@@ -3,11 +3,18 @@
   "version": "0.0.0",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "elastic",
+    "design",
+    "ember",
+    "eui"
   ],
-  "repository": "",
+  "repository": "https://github.com/prysmex/ember-eui",
   "license": "MIT",
-  "author": "",
+  "author": "Alberto Cantu <betocantu93@gmail.com> (https://betocantu93.com)",
+  "contributors:": [
+    "David Martinez"
+  ],
   "directories": {
     "doc": "doc",
     "test": "tests"

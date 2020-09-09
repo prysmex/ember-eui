@@ -34,6 +34,7 @@ module.exports = {
       { ...this.config },
       app.options["ember-eui"]
     );
+
   },
 
   config() {

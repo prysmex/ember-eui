@@ -33,13 +33,13 @@ module.exports = {
     this.emberEuiOptions = Object.assign({}, app.options["ember-eui"]);
 
    
-    if(this.emberEuiOptions.theme) {
-      app.import(`node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`);
-    } else {
-      app.import("node_modules/@elastic/eui/dist/eui_theme_light.min.css");
+    if(!this.emberEuiOptions.disableImport) {
+      if(this.emberEuiOptions.theme) {
+        app.import(`node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`);
+      } else {
+        app.import("node_modules/@elastic/eui/dist/eui_theme_light.min.css");
+      }
     }
-
-    
   },
 
   

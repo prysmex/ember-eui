@@ -1,5 +1,8 @@
 # Ember Eui Changelog
 
+### 0.0.5
+Add ember-cli-sass and app.scss blueprint
+
 ### 0.0.4
 Expose scss files so you can now use eui sass variables
 

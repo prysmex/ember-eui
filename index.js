@@ -5,6 +5,7 @@ const BroccoliMergeTrees = require("broccoli-merge-trees");
 const writeFile = require("broccoli-file-creator");
 const Funnel = require("broccoli-funnel");
 const EuiScssFilter = require("./lib/elastic-eui-scss-filter");
+const { deprecate } = require("util");
 
 module.exports = {
   name: require("./package").name,
@@ -36,37 +37,51 @@ module.exports = {
       ? this.emberEuiOptions.theme
       : "light";
 
-    // if(!this.emberEuiOptions.disableImport) {
-    //   if(this.emberEuiOptions.theme) {
-    //     app.import(`node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`);
-    //   } else {
-    //     app.import("node_modules/@elastic/eui/dist/eui_theme_light.min.css");
-    //   }
-    // }
+    if (this.emberEuiOptions.useCompiledCss) {
+      if (this.emberEuiOptions.theme) {
+        app.import(
+          `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
+        );
+      } else {
+        app.import("node_modules/@elastic/eui/dist/eui_theme_light.min.css");
+      }
+    }
   },
 
   // TODO: Currently the performance of recompiling sass on every change are serious, find a way to improve them.
   treeForStyles(tree) {
+    let trees = [];
+    let euiScssFiles;
+
+    if (!this.emberEuiOptions.useCompiledCss) {
+      euiScssFiles = new Funnel(this.pathBase("@elastic/eui"), {
+        srcDir: "/src",
+        include: ["**/*.scss"],
+        destDir: "elastic-eui",
+        annotation: "ElasticEUIScssFunnel",
+      });
+
+      euiScssFiles = new EuiScssFilter(euiScssFiles);
+
+      trees.push(euiScssFiles);  
+    } 
+
     let selectedTheme = this.emberEuiOptions.theme;
 
-    let euiScssFiles = new Funnel(this.pathBase("@elastic/eui"), {
-      srcDir: "/src",
-      include: ["**/*.scss"],
-      destDir: "elastic-eui",
-      annotation: "ElasticEUIScssFunnel",
-    });
-
-    euiScssFiles = new EuiScssFilter(euiScssFiles);
-    
     let importer = writeFile(
       "ember-eui-components.scss",
-      `@import './elastic-eui/theme_${selectedTheme}.scss';`
+      euiScssFiles ? `@import './elastic-eui/theme_${selectedTheme}.scss';` : ''
     );
 
-    let mergedTrees = new BroccoliMergeTrees([euiScssFiles, importer, tree], {
+    trees.push(importer);
+
+    trees.push(tree);
+
+    let output = new BroccoliMergeTrees(trees, {
       overwrite: true,
     });
-    return this._super.treeForStyles(mergedTrees);
+
+    return this._super.treeForStyles(output);
   },
 
   pathBase(packageName) {

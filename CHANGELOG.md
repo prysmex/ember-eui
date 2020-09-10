@@ -1,5 +1,7 @@
 # Ember Eui Changelog
 
+### 0.0.4
+Expose scss files so you can now use eui sass variables
 
 ### 0.0.3
 Delete blueprint for now

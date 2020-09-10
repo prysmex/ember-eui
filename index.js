@@ -57,8 +57,7 @@ module.exports = {
     });
 
     euiScssFiles = new EuiScssFilter(euiScssFiles);
-
-    console.log(euiScssFiles);
+    
     let importer = writeFile(
       "ember-eui-components.scss",
       `@import './elastic-eui/theme_${selectedTheme}.scss';`

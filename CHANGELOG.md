@@ -1,5 +1,8 @@
 # Ember Eui Changelog
 
+### 0.0.2
+Fix changelog location
+
 ### 0.0.1
 Support importing custom themes
 

@@ -32,46 +32,47 @@ module.exports = {
 
     this.emberEuiOptions = Object.assign({}, app.options["ember-eui"]);
 
-   
-    if(!this.emberEuiOptions.disableImport) {
-      if(this.emberEuiOptions.theme) {
-        app.import(`node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`);
-      } else {
-        app.import("node_modules/@elastic/eui/dist/eui_theme_light.min.css");
-      }
-    }
+    this.emberEuiOptions.theme = this.emberEuiOptions.theme
+      ? this.emberEuiOptions.theme
+      : "light";
+
+    // if(!this.emberEuiOptions.disableImport) {
+    //   if(this.emberEuiOptions.theme) {
+    //     app.import(`node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`);
+    //   } else {
+    //     app.import("node_modules/@elastic/eui/dist/eui_theme_light.min.css");
+    //   }
+    // }
   },
 
-  
-
   // TODO: Currently the performance of recompiling sass on every change are serious, find a way to improve them.
-  // treeForStyles(tree) {
-  //   let selectedTheme = this.emberEuiOptions.theme || this.config.theme;
+  treeForStyles(tree) {
+    let selectedTheme = this.emberEuiOptions.theme;
 
-  //   let euiScssFiles = new Funnel(this.pathBase("@elastic/eui"), {
-  //     srcDir: "/src",
-  //     include: ["**/*.scss"],
-  //     destDir: "elastic-eui",
-  //     annotation: "ElasticEUIScssFunnel",
-  //   });
+    let euiScssFiles = new Funnel(this.pathBase("@elastic/eui"), {
+      srcDir: "/src",
+      include: ["**/*.scss"],
+      destDir: "elastic-eui",
+      annotation: "ElasticEUIScssFunnel",
+    });
 
-  //   euiScssFiles = new EuiScssFilter(euiScssFiles);
+    euiScssFiles = new EuiScssFilter(euiScssFiles);
 
-  //   console.log(euiScssFiles);
-  //   let importer = writeFile(
-  //     "ember-eui-components.scss",
-  //     `@import './elastic-eui/theme_light.scss';`
-  //   );
+    console.log(euiScssFiles);
+    let importer = writeFile(
+      "ember-eui-components.scss",
+      `@import './elastic-eui/theme_${selectedTheme}.scss';`
+    );
 
-  //   let mergedTrees = new BroccoliMergeTrees([euiScssFiles, importer, tree], {
-  //     overwrite: true,
-  //   });
-  //   return this._super.treeForStyles(mergedTrees);
-  // },
+    let mergedTrees = new BroccoliMergeTrees([euiScssFiles, importer, tree], {
+      overwrite: true,
+    });
+    return this._super.treeForStyles(mergedTrees);
+  },
 
-  // pathBase(packageName) {
-  //   return path.dirname(
-  //     resolve.sync(`${packageName}/package.json`, { basedir: __dirname })
-  //   );
-  // },
+  pathBase(packageName) {
+    return path.dirname(
+      resolve.sync(`${packageName}/package.json`, { basedir: __dirname })
+    );
+  },
 };

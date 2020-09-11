@@ -24,3 +24,5 @@ Contributing
 ------------------------------------------------------------------------------
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
+
+## PR's are truly welcome

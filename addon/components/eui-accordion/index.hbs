@@ -1,0 +1,125 @@
+<div
+  class={{concat
+    "euiAccordion"
+    (if this.isOpen " euiAccordion-isOpen")
+  }}
+  ...attributes
+>
+  <div class="euiAccordion__triggerWrapper">
+    <button
+      id={{this.buttonId}}
+      aria-controls={{@id}}
+      aria-expanded={{this.isOpen}}
+      class={{concat
+        "euiAccordion__button "
+        (if this.buttonReverse "euiAccordion__buttonReverse ")
+        @buttonClassName
+      }}
+      type="button"
+      {{on "click" this.onToggle}}
+    >
+      {{#if this.hasArrowDisplay}}
+        <span
+          class={{concat
+            "euiAccordion__iconWrapper "
+            (if this.hasIconButton "euiAccordion__iconButton ")
+          }}
+        >
+          {{!-- <EuiIcon
+            class={{concat
+              "euiAccordion__icon"
+              (if this.isOpen " euiAccordion__icon-isOpen")
+            }}
+            @type="arrowRight"
+            @size="m"
+          /> --}}
+          <div
+            class={{concat
+              "euiAccordion__icon"
+              (if this.isOpen " euiAccordion__icon-isOpen")
+            }}
+          >
+            >
+          </div>
+        </span>
+      {{/if}}
+      <span
+        class={{concat
+          "euiIEFlexWrapFix "
+          @buttonContentClassName
+        }}
+      >
+        {{@buttonContent}}
+      </span>
+    </button>
+
+    {{#if @extraAction}}
+      {{#if this.isLoading}}
+        <div className="euiAccordion__optionalAction">
+          {{!-- <EuiLoadingSpinner /> --}}
+          Spinner
+        </div>
+      {{else}}
+        <div className="euiAccordion__optionalAction">{{@extraAction}}</div>
+      {{/if}}
+    {{/if}}
+
+    {{#if this.hasIconButton}}
+      <button
+        aria-controls={{@id}}
+        aria-expanded={{this.isOpen}}
+        aria-labelledby={{this.buttonId}}
+        tabIndex={{-1}}
+        class={{concat
+          "euiAccordion__iconWrapper "
+          (if this.hasIconButton "euiAccordion__iconButton ")
+        }}
+        {{on "click" this.onToggle}}
+      >
+        {{!-- <EuiIcon
+          class={{concat
+            "euiAccordion__icon"
+            (if this.isOpen " euiAccordion__icon-isOpen")
+          }}
+          @type="arrowRight"
+          @size="m"
+        /> --}}
+        <div
+          class={{concat
+            "euiAccordion__icon"
+            (if this.isOpen " euiAccordion__icon-isOpen")
+          }}
+        >
+          >
+        </div>
+      </button>
+    {{/if}}
+  </div>
+
+  <div
+    class="euiAccordion__childWrapper"
+    id={{@id}}
+  >
+    <div
+      class={{concat
+        @paddingClass
+        (if this.isLoading " euiAccordion__children-isLoading")
+      }}
+    >
+      {{#if (and this.isLoading @isLoadingMessage)}}
+        {{!-- <EuiLoadingSpinner class="euiAccordion__spinner" /> --}}
+        Spinner
+        <span>
+          {{#if this.showLoadingMessage}}
+            {{@isLoadingMessage}}
+          {{else}}
+            {{!-- <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> --}}
+            Loading...
+          {{/if}}
+        </span>
+      {{else}}
+        {{yield}}
+      {{/if}}
+    </div>
+  </div>
+</div>

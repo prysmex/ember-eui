@@ -1,0 +1,11 @@
+<figure
+  class={{concat "euiImage "
+    (if this.hasShadow "euiImage--hasShadow ")
+    @className
+  }}
+>
+  <img src={{@url}} class="euiImage__img" alt={{@alt}}>
+  {{#if this.caption}}
+    <figcaption class="euiImage__caption">{{this.caption}}</figcaption>
+  {{/if}}
+</figure>

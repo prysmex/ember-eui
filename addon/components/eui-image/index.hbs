@@ -1,10 +1,12 @@
 <figure
   class={{concat "euiImage "
     (if this.hasShadow "euiImage--hasShadow ")
+    this.sizeClass
     @className
   }}
+  ...attributes
 >
-  <img src={{@url}} class="euiImage__img" alt={{@alt}}>
+  <img src={{@url}} class="euiImage__img" style={{this.sizeStyle}} alt={{@alt}}>
   {{#if this.caption}}
     <figcaption class="euiImage__caption">{{this.caption}}</figcaption>
   {{/if}}

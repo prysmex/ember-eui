@@ -4,9 +4,25 @@ import { tracked } from '@glimmer/tracking';
 
 import htmlIdGenerator from '../../utils/html-id-generator';
 
+const paddingSizeToClassNameMap = {
+  none: '',
+  xs: 'euiAccordion__padding--xs',
+  s: 'euiAccordion__padding--s',
+  m: 'euiAccordion__padding--m',
+  l: 'euiAccordion__padding--l',
+  xl: 'euiAccordion__padding--xl'
+};
 export default class EuiAccordionAccordionComponent extends Component {
-  @tracked isOpen;
+  @tracked _opened;
   buttonId = htmlIdGenerator();
+
+  constructor () {
+    super(...arguments);
+
+    this._opened = this.args.forceState
+      ? this.args.forceState === 'open'
+      : this.args.initialIsOpen;
+  }
 
   // Defaults
   get isLoading () {
@@ -30,6 +46,22 @@ export default class EuiAccordionAccordionComponent extends Component {
   }
   // /Defaults
 
+  get classes () {
+    return [
+      'euiAccordion',
+      this.isOpen ? 'euiAccordion-isOpen' : '',
+      this.args.className
+    ].join(' ');
+  }
+
+  get isOpen () {
+    return this.args.forceState ? this.args.forceState === 'open' : this._opened;
+  }
+
+  get paddingClass () {
+    return paddingSizeToClassNameMap[this.paddingSize];
+  }
+
   get hasIconButton () {
     return this.args.extraAction && this.arrowDisplay === 'right';
   }
@@ -39,21 +71,28 @@ export default class EuiAccordionAccordionComponent extends Component {
   }
 
   get buttonReverse () {
-    return !this.hasIconButton;
+    return !this.args.extraAction && this.arrowDisplay === 'right';
   }
 
-  get showLoadingMessage () {
+  get hasLoadingMessage () {
     return this.isLoadingMessage && this.isLoadingMessage !== true;
+  }
+
+  get buttonClasses () {
+    return [
+      'euiAccordion__button',
+      this.buttonReverse ? 'euiAccordion__buttonReverse' : '',
+      this.args.buttonClassName
+    ].join(' ');
   }
 
   @action
   onToggle () {
     if (this.args.forceState) {
-      this.args.onToggle &&
-        this.args.onToggle(this.args.forceState === 'open' ? false : true);
+      this.args.onToggle && this.args.onToggle(this.args.forceState === 'open' ? false : true);
     } else {
-      this.isOpen = !this.isOpen;
-      this.args.onToggle && this.args.onToggle(this.isOpen);
+      this._opened = !this._opened;
+      this.args.onToggle && this.args.onToggle(this._opened);
     }
   }
 }

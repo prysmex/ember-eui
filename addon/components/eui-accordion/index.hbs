@@ -1,20 +1,10 @@
-<div
-  class={{concat
-    "euiAccordion"
-    (if this.isOpen " euiAccordion-isOpen")
-  }}
-  ...attributes
->
+<div class={{this.classes}} ...attributes>
   <div class="euiAccordion__triggerWrapper">
     <button
       id={{this.buttonId}}
       aria-controls={{@id}}
       aria-expanded={{this.isOpen}}
-      class={{concat
-        "euiAccordion__button "
-        (if this.buttonReverse "euiAccordion__buttonReverse ")
-        @buttonClassName
-      }}
+      class={{this.buttonClasses}}
       type="button"
       {{on "click" this.onToggle}}
     >
@@ -39,7 +29,7 @@
               (if this.isOpen " euiAccordion__icon-isOpen")
             }}
           >
-            >
+            ▶️
           </div>
         </span>
       {{/if}}
@@ -53,15 +43,12 @@
       </span>
     </button>
 
-    {{#if @extraAction}}
-      {{#if this.isLoading}}
-        <div className="euiAccordion__optionalAction">
-          {{!-- <EuiLoadingSpinner /> --}}
-          Spinner
-        </div>
-      {{else}}
-        <div className="euiAccordion__optionalAction">{{@extraAction}}</div>
-      {{/if}}
+    {{#if (and @extraAction (not this.isLoading))}}
+      <div class="euiAccordion__optionalAction">{{@extraAction}}</div>
+    {{else if this.isLoading}}
+      <div class="euiAccordion__optionalAction">
+        <EuiLoadingSpinner />
+      </div>
     {{/if}}
 
     {{#if this.hasIconButton}}
@@ -90,7 +77,7 @@
             (if this.isOpen " euiAccordion__icon-isOpen")
           }}
         >
-          >
+          ▶️
         </div>
       </button>
     {{/if}}
@@ -102,15 +89,14 @@
   >
     <div
       class={{concat
-        @paddingClass
+        this.paddingClass
         (if this.isLoading " euiAccordion__children-isLoading")
       }}
     >
       {{#if (and this.isLoading @isLoadingMessage)}}
-        {{!-- <EuiLoadingSpinner class="euiAccordion__spinner" /> --}}
-        Spinner
+        <EuiLoadingSpinner class="euiAccordion__spinner" />
         <span>
-          {{#if this.showLoadingMessage}}
+          {{#if this.hasLoadingMessage}}
             {{@isLoadingMessage}}
           {{else}}
             {{!-- <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> --}}

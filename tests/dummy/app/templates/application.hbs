@@ -1,58 +1,8 @@
 <EuiCard />
 <EuiCard />
 
-<hr>
-
-<br>
-<h1>Accordion</h1>
-<EuiAccordion
-  @buttonContent="Clickable title"
->
-  My content
-</EuiAccordion>
-
-<br>
-<h1>Accordion with <b>forceState</b></h1>
-The accordion is {{this.accordionState}} <br>
-<button {{on "click" (fn (mut this.accordionState) "open")}}>Open</button>
-<button {{on "click" (fn (mut this.accordionState) "closed")}}>Close</button>
-<EuiAccordion
-  @buttonContent="Clickable title"
-  @forceState={{this.accordionState}}
-  @onToggle={{if (eq this.accordionState "open")
-    (fn (mut this.accordionState) "closed")
-    (fn (mut this.accordionState) "open")
-  }}
->
-  My content
-</EuiAccordion>
-
-<br>
-<h1>Accordion with <b>isLoading = true</b></h1>
-<EuiAccordion
-  @buttonContent="You spin my head right round"
-  @isLoading={{true}}
->
-  My content
-</EuiAccordion>
-<EuiAccordion
-  @buttonContent="You spin my head right round also in content"
-  @isLoading={{true}}
-  @isLoadingMessage="What what"
->
-  My content
-</EuiAccordion>
-
-<br>
-<h1>Accordion with <b>arrowDisplay = left</b></h1>
-<EuiAccordion
-  @buttonContent="Clickable title"
-  @arrowDisplay="right"
->
-  My content
-</EuiAccordion>
-
-<hr>
+<EuiLoadingSpinner id={{unique-id}} />
+<EuiLoadingSpinner id={{unique-id}} @size="xl" />
 
 <div>
   <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow euiFlexGroup--responsive">

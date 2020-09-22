@@ -4,3 +4,20 @@ declare module 'ember-eui/templates/*' {
   const tmpl: TemplateFactory;
   export default tmpl;
 }
+
+interface PropertyMapping {
+  [size: string]: string;
+}
+
+interface ComponentProperty {
+  [property: string]: PropertyMapping;
+}
+
+interface ComponentMapping {
+  base: string;
+  properties: ComponentProperty;
+}
+
+interface Mapping {
+  [componentName: string]: ComponentMapping;
+}

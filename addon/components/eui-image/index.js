@@ -3,14 +3,14 @@ import { tracked } from '@glimmer/tracking';
 import { assert } from '@ember/debug';
 import { computed } from '@ember/object';
 import { htmlSafe } from '@ember/string';
+import { action } from '@ember/object';
 
 export default class EmberEuiImage extends GlimmerComponent {
 
-  url = '';
-  alt = '';
-  @tracked hasShadow = this.args.hasShadow;
+  // TODO: allowFullscreen functionality
 
   size = this.args.size;
+
   @computed('size')
   get sizeClass() {
     if (typeof this.size == 'number') {
@@ -35,27 +35,11 @@ export default class EmberEuiImage extends GlimmerComponent {
     }
   }
 
-  // caption = '';
-  // fullScreenIconColor = '';
-  // allowFullScreen = false;
-  // className = this.args.className;
-  // ariaLabel = '';
-  // dataTestSubj = '';
-
-  constructor () {
-    super(...arguments);
-    if (!this.args.url) {
-      assert('You must provide an image url');
-    } else {
-      this.url = this.args.url;
-    }
-
-    if (!this.args.alt) {
-      assert('You must provide an image alt text');
-    } else {
-      this.alt = this.args.alt;
-    }
+  @action
+  expandImage() {
+    console.log('clicked!')
+    let body = document.body;
+    body.classList.add('euiBody-hasOverlayMask')
   }
-
 
 }

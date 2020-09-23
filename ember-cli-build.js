@@ -24,9 +24,5 @@ module.exports = function(defaults) {
     behave. You most likely want to be modifying `./index.js` or app's build file
   */
 
-  app.import('node_modules/uuid/dist/esm-browser/index.js', {
-    using: [{ transformation: 'cjs', as: 'uuid' }]
-  });
-
   return app.toTree();
 };

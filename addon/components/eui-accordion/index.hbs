@@ -1,4 +1,10 @@
-<div class={{this.classes}} ...attributes>
+<div
+  class={{class-names "EuiAccordion"
+    (if this.isOpen "euiAccordion-isOpen")
+    padding=this.paddingSize
+  }}
+  ...attributes
+>
   <div class="euiAccordion__triggerWrapper">
     <button
       id={{this.buttonId}}
@@ -88,16 +94,16 @@
     id={{@id}}
   >
     <div
-      class={{concat
-        this.paddingClass
+      class={{class-names "EuiAccordion"
         (if this.isLoading " euiAccordion__children-isLoading")
+        padding=this.paddingSize
       }}
     >
-      {{#if (and this.isLoading @isLoadingMessage)}}
+      {{#if (and this.isLoading this.isLoadingMessage)}}
         <EuiLoadingSpinner class="euiAccordion__spinner" />
         <span>
           {{#if this.hasLoadingMessage}}
-            {{@isLoadingMessage}}
+            {{this.isLoadingMessage}}
           {{else}}
             {{!-- <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> --}}
             Loading...

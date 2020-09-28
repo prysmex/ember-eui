@@ -1,7 +1,5 @@
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { assert } from '@ember/debug';
-import { computed } from '@ember/object';
 import { htmlSafe } from '@ember/string';
 import { action } from '@ember/object';
 
@@ -9,9 +7,12 @@ export default class EmberEuiImage extends GlimmerComponent {
 
   // TODO: allowFullscreen functionality
 
-  size = this.args.size;
+  @tracked isFullscreen = false;
 
-  @computed('size')
+  get size() {
+    return this.args.size || 'original';
+  }
+
   get sizeClass() {
     if (typeof this.size == 'number') {
       this.sizeStyle = htmlSafe(`max-height:${this.args.size}px; max-width:${this.args.size}px; width:auto;`);
@@ -36,10 +37,9 @@ export default class EmberEuiImage extends GlimmerComponent {
   }
 
   @action
-  expandImage() {
+  toggleFullscreen() {
     console.log('clicked!')
-    let body = document.body;
-    body.classList.add('euiBody-hasOverlayMask')
+    this.isFullscreen = !this.isFullscreen;
   }
 
 }

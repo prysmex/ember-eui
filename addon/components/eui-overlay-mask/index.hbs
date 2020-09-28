@@ -1,0 +1,12 @@
+{{#in-element this.destinationElement insertBefore=null}}
+  <div class={{concat
+    "euiOverlayMask "
+    (unless (eq @headerZindexLocation "below")
+      "euiOverlayMask--aboveHeader"
+      "euiOverlayMask--belowHeader"
+    )}}
+    {{on "click" @onClick}}
+  >
+    {{yield}}
+  </div>
+{{/in-element}}

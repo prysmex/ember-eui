@@ -63,8 +63,8 @@ module.exports = {
 
       euiScssFiles = new EuiScssFilter(euiScssFiles);
 
-      trees.push(euiScssFiles);  
-    } 
+      trees.push(euiScssFiles);
+    }
 
     let selectedTheme = this.emberEuiOptions.theme;
 

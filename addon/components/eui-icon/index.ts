@@ -489,8 +489,8 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   get icon(): IconType | void {
-	let { type } = this.args;
-	
+    let { type } = this.args;
+
     if (type === null) {
       return undefined;
     }
@@ -511,15 +511,15 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   get classes(): string {
-	const { size, isAppIcon } = this;
-	const { className = '' } = this.args;
+    const { size, isAppIcon } = this;
+    const { className = '' } = this.args;
 
     return [
       'euiIcon',
       sizeToClassNameMap[size],
       this.optionalColorClass,
-	  isAppIcon ? 'euiIcon--app' : '',
-	  className
+      isAppIcon ? 'euiIcon--app' : '',
+      className,
     ].join(' ');
   }
 
@@ -536,15 +536,15 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     const { tabIndex } = this.args;
     return tabIndex == null || tabIndex === -1 ? 'false' : 'true';
   }
- 
+
   get optionalCustomStyles() {
-	let { color } = this;
+    let { color } = this;
     if (color) {
       if (!isNamedColor(color)) {
         return htmlSafe(`fill: ${color}`);
       }
-	}
-	return ''
+    }
+    return '';
   }
 
   get optionalColorClass() {

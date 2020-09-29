@@ -1,0 +1,21 @@
+<EuiPanel
+  @hasShadow={{@hasShadow}}
+  @paddingSize={{@paddingSize}}
+  @grow={{@grow}}
+  class={{concat
+    "euiPageContent "
+    (if
+      (eq @verticalPosition "center") " euiPageContent--verticalCenter "
+    )
+    (if
+      (eq @horizontalPosition "center") " euiPageContent--horizontalCenter "
+    )
+  }}
+  ...attributes
+>
+  {{yield (hash
+      header=(component "eui-page/eui-page-body/eui-page-content/eui-page-content-header")
+      body=(component "eui-page/eui-page-body/eui-page-content/eui-page-content-body")
+    )
+  }}
+</EuiPanel>

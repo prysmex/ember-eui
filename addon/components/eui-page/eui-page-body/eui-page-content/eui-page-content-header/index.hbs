@@ -1,0 +1,5 @@
+<div class={{concat "euiPageContentHeader " (if @responsive "euiPageContentHeader--responsive")}} ...attributes>
+  {{yield (hash
+    section=(component "eui-page/eui-page-body/eui-page-content/eui-page-content-header/section")
+  )}}
+</div>

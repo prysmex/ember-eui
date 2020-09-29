@@ -1,13 +1,27 @@
-<div
-  class={{class-names
-    "EuiPanel"
-    (if @onClick "euiPanel--isClickable")
-    (if @hasShadow "euiPanel--shadow")
-    padding=(arg-or-default @paddingSize "m")
-  }}
-  role={{if @onClick "button"}}
-  onClick={{@onClick}}
-  ...attributes
->
-  {{yield}}
-</div>
+{{#if @onClick}}
+  <button
+    class={{class-names
+      "EuiPanel"
+      (if @onClick "euiPanel--isClickable")
+      (if @hasShadow "euiPanel--shadow")
+      (if (eq @grow false) "euiPanel--flexGrowZero")
+      padding=(arg-or-default @paddingSize "m")
+    }}
+    onClick={{@onClick}}
+    ...attributes
+  >
+    {{yield}}
+  </button>
+{{else}}
+  <div
+    class={{class-names
+      "EuiPanel"
+      (if @hasShadow "euiPanel--shadow")
+      (if (eq @grow false) "euiPanel--flexGrowZero")
+      padding=(arg-or-default @paddingSize "m")
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </div>
+{{/if}}

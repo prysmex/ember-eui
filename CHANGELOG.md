@@ -1,5 +1,9 @@
 # Ember Eui Changelog
 
+### 0.0.7
+
+Update license and add a short description to the readme
+
 ### 0.0.6
 
 Support importing only compiled css

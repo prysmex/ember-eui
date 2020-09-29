@@ -1,7 +1,7 @@
 ember-eui
 ==============================================================================
 
-[Short description of the addon.]
+This project aims to provide ember components implementing the css layer of https://elastic.github.io/eui
 
 
 Compatibility
@@ -20,19 +20,9 @@ ember install ember-eui
 ```
 
 
-Usage
-------------------------------------------------------------------------------
-
-[Longer description of how to use the addon in apps.]
-
-
 Contributing
 ------------------------------------------------------------------------------
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
 
-
-License
-------------------------------------------------------------------------------
-
-This project is licensed under the [MIT License](LICENSE.md).
+### PR's are truly welcome

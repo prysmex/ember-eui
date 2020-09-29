@@ -1,0 +1,19 @@
+{{#if this.useImage}}
+  <img
+    class={{this.classes}}
+    alt={{if @title @title}}
+    src={{this.icon}}
+    tabIndex={{@tabIndex}}
+    ...attributes
+  />
+{{else}}
+  {{svg-jar
+    this.icon
+    class=this.classes
+    style=this.optionalCustomStyles
+	tabIndex=this.tabIndex
+    role="image"
+	title=this.title
+	aria-labelledby=this.titleId
+  }}
+{{/if}}

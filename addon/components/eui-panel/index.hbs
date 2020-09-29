@@ -1,0 +1,13 @@
+<div
+  class={{class-names
+    "EuiPanel"
+    (if @onClick "euiPanel--isClickable")
+    (if @hasShadow "euiPanel--shadow")
+    padding=(arg-or-default @paddingSize "m")
+  }}
+  role={{if @onClick "button"}}
+  onClick={{@onClick}}
+  ...attributes
+>
+  {{yield}}
+</div>

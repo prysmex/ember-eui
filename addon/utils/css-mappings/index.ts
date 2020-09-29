@@ -1,7 +1,9 @@
 import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiPanel from './eui-panel';
 
 const mapping: Mapping = {
-  EuiLoadingSpinner
+  EuiLoadingSpinner,
+  EuiPanel
 }
 
 export default mapping;

@@ -18,7 +18,8 @@ module.exports = function(defaults) {
 
     svgJar: {
       sourceDirs: [
-        'node_modules/@elastic/eui/lib/components/icon',
+        'public/assets',
+        'node_modules/@elastic/eui/lib/components/icon'
       ],
     }
   });

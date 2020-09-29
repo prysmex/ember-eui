@@ -2,7 +2,6 @@
   class={{concat "euiImage "
     (unless (eq @hasShadow false) "euiImage--hasShadow ")
     this.sizeClass
-    @className
   }}
   ...attributes
 >
@@ -57,7 +56,6 @@
       >
         <img
           class="euiImage-isFullScreen__img"
-          style={{this.sizeStyle}}
           src={{@url}}
           alt={{@alt}}
         >

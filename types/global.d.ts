@@ -6,7 +6,7 @@ declare module 'ember-eui/templates/*' {
 }
 
 interface PropertyMapping {
-  [size: string]: string;
+  [size: string]: string | null;
 }
 
 interface ComponentProperty {

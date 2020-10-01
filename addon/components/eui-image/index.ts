@@ -4,7 +4,13 @@ import { htmlSafe } from '@ember/string';
 import { action } from '@ember/object';
 import { sizeMapping } from '../../utils/css-mappings/eui-image';
 
-export default class EmberEuiImage extends GlimmerComponent {
+type ImageArgs = {
+
+  size: number | string;
+
+}
+
+export default class EmberEuiImage extends GlimmerComponent<ImageArgs> {
 
   // TODO: allowFullscreen functionality
 

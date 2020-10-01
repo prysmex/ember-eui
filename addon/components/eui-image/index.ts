@@ -5,14 +5,14 @@ import { action } from '@ember/object';
 import { sizeMapping } from '../../utils/css-mappings/eui-image';
 
 type ImageArgs = {
-
+  /*
+    Determines the size of the image itself, can be a number or a string
+    Default: 'm'
+  */
   size: number | string;
-
 }
 
 export default class EmberEuiImage extends GlimmerComponent<ImageArgs> {
-
-  // TODO: allowFullscreen functionality
 
   @tracked isFullscreen = false;
 

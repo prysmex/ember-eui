@@ -14,6 +14,13 @@ module.exports = function(defaults) {
     "ember-eui": {
       theme: 'light',
       useCompiledCss: true
+    },
+
+    svgJar: {
+      sourceDirs: [
+        'public/assets',
+        'node_modules/@elastic/eui/lib/components/icon'
+      ],
     }
   });
 

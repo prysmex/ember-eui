@@ -1,6 +1,12 @@
 {{#if this.useImage}}
   <img
-    class={{this.classes}}
+    class={{class-names
+      'EuiIcon'
+      this.optionalColorClass
+      (if this.isAppIcon 'euiIcon--app')
+      @className
+      size=this.size
+    }}
     alt={{if @title @title}}
     src={{this.icon}}
     tabIndex={{@tabIndex}}
@@ -9,10 +15,16 @@
 {{else}}
   {{svg-jar
     this.icon
-    class=this.classes
+    class=(class-names
+      'EuiIcon'
+      this.optionalColorClass
+      (if this.isAppIcon 'euiIcon--app')
+      @className
+      size=this.size
+    )
     style=this.optionalCustomStyles
     tabIndex=this.tabIndex
-    role="image"
+    role='image'
     title=this.title
     aria-labelledby=this.titleId
   }}

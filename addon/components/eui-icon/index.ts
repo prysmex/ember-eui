@@ -509,20 +509,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
       onIconLoad();
     }
   }
-
-  get classes(): string {
-    const { size, isAppIcon } = this;
-    const { className = '' } = this.args;
-
-    return [
-      'euiIcon',
-      sizeToClassNameMap[size],
-      this.optionalColorClass,
-      isAppIcon ? 'euiIcon--app' : '',
-      className,
-    ].join(' ');
-  }
-
+  
   get isAppIcon() {
     const { type } = this.args;
     return (

@@ -4,24 +4,24 @@ const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
 
 const nodeSass = require('node-sass');
 
-module.exports = function(defaults) {
+module.exports = function (defaults) {
   let app = new EmberAddon(defaults, {
     sassOptions: {
       implementation: nodeSass,
       sourceMap: false,
     },
     // Add options here
-    "ember-eui": {
+    'ember-eui': {
       theme: 'dark',
-      useCompiledCss: true
+      useCompiledCss: true,
     },
 
     svgJar: {
       sourceDirs: [
         'public/assets',
-        'node_modules/@elastic/eui/lib/components/icon'
+        'node_modules/@elastic/eui/lib/components/icon',
       ],
-    }
+    },
   });
 
   /*

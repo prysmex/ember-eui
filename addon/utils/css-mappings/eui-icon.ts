@@ -1,7 +1,6 @@
 export const baseClass: string = 'euiIcon';
 
 export const sizeToClassNameMap = {
-  original: null,
   s: `${baseClass}--small`,
   m: `${baseClass}--medium`,
   l: `${baseClass}--large`,
@@ -10,7 +9,6 @@ export const sizeToClassNameMap = {
 };
 
 export const colorToClassMap = {
-  default: null,
   primary: `${baseClass}--primary`,
   secondary: `${baseClass}--secondary`,
   success: `${baseClass}--success`,

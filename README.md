@@ -22,6 +22,10 @@ var app = new EmberApp(defaults, {
 
   ...
 });
+
+//And import the ember-template-compiler... currently ember-eui depends on a fork of ember-svg-jar
+app.import('node_modules/ember-source/dist/ember-template-compiler.js');
+
 ```
 
 ## Compatibility

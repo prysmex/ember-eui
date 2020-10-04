@@ -42,7 +42,8 @@
     "ember-cli-typescript": "^4.0.0",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
-    "resolve": "^1.13.1"
+    "resolve": "^1.13.1",
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#de0d374e5f39e5d6c7635a20d4e049707ede51d3"
   },
   "devDependencies": {
     "@ember/optional-features": "^1.3.0",
@@ -70,7 +71,7 @@
     "ember-resolver": "^8.0.0",
     "ember-source": "~3.20.2",
     "ember-source-channel-url": "^2.0.1",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#de0d374e5f39e5d6c7635a20d4e049707ede51d3",
+    
     "ember-template-lint": "^2.9.1",
     "ember-try": "^1.4.0",
     "eslint": "^7.5.0",

@@ -7,7 +7,6 @@ import {
 } from 'ember-eui/utils/css-mappings/eui-icon';
 import { uniqueId } from 'ember-eui/helpers/unique-id';
 import { htmlSafe } from '@ember/template';
-
 const typeToPathMap = {
   accessibility: 'accessibility',
   addDataApp: 'app_add_data',
@@ -509,7 +508,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
       onIconLoad();
     }
   }
-  
+
   get isAppIcon() {
     const { type } = this.args;
     return (
@@ -550,14 +549,8 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
     return (
       icon === 'empty' ||
-      !(this.args['aria-label'],
-      this.args['aria-labelledby'],
-      this.args['title'])
+      !(this.args['aria-label'], this.args['aria-labelledby'], this.args.title)
     );
-  }
-
-  get hideIconEmpty() {
-    return this.isAriaHidden && { 'aria-hidden': true };
   }
 
   get titleId(): string {
@@ -568,7 +561,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     //  The svg aria-labelledby attribute gets this titleId
     //  The svg title element gets this titleId as an id
     if (!this.args['aria-label'] && !this.args['aria-labelledby'] && title) {
-      titleId = { titleId: uniqueId() };
+      titleId = uniqueId();
     }
     return titleId;
   }

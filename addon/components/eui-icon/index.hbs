@@ -1,31 +1,32 @@
 {{#if this.useImage}}
   <img
+    src={{this.icon}}
     class={{class-names
       'EuiIcon'
       this.optionalColorClass
       (if this.isAppIcon 'euiIcon--app')
-      @className
       size=this.size
     }}
     alt={{if @title @title}}
-    src={{this.icon}}
     tabIndex={{@tabIndex}}
     ...attributes
   />
 {{else}}
-  {{svg-jar
-    this.icon
-    class=(class-names
+  <SvgJar
+    @name={{this.icon}}
+    class={{class-names
       'EuiIcon'
       this.optionalColorClass
       (if this.isAppIcon 'euiIcon--app')
-      @className
       size=this.size
-    )
-    style=this.optionalCustomStyles
-    tabIndex=this.tabIndex
+    }}
+    style={{this.optionalCustomStyles}}
+    tabIndex={{this.tabIndex}}
     role='image'
-    title=this.title
-    aria-labelledby=this.titleId
-  }}
+    aria-hidden={{if this.isAriaHidden true}}
+    aria-label={{if @aria-label @aria-label this.titleId}}
+    aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
+    @title={{@title}}
+    ...attributes
+  />
 {{/if}}

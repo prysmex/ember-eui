@@ -1,9 +1,1 @@
-<div class=
-  {{if @size
-    (concat "euiSpacer--" @size)
-    "euiSpacer--l"
-  }}
-  aria-label={{@ariaLabel}}
-  data-test-subj={{@dataTestSubj}}
-  ...attributes
-/>
+<div class={{class-names "EuiSpacer" size=(arg-or-default @size "l")}} ...attributes />

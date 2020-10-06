@@ -7,6 +7,8 @@ import cssMappings from '../utils/css-mappings';
 interface Options {
   size: string;
   padding: string;
+  textAlign: string;
+  textColor: string;
 };
 
 /**
@@ -14,7 +16,7 @@ interface Options {
  *
  * @param classes - List of classes that will be joined
  */
-export function classNames([componentName]: string[] = [], { size, padding }: Options): string {
+export function classNames([componentName]: string[] = [], { size, padding, textAlign, textColor }: Options): string {
   assert('The component name must be provided as the first parameter', componentName !== undefined);
   assert(`The component '${componentName}' doesn't have mappings defined`, cssMappings[componentName] !== undefined);
 
@@ -23,6 +25,8 @@ export function classNames([componentName]: string[] = [], { size, padding }: Op
   classes.push(cssMappings[componentName].base || '');
   classes.push(cssMappings[componentName].properties.size?.[size] || '');
   classes.push(cssMappings[componentName].properties.padding?.[padding] || '');
+  classes.push(cssMappings[componentName].properties.textAlign?.[textAlign] || '');
+  classes.push(cssMappings[componentName].properties.textColor?.[textColor] || '');
 
   return classes.join(' ');
 }

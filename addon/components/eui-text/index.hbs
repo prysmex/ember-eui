@@ -1,0 +1,7 @@
+<div class={{class-names "EuiText" (unless @grow "euiText--constrainedWidth") size=(arg-or-default @size "m")}} ...attributes>
+  <EuiText::Align @textAlign={{@textAlign}}>
+    <EuiText::Color @color={{@color}} @tag="div">
+      {{yield}}
+    </EuiText::Color>
+  </EuiText::Align>
+</div>

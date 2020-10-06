@@ -1,6 +1,4 @@
-<div class={{concat
-  "euiTextAlign euiTextAlign--"
-  (if @textAlign @textAlign "left")}}
+<div class={{class-names "EuiTextAlign" textAlign=(arg-or-default @textAlign "left")}}
   ...attributes
 >
   {{yield}}

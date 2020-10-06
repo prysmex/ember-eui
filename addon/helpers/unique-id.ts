@@ -8,11 +8,12 @@ interface Identifiable {
 
 /**
  * Returns a guid for the passed `ref`.
- * If no parameter was passed it will generate a random string and create a guid for it.
+ * The guid is stable, meaning that passing the same `ref` will yield the same guid.
+ * If no parameter is passed it will generate the next available guid.
  *
  * @param { any } ref
  */
-export function uniqueId ([], { ref }: { ref: Identifiable }): string {
+export function uniqueId (_?: any[], { ref }: { ref?: Identifiable } = {}): string {
   return isPresent(ref) ? guidFor(ref) : guidFor({});
 }
 

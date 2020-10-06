@@ -16,11 +16,11 @@ interface Options {
  *
  * @param classes - List of classes that will be joined
  */
-export function classNames([componentName]: string[] = [], { size, padding, textAlign, textColor }: Options): string {
+export function classNames([componentName, ...classNames]: string[] = [], { size, padding, textAlign, textColor }: Options): string {
   assert('The component name must be provided as the first parameter', componentName !== undefined);
   assert(`The component '${componentName}' doesn't have mappings defined`, cssMappings[componentName] !== undefined);
 
-  let classes: string[] = [];
+  let classes: string[] = [...classNames];
 
   classes.push(cssMappings[componentName].base || '');
   classes.push(cssMappings[componentName].properties.size?.[size] || '');

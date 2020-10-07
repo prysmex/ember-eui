@@ -3,15 +3,7 @@
   @hasShadow={{@hasShadow}}
   @paddingSize={{@paddingSize}}
   @grow={{@grow}}
-  class={{concat
-    "euiPageContent "
-    (if
-      (eq @verticalPosition "center") " euiPageContent--verticalCenter "
-    )
-    (if
-      (eq @horizontalPosition "center") " euiPageContent--horizontalCenter "
-    )
-  }}
+  class={{class-names "EuiPageContent" verticalPosition=@verticalPosition horizontalPosition=@horizontalPosition}}
   ...attributes
 >
   {{yield (hash

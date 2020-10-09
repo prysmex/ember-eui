@@ -1,0 +1,5 @@
+{{#let (element (if @tag @tag "h2")) as |Tag|}}
+  <Tag class={{class-names "EuiTitle" size=@size textTransform=@textTransform}} ...attributes>
+    {{yield}}
+  </Tag>
+{{/let}}

@@ -21,22 +21,14 @@
             (if this.hasIconButton "euiAccordion__iconButton ")
           }}
         >
-          {{!-- <EuiIcon
-            class={{concat
+          <EuiIcon
+            class={{class-names "EuiIcon"
               "euiAccordion__icon"
-              (if this.isOpen " euiAccordion__icon-isOpen")
+              (if this.isOpen "euiAccordion__icon-isOpen")
             }}
             @type="arrowRight"
             @size="m"
-          /> --}}
-          <div
-            class={{concat
-              "euiAccordion__icon"
-              (if this.isOpen " euiAccordion__icon-isOpen")
-            }}
-          >
-            ▶️
-          </div>
+          />
         </span>
       {{/if}}
       <span
@@ -69,22 +61,14 @@
         }}
         {{on "click" this.onToggle}}
       >
-        {{!-- <EuiIcon
-          class={{concat
+        <EuiIcon
+          class={{class-names "EuiIcon"
             "euiAccordion__icon"
-            (if this.isOpen " euiAccordion__icon-isOpen")
+            (if this.isOpen "euiAccordion__icon-isOpen")
           }}
           @type="arrowRight"
           @size="m"
-        /> --}}
-        <div
-          class={{concat
-            "euiAccordion__icon"
-            (if this.isOpen " euiAccordion__icon-isOpen")
-          }}
-        >
-          ▶️
-        </div>
+        />
       </button>
     {{/if}}
   </div>

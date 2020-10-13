@@ -19,11 +19,11 @@
 <EuiIcon @type="logoAWS" @size="xl" />
 <EuiIcon @type="logoAWS" @size="xxl" />
 <br>
-<EuiIcon @type="ember-eui/assets/ember.svg" @size="s" />
-<EuiIcon @type="ember-eui/assets/ember.svg" @size="m" />
-<EuiIcon @type="ember-eui/assets/ember.svg" @size="l" />
-<EuiIcon @type="ember-eui/assets/ember.svg" @size="xl" />
-<EuiIcon @type="ember-eui/assets/ember.svg" @size="xxl" />
+<EuiIcon @type="/assets/ember.svg" @size="s" />
+<EuiIcon @type="/assets/ember.svg" @size="m" />
+<EuiIcon @type="/assets/ember.svg" @size="l" />
+<EuiIcon @type="/assets/ember.svg" @size="xl" />
+<EuiIcon @type="/assets/ember.svg" @size="xxl" />
 <br>
 <EuiIcon @type="https://www.flaticon.es/svg/static/icons/svg/3445/3445045.svg" @size="s" />
 <EuiIcon @type="https://www.flaticon.es/svg/static/icons/svg/3445/3445045.svg" @size="m" />
@@ -45,54 +45,6 @@
 <EuiLoadingSpinner id={{unique-id}} @size="xl" />
 
 <br>
-
-<h1>Accordion</h1>
-<EuiAccordion
-  @buttonContent="Clickable title"
->
-  My content
-</EuiAccordion>
-
-<br>
-<h1>Accordion with <b>forceState</b></h1>
-The accordion is {{this.accordionState}} <br>
-<button {{on "click" (fn (mut this.accordionState) "open")}}>Open</button>
-<button {{on "click" (fn (mut this.accordionState) "closed")}}>Close</button>
-<EuiAccordion
-  @buttonContent="Clickable title"
-  @forceState={{this.accordionState}}
-  @onToggle={{if (eq this.accordionState "open")
-    (fn (mut this.accordionState) "closed")
-    (fn (mut this.accordionState) "open")
-  }}
->
-  My content
-</EuiAccordion>
-
-<br>
-<h1>Accordion with <b>isLoading = true</b></h1>
-<EuiAccordion
-  @buttonContent="You spin my head right round"
-  @isLoading={{true}}
->
-  My content
-</EuiAccordion>
-<EuiAccordion
-  @buttonContent="You spin my head right round also in content"
-  @isLoading={{true}}
-  @isLoadingMessage="What what"
->
-  My content
-</EuiAccordion>
-
-<br>
-<h1>Accordion with <b>arrowDisplay = left</b></h1>
-<EuiAccordion
-  @buttonContent="Clickable title"
-  @arrowDisplay="right"
->
-  My content
-</EuiAccordion>
 
 <hr>
 

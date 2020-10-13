@@ -1,6 +1,6 @@
 export const baseClass: string = 'euiLoadingSpinner';
 
-export const sizeMapping: PropertyMapping = {
+export const sizeMapping = {
   s: `${baseClass}--small`,
   m: `${baseClass}--medium`,
   l: `${baseClass}--large`,

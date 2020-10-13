@@ -40,6 +40,7 @@
     "ember-cli-htmlbars": "^5.3.1",
     "ember-cli-sass": "^10.0.1",
     "ember-cli-typescript": "^4.0.0",
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#afc4286598bf08b05dec374a09bb0a7fbf00b56d",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
     "resolve": "^1.13.1"
@@ -64,6 +65,7 @@
     "ember-cli-uglify": "^3.0.0",
     "ember-disable-prototype-extensions": "^1.1.3",
     "ember-export-application-global": "^2.0.1",
+    "ember-get-config": "^0.3.0",
     "ember-load-initializers": "^2.1.1",
     "ember-maybe-import-regenerator": "^0.1.6",
     "ember-qunit": "^4.6.0",

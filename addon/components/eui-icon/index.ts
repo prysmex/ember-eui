@@ -7,6 +7,8 @@ import {
 } from 'ember-eui/utils/css-mappings/eui-icon';
 import { uniqueId } from 'ember-eui/helpers/unique-id';
 import { htmlSafe } from '@ember/template';
+import { dasherize } from '@ember/string';
+
 const typeToPathMap = {
   accessibility: 'accessibility',
   addDataApp: 'app_add_data',
@@ -489,13 +491,13 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
   get icon(): IconType | void {
     let { type } = this.args;
-
+   
     if (type === null) {
       return undefined;
     }
 
     if (isEuiIconType(type)) {
-      return typeToPathMap[type];
+      return `svg/${dasherize(typeToPathMap[type]).toLowerCase()}`;
     }
 
     return type;

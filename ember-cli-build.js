@@ -10,6 +10,10 @@ module.exports = function (defaults) {
       implementation: nodeSass,
       sourceMap: false,
     },
+
+    'ember-composable-helpers': {
+      only: ['optional']
+    },
     // Add options here
     'ember-eui': {
       theme: 'dark',

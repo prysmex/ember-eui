@@ -1,5 +1,4 @@
 import GlimmerComponent from '@glimmer/component';
-import { getOwner } from '@ember/application';
 
 export default class EuiOverlayMaskComponent extends GlimmerComponent {
 

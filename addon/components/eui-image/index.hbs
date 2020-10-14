@@ -1,8 +1,8 @@
 <figure
-  class={{concat
-    "euiImage "
+  class={{class-names
     (unless (eq @hasShadow false) "euiImage--hasShadow ")
-    this.sizeClass
+    componentName="EuiImage"
+    size=@size 
   }}
   ...attributes
 >
@@ -15,9 +15,9 @@
       {{on "click" this.toggleFullscreen}}
     >
       <img
+        src={{@url}}
         class="euiImage__img"
         style={{this.sizeStyle}}
-        src={{@url}}
         alt={{@alt}}
       />
       <EuiIcon

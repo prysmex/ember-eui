@@ -1,12 +1,12 @@
 <figure
-  class={{concat "euiImage "
+  class={{concat
+    "euiImage "
     (unless (eq @hasShadow false) "euiImage--hasShadow ")
     this.sizeClass
   }}
   ...attributes
 >
   {{#if @allowFullScreen}}
-
     <button
       class="euiImage__button"
       type="button"
@@ -21,44 +21,46 @@
         alt={{@alt}}
       />
       <EuiIcon
+        class="euiImage__icon"
         @type="fullScreen"
         @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
-        @className="euiImage__icon"
       />
     </button>
-
   {{else}}
-    <img src={{@url}} class="euiImage__img" style={{this.sizeStyle}} alt={{@alt}}>
+    <img
+      src={{@url}}
+      class="euiImage__img"
+      style={{this.sizeStyle}}
+      alt={{@alt}}
+    />
   {{/if}}
-
   {{#if @caption}}
-    <figcaption class="euiImage__caption">{{@caption}}</figcaption>
+    <figcaption class="euiImage__caption">
+      {{@caption}}
+    </figcaption>
   {{/if}}
 </figure>
-
-
 {{#if this.isFullscreen}}
-  <EuiOverlayMask @headerZindexLocation="above" @onClick={{this.toggleFullscreen}}>
-    <figure
-      class="euiImage euiImage-isFullScreen"
-    >
+  <EuiOverlayMask
+    @headerZindexLocation="above"
+    @onClick={{this.toggleFullscreen}}
+  >
+    <figure class="euiImage euiImage-isFullScreen">
       <button
         class="euiImage__button"
         type="button"
         {{on "click" this.toggleFullscreen}}
       >
-        <img
-          class="euiImage-isFullScreen__img"
-          src={{@url}}
-          alt={{@alt}}
-        />
+        <img class="euiImage-isFullScreen__img" src={{@url}} alt={{@alt}} />
         <EuiIcon
+          class="euiImage-isFullScreen__icon"
           @type="cross"
           @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
-          @className="euiImage-isFullScreen__icon"
         />
       </button>
-      <figcaption class="euiImage__caption">{{@caption}}</figcaption>
+      <figcaption class="euiImage__caption">
+        {{@caption}}
+      </figcaption>
     </figure>
   </EuiOverlayMask>
 {{/if}}

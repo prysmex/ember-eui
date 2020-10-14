@@ -1,5 +1,6 @@
 import { helper } from '@ember/component/helper';
 import { assert } from '@ember/debug';
+import { isPresent } from '@ember/utils';
 
 // Mappings registry
 import cssMappings from '../utils/css-mappings';
@@ -49,6 +50,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.textAlign?.[textAlign] || '');
     classes.push(cssMappings[componentName].properties.color?.[color] || '');
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
+    classes = classes.filter(s => isPresent(s));
   }
 
   return classes.join(' ');

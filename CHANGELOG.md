@@ -1,5 +1,19 @@
 # Ember Eui Changelog
 
+### 0.0.11
+
+🚀 Enhancements
+- EuiIcon
+- EuiAccordion
+- EuiPage
+- EuiTitle
+- EuiText
+- EuiImage
+- EuiOverlayMask
+
+🏠 Internal
+- Update class-names helper to always concat
+
 ### 0.0.7
 
 Update license and add a short description to the readme

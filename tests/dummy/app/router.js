@@ -13,5 +13,6 @@ Router.map(function() {
     this.route('page')
     this.route('loading');
     this.route('text');
+    this.route('title');
   })
 });

@@ -1,6 +1,10 @@
 <EuiPageHeader>
   <EuiPageHeaderSection>
-    Accordion
+    <EuiTitle @size="l">
+      <h1>
+        Accordion
+      </h1>
+    </EuiTitle>
   </EuiPageHeaderSection>
 </EuiPageHeader>
 <EuiPageContent>
@@ -18,10 +22,13 @@
     The accordion is
     {{this.accordionState}}
     <br />
-    <button {{on "click" (fn (mut this.accordionState) "open")}}>
+    <button type="button" {{on "click" (fn (mut this.accordionState) "open")}}>
       Open
     </button>
-    <button {{on "click" (fn (mut this.accordionState) "closed")}}>
+    <button
+      type="button"
+      {{on "click" (fn (mut this.accordionState) "closed")}}
+    >
       Close
     </button>
     <EuiAccordion

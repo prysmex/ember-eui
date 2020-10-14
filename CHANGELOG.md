@@ -9,6 +9,7 @@
 - EuiTitle
 - EuiText
 - EuiImage
+- EuiSpinner
 - EuiOverlayMask
 
 🏠 Internal

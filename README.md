@@ -9,7 +9,7 @@ For icons to work you will need to:
 - install `ember-svg-jar`
 - add the following `ember-svg-jar` options to your `ember-cli-build.js`:
 - NOTICE: we are currently using a fork from ember-svg-jar, for the hbs strategy
-  `"ember-svg-jar": "github:betocantu93/ember-svg-jar#afc4286598bf08b05dec374a09bb0a7fbf00b56d"`
+  `"ember-svg-jar": "github:betocantu93/ember-svg-jar#648cb86f0f26c4df71a0f1550a095f3189e2aadb"`
 
 ```javascript
 // ember-cli-build.js

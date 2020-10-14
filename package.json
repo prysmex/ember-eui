@@ -1,6 +1,6 @@
 {
   "name": "ember-eui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon",
@@ -13,7 +13,8 @@
   "license": "MIT",
   "author": "Alberto Cantu <betocantu93@gmail.com> (https://betocantu93.com)",
   "contributors:": [
-    "David Martinez"
+    "David Martinez",
+    "Mario Trujillo"
   ],
   "directories": {
     "doc": "doc",

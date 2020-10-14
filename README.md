@@ -8,6 +8,8 @@ For icons to work you will need to:
 
 - install `ember-svg-jar`
 - add the following `ember-svg-jar` options to your `ember-cli-build.js`:
+- NOTICE: we are currently using a fork from ember-svg-jar, for the hbs strategy
+  `"ember-svg-jar": "github:betocantu93/ember-svg-jar#afc4286598bf08b05dec374a09bb0a7fbf00b56d"`
 
 ```javascript
 // ember-cli-build.js
@@ -21,9 +23,6 @@ var app = new EmberApp(defaults, {
   },
   ...
 });
-
-//And import the ember-template-compiler... currently ember-eui depends on a fork of ember-svg-jar
-app.import('node_modules/ember-source/dist/ember-template-compiler.js');
 
 ```
 

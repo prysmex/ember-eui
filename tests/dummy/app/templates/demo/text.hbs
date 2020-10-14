@@ -5,16 +5,30 @@
 </EuiPageHeader>
 <EuiPageContent>
   <EuiPageContentBody>
-    <EuiText @textAlign="center" @size="xl">
+    <EuiText @textAlign="center" @size="xl" @grow={{true}}>
       <div>
-        <h1>
-          This is Heading One
-        </h1>
+        <EuiTextAlign @textAlign="left">
+          <h1>
+            This is Heading One
+          </h1>
+        </EuiTextAlign>
         <EuiTextAlign @textAlign="right">
           <p>
-            Far out in the uncharted backwaters of the unfashionable end of the
+            Far out in the uncharted
+            <EuiTextColor @color="subdued">
+              backwaters
+            </EuiTextColor>
+            of the
+            <EuiTextColor @color="secondary">
+              unfashionable
+            </EuiTextColor>
+            end of the
       western spiral arm of the Galaxy lies a small unregarded yellow sun. When
-      suddenly some wild JavaScript code appeared!{' '}
+      suddenly some wild
+            <EuiTextColor @color="warning">
+              JavaScript code appeared!
+            </EuiTextColor>
+            {' '}
             <code>
               const whoa = "!"
             </code>
@@ -31,17 +45,32 @@
       forms are so amazingly primitive that they still think digital watches are
       a pretty neat idea.
         </p>
-        <ul>
-          <li>
-            List item one
-          </li>
-          <li>
-            List item two
-          </li>
-          <li>
-            Dolphins
-          </li>
+				<EuiTextAlign @textAlign="left">
+					<ul>
+          <EuiTextColor @tag="li">
+            Default color
+          </EuiTextColor>
+          <EuiTextColor @color="subdued" @tag="li">
+            Subdued color
+          </EuiTextColor>
+          <EuiTextColor @color="secondary" @tag="li">
+            Secondary color
+          </EuiTextColor>
+					<EuiTextColor @color="accent" @tag="li">
+            Accent color
+          </EuiTextColor>
+          <EuiTextColor @color="danger" @tag="li">
+            Danger color
+          </EuiTextColor>
+          <EuiTextColor @color="warning" @tag="li">
+            Warning color
+          </EuiTextColor>
+          <EuiTextColor @color="ghost" @tag="li">
+            Ghost color
+          </EuiTextColor>
         </ul>
+				</EuiTextAlign>
+        
         <p>
           This planet has - or rather had - a problem, which was this: most of the
       people living on it were unhappy for pretty much of the time. Many

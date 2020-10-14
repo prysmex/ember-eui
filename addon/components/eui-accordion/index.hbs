@@ -1,6 +1,7 @@
 <div
-  class={{class-names "EuiAccordion"
+  class={{class-names
     (if this.isOpen "euiAccordion-isOpen")
+    componentName="EuiAccordion"
     padding=this.paddingSize
   }}
   ...attributes
@@ -21,22 +22,14 @@
             (if this.hasIconButton "euiAccordion__iconButton ")
           }}
         >
-          {{!-- <EuiIcon
-            class={{concat
+          <EuiIcon
+            class={{class-names
               "euiAccordion__icon"
-              (if this.isOpen " euiAccordion__icon-isOpen")
+              (if this.isOpen "euiAccordion__icon-isOpen")
             }}
             @type="arrowRight"
             @size="m"
-          /> --}}
-          <div
-            class={{concat
-              "euiAccordion__icon"
-              (if this.isOpen " euiAccordion__icon-isOpen")
-            }}
-          >
-            ▶️
-          </div>
+          />
         </span>
       {{/if}}
       <span
@@ -68,23 +61,16 @@
           (if this.hasIconButton "euiAccordion__iconButton ")
         }}
         {{on "click" this.onToggle}}
+        type="button"
       >
-        {{!-- <EuiIcon
-          class={{concat
+        <EuiIcon
+          class={{class-names
             "euiAccordion__icon"
-            (if this.isOpen " euiAccordion__icon-isOpen")
+            (if this.isOpen "euiAccordion__icon-isOpen")
           }}
           @type="arrowRight"
           @size="m"
-        /> --}}
-        <div
-          class={{concat
-            "euiAccordion__icon"
-            (if this.isOpen " euiAccordion__icon-isOpen")
-          }}
-        >
-          ▶️
-        </div>
+        />
       </button>
     {{/if}}
   </div>
@@ -94,9 +80,10 @@
     id={{@id}}
   >
     <div
-      class={{class-names "EuiAccordion"
+      class={{class-names
         (if this.isLoading " euiAccordion__children-isLoading")
         padding=this.paddingSize
+        componentName="EuiAccordion"
       }}
     >
       {{#if (and this.isLoading this.isLoadingMessage)}}

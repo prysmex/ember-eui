@@ -1,0 +1,12 @@
+{{#let (element (arg-or-default @tag "h2")) as |Tag|}}
+  <Tag
+    class={{class-names
+      componentName="EuiTitle"
+      size=(arg-or-default @size "m")
+      textTransform=@textTransform
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </Tag>
+{{/let}}

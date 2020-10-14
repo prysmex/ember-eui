@@ -13,15 +13,18 @@ For icons to work you will need to:
 // ember-cli-build.js
 var app = new EmberApp(defaults, {
   ...
-
   svgJar: {
-	sourceDirs: [
-		'node_modules/@elastic/eui/lib/components/icon',
-	],
+    strategy: 'hbs',
+    sourceDirs: [
+      'node_modules/@elastic/eui/lib/components/icon',
+    ],
   },
-
   ...
 });
+
+//And import the ember-template-compiler... currently ember-eui depends on a fork of ember-svg-jar
+app.import('node_modules/ember-source/dist/ember-template-compiler.js');
+
 ```
 
 ## Compatibility

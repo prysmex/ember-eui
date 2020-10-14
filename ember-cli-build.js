@@ -4,24 +4,26 @@ const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
 
 const nodeSass = require('node-sass');
 
-module.exports = function(defaults) {
+module.exports = function (defaults) {
   let app = new EmberAddon(defaults, {
     sassOptions: {
       implementation: nodeSass,
       sourceMap: false,
     },
     // Add options here
-    "ember-eui": {
-      theme: 'light',
-      useCompiledCss: true
+    'ember-eui': {
+      theme: 'dark',
+      useCompiledCss: true,
     },
 
     svgJar: {
+      strategy: ['hbs'],
+
       sourceDirs: [
         'public/assets',
-        'node_modules/@elastic/eui/lib/components/icon'
+        'node_modules/@elastic/eui/lib/components/icon',
       ],
-    }
+    },
   });
 
   /*
@@ -30,6 +32,5 @@ module.exports = function(defaults) {
     This build file does *not* influence how the addon or the app using it
     behave. You most likely want to be modifying `./index.js` or app's build file
   */
-
   return app.toTree();
 };

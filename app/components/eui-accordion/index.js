@@ -1,1 +1,1 @@
-export { default } from 'ember-eui/components/eui-accordion/index';
+export { default } from 'ember-eui/components/eui-accordion';

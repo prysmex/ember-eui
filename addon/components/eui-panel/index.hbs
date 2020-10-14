@@ -3,10 +3,10 @@
   <button
     type="button"
     class={{class-names
-      "EuiPanel"
       (if @onClick "euiPanel--isClickable")
       (if @hasShadow "euiPanel--shadow")
       (if (eq @grow false) "euiPanel--flexGrowZero")
+      componentName="EuiPanel"
       padding=(arg-or-default @paddingSize "m")
     }}
     onClick={{@onClick}}
@@ -17,9 +17,9 @@
 {{else}}
   <div
     class={{class-names
-      "EuiPanel"
       (if @hasShadow "euiPanel--shadow")
       (if (eq @grow false) "euiPanel--flexGrowZero")
+      componentName="EuiPanel"
       padding=(arg-or-default @paddingSize "m")
     }}
     ...attributes

@@ -3,12 +3,21 @@
   @hasShadow={{@hasShadow}}
   @paddingSize={{@paddingSize}}
   @grow={{@grow}}
-  class={{class-names "EuiPageContent" verticalPosition=@verticalPosition horizontalPosition=@horizontalPosition}}
+  class={{class-names
+    componentName="EuiPageContent"
+    verticalPosition=@verticalPosition
+    horizontalPosition=@horizontalPosition
+  }}
   ...attributes
 >
-  {{yield (hash
-      header=(component "eui-page/eui-page-body/eui-page-content/eui-page-content-header")
-      body=(component "eui-page/eui-page-body/eui-page-content/eui-page-content-body")
+  {{yield
+    (hash
+      header=(component
+        "eui-page/eui-page-body/eui-page-content/eui-page-content-header"
+      )
+      body=(component
+        "eui-page/eui-page-body/eui-page-content/eui-page-content-body"
+      )
     )
   }}
 </EuiPanel>

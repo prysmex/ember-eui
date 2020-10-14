@@ -1,0 +1,11 @@
+<div
+  class={{class-names
+    "euiPageHeader"
+    (if @responsive "euiPageHeader--responsive")
+  }}
+  ...attributes
+>
+  {{yield
+    (hash Section=(component "eui-page-header-section"))
+  }}
+</div>

@@ -1,14 +1,13 @@
-"use strict";
-const path = require("path");
-const resolve = require("resolve");
-const BroccoliMergeTrees = require("broccoli-merge-trees");
-const writeFile = require("broccoli-file-creator");
-const Funnel = require("broccoli-funnel");
-const EuiScssFilter = require("./lib/elastic-eui-scss-filter");
-const { deprecate } = require("util");
+'use strict';
+const path = require('path');
+const resolve = require('resolve');
+const BroccoliMergeTrees = require('broccoli-merge-trees');
+const writeFile = require('broccoli-file-creator');
+const Funnel = require('broccoli-funnel');
+const EuiScssFilter = require('./lib/elastic-eui-scss-filter');
 
 module.exports = {
-  name: require("./package").name,
+  name: require('./package').name,
 
   inDevelopingAddon() {
     return true;
@@ -20,7 +19,7 @@ module.exports = {
 
     // If the addon has the _findHost() method (in ember-cli >= 2.7.0), we'll just
     // use that.
-    if (typeof this._findHost === "function") {
+    if (typeof this._findHost === 'function') {
       app = this._findHost();
     } else {
       // Otherwise, we'll use this implementation borrowed from the _findHost()
@@ -31,11 +30,11 @@ module.exports = {
       } while (current.parent.parent && (current = current.parent));
     }
 
-    this.emberEuiOptions = Object.assign({}, app.options["ember-eui"]);
+    this.emberEuiOptions = Object.assign({}, app.options['ember-eui']);
 
     this.emberEuiOptions.theme = this.emberEuiOptions.theme
       ? this.emberEuiOptions.theme
-      : "light";
+      : 'light';
 
     if (this.emberEuiOptions.useCompiledCss) {
       if (this.emberEuiOptions.theme) {
@@ -43,7 +42,7 @@ module.exports = {
           `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
         );
       } else {
-        app.import("node_modules/@elastic/eui/dist/eui_theme_light.min.css");
+        app.import('node_modules/@elastic/eui/dist/eui_theme_light.min.css');
       }
     }
   },
@@ -54,22 +53,22 @@ module.exports = {
     let euiScssFiles;
 
     if (!this.emberEuiOptions.useCompiledCss) {
-      euiScssFiles = new Funnel(this.pathBase("@elastic/eui"), {
-        srcDir: "/src",
-        include: ["**/*.scss"],
-        destDir: "elastic-eui",
-        annotation: "ElasticEUIScssFunnel",
+      euiScssFiles = new Funnel(this.pathBase('@elastic/eui'), {
+        srcDir: '/src',
+        include: ['**/*.scss'],
+        destDir: 'elastic-eui',
+        annotation: 'ElasticEUIScssFunnel',
       });
 
       euiScssFiles = new EuiScssFilter(euiScssFiles);
 
-      trees.push(euiScssFiles);  
-    } 
+      trees.push(euiScssFiles);
+    }
 
     let selectedTheme = this.emberEuiOptions.theme;
 
     let importer = writeFile(
-      "ember-eui-components.scss",
+      'ember-eui-components.scss',
       euiScssFiles ? `@import './elastic-eui/theme_${selectedTheme}.scss';` : ''
     );
 

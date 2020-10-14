@@ -7,6 +7,9 @@ import cssMappings from '../utils/css-mappings';
 interface Options {
   size: string;
   padding: string;
+  verticalPosition: string;
+  horizontalPosition: string;
+  componentName: string;
 };
 
 /**
@@ -14,15 +17,16 @@ interface Options {
  *
  * @param classes - List of classes that will be joined
  */
-export function classNames([componentName, ...classNames]: string[] = [], { size, padding }: Options): string {
-  assert('The component name must be provided as the first parameter', componentName !== undefined);
-  assert(`The component '${componentName}' doesn't have mappings defined`, cssMappings[componentName] !== undefined);
-
+export function classNames(classNames: string[] = [], { componentName, size, padding, verticalPosition, horizontalPosition }: Options): string {
   let classes: string[] = [...classNames];
-
-  classes.push(cssMappings[componentName].base || '');
-  classes.push(cssMappings[componentName].properties.size?.[size] || '');
-  classes.push(cssMappings[componentName].properties.padding?.[padding] || '');
+  if(componentName) {
+    assert(`The component '${componentName}' doesn't have mappings defined`, cssMappings[componentName] !== undefined);
+    classes.push(cssMappings[componentName].base || '');
+    classes.push(cssMappings[componentName].properties.size?.[size] || '');
+    classes.push(cssMappings[componentName].properties.padding?.[padding] || '');
+    classes.push(cssMappings[componentName].properties.verticalPosition?.[verticalPosition] || '');
+    classes.push(cssMappings[componentName].properties.horizontalPosition?.[horizontalPosition] || '');
+  }
 
   return classes.join(' ');
 }

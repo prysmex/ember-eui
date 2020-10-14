@@ -1,6 +1,7 @@
 <div
-  class={{class-names "EuiAccordion"
+  class={{class-names
     (if this.isOpen "euiAccordion-isOpen")
+    componentName="EuiAccordion"
     padding=this.paddingSize
   }}
   ...attributes
@@ -22,7 +23,7 @@
           }}
         >
           <EuiIcon
-            class={{class-names "EuiIcon"
+            class={{class-names
               "euiAccordion__icon"
               (if this.isOpen "euiAccordion__icon-isOpen")
             }}
@@ -62,7 +63,7 @@
         {{on "click" this.onToggle}}
       >
         <EuiIcon
-          class={{class-names "EuiIcon"
+          class={{class-names
             "euiAccordion__icon"
             (if this.isOpen "euiAccordion__icon-isOpen")
           }}
@@ -78,9 +79,10 @@
     id={{@id}}
   >
     <div
-      class={{class-names "EuiAccordion"
+      class={{class-names
         (if this.isLoading " euiAccordion__children-isLoading")
         padding=this.paddingSize
+        componentName="EuiAccordion"
       }}
     >
       {{#if (and this.isLoading this.isLoadingMessage)}}

@@ -2,9 +2,9 @@
   <img
     src={{this.icon}}
     class={{class-names
-      'EuiIcon'
       this.optionalColorClass
-      (if this.isAppIcon 'euiIcon--app')
+      (if this.isAppIcon "euiIcon--app")
+      componentName="EuiIcon"
       size=this.size
     }}
     alt={{if @title @title}}
@@ -15,14 +15,14 @@
   <Svg
     @name={{this.icon}}
     class={{class-names
-      'EuiIcon'
       this.optionalColorClass
-      (if this.isAppIcon 'euiIcon--app')
+      (if this.isAppIcon "euiIcon--app")
+      componentName="EuiIcon"
       size=this.size
     }}
     style={{this.optionalCustomStyles}}
     tabIndex={{this.tabIndex}}
-    role='image'
+    role="image"
     aria-hidden={{if this.isAriaHidden true}}
     aria-label={{if @aria-label @aria-label this.titleId}}
     aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}

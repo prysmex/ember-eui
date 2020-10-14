@@ -1,0 +1,11 @@
+{{! TODO: restrictWidth Prop}}
+{{#let (element (arg-or-default @tag "div")) as |Tag|}}
+  <Tag class="euiPageBody" ...attributes>
+    {{yield
+      (hash
+        Header=(component "eui-page-header")
+        Content=(component "eui-page-content")
+      )
+    }}
+  </Tag>
+{{/let}}

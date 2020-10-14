@@ -1,0 +1,11 @@
+{{#let (element (arg-or-default @tag "span")) as |Tag|}}
+  <Tag
+    class={{class-names
+      componentName="EuiTextColor"
+      color=(arg-or-default @color "default")
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </Tag>
+{{/let}}

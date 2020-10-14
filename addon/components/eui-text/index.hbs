@@ -1,0 +1,18 @@
+<div
+  class={{class-names
+    (unless @grow "euiText--constrainedWidth")
+    componentName="EuiText"
+    size=(arg-or-default @size "m")
+  }}
+  ...attributes
+>
+  {{#let (if @textAlign (component "eui-text-align") (element "")) as |Align|}}
+    {{#let (if @color (component "eui-text-color") (element "")) as |Color|}}
+      <Align @textAlign={{@textAlign}}>
+        <Color @color={{@color}} @tag="div">
+          {{yield}}
+        </Color>
+      </Align>
+    {{/let}}
+  {{/let}}
+</div>

@@ -1,7 +1,9 @@
 {{! TODO: restrictWidth Prop}}
 <div class="euiPageBody" ...attributes>
-  {{yield (hash
-    header=(component "eui-page/eui-page-body/eui-page-header")
-    content=(component "eui-page/eui-page-body/eui-page-content")
-  )}}
+  {{yield
+    (hash
+      Header=(component "eui-page/eui-page-body/eui-page-header")
+      Content=(component "eui-page/eui-page-body/eui-page-content")
+    )
+  }}
 </div>

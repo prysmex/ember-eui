@@ -1,5 +1,5 @@
 {{! TODO: restrictWidth Prop}}
-{{#let (-element (arg-or-default @component "div")) as |Tag|}}
+{{#let (element (arg-or-default @tag "div")) as |Tag|}}
   <Tag class="euiPageBody" ...attributes>
     {{yield
       (hash

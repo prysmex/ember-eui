@@ -40,6 +40,7 @@
     "ember-cli-htmlbars": "^5.3.1",
     "ember-cli-sass": "^10.0.1",
     "ember-cli-typescript": "^4.0.0",
+    "ember-element-helper": "^0.3.1",
     "ember-svg-jar": "github:betocantu93/ember-svg-jar#afc4286598bf08b05dec374a09bb0a7fbf00b56d",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",

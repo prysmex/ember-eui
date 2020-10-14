@@ -12,6 +12,7 @@ interface Options {
   verticalPosition: string;
   horizontalPosition: string;
   componentName: string;
+  textTransform: string;
 }
 
 /**
@@ -21,7 +22,16 @@ interface Options {
  */
 export function classNames(
   classNames: string[] = [],
-  { componentName, size, padding, verticalPosition, horizontalPosition, textAlign, color }: Options
+  {
+    componentName,
+    size,
+    padding,
+    verticalPosition,
+    horizontalPosition,
+    textAlign,
+    color,
+    textTransform,
+  }: Options
 ): string {
   let classes: string[] = [...classNames];
   if (componentName) {
@@ -38,6 +48,7 @@ export function classNames(
     );
     classes.push(cssMappings[componentName].properties.textAlign?.[textAlign] || '');
     classes.push(cssMappings[componentName].properties.color?.[color] || '');
+    classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
   }
 
   return classes.join(' ');

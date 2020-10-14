@@ -3,6 +3,7 @@ import EuiAccordion from './eui-accordion';
 import EuiIcon from './eui-icon';
 import EuiLoadingSpinner from './eui-loading-spinner';
 import EuiSpacer from './eui-spacer';
+import EuiTitle from './eui-title';
 import EuiTextAlign from './eui-text-align';
 import EuiTextColor from './eui-text-color';
 import EuiText from './eui-text';
@@ -14,6 +15,7 @@ const mapping: Mapping = {
   EuiIcon,
   EuiLoadingSpinner,
   EuiSpacer,
+  EuiTitle,
   EuiTextAlign,
   EuiTextColor,
   EuiText,

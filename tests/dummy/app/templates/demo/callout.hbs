@@ -1,0 +1,53 @@
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Eui Callout
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
+<EuiPageContent>
+  <EuiPageContentBody>
+
+    <EuiText size="xs"><p>Default Small callout H3</p></EuiText>
+    <EuiCallout @iconType="searchProfilerApp" @title="Good status" @heading="h3" @color="primary" @size="s">
+      <p>
+        All systems check, you are good to go. Good luck!
+      </p>
+    </EuiCallout>
+    <EuiSpacer />
+
+    <EuiText size="xs"><p>Warning Medium callout H3</p></EuiText>
+    <EuiCallout @iconType="alert" @title="INCOMING!" @heading="h3" @color="warning">
+      <p>
+        You have an homing rocket coming your way! Take evasive action!
+      </p>
+    </EuiCallout>
+    <EuiSpacer />
+
+    <EuiText size="xs"><p>Danger Medium callout H1</p></EuiText>
+    <EuiCallout @iconType="wrench" @title="Watch out! Danger close!" @heading="h1" @color="danger" @size="m">
+      <p>
+        You have been hit! Seek the repair ship immediately!
+      </p>
+    </EuiCallout>
+    <EuiSpacer />
+
+    <EuiText size="xs"><p>Success Medium callout H3</p></EuiText>
+    <EuiCallout @iconType="bullseye" @title="Great, you're ready for deployment!" @heading="h3" @color="success" @size="m">
+      <p>
+        Your ship has been repaired, you are good to launch again. Next time evade those missiles!
+      </p>
+    </EuiCallout>
+    <EuiSpacer />
+
+    <EuiText size="xs"><p>Default Callout without block</p></EuiText>
+    <EuiCallout @iconType="grid" @title="This is a Callout without block!" @size="m" />
+    <EuiSpacer />
+
+    <EuiText size="xs"><p>Default Callout H3 without block or icon</p></EuiText>
+    <EuiCallout @title="This is a Callout without block or Icon!" @heading="h3"  @size="m" />
+
+  </EuiPageContentBody>
+</EuiPageContent>

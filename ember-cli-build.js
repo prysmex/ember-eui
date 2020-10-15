@@ -22,7 +22,9 @@ module.exports = function (defaults) {
 
     svgJar: {
       strategy: ['hbs'],
-
+      hbs: {
+        stripPath: false,
+      },
       sourceDirs: [
         'public/assets',
         'node_modules/@elastic/eui/lib/components/icon',

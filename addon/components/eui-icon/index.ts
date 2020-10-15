@@ -4,11 +4,11 @@ import { keysOf, CommonArgs } from '../common';
 import {
   sizeToClassNameMap,
   colorToClassMap,
-  typeToPathMap
+  typeToPathMap,
 } from 'ember-eui/utils/css-mappings/eui-icon';
 import { uniqueId } from 'ember-eui/helpers/unique-id';
 import { htmlSafe } from '@ember/template';
-import { dasherize } from '@ember/string';
+import { getOwner } from '@ember/application';
 
 export const TYPES = keysOf(typeToPathMap);
 
@@ -28,6 +28,8 @@ function isNamedColor(name: string): name is NamedColor {
 type IconColor = string | NamedColor;
 
 export type IconSize = keyof typeof sizeToClassNameMap;
+
+// const SVG_PREI : string | undefined = config['ember-eui'].svgPrefixPath || 'svg/assets';
 
 export type EuiIconArgs = CommonArgs & {
   /**
@@ -88,13 +90,17 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
   get icon(): IconType | void {
     let { type } = this.args;
-   
+
     if (type === null) {
       return undefined;
     }
 
+    //We should probably find a better way to always 
     if (isEuiIconType(type)) {
-      return `svg/${dasherize(typeToPathMap[type]).toLowerCase()}`;
+      const config = getOwner(this).resolveRegistration('config:environment');
+      const svgPath = config?.['ember-eui']?.svgPath || 'svg/assets/';
+      let euiIcon = typeToPathMap[type].toLowerCase();
+      return `${svgPath}${euiIcon}`;
     }
 
     return type;
@@ -147,8 +153,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     const { icon } = this;
 
     return (
-      icon === 'empty' ||
-      !(this.args['aria-label'], this.args['aria-labelledby'], this.args.title)
+      icon === 'empty' || !(this.args['aria-label'], this.args['aria-labelledby'], this.args.title)
     );
   }
 

@@ -15,12 +15,16 @@ For icons to work you will need to:
 // ember-cli-build.js
 var app = new EmberApp(defaults, {
   ...
-  svgJar: {
-    strategy: 'hbs',
-    sourceDirs: [
-      'node_modules/@elastic/eui/lib/components/icon',
-    ],
-  },
+    svgJar: {
+      strategy: ['hbs'],
+      hbs: {
+        stripPath: false,
+      },
+      sourceDirs: [
+        'public/assets',
+        'node_modules/@elastic/eui/lib/components/icon',
+      ],
+    },
   ...
 });
 

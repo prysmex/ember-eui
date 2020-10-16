@@ -3,7 +3,6 @@ import { toInitials } from '../../utils';
 import { isColorDark, hexToRgb, isValidHex } from '../../utils/color';
 import { euiPaletteColorBlindBehindText } from '../../utils';
 import { sizeMapping, typeMapping } from 'ember-eui/utils/css-mappings/eui-avatar';
-// import { keysOf } from '../common';
 import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
 import  { htmlSafe } from '@ember/string';
 

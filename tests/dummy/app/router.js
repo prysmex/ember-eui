@@ -16,5 +16,6 @@ Router.map(function() {
     this.route('title');
     this.route('image');
     this.route('overlay-mask');
+    this.route('avatar');
   })
 });

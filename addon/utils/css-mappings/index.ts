@@ -10,6 +10,7 @@ import EuiTextColor from './eui-text-color';
 import EuiText from './eui-text';
 import EuiPanel from './eui-panel';
 import EuiPageContent from './eui-page-content';
+import EuiAvatar from './eui-avatar';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -22,7 +23,8 @@ const mapping: Mapping = {
   EuiTextColor,
   EuiText,
   EuiPanel,
-  EuiPageContent
+  EuiPageContent,
+  EuiAvatar
 }
 
 export default mapping;

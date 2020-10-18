@@ -20,6 +20,10 @@ module.exports = function (defaults) {
       useCompiledCss: true,
     },
 
+    fingerprint: {
+      generateAssetMap: true
+    },
+
     svgJar: {
       strategy: ['hbs'],
       hbs: {

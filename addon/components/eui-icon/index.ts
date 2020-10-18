@@ -99,7 +99,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     if (isEuiIconType(type)) {
       const config = getOwner(this).resolveRegistration('config:environment');
       const svgPath = config?.['ember-eui']?.svgPath || 'svg/assets/';
-      let euiIcon = typeToPathMap[type].toLowerCase();
+      let euiIcon = typeToPathMap[type].replace(/_/g, '-').toLowerCase();
       return `${svgPath}${euiIcon}`;
     }
 

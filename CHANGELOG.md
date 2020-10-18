@@ -1,5 +1,9 @@
 # Ember Eui Changelog
 
+### 0.0.14
+🚀 Enhancements
+- EuiCallout
+
 ### 0.0.13
 🚀 Enhancements
 - Updates ember-svg-jar dependency and loads all svgs on demand.

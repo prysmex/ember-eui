@@ -16,7 +16,7 @@
       <EuiSideNavItem
         @selectedItem={{@selectedItem}}
         @isOpen={{is-item-open item @selectedItem}}
-        @isSelected={{eq item.name item.isSelected}}
+        @isSelected={{eq item.id item.isSelected}}
         @isParent={{not (not item.items)}}
         @icon={{item.icon}}
         @onClick={{item.onClick}}

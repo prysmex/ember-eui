@@ -15,9 +15,8 @@
       (if (and (gt @depth 0) @isOpen (not @isSelected)) "euiSideNavItemButton-isOpen")
       (if @isSelected "euiSideNavItemButton-isSelected")
       @className
-    ) 
-    (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected))
-    as |className caret|
+    )
+    (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected)) as |className caret|
   }}
     {{#if @href}}
       <a
@@ -27,7 +26,7 @@
         rel={{@rel}}
         {{on "click" (optional @onClick)}}
       >
-         <EuiSideNavItem::Button
+        <EuiSideNavItem::Button
           @icon={{@icon}}
           @buttonIconClasses={{@buttonIconClasses}}
           @caret={{caret}}
@@ -47,7 +46,13 @@
       </button>
     {{else}}
       <div class={{className}}>
-        {{yield}}
+        <EuiSideNavItem::Button
+          @icon={{@icon}}
+          @buttonIconClasses={{@buttonIconClasses}}
+          @caret={{caret}}
+        >
+          {{yield}}
+        </EuiSideNavItem::Button>
       </div>
     {{/if}}
   {{/let}}
@@ -57,7 +62,7 @@
         <EuiSideNavItem
           @selectedItem={{@selectedItem}}
           @isOpen={{is-item-open item @selectedItem}}
-          @isSelected={{eq item.name @selectedItem}}
+          @isSelected={{eq item.id @selectedItem}}
           @isParent={{not (not item.items)}}
           @icon={{item.icon}}
           @onClick={{item.onClick}}

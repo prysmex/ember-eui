@@ -25,9 +25,7 @@
  */
 
 import chroma from 'chroma-js';
-import { HEX } from './color_types';
 import { colorPalette } from './color_palette';
-
 
 export type EuiPalette = string[];
 const flatten = (arr: any[]) => [].concat(...arr);

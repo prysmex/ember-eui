@@ -17,9 +17,6 @@
  * specific language governing permissions and limitations
  * under the License.
 */
-export { isColorDark } from './is_color_dark';
-export { isValidHex } from './is_valid_hex';
-export { hexToRgb } from './hex_to_rgb';
 export { colorPalette } from './color_palette';
 export {
   euiPaletteForLightBackground,
@@ -35,4 +32,3 @@ export {
   euiPaletteWarm,
   euiPaletteGray,
 } from './eui_palettes';
-export { rgbDef, HSV, RGB } from './color_types';

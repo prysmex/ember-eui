@@ -21,9 +21,8 @@
 // Modified from https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 
 import { helper } from '@ember/component/helper';
-import { rgbDef } from '../utils/color/index';
 
-export function hexToRgb([hex]: [string]): rgbDef {
+export function hexToRgb(hex: string): rgbDef {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(
@@ -42,4 +41,6 @@ export function hexToRgb([hex]: [string]): rgbDef {
   return [0, 0, 0];
 }
 
-export default helper(hexToRgb)
+export default helper(function ([hex]: [string]) {
+  return hexToRgb(hex);
+})

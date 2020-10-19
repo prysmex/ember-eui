@@ -19,8 +19,10 @@ import { helper } from '@ember/component/helper';
  * under the License.
  */
 
-export function isValidHex([hex]: [string]): boolean {
+export function isValidHex(hex: string): boolean {
   return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
 }
 
-export default helper(isValidHex)
+export default helper(function ([hex]:[string]) {
+  return isValidHex(hex)
+});

@@ -33,7 +33,7 @@
 */
 import { helper } from '@ember/component/helper';
 
-export function isColorDark([red, green, blue]: [number, number, number]): boolean {
+export function isColorDark(red: number, green: number, blue: number): boolean {
   const [r, g, b] = [red, green, blue]
     .map((c) => c / 255.0)
     .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
@@ -41,4 +41,6 @@ export function isColorDark([red, green, blue]: [number, number, number]): boole
   return luminance <= 0.179;
 }
 
-export default helper(isColorDark);
+export default helper(function ([red, green, blue]: [number, number, number]) {
+  return isColorDark(red, green, blue);
+});

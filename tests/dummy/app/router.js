@@ -17,5 +17,6 @@ Router.map(function() {
     this.route('image');
     this.route('overlay-mask');
     this.route('callout');
+    this.route('side-nav');
   })
 });

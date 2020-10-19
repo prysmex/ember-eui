@@ -8,49 +8,49 @@
     (if @items.length "euiSideNavItem--hasChildItems")
   }}
 >
-  {{#if @href}}
-    <a
-      class={{@className}}
-      href={{@className}}
-      target={{@target}}
-      rel={{@rel}}
-      {{on "click" (optional @onClick)}}
-    >
-      {{yield}}
-    </a>
-  {{else if @onClick}}
-    <button
-      type="button"
-      class={{class-names
-        "euiSideNavItemButton"
-        (if (or @onClick @href) "euiSideNavItemButton--isClickable")
-        (if (and (gt @depth 0) @isOpen (not @isSelected)) "euiSideNavItemButton-isOpen")
-        (if @isSelected "euiSideNavItemButton-isSelected")
-        @className
-      }}
-      {{on "click" @onClick}}
-    >
-      <span class="euiSideNavItemButton__content">
-        {{#if @icon}}
-          <EuiIcon
-            @type={{@icon}}
-            @size="m"
-            class={{class-names "euiSideNavItemButton__icon" @buttonIconClasses}}
-          />
-        {{/if}}
-        <span class="euiSideNavItemButton__label">
+  {{#let
+    (class-names
+      "euiSideNavItemButton"
+      (if (or @onClick @href) "euiSideNavItemButton--isClickable")
+      (if (and (gt @depth 0) @isOpen (not @isSelected)) "euiSideNavItemButton-isOpen")
+      (if @isSelected "euiSideNavItemButton-isSelected")
+      @className
+    ) 
+    (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected))
+    as |className caret|
+  }}
+    {{#if @href}}
+      <a
+        class={{className}}
+        href={{@href}}
+        target={{@target}}
+        rel={{@rel}}
+        {{on "click" (optional @onClick)}}
+      >
+         <EuiSideNavItem::Button
+          @icon={{@icon}}
+          @buttonIconClasses={{@buttonIconClasses}}
+          @caret={{caret}}
+        >
           {{yield}}
-        </span>
-        {{#if (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected))}}
-          <EuiIcon @type="arrowDown" @color="subdued" @size="s" />
-        {{/if}}
-      </span>
-    </button>
-  {{else}}
-    <div class={{@className}}>
-      {{yield}}
-    </div>
-  {{/if}}
+        </EuiSideNavItem::Button>
+      </a>
+    {{else if @onClick}}
+      <button type="button" class={{className}} {{on "click" @onClick}}>
+        <EuiSideNavItem::Button
+          @icon={{@icon}}
+          @buttonIconClasses={{@buttonIconClasses}}
+          @caret={{caret}}
+        >
+          {{yield}}
+        </EuiSideNavItem::Button>
+      </button>
+    {{else}}
+      <div class={{className}}>
+        {{yield}}
+      </div>
+    {{/if}}
+  {{/let}}
   {{#if (or (eq @depth 0) (and @items.length @isOpen))}}
     <div class="euiSideNavItem__items">
       {{#each @items as |item|}}

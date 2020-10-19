@@ -1,5 +1,6 @@
 import GlimmerComponent from '@glimmer/component';
-import { isColorDark, hexToRgb, isValidHex } from '../../utils/color';
+import { isColorDark } from '../../helpers/is-color-dark';
+import { hexToRgb } from '../../helpers/hex-to-rgb';
 import { euiPaletteColorBlindBehindText } from '../../utils';
 import  { htmlSafe } from '@ember/string';
 
@@ -32,11 +33,11 @@ export type EuiAvatarProps = {
   imageUrl?: string;
 };
 
+export const VIS_COLORS = euiPaletteColorBlindBehindText();
+
 export default class EuiAvatarComponent extends GlimmerComponent<EuiAvatarProps> {
 
-  visColors = euiPaletteColorBlindBehindText();
-
-  _assignedColor = this.args.color || this.visColors[Math.floor(this.args.name.length % this.visColors.length)];
+  _assignedColor = this.args.color || VIS_COLORS[Math.floor(this.args.name.length % VIS_COLORS.length)];
 
   _textColor = isColorDark(...hexToRgb(this._assignedColor)) ? '#FFFFFF' : '#000000';
 

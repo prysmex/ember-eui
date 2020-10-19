@@ -2,7 +2,7 @@
   <button
     type="button"
     class="euiSideNav__mobileToggle euiLink"
-    {{on "click" (optional @toggleOpenOnMobile)}}
+    {{on "click" (fn (optional @toggleOpenOnMobile) (not @isOpenMobile))}}
   >
     <span class="euiSideNav__mobileWrap">
       <span class="euiSideNav__mobileTitle">

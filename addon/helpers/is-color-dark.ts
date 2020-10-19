@@ -41,6 +41,6 @@ export function isColorDark(red: number, green: number, blue: number): boolean {
   return luminance <= 0.179;
 }
 
-export default helper(function ([red, green, blue]: [number, number, number]) {
-  return isColorDark(red, green, blue);
+export default helper(function (rgb: [number, number, number]) {
+  return isColorDark(...rgb);
 });

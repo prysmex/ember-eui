@@ -37,11 +37,17 @@ export const VIS_COLORS = euiPaletteColorBlindBehindText();
 
 export default class EuiAvatarComponent extends GlimmerComponent<EuiAvatarProps> {
 
-  _assignedColor = this.args.color || VIS_COLORS[Math.floor(this.args.name.length % VIS_COLORS.length)];
+  get _assignedColor () {
+    return this.args.color || VIS_COLORS[Math.floor(this.args.name.length % VIS_COLORS.length)];
+  }
 
-  _textColor = isColorDark(...hexToRgb(this._assignedColor)) ? '#FFFFFF' : '#000000';
+  get _textColor () {
+    return isColorDark(...hexToRgb(this._assignedColor)) ? '#FFFFFF' : '#000000';
+  }
 
-  _backgroundImage = this.args.imageUrl ? `url(${this.args.imageUrl})` : 'none';
+  get _backgroundImage () {
+    return this.args.imageUrl ? `url(${this.args.imageUrl})` : 'none';
+  }
 
   get avatarStyles () {
     return htmlSafe(

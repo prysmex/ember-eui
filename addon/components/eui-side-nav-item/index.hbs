@@ -1,0 +1,79 @@
+<div
+  class={{class-names
+    "euiSideNavItem"
+    (if (eq @depth 1) "euiSideNavItem--trunk")
+    (if (eq @depth 0) "euiSideNavItem--root")
+    (if (and (eq @depth 0) @icon) "euiSideNavItem--rootIcon")
+    (if (gt @depth 1) "euiSideNavItem--branch")
+    (if @items.length "euiSideNavItem--hasChildItems")
+  }}
+>
+  {{#if @href}}
+    <a
+      class={{@className}}
+      href={{@className}}
+      target={{@target}}
+      rel={{@rel}}
+      {{on "click" (optional @onClick)}}
+    >
+      {{yield}}
+    </a>
+  {{else if @onClick}}
+    <button
+      type="button"
+      class={{class-names
+        "euiSideNavItemButton"
+        (if (or @onClick @href) "euiSideNavItemButton--isClickable")
+        (if (and (gt @depth 0) @isOpen (not @isSelected)) "euiSideNavItemButton-isOpen")
+        (if @isSelected "euiSideNavItemButton-isSelected")
+        @className
+      }}
+      {{on "click" @onClick}}
+    >
+      <span class="euiSideNavItemButton__content">
+        {{#if @icon}}
+          <EuiIcon
+            @type={{@icon}}
+            @size="m"
+            class={{class-names "euiSideNavItemButton__icon" @buttonIconClasses}}
+          />
+        {{/if}}
+        <span class="euiSideNavItemButton__label">
+          {{yield}}
+        </span>
+        {{#if (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected))}}
+          <EuiIcon @type="arrowDown" @color="subdued" @size="s" />
+        {{/if}}
+      </span>
+    </button>
+  {{else}}
+    <div class={{@className}}>
+      {{yield}}
+    </div>
+  {{/if}}
+  {{#if (or (eq @depth 0) (and @items.length @isOpen))}}
+    <div class="euiSideNavItem__items">
+      {{#each @items as |item|}}
+        <EuiSideNavItem
+          @selectedItem={{@selectedItem}}
+          @isOpen={{is-item-open item @selectedItem}}
+          @isSelected={{eq item.name @selectedItem}}
+          @isParent={{not (not item.items)}}
+          @icon={{item.icon}}
+          @onClick={{item.onClick}}
+          @href={{item.href}}
+          @className={{item.className}}
+          @rel={{item.rel}}
+          @target={{item.target}}
+          @items={{item.items}}
+          @key={{item.id}}
+          @depth={{add @depth 1}}
+          @name={{item.name}}
+          @renderItem={{item.renderItem}}
+        >
+          {{item.name}}
+        </EuiSideNavItem>
+      {{/each}}
+    </div>
+  {{/if}}
+</div>

@@ -1,0 +1,36 @@
+<nav class={{class-names "euiSideNav" (if @isOpenMobile "euiSideNav-isOpenMobile")}} ...attributes>
+  <button
+    type="button"
+    class="euiSideNav__mobileToggle euiLink"
+    {{on "click" (optional @toggleOpenOnMobile)}}
+  >
+    <span class="euiSideNav__mobileWrap">
+      <span class="euiSideNav__mobileTitle">
+        {{@mobileTitle}}
+      </span>
+      <EuiIcon class="euiSideNav__mobileIcon" @type="apps" @size="m" aria-hidden="true" />
+    </span>
+  </button>
+  <div class="euiSideNav__content">
+    {{#each @items as |item|}}
+      <EuiSideNavItem
+        @selectedItem={{@selectedItem}}
+        @isOpen={{is-item-open item @selectedItem}}
+        @isSelected={{eq item.name item.isSelected}}
+        @isParent={{not (not item.items)}}
+        @icon={{item.icon}}
+        @onClick={{item.onClick}}
+        @href={{item.href}}
+        @className={{item.className}}
+        @rel={{item.rel}}
+        @target={{item.target}}
+        @items={{item.items}}
+        @key={{item.id}}
+        @depth={{0}}
+        @renderItem={{item.renderItem}}
+      >
+        {{item.name}}
+      </EuiSideNavItem>
+    {{/each}}
+  </div>
+</nav>

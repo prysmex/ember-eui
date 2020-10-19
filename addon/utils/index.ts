@@ -19,8 +19,6 @@
 
 // Export all keys under a `keys` named variable
 
-export { toInitials } from './string';
-
 export {
   isColorDark,
   isValidHex,

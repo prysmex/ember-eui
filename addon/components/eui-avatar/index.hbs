@@ -1,13 +1,17 @@
 <div
   class={{class-names
     componentName="EuiAvatar"
-    size=this.size
-    type=this.type
+    size=(arg-or-default @size "m")
+    type=(arg-or-default @type "user")
   }}
   style={{this.avatarStyles}}
   aria-label={{@name}}
   title={{@name}}
   ...attributes
 >
-  {{this.optionalInitial}}
+  {{#if (and @name (not @imageUrl))}}
+    <span aria-hidden="true">
+      {{to-initials @name @initialLength @initials}}
+    </span>
+  {{/if}}
 </div>

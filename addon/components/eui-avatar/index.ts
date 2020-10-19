@@ -1,13 +1,7 @@
 import GlimmerComponent from '@glimmer/component';
-import { toInitials } from '../../utils';
 import { isColorDark, hexToRgb, isValidHex } from '../../utils/color';
 import { euiPaletteColorBlindBehindText } from '../../utils';
-import { sizeMapping, typeMapping } from 'ember-eui/utils/css-mappings/eui-avatar';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
 import  { htmlSafe } from '@ember/string';
-
-export type EuiAvatarSize = keyof typeof sizeMapping;
-export type EuiAvatarType = keyof typeof typeMapping;
 
 export type EuiAvatarProps = {
   /**
@@ -35,26 +29,12 @@ export type EuiAvatarProps = {
   /**
    * The type of avatar this is displaying
    */
-  type?: EuiAvatarType;
   imageUrl?: string;
-  size?: EuiAvatarSize;
 };
 
 export default class EuiAvatarComponent extends GlimmerComponent<EuiAvatarProps> {
 
-  @argOrDefault('user') type!: EuiAvatarType;
-  @argOrDefault('m') size!: EuiAvatarSize;
-
   visColors = euiPaletteColorBlindBehindText();
-
-  get optionalInitial () {
-    if (this.args.name && !this.args.imageUrl) {
-      const calculatedInitials = toInitials(this.args.name, this.args.initialsLength, this.args.initials);
-      return htmlSafe(`<span aria-hidden="true">${calculatedInitials}</span>`);
-    } else {
-      return;
-    }
-  }
 
   _assignedColor = this.args.color || this.visColors[Math.floor(this.args.name.length % this.visColors.length)];
 

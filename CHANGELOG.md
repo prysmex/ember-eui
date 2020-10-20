@@ -1,5 +1,9 @@
 # Ember Eui Changelog
 
+### Master
+🐛 Bug / Fixes
+- Add accordion to demo
+
 ### 0.0.15
 🚀 Enhancements
 - EuiSideNav

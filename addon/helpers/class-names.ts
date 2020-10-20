@@ -14,6 +14,7 @@ interface Options {
   horizontalPosition: string;
   componentName: string;
   textTransform: string;
+  type: string;
 }
 
 /**
@@ -32,6 +33,7 @@ export function classNames(
     textAlign,
     color,
     textTransform,
+    type
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -50,6 +52,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.textAlign?.[textAlign] || '');
     classes.push(cssMappings[componentName].properties.color?.[color] || '');
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
+    classes.push(cssMappings[componentName].properties.type?.[type] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

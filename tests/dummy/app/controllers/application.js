@@ -43,6 +43,9 @@ export default class ApplicationController extends Controller {
       createItem('Display', {
         onClick: false,
         items: [
+          createItem('Avatar', {
+            href: 'demo.avatar',
+          }),
           createItem('Callout', {
             href: 'demo.callout',
           }),

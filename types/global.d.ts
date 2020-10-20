@@ -21,3 +21,18 @@ interface ComponentMapping {
 interface Mapping {
   [componentName: string]: ComponentMapping;
 }
+
+type rgbDef = [number, number, number];
+
+interface HSV {
+  h: number;
+  s: number;
+  v: number;
+}
+interface RGB {
+  r: number;
+  g: number;
+  b: number;
+}
+
+type HEX = string;

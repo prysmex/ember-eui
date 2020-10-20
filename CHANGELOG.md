@@ -1,5 +1,10 @@
 # Ember Eui Changelog
 
+### 0.0.15
+🚀 Enhancements
+- EuiSideNav
+- EuiAvatar
+
 ### 0.0.14
 🚀 Enhancements
 - EuiCallout

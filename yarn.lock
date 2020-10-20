@@ -3307,7 +3307,7 @@ broccoli-funnel@^2.0.0, broccoli-funnel@^2.0.1, broccoli-funnel@^2.0.2:
     symlink-or-copy "^1.0.0"
     walk-sync "^0.3.1"
 
-broccoli-funnel@^3.0.3:
+broccoli-funnel@^3.0.1, broccoli-funnel@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/broccoli-funnel/-/broccoli-funnel-3.0.3.tgz#26fd42632471f67a91f4770d1987118087219937"
   integrity sha512-LPzZ91BwStoHZXdXHQAJeYORl189OrRKM5NdIi86SDU9wZ4s/3lV1PRFOiobDT/jKM10voM7CDzfvicHbCYxAQ==
@@ -5165,7 +5165,7 @@ ember-cli-babel@^6.0.0-beta.4, ember-cli-babel@^6.3.0, ember-cli-babel@^6.6.0, e
     ember-cli-version-checker "^2.1.2"
     semver "^5.5.0"
 
-ember-cli-babel@^7.0.0, ember-cli-babel@^7.10.0, ember-cli-babel@^7.11.0, ember-cli-babel@^7.11.1, ember-cli-babel@^7.12.0, ember-cli-babel@^7.13.0, ember-cli-babel@^7.17.2, ember-cli-babel@^7.18.0, ember-cli-babel@^7.19.0, ember-cli-babel@^7.20.5, ember-cli-babel@^7.22.1, ember-cli-babel@^7.7.3:
+ember-cli-babel@^7.0.0, ember-cli-babel@^7.10.0, ember-cli-babel@^7.11.0, ember-cli-babel@^7.11.1, ember-cli-babel@^7.12.0, ember-cli-babel@^7.13.0, ember-cli-babel@^7.13.2, ember-cli-babel@^7.17.2, ember-cli-babel@^7.18.0, ember-cli-babel@^7.19.0, ember-cli-babel@^7.20.5, ember-cli-babel@^7.22.1, ember-cli-babel@^7.7.3:
   version "7.23.0"
   resolved "https://registry.yarnpkg.com/ember-cli-babel/-/ember-cli-babel-7.23.0.tgz#ec580aa2c115d0810e454dd5c2fffce238284b92"
   integrity sha512-ix58DlRDAbGITtdJoRUPcAoQwKLYr/x/kIXjU9u1ATyhmuUjqb+0FDXghOWbkNihGiNOqBBR49+LBgK9AeBcNw==
@@ -5244,7 +5244,7 @@ ember-cli-htmlbars@^4.2.3:
     strip-bom "^4.0.0"
     walk-sync "^2.0.2"
 
-ember-cli-htmlbars@^5.1.0, ember-cli-htmlbars@^5.3.1:
+ember-cli-htmlbars@^5.1.0, ember-cli-htmlbars@^5.1.2, ember-cli-htmlbars@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/ember-cli-htmlbars/-/ember-cli-htmlbars-5.3.1.tgz#61793964fc2599ce750db9e972ab55c6dd177c48"
   integrity sha512-ZjQTt44euDoqLvUkWbt1svgNCXgLzOztEbc2qqYMQvhQig416LMrWK7l3SSbNU+BtLD5UIxmwvLfF1tsO2CVyA==
@@ -5659,6 +5659,13 @@ ember-get-config@^0.3.0:
     broccoli-file-creator "^1.1.1"
     ember-cli-babel "^7.0.0"
 
+ember-href-to@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/ember-href-to/-/ember-href-to-4.1.0.tgz#daa8b398bc5a51ba3ba5ff736e099f0a0d010b7b"
+  integrity sha512-h8xSzt9lQAUzk4JvXNnZjRj29hOWKo92VIHzH68io13UurDBaMmJ4WtXa0iy/awlSFs6h8BwpEWQeaCYIZDRuQ==
+  dependencies:
+    ember-cli-babel "^7.13.2"
+
 ember-load-initializers@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ember-load-initializers/-/ember-load-initializers-2.1.1.tgz#d1a8bead00bc44222b0ab181840869992beb30f5"
@@ -5666,6 +5673,15 @@ ember-load-initializers@^2.1.1:
   dependencies:
     ember-cli-babel "^7.11.0"
     ember-cli-typescript "^2.0.2"
+
+ember-math-helpers@^2.15.0:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/ember-math-helpers/-/ember-math-helpers-2.15.0.tgz#3feb3328354589e4508f7035bd6b37d7df275096"
+  integrity sha512-dxHU0jgErvK+ihl/GEn7FZycgZFZeUgS1P0DlEqSOuzbZ0klikntUgBDfUS1xuF31gRxnDx2V9com28htZJHaA==
+  dependencies:
+    broccoli-funnel "^3.0.1"
+    ember-cli-babel "^7.20.5"
+    ember-cli-htmlbars "^5.1.2"
 
 ember-maybe-import-regenerator@^0.1.6:
   version "0.1.6"
@@ -5783,6 +5799,7 @@ ember-source@~3.20.2:
   dependencies:
     broccoli-caching-writer "^3.0.3"
     broccoli-concat "^3.7.4"
+    broccoli-file-creator "^2.1.1"
     broccoli-funnel "^2.0.2"
     broccoli-merge-trees "^3.0.2"
     broccoli-persistent-filter "^2.3.1"

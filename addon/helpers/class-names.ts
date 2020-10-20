@@ -15,6 +15,7 @@ interface Options {
   componentName: string;
   textTransform: string;
   type: string;
+  gutterSize: string;
 }
 
 /**
@@ -33,7 +34,8 @@ export function classNames(
     textAlign,
     color,
     textTransform,
-    type
+    type,
+    gutterSize
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -53,6 +55,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.color?.[color] || '');
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
     classes.push(cssMappings[componentName].properties.type?.[type] || '');
+    classes.push(cssMappings[componentName].properties.gutterSize?.[gutterSize] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

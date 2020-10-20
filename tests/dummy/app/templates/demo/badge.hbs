@@ -10,7 +10,7 @@
 <EuiPageContent>
   <EuiPageContentBody>
 
-    <EuiTitle @size="m">
+    <EuiTitle @tag="h2" @size="m">
       Notification Badge
     </EuiTitle>
     <EuiBadgeNotification>1</EuiBadgeNotification>
@@ -37,6 +37,16 @@
       @iconType="beaker"
     />
 
+    <EuiTitle @tag="h2" @size="m">
+      Badge Group
+    </EuiTitle>
+    <EuiPanel style="max-width: 200px;">
+      <EuiBadgeGroup @gutterSize="s" as |Group|>
+        <Group.item><p>Item 1</p></Group.item>
+        <Group.item><p>Item 2</p></Group.item>
+        <Group.item><p>Item 2</p></Group.item>
+      </EuiBadgeGroup>
+    </EuiPanel>
 
   </EuiPageContentBody>
 </EuiPageContent>

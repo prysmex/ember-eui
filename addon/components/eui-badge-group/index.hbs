@@ -1,0 +1,11 @@
+<div
+  class={{class-names
+    componentName="EuiBadgeGroup"
+    gutterSize=(arg-or-default @gutterSize "xs")
+  }}
+  ...attributes
+>
+  {{yield (hash
+    item=(component "eui-badge-group/badge-group-item")
+  )}}
+</div>

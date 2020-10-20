@@ -14,6 +14,7 @@ import EuiAvatar from './eui-avatar';
 import EuiCallout from './eui-callout';
 import EuiBadgeNotification from './eui-badge-notification';
 import EuiBetaBadge from './eui-beta-badge';
+import EuiBadgeGroup from './eui-badge-group';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -30,7 +31,8 @@ const mapping: Mapping = {
   EuiAvatar,
   EuiCallout,
   EuiBadgeNotification,
-  EuiBetaBadge
+  EuiBetaBadge,
+  EuiBadgeGroup
 }
 
 export default mapping;

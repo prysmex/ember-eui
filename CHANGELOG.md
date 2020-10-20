@@ -1,5 +1,27 @@
 # Ember Eui Changelog
 
+### 0.0.14
+🚀 Enhancements
+- EuiCallout
+
+### 0.0.13
+🚀 Enhancements
+- Updates ember-svg-jar dependency and loads all svgs on demand.
+
+### 0.0.12
+
+🏠 Internal
+- Let apps define svgPath in environment.js
+  ```ts
+    `ember-eui`: {
+      svgPath: 'svg/assets'
+    }
+  ```
+  This assumes that you setup ember-svg-jar with the prefix `svg/` (which is the default one)
+
+🐛 Bug / Fixes
+- Fixed EuiIcon camelCase svgs
+
 ### 0.0.11
 
 🚀 Enhancements

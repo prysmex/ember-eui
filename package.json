@@ -1,6 +1,6 @@
 {
   "name": "ember-eui",
-  "version": "0.0.11",
+  "version": "0.0.14",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon",
@@ -44,13 +44,14 @@
     "ember-cli-sass": "^10.0.1",
     "ember-cli-typescript": "^4.0.0",
     "ember-element-helper": "^0.3.1",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#648cb86f0f26c4df71a0f1550a095f3189e2aadb",
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#262581c6fc33a68f6ba389c28f9e79b6584f196c",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
     "resolve": "^1.13.1"
   },
   "devDependencies": {
     "@ember/optional-features": "^1.3.0",
+    "@ember/render-modifiers": "^1.0.2",
     "@glimmer/component": "^1.0.1",
     "@glimmer/tracking": "^1.0.0",
     "@types/ember": "^3.16.0",
@@ -64,6 +65,7 @@
     "ember-cli": "~3.20.0",
     "ember-cli-dependency-checker": "^3.2.0",
     "ember-cli-inject-live-reload": "^2.0.2",
+    "ember-cli-resolve-asset": "^0.3.0",
     "ember-cli-sri": "^2.1.1",
     "ember-cli-typescript-blueprints": "^3.0.0",
     "ember-cli-uglify": "^3.0.0",
@@ -81,7 +83,6 @@
     "ember-source": "~3.20.2",
     "ember-source-channel-url": "^2.0.1",
     "ember-template-lint": "^2.9.1",
-    "ember-truth-helpers": "2.1.0",
     "ember-try": "^1.4.0",
     "eslint": "^7.5.0",
     "eslint-plugin-ember": "^8.9.1",

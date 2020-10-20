@@ -13,7 +13,53 @@
       Badge
     </EuiTitle>
 
+    <EuiBadge @href="#" @color="accent">
+      Hello
+    </EuiBadge>
+    <EuiBadge @color="danger">
+      Danger!
+    </EuiBadge>
+    <EuiBadge @onClick={{fn this.clickBadge}} @color="#000fff">
+      Custom color
+    </EuiBadge>
+    <EuiBadge
+      @color="primary"
+      @iconType="cross"
+      @iconSide="right"
+      @iconOnClick={{fn this.clickIcon}}
+      @onClick={{fn this.clickBadge}}
+    >
+      Clickable
+    </EuiBadge>
+
+    <EuiBadge @onClick={{fn this.clickBadge}} @iconType="check" @color="#c5c5c5">
+      Click Text Only!
+    </EuiBadge>
+    <EuiBadge @iconOnClick={{fn this.clickBadge}} @color="#c9c9c9" @iconType="returnKey">
+      Click Icon Only!
+    </EuiBadge>
+
+    <EuiTitle @size="s">
+      Icon left or right
+    </EuiTitle>
+    <EuiBadge @iconType="check" @color="#c5c5c5">
+      On your left!
+    </EuiBadge>
+    <EuiBadge @iconType="check" @iconSide="right">
+      On your right!
+    </EuiBadge>
+
+    <EuiTitle @size="s">
+      Icon Only
+    </EuiTitle>
+    <EuiBadge @iconType="returnKey" @color="#c5c5c5" />
+    <EuiBadge @iconType="check" />
+
+
     <EuiSpacer />
+
+
+
     <EuiTitle @tag="h2" @size="m">
       Notification Badge
     </EuiTitle>
@@ -47,9 +93,36 @@
     </EuiTitle>
     <EuiPanel style="max-width: 200px;">
       <EuiBadgeGroup @gutterSize="s" as |Group|>
-        <Group.item><p>Item 1</p></Group.item>
-        <Group.item><p>Item 2</p></Group.item>
-        <Group.item><p>Item 2</p></Group.item>
+        <Group.item>
+          <EuiBadge @href="#" @color="accent">
+            Example of a good ol' badge group item 1
+          </EuiBadge>
+        </Group.item>
+        <Group.item>
+          <EuiBadge @iconType="check" @color="primary">
+            Example of a good ol' badge group item 2
+          </EuiBadge>
+        </Group.item>
+        <Group.item>
+          <EuiBadge @iconType="check" @iconSide="right" @color="secondary">
+            Example of a good ol' badge group item 3
+          </EuiBadge>
+        </Group.item>
+        <Group.item>
+          <EuiBadge @onClick={{fn this.clickBadge}} @color="#fffeee">
+            Example of a good ol' badge group item 4
+          </EuiBadge>
+        </Group.item>
+        <Group.item>
+          <EuiBadge @onClick={{fn this.clickBadge}} @iconType="cross" @iconOnClick={{fn this.clickIcon}} @color="#e5e5e5">
+            Example of a good ol' badge group item 5
+          </EuiBadge>
+        </Group.item>
+        <Group.item>
+          <EuiBadge @onClick={{fn this.clickBadge}} @iconSide="right" @iconType="cross" @iconOnClick={{fn this.clickIcon}} @color="#f5f5f5">
+            Example of a good ol' badge group item 6
+          </EuiBadge>
+        </Group.item>
       </EuiBadgeGroup>
     </EuiPanel>
 

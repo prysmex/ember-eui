@@ -1,0 +1,93 @@
+{{#if (and (or @onClick @href) (not @iconType))}}
+  {{#let (element (if @onClick "button" "a")) as |Element|}}
+    <Element
+      type="button"
+      class={{class-names
+        (if (and (or @onClick @href) (not @iconOnClick)) "euiBadge-isClickable")
+        (if @isDisabled "euiBadge-isDisabled")
+        componentName="EuiBadge"
+        iconSide=(arg-or-default @iconSide "left")
+        color=(arg-or-default @color "default")
+      }}
+      style={{badge-styles (arg-or-default @color "default")}}
+      onClick={{@onClick}}
+      href={{@href}}
+      ...attributes
+    >
+      <span class="euiBadge__content">
+        <span class="euiBadge__text">
+          {{yield}}
+        </span>
+      </span>
+    </Element>
+  {{/let}}
+
+{{else if @iconType}}
+
+  <span
+    type="button"
+    class={{class-names
+      (if (and (or @onClick @href) (not @iconOnClick)) "euiBadge-isClickable")
+      (if @isDisabled "euiBadge-isDisabled")
+      componentName="EuiBadge"
+      iconSide=(arg-or-default @iconSide "left")
+      color=(arg-or-default @color "default")
+    }}
+    style={{badge-styles (arg-or-default @color "default")}}
+    ...attributes
+  >
+    <span class="euiBadge__content">
+      {{#if hasBlock}}
+        {{#let (element (if @onClick "button" (if @href "a" "span") )) as |Element|}}
+          <Element onClick={{@onClick}} href={{@href}} type="button" class={{if (or @onClick @href) "euiBadge__childButton" "euiBadge__text"}}>
+            {{yield}}
+          </Element>
+        {{/let}}
+      {{/if}}
+      {{#if @iconOnClick}}
+        <button
+          type="button"
+          class="euiBadge__iconButton"
+          aria-label={{@iconOnClickAriaLabel}}
+          disabled={{@isDisabled}}
+          title={{@iconOnClickAriaLabel}}
+          onClick={{@iconOnClick}}
+        >
+          <EuiIcon
+            class={{class-names "euiBadge__icon" @closeButtonProps}}
+            @type={{@iconType}}
+            @size={{if hasBlock "s" "m"}}
+          />
+        </button>
+      {{else}}
+        <EuiIcon
+          @type={{@iconType}}
+          @size={{if hasBlock "s" "m"}}
+          class="euiBadge__icon"
+        />
+      {{/if}}
+    </span>
+  </span>
+
+{{else}}
+  <span
+    class={{class-names
+      (if (and (or @onClick @href) (not @iconOnClick)) "euiBadge-isClickable")
+      (if @isDisabled "euiBadge-isDisabled")
+      componentName="EuiBadge"
+      iconSide=(arg-or-default @iconSide "left")
+      color=(arg-or-default @color "default")
+    }}
+    style={{badge-styles (arg-or-default @color "default")}}
+    onClick={{@onClick}}
+    href={{@href}}
+    ...attributes
+  >
+    <span class="euiBadge__content">
+      <span class="euiBadge__text">
+        {{yield}}
+      </span>
+    </span>
+  </span>
+{{/if}}
+

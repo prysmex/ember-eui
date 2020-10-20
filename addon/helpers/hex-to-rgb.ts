@@ -27,7 +27,7 @@ export function hexToRgb(hex: string): rgbDef {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(
     shorthandRegex,
-    (m, r1, g1, b1) => r1 + r1 + g1 + g1 + b1 + b1
+    (_m, r1, g1, b1) => r1 + r1 + g1 + g1 + b1 + b1
   );
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)!;

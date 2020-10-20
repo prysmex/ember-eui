@@ -35,8 +35,7 @@ export {
   euiPalettePositive,
   euiPaletteCool,
   euiPaletteWarm,
-  euiPaletteGray,
-  HSV
+  euiPaletteGray
 } from './color';
 
 export { default } from './css-mappings';

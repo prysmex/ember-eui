@@ -27,6 +27,9 @@ export default class ApplicationController extends Controller {
       createItem('Layout', {
         onClick: false,
         items: [
+          createItem('Accordion', {
+            href: 'demo.accordion'
+          }),
           createItem('Page', {
             href: 'demo.page'
           })

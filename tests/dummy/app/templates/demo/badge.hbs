@@ -10,7 +10,7 @@
 <EuiPageContent>
   <EuiPageContentBody>
 
-    <EuiTitle>
+    <EuiTitle @size="m">
       Notification Badge
     </EuiTitle>
     <EuiBadgeNotification>1</EuiBadgeNotification>
@@ -20,8 +20,12 @@
     <EuiBadgeNotification @size="m">5</EuiBadgeNotification>
     <EuiSpacer />
 
-    <EuiTitle>
+    <EuiTitle @size="m">
       Beta Badge
+      <EuiBetaBadge
+        @label="Beta"
+        @title="Philly"
+      />
     </EuiTitle>
     <EuiBetaBadge
       @label="Pill"

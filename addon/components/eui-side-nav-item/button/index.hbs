@@ -1,0 +1,15 @@
+<span class="euiSideNavItemButton__content">
+  {{#if @icon}}
+    <EuiIcon
+      @type={{@icon}}
+      @size="m"
+      class={{class-names "euiSideNavItemButton__icon" @buttonIconClasses}}
+    />
+  {{/if}}
+  <span class="euiSideNavItemButton__label">
+    {{yield}}
+  </span>
+  {{#if @caret}}
+    <EuiIcon @type="arrowDown" @color="subdued" @size="s" />
+  {{/if}}
+</span>

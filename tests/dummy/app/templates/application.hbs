@@ -1,46 +1,12 @@
 <EuiPage>
   <EuiPageSideBar>
-    <EuiPanel class="euiFlexGroup euiFlexGroup--directionColumn">
-      <LinkTo @route="demo.accordion">
-        Accordion
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.icon">
-        Icon
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.image">
-        Image
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.loading">
-        Loading
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.page">
-        Page
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.text">
-        Text
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.title">
-        Title
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.overlay-mask">
-        Overlay Mask
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.avatar">
-        Avatar
-      </LinkTo>
-      <EuiSpacer />
-      <LinkTo @route="demo.callout">
-        Callout
-      </LinkTo>
-    </EuiPanel>
+    <EuiSideNav
+      @mobileTitle="Elastic UI"
+      @isOpenMobile={{this.isOpenMobile}}
+      @toggleOpenOnMobile={{set this.isOpenMobile}}
+      @items={{this.sideNavItems}}
+      @selectedItem={{this.router.currentRouteName}}
+    />
   </EuiPageSideBar>
   <EuiPageBody @tag="div">
     {{outlet}}

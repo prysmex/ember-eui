@@ -1,0 +1,19 @@
+<span
+  class={{class-names
+    componentName="EuiBetaBadge"
+    type=(if @iconType "iconOnly")
+  }}
+  title={{@title}}
+  ...attributes
+>
+  {{#if @iconType}}
+    <EuiIcon
+      class="euiBetaBadge__icon"
+      @type={{@iconType}}
+      @size="m"
+      @aria-hidden="true"
+    />
+  {{else}}
+    {{@label}}
+  {{/if}}
+</span>

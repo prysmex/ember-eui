@@ -13,6 +13,7 @@ import EuiPageContent from './eui-page-content';
 import EuiAvatar from './eui-avatar';
 import EuiCallout from './eui-callout';
 import EuiBadgeNotification from './eui-badge-notification';
+import EuiBetaBadge from './eui-beta-badge';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -28,7 +29,8 @@ const mapping: Mapping = {
   EuiPageContent,
   EuiAvatar,
   EuiCallout,
-  EuiBadgeNotification
+  EuiBadgeNotification,
+  EuiBetaBadge
 }
 
 export default mapping;

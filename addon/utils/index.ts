@@ -20,9 +20,6 @@
 // Export all keys under a `keys` named variable
 
 export {
-  isColorDark,
-  isValidHex,
-  hexToRgb,
   colorPalette,
   euiPaletteForLightBackground,
   euiPaletteForDarkBackground,
@@ -36,7 +33,6 @@ export {
   euiPaletteCool,
   euiPaletteWarm,
   euiPaletteGray,
-  HSV
 } from './color';
 
 export { default } from './css-mappings';

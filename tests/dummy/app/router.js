@@ -18,5 +18,6 @@ Router.map(function() {
     this.route('overlay-mask');
     this.route('avatar');
     this.route('callout');
+    this.route('badge');
   })
 });

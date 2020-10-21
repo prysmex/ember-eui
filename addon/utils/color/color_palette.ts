@@ -67,17 +67,19 @@ export function colorPalette(
 
     const numColorsHalf = Math.ceil(hexStart.length / 2);
 
-    const colorsLeft = hexStart.filter(function (item, index) {
+    const colorsLeft = hexStart.filter(function (_item, index) {
       if (index < numColorsHalf) {
         return true; // keep it
       }
+      return false;
     });
     const colorsRight = hexStart
       .reverse()
-      .filter(function (item, index) {
+      .filter(function (_item, index) {
         if (index < numColorsHalf) {
           return true; // keep it
         }
+        return false
       })
       .reverse();
 

@@ -18,6 +18,9 @@
  * under the License.
 */
 export { colorPalette } from './color_palette';
+export { isColorDark } from '../../helpers/is-color-dark';
+export { isValidHex } from '../../helpers/is-valid-hex';
+export { hexToRgb } from '../../helpers/hex-to-rgb';
 export {
   euiPaletteForLightBackground,
   euiPaletteForDarkBackground,

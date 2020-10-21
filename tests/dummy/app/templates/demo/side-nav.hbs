@@ -1,0 +1,19 @@
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Side nav
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
+<EuiPageContent>
+  <EuiPageContentBody>
+    <EuiSideNav
+      @mobileTitle="Test Mobile Title"
+      @isOpenMobile={{true}}
+      @items={{this.sideNavItems}}
+      @selectedItem={{this.selectedItem}}
+    />
+  </EuiPageContentBody>
+</EuiPageContent>

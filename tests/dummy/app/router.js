@@ -19,5 +19,6 @@ Router.map(function() {
     this.route('avatar');
     this.route('callout');
     this.route('badge');
+    this.route('side-nav');
   })
 });

@@ -21,7 +21,12 @@ module.exports = function (defaults) {
     },
 
     fingerprint: {
+      enabled: true,
       generateAssetMap: true
+    },
+
+    'ember-fetch': {
+      preferNative: true // Recommended to enable faster preloading for browsers that support it.
     },
 
     svgJar: {
@@ -34,10 +39,6 @@ module.exports = function (defaults) {
         'node_modules/@elastic/eui/lib/components/icon',
       ],
     },
-  });
-
-  app.import('node_modules/chroma-js/index.js', {
-    using: [{ transformation: 'cjs', as: 'chroma-js' }]
   });
 
   /*

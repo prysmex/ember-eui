@@ -9,8 +9,8 @@
     (if @betaBadeLabel "euiCard--hasBetaBadge")
     (if (or @onClick @href) "euiCard--isClickable")
     componentName="EuiCard"
-    padding=@paddingSize
-    textAlign=@textAlign
+    padding=(arg-or-default @paddingSize "m")
+    textAlign=(arg-or-default @textAlign "center")
   }}
   ...attributes
 >
@@ -34,8 +34,8 @@
   <div class="euiCard__content">
     <EuiTitle
       class="euiCard__title"
-      @size={{@titleSize}}
-      @tag={{@titleElement}}
+      @size={{arg-or-default @titleSize "s"}}
+      @tag={{arg-or-default @titleElement "span"}}
     >
       {{@title}}
     </EuiTitle>

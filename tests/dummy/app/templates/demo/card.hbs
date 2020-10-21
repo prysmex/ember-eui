@@ -4,31 +4,104 @@
 <EuiPageContent>
   <EuiPageContentBody>
 
-    <EuiCard
-      @title="Darth Vader"
-      @titleSize="s"
-      @titleElement="h3"
-      @description="Dark Lord of the Sith"
-      @layout="vertical"
-      as |Card|
-    >
-      <Card.body>
-        <EuiText>
-          <p>Darth Vaders true name is Anakin Skywalker.</p>
-          <p>The One chosen by the force itself to bring balance to the galaxy.</p>
-          <p>
-            The potentially most powerful force user to ever come to existence,
-            only to be seduced by the dark side; Bringing chaos and destruction across the galaxy.
-          </p>
-        </EuiText>
-      </Card.body>
-      <Card.footer>
-        <EuiBadge>Dark Side</EuiBadge>
-        <EuiBadge>Sith Lord</EuiBadge>
-        <EuiBadge>Force</EuiBadge>
-        <EuiBadge>Empire</EuiBadge>
-      </Card.footer>
-    </EuiCard>
+    <div class="euiFlexGrid euiFlexGrid--thirds euiFlexGrid--responsive euiFlexGrid--gutterLarge">
+      <div class="euiFlexItem">
+        <EuiText @size="s">Clickable with href</EuiText>
+        <EuiCard
+          @title="Darth Vader"
+          @titleSize="s"
+          @titleElement="h3"
+          @description="Dark Lord of the Sith"
+          @layout="vertical"
+          @paddingSize="l"
+          @href="https://starwars.fandom.com/wiki/Anakin_Skywalker"
+          @image="https://1.bp.blogspot.com/-nMzqcqU8SwE/W4l4yJdZUVI/AAAAAAAAALQ/qUNHiJg-OwEccNcDzOMLdRhEOvn7sgI2gCLcBGAs/s1600/Darth%2BVader%2B-%2BStar%2BWars%2B-%2BBlack%2BWallpaper%2BBackground.jpg"
+          as |Card|
+        >
+          <Card.body>
+            <EuiText @size="xs" @textAlign="left" @grow={{true}}>
+              <p>
+                Darth Vader's true name is Anakin Skywalker.<br>
+                The One chosen by the force itself to bring balance to the galaxy.
+                The potentially most powerful force user to ever come to existence,
+                only to be seduced by the dark side; bringing chaos and destruction across the galaxy.
+              </p>
+            </EuiText>
+          </Card.body>
+          <Card.footer>
+            <EuiBadgeGroup @gutterSize="m">
+              <EuiBadge>Dark Side</EuiBadge>
+              <EuiBadge>Sith Lord</EuiBadge>
+              <EuiBadge>Force</EuiBadge>
+              <EuiBadge>Empire</EuiBadge>
+            </EuiBadgeGroup>
+          </Card.footer>
+        </EuiCard>
+      </div>
+      <div class="euiFlexItem">
+        <EuiText @size="s">Basic</EuiText>
+        <EuiCard
+          @title="Darth Sidious"
+          @titleSize="s"
+          @titleElement="h3"
+          @description="Galactic Emperor"
+          @layout="vertical"
+          @paddingSize="l"
+          @image="https://i.pinimg.com/originals/ab/eb/f4/abebf495862d9b822d0b368879d1ea00.jpg"
+          as |Card|
+        >
+          <Card.body>
+            <EuiText @size="xs" @textAlign="left" @grow={{true}}>
+              <p>
+                Sidious's real name is Sheev Palpatine. He was a former member of the Galactic Senat annd secretly the Dark Lord of the Sith.
+                After the Jedi genocide, he became the self-titled Emperor of the Galaxy.<br>
+                "There is only one plan—one great design which shall govern the universe—mine."
+              </p>
+            </EuiText>
+          </Card.body>
+          <Card.footer>
+            <EuiBadgeGroup>
+              <EuiBadge>Dark Side</EuiBadge>
+              <EuiBadge>Sith Lord</EuiBadge>
+              <EuiBadge>Force</EuiBadge>
+              <EuiBadge>Empire</EuiBadge>
+            </EuiBadgeGroup>
+          </Card.footer>
+        </EuiCard>
+      </div>
+      <div class="euiFlexItem">
+        <EuiText @size="s">Disabled</EuiText>
+        <EuiCard
+          @title="Darth Nihilus"
+          @titleSize="s"
+          @titleElement="h3"
+          @description="Lord of Hunger"
+          @layout="vertical"
+          @isDisabled={{true}}
+          @paddingSize="l"
+          @image="https://cdn.hipwallpaper.com/i/29/87/pyJ0Pi.jpg"
+          as |Card|
+        >
+          <Card.body>
+            <EuiText @size="xs" @textAlign="left" @grow={{true}}>
+              <p>
+                Considered to be an actual wound in the force, Nihilus experiences a never-ending hunger<br>
+                for force energy. Able to strip entire planets of their life-force energy for himself,<br>
+                He became to be considered as arguably one of the most powerful Sith Lords to have ever existed.
+              </p>
+            </EuiText>
+          </Card.body>
+          <Card.footer>
+            <EuiBadgeGroup>
+              <EuiBadge>Sith Lord</EuiBadge>
+              <EuiBadge>Old Republic</EuiBadge>
+              <EuiBadge>Jedi Civil War</EuiBadge>
+            </EuiBadgeGroup>
+          </Card.footer>
+        </EuiCard>
+      </div>
+    </div>
+
 
   </EuiPageContentBody>
 </EuiPageContent>

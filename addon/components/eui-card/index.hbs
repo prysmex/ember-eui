@@ -18,7 +18,7 @@
   {{#if (or @image @icon)}}
     <div class="euiCard__top">
       {{#if (and @image (eq @layout "vertical"))}}
-        <div className="euiCard__image">
+        <div class="euiCard__image">
           <img src={{@image}} alt="card-top" />
         </div>
       {{/if}}
@@ -40,6 +40,7 @@
       {{@title}}
     </EuiTitle>
     <EuiText
+      @grow={{true}}
       @size="s"
       class="euiCard__description"
     >
@@ -51,7 +52,7 @@
   {{! optional beta badge}}
 
   {{#if (eq @layout "vertical")}}
-    <div className="euiCard__footer">
+    <div class="euiCard__footer">
       {{yield (hash footer="eui-card/eui-card-footer")}}
     </div>
   {{/if}}

@@ -6,7 +6,7 @@
     (if @isDisabled "euiCard-isDisabled")
     (if hasBlock "euiCard--hasChildren")
     (if @icon "euiCard--hasIcon")
-    (if @betaBadeLabel "euiCard--hasBetaBadge")
+    (if @betaBadgeLabel "euiCard--hasBetaBadge")
     (if (or @onClick @href) "euiCard--isClickable")
     componentName="EuiCard"
     padding=(arg-or-default @paddingSize "m")
@@ -14,16 +14,16 @@
   }}
   ...attributes
 >
-  {{! option card top }}
   {{#if (or @image @icon)}}
     <div class="euiCard__top">
-      {{#if (and @image (eq @layout "vertical"))}}
+      {{#if (and @image (not (eq @layout "horizontal")))}}
         <div class="euiCard__image">
           <img src={{@image}} alt="card-top" />
         </div>
       {{/if}}
       {{#if @icon}}
         <EuiIcon
+          class="euiCard__icon"
           @type={{@icon}}
           @size={{@iconSize}}
         />
@@ -37,7 +37,28 @@
       @size={{arg-or-default @titleSize "s"}}
       @tag={{arg-or-default @titleElement "span"}}
     >
-      {{@title}}
+      {{#if (and (not @isDisabled) @href)}}
+        <a
+          class="euiCard__titleAnchor"
+          onClick={{@onClick}}
+          target={{@target}}
+          disabled={{@isDisabled}}
+          href={{@href}}
+        >
+          {{@title}}
+        </a>
+      {{else if (or @isDisabled @onClick)}}
+        <button
+          class="euiCard__titleButton"
+          onClick={{@onClick}}
+          disabled={{@isDisabled}}
+          href={{@href}}
+        >
+          {{@title}}
+        </button>
+      {{else}}
+        {{@title}}
+      {{/if}}
     </EuiTitle>
     <EuiText
       @grow={{true}}
@@ -49,12 +70,20 @@
     {{yield (hash body="eui-card/eui-card-body")}}
   </div>
 
-  {{! optional beta badge}}
+  {{#if @betaBadgeLabel}}
+    <span class="euiCard__betaBadgeWrapper">
+      <EuiBetaBadge
+        @label={{@betaBadgeLabel}}
+        @title={{@betaBadgeLabel}}
+        class="euiCard__betaBadge"
+      />
+    </span>
+  {{/if}}
 
-  {{#if (eq @layout "vertical")}}
+  {{#unless (eq @layout "horizontal")}}
     <div class="euiCard__footer">
       {{yield (hash footer="eui-card/eui-card-footer")}}
     </div>
-  {{/if}}
+  {{/unless}}
 
 </div>

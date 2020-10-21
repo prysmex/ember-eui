@@ -1,28 +1,59 @@
 <div
-  class="euiCard euiCard--paddingMedium euiCard--centerAligned euiCard--isClickable euiCard--hasIcon"
+  {{! TODO: selectable and clickable class/props }}
+  class={{class-names
+    (if (eq @layout "horizontal") "euiCard--horizontal")
+    (if (eq @display "plain") "euiCard--plain")
+    (if @isDisabled "euiCard-isDisabled")
+    (if hasBlock "euiCard--hasChildren")
+    (if @icon "euiCard--hasIcon")
+    (if @betaBadeLabel "euiCard--hasBetaBadge")
+    (if (or @onClick @href) "euiCard--isClickable")
+    componentName="EuiCard"
+    padding=@paddingSize
+    textAlign=@textAlign
+  }}
+  ...attributes
 >
-  <div class="euiCard__top">
-    <EuiIcon @type="logoGolang" @size="xxl"/>
-  </div>
-  <div class="euiCard__content">
-    <span
-      class="euiTitle euiTitle--small euiCard__title"
-      id="id6432d61-f2c4-11ea-b18a-811028e88c64Title"
-    >
-      <button
-        class="euiCard__titleButton"
-        aria-describedby="id6432d61-f2c4-11ea-b18a-811028e88c64Description"
-      >
-        Elastic Beats
-      </button>
-    </span>
-    <div
-      class="euiText euiText--small euiCard__description"
-      id="id6432d61-f2c4-11ea-b18a-811028e88c64Description"
-    >
-      <p>
-        Example of a card's description. Stick to one or two sentences.
-      </p>
+  {{! option card top }}
+  {{#if (or @image @icon)}}
+    <div class="euiCard__top">
+      {{#if (and @image (eq @layout "vertical"))}}
+        <div className="euiCard__image">
+          <img src={{@image}} alt="card-top" />
+        </div>
+      {{/if}}
+      {{#if @icon}}
+        <EuiIcon
+          @type={{@icon}}
+          @size={{@iconSize}}
+        />
+      {{/if}}
     </div>
+  {{/if}}
+
+  <div class="euiCard__content">
+    <EuiTitle
+      class="euiCard__title"
+      @size={{@titleSize}}
+      @tag={{@titleElement}}
+    >
+      {{@title}}
+    </EuiTitle>
+    <EuiText
+      @size="s"
+      class="euiCard__description"
+    >
+      {{@description}}
+    </EuiText>
+    {{yield (hash body="eui-card/eui-card-body")}}
   </div>
+
+  {{! optional beta badge}}
+
+  {{#if (eq @layout "vertical")}}
+    <div className="euiCard__footer">
+      {{yield (hash footer="eui-card/eui-card-footer")}}
+    </div>
+  {{/if}}
+
 </div>

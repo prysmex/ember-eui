@@ -3,6 +3,32 @@
 </EuiPageHeader>
 <EuiPageContent>
   <EuiPageContentBody>
-    Aloha!
+
+    <EuiCard
+      @title="Darth Vader"
+      @titleSize="s"
+      @titleElement="h3"
+      @description="Dark Lord of the Sith"
+      @layout="vertical"
+      as |Card|
+    >
+      <Card.body>
+        <EuiText>
+          <p>Darth Vaders true name is Anakin Skywalker.</p>
+          <p>The One chosen by the force itself to bring balance to the galaxy.</p>
+          <p>
+            The potentially most powerful force user to ever come to existence,
+            only to be seduced by the dark side; Bringing chaos and destruction across the galaxy.
+          </p>
+        </EuiText>
+      </Card.body>
+      <Card.footer>
+        <EuiBadge>Dark Side</EuiBadge>
+        <EuiBadge>Sith Lord</EuiBadge>
+        <EuiBadge>Force</EuiBadge>
+        <EuiBadge>Empire</EuiBadge>
+      </Card.footer>
+    </EuiCard>
+
   </EuiPageContentBody>
 </EuiPageContent>

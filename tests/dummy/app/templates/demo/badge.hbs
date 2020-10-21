@@ -59,6 +59,26 @@
 
     <EuiSpacer />
 
+    <EuiTitle @size="s">
+      Disabled
+    </EuiTitle>
+    <EuiBadge
+      @iconType="arrowRight"
+      @color="#f6f6f6"
+      @onClick={{fn this.toggleDisabled}}
+      @iconSide="right"
+    >
+      Click me to disable this guy
+    </EuiBadge>
+    <EuiBadge
+      @isDisabled={{this.disabled}}
+      @iconType={{if this.disabled "faceSad" "faceHappy"}}
+      @color="accent"
+    >
+      I am {{if this.disabled "disabled" "enabled!"}}
+    </EuiBadge>
+
+    <EuiSpacer />
 
 
     <EuiTitle @tag="h2" @size="m">

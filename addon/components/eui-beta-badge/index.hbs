@@ -2,8 +2,8 @@
 
 <span
   class={{class-names
-    componentName="EuiBetaBadge"
-    type=(if @iconType "iconOnly")
+    "euiBetaBadge"
+    (if @iconType "euiBetaBadge--iconOnly")
   }}
   title={{@title}}
   ...attributes
@@ -13,7 +13,7 @@
       class="euiBetaBadge__icon"
       @type={{@iconType}}
       @size="m"
-      @aria-hidden="true"
+      aria-hidden="true"
     />
   {{else}}
     {{@label}}

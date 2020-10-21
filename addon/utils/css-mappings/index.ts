@@ -13,7 +13,6 @@ import EuiPageContent from './eui-page-content';
 import EuiAvatar from './eui-avatar';
 import EuiCallout from './eui-callout';
 import EuiBadgeNotification from './eui-badge-notification';
-import EuiBetaBadge from './eui-beta-badge';
 import EuiBadgeGroup from './eui-badge-group';
 import EuiBadge from  './eui-badge';
 
@@ -32,7 +31,6 @@ const mapping: Mapping = {
   EuiAvatar,
   EuiCallout,
   EuiBadgeNotification,
-  EuiBetaBadge,
   EuiBadgeGroup,
   EuiBadge
 }

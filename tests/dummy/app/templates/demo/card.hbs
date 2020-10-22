@@ -254,5 +254,50 @@
       </div>
     </div>
 
+    <EuiSpacer @size="xl"/>
+    <EuiTitle @size="m">
+      Selectable
+    </EuiTitle>
+    <EuiSpacer @size="s"/>
+    <div class="euiFlexGroup euiFlexGroup--directionRow euiFlexGroup--responsive euiFlexGroup--gutterLarge">
+      <div class="euiFlexItem">
+        <EuiCard
+          @title="E-11 Blaster Rifle"
+          @titleSize="s"
+          @titleElement="h3"
+          @description="Manufactured by BlasTech Industries"
+          @image="https://vignette.wikia.nocookie.net/starwars/images/2/20/E-11_blaster_rifle_DICE.png/revision/latest/scale-to-width-down/500?cb=20151106030234"
+          @selectable={{hash onClick=(fn this.selectToggle this.cardOneSelected) isSelected=this.cardOne}}
+        />
+      </div>
+      <div class="euiFlexItem">
+        <EuiCard
+          @title="A280 Blaster Rifle"
+          @titleSize="s"
+          @titleElement="h3"
+          @description="Manufactured by BlasTech Industries"
+          @image="https://vignette.wikia.nocookie.net/starwars/images/c/c1/A280_blaster_rifle.jpg/revision/latest/scale-to-width-down/499?cb=20061203115750"
+        />
+      </div>
+      <div class="euiFlexItem">
+        <EuiCard
+          @title="E-10 Blaster Rifle"
+          @titleSize="s"
+          @titleElement="h3"
+          @description="Manufactured by BlasTech Industries"
+          @image="https://vignette.wikia.nocookie.net/starwars/images/6/6f/E-10.png/revision/latest/scale-to-width-down/500?cb=20181125220049"
+        />
+      </div>
+      <div class="euiFlexItem">
+        <EuiCard
+          @title="E-5C Heavy Blaster Rifle"
+          @titleSize="s"
+          @titleElement="h3"
+          @description="Manufactured by BlasTech Industries"
+          @image="https://vignette.wikia.nocookie.net/starwars/images/b/ba/E-5C_BF2.png/revision/latest/scale-to-width-down/499?cb=20180310060911"
+        />
+      </div>
+    </div>
+
   </EuiPageContentBody>
 </EuiPageContent>

@@ -17,6 +17,7 @@ interface Options {
   type: string;
   gutterSize: string;
   iconSide: string;
+  flush: string;
 }
 
 /**
@@ -37,7 +38,8 @@ export function classNames(
     textTransform,
     type,
     gutterSize,
-    iconSide
+    iconSide,
+    flush
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -59,6 +61,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.type?.[type] || '');
     classes.push(cssMappings[componentName].properties.gutterSize?.[gutterSize] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
+    classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

@@ -16,6 +16,7 @@ import EuiNotificationBadge from './eui-notification-badge';
 import EuiBadgeGroup from './eui-badge-group';
 import EuiBadge from  './eui-badge';
 import EuiCard from './eui-card';
+import EuiButtonEmpty from './eui-button-empty';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -34,7 +35,8 @@ const mapping: Mapping = {
   EuiNotificationBadge,
   EuiBadgeGroup,
   EuiBadge,
-  EuiCard
+  EuiCard,
+  EuiButtonEmpty
 }
 
 export default mapping;

@@ -13,7 +13,7 @@
     componentName="EuiCard"
     padding=(arg-or-default @paddingSize "m")
     textAlign=(arg-or-default @textAlign "center")
-    color=(if @selectable.isSelected @selectable.color)
+    color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
   }}
   ...attributes
 >
@@ -93,6 +93,7 @@
       @isSelected={{@selectable.isSelected}}
       @isDisabled={{@selectable.isDisabled}}
       onClick={{@selectable.onClick}}
+      @color={{@selectable.color}}
     />
   {{/if}}
 </div>

@@ -1,0 +1,25 @@
+<EuiButtonEmpty
+  class={{class-names
+    componentName="EuiCardSelect"
+    color=(if @color @color (if @isSelected "success" "text"))
+  }}
+  @color={{arg-or-default @color "text"}}
+  @size="xs"
+  @isDisabled={{@isDisabled}}
+  @iconType={{if @isSelected "check"}}
+  role="switch"
+  aria-checked={{@isSelected}}
+  ...attributes
+>
+  {{#if hasBlock}}
+    {{yield}}
+  {{else}}
+    {{#if @isSelected}}
+      Selected
+    {{else if @isDisabled}}
+      Unavailable
+    {{else}}
+      Select
+    {{/if}}
+  {{/if}}
+</EuiButtonEmpty>

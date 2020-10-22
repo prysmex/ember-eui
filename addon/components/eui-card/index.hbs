@@ -7,10 +7,13 @@
     (if hasBlock "euiCard--hasChildren")
     (if @icon "euiCard--hasIcon")
     (if @betaBadgeLabel "euiCard--hasBetaBadge")
-    (if (or @onClick @href) "euiCard--isClickable")
+    (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
+    (if @selectable "euiCard--isSelectable")
+    (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
     componentName="EuiCard"
     padding=(arg-or-default @paddingSize "m")
     textAlign=(arg-or-default @textAlign "center")
+    color=(if @selectable.isSelected @selectable.color)
   }}
   ...attributes
 >
@@ -85,5 +88,11 @@
       {{yield (hash footer="eui-card/eui-card-footer")}}
     </div>
   {{/unless}}
-
+  {{#if @selectable}}
+    <EuiCard::EuiCardSelect
+      @isSelected={{@selectable.isSelected}}
+      @isDisabled={{@selectable.isDisabled}}
+      onClick={{@selectable.onClick}}
+    />
+  {{/if}}
 </div>

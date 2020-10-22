@@ -4,7 +4,12 @@ import { tracked } from '@glimmer/tracking';
 
 export default class DemoIconController extends Controller {
 
-  @tracked cardOne = false;
+  @tracked cardOneSelected = false;
+  @tracked cardTwoSelected = false;
+  @tracked cardThreeSelected = true;
+  @tracked cardFourSelected = false;
+
+  @tracked weaponLocked = true;
 
 	@action
 	punchIt() {
@@ -13,7 +18,7 @@ export default class DemoIconController extends Controller {
 
   @action
   selectToggle(card){
-    card = !card;
+    this.toggleProperty(card);
   }
 
 }

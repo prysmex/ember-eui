@@ -1,0 +1,11 @@
+<div
+  class={{class-names
+    componentName="EuiHealth"
+    color=(arg-or-default @color "default")
+  }}
+  ...attributes
+>
+
+  <EuiIcon @type="dot" @size="m" @color={{@color}} />
+  {{yield}}
+</div>

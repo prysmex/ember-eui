@@ -6,7 +6,7 @@ export default class DemoIconController extends Controller {
 
   @tracked cardOneSelected = false;
   @tracked cardTwoSelected = false;
-  @tracked cardThreeSelected = true;
+  @tracked cardThreeSelected = false;
   @tracked cardFourSelected = false;
 
   @tracked weaponLocked = true;
@@ -17,8 +17,9 @@ export default class DemoIconController extends Controller {
   }
 
   @action
-  selectToggle(card){
+  selectToggle(card, event){
     this.toggleProperty(card);
+    event.stopPropagation();
   }
 
 }

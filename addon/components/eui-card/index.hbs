@@ -1,99 +1,105 @@
-<div
-  {{! TODO: selectable and clickable class/props }}
-  class={{class-names
-    (if (eq @layout "horizontal") "euiCard--horizontal")
-    (if (eq @display "plain") "euiCard--plain")
-    (if @isDisabled "euiCard-isDisabled")
-    (if hasBlock "euiCard--hasChildren")
-    (if @icon "euiCard--hasIcon")
-    (if @betaBadgeLabel "euiCard--hasBetaBadge")
-    (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
-    (if @selectable "euiCard--isSelectable")
-    (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
-    componentName="EuiCard"
-    padding=(arg-or-default @paddingSize "m")
-    textAlign=(arg-or-default @textAlign "center")
-    color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
-  }}
-  ...attributes
->
-  {{#if (or @image @icon)}}
-    <div class="euiCard__top">
-      {{#if (and @image (not (eq @layout "horizontal")))}}
-        <div class="euiCard__image">
-          <img src={{@image}} alt="card-top" />
-        </div>
-      {{/if}}
-      {{#if @icon}}
-        <EuiIcon
-          class="euiCard__icon"
-          @type={{@icon}}
-          @size={{@iconSize}}
+{{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) as |titleId selectableId|}}
+  <div
+    {{! TODO: selectable and clickable class/props }}
+    {{simulate-click (or titleId selectableId)}}
+    class={{class-names
+      (if (eq @layout "horizontal") "euiCard--horizontal")
+      (if (eq @display "plain") "euiCard--plain")
+      (if @isDisabled "euiCard-isDisabled")
+      (if hasBlock "euiCard--hasChildren")
+      (if @icon "euiCard--hasIcon")
+      (if @betaBadgeLabel "euiCard--hasBetaBadge")
+      (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
+      (if @selectable "euiCard--isSelectable")
+      (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
+      componentName="EuiCard"
+      padding=(arg-or-default @paddingSize "m")
+      textAlign=(arg-or-default @textAlign "center")
+      color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
+    }}
+    ...attributes
+  >
+    {{#if (or @image @icon)}}
+      <div class="euiCard__top">
+        {{#if (and @image (not (eq @layout "horizontal")))}}
+          <div class="euiCard__image">
+            <img src={{@image}} alt="card-top" />
+          </div>
+        {{/if}}
+        {{#if @icon}}
+          <EuiIcon
+            class="euiCard__icon"
+            @type={{@icon}}
+            @size={{@iconSize}}
+          />
+        {{/if}}
+      </div>
+    {{/if}}
+
+    <div class="euiCard__content">
+      <EuiTitle
+        class="euiCard__title"
+        @size={{arg-or-default @titleSize "s"}}
+        @tag={{arg-or-default @titleElement "span"}}
+      >
+        {{#if (and (not @isDisabled) @href)}}
+          <a
+            class="euiCard__titleAnchor"
+            onClick={{@onClick}}
+            target={{@target}}
+            disabled={{@isDisabled}}
+            href={{@href}}
+            id={{titleId}}
+          >
+            {{@title}}
+          </a>
+        {{else if (or @isDisabled @onClick)}}
+          <button
+            class="euiCard__titleButton"
+            onClick={{@onClick}}
+            disabled={{@isDisabled}}
+            href={{@href}}
+            id={{titleId}}
+          >
+            {{@title}}
+          </button>
+        {{else}}
+          {{@title}}
+        {{/if}}
+      </EuiTitle>
+      <EuiText
+        @grow={{true}}
+        @size="s"
+        class="euiCard__description"
+      >
+        {{@description}}
+      </EuiText>
+      {{yield (hash body="eui-card/eui-card-body")}}
+    </div>
+
+    {{#if @betaBadgeLabel}}
+      <span class="euiCard__betaBadgeWrapper">
+        <EuiBetaBadge
+          @label={{@betaBadgeLabel}}
+          @title={{@betaBadgeLabel}}
+          class="euiCard__betaBadge"
         />
-      {{/if}}
-    </div>
-  {{/if}}
+      </span>
+    {{/if}}
 
-  <div class="euiCard__content">
-    <EuiTitle
-      class="euiCard__title"
-      @size={{arg-or-default @titleSize "s"}}
-      @tag={{arg-or-default @titleElement "span"}}
-    >
-      {{#if (and (not @isDisabled) @href)}}
-        <a
-          class="euiCard__titleAnchor"
-          onClick={{@onClick}}
-          target={{@target}}
-          disabled={{@isDisabled}}
-          href={{@href}}
-        >
-          {{@title}}
-        </a>
-      {{else if (or @isDisabled @onClick)}}
-        <button
-          class="euiCard__titleButton"
-          onClick={{@onClick}}
-          disabled={{@isDisabled}}
-          href={{@href}}
-        >
-          {{@title}}
-        </button>
-      {{else}}
-        {{@title}}
-      {{/if}}
-    </EuiTitle>
-    <EuiText
-      @grow={{true}}
-      @size="s"
-      class="euiCard__description"
-    >
-      {{@description}}
-    </EuiText>
-    {{yield (hash body="eui-card/eui-card-body")}}
-  </div>
-
-  {{#if @betaBadgeLabel}}
-    <span class="euiCard__betaBadgeWrapper">
-      <EuiBetaBadge
-        @label={{@betaBadgeLabel}}
-        @title={{@betaBadgeLabel}}
-        class="euiCard__betaBadge"
+    {{#unless (eq @layout "horizontal")}}
+      <div class="euiCard__footer">
+        {{yield (hash footer="eui-card/eui-card-footer")}}
+      </div>
+    {{/unless}}
+    {{#if @selectable}}
+      <EuiCard::EuiCardSelect
+        @isSelected={{@selectable.isSelected}}
+        @isDisabled={{@selectable.isDisabled}}
+        onClick={{@selectable.onClick}}
+        @color={{@selectable.color}}
+        @buttonId={{selectableId}}
       />
-    </span>
-  {{/if}}
-
-  {{#unless (eq @layout "horizontal")}}
-    <div class="euiCard__footer">
-      {{yield (hash footer="eui-card/eui-card-footer")}}
-    </div>
-  {{/unless}}
-  {{#if @selectable}}
-    <EuiCard::EuiCardSelect
-      @isSelected={{@selectable.isSelected}}
-      @isDisabled={{@selectable.isDisabled}}
-      onClick={{@selectable.onClick}}
-      @color={{@selectable.color}}
-    />
-  {{/if}}
-</div>
+    {{/if}}
+  </div>
+{{/let}}

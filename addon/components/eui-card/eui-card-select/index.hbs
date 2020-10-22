@@ -3,6 +3,7 @@
     componentName="EuiCardSelect"
     color=(if @color @color (if @isSelected "success" "text"))
   }}
+  id={{@buttonId}}
   @color={{arg-or-default @color "text"}}
   @size="xs"
   @isDisabled={{@isDisabled}}

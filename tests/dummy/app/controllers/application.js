@@ -41,6 +41,9 @@ export default class ApplicationController extends Controller {
           createItem('Side nav', {
             href: 'demo.side-nav',
           }),
+          createItem('button', {
+            href: 'demo.button',
+          }),
         ],
       }),
       createItem('Display', {

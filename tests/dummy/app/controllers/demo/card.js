@@ -13,7 +13,7 @@ export default class DemoCardController extends Controller {
 
 	@action
 	punchIt() {
-		console.log("You punched it into hyperspace!!");
+		alert('You punched into hyperspacer!')
   }
 
   @action

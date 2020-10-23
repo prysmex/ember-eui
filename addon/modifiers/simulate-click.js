@@ -7,9 +7,9 @@ export default modifier(function simulateClick(element, [targetId]) {
   }
 
   if (targetId) {
-    element.addEventListener("click", _targetClick);
+    element.addEventListener('click', _targetClick);
     return () => {
-      element.removeEventListener("click", _targetClick)
+      element.removeEventListener('click', _targetClick)
     };
   }
 

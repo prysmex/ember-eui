@@ -2,7 +2,7 @@ import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
-export default class DemoIconController extends Controller {
+export default class DemoCardController extends Controller {
 
   @tracked cardOneSelected = false;
   @tracked cardTwoSelected = false;

@@ -55,11 +55,26 @@
   >
     <span class="euiBadge__content">
       {{#if hasBlock}}
-        {{#let (element (if @onClick "button" (if @href "a" "span") )) as |Element|}}
-          <Element onClick={{@onClick}} href={{@href}} type="button" class={{if (or @onClick @href) "euiBadge__childButton" "euiBadge__text"}}>
+        {{#if @onClick}}
+          <button
+            class="euiBadge__childButton"
+            onClick={{@onClick}}
+            type="button"
+          >
             {{yield}}
-          </Element>
-        {{/let}}
+          </button>
+        {{else if @href}}
+          <a
+            class="euiBadge__text"
+            href={{@href}}
+          >
+            {{yield}}
+          </a>
+        {{else}}
+          <span class="euiBadge__text">
+            {{yield}}
+          </span>
+        {{/if}}
       {{/if}}
       {{#if @iconOnClick}}
         <button

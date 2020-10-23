@@ -61,6 +61,9 @@ export default class ApplicationController extends Controller {
           createItem('Card', {
             href: 'demo.card',
           }),
+          createItem('Health', {
+            href: 'demo.health',
+          }),
           createItem('Icons', {
             href: 'demo.icon',
           }),

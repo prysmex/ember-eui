@@ -12,9 +12,23 @@
     <EuiTitle @tag="h2" @size="m">
       Badge
     </EuiTitle>
-    <EuiTitle @size="s">
-      Check the console to see the click event of the clickable badges
-    </EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiBadge
+      @href="https://starwars.fandom.com/wiki/Main_Page"
+      @iconType="https://iconarchive.com/download/i103537/sensibleworld/starwars/Death-Star.ico"
+      @iconSide="right"
+    >
+      Star Wars Lore
+    </EuiBadge>
+    <EuiBadge
+      @href="https://starwars.fandom.com/wiki/Main_Page"
+      @iconType="https://static.thenounproject.com/png/65913-200.png"
+      @iconSide="right"
+      @color="default"
+    >
+      Darth Vader
+    </EuiBadge>
+    <EuiSpacer />
     <EuiBadge @href="#" @color="accent">
       Hello
     </EuiBadge>
@@ -37,7 +51,7 @@
     <EuiBadge @onClick={{this.clickBadge}} @iconType="check" @color="#c5c5c5">
       Click Text Only!
     </EuiBadge>
-    <EuiBadge @iconOnClick={{this.clickBadge}} @color="#c9c9c9" @iconType="returnKey">
+    <EuiBadge @iconOnClick={{this.clickIcon}} @color="#c9c9c9" @iconType="returnKey">
       Click Icon Only!
     </EuiBadge>
 
@@ -77,9 +91,23 @@
     >
       I am {{if this.disabled "disabled" "enabled!"}}
     </EuiBadge>
-
+    <EuiSpacer @size="s"/>
+    <EuiText @size="xs">Click on the Dot icon to turn the lightsaber on!</EuiText>
+    <EuiBadge
+      @color="#e5e5e5"
+      @iconOnClick={{this.toggleLightsaber}}
+      @iconType="dot"
+      @iconSide="right"
+    >
+      0===|*|==|
+    </EuiBadge>
+    <EuiBadge
+      @isDisabled={{this.lightsaberDisabled}}
+      @color="#F83A00"
+    >
+      ----------------------------------------------------------
+    </EuiBadge>
     <EuiSpacer />
-
 
     <EuiTitle @tag="h2" @size="m">
       Notification Badge

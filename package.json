@@ -42,10 +42,12 @@
     "ember-cli-sass": "^10.0.1",
     "ember-cli-typescript": "^4.0.0",
     "ember-element-helper": "^0.3.1",
+    "ember-modifier": "^2.1.1",
     "ember-svg-jar": "github:betocantu93/ember-svg-jar#262581c6fc33a68f6ba389c28f9e79b6584f196c",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
-    "resolve": "^1.13.1"
+    "resolve": "^1.13.1",
+    "tracked-toolbox": "^1.2.1"
   },
   "devDependencies": {
     "@ember/optional-features": "^1.3.0",

@@ -1,0 +1,21 @@
+<EuiStateProvider
+  @selectedTab={{if @selectedTab (get-tab-id @selectedTab)}}
+  as |state|
+>
+  <div
+    role="tablist"
+    class={{class-names
+      (if (arg-or-default @expand false) "euiTabs--expand")
+      @className
+      componentName="EuiTabs"
+      display=(arg-or-default @display "default")
+      size=(arg-or-default @size "m")
+    }}
+    ...attributes
+  >
+    {{yield (component "eui-tabs/eui-tab"
+      onClick=state.setSelectedTab
+      selectedTabId=state.selectedTab
+    )}}
+  </div>
+</EuiStateProvider>

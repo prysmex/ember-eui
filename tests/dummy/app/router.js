@@ -18,5 +18,6 @@ Router.map(function() {
     this.route('overlay-mask');
     this.route('callout');
     this.route('side-nav');
+    this.route('tabs');
   })
 });

@@ -1,0 +1,50 @@
+<EuiStateProvider
+  @selectedTab={{get-tab-id
+    (arg-or-default
+      (or @selectedTab @initialSelectedTab)
+      (object-at 0 @tabs)
+    )
+  }}
+  as |state|
+>
+  {{#let
+    (unique-id)
+    (optional @onTabClick)
+    (arg-or-default @autoFocus "initial")
+    as |id onTabClick autoFocus|
+  }}
+    <div class={{@className}} ...attributes>
+      <EuiTabs
+        @selectedTab={{state.selectedTab}}
+        @expand={{@expand}}
+        @display={{@display}}
+        @size={{@size}}
+        as |EuiTab|
+      >
+        {{#each @tabs as |tab|}}
+          <EuiTab
+            @id={{tab.id}}
+            aria-controls={{id}}
+            @selectedTabId={{state.selectedTab}}
+            @onClick={{pipe state.setSelectedTab (fn onTabClick tab)}}
+          >
+            {{tab.name}}
+          </EuiTab>
+        {{/each}}
+      </EuiTabs>
+
+      {{#with
+        (find-by "id" state.selectedTab @tabs)
+        as |selectedTab|
+      }}
+        <div
+          role="tabpanel"
+          id={{id}}
+          aria-labelledby={{selectedTab.id}}
+        >
+          {{selectedTab.content}}
+        </div>
+      {{/with}}
+    </div>
+  {{/let}}
+</EuiStateProvider>

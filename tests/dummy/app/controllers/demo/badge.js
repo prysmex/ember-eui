@@ -4,20 +4,26 @@ import { action } from '@ember/object';
 
 export default class DemoIconController extends Controller {
 	@tracked disabled = false;
+	@tracked lightsaberDisabled = true;
 
 	@action
 	toggleDisabled() {
 		this.disabled = !this.disabled;
+	}
+
+	@action
+	toggleLightsaber() {
+		this.lightsaberDisabled = !this.lightsaberDisabled;
   }
 
   @action
   clickIcon() {
-		console.log("ICON clicked!")
+		alert('ICON clicked!');
   }
 
   @action
   clickBadge() {
-		console.log("BADGE TEXT clicked!")
+		alert('BADGE TEXT clicked!');
 	}
 
 }

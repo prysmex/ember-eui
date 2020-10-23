@@ -94,11 +94,17 @@
     {{/unless}}
     {{#if @selectable}}
       <EuiCard::EuiCardSelect
+        onClick={{@selectable.onClick}}
+        type={{@selectable.type}}
+        @buttonId={{selectableId}}
         @isSelected={{@selectable.isSelected}}
         @isDisabled={{@selectable.isDisabled}}
-        onClick={{@selectable.onClick}}
         @color={{@selectable.color}}
-        @buttonId={{selectableId}}
+        @iconType={{@selectable.iconType}}
+        @isLoading={{@selectable.isLoading}}
+        @href={{@selectable.href}}
+        @iconSide={{@selectable.iconSide}}
+        @flush={{@selectable.flush}}
       />
     {{/if}}
   </div>

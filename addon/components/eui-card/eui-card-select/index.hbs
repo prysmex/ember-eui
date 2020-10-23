@@ -7,7 +7,13 @@
   @color={{arg-or-default @color "text"}}
   @size="xs"
   @isDisabled={{@isDisabled}}
-  @iconType={{if @isSelected "check"}}
+  @iconType={{if @isSelected "check" @iconType}}
+  @isLoading={{@isLoading}}
+  @href={{@href}}
+  @iconSide={{@iconSide}}
+  @flush={{@flush}}
+  type={{@type}}
+  onClick={{@onClick}}
   role="switch"
   aria-checked={{@isSelected}}
   ...attributes

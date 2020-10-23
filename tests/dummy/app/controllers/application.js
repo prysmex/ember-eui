@@ -24,6 +24,17 @@ export default class ApplicationController extends Controller {
     super(...arguments);
     let createItem = this.createItem.bind(this);
     this.sideNavItems = [
+      createItem('Layout', {
+        onClick: false,
+        items: [
+          createItem('Accordion', {
+            href: 'demo.accordion'
+          }),
+          createItem('Page', {
+            href: 'demo.page'
+          })
+        ]
+      }),
       createItem('Navigation', {
         onClick: false,
         items: [
@@ -35,6 +46,9 @@ export default class ApplicationController extends Controller {
       createItem('Display', {
         onClick: false,
         items: [
+          createItem('Avatar', {
+            href: 'demo.avatar',
+          }),
           createItem('Callout', {
             href: 'demo.callout',
           }),

@@ -15,6 +15,7 @@ interface Options {
   componentName: string;
   textTransform: string;
   display: string;
+  type: string;
 }
 
 /**
@@ -34,6 +35,7 @@ export function classNames(
     color,
     textTransform,
     display
+    type
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -53,6 +55,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.color?.[color] || '');
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
     classes.push(cssMappings[componentName].properties.display?.[display] || '');
+    classes.push(cssMappings[componentName].properties.type?.[type] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

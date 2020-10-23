@@ -1,0 +1,1 @@
+export { default, euiPalette } from 'ember-eui/helpers/eui-palette';

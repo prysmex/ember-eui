@@ -33,7 +33,7 @@
     disabled={{or @isLoading @isDisabled}}
     type={{@type}}
     ref={{buttonRef}}
-    aria-pressed={{@isSelected}}
+    aria-pressed={{if @isSelected "true" "false"}}
     ...attributes
   >
     <EuiButtonContent

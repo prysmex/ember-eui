@@ -10,7 +10,7 @@
 <EuiPageContent>
   <EuiPageContentBody>
 
-    <EuiTitle size="m">
+    <EuiTitle @size="m">
       Button Empty
     </EuiTitle>
     <div class="euiFlexGrid euiFlexGrid--responsive euiFlexGrid--fourths euiFlexGrid--gutterLarge">
@@ -43,15 +43,44 @@
 
     <EuiSpacer @size="l"/>
 
-    <EuiTitle size="m">
+    <EuiTitle @size="m">
       Icon Button
     </EuiTitle>
-    <div class="euiFlexGrid euiFlexGrid--responsive euiFlexGrid--fourths euiFlexGrid--gutterLarge">
-      <div class="euiFlexItem">
-        <EuiButtonIcon @color="primary">
-          Primary
-        </EuiButtonIcon>
+    <div class="euiFlexGroup euiFlexGroup--directionRow euiFlexGroup--responsive euiFlexGroup--gutterLarge">
+
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="primary" @iconType="arrowRight" @iconSize="s" />
       </div>
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="text" @iconType="arrowRight" @iconSize="m" />
+      </div>
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="accent" @iconType="arrowRight" @iconSize="l" />
+      </div>
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="warning" @iconType="arrowRight" @iconSize="xl" />
+      </div>
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="danger" @iconType="arrowRight" @iconSize="xxl" />
+      </div>
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="ghost" @iconType="arrowRight" @iconSize="xxl" />
+      </div>
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="subdued" @iconType="arrowRight" @iconSize="xxl" />
+      </div>
+
+    </div>
+
+    <div class="euiFlexGroup euiFlexGroup--directionRow euiFlexGroup--responsive euiFlexGroup--gutterLarge">
+
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="primary" @iconType="arrowRight" @iconSize="original" onClick={{this.toggleIconButton}} />
+      </div>
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiButtonIcon @color="success" @iconType="arrowRight" @isDisabled={{true}}  />
+      </div>
+
     </div>
 
   </EuiPageContentBody>

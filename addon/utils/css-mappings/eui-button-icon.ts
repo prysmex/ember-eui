@@ -14,7 +14,7 @@ export const colorMapping = {
 export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-
+    color: colorMapping
   }
 };
 

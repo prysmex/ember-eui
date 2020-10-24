@@ -31,8 +31,8 @@
       flush=@flush
     }}
     disabled={{or @isLoading @isDisabled}}
-    type={{@type}}
-    ref={{buttonRef}}
+    type={{arg-or-default @type "button"}}
+    ref={{@buttonRef}}
     aria-pressed={{if @isSelected "true" "false"}}
     ...attributes
   >

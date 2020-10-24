@@ -1,7 +1,14 @@
 {{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) as |titleId selectableId|}}
   <div
     {{! TODO: selectable and clickable class/props }}
-    {{simulate-click (or titleId selectableId)}}
+    {{simulate-event
+      "click"
+      handler="click"
+      targetElement=(or
+        titleId
+        selectableId
+      )
+    }}
     class={{class-names
       (if (eq @layout "horizontal") "euiCard--horizontal")
       (if (eq @display "plain") "euiCard--plain")
@@ -94,8 +101,8 @@
     {{/unless}}
     {{#if @selectable}}
       <EuiCard::EuiCardSelect
-        onClick={{@selectable.onClick}}
         type={{@selectable.type}}
+        @onClick={{@selectable.onClick}}
         @buttonId={{selectableId}}
         @isSelected={{@selectable.isSelected}}
         @isDisabled={{@selectable.isDisabled}}

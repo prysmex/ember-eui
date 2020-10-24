@@ -1,8 +1,7 @@
 export const baseClass: string = 'euiButton'
 
 export const sizeMapping = {
-  s: `${baseClass}--small`,
-  m: null
+  s: `${baseClass}--small`
 }
 
 export const colorMapping = {
@@ -17,7 +16,8 @@ export const colorMapping = {
 export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    color: colorMapping
+    color: colorMapping,
+    size: sizeMapping
   }
 }
 

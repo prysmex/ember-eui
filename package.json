@@ -48,7 +48,7 @@
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
     "resolve": "^1.13.1",
-    "tracked-toolbox": "^1.2.1"
+    "tracked-toolbox": "^1.2.1",
     "ember-cli-resolve-asset": "^0.3.0",
     "ember-auto-import": "^1.6.0"
   },

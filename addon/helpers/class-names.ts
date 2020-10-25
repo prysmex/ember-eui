@@ -34,7 +34,7 @@ export function classNames(
     textAlign,
     color,
     textTransform,
-    display
+    display,
     type
   }: Options
 ): string {

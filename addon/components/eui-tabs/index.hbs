@@ -1,7 +1,7 @@
-<EuiStateProvider
-  @selectedTab={{if @selectedTab (get-tab-id @selectedTab)}}
-  as |state|
->
+{{#let
+  (use-state (get-tab-id @selectedTab))
+  as |selectedTab|
+}}
   <div
     role="tablist"
     class={{class-names
@@ -14,8 +14,8 @@
     ...attributes
   >
     {{yield (component "eui-tabs/eui-tab"
-      onClick=state.setSelectedTab
-      selectedTabId=state.selectedTab
+      onClick=selectedTab.set
+      selectedTabId=selectedTab.get
     )}}
   </div>
-</EuiStateProvider>
+{{/let}}

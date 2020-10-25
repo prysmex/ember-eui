@@ -12,7 +12,19 @@ module.exports = function (defaults) {
     },
 
     'ember-composable-helpers': {
-      only: ['optional']
+      only: [
+        'optional',
+        'find-by',
+        'pipe',
+        'object-at',
+        'noop'
+      ]
+    },
+
+    'tracked-toolbox': {
+      only: [
+        'localCopy'
+      ]
     },
     // Add options here
     'ember-eui': {

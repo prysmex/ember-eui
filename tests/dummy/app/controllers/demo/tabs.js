@@ -3,7 +3,7 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class DemoTabsController extends Controller {
-  @tracked tabIndex2 = 0;
+  @tracked tabsIndex2 = 0;
 
   constructor() {
     super(...arguments);
@@ -46,10 +46,10 @@ export default class DemoTabsController extends Controller {
 
   @action
   cycleTabs () {
-    this.tabIndex2++;
+    this.tabsIndex2++;
 
-    if (this.tabIndex2 >= this.tabsItems2.length) {
-      this.tabIndex2 = 0;
+    if (this.tabsIndex2 >= this.tabsItems2.length) {
+      this.tabsIndex2 = 0;
     }
   }
 }

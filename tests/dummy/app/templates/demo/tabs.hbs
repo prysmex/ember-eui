@@ -16,7 +16,7 @@
       <EuiTab>Example 3</EuiTab>
     </EuiTabs>
 
-    <div class="euiSpacer euiSpacer--xxl"></div>
+    <EuiSpacer @size="xxl" />
 
     <EuiTitle @size="s">Simple tabs with <b>isSelected</b> and <b>display = condensed</b></EuiTitle>
     <EuiTabs
@@ -28,7 +28,7 @@
       <EuiTab>Example 3</EuiTab>
     </EuiTabs>
 
-    <div class="euiSpacer euiSpacer--xxl"></div>
+    <EuiSpacer @size="xxl" />
 
     <EuiTitle @size="s">Simple tabs with <b>disabled</b> and <b>expand = true</b></EuiTitle>
     <EuiTabs
@@ -39,14 +39,14 @@
       <EuiTab>Example 2</EuiTab>
     </EuiTabs>
 
-    <div class="euiSpacer euiSpacer--xxl"></div>
+    <EuiSpacer @size="xxl" />
 
     <EuiTitle @size="s">Tabbed content</EuiTitle>
     <EuiTabs::EuiTabbedContent
       @tabs={{this.tabsItems1}}
     />
 
-    <div class="euiSpacer euiSpacer--xxl"></div>
+    <EuiSpacer @size="xxl" />
 
     <EuiTitle @size="s">Tabbed content with <b>onTabClick</b></EuiTitle>
     <EuiTabs::EuiTabbedContent
@@ -54,7 +54,7 @@
       @onTabClick={{this.sayMyName}}
     />
 
-    <div class="euiSpacer euiSpacer--xxl"></div>
+    <EuiSpacer @size="xxl" />
 
     <EuiTitle @size="s">Tabbed content with <b>initialSelectedTab</b></EuiTitle>
     <EuiTabs::EuiTabbedContent
@@ -62,22 +62,23 @@
       @initialSelectedTab={{object-at 2 this.tabsItems2}}
     />
 
-    <div class="euiSpacer euiSpacer--xxl"></div>
+    <EuiSpacer @size="xxl" />
 
     <EuiTitle @size="s">Tabbed content with <b>selectedTab</b></EuiTitle>
     <p>This is used if you want to control the tabs from the outside, however the internal state is not propagated to the outside</p>
+    <EuiSpacer />
     <button
       class="euiButton euiButton--primary"
       {{on "click" this.cycleTabs}}
     >
       Next tab
     </button>
-    Selected tab: {{this.tabIndex2}}
+    Outer selected tab: {{get (object-at this.tabsIndex2 this.tabsItems2) "name"}}
     <EuiTabs::EuiTabbedContent
       @tabs={{this.tabsItems2}}
-      @selectedTab={{object-at this.tabIndex2 this.tabsItems2}}
+      @selectedTab={{object-at this.tabsIndex2 this.tabsItems2}}
     />
 
-    <div class="euiSpacer euiSpacer--xxl"></div>
+    <EuiSpacer @size="xxl" />
   </EuiPageContentBody>
 </EuiPageContent>

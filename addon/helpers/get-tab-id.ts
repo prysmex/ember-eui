@@ -1,12 +1,6 @@
 import { helper } from '@ember/component/helper';
 import { assert } from '@ember/debug';
 
-interface Tab {
-  id: string | number;
-  name: string;
-  content: string;
-}
-
 export function getTabId([tabOrId]: [Tab | string | number]): string | number | undefined {
   if (tabOrId === undefined) {
     return;

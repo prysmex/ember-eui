@@ -33,7 +33,12 @@ module.exports = function (defaults) {
     },
 
     fingerprint: {
+      enabled: true,
       generateAssetMap: true
+    },
+
+    'ember-fetch': {
+      preferNative: true // Recommended to enable faster preloading for browsers that support it.
     },
 
     svgJar: {

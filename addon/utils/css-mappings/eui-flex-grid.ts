@@ -24,7 +24,7 @@ export const columnsMapping = {
 export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    dicetion: directionMapping,
+    direction: directionMapping,
     gutterSize: gutterSizeMapping,
     columns: columnsMapping
   }

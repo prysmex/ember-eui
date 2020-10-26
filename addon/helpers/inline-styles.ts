@@ -22,7 +22,7 @@ export function inlineStyles(positional, {...args}) {
       args.backgroundColor = args.backgroundColor || VIS_COLORS[Math.floor(args.name.length % VIS_COLORS.length)];
       args.color = isColorDark(...hexToRgb(args.backgroundColor)) ? '#FFFFFF' : '#000000';
       if (args.name) delete args.name;
-      delete args.componentName
+      delete args.componentName;
       break;
     case 'EuiBadge':
       if (COLORS.indexOf(args.backgroundColor) > -1) {
@@ -32,10 +32,10 @@ export function inlineStyles(positional, {...args}) {
       } else if (args.backgroundColor !== 'hollow') {
         args.color = isColorDark(...hexToRgb(args.backgroundColor)) ? '#fff' : '#000';
       }
-      delete args.componentName
+      delete args.componentName;
       break;
     default:
-      delete args.componentName
+      delete args.componentName;
       break;
   }
 

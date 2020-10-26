@@ -53,43 +53,55 @@ class MultipleUseState {
 
   constructor (values: Record<string, unknown>) {
     Object.keys(values).forEach(prop => {
-      // Define the internal property for tracking
-      let baseDescriptor = {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        initializer: values[prop]
-      };
-
-      let trackedDescriptor = tracked.call(null, this, `${prop}Value`, baseDescriptor) as unknown as PropertyDescriptor;
-      // let trackedDescriptor = tracked.call(null, this, `${prop}Value`, baseDescriptor);
-      defineProperty(this, `${prop}Value`, trackedDescriptor);
-
-      // Create the object with `get` and `set` methods
-      const setFn = setterFn(this, prop);
-      let statefulProp = {
-        set: (value: unknown) => {
-          return setFn(value);
-        }
-      };
-
-      defineProperty(statefulProp, 'get', {
-        enumerable: true,
-        get: () => {
-          return this[`${prop}Value`];
-        }
-      });
-
-      this[prop] = statefulProp;
+      this.addProperty(prop, values[prop]);
     });
+  }
+
+  hasProperty (prop: string): boolean {
+    return this.hasOwnProperty(prop);
+  }
+
+  addProperty (prop: string, initialValue?: unknown): void {
+    // Define the internal property for tracking
+    let baseDescriptor = {
+      writable: true,
+      enumerable: true,
+      configurable: true,
+      initializer: function () {
+        return initialValue;
+      }
+    };
+
+    let trackedDescriptor = tracked.call(null, this, `${prop}Value`, baseDescriptor) as unknown as PropertyDescriptor;
+    defineProperty(this, `${prop}Value`, trackedDescriptor);
+
+    // Create the object with `get` and `set` methods
+    const setFn = setterFn(this, prop);
+    let statefulProp = {
+      set: (value: unknown) => {
+        return setFn(value);
+      }
+    };
+
+    defineProperty(statefulProp, 'get', {
+      enumerable: true,
+      get: () => {
+        return this[`${prop}Value`];
+      }
+    });
+
+    this[prop] = statefulProp;
   }
 }
 
 export function useState(
   [...initialValues]: [unknown],
   params: Record<string, unknown>
-  ): SingleUseState | MultipleUseState {
-  const hasParams = Object.keys(params).length > 0;
+  ): SingleUseState | MultipleUseState
+{
+  const { ...rest } = params;
+
+  const hasParams = Object.keys(rest).length > 0;
   const hasMultipleValues = initialValues.length > 1;
 
   // Must use the `MultipleUseState` class if there's more than 1 value
@@ -97,11 +109,16 @@ export function useState(
     assert(`Incorrect use of 'use-state'.\n
     Must be used with either an array of properties or hashed properties with
     their initial values.\n
-    {{use-state var1 var2 ... varN}} or {{use-state var1=val1 var2=val2 ... varN=valN}}
+    {{use-state var1 var2 ... varN}} or {{use-state var1=val1 var2=val2 ... varN=valN}}\n
+    When multiple strings are passed they are the names of the properties to set on the state;
+    these properties get initialized to 'undefined'.
     `, hasMultipleValues && !hasParams);
 
     // We got an array, transpose it to an object
-    const values = initialValues.reduce<Record<string, unknown>>((acc, key: string) => (acc[key] = undefined, acc), {});
+    const values = initialValues.reduce<Record<string, unknown>>((acc, prop: string) => {
+      acc[prop] = undefined;
+      return acc;
+    }, {});
     return new MultipleUseState(values);
   } else if (hasParams) {
     assert(`Incorrect use of 'use-state'.\n

@@ -5,7 +5,8 @@
   {{#let
     (eq @selectedTabId id)
     (fn @onClick id)
-    as |isSelected onClick|
+    (fn (optional @focusFn) id)
+    as |isSelected onClick focusFn|
   }}
     {{#if (and @href (not @disabled))}}
       <a
@@ -23,7 +24,7 @@
         onClick={{onClick}}
         {{!-- target={target}
         rel={secureRel} --}}
-        {{focus-tab @selectedTabId @disabled onClick}}
+        {{focus-tab @selectedTabId @disabled focusFn}}
         ...attributes>
         <span class="euiTab__content">{{yield}}</span>
       </a>
@@ -41,7 +42,7 @@
         }}
         disabled={{@disabled}}
         onClick={{onClick}}
-        {{focus-tab @selectedTabId @disabled onClick}}
+        {{focus-tab @selectedTabId @disabled focusFn}}
         ...attributes>
         <span class="euiTab__content">{{yield}}</span>
       </button>

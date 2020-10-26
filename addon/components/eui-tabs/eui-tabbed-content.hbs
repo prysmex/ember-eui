@@ -26,6 +26,7 @@
           aria-controls={{id}}
           @selectedTabId={{selectedTab.get}}
           @onClick={{pipe selectedTab.set (fn onTabClick tab)}}
+          @focusFn={{selectedTab.set}}
         >
           {{tab.name}}
         </EuiTab>

@@ -1,0 +1,11 @@
+{{#let (element (arg-or-default @tag "div")) as |Element|}}
+  <Element
+    class={{class-names
+      componentName="EuiFlexItem"
+      grow=@grow
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </Element>
+{{/let}}

@@ -12,6 +12,8 @@ import EuiPanel from './eui-panel';
 import EuiPageContent from './eui-page-content';
 import EuiAvatar from './eui-avatar';
 import EuiCallout from './eui-callout';
+import EuiFlexGroup from './eui-flex-group';
+import EuiFlexItem from './eui-flex-item';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -26,7 +28,9 @@ const mapping: Mapping = {
   EuiPanel,
   EuiPageContent,
   EuiAvatar,
-  EuiCallout
+  EuiCallout,
+  EuiFlexGroup,
+  EuiFlexItem
 }
 
 export default mapping;

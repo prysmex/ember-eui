@@ -14,6 +14,7 @@ import EuiAvatar from './eui-avatar';
 import EuiCallout from './eui-callout';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
+import EuiFlexGrid from './eui-flex-item';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -30,7 +31,8 @@ const mapping: Mapping = {
   EuiAvatar,
   EuiCallout,
   EuiFlexGroup,
-  EuiFlexItem
+  EuiFlexItem,
+  EuiFlexGrid
 }
 
 export default mapping;

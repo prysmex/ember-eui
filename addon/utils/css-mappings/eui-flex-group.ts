@@ -30,13 +30,16 @@ export const directionMapping = {
   row: `${baseClass}--directionRow`,
   rowReverse: `${baseClass}--directionRowReverse`,
   column: `${baseClass}--directionColumn`,
-  columnReverse: `${baseClass}--directionColumnReverse`,
+  columnReverse: `${baseClass}--directionColumnReverse`
 }
 
 export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-
+    direction: directionMapping,
+    gutterSize: gutterSizeMapping,
+    alignItems: alignItemsMapping,
+    justifyContent: justifyContentMapping
   }
 }
 

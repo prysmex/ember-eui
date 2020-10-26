@@ -20,6 +20,7 @@ interface Options {
   direction: string;
   justifyContent: string;
   columns: number;
+  grow: number | string;
 }
 
 /**
@@ -43,7 +44,8 @@ export function classNames(
     alignItems,
     direction,
     justifyContent,
-    columns
+    columns,
+    grow
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -68,6 +70,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.direction?.[direction] || '');
     classes.push(cssMappings[componentName].properties.justifyContent?.[justifyContent] || '');
     classes.push(cssMappings[componentName].properties.columns?.[columns] || '');
+    classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

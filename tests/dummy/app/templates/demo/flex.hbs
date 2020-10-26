@@ -1,0 +1,43 @@
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Flex
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
+<EuiPageContent>
+  <EuiPageContentBody>
+
+    <EuiTitle>
+      Flex Group
+    </EuiTitle>
+    <EuiSpacer />
+
+    <EuiTitle @size="s">
+      Flex Wrap
+    </EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiFlexGroup
+      @wrap={{true}}
+    >
+      <EuiFlexItem
+        style="padding: 16px; background-color: rgba(221, 245, 255, 0.3); min-width: 300px;"
+      >
+        Min Width: 300px
+      </EuiFlexItem>
+      <EuiFlexItem
+        style="padding: 16px; background-color: rgba(221, 245, 255, 0.3); min-width: 300px;"
+      >
+        Min Width: 300px
+      </EuiFlexItem>
+      <EuiFlexItem
+        style="padding: 16px; background-color: rgba(221, 245, 255, 0.3); min-width: 300px;"
+      >
+        Min Width: 300px
+      </EuiFlexItem>
+    </EuiFlexGroup>
+
+  </EuiPageContentBody>
+</EuiPageContent>

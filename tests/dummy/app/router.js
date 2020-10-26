@@ -20,5 +20,6 @@ Router.map(function() {
     this.route('callout');
     this.route('side-nav');
     this.route('health');
+    this.route('flex');
   })
 });

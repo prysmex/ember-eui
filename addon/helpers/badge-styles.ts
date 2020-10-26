@@ -2,7 +2,6 @@ import { helper } from '@ember/component/helper';
 import { euiPaletteColorBlindBehindText } from '../utils/color';
 import  { htmlSafe } from '@ember/string';
 import { keysOf } from 'ember-eui/components/common';
-import chroma from 'chroma-js';
 import { isColorDark } from './is-color-dark';
 import { hexToRgb } from './hex-to-rgb';
 

@@ -9,31 +9,32 @@
 </EuiPageHeader>
 <EuiPageContent>
   <EuiPageContentBody>
-    <EuiHealth @color="subdued">Inactive</EuiHealth>
 
-    <EuiSpacer />
-
-    <EuiHealth @color="primary">Active</EuiHealth>
-
-    <EuiSpacer />
-
-    <EuiHealth @color="success">Healthy</EuiHealth>
-
-    <EuiSpacer />
-
-    <EuiHealth @color="warning">Warning</EuiHealth>
-
-    <EuiSpacer />
-
-    <EuiHealth @color="danger">Failure</EuiHealth>
-
-    <EuiSpacer />
-
-    <EuiHealth @color="#000000">Custom color as hex</EuiHealth>
-
-    <EuiSpacer />
-
-    <EuiHealth >No color</EuiHealth>
+    <div class="euiFlexGroup">
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <div
+          style=
+            {{inline-styles
+              color=(if (is-color-dark (hex-to-rgb "#ff5959")) "#fff" "#000" )
+              padding="16px"
+              backgroundColor="#ff5959"
+              minWidth="300px"
+            }}
+          >
+          Hello There!
+        </div>
+      </div>
+      <EuiAvatar
+        @name="David Martinez"
+        @size="xl"
+        @color="#212121"
+      />
+      <div class="euiFlexItem euiFlexItem--flexGrowZero">
+        <EuiBadge @href="#" @color="#000fff">
+          Custom color
+        </EuiBadge>
+      </div>
+    </div>
 
   </EuiPageContentBody>
 </EuiPageContent>

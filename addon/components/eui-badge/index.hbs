@@ -27,7 +27,7 @@
         componentName="EuiBadge"
         color=(arg-or-default @color "default")
       }}
-      style={{badge-styles (arg-or-default @color "default")}}
+      style={{inline-styles componentName="EuiBadge" backgroundColor=(arg-or-default @color "default")}}
       target={{@target}}
       href={{@href}}
       aria-label={{if @onClick @onClickAriaLabel}}

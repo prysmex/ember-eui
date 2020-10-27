@@ -7,7 +7,7 @@ export function inlineStyles(_:unknown, params:Record<string, unknown>) {
   const { componentName, ...properties } = params
 
   if (componentName) {
-    styles.push(...cssMappings[componentName as string].inlineStyles(properties))
+    styles.push(...cssMappings[componentName as string].inlineStyles(properties));
   }
 
   for(let property in properties) {

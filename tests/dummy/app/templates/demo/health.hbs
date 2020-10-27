@@ -10,32 +10,6 @@
 <EuiPageContent>
   <EuiPageContentBody>
 
-    <div class="euiFlexGroup">
-      <div class="euiFlexItem euiFlexItem--flexGrowZero">
-        <div
-          style=
-            {{inline-styles
-              color=(if (is-color-dark (hex-to-rgb "#ff5959")) "#fff" "#000" )
-              padding="16px"
-              backgroundColor="#ff5959"
-              minWidth="300px"
-            }}
-          >
-          Hello There!
-        </div>
-      </div>
-      <EuiAvatar
-        @name="David Martinez"
-        @size="xl"
-        @color="#212121"
-      />
-      <div class="euiFlexItem euiFlexItem--flexGrowZero">
-        <EuiBadge @href="#" @color="#000fff">
-          Custom color
-        </EuiBadge>
-      </div>
-    </div>
-
     <EuiHealth @color="subdued">Inactive</EuiHealth>
 
     <EuiSpacer />

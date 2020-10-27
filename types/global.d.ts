@@ -16,6 +16,7 @@ interface ComponentProperty {
 interface ComponentMapping {
   base: string;
   properties: ComponentProperty;
+  inlineStyles(rest: Record<string, unknown>): string[];
 }
 
 interface Mapping {

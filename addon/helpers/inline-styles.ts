@@ -1,60 +1,26 @@
 import { helper } from '@ember/component/helper';
-import { euiPaletteColorBlindBehindText } from '../utils';
-import { isColorDark } from '../helpers/is-color-dark';
-import { hexToRgb } from '../helpers/hex-to-rgb';
-import { keysOf } from 'ember-eui/components/common';
+import cssMappings from '../utils/css-mappings';
 
-export const VIS_COLORS = euiPaletteColorBlindBehindText();
-export const colorToHexMap: any = {
-  default: '#d3dae6',
-  primary: VIS_COLORS[1],
-  secondary: VIS_COLORS[0],
-  accent: VIS_COLORS[2],
-  warning: VIS_COLORS[5],
-  danger: VIS_COLORS[9]
-}
-export const COLORS = keysOf(colorToHexMap);
+export function inlineStyles(_:unknown, params:Record<string, unknown>) {
 
-export function inlineStyles(positional, {...args}) {
+  let styles: string[] = [];
+  const { componentName, ...properties } = params
 
-  switch(args.componentName) {
-    case 'EuiAvatar':
-      args.backgroundColor = args.backgroundColor || VIS_COLORS[Math.floor(args.name.length % VIS_COLORS.length)];
-      args.color = isColorDark(...hexToRgb(args.backgroundColor)) ? '#FFFFFF' : '#000000';
-      if (args.name) delete args.name;
-      delete args.componentName;
-      break;
-    case 'EuiBadge':
-      if (COLORS.indexOf(args.backgroundColor) > -1) {
-        args.backgroundColor = colorToHexMap[args.backgroundColor];
-        args.color = isColorDark(...hexToRgb(args.backgroundColor)) ? '#fff' : '#000';
-
-      } else if (args.backgroundColor !== 'hollow') {
-        args.color = isColorDark(...hexToRgb(args.backgroundColor)) ? '#fff' : '#000';
-      }
-      delete args.componentName;
-      break;
-    default:
-      delete args.componentName;
-      break;
+  if (componentName) {
+    styles.push(...cssMappings[componentName as string].inlineStyles(properties))
   }
 
-  // Array of strings that will contain all style properties
-  let styles: string[] = [];
-
-  // Loop through all styles coming in args, dasherize and push to styles[]
-  for(let property in args) {
+  for(let property in properties) {
     let style;
-    if (property === 'backgroundImage' && args[property] !== 'none') {
-      style = `${property}`.replace(/[A-Z]/g, m => "-" + m.toLowerCase()) + `: url(${args[property]})`;
+    if (property === 'background-image' && properties[property] !== 'none') {
+      style = `${property}` + `: url(${properties[property]})`;
     } else {
-      style = `${property}`.replace(/[A-Z]/g, m => "-" + m.toLowerCase()) + `: ${args[property]}`;
+      style = `${property}` + `: ${properties[property]}`;
     }
 
     styles.push(style);
   }
 
-  console.log(styles);
   return styles.join('; ');
 }
 

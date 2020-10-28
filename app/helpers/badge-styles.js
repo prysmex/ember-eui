@@ -1,1 +1,0 @@
-export { default, badgeStyles } from 'ember-eui/helpers/badge-styles';

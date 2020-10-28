@@ -1,4 +1,5 @@
 import { helper } from '@ember/component/helper';
+import { assert } from '@ember/debug';
 import cssMappings from '../utils/css-mappings';
 
 export function inlineStyles(_:unknown, params:Record<string, unknown>) {
@@ -7,7 +8,11 @@ export function inlineStyles(_:unknown, params:Record<string, unknown>) {
   const { componentName, ...properties } = params
 
   if (componentName) {
-    styles.push(...cssMappings[componentName as string].inlineStyles(properties));
+    if (!cssMappings[componentName as string]){
+      assert(`Could not find component ${componentName} in cssMappings.`)
+    } else {
+      styles.push(...cssMappings[componentName as string].inlineStyles(properties));
+    }
   }
 
   for(let property in properties) {

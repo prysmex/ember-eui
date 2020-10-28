@@ -3,16 +3,18 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoModalController extends Controller {
-	@tracked modalActive = false;
+  @tracked basicModalActive = false;
+  @tracked overflowModalActive = false;
+  @tracked confirmModalActive = false;
 
 	@action
-	activateModal() {
-		this.modalActive = true;
+	activateModal(modal) {
+		this.set(modal, true)
   }
 
   @action
-  deactivateModal() {
-    this.modalActive = false;
+  deactivateModal(modal) {
+    this.set(modal, false)
   }
 
 }

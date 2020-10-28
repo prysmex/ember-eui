@@ -1,0 +1,21 @@
+<div {{focus-trap isActive=true focusTrapOptions=(hash initalFocus=@initialFocus)}}>
+  <div
+    class={{class-names
+      "euiModal"
+      (unless (eq @restrainWidth false) "euiModal--maxWidth-default")
+    }}
+    tabIndex={{0}}
+    ...attributes
+  >
+    <EuiButtonIcon
+      @iconType="cross"
+      onClick={{@onClose}}
+      class="euiModal__closeIcon"
+      @color="text"
+      aria-label="close modal"
+    />
+    <div class="euiModal__flex">
+      {{yield}}
+    </div>
+  </div>
+</div>

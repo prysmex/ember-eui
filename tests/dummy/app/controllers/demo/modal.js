@@ -17,4 +17,9 @@ export default class DemoModalController extends Controller {
     this.set(modal, false)
   }
 
+  @action
+  reloadPage() {
+    location.reload();
+  }
+
 }

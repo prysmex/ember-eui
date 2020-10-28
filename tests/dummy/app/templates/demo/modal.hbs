@@ -121,7 +121,20 @@
       Show Confirm Modal
     </EuiButton>
     {{#if this.confirmModalActive}}
-
+      <EuiOverlayMask
+        @headerZindexLocation="above"
+      >
+        <EuiConfirmModal
+          @title="Refresh the page?"
+          @onConfirm={{this.reloadPage}}
+          @buttonColor="primary"
+          @confirmButtonText="Refresh"
+          @cancelButtonText="Cancel"
+          @onCancel={{fn this.deactivateModal "confirmModalActive"}}
+        >
+          <EuiText>This action will trash all unsaved changes</EuiText>
+        </EuiConfirmModal>
+      </EuiOverlayMask>
     {{/if}}
 
   </EuiPageContentBody>

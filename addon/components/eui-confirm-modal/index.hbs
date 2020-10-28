@@ -1,0 +1,38 @@
+<EuiModal
+  class="euiModal--confirmation"
+  @onClose={{@onCancel}}
+  ...attributes
+>
+  {{#if @title}}
+    <EuiModalHeader>
+      <EuiModalHeaderTitle>
+        {{@title}}
+      </EuiModalHeaderTitle>
+    </EuiModalHeader>
+  {{/if}}
+  {{#if hasBlock}}
+    <EuiModalBody>
+      {{yield}}
+    </EuiModalBody>
+  {{else if @message}}
+    <EuiModalBody>
+      <EuiText>{{@message}}</EuiText>
+    </EuiModalBody>
+  {{/if}}
+  <EuiModalFooter>
+    <EuiButtonEmpty
+      onClick={{@onCancel}}
+    >
+      {{@cancelButtonText}}
+    </EuiButtonEmpty>
+    <EuiButton
+      onClick={{@onConfirm}}
+      @fill={{true}}
+      @color={{@buttonColor}}
+      @isDisabled={{@confirmButtonDisabled}}
+      @isLoading={{@confirmButtonIsLoading}}
+    >
+      {{@confirmButtonText}}
+    </EuiButton>
+  </EuiModalFooter>
+</EuiModal>

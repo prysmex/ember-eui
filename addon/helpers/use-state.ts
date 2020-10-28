@@ -99,20 +99,21 @@ export function useState(
   params: Record<string, unknown>
   ): SingleUseState | MultipleUseState
 {
-  const { ...rest } = params;
-
-  const hasParams = Object.keys(rest).length > 0;
+  const paramsCount = Object.keys(params).length;
+  const hasParams = paramsCount > 0;
   const hasMultipleValues = initialValues.length > 1;
 
   // Must use the `MultipleUseState` class if there's more than 1 value
   if (hasMultipleValues) {
+    // TODO: Allow multiple values? YOU DECIDE!!!
+    assert(`'use-state' can only be used to track one value. More than one value was provided: ${initialValues.join(', ')}`, !hasMultipleValues);
+
     assert(`Incorrect use of 'use-state'.\n
     Must be used with either an array of properties or hashed properties with
     their initial values.\n
     {{use-state var1 var2 ... varN}} or {{use-state var1=val1 var2=val2 ... varN=valN}}\n
     When multiple strings are passed they are the names of the properties to set on the state;
-    these properties get initialized to 'undefined'.
-    `, hasMultipleValues && !hasParams);
+    these properties get initialized to 'undefined'.`, hasMultipleValues && !hasParams);
 
     // We got an array, transpose it to an object
     const values = initialValues.reduce<Record<string, unknown>>((acc, prop: string) => {
@@ -121,11 +122,22 @@ export function useState(
     }, {});
     return new MultipleUseState(values);
   } else if (hasParams) {
+    // TODO: Allow multiple values? YOU DECIDE!!!
+    assert(`'use-state' can only be used to track one value. More than one value was provided: ${Object.keys(params).join(', ')}`, paramsCount === 1);
+
     assert(`Incorrect use of 'use-state'.\n
     Must be used with either an array of properties or hashed properties with
     their initial values.\n
     {{use-state var1 var2 ... varN}} or {{use-state var1=val1 var2=val2 ... varN=valN}}
     `, !hasMultipleValues && hasParams);
+
+    if (paramsCount === 1) {
+      // This can be replaced for `Object.values` however that would need a
+      // polyfill on some browsers
+      const value = params[Object.keys(params)[0]];
+      return new SingleUseState(value);
+    }
+
     return new MultipleUseState(params);
   }
 

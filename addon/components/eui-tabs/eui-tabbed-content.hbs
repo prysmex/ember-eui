@@ -14,7 +14,7 @@
 }}
   <div class={{@className}} ...attributes>
     <EuiTabs
-      @selectedTab={{selectedTab.get}}
+      @selectedTab={{selectedTab.value}}
       @expand={{@expand}}
       @display={{@display}}
       @size={{@size}}
@@ -24,7 +24,7 @@
         <EuiTab
           @id={{tab.id}}
           aria-controls={{id}}
-          @selectedTabId={{selectedTab.get}}
+          @selectedTabId={{selectedTab.value}}
           @onClick={{pipe selectedTab.set (fn onTabClick tab)}}
           @focusFn={{selectedTab.set}}
         >
@@ -34,7 +34,7 @@
     </EuiTabs>
 
     {{#with
-      (find-by "id" selectedTab.get @tabs)
+      (find-by "id" selectedTab.value @tabs)
       as |currentTab|
     }}
       <div

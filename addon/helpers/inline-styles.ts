@@ -8,9 +8,9 @@ export function inlineStyles(_:unknown, params:Record<string, unknown>) {
   const { componentName, ...properties } = params
 
   if (componentName) {
-      assert(`Could not find component ${componentName} in cssMappings.`, cssMappings[componentName as string])
-      assert(`Could not find inlineStyles in ${componentName}'s cssMapping.`, cssMappings[componentName as string].inlineStyles)
-      styles.push(...cssMappings[componentName as string].inlineStyles(properties));
+    assert(`Could not find component ${componentName} in cssMappings.`, cssMappings[componentName as string]);
+    assert(`Could not find inlineStyles in ${componentName}'s cssMapping.`, cssMappings[componentName as string].inlineStyles);
+    styles.push(...cssMappings[componentName as string].inlineStyles?.(properties) as string[]);
   }
 
   for(let property in properties) {

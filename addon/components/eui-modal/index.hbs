@@ -1,5 +1,6 @@
 <div {{focus-trap isActive=true focusTrapOptions=(hash initialFocus=@initialFocus)}}>
   <div
+    {{on-key 'Escape' @onClose}}
     class={{class-names
       "euiModal"
       (unless (eq @restrainWidth false) "euiModal--maxWidth-default")
@@ -12,7 +13,6 @@
       onClick={{@onClose}}
       class="euiModal__closeIcon"
       @color="text"
-      aria-label="close modal"
     />
     <div class="euiModal__flex">
       {{yield}}

@@ -1,0 +1,21 @@
+{{! TODO: Eui Tooltip and update this component to support it. }}
+
+<span
+  class={{class-names
+    "euiBetaBadge"
+    (if @iconType "euiBetaBadge--iconOnly")
+  }}
+  title={{@title}}
+  ...attributes
+>
+  {{#if @iconType}}
+    <EuiIcon
+      class="euiBetaBadge__icon"
+      @type={{@iconType}}
+      @size="m"
+      aria-hidden="true"
+    />
+  {{else}}
+    {{@label}}
+  {{/if}}
+</span>

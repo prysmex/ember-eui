@@ -67,7 +67,9 @@
       <EuiOverlayMask
         @headerZindexLocation="above"
       >
-        <EuiModal>
+        <EuiModal
+          @initialFocus="#donebutton"
+        >
           <EuiModalHeader>
             <EuiTitle @size="l">
               Overflow Test
@@ -104,6 +106,7 @@
             <EuiButton
               @color="primary"
               onClick={{fn this.deactivateModal "overflowModalActive"}}
+              id="donebutton"
             >
               Done
             </EuiButton>

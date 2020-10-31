@@ -49,7 +49,7 @@ module.exports = {
 
   netlifyRedirects() {
     return [
-      "https://ember-eui.netlify.app/* https://ember-eui.netlify.app/:splat 301!"
+      "/* /index.html 200"
     ]
   },
 

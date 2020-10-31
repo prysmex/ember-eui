@@ -47,6 +47,12 @@ module.exports = {
     }
   },
 
+  netlifyRedirects() {
+    return [
+      "https://ember-eui.netlify.app/* https://ember-eui.netlify.app/:splat 301!"
+    ]
+  },
+
   // TODO: Currently the performance of recompiling sass on every change are serious, find a way to improve them.
   treeForStyles(tree) {
     let trees = [];

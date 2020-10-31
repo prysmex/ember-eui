@@ -7,6 +7,7 @@
 🚀 Enhancements
 - EuiBadge
 - Use empty icon svg as placeholder while downloading the desired one 
+- Adds @victor-aguilars to contributors
 
 🏠 Internal
 - Update ember-svg-jar fork

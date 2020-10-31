@@ -43,7 +43,7 @@
     "ember-cli-sass": "^10.0.1",
     "ember-cli-typescript": "^4.0.0",
     "ember-element-helper": "^0.3.1",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#262581c6fc33a68f6ba389c28f9e79b6584f196c",
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#a62c02509e5ea6953a51ded9b912c97ed0a43a48",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
     "resolve": "^1.13.1",

@@ -1,6 +1,16 @@
 # Ember Eui Changelog
 
 ### Master
+
+
+### 0.0.16
+🚀 Enhancements
+- EuiBadge
+- Use empty icon svg as placeholder while downloading the desired one 
+
+🏠 Internal
+- Update ember-svg-jar fork
+
 🐛 Bug / Fixes
 - Add accordion to demo
 

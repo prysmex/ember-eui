@@ -47,6 +47,12 @@ module.exports = {
     }
   },
 
+  netlifyRedirects() {
+    return [
+      "/* /index.html 200"
+    ]
+  },
+
   // TODO: Currently the performance of recompiling sass on every change are serious, find a way to improve them.
   treeForStyles(tree) {
     let trees = [];

@@ -77,12 +77,6 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   @argOrDefault('m') size!: IconSize;
   @argOrDefault('default') color!: IconColor;
 
-  constructor(owner: unknown, args: EuiIconArgs) {
-    super(owner, args);
-
-    this.onIconLoad();
-  }
-
   get useImage(): boolean {
     let { type } = this.args;
     return typeof type === 'string' && !isEuiIconType(type);
@@ -95,23 +89,23 @@ export default class EuiIcon extends Component<EuiIconArgs> {
       return undefined;
     }
 
-    //We should probably find a better way to always 
+    //We should probably find a better way to always
     if (isEuiIconType(type)) {
-      const config = getOwner(this).resolveRegistration('config:environment');
-      const svgPath = config?.['ember-eui']?.svgPath || 'svg/assets/';
-      let euiIcon = typeToPathMap[type].replace(/_/g, '-').toLowerCase();
-      return `${svgPath}${euiIcon}`;
+      return this.getEuiIconSvgPath(type);
     }
 
     return type;
   }
 
-  onIconLoad() {
-    const { onIconLoad } = this.args;
+  get emptyIcon() {
+    return this.getEuiIconSvgPath('empty');
+  }
 
-    if (onIconLoad) {
-      onIconLoad();
-    }
+  getEuiIconSvgPath(type: EuiIconType) {
+    const config = getOwner(this).resolveRegistration('config:environment');
+    const svgPath = config?.['ember-eui']?.svgPath || 'svg/assets/';
+    let euiIcon = typeToPathMap[type].replace(/_/g, '-').toLowerCase();
+    return `${svgPath}${euiIcon}`;
   }
 
   get isAppIcon() {

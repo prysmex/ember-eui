@@ -1,12 +1,11 @@
 {{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) as |titleId selectableId|}}
   <div
-    {{! TODO: selectable and clickable class/props }}
     {{simulate-event
       "click"
       handler="click"
       targetElement=(or
-        titleId
-        selectableId
+        (if titleId (concat "#" titleId))
+        (if selectableId (concat "#" selectableId))
       )
     }}
     class={{class-names

@@ -13,7 +13,7 @@
   @iconSide={{@iconSide}}
   @flush={{@flush}}
   type={{@type}}
-  onClick={{@onClick}}
+  onClick={{unless @isDisabled @onClick}}
   role="switch"
   aria-checked={{@isSelected}}
   ...attributes

@@ -51,7 +51,6 @@
         {{#if (and (not @isDisabled) @href)}}
           <a
             class="euiCard__titleAnchor"
-            onClick={{@onClick}}
             target={{@target}}
             disabled={{@isDisabled}}
             href={{@href}}
@@ -61,10 +60,10 @@
           </a>
         {{else if (or @isDisabled @onClick)}}
           <button
+            type="button"
             class="euiCard__titleButton"
             onClick={{@onClick}}
             disabled={{@isDisabled}}
-            href={{@href}}
             id={{titleId}}
           >
             {{@title}}
@@ -93,11 +92,11 @@
       </span>
     {{/if}}
 
-    {{#unless (eq @layout "horizontal")}}
+    {{#if (not (eq @layout "horizontal"))}}
       <div class="euiCard__footer">
         {{yield (hash footer="eui-card/eui-card-footer")}}
       </div>
-    {{/unless}}
+    {{/if}}
     {{#if @selectable}}
       <EuiCard::EuiCardSelect
         type={{@selectable.type}}

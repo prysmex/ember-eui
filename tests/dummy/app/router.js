@@ -18,6 +18,7 @@ Router.map(function() {
     this.route('overlay-mask');
     this.route('avatar');
     this.route('callout');
+    this.route('badge');
     this.route('side-nav');
     this.route('health');
     this.route('flex');

@@ -21,6 +21,7 @@ interface Options {
   justifyContent: string;
   columns: number;
   grow: number | string;
+  iconSide: string;
 }
 
 /**
@@ -45,7 +46,8 @@ export function classNames(
     direction,
     justifyContent,
     columns,
-    grow
+    grow,
+    iconSide
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -71,6 +73,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.justifyContent?.[justifyContent] || '');
     classes.push(cssMappings[componentName].properties.columns?.[columns] || '');
     classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
+    classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

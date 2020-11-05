@@ -15,6 +15,9 @@ import EuiCallout from './eui-callout';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
 import EuiFlexGrid from './eui-flex-grid';
+import EuiNotificationBadge from './eui-notification-badge';
+import EuiBadgeGroup from './eui-badge-group';
+import EuiBadge from  './eui-badge';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -32,7 +35,10 @@ const mapping: Mapping = {
   EuiCallout,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFlexGrid
+  EuiFlexGrid,
+  EuiNotificationBadge,
+  EuiBadgeGroup,
+  EuiBadge
 }
 
 export default mapping;

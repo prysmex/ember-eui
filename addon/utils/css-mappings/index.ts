@@ -12,6 +12,9 @@ import EuiPanel from './eui-panel';
 import EuiPageContent from './eui-page-content';
 import EuiAvatar from './eui-avatar';
 import EuiCallout from './eui-callout';
+import EuiFlexGroup from './eui-flex-group';
+import EuiFlexItem from './eui-flex-item';
+import EuiFlexGrid from './eui-flex-grid';
 import EuiNotificationBadge from './eui-notification-badge';
 import EuiBadgeGroup from './eui-badge-group';
 import EuiBadge from  './eui-badge';
@@ -31,6 +34,9 @@ const mapping: Mapping = {
   EuiPageContent,
   EuiAvatar,
   EuiCallout,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiFlexGrid,
   EuiNotificationBadge,
   EuiBadgeGroup,
   EuiBadge,

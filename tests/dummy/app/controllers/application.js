@@ -30,6 +30,9 @@ export default class ApplicationController extends Controller {
           createItem('Accordion', {
             href: 'demo.accordion'
           }),
+          createItem('Flex', {
+            href: 'demo.flex'
+          }),
           createItem('Page', {
             href: 'demo.page'
           })

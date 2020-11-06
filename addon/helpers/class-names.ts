@@ -17,6 +17,7 @@ interface Options {
   type: string;
   gutterSize: string;
   iconSide: string;
+  position: string;
 }
 
 /**
@@ -37,7 +38,8 @@ export function classNames(
     textTransform,
     type,
     gutterSize,
-    iconSide
+    iconSide,
+    position,
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -59,10 +61,11 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.type?.[type] || '');
     classes.push(cssMappings[componentName].properties.gutterSize?.[gutterSize] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
+    classes.push(cssMappings[componentName].properties.position?.[position] || '');
     classes = classes.filter(s => isPresent(s));
   }
 
-  return classes.join(' ');
+  return classes.join(' ').trim();
 }
 
 export default helper(classNames);

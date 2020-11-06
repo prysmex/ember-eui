@@ -1,0 +1,37 @@
+<div
+  class={{class-names
+    "euiToolTipAnchor"
+    @anchorClassName
+  }}
+  style={{inline-styles
+    display=(arg-or-default @display "inline-block")
+  }}
+>
+  {{yield}}
+
+  <EmberTooltip
+    @_tooltipVariantClass={{class-names
+      "ember-tooltip"
+      componentName="EuiTooltip"
+    }}
+    @tooltipClass={{class-names
+      @className
+      "euiToolTipPopover"
+      componentName="EuiTooltip"
+      position=(arg-or-default @position "top")
+    }}
+    @side={{arg-or-default @position "top"}}
+    @delay={{attr-map
+      "delay"
+      (arg-or-default @delay "regular")
+      componentName="EuiTooltip"
+    }}
+    @onHide={{optional @onMouseOut}}
+  >
+    {{#if @title}}
+      <div class="euiToolTip__title">{{@title}}</div>
+    {{/if}}
+
+    {{@content}}
+  </EmberTooltip>
+</div>

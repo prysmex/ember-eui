@@ -1,0 +1,18 @@
+// Need to import these to have the Elastic UI variables
+@import '../../node_modules/@elastic/eui/src/themes/eui/eui_globals';
+@import '../../node_modules/@elastic/eui/src/components/tool_tip/index';
+
+// Override some EuiTooltip class values
+// to avoid conflicts with EmberTooltip
+.ember-tooltip {
+  @extend .euiToolTip;
+  animation: none;
+  opacity: initial;
+  background-color: $euiTooltipBackgroundColor;
+}
+
+.euiToolTip-arrow {
+  @extend .euiToolTip__arrow;
+  transform: rotate(45deg) !important;
+  border: 0;
+}

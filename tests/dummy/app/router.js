@@ -21,5 +21,6 @@ Router.map(function() {
     this.route('badge');
     this.route('side-nav');
     this.route('health');
+    this.route('tooltip');
   })
 });

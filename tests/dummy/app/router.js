@@ -22,5 +22,6 @@ Router.map(function() {
     this.route('side-nav');
     this.route('health');
     this.route('tooltip');
+    this.route('flex');
   })
 });

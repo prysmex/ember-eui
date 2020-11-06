@@ -1,0 +1,14 @@
+{{#let (element (arg-or-default @tagName "div")) as |Element|}}
+  <Element
+    class={{class-names
+      (unless (eq @responsive false) "euiFlexGrid--responsive")
+      componentName="EuiFlexGrid"
+      gutterSize=(arg-or-default @gutterSize "l")
+      direction=(arg-or-default @direction "row")
+      columns=(arg-or-default @columns 0)
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </Element>
+{{/let}}

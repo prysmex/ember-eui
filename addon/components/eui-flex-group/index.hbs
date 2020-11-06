@@ -1,0 +1,16 @@
+{{#let (element (arg-or-default @tagName "div")) as |Element|}}
+  <Element
+    class={{class-names
+      (unless (eq @responsive false) "euiFlexGroup--responsive")
+      (if @wrap "euiFlexGroup--wrap")
+      componentName="EuiFlexGroup"
+      gutterSize=(arg-or-default @gutterSize "l")
+      alignItems=(arg-or-default @alignItems "stretch")
+      justifyContent=(arg-or-default @justifyContent "flexStart")
+      direction=(arg-or-default @direction "row")
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </Element>
+{{/let}}

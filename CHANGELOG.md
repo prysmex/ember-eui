@@ -1,6 +1,26 @@
 # Ember Eui Changelog
 
 ### Master
+
+### 0.0.18
+🚀 Enhancements
+- EuiFlexGroup
+- EuiFlexGrid
+- EuiFlexItem
+
+### 0.0.17
+🏠 Internal
+- Fixes netlify redirects
+
+### 0.0.16
+🚀 Enhancements
+- EuiBadge
+- Use empty icon svg as placeholder while downloading the desired one 
+- Adds @victor-aguilars to contributors
+
+🏠 Internal
+- Update ember-svg-jar fork
+
 🐛 Bug / Fixes
 - Add accordion to demo
 

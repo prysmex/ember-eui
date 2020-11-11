@@ -24,5 +24,6 @@ Router.map(function() {
     this.route('button');
     this.route('health');
     this.route('modal');
+    this.route('flex');
   })
 });

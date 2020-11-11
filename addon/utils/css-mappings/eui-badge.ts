@@ -16,15 +16,19 @@ export const colorToHexMap = {
 
 export const COLORS = keysOf(colorToHexMap);
 
+export type EuiBadgeColorType = keyof typeof colorToHexMap;
+
+export type ColorType = EuiBadgeColorType | string;
+
 export const baseClass: string = 'euiBadge';
 
-export function inlineStyles({ badgeColor }: { badgeColor: string }) {
+export function inlineStyles({ badgeColor }: { badgeColor: ColorType }) {
 
   let styles: string[] = [];
   let textColor = null;
   let colorHex = 'default';
-  if (COLORS.indexOf(badgeColor) > -1) {
-    colorHex = colorToHexMap[badgeColor];
+  if (COLORS.indexOf(badgeColor as EuiBadgeColorType) > -1) {
+    colorHex = colorToHexMap[badgeColor as EuiBadgeColorType];
     textColor = isColorDark(...hexToRgb(colorHex)) ? '#fff' : '#000';
 
   } else if (badgeColor !== 'hollow') {

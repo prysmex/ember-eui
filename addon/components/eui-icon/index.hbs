@@ -14,6 +14,7 @@
 {{else}}
   <Svg
     @name={{this.icon}}
+    @loadingSvg={{this.emptyIcon}}
     class={{class-names
       this.optionalColorClass
       (if this.isAppIcon "euiIcon--app")
@@ -27,6 +28,7 @@
     aria-label={{if @aria-label @aria-label this.titleId}}
     aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
     @title={{@title}}
+    @onIconLoad={{@onIconLoad}}
     ...attributes
   />
 {{/if}}

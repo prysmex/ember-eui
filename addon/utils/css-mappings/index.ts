@@ -23,6 +23,7 @@ import EuiButtonEmpty from './eui-button-empty';
 import EuiCardSelect from './eui-card-select';
 import EuiHeaderSection from './eui-header-section';
 import EuiHeaderSectionItem from './eui-header-section-item';
+import EuiHeader from './eui-header';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -48,7 +49,8 @@ const mapping: Mapping = {
   EuiButtonEmpty,
   EuiCardSelect,
   EuiHeaderSection,
-  EuiHeaderSectionItem
+  EuiHeaderSectionItem,
+  EuiHeader
 }
 
 export default mapping;

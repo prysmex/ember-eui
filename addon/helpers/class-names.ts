@@ -24,6 +24,8 @@ interface Options {
   iconSide: string;
   flush: string;
   borderSide: string;
+  position: string;
+  theme: string;
 }
 
 /**
@@ -51,7 +53,9 @@ export function classNames(
     columns,
     grow,
     iconSide,
-    borderSide
+    borderSide,
+    position,
+    theme
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -80,6 +84,8 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
     classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
     classes.push(cssMappings[componentName].properties.borderSide?.[borderSide] || '');
+    classes.push(cssMappings[componentName].properties.theme?.[theme] || '');
+    classes.push(cssMappings[componentName].properties.position?.[position] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

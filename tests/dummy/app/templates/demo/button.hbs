@@ -17,14 +17,14 @@
     <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
       <div class="euiFlexItem euiFlexItem--flexGrowZero ">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
         >
           Primary
         </EuiButton>
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @fill={{true}}
         >
           Filled
@@ -32,7 +32,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
         >
           Small
@@ -40,7 +40,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @fill={{true}}
         >
@@ -52,7 +52,7 @@
     <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
       <div class="euiFlexItem euiFlexItem--flexGrowZero ">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @color="secondary"
         >
           Primary
@@ -60,7 +60,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @fill={{true}}
           @color="secondary"
         >
@@ -69,7 +69,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @color="secondary"
         >
@@ -78,7 +78,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @fill={{true}}
           @color="secondary"
@@ -91,7 +91,7 @@
     <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
       <div class="euiFlexItem euiFlexItem--flexGrowZero ">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @color="warning"
         >
           Primary
@@ -99,7 +99,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @fill={{true}}
           @color="warning"
         >
@@ -108,7 +108,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @color="warning"
         >
@@ -117,7 +117,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @fill={{true}}
           @color="warning"
@@ -130,7 +130,7 @@
     <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
       <div class="euiFlexItem euiFlexItem--flexGrowZero ">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @color="danger"
         >
           Primary
@@ -138,7 +138,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @fill={{true}}
           @color="danger"
         >
@@ -147,7 +147,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @color="danger"
         >
@@ -156,7 +156,7 @@
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @fill={{true}}
           @color="danger"
@@ -170,7 +170,7 @@
       <div class="euiFlexItem euiFlexItem--flexGrowZero ">
         <EuiButton
           @isDisabled={{true}}
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @color="danger"
         >
           Primary
@@ -179,7 +179,7 @@
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
           @isDisabled={{true}}
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @fill={{true}}
           @color="danger"
         >
@@ -189,7 +189,7 @@
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
           @isDisabled={{true}}
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @color="danger"
         >
@@ -199,7 +199,7 @@
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
           @isDisabled={{true}}
-          onClick={{this.clickedButton}}
+          @onClick={{this.clickedButton}}
           @size="s"
           @fill={{true}}
           @color="danger"
@@ -239,19 +239,19 @@
     <EuiSpacer @size="s" />
     <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
-        <EuiButton @iconType="pencil" onClick={{this.clickedButton}}>Primary</EuiButton>
+        <EuiButton @iconType="pencil" @onClick={{this.clickedButton}}>Primary</EuiButton>
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
-        <EuiButton @iconType="pencil" @fill={{true}} @iconSide="right" onClick={{this.clickedButton}}>Primary</EuiButton>
+        <EuiButton @iconType="pencil" @fill={{true}} @iconSide="right" @onClick={{this.clickedButton}}>Primary</EuiButton>
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <div class="euiFlexItem euiFlexItem--flexGrowZero">
-          <EuiButton @iconType="pencil" @iconSide="right" @isDisabled={{true}} onClick={{this.clickedButton}}>Disabled</EuiButton>
+          <EuiButton @iconType="pencil" @iconSide="right" @isDisabled={{true}} @onClick={{this.clickedButton}}>Disabled</EuiButton>
         </div>
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <div class="euiFlexItem euiFlexItem--flexGrowZero">
-          <EuiButton @iconType="pencil" @fill={{true}} @isDisabled={{true}} onClick={{this.clickedButton}}>Disabled</EuiButton>
+          <EuiButton @iconType="pencil" @fill={{true}} @isDisabled={{true}} @onClick={{this.clickedButton}}>Disabled</EuiButton>
         </div>
       </div>
     </div>
@@ -345,7 +345,7 @@
     <div class="euiFlexGroup euiFlexGroup--directionRow euiFlexGroup--responsive euiFlexGroup--gutterLarge">
 
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
-        <EuiButtonIcon @color="primary" @iconType="arrowRight" @iconSize="original" onClick={{this.toggleIconButton}} />
+        <EuiButtonIcon @color="primary" @iconType="arrowRight" @iconSize="original" @onClick={{this.toggleIconButton}} />
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButtonIcon @color="success" @iconType="arrowRight" @isDisabled={{true}}  />
@@ -366,14 +366,14 @@
           @isSelected={{this.button1On}}
           @fill={{this.button1On}}
           @iconType={{if this.button1On "stopFilled" "stop"}}
-          onClick={{fn this.toggleButtonState "button1On"}}
+          @onClick={{fn this.toggleButtonState "button1On"}}
         >
           Toggle me
         </EuiButton>
       </div>
       <div class="euiFlexItem euiFlexItem--flexGrowZero">
         <EuiButton
-          onClick={{fn this.toggleButtonState "button2On"}}
+          @onClick={{fn this.toggleButtonState "button2On"}}
         >
           {{if this.button2On "I have changed!" "Click to change text!"}}
         </EuiButton>
@@ -384,7 +384,7 @@
           @iconType="save"
           aria-pressed={{this.button3On}}
           @color={{if this.button3On "primary" "subdued"}}
-          onClick={{fn this.toggleButtonState "button3On"}}
+          @onClick={{fn this.toggleButtonState "button3On"}}
         />
       </div>
     </div>

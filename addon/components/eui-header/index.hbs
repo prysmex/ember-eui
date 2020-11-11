@@ -1,0 +1,10 @@
+<div
+  class={{class-names
+    "euiHeader"
+    (concat "euiHeader--" (arg-or-default @theme "default"))
+    (concat "euiHeader--" this.position)
+  }}
+  ...attributes
+>
+  {{yield}}
+</div>

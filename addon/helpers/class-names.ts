@@ -23,6 +23,7 @@ interface Options {
   grow: number | string;
   iconSide: string;
   flush: string;
+  borderSide: string;
 }
 
 /**
@@ -49,7 +50,8 @@ export function classNames(
     justifyContent,
     columns,
     grow,
-    iconSide
+    iconSide,
+    borderSide
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -77,6 +79,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
     classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
+    classes.push(cssMappings[componentName].properties.borderSide?.[borderSide] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

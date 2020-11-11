@@ -22,6 +22,7 @@ interface Options {
   columns: number;
   grow: number | string;
   iconSide: string;
+  flush: string;
 }
 
 /**
@@ -42,6 +43,7 @@ export function classNames(
     textTransform,
     type,
     gutterSize,
+    flush,
     alignItems,
     direction,
     justifyContent,
@@ -74,6 +76,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.columns?.[columns] || '');
     classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
+    classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

@@ -18,6 +18,9 @@ import EuiFlexGrid from './eui-flex-grid';
 import EuiNotificationBadge from './eui-notification-badge';
 import EuiBadgeGroup from './eui-badge-group';
 import EuiBadge from  './eui-badge';
+import EuiCard from './eui-card';
+import EuiButtonEmpty from './eui-button-empty';
+import EuiCardSelect from './eui-card-select';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -38,7 +41,10 @@ const mapping: Mapping = {
   EuiFlexGrid,
   EuiNotificationBadge,
   EuiBadgeGroup,
-  EuiBadge
+  EuiBadge,
+  EuiCard,
+  EuiButtonEmpty,
+  EuiCardSelect
 }
 
 export default mapping;

@@ -16,6 +16,11 @@ interface Options {
   textTransform: string;
   type: string;
   gutterSize: string;
+  alignItems: string;
+  direction: string;
+  justifyContent: string;
+  columns: number;
+  grow: number | string;
   iconSide: string;
   flush: string;
 }
@@ -38,8 +43,13 @@ export function classNames(
     textTransform,
     type,
     gutterSize,
-    iconSide,
-    flush
+    flush,
+    alignItems,
+    direction,
+    justifyContent,
+    columns,
+    grow,
+    iconSide
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -60,6 +70,11 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
     classes.push(cssMappings[componentName].properties.type?.[type] || '');
     classes.push(cssMappings[componentName].properties.gutterSize?.[gutterSize] || '');
+    classes.push(cssMappings[componentName].properties.alignItems?.[alignItems] || '');
+    classes.push(cssMappings[componentName].properties.direction?.[direction] || '');
+    classes.push(cssMappings[componentName].properties.justifyContent?.[justifyContent] || '');
+    classes.push(cssMappings[componentName].properties.columns?.[columns] || '');
+    classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
     classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
     classes = classes.filter(s => isPresent(s));

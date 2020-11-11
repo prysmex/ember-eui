@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.0.18
+🚀 Enhancements
+- EuiFlexGroup
+- EuiFlexGrid
+- EuiFlexItem
 
 ### 0.0.17
 🏠 Internal

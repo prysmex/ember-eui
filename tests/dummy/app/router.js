@@ -23,5 +23,6 @@ Router.map(function() {
     this.route('card');
     this.route('button');
     this.route('health');
+    this.route('flex');
   })
 });

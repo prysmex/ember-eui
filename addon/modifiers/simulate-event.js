@@ -2,7 +2,7 @@ import { modifier } from 'ember-modifier';
 
 export default modifier(function simulateEvent(element, eventName, {handler, targetElement}) {
 
-  let _target = element.querySelector(`#${targetElement}`);
+  let _target = element.querySelector(targetElement);
 
   function _triggerEvent (target) {
     let _newEvent = _target[handler];

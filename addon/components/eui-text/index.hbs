@@ -9,7 +9,7 @@
   {{#let (if @textAlign (component "eui-text-align") (element "")) as |Align|}}
     {{#let (if @color (component "eui-text-color") (element "")) as |Color|}}
       <Align @textAlign={{@textAlign}}>
-        <Color @color={{@color}} @tag="div">
+        <Color @color={{@color}} @tagName="div">
           {{yield}}
         </Color>
       </Align>

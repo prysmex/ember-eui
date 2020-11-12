@@ -9,6 +9,7 @@
   class={{class-names
     (if (eq @maxWidth true) "euiFlyout--maxWidth-default")
     componentName="EuiFlyout"
+    size=(arg-or-default @size "m")
   }}
   tabindex={{0}}
   style={{if (not (or (eq @maxWidth false) (eq @maxWidth true) )) (inline-styles max-width=@maxWidth)}}

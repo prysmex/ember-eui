@@ -1,0 +1,12 @@
+<div class="euiFlyoutBody">
+  <div
+    class={{class-names
+      "euiFlyoutBody__overflow"
+      (if @banner "euiFlyoutBody__overflow--hasBanner")
+    }}
+  >
+    <div class="euiFlyoutBody__overflowContent">
+      {{yield}}
+    </div>
+  </div>
+</div>

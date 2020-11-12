@@ -2,4 +2,9 @@
 
 body.euiBody--headerIsFixed {
   padding-top: 49px;
+
+  .euiFlyout {
+    top: 49px;
+    height: calc(100% - 49px);
+  }
 }

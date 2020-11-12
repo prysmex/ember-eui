@@ -20,6 +20,7 @@
     disabled={{@isDisabled}}
     aria-pressed={{if @isSelected "true" "false"}}
     type="button"
+    onClick={{@onClick}}
     ...attributes
   >
     {{#if @iconType}}

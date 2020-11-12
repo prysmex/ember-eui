@@ -16,7 +16,7 @@ module.exports = function (defaults) {
     },
     // Add options here
     'ember-eui': {
-      theme: 'light',
+      theme: 'dark',
       useCompiledCss: true,
     },
 

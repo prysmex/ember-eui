@@ -1,6 +1,6 @@
 {
   "name": "ember-eui",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon",
@@ -47,7 +47,7 @@
     "ember-cli-sass": "^10.0.1",
     "ember-cli-typescript": "^4.0.0",
     "ember-element-helper": "^0.3.1",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#a62c02509e5ea6953a51ded9b912c97ed0a43a48",
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#11e288e32e9195df777587a2c8e5beea12421d1b",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
     "resolve": "^1.13.1"

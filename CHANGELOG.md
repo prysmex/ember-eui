@@ -1,6 +1,9 @@
 # Ember Eui Changelog
 
 ### Master
+- Performance for EuiText, EuiColor, EuiCallout, EuiPage, EuiFlexItem and more, reducing usage of element helper
+- Text hack to avoid using element helper for simple text dom nodes
+- EuiCard
 
 ### 0.0.18
 🚀 Enhancements

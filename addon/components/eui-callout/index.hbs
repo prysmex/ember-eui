@@ -7,21 +7,20 @@
   ...attributes
 >
   {{#if @title}}
-    {{#let (element (arg-or-default @heading "span")) as |H|}}
-      <div class="euiCallOutHeader">
-        {{#if @iconType}}
-          <EuiIcon
-            class="euiCallOutHeader__icon"
-            @type={{@iconType}}
-            @size="m"
-            aria-hidden="true"
-          />
-        {{/if}}
-        <H class="euiCallOutHeader__title">
+    <div class="euiCallOutHeader">
+      {{#if @iconType}}
+        <EuiIcon class="euiCallOutHeader__icon" @type={{@iconType}} @size="m" aria-hidden="true" />
+      {{/if}}
+      {{#if @heading}}
+        <Text @tagName={{@heading}} class="euiCallOutHeader__title">
           {{@title}}
-        </H>
-      </div>
-    {{/let}}
+        </Text>
+      {{else}}
+        <span class="euiCallOutHeader__title">
+          {{@title}}
+        </span>
+      {{/if}}
+    </div>
   {{/if}}
   {{#if hasBlock}}
     <EuiText @size={{if (eq @size "s") "xs" "s"}}>

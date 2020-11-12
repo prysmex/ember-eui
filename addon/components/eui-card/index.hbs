@@ -92,11 +92,11 @@
       </span>
     {{/if}}
 
-    {{#if (not (eq @layout "horizontal"))}}
+    {{#unless (eq @layout "horizontal")}}
       <div class="euiCard__footer">
         {{yield (hash footer="eui-card/eui-card-footer")}}
       </div>
-    {{/if}}
+    {{/unless}}
     {{#if @selectable}}
       <EuiCard::EuiCardSelect
         type={{@selectable.type}}

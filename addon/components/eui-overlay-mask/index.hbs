@@ -3,7 +3,7 @@
   insertBefore=null
 }}
   <div
-    role="button"
+    role={{if @onClick "button"}}
     class={{class-names
       "euiOverlayMask"
       (unless

@@ -26,6 +26,7 @@ Router.map(function() {
     this.route('modal');
     this.route('flex');
     this.route('header');
+    this.route('horizontal-rule');
     this.route('flyout');
   })
 });

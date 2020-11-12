@@ -26,6 +26,7 @@ import EuiHeaderSectionItem from './eui-header-section-item';
 import EuiHeader from './eui-header';
 import EuiButtonIcon from './eui-button-icon';
 import EuiButton from './eui-button';
+import EuiHorizontalRule from './eui-horizontal-rule';
 import EuiFlyout from './eui-flyout';
 
 const mapping: Mapping = {
@@ -56,6 +57,7 @@ const mapping: Mapping = {
   EuiHeader,
   EuiButtonIcon,
   EuiButton,
+  EuiHorizontalRule,
   EuiFlyout
 }
 

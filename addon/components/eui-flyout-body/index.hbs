@@ -2,11 +2,14 @@
   <div
     class={{class-names
       "euiFlyoutBody__overflow"
-      (if @banner "euiFlyoutBody__overflow--hasBanner")
+      (if @hasBanner "euiFlyoutBody__overflow--hasBanner")
     }}
   >
-    <div class="euiFlyoutBody__overflowContent">
-      {{yield}}
-    </div>
+    {{yield
+      (hash
+        banner=(component "eui-flyout-body/banner")
+        content=(component "eui-flyout-body/content")
+      )
+    }}
   </div>
 </div>

@@ -52,31 +52,52 @@
       35% Max Width Flyout
     </EuiButton>
 
+    <EuiButton @onClick={{fn this.openFlyout "flyout4Open"}}>
+      Flyout w/ banner
+    </EuiButton>
+
     {{#if this.flyout1Open}}
       <EuiFlyout @ownFocus={{true}} @size="m" @onClose={{fn this.closeFlyout "flyout1Open"}}>
         <EuiFlyoutHeader @hasBorder={{true}}>
           <EuiTitle @size="l">Default Welcome!</EuiTitle>
         </EuiFlyoutHeader>
-        <EuiFlyoutBody>
-          <EuiText>
-            <p>
-              Far out in the uncharted backwaters of the unfashionable
-              end of the western spiral arm of the Galaxy lies a small unregarded yellow sun.
-            </p>
-            <EuiHorizontalRule margin="s" @size="half"/>
-            <p>
-              Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant
-              little blue green planet whose ape- descended life forms are so amazingly primitive that
-              they still think digital watches are a pretty neat idea.
-            </p>
-            <EuiHorizontalRule margin="s" @size="half"/>
-            <p>
-              This planet has - or rather had - a problem, which was this: most of the people living on it were unhappy
-              for pretty much of the time. Many solutions were suggested for this problem, but most of these were
-              largely concerned with the movements of small green pieces of paper, which is odd because on the whole
-              it was not the small green pieces of paper that were unhappy.
-            </p>
-          </EuiText>
+        <EuiFlyoutBody @hasBanner={{true}}>
+          <EuiFlyoutBody::Banner>
+            <EuiCallout
+              @color="warning"
+              @heading="h3"
+              @title="EuiCallout as Flyout Banners!"
+              @iconType="alert"
+            >
+              <EuiText @size="s">
+                <p>
+                  You can really use whatever you want as a banner,
+                  but it is actually meant to be used with an <code>EuiCallout!</code>
+                </p>
+              </EuiText>
+            </EuiCallout>
+          </EuiFlyoutBody::Banner>
+          <EuiFlyoutBody::Content>
+            <EuiText>
+              <p>
+                Far out in the uncharted backwaters of the unfashionable
+                end of the western spiral arm of the Galaxy lies a small unregarded yellow sun.
+              </p>
+              <EuiHorizontalRule margin="s" @size="half"/>
+              <p>
+                Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant
+                little blue green planet whose ape- descended life forms are so amazingly primitive that
+                they still think digital watches are a pretty neat idea.
+              </p>
+              <EuiHorizontalRule margin="s" @size="half"/>
+              <p>
+                This planet has - or rather had - a problem, which was this: most of the people living on it were unhappy
+                for pretty much of the time. Many solutions were suggested for this problem, but most of these were
+                largely concerned with the movements of small green pieces of paper, which is odd because on the whole
+                it was not the small green pieces of paper that were unhappy.
+              </p>
+            </EuiText>
+          </EuiFlyoutBody::Content>
         </EuiFlyoutBody>
         <EuiFlyoutFooter>
           <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
@@ -97,25 +118,27 @@
           <EuiTitle @size="l">Small Welcome!</EuiTitle>
         </EuiFlyoutHeader>
         <EuiFlyoutBody>
-          <EuiText>
-            <p>
-              Far out in the uncharted backwaters of the unfashionable
-              end of the western spiral arm of the Galaxy lies a small unregarded yellow sun.
-            </p>
-            <EuiHorizontalRule margin="s" @size="half"/>
-            <p>
-              Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant
-              little blue green planet whose ape- descended life forms are so amazingly primitive that
-              they still think digital watches are a pretty neat idea.
-            </p>
-            <EuiHorizontalRule margin="s" @size="half"/>
-            <p>
-              This planet has - or rather had - a problem, which was this: most of the people living on it were unhappy
-              for pretty much of the time. Many solutions were suggested for this problem, but most of these were
-              largely concerned with the movements of small green pieces of paper, which is odd because on the whole
-              it was not the small green pieces of paper that were unhappy.
-            </p>
-          </EuiText>
+          <EuiFlyoutBody::Content>
+            <EuiText>
+              <p>
+                Far out in the uncharted backwaters of the unfashionable
+                end of the western spiral arm of the Galaxy lies a small unregarded yellow sun.
+              </p>
+              <EuiHorizontalRule margin="s" @size="half"/>
+              <p>
+                Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant
+                little blue green planet whose ape- descended life forms are so amazingly primitive that
+                they still think digital watches are a pretty neat idea.
+              </p>
+              <EuiHorizontalRule margin="s" @size="half"/>
+              <p>
+                This planet has - or rather had - a problem, which was this: most of the people living on it were unhappy
+                for pretty much of the time. Many solutions were suggested for this problem, but most of these were
+                largely concerned with the movements of small green pieces of paper, which is odd because on the whole
+                it was not the small green pieces of paper that were unhappy.
+              </p>
+            </EuiText>
+          </EuiFlyoutBody::Content>
         </EuiFlyoutBody>
         <EuiFlyoutFooter>
           <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
@@ -136,25 +159,27 @@
           <EuiTitle @size="l">35% Welcome!</EuiTitle>
         </EuiFlyoutHeader>
         <EuiFlyoutBody>
-          <EuiText>
-            <p>
-              Far out in the uncharted backwaters of the unfashionable
-              end of the western spiral arm of the Galaxy lies a small unregarded yellow sun.
-            </p>
-            <EuiHorizontalRule margin="s" @size="half"/>
-            <p>
-              Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant
-              little blue green planet whose ape- descended life forms are so amazingly primitive that
-              they still think digital watches are a pretty neat idea.
-            </p>
-            <EuiHorizontalRule margin="s" @size="half"/>
-            <p>
-              This planet has - or rather had - a problem, which was this: most of the people living on it were unhappy
-              for pretty much of the time. Many solutions were suggested for this problem, but most of these were
-              largely concerned with the movements of small green pieces of paper, which is odd because on the whole
-              it was not the small green pieces of paper that were unhappy.
-            </p>
-          </EuiText>
+          <EuiFlyoutBody::Content>
+            <EuiText>
+              <p>
+                Far out in the uncharted backwaters of the unfashionable
+                end of the western spiral arm of the Galaxy lies a small unregarded yellow sun.
+              </p>
+              <EuiHorizontalRule margin="s" @size="half"/>
+              <p>
+                Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant
+                little blue green planet whose ape- descended life forms are so amazingly primitive that
+                they still think digital watches are a pretty neat idea.
+              </p>
+              <EuiHorizontalRule margin="s" @size="half"/>
+              <p>
+                This planet has - or rather had - a problem, which was this: most of the people living on it were unhappy
+                for pretty much of the time. Many solutions were suggested for this problem, but most of these were
+                largely concerned with the movements of small green pieces of paper, which is odd because on the whole
+                it was not the small green pieces of paper that were unhappy.
+              </p>
+            </EuiText>
+          </EuiFlyoutBody::Content>
         </EuiFlyoutBody>
         <EuiFlyoutFooter>
           <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
@@ -175,32 +200,56 @@
           <EuiTitle @size="l">Notifications</EuiTitle>
         </EuiFlyoutHeader>
         <EuiFlyoutBody>
-          <EuiFlexGrid @responsive={{false}} @direction="column" @gutterSize="s" @columns="single">
-            {{#each this.notifications as |notification|}}
-              <EuiFlexItem>
-                <EuiFlexGroup @direction="column" @gutterSize="s" @responsive={{false}}>
-                  <EuiFlexItem>
-                    <EuiTitle @size="xs" @textTransform="uppercase">
-                      {{notification.title}}
-                    </EuiTitle>
-                  </EuiFlexItem>
-                  <EuiFlexItem>
-                    <EuiText @size="s" @color="subdued">
-                      {{notification.description}}
-                    </EuiText>
-                  </EuiFlexItem>
-                  <EuiFlexItem>
-                    <EuiFlexGroup @justifyContent="flexEnd">
-                      <EuiFlexItem @grow={{false}}>
-                        <EuiText @color="subdued" @size="xs">{{notification.time}}</EuiText>
-                      </EuiFlexItem>
-                    </EuiFlexGroup>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-                <EuiHorizontalRule @margin="m" />
-              </EuiFlexItem>
-            {{/each}}
-          </EuiFlexGrid>
+          <EuiFlyoutBody::Content>
+            <EuiFlexGrid @responsive={{false}} @direction="column" @gutterSize="s" @columns="single">
+              {{#each this.notifications as |notification|}}
+                <EuiFlexItem>
+                  <EuiFlexGroup @direction="column" @gutterSize="s" @responsive={{false}}>
+                    <EuiFlexItem>
+                      <EuiTitle @size="xs" @textTransform="uppercase">
+                        {{notification.title}}
+                      </EuiTitle>
+                    </EuiFlexItem>
+                    <EuiFlexItem>
+                      <EuiText @size="s" @color="subdued">
+                        {{notification.description}}
+                      </EuiText>
+                    </EuiFlexItem>
+                    <EuiFlexItem>
+                      <EuiFlexGroup @justifyContent="flexEnd">
+                        <EuiFlexItem @grow={{false}}>
+                          <EuiText @color="subdued" @size="xs">{{notification.time}}</EuiText>
+                        </EuiFlexItem>
+                      </EuiFlexGroup>
+                    </EuiFlexItem>
+                  </EuiFlexGroup>
+                  <EuiHorizontalRule @margin="m" />
+                </EuiFlexItem>
+              {{/each}}
+            </EuiFlexGrid>
+          </EuiFlyoutBody::Content>
+        </EuiFlyoutBody>
+      </EuiFlyout>
+    {{/if}}
+
+    {{#if this.flyout4Open}}
+      <EuiFlyout @ownFocus={{false}} @size="s" @onClose={{fn this.closeFlyout "flyout4Open"}}>
+        <EuiFlyoutHeader @hasBorder={{true}}>
+          <EuiTitle @size="l">Flyout w/ Banner</EuiTitle>
+        </EuiFlyoutHeader>
+        <EuiFlyoutBody
+          @hasBanner={{true}}
+          @banner={{component "eui-callout" title="hello there!" color="danger"}}
+          as |body|
+        >
+          <body.banner>
+            <EuiCallout @ @color="primary" @title="Hold up, this is a notice!">
+              This is a callout component to display inside the flyout as a banner.
+            </EuiCallout>
+          </body.banner>
+          <body.content>
+            This is the message as a flyout body my friend
+          </body.content>
         </EuiFlyoutBody>
       </EuiFlyout>
     {{/if}}

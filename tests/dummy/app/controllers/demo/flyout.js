@@ -7,6 +7,7 @@ export default class DemoHeaderController extends Controller {
   @tracked flyout1Open = false;
   @tracked flyout2Open = false;
   @tracked flyout3Open = false;
+  @tracked flyout4Open = false;
   @tracked notificationFlyoutOpen = false;
 
   notifications = [

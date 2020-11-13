@@ -3,7 +3,13 @@
 {{/if}}
 <div
   {{open-flyout}}
-  {{focus-trap isActive=true}}
+  {{focus-trap
+    isActive=true
+    focusTrapOptions=(hash
+      allowOutsideClick=true
+      clickOutsideDeactivates=(not @ownFocus)
+    )
+  }}
   {{on-key 'Escape' @onClose}}
   role="dialog"
   class={{class-names

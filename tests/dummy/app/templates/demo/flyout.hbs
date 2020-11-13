@@ -24,7 +24,7 @@
 
       <EuiHeaderSection @side="right">
         <EuiHeaderSectionItem @border="left">
-          <EuiHeaderSectionItemButton @notification="3" @notificationColor="accent">
+          <EuiHeaderSectionItemButton @notification="4" @onClick={{this.toggleNotificationFlyout}} @notificationColor="accent">
             <EuiIcon @type="bell" @size="m" />
           </EuiHeaderSectionItemButton>
         </EuiHeaderSectionItem>
@@ -36,8 +36,20 @@
       </EuiHeaderSection>
     </EuiHeader>
 
+    <EuiText>
+      <p>Click the Notification Bell in the header to toggle a Flyout or try the ones below</p>
+    </EuiText>
+
     <EuiButton @onClick={{fn this.openFlyout "flyout1Open"}}>
       Open Default Flyout
+    </EuiButton>
+
+    <EuiButton @onClick={{fn this.openFlyout "flyout2Open"}}>
+      Small Flyout w/o Overlay
+    </EuiButton>
+
+    <EuiButton @onClick={{fn this.openFlyout "flyout3Open"}}>
+      35% Max Width Flyout
     </EuiButton>
 
     {{#if this.flyout1Open}}
@@ -79,10 +91,6 @@
       </EuiFlyout>
     {{/if}}
 
-    <EuiButton @onClick={{fn this.openFlyout "flyout2Open"}}>
-      Small Flyout w/o Overlay
-    </EuiButton>
-
     {{#if this.flyout2Open}}
       <EuiFlyout @ownFocus={{false}} @size="s" @onClose={{fn this.closeFlyout "flyout2Open"}}>
         <EuiFlyoutHeader @hasBorder={{true}}>
@@ -122,10 +130,6 @@
       </EuiFlyout>
     {{/if}}
 
-    <EuiButton @onClick={{fn this.openFlyout "flyout3Open"}}>
-      35% Max Width Flyout
-    </EuiButton>
-
     {{#if this.flyout3Open}}
       <EuiFlyout @maxWidth="35%" @ownFocus={{true}} @onClose={{fn this.closeFlyout "flyout3Open"}}>
         <EuiFlyoutHeader @hasBorder={{true}}>
@@ -162,6 +166,42 @@
             </EuiButton>
           </EuiFlexGroup>
         </EuiFlyoutFooter>
+      </EuiFlyout>
+    {{/if}}
+
+    {{#if this.notificationFlyoutOpen}}
+      <EuiFlyout @ownFocus={{false}} @size="s" @onClose={{this.toggleNotificationFlyout}}>
+        <EuiFlyoutHeader @hasBorder={{true}}>
+          <EuiTitle @size="l">Notifications</EuiTitle>
+        </EuiFlyoutHeader>
+        <EuiFlyoutBody>
+          <EuiFlexGrid @responsive={{false}} @direction="column" @gutterSize="s" @columns="single">
+            {{#each this.notifications as |notification|}}
+              <EuiFlexItem>
+                <EuiFlexGroup @direction="column" @gutterSize="s" @responsive={{false}}>
+                  <EuiFlexItem>
+                    <EuiTitle @size="xs" @textTransform="uppercase">
+                      {{notification.title}}
+                    </EuiTitle>
+                  </EuiFlexItem>
+                  <EuiFlexItem>
+                    <EuiText @size="s" @color="subdued">
+                      {{notification.description}}
+                    </EuiText>
+                  </EuiFlexItem>
+                  <EuiFlexItem>
+                    <EuiFlexGroup @justifyContent="flexEnd">
+                      <EuiFlexItem @grow={{false}}>
+                        <EuiText @color="subdued" @size="xs">{{notification.time}}</EuiText>
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+                <EuiHorizontalRule @margin="m" />
+              </EuiFlexItem>
+            {{/each}}
+          </EuiFlexGrid>
+        </EuiFlyoutBody>
       </EuiFlyout>
     {{/if}}
 

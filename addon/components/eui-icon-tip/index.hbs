@@ -1,0 +1,19 @@
+<EuiTooltip
+  @position={{arg-or-default @position "top"}}
+  @delay={{arg-or-default @delay "regular"}}
+  @title={{@title}}
+  @content={{@content}}
+  @onMouseOut={{@onMouseOut}}
+  @anchorClassName={{@anchorClassName}}
+  @display={{@display}}
+  @className={{@className}}
+>
+  <EuiIcon
+    @tabIndex="0"
+    @type={{arg-or-default @type "questionInCircle"}}
+    @color={{@color}}
+    @size={{@size}}
+    @type={{@type}}
+    @aria-label={{arg-or-default @ariaLabel "Info"}}
+  />
+</EuiTooltip>

@@ -1,0 +1,50 @@
+{{#if (and @href (not (or @isLoading @isDisabled)))}}
+  <a
+    class={{class-names
+      (if (or @isLoading @isDisabled) "euiButtonEmpty-isDisabled")
+      componentName="EuiButtonEmpty"
+      color=(arg-or-default @color "primary")
+      size=@size
+      flush=@flush
+    }}
+    href={{@href}}
+    target={{@target}}
+    ...attributes
+  >
+    <EuiButtonContent
+      @isLoading={{@isLoading}}
+      @iconType={{@iconType}}
+      @iconSide={{@iconSide}}
+      @textClasses={{class-names "euiButtonEmpty__text" @textClasses}}
+      class="euiButtonEmpty__content"
+    >
+      {{yield}}
+    </EuiButtonContent>
+  </a>
+{{else}}
+  <button
+    class={{class-names
+      (if (or @isLoading @isDisabled) "euiButtonEmpty-isDisabled")
+      componentName="EuiButtonEmpty"
+      color=(arg-or-default @color "primary")
+      size=@size
+      flush=@flush
+    }}
+    disabled={{or @isLoading @isDisabled}}
+    type={{@type}}
+    ref={{@buttonRef}}
+    onClick={{@onClick}}
+    aria-pressed={{@isSelected}}
+    ...attributes
+  >
+    <EuiButtonContent
+      @isLoading={{@isLoading}}
+      @iconType={{@iconType}}
+      @iconSide={{@iconSide}}
+      @textClasses={{class-names "euiButtonEmpty__text" @textClasses}}
+      class="euiButtonEmpty__content"
+    >
+      {{yield}}
+    </EuiButtonContent>
+  </button>
+{{/if}}

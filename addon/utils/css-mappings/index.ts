@@ -19,6 +19,10 @@ import EuiNotificationBadge from './eui-notification-badge';
 import EuiBadgeGroup from './eui-badge-group';
 import EuiBadge from  './eui-badge';
 import EuiTooltip from  './eui-tooltip';
+import EuiCard from './eui-card';
+import EuiButtonEmpty from './eui-button-empty';
+import EuiCardSelect from './eui-card-select';
+import EuiHorizontalRule from './eui-horizontal-rule';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -41,6 +45,10 @@ const mapping: Mapping = {
   EuiBadgeGroup,
   EuiBadge,
   EuiTooltip
+  EuiCard,
+  EuiButtonEmpty,
+  EuiCardSelect,
+  EuiHorizontalRule
 }
 
 export default mapping;

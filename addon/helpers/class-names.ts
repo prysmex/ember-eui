@@ -23,6 +23,8 @@ interface Options {
   grow: number | string;
   iconSide: string;
   position: string;
+  flush: string;
+  margin: string;
 }
 
 /**
@@ -44,12 +46,14 @@ export function classNames(
     type,
     gutterSize,
     position,
+    flush,
     alignItems,
     direction,
     justifyContent,
     columns,
     grow,
-    iconSide
+    iconSide,
+    margin
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -77,6 +81,8 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
     classes.push(cssMappings[componentName].properties.position?.[position] || '');
+    classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
+    classes.push(cssMappings[componentName].properties.margin?.[margin] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

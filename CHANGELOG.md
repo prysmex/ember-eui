@@ -2,6 +2,17 @@
 
 ### Master
 
+
+### 0.0.19
+🚀 Enhancements
+- Performance for EuiText, EuiColor, EuiCallout, EuiPage, EuiFlexItem and more, reducing usage of element helper
+- Text hack to avoid using element helper for simple text dom nodes
+- EuiCard
+
+🏠 Internal
+- Update ember-svg-jar fork
+- Update @elastic/eui to 30.3.0
+
 ### 0.0.18
 🚀 Enhancements
 - EuiFlexGroup

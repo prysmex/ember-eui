@@ -33,6 +33,9 @@ export default class ApplicationController extends Controller {
           createItem('Flex', {
             href: 'demo.flex'
           }),
+          createItem('Horizontal Rule', {
+            href: 'demo.horizontal-rule'
+          }),
           createItem('Page', {
             href: 'demo.page'
           })
@@ -43,6 +46,9 @@ export default class ApplicationController extends Controller {
         items: [
           createItem('Side nav', {
             href: 'demo.side-nav',
+          }),
+          createItem('Button', {
+            href: 'demo.button',
           }),
         ],
       }),
@@ -57,6 +63,9 @@ export default class ApplicationController extends Controller {
           }),
           createItem('Callout', {
             href: 'demo.callout',
+          }),
+          createItem('Card', {
+            href: 'demo.card',
           }),
           createItem('Health', {
             href: 'demo.health',

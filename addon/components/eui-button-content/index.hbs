@@ -1,0 +1,20 @@
+<span
+  class={{class-names
+    "euiButtonContent"
+    (if (eq @iconSide "right") "euiButtonContent--iconRight")
+  }}
+  ...attributes
+>
+  {{#if @isLoading}}
+    <EuiLoadingSpinner class="euiButtonContent__spinner" @size="m" />
+  {{else if @iconType}}
+    <EuiIcon
+      class="euiButtonContent__icon"
+      @type={{@iconType}}
+      @size="m"
+    />
+  {{/if}}
+  <span class={{@textClasses}}>
+    {{yield}}
+  </span>
+</span>

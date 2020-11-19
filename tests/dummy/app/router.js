@@ -24,5 +24,6 @@ Router.map(function() {
     this.route('button');
     this.route('health');
     this.route('flex');
+    this.route('horizontal-rule');
   })
 });

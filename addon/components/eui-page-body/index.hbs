@@ -1,11 +1,14 @@
 {{! TODO: restrictWidth Prop}}
-{{#let (element (arg-or-default @tagName "div")) as |Tag|}}
-  <Tag class="euiPageBody" ...attributes>
-    {{yield
-      (hash
-        Header=(component "eui-page-header")
-        Content=(component "eui-page-content")
-      )
-    }}
-  </Tag>
+{{#let (arg-or-default @tagName "div") as |tagName|}}
+  {{#if (eq tagName "div")}}
+    <div class="euiPageBody" ...attributes>
+      {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))}}
+    </div>
+  {{else}}
+    {{#let (element tagName) as |Tag|}}
+      <Tag class="euiPageBody" ...attributes>
+        {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))}}
+      </Tag>
+    {{/let}}
+  {{/if}}
 {{/let}}

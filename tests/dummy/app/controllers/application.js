@@ -36,6 +36,9 @@ export default class ApplicationController extends Controller {
           createItem('Modal', {
             href: 'demo.modal'
           }),
+          createItem('Horizontal Rule', {
+            href: 'demo.horizontal-rule'
+          }),
           createItem('Page', {
             href: 'demo.page'
           })

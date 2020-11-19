@@ -12,8 +12,8 @@
   @href={{@href}}
   @iconSide={{@iconSide}}
   @flush={{@flush}}
-  type={{@type}}
-  onClick={{@onClick}}
+  @type={{@type}}
+  @onClick={{unless @isDisabled @onClick}}
   role="switch"
   aria-checked={{@isSelected}}
   ...attributes

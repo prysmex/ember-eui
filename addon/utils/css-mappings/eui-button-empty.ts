@@ -1,19 +1,19 @@
 export const baseClass: string = 'euiButtonEmpty';
 
-export const colorMapping = {
+const colorMapping = {
   primary: `${baseClass}--primary`,
   danger: `${baseClass}--danger`,
   text: `${baseClass}--text`,
   ghost: `${baseClass}--ghost`
 }
 
-export const sizeMapping = {
+const sizeMapping = {
   xs: `${baseClass}--xSmall`,
   s: `${baseClass}--small`,
   l: `${baseClass}--large`,
 }
 
-export const flushMapping = {
+const flushMapping = {
   left: `${baseClass}--flushLeft`,
   right: `${baseClass}--flushRight`,
   both: `${baseClass}--flushBoth`,

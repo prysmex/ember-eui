@@ -1,4 +1,4 @@
-{{#if @href}}
+{{#if (and @href (not (or @isLoading @isDisabled)))}}
   <a
     class={{class-names
       (if @fill "euiButton--fill")
@@ -37,6 +37,7 @@
     type="button"
     aria-pressed={{if @isSelected "true" null}}
     ref={{@buttonRef}}
+    onClick={{@onClick}}
     ...attributes
   >
     <EuiButtonContent

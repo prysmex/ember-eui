@@ -31,9 +31,10 @@
       flush=@flush
     }}
     disabled={{or @isLoading @isDisabled}}
-    type={{arg-or-default @type "button"}}
+    type={{@type}}
     ref={{@buttonRef}}
-    aria-pressed={{if @isSelected "true" "false"}}
+    onClick={{@onClick}}
+    aria-pressed={{@isSelected}}
     ...attributes
   >
     <EuiButtonContent

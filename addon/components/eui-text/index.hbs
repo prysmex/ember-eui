@@ -6,13 +6,29 @@
   }}
   ...attributes
 >
-  {{#let (if @textAlign (component "eui-text-align") (element "")) as |Align|}}
-    {{#let (if @color (component "eui-text-color") (element "")) as |Color|}}
+  {{#if (and @textAlign @color)}}
+    {{#let (component "eui-text-align") as |Align|}}
+      {{#let (component "eui-text-color") as |Color|}}
+        <Align @textAlign={{@textAlign}}>
+          <Color @color={{@color}} @tagName="div">
+            {{yield}}
+          </Color>
+        </Align>
+      {{/let}}
+    {{/let}}
+  {{else if (and @textAlign (not @color))}}
+    {{#let (component "eui-text-align") as |Align|}}
       <Align @textAlign={{@textAlign}}>
-        <Color @color={{@color}} @tagName="div">
-          {{yield}}
-        </Color>
+        {{yield}}
       </Align>
     {{/let}}
-  {{/let}}
+  {{else if (and (not @textAlign) @color)}}
+    {{#let (component "eui-text-color") as |Color|}}
+      <Color @color={{@color}} @tagName="div">
+        {{yield}}
+      </Color>
+    {{/let}}
+  {{else}}
+    {{yield}}
+  {{/if}}
 </div>

@@ -23,6 +23,7 @@ import EuiButtonEmpty from './eui-button-empty';
 import EuiCardSelect from './eui-card-select';
 import EuiButtonIcon from './eui-button-icon';
 import EuiButton from './eui-button';
+import EuiHorizontalRule from './eui-horizontal-rule';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -48,7 +49,8 @@ const mapping: Mapping = {
   EuiButtonEmpty,
   EuiButtonIcon,
   EuiCardSelect,
-  EuiButton
+  EuiButton,
+  EuiHorizontalRule
 }
 
 export default mapping;

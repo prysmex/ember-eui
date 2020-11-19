@@ -1,6 +1,6 @@
 export const baseClass: string = 'euiButtonIcon';
 
-export const colorMapping = {
+const colorMapping = {
   accent: `${baseClass}--accent`,
   danger: `${baseClass}--danger`,
   ghost: `${baseClass}--ghost`,
@@ -11,7 +11,7 @@ export const colorMapping = {
   warning: `${baseClass}--warning`
 }
 
-export const mapping: ComponentMapping = {
+const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     color: colorMapping

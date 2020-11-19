@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.20
+🚀 Enhancements
+- EuiHr
+
+🐛 Bug / Fixes
+- Fix EuiImage close Icon
 
 ### 0.0.19
 🚀 Enhancements

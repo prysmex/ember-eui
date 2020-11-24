@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.0.22
+🐛 Bug / Fixes
+- Renames EuiCallout to EuiCallOut
+
 ### 0.0.21
 🐛 Bug / Fixes
 - Fixes a few missing props for EuiPage, EuiPageBody, EuiPanel and EuiCard

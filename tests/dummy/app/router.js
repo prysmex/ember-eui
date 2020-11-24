@@ -25,5 +25,6 @@ Router.map(function() {
     this.route('health');
     this.route('flex');
     this.route('horizontal-rule');
+    this.route('panel');
   })
 });

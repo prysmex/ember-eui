@@ -1,29 +1,13 @@
-{{! TODO: Add BetaBadge Component for Beta Label in eui Panel}}
-{{#if @onClick}}
-  <button
-    type="button"
-    class={{class-names
-      (if @onClick "euiPanel--isClickable")
-      (if @hasShadow "euiPanel--shadow")
-      (if (eq @grow false) "euiPanel--flexGrowZero")
-      componentName="EuiPanel"
-      padding=(arg-or-default @paddingSize "m")
-    }}
-    onClick={{@onClick}}
-    ...attributes
-  >
-    {{yield}}
-  </button>
-{{else}}
-  <div
-    class={{class-names
-      (if @hasShadow "euiPanel--shadow")
-      (if (eq @grow false) "euiPanel--flexGrowZero")
-      componentName="EuiPanel"
-      padding=(arg-or-default @paddingSize "m")
-    }}
-    ...attributes
-  >
-    {{yield}}
-  </div>
-{{/if}}
+<div
+  class={{class-names
+    (if (not-eq @hasShadow false) "euiPanel--shadow")
+    (if (eq @grow false) "euiPanel--flexGrowZero")
+    componentName="EuiPanel"
+    padding=(arg-or-default @paddingSize "m")
+    borderRadius=(arg-or-default @borderRadius "m")
+    color=(arg-or-default @color "plain")
+  }}
+  ...attributes
+>
+  {{yield}}
+</div>

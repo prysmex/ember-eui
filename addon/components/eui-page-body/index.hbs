@@ -1,14 +1,36 @@
-{{! TODO: restrictWidth Prop}}
-{{#let (arg-or-default @tagName "div") as |tagName|}}
-  {{#if (eq tagName "div")}}
-    <div class="euiPageBody" ...attributes>
-      {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))}}
-    </div>
-  {{else}}
-    {{#let (element tagName) as |Tag|}}
-      <Tag class="euiPageBody" ...attributes>
+{{#let
+  (arg-or-default @tagName "div")
+  (arg-or-default @restrictWidth false) as |tagName restrictWidth|
+}}
+  {{#let
+    (if
+      (eq restrictWidth true)
+      (hash widthClassName="euiPageBody--restrictWidth-default")
+      (if
+        (not-eq restrictWidth false)
+        (hash widthClassName="euiPageBody--restrictWidth-custom" widthStyle=restrictWidth)
+      )
+    ) as |styling|
+  }}
+    {{#if (eq tagName "div")}}
+      <div
+        class={{class-names styling.widthClassName "euiPageBody"}}
+        style={{if styling.widthStyle (inline-styles max-width=styling.widthStyle)}}
+        ...attributes
+      >
         {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))}}
-      </Tag>
-    {{/let}}
-  {{/if}}
+      </div>
+    {{else}}
+      {{#let (element tagName) as |Tag|}}
+        <Tag
+          class={{class-names styling.widthClassName "euiPageBody"}}
+          style={{if styling.widthStyle (inline-styles max-width=styling.widthStyle)}}
+          ...attributes
+        >
+          {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))
+          }}
+        </Tag>
+      {{/let}}
+    {{/if}}
+  {{/let}}
 {{/let}}

@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.0.21
+🐛 Bug / Fixes
+- Fixes a few missing props for EuiPage, EuiPageBody, EuiPanel and EuiCard
+- Fixes EuiHorizontalRule not receiving splattributes
+
 ### 0.0.20
 🚀 Enhancements
 - EuiHr

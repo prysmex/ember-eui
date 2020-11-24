@@ -1,7 +1,20 @@
-{{! TODO: restrictWidth Prop}}
-<div class="euiPage" ...attributes>
-  {{yield (hash
-    Sidebar=(component "eui-page-sidebar")
-    Body=(component "eui-page-body")
-  )}}
-</div>
+{{#let (arg-or-default @restrictWidth false) as |restrictWidth|}}
+  {{#let
+    (if
+      (eq restrictWidth true)
+      (hash widthClassName="euiPage--restrictWidth-default")
+      (if
+        (not-eq restrictWidth false)
+        (hash widthClassName="euiPage--restrictWidth-custom" widthStyle=restrictWidth)
+      )
+    ) as |styling|
+  }}
+    <div
+      class={{class-names styling.widthClassName "euiPage"}}
+      style={{if styling.widthStyle (inline-styles max-width=styling.widthStyle)}}
+      ...attributes
+    >
+      {{yield (hash Sidebar=(component "eui-page-sidebar") Body=(component "eui-page-body"))}}
+    </div>
+  {{/let}}
+{{/let}}

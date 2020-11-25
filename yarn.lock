@@ -5355,7 +5355,7 @@ ember-cli-htmlbars-inline-precompile@^2.1.0:
     heimdalljs-logger "^0.1.9"
     silent-error "^1.1.0"
 
-ember-cli-htmlbars@^4.2.3:
+ember-cli-htmlbars@^4.2.3, ember-cli-htmlbars@^4.3.1:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/ember-cli-htmlbars/-/ember-cli-htmlbars-4.4.0.tgz#7ca17d5ca8f7550984346d9e6e93da0c3323f8d9"
   integrity sha512-ohgctqk7dXIZR4TgN0xRoUYltWhghFJgqmtuswQTpZ7p74RxI9PKx+E8WV/95mGcPzraesvMNBg5utQNvcqgNg==
@@ -5859,6 +5859,15 @@ ember-modifier@^2.1.1:
     ember-destroyable-polyfill "^2.0.2"
     ember-modifier-manager-polyfill "^1.2.0"
 
+ember-named-blocks-polyfill@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/ember-named-blocks-polyfill/-/ember-named-blocks-polyfill-0.2.3.tgz#05fb3b40cff98a0d30e8c3b1e3d2155951007d84"
+  integrity sha512-RrhkgWmfte2lRuOmRWWa7sS2Eo6W3O0VybK0iPhhnLvk7VtUSOmFxuDlhAtEaJ0lBieISrNcmSIZRnmgca/HcA==
+  dependencies:
+    ember-cli-babel "^7.19.0"
+    ember-cli-htmlbars "^4.3.1"
+    ember-cli-version-checker "^5.1.1"
+
 ember-qunit@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/ember-qunit/-/ember-qunit-4.6.0.tgz#ad79fd3ff00073a8779400cc5a4b44829517590f"
@@ -5956,6 +5965,7 @@ ember-source@~3.20.2:
   dependencies:
     broccoli-caching-writer "^3.0.3"
     broccoli-concat "^3.7.4"
+    broccoli-file-creator "^2.1.1"
     broccoli-funnel "^2.0.2"
     broccoli-merge-trees "^3.0.2"
     broccoli-persistent-filter "^2.3.1"

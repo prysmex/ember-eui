@@ -2,6 +2,13 @@
 
 ### Master
 
+### 0.0.23
+🚀 Enhancements
+- EuiCallOut may now receive named blocks <:title> </:title> <:body> <:/body>
+
+🏠 Internal
+- Installed ember-named-blocks-polyfill
+
 ### 0.0.22
 🐛 Bug / Fixes
 - Renames EuiCallout to EuiCallOut

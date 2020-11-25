@@ -9,8 +9,9 @@
       )
     }}
     class={{class-names
+      "euiCard--shadow"
       (if (eq @layout "horizontal") "euiCard--horizontal")
-      (if (eq @display "plain") "euiCard--plain")
+      (if (and (eq @display "plain") (not @selectable)) "euiCard--plain")
       (if @isDisabled "euiCard-isDisabled")
       (if hasBlock "euiCard--hasChildren")
       (if @icon "euiCard--hasIcon")

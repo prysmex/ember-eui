@@ -38,7 +38,10 @@ export default class ApplicationController extends Controller {
           }),
           createItem('Page', {
             href: 'demo.page'
-          })
+          }),
+          createItem('Panel', {
+            href: 'demo.panel'
+          }),
         ]
       }),
       createItem('Navigation', {

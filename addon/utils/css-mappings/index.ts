@@ -18,6 +18,8 @@ import EuiFlexGrid from './eui-flex-grid';
 import EuiNotificationBadge from './eui-notification-badge';
 import EuiBadgeGroup from './eui-badge-group';
 import EuiBadge from  './eui-badge';
+import EuiTooltip from  './eui-tooltip';
+import EuiPopover from  './eui-popover';
 import EuiCard from './eui-card';
 import EuiButtonEmpty from './eui-button-empty';
 import EuiCardSelect from './eui-card-select';
@@ -45,6 +47,8 @@ const mapping: Mapping = {
   EuiNotificationBadge,
   EuiBadgeGroup,
   EuiBadge,
+  EuiTooltip,
+  EuiPopover,
   EuiCard,
   EuiButtonEmpty,
   EuiButtonIcon,

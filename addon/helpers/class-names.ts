@@ -22,8 +22,10 @@ interface Options {
   columns: number;
   grow: number | string;
   iconSide: string;
+  position: string;
   flush: string;
   margin: string;
+  display: string;
   borderRadius: string;
 }
 
@@ -45,6 +47,7 @@ export function classNames(
     textTransform,
     type,
     gutterSize,
+    position,
     flush,
     alignItems,
     direction,
@@ -53,6 +56,7 @@ export function classNames(
     grow,
     iconSide,
     margin,
+    display,
     borderRadius
   }: Options
 ): string {
@@ -80,13 +84,15 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.columns?.[columns] || '');
     classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
+    classes.push(cssMappings[componentName].properties.position?.[position] || '');
     classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
     classes.push(cssMappings[componentName].properties.margin?.[margin] || '');
+    classes.push(cssMappings[componentName].properties.display?.[display] || '');
     classes.push(cssMappings[componentName].properties.borderRadius?.[borderRadius] || '');
     classes = classes.filter(s => isPresent(s));
   }
 
-  return classes.join(' ');
+  return classes.join(' ').trim();
 }
 
 export default helper(classNames);

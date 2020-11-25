@@ -23,6 +23,18 @@ interface Mapping {
   [componentName: string]: ComponentMapping;
 }
 
+type Attribute = {
+  [value: string]: unknown
+}
+
+interface AttributeMap {
+  [attribute: string]: Attribute;
+}
+
+interface AttributeMapping {
+  [componentName: string]: AttributeMap
+}
+
 type rgbDef = [number, number, number];
 
 interface HSV {

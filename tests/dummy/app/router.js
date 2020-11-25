@@ -23,6 +23,8 @@ Router.map(function() {
     this.route('card');
     this.route('button');
     this.route('health');
+    this.route('tooltip');
+    this.route('popover');
     this.route('flex');
     this.route('horizontal-rule');
     this.route('panel');

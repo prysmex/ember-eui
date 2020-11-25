@@ -75,7 +75,9 @@ module.exports = {
 
     let importer = writeFile(
       'ember-eui-components.scss',
-      euiScssFiles ? `@import './elastic-eui/theme_${selectedTheme}.scss';` : ''
+      euiScssFiles
+      ? `@import './elastic-eui/theme_${selectedTheme}.scss';`
+      : `@import 'node_modules/@elastic/eui/src/themes/eui/eui_colors_${selectedTheme}.scss';`
     );
 
     trees.push(importer);

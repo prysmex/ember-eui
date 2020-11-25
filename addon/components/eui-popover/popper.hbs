@@ -1,0 +1,33 @@
+<EmberPopover
+  @isShown={{@isOpen}}
+  @side={{arg-or-default @anchorPlacement "bottom"}}
+  @event={{arg-or-default @event "click"}}
+  @side={{attr-map
+    "anchorPosition"
+    (arg-or-default @anchorPosition "downCenter")
+    componentName="EuiPopover"
+  }}
+  @popperOptions={{hash
+    modifiers=(hash
+      offset=(hash
+        offset=8
+      )
+    )
+  }}
+  as |popover|
+>
+  <EuiPanel
+    class={{class-names
+      "euiPopover__panel"
+      (if popover.isShown "euiPopover__panel-isOpen")
+      componentName="EuiPanel"
+    }}
+    @paddingSize={{@panelPaddingSize}}
+  >
+    {{yield (hash
+      content=(component "eui-popover/content")
+      title=(component "eui-popover/title")
+      footer=(component "eui-popover/footer")
+    )}}
+  </EuiPanel>
+</EmberPopover>

@@ -18,7 +18,7 @@ const positionMapping = {
 
 const displayMapping = {
   inlineBlock: '',
-  block: 'euiToolTipAnchor--displayBlock',
+  block: `${baseClass}Anchor--displayBlock`,
 };
 
 const mapping: ComponentMapping = {

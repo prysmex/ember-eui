@@ -1,0 +1,15 @@
+<div
+  class={{class-names
+    display=(arg-or-default @display "inline-block")
+    componentName="EuiPopover"
+  }}
+>
+  {{yield (hash
+    activator=(component "eui-popover/activator")
+    popper=(component "eui-popover/popper"
+      isOpen=@isOpen
+      panelPaddingSize=@panelPaddingSize
+      anchorPosition=@anchorPosition
+    )
+  )}}
+</div>

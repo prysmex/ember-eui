@@ -1,0 +1,293 @@
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Tooltips
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
+<EuiPageContent>
+  <EuiPageContentBody>
+    <p><b>EuiPopover</b> is a wrapper for <a href="https://sir-dunxalot.github.io/ember-tooltips/">Ember Tooltips</a></p>
+
+    <EuiPopover
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton>Hello</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper
+        as |Popper|
+      >
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiSpacer></EuiSpacer>
+
+    <EuiPageContentHeaderSection>
+      <h1>
+        With <b>title</b>
+      </h1>
+    </EuiPageContentHeaderSection>
+
+    <EuiPopover
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton>Hello</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper
+        as |Popper|
+      >
+        <Popper.title>
+          With title
+        </Popper.title>
+
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiSpacer></EuiSpacer>
+
+    <EuiPageContentHeaderSection>
+      <h1>
+        With <b>footer</b>
+      </h1>
+    </EuiPageContentHeaderSection>
+
+    <EuiPopover
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton>Hello</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper
+        as |Popper|
+      >
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+
+        <Popper.footer>
+          With footer
+        </Popper.footer>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiSpacer></EuiSpacer>
+
+    <EuiPageContentHeaderSection>
+      <h1>
+        With <b>why not both</b> and custom component
+      </h1>
+    </EuiPageContentHeaderSection>
+
+    <EuiPopover
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton>Hello</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper
+        @panelPaddingSize="s"
+        as |Popper|
+      >
+        <Popper.title>
+          With title
+        </Popper.title>
+
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+
+        <Popper.footer>
+          <EuiButton
+            @fullWidth={{true}}
+          >
+            Button
+          </EuiButton>
+        </Popper.footer>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiSpacer></EuiSpacer>
+
+    <div class="guideSection__text">
+      <EuiTitle>Popover padding sizes</EuiTitle>
+      <EuiText>
+        Use the <span class="euiCodeBlock euiCodeBlock--fontSmall euiCodeBlock--paddingLarge euiCodeBlock--inline"><code class="euiCodeBlock__code">panelPaddingSize</code></span>
+        prop to adjust the padding of the panel content. When using popover titles and footers, this setting will propogate to them. Or you can supply a custom <span class="euiCodeBlock euiCodeBlock--fontSmall euiCodeBlock--paddingLarge euiCodeBlock--inline"><code class="euiCodeBlock__code">paddingSize</code></span>
+        to either the <strong>EuiPopoverTitle</strong> of <strong>EuiPopoverFooter</strong>.
+      </EuiText>
+    </div>
+
+    <EuiPopover
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton>Hello</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper
+        @panelPaddingSize="l"
+        as |Popper|
+      >
+        <Popper.title>
+          With title
+        </Popper.title>
+
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+
+        <Popper.footer>
+          <EuiButton
+            @fullWidth={{true}}
+          >
+            Button
+          </EuiButton>
+        </Popper.footer>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiSpacer></EuiSpacer>
+
+    <div class="guideSection__text">
+      <EuiTitle>Popover with block level display</EuiTitle>
+      <EuiText>
+        Popover anchors default to display: inline-block; so they do not force a display on inline triggers. If you do need to change this, just add display="block"
+      </EuiText>
+    </div>
+
+    <EuiPopover
+      @display="block"
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton @fullWidth={{true}}>Hello</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper
+        @panelPaddingSize="l"
+        as |Popper|
+      >
+        <Popper.title>
+          With title
+        </Popper.title>
+
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+
+        <Popper.footer>
+          <EuiButton
+            @fullWidth={{true}}
+          >
+            Button
+          </EuiButton>
+        </Popper.footer>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiSpacer></EuiSpacer>
+
+    <div class="guideSection__text">
+      <EuiTitle>Anchor position</EuiTitle>
+      <EuiText>
+        The alignment and arrow on your popover can be set with the anchorPosition prop. These positions will update based upon screen real estate.
+
+        Some tips:
+        The first word in the anchorPosition denotes where the popover will appear relative to the button.
+        The second word in the anchorPosition denotes where the gravity / pin position will appear relative to the popover.
+      </EuiText>
+    </div>
+
+    <EuiPopover
+      @anchorPosition="upRight"
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton @fullWidth={{true}}>Up Right</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper
+        @panelPaddingSize="l"
+        as |Popper|
+      >
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiPopover
+      @anchorPosition="downLeft"
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton @fullWidth={{true}}>Down Left</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper as |Popper|>
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiPopover
+      @anchorPosition="rightUp"
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton @fullWidth={{true}}>Right Up</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper as |Popper|>
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiPopover
+      @anchorPosition="leftDown"
+      as |Popover|
+    >
+      <Popover.activator>
+        <EuiButton @fullWidth={{true}}>Left Down</EuiButton>
+      </Popover.activator>
+
+      <Popover.popper as |Popper|>
+        <Popper.content>
+          <h3>More info</h3>
+          <p>Here is more information!</p>
+        </Popper.content>
+      </Popover.popper>
+    </EuiPopover>
+
+    <EuiSpacer @size="xxl"></EuiSpacer>
+    <EuiSpacer @size="xxl"></EuiSpacer>
+    <EuiSpacer @size="xxl"></EuiSpacer>
+
+  </EuiPageContentBody>
+</EuiPageContent>

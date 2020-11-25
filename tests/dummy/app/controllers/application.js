@@ -89,6 +89,9 @@ export default class ApplicationController extends Controller {
           createItem('Tooltip', {
             href: 'demo.tooltip',
           }),
+          createItem('Popover', {
+            href: 'demo.popover',
+          }),
         ],
       }),
       createItem('Utitilies', {

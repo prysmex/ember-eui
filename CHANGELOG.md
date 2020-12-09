@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.0.24
+🚀 Enhancements
+- EuiModal
+
 ### 0.0.23
 🚀 Enhancements
 - EuiCallOut may now receive named blocks <:title> </:title> <:body> <:/body>

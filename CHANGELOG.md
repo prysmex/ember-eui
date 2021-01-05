@@ -2,6 +2,8 @@
 
 ### Master
 
+### 0.0.25
+- Updates to elastic ui to 31.0.0
 ### 0.0.24
 🚀 Enhancements
 - EuiModal

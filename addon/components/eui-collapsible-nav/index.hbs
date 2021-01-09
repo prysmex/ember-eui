@@ -1,0 +1,35 @@
+{{#unless (and @navIsDocked (not @showButtonIfDocked))}}
+  {{yield to="button"}}
+{{/unless}}
+
+{{#if @isOpen}}
+  {{#let (unique-id) as |flyoutId|}}
+    {{#unless @navIsDocked}}
+      <EuiOverlayMask @onClick={{unless @navIsDocked @onClose}} @headerZindexLocation="below" />
+    {{/unless}}
+    <nav
+      id={{flyoutId}}
+      class={{class-names
+        "euiCollapsibleNav"
+        (if @navIsDocked "euiCollapsibleNav--isDocked")
+      }}
+      ...attributes
+      {{open-collapsible-nav}}
+      {{on-key "Escape" (unless @navIsDocked @onClose)}}
+      {{focus-trap isActive=(not @navIsDocked)}}
+    >
+      {{yield to="content"}}
+      {{!-- {{#if @showCloseButton}}
+        <EuiButtonEmpty
+          @onClick={{unless @navIsDocked @onClose}}
+          @size="xs"
+          @textClasses="euiCollapsibleNav__closeButtonText"
+          @iconType="cross"
+          class="euiCollapsibleNav__closeButton"
+        >
+          {{@closeButtonLabel}}
+        </EuiButtonEmpty>
+      {{/if}} --}}
+    </nav>
+  {{/let}}
+{{/if}}

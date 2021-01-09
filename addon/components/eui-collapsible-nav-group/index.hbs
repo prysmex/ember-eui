@@ -1,9 +1,9 @@
 {{#let (unique-id) as |groupId|}}
-  {{#if (and @isCollapsible @title)}}
+  {{#if (and @isCollapsible (hasBlock "title"))}}
     <EuiAccordion
       id={{groupId}}
       class={{class-names
-        (if @title "euiCollapsibleNavGroup--withHeading")
+        (if (hasBlock "title") "euiCollapsibleNavGroup--withHeading")
         componentName="EuiCollapsibleNavGroup"
         backgroundColor=(arg-or-default @background "none")
       }}
@@ -26,7 +26,7 @@
                 id={{concat groupId "__title"}}
                 class="euiCollapsibleNavGroup__title"
               >
-                {{@title}}
+                {{yield to="title"}}
               </Text>
             </EuiTitle>
           </EuiFlexItem>
@@ -34,7 +34,7 @@
       </:buttonContent>
       <:content>
         <div class="euiCollapsibleNavGroup__children">
-          {{yield}}
+          {{yield to="content"}}
         </div>
       </:content>
     </EuiAccordion>
@@ -42,13 +42,13 @@
     <div
       id={{groupId}}
       class={{class-names
-        (if @title "euiCollapsibleNavGroup--withHeading")
+        (if (hasBlock "title") "euiCollapsibleNavGroup--withHeading")
         componentName="EuiCollapsibleNavGroup"
         backgroundColor=(arg-or-default @background "none")
       }}
       ...attributes
     >
-      {{#if @title}}
+      {{#if (hasBlock "title")}}
         <div class="euiCollapsibleNavGroup__heading">
           <EuiFlexGroup @gutterSize="m" @alignItems="center" @responsive={{false}}>
             {{#if @iconType}}
@@ -63,7 +63,7 @@
                   id={{concat groupId "__title"}}
                   class="euiCollapsibleNavGroup__title"
                 >
-                  {{@title}}
+                  {{yield to="title"}}
                 </Text>
               </EuiTitle>
             </EuiFlexItem>
@@ -71,7 +71,7 @@
         </div>
       {{/if}}
       <div class="euiCollapsibleNavGroup__children">
-        {{yield}}
+        {{yield to="content"}}
       </div>
     </div>
   {{/if}}

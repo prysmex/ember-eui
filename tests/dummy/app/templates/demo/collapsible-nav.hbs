@@ -15,13 +15,25 @@
     </EuiTitle>
     <EuiSpacer />
     <EuiCollapsibleNavGroup>
-      BASIC WITH NOTHING
+      <:content>
+        BASIC WITH NOTHING
+      </:content>
     </EuiCollapsibleNavGroup>
-    <EuiCollapsibleNavGroup @iconType="alert" @title="Hello there! This is a title" @background="light">
-      This is not collapsible! But the bottom one is!
+    <EuiCollapsibleNavGroup @iconType="alert" @background="light">
+      <:title>
+        Hello My friends!
+      </:title>
+      <:content>
+        This is not collapsible! But the bottom one is!
+      </:content>
     </EuiCollapsibleNavGroup>
-    <EuiCollapsibleNavGroup @iconType="alert" @title="Click me!!" @background="dark" @initialIsOpen={{false}} @isCollapsible={{true}}>
-      This is the collapseible content!!!
+    <EuiCollapsibleNavGroup @iconType="alert" @background="dark" @initialIsOpen={{false}} @isCollapsible={{true}}>
+      <:title>
+        Click me!!
+      </:title>
+      <:content>
+        This is the collapsible content!!!
+      </:content>
     </EuiCollapsibleNavGroup>
 
   </EuiPageContentBody>

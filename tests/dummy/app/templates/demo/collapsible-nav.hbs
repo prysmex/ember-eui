@@ -1,0 +1,28 @@
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Collapsible Nav
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
+<EuiPageContent>
+  <EuiPageContentBody>
+
+    <EuiTitle @size="s">
+      Collapsible Nav Group
+    </EuiTitle>
+    <EuiSpacer />
+    <EuiCollapsibleNavGroup>
+      BASIC WITH NOTHING
+    </EuiCollapsibleNavGroup>
+    <EuiCollapsibleNavGroup @iconType="alert" @title="Hello there! This is a title" @background="light">
+      This is not collapsible! But the bottom one is!
+    </EuiCollapsibleNavGroup>
+    <EuiCollapsibleNavGroup @iconType="alert" @title="Click me!!" @background="dark" @initialIsOpen={{false}} @isCollapsible={{true}}>
+      This is the collapseible content!!!
+    </EuiCollapsibleNavGroup>
+
+  </EuiPageContentBody>
+</EuiPageContent>

@@ -24,6 +24,7 @@ import EuiCardSelect from './eui-card-select';
 import EuiButtonIcon from './eui-button-icon';
 import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
+import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -50,7 +51,8 @@ const mapping: Mapping = {
   EuiButtonIcon,
   EuiCardSelect,
   EuiButton,
-  EuiHorizontalRule
+  EuiHorizontalRule,
+  EuiCollapsibleNavGroup,
 }
 
 export default mapping;

@@ -37,7 +37,10 @@ export default class ApplicationController extends Controller {
             href: 'demo.flyout'
           }),
           createItem('Header', {
-            href: 'demo.header'
+            href: 'demo.header',
+          }),
+          createItem('Modal', {
+            href: 'demo.modal'
           }),
           createItem('Horizontal Rule', {
             href: 'demo.horizontal-rule'
@@ -47,7 +50,10 @@ export default class ApplicationController extends Controller {
           }),
           createItem('Page', {
             href: 'demo.page'
-          })
+          }),
+          createItem('Panel', {
+            href: 'demo.panel'
+          }),
         ]
       }),
       createItem('Navigation', {

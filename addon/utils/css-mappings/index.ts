@@ -11,7 +11,7 @@ import EuiText from './eui-text';
 import EuiPanel from './eui-panel';
 import EuiPageContent from './eui-page-content';
 import EuiAvatar from './eui-avatar';
-import EuiCallout from './eui-callout';
+import EuiCallOut from './eui-call-out';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
 import EuiFlexGrid from './eui-flex-grid';
@@ -42,7 +42,7 @@ const mapping: Mapping = {
   EuiPanel,
   EuiPageContent,
   EuiAvatar,
-  EuiCallout,
+  EuiCallOut,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFlexGrid,
@@ -51,11 +51,11 @@ const mapping: Mapping = {
   EuiBadge,
   EuiCard,
   EuiButtonEmpty,
+  EuiButtonIcon,
   EuiCardSelect,
   EuiHeaderSection,
   EuiHeaderSectionItem,
   EuiHeader,
-  EuiButtonIcon,
   EuiButton,
   EuiHorizontalRule,
   EuiFlyout

@@ -28,5 +28,6 @@ Router.map(function() {
     this.route('header');
     this.route('horizontal-rule');
     this.route('flyout');
+    this.route('panel');
   })
 });

@@ -9,6 +9,8 @@ export default class DemoCardController extends Controller {
   @tracked button2On = false;
   @tracked button3On = false;
 
+  @tracked disabledLink = false;
+
   @action
   toggleIconButton () {
     this.toggleProperty('selectedIconButton');

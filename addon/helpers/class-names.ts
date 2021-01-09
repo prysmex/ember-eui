@@ -27,6 +27,7 @@ interface Options {
   position: string;
   theme: string;
   margin: string;
+  borderRadius: string;
 }
 
 /**
@@ -57,7 +58,8 @@ export function classNames(
     borderSide,
     position,
     theme,
-    margin
+    margin,
+    borderRadius
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -89,6 +91,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.theme?.[theme] || '');
     classes.push(cssMappings[componentName].properties.position?.[position] || '');
     classes.push(cssMappings[componentName].properties.margin?.[margin] || '');
+    classes.push(cssMappings[componentName].properties.borderRadius?.[borderRadius] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

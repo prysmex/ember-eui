@@ -2,7 +2,7 @@
   class={{class-names
     (unless (eq @hasShadow false) "euiImage--hasShadow")
     componentName="EuiImage"
-    size=@size 
+    size=@size
   }}
   ...attributes
 >
@@ -52,15 +52,15 @@
         {{on "click" this.toggleFullscreen}}
       >
         <img class="euiImage-isFullScreen__img" src={{@url}} alt={{@alt}} />
-        <EuiIcon
-          class="euiImage-isFullScreen__icon"
-          @type="cross"
-          @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
-        />
       </button>
       <figcaption class="euiImage__caption">
         {{@caption}}
       </figcaption>
     </figure>
+    <EuiIcon
+      class="euiImage-isFullScreenCloseIcon"
+      @type="cross"
+      @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
+    />
   </EuiOverlayMask>
 {{/if}}

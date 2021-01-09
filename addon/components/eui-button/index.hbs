@@ -1,4 +1,4 @@
-{{#if @href}}
+{{#if (and @href (not (or @isLoading @isDisabled)))}}
   <a
     class={{class-names
       (if @fill "euiButton--fill")

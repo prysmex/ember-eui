@@ -22,7 +22,7 @@
         (if @navIsDocked "euiCollapsibleNav--isDocked")
       }}
       ...attributes
-      {{open-collapsible-nav}}
+      {{open-collapsible-nav @navIsDocked}}
       {{on-key "Escape" (unless @navIsDocked @onClose)}}
       {{focus-trap
         isActive=(not @navIsDocked)

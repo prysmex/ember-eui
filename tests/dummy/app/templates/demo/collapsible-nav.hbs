@@ -18,6 +18,7 @@
       @isOpen={{this.collNavIsOpen}}
       @onClose={{this.closeCollapsibleNav}}
       @showCloseButton={{true}}
+      @navIsDocked={{this.navIsDocked}}
     >
       <:button>
         <EuiButton @onClick={{this.openCollapsibleNav}}>
@@ -66,8 +67,8 @@
             Submenu 3
           </:title>
           <:content>
-            <EuiButton>
-              I am a button here
+            <EuiButton @onClick={{this.toggleDockedNav}}>
+              {{unless this.navIsDocked "Dock it!" "Undock it!"}}
             </EuiButton>
           </:content>
         </EuiCollapsibleNavGroup>

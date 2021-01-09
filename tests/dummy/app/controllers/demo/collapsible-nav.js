@@ -5,6 +5,7 @@ import { action } from '@ember/object';
 export default class DemoCollapsibleNavController extends Controller {
 
   @tracked collNavIsOpen = false;
+  @tracked navIsDocked = false;
 
   @action
   openCollapsibleNav() {
@@ -14,5 +15,10 @@ export default class DemoCollapsibleNavController extends Controller {
   @action
   closeCollapsibleNav() {
     this.collNavIsOpen = false;
+  }
+
+  @action
+  toggleDockedNav() {
+    this.navIsDocked = !this.navIsDocked;
   }
 }

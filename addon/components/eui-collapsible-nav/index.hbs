@@ -1,7 +1,15 @@
-{{#unless (and @navIsDocked (not @showButtonIfDocked))}}
+{{!
+  Trigger button itself
+  By using a named block you can place any button as the trigger:
+  eg. HeaderSectionItem, EuiButton, EuiButtonIcon, or any custom button
+}}
+{{#if (not (and @navIsDocked (not @showButtonIfDocked)))}}
   {{yield to="button"}}
-{{/unless}}
+{{/if}}
 
+{{!
+  The side navigation panel, acts the same way as a flyout
+}}
 {{#if @isOpen}}
   {{#let (unique-id) as |flyoutId|}}
     {{#unless @navIsDocked}}
@@ -16,9 +24,19 @@
       ...attributes
       {{open-collapsible-nav}}
       {{on-key "Escape" (unless @navIsDocked @onClose)}}
-      {{focus-trap isActive=(not @navIsDocked)}}
+      {{focus-trap
+        isActive=(not @navIsDocked)
+        focusTrapOptions=(hash
+          allowOutsideClick=true
+        )
+      }}
     >
       {{yield to="content"}}
+      {{!
+        Close button is for accessibility purposes only
+        To close, use ESC key, or click outside the Nav.
+        Commented for the time being
+      }}
       {{!-- {{#if @showCloseButton}}
         <EuiButtonEmpty
           @onClick={{unless @navIsDocked @onClose}}

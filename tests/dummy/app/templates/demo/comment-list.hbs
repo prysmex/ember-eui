@@ -10,8 +10,52 @@
 <EuiPageContent>
   <EuiPageContentBody>
 
-    <EuiTitle>Eui Comment</EuiTitle>
-    <EuiSpace />
+    <EuiTitle @size="s">Comment List</EuiTitle>
+    <EuiSpacer />
+
+    <EuiComment @type="regular" @timestamp="on 2015-02-01">
+      <:username>
+        kyloRen
+      </:username>
+      <:event>
+        destroyed the jedi temple
+      </:event>
+      <:body>
+        <EuiText>
+          <p>
+            Far out in the uncharted backwaters of the unfashionable end of the
+            western spiral arm of the Galaxy lies a small unregarded yellow sun.
+          </p>
+        </EuiText>
+      </:body>
+      <:actions>
+        <EuiButtonIcon @iconType="wrench"/>
+      </:actions>
+    </EuiComment>
+    <EuiComment @type="update" @timestamp="on 2015-02-05">
+      <:username>
+        lukeSW
+      </:username>
+      <:event>
+        went into hiding
+      </:event>
+    </EuiComment>
+    <EuiComment @type="update" @timestamp="on 2015-02-05">
+      <:username>
+        r2d2
+      </:username>
+      <:event>
+        kinda shut down
+      </:event>
+      <:body>
+        <EuiText>
+          <p>
+            He went into a sort of hibernation or low power mode,
+            you know? Like when you 'sleep' a computer.
+          </p>
+        </EuiText>
+      </:body>
+    </EuiComment>
 
   </EuiPageContentBody>
 </EuiPageContent>

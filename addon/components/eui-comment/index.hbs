@@ -1,0 +1,30 @@
+<div
+  class={{class-names
+    "euiComment"
+    (if (eq @type "update") "euiComment--update")
+    (if (hasBlock "body") "euiComment--hasBody")
+  }}
+  ...attributes
+>
+  <EuiComment::EuiCommentTimeline
+    @type={{@type}}
+    @timelineIcon={{@timelineIcon}}
+  />
+  <EuiComment::EuiCommentEvent
+    @timestamp={{@timestamp}}
+    @type={{@type}}
+  >
+    <:username>
+      {{yield to="username"}}
+    </:username>
+    <:event>
+      {{yield to="event"}}
+    </:event>
+    <:actions>
+      {{yield to="actions"}}
+    </:actions>
+    <:body>
+      {{yield to="body"}}
+    </:body>
+  </EuiComment::EuiCommentEvent>
+</div>

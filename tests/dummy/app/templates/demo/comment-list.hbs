@@ -10,52 +10,110 @@
 <EuiPageContent>
   <EuiPageContentBody>
 
-    <EuiTitle @size="s">Comment List</EuiTitle>
+    <EuiTitle @size="m">Comment List</EuiTitle>
+    <EuiText @size="s">
+      <p>
+        The Comment List serves merely as a wrapper for various comments.
+        Does not serve any other purpose.
+      </p>
+      <p>
+        The original component from the React.js framework receives a @comments object,
+        and maps them into the EuiCommentList component. For Ember.js, just pass them as children.
+      </p>
+    </EuiText>
     <EuiSpacer />
-
-    <EuiComment @type="regular" @timestamp="on 2015-02-01">
-      <:username>
-        kyloRen
-      </:username>
-      <:event>
-        destroyed the jedi temple
-      </:event>
-      <:body>
-        <EuiText>
-          <p>
-            Far out in the uncharted backwaters of the unfashionable end of the
-            western spiral arm of the Galaxy lies a small unregarded yellow sun.
-          </p>
-        </EuiText>
-      </:body>
-      <:actions>
-        <EuiButtonIcon @iconType="wrench"/>
-      </:actions>
-    </EuiComment>
-    <EuiComment @type="update" @timestamp="on 2015-02-05">
-      <:username>
-        lukeSW
-      </:username>
-      <:event>
-        went into hiding
-      </:event>
-    </EuiComment>
-    <EuiComment @type="update" @timestamp="on 2015-02-05">
-      <:username>
-        r2d2
-      </:username>
-      <:event>
-        kinda shut down
-      </:event>
-      <:body>
-        <EuiText>
-          <p>
-            He went into a sort of hibernation or low power mode,
-            you know? Like when you 'sleep' a computer.
-          </p>
-        </EuiText>
-      </:body>
-    </EuiComment>
+    <EuiCommentList>
+      <EuiComment @type="regular" @timestamp="on 2015-02-01">
+        <:username>
+          kyloRen
+        </:username>
+        <:event>
+          destroyed the jedi temple
+        </:event>
+        <:body>
+          <EuiText>
+            <p>
+              Far out in the uncharted backwaters of the unfashionable end of the
+              western spiral arm of the Galaxy lies a small unregarded yellow sun.
+            </p>
+          </EuiText>
+        </:body>
+        <:actions>
+          <EuiButtonIcon @iconType="wrench"/>
+        </:actions>
+      </EuiComment>
+      <EuiComment @type="update" @timestamp="on 2015-02-05">
+        <:username>
+          lukeSW
+        </:username>
+        <:event>
+          went into hiding
+        </:event>
+      </EuiComment>
+      <EuiComment @type="update" @timestamp="on 2015-02-05">
+        <:username>
+          r2d2
+        </:username>
+        <:event>
+          kinda shut down
+        </:event>
+        <:body>
+          <EuiText>
+            <p>
+              He went into a sort of hibernation or low power mode,
+              you know? Like when you 'sleep' a computer.
+            </p>
+          </EuiText>
+        </:body>
+      </EuiComment>
+      <EuiComment @timelineIcon="listAdd" @type="update" @timestamp="on 2015-02-08">
+        <:username>
+          <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="s">
+            <EuiFlexItem @grow={{false}}>
+              <EuiAvatar @type="space" @initials="FO" @name="First Order" @initialLength={{2}} @size="s" />
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              firstOrder
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </:username>
+        <:event>
+          <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="s">
+            <EuiFlexItem @grow={{false}}>
+              was created by
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiBadge @color="accent">snoke</EuiBadge>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </:event>
+      </EuiComment>
+      {{!-- <EuiComment @type="regular" @timestamp="on 2015-02-10">
+        <:timelineIcon>
+          <EuiAvatar
+            @initials="RS"
+            @name="Rey Skywokah"
+            @type="user"
+          />
+        </:timelineIcon>
+        <:username>
+          reySkywokah
+        </:username>
+        <:event>
+          turned out to be all mighty
+        </:event>
+        <:body>
+          <EuiText>
+            <p>
+              How and why did this happen? Who knows..?
+            </p>
+          </EuiText>
+        </:body>
+        <:actions>
+          <EuiButtonIcon @iconType="questionInCircle" />
+        </:actions>
+      </EuiComment> --}}
+    </EuiCommentList>
 
   </EuiPageContentBody>
 </EuiPageContent>

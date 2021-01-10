@@ -27,5 +27,6 @@ Router.map(function() {
     this.route('flex');
     this.route('horizontal-rule');
     this.route('panel');
+    this.route('comment-list');
   })
 });

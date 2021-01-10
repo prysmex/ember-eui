@@ -73,6 +73,15 @@ export default class ApplicationController extends Controller {
           createItem('Card', {
             href: 'demo.card',
           }),
+          createItem('Comment List', {
+            href: 'demo.comment-list',
+            items: [
+              createItem('Comment'),
+              createItem('Comment Types'),
+              createItem('Custom Timeline Icon'),
+              createItem('Actions'),
+            ]
+          }),
           createItem('Health', {
             href: 'demo.health',
           }),

@@ -4,8 +4,8 @@
       class={{class-names
         (if
           (or
-            (not @timelineIcon)
-            @timelineIcon.length
+            @timelineIcon
+            (not (hasBlock "timelineIcon"))
           )
           "euiCommentTimeline__icon--default"
         )
@@ -18,6 +18,8 @@
           @size={{if (eq @type "update") "m" "l"}}
           @type={{@timelineIcon}}
         />
+      {{else if (hasBlock "timelineIcon")}}
+        {{yield to="timelineIcon"}}
       {{else}}
         <EuiIcon
           @type={{if (eq @type "update") "dot" "user"}}

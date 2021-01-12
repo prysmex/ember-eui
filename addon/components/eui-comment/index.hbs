@@ -6,10 +6,20 @@
   }}
   ...attributes
 >
-  <EuiComment::EuiCommentTimeline
-    @type={{@type}}
-    @timelineIcon={{@timelineIcon}}
-  />
+  {{#if (hasBlock "timelineIcon")}}
+    <EuiComment::EuiCommentTimeline
+      @type={{@type}}
+    >
+      <:timelineIcon>
+        {{yield to="timelineIcon"}}
+      </:timelineIcon>
+    </EuiComment::EuiCommentTimeline>
+  {{else}}
+    <EuiComment::EuiCommentTimeline
+      @type={{@type}}
+      @timelineIcon={{@timelineIcon}}
+    />
+  {{/if}}
   <EuiComment::EuiCommentEvent
     @timestamp={{@timestamp}}
     @type={{@type}}

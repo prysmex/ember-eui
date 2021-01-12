@@ -88,7 +88,7 @@
           </EuiFlexGroup>
         </:event>
       </EuiComment>
-      {{!-- <EuiComment @type="regular" @timestamp="on 2015-02-10">
+      <EuiComment @type="regular" @timestamp="on 2015-02-10">
         <:timelineIcon>
           <EuiAvatar
             @initials="RS"
@@ -112,8 +112,64 @@
         <:actions>
           <EuiButtonIcon @iconType="questionInCircle" />
         </:actions>
-      </EuiComment> --}}
+      </EuiComment>
     </EuiCommentList>
+    <EuiSpacer @size="xl" />
+    <EuiTitle @size="m">Comment</EuiTitle>
+    <EuiText @size="s">
+      <p>
+        You can still use comments without the comment list wrapper.
+      </p>
+      <p>
+        Due to the heavy amount of custom params you can provide to this component,
+        EuiComment mostly receives named blocks rather that props.
+        The code below yields the following result:
+      </p>
+    </EuiText>
+    <EuiSpacer />
+    <div class="code-block">
+      <code>
+        &lt;<span class="component-tag">EuiComment</span> @<span class="prop">type</span>=<span class="string">"regular"</span> @<span class="prop">timestamp</span>=<span class="string">"on 2015-02-01"</span>&gt;<br>
+          &nbsp;&nbsp;&lt;<span class="component-tag">:username</span>&gt;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;kyloRen<br>
+          &nbsp;&nbsp;&lt;/<span class="component-tag">:username</span>&gt;<br>
+          &nbsp;&nbsp;&lt;<span class="component-tag">:event</span>&gt;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;destroyed the jedi temple<br>
+          &nbsp;&nbsp;&lt;/<span class="component-tag">:event</span>&gt;<br>
+          &nbsp;&nbsp;&lt;<span class="component-tag">:body</span>&gt;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="component-tag">EuiText</span>&gt;<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="html-tag">p</span>&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Far out in the uncharted backwaters of the unfashionable end of the<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;western spiral arm of the Galaxy lies a small unregarded yellow sun.<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="html-tag">p</span>&gt;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span class="component-tag">EuiText</span>&gt;<br>
+          &nbsp;&nbsp;&lt;/<span class="component-tag">:body</span>&gt;<br>
+          &nbsp;&nbsp;&lt;<span class="component-tag">:actions</span>&gt;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="component-tag">EuiButtonIcon</span> @<span class="prop">iconType</span>=<span class="string">"wrench"</span>/&gt;<br>
+          &nbsp;&nbsp;&lt;/<span class="component-tag">:actions</span>&gt;<br>
+        &lt;/<span class="component-tag">EuiComment</span>&gt;<br>
+      </code>
+    </div>
+    <EuiSpacer />
+    <EuiComment @type="regular" @timestamp="on 2015-02-01">
+      <:username>
+        kyloRen
+      </:username>
+      <:event>
+        destroyed the jedi temple
+      </:event>
+      <:body>
+        <EuiText>
+          <p>
+            Far out in the uncharted backwaters of the unfashionable end of the
+            western spiral arm of the Galaxy lies a small unregarded yellow sun.
+          </p>
+        </EuiText>
+      </:body>
+      <:actions>
+        <EuiButtonIcon @iconType="wrench"/>
+      </:actions>
+    </EuiComment>
 
   </EuiPageContentBody>
 </EuiPageContent>

@@ -2,6 +2,9 @@
 
 ### Master
 
+### 0.0.26
+- Rename <Text /> component to <TextBlock>
+
 ### 0.0.25
 - Updates to elastic ui to 31.0.0
 ### 0.0.24

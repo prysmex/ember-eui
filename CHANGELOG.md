@@ -2,6 +2,9 @@
 
 ### Master
 
+### 0.0.28
+- Add ember-in-element-polyfill
+
 ### 0.0.27
 - Move `ember-keyboard` and `ember-focus-trap` from devDependencies to dependencies
 

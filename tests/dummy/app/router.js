@@ -12,7 +12,7 @@ Router.map(function() {
     this.route('accordion');
     this.route('page');
     this.route('loading');
-    this.route('text');
+    this.route('text-block');
     this.route('title');
     this.route('image');
     this.route('overlay-mask');

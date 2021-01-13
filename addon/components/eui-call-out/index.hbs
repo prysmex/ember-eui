@@ -12,13 +12,13 @@
         <EuiIcon class="euiCallOutHeader__icon" @type={{@iconType}} @size="m" aria-hidden="true" />
       {{/if}}
       {{#if @heading}}
-        <Text @tagName={{@heading}} class="euiCallOutHeader__title">
+        <TextBlock @tagName={{@heading}} class="euiCallOutHeader__title">
           {{#if (has-block "title")}}
             {{yield to="title"}}
           {{else}}
             {{@title}}
           {{/if}}
-        </Text>
+        </TextBlock>
       {{else}}
         <span class="euiCallOutHeader__title">
           {{#if (has-block "title")}}

@@ -14,7 +14,8 @@
     <EuiText @size="s">
       <p>
         The Comment List serves merely as a wrapper for various comments.
-        Does not serve any other purpose.
+        It does contain the comments from trying to connect each other in case you had multiple
+        unrelated comment lists in the same page.
       </p>
       <p>
         The original component from the React.js framework receives a @comments object,
@@ -151,25 +152,158 @@
       </code>
     </div>
     <EuiSpacer />
-    <EuiComment @type="regular" @timestamp="on 2015-02-01">
-      <:username>
-        kyloRen
-      </:username>
-      <:event>
-        destroyed the jedi temple
-      </:event>
-      <:body>
-        <EuiText>
-          <p>
-            Far out in the uncharted backwaters of the unfashionable end of the
-            western spiral arm of the Galaxy lies a small unregarded yellow sun.
-          </p>
-        </EuiText>
-      </:body>
-      <:actions>
-        <EuiButtonIcon @iconType="wrench"/>
-      </:actions>
-    </EuiComment>
+    <EuiCommentList>
+      <EuiComment @type="regular" @timestamp="on 2015-02-01">
+        <:username>
+          kyloRen
+        </:username>
+        <:event>
+          destroyed the jedi temple
+        </:event>
+        <:body>
+          <EuiText>
+            <p>
+              Far out in the uncharted backwaters of the unfashionable end of the
+              western spiral arm of the Galaxy lies a small unregarded yellow sun.
+            </p>
+          </EuiText>
+        </:body>
+        <:actions>
+          <EuiButtonIcon @iconType="wrench"/>
+        </:actions>
+      </EuiComment>
+    </EuiCommentList>
 
+    <EuiSpacer @size="xl" />
+    <EuiTitle @size="m">Comment Types</EuiTitle>
+    <EuiSpacer />
+    <EuiText>
+      <p>
+        You can pass down a <code>@<span class="prop">type</span></code> prop to
+        stylize the comment. It accepts <code><span class="string">"regular"</span></code> as the default and
+        <code><span class="string">"update"</span></code> for a more minimal one-liner comment.
+        Update comments can also receive a body content.
+      </p>
+    </EuiText>
+    <EuiSpacer />
+    <EuiCommentList>
+      <EuiComment @type="regular" @timestamp="on 2015-02-01">
+        <:username>
+          betoCantu
+        </:username>
+        <:event>
+          <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="s">
+            <EuiFlexItem @grow={{false}}>
+              merged this branch into
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiBadge @color="accent">master</EuiBadge>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </:event>
+        <:body>
+          The lorem ipsum body content to better show what the comment structure looks like.
+        </:body>
+      </EuiComment>
+      <EuiComment @type="update" @timestamp="on 2015-02-01">
+        <:username>
+          betoCantu
+        </:username>
+        <:event>
+          <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="s">
+            <EuiFlexItem @grow={{false}}>
+              merged this branch into
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiBadge @color="accent">master</EuiBadge>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </:event>
+        <:body>This is a comment with a body!!</:body>
+      </EuiComment>
+      <EuiComment @type="update" @timestamp="on 2015-02-01">
+        <:username>
+          silvaMtz
+        </:username>
+        <:event>
+          <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="s">
+            <EuiFlexItem @grow={{false}}>
+              reopened this
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiBadge @color="green">pull request</EuiBadge>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </:event>
+      </EuiComment>
+    </EuiCommentList>
+
+    <EuiSpacer @size="xl" />
+    <EuiTitle @size="m">Custom Timeline Icon</EuiTitle>
+    <EuiSpacer />
+    <EuiText>
+      <p>
+        Since most of the props are custom, you can use named blocks to pass down different components
+        to the body, event, username, and most importantly, the icon to display.
+        Use the <code>&lt;<span class="component-tag">:timelineIcon</span>&gt;</code> block.
+      </p>
+    </EuiText>
+    <EuiSpacer />
+    <EuiCommentList>
+      <EuiComment @type="regular" @timestamp="on 2015-02-10">
+        <:timelineIcon>
+          <EuiAvatar
+            @initials="RS"
+            @name="Rey Skywokah"
+            @type="user"
+            @size="l"
+          />
+        </:timelineIcon>
+        <:username>
+          reySkywokah
+        </:username>
+        <:event>
+          turned out to be all mighty
+        </:event>
+        <:body>
+          <EuiText>
+            <p>
+              How and why did this happen? Who knows..?
+            </p>
+          </EuiText>
+        </:body>
+      </EuiComment>
+    </EuiCommentList>
+    <EuiSpacer @size="xl" />
+    <EuiTitle @size="m">Actions</EuiTitle>
+    <EuiSpacer />
+    <EuiText>
+      <p>
+        Use the <code>&lt;<span class="component-tag">:actions</span>&gt;</code> block to pass
+        your custom actions, can be a button, popup menu, tooltip, anything.
+        It will show on the top right corner of the comment.
+      </p>
+    </EuiText>
+    <EuiSpacer />
+    <EuiCommentList>
+      <EuiComment @type="regular" @timestamp="on 2015-02-10">
+        <:username>
+          reySkywokah
+        </:username>
+        <:event>
+          turned out to be all mighty
+        </:event>
+        <:body>
+          <EuiText>
+            <p>
+              How and why did this happen? Who knows..?
+            </p>
+          </EuiText>
+        </:body>
+        <:actions>
+          <EuiButtonIcon @iconType="questionInCircle" />
+        </:actions>
+      </EuiComment>
+    </EuiCommentList>
   </EuiPageContentBody>
 </EuiPageContent>

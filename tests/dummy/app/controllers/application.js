@@ -90,7 +90,7 @@ export default class ApplicationController extends Controller {
             items: [createItem('Spinner')],
           }),
           createItem('Text', {
-            href: 'demo.text',
+            href: 'demo.text-block',
           }),
           createItem('Title', {
             href: 'demo.title',

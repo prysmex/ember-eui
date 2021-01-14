@@ -1,9 +1,9 @@
 {{#let (unique-id) as |groupId|}}
-  {{#if (and @isCollapsible (hasBlock "title"))}}
+  {{#if (and @isCollapsible (has-block "title"))}}
     <EuiAccordion
       id={{groupId}}
       class={{class-names
-        (if (hasBlock "title") "euiCollapsibleNavGroup--withHeading")
+        (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
         componentName="EuiCollapsibleNavGroup"
         backgroundColor=(arg-or-default @background "none")
       }}
@@ -21,13 +21,13 @@
           {{/if}}
           <EuiFlexItem>
             <EuiTitle @size={{arg-or-default @titleSize "xxs"}}>
-              <Text
+              <TextBlock
                 @tagName={{arg-or-default @titleTagName "h3"}}
                 id={{concat groupId "__title"}}
                 class="euiCollapsibleNavGroup__title"
               >
                 {{yield to="title"}}
-              </Text>
+              </TextBlock>
             </EuiTitle>
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -42,13 +42,13 @@
     <div
       id={{groupId}}
       class={{class-names
-        (if (hasBlock "title") "euiCollapsibleNavGroup--withHeading")
+        (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
         componentName="EuiCollapsibleNavGroup"
         backgroundColor=(arg-or-default @background "none")
       }}
       ...attributes
     >
-      {{#if (hasBlock "title")}}
+      {{#if (has-block "title")}}
         <div class="euiCollapsibleNavGroup__heading">
           <EuiFlexGroup @gutterSize="m" @alignItems="center" @responsive={{false}}>
             {{#if @iconType}}
@@ -58,13 +58,13 @@
             {{/if}}
             <EuiFlexItem>
               <EuiTitle @size={{arg-or-default @titleSize "xxs"}}>
-                <Text
+                <TextBlock
                   @tagName={{arg-or-default @titleTagName "h3"}}
                   id={{concat groupId "__title"}}
                   class="euiCollapsibleNavGroup__title"
                 >
                   {{yield to="title"}}
-                </Text>
+                </TextBlock>
               </EuiTitle>
             </EuiFlexItem>
           </EuiFlexGroup>

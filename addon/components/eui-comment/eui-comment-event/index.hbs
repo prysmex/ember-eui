@@ -20,10 +20,10 @@
         <div class="euiCommentEvent__headerEvent">
           {{yield to="event"}}
         </div>
-        {{#if @timestamp}}
+        {{#if (has-block "timestamp")}}
           <div class="euiCommentEvent__headerTimestamp">
             <time>
-              {{@timestamp}}
+              {{yield to="timestamp"}}
             </time>
           </div>
         {{/if}}
@@ -51,10 +51,10 @@
         <div class="euiCommentEvent__headerEvent">
           {{yield to="event"}}
         </div>
-        {{#if @timestamp}}
+        {{#if (has-block "timestamp")}}
           <div class="euiCommentEvent__headerTimestamp">
             <time>
-              {{@timestamp}}
+              {{yield to="timestamp"}}
             </time>
           </div>
         {{/if}}

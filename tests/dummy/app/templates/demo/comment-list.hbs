@@ -24,7 +24,7 @@
     </EuiText>
     <EuiSpacer />
     <EuiCommentList>
-      <EuiComment @type="regular" @timestamp="on 2015-02-01">
+      <EuiComment @type="regular">
         <:username>
           kyloRen
         </:username>
@@ -43,15 +43,18 @@
           <EuiButtonIcon @iconType="wrench"/>
         </:actions>
       </EuiComment>
-      <EuiComment @type="update" @timestamp="on 2015-02-05">
+      <EuiComment @type="update">
         <:username>
           lukeSW
         </:username>
         <:event>
           went into hiding
         </:event>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
-      <EuiComment @type="update" @timestamp="on 2015-02-05">
+      <EuiComment @type="update">
         <:username>
           r2d2
         </:username>
@@ -66,8 +69,11 @@
             </p>
           </EuiText>
         </:body>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
-      <EuiComment @timelineIcon="listAdd" @type="update" @timestamp="on 2015-02-08">
+      <EuiComment @timelineIcon="listAdd" @type="update">
         <:username>
           <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="s">
             <EuiFlexItem @grow={{false}}>
@@ -88,8 +94,11 @@
             </EuiFlexItem>
           </EuiFlexGroup>
         </:event>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
-      <EuiComment @type="regular" @timestamp="on 2015-02-10">
+      <EuiComment @type="regular">
         <:timelineIcon>
           <EuiAvatar
             @initials="RS"
@@ -113,6 +122,9 @@
         <:actions>
           <EuiButtonIcon @iconType="questionInCircle" />
         </:actions>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
     </EuiCommentList>
     <EuiSpacer @size="xl" />
@@ -130,7 +142,7 @@
     <EuiSpacer />
     <div class="code-block">
       <code>
-        &lt;<span class="component-tag">EuiComment</span> @<span class="prop">type</span>=<span class="string">"regular"</span> @<span class="prop">timestamp</span>=<span class="string">"on 2015-02-01"</span>&gt;<br>
+        &lt;<span class="component-tag">EuiComment</span> @<span class="prop">type</span>=<span class="string">"regular"</span>&gt;<br>
           &nbsp;&nbsp;&lt;<span class="component-tag">:username</span>&gt;<br>
             &nbsp;&nbsp;&nbsp;&nbsp;kyloRen<br>
           &nbsp;&nbsp;&lt;/<span class="component-tag">:username</span>&gt;<br>
@@ -148,12 +160,15 @@
           &nbsp;&nbsp;&lt;<span class="component-tag">:actions</span>&gt;<br>
             &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span class="component-tag">EuiButtonIcon</span> @<span class="prop">iconType</span>=<span class="string">"wrench"</span>/&gt;<br>
           &nbsp;&nbsp;&lt;/<span class="component-tag">:actions</span>&gt;<br>
+          &nbsp;&nbsp;&lt;<span class="component-tag">:timestamp</span>&gt;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;on 2015-02-05<br>
+          &nbsp;&nbsp;&lt;/<span class="component-tag">:timestamp</span>&gt;<br>
         &lt;/<span class="component-tag">EuiComment</span>&gt;<br>
       </code>
     </div>
     <EuiSpacer />
     <EuiCommentList>
-      <EuiComment @type="regular" @timestamp="on 2015-02-01">
+      <EuiComment @type="regular">
         <:username>
           kyloRen
         </:username>
@@ -171,6 +186,9 @@
         <:actions>
           <EuiButtonIcon @iconType="wrench"/>
         </:actions>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
     </EuiCommentList>
 
@@ -187,7 +205,7 @@
     </EuiText>
     <EuiSpacer />
     <EuiCommentList>
-      <EuiComment @type="regular" @timestamp="on 2015-02-01">
+      <EuiComment @type="regular">
         <:username>
           betoCantu
         </:username>
@@ -204,8 +222,11 @@
         <:body>
           The lorem ipsum body content to better show what the comment structure looks like.
         </:body>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
-      <EuiComment @type="update" @timestamp="on 2015-02-01">
+      <EuiComment @type="update">
         <:username>
           betoCantu
         </:username>
@@ -220,8 +241,11 @@
           </EuiFlexGroup>
         </:event>
         <:body>This is a comment with a body!!</:body>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
-      <EuiComment @type="update" @timestamp="on 2015-02-01">
+      <EuiComment @type="update">
         <:username>
           silvaMtz
         </:username>
@@ -235,6 +259,9 @@
             </EuiFlexItem>
           </EuiFlexGroup>
         </:event>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
     </EuiCommentList>
 
@@ -250,7 +277,7 @@
     </EuiText>
     <EuiSpacer />
     <EuiCommentList>
-      <EuiComment @type="regular" @timestamp="on 2015-02-10">
+      <EuiComment @type="regular">
         <:timelineIcon>
           <EuiAvatar
             @initials="RS"
@@ -272,6 +299,9 @@
             </p>
           </EuiText>
         </:body>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
     </EuiCommentList>
     <EuiSpacer @size="xl" />
@@ -286,7 +316,7 @@
     </EuiText>
     <EuiSpacer />
     <EuiCommentList>
-      <EuiComment @type="regular" @timestamp="on 2015-02-10">
+      <EuiComment @type="regular">
         <:username>
           reySkywokah
         </:username>
@@ -303,6 +333,9 @@
         <:actions>
           <EuiButtonIcon @iconType="questionInCircle" />
         </:actions>
+        <:timestamp>
+          on 2015-02-05
+        </:timestamp>
       </EuiComment>
     </EuiCommentList>
   </EuiPageContentBody>

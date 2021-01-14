@@ -21,7 +21,6 @@
     />
   {{/if}}
   <EuiComment::EuiCommentEvent
-    @timestamp={{@timestamp}}
     @type={{@type}}
   >
     <:username>
@@ -36,5 +35,8 @@
     <:body>
       {{yield to="body"}}
     </:body>
+    <:timestamp>
+      {{yield to="timestamp"}}
+    </:timestamp>
   </EuiComment::EuiCommentEvent>
 </div>

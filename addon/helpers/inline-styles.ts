@@ -4,7 +4,7 @@ import cssMappings from '../utils/css-mappings';
 
 interface InlineStylesParams {
   componentName?: string;
-  componentArgs?: number;
+  componentArgs?: Record<string, unknown>;
   [property: string]: unknown;
 }
 interface FinalProperties {

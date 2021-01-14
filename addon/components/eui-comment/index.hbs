@@ -2,11 +2,11 @@
   class={{class-names
     "euiComment"
     (if (eq @type "update") "euiComment--update")
-    (if (hasBlock "body") "euiComment--hasBody")
+    (if (has-block "body") "euiComment--hasBody")
   }}
   ...attributes
 >
-  {{#if (hasBlock "timelineIcon")}}
+  {{#if (has-block "timelineIcon")}}
     <EuiComment::EuiCommentTimeline
       @type={{@type}}
     >

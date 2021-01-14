@@ -1,6 +1,7 @@
 
 import EuiAccordion from './eui-accordion';
 import EuiIcon from './eui-icon';
+import EuiModal from './eui-modal';
 import EuiLoadingSpinner from './eui-loading-spinner';
 import EuiImage from './eui-image';
 import EuiSpacer from './eui-spacer';
@@ -26,10 +27,12 @@ import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
 import EuiCommentTimelineIcon from './eui-comment-timeline-icon';
 import EuiCommentEvent from './eui-comment-event';
+import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
 
 const mapping: Mapping = {
   EuiAccordion,
   EuiIcon,
+  EuiModal,
   EuiImage,
   EuiLoadingSpinner,
   EuiSpacer,
@@ -54,7 +57,8 @@ const mapping: Mapping = {
   EuiButton,
   EuiHorizontalRule,
   EuiCommentTimelineIcon,
-  EuiCommentEvent
+  EuiCommentEvent,
+  EuiCollapsibleNavGroup,
 }
 
 export default mapping;

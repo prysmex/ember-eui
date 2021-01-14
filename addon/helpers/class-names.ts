@@ -25,6 +25,7 @@ interface Options {
   flush: string;
   margin: string;
   borderRadius: string;
+  backgroundColor: string;
 }
 
 /**
@@ -53,7 +54,8 @@ export function classNames(
     grow,
     iconSide,
     margin,
-    borderRadius
+    borderRadius,
+    backgroundColor
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -83,6 +85,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
     classes.push(cssMappings[componentName].properties.margin?.[margin] || '');
     classes.push(cssMappings[componentName].properties.borderRadius?.[borderRadius] || '');
+    classes.push(cssMappings[componentName].properties.backgroundColor?.[backgroundColor] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

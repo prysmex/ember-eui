@@ -1,21 +1,16 @@
-<div {{focus-trap isActive=true focusTrapOptions=(hash initialFocus=@initialFocus)}}>
-  <div
-    {{on-key 'Escape' @onClose}}
-    class={{class-names
-      "euiModal"
-      (unless (eq @restrainWidth false) "euiModal--maxWidth-default")
-    }}
-    tabIndex={{0}}
-    ...attributes
-  >
-    <EuiButtonIcon
-      @iconType="cross"
-      onClick={{@onClose}}
-      class="euiModal__closeIcon"
-      @color="text"
-    />
-    <div class="euiModal__flex">
-      {{yield}}
-    </div>
+<div
+  class={{class-names "euiModal" (if (eq @maxWidth true) "euiModal--maxWidth-default")}}
+  style={{if
+    (not-eq @maxWidth false)
+    (inline-styles componentName="EuiModal" componentArgs=(hash maxWidth=@maxWidth))
+  }}
+  tabIndex={{0}}
+  ...attributes
+  {{focus-trap isActive=true focusTrapOptions=(hash initialFocus=@initialFocus)}}
+  {{on-key "Escape" @onClose}}
+>
+  <EuiButtonIcon @iconType="cross" onClick={{@onClose}} class="euiModal__closeIcon" @color="text" />
+  <div class="euiModal__flex">
+    {{yield}}
   </div>
 </div>

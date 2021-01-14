@@ -4,26 +4,38 @@ import cssMappings from '../utils/css-mappings';
 
 interface InlineStylesParams {
   componentName?: string;
+  componentArgs?: Record<string, unknown>;
   [property: string]: unknown;
 }
+interface FinalProperties {
+  [name: string]: unknown
+}
 
-export function inlineStyles(_:unknown, params: InlineStylesParams) {
-
+export function inlineStyles(_: unknown, params: InlineStylesParams) {
   let styles: string[] = [];
-  const { componentName, ...properties } = params
+  const { componentName, componentArgs = {}, ...properties } = params;
+  let componentStyles = {};
 
   if (componentName) {
     assert(`Could not find component ${componentName} in cssMappings.`, cssMappings[componentName]);
-    assert(`Could not find inlineStyles in ${componentName}'s cssMapping.`, cssMappings[componentName].inlineStyles);
-    styles.push(...cssMappings[componentName].inlineStyles!?.(properties));
+    assert(
+      `Could not find inlineStyles in ${componentName}'s cssMapping.`,
+      cssMappings[componentName].inlineStyles
+    );
+    componentStyles = cssMappings[componentName].inlineStyles?.(componentArgs) || {};
   }
 
-  for(let property in properties) {
+  let finalProperties: FinalProperties = {
+    ...properties,
+    ...componentStyles,
+  };
+
+  for (let property in finalProperties) {
     let style;
-    if (property === 'background-image' && properties[property] !== 'none') {
-      style = `${property}` + `: url(${properties[property]})`;
+    if (property === 'background-image' && finalProperties[property] !== 'none') {
+      style = `${property}` + `: url(${finalProperties[property]})`;
     } else {
-      style = `${property}` + `: ${properties[property]}`;
+      style = `${property}` + `: ${finalProperties[property]}`;
     }
 
     styles.push(style);

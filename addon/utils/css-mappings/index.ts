@@ -1,6 +1,7 @@
 
 import EuiAccordion from './eui-accordion';
 import EuiIcon from './eui-icon';
+import EuiModal from './eui-modal';
 import EuiLoadingSpinner from './eui-loading-spinner';
 import EuiImage from './eui-image';
 import EuiSpacer from './eui-spacer';
@@ -28,6 +29,7 @@ import EuiHorizontalRule from './eui-horizontal-rule';
 const mapping: Mapping = {
   EuiAccordion,
   EuiIcon,
+  EuiModal,
   EuiImage,
   EuiLoadingSpinner,
   EuiSpacer,

@@ -56,6 +56,9 @@ export default class ApplicationController extends Controller {
           createItem('Button', {
             href: 'demo.button',
           }),
+          createItem('Collapsible Nav', {
+            href: 'demo.collapsible-nav'
+          })
         ],
       }),
       createItem('Display', {

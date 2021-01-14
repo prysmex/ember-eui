@@ -2,6 +2,9 @@
 
 ### Master
 
+### 0.0.29
+- Fix inline-styles and <EuiModal /> type with restrictWidth, should be maxWidth 
+
 ### 0.0.28
 - Add ember-in-element-polyfill
 

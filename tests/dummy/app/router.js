@@ -12,7 +12,7 @@ Router.map(function() {
     this.route('accordion');
     this.route('page');
     this.route('loading');
-    this.route('text');
+    this.route('text-block');
     this.route('title');
     this.route('image');
     this.route('overlay-mask');
@@ -23,7 +23,11 @@ Router.map(function() {
     this.route('card');
     this.route('button');
     this.route('health');
+    this.route('modal');
     this.route('flex');
     this.route('header');
+    this.route('horizontal-rule');
+    this.route('panel');
+    this.route('collapsible-nav');
   })
 });

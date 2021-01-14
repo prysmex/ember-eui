@@ -36,9 +36,18 @@ export default class ApplicationController extends Controller {
           createItem('Header', {
             href: 'demo.header'
           }),
+          createItem('Modal', {
+            href: 'demo.modal'
+          }),
+          createItem('Horizontal Rule', {
+            href: 'demo.horizontal-rule'
+          }),
           createItem('Page', {
             href: 'demo.page'
-          })
+          }),
+          createItem('Panel', {
+            href: 'demo.panel'
+          }),
         ]
       }),
       createItem('Navigation', {
@@ -50,6 +59,9 @@ export default class ApplicationController extends Controller {
           createItem('Button', {
             href: 'demo.button',
           }),
+          createItem('Collapsible Nav', {
+            href: 'demo.collapsible-nav'
+          })
         ],
       }),
       createItem('Display', {
@@ -81,7 +93,7 @@ export default class ApplicationController extends Controller {
             items: [createItem('Spinner')],
           }),
           createItem('Text', {
-            href: 'demo.text',
+            href: 'demo.text-block',
           }),
           createItem('Title', {
             href: 'demo.title',

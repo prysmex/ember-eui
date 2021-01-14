@@ -1,6 +1,7 @@
 
 import EuiAccordion from './eui-accordion';
 import EuiIcon from './eui-icon';
+import EuiModal from './eui-modal';
 import EuiLoadingSpinner from './eui-loading-spinner';
 import EuiImage from './eui-image';
 import EuiSpacer from './eui-spacer';
@@ -11,7 +12,7 @@ import EuiText from './eui-text';
 import EuiPanel from './eui-panel';
 import EuiPageContent from './eui-page-content';
 import EuiAvatar from './eui-avatar';
-import EuiCallout from './eui-callout';
+import EuiCallOut from './eui-call-out';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
 import EuiFlexGrid from './eui-flex-grid';
@@ -24,10 +25,15 @@ import EuiCardSelect from './eui-card-select';
 import EuiHeaderSection from './eui-header-section';
 import EuiHeaderSectionItem from './eui-header-section-item';
 import EuiHeader from './eui-header';
+import EuiButtonIcon from './eui-button-icon';
+import EuiButton from './eui-button';
+import EuiHorizontalRule from './eui-horizontal-rule';
+import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
 
 const mapping: Mapping = {
   EuiAccordion,
   EuiIcon,
+  EuiModal,
   EuiImage,
   EuiLoadingSpinner,
   EuiSpacer,
@@ -38,7 +44,7 @@ const mapping: Mapping = {
   EuiPanel,
   EuiPageContent,
   EuiAvatar,
-  EuiCallout,
+  EuiCallOut,
   EuiFlexGroup,
   EuiFlexItem,
   EuiFlexGrid,
@@ -50,7 +56,11 @@ const mapping: Mapping = {
   EuiCardSelect,
   EuiHeaderSection,
   EuiHeaderSectionItem,
-  EuiHeader
+  EuiHeader,
+  EuiButtonIcon,
+  EuiButton,
+  EuiHorizontalRule,
+  EuiCollapsibleNavGroup,
 }
 
 export default mapping;

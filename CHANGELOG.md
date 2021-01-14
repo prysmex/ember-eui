@@ -1,9 +1,58 @@
 # Ember Eui Changelog
 
 ### Master
+
+### 0.0.29
+- Fix inline-styles and <EuiModal /> type with restrictWidth, should be maxWidth 
+
+### 0.0.28
+- Add ember-in-element-polyfill
+
+### 0.0.27
+- Move `ember-keyboard` and `ember-focus-trap` from devDependencies to dependencies
+
+### 0.0.26
+- Rename <Text /> component to <TextBlock>
+
+### 0.0.25
+- Updates to elastic ui to 31.0.0
+
+### 0.0.24
+🚀 Enhancements
+- EuiModal
+
+### 0.0.23
+🚀 Enhancements
+- EuiCallOut may now receive named blocks <:title> </:title> <:body> <:/body>
+
+🏠 Internal
+- Installed ember-named-blocks-polyfill
+
+### 0.0.22
+🐛 Bug / Fixes
+- Renames EuiCallout to EuiCallOut
+
+### 0.0.21
+🐛 Bug / Fixes
+- Fixes a few missing props for EuiPage, EuiPageBody, EuiPanel and EuiCard
+- Fixes EuiHorizontalRule not receiving splattributes
+
+### 0.0.20
+🚀 Enhancements
+- EuiHr
+
+🐛 Bug / Fixes
+- Fix EuiImage close Icon
+
+### 0.0.19
+🚀 Enhancements
 - Performance for EuiText, EuiColor, EuiCallout, EuiPage, EuiFlexItem and more, reducing usage of element helper
 - Text hack to avoid using element helper for simple text dom nodes
 - EuiCard
+
+🏠 Internal
+- Update ember-svg-jar fork
+- Update @elastic/eui to 30.3.0
 
 ### 0.0.18
 🚀 Enhancements

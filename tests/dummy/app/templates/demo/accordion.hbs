@@ -9,9 +9,12 @@
 </EuiPageHeader>
 <EuiPageContent>
   <EuiPageContentBody>
-    <EuiAccordion @buttonContent="Clickable title">
-      My content
+
+    <EuiAccordion>
+      <:buttonContent>Clickable title</:buttonContent>
+      <:content>My content</:content>
     </EuiAccordion>
+
     <br />
     <h1>
       Accordion with
@@ -32,7 +35,6 @@
       Close
     </button>
     <EuiAccordion
-      @buttonContent="Clickable title"
       @forceState={{this.accordionState}}
       @onToggle={{if
         (eq this.accordionState "open")
@@ -40,7 +42,12 @@
         (fn (mut this.accordionState) "open")
       }}
     >
-      My content
+      <:buttonContent>
+        Clickable title
+      </:buttonContent>
+      <:content>
+        My Content
+      </:content>
     </EuiAccordion>
     <br />
     <h1>
@@ -50,17 +57,25 @@
       </b>
     </h1>
     <EuiAccordion
-      @buttonContent="You spin my head right round"
       @isLoading={{true}}
     >
-      My content
+      <:buttonContent>
+        "You spin my head right round"
+      </:buttonContent>
+      <:content>
+        My content
+      </:content>
     </EuiAccordion>
     <EuiAccordion
-      @buttonContent="You spin my head right round also in content"
       @isLoading={{true}}
       @isLoadingMessage="What what"
     >
-      My content
+      <:buttonContent>
+        You spin my head right round also in content
+      </:buttonContent>
+      <:content>
+        My content
+      </:content>
     </EuiAccordion>
     <br />
     <h1>
@@ -69,8 +84,13 @@
         arrowDisplay = left
       </b>
     </h1>
-    <EuiAccordion @buttonContent="Clickable title" @arrowDisplay="right">
-      My content
+    <EuiAccordion @arrowDisplay="right">
+      <:buttonContent>
+        Clickable Title
+      </:buttonContent>
+      <:content>
+        My content
+      </:content>
     </EuiAccordion>
   </EuiPageContentBody>
 </EuiPageContent>

@@ -9,14 +9,15 @@
 </EuiPageHeader>
 <EuiPageContent>
   <EuiPageContentBody>
-    <EuiPageContentHeader>
-      <EuiPageContentHeaderSection>
-        <h1>
-          Spinner
-        </h1>
-      </EuiPageContentHeaderSection>
-    </EuiPageContentHeader>
+    <EuiTitle size="l">
+      Spinner
+    </EuiTitle>
     <EuiLoadingSpinner id={{unique-id}} />
     <EuiLoadingSpinner id={{unique-id}} @size="xl" />
+    <EuiSpacer />
+    <EuiTitle size="l">
+      Text Content
+    </EuiTitle>
+    <EuiLoadingContent @lines={{4}} />
   </EuiPageContentBody>
 </EuiPageContent>

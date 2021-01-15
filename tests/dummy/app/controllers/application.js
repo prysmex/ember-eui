@@ -88,6 +88,7 @@ export default class ApplicationController extends Controller {
           createItem('Loading', {
             href: 'demo.loading',
             items: [createItem('Spinner')],
+            items: [createItem('Text content')],
           }),
           createItem('Text', {
             href: 'demo.text-block',

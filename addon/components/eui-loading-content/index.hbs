@@ -1,5 +1,17 @@
 <span class="euiLoadingContent" ...attributes>
-  {{#each (repeat @lines)}}
+  {{#each
+    (repeat
+      (if
+        (gt @lines 10)
+        10
+        (if
+          (lt @lines 1)
+          1
+          @lines
+        )
+      )
+    )
+  }}
     <span class="euiLoadingContent__singleLine">
       <span class="euiLoadingContent__singleLineBackground" />
     </span>

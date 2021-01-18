@@ -1,5 +1,6 @@
 import EmberRouter from '@ember/routing/router';
 import config from 'dummy/config/environment';
+import { addDocfyRoutes } from '@docfy/ember';
 
 export default class Router extends EmberRouter {
   location = config.locationType;
@@ -7,6 +8,7 @@ export default class Router extends EmberRouter {
 }
 
 Router.map(function() {
+  addDocfyRoutes(this)
   this.route('demo', function() {
     this.route('icon');
     this.route('accordion');

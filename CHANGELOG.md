@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.0.30
+🚀 Enhancements
+- Docfy docs
+- EuiCollapsibleNav
+
 ### 0.0.29
 - Fix inline-styles and <EuiModal /> type with restrictWidth, should be maxWidth 
 

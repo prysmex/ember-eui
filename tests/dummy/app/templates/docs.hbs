@@ -1,0 +1,14 @@
+<EuiPage @restrictWidth="1280px">
+  <EuiPageSideBar>
+    <EuiSideNav
+      @mobileTitle="Elastic UI"
+      @isOpenMobile={{this.isOpenMobile}}
+      @toggleOpenOnMobile={{set this.isOpenMobile}}
+      @items={{this.sideNavRoutes}}
+			@selectedItem={{this.selectedItem}}
+    />
+  </EuiPageSideBar>
+  <EuiPageBody @tagName="div">
+    {{outlet}}
+  </EuiPageBody>
+</EuiPage>

@@ -4,6 +4,7 @@ import { inject as service } from '@ember/service';
 
 export default class ApplicationController extends Controller {
   @service router;
+  @service docfy;
   @tracked sideNavItems = [];
   @tracked isOpenMobile = true;
 
@@ -22,6 +23,7 @@ export default class ApplicationController extends Controller {
 
   constructor() {
     super(...arguments);
+    window.docfy = this.docfy;
     let createItem = this.createItem.bind(this);
     this.sideNavItems = [
       createItem('Layout', {
@@ -102,5 +104,7 @@ export default class ApplicationController extends Controller {
         items: [createItem('Overlay mask', { href: 'demo.overlay-mask' })],
       }),
     ];
+
+    console.log(this.sideNavItems)
   }
 }

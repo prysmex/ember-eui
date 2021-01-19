@@ -51,7 +51,7 @@
     "ember-in-element-polyfill": "^1.0.0",
     "ember-keyboard": "^6.0.1",
     "ember-named-blocks-polyfill": "^0.2.3",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#11e288e32e9195df777587a2c8e5beea12421d1b",
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#80fc7c2ea1a026e60061677648e5693e0d9361b3",
     "ember-truth-helpers": "^2.1.0",
     "node-sass": "^4.14.1",
     "resolve": "^1.13.1"

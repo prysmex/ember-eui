@@ -25,8 +25,6 @@ type Item = {
   onClick: boolean | (() => unknown);
 }
 
-
-
 function compareFunction(a: Item, b: Item) {
   if (a.name < b.name) {
     return -1;

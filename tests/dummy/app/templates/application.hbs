@@ -1,14 +1,25 @@
-<EuiPage @restrictWidth="1280px">
-  <EuiPageSideBar>
+<EuiHeader>
+	<EuiHeaderSectionItem @border="none" class="mx-3">
+		Ember Eui
+	</EuiHeaderSectionItem>
+  <EuiHeaderSectionItem @size="right" @border="right">
+    <EuiHeaderLogo @iconType="logoGithub" href="https://github.com/prysmex/ember-eui" target="_blank" rel="noopener noreferrer"/>
+  </EuiHeaderSectionItem>
+</EuiHeader>
+<EuiPage @restrictWidth="1280px" class="m-auto overflow-hidden p-2">
+  <EuiPageSideBar class="mt-8">
     <EuiSideNav
+      class="flex-none"
       @mobileTitle="Elastic UI"
       @isOpenMobile={{this.isOpenMobile}}
       @toggleOpenOnMobile={{set this.isOpenMobile}}
-      @items={{this.sideNavItems}}
-      @selectedItem={{this.router.currentRouteName}}
+      @items={{this.sideNavRoutes}}
+      @selectedItem={{this.selectedItem}}
     />
   </EuiPageSideBar>
-  <EuiPageBody @tagName="div">
-    {{outlet}}
+  <EuiPageBody class="flex-1 w-full min-w-0 mt-8 mode-dark" @tagName="div">
+    <EuiPanel class="max-w-full markdown euiCodeBlock">
+      {{outlet}}
+    </EuiPanel>
   </EuiPageBody>
 </EuiPage>

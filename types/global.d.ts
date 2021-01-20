@@ -6,7 +6,7 @@ declare module 'ember-eui/templates/*' {
 }
 
 declare module 'ember-cli-string-helpers/helpers/*' {
-  const humanize: string;
+  const humanize: (positionalParams: string[]) => string;
   export { humanize };
 }
 

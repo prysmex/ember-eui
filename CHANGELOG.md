@@ -2,9 +2,14 @@
 
 ### Master
 
+### 0.0.31
+🚀 Enhancements
+- Customize focusTrapOptions for `focus-trap` helper inside <EuiModal /> 
+
 ### 0.0.30
 🏠 Internal
 - Bump ember-svg-jar
+
 ### 0.0.29
 - Fix inline-styles and <EuiModal /> type with restrictWidth, should be maxWidth 
 

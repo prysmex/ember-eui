@@ -1,7 +1,8 @@
-# You can use spinners
+# Demo
 
 ```hbs template
-	<EuiLoadingSpinner />
-	<EuiLoadingSpinner />
-	<EuiLoadingSpinner />
+<EuiLoadingSpinner @size="s"/>
+<EuiLoadingSpinner @size="m"/>
+<EuiLoadingSpinner @size="l"/>
+<EuiLoadingSpinner @size="xl"/>
 ```

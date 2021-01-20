@@ -1,6 +1,5 @@
 # Demo
 
-
 ```hbs template
 <EuiBadge
   @href="https://starwars.fandom.com/wiki/Main_Page"

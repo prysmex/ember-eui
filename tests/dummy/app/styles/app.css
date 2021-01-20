@@ -8,6 +8,15 @@
 /* @import './markdown/light.css'; */
 @import './highlight.css';
 
+*, ::before, ::after {
+  border-style: none;
+  box-sizing: border-box;
+  border-width: 0;
+  border-color: unset;
+}
+img {
+  border: none;
+}
 
 .docfy-demo__description {
   @apply border rounded-t;

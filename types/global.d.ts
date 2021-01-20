@@ -7,7 +7,7 @@ declare module 'ember-eui/templates/*' {
 
 declare module 'ember-cli-string-helpers/helpers/*' {
   const humanize: string;
-  export humanize;
+  export { humanize };
 }
 
 interface PropertyMapping {

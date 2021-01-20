@@ -27,6 +27,7 @@ Router.map(function() {
     this.route('health');
     this.route('modal');
     this.route('flex');
+    this.route('header');
     this.route('horizontal-rule');
     this.route('panel');
     this.route('collapsible-nav');

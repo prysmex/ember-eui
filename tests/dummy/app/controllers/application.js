@@ -35,6 +35,9 @@ export default class ApplicationController extends Controller {
           createItem('Flex', {
             href: 'demo.flex'
           }),
+          createItem('Header', {
+            href: 'demo.header'
+          }),
           createItem('Modal', {
             href: 'demo.modal'
           }),

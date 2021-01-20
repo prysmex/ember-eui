@@ -23,6 +23,9 @@ interface Options {
   grow: number | string;
   iconSide: string;
   flush: string;
+  borderSide: string;
+  position: string;
+  theme: string;
   margin: string;
   borderRadius: string;
   backgroundColor: string;
@@ -53,6 +56,9 @@ export function classNames(
     columns,
     grow,
     iconSide,
+    borderSide,
+    position,
+    theme,
     margin,
     borderRadius,
     backgroundColor
@@ -83,6 +89,9 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
     classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
     classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
+    classes.push(cssMappings[componentName].properties.borderSide?.[borderSide] || '');
+    classes.push(cssMappings[componentName].properties.theme?.[theme] || '');
+    classes.push(cssMappings[componentName].properties.position?.[position] || '');
     classes.push(cssMappings[componentName].properties.margin?.[margin] || '');
     classes.push(cssMappings[componentName].properties.borderRadius?.[borderRadius] || '');
     classes.push(cssMappings[componentName].properties.backgroundColor?.[backgroundColor] || '');

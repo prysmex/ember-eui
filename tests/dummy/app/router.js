@@ -29,5 +29,6 @@ Router.map(function() {
     this.route('horizontal-rule');
     this.route('panel');
     this.route('collapsible-nav');
+    this.route('steps');
   })
 });

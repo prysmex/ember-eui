@@ -61,6 +61,9 @@ export default class ApplicationController extends Controller {
           }),
           createItem('Collapsible Nav', {
             href: 'demo.collapsible-nav'
+          }),
+          createItem('Steps', {
+            href: 'demo.steps'
           })
         ],
       }),

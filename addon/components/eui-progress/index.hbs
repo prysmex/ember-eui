@@ -1,0 +1,50 @@
+{{#if @max}}
+  {{#if (or (has-block "label") (hasBlock "valueText") @valueText)}}
+    <div
+      class={{class-names
+        (if (eq @size "l") "euiProgress__data--l")
+        componentName="EuiProgressData"
+        color=(arg-or-default @color "secondary")
+      }}
+    >
+      {{#if (has-block "label")}}
+          <span class="euiProgress__label">
+            {{yield to="label"}}
+          </span>
+      {{/if}}
+      {{#if (or (has-block "valueText") @valueText)}}
+        <span class="euiProgress__valueText">
+          {{#if (eq @valueText true)}}
+            {{@value}}
+          {{else}}
+            {{yield to="valueText"}}
+          {{/if}}
+        </span>
+      {{/if}}
+    </div>
+  {{/if}}
+  <progress
+    class={{class-names
+      "euiProgress--native"
+      componentName="EuiProgress"
+      size=(arg-or-default @size 'm')
+      position=(arg-or-default @position 'static')
+      color=(arg-or-default @color 'secondary')
+    }}
+    max={{@max}}
+    value={{@value}}
+    aria-hidden={{and (has-block "label") (or @valueText (has-block "valueText"))}}
+    ...attributes
+  />
+{{else}}
+  <div
+    class={{class-names
+      "euiProgress--indeterminate"
+      componentName="EuiProgress"
+      size=(arg-or-default @size 'm')
+      position=(arg-or-default @position 'static')
+      color=(arg-or-default @color 'secondary')
+    }}
+    ...attributes
+  />
+{{/if}}

@@ -61,7 +61,7 @@ export function classNames(
     theme,
     margin,
     borderRadius,
-    backgroundColor
+    backgroundColor,
   }: Options
 ): string {
   let classes: string[] = [...classNames];

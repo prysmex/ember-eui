@@ -5993,13 +5993,12 @@ ember-source@~3.20.2:
     semver "^6.1.1"
     silent-error "^1.1.1"
 
-"ember-svg-jar@github:betocantu93/ember-svg-jar#11e288e32e9195df777587a2c8e5beea12421d1b":
+"ember-svg-jar@github:betocantu93/ember-svg-jar#80fc7c2ea1a026e60061677648e5693e0d9361b3":
   version "2.2.3"
-  resolved "https://codeload.github.com/betocantu93/ember-svg-jar/tar.gz/11e288e32e9195df777587a2c8e5beea12421d1b"
+  resolved "https://codeload.github.com/betocantu93/ember-svg-jar/tar.gz/80fc7c2ea1a026e60061677648e5693e0d9361b3"
   dependencies:
     broccoli-caching-writer "^3.0.3"
     broccoli-concat "^3.7.4"
-    broccoli-file-creator "^2.1.1"
     broccoli-funnel "^2.0.2"
     broccoli-merge-trees "^3.0.2"
     broccoli-persistent-filter "^2.3.1"

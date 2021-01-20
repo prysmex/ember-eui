@@ -1,0 +1,53 @@
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Progress
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
+<EuiPageContent>
+  <EuiPageContentBody>
+    <EuiTitle>
+      Indefinite Progress
+    </EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiProgress @color="accent" @size="s" />
+    <EuiSpacer />
+    <EuiTitle>
+      Finite Progress
+    </EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiButton @onClick={{this.increaseValue1}}>
+      Click!
+    </EuiButton>
+    <EuiSpacer @size="s" />
+    <EuiProgress
+      @max={{100}}
+      @color="primary"
+      @size="l"
+      @value={{this.value1}}
+      @valueText={{true}}
+    >
+      <:label>
+        Click it!
+      </:label>
+    </EuiProgress>
+    <EuiSpacer @size="m" />
+    <EuiProgress
+      @max={{100}}
+      @color="secondary"
+      @size="l"
+      @value={{this.value1}}
+    >
+      <:label>
+        Click it!
+      </:label>
+      <:valueText>
+        {{this.value1Text}}
+      </:valueText>
+    </EuiProgress>
+
+  </EuiPageContentBody>
+</EuiPageContent>

@@ -29,6 +29,8 @@ import EuiButtonIcon from './eui-button-icon';
 import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
 import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
+import EuiProgress from './eui-progress';
+import EuiProgressData from './eui-progress-data';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -61,6 +63,8 @@ const mapping: Mapping = {
   EuiButton,
   EuiHorizontalRule,
   EuiCollapsibleNavGroup,
+  EuiProgress,
+  EuiProgressData,
 }
 
 export default mapping;

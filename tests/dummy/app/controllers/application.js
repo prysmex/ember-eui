@@ -92,6 +92,9 @@ export default class ApplicationController extends Controller {
             href: 'demo.loading',
             items: [createItem('Spinner')],
           }),
+          createItem('Progress', {
+            href: 'demo.progress',
+          }),
           createItem('Text', {
             href: 'demo.text-block',
           }),

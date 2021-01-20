@@ -259,6 +259,7 @@ export const typeToPathMap = {
   pinFilled: 'pin_filled',
   pipelineApp: 'app_pipeline',
   play: 'play',
+  plus: 'plus',
   plusInCircle: 'plus_in_circle',
   plusInCircleFilled: 'plus_in_circle_filled',
   popout: 'popout',

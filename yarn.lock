@@ -951,10 +951,10 @@
     unist-util-find "^1.0.1"
     unist-util-visit "^2.0.2"
 
-"@elastic/eui@^31.0.0":
-  version "31.2.0"
-  resolved "https://registry.yarnpkg.com/@elastic/eui/-/eui-31.2.0.tgz#abf4aa7eb9727b6bccefed6a785a14369a25c307"
-  integrity sha512-6QwgSG335o8d54zTzHIdGFq1PKbymK/HVLwGQHCAnWMCHc3xepqxgCxQ4QzsxLExF2q5pTdPvy4w65w0+Ns35A==
+"@elastic/eui@31.0.0":
+  version "31.0.0"
+  resolved "https://registry.yarnpkg.com/@elastic/eui/-/eui-31.0.0.tgz#7d17386c04a0ad343d70c3652902fcd3f46ed337"
+  integrity sha512-oj63HpQQKg/Cgwz5B0ZBQCkcgZiEdQzBT9PbmEiR/VRz5P0WqJpgZPyIF7jiFaFlGP1a9hPjkUTo+ramWNCpiw==
   dependencies:
     "@types/chroma-js" "^2.0.0"
     "@types/lodash" "^4.14.160"

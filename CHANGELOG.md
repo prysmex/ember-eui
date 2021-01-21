@@ -2,6 +2,16 @@
 
 ### Master
 
+### 0.0.33
+🏠 Internal
+- Locks @elastic/eui version to 31.0.0
+- Updates icon mappings
+
+### 0.0.32
+🚀 Enhancements
+- Docfy docs
+- EuiCollapsibleNav
+
 ### 0.0.31
 🚀 Enhancements
 - Customize focusTrapOptions for `focus-trap` helper inside <EuiModal /> 

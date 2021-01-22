@@ -59,6 +59,7 @@ const mapping: Mapping = {
   EuiHeaderSectionItem,
   EuiHeader,
   EuiButton,
+  EuiButtonIcon,
   EuiHorizontalRule,
   EuiFlyout,
   EuiCollapsibleNavGroup,

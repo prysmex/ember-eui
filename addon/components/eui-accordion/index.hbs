@@ -38,7 +38,7 @@
           @buttonContentClassName
         }}
       >
-        {{@buttonContent}}
+        {{yield to="buttonContent"}}
       </span>
     </button>
 
@@ -97,7 +97,7 @@
           {{/if}}
         </span>
       {{else}}
-        {{yield}}
+        {{yield to="content"}}
       {{/if}}
     </div>
   </div>

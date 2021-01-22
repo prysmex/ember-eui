@@ -1,6 +1,7 @@
 
 import EuiAccordion from './eui-accordion';
 import EuiIcon from './eui-icon';
+import EuiModal from './eui-modal';
 import EuiLoadingSpinner from './eui-loading-spinner';
 import EuiImage from './eui-image';
 import EuiSpacer from './eui-spacer';
@@ -28,10 +29,12 @@ import EuiButtonIcon from './eui-button-icon';
 import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
 import EuiFlyout from './eui-flyout';
+import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
 
 const mapping: Mapping = {
   EuiAccordion,
   EuiIcon,
+  EuiModal,
   EuiImage,
   EuiLoadingSpinner,
   EuiSpacer,
@@ -51,14 +54,14 @@ const mapping: Mapping = {
   EuiBadge,
   EuiCard,
   EuiButtonEmpty,
-  EuiButtonIcon,
   EuiCardSelect,
   EuiHeaderSection,
   EuiHeaderSectionItem,
   EuiHeader,
   EuiButton,
   EuiHorizontalRule,
-  EuiFlyout
+  EuiFlyout,
+  EuiCollapsibleNavGroup,
 }
 
 export default mapping;

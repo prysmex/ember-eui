@@ -18,15 +18,13 @@ export const typeMapping = {
 };
 
 export function inlineStyles({ name, avatarColor }: { name:string, avatarColor:string }) {
-
-  let styles: string[] = [];
-
   let assignedColor = avatarColor || VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
   let textColor = isColorDark(...hexToRgb(assignedColor)) ? '#FFFFFF' : '#000000';
-
-  styles.push(`background-color: ${assignedColor}`, `color: ${textColor}`);
-
-  return styles;
+  
+  return {
+    'background-color': assignedColor,
+    color: textColor
+  };
 }
 
 const mapping: ComponentMapping = {

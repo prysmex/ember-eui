@@ -10,7 +10,7 @@
     @size="l"
     @type={{arg-or-default @iconType "logoElastic"}}
   />
-  {{#if hasBlock}}
+  {{#if (has-block)}}
     <span class="euiHeaderLogo__text">
       {{yield}}
     </span>

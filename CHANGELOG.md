@@ -2,8 +2,43 @@
 
 ### Master
 
+### 0.0.34
+🏠 Internal
+- Added netlify link for opensource
+
+### 0.0.33
+🏠 Internal
+- Locks @elastic/eui version to 31.0.0
+- Updates icon mappings
+
+### 0.0.32
+🚀 Enhancements
+- Docfy docs
+- EuiCollapsibleNav
+
+### 0.0.31
+🚀 Enhancements
+- Customize focusTrapOptions for `focus-trap` helper inside <EuiModal /> 
+
+### 0.0.30
+🏠 Internal
+- Bump ember-svg-jar
+
+### 0.0.29
+- Fix inline-styles and <EuiModal /> type with restrictWidth, should be maxWidth 
+
+### 0.0.28
+- Add ember-in-element-polyfill
+
+### 0.0.27
+- Move `ember-keyboard` and `ember-focus-trap` from devDependencies to dependencies
+
+### 0.0.26
+- Rename <Text /> component to <TextBlock>
+
 ### 0.0.25
 - Updates to elastic ui to 31.0.0
+
 ### 0.0.24
 🚀 Enhancements
 - EuiModal

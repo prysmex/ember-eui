@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.0.34
+🏠 Internal
+- Added netlify link for opensource
+
 ### 0.0.33
 🏠 Internal
 - Locks @elastic/eui version to 31.0.0

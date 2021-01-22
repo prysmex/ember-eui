@@ -1,10 +1,29 @@
 <EuiHeader>
-	<EuiHeaderSectionItem @border="none" class="mx-3">
-		Ember Eui
-	</EuiHeaderSectionItem>
-  <EuiHeaderSectionItem @size="right" @border="right">
-    <EuiHeaderLogo @iconType="logoGithub" href="https://github.com/prysmex/ember-eui" target="_blank" rel="noopener noreferrer"/>
-  </EuiHeaderSectionItem>
+  <EuiHeaderSection @side="left">
+    <EuiHeaderSectionItem @border="none" class="mx-3">
+      Ember Eui
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+  <EuiHeaderSection @side="right">
+    <EuiHeaderSectionItem @border="none">
+      <EuiHeaderLogo
+        @iconType="logoGithub"
+        href="https://github.com/prysmex/ember-eui"
+        target="_blank"
+        rel="noopener noreferrer"
+      />
+    </EuiHeaderSectionItem>
+    <EuiHeaderSectionItem @border="none">
+      <EuiHeaderLogo
+        @iconType="/assets/netlify.svg"
+        href="https://www.netlify.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Hosted
+      </EuiHeaderLogo>
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
 </EuiHeader>
 <EuiPage @restrictWidth="1280px" class="m-auto overflow-hidden p-2">
   <EuiPageSideBar class="mt-8">

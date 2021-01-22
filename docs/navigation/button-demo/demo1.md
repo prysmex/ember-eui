@@ -1,3 +1,5 @@
+# Demo 
+
 ```hbs template
 <EuiTitle @size="m">
   Button

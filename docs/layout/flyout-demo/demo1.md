@@ -3,22 +3,25 @@
 Click on the hamburger icon in the Header Nav to open the flyout!
 
 ```hbs template
-{{#if this.flyout1Open}}
-  <EuiFlyout @ownFocus={{this.flyout1Open}} @size="s" @onClose={{this.closeFlyout}}>
+<EuiButton @onClick={{this.openFlyout}}>
+  Small Flyout
+</EuiButton>
+{{#if this.flyoutOpen}}
+  <EuiFlyout @ownFocus={{true}} @size="s" @onClose={{this.closeFlyout}}>
     <EuiFlyoutHeader @hasBorder={{true}}>
       <EuiTitle @size="l">Small Welcome!</EuiTitle>
     </EuiFlyoutHeader>
     <EuiFlyoutBody>
       <EuiFlyoutBody::Content>
-        content
+        Content
       </EuiFlyoutBody::Content>
     </EuiFlyoutBody>
     <EuiFlyoutFooter>
       <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
-        <EuiButton @onClick={{fn this.closeFlyout "flyout1Open"}}>
+        <EuiButton @onClick={{this.closeFlyout}}>
           Cancel
         </EuiButton>
-        <EuiButton @fill={{true}} @onClick={{fn this.closeFlyout "flyout1Open"}}>
+        <EuiButton @fill={{true}} @onClick={{this.closeFlyout}}>
           Send
         </EuiButton>
       </EuiFlexGroup>
@@ -34,16 +37,16 @@ import { action } from '@ember/object';
 
 export default class DemoFlyoutController extends Component {
 
-  @tracked flyout1Open = false;
+  @tracked flyoutOpen = false;
 
   @action
   openFlyout(){
-    this.flyout1Open = true;
+    this.flyoutOpen = true;
   }
 
   @action
   closeFlyout(flyout){
-    this.flyout1Open = false;
+    this.flyoutOpen = false;
   }
 }
 ```

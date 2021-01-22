@@ -10,7 +10,6 @@ export default class ApplicationController extends Controller {
   @tracked sideNavRoutes = [];
   @tracked isOpenMobile = true;
   @tracked selectedItem;
-  @tracked flyoutOpen = false;
 
   constructor() {
     super(...arguments);
@@ -20,14 +19,5 @@ export default class ApplicationController extends Controller {
         this.selectedItem = id;
       },
     ]);
-  }
-
-  @action
-  openFlyout() {
-    this.flyoutOpen = true;
-  }
-  @action
-  closeFlyout() {
-    this.flyoutOpen = false;
   }
 }

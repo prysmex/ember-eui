@@ -1,14 +1,28 @@
 'use strict';
 
 const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
-
-const nodeSass = require('node-sass');
+const path = require('path');
 
 module.exports = function (defaults) {
   let app = new EmberAddon(defaults, {
-    sassOptions: {
-      implementation: nodeSass,
-      sourceMap: false,
+    postcssOptions: {
+      compile: {
+        enabled: true,
+        cacheInclude: [/.*\.css$/, /.tailwind\.config\.js$/],
+        plugins: [
+          {
+            module: require('postcss-import'),
+            options: {
+              path: ['node_modules'],
+            },
+          },
+          require('tailwindcss')(
+            path.join('tests', 'dummy', 'app', 'styles', 'tailwind.config.js')
+          ),
+          require('postcss-nested'),
+          require('autoprefixer'),
+        ],
+      },
     },
 
     'ember-composable-helpers': {
@@ -22,11 +36,11 @@ module.exports = function (defaults) {
 
     fingerprint: {
       enabled: true,
-      generateAssetMap: true
+      generateAssetMap: true,
     },
 
     'ember-fetch': {
-      preferNative: true // Recommended to enable faster preloading for browsers that support it.
+      preferNative: true, // Recommended to enable faster preloading for browsers that support it.
     },
 
     svgJar: {
@@ -34,10 +48,7 @@ module.exports = function (defaults) {
       hbs: {
         stripPath: false,
       },
-      sourceDirs: [
-        'public/assets',
-        'node_modules/@elastic/eui/lib/components/icon',
-      ],
+      sourceDirs: ['public/assets', 'node_modules/@elastic/eui/lib/components/icon'],
     },
   });
 

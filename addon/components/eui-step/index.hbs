@@ -1,0 +1,27 @@
+<div
+  class={{class-names
+    "euiStep"
+    (if (eq @titleSize "xs") "euiStep--small")
+    (if (eq @status "disabled") "euiStep-isDisabled")
+  }}
+  ...attributes
+>
+  <div class="euiStep__titleWrapper">
+    <EuiStep::EuiStepNumber
+      class={{class-names
+        "euiStep__circle"
+        (if (eq @titleSize "xs") "euiStepNumber--small")
+      }}
+      @number={{@step}}
+      @status={{@status}}
+      @titleSize={{arg-or-default @titleSize "s"}}
+      @isHollow={{eq @status "incomplete"}}
+    />
+    <EuiTitle @size={{@titleSize}} class="euiStep__title">
+      <TextBlock @tagName={{arg-or-default @headingElement "p"}}>
+        {{@title}}
+      </TextBlock>
+    </EuiTitle>
+  </div>
+  <div class="euiStep__content">{{yield}}</div>
+</div>

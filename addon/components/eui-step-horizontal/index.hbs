@@ -1,0 +1,39 @@
+{{#let
+  (if @disabled
+    "disabled"
+    (if @isComplete
+      "complete"
+      (if @isSelected
+        @status
+        (unless @status
+          "incomplete"
+        )
+      )
+    )
+  )
+  as |status|
+}}
+  <li class="euiStepHorizontal__item" aria-current={{if @isSelected "step"}}>
+    <button
+      type="button"
+      class={{class-names
+        "euiStepHorizontal"
+        (if @isSelected "euiStepHorizontal-isSelected")
+        (if @isDisabled "isDisabled")
+        (if @isComplete "euiStepHorizontal-isComplete")
+        (if (and (not @isSelected) (not @isComplete)) "euiStepHorizontal-isIncomplete")
+      }}
+      title={{@title}}
+      onClick={{@onStepClick}}
+      disabled={{@disabled}}
+      ...attributes
+    >
+      <EuiStep::EuiStepNumber
+        class="euiStepHorizontal__number"
+        @status={{status}}
+        @number={{@step}}
+      />
+      <span class="euiStepHorizontal__title">{{@title}}</span>
+    </button>
+  </li>
+{{/let}}

@@ -12,11 +12,11 @@
     ...attributes
   >
     <EuiButtonContent
+      class="euiButtonEmpty__content {{@contentClasses}}"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
       @iconSide={{@iconSide}}
       @textClasses={{class-names "euiButtonEmpty__text" @textClasses}}
-      class="euiButtonEmpty__content"
     >
       {{yield}}
     </EuiButtonContent>
@@ -38,7 +38,7 @@
     {{on "click" (optional @onClick)}}
   >
     <EuiButtonContent
-      class="euiButtonEmpty__content"
+      class="euiButtonEmpty__content {{@contentClasses}}"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
       @iconSide={{@iconSide}}

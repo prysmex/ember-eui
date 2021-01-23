@@ -153,19 +153,9 @@
       </Card.body>
       <Card.footer>
         <div class="euiFlexGroup euiFlexGroup--justifyContentSpaceAround">
-          <div class="euiFlexItem euiFlexItem--flexGrowZero">
-            <button
-              {{on "click" this.punchIt}}
-              class="euiButton euiButton--primary euiButton--fill"
-              type="button"
-            >
-              <span class="euiButtonContent euiButton__content">
-                <span class="euiButton__text">
-                  Try it!
-                </span>
-              </span>
-            </button>
-          </div>
+          <EuiButton class="euiFlexItem euiFlexItem--flexGrowZero" @onClick={{this.puntIt}} @fill={{true}}>
+              Try it!
+          </EuiButton>
         </div>
       </Card.footer>
     </EuiCard>

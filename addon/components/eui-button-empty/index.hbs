@@ -33,16 +33,16 @@
     disabled={{or @isLoading @isDisabled}}
     type={{@type}}
     ref={{@buttonRef}}
-    onClick={{@onClick}}
     aria-pressed={{@isSelected}}
     ...attributes
+    {{on "click" (optional @onClick)}}
   >
     <EuiButtonContent
+      class="euiButtonEmpty__content"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
       @iconSide={{@iconSide}}
       @textClasses={{class-names "euiButtonEmpty__text" @textClasses}}
-      class="euiButtonEmpty__content"
     >
       {{yield}}
     </EuiButtonContent>

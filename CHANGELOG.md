@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.0.35
+🐛 Bug / Fixes
+- Change onClick to `@onClick` in most clickable components
+
 ### 0.0.34
 🏠 Internal
 - Added netlify link for opensource

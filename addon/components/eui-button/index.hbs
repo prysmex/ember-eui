@@ -14,7 +14,7 @@
     ...attributes
   >
     <EuiButtonContent
-      class="euiButton__content"
+      class="euiButton__content {{@contentClasses}}"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
       @iconSide={{@iconSide}}
@@ -34,14 +34,14 @@
       size=@size
     }}
     disabled={{or @isLoading @isDisabled}}
-    type="button"
+    type={{if @type @type "button"}}
     aria-pressed={{if @isSelected "true" null}}
     ref={{@buttonRef}}
     {{on "click" (optional @onClick)}}
     ...attributes
   >
     <EuiButtonContent
-      class="euiButton__content"
+      class="euiButton__content {{@contentClasses}}"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
       @iconSide={{@iconSide}}

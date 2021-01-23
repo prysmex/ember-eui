@@ -155,7 +155,7 @@
         <div class="euiFlexGroup euiFlexGroup--justifyContentSpaceAround">
           <div class="euiFlexItem euiFlexItem--flexGrowZero">
             <button
-              onClick={{this.punchIt}}
+              {{on "click" this.punchIt}}
               class="euiButton euiButton--primary euiButton--fill"
               type="button"
             >

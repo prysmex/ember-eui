@@ -1,8 +1,12 @@
 # Ember Eui Changelog
 
 ### Master
+
+
+### 0.0.36
 🚀 Enhancements
 - `<EuiLoadingContent />`
+- Allow @useSvg to force `<EuiIcon/>` to use `<Svg>` from ember-svg-jar
 
 ### 0.0.36
 🚀 Enhancements

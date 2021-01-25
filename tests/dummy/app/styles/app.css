@@ -37,6 +37,8 @@ img {
     @apply markdown;
   }
 }
+
+
 .docfy-demo__snippets {
   &__tabs {
     @apply px-2 border-l border-r;
@@ -54,7 +56,7 @@ img {
 
 .docfy-demo__snippet {
   pre {
-    @apply flex text-gray-200 bg-gray-800;
+    @apply flex mt-8 text-gray-200 bg-gray-800;
     @apply text-sm leading-normal;
     @apply font-mono;
     @apply rounded-b;

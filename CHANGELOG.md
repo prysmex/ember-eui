@@ -2,7 +2,7 @@
 
 ### Master
 🚀 Enhancements
-- <EuiLoadingContent />
+- `<EuiLoadingContent />`
 
 ### 0.0.36
 🚀 Enhancements

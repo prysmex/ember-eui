@@ -336,7 +336,7 @@ export default class Demo1ButtonComponent extends Component {
 
   @action
   toggleIconButton () {
-    this.toggleProperty('selectedIconButton');
+    this.selectedIconButton = !this.selectedIconButton;
   }
 
   @action
@@ -346,7 +346,7 @@ export default class Demo1ButtonComponent extends Component {
 
   @action
   toggleButtonState (btn) {
-    this.toggleProperty(btn);
+    this[btn] = !this[btn];
   }
 }
 ```

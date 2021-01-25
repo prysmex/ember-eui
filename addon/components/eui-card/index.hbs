@@ -1,13 +1,5 @@
 {{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) as |titleId selectableId|}}
   <div
-    {{simulate-event
-      "click"
-      handler="click"
-      targetElement=(or
-        (if titleId (concat "#" titleId))
-        (if selectableId (concat "#" selectableId))
-      )
-    }}
     class={{class-names
       "euiCard--shadow"
       (if (eq @layout "horizontal") "euiCard--horizontal")
@@ -25,6 +17,13 @@
       color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
     }}
     ...attributes
+    {{simulate-event
+      "click"
+      handler="click"
+      targetElement=(or
+        (if titleId (concat "#" titleId)) (if selectableId (concat "#" selectableId))
+      )
+    }}
   >
     {{#if (or @image @icon)}}
       <div class="euiCard__top">
@@ -34,15 +33,10 @@
           </div>
         {{/if}}
         {{#if @icon}}
-          <EuiIcon
-            class="euiCard__icon"
-            @type={{@icon}}
-            @size={{@iconSize}}
-          />
+          <EuiIcon class="euiCard__icon" @type={{@icon}} @size={{@iconSize}} />
         {{/if}}
       </div>
     {{/if}}
-
     <div class="euiCard__content">
       <EuiTitle
         class="euiCard__title"
@@ -63,9 +57,9 @@
           <button
             type="button"
             class="euiCard__titleButton"
-            onClick={{@onClick}}
             disabled={{@isDisabled}}
             id={{titleId}}
+            {{on "click" @onClick}}
           >
             {{@title}}
           </button>
@@ -73,26 +67,20 @@
           {{@title}}
         {{/if}}
       </EuiTitle>
-      <EuiText
-        @grow={{true}}
-        @size="s"
-        class="euiCard__description"
-      >
+      <EuiText @grow={{true}} @size="s" class="euiCard__description">
         {{@description}}
       </EuiText>
       {{yield (hash body="eui-card/eui-card-body")}}
     </div>
-
     {{#if @betaBadgeLabel}}
       <span class="euiCard__betaBadgeWrapper">
         <EuiBetaBadge
+          class="euiCard__betaBadge"
           @label={{@betaBadgeLabel}}
           @title={{@betaBadgeLabel}}
-          class="euiCard__betaBadge"
         />
       </span>
     {{/if}}
-
     {{#if (not (eq @layout "horizontal"))}}
       <div class="euiCard__footer">
         {{yield (hash footer="eui-card/eui-card-footer")}}

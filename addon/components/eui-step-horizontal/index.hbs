@@ -1,17 +1,9 @@
 {{#let
-  (if @disabled
+  (if
+    @disabled
     "disabled"
-    (if @isComplete
-      "complete"
-      (if @isSelected
-        @status
-        (unless @status
-          "incomplete"
-        )
-      )
-    )
-  )
-  as |status|
+    (if @isComplete "complete" (if @isSelected @status (unless @status "incomplete")))
+  ) as |status|
 }}
   <li class="euiStepHorizontal__item" aria-current={{if @isSelected "step"}}>
     <button
@@ -24,16 +16,18 @@
         (if (and (not @isSelected) (not @isComplete)) "euiStepHorizontal-isIncomplete")
       }}
       title={{@title}}
-      onClick={{@onStepClick}}
       disabled={{@disabled}}
       ...attributes
+      {{on "click" @onStepClick}}
     >
       <EuiStep::EuiStepNumber
         class="euiStepHorizontal__number"
         @status={{status}}
         @number={{@step}}
       />
-      <span class="euiStepHorizontal__title">{{@title}}</span>
+      <span class="euiStepHorizontal__title">
+        {{@title}}
+      </span>
     </button>
   </li>
 {{/let}}

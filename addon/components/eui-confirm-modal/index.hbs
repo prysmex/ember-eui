@@ -21,12 +21,12 @@
   {{/if}}
   <EuiModalFooter>
     <EuiButtonEmpty
-      onClick={{@onCancel}}
+      @onClick={{@onCancel}}
     >
       {{@cancelButtonText}}
     </EuiButtonEmpty>
     <EuiButton
-      onClick={{@onConfirm}}
+      @onClick={{@onConfirm}}
       @fill={{true}}
       @color={{@buttonColor}}
       @isDisabled={{@confirmButtonDisabled}}

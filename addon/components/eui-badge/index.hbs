@@ -12,9 +12,9 @@
         componentName="EuiBadge"
         componentArgs=(hash badgeColor=(arg-or-default @color "default"))
       }}
-      onClick={{@onClick}}
       aria-label={{if @onClick @onClickAriaLabel}}
       ...attributes
+      {{on "click" (optional @onClick)}}
     >
       <span class="euiBadge__content">
         <span class="euiBadge__text">
@@ -63,7 +63,7 @@
     <span class="euiBadge__content">
       {{#if hasBlock}}
         {{#if @onClick}}
-          <button class="euiBadge__childButton" onClick={{@onClick}} type="button">
+          <button class="euiBadge__childButton" type="button" {{on "click" (optional @onClick)}}>
             {{yield}}
           </button>
         {{else if @href}}
@@ -83,7 +83,7 @@
           aria-label={{@iconOnClickAriaLabel}}
           disabled={{@isDisabled}}
           title={{@iconOnClickAriaLabel}}
-          onClick={{@iconOnClick}}
+          {{on "click" (optional @iconOnClick)}}
         >
           <EuiIcon
             class={{class-names "euiBadge__icon" @closeButtonProps}}

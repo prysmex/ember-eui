@@ -4,7 +4,7 @@
 <EuiTitle>
   Basic Modal
 </EuiTitle>
-<EuiButton @color="primary" onClick={{fn this.activateModal "basicModalActive"}}>
+<EuiButton @color="primary" @onClick={{fn this.activateModal "basicModalActive"}}>
   Activate Modal
 </EuiButton>
 {{#if this.basicModalActive}}
@@ -40,11 +40,11 @@
         </EuiText>
       </EuiModalBody>
       <EuiModalFooter>
-        <EuiButtonEmpty onClick={{fn this.deactivateModal "basicModalActive"}}>
+        <EuiButtonEmpty @onClick={{fn this.deactivateModal "basicModalActive"}}>
           Cancel
         </EuiButtonEmpty>
         <EuiButton
-          onClick={{fn this.deactivateModal "basicModalActive"}}
+          @onClick={{fn this.deactivateModal "basicModalActive"}}
           @color="primary"
           @fill={{true}}
         >
@@ -58,7 +58,7 @@
 <EuiTitle>
   Overflow Test
 </EuiTitle>
-<EuiButton @color="primary" onClick={{fn this.activateModal "overflowModalActive"}}>
+<EuiButton @color="primary" @onClick={{fn this.activateModal "overflowModalActive"}}>
   Show Modal
 </EuiButton>
 {{#if this.overflowModalActive}}
@@ -138,7 +138,7 @@
       <EuiModalFooter>
         <EuiButton
           @color="primary"
-          onClick={{fn this.deactivateModal "overflowModalActive"}}
+          @onClick={{fn this.deactivateModal "overflowModalActive"}}
           id="donebutton"
         >
           Done
@@ -151,7 +151,7 @@
 <EuiTitle>
   Confirm Modal
 </EuiTitle>
-<EuiButton @color="primary" onClick={{fn this.activateModal "confirmModalActive"}}>
+<EuiButton @color="primary" @onClick={{fn this.activateModal "confirmModalActive"}}>
   Show Confirm Modal
 </EuiButton>
 {{#if this.confirmModalActive}}

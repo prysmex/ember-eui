@@ -1,6 +1,8 @@
 # Ember Eui Changelog
 
 ### Master
+🚀 Enhancements
+- <EuiLoadingContent />
 
 ### 0.0.36
 🚀 Enhancements

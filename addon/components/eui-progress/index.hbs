@@ -1,5 +1,5 @@
 {{#if @max}}
-  {{#if (or (has-block "label") (hasBlock "valueText") @valueText)}}
+  {{#if (or (has-block "label") (has-block "valueText") @valueText)}}
     <div
       class={{class-names
         (if (eq @size "l") "euiProgress__data--l")
@@ -13,7 +13,7 @@
           </span>
       {{/if}}
       {{#if (or (has-block "valueText") @valueText)}}
-        <span class="euiProgress__valueText">
+        <span class="euiProgress__valueText {{@labelClasses}}">
           {{#if (eq @valueText true)}}
             {{@value}}
           {{else}}

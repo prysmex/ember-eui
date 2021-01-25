@@ -3,7 +3,11 @@
 ### Master
 
 
-### 0.0.36
+### 0.0.38
+🚀 Enhancements
+- `<EuiProgress />`
+
+### 0.0.37
 🚀 Enhancements
 - `<EuiLoadingContent />`
 - Allow @useSvg to force `<EuiIcon/>` to use `<Svg>` from ember-svg-jar

@@ -3,6 +3,10 @@
 ### Master
 
 
+### 0.0.39
+🚀 Enhancements
+- `<EuiSteps />`
+
 ### 0.0.38
 🚀 Enhancements
 - `<EuiProgress />`

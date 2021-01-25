@@ -26,7 +26,7 @@ module.exports = function (defaults) {
     },
 
     'ember-composable-helpers': {
-      only: ['optional'],
+      only: ['optional', 'repeat']
     },
     // Add options here
     'ember-eui': {

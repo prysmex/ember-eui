@@ -1,6 +1,12 @@
 # Ember Eui Changelog
 
 ### Master
+🚀 Enhancements
+- `<EuiLoadingContent />`
+
+### 0.0.36
+🚀 Enhancements
+- Accept `@type` for `<EuiButton />` to avoid a bug with merging `...attributes`
 
 ### 0.0.35
 🐛 Bug / Fixes

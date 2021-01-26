@@ -13,15 +13,12 @@
           "euiTab"
           (if isSelected "euiTab-isSelected")
           (if @disabled "euiTab-isDisabled")
-          @className
         }}
         href={{@href}}
         disabled={{@disabled}}
         ...attributes
         {{on "click" onClick}}
         {{focus-tab @selectedTabId @disabled focusFn}}
-        {{! target={target}
-        rel={secureRel} }}
       >
         <span class="euiTab__content">
           {{yield}}
@@ -37,7 +34,6 @@
           "euiTab"
           (if isSelected "euiTab-isSelected")
           (if @disabled "euiTab-isDisabled")
-          @className
         }}
         disabled={{@disabled}}
         ...attributes

@@ -12,16 +12,16 @@
     display = condensed
   </b>
 </EuiTitle>
-<EuiTabs @display="condensed" as |EuiTab|>
-  <EuiTab @isSelected={{true}}>
+<EuiTabs @display="condensed" as |Tab|>
+  <Tab @isSelected={{true}}>
     Example 1
-  </EuiTab>
-  <EuiTab>
+  </Tab>
+  <Tab>
     Example 2
-  </EuiTab>
-  <EuiTab>
+  </Tab>
+  <Tab>
     Example 3
-  </EuiTab>
+  </Tab>
 </EuiTabs>
 <EuiSpacer @size="xxl" />
 <EuiTitle @size="s">
@@ -34,13 +34,13 @@
     expand = true
   </b>
 </EuiTitle>
-<EuiTabs @expand={{true}} as |EuiTab|>
-  <EuiTab @disabled={{true}}>
+<EuiTabs @expand={{true}} as |Tab|>
+  <Tab @disabled={{true}}>
     Example 1
-  </EuiTab>
-  <EuiTab>
+  </Tab>
+  <Tab>
     Example 2
-  </EuiTab>
+  </Tab>
 </EuiTabs>
 <EuiSpacer @size="xxl" />
 <EuiTitle @size="s">

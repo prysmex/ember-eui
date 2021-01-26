@@ -14,9 +14,9 @@
     ...attributes
   >
     {{yield (component "eui-tab"
-      onClick=selectedTab.set
+      onClick=selectedTab.setState
       selectedTabId=selectedTab.value
-      focusFn=selectedTab.set
+      focusFn=selectedTab.setState
     )}}
   </div>
 {{/let}}

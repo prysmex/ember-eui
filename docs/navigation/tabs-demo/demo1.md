@@ -46,7 +46,7 @@
 <EuiTitle @size="s">
   Tabbed content
 </EuiTitle>
-<EuiTabs::EuiTabbedContent @tabs={{this.tabsItems1}} />
+<EuiTabbedContent @tabs={{this.tabsItems1}} />
 <EuiSpacer @size="xxl" />
 <EuiTitle @size="s">
   Tabbed content with
@@ -54,7 +54,7 @@
     onTabClick
   </b>
 </EuiTitle>
-<EuiTabs::EuiTabbedContent @tabs={{this.tabsItems2}} @onTabClick={{this.sayMyName}} />
+<EuiTabbedContent @tabs={{this.tabsItems2}} @onTabClick={{this.sayMyName}} />
 <EuiSpacer @size="xxl" />
 <EuiTitle @size="s">
   Tabbed content with
@@ -62,7 +62,7 @@
     initialSelectedTab
   </b>
 </EuiTitle>
-<EuiTabs::EuiTabbedContent
+<EuiTabbedContent
   @tabs={{this.tabsItems2}}
   @initialSelectedTab={{object-at 2 this.tabsItems2}}
 />
@@ -78,12 +78,12 @@
   outside
 </p>
 <EuiSpacer />
-<button type="button" class="euiButton euiButton--primary" {{on "click" this.cycleTabs}}>
+<EuiButton @color="primary" @onClick={{this.cycleTabs}}>
   Next tab
-</button>
+</EuiButton>
 Outer selected tab:
 {{get (object-at this.tabsIndex2 this.tabsItems2) "name"}}
-<EuiTabs::EuiTabbedContent
+<EuiTabbedContent
   @tabs={{this.tabsItems2}}
   @selectedTab={{object-at this.tabsIndex2 this.tabsItems2}}
 />

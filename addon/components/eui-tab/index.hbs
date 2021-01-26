@@ -1,0 +1,49 @@
+{{#let (arg-or-default @id (unique-id)) as |id|}}
+  {{#let
+    (eq @selectedTabId id)
+    (fn @onClick id)
+    (fn (optional @focusFn) id) as |isSelected onClick focusFn|
+  }}
+    {{#if (and @href (not @disabled))}}
+      <a
+        id={{id}}
+        role="tab"
+        aria-selected={{isSelected}}
+        class={{class-names
+          "euiTab"
+          (if isSelected "euiTab-isSelected")
+          (if @disabled "euiTab-isDisabled")
+        }}
+        href={{@href}}
+        disabled={{@disabled}}
+        ...attributes
+        {{on "click" onClick}}
+        {{focus-tab @selectedTabId @disabled focusFn}}
+      >
+        <span class="euiTab__content">
+          {{yield}}
+        </span>
+      </a>
+    {{else}}
+      <button
+        id={{id}}
+        role="tab"
+        aria-selected={{isSelected}}
+        type="button"
+        class={{class-names
+          "euiTab"
+          (if isSelected "euiTab-isSelected")
+          (if @disabled "euiTab-isDisabled")
+        }}
+        disabled={{@disabled}}
+        ...attributes
+        {{on "click" onClick}}
+        {{focus-tab @selectedTabId @disabled focusFn}}
+      >
+        <span class="euiTab__content">
+          {{yield}}
+        </span>
+      </button>
+    {{/if}}
+  {{/let}}
+{{/let}}

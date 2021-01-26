@@ -14,6 +14,7 @@ interface Options {
   horizontalPosition: string;
   componentName: string;
   textTransform: string;
+  display: string;
   type: string;
   gutterSize: string;
   alignItems: string;
@@ -48,6 +49,7 @@ export function classNames(
     color,
     textTransform,
     type,
+    display,
     gutterSize,
     flush,
     alignItems,
@@ -80,6 +82,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.textAlign?.[textAlign] || '');
     classes.push(cssMappings[componentName].properties.color?.[color] || '');
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
+    classes.push(cssMappings[componentName].properties.display?.[display] || '');
     classes.push(cssMappings[componentName].properties.type?.[type] || '');
     classes.push(cssMappings[componentName].properties.gutterSize?.[gutterSize] || '');
     classes.push(cssMappings[componentName].properties.alignItems?.[alignItems] || '');

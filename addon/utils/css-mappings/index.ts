@@ -5,6 +5,7 @@ import EuiModal from './eui-modal';
 import EuiLoadingSpinner from './eui-loading-spinner';
 import EuiImage from './eui-image';
 import EuiSpacer from './eui-spacer';
+import EuiTabs from './eui-tabs';
 import EuiTitle from './eui-title';
 import EuiTextAlign from './eui-text-align';
 import EuiTextColor from './eui-text-color';
@@ -40,6 +41,7 @@ const mapping: Mapping = {
   EuiImage,
   EuiLoadingSpinner,
   EuiSpacer,
+  EuiTabs,
   EuiTitle,
   EuiTextAlign,
   EuiTextColor,

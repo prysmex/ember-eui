@@ -1,0 +1,53 @@
+{{#if (and @href (not (or @isLoading @isDisabled)))}}
+  <a
+    class={{class-names
+      (if @fill "euiButton--fill")
+      (if @fullWidth "euiButton--fullWidth")
+      (if (or @isLoading @isDisabled) "euiButton-isDisabled")
+      componentName="EuiButton"
+      color=(arg-or-default @color "primary")
+      size=@size
+    }}
+    disabled={{or @isLoading @isDisabled}}
+    href={{@href}}
+    aria-pressed={{if @isSelected "true" null}}
+    ...attributes
+  >
+    <EuiButtonContent
+      class="euiButton__content {{@contentClasses}}"
+      @isLoading={{@isLoading}}
+      @iconType={{@iconType}}
+      @iconSide={{@iconSide}}
+      @textClasses={{class-names "euiButton__text" @textClasses}}
+    >
+      {{yield}}
+    </EuiButtonContent>
+  </a>
+{{else}}
+  <button
+    class={{class-names
+      (if @fill "euiButton--fill")
+      (if @fullWidth "euiButton--fullWidth")
+      (if (or @isLoading @isDisabled) "euiButton-isDisabled")
+      componentName="EuiButton"
+      color=(arg-or-default @color "primary")
+      size=@size
+    }}
+    disabled={{or @isLoading @isDisabled}}
+    type={{if @type @type "button"}}
+    aria-pressed={{if @isSelected "true" null}}
+    ref={{@buttonRef}}
+    {{on "click" (optional @onClick)}}
+    ...attributes
+  >
+    <EuiButtonContent
+      class="euiButton__content {{@contentClasses}}"
+      @isLoading={{@isLoading}}
+      @iconType={{@iconType}}
+      @iconSide={{@iconSide}}
+      @textClasses={{class-names "euiButton__text" @textClasses}}
+    >
+      {{yield}}
+    </EuiButtonContent>
+  </button>
+{{/if}}

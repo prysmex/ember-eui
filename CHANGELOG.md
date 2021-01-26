@@ -1,6 +1,122 @@
 # Ember Eui Changelog
 
 ### Master
+
+
+### 0.0.39
+🚀 Enhancements
+- `<EuiSteps />`
+
+### 0.0.38
+🚀 Enhancements
+- `<EuiProgress />`
+
+### 0.0.37
+🚀 Enhancements
+- `<EuiLoadingContent />`
+- Allow @useSvg to force `<EuiIcon/>` to use `<Svg>` from ember-svg-jar
+
+### 0.0.36
+🚀 Enhancements
+- Accept `@type` for `<EuiButton />` to avoid a bug with merging `...attributes`
+
+### 0.0.35
+🐛 Bug / Fixes
+- Change onClick to `@onClick` in most clickable components
+
+### 0.0.34
+🏠 Internal
+- Added netlify link for opensource
+
+### 0.0.33
+🏠 Internal
+- Locks @elastic/eui version to 31.0.0
+- Updates icon mappings
+
+### 0.0.32
+🚀 Enhancements
+- Docfy docs
+- EuiCollapsibleNav
+
+### 0.0.31
+🚀 Enhancements
+- Customize focusTrapOptions for `focus-trap` helper inside <EuiModal /> 
+
+### 0.0.30
+🏠 Internal
+- Bump ember-svg-jar
+
+### 0.0.29
+- Fix inline-styles and <EuiModal /> type with restrictWidth, should be maxWidth 
+
+### 0.0.28
+- Add ember-in-element-polyfill
+
+### 0.0.27
+- Move `ember-keyboard` and `ember-focus-trap` from devDependencies to dependencies
+
+### 0.0.26
+- Rename <Text /> component to <TextBlock>
+
+### 0.0.25
+- Updates to elastic ui to 31.0.0
+
+### 0.0.24
+🚀 Enhancements
+- EuiModal
+
+### 0.0.23
+🚀 Enhancements
+- EuiCallOut may now receive named blocks <:title> </:title> <:body> <:/body>
+
+🏠 Internal
+- Installed ember-named-blocks-polyfill
+
+### 0.0.22
+🐛 Bug / Fixes
+- Renames EuiCallout to EuiCallOut
+
+### 0.0.21
+🐛 Bug / Fixes
+- Fixes a few missing props for EuiPage, EuiPageBody, EuiPanel and EuiCard
+- Fixes EuiHorizontalRule not receiving splattributes
+
+### 0.0.20
+🚀 Enhancements
+- EuiHr
+
+🐛 Bug / Fixes
+- Fix EuiImage close Icon
+
+### 0.0.19
+🚀 Enhancements
+- Performance for EuiText, EuiColor, EuiCallout, EuiPage, EuiFlexItem and more, reducing usage of element helper
+- Text hack to avoid using element helper for simple text dom nodes
+- EuiCard
+
+🏠 Internal
+- Update ember-svg-jar fork
+- Update @elastic/eui to 30.3.0
+
+### 0.0.18
+🚀 Enhancements
+- EuiFlexGroup
+- EuiFlexGrid
+- EuiFlexItem
+
+### 0.0.17
+🏠 Internal
+- Fixes netlify redirects
+
+### 0.0.16
+🚀 Enhancements
+- EuiBadge
+- Use empty icon svg as placeholder while downloading the desired one 
+- Adds @victor-aguilars to contributors
+
+🏠 Internal
+- Update ember-svg-jar fork
+
 🐛 Bug / Fixes
 - Add accordion to demo
 

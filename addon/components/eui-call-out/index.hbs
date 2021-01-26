@@ -1,0 +1,38 @@
+<div
+  class={{class-names
+    componentName="EuiCallOut"
+    size=(arg-or-default @size "m")
+    color=(arg-or-default @color "primary")
+  }}
+  ...attributes
+>
+  {{#if (or @title (has-block "title"))}}
+    <div class="euiCallOutHeader">
+      {{#if @iconType}}
+        <EuiIcon class="euiCallOutHeader__icon" @type={{@iconType}} @size="m" aria-hidden="true" />
+      {{/if}}
+      {{#if @heading}}
+        <TextBlock @tagName={{@heading}} class="euiCallOutHeader__title">
+          {{#if (has-block "title")}}
+            {{yield to="title"}}
+          {{else}}
+            {{@title}}
+          {{/if}}
+        </TextBlock>
+      {{else}}
+        <span class="euiCallOutHeader__title">
+          {{#if (has-block "title")}}
+            {{yield to="title"}}
+          {{else}}
+            {{@title}}
+          {{/if}}
+        </span>
+      {{/if}}
+    </div>
+  {{/if}}
+  {{#if (has-block "body")}}
+    <EuiText @size={{if (eq @size "s") "xs" "s"}}>
+      {{yield to="body"}}
+    </EuiText>
+  {{/if}}
+</div>

@@ -16,6 +16,20 @@ interface Options {
   textTransform: string;
   display: string;
   type: string;
+  gutterSize: string;
+  alignItems: string;
+  direction: string;
+  justifyContent: string;
+  columns: number;
+  grow: number | string;
+  iconSide: string;
+  flush: string;
+  borderSide: string;
+  position: string;
+  theme: string;
+  margin: string;
+  borderRadius: string;
+  backgroundColor: string;
 }
 
 /**
@@ -34,8 +48,22 @@ export function classNames(
     textAlign,
     color,
     textTransform,
+    type,
     display,
-    type
+    gutterSize,
+    flush,
+    alignItems,
+    direction,
+    justifyContent,
+    columns,
+    grow,
+    iconSide,
+    borderSide,
+    position,
+    theme,
+    margin,
+    borderRadius,
+    backgroundColor,
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -56,6 +84,20 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
     classes.push(cssMappings[componentName].properties.display?.[display] || '');
     classes.push(cssMappings[componentName].properties.type?.[type] || '');
+    classes.push(cssMappings[componentName].properties.gutterSize?.[gutterSize] || '');
+    classes.push(cssMappings[componentName].properties.alignItems?.[alignItems] || '');
+    classes.push(cssMappings[componentName].properties.direction?.[direction] || '');
+    classes.push(cssMappings[componentName].properties.justifyContent?.[justifyContent] || '');
+    classes.push(cssMappings[componentName].properties.columns?.[columns] || '');
+    classes.push(cssMappings[componentName].properties.grow?.[grow] || '');
+    classes.push(cssMappings[componentName].properties.iconSide?.[iconSide] || '');
+    classes.push(cssMappings[componentName].properties.flush?.[flush] || '');
+    classes.push(cssMappings[componentName].properties.borderSide?.[borderSide] || '');
+    classes.push(cssMappings[componentName].properties.theme?.[theme] || '');
+    classes.push(cssMappings[componentName].properties.position?.[position] || '');
+    classes.push(cssMappings[componentName].properties.margin?.[margin] || '');
+    classes.push(cssMappings[componentName].properties.borderRadius?.[borderRadius] || '');
+    classes.push(cssMappings[componentName].properties.backgroundColor?.[backgroundColor] || '');
     classes = classes.filter(s => isPresent(s));
   }
 

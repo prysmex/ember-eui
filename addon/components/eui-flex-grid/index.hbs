@@ -1,0 +1,31 @@
+{{#let (arg-or-default @tagName "div") as |tagName|}}
+  {{#if (eq tagName "div")}}
+    <div
+      class={{class-names
+        (unless (eq @responsive false) "euiFlexGrid--responsive")
+        componentName="EuiFlexGrid"
+        gutterSize=(arg-or-default @gutterSize "l")
+        direction=(arg-or-default @direction "row")
+        columns=(arg-or-default @columns 0)
+      }}
+      ...attributes
+    >
+      {{yield}}
+    </div>
+  {{else}}
+    {{#let (element tagName) as |Element|}}
+      <Element
+        class={{class-names
+          (unless (eq @responsive false) "euiFlexGrid--responsive")
+          componentName="EuiFlexGrid"
+          gutterSize=(arg-or-default @gutterSize "l")
+          direction=(arg-or-default @direction "row")
+          columns=(arg-or-default @columns 0)
+        }}
+        ...attributes
+      >
+        {{yield}}
+      </Element>
+    {{/let}}
+  {{/if}}
+{{/let}}

@@ -1,28 +1,105 @@
-<div
-  class="euiCard euiCard--paddingMedium euiCard--centerAligned euiCard--isClickable euiCard--hasIcon"
->
-  <div class="euiCard__top">
-    <EuiIcon @type="logoGolang" @size="xxl"/>
-  </div>
-  <div class="euiCard__content">
-    <span
-      class="euiTitle euiTitle--small euiCard__title"
-      id="id6432d61-f2c4-11ea-b18a-811028e88c64Title"
-    >
-      <button
-        class="euiCard__titleButton"
-        aria-describedby="id6432d61-f2c4-11ea-b18a-811028e88c64Description"
+{{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) as |titleId selectableId|}}
+  <div
+    class={{class-names
+      "euiCard--shadow"
+      (if (eq @layout "horizontal") "euiCard--horizontal")
+      (if (and (eq @display "plain") (not @selectable)) "euiCard--plain")
+      (if @isDisabled "euiCard-isDisabled")
+      (if hasBlock "euiCard--hasChildren")
+      (if @icon "euiCard--hasIcon")
+      (if @betaBadgeLabel "euiCard--hasBetaBadge")
+      (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
+      (if @selectable "euiCard--isSelectable")
+      (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
+      componentName="EuiCard"
+      padding=(arg-or-default @paddingSize "m")
+      textAlign=(arg-or-default @textAlign "center")
+      color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
+    }}
+    ...attributes
+    {{simulate-event
+      "click"
+      handler="click"
+      targetElement=(or
+        (if titleId (concat "#" titleId)) (if selectableId (concat "#" selectableId))
+      )
+    }}
+  >
+    {{#if (or @image @icon)}}
+      <div class="euiCard__top">
+        {{#if (and @image (not (eq @layout "horizontal")))}}
+          <div class="euiCard__image">
+            <img src={{@image}} alt="card-top" />
+          </div>
+        {{/if}}
+        {{#if @icon}}
+          <EuiIcon class="euiCard__icon" @type={{@icon}} @size={{@iconSize}} />
+        {{/if}}
+      </div>
+    {{/if}}
+    <div class="euiCard__content">
+      <EuiTitle
+        class="euiCard__title"
+        @size={{arg-or-default @titleSize "s"}}
+        @tag={{arg-or-default @titleElement "span"}}
       >
-        Elastic Beats
-      </button>
-    </span>
-    <div
-      class="euiText euiText--small euiCard__description"
-      id="id6432d61-f2c4-11ea-b18a-811028e88c64Description"
-    >
-      <p>
-        Example of a card's description. Stick to one or two sentences.
-      </p>
+        {{#if (and (not @isDisabled) @href)}}
+          <a
+            class="euiCard__titleAnchor"
+            target={{@target}}
+            disabled={{@isDisabled}}
+            href={{@href}}
+            id={{titleId}}
+          >
+            {{@title}}
+          </a>
+        {{else if (or @isDisabled @onClick)}}
+          <button
+            type="button"
+            class="euiCard__titleButton"
+            disabled={{@isDisabled}}
+            id={{titleId}}
+            {{on "click" @onClick}}
+          >
+            {{@title}}
+          </button>
+        {{else}}
+          {{@title}}
+        {{/if}}
+      </EuiTitle>
+      <EuiText @grow={{true}} @size="s" class="euiCard__description">
+        {{@description}}
+      </EuiText>
+      {{yield (hash body="eui-card/eui-card-body")}}
     </div>
+    {{#if @betaBadgeLabel}}
+      <span class="euiCard__betaBadgeWrapper">
+        <EuiBetaBadge
+          class="euiCard__betaBadge"
+          @label={{@betaBadgeLabel}}
+          @title={{@betaBadgeLabel}}
+        />
+      </span>
+    {{/if}}
+    {{#if (not (eq @layout "horizontal"))}}
+      <div class="euiCard__footer">
+        {{yield (hash footer="eui-card/eui-card-footer")}}
+      </div>
+    {{/if}}
+    {{#if @selectable}}
+      <EuiCard::EuiCardSelect
+        type={{@selectable.type}}
+        @onClick={{@selectable.onClick}}
+        @buttonId={{selectableId}}
+        @isSelected={{@selectable.isSelected}}
+        @isDisabled={{@selectable.isDisabled}}
+        @color={{@selectable.color}}
+        @iconType={{@selectable.iconType}}
+        @isLoading={{@selectable.isLoading}}
+        @href={{@selectable.href}}
+        @iconSide={{@selectable.iconSide}}
+        @flush={{@selectable.flush}}
+      />
+    {{/if}}
   </div>
-</div>
+{{/let}}

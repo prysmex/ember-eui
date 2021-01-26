@@ -1,0 +1,17 @@
+{{#let (arg-or-default @tagName "div") as |tagName|}}
+  {{#if (eq tagName "div")}}
+    <div class={{class-names componentName="EuiFlexItem" grow=@grow}} ...attributes>
+      {{yield}}
+    </div>
+  {{else if (eq tagName "span")}}
+    <span class={{class-names componentName="EuiFlexItem" grow=@grow}} ...attributes>
+      {{yield}}
+    </span>
+  {{else}}
+    {{#let (element tagName) as |Element|}}
+      <Element class={{class-names componentName="EuiFlexItem" grow=@grow}} ...attributes>
+        {{yield}}
+      </Element>
+    {{/let}}
+  {{/if}}
+{{/let}}

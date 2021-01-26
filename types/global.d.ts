@@ -5,6 +5,11 @@ declare module 'ember-eui/templates/*' {
   export default tmpl;
 }
 
+declare module 'ember-cli-string-helpers/helpers/*' {
+  const humanize: (positionalParams: string[]) => string;
+  export { humanize };
+}
+
 interface PropertyMapping {
   [size: string]: string;
 }
@@ -16,6 +21,7 @@ interface ComponentProperty {
 interface ComponentMapping {
   base: string;
   properties: ComponentProperty;
+  inlineStyles?(styles: Record<string, unknown>): Record<string, unknown>;
 }
 
 interface Mapping {

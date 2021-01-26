@@ -1,0 +1,35 @@
+{{#if (and @href (not @isDisabled))}}
+  <a
+    class={{class-names componentName="EuiButtonIcon" color=(arg-or-default @color "primary")}}
+    href={{@href}}
+    target={{@target}}
+    ...attributes
+  >
+    {{#if @iconType}}
+      <EuiIcon
+        class="euiButtonIcon__icon"
+        @type={{@iconType}}
+        @size={{arg-or-default @iconSize "m"}}
+        aria-hidden="true"
+      />
+    {{/if}}
+  </a>
+{{else}}
+  <button
+    class={{class-names componentName="EuiButtonIcon" color=(arg-or-default @color "primary")}}
+    disabled={{@isDisabled}}
+    aria-pressed={{if @isSelected "true" "false"}}
+    type={{if @type @type "button"}}
+    ...attributes
+    {{on "click" (optional @onClick)}}
+  >
+    {{#if @iconType}}
+      <EuiIcon
+        class="euiButtonIcon__icon"
+        @type={{@iconType}}
+        @size={{@iconSize}}
+        aria-hidden="true"
+      />
+    {{/if}}
+  </button>
+{{/if}}

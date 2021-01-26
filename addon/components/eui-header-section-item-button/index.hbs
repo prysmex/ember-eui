@@ -1,0 +1,26 @@
+<button
+  class="euiHeaderSectionItem__button"
+  ref={{@ref}}
+  type="button"
+  ...attributes
+  {{on "click" (optional @onClick)}}
+>
+  {{yield}}
+  {{#if @notification}}
+    {{#if (eq @notification true)}}
+      <EuiIcon
+        class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
+        @color={{arg-or-default @notificationColor "accent"}}
+        @type="dot"
+        @size="l"
+      />
+    {{else}}
+      <EuiNotificationBadge
+        class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge"
+        @color={{arg-or-default @notificationColor "accent"}}
+      >
+        {{@notification}}
+      </EuiNotificationBadge>
+    {{/if}}
+  {{/if}}
+</button>

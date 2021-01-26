@@ -4,7 +4,11 @@
     size=(arg-or-default @size "m")
     type=(arg-or-default @type "user")
   }}
-  style={{avatar-styles @name @color @imageUrl}}
+  style={{inline-styles
+    componentName="EuiAvatar"
+    componentArgs=(hash name=@name avatarColor=@avatarColor)
+    background-image=(if @imageUrl @imageUrl "none")
+  }}
   aria-label={{@name}}
   title={{@name}}
   ...attributes

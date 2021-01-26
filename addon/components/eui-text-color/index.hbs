@@ -1,11 +1,15 @@
-{{#let (element (arg-or-default @tag "span")) as |Tag|}}
-  <Tag
-    class={{class-names
-      componentName="EuiTextColor"
-      color=(arg-or-default @color "default")
-    }}
+{{#if (eq @tagName "div")}}
+  <div
+    class={{class-names componentName="EuiTextColor" color=(arg-or-default @color "default")}}
     ...attributes
   >
     {{yield}}
-  </Tag>
-{{/let}}
+  </div>
+{{else}}
+  <span
+    class={{class-names componentName="EuiTextColor" color=(arg-or-default @color "default")}}
+    ...attributes
+  >
+    {{yield}}
+  </span>
+{{/if}}

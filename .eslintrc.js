@@ -4,13 +4,13 @@ module.exports = {
   root: true,
   parser: 'babel-eslint',
   parserOptions: {
-    ecmaVersion: 2018,
+    ecmaVersion: 2019,
     sourceType: 'module',
     ecmaFeatures: {
       legacyDecorators: true,
     },
   },
-  plugins: ['ember'],
+  plugins: ['ember', 'prettier'],
   extends: ['eslint:recommended', 'ember/recommended', 'prettier'],
   env: {
     browser: true,
@@ -37,7 +37,7 @@ module.exports = {
         browser: false,
         node: true,
       },
-      plugins: ['node', 'ember', 'prettier'],
+      plugins: ['node'],
       extends: ['plugin:node/recommended'],
     },
   ],

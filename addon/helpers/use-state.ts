@@ -5,23 +5,24 @@ import { tracked } from '@glimmer/tracking';
 /**
  * @param value - initial value to use, undefined if not provided.
  *
- * @returns - Object with `get` and `set` methods to retrieve and set the
- *            `value` respectively.
+ * @returns - Object with a `value` property and `setState` method to set the
+ *            `value`
  */
-class SingleUseState {
-  @tracked value: unknown;
+class SingleUseState<T> {
+  @tracked value: T;
 
-  constructor(value: unknown) {
+  constructor(value: T) {
     this.value = value;
   }
 
   @action
-  setState(value: unknown) {
+  setState(value: T): T {
     this.value = value;
+    return value;
   }
 }
 
-export function useState([initialValue]: [unknown]): SingleUseState {
+export function useState<T>([initialValue]: [T]): SingleUseState<T> {
   return new SingleUseState(initialValue);
 }
 

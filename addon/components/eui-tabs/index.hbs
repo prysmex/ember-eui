@@ -1,7 +1,4 @@
-{{#let
-  (use-state (get-tab-id @selectedTab))
-  as |selectedTab|
-}}
+{{#let (use-state (get-tab-id @selectedTab)) as |selectedTab|}}
   <div
     role="tablist"
     class={{class-names
@@ -13,10 +10,13 @@
     }}
     ...attributes
   >
-    {{yield (component "eui-tab"
-      onClick=selectedTab.setState
-      selectedTabId=selectedTab.value
-      focusFn=selectedTab.setState
-    )}}
+    {{yield
+      (component
+        "eui-tab"
+        onClick=selectedTab.setState
+        selectedTabId=selectedTab.value
+        focusFn=selectedTab.setState
+      )
+    }}
   </div>
 {{/let}}

@@ -27,7 +27,11 @@
     </EuiTabs>
     {{#with (find-by "id" selectedTab.value @tabs) as |currentTab|}}
       <div role="tabpanel" id={{id}} aria-labelledby={{currentTab.id}}>
-        {{currentTab.content}}
+        {{#if (has-block "selectedTabContent")}}
+          {{yield currentTab to="selectedTabContent"}}
+        {{else}}
+          {{currentTab.content}}
+        {{/if}}
       </div>
     {{/with}}
   </div>

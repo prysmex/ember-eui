@@ -87,6 +87,23 @@ Outer selected tab:
   @tabs={{this.tabsItems2}}
   @selectedTab={{object-at this.tabsIndex2 this.tabsItems2}}
 />
+
+<EuiSpacer />
+<EuiTitle @size="s">
+  You could also provide a `selectedTabContent` block for more flexibility
+</EuiTitle>
+<EuiTabbedContent
+  @tabs={{array 
+    (hash id="hello" name="Hello") 
+    (hash id="goodbye" name="Goodbye")
+  }}
+>
+  <:selectedTabContent as |currentTab|>
+    <EuiTitle>
+      {{currentTab.name}}
+    </EuiTitle>
+  </:selectedTabContent>
+</EuiTabbedContent>
 ```
 
 

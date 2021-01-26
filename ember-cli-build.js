@@ -35,12 +35,7 @@ module.exports = function (defaults) {
         'repeat'
       ]
     },
-
-    'tracked-toolbox': {
-      only: [
-        'localCopy'
-      ]
-    },
+    
     // Add options here
     'ember-eui': {
       theme: 'dark',

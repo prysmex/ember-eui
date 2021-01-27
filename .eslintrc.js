@@ -17,7 +17,9 @@ module.exports = {
     node: true,
     amd: true,
   },
-  rules: {},
+  rules: {
+    "no-unused-vars": "error"
+  },
   overrides: [
     // node files
     {

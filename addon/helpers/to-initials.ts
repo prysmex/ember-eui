@@ -2,7 +2,12 @@ import { helper } from '@ember/component/helper';
 
 export const MAX_INITIALS = 2;
 
-export function toInitials(name: string, initialsLength?: 1 | 2, initials?: string): string | null {
+export function toInitials(
+  name: string,
+  initialsLength?: 1 | 2,
+  initials?: string,
+  unsudedargument
+): string | null {
   // Calculate the number of initials to show, maxing out at MAX_INITIALS
   let calculatedInitialsLength: number = initials
     ? initials.split(' ').length

@@ -98,7 +98,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.margin?.[margin] || '');
     classes.push(cssMappings[componentName].properties.borderRadius?.[borderRadius] || '');
     classes.push(cssMappings[componentName].properties.backgroundColor?.[backgroundColor] || '');
-    classes = classes.filter(s => isPresent(s));
+    classes = classes.filter((s) => isPresent(s));
   }
 
   return classes.join(' ');

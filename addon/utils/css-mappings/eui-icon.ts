@@ -432,8 +432,8 @@ const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     size: sizeToClassNameMap,
-    color: colorToClassMap
-  }
+    color: colorToClassMap,
+  },
 };
 
 export default mapping;

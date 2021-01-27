@@ -9,21 +9,21 @@ export const sizeMapping = {
   s: `${baseClass}--s`,
   m: `${baseClass}--m`,
   l: `${baseClass}--l`,
-  xl: `${baseClass}--xl`
+  xl: `${baseClass}--xl`,
 };
 
 export const typeMapping = {
   space: `${baseClass}--space`,
-  user: `${baseClass}--user`
+  user: `${baseClass}--user`,
 };
 
-export function inlineStyles({ name, avatarColor }: { name:string, avatarColor:string }) {
+export function inlineStyles({ name, avatarColor }: { name: string; avatarColor: string }) {
   let assignedColor = avatarColor || VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
   let textColor = isColorDark(...hexToRgb(assignedColor)) ? '#FFFFFF' : '#000000';
-  
+
   return {
     'background-color': assignedColor,
-    color: textColor
+    color: textColor,
   };
 }
 
@@ -31,9 +31,9 @@ const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     size: sizeMapping,
-    type: typeMapping
+    type: typeMapping,
   },
-  inlineStyles: inlineStyles
+  inlineStyles: inlineStyles,
 };
 
 export default mapping;

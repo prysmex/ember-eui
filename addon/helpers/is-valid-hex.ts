@@ -23,6 +23,6 @@ export function isValidHex(hex: string): boolean {
   return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex);
 }
 
-export default helper(function ([hex]:[string]) {
-  return isValidHex(hex)
+export default helper(function ([hex]: [string]) {
+  return isValidHex(hex);
 });

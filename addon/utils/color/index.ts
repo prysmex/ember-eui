@@ -1,4 +1,3 @@
-
 /*
  * Licensed to Elasticsearch B.V. under one or more contributor
  * license agreements. See the NOTICE file distributed with
@@ -16,7 +15,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
-*/
+ */
 export { colorPalette } from './color_palette';
 export { isColorDark } from '../../helpers/is-color-dark';
 export { isValidHex } from '../../helpers/is-valid-hex';

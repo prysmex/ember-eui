@@ -1,6 +1,6 @@
 // Types for compiled templates
 declare module 'ember-eui/templates/*' {
-  import { TemplateFactory } from 'htmlbars-inline-precompile';
+  import type { TemplateFactory } from 'htmlbars-inline-precompile';
   const tmpl: TemplateFactory;
   export default tmpl;
 }
@@ -39,6 +39,12 @@ interface RGB {
   r: number;
   g: number;
   b: number;
+}
+
+interface Tab {
+  id: string | number;
+  name: string;
+  content: string;
 }
 
 type HEX = string;

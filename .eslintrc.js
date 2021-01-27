@@ -4,7 +4,7 @@ module.exports = {
   root: true,
   parser: 'babel-eslint',
   parserOptions: {
-    ecmaVersion: 2019,
+    ecmaVersion: 2018,
     sourceType: 'module',
     ecmaFeatures: {
       legacyDecorators: true,
@@ -14,6 +14,8 @@ module.exports = {
   extends: ['eslint:recommended', 'plugin:ember/recommended', 'prettier'],
   env: {
     browser: true,
+    node: true,
+    amd: true,
   },
   rules: {},
   overrides: [
@@ -34,8 +36,8 @@ module.exports = {
         sourceType: 'script',
       },
       env: {
-        browser: false,
-        node: true,
+        browser: true,
+        node: true
       },
       plugins: ['node'],
       extends: ['plugin:node/recommended'],

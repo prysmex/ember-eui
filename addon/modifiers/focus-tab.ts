@@ -6,6 +6,5 @@ export default modifier(function focusTab(
 ) {
   if (selectedTabId === undefined && !isDisabled) {
     focusFn();
-    console.log('h');
   }
 });

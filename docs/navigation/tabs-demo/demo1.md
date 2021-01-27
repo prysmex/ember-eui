@@ -1,11 +1,11 @@
 # Demo
 
 ```hbs template
-<EuiSpacer @size="xxl" />
-<EuiTitle @size="s">
-  Simple tabs with
-  <b>
-    isSelected
+  <EuiSpacer @size="xxl" />
+  <EuiTitle @size="s">
+    Simple tabs with
+    <b>
+      isSelected
   </b>
   and
   <b>
@@ -93,8 +93,8 @@ Outer selected tab:
   You could also provide a `selectedTabContent` block for more flexibility
 </EuiTitle>
 <EuiTabbedContent
-  @tabs={{array 
-    (hash id="hello" name="Hello") 
+  @tabs={{array
+    (hash id="hello" name="Hello")
     (hash id="goodbye" name="Goodbye")
   }}
 >
@@ -105,7 +105,6 @@ Outer selected tab:
   </:selectedTabContent>
 </EuiTabbedContent>
 ```
-
 
 ```js component
 import Component from '@ember/component';
@@ -135,27 +134,27 @@ export default class DemoTabsComponent extends Component {
       {
         id: 'one',
         name: 'Click me 1!',
-        content: 'Same ol\' 1 content.',
+        content: "Same ol' 1 content.",
       },
       {
         id: 'two',
         name: 'Click me 2!',
-        content: 'Same ol\' 2 content.',
+        content: "Same ol' 2 content.",
       },
       {
         id: 'three',
         name: 'Click me 3!',
-        content: 'Same ol\' 3 content.',
-      }
+        content: "Same ol' 3 content.",
+      },
     ];
   }
 
-  sayMyName (tab) {
+  sayMyName(tab) {
     alert(`I am ${tab.name || tab.id}`);
   }
 
   @action
-  cycleTabs () {
+  cycleTabs() {
     this.tabsIndex2++;
 
     if (this.tabsIndex2 >= this.tabsItems2.length) {
@@ -163,6 +162,4 @@ export default class DemoTabsComponent extends Component {
     }
   }
 }
-
-
 ```

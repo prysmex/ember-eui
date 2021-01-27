@@ -1,11 +1,11 @@
 # Demo
 
 ```hbs template
-  <EuiSpacer @size="xxl" />
-  <EuiTitle @size="s">
-    Simple tabs with
-    <b>
-      isSelected
+<EuiSpacer @size="xxl" />
+<EuiTitle @size="s">
+  Simple tabs with
+  <b>
+    isSelected
   </b>
   and
   <b>

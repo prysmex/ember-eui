@@ -6,19 +6,19 @@ export const sizeMapping = {
   xs: `${baseClass}--xsmall`,
   s: `${baseClass}--small`,
   m: `${baseClass}--medium`,
-  l: `${baseClass}--large`
+  l: `${baseClass}--large`,
 };
 
 export const transformMapping = {
-  uppercase: `${baseClass}--uppercase`
-}
+  uppercase: `${baseClass}--uppercase`,
+};
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     size: sizeMapping,
-    textTransform: transformMapping
-  }
+    textTransform: transformMapping,
+  },
 };
 
 export default mapping;

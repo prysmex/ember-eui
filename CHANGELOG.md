@@ -3,6 +3,11 @@
 ### Master
 
 
+### 0.0.40
+🚀 Enhancements
+- `<EuiTabs />` 
+- `<EuiTabbedContent />`
+
 ### 0.0.39
 🚀 Enhancements
 - `<EuiSteps />`

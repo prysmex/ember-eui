@@ -5,7 +5,7 @@ const sizeToClassMapping = {
   s: `${baseClass}--s`,
   m: `${baseClass}--m`,
   l: `${baseClass}--l`,
-}
+};
 
 const colorToClassMap = {
   primary: `${baseClass}--primary`,
@@ -59,8 +59,8 @@ export const mapping: ComponentMapping = {
     size: sizeToClassMapping,
     position: positionsToClassMap,
     color: colorToClassMap,
-    secondaryColor: dataColorToClassMap
-  }
-}
+    secondaryColor: dataColorToClassMap,
+  },
+};
 
 export default mapping;

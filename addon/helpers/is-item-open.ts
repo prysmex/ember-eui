@@ -6,10 +6,10 @@ export function isItemOpen(item: any, selectedItem: string): boolean {
     return true;
   }
 
-	// Of course a selected item is open.
-	if(item.id === selectedItem) {
-		return true;
-	}
+  // Of course a selected item is open.
+  if (item.id === selectedItem) {
+    return true;
+  }
 
   // The item has to be open if it has a child that's open.
   if (item.items) {

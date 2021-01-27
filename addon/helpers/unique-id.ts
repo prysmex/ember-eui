@@ -4,7 +4,7 @@ import { isPresent } from '@ember/utils';
 
 interface Identifiable {
   ref: number | string | Element | object;
-};
+}
 
 /**
  * Returns a guid for the passed `ref`.
@@ -13,7 +13,7 @@ interface Identifiable {
  *
  * @param { any } ref
  */
-export function uniqueId (_?: any[], { ref }: { ref?: Identifiable } = {}): string {
+export function uniqueId(_?: any[], { ref }: { ref?: Identifiable } = {}): string {
   return isPresent(ref) ? guidFor(ref) : guidFor({});
 }
 

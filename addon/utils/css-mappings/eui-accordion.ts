@@ -6,14 +6,14 @@ export const paddingMapping = {
   s: `${baseClass}__padding--s`,
   m: `${baseClass}__padding--m`,
   l: `${baseClass}__padding--l`,
-  xl: `${baseClass}__padding--xl`
+  xl: `${baseClass}__padding--xl`,
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    padding: paddingMapping
-  }
+    padding: paddingMapping,
+  },
 };
 
 export default mapping;

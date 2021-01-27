@@ -18,12 +18,5 @@ module.exports = {
       pattern: '**/*.md',
       urlPrefix: 'docs'
     },
-  ],
-  // labels: {
-  //   components: 'Components',
-  //   helpers: 'Helpers',
-  //   core: '@docfy/core',
-  //   ember: '@docfy/ember',
-  //   docs: 'Documentation'
-  // }
+  ]
 };

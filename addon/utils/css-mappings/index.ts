@@ -1,4 +1,3 @@
-
 import EuiAccordion from './eui-accordion';
 import EuiIcon from './eui-icon';
 import EuiModal from './eui-modal';
@@ -19,7 +18,7 @@ import EuiFlexItem from './eui-flex-item';
 import EuiFlexGrid from './eui-flex-grid';
 import EuiNotificationBadge from './eui-notification-badge';
 import EuiBadgeGroup from './eui-badge-group';
-import EuiBadge from  './eui-badge';
+import EuiBadge from './eui-badge';
 import EuiCard from './eui-card';
 import EuiButtonEmpty from './eui-button-empty';
 import EuiCardSelect from './eui-card-select';
@@ -69,6 +68,6 @@ const mapping: Mapping = {
   EuiStepNumber,
   EuiProgress,
   EuiProgressData,
-}
+};
 
 export default mapping;

@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.41
+
+🐛 Bug / Fixes
+
+- Add missing colors to `<EuiButtonEmpty />`
+
 ### 0.0.40
 
 🚀 Enhancements

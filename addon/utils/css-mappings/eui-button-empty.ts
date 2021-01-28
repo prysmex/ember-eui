@@ -1,10 +1,12 @@
 export const baseClass: string = 'euiButtonEmpty';
 
 const colorMapping = {
-  primary: `${baseClass}--primary`,
-  danger: `${baseClass}--danger`,
   text: `${baseClass}--text`,
+  danger: `${baseClass}--danger`,
+  warning: `${baseClass}--warning`,
   ghost: `${baseClass}--ghost`,
+  primary: `${baseClass}--primary`,
+  success: `${baseClass}--success`,
 };
 
 const sizeMapping = {

@@ -9,7 +9,7 @@
     <EuiLoadingSpinner class="euiButtonContent__spinner" @size="m" />
   {{else if @iconType}}
     <EuiIcon
-      class="euiButtonContent__icon"
+      class="euiButtonContent__icon {{@iconClasses}}"
       @type={{@iconType}}
       @size="m"
     />

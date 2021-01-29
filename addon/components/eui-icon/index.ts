@@ -48,6 +48,11 @@ export type EuiIconArgs = CommonArgs & {
   size?: IconSize;
 
   /**
+   * If the type is not a named eui icon, render as Svg, not as img.
+   */
+  useSvg?: boolean;
+
+  /**
    * Descriptive title for naming the icon based on its use
    */
   title?: string;
@@ -79,7 +84,12 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
   get useImage(): boolean {
     let { type } = this.args;
-    return typeof type === 'string' && !isEuiIconType(type);
+    return typeof type === 'string' && !isEuiIconType(type) && !this.useSvg;
+  }
+
+  get useSvg(): boolean {
+    const config = getOwner(this).resolveRegistration('config:environment');
+    return this.args.useSvg ?? config?.['ember-eui']?.['eui-icon']?.useSvg ?? false;
   }
 
   get icon(): IconType | void {

@@ -11,7 +11,7 @@
   @navIsDocked={{this.navIsDocked}}
 >
   <:button>
-    <EuiButton @onClick={{this.openCollapsibleNav}}>
+    <EuiButton {{on "click" this.openCollapsibleNav}}>
       Open Collapsible Nav
     </EuiButton>
   </:button>
@@ -52,7 +52,7 @@
         Submenu 3
       </:title>
       <:content>
-        <EuiButton @onClick={{this.toggleDockedNav}}>
+        <EuiButton {{on "click" this.toggleDockedNav}}>
           {{unless this.navIsDocked "Dock it!" "Undock it!"}}
         </EuiButton>
       </:content>
@@ -98,7 +98,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoCollapsibleNavComponent extends Component {
-
   @tracked collNavIsOpen = false;
   @tracked navIsDocked = false;
 

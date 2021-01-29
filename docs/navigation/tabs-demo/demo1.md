@@ -78,7 +78,7 @@
   outside
 </p>
 <EuiSpacer />
-<EuiButton @color="primary" @onClick={{this.cycleTabs}}>
+<EuiButton @color="primary" {{on "click" this.cycleTabs}}>
   Next tab
 </EuiButton>
 Outer selected tab:

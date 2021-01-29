@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.43
+
+🐛 Bug / Fixes
+
+- Add missing `{{on "clicks"}}` for `<EuiButton />` around the codebase
+
 ### 0.0.42
 
 🚀 Enhancements

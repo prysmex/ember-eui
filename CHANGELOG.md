@@ -2,6 +2,16 @@
 
 ### Master
 
+### 0.0.44
+
+🚀 Enhancements
+
+- Allow defaulting to always use `<Svg/>` component from `ember-svg-jar`, you can still override with `@useSvg={{false}}` to render an icon as img
+
+```ts
+config['ember-eui']['eui-icon'].useSvg;
+```
+
 ### 0.0.43
 
 🐛 Bug / Fixes

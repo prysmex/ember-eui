@@ -8,7 +8,7 @@ interface InlineStylesParams {
   [property: string]: unknown;
 }
 interface FinalProperties {
-  [name: string]: unknown
+  [name: string]: unknown;
 }
 
 export function inlineStyles(_: unknown, params: InlineStylesParams) {

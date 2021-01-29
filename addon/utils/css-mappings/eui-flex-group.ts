@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiFlexGroup'
+export const baseClass: string = 'euiFlexGroup';
 
 export const gutterSizeMapping = {
   none: '',
@@ -6,16 +6,16 @@ export const gutterSizeMapping = {
   s: `${baseClass}--gutterSmall`,
   m: `${baseClass}--gutterMedium`,
   l: `${baseClass}--gutterLarge`,
-  xl: `${baseClass}--gutterExtraLarge`
-}
+  xl: `${baseClass}--gutterExtraLarge`,
+};
 
 export const alignItemsMapping = {
   stretch: '',
   flexStart: `${baseClass}--alignItemsFlexStart`,
   flexEnd: `${baseClass}--alignItemsFlexEnd`,
   center: `${baseClass}--alignItemsCenter`,
-  baseline: `${baseClass}--alignItemsBaseline`
-}
+  baseline: `${baseClass}--alignItemsBaseline`,
+};
 
 export const justifyContentMapping = {
   flexStart: '',
@@ -23,15 +23,15 @@ export const justifyContentMapping = {
   center: `${baseClass}--justifyContentCenter`,
   spaceBetween: `${baseClass}--justifyContentSpaceBetween`,
   spaceAround: `${baseClass}--justifyContentSpaceAround`,
-  spaceEvenly: `${baseClass}--justifyContentSpaceEvenly`
-}
+  spaceEvenly: `${baseClass}--justifyContentSpaceEvenly`,
+};
 
 export const directionMapping = {
   row: `${baseClass}--directionRow`,
   rowReverse: `${baseClass}--directionRowReverse`,
   column: `${baseClass}--directionColumn`,
-  columnReverse: `${baseClass}--directionColumnReverse`
-}
+  columnReverse: `${baseClass}--directionColumnReverse`,
+};
 
 export const mapping: ComponentMapping = {
   base: baseClass,
@@ -39,8 +39,8 @@ export const mapping: ComponentMapping = {
     direction: directionMapping,
     gutterSize: gutterSizeMapping,
     alignItems: alignItemsMapping,
-    justifyContent: justifyContentMapping
-  }
-}
+    justifyContent: justifyContentMapping,
+  },
+};
 
 export default mapping;

@@ -4,7 +4,7 @@
 <EuiTitle>
   Basic Modal
 </EuiTitle>
-<EuiButton @color="primary" @onClick={{fn this.activateModal "basicModalActive"}}>
+<EuiButton @color="primary" {{on "click" (fn this.activateModal "basicModalActive")}}>
   Activate Modal
 </EuiButton>
 {{#if this.basicModalActive}}
@@ -40,11 +40,11 @@
         </EuiText>
       </EuiModalBody>
       <EuiModalFooter>
-        <EuiButtonEmpty @onClick={{fn this.deactivateModal "basicModalActive"}}>
+        <EuiButtonEmpty {{on "click" (fn this.deactivateModal "basicModalActive")}}>
           Cancel
         </EuiButtonEmpty>
         <EuiButton
-          @onClick={{fn this.deactivateModal "basicModalActive"}}
+          {{on "click" (fn this.deactivateModal "basicModalActive")}}
           @color="primary"
           @fill={{true}}
         >
@@ -58,7 +58,7 @@
 <EuiTitle>
   Overflow Test
 </EuiTitle>
-<EuiButton @color="primary" @onClick={{fn this.activateModal "overflowModalActive"}}>
+<EuiButton @color="primary" {{on "click" (fn this.activateModal "overflowModalActive")}}>
   Show Modal
 </EuiButton>
 {{#if this.overflowModalActive}}
@@ -138,7 +138,7 @@
       <EuiModalFooter>
         <EuiButton
           @color="primary"
-          @onClick={{fn this.deactivateModal "overflowModalActive"}}
+          {{on "click" (fn this.deactivateModal "overflowModalActive")}}
           id="donebutton"
         >
           Done
@@ -151,7 +151,7 @@
 <EuiTitle>
   Confirm Modal
 </EuiTitle>
-<EuiButton @color="primary" @onClick={{fn this.activateModal "confirmModalActive"}}>
+<EuiButton @color="primary" {{on "click" (fn this.activateModal "confirmModalActive")}}>
   Show Confirm Modal
 </EuiButton>
 {{#if this.confirmModalActive}}
@@ -180,16 +180,16 @@ import { action } from '@ember/object';
 export default class DemoModalComponent extends Component {
   @tracked basicModalActive = false;
   @tracked overflowModalActive = false;
-	@tracked confirmModalActive = false;
+  @tracked confirmModalActive = false;
 
   @action
   activateModal(modal) {
-		this[modal] = true;
+    this[modal] = true;
   }
 
   @action
   deactivateModal(modal) {
-		this[modal] = false;
+    this[modal] = false;
   }
 
   @action

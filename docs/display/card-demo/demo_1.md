@@ -153,7 +153,7 @@
       </Card.body>
       <Card.footer>
         <div class="euiFlexGroup euiFlexGroup--justifyContentSpaceAround">
-          <EuiButton class="euiFlexItem euiFlexItem--flexGrowZero" @onClick={{this.puntIt}} @fill={{true}}>
+          <EuiButton class="euiFlexItem euiFlexItem--flexGrowZero" {{on "click" this.puntIt}} @fill={{true}}>
               Try it!
           </EuiButton>
         </div>
@@ -372,7 +372,6 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class DemoCardComponent extends Component {
-
   @tracked cardOneSelected = false;
   @tracked cardTwoSelected = false;
   @tracked cardThreeSelected = false;
@@ -380,16 +379,15 @@ export default class DemoCardComponent extends Component {
 
   @tracked weaponLocked = true;
 
-	@action
-	punchIt() {
-		alert('You punched into hyperspacer!')
+  @action
+  punchIt() {
+    alert('You punched into hyperspacer!');
   }
 
   @action
-  selectToggle(card, event){
+  selectToggle(card, event) {
     this.toggleProperty(card);
     event.stopPropagation();
   }
-
 }
 ```

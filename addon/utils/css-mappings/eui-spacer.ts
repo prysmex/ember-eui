@@ -6,14 +6,14 @@ export const sizeMapping = {
   m: `${baseClass}--m`,
   l: `${baseClass}--l`,
   xl: `${baseClass}--xl`,
-  xxl: `${baseClass}--xxl`
+  xxl: `${baseClass}--xxl`,
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    size: sizeMapping
-  }
+    size: sizeMapping,
+  },
 };
 
 export default mapping;

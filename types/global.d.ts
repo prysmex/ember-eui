@@ -41,4 +41,10 @@ interface RGB {
   b: number;
 }
 
+interface Tab {
+  id: string | number;
+  name: string;
+  content: string;
+}
+
 type HEX = string;

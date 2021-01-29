@@ -13,20 +13,18 @@
   @iconSide={{@iconSide}}
   @flush={{@flush}}
   @type={{@type}}
-  @onClick={{unless @isDisabled @onClick}}
   role="switch"
   aria-checked={{@isSelected}}
   ...attributes
+  {{on "click" (unless @isDisabled @onClick)}}
 >
   {{#if hasBlock}}
     {{yield}}
+  {{else if @isSelected}}
+    Selected
+  {{else if @isDisabled}}
+    Unavailable
   {{else}}
-    {{#if @isSelected}}
-      Selected
-    {{else if @isDisabled}}
-      Unavailable
-    {{else}}
-      Select
-    {{/if}}
+    Select
   {{/if}}
 </EuiButtonEmpty>

@@ -9,9 +9,8 @@ export const sizeMapping: PropertyMapping = {
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    size: sizeMapping
-  }
+    size: sizeMapping,
+  },
 };
 
 export default mapping;
-

@@ -1,11 +1,11 @@
 # Demo
 
 ```hbs template
-<EuiButtonEmpty @onClick={{this.toggle}} @color="primary">
+<EuiButtonEmpty {{on "click" this.toggle}} @color="primary">
     Click here to test Overlay
 </EuiButtonEmpty>
 {{#if this.showOverlay}}
-  <EuiOverlayMask @headerZindexLocation="above" @onClick={{this.toggle}}>
+  <EuiOverlayMask @headerZindexLocation="above" {{on "click" this.toggle}}>
     This is a plain overlay!!
   </EuiOverlayMask>
 {{/if}}
@@ -17,12 +17,11 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class OverlayMaskDemoComponent extends Component {
-	@tracked showOverlay = false;
+  @tracked showOverlay = false;
 
-	@action
-	toggle() {
-		this.showOverlay = !this.showOverlay;
-	}
+  @action
+  toggle() {
+    this.showOverlay = !this.showOverlay;
+  }
 }
-
 ```

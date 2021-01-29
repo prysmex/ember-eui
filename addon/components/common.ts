@@ -1,4 +1,3 @@
-
 export interface CommonArgs {
   className?: string;
   'aria-label'?: string;

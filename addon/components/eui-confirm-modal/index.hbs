@@ -1,8 +1,4 @@
-<EuiModal
-  class="euiModal--confirmation"
-  @onClose={{@onCancel}}
-  ...attributes
->
+<EuiModal class="euiModal--confirmation" @onClose={{@onCancel}} ...attributes>
   {{#if @title}}
     <EuiModalHeader>
       <EuiModalHeaderTitle>
@@ -16,21 +12,21 @@
     </EuiModalBody>
   {{else if @message}}
     <EuiModalBody>
-      <EuiText>{{@message}}</EuiText>
+      <EuiText>
+        {{@message}}
+      </EuiText>
     </EuiModalBody>
   {{/if}}
   <EuiModalFooter>
-    <EuiButtonEmpty
-      @onClick={{@onCancel}}
-    >
+    <EuiButtonEmpty {{on "click" @onCancel}}>
       {{@cancelButtonText}}
     </EuiButtonEmpty>
     <EuiButton
-      @onClick={{@onConfirm}}
       @fill={{true}}
       @color={{@buttonColor}}
       @isDisabled={{@confirmButtonDisabled}}
       @isLoading={{@confirmButtonIsLoading}}
+      {{on "click" @onConfirm}}
     >
       {{@confirmButtonText}}
     </EuiButton>

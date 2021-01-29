@@ -1,8 +1,8 @@
-export const baseClass: string = 'euiButton'
+export const baseClass: string = 'euiButton';
 
 const sizeMapping = {
-  s: `${baseClass}--small`
-}
+  s: `${baseClass}--small`,
+};
 
 const colorMapping = {
   primary: `${baseClass}--primary`,
@@ -11,14 +11,14 @@ const colorMapping = {
   danger: `${baseClass}--danger`,
   ghost: `${baseClass}--ghost`,
   text: `${baseClass}--text`,
-}
+};
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     color: colorMapping,
-    size: sizeMapping
-  }
-}
+    size: sizeMapping,
+  },
+};
 
 export default mapping;

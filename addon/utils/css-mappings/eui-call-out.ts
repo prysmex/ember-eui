@@ -4,19 +4,19 @@ export const colorMapping = {
   primary: `${baseClass}--primary`,
   success: `${baseClass}--success`,
   warning: `${baseClass}--warning`,
-  danger: `${baseClass}--danger`
+  danger: `${baseClass}--danger`,
 };
 
 export const sizeMapping = {
-  s: `${baseClass}--small`
-}
+  s: `${baseClass}--small`,
+};
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     color: colorMapping,
-    size: sizeMapping
-  }
+    size: sizeMapping,
+  },
 };
 
 export default mapping;

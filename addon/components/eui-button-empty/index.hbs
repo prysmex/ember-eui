@@ -32,10 +32,8 @@
     }}
     disabled={{or @isLoading @isDisabled}}
     type={{if @type @type "button"}}
-    ref={{@buttonRef}}
     aria-pressed={{@isSelected}}
     ...attributes
-    {{on "click" (optional @onClick)}}
   >
     <EuiButtonContent
       class="euiButtonEmpty__content {{@contentClasses}}"

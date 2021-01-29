@@ -14,8 +14,8 @@ const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     size: sizeMapping,
-    display: displayMapping
-  }
+    display: displayMapping,
+  },
 };
 
 export default mapping;

@@ -5,14 +5,14 @@ export const colorMapping = {
   danger: `${baseClass}--danger`,
   text: `${baseClass}--text`,
   ghost: `${baseClass}--ghost`,
-  success: `${baseClass}--success`
-}
+  success: `${baseClass}--success`,
+};
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    color: colorMapping
-  }
+    color: colorMapping,
+  },
 };
 
 export default mapping;

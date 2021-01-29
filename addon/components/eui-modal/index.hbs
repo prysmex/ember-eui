@@ -15,8 +15,8 @@
   <EuiButtonIcon
     class="euiModal__closeIcon"
     @iconType="cross"
-    @onClick={{@onClose}}
     @color="text"
+    {{on "click" @onClose}}
   />
   <div class="euiModal__flex">
     {{yield}}

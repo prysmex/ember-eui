@@ -18,37 +18,37 @@
       Click the buttons below to change status!
       <EuiFlexGroup>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="danger" @onClick={{this.setDanger}}>
+          <EuiButton @color="danger" {{on "click" this.setDanger}}>
             Set Danger
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="secondary" @onClick={{this.setComplete}}>
+          <EuiButton @color="secondary" {{on "click" this.setComplete}}>
             Set Complete
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="warning" @onClick={{this.setWarning}}>
+          <EuiButton @color="warning" {{on "click" this.setWarning}}>
             Set Warning
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="primary" @onClick={{this.setLoading}}>
+          <EuiButton @color="primary" {{on "click" this.setLoading}}>
             Set Loading
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty @onClick={{this.setDisabled}}>
+          <EuiButtonEmpty {{on "click" this.setDisabled}}>
             Set Disabled
           </EuiButtonEmpty>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty @onClick={{this.setIncomplete}}>
+          <EuiButtonEmpty {{on "click" this.setIncomplete}}>
             Set Incomplete
           </EuiButtonEmpty>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty @onClick={{this.reset}}>
+          <EuiButtonEmpty {{on "click" this.reset}}>
             Reset
           </EuiButtonEmpty>
         </EuiFlexItem>
@@ -68,32 +68,32 @@ export default class DemoStepsComponent extends Component {
 
   @action
   setComplete() {
-    this.status = "complete";
+    this.status = 'complete';
   }
 
   @action
   setDanger() {
-    this.status = "danger";
+    this.status = 'danger';
   }
 
   @action
   setWarning() {
-    this.status = "warning";
+    this.status = 'warning';
   }
 
   @action
   setLoading() {
-    this.status = "loading";
+    this.status = 'loading';
   }
 
   @action
   setDisabled() {
-    this.status = "disabled";
+    this.status = 'disabled';
   }
 
   @action
   setIncomplete() {
-    this.status = "incomplete";
+    this.status = 'incomplete';
   }
 
   @action

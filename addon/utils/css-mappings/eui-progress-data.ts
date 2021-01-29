@@ -24,7 +24,7 @@ export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     color: dataColorToClassMap,
-  }
-}
+  },
+};
 
 export default mapping;

@@ -1,4 +1,4 @@
-const baseClass: string = "euiStepNumber"
+const baseClass: string = 'euiStepNumber';
 
 const statusToClassMap = {
   incomplete: `${baseClass}--incomplete`,
@@ -7,13 +7,13 @@ const statusToClassMap = {
   warning: `${baseClass}--warning`,
   danger: `${baseClass}--danger`,
   complete: `${baseClass}--complete`,
-}
+};
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    type: statusToClassMap
-  }
-}
+    type: statusToClassMap,
+  },
+};
 
 export default mapping;

@@ -7,8 +7,9 @@ To make a progress bar actually progressable, you should pass down the `@max` pr
 `@value` is the number value of the progress bar that is passed down as a HTML attribute to the `<progress />` tag.
 
 ValueText can be and should be a `@valueText` prop and `:valueText` named block. Whenever the `@valueText` prop is passed as TRUE, that means you want the `@value` prop to be displayed atop the progress bar. When set to false or not passed at all, that means you DON'T want `@value` to be displayed OR that you are passing a custom `:valueText` named block.<br><br>
+
 ```hbs template
-<EuiButton @onClick={{this.increaseValue1}}>
+<EuiButton {{on "click" this.increaseValue1}}>
   Click!
 </EuiButton>
 <EuiSpacer @size="m" />
@@ -54,18 +55,15 @@ export default class DemoProgressComponent extends Component {
   @computed('value1')
   get value1Text() {
     if (this.value1 == 0) {
-      return "Progress me!";
-    }
-    else if (this.value1 < 40) {
-      return "Keep at it!";
-    }
-    else if (this.value1 >= 40 && this.value1 < 70) {
-      return "Keep going!! Grind it!"
-    }
-    else if (this.value1 >= 70 && this.value1 < 100){
-      return "Almost there!!"
+      return 'Progress me!';
+    } else if (this.value1 < 40) {
+      return 'Keep at it!';
+    } else if (this.value1 >= 40 && this.value1 < 70) {
+      return 'Keep going!! Grind it!';
+    } else if (this.value1 >= 70 && this.value1 < 100) {
+      return 'Almost there!!';
     } else if (this.value1 == 100) {
-      return "Nailed it!"
+      return 'Nailed it!';
     }
   }
 

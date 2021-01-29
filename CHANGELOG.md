@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.42
+
+🚀 Enhancements
+
+- Use `{{on "click"}}` instead of `@onClick` for `<EuiButton />` `<EuiButtonEmpty/>` `<EuiButtonIcon />`
+
 ### 0.0.41
 
 🐛 Bug / Fixes

@@ -1,6 +1,6 @@
 {
   "name": "ember-eui",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon",

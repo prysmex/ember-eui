@@ -4,7 +4,11 @@
 
 ### 0.0.44
 
-🚀 Enhancements
+🐛 Bug / Fixes
+
+- Add missing `{{yield}}` to `<EuiHeaderLink />`
+
+  🚀 Enhancements
 
 - Allow defaulting to always use `<Svg/>` component from `ember-svg-jar`, you can still override with `@useSvg={{false}}` to render an icon as img
 

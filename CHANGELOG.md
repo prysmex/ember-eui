@@ -2,13 +2,19 @@
 
 ### Master
 
+### 0.0.45
+
+🚀 Enhancements
+
+- Add `{{yield}}` to `<EuiButtonIcon>` useful for stuff like adding tooltips or so
+
 ### 0.0.44
 
 🐛 Bug / Fixes
 
 - Add missing `{{yield}}` to `<EuiHeaderLink />`
 
-  🚀 Enhancements
+🚀 Enhancements
 
 - Allow defaulting to always use `<Svg/>` component from `ember-svg-jar`, you can still override with `@useSvg={{false}}` to render an icon as img
 

@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.46
+
+🚀 Enhancements
+
+- Add `@iconClasses` to buttons
+
 ### 0.0.45
 
 🚀 Enhancements

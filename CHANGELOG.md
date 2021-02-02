@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.47
+
+🐛 Bug / Fixes
+
+- Fix default `focus-trap`
+
 ### 0.0.46
 
 🚀 Enhancements

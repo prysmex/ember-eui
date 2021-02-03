@@ -7,11 +7,12 @@
   >
     {{#if @iconType}}
       <EuiIcon
-        class="euiButtonIcon__icon"
+        class="euiButtonIcon__icon {{@iconClasses}}"
         @type={{@iconType}}
         @size={{arg-or-default @iconSize "m"}}
         aria-hidden="true"
       />
+      {{yield}}
     {{/if}}
   </a>
 {{else}}
@@ -24,11 +25,12 @@
   >
     {{#if @iconType}}
       <EuiIcon
-        class="euiButtonIcon__icon"
+        class="euiButtonIcon__icon {{@iconClasses}}"
         @type={{@iconType}}
         @size={{@iconSize}}
         aria-hidden="true"
       />
+      {{yield}}
     {{/if}}
   </button>
 {{/if}}

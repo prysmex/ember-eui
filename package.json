@@ -1,6 +1,6 @@
 {
   "name": "ember-eui",
-  "version": "0.0.43",
+  "version": "0.0.47",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon",
@@ -17,7 +17,8 @@
     "David Martinez",
     "Mario Trujillo",
     "Victor Aguilar",
-    "Diego Zubieta"
+    "Diego Zubieta",
+    "Gustavo Rodriguez"
   ],
   "directories": {
     "doc": "doc",

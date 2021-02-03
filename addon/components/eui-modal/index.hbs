@@ -4,11 +4,13 @@
     (not-eq @maxWidth false)
     (inline-styles componentName="EuiModal" componentArgs=(hash maxWidth=@maxWidth))
   }}
-  tabIndex={{0}}
+  tabindex="0"
   ...attributes
   {{focus-trap
-    isActive=true
-    focusTrapOptions=(if @focusTrapOptions @focusTrapOptions (hash initialFocus=@initialFocus))
+    isActive=(arg-or-default @isFocusTrapActive true)
+    shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
+    isPaused=(arg-or-default @isFocusTrapPaused false)
+    focusTrapOptions=(arg-or-default @focusTrapOptions (hash))
   }}
   {{on-key "Escape" @onClose}}
 >

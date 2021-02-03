@@ -2,6 +2,38 @@
 
 ### Master
 
+### 0.0.47
+
+🐛 Bug / Fixes
+
+- Fix default `focus-trap`
+
+### 0.0.46
+
+🚀 Enhancements
+
+- Add `@iconClasses` to buttons
+
+### 0.0.45
+
+🚀 Enhancements
+
+- Add `{{yield}}` to `<EuiButtonIcon>` useful for stuff like adding tooltips or so
+
+### 0.0.44
+
+🐛 Bug / Fixes
+
+- Add missing `{{yield}}` to `<EuiHeaderLink />`
+
+🚀 Enhancements
+
+- Allow defaulting to always use `<Svg/>` component from `ember-svg-jar`, you can still override with `@useSvg={{false}}` to render an icon as img
+
+```ts
+config['ember-eui']['eui-icon'].useSvg;
+```
+
 ### 0.0.43
 
 🐛 Bug / Fixes

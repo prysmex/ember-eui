@@ -8,7 +8,9 @@
 /* @import './markdown/light.css'; */
 @import './highlight.css';
 
-*, ::before, ::after {
+*,
+::before,
+::after {
   border-style: none;
   box-sizing: border-box;
   border-width: 0;
@@ -37,7 +39,6 @@ img {
     @apply markdown;
   }
 }
-
 
 .docfy-demo__snippets {
   &__tabs {
@@ -68,6 +69,14 @@ img {
   }
 }
 
-
-
 @import 'ember-eui';
+
+body.euiBody--headerIsFixed {
+  padding-top: 49px;
+
+  .euiFlyout,
+  .euiCollapsibleNav {
+    top: 49px;
+    height: calc(100% - 49px);
+  }
+}

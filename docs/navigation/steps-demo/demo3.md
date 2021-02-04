@@ -1,3 +1,7 @@
+---
+order: 3
+---
+
 # Horizontal Steps
 
 ```hbs template
@@ -30,7 +34,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DemoStepsComponent extends Component {
+export default class DemoStepsDemo3Component extends Component {
   @tracked isComplete = null;
 
   @action

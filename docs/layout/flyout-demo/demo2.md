@@ -48,21 +48,20 @@
 ```
 
 ```js component
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DemoFlyoutController extends Component {
-
+export default class DemoFlyoutDemo2Component extends Component {
   @tracked flyout2Open = false;
 
   @action
-  openFlyout(){
+  openFlyout() {
     this.flyout2Open = true;
   }
 
   @action
-  closeFlyout(flyout){
+  closeFlyout(flyout) {
     this.flyout2Open = false;
   }
 }

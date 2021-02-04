@@ -1,3 +1,7 @@
+---
+order: 1
+---
+
 # Demo 1
 
 Click on the hamburger icon in the Header Nav to open the flyout!
@@ -31,21 +35,20 @@ Click on the hamburger icon in the Header Nav to open the flyout!
 ```
 
 ```js component
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DemoFlyoutController extends Component {
-
+export default class DemoFlyoutDemo1Component extends Component {
   @tracked flyoutOpen = false;
 
   @action
-  openFlyout(){
+  openFlyout() {
     this.flyoutOpen = true;
   }
 
   @action
-  closeFlyout(flyout){
+  closeFlyout(flyout) {
     this.flyoutOpen = false;
   }
 }

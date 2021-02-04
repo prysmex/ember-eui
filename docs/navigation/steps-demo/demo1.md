@@ -1,3 +1,7 @@
+---
+order: 1
+---
+
 # Basic Steps
 
 ```hbs template

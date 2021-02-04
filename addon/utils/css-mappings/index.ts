@@ -30,6 +30,7 @@ import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
 import EuiCommentTimelineIcon from './eui-comment-timeline-icon';
 import EuiCommentEvent from './eui-comment-event';
+import EuiFlyout from './eui-flyout';
 import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
 import EuiStepNumber from './eui-step-number';
 import EuiProgress from './eui-progress';
@@ -63,11 +64,12 @@ const mapping: Mapping = {
   EuiHeaderSection,
   EuiHeaderSectionItem,
   EuiHeader,
-  EuiButtonIcon,
   EuiButton,
+  EuiButtonIcon,
   EuiHorizontalRule,
   EuiCommentTimelineIcon,
   EuiCommentEvent,
+  EuiFlyout,
   EuiCollapsibleNavGroup,
   EuiStepNumber,
   EuiProgress,

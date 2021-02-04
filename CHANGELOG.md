@@ -2,6 +2,10 @@
 
 ### Master
 
+🚀 Enhancements
+
+- `<EuiFlyout>`
+
 ### 0.0.48
 
 🐛 Bug / Fixes

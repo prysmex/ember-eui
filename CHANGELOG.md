@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.48
+
+🐛 Bug / Fixes
+
+- Update package.json to ember-svg-jar github:betocantu93/ember-svg-jar#ember-eui-hbs
+
 ### 0.0.47
 
 🐛 Bug / Fixes

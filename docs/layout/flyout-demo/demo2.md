@@ -1,3 +1,7 @@
+---
+order: 2
+---
+
 # Demo 2
 
 ```hbs template

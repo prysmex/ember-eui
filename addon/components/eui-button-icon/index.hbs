@@ -7,11 +7,12 @@
   >
     {{#if @iconType}}
       <EuiIcon
-        class="euiButtonIcon__icon"
+        class="euiButtonIcon__icon {{@iconClasses}}"
         @type={{@iconType}}
         @size={{arg-or-default @iconSize "m"}}
         aria-hidden="true"
       />
+      {{yield}}
     {{/if}}
   </a>
 {{else}}
@@ -19,17 +20,17 @@
     class={{class-names componentName="EuiButtonIcon" color=(arg-or-default @color "primary")}}
     disabled={{@isDisabled}}
     aria-pressed={{if @isSelected "true" "false"}}
-    type="button"
-    onClick={{@onClick}}
+    type={{if @type @type "button"}}
     ...attributes
   >
     {{#if @iconType}}
       <EuiIcon
-        class="euiButtonIcon__icon"
+        class="euiButtonIcon__icon {{@iconClasses}}"
         @type={{@iconType}}
         @size={{@iconSize}}
         aria-hidden="true"
       />
+      {{yield}}
     {{/if}}
   </button>
 {{/if}}

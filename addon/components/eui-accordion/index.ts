@@ -67,44 +67,42 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
 
   buttonId: string = uniqueId();
 
-  constructor (owner: unknown, args: AccordionArgs) {
+  constructor(owner: unknown, args: AccordionArgs) {
     super(owner, args);
 
-    this._opened = this.args.forceState
-      ? this.args.forceState === 'open'
-      : this.args.initialIsOpen;
+    this._opened = this.args.forceState ? this.args.forceState === 'open' : this.args.initialIsOpen;
   }
 
-  get isOpen () {
+  get isOpen() {
     return this.args.forceState ? this.args.forceState === 'open' : this._opened;
   }
 
-  get hasIconButton () {
+  get hasIconButton() {
     return this.args.extraAction && this.arrowDisplay === 'right';
   }
 
-  get hasArrowDisplay () {
+  get hasArrowDisplay() {
     return this.arrowDisplay !== 'none';
   }
 
-  get buttonReverse () {
+  get buttonReverse() {
     return !this.args.extraAction && this.arrowDisplay === 'right';
   }
 
-  get hasLoadingMessage () {
+  get hasLoadingMessage() {
     return this.isLoadingMessage && this.isLoadingMessage !== true;
   }
 
-  get buttonClasses () {
+  get buttonClasses() {
     return [
       'euiAccordion__button',
       this.buttonReverse ? 'euiAccordion__buttonReverse' : '',
-      this.args.buttonClassName
+      this.args.buttonClassName,
     ].join(' ');
   }
 
   @action
-  onToggle () {
+  onToggle() {
     if (this.args.forceState) {
       this.args.onToggle && this.args.onToggle(this.args.forceState === 'open' ? false : true);
     } else {

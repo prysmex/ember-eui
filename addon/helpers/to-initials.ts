@@ -2,26 +2,18 @@ import { helper } from '@ember/component/helper';
 
 export const MAX_INITIALS = 2;
 
-
-export function toInitials(
-  name: string,
-  initialsLength?: 1 | 2,
-  initials?: string
-): string | null {
+export function toInitials(name: string, initialsLength?: 1 | 2, initials?: string): string | null {
   // Calculate the number of initials to show, maxing out at MAX_INITIALS
   let calculatedInitialsLength: number = initials
     ? initials.split(' ').length
     : name.split(' ').length;
 
   calculatedInitialsLength =
-    calculatedInitialsLength > MAX_INITIALS
-      ? MAX_INITIALS
-      : calculatedInitialsLength;
+    calculatedInitialsLength > MAX_INITIALS ? MAX_INITIALS : calculatedInitialsLength;
 
   // Check if initialsLength was passed and set to calculated, unless greater than MAX_INITIALS
   if (initialsLength) {
-    calculatedInitialsLength =
-      initialsLength <= MAX_INITIALS ? initialsLength : MAX_INITIALS;
+    calculatedInitialsLength = initialsLength <= MAX_INITIALS ? initialsLength : MAX_INITIALS;
   }
 
   let calculatedInitials;
@@ -33,8 +25,7 @@ export function toInitials(
       // B. If there are any spaces in the name, set to first letter of each word
       calculatedInitials = name.match(/\b(\w)/g);
       calculatedInitials =
-        calculatedInitials &&
-        calculatedInitials.join('').substring(0, calculatedInitialsLength);
+        calculatedInitials && calculatedInitials.join('').substring(0, calculatedInitialsLength);
     } else {
       // C. Set to the name's initials truncated based on calculated length
       calculatedInitials = name.substring(0, calculatedInitialsLength);

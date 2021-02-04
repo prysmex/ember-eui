@@ -4,7 +4,7 @@ export default modifier(function simulateEvent(element, eventName, {handler, tar
 
   let _target = element.querySelector(targetElement);
 
-  function _triggerEvent (target) {
+  function _triggerEvent () {
     let _newEvent = _target[handler];
     typeof _newEvent === 'function' && _target[handler]();
   }
@@ -12,7 +12,8 @@ export default modifier(function simulateEvent(element, eventName, {handler, tar
   if (targetElement) {
     element.addEventListener(eventName, _triggerEvent);
     return () => {
-      element.removeEventListener(eventName, _triggerEvent)
+      element.removeEventListener(eventName, _triggerEvent);
+      _target = null;
     };
   }
 

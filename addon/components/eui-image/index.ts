@@ -44,7 +44,6 @@ type ImageArgs = {
    * When set to `true` will make the image clickable to a larger version
    */
   allowFullScreen?: boolean;
-
 };
 
 export default class EmberEuiImage extends GlimmerComponent<ImageArgs> {

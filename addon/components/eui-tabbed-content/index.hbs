@@ -1,0 +1,38 @@
+{{#let
+  (unique-id)
+  (optional @onTabClick)
+  (arg-or-default @autoFocus "initial")
+  (use-state
+    (get-tab-id (arg-or-default (or @selectedTab @initialSelectedTab) (object-at 0 @tabs)))
+  ) as |id onTabClick autoFocus selectedTab|
+}}
+  <div class={{@className}} ...attributes>
+    <EuiTabs
+      @selectedTab={{selectedTab.value}}
+      @expand={{@expand}}
+      @display={{@display}}
+      @size={{@size}} as |EuiTab|
+    >
+      {{#each @tabs as |tab|}}
+        <EuiTab
+          @id={{tab.id}}
+          aria-controls={{id}}
+          @selectedTabId={{selectedTab.value}}
+          @onClick={{pipe selectedTab.setState (fn onTabClick tab)}}
+          @focusFn={{selectedTab.setState}}
+        >
+          {{tab.name}}
+        </EuiTab>
+      {{/each}}
+    </EuiTabs>
+    {{#with (find-by "id" selectedTab.value @tabs) as |currentTab|}}
+      <div role="tabpanel" id={{id}} aria-labelledby={{currentTab.id}}>
+        {{#if (has-block "selectedTabContent")}}
+          {{yield currentTab to="selectedTabContent"}}
+        {{else}}
+          {{currentTab.content}}
+        {{/if}}
+      </div>
+    {{/with}}
+  </div>
+{{/let}}

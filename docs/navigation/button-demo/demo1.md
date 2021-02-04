@@ -1,4 +1,4 @@
-# Demo 
+# Demo
 
 ```hbs template
 <EuiTitle @size="m">
@@ -7,115 +7,120 @@
 <EuiSpacer @size="s" />
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}}>
+    <EuiButton {{on "click" this.clickedButton}}>
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @fill={{true}}>
+    <EuiButton @fill={{true}} {{on "click" this.clickedButton}}>
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s">
+    <EuiButton @size="s" {{on "click" this.clickedButton}}>
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s" @fill={{true}}>
+    <EuiButton @size="s" @fill={{true}} {{on "click" this.clickedButton}}>
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @color="secondary">
+    <EuiButton @color="secondary" {{on "click" this.clickedButton}}>
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @fill={{true}} @color="secondary">
+    <EuiButton @fill={{true}} @color="secondary" {{on "click" this.clickedButton}}>
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s" @color="secondary">
+    <EuiButton @size="s" @color="secondary" {{on "click" this.clickedButton}}>
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s" @fill={{true}} @color="secondary">
+    <EuiButton @size="s" @fill={{true}} @color="secondary" {{on "click" this.clickedButton}}>
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @color="warning">
+    <EuiButton @color="warning" {{on "click" this.clickedButton}}>
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @fill={{true}} @color="warning">
+    <EuiButton @fill={{true}} @color="warning" {{on "click" this.clickedButton}}>
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s" @color="warning">
+    <EuiButton @size="s" @color="warning" {{on "click" this.clickedButton}}>
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s" @fill={{true}} @color="warning">
+    <EuiButton @size="s" @fill={{true}} @color="warning" {{on "click" this.clickedButton}}>
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @color="danger">
+    <EuiButton @color="danger" {{on "click" this.clickedButton}}>
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @fill={{true}} @color="danger">
+    <EuiButton @fill={{true}} @color="danger" {{on "click" this.clickedButton}}>
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s" @color="danger">
+    <EuiButton @size="s" @color="danger" {{on "click" this.clickedButton}}>
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{this.clickedButton}} @size="s" @fill={{true}} @color="danger">
+    <EuiButton @size="s" @fill={{true}} @color="danger" {{on "click" this.clickedButton}}>
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @isDisabled={{true}} @onClick={{this.clickedButton}} @color="danger">
+    <EuiButton @isDisabled={{true}} @color="danger" {{on "click" this.clickedButton}}>
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @isDisabled={{true}} @onClick={{this.clickedButton}} @fill={{true}} @color="danger">
+    <EuiButton
+      @isDisabled={{true}}
+      @fill={{true}}
+      @color="danger"
+      {{on "click" this.clickedButton}}
+    >
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @isDisabled={{true}} @onClick={{this.clickedButton}} @size="s" @color="danger">
+    <EuiButton @isDisabled={{true}} @size="s" @color="danger" {{on "click" this.clickedButton}}>
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
     <EuiButton
       @isDisabled={{true}}
-      @onClick={{this.clickedButton}}
       @size="s"
       @fill={{true}}
       @color="danger"
+      {{on "click" this.clickedButton}}
     >
       Small Filled
     </EuiButton>
@@ -148,12 +153,17 @@
 <EuiSpacer @size="s" />
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @iconType="pencil" @onClick={{this.clickedButton}}>
+    <EuiButton @iconType="pencil" {{on "click" this.clickedButton}}>
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @iconType="pencil" @fill={{true}} @iconSide="right" @onClick={{this.clickedButton}}>
+    <EuiButton
+      @iconType="pencil"
+      @fill={{true}}
+      @iconSide="right"
+      {{on "click" this.clickedButton}}
+    >
       Primary
     </EuiButton>
   </div>
@@ -163,7 +173,7 @@
         @iconType="pencil"
         @iconSide="right"
         @isDisabled={{true}}
-        @onClick={{this.clickedButton}}
+        {{on "click" this.clickedButton}}
       >
         Disabled
       </EuiButton>
@@ -272,7 +282,7 @@
       @color="primary"
       @iconType="arrowRight"
       @iconSize="original"
-      @onClick={{this.toggleIconButton}}
+      {{on "click" this.toggleIconButton}}
     />
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
@@ -298,13 +308,13 @@
       @isSelected={{this.button1On}}
       @fill={{this.button1On}}
       @iconType={{if this.button1On "stopFilled" "stop"}}
-      @onClick={{fn this.toggleButtonState "button1On"}}
+      {{on "click" (fn this.toggleButtonState "button1On")}}
     >
       Toggle me
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @onClick={{fn this.toggleButtonState "button2On"}}>
+    <EuiButton {{on "click" (fn this.toggleButtonState "button2On")}}>
       {{if this.button2On "I have changed!" "Click to change text!"}}
     </EuiButton>
   </div>
@@ -314,7 +324,7 @@
       @iconType="save"
       aria-pressed={{this.button3On}}
       @color={{if this.button3On "primary" "subdued"}}
-      @onClick={{fn this.toggleButtonState "button3On"}}
+      {{on "click" (fn this.toggleButtonState "button3On")}}
     />
   </div>
 </div>
@@ -326,7 +336,6 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class Demo1ButtonComponent extends Component {
-
   @tracked selectedIconButton = false;
   @tracked button1On = false;
   @tracked button2On = false;
@@ -335,18 +344,18 @@ export default class Demo1ButtonComponent extends Component {
   @tracked disabledLink = false;
 
   @action
-  toggleIconButton () {
-    this.toggleProperty('selectedIconButton');
+  toggleIconButton() {
+    this.selectedIconButton = !this.selectedIconButton;
   }
 
   @action
-  clickedButton () {
+  clickedButton() {
     alert('You clicked a button!');
   }
 
   @action
-  toggleButtonState (btn) {
-    this.toggleProperty(btn);
+  toggleButtonState(btn) {
+    this[btn] = !this[btn];
   }
 }
 ```

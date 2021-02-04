@@ -1,10 +1,10 @@
 # Demo
 
 ```hbs template
-<EuiButtonEmpty @onClick={{fn this.toggleHeaderPosition "header1Fixed"}}>
+<EuiButtonEmpty {{on "click" (fn this.toggleHeaderPosition "header1Fixed")}}>
   Toggle Header 1
 </EuiButtonEmpty>
-<EuiButtonEmpty @onClick={{fn this.toggleHeaderPosition "header2Fixed"}}>
+<EuiButtonEmpty {{on "click" (fn this.toggleHeaderPosition "header2Fixed")}}>
   Toggle Header 2
 </EuiButtonEmpty>
 <EuiHeader @position={{if this.header1Fixed "fixed"}}>
@@ -48,14 +48,12 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
-
   @tracked header1Fixed = false;
   @tracked header2Fixed = false;
 
   @action
-  toggleHeaderPosition(header){
-		this[header] = !this[header];
+  toggleHeaderPosition(header) {
+    this[header] = !this[header];
   }
-
 }
 ```

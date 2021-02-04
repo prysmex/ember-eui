@@ -1,9 +1,9 @@
 <button
   class="euiHeaderSectionItem__button"
   ref={{@ref}}
-  onClick={{@onClick}}
   type="button"
   ...attributes
+  {{on "click" (optional @onClick)}}
 >
   {{yield}}
   {{#if @notification}}

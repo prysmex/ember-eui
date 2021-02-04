@@ -30,7 +30,7 @@
  * @param {number} green The green component in the range 0 to 255
  * @param {number} blue The blue component in the range 0 to 255
  * @returns {boolean} True if the color is dark, false otherwise.
-*/
+ */
 import { helper } from '@ember/component/helper';
 
 export function isColorDark(red: number, green: number, blue: number): boolean {

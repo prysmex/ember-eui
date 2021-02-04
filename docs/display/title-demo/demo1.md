@@ -2,33 +2,28 @@
 
 ```hbs template
 <EuiTitle @size="l">
-  <h1>
-    Title size="l"
-  </h1>
+  Title size="l"
 </EuiTitle>
 <EuiTitle @size="m">
-  <h1>
-    Title size="m"
-  </h1>
+  Title size="m"
 </EuiTitle>
 <EuiTitle @size="s">
-  <h1>
-    Title size="s"
-  </h1>
+  Title size="s"
 </EuiTitle>
 <EuiTitle @size="xs">
-  <h1>
-    Title size="xs"
-  </h1>
+  Title size="xs"
 </EuiTitle>
 <EuiTitle @size="xxs">
-  <h1>
-    Title size="xxs"
-  </h1>
+  Title size="xxs"
 </EuiTitle>
 <EuiTitle @size="xxxs">
-  <h1>
-    Title size="xxxs"
-  </h1>
+  Title size="xxxs"
+</EuiTitle>
+
+<EuiSpacer />
+
+You could also change the title tag using `@tagName`
+<EuiTitle @tagName="h6">
+  This is an h6
 </EuiTitle>
 ```

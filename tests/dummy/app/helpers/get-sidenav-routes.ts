@@ -5,7 +5,7 @@ type Page = {
   id: string;
   url: string;
   title: string;
-}
+};
 
 type DocfyNode = {
   id: string | number | undefined;
@@ -14,7 +14,7 @@ type DocfyNode = {
   children: DocfyNode[];
   pages: Page[];
   onClick: boolean | (() => unknown);
-}
+};
 
 type Item = {
   id: string | number | undefined;
@@ -23,7 +23,7 @@ type Item = {
   name: string;
   items: Item[];
   onClick: boolean | (() => unknown);
-}
+};
 
 function compareFunction(a: Item, b: Item) {
   if (a.name < b.name) {
@@ -42,7 +42,7 @@ export function getSidenavRoutes([docfyNode, clickHandler]: [DocfyNode, () => un
   return navigation;
 }
 
-function getItems(docfyNode: DocfyNode, clickHandler: () => unknown) : Item {
+function getItems(docfyNode: DocfyNode, clickHandler: () => unknown): Item {
   let items: Item[] = [];
   if (docfyNode.children.length > 0) {
     items = docfyNode.children.map((child) => getItems(child, clickHandler));
@@ -63,7 +63,7 @@ function getItems(docfyNode: DocfyNode, clickHandler: () => unknown) : Item {
   };
 }
 
-function getItemFromPage(page: Page, clickHandler: () => unknown) : Item {
+function getItemFromPage(page: Page, clickHandler: () => unknown): Item {
   return {
     id: page.title,
     href: page.url,

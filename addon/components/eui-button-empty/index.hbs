@@ -12,11 +12,12 @@
     ...attributes
   >
     <EuiButtonContent
+      class="euiButtonEmpty__content {{@contentClasses}}"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
       @iconSide={{@iconSide}}
+      @iconClasses={{@iconClasses}}
       @textClasses={{class-names "euiButtonEmpty__text" @textClasses}}
-      class="euiButtonEmpty__content"
     >
       {{yield}}
     </EuiButtonContent>
@@ -31,18 +32,17 @@
       flush=@flush
     }}
     disabled={{or @isLoading @isDisabled}}
-    type={{@type}}
-    ref={{@buttonRef}}
-    onClick={{@onClick}}
+    type={{if @type @type "button"}}
     aria-pressed={{@isSelected}}
     ...attributes
   >
     <EuiButtonContent
+      class="euiButtonEmpty__content {{@contentClasses}}"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
       @iconSide={{@iconSide}}
+      @iconClasses={{@iconClasses}}
       @textClasses={{class-names "euiButtonEmpty__text" @textClasses}}
-      class="euiButtonEmpty__content"
     >
       {{yield}}
     </EuiButtonContent>

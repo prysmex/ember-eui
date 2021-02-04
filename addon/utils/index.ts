@@ -32,7 +32,7 @@ export {
   euiPalettePositive,
   euiPaletteCool,
   euiPaletteWarm,
-  euiPaletteGray
+  euiPaletteGray,
 } from './color';
 
 export { default } from './css-mappings';

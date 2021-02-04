@@ -8,7 +8,7 @@ export default class ApplicationController extends Controller {
   @service router;
   @service docfy;
   @tracked sideNavRoutes = [];
-  @tracked isOpenMobile = true;
+	@tracked isOpenMobile = true;
   @tracked selectedItem;
 
   constructor() {

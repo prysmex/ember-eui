@@ -3,14 +3,14 @@ export const baseClass: string = 'euiHeaderSectionItem';
 export const borderSizeMappping = {
   none: '',
   left: `${baseClass}--borderLeft`,
-  right: `${baseClass}--borderRight`
-}
+  right: `${baseClass}--borderRight`,
+};
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    borderSide: borderSizeMappping
-  }
-}
+    borderSide: borderSizeMappping,
+  },
+};
 
 export default mapping;

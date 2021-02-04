@@ -26,8 +26,16 @@ module.exports = function (defaults) {
     },
 
     'ember-composable-helpers': {
-      only: ['optional'],
+      only: [
+        'optional',
+        'find-by',
+        'pipe',
+        'object-at',
+        'noop',
+        'repeat'
+      ]
     },
+    
     // Add options here
     'ember-eui': {
       theme: 'dark',

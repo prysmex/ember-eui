@@ -9,7 +9,6 @@
   {{#if (has-block "timelineIcon")}}
     <EuiComment::EuiCommentTimeline @type={{@type}}>
       <:timelineIcon>
-        I always actually render
         {{yield to="timelineIcon"}}
       </:timelineIcon>
     </EuiComment::EuiCommentTimeline>

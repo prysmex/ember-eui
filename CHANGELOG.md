@@ -2,9 +2,12 @@
 
 ### Master
 
+### 0.0.49
+
 🚀 Enhancements
 
 - `<EuiFlyout>`
+- `<EuiCommentList/>`
 
 ### 0.0.48
 

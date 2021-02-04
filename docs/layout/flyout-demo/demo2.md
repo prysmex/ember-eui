@@ -1,7 +1,7 @@
 # Demo 2
 
 ```hbs template
-<EuiButton @onClick={{this.openFlyout}}>
+<EuiButton {{on "click" this.openFlyout}}>
   Small Flyout w/o Overlay
 </EuiButton>
 
@@ -35,10 +35,10 @@
     </EuiFlyoutBody>
     <EuiFlyoutFooter>
       <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
-        <EuiButton @onClick={{fn this.closeFlyout "flyout2Open"}}>
+        <EuiButton {{on "click" (fn this.closeFlyout "flyout2Open")}}>
           Cancel
         </EuiButton>
-        <EuiButton @fill={{true}} @onClick={{fn this.closeFlyout "flyout2Open"}}>
+        <EuiButton @fill={{true}} {{on "click" (fn this.closeFlyout "flyout2Open")}}>
           Send
         </EuiButton>
       </EuiFlexGroup>

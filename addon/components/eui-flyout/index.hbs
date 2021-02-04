@@ -2,15 +2,6 @@
   <EuiOverlayMask @onClick={{@onClose}} @headerZindexLocation="below" />
 {{/if}}
 <div
-  {{open-flyout}}
-  {{focus-trap
-    isActive=true
-    focusTrapOptions=(hash
-      allowOutsideClick=true
-      clickOutsideDeactivates=(not @ownFocus)
-    )
-  }}
-  {{on-key 'Escape' @onClose}}
   role="dialog"
   class={{class-names
     (if (eq @maxWidth true) "euiFlyout--maxWidth-default")
@@ -18,8 +9,19 @@
     size=(arg-or-default @size "m")
   }}
   tabindex={{0}}
-  style={{if (not (or (eq @maxWidth false) (eq @maxWidth true) )) (inline-styles max-width=@maxWidth)}}
+  style={{if (not (or (eq @maxWidth false) (eq @maxWidth true))) (inline-styles max-width=@maxWidth)
+  }}
   ...attributes
+  {{open-flyout}}
+  {{focus-trap
+    isActive=(arg-or-default @isFocusTrapActive true)
+    shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
+    isPaused=(arg-or-default @isFocusTrapPaused false)
+    focusTrapOptions=(arg-or-default
+      @focusTrapOptions (hash allowOutsideClick=true clickOutsideDeactivates=(not @ownFocus))
+    )
+  }}
+  {{on-key "Escape" @onClose}}
 >
   {{#if (and @onClose (not @hideCloseButton))}}
     <EuiButtonIcon
@@ -27,8 +29,8 @@
       aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
       @iconType="cross"
       @color="text"
-      @onClick={{@onClose}}
       data-test-subj="euiFlyoutCloseButton"
+      {{on "click" @onClose}}
     />
   {{/if}}
   {{yield}}

@@ -7,7 +7,7 @@ order: 1
 Click on the hamburger icon in the Header Nav to open the flyout!
 
 ```hbs template
-<EuiButton @onClick={{this.openFlyout}}>
+<EuiButton {{on "click" this.openFlyout}}>
   Small Flyout
 </EuiButton>
 {{#if this.flyoutOpen}}
@@ -22,10 +22,10 @@ Click on the hamburger icon in the Header Nav to open the flyout!
     </EuiFlyoutBody>
     <EuiFlyoutFooter>
       <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
-        <EuiButton @onClick={{this.closeFlyout}}>
+        <EuiButton {{on "click" this.closeFlyout}}>
           Cancel
         </EuiButton>
-        <EuiButton @fill={{true}} @onClick={{this.closeFlyout}}>
+        <EuiButton @fill={{true}} {{on "click" this.closeFlyout}}>
           Send
         </EuiButton>
       </EuiFlexGroup>

@@ -7,36 +7,71 @@
   ...attributes
 >
   {{#if (has-block "timelineIcon")}}
-    <EuiComment::EuiCommentTimeline
-      @type={{@type}}
-    >
+    <EuiComment::EuiCommentTimeline @type={{@type}}>
       <:timelineIcon>
+        I always actually render
         {{yield to="timelineIcon"}}
       </:timelineIcon>
     </EuiComment::EuiCommentTimeline>
   {{else}}
-    <EuiComment::EuiCommentTimeline
-      @type={{@type}}
-      @timelineIcon={{@timelineIcon}}
-    />
+    <EuiComment::EuiCommentTimeline @type={{@type}} @timelineIcon={{@timelineIcon}} />
   {{/if}}
-  <EuiComment::EuiCommentEvent
-    @type={{@type}}
-  >
-    <:username>
-      {{yield to="username"}}
-    </:username>
-    <:event>
-      {{yield to="event"}}
-    </:event>
-    <:actions>
-      {{yield to="actions"}}
-    </:actions>
-    <:body>
-      {{yield to="body"}}
-    </:body>
-    <:timestamp>
-      {{yield to="timestamp"}}
-    </:timestamp>
-  </EuiComment::EuiCommentEvent>
+  {{! Basically the same, just to avoid using dynamic tag we use figure and figcaption instead of divs when it doesn't have body}}
+  {{#if (and (eq @type "update") (not (has-block "body")))}}
+    <figure
+      class={{class-names componentName="EuiCommentEvent" type=(arg-or-default @type "regular")}}
+    >
+      <figcaption class="euiCommentEvent__header">
+        <div class="euiCommentEvent__headerData">
+          <div class="euiCommentEvent__headerUsername">
+            {{yield to="username"}}
+          </div>
+          <div class="euiCommentEvent__headerEvent">
+            {{yield to="event"}}
+          </div>
+          {{#if (has-block "timestamp")}}
+            <div class="euiCommentEvent__headerTimestamp">
+              <time>
+                {{yield to="timestamp"}}
+              </time>
+            </div>
+          {{/if}}
+        </div>
+        <div class="euiCommentEvent__headerActions">
+          {{yield to="actions"}}
+        </div>
+      </figcaption>
+      <div class="euiCommentEvent__body">
+        {{yield to="body"}}
+      </div>
+    </figure>
+  {{else}}
+    <div
+      class={{class-names componentName="EuiCommentEvent" type=(arg-or-default @type "regular")}}
+    >
+      <div class="euiCommentEvent__header">
+        <div class="euiCommentEvent__headerData">
+          <div class="euiCommentEvent__headerUsername">
+            {{yield to="username"}}
+          </div>
+          <div class="euiCommentEvent__headerEvent">
+            {{yield to="event"}}
+          </div>
+          {{#if (has-block "timestamp")}}
+            <div class="euiCommentEvent__headerTimestamp">
+              <time>
+                {{yield to="timestamp"}}
+              </time>
+            </div>
+          {{/if}}
+        </div>
+        <div class="euiCommentEvent__headerActions">
+          {{yield to="actions"}}
+        </div>
+      </div>
+      <div class="euiCommentEvent__body">
+        {{yield to="body"}}
+      </div>
+    </div>
+  {{/if}}
 </div>

@@ -1,3 +1,7 @@
+---
+order: 2
+---
+
 # Statuses
 
 ```hbs template
@@ -63,7 +67,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DemoStepsComponent extends Component {
+export default class DemoStepsDemo2Component extends Component {
   @tracked status = null;
 
   @action

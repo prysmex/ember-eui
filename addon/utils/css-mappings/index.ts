@@ -28,6 +28,7 @@ import EuiHeader from './eui-header';
 import EuiButtonIcon from './eui-button-icon';
 import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
+import EuiFlyout from './eui-flyout';
 import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
 import EuiStepNumber from './eui-step-number';
 import EuiProgress from './eui-progress';
@@ -61,9 +62,10 @@ const mapping: Mapping = {
   EuiHeaderSection,
   EuiHeaderSectionItem,
   EuiHeader,
-  EuiButtonIcon,
   EuiButton,
+  EuiButtonIcon,
   EuiHorizontalRule,
+  EuiFlyout,
   EuiCollapsibleNavGroup,
   EuiStepNumber,
   EuiProgress,

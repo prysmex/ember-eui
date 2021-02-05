@@ -2,6 +2,13 @@
 
 ### Master
 
+### 0.0.50
+
+🚀 Enhancements
+
+- `<EuiListGroup>`
+- `<EuiListGroupItem/>`
+
 ### 0.0.49
 
 🚀 Enhancements

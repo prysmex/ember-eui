@@ -1,0 +1,48 @@
+{{#let
+  (arg-or-default @invalidCallout "above")
+  (if (is-array @error) @error (array @error)) as |invalidCallout errors|
+}}
+  {{#if (eq @tagName "form")}}
+    <form class="euiForm" ...attributes>
+      {{#if (and (eq invalidCallout "above") (gt errors.length 0) @isInvalid)}}
+        <EuiCallOut
+          class="euiForm__errors"
+          role="alert"
+          aria-live="assertive"
+          @title={{arg-or-default @errorTitle "Please correct the fields"}}
+          @color="danger"
+        >
+          <:body>
+            {{#each errors as |error|}}
+              <li class="euiForm__error">
+                {{error}}
+              </li>
+            {{/each}}
+          </:body>
+        </EuiCallOut>
+      {{/if}}
+      {{yield}}
+    </form>
+  {{else}}
+    <div class="euiForm" ...attributes>
+      {{#if (and (eq invalidCallout "above") (gt errors.length 0) @isInvalid)}}
+        <EuiCallOut
+          class="euiForm__errors"
+          role="alert"
+          aria-live="assertive"
+          @title={{arg-or-default @errorTitle "Please correct the fields"}}
+          @color="danger"
+        >
+          <:body>
+            {{#each errors as |error|}}
+              <li class="euiForm__error">
+                {{error}}
+              </li>
+            {{/each}}
+          </:body>
+        </EuiCallOut>
+      {{/if}}
+      {{yield}}
+    </div>
+  {{/if}}
+{{/let}}

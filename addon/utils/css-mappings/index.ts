@@ -32,6 +32,8 @@ import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
 import EuiStepNumber from './eui-step-number';
 import EuiProgress from './eui-progress';
 import EuiProgressData from './eui-progress-data';
+import EuiListGroup from './eui-list-group';
+import EuiListGroupItem from './eui-list-group-item';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -68,6 +70,8 @@ const mapping: Mapping = {
   EuiStepNumber,
   EuiProgress,
   EuiProgressData,
+  EuiListGroup,
+  EuiListGroupItem,
 };
 
 export default mapping;

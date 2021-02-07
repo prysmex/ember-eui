@@ -1,0 +1,73 @@
+<li
+  class={{class-names
+    (if (or @href @onClick) "euiListGroupItem-isClickable")
+    (if @isActive "euiListGroupItem-isActive")
+    (if @isDisabled "euiListGroupItem-isDisabled")
+    (if @wrapText "euiListGroupItem-wrapText")
+    componentName="EuiListGroupItem"
+    size=(arg-or-default @size "m")
+    color=(arg-or-default @color "inherit")
+  }}
+>
+  {{#if (and @href (not @isDisabled))}}
+    <a
+      className="euiListGroupItem__button"
+      href={{@href}}
+      target={{@target}}
+      {{on "click" (optional @onClick)}}
+      ...attributes
+    >
+      <span className="euiListGroupItem__label">
+        {{#if @iconType}}
+          <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+        {{/if}}
+        {{#if (has-block)}}
+          {{yield}}
+        {{else}}
+          {{@label}}
+        {{/if}}
+        {{#if @extraAction}}
+          {{component @extraAction}}
+        {{/if}}
+      </span>
+    </a>
+  {{else if (or @onClick (and @href @isDisabled))}}
+    <button
+      class="euiListGroupItem__button"
+      type="button"
+      disabled={{eq @isDisabled true}}
+      {{on "click" (optional @onClick)}}
+      ...attributes
+    >
+      <span className="euiListGroupItem__label">
+        {{#if @iconType}}
+          <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+        {{/if}}
+        {{#if (has-block)}}
+          {{yield}}
+        {{else}}
+          {{@label}}
+        {{/if}}
+        {{#if @extraAction}}
+          {{component @extraAction}}
+        {{/if}}
+      </span>
+    </button>
+  {{else}}
+    <span className="euiListGroupItem__text" ...attributes>
+      <span className="euiListGroupItem__label">
+        {{#if @iconType}}
+          <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+        {{/if}}
+        {{#if (has-block)}}
+          {{yield}}
+        {{else}}
+          {{@label}}
+        {{/if}}
+        {{#if @extraAction}}
+          {{component @extraAction}}
+        {{/if}}
+      </span>
+    </span>
+  {{/if}}
+</li>

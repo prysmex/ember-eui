@@ -1,0 +1,41 @@
+{{#let
+  (class-names
+    (if @icon "euiFieldNumber--withIcon")
+    (if @fullWidth "euiFieldNumber--fullWidth")
+    (if @compressed "euiFieldNumber--compressed")
+    (if (or @prepend @append) "euiFieldNumber--inGroup")
+    (if @isLoading "euiFieldNumber--isLoading")
+    "euiFieldNumber"
+  ) as |classes|
+}}
+  {{#if @controlOnly}}
+    <input
+      id={{@id}}
+      class={{classes}}
+      value={{@value}}
+      type="number"
+      ...attributes
+      {{validatable-control @isInvalid}}
+    />
+  {{else}}
+    <EuiFormControlLayout
+      @icon={{@icon}}
+      @fullWidth={{@fullWidth}}
+      @isLoading={{@isLoading}}
+      @compressed={{@compressed}}
+      @readOnly={{@readOnly}}
+      @prepend={{@prepend}}
+      @append={{@append}}
+      @inputId={{@id}}
+    >
+      <input
+        id={{@id}}
+        class={{classes}}
+        value={{@value}}
+        type="number"
+        ...attributes
+        {{validatable-control @isInvalid}}
+      />
+    </EuiFormControlLayout>
+  {{/if}}
+{{/let}}

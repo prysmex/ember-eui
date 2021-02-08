@@ -1,0 +1,18 @@
+{{#if (and @icon (eq @iconSide "left"))}}
+  <div class="euiFormControlLayoutIcons">
+    <EuiFormControlLayoutCustomIcon @size={{if @compressed "s" "m"}} ...attributes />
+  </div>
+{{/if}}
+{{#if (or @clear @isLoading (and @icon (eq @iconSide "right")))}}
+  <div class="euiFormControlLayoutIcons euiFormControlLayoutIcons--right">
+    {{#if @clear}}
+      <EuiFormControlLayoutClearButton @size={{if @compressed "s" "m"}} ...attributes />
+    {{/if}}
+    {{#if @isLoading}}
+      <EuiLoadingSpinner @size="m" />
+    {{/if}}
+    {{#if (and @icon (eq @iconSide "right"))}}
+      <EuiFormControlLayoutCustomIcon @size={{if @compressed "s" "m"}} ...attributes />
+    {{/if}}
+  </div>
+{{/if}}

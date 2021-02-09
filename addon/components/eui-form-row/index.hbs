@@ -66,26 +66,15 @@
           {{/if}}
         </div>
       {{/if}}
-      <div class={{fieldWrapperClasses}}>
+      <div
+        class={{fieldWrapperClasses}}
+        {{on "focus" (fn focusedState.setState true) capture=true}}
+        {{on "blur" (fn focusedState.setState false) capture=true}}
+      >
         {{#if (has-block "field")}}
-          {{yield
-            (hash
-              events=(array
-                (hash event="focus" handler=(fn focusedState.setState true))
-                (hash event="blur" handler=(fn focusedState.setState false))
-              )
-            )
-            to="field"
-          }}
+          {{yield to="field"}}
         {{else}}
-          {{yield
-            (hash
-              events=(array
-                (hash event="focus" handler=(fn focusedState.setState true))
-                (hash event="blur" handler=(fn focusedState.setState false))
-              )
-            )
-          }}
+          {{yield}}
         {{/if}}
         {{#if (or (and (has-block "error") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
           {{#if (has-block "errors")}}
@@ -170,26 +159,15 @@
           {{/if}}
         </div>
       {{/if}}
-      <div class={{fieldWrapperClasses}}>
+      <div
+        class={{fieldWrapperClasses}}
+        {{on "focus" (fn focusedState.setState true) capture=true}}
+        {{on "blur" (fn focusedState.setState false) capture=true}}
+      >
         {{#if (has-block "field")}}
-          {{yield
-            (hash
-              events=(array
-                (hash event="focus" handler=(fn focusedState.setState true))
-                (hash event="blur" handler=(fn focusedState.setState false))
-              )
-            )
-            to="field"
-          }}
+          {{yield to="field"}}{{yield to="field"}}
         {{else}}
-          {{yield
-            (hash
-              events=(array
-                (hash event="focus" handler=(fn focusedState.setState true))
-                (hash event="blur" handler=(fn focusedState.setState false))
-              )
-            )
-          }}
+          {{yield}}
         {{/if}}
         {{#if (or (and (has-block "error") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
           {{#if (has-block "errors")}}

@@ -68,8 +68,8 @@
       {{/if}}
       <div
         class={{fieldWrapperClasses}}
-        {{on "focus" (fn focusedState.setState true) capture=true}}
-        {{on "blur" (fn focusedState.setState false) capture=true}}
+        {{on "focusin" (fn focusedState.setState true)}}
+        {{on "focusout" (fn focusedState.setState false)}}
       >
         {{#if (has-block "field")}}
           {{yield to="field"}}
@@ -161,11 +161,11 @@
       {{/if}}
       <div
         class={{fieldWrapperClasses}}
-        {{on "focus" (fn focusedState.setState true) capture=true}}
-        {{on "blur" (fn focusedState.setState false) capture=true}}
+        {{on "focusin" (fn focusedState.setState true)}}
+        {{on "focusout" (fn focusedState.setState false)}}
       >
         {{#if (has-block "field")}}
-          {{yield to="field"}}{{yield to="field"}}
+          {{yield to="field"}}
         {{else}}
           {{yield}}
         {{/if}}

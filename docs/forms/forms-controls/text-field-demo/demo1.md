@@ -8,49 +8,35 @@ order: 1
 
 ```hbs template
 <EuiForm>
-  <EuiFormRow
-    @label="Some Input"
-    @helpText="here's some help text"
-    as |fieldApi|>
-    <EuiFieldText
-      value={{this.num}}
-      @prepend={{array
-        "Salute"
-        (component
-          "with-attributes"
-          componentName=(component "eui-button-icon" iconType="faceHappy")
-          events=(array (hash event="click" handler=this.salute))
-        )
-      }}
-      {{html-events fieldApi.events}}
-      {{on "input" (pick "target.value" (set this.num))}}
-    />
+  <EuiFormRow @label="Some Input" @helpText="here's some help text">
+    <EuiFieldText value={{this.num}} {{on "input" (pick "target.value" (set this.num))}}>
+      <:prepend as |classes|>
+        <EuiButtonIcon
+          class={{classes}}
+          @size="xs"
+          @iconType="faceHappy"
+          {{on "click" this.salute}}
+        />
+      </:prepend>
+      <:append as |classes|>
+        <EuiFormLabel class={{classes}}>
+          Salute
+        </EuiFormLabel>
+        <EuiButtonIcon
+          class={{classes}}
+          @size="xs"
+          @iconType="faceHappy"
+          {{on "click" this.salute}}
+        />
+      </:append>
+    </EuiFieldText>
   </EuiFormRow>
-
   <EuiHorizontalRule />
   <EuiTitle>
     With Errors
   </EuiTitle>
-  <EuiFormRow
-    @label="Some Input"
-    @isInvalid={{true}}
-    @error={{array "error one" "error two"}}
-    @helpText="here's some help text"
-    as |fieldApi|
-  >
-    <EuiFieldText
-      value={{this.num2}}
-      @prepend={{array
-        "Salute"
-        (component
-          "with-attributes"
-          componentName=(component "eui-button-icon" iconType="faceSad")
-          events=(array (hash event="click" handler=this.salute))
-        )
-      }}
-      {{html-events fieldApi.events}}
-      {{on "input" (pick "target.value" (set this.num2))}}
-    />
+  <EuiFormRow @label="Some Input" @helpText="here's some help text" @error={{array "error"}} @isInvalid={{true}}>
+    <EuiFieldText value={{this.num2}} {{on "input" (pick "target.value" (set this.num2))}} />
   </EuiFormRow>
 </EuiForm>
 ```
@@ -66,11 +52,6 @@ export default class EuiTextFieldDemo1 extends Component {
 
   salute() {
     alert('hello');
-  }
-
-  @action
-  change(n) {
-    this.num += n;
   }
 }
 ```

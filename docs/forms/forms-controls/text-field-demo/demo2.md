@@ -14,18 +14,9 @@ order: 2
       <EuiAvatar @name="row" />
       My label
     </:label>
-    <:field as |fieldApi|>
+    <:field>
       <EuiFieldText
         value={{this.num2}}
-        @prepend={{array
-          "Salute"
-          (component
-            "with-attributes"
-            componentName=(component "eui-button-icon" iconType="faceSad")
-            events=(array (hash event="click" handler=this.salute))
-          )
-        }}
-        {{html-events fieldApi.events}}
         {{on "input" (pick "target.value" (set this.num2))}}
       />
     </:field>
@@ -50,11 +41,6 @@ export default class EuiTextFieldDemo2 extends Component {
 
   salute() {
     alert('hello');
-  }
-
-  @action
-  change(n) {
-    this.num += n;
   }
 }
 ```

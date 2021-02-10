@@ -3,7 +3,7 @@
     (if @icon "euiFieldNumber--withIcon")
     (if @fullWidth "euiFieldNumber--fullWidth")
     (if @compressed "euiFieldNumber--compressed")
-    (if (or @prepend @append) "euiFieldNumber--inGroup")
+    (if (or (has-block "prepend") (has-block "append")) "euiFieldNumber--inGroup")
     (if @isLoading "euiFieldNumber--isLoading")
     "euiFieldNumber"
   ) as |classes|
@@ -24,18 +24,26 @@
       @isLoading={{@isLoading}}
       @compressed={{@compressed}}
       @readOnly={{@readOnly}}
-      @prepend={{@prepend}}
-      @append={{@append}}
+      @append={{has-block "append"}}
+      @prepend={{has-block "prepend"}}
       @inputId={{@id}}
     >
-      <input
-        id={{@id}}
-        class={{classes}}
-        value={{@value}}
-        type="number"
-        ...attributes
-        {{validatable-control @isInvalid}}
-      />
+      <:prepend as |api|>
+        {{yield api to="prepend"}}
+      </:prepend>
+      <:field>
+        <input
+          id={{@id}}
+          class={{classes}}
+          value={{@value}}
+          type="number"
+          ...attributes
+          {{validatable-control @isInvalid}}
+        />
+      </:field>
+      <:append as |api|>
+        {{yield api to="append"}}
+      </:append>
     </EuiFormControlLayout>
   {{/if}}
 {{/let}}

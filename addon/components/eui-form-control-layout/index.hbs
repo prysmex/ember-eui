@@ -1,52 +1,35 @@
-{{#let
-  (if (and @prepend (is-array @prepend)) @prepend (if @prepend (array @prepend)))
-  (if (and @append (is-array @append)) @append (if @append (array @append))) as |prepend append|
-}}
-  <div
-    class={{class-names
-      (if @fullWidth "euiFormControlLayout--fullWidth")
-      (if @compressed "euiFormControlLayout--compressed")
-      (if @readOnly "euiFormControlLayout--readOnly")
-      (if (or @prepend @append) "euiFormControlLayout--group")
-      (if @disabled "euiFormControlLayout--isDisabled")
-      "euiFormControlLayout"
-    }}
-    ...attributes
-  >
-    {{#if (gt prepend.length 0)}}
-      {{#each prepend as |pre|}}
-        {{#if (is-curried-component pre)}}
-          {{#let (component pre) as |Pre|}}
-            <Pre htmlFor={{@inputId}} class="euiFormControlLayout__prepend" />
-          {{/let}}
-        {{else}}
-          <EuiFormLabel htmlFor={{@inputId}} class="euiFormControlLayout__prepend">
-            {{pre}}
-          </EuiFormLabel>
-        {{/if}}
-      {{/each}}
-    {{/if}}
-    <div class="euiFormControlLayout__childrenWrapper">
+<div
+  class={{class-names
+    (if @fullWidth "euiFormControlLayout--fullWidth")
+    (if @compressed "euiFormControlLayout--compressed")
+    (if @readOnly "euiFormControlLayout--readOnly")
+    (if (or @append @prepend) "euiFormControlLayout--group")
+    (if @disabled "euiFormControlLayout--isDisabled")
+    "euiFormControlLayout"
+  }}
+  ...attributes
+>
+  {{#if (has-block "prepend")}}
+    {{yield "euiFormControlLayout__prepend" to="prepend"}}
+  {{else}}
+    {{yield "euiFormControlLayout__prepend"}}
+  {{/if}}
+  <div class="euiFormControlLayout__childrenWrapper">
+    {{#if (has-block "field")}}
+      {{yield to="field"}}
+    {{else}}
       {{yield}}
-      <EuiFormControlLayoutIcons
-        @icon={{@icon}}
-        @clear={{@clear}}
-        @compressed={{@compressed}}
-        @isLoading={{@isLoading}}
-      />
-    </div>
-    {{#if (gt append.length 0)}}
-      {{#each append as |app|}}
-				{{#if (is-curried-component app)}}
-          {{#let (component app) as |App|}}
-            <App htmlFor={{@inputId}} class="euiFormControlLayout__append" />
-          {{/let}}
-        {{else}}
-          <EuiFormLabel htmlFor={{@inputId}} class="euiFormControlLayout__append">
-            {{app}}
-          </EuiFormLabel>
-        {{/if}}
-      {{/each}}
     {{/if}}
+    <EuiFormControlLayoutIcons
+      @icon={{@icon}}
+      @clear={{@clear}}
+      @compressed={{@compressed}}
+      @isLoading={{@isLoading}}
+    />
   </div>
-{{/let}}
+  {{#if (has-block "append")}}
+    {{yield "euiFormControlLayout__append" to="append"}}
+  {{else}}
+    {{yield "euiFormControlLayout__append"}}
+  {{/if}}
+</div>

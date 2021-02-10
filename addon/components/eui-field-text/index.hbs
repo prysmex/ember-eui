@@ -1,49 +1,51 @@
-{{#let
-  (class-names
-    (if @icon "euiFieldText--withIcon")
-    (if @fullWidth "euiFieldText--fullWidth")
-    (if @compressed "euiFieldText--compressed")
-    (if (or (has-block "prepend") (has-block "append")) "euiFieldText--inGroup")
-    (if @isLoading "euiFieldText--isLoading")
-    "euiFieldText"
-  ) as |classes|
-}}
-  {{#if @controlOnly}}
-    <input
-      id={{@id}}
-      class={{classes}}
-      value={{@value}}
-      type="text"
-      ...attributes
-      {{validatable-control @isInvalid}}
-    />
-  {{else}}
-    <EuiFormControlLayout
-      @icon={{@icon}}
-      @fullWidth={{@fullWidth}}
-      @isLoading={{@isLoading}}
-      @compressed={{@compressed}}
-      @readOnly={{@readOnly}}
-      @append={{has-block "append"}}
-      @prepend={{has-block "prepend"}}
-      @inputId={{@id}}
-    >
-      <:prepend as |api|>
-        {{yield api to="prepend"}}
-      </:prepend>
-      <:field>
-        <input
-          id={{@id}}
-          class={{classes}}
-          value={{@value}}
-          type="text"
-          ...attributes
-          {{validatable-control @isInvalid}}
-        />
-      </:field>
-      <:append as |api|>
-        {{yield api to="append"}}
-      </:append>
-    </EuiFormControlLayout>
-  {{/if}}
+{{#let (has-block "prepend") (has-block "append") as |hasPrepend hasAppend|}}
+  {{#let
+    (class-names
+      (if @icon "euiFieldText--withIcon")
+      (if @fullWidth "euiFieldText--fullWidth")
+      (if @compressed "euiFieldText--compressed")
+      (if (or hasPrepend hasAppend) "euiFieldText--inGroup")
+      (if @isLoading "euiFieldText--isLoading")
+      "euiFieldText"
+    ) as |classes|
+  }}
+    {{#if @controlOnly}}
+      <input
+        id={{@id}}
+        class={{classes}}
+        value={{@value}}
+        type="text"
+        ...attributes
+        {{validatable-control @isInvalid}}
+      />
+    {{else}}
+      <EuiFormControlLayout
+        @icon={{@icon}}
+        @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @compressed={{@compressed}}
+        @readOnly={{@readOnly}}
+        @prepend={{hasPrepend}}
+        @append={{hasAppend}}
+        @inputId={{@id}}
+      >
+        <:prepend as |api|>
+          {{yield api to="prepend"}}
+        </:prepend>
+        <:field>
+          <input
+            id={{@id}}
+            class={{classes}}
+            value={{@value}}
+            type="text"
+            ...attributes
+            {{validatable-control @isInvalid}}
+          />
+        </:field>
+        <:append as |api|>
+          {{yield api to="append"}}
+        </:append>
+      </EuiFormControlLayout>
+    {{/if}}
+  {{/let}}
 {{/let}}

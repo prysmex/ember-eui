@@ -1,0 +1,52 @@
+{{#let
+  (arg-or-default @type "dual")
+  (has-block "prepend")
+  (has-block "append") as |hasPrepend hasAppend type|
+}}
+  {{#let (use-state (if (eq type "dual") "password" type)) as |inputTypeState|}}
+    {{#let
+      (class-names
+        (if @fullWidth "euiFieldPassword--fullWidth")
+        (if @compressed "euiFieldPassword--compressed")
+        (if (or hasPrepend hasAppend) "euiFieldPassword--inGroup")
+        (if @isLoading "euiFieldPassword--isLoading")
+        "euiFieldPassword"
+      ) as |classes|
+    }}
+      {{#let (eq inputTypeState.value "text") as |isVisible|}}
+        <EuiFormControlLayout
+          @icon="lock"
+          @fullWidth={{@fullWidth}}
+          @isLoading={{@isLoading}}
+          @compressed={{@compressed}}
+          @readOnly={{@readOnly}}
+          @prepend={{hasPrepend}}
+          @append={{hasAppend}}
+          @inputId={{@id}}
+        >
+          <:prepend as |api|>
+            {{yield api to="prepend"}}
+          </:prepend>
+          <:field>
+            <input
+              id={{@id}}
+              class={{classes}}
+              disabled={{@isDisabled}}
+              value={{@value}}
+              type={{inputTypeState.value}}
+              ...attributes
+              {{validatable-control @isInvalid}}
+            />
+          </:field>
+          <:append as |api|>
+            {{yield api to="append"}}
+            <EuiButtonIcon
+              @iconType={{if isVisible "eyeClosed" "eye"}}
+              {{on "click" (fn inputTypeState.setState (if isVisible "password" "text"))}}
+            />
+          </:append>
+        </EuiFormControlLayout>
+      {{/let}}
+    {{/let}}
+  {{/let}}
+{{/let}}

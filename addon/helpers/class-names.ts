@@ -30,6 +30,7 @@ interface Options {
   margin: string;
   borderRadius: string;
   backgroundColor: string;
+  resize: string;
 }
 
 /**
@@ -64,6 +65,7 @@ export function classNames(
     margin,
     borderRadius,
     backgroundColor,
+    resize,
   }: Options
 ): string {
   let classes: string[] = [...classNames];
@@ -84,6 +86,7 @@ export function classNames(
     classes.push(cssMappings[componentName].properties.textTransform?.[textTransform] || '');
     classes.push(cssMappings[componentName].properties.display?.[display] || '');
     classes.push(cssMappings[componentName].properties.type?.[type] || '');
+    classes.push(cssMappings[componentName].properties.resize?.[resize] || '');
     classes.push(cssMappings[componentName].properties.gutterSize?.[gutterSize] || '');
     classes.push(cssMappings[componentName].properties.alignItems?.[alignItems] || '');
     classes.push(cssMappings[componentName].properties.direction?.[direction] || '');

@@ -4,8 +4,6 @@ order: 1
 
 # Demo
 
-> Because of Ember limitations of metaprogramming between child and parent html events and attributes, we need to use html-events modifer in order to pass eui-form-row events to the wrapped fields, to accomplish stuff like onFocus... highlight the label.
-
 ```hbs template
 <EuiForm>
   <EuiFormRow @label="Some Input" @helpText="here's some help text">

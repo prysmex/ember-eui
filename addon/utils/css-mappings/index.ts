@@ -38,6 +38,7 @@ import EuiProgressData from './eui-progress-data';
 import EuiFormRow from './eui-form-row';
 import EuiListGroup from './eui-list-group';
 import EuiListGroupItem from './eui-list-group-item';
+import EuiTextArea from './eui-text-area';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -80,6 +81,7 @@ const mapping: Mapping = {
   EuiFormRow,
   EuiListGroup,
   EuiListGroupItem,
+  EuiTextArea,
 };
 
 export default mapping;

@@ -1,6 +1,14 @@
 <EuiButtonEmpty
   class={{class-names "euiHeaderLink" (if @isActive "euiHeaderLink-isActive")}}
   @color={{if @isActive "primary" "text"}}
+  @href={{@href}}
+  @isLoading={{@isLoading}}
+  @isDisabled={{@isDisabled}}
+  @target={{@target}}
+  @iconType={{@iconType}}
+  @iconSide={{@iconSide}}
+  @iconClasses={{@iconClasses}}
+  @textClasses={{@textClasses}}
   ...attributes
 >
   {{yield}}

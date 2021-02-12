@@ -2,6 +2,13 @@
 
 ### Master
 
+### 0.0.51
+
+🐛 Bug / Fixes
+
+- Prevent inline style of maxWidth as undefined on modal
+- Fix EuiCollapsibleNavGroup title styling
+
 ### 0.0.50
 
 🚀 Enhancements

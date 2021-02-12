@@ -1,7 +1,7 @@
 <div
   class={{class-names "euiModal" (if (eq @maxWidth true) "euiModal--maxWidth-default")}}
   style={{if
-    (and (not (is-empty @maxWidth)) (not-eq @maxWidth true))
+    (and @maxWidth (not-eq @maxWidth true))
     (inline-styles componentName="EuiModal" componentArgs=(hash maxWidth=@maxWidth))
   }}
   tabindex="0"

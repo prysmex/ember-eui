@@ -20,14 +20,13 @@
             </div>
           {{/if}}
           <EuiFlexItem>
-            <EuiTitle @size={{arg-or-default @titleSize "xxs"}}>
-              <TextBlock
-                @tagName={{arg-or-default @titleTagName "h3"}}
-                id={{concat groupId "__title"}}
-                class="euiCollapsibleNavGroup__title"
-              >
-                {{yield to="title"}}
-              </TextBlock>
+            <EuiTitle
+              id={{concat groupId "__title"}}
+              class="euiCollapsibleNavGroup__title"
+              @tagName={{arg-or-default @titleTagName "h3"}}
+              @size={{arg-or-default @titleSize "xxs"}}
+            >
+              {{yield to="title"}}
             </EuiTitle>
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -57,14 +56,13 @@
               </div>
             {{/if}}
             <EuiFlexItem>
-              <EuiTitle @size={{arg-or-default @titleSize "xxs"}}>
-                <TextBlock
-                  @tagName={{arg-or-default @titleTagName "h3"}}
-                  id={{concat groupId "__title"}}
-                  class="euiCollapsibleNavGroup__title"
-                >
-                  {{yield to="title"}}
-                </TextBlock>
+             <EuiTitle
+                id={{concat groupId "__title"}}
+                class="euiCollapsibleNavGroup__title"
+                @tagName={{arg-or-default @titleTagName "h3"}}
+                @size={{arg-or-default @titleSize "xxs"}}
+              >
+                {{yield to="title"}}
               </EuiTitle>
             </EuiFlexItem>
           </EuiFlexGroup>

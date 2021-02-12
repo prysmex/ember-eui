@@ -1,7 +1,6 @@
 /* Source: https://github.com/tailwindcss/docs/blob/master/source/_assets/less/markdown.less */
 .markdown {
-  
-  @apply leading-relaxed;
+  @apply leading-normal;
 
   > *:first-child {
     @apply mt-0;

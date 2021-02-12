@@ -17,7 +17,11 @@
         <EuiLoadingSpinner @size="m" />
       {{/if}}
       {{#if (and @icon (eq iconSide "right"))}}
-        <EuiFormControlLayoutCustomIcon @size={{if @compressed "s" "m"}} ...attributes />
+        <EuiFormControlLayoutCustomIcon
+          @size={{if @compressed "s" "m"}}
+          @type={{@icon}}
+          ...attributes
+        />
       {{/if}}
     </div>
   {{/if}}

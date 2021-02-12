@@ -1,6 +1,6 @@
 export const baseClass: string = 'euiTextAlign';
 
-export const alignMapping: PropertyMapping = {
+export const alignMapping = {
   left: `${baseClass}--left`,
   center: `${baseClass}--center`,
   right: `${baseClass}--right`,

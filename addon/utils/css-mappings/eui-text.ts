@@ -1,6 +1,6 @@
 export const baseClass: string = 'euiText';
 
-export const sizeMapping: PropertyMapping = {
+export const sizeMapping = {
   xs: `${baseClass}--extraSmall`,
   s: `${baseClass}--small`,
   m: `${baseClass}--medium`,

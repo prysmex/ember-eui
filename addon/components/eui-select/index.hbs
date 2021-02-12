@@ -1,0 +1,50 @@
+{{#let (has-block "prepend") (has-block "append") as |hasPrepend hasAppend|}}
+  {{#let
+    (class-names
+      (if @fullWidth "euiSelect--fullWidth")
+      (if @compressed "euiSelect--compressed")
+      (if (or hasPrepend hasAppend) "euiSelect--inGroup")
+      (if @isLoading "euiSelect--isLoading")
+      "euiSelect"
+    )
+    (arg-or-default @hasNoInitialSelection false) as |classes hasNoInitialSelection value|
+  }}
+    {{#let (if hasNoInitialSelection (nullish @value "") @value) as |defaultValue|}}
+      <EuiFormControlLayout
+        @icon="arrowDown"
+        @iconSide="right"
+        @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @compressed={{@compressed}}
+        @prepend={{hasPrepend}}
+        @append={{hasAppend}}
+        @inputId={{@id}}
+      >
+        <:prepend as |api|>
+          {{yield api to="prepend"}}
+        </:prepend>
+        <:field>
+          <select id={{@id}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
+            {{#if hasNoInitialSelection}}
+              <option
+                value=""
+                disabled
+                hidden
+                style="display: none"
+                selected={{eq @value defaultValue}}
+              ></option>
+            {{/if}}
+            {{#each @options as |opt|}}
+              <option value={{opt.value}} selected={{eq @value opt.value}}>
+                {{opt.text}}
+              </option>
+            {{/each}}
+          </select>
+        </:field>
+        <:append as |api|>
+          {{yield api to="append"}}
+        </:append>
+      </EuiFormControlLayout>
+    {{/let}}
+  {{/let}}
+{{/let}}

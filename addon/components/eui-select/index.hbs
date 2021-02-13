@@ -1,4 +1,8 @@
-{{#let (has-block "prepend") (has-block "append") as |hasPrepend hasAppend|}}
+{{#let
+  (has-block "prepend")
+  (has-block "append")
+  (arg-or-default @id (unique-id)) as |hasPrepend hasAppend id|
+}}
   {{#let
     (class-names
       (if @fullWidth "euiSelect--fullWidth")
@@ -18,13 +22,13 @@
         @compressed={{@compressed}}
         @prepend={{hasPrepend}}
         @append={{hasAppend}}
-        @inputId={{@id}}
+        @inputId={{id}}
       >
         <:prepend as |api|>
           {{yield api to="prepend"}}
         </:prepend>
         <:field>
-          <select id={{@id}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
+          <select id={{id}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
             {{#if hasNoInitialSelection}}
               <option
                 value=""

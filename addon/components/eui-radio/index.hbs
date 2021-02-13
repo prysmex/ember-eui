@@ -1,29 +1,28 @@
 {{#let (has-block "label") (arg-or-default @id (unique-id)) as |hasLabelBlock id|}}
   {{#let
     (class-names
-      (if @icon "euiCheckbox--withIcon")
-      (if (and (not hasLabelBlock) (not @label)) "euiCheckbox--noLabel")
-      (if @compressed "euiCheckbox--compressed")
-      "euiCheckbox"
+      (if (and (not hasLabelBlock) (not @label)) "euiRadio--noLabel")
+      (if @compressed "euiRadio--compressed")
+      "euiRadio"
     ) as |classes|
   }}
     <div class={{classes}}>
       <input
-        class="euiCheckbox__input"
-        type="checkbox"
+        class="euiRadio__input"
+        type="radio"
         id={{id}}
         checked={{@checked}}
+        disabled={{@disabled}}
         ...attributes
-        {{invalidate-indeterminate @indeterminate @checked}}
       />
-      <div class="euiCheckbox__square"></div>
+      <div class="euiRadio__circle"></div>
       {{#if (or hasLabelBlock @label)}}
         {{#if hasLabelBlock}}
-          <label class="euiCheckbox__label" htmlFor={{id}}>
+          <label class="euiRadio__label" htmlFor={{id}}>
             {{yield to="label"}}
           </label>
         {{else}}
-          <label class="euiCheckbox__label" htmlFor={{id}}>
+          <label class="euiRadio__label" htmlFor={{id}}>
             {{@label}}
           </label>
         {{/if}}

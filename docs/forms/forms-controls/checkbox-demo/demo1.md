@@ -19,7 +19,7 @@ order: 1
 		{{on "change" (pick "target.checked" (set this.indeterminate))}}
 	/>
 	<EuiCheckbox
-		disabled={{true}}
+		@disabled={{true}}
 		@id="disabled-checkbox"
 		@label="I am a checkbox"
 		@checked={{this.checkbox1}}

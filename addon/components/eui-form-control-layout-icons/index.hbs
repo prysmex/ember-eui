@@ -11,7 +11,7 @@
   {{#if (or @clear @isLoading (and @icon (eq iconSide "right")))}}
     <div class="euiFormControlLayoutIcons euiFormControlLayoutIcons--right">
       {{#if @clear}}
-        <EuiFormControlLayoutClearButton @size={{if @compressed "s" "m"}} ...attributes />
+        <EuiFormControlLayoutClearButton @size={{if @compressed "s" "m"}} {{on "click" @clear}}/>
       {{/if}}
       {{#if @isLoading}}
         <EuiLoadingSpinner @size="m" />

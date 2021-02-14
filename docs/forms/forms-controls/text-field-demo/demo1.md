@@ -7,7 +7,7 @@ order: 1
 ```hbs template
 <EuiForm>
   <EuiFormRow @label="Some Input" @helpText="here's some help text">
-    <EuiFieldText value={{this.num}} {{on "input" (pick "target.value" (set this.num))}}>
+    <EuiFieldText value={{this.num}}  @clear={{set this.num ""}} {{on "input" (pick "target.value" (set this.num))}}>
       <:prepend as |classes|>
         <EuiButtonIcon
           class={{classes}}

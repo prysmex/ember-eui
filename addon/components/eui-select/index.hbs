@@ -15,6 +15,7 @@
   }}
     {{#let (if hasNoInitialSelection (nullish @value "") @value) as |defaultValue|}}
       <EuiFormControlLayout
+        @clear={{@clear}}
         @icon="arrowDown"
         @iconSide="right"
         @fullWidth={{@fullWidth}}

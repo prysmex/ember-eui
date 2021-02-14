@@ -3,7 +3,10 @@
     (if @fullWidth "euiFormControlLayout--fullWidth")
     (if @compressed "euiFormControlLayout--compressed")
     (if @readOnly "euiFormControlLayout--readOnly")
-    (if (or @append @prepend) "euiFormControlLayout--group")
+    (if
+      (and (arg-or-default @useGroup true) (or (has-block "append") (has-block "prepend")))
+      "euiFormControlLayout--group"
+    )
     (if @disabled "euiFormControlLayout--isDisabled")
     "euiFormControlLayout"
   }}
@@ -11,8 +14,6 @@
 >
   {{#if (has-block "prepend")}}
     {{yield "euiFormControlLayout__prepend" to="prepend"}}
-  {{else}}
-    {{yield "euiFormControlLayout__prepend"}}
   {{/if}}
   <div class="euiFormControlLayout__childrenWrapper">
     {{#if (has-block "field")}}
@@ -30,7 +31,5 @@
   </div>
   {{#if (has-block "append")}}
     {{yield "euiFormControlLayout__append" to="append"}}
-  {{else}}
-    {{yield "euiFormControlLayout__append"}}
   {{/if}}
 </div>

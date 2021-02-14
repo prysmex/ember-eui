@@ -16,12 +16,12 @@
       {{#let (eq inputTypeState.value "text") as |isVisible|}}
         <EuiFormControlLayout
           @icon="lock"
+          @clear={{@clear}}
           @fullWidth={{@fullWidth}}
           @isLoading={{@isLoading}}
           @compressed={{@compressed}}
           @readOnly={{@readOnly}}
-          @prepend={{hasPrepend}}
-          @append={{or hasAppend (eq type "dual")}}
+          @useGroup={{or hasPrepend (or hasAppend (eq type "dual"))}}
           @inputId={{@id}}
           {{! we need to ensure we add the }}
         >

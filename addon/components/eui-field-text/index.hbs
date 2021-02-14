@@ -20,12 +20,12 @@
     {{else}}
       <EuiFormControlLayout
         @icon={{@icon}}
+        @clear={{@clear}}
         @fullWidth={{@fullWidth}}
         @isLoading={{@isLoading}}
         @compressed={{@compressed}}
         @readOnly={{@readOnly}}
-        @prepend={{hasPrepend}}
-        @append={{hasAppend}}
+        @useGroup={{or hasPrepend hasAppend}}
         @inputId={{@id}}
       >
         <:prepend as |api|>

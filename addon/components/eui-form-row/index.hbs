@@ -76,7 +76,7 @@
         {{else}}
           {{yield}}
         {{/if}}
-        {{#if (or (and (has-block "error") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
+        {{#if (or (and (has-block "errors") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
           {{#if (has-block "errors")}}
             {{#each errors as |error i|}}
               <EuiFormErrorText
@@ -169,7 +169,7 @@
         {{else}}
           {{yield}}
         {{/if}}
-        {{#if (or (and (has-block "error") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
+        {{#if (or (and (has-block "errors") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
           {{#if (has-block "errors")}}
             {{#each errors as |error i|}}
               <EuiFormErrorText

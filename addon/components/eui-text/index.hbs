@@ -1,6 +1,6 @@
 <div
   class={{class-names
-    (unless @grow "euiText--constrainedWidth")
+    (unless (arg-or-default @grow true) "euiText--constrainedWidth")
     componentName="EuiText"
     size=(arg-or-default @size "m")
   }}

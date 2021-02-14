@@ -1,5 +1,4 @@
 import { modifier } from 'ember-modifier';
-import { typeOf } from '@ember/utils';
 
 export default modifier(function screenReaderOnly(
   element: HTMLObjectElement,

@@ -39,7 +39,6 @@ import EuiFormRow from './eui-form-row';
 import EuiListGroup from './eui-list-group';
 import EuiListGroupItem from './eui-list-group-item';
 import EuiTextArea from './eui-text-area';
-import EuiFilePicker from './eui-file-picker';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -83,7 +82,6 @@ const mapping: Mapping = {
   EuiListGroup,
   EuiListGroupItem,
   EuiTextArea,
-  EuiFilePicker,
 };
 
 export default mapping;

@@ -7,95 +7,95 @@
 <EuiSpacer @size="s" />
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton {{on "click" this.clickedButton}}>
+    <EuiButton>
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @fill={{true}} {{on "click" this.clickedButton}}>
+    <EuiButton @fill={{true}}>
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" {{on "click" this.clickedButton}}>
+    <EuiButton @size="s">
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" @fill={{true}} {{on "click" this.clickedButton}}>
+    <EuiButton @size="s" @fill={{true}}>
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @color="secondary" {{on "click" this.clickedButton}}>
+    <EuiButton @color="secondary">
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @fill={{true}} @color="secondary" {{on "click" this.clickedButton}}>
+    <EuiButton @fill={{true}} @color="secondary">
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" @color="secondary" {{on "click" this.clickedButton}}>
+    <EuiButton @size="s" @color="secondary">
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" @fill={{true}} @color="secondary" {{on "click" this.clickedButton}}>
+    <EuiButton @size="s" @fill={{true}} @color="secondary">
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @color="warning" {{on "click" this.clickedButton}}>
+    <EuiButton @color="warning">
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @fill={{true}} @color="warning" {{on "click" this.clickedButton}}>
+    <EuiButton @fill={{true}} @color="warning">
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" @color="warning" {{on "click" this.clickedButton}}>
+    <EuiButton @size="s" @color="warning">
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" @fill={{true}} @color="warning" {{on "click" this.clickedButton}}>
+    <EuiButton @size="s" @fill={{true}} @color="warning">
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @color="danger" {{on "click" this.clickedButton}}>
+    <EuiButton @color="danger">
       Primary
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @fill={{true}} @color="danger" {{on "click" this.clickedButton}}>
+    <EuiButton @fill={{true}} @color="danger">
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" @color="danger" {{on "click" this.clickedButton}}>
+    <EuiButton @size="s" @color="danger">
       Small
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @size="s" @fill={{true}} @color="danger" {{on "click" this.clickedButton}}>
+    <EuiButton @size="s" @fill={{true}} @color="danger">
       Small Filled
     </EuiButton>
   </div>
 </div>
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @isDisabled={{true}} @color="danger" {{on "click" this.clickedButton}}>
+    <EuiButton @isDisabled={{true}} @color="danger">
       Primary
     </EuiButton>
   </div>
@@ -104,13 +104,13 @@
       @isDisabled={{true}}
       @fill={{true}}
       @color="danger"
-      {{on "click" this.clickedButton}}
+
     >
       Filled
     </EuiButton>
   </div>
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @isDisabled={{true}} @size="s" @color="danger" {{on "click" this.clickedButton}}>
+    <EuiButton @isDisabled={{true}} @size="s" @color="danger">
       Small
     </EuiButton>
   </div>
@@ -120,7 +120,7 @@
       @size="s"
       @fill={{true}}
       @color="danger"
-      {{on "click" this.clickedButton}}
+
     >
       Small Filled
     </EuiButton>
@@ -153,7 +153,7 @@
 <EuiSpacer @size="s" />
 <div class="euiFlexGroup euiFlexGroup--gutterSmall euiFlexGroup--alignItemsCenter">
   <div class="euiFlexItem euiFlexItem--flexGrowZero">
-    <EuiButton @iconType="pencil" {{on "click" this.clickedButton}}>
+    <EuiButton @iconType="pencil">
       Primary
     </EuiButton>
   </div>
@@ -162,7 +162,7 @@
       @iconType="pencil"
       @fill={{true}}
       @iconSide="right"
-      {{on "click" this.clickedButton}}
+
     >
       Primary
     </EuiButton>
@@ -173,7 +173,7 @@
         @iconType="pencil"
         @iconSide="right"
         @isDisabled={{true}}
-        {{on "click" this.clickedButton}}
+
       >
         Disabled
       </EuiButton>
@@ -185,7 +185,7 @@
         @iconType="pencil"
         @fill={{true}}
         @isDisabled={{true}}
-        @onClick={{this.clickedButton}}
+        {{on "click" this.clickedButton}}
       >
         Disabled
       </EuiButton>

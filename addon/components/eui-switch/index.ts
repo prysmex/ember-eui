@@ -11,7 +11,7 @@ type SwitchArgs = {
    */
   label: unknown | string;
   checked: boolean;
-  onChange: (event: Event) => void;
+  onChange: (event: { target: HTMLInputElement }) => void;
   disabled?: boolean;
   compressed?: boolean;
   type?: 'submit' | 'reset' | 'button';
@@ -19,12 +19,13 @@ type SwitchArgs = {
 
 export default class EuiAccordionAccordionComponent extends Component<SwitchArgs> {
   @action
-  onClick(e: Event) {
+  onClick(e: { target: HTMLInputElement }) {
     if (this.args.disabled) {
       return;
     }
-    const event = (e as Event) as HTMLInputElement & Event;
-    event.target.checked = !this.args.checked;
-    this.args.onChange?.(event);
+
+    e.target.checked = !this.args.checked;
+
+    this.args.onChange?.(e);
   }
 }

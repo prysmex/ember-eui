@@ -1,4 +1,4 @@
-{{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) as |titleId selectableId|}}
+{{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) (optional @onClick) as |titleId selectableId onClick|}}
   <div
     class={{class-names
       "euiCard--shadow"
@@ -8,7 +8,7 @@
       (if hasBlock "euiCard--hasChildren")
       (if @icon "euiCard--hasIcon")
       (if @betaBadgeLabel "euiCard--hasBetaBadge")
-      (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
+      (if (or onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
       (if @selectable "euiCard--isSelectable")
       (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
       componentName="EuiCard"
@@ -53,13 +53,13 @@
           >
             {{@title}}
           </a>
-        {{else if (or @isDisabled @onClick)}}
+        {{else if (or @isDisabled onClick)}}
           <button
             type="button"
             class="euiCard__titleButton"
             disabled={{@isDisabled}}
             id={{titleId}}
-            {{on "click" @onClick}}
+            {{on "click" onClick}}
           >
             {{@title}}
           </button>
@@ -88,8 +88,7 @@
     {{/if}}
     {{#if @selectable}}
       <EuiCard::EuiCardSelect
-        type={{@selectable.type}}
-        @onClick={{@selectable.onClick}}
+        @type={{@selectable.type}}
         @buttonId={{selectableId}}
         @isSelected={{@selectable.isSelected}}
         @isDisabled={{@selectable.isDisabled}}
@@ -99,6 +98,7 @@
         @href={{@selectable.href}}
         @iconSide={{@selectable.iconSide}}
         @flush={{@selectable.flush}}
+        {{on "click" (optional @selectable.onClick)}}
       />
     {{/if}}
   </div>

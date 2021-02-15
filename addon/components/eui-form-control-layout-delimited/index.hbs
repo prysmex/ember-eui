@@ -3,7 +3,7 @@
   (has-block "append")
   (has-block "delimiter") 
 	(arg-or-default @delimiter "→")
-	as |hasPrepend hasAppend hasDelimeterBlock delimiter|
+	as |hasPrepend hasAppend hasDelimeterBlock delimiter inputId|
 }}
   <EuiFormControlLayout
     class="euiFormControlLayoutDelimited"
@@ -15,10 +15,9 @@
     @readOnly={{@readOnly}}
     @prepend={{hasPrepend}}
     @append={{hasAppend}}
-    @inputId={{@id}}
   >
-    <:prepend as |api|>
-      {{yield api to="prepend"}}
+    <:prepend as |prependClasses|>
+      {{yield prependClasses to="prepend"}}
     </:prepend>
     <:field>
       {{yield "euiFormControlLayoutDelimited__input" to="startControl"}}
@@ -33,8 +32,8 @@
       </EuiText>
       {{yield "euiFormControlLayoutDelimited__input" to="endControl"}}
     </:field>
-    <:append as |api|>
-      {{yield api to="append"}}
+    <:append as |appendClasses|>
+      {{yield appendClasses to="append"}}
     </:append>
   </EuiFormControlLayout>
 {{/let}}

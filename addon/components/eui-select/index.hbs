@@ -1,7 +1,7 @@
 {{#let
   (has-block "prepend")
   (has-block "append")
-  (arg-or-default @id (unique-id)) as |hasPrepend hasAppend id|
+  (arg-or-default @id (unique-id)) as |hasPrepend hasAppend inputId|
 }}
   {{#let
     (class-names
@@ -23,13 +23,12 @@
         @compressed={{@compressed}}
         @prepend={{hasPrepend}}
         @append={{hasAppend}}
-        @inputId={{id}}
       >
-        <:prepend as |api|>
-          {{yield api to="prepend"}}
+        <:prepend as |prependClasses|>
+          {{yield prependClasses inputId to="prepend"}}
         </:prepend>
         <:field>
-          <select id={{id}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
+          <select id={{inputId}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
             {{#if hasNoInitialSelection}}
               {{! template-lint-disable}}
               <option
@@ -48,8 +47,8 @@
             {{/each}}
           </select>
         </:field>
-        <:append as |api|>
-          {{yield api to="append"}}
+        <:append as |appendClasses|>
+          {{yield appendClasses inputId to="append"}}
         </:append>
       </EuiFormControlLayout>
     {{/let}}

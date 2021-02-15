@@ -1,7 +1,9 @@
 {{#let
   (arg-or-default @type "dual")
   (has-block "prepend")
-  (has-block "append") as |type hasPrepend hasAppend|
+  (has-block "append") 
+  (arg-or-default @id (unique-id))
+  as |type hasPrepend hasAppend inputId|
 }}
   {{#let (use-state (if (eq type "dual") "password" type)) as |inputTypeState|}}
     {{#let
@@ -22,15 +24,13 @@
           @compressed={{@compressed}}
           @readOnly={{@readOnly}}
           @useGroup={{or hasPrepend (or hasAppend (eq type "dual"))}}
-          @inputId={{@id}}
-          {{! we need to ensure we add the }}
         >
-          <:prepend as |api|>
-            {{yield api to="prepend"}}
+          <:prepend as |prependClasses|>
+            {{yield prependClasses inputId to="prepend"}}
           </:prepend>
           <:field>
             <input
-              id={{@id}}
+              id={{inputId}}
               class={{classes}}
               disabled={{@isDisabled}}
               type={{inputTypeState.value}}
@@ -38,8 +38,8 @@
               {{validatable-control @isInvalid}}
             />
           </:field>
-          <:append as |api|>
-            {{yield api to="append"}}
+          <:append as |appendClasses|>
+            {{yield appendClasses inputId to="append"}}
             {{#if (eq type "dual")}}
               <EuiButtonIcon
                 @iconType={{if isVisible "eyeClosed" "eye"}}

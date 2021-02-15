@@ -1,4 +1,8 @@
-{{#let (has-block "prepend") (has-block "append") as |hasPrepend hasAppend|}}
+{{#let
+  (has-block "prepend")
+  (has-block "append")
+  (arg-or-default @id (unique-id)) as |hasPrepend hasAppend inputId|
+}}
   {{#let
     (class-names
       (if @icon "euiFieldText--withIcon")
@@ -11,7 +15,7 @@
   }}
     {{#if @controlOnly}}
       <input
-        id={{@id}}
+        id={{inputId}}
         class={{classes}}
         type="text"
         ...attributes
@@ -26,22 +30,21 @@
         @compressed={{@compressed}}
         @readOnly={{@readOnly}}
         @useGroup={{or hasPrepend hasAppend}}
-        @inputId={{@id}}
       >
-        <:prepend as |api|>
-          {{yield api to="prepend"}}
+        <:prepend as |prependClasses|>
+          {{yield prependClasses inputId to="prepend"}}
         </:prepend>
         <:field>
           <input
-            id={{@id}}
+            id={{inputId}}
             class={{classes}}
             type="text"
             ...attributes
             {{validatable-control @isInvalid}}
           />
         </:field>
-        <:append as |api|>
-          {{yield api to="append"}}
+        <:append as |appendClasses|>
+          {{yield appendClasses inputId to="append"}}
         </:append>
       </EuiFormControlLayout>
     {{/if}}

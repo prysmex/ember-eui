@@ -31,6 +31,7 @@
         <:field>
           <select id={{id}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
             {{#if hasNoInitialSelection}}
+              {{! template-lint-disable}}
               <option
                 value=""
                 disabled
@@ -38,6 +39,7 @@
                 style="display: none"
                 selected={{eq @value defaultValue}}
               ></option>
+              {{! template-lint-enable}}
             {{/if}}
             {{#each @options as |opt|}}
               <option value={{opt.value}} selected={{eq @value opt.value}}>

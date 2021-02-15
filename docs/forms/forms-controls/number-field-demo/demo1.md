@@ -6,43 +6,47 @@ order: 1
 
 ```hbs template
 <EuiForm>
-  <EuiFormRow
-    @label="Some Input"
-    @helpText="here's some help text">
-    <EuiFieldNumber
-      value={{this.num}}
-      {{on "input" (pick "target.value" (set this.num))}}
-    />
-  </EuiFormRow>
-
-  <EuiFormRow
-    @label="Some Input"
-    @helpText="here's some help text">
-    <EuiFieldNumber
-      value={{this.num}}
-      {{on "input" (pick "target.value" (set this.num))}}
-    >
-      <:prepend as |classes|>
-        <EuiButtonIcon @iconType="faceHappy" class={{classes}} {{on "click" this.salute}}/>
-      </:prepend>
-    </EuiFieldNumber>
-  </EuiFormRow>
-
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow @label="Some Input" @id={{inputId}} @helpText="here's some help text">
+      <EuiFieldNumber
+        @value={{this.num}}
+        @id={{inputId}}
+        {{on "input" (pick "target.value" (set this.num))}}
+      />
+    </EuiFormRow>
+  {{/let}}
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow @label="Some Input" @id={{inputId}} @helpText="here's some help text">
+      <EuiFieldNumber
+        @value={{this.num}}
+        @id={{inputId}}
+        {{on "input" (pick "target.value" (set this.num))}}
+      >
+        <:prepend as |classes|>
+          <EuiButtonIcon @iconType="faceHappy" class={{classes}} {{on "click" this.salute}} />
+        </:prepend>
+      </EuiFieldNumber>
+    </EuiFormRow>
+  {{/let}}
   <EuiHorizontalRule />
   <EuiTitle>
     With Errors
   </EuiTitle>
-  <EuiFormRow
-    @label="Some Input"
-    @isInvalid={{true}}
-    @error={{array "error one" "error two"}}
-    @helpText="here's some help text"
-  >
-    <EuiFieldNumber
-      value={{this.num2}}
-      {{on "input" (pick "target.value" (set this.num2))}}
-    />
-  </EuiFormRow>
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow
+      @label="Some Input"
+      @isInvalid={{true}}
+      @id={{inputId}}
+      @error={{array "error one" "error two"}}
+      @helpText="here's some help text"
+    >
+      <EuiFieldNumber
+        @value={{this.num2}}
+        @id={{inputId}}
+        {{on "input" (pick "target.value" (set this.num2))}}
+      />
+    </EuiFormRow>
+  {{/let}}
 </EuiForm>
 ```
 

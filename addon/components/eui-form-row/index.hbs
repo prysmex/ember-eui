@@ -15,7 +15,9 @@
   (use-state false)
   (arg-or-default
     @id (unique-id)
-  ) as |classes fieldWrapperClasses errors isLegend focusedState rowId|
+  ) 
+  (arg-or-default @hasChildLabel true)
+  as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel|
 }}
   {{#if (eq @legendType "legend")}}
     <fieldset class={{classes}} id="{{rowId}}-row" ...attributes>
@@ -25,6 +27,7 @@
             {{#if (has-block "label")}}
               <EuiFormLabel
                 class="euiFormRow__label"
+                for={{rowId}}
                 aria-invalid={{@isInvalid}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}
@@ -34,6 +37,7 @@
             {{else}}
               <EuiFormLabel
                 class="euiFormRow__label"
+                for={{rowId}}
                 aria-invalid={{@isInvalid}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}
@@ -45,7 +49,7 @@
             <EuiFormLabel
               class="euiFormRow__label"
               aria-invalid={{@isInvalid}}
-              htmlFor={{if @hasChildLabel rowId}}
+              for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
               @isFocused={{and (not isLegend) focusedState.value}}
@@ -56,7 +60,7 @@
             <EuiFormLabel
               class="euiFormRow__label"
               aria-invalid={{@isInvalid}}
-              htmlFor={{if @hasChildLabel rowId}}
+              for={{ifhasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
               @isFocused={{and (not isLegend) focusedState.value}}
@@ -67,7 +71,7 @@
         </div>
       {{/if}}
       <div
-        class={{fieldWrapperClasses}}
+        class={{fieldWapperClasses}}
         {{on "focusin" (fn focusedState.setState true)}}
         {{on "focusout" (fn focusedState.setState false)}}
       >
@@ -118,6 +122,7 @@
             {{#if (has-block "label")}}
               <EuiFormLabel
                 class="euiFormRow__label"
+                for={{rowId}}
                 aria-invalid={{@isInvalid}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}
@@ -127,6 +132,7 @@
             {{else}}
               <EuiFormLabel
                 class="euiFormRow__label"
+                for={{rowId}}
                 aria-invalid={{@isInvalid}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}
@@ -138,7 +144,7 @@
             <EuiFormLabel
               class="euiFormRow__label"
               aria-invalid={{@isInvalid}}
-              htmlFor={{if @hasChildLabel rowId}}
+              for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
               @isFocused={{and (not isLegend) focusedState.value}}
@@ -149,7 +155,7 @@
             <EuiFormLabel
               class="euiFormRow__label"
               aria-invalid={{@isInvalid}}
-              htmlFor={{if @hasChildLabel rowId}}
+              for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
               @isFocused={{and (not isLegend) focusedState.value}}

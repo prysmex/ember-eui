@@ -5,10 +5,12 @@
     componentName="EuiTextArea"
     resize=(arg-or-default @resize "vertical")
   )
-  (if @rows @rows (if @compressed 3 6)) as |classes definedRows|
+  (if @rows @rows (if @compressed 3 6))
+  (arg-or-default @id (unique-id)) as |classes definedRows id|
 }}
   <textarea
-    id={{@id}}
+    id={{id}}
+    value={{@value}}
     class={{classes}}
     rows={{definedRows}}
     type="text"

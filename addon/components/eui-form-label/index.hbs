@@ -6,11 +6,11 @@
   ) as |classes|
 }}
   {{#if (eq @type "lengend")}}
-    <legend class={{classes}} ...attributes>
+    <legend class={{classes}} for={{@for}} ...attributes>
       {{yield}}
     </legend>
   {{else}}
-    <label class={{classes}} ...attributes>
+    <label class={{classes}} for={{@for}} ...attributes>
       {{yield}}
     </label>
   {{/if}}

@@ -6,16 +6,17 @@ order: 1
 
 ```hbs template
 <EuiTitle>
-Text: {{this.text1}}
+  Text:
+  {{this.text1}}
 </EuiTitle>
-<EuiTextArea value={{this.text1}} {{on "input" (pick "target.value" (set this.text1))}}/>
-
+<EuiTextArea @value={{this.text1}} {{on "input" (pick "target.value" (set this.text1))}} />
 <EuiSpacer />
 <EuiTitle>
-Text: {{this.text2}}
+  Text:
+  {{this.text2}}
 </EuiTitle>
 <EuiTextArea
-  value={{this.text2}}
+  @value={{this.text2}}
   @rows={{10}}
   @resize="both"
   @isInvalid={{true}}

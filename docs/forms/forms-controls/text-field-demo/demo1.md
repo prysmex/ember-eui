@@ -6,36 +6,55 @@ order: 1
 
 ```hbs template
 <EuiForm>
-  <EuiFormRow @label="Some Input" @helpText="here's some help text">
-    <EuiFieldText value={{this.num}}  @clear={{set this.num ""}} {{on "input" (pick "target.value" (set this.num))}}>
-      <:prepend as |classes|>
-        <EuiButtonIcon
-          class={{classes}}
-          @size="xs"
-          @iconType="faceHappy"
-          {{on "click" this.salute}}
-        />
-      </:prepend>
-      <:append as |classes|>
-        <EuiFormLabel class={{classes}}>
-          Salute
-        </EuiFormLabel>
-        <EuiButtonIcon
-          class={{classes}}
-          @size="xs"
-          @iconType="faceHappy"
-          {{on "click" this.salute}}
-        />
-      </:append>
-    </EuiFieldText>
-  </EuiFormRow>
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow @label="Some Input" @helpText="here's some help text" @id={{inputId}}>
+      <EuiFieldText
+        @value={{this.num}}
+        @clear={{set this.num ""}}
+        @id={{inputId}}
+        {{on "input" (pick "target.value" (set this.num))}}
+      >
+        <:prepend as |classes|>
+          <EuiButtonIcon
+            class={{classes}}
+            @size="xs"
+            @iconType="faceHappy"
+            {{on "click" this.salute}}
+          />
+        </:prepend>
+        <:append as |classes|>
+          <EuiFormLabel class={{classes}} for={{inputId}}>
+            Salute
+          </EuiFormLabel>
+          <EuiButtonIcon
+            class={{classes}}
+            @size="xs"
+            @iconType="faceHappy"
+            {{on "click" this.salute}}
+          />
+        </:append>
+      </EuiFieldText>
+    </EuiFormRow>
+  {{/let}}
   <EuiHorizontalRule />
   <EuiTitle>
     With Errors
   </EuiTitle>
-  <EuiFormRow @label="Some Input" @helpText="here's some help text" @error={{array "error"}} @isInvalid={{true}}>
-    <EuiFieldText value={{this.num2}} {{on "input" (pick "target.value" (set this.num2))}} />
-  </EuiFormRow>
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow
+      @label="Some Input"
+      @helpText="here's some help text"
+      @error={{array "error"}}
+      @isInvalid={{true}}
+      @id={{inputId}}
+    >
+      <EuiFieldText
+        @value={{this.num2}}
+        @id={{inputId}}
+        {{on "input" (pick "target.value" (set this.num2))}}
+      />
+    </EuiFormRow>
+  {{/let}}
 </EuiForm>
 ```
 

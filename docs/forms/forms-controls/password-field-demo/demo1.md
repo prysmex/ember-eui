@@ -6,30 +6,34 @@ order: 1
 
 ```hbs template
 <EuiForm>
-  <EuiFormRow
-    @label="Some Input"
-    @helpText="here's some help text">
-    <EuiFieldPassword
-      value={{this.password}}
-      {{on "input" (pick "target.value" (set this.password))}}
-    />
-  </EuiFormRow>
-
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow @label="Some Input" @helpText="here's some help text" @id={{inputId}}>
+      <EuiFieldPassword
+        @value={{this.password}}
+        @id={{inputId}}
+        {{on "input" (pick "target.value" (set this.password))}}
+      />
+    </EuiFormRow>
+  {{/let}}
   <EuiHorizontalRule />
   <EuiTitle>
     With Errors
   </EuiTitle>
-  <EuiFormRow
-    @label="Some Input"
-    @isInvalid={{true}}
-    @error={{array "error one" "error two"}}
-    @helpText="here's some help text"
-  >
-    <EuiFieldPassword
-      value={{this.password2}}
-      {{on "input" (pick "target.value" (set this.password2))}}
-    />
-  </EuiFormRow>
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow
+      @label="Some Input"
+      @id={{inputId}}
+      @isInvalid={{true}}
+      @error={{array "error one" "error two"}}
+      @helpText="here's some help text"
+    >
+      <EuiFieldPassword
+        @value={{this.password2}}
+        @id={{inputId}}
+        {{on "input" (pick "target.value" (set this.password2))}}
+      />
+    </EuiFormRow>
+  {{/let}}
 </EuiForm>
 ```
 

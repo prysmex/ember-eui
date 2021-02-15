@@ -9,24 +9,27 @@ order: 2
   You can use named blocks for further row customization
 </EuiTitle>
 <EuiForm>
-  <EuiFormRow @error={{array "error 1"}} @isInvalid={{true}}>
-    <:label>
-      <EuiAvatar @name="row" />
-      My label
-    </:label>
-    <:field>
-      <EuiFieldText
-        value={{this.num2}}
-        {{on "input" (pick "target.value" (set this.num2))}}
-      />
-    </:field>
-    <:errors as |error|>
-      {{error}}
-    </:errors>
-    <:helpText>
-      Some text
-    </:helpText>
-  </EuiFormRow>
+  {{#let (unique-id) as |inputId|}}
+    <EuiFormRow @error={{array "error 1"}} @isInvalid={{true}} @id={{inputId}}>
+      <:label>
+        <EuiAvatar @name="row" />
+        My label
+      </:label>
+      <:field>
+        <EuiFieldText
+          @value={{this.num2}}
+          @id={{inputId}}
+          {{on "input" (pick "target.value" (set this.num2))}}
+        />
+      </:field>
+      <:errors as |error|>
+        {{error}}
+      </:errors>
+      <:helpText>
+        Some text
+      </:helpText>
+    </EuiFormRow>
+  {{/let}}
 </EuiForm>
 ```
 

@@ -18,11 +18,11 @@
       <div class="euiRadio__circle"></div>
       {{#if (or hasLabelBlock @label)}}
         {{#if hasLabelBlock}}
-          <label class="euiRadio__label" htmlFor={{id}}>
+          <label class="euiRadio__label" for={{id}}>
             {{yield to="label"}}
           </label>
         {{else}}
-          <label class="euiRadio__label" htmlFor={{id}}>
+          <label class="euiRadio__label" for={{id}}>
             {{@label}}
           </label>
         {{/if}}

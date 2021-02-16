@@ -1,0 +1,32 @@
+{{!-- TODO: Add landmarkSupport after having an <EuiI18n> component support --}}
+{{#in-element
+  this.destinationElement
+  insertBefore=null
+}}
+  <section
+    class={{class-names
+      componentName="EuiBottomBar"
+      paddingSize=(arg-or-default @paddingSize "m")
+    }}
+    {{!-- aria-label={{if @landmarkHeading @landmarkHeading "Page level controls"}} --}}
+    {{did-insert this.didInsert}}
+    {{did-update this.updateDisplacement @affordForDisplacement}}
+    ...attributes
+  >
+    {{!-- <div {{screen-reader-only}}>
+      <h2>
+        {{if @landmarkHeading @landmarkHeading "Page level controls"}}
+      </h2>
+    </div> --}}
+    {{yield}}
+  </section>
+  {{!-- <div {{screen-reader-only}}>
+    <p aria-live="assertive">
+      {{#if @landmarkHeading}}
+        There is a new region landmark called {{@landmarkHeading}} with page level controls at the end of the document.
+      {{else}}
+        There is a new region landmark with page level controls at the end of the document.
+      {{/if}}
+    </p>
+  </div> --}}
+{{/in-element}}

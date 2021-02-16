@@ -33,7 +33,8 @@ module.exports = function (defaults) {
         'object-at',
         'noop',
         'repeat',
-        'pick'
+        'pick',
+        'queue',
       ]
     },
     

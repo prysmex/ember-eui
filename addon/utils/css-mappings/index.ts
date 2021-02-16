@@ -39,6 +39,7 @@ import EuiFormRow from './eui-form-row';
 import EuiListGroup from './eui-list-group';
 import EuiListGroupItem from './eui-list-group-item';
 import EuiTextArea from './eui-text-area';
+import EuiBottomBar from './eui-bottom-bar';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -82,6 +83,7 @@ const mapping: Mapping = {
   EuiListGroup,
   EuiListGroupItem,
   EuiTextArea,
+  EuiBottomBar,
 };
 
 export default mapping;

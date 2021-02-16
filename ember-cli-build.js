@@ -32,7 +32,8 @@ module.exports = function (defaults) {
         'pipe',
         'object-at',
         'noop',
-        'repeat'
+        'repeat',
+        'pick'
       ]
     },
     

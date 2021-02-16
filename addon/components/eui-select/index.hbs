@@ -1,0 +1,56 @@
+{{#let
+  (has-block "prepend")
+  (has-block "append")
+  (arg-or-default @id (unique-id)) as |hasPrepend hasAppend inputId|
+}}
+  {{#let
+    (class-names
+      (if @fullWidth "euiSelect--fullWidth")
+      (if @compressed "euiSelect--compressed")
+      (if (or hasPrepend hasAppend) "euiSelect--inGroup")
+      (if @isLoading "euiSelect--isLoading")
+      "euiSelect"
+    )
+    (arg-or-default @hasNoInitialSelection false) as |classes hasNoInitialSelection value|
+  }}
+    {{#let (if hasNoInitialSelection (nullish @value "") @value) as |defaultValue|}}
+      <EuiFormControlLayout
+        @clear={{@clear}}
+        @icon="arrowDown"
+        @iconSide="right"
+        @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @compressed={{@compressed}}
+        @prepend={{hasPrepend}}
+        @append={{hasAppend}}
+      >
+        <:prepend as |prependClasses|>
+          {{yield prependClasses inputId to="prepend"}}
+        </:prepend>
+        <:field>
+          <select id={{inputId}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
+            {{#if hasNoInitialSelection}}
+              {{! template-lint-disable}}
+              <option
+                value=""
+                disabled
+                hidden
+                style="display: none"
+                selected={{eq @value defaultValue}}
+              ></option>
+              {{! template-lint-enable}}
+            {{/if}}
+            {{#each @options as |opt|}}
+              <option value={{opt.value}} selected={{eq @value opt.value}}>
+                {{opt.text}}
+              </option>
+            {{/each}}
+          </select>
+        </:field>
+        <:append as |appendClasses|>
+          {{yield appendClasses inputId to="append"}}
+        </:append>
+      </EuiFormControlLayout>
+    {{/let}}
+  {{/let}}
+{{/let}}

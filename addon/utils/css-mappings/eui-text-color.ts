@@ -1,6 +1,6 @@
 export const baseClass: string = 'euiTextColor';
 
-export const colorMapping: PropertyMapping = {
+export const colorMapping = {
   default: `${baseClass}--default`,
   subdued: `${baseClass}--subdued`,
   secondary: `${baseClass}--secondary`,

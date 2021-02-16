@@ -1,0 +1,33 @@
+{{#let (has-block "label") (arg-or-default @id (unique-id)) as |hasLabelBlock id|}}
+  {{#let
+    (class-names
+      (if @icon "euiCheckbox--withIcon")
+      (if (and (not hasLabelBlock) (not @label)) "euiCheckbox--noLabel")
+      (if @compressed "euiCheckbox--compressed")
+      "euiCheckbox"
+    ) as |classes|
+  }}
+    <div class={{classes}}>
+      <input
+        class="euiCheckbox__input"
+        type="checkbox"
+        id={{id}}
+        checked={{@checked}}
+        ...attributes
+        {{invalidate-indeterminate @indeterminate @checked}}
+      />
+      <div class="euiCheckbox__square"></div>
+      {{#if (or hasLabelBlock @label)}}
+        {{#if hasLabelBlock}}
+          <label class="euiCheckbox__label" for={{id}}>
+            {{yield to="label"}}
+          </label>
+        {{else}}
+          <label class="euiCheckbox__label" for={{id}}>
+            {{@label}}
+          </label>
+        {{/if}}
+      {{/if}}
+    </div>
+  {{/let}}
+{{/let}}

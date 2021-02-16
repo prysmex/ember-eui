@@ -1,0 +1,17 @@
+{{#let
+  (class-names
+    (if @isFocused "euiFormLabel-isFocused")
+    (if @isInvalid "euiFormLabel-isInvalid")
+    "euiFormLabel"
+  ) as |classes|
+}}
+  {{#if (eq @type "lengend")}}
+    <legend class={{classes}} for={{@for}} ...attributes>
+      {{yield}}
+    </legend>
+  {{else}}
+    <label class={{classes}} for={{@for}} ...attributes>
+      {{yield}}
+    </label>
+  {{/if}}
+{{/let}}

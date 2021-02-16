@@ -16,7 +16,6 @@
   role="switch"
   aria-checked={{@isSelected}}
   ...attributes
-  {{on "click" (unless @isDisabled @onClick)}}
 >
   {{#if hasBlock}}
     {{yield}}

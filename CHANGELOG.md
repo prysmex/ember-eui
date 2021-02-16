@@ -4,10 +4,54 @@
 
 ### 0.0.51
 
+🚀 Enhancements
+
+Components
+
+- `<EuiCheckbox>`
+- `<EuiCheckboxGroup>`
+- `<EuiFieldNumber>`
+- `<EuiFieldPassword>`
+- `<EuiFieldText>`
+- `<EuiFormControlLayoutClearButton>`
+- `<EuiFormControlLayoutClearCustomIcon>`
+- `<EuiFormControlLayoutDelimited>`
+- `<EuiFormControlLayoutIcons>`
+- `<EuiFormControlLayout>`
+- `<EuiFormErrorText>`
+- `<EuiFormFielset>`
+- `<EuiFormHelpText>`
+- `<EuiFormLegend>`
+- `<EuiFormRow>`
+- `<EuiForm>`
+- `<EuiRadioGroup>`
+- `<EuiRadio>`
+- `<EuiSelect>`
+- `<EuiSwitch>`
+- `<EuiTextArea>`
+- `<EuiTextArea>`
+
+Helpers
+
+- `{{nullish}}`
+- `{{starts-with}}`
+
+Modifiers
+
+- `{{invalidate-indeterminate}}`
+- `{{screen-reader-only}}`
+- `{{validatable-control}}`
+
 🐛 Bug / Fixes
 
+- `<EuiText>` `@grow` defaults to true
+- `<EuiCard>` selectable bugfixes
 - Prevent inline style of maxWidth as undefined on modal
 - Fix EuiCollapsibleNavGroup title styling
+
+🏠 Internal
+
+- Refactor `class-names` helper for more clarity and perceived performance(?)
 
 ### 0.0.50
 

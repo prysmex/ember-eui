@@ -6498,7 +6498,7 @@ ember-string-helpers@^1.0.2:
   dependencies:
     ember-cli-babel "^5.0.0"
 
-"ember-svg-jar@github:betocantu93/ember-svg-jar#80fc7c2ea1a026e60061677648e5693e0d9361b3":
+"ember-svg-jar@github:betocantu93/ember-svg-jar#ember-eui-hbs":
   version "2.2.3"
   resolved "https://codeload.github.com/betocantu93/ember-svg-jar/tar.gz/80fc7c2ea1a026e60061677648e5693e0d9361b3"
   dependencies:

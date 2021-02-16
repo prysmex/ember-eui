@@ -1,0 +1,22 @@
+{{#let
+  (class-names
+    (if @fullWidth "euiTextArea--fullWidth")
+    (if @compressed "euiTextArea--compressed")
+    componentName="EuiTextArea"
+    resize=(arg-or-default @resize "vertical")
+  )
+  (if @rows @rows (if @compressed 3 6))
+  (arg-or-default @id (unique-id)) as |classes definedRows id|
+}}
+  <textarea
+    id={{id}}
+    value={{@value}}
+    class={{classes}}
+    rows={{definedRows}}
+    type="text"
+    ...attributes
+    {{validatable-control @isInvalid}}
+  >
+    {{yield}}
+  </textarea>
+{{/let}}

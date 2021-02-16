@@ -153,7 +153,7 @@
       </Card.body>
       <Card.footer>
         <div class="euiFlexGroup euiFlexGroup--justifyContentSpaceAround">
-          <EuiButton class="euiFlexItem euiFlexItem--flexGrowZero" {{on "click" this.puntIt}} @fill={{true}}>
+          <EuiButton class="euiFlexItem euiFlexItem--flexGrowZero" {{on "click" this.punchIt}} @fill={{true}}>
               Try it!
           </EuiButton>
         </div>
@@ -386,7 +386,7 @@ export default class DemoCardComponent extends Component {
 
   @action
   selectToggle(card, event) {
-    this.toggleProperty(card);
+    this[card] = !this[card];
     event.stopPropagation();
   }
 }

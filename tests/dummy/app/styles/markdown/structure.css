@@ -1,6 +1,6 @@
 .markdown,
 .docfy-demo__description__content {
-  @apply leading-relaxed;
+  @apply leading-normal;
 
   > *:first-child {
     @apply mt-0;

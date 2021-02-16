@@ -1,0 +1,213 @@
+{{#let
+  (class-names
+    "euiFormRow"
+    (if @hasEmptyLabelSpace "euiFormRow--hasEmptyLabelSpace")
+    (if @fullWidth "euiFormRow--fullWidth")
+    componentName="EuiFormRow"
+    display=@display
+  )
+  (class-names
+    "euiFormRow__fieldWrapper"
+    (if (starts-with "center" @display) "euiFormRow__fieldWrapperDisplayOnly")
+  )
+  (if (is-array @error) @error (array @error))
+  (and @label (eq @labelType "legend"))
+  (use-state false)
+  (arg-or-default
+    @id (unique-id)
+  ) 
+  (arg-or-default @hasChildLabel true)
+  as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel|
+}}
+  {{#if (eq @legendType "legend")}}
+    <fieldset class={{classes}} id="{{rowId}}-row" ...attributes>
+      {{#if (or @label @labelAppend (has-block "label"))}}
+        <div class="euiFormRow__labelWrapper">
+          {{#if isLegend}}
+            {{#if (has-block "label")}}
+              <EuiFormLabel
+                class="euiFormRow__label"
+                for={{rowId}}
+                aria-invalid={{@isInvalid}}
+                @isInvalid={{@isInvalid}}
+                @type={{@labelType}}
+              >
+                {{yield @label to="label"}}
+              </EuiFormLabel>
+            {{else}}
+              <EuiFormLabel
+                class="euiFormRow__label"
+                for={{rowId}}
+                aria-invalid={{@isInvalid}}
+                @isInvalid={{@isInvalid}}
+                @type={{@labelType}}
+              >
+                {{@label}}
+              </EuiFormLabel>
+            {{/if}}
+          {{else if (has-block "label")}}
+            <EuiFormLabel
+              class="euiFormRow__label"
+              aria-invalid={{@isInvalid}}
+              for={{if hasChildLabel rowId}}
+              @isInvalid={{@isInvalid}}
+              @type={{@labelType}}
+              @isFocused={{and (not isLegend) focusedState.value}}
+            >
+              {{yield @label to="label"}}
+            </EuiFormLabel>
+          {{else}}
+            <EuiFormLabel
+              class="euiFormRow__label"
+              aria-invalid={{@isInvalid}}
+              for={{ifhasChildLabel rowId}}
+              @isInvalid={{@isInvalid}}
+              @type={{@labelType}}
+              @isFocused={{and (not isLegend) focusedState.value}}
+            >
+              {{@label}}
+            </EuiFormLabel>
+          {{/if}}
+        </div>
+      {{/if}}
+      <div
+        class={{fieldWapperClasses}}
+        {{on "focusin" (fn focusedState.setState true)}}
+        {{on "focusout" (fn focusedState.setState false)}}
+      >
+        {{#if (has-block "field")}}
+          {{yield to="field"}}
+        {{else}}
+          {{yield}}
+        {{/if}}
+        {{#if (or (and (has-block "errors") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
+          {{#if (has-block "errors")}}
+            {{#each errors as |error i|}}
+              <EuiFormErrorText
+                class="euiFormRow__text {{@errorClasses}}"
+                id="{{rowId}}-error-{{i}}"
+              >
+                {{yield error to="errors"}}
+              </EuiFormErrorText>
+            {{/each}}
+          {{else}}
+            {{#each errors as |error i|}}
+              <EuiFormErrorText
+                class="euiFormRow__text {{@errorClasses}}"
+                id="{{rowId}}-error-{{i}}"
+              >
+                {{error}}
+              </EuiFormErrorText>
+            {{/each}}
+          {{/if}}
+        {{/if}}
+        {{#if (or @helpText (has-block "helpText"))}}
+          {{#if (has-block "helpText")}}
+            <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
+              {{yield to="helpText"}}
+            </EuiFormHelpText>
+          {{else}}
+            <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
+              {{@helpText}}
+            </EuiFormHelpText>
+          {{/if}}
+        {{/if}}
+      </div>
+    </fieldset>
+  {{else}}
+    <div class={{classes}} id="{{rowId}}-row" ...attributes>
+      {{#if (or @label @labelAppend (has-block "label"))}}
+        <div class="euiFormRow__labelWrapper">
+          {{#if isLegend}}
+            {{#if (has-block "label")}}
+              <EuiFormLabel
+                class="euiFormRow__label"
+                for={{rowId}}
+                aria-invalid={{@isInvalid}}
+                @isInvalid={{@isInvalid}}
+                @type={{@labelType}}
+              >
+                {{yield @label to="label"}}
+              </EuiFormLabel>
+            {{else}}
+              <EuiFormLabel
+                class="euiFormRow__label"
+                for={{rowId}}
+                aria-invalid={{@isInvalid}}
+                @isInvalid={{@isInvalid}}
+                @type={{@labelType}}
+              >
+                {{@label}}
+              </EuiFormLabel>
+            {{/if}}
+          {{else if (has-block "label")}}
+            <EuiFormLabel
+              class="euiFormRow__label"
+              aria-invalid={{@isInvalid}}
+              for={{if hasChildLabel rowId}}
+              @isInvalid={{@isInvalid}}
+              @type={{@labelType}}
+              @isFocused={{and (not isLegend) focusedState.value}}
+            >
+              {{yield @label to="label"}}
+            </EuiFormLabel>
+          {{else}}
+            <EuiFormLabel
+              class="euiFormRow__label"
+              aria-invalid={{@isInvalid}}
+              for={{if hasChildLabel rowId}}
+              @isInvalid={{@isInvalid}}
+              @type={{@labelType}}
+              @isFocused={{and (not isLegend) focusedState.value}}
+            >
+              {{@label}}
+            </EuiFormLabel>
+          {{/if}}
+        </div>
+      {{/if}}
+      <div
+        class={{fieldWrapperClasses}}
+        {{on "focusin" (fn focusedState.setState true)}}
+        {{on "focusout" (fn focusedState.setState false)}}
+      >
+        {{#if (has-block "field")}}
+          {{yield to="field"}}
+        {{else}}
+          {{yield}}
+        {{/if}}
+        {{#if (or (and (has-block "errors") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
+          {{#if (has-block "errors")}}
+            {{#each errors as |error i|}}
+              <EuiFormErrorText
+                class="euiFormRow__text {{@errorClasses}}"
+                id="{{rowId}}-error-{{i}}"
+              >
+                {{yield error to="errors"}}
+              </EuiFormErrorText>
+            {{/each}}
+          {{else}}
+            {{#each errors as |error i|}}
+              <EuiFormErrorText
+                class="euiFormRow__text {{@errorClasses}}"
+                id="{{rowId}}-error-{{i}}"
+              >
+                {{error}}
+              </EuiFormErrorText>
+            {{/each}}
+          {{/if}}
+        {{/if}}
+        {{#if (or @helpText (has-block "helpText"))}}
+          {{#if (has-block "helpText")}}
+            <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
+              {{yield to="helpText"}}
+            </EuiFormHelpText>
+          {{else}}
+            <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
+              {{@helpText}}
+            </EuiFormHelpText>
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+  {{/if}}
+{{/let}}

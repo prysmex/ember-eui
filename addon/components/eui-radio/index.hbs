@@ -1,0 +1,32 @@
+{{#let (has-block "label") (arg-or-default @id (unique-id)) as |hasLabelBlock id|}}
+  {{#let
+    (class-names
+      (if (and (not hasLabelBlock) (not @label)) "euiRadio--noLabel")
+      (if @compressed "euiRadio--compressed")
+      "euiRadio"
+    ) as |classes|
+  }}
+    <div class={{classes}}>
+      <input
+        class="euiRadio__input"
+        type="radio"
+        id={{id}}
+        checked={{@checked}}
+        disabled={{@disabled}}
+        ...attributes
+      />
+      <div class="euiRadio__circle"></div>
+      {{#if (or hasLabelBlock @label)}}
+        {{#if hasLabelBlock}}
+          <label class="euiRadio__label" for={{id}}>
+            {{yield to="label"}}
+          </label>
+        {{else}}
+          <label class="euiRadio__label" for={{id}}>
+            {{@label}}
+          </label>
+        {{/if}}
+      {{/if}}
+    </div>
+  {{/let}}
+{{/let}}

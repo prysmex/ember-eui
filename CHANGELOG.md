@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.52
+
+🚀 Enhancements
+
+- `<EuiBottomBar>`
+
 ### 0.0.51
 
 🚀 Enhancements

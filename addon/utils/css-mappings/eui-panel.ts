@@ -1,6 +1,6 @@
 export const baseClass: string = 'euiPanel';
 
-export const paddingMapping = {
+export const paddingSizeMapping = {
   s: `${baseClass}--paddingSmall`,
   m: `${baseClass}--paddingMedium`,
   l: `${baseClass}--paddingLarge`,
@@ -25,7 +25,7 @@ const colorMapping = {
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    padding: paddingMapping,
+    paddingSize: paddingSizeMapping,
     borderRadius: borderRadiusMapping,
     color: colorMapping,
   },

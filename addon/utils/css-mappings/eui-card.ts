@@ -25,7 +25,7 @@ const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     textAlign: textAlignMapping,
-    padding: paddingSizeMapping,
+    paddingSize: paddingSizeMapping,
     color: selectableColor,
   },
 };

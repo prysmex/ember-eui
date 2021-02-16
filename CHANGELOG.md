@@ -7,6 +7,8 @@
 🚀 Enhancements
 
 - `<EuiBottomBar>`
+- `<EuiFieldSearch>`
+- `<EuiFilePicker>`
 
 ### 0.0.51
 

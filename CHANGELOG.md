@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.53
+
+🐛 Bug / Fixes
+
+- Fix Search field demo
+
 ### 0.0.52
 
 🚀 Enhancements

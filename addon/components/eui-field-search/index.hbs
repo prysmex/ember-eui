@@ -1,11 +1,15 @@
-{{#let (has-block "prepend") (has-block "append") (arg-or-default @id (unique-id)) as |hasPrepend hasAppend inputId|}}
+{{#let
+  (has-block "prepend")
+  (has-block "append")
+  (arg-or-default @id (unique-id)) as |hasPrepend hasAppend inputId|
+}}
   {{#let
     (class-names
       (if @fullWidth "euiFieldSearch--fullWidth")
       (if @compressed "euiFieldSearch--compressed")
       (if (or hasPrepend hasAppend) "euiFieldSearch--inGroup")
       (if @isLoading "euiFieldSearch--isLoading")
-      (if (and @isClearable @value) "euiFieldSearch--isClearable")
+      (if (and (arg-or-default @isClearable true) @value) "euiFieldSearch--isClearable")
       "euiFieldSearch"
     ) as |classes|
   }}
@@ -13,7 +17,7 @@
       @icon="search"
       @fullWidth={{@fullWidth}}
       @isLoading={{@isLoading}}
-      @clear={{@clear}}
+      @clear={{if (and @isClearable @value (not @readOnly) (not @isDisabled)) this.onClear}}
       @compressed={{@compressed}}
       @useGroup={{or hasPrepend hasAppend}}
     >
@@ -24,8 +28,13 @@
         <input
           id={{inputId}}
           class={{classes}}
+          value={{this.value}}
           type="text"
           ...attributes
+          {{on "keyup" (fn this.onKeyUp this.incremental @onSearch)}}
+          {{on "search" this.setValue}}
+          {{on "change" this.setValue}}
+          {{did-insert this.didInsertInput}}
           {{validatable-control @isInvalid}}
         />
       </:field>

@@ -12,7 +12,7 @@ export const paddingMapping = {
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    padding: paddingMapping,
+    paddingSize: paddingMapping,
   },
 };
 

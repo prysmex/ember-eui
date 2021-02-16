@@ -12,7 +12,7 @@
       (if @selectable "euiCard--isSelectable")
       (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
       componentName="EuiCard"
-      padding=(arg-or-default @paddingSize "m")
+      paddingSize=(arg-or-default @paddingSize "m")
       textAlign=(arg-or-default @textAlign "center")
       color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
     }}

@@ -7,12 +7,15 @@
 🐛 Bug / Fixes
 
 - `<EuiListGroupItem>` Fix DOM structure and styles
+- Fix Search field demo
 
 ### 0.0.52
 
 🚀 Enhancements
 
 - `<EuiBottomBar>`
+- `<EuiFieldSearch>`
+- `<EuiFilePicker>`
 
 ### 0.0.51
 

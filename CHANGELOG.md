@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.53
+
+🐛 Bug / Fixes
+
+- `<EuiListGroupItem>` Fix DOM structure and styles
+
 ### 0.0.52
 
 🚀 Enhancements

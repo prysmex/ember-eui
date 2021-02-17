@@ -2,11 +2,16 @@
 
 ### Master
 
-### 0.0.53
+### 0.0.54
 
 🐛 Bug / Fixes
 
 - `<EuiListGroupItem>` Fix DOM structure and styles
+
+### 0.0.53
+
+🐛 Bug / Fixes
+
 - Fix Search field demo
 
 ### 0.0.52

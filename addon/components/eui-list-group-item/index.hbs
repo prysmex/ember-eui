@@ -11,23 +11,20 @@
 >
   {{#if (and @href (not @isDisabled))}}
     <a
-      className="euiListGroupItem__button"
+      class="euiListGroupItem__button"
       href={{@href}}
       target={{@target}}
       {{on "click" (optional @onClick)}}
       ...attributes
     >
-      <span className="euiListGroupItem__label">
-        {{#if @iconType}}
-          <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
-        {{/if}}
+      {{#if @iconType}}
+        <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+      {{/if}}
+      <span class="euiListGroupItem__label">
         {{#if (has-block)}}
           {{yield}}
         {{else}}
           {{@label}}
-        {{/if}}
-        {{#if @extraAction}}
-          {{component @extraAction}}
         {{/if}}
       </span>
     </a>
@@ -39,35 +36,32 @@
       {{on "click" (optional @onClick)}}
       ...attributes
     >
-      <span className="euiListGroupItem__label">
-        {{#if @iconType}}
-          <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
-        {{/if}}
+      {{#if @iconType}}
+        <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+      {{/if}}
+      <span class="euiListGroupItem__label">
         {{#if (has-block)}}
           {{yield}}
         {{else}}
           {{@label}}
-        {{/if}}
-        {{#if @extraAction}}
-          {{component @extraAction}}
         {{/if}}
       </span>
     </button>
   {{else}}
-    <span className="euiListGroupItem__text" ...attributes>
-      <span className="euiListGroupItem__label">
-        {{#if @iconType}}
-          <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
-        {{/if}}
+    <span class="euiListGroupItem__text" ...attributes>
+      {{#if @iconType}}
+        <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+      {{/if}}
+      <span class="euiListGroupItem__label">
         {{#if (has-block)}}
           {{yield}}
         {{else}}
           {{@label}}
         {{/if}}
-        {{#if @extraAction}}
-          {{component @extraAction}}
-        {{/if}}
       </span>
     </span>
+  {{/if}}
+  {{#if @extraAction}}
+    {{component @extraAction}}
   {{/if}}
 </li>

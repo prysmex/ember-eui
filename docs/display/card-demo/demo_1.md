@@ -14,9 +14,9 @@
       @layout="vertical"
       @paddingSize="l"
       @href="https://starwars.fandom.com/wiki/Anakin_Skywalker"
-      @image="https://1.bp.blogspot.com/-nMzqcqU8SwE/W4l4yJdZUVI/AAAAAAAAALQ/qUNHiJg-OwEccNcDzOMLdRhEOvn7sgI2gCLcBGAs/s1600/Darth%2BVader%2B-%2BStar%2BWars%2B-%2BBlack%2BWallpaper%2BBackground.jpg" as |Card|
+      @image="https://1.bp.blogspot.com/-nMzqcqU8SwE/W4l4yJdZUVI/AAAAAAAAALQ/qUNHiJg-OwEccNcDzOMLdRhEOvn7sgI2gCLcBGAs/s1600/Darth%2BVader%2B-%2BStar%2BWars%2B-%2BBlack%2BWallpaper%2BBackground.jpg"
     >
-      <Card.body>
+      <:body>
         <EuiText @size="xs" @textAlign="left" @grow={{true}}>
           <p>
             Darth Vader's true name is Anakin Skywalker.
@@ -26,8 +26,8 @@
                 only to be seduced by the dark side; bringing chaos and destruction across the galaxy.
           </p>
         </EuiText>
-      </Card.body>
-      <Card.footer>
+      </:body>
+      <:footer>
         <EuiBadgeGroup @gutterSize="m">
           <EuiBadge>
             Dark Side
@@ -42,7 +42,7 @@
             Empire
           </EuiBadge>
         </EuiBadgeGroup>
-      </Card.footer>
+      </:footer>
     </EuiCard>
   </div>
   <div class="euiFlexItem">
@@ -56,9 +56,9 @@
       @description="Galactic Emperor"
       @layout="vertical"
       @paddingSize="l"
-      @image="https://i.pinimg.com/originals/ab/eb/f4/abebf495862d9b822d0b368879d1ea00.jpg" as |Card|
+      @image="https://i.pinimg.com/originals/ab/eb/f4/abebf495862d9b822d0b368879d1ea00.jpg"
     >
-      <Card.body>
+      <:body>
         <EuiText @size="xs" @textAlign="left" @grow={{true}}>
           <p>
             Sidious's real name is Sheev Palpatine. He was a former member of the Galactic Senat annd secretly the Dark Lord of the Sith.
@@ -67,8 +67,8 @@
             "There is only one plan—one great design which shall govern the universe—mine."
           </p>
         </EuiText>
-      </Card.body>
-      <Card.footer>
+      </:body>
+      <:footer>
         <EuiBadgeGroup>
           <EuiBadge>
             Dark Side
@@ -83,7 +83,7 @@
             Empire
           </EuiBadge>
         </EuiBadgeGroup>
-      </Card.footer>
+      </:footer>
     </EuiCard>
   </div>
   <div class="euiFlexItem">
@@ -99,9 +99,9 @@
       @isDisabled={{true}}
       @paddingSize="l"
       @href="https://starwars.fandom.com/"
-      @image="https://cdn.hipwallpaper.com/i/29/87/pyJ0Pi.jpg" as |Card|
+      @image="https://cdn.hipwallpaper.com/i/29/87/pyJ0Pi.jpg"
     >
-      <Card.body>
+      <:body>
         <EuiText @size="xs" @textAlign="left" @grow={{true}}>
           <p>
             Considered to be an actual wound in the force, Nihilus experiences a never-ending hunger
@@ -111,8 +111,8 @@
             He became to be considered as arguably one of the most powerful Sith Lords to have ever existed.
           </p>
         </EuiText>
-      </Card.body>
-      <Card.footer>
+      </:body>
+      <:footer>
         <EuiBadgeGroup>
           <EuiBadge>
             Sith Lord
@@ -124,7 +124,7 @@
             Jedi Civil War
           </EuiBadge>
         </EuiBadgeGroup>
-      </Card.footer>
+      </:footer>
     </EuiCard>
   </div>
   <div class="euiFlexItem">
@@ -140,9 +140,9 @@
       @layout="vertical"
       @paddingSize="l"
       @betaBadgeLabel="Alpha"
-      @image="https://cdn.wallpapersafari.com/8/67/A3xeaM.jpg" as |Card|
+      @image="https://cdn.wallpapersafari.com/8/67/A3xeaM.jpg"
     >
-      <Card.body>
+      <:body>
         <EuiText @size="xs" @textAlign="left" @grow={{true}}>
           <p>
             By far the most iconic ship in the galaxy.
@@ -150,14 +150,14 @@
             Commandeered by the its trusty crew of smugglers turned warriors: Han Solo and Chewbacca.
           </p>
         </EuiText>
-      </Card.body>
-      <Card.footer>
+      </:body>
+      <:footer>
         <div class="euiFlexGroup euiFlexGroup--justifyContentSpaceAround">
           <EuiButton class="euiFlexItem euiFlexItem--flexGrowZero" {{on "click" this.punchIt}} @fill={{true}}>
               Try it!
           </EuiButton>
         </div>
-      </Card.footer>
+      </:footer>
     </EuiCard>
   </div>
   <div class="euiFlexItem">
@@ -173,9 +173,9 @@
       @layout="vertical"
       @paddingSize="l"
       @display="plain"
-      @image="https://i.pinimg.com/originals/09/60/ab/0960ab6bb8a217da7362d88ff7b3a0af.jpg" as |Card|
+      @image="https://i.pinimg.com/originals/09/60/ab/0960ab6bb8a217da7362d88ff7b3a0af.jpg"
     >
-      <Card.body>
+      <:body>
         <EuiText @size="xs" @textAlign="left" @grow={{true}}>
           <p>
             The fighter of the republic.
@@ -184,8 +184,8 @@
                 this is the primary starfighter of the Rebellion and New Republic.
           </p>
         </EuiText>
-      </Card.body>
-      <Card.footer>
+      </:body>
+      <:footer>
         <EuiBadgeGroup>
           <EuiBadge>
             Republic
@@ -197,7 +197,7 @@
             starfighter
           </EuiBadge>
         </EuiBadgeGroup>
-      </Card.footer>
+      </:footer>
     </EuiCard>
   </div>
   <div class="euiFlexItem">
@@ -215,9 +215,9 @@
       @display="plain"
       @betaBadgeLabel="Beta"
       @image="https://i.imgur.com/LWzoQ0S.png"
-      @onClick={{this.punchIt}} as |Card|
+      @onClick={{this.punchIt}}
     >
-      <Card.body>
+      <:body>
         <EuiText @size="xs" @textAlign="left" @grow={{true}}>
           <p>
             The powerhouse of the most feared bounty hunter across the galaxy: Boba Fett.
@@ -226,8 +226,8 @@
                 If you see it coming, you know he is out for you, and there is no stopping him.
           </p>
         </EuiText>
-      </Card.body>
-      <Card.footer>
+      </:body>
+      <:footer>
         <EuiBadgeGroup>
           <EuiBadge>
             Mandalore
@@ -239,7 +239,7 @@
             bounty
           </EuiBadge>
         </EuiBadgeGroup>
-      </Card.footer>
+      </:footer>
     </EuiCard>
   </div>
 </div>

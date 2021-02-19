@@ -1,4 +1,8 @@
-{{#let (if (or @href @onClick) (unique-id)) (if @selectable (unique-id)) (optional @onClick) as |titleId selectableId onClick|}}
+{{#let
+  (if (or @href @onClick) (unique-id))
+  (if @selectable (unique-id))
+  (optional @onClick) as |titleId selectableId onClick|
+}}
   <div
     class={{class-names
       "euiCard--shadow"
@@ -70,7 +74,7 @@
       <EuiText @grow={{true}} @size="s" class="euiCard__description">
         {{@description}}
       </EuiText>
-      {{yield (hash body="eui-card/eui-card-body")}}
+      {{yield to="body"}}
     </div>
     {{#if @betaBadgeLabel}}
       <span class="euiCard__betaBadgeWrapper">
@@ -81,9 +85,9 @@
         />
       </span>
     {{/if}}
-    {{#if (not (eq @layout "horizontal"))}}
+    {{#if (and (not (eq @layout "horizontal")) (has-block "footer"))}}
       <div class="euiCard__footer">
-        {{yield (hash footer="eui-card/eui-card-footer")}}
+        {{yield to="footer"}}
       </div>
     {{/if}}
     {{#if @selectable}}

@@ -33,7 +33,7 @@ export default modifier(function useMutationObserver(
     onMutation,
     observerOptions,
   }: { onMutation: MutationCallback; observerOptions: MutationObserverInit }
-) {
+): void | (() => unknown) {
   if (element != null) {
     const observer = makeMutationObserver(element, observerOptions, onMutation);
     return () => observer.disconnect();

@@ -1,0 +1,1 @@
+# Outside click detector

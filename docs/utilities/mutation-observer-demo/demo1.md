@@ -7,7 +7,7 @@
   </p>
   <EuiSpacer />
   <div
-    {{use-mutation-observer
+    {{mutation-observer
       observerOptions=(hash subtree=true attributes=true childList=true)
       onMutation=this.onMutation
     }}

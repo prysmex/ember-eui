@@ -61,7 +61,7 @@
               </p>
             {{/if}}
             <div
-              {{use-mutation-observer
+              {{mutation-observer
                 onMutation=this.onMutation
                 observerOptions=(hash
                   attributes=true childList=true characterData=true subtree=true

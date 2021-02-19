@@ -486,7 +486,6 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
 
   get _arrowStyles(): string | undefined {
     let { arrowStyles } = this;
-    console.log(arrowStyles);
     return arrowStyles ? `top: ${arrowStyles?.top}px; left: ${arrowStyles?.left}px;` : undefined;
   }
   get _popoverStyles(): string {

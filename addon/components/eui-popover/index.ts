@@ -47,6 +47,7 @@ type PopoverArgs = {
    * Triggering element for which to align the popover to
    */
   button: Component;
+  buttonRef: (e: HTMLDivElement) => unknown;
   /**
    * Callback to handle hiding of the popover
    */
@@ -98,6 +99,8 @@ type PopoverArgs = {
    * Standard DOM `style` attribute. Passed to the EuiPanel
    */
   panelStyle?: HTMLStyleElement;
+  panelRef?: (e: HTMLElement | null) => unknown;
+  popoverRef?: (e: HTMLElement) => unknown;
   /**
    * When `true`, the popover's position is re-calculated when the user
    * scrolls, this supports having fixed-position popover anchors
@@ -509,12 +512,13 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
   @action
   registerButton(btn: HTMLElement) {
     this.button = btn;
+    this.args.buttonRef?.(btn);
   }
 
   @action
   registerPanel(panel: HTMLElement | null) {
     this.panel = panel;
-
+    this.args.panelRef?.(panel);
     if (panel == null) {
       // panel has unmounted, restore the state defaults
       this.popoverStyles = DEFAULT_POPOVER_STYLES;

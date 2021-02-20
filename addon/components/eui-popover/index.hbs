@@ -14,11 +14,12 @@
       class="{{if this.isOpening "euiPopover-isOpen"}} {{classes}}"
       ...attributes
       {{did-insert this.didInsertPopover}}
+      {{did-insert (optional @popoverRef)}}
       {{did-update this.didUpdateIsOpen @isOpen}}
       {{did-update this.didUpdateRepositionOnScroll @repositionOnScroll}}
     >
-      <div class="euiPopover__anchor {{@anchorClassName}}">
-        {{yield this.registerButton to="button"}}
+      <div class="euiPopover__anchor {{@anchorClassName}}" {{did-insert this.registerButton}}>
+        {{yield to="button"}}
       </div>
       {{#if (and (not this.suppressingPopover) (or this.isCurrentlyOpen this.isClosing))}}
         <EuiPortal @insert={{@insert}}>
@@ -86,8 +87,8 @@
       {{did-update this.didUpdateIsOpen @isOpen}}
       {{did-insert this.didInsertPopover}}
     >
-      <div class="euiPopover__anchor {{@anchorClassName}}">
-        {{yield this.registerButton to="button"}}
+      <div class="euiPopover__anchor {{@anchorClassName}}" {{did-insert this.registerButton}}>
+        {{yield to="button"}}
       </div>
     </div>
   {{/if}}

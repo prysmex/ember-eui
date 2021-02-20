@@ -17,12 +17,11 @@ Popover content even works on position: fixed; elements. Add the repositionOnScr
 			@repositionOnScroll={{true}}
 		style="position: fixed; bottom: 50px; right: 50px; z-index: 10;"
     >
-      <:button as |register|>
+      <:button>
         <EuiButton
 					@iconType="arrowDown"
 					@iconSide="right"
 					{{on "click" (set this.pop1 true)}}
-					{{did-insert register}}
 					@fill={{true}}>
 					Show fixed popover
 				</EuiButton>

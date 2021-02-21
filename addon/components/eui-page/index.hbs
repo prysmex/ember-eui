@@ -10,7 +10,11 @@
     ) as |styling|
   }}
     <div
-      class={{class-names styling.widthClassName "euiPage"}}
+      class={{class-names
+        styling.widthClassName
+        componentName="EuiPage"
+        paddingSize=(arg-or-default @paddingSize "m")
+      }}
       style={{if styling.widthStyle (inline-styles max-width=styling.widthStyle)}}
       ...attributes
     >

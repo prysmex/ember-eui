@@ -3,8 +3,6 @@ import { action } from '@ember/object';
 
 export default class EuiBottomBarComponent extends GlimmerComponent {
 
-  destinationElement = document.body;
-
   get affordForDisplacement() {
     return this.args.affordForDisplacement ?? true;
   }

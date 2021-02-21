@@ -1,0 +1,21 @@
+<div
+  class="euiRangeLevels
+    {{if @showTicks "euiRangeLevels--hasTicks"}}
+
+    {{if @compresses "euiRangeLevels--compressed"}}"
+  {{did-insert this.validateLevels}}
+  {{did-update this.validateLevels @levels}}
+  {{did-update this.validateLevels @min}}
+  {{did-update this.validateLevels @max}}
+>
+  {{#each @levels as |level|}}
+    <span
+      class="euiRangeLevel euiRangeLevel--{{level.color}}"
+      {{style
+        (inline-styles
+          componentName="EuiRangeLevels" componentArgs=(hash level=level max=@max min=@min)
+        )
+      }}
+    ></span>
+  {{/each}}
+</div>

@@ -8,12 +8,13 @@
         componentName="EuiBadge"
         color=(arg-or-default @color "default")
       }}
-      style={{inline-styles
-        componentName="EuiBadge"
-        componentArgs=(hash badgeColor=(arg-or-default @color "default"))
-      }}
       aria-label={{if @onClick @onClickAriaLabel}}
       ...attributes
+      {{style
+        (inline-styles
+          componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+        )
+      }}
       {{on "click" (optional @onClick)}}
     >
       <span class="euiBadge__content">
@@ -30,14 +31,15 @@
         componentName="EuiBadge"
         color=(arg-or-default @color "default")
       }}
-      style={{inline-styles
-        componentName="EuiBadge"
-        componentArgs=(hash badgeColor=(arg-or-default @color "default"))
-      }}
       target={{@target}}
       href={{@href}}
       aria-label={{if @onClick @onClickAriaLabel}}
       ...attributes
+      {{style
+        (inline-styles
+          componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+        )
+      }}
     >
       <span class="euiBadge__content">
         <span class="euiBadge__text">
@@ -54,11 +56,12 @@
       iconSide=(arg-or-default @iconSide "left")
       color=(arg-or-default @color "default")
     }}
-    style={{inline-styles
-      componentName="EuiBadge"
-      componentArgs=(hash badgeColor=(arg-or-default @color "default"))
-    }}
     ...attributes
+    {{style
+      (inline-styles
+        componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+      )
+    }}
   >
     <span class="euiBadge__content">
       {{#if hasBlock}}
@@ -104,11 +107,12 @@
       iconSide=(arg-or-default @iconSide "left")
       color=(arg-or-default @color "default")
     }}
-    style={{inline-styles
-      componentName="EuiBadge"
-      componentArgs=(hash badgeColor=(arg-or-default @color "default"))
-    }}
     ...attributes
+    {{style
+      (inline-styles
+        componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+      )
+    }}
   >
     <span class="euiBadge__content">
       <span class="euiBadge__text">

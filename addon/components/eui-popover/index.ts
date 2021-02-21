@@ -9,7 +9,7 @@ import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-
 import { tabbable } from 'tabbable';
 import { anchorPositionMapping, displayMapping } from 'ember-eui/utils/css-mappings/eui-popover';
 import { paddingSizeMapping } from 'ember-eui/utils/css-mappings/eui-panel';
-import { scheduleOnce } from '@ember/runloop';
+import { scheduleOnce, later, cancel } from '@ember/runloop';
 import { assert } from '@ember/debug';
 
 type PanelPaddingSize = keyof typeof paddingSizeMapping;
@@ -28,7 +28,7 @@ export type PopoverAnchorPosition =
   | 'rightUp'
   | 'rightDown';
 
-type PopoverArgs = {
+export type EuiPopoverArgs = {
   /**
    * Class name passed to the direct parent of the button
    */
@@ -211,7 +211,7 @@ type CssProps = {
   willChange?: string;
 };
 
-export default class EuiPopoverComponent extends Component<PopoverArgs> {
+export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   // Defaults
   @argOrDefault(false) isOpen!: boolean;
   @argOrDefault(false) ownFocus!: boolean;
@@ -233,14 +233,14 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
   @tracked isCurrentlyOpen: boolean | undefined;
   ///
 
-  private respositionTimeout: number | undefined;
-  private closingTransitionTimeout: number | undefined;
+  private respositionTimeout: any;
+  private closingTransitionTimeout: any;
   private closingTransitionAnimationFrame: number | undefined;
   private updateFocusAnimationFrame: number | undefined;
   @tracked button: HTMLElement | null = null;
   @tracked panel: HTMLElement | null = null;
 
-  constructor(owner: unknown, args: PopoverArgs) {
+  constructor(owner: unknown, args: EuiPopoverArgs) {
     super(owner, args);
     assert(`Must provide closePopover function`, this.args.closePopover);
     this.prevIsOpen = this.isOpen;
@@ -334,7 +334,7 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
 
   @action
   onOpenPopover() {
-    clearTimeout(this.closingTransitionTimeout);
+    cancel(this.closingTransitionTimeout);
     // We need to set this state a beat after the render takes place, so that the CSS
     // transition can take effect.
     this.closingTransitionAnimationFrame = window.requestAnimationFrame(() => {
@@ -359,13 +359,17 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
         { durationMatch: 0, delayMatch: 0 }
       );
 
-    this.respositionTimeout = window.setTimeout(() => {
-      this.isOpenStable = true;
-      scheduleOnce('afterRender', this, () => {
-        this.positionPopoverFixed();
-        this.updateFocus();
-      });
-    }, durationMatch + delayMatch);
+    this.respositionTimeout = later(
+      this,
+      () => {
+        this.isOpenStable = true;
+        scheduleOnce('afterRender', this, () => {
+          this.positionPopoverFixed();
+          this.updateFocus();
+        });
+      },
+      durationMatch + delayMatch
+    );
   }
 
   @action
@@ -408,9 +412,13 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
       // transition is complete.
       this.isClosing = true;
       this.isOpening = false;
-      this.closingTransitionTimeout = window.setTimeout(() => {
-        this.isClosing = false;
-      }, 250);
+      this.closingTransitionTimeout = later(
+        this,
+        () => {
+          this.isClosing = false;
+        },
+        250
+      );
     }
     this.prevIsOpen = this.args.isOpen;
   }
@@ -418,8 +426,8 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
   willDestroy() {
     super.willDestroy();
     window.removeEventListener('scroll', this.positionPopoverFixed);
-    clearTimeout(this.respositionTimeout);
-    clearTimeout(this.closingTransitionTimeout);
+    cancel(this.respositionTimeout);
+    cancel(this.closingTransitionTimeout);
     cancelAnimationFrame(this.closingTransitionAnimationFrame!);
     cancelAnimationFrame(this.updateFocusAnimationFrame!);
   }
@@ -491,12 +499,16 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
     let { arrowStyles } = this;
     return arrowStyles ? `top: ${arrowStyles?.top}px; left: ${arrowStyles?.left}px;` : undefined;
   }
-  get _popoverStyles(): string {
+  get _popoverStyles(): {} {
     let { panelStyle } = this.args;
     let { popoverStyles } = this;
-    return `${panelStyle ? panelStyle : ''} top: ${popoverStyles.top}px; left: ${
-      popoverStyles.left
-    }px; z-index: ${popoverStyles.zIndex}; will-change: transform, opacity;`;
+    return {
+      ...panelStyle,
+      top: `${popoverStyles.top}px`,
+      left: `${popoverStyles.left}px`,
+      zIndex: `${popoverStyles.zIndex}`,
+      willChange: 'transform, opacity',
+    };
   }
 
   @action
@@ -510,7 +522,7 @@ export default class EuiPopoverComponent extends Component<PopoverArgs> {
   }
 
   @action
-  registerButton(btn: HTMLElement) {
+  registerButton(btn: HTMLDivElement) {
     this.button = btn;
     this.args.buttonRef?.(btn);
   }

@@ -1,0 +1,27 @@
+<div
+  class="euiRangeTicks {{if @compressed "euiRangeTicks--compressed"}}"
+  style={{this.ticksStyle}}
+  ...attributes
+>
+  {{#each @tickSequence key="value" as |tickValue|}}
+    {{#let
+      (get-range-tick @ticksSequence tickValue @min @max this.percentageWidth) as |derivedState|
+    }}
+      <button
+        type="button"
+        class={{class-names
+          (if (eq @value tickValue) "euiRangeTick--selected")
+          (if derivedState.customTick "euiRangeTick--isCustom")
+          "euiRangeTick"
+        }}
+        value={{tickValue}}
+        disabled={{@disabled}}
+        style={{derivedState.style}}
+        tabindex="-1"
+        {{on "click" (optional @onChange)}}
+      >
+        {{derivedState.label}}
+      </button>
+    {{/let}}
+  {{/each}}
+</div>

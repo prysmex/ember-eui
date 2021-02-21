@@ -1,0 +1,17 @@
+<div
+  class="euiRangeHighlight
+    {{if @showTicks "euiRangeHighlight--hasTicks"}}
+
+    {{if @compressed "euiRangeHighlight--compressed"}}"
+  ...attributes
+>
+  <div
+    class="euiRangeHighlight__progress {{if @hasFocus "euiRangeHighlight__progress--hasFocus"}}"
+    {{style
+      (inline-styles
+        componentName="EuiRangeHighlight"
+        componentArgs=(hash lowerValue=@lowerValue min=@min max=@max upperValue=@upperValue)
+      )
+    }}
+  ></div>
+</div>

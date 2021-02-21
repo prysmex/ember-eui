@@ -1,0 +1,31 @@
+<EuiPopover
+  class="euiInputPopover {{if this.fullWidth "euiInputPopover--fullWidth"}}"
+  @ownFocus={{false}}
+  @buttonRef={{this.didInsertInput}}
+  @panelRef={{this.didInsertPanel}}
+  @anchorPosition={{this.anchorPosition}}
+  @panelPaddingSize={{this.panelPaddingSize}}
+  @attachToAnchor={{this.attachToAnchor}}
+  @display={{this.display}}
+  @closePopover={{@closePopover}}
+  @isOpen={{@isOpen}}
+  ...attributes
+>
+  <:button>
+    <div {{resize-observer onResize=this.onResize}}>
+      {{yield to="input"}}
+    </div>
+  </:button>
+  <:content>
+    <div
+      tabindex="-1"
+      {{on "keydown" this.onKeyDown}}
+      {{focus-trap
+        isActive=(not this.disableFocusTrap)
+        focusTrapOptions=(hash clickOutsideDeactivates=true returnFocusOnDeactivate=false)
+      }}
+    >
+      {{yield to="content"}}
+    </div>
+  </:content>
+</EuiPopover>

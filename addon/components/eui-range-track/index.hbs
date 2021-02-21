@@ -1,0 +1,33 @@
+<div
+  class="euiRangeTrack {{if @disabled "euiRangeTrack--disabled"}}"
+  style={{this.derivedState.styles}}
+  ...attributes
+  {{did-insert (fn this.validateValueIsInStep @max)}}
+  {{did-update (fn this.validateValueIsInStep @max) @max}}
+  {{did-update (fn this.validateValueIsInStep @max) @min}}
+  {{did-update (fn this.validateValueIsInStep @max) @step}}
+>
+  {{#if (gt @levels.length 0)}}
+    <EuiRangeLevels
+      @compressed={{@compressed}}
+      @levels={{@levels}}
+      @max={{@max}}
+      @min={{@min}}
+      @showTicks={{@showTicks}}
+    />
+  {{/if}}
+  {{#if this.derivedState.tickSequence}}
+    <EuiRangeTicks
+      @disabled={{@disabled}}
+      @compressed={{@compressed}}
+      @ticks={{@ticks}}
+      @tickSequence={{this.derivedState.tickSequence}}
+      @value={{@value}}
+      @min={{@min}}
+      @max={{@max}}
+      @interval={{or @tickInterval @step}}
+      @onChange={{@onChange}}
+    />
+  {{/if}}
+  {{yield}}
+</div>

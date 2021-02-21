@@ -2,6 +2,16 @@
 
 ### Master
 
+### 0.0.55
+
+🚀 Enhancements
+
+- `<EuiPage>` Support paddingSize prop
+
+🐛 Bug / Fixes
+
+- `<EuiBottomBar>` Use EuiPortal
+
 ### 0.0.54
 
 🐛 Bug / Fixes

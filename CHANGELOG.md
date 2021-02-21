@@ -14,9 +14,24 @@
 
 ### 0.0.54
 
+🚀 Enhancements
+
+Components
+
+- `<EuiPopover>`
+- `<EuiPopoverFooter>`
+- `<EuiPopoverTitle>`
+- `<Portal>`
+
+Modifiers
+
+- `{{outside-click-detector}}`
+- `{{mutation-observer}}`
+
 🐛 Bug / Fixes
 
 - `<EuiListGroupItem>` Fix DOM structure and styles
+- `{{screen-reader-only}}` bugfixes
 
 ### 0.0.53
 

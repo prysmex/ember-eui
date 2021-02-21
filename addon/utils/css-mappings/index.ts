@@ -42,6 +42,9 @@ import EuiTextArea from './eui-text-area';
 import EuiFilePicker from './eui-file-picker';
 import EuiBottomBar from './eui-bottom-bar';
 import EuiPage from './eui-page';
+import EuiPopover from './eui-popover';
+import EuiPopoverTitle from './eui-popover-title';
+import EuiPopoverFooter from './eui-popover-footer';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -88,6 +91,9 @@ const mapping: Mapping = {
   EuiFilePicker,
   EuiBottomBar,
   EuiPage,
+  EuiPopover,
+  EuiPopoverTitle,
+  EuiPopoverFooter,
 };
 
 export default mapping;

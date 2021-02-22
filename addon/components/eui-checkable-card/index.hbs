@@ -1,0 +1,44 @@
+{{#let (has-block "label") (arg-or-default @id (unique-id)) as |hasLabelBlock id|}}
+  <div
+    class="euiCheckableCard euiCheckableCard--shadow euiCheckableCard--borderRadiusMedium"
+    ...attributes
+  >
+    <div class="euiCheckableCard__row">
+      <div class="euiCheckableCard__control">
+        {{#if (eq @checkableType "checkbox")}}
+          <div class="euiCheckbox euiCheckbox--noLabel">
+            <EuiCheckbox
+              @id={{id}}
+              @checked={{@checked}}
+              disabled={{@disabled}}
+            />
+          </div>
+        {{else}}
+          <div class="euiRadio euiRadio--noLabel">
+            <EuiRadio
+              @id={{id}}
+              checked={{@checked}}
+              disabled={{@disabled}}
+            />
+          </div>
+        {{/if}}
+      </div>
+      <div class="euiFlexGroup euiFlexGroup--directionRow">
+        {{#if (has-block "icon")}}
+          <div class={{concat "euiFlexItem euiFlexItem--flexGrowZero " @iconClasses}}>
+            {{yield to="icon"}}
+          </div>
+        {{/if}}
+        <div class="euiFlexItem">
+          <label class="euiCheckableCard__label" for={{id}}>
+            {{#if hasLabelBlock}}
+              {{yield to="label"}}
+            {{else}}
+              {{@label}}
+            {{/if}}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/let}}

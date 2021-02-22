@@ -34,7 +34,7 @@
             aria-describedby={{if this.ownFocus descriptionId}}
             @hasShadow={{false}}
             @paddingSize={{this.panelPaddingSize}}
-            {{style this._popoverStyles}}
+            {{simple-style this._popoverStyles}}
             {{did-insert this.registerPanel}}
             {{outside-click-detector onOutsideClick=this.onClickOutside}}
             {{on-key "Escape" this.onEscapeKey}}
@@ -101,7 +101,7 @@
             aria-describedby={{if this.ownFocus descriptionId}}
             @hasShadow={{false}}
             @paddingSize={{this.panelPaddingSize}}
-            {{style this._popoverStyles}}
+            {{simple-style this._popoverStyles}}
             {{did-insert this.registerPanel}}
             {{outside-click-detector onOutsideClick=this.onClickOutside}}
             {{on-key "Escape" this.onEscapeKey}}

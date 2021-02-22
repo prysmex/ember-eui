@@ -10,7 +10,7 @@
       }}
       aria-label={{if @onClick @onClickAriaLabel}}
       ...attributes
-      {{style
+      {{simple-style
         (inline-styles
           componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
         )
@@ -35,7 +35,7 @@
       href={{@href}}
       aria-label={{if @onClick @onClickAriaLabel}}
       ...attributes
-      {{style
+      {{simple-style
         (inline-styles
           componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
         )
@@ -57,7 +57,7 @@
       color=(arg-or-default @color "default")
     }}
     ...attributes
-    {{style
+    {{simple-style
       (inline-styles
         componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
       )
@@ -108,7 +108,7 @@
       color=(arg-or-default @color "default")
     }}
     ...attributes
-    {{style
+    {{simple-style
       (inline-styles
         componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
       )

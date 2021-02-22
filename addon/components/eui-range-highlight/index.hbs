@@ -7,7 +7,7 @@
 >
   <div
     class="euiRangeHighlight__progress {{if @hasFocus "euiRangeHighlight__progress--hasFocus"}}"
-    {{style
+    {{simple-style
       (inline-styles
         componentName="EuiRangeHighlight"
         componentArgs=(hash lowerValue=@lowerValue min=@min max=@max upperValue=@upperValue)

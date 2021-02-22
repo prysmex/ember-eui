@@ -11,7 +11,7 @@
   {{#each @levels as |level|}}
     <span
       class="euiRangeLevel euiRangeLevel--{{level.color}}"
-      {{style
+      {{simple-style
         (inline-styles
           componentName="EuiRangeLevels" componentArgs=(hash level=level max=@max min=@min)
         )

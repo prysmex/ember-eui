@@ -6,6 +6,40 @@
 
 🚀 Enhancements
 
+Components
+
+- `<EuiRangeHighlight>`
+- `<EuiRangeInput>`
+- `<EuiRangeLabel>`
+- `<EuiRangeLevels>`
+- `<EuiRangeSlider>`
+- `<EuiRangeThumb>`
+- `<EuiRangeTicks>`
+- `<EuiRangeTooltip>`
+- `<EuiRangeTrack>`
+- `<EuiRangeWrapper>`
+- `<EuiRange>`
+- `<EuiDualRange>`
+
+Modifiers
+
+Convert all to Typescript.
+
+- `{{resize-observer}}`
+- `{{simple-style}}`
+- `{{on-event-simulate-event}}`
+
+Helpers
+
+- `{{cast-to}}`
+- `{{create-event}}`
+- `{{get-range-tick}}`
+
+New deps
+
+- `ember-style-modifier`
+- `lodash-es`
+
 - `<EuiPage>` Support paddingSize prop
 
 🐛 Bug / Fixes

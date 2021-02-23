@@ -2,6 +2,10 @@
 
 ### Master
 
+🐛 Bug / Fixes
+
+- Remove a few console logs
+
 ### 0.0.55
 
 🚀 Enhancements

@@ -1,8 +1,9 @@
 <div
-  class="euiRangeWrapper
-    {{if @fullWidth " euiRangeWrapper--fullWidth "}}
-
-    {{if @compressed " euiRangeWrapper--compressed "}}"
+  class={{class-names
+    "euiRangeWrapper"
+    (if @fullWidth "euiRangeWrapper--fullWidth")
+    (if @compressed "euiRangeWrapper--compressed")
+  }}
   ...attributes
 >
   {{yield}}

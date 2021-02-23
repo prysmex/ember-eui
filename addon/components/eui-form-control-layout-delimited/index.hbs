@@ -1,9 +1,9 @@
 {{#let
   (has-block "prepend")
   (has-block "append")
-  (has-block "delimiter") 
-	(arg-or-default @delimiter "→")
-	as |hasPrepend hasAppend hasDelimeterBlock delimiter|
+  (has-block "delimiter")
+  (arg-or-default @delimiter "→")
+  (arg-or-default @useGroup true) as |hasPrepend hasAppend hasDelimeterBlock delimiter useGroup|
 }}
   <EuiFormControlLayout
     class="euiFormControlLayoutDelimited"
@@ -13,8 +13,7 @@
     @isLoading={{@isLoading}}
     @compressed={{@compressed}}
     @readOnly={{@readOnly}}
-    @prepend={{hasPrepend}}
-    @append={{hasAppend}}
+    @useGroup={{and useGroup (or hasPrepend hasAppend)}}
   >
     <:prepend as |prependClasses|>
       {{yield prependClasses to="prepend"}}

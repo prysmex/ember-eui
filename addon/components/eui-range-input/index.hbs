@@ -1,0 +1,19 @@
+<EuiFieldNumber
+  class="euiRangeInput euiRangeInput--{{arg-or-default @side "max"}}"
+  name={{@name}}
+  min={{cast-to @min to="number"}}
+  max={{cast-to @max to="number"}}
+  @step={{@step}}
+  @value={{if (eq @value "") "" (cast-to @value to="number")}}
+  @disabled={{@disabled}}
+  @compressed={{@compressed}}
+  @fullWidth={{@fullWidth}}
+  @controlOnly={{@controlOnly}}
+  ...attributes
+  {{simple-style
+    (inline-styles
+      componentName="EuiRangeInput"
+      componentArgs=(hash autoSize=(arg-or-default @autoSize true) digitTolerance=@digitTolerance)
+    )
+  }}
+/>

@@ -15,8 +15,8 @@
     {{#if (eq tagName "div")}}
       <div
         class={{class-names styling.widthClassName "euiPageBody"}}
-        style={{if styling.widthStyle (inline-styles max-width=styling.widthStyle)}}
         ...attributes
+        {{style (if styling.widthStyle (inline-styles max-width=styling.widthStyle))}}
       >
         {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))}}
       </div>

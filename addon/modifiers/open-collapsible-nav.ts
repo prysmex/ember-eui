@@ -1,7 +1,6 @@
 import { modifier } from 'ember-modifier';
 
-export default modifier(function openCollapsibleNav(_, [navIsDocked]) {
-
+export default modifier(function openCollapsibleNav(_, [navIsDocked]: [boolean]) {
   if (navIsDocked) {
     document.body.classList.add('euiBody--collapsibleNavIsDocked');
   }
@@ -13,5 +12,4 @@ export default modifier(function openCollapsibleNav(_, [navIsDocked]) {
     }
     document.body.classList.remove('euiBody--collapsibleNavIsOpen');
   };
-
 });

@@ -6,11 +6,13 @@
     componentName="EuiListGroup"
     gutterSize=(arg-or-default @gutterSize "s")
   }}
-  style={{if
-    (and @maxWidth (not-eq @maxWidth true))
-    (inline-styles componentName="EuiListGroup" componentArgs=(hash maxWidth=@maxWidth))
-  }}
   ...attributes
+  {{style
+    (if
+      (and @maxWidth (not-eq @maxWidth true))
+      (inline-styles componentName="EuiListGroup" componentArgs=(hash maxWidth=@maxWidth))
+    )
+  }}
 >
   {{yield}}
 </ul>

@@ -1,11 +1,13 @@
 <div
   class={{class-names "euiModal" (if (eq @maxWidth true) "euiModal--maxWidth-default")}}
-  style={{if
-    (and @maxWidth (not-eq @maxWidth true))
-    (inline-styles componentName="EuiModal" componentArgs=(hash maxWidth=@maxWidth))
-  }}
   tabindex="0"
   ...attributes
+  {{style
+    (if
+      (and @maxWidth (not-eq @maxWidth true))
+      (inline-styles componentName="EuiModal" componentArgs=(hash maxWidth=@maxWidth))
+    )
+  }}
   {{focus-trap
     isActive=(arg-or-default @isFocusTrapActive true)
     shouldSelfFocus=(arg-or-default @shouldSelfFocus true)

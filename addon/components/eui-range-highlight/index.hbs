@@ -1,8 +1,9 @@
 <div
-  class="euiRangeHighlight
-    {{if @showTicks "euiRangeHighlight--hasTicks"}}
-
-    {{if @compressed "euiRangeHighlight--compressed"}}"
+  class={{class-names
+    "euiRangeHighlight"
+    (if @showTicks "euiRangeHighlight--hasTicks")
+    (if @compressed "euiRangeHighlight--compressed")
+  }}
   ...attributes
 >
   <div

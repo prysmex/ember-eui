@@ -1,3 +1,4 @@
+{{! template-lint-disable }}
 <button
   type="button"
   class={{class-names "euiRangeThumb" (if @showTicks "euiRangeThumb--hasTicks")}}
@@ -17,3 +18,4 @@
     tabindex={{if @disabled -1 (if @tabIndex 0)}}
   ></div>
 </button>
+{{! template-lint-enable }}

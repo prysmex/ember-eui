@@ -116,7 +116,6 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
 
   @action
   onInputFocus(e: Event) {
-    console.log('received focus');
     if (this.args.onFocus) {
       this.args.onFocus(e);
     }

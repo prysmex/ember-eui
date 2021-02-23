@@ -53,7 +53,6 @@ export default class EuiTextFieldDemo1 extends Component {
   @tracked value = ['', ''];
   @action
   onChange(values) {
-    console.log(values);
     this.value = values;
   }
 }

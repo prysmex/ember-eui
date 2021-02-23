@@ -46,7 +46,7 @@ type ImageArgs = {
   allowFullScreen?: boolean;
 };
 
-export default class EmberEuiImage extends GlimmerComponent<ImageArgs> {
+export default class EuiImage extends GlimmerComponent<ImageArgs> {
   @tracked isFullscreen = false;
   @argOrDefault('original') size!: ImageArgs['size'];
 

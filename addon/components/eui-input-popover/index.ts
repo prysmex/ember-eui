@@ -14,7 +14,7 @@ export interface EuiInputPopoverArgs extends Omit<EuiPopoverArgs, 'button' | 'bu
   onPanelResize?: (width?: number) => void;
 }
 
-export default class EuiPopoverComponent extends Component<EuiInputPopoverArgs> {
+export default class EuiInputPopoverComponent extends Component<EuiInputPopoverArgs> {
   // Defaults
   @argOrDefault('downLeft') anchorPosition!: string;
   @argOrDefault(true) attachToAnchor!: boolean;

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { htmlSafe } from '@ember/template';
 
 export interface EuiRangeTick {
   value: number;
@@ -25,6 +26,8 @@ export default class EuiRangeTicksComponent extends Component<EuiRangeTicksArgs>
 
   get ticksStyle() {
     const { ticks } = this.args;
-    return !!ticks ? undefined : `margin: 0 ${this.percentageWidth / -2}%; left: 0; right: 0;`;
+    return !!ticks
+      ? undefined
+      : htmlSafe(`margin: 0 ${this.percentageWidth / -2}%; left: 0; right: 0;`);
   }
 }

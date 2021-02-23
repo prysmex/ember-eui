@@ -19,7 +19,7 @@
   <:content>
     <div
       tabindex="-1"
-      {{on "keydown" this.onKeyDown}}
+      {{on-key "_all" this.onKeyDown}}
       {{focus-trap
         isActive=(not this.disableFocusTrap)
         focusTrapOptions=(hash clickOutsideDeactivates=true returnFocusOnDeactivate=false)

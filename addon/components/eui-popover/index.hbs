@@ -80,7 +80,7 @@
       class={{classes}}
       ...attributes
       tabindex="-1"
-      {{on "keydown" this.onKeyDown}}
+      {{on-key "_all" this.onKeyDown}}
       {{did-insert this.didInsertPopover}}
       {{did-update this.didUpdateIsOpen @isOpen}}
       {{did-update this.didUpdateRepositionOnScroll @repositionOnScroll}}

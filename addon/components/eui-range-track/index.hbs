@@ -1,6 +1,6 @@
 <div
   class="euiRangeTrack {{if @disabled "euiRangeTrack--disabled"}}"
-  style={{this.derivedState.styles}}
+  style={{if this.derivedState.styles this.derivedState.styles}}
   ...attributes
   {{did-insert (fn this.validateValueIsInStep @max)}}
   {{did-update (fn this.validateValueIsInStep @max) @max}}

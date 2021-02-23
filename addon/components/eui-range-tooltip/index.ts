@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-
+import { htmlSafe } from '@ember/template';
 export interface EuiRangeTick {
   value: number;
   label: Component;
@@ -42,7 +42,7 @@ export default class EuiRangeToolipComponent extends Component<EuiRangeTooltopAr
 
     return {
       side: valuePositionSide,
-      style: valuePositionStyleStr,
+      style: htmlSafe(valuePositionStyleStr),
     };
   }
 }

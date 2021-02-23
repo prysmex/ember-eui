@@ -23,6 +23,7 @@ export function getRangeTick([ticks, tickValue, min, max, percentageWidth]: [
   } else {
     tickStyle = `width: ${tickStyle} ${percentageWidth}%`;
   }
+
   return {
     style: tickStyle,
     customTick,

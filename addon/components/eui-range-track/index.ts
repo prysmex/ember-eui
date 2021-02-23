@@ -4,6 +4,7 @@ import { assert } from '@ember/debug';
 import { isEvenlyDivisibleBy } from 'ember-eui/utils/number';
 import { range } from 'lodash-es';
 import { action } from '@ember/object';
+import { htmlSafe } from '@ember/template';
 
 export { LEVEL_COLORS };
 
@@ -118,7 +119,7 @@ export default class EuiRangeToolipComponent extends Component<EuiRangeTrackArgs
 
     return {
       tickSequence,
-      styles,
+      styles: htmlSafe(styles as any),
     };
   }
 }

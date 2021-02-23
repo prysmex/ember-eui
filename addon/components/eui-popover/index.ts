@@ -11,6 +11,7 @@ import { anchorPositionMapping, displayMapping } from 'ember-eui/utils/css-mappi
 import { paddingSizeMapping } from 'ember-eui/utils/css-mappings/eui-panel';
 import { scheduleOnce, later, cancel } from '@ember/runloop';
 import { assert } from '@ember/debug';
+import { htmlSafe } from '@ember/template';
 
 type PanelPaddingSize = keyof typeof paddingSizeMapping;
 
@@ -495,9 +496,11 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
     this.openPosition = foundPosition;
   }
 
-  get _arrowStyles(): string | undefined {
+  get _arrowStyles(): ReturnType<typeof htmlSafe> | undefined {
     let { arrowStyles } = this;
-    return arrowStyles ? `top: ${arrowStyles?.top}px; left: ${arrowStyles?.left}px;` : undefined;
+    return arrowStyles
+      ? htmlSafe(`top: ${arrowStyles?.top}px; left: ${arrowStyles?.left}px;`)
+      : undefined;
   }
   get _popoverStyles(): {} {
     let { panelStyle } = this.args;

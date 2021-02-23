@@ -1,8 +1,9 @@
 <div
-  class="euiRangeLevels
-    {{if @showTicks "euiRangeLevels--hasTicks"}}
-
-    {{if @compresses "euiRangeLevels--compressed"}}"
+  class={{class-names
+    "euiRangeLevels"
+    (if @showTicks "euiRangeLevels--hasTicks")
+    (if @compresses "euiRangeLevels--compressed")
+  }}
   {{did-insert this.validateLevels}}
   {{did-update this.validateLevels @levels}}
   {{did-update this.validateLevels @min}}

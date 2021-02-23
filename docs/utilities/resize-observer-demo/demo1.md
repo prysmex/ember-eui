@@ -3,13 +3,12 @@
 ```hbs template
 <div>
   <EuiText>
-		<p>
-    EuiResizeObserver is a wrapper around the Resizer Observer API which allows watching for changes to the content rectangle of DOM elements. Unlike EuiMutationObserver, EuiResizeObserver does not take parameters, but it does fire a more efficient and informative callback when resize events occur.
-		</p>
-		<p>
-
-		Due to limited browser support (currently not in Safari and IE11), will fallback to using the MutationObserver API with a default set of parameters that approximate the results of EuiMutationObserver.
-		</p>
+    <p>
+      EuiResizeObserver is a wrapper around the Resizer Observer API which allows watching for changes to the content rectangle of DOM elements. Unlike EuiMutationObserver, EuiResizeObserver does not take parameters, but it does fire a more efficient and informative callback when resize events occur.
+    </p>
+    <p>
+      Due to limited browser support (currently not in Safari and IE11), will fallback to using the MutationObserver API with a default set of parameters that approximate the results of EuiMutationObserver.
+    </p>
   </EuiText>
   <EuiSpacer />
   <div>
@@ -45,7 +44,7 @@
     <EuiButton {{on "click" this.increaseItemsWidth}}>
       increaseWidth
     </EuiButton>
-		<EuiButton {{on "click" this.addItem}}>
+    <EuiButton {{on "click" this.addItem}}>
       add item
     </EuiButton>
     <EuiTitle>

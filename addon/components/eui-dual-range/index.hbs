@@ -13,9 +13,10 @@
         @fullWidth={{this.fullWidth}}
         @compressed={{this.compressed}}
         @readOnly={{@readOnly}}
+        @useGroup={{or (has-block "prepend") (has-block "append")}}
       >
-        <:prepend>
-          {{yield to="prepend"}}
+        <:prepend as |prependClasses|>
+          {{yield prependClasses to="prepend"}}
         </:prepend>
         <:startControl as |classes|>
           <EuiRangeInput
@@ -72,8 +73,8 @@
             {{on "input" this.handleUpperInputChange}}
           />
         </:endControl>
-        <:append>
-          {{yield to="append"}}
+        <:append as |appendClasses|>
+          {{yield appendClasses to="append"}}
         </:append>
       </EuiFormControlLayoutDelimited>
     </:input>

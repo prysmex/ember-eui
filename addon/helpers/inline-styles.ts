@@ -8,11 +8,10 @@ interface InlineStylesParams {
   [property: string]: unknown;
 }
 interface FinalProperties {
-  [name: string]: unknown;
+  [name: string]: string | undefined;
 }
 
 export function inlineStyles(_: unknown, params: InlineStylesParams) {
-  let styles: string[] = [];
   const { componentName, componentArgs = {}, ...properties } = params;
   let componentStyles = {};
 
@@ -31,17 +30,14 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
   };
 
   for (let property in finalProperties) {
-    let style;
     if (property === 'background-image' && finalProperties[property] !== 'none') {
-      style = `${property}` + `: url(${finalProperties[property]})`;
+      finalProperties[property] = `url(${finalProperties[property]})`;
     } else {
-      style = `${property}` + `: ${finalProperties[property]}`;
+      finalProperties[property] = `${finalProperties[property]}`;
     }
-
-    styles.push(style);
   }
 
-  return styles.join('; ');
+  return finalProperties;
 }
 
 export default helper(inlineStyles);

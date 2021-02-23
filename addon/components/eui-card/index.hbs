@@ -21,12 +21,10 @@
       color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
     }}
     ...attributes
-    {{simulate-event
+    {{on-event-simulate-event
       "click"
-      handler="click"
-      targetElement=(or
-        (if titleId (concat "#" titleId)) (if selectableId (concat "#" selectableId))
-      )
+      target=(or (if titleId (concat "#" titleId)) (if selectableId (concat "#" selectableId)))
+      event=(create-event (hash eventType="Event" trigger="click"))
     }}
   >
     {{#if (or @image @icon)}}

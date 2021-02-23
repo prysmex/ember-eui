@@ -18,6 +18,8 @@
         id={{@id}}
         class={{classes}}
         value={{@value}}
+        min={{@min}}
+        max={{@max}}
         type="number"
         ...attributes
         {{validatable-control @isInvalid}}
@@ -39,6 +41,7 @@
           <input
             id={{inputId}}
             class={{classes}}
+            value={{@value}}
             type="number"
             ...attributes
             {{validatable-control @isInvalid}}

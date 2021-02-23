@@ -14,17 +14,17 @@
       class="{{if this.isOpening "euiPopover-isOpen"}} {{classes}}"
       ...attributes
       {{did-insert this.didInsertPopover}}
+      {{did-insert (optional @popoverRef)}}
       {{did-update this.didUpdateIsOpen @isOpen}}
       {{did-update this.didUpdateRepositionOnScroll @repositionOnScroll}}
     >
-      <div class="euiPopover__anchor {{@anchorClassName}}">
-        {{yield this.registerButton to="button"}}
+      <div class="euiPopover__anchor {{@anchorClassName}}" {{did-insert this.registerButton}}>
+        {{yield to="button"}}
       </div>
       {{#if (and (not this.suppressingPopover) (or this.isCurrentlyOpen this.isClosing))}}
         <EuiPortal @insert={{@insert}}>
           <EuiPanel
             class={{panelClasses}}
-            style={{this._popoverStyles}}
             tabindex={{if this.ownFocus "0"}}
             aria-live={{if this.ownFocus "off" "assertive"}}
             role="dialog"
@@ -34,6 +34,7 @@
             aria-describedby={{if this.ownFocus descriptionId}}
             @hasShadow={{false}}
             @paddingSize={{this.panelPaddingSize}}
+            {{simple-style this._popoverStyles}}
             {{did-insert this.registerPanel}}
             {{outside-click-detector onOutsideClick=this.onClickOutside}}
             {{on-key "Escape" this.onEscapeKey}}
@@ -42,7 +43,7 @@
               focusTrapOptions=(hash
                 shouldSelfFocus=true
                 returnFocusOnDeactivate=this.isOpenStable
-                initialFocus=this.panel
+                initialFocus=(or @initialFocus this.panel)
                 onDeactivate=(optional @onTrapDeactivation)
                 preventScroll=true
                 clickOutsideDeactivates=true
@@ -78,17 +79,57 @@
     <div
       class={{classes}}
       ...attributes
-      tabindex="0"
-      {{on "keydown" this.onKeyDown}}
-      {{outside-click-detector onOutsideClick=this.closePopover}}
-      {{did-update this.openPopover @isOpen}}
-      {{did-update this.didUpdateRepositionOnScroll @repositionOnScroll}}
-      {{did-update this.didUpdateIsOpen @isOpen}}
+      tabindex="-1"
+      {{on-key "_all" this.onKeyDown}}
       {{did-insert this.didInsertPopover}}
+      {{did-update this.didUpdateIsOpen @isOpen}}
+      {{did-update this.didUpdateRepositionOnScroll @repositionOnScroll}}
     >
-      <div class="euiPopover__anchor {{@anchorClassName}}">
-        {{yield this.registerButton to="button"}}
+      <div class="euiPopover__anchor {{@anchorClassName}}" {{did-insert this.registerButton}}>
+        {{yield to="button"}}
       </div>
+      {{#if (and (not this.suppressingPopover) (or this.isOpen this.isClosing))}}
+        <EuiPortal @insert={{@insert}}>
+          <EuiPanel
+            class={{panelClasses}}
+            tabindex={{if this.ownFocus "0"}}
+            aria-live={{if this.ownFocus "off" "assertive"}}
+            role="dialog"
+            aria-label={{@ariaLabel}}
+            aria-labelledby={{@ariaLabelledBy}}
+            aria-modal="true"
+            aria-describedby={{if this.ownFocus descriptionId}}
+            @hasShadow={{false}}
+            @paddingSize={{this.panelPaddingSize}}
+            {{simple-style this._popoverStyles}}
+            {{did-insert this.registerPanel}}
+            {{outside-click-detector onOutsideClick=this.onClickOutside}}
+            {{on-key "Escape" this.onEscapeKey}}
+          >
+            <div
+              class="euiPopover__panelArrow euiPopover__panelArrow--{{this.arrowPosition}}"
+              style={{this._arrowStyles}}
+            >
+              {{yield to="arrowChildren"}}
+            </div>
+            {{#if this.ownFocus}}
+              <p id={{descriptionId}} {{screen-reader-only}}>
+                "You are in a dialog. To close this dialog, hit escape."
+              </p>
+            {{/if}}
+            <div
+              {{mutation-observer
+                onMutation=this.onMutation
+                observerOptions=(hash
+                  attributes=true childList=true characterData=true subtree=true
+                )
+              }}
+            >
+              {{yield to="content"}}
+            </div>
+          </EuiPanel>
+        </EuiPortal>
+      {{/if}}
     </div>
   {{/if}}
 {{/let}}

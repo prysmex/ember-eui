@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.0.57
+
+🐛 Bug / Fixes
+
+- Move `ember-style-modifier` to deps
+
 ### 0.0.56
 
 🚀 Enhancements

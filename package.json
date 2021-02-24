@@ -1,6 +1,6 @@
 {
   "name": "ember-eui",
-  "version": "0.0.56",
+  "version": "0.0.57",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon",
@@ -67,6 +67,7 @@
     "ember-keyboard": "^6.0.2",
     "ember-modifier": "^2.1.1",
     "ember-named-blocks-polyfill": "^0.2.3",
+    "ember-style-modifier": "^0.6.0",
     "ember-svg-jar": "github:betocantu93/ember-svg-jar#ember-eui-hbs",
     "ember-truth-helpers": "^2.1.0",
     "lodash-es": "^4.17.21",
@@ -117,7 +118,6 @@
     "ember-source": "~3.20.2",
     "ember-source-channel-url": "^2.0.1",
     "ember-string-helpers": "^1.0.2",
-    "ember-style-modifier": "^0.6.0",
     "ember-template-lint": "^2.9.1",
     "ember-try": "^1.4.0",
     "eslint": "^7.5.0",

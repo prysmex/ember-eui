@@ -1,6 +1,7 @@
 {{#if @ownFocus}}
   <EuiOverlayMask @onClick={{@onClose}} @headerZindexLocation="below" />
 {{/if}}
+{{set-body-class "euiBody--hasFlyout"}}
 <div
   role="dialog"
   class={{class-names
@@ -13,7 +14,6 @@
   {{style
     (if (not (or (eq @maxWidth false) (eq @maxWidth true))) (inline-styles max-width=@maxWidth))
   }}
-  {{open-flyout}}
   {{focus-trap
     isActive=(arg-or-default @isFocusTrapActive true)
     shouldSelfFocus=(arg-or-default @shouldSelfFocus true)

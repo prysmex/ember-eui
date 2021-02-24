@@ -88,7 +88,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   popover: null | HTMLElement = null;
 
   @argOrDefault('top') position!: ToolTipPositions;
-  @argOrDefault('regular') delay!: ToolTipPositions;
+  @argOrDefault('regular') delay!: ToolTipDelay;
 
   //STATE
   @tracked visible: boolean = false;

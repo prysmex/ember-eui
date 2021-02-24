@@ -1,7 +1,6 @@
 {{#let
   (if (or @href @onClick) (unique-id))
-  (if @selectable (unique-id))
-  (optional @onClick) as |titleId selectableId onClick|
+  (if @selectable (unique-id)) as |titleId selectableId|
 }}
   <div
     class={{class-names
@@ -12,7 +11,7 @@
       (if hasBlock "euiCard--hasChildren")
       (if @icon "euiCard--hasIcon")
       (if @betaBadgeLabel "euiCard--hasBetaBadge")
-      (if (or onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
+      (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
       (if @selectable "euiCard--isSelectable")
       (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
       componentName="EuiCard"
@@ -55,13 +54,13 @@
           >
             {{@title}}
           </a>
-        {{else if (or @isDisabled onClick)}}
+        {{else if (or @isDisabled @onClick)}}
           <button
             type="button"
             class="euiCard__titleButton"
             disabled={{@isDisabled}}
             id={{titleId}}
-            {{on "click" onClick}}
+            {{on "click" (optional @onClick)}}
           >
             {{@title}}
           </button>

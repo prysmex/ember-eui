@@ -64,16 +64,51 @@ order: 1
   <EuiFieldText placeholder="Hover over me" aria-label="ToolTip appears on hover" />
 </EuiToolTip>
 <EuiSpacer />
-<EuiToolTip @position="top">
-  <:anchor>
-    <EuiButton>
-      Hover me
-    </EuiButton>
-  </:anchor>
+
+<EuiText>
+  If you want to attach and control the ToolTip to something programatically you can optionally pass an attachTo string or element
+  and use the content named block, also you can pass isShown as true to show the tooltip without user interaction
+</EuiText>
+
+<EuiSpacer @size="xl"/>
+
+<EuiButton @color="danger" id="attachTo1" {{on "mouseenter" this.updateAttachTo}}>
+  You can hover me, attach to 1
+</EuiButton>
+<EuiButton @color="primary" id="attachTo2" {{on "mouseenter" this.updateAttachTo}}>
+  You can hover me, attach to 2
+</EuiButton>
+<EuiButton @color="warning" id="attachTo3" {{on "mouseenter" this.updateAttachTo}}>
+  You can hover me, attach to 3
+</EuiButton>
+
+<EuiSpacer @size="xl"/>
+<EuiButton {{on "click" (set this.isShown (not this.isShown))}}>
+  {{if this.isShown "isShown true" "isShown false"}}
+</EuiButton>
+<EuiToolTip @position="top" @attachTo={{this.attachTo}} @isShown={{this.isShown}}>
   <:content>
     <p>
       Works on any kind of element — buttons, inputs, you name it!
     </p>
   </:content>
 </EuiToolTip>
+```
+
+```javascript component
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+
+export default class ToolTipDemo1 extends Component {
+  @tracked attachTo = '#attachTo1';
+  @tracked isShown = false;
+
+  @action
+  updateAttachTo(ele) {
+    if (ele.target !== this.attachTo) {
+      this.attachTo = ele.target;
+    }
+  }
+}
 ```

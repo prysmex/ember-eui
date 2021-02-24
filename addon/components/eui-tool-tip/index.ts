@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
 import { uniqueId } from 'ember-eui/helpers/unique-id';
-import { tracked } from '@glimmer/tracking';
+import { tracked, cached } from '@glimmer/tracking';
 import { findPopoverPosition } from 'ember-eui/utils/popover';
 import { keys } from 'ember-eui/utils/keys';
 import { later, cancel, scheduleOnce } from '@ember/runloop';
@@ -76,6 +76,10 @@ type EuiTooltipArgs = {
    */
   position: ToolTipPositions;
 
+  attachTo: undefined | HTMLElement | string | null;
+
+  isShown: boolean | undefined;
+
   /**
    * If supplied, called when mouse movement causes the tool tip to be
    * hidden.
@@ -96,8 +100,47 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   @tracked toolTipStyles: ToolTipStyles = DEFAULT_TOOLTIP_STYLES;
   @tracked arrowStyles: undefined | { left: string; top: string };
   @tracked id: string = this.args.id || uniqueId();
+  @tracked _attachTo: undefined | HTMLElement | string | null = null;
 
   private timeoutId?: ReturnType<typeof later>;
+
+  @action
+  updateAttachTo() {
+    if (!this.args.attachTo && this._attachTo) {
+      this.removeAttachToHandlers();
+      this._attachTo = null;
+      return;
+    }
+
+    if (this.args.attachTo && this.args.attachTo !== this._attachTo) {
+      this.removeAttachToHandlers();
+      this._attachTo = this.args.attachTo;
+      this.setupAttachToHandlers();
+    }
+  }
+
+  @action
+  setupAttachToHandlers() {
+    if (this.attachTo) {
+      this.attachTo?.addEventListener('mousemove', this.showToolTip);
+      this.attachTo?.addEventListener('keyup', this.onKeyUp);
+      this.attachTo?.addEventListener('focusin', this.showToolTip);
+      this.attachTo?.addEventListener('mouseout', this.onMouseOut);
+      this.attachTo?.addEventListener('focusout', this.hideToolTip);
+      this.positionToolTip();
+    }
+  }
+
+  @action
+  removeAttachToHandlers() {
+    if (this.attachTo) {
+      this.attachTo?.removeEventListener('mousemove', this.showToolTip);
+      this.attachTo?.removeEventListener('keyup', this.onKeyUp);
+      this.attachTo?.removeEventListener('focusin', this.showToolTip);
+      this.attachTo?.removeEventListener('mouseout', this.onMouseOut);
+      this.attachTo?.removeEventListener('focusout', this.hideToolTip);
+    }
+  }
 
   @action
   clearAnimationTimeout() {
@@ -117,6 +160,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   willDestroy() {
     super.willDestroy();
     this.clearAnimationTimeout();
+    this.removeAttachToHandlers();
     window.removeEventListener('mousemove', this.hasFocusMouseMoveListener);
   }
 
@@ -125,7 +169,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     // when the tooltip is visible, this checks if the anchor is still part of document
     // this fixes when the react root is removed from the dom without unmounting
     // https://github.com/elastic/eui/issues/1105
-    if (document.body.contains(this.anchor) === false) {
+    if (document.body.contains(this._anchor) === false) {
       // the anchor is no longer part of `document`
       this.hideToolTip();
     } else {
@@ -157,7 +201,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
 
   @action
   showToolTip() {
-    if (!this.timeoutId) {
+    if (!this.timeoutId && !this.visible) {
       this.timeoutId = later(
         this,
         () => {
@@ -170,15 +214,28 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     }
   }
 
+  @cached
+  get attachTo() {
+    if (typeof this._attachTo === 'string') {
+      return document.querySelector(this._attachTo);
+    } else {
+      return this._attachTo;
+    }
+  }
+
+  get _anchor() {
+    return this.attachTo || this.anchor;
+  }
+
   @action
   positionToolTip() {
     const requestedPosition = this.position;
 
-    if (!this.anchor || !this.popover) {
+    if (!this._anchor || !this.popover) {
       return;
     }
     const { position, left, top, arrow } = findPopoverPosition({
-      anchor: this.anchor,
+      anchor: this._anchor as HTMLElement,
       popover: this.popover,
       position: requestedPosition,
       offset: 16, // offset popover 16px from the anchor
@@ -210,6 +267,9 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
 
   @action
   hideToolTip() {
+    if (this.args.isShown === true) {
+      return;
+    }
     this.clearAnimationTimeout();
     scheduleOnce('afterRender', this, () => {
       if (!this.isDestroying || !this.isDestroyed) {
@@ -236,8 +296,8 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     // Prevent mousing over children from hiding the tooltip by testing for whether the mouse has
     // left the anchor for a non-child.
     if (
-      this.anchor === event.relatedTarget ||
-      (this.anchor != null && !this.anchor.contains(event.relatedTarget as Node))
+      this._anchor === event.relatedTarget ||
+      (this._anchor != null && !this._anchor.contains(event.relatedTarget as Node))
     ) {
       this.hideToolTip();
     }

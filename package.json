@@ -57,6 +57,7 @@
     "broccoli-merge-trees": "^4.2.0",
     "chroma-js": "^2.1.0",
     "ember-auto-import": "^1.6.0",
+    "ember-cached-decorator-polyfill": "^0.1.1",
     "ember-cli-babel": "^7.13.0",
     "ember-cli-htmlbars": "^5.3.1",
     "ember-cli-resolve-asset": "^0.3.0",

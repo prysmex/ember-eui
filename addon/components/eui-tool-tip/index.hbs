@@ -3,26 +3,37 @@
   (has-block "title")
   (has-block "anchor") as |hasContentBlock hasTitleBlock hasAnchorBlock|
 }}
-  <span
-    role="tooltip"
-    class={{class-names
-      "euiToolTipAnchor"
-      (if (eq @display "block") "euiToolTipAnchor--displayBlock")
-      @anchorClassName
-    }}
-    {{did-insert this.didInsertAnchor}}
-    {{on "mouseover" this.showToolTip}}
-    {{on "keyup" this.onKeyUp}}
-    {{on "focusin" this.showToolTip}}
-    {{on "mouseout" this.hideToolTip}}
-    {{on "focusout" this.hideToolTip}}
-  >
-    {{#if hasAnchorBlock}}
-      {{yield this.id to="anchor"}}
-    {{else}}
-      {{yield this.id}}
-    {{/if}}
-  </span>
+  {{#if @attachTo}}
+    <span
+      {{did-insert this.updateAttachTo}}
+      {{did-update this.updateAttachTo @attachTo}}
+      {{did-update (if (eq @isShown true) this.showToolTip this.hideToolTip) @isShown}}
+      {{did-insert (if (eq @isShown true) this.showToolTip this.hideToolTip)}}
+    ></span>
+  {{else}}
+    <span
+      role="tooltip"
+      class={{class-names
+        "euiToolTipAnchor"
+        (if (eq @display "block") "euiToolTipAnchor--displayBlock")
+        @anchorClassName
+      }}
+      {{did-insert this.didInsertAnchor}}
+      {{on "mouseover" this.showToolTip}}
+      {{on "keyup" this.onKeyUp}}
+      {{on "focusin" this.showToolTip}}
+      {{on "focusout" this.hideToolTip}}
+      {{on "mouseout" this.onMouseOut}}
+      {{did-update (if (eq @isShown true) this.showToolTip this.hideToolTip) @isShown}}
+      {{did-insert (if (eq @isShown true) this.showToolTip this.hideToolTip)}}
+    >
+      {{#if hasAnchorBlock}}
+        {{yield this.id to="anchor"}}
+      {{else}}
+        {{yield this.id}}
+      {{/if}}
+    </span>
+  {{/if}}
   {{#if (and this.visible (or @title @content hasContentBlock hasTitleBlock))}}
     <EuiPortal>
       <EuiToolTipPopover

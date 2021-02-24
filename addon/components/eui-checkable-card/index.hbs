@@ -1,6 +1,12 @@
 {{#let (has-block "label") (arg-or-default @id (unique-id)) as |hasLabelBlock id|}}
   <div
-    class="euiCheckableCard euiCheckableCard--shadow euiCheckableCard--borderRadiusMedium"
+    class={{class-names
+      "euiCheckableCard"
+      "euiCheckableCard--shadow"
+      "euiCheckableCard--borderRadiusMedium"
+      (if @checked "euiCheckableCard-isChecked")
+      (if @disabled "euiCheckableCard-isDisabled")
+    }}
     ...attributes
   >
     <div class="euiCheckableCard__row">
@@ -30,7 +36,10 @@
           </div>
         {{/if}}
         <div class="euiFlexItem">
-          <label class="euiCheckableCard__label" for={{id}}>
+          <label class={{class-names
+            "euiCheckableCard__label"
+            (if @disabled "euiCheckableCard__label-isDisabled")
+            }} for={{id}}>
             {{#if hasLabelBlock}}
               {{yield to="label"}}
             {{else}}

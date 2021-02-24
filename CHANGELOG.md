@@ -6,6 +6,20 @@
 
 - Remove a few console logs
 
+### 0.0.56
+
+🚀 Enhancements
+
+Components
+
+- `<EuiToolTip>`
+- `<EuiToolTipPopover>`
+- `<EuiIconTip>`
+
+Dependencies
+
+- - `ember-set-body-class`
+
 ### 0.0.55
 
 🚀 Enhancements

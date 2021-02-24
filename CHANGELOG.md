@@ -19,6 +19,8 @@ Dependencies
 🐛 Bug / Fixes
 
 - Remove a few console logs
+- Rename a few classes
+- Use ts for every component
 
 ### 0.0.55
 

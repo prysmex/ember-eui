@@ -48,6 +48,7 @@ import EuiPopoverFooter from './eui-popover-footer';
 import EuiRangeHighlight from './eui-range-highlight';
 import EuiRangeInput from './eui-range-input';
 import EuiRangeLevels from './eui-range-levels';
+import EuiToolTip from './eui-tool-tip';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -100,6 +101,7 @@ const mapping: Mapping = {
   EuiRangeHighlight,
   EuiRangeInput,
   EuiRangeLevels,
+  EuiToolTip,
 };
 
 export default mapping;

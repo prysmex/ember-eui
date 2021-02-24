@@ -13,11 +13,10 @@ order: 2
       @anchorPosition="downLeft"
       @closePopover={{set this.pop1 false}}
     >
-      <:button as |register|>
+      <:button>
         <EuiButton
           @iconType="arrowDown"
           @iconSide="right"
-          {{did-insert register}}
           {{on "click" (set this.pop1 true)}}
         >
           downLeft
@@ -45,11 +44,10 @@ order: 2
       @anchorPosition="downLeft"
       @closePopover={{set this.pop2 false}}
     >
-      <:button as |register|>
+      <:button>
         <EuiButton
           @iconType="arrowDown"
           @iconSide="right"
-          {{did-insert register}}
           {{on "click" (set this.pop2 true)}}
         >
           downLeft
@@ -79,11 +77,10 @@ order: 2
       @anchorPosition="downLeft"
       @closePopover={{set this.pod3 false}}
     >
-      <:button as |register|>
+      <:button>
         <EuiButton
           @iconType="arrowDown"
           @iconSide="right"
-          {{did-insert register}}
           {{on "click" (set this.pod3 true)}}
         >
           downLeft

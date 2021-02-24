@@ -14,11 +14,10 @@ order: 1
         @anchorPosition="downLeft"
         @closePopover={{set this.pop1 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop1 true)}}
           >
             downLeft
@@ -36,11 +35,10 @@ order: 1
         @anchorPosition="downCenter"
         @closePopover={{set this.pop2 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop2 true)}}
           >
             downCenter
@@ -58,11 +56,10 @@ order: 1
         @anchorPosition="downRight"
         @closePopover={{set this.pop3 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop3 true)}}
           >
             downRight
@@ -83,11 +80,10 @@ order: 1
         @anchorPosition="upLeft"
         @closePopover={{set this.pop4 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop4 true)}}
           >
             upLeft
@@ -105,11 +101,10 @@ order: 1
         @anchorPosition="upCenter"
         @closePopover={{set this.pop5 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop5 true)}}
           >
             upCenter
@@ -127,11 +122,10 @@ order: 1
         @anchorPosition="upRight"
         @closePopover={{set this.pop6 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop6 true)}}
           >
             upRight
@@ -152,11 +146,10 @@ order: 1
         @anchorPosition="leftUp"
         @closePopover={{set this.pop7 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop7 true)}}
           >
             leftUp
@@ -180,11 +173,10 @@ order: 1
         @anchorPosition="leftCenter"
         @closePopover={{set this.pop8 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop8 true)}}
           >
             leftCenter
@@ -202,11 +194,10 @@ order: 1
         @anchorPosition="leftDown"
         @closePopover={{set this.pop9 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop9 true)}}
           >
             leftDown
@@ -233,11 +224,10 @@ order: 1
         @anchorPosition="rightUp"
         @closePopover={{set this.pop10 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop10 true)}}
           >
             rightUp
@@ -261,11 +251,10 @@ order: 1
         @anchorPosition="rightCenter"
         @closePopover={{set this.pop11 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop11 true)}}
           >
             rightCenter
@@ -283,11 +272,10 @@ order: 1
         @anchorPosition="rightDown"
         @closePopover={{set this.pop12 false}}
       >
-        <:button as |register|>
+        <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{did-insert register}}
             {{on "click" (set this.pop12 true)}}
           >
             rightDown

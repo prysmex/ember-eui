@@ -15,8 +15,8 @@
         componentName="EuiPage"
         paddingSize=(arg-or-default @paddingSize "m")
       }}
-      style={{if styling.widthStyle (inline-styles max-width=styling.widthStyle)}}
       ...attributes
+      {{style (if styling.widthStyle (inline-styles max-width=styling.widthStyle))}}
     >
       {{yield (hash Sidebar=(component "eui-page-sidebar") Body=(component "eui-page-body"))}}
     </div>

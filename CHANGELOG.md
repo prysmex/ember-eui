@@ -2,10 +2,6 @@
 
 ### Master
 
-🐛 Bug / Fixes
-
-- Remove a few console logs
-
 ### 0.0.56
 
 🚀 Enhancements
@@ -19,6 +15,10 @@ Components
 Dependencies
 
 - - `ember-set-body-class`
+
+🐛 Bug / Fixes
+
+- Remove a few console logs
 
 ### 0.0.55
 

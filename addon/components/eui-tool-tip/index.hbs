@@ -1,0 +1,59 @@
+{{#let
+  (has-block "content")
+  (has-block "title")
+  (has-block "anchor") as |hasContentBlock hasTitleBlock hasAnchorBlock|
+}}
+  <span
+    role="tooltip"
+    class={{class-names
+      "euiToolTipAnchor"
+      (if (eq @display "block") "euiToolTipAnchor--displayBlock")
+      @anchorClassName
+    }}
+    {{did-insert this.didInsertAnchor}}
+    {{on "mouseover" this.showToolTip}}
+    {{on "keyup" this.onKeyUp}}
+    {{on "focusin" this.showToolTip}}
+    {{on "mouseout" this.hideToolTip}}
+    {{on "focusout" this.hideToolTip}}
+  >
+    {{#if hasAnchorBlock}}
+      {{yield this.id to="anchor"}}
+    {{else}}
+      {{yield this.id}}
+    {{/if}}
+  </span>
+  {{#if (and this.visible (or @title @content hasContentBlock hasTitleBlock))}}
+    <EuiPortal>
+      <EuiToolTipPopover
+        class={{class-names "euiToolTip" componentName="EuiToolTip" position=this.calculatedPosition
+        }}
+        @positionToolTip={{this.positionToolTip}}
+        @popoverRef={{this.setPopoverRef}}
+        @id={{this.id}}
+        @hasTitle={{and (arg-or-default @hasTitle true) (or hasTitleBlock @title)}}
+        role="tooltip"
+        ...attributes
+        {{style this.toolTipStyles}}
+      >
+        <:title>
+          {{#if hasTitleBlock}}
+            {{yield to="title"}}
+          {{else}}
+            {{@title}}
+          {{/if}}
+        </:title>
+        <:content>
+          <div class="euiToolTip__arrow" {{style this.arrowStyles}}></div>
+          <div {{resize-observer onResize=this.positionToolTip}}>
+            {{#if hasContentBlock}}
+              {{yield to="content"}}
+            {{else}}
+              {{@content}}
+            {{/if}}
+          </div>
+        </:content>
+      </EuiToolTipPopover>
+    </EuiPortal>
+  {{/if}}
+{{/let}}

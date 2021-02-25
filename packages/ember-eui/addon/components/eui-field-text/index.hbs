@@ -8,7 +8,7 @@
       (if @icon "euiFieldText--withIcon")
       (if @fullWidth "euiFieldText--fullWidth")
       (if @compressed "euiFieldText--compressed")
-      (if (or hasPrepend hasAppend) "euiFieldText--inGroup")
+      (if (and (arg-or-default @useGroup true) (or hasPrepend hasAppend)) "euiFieldText--inGroup")
       (if @isLoading "euiFieldText--isLoading")
       "euiFieldText"
     ) as |classes|

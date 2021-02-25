@@ -15,13 +15,21 @@
           <:body>
             {{#each errors as |error|}}
               <li class="euiForm__error">
-                {{error}}
+                {{#if (has-block "error")}}
+                  {{yield error to="error"}}
+                {{else}}
+                  {{error}}
+                {{/if}}
               </li>
             {{/each}}
           </:body>
         </EuiCallOut>
       {{/if}}
-      {{yield}}
+      {{#if (has-block "content")}}
+        {{yield to="content"}}
+      {{else}}
+        {{yield}}
+      {{/if}}
     </form>
   {{else}}
     <div class="euiForm" ...attributes>
@@ -36,13 +44,21 @@
           <:body>
             {{#each errors as |error|}}
               <li class="euiForm__error">
-                {{error}}
+                {{#if (has-block "error")}}
+                  {{yield error to="error"}}
+                {{else}}
+                  {{error}}
+                {{/if}}
               </li>
             {{/each}}
           </:body>
         </EuiCallOut>
       {{/if}}
-      {{yield}}
+      {{#if (has-block "content")}}
+        {{yield to="content"}}
+      {{else}}
+        {{yield}}
+      {{/if}}
     </div>
   {{/if}}
 {{/let}}

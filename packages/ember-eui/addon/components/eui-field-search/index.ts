@@ -1,9 +1,9 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
-import { keys } from 'ember-eui/utils/keys';
-import { Browser } from 'ember-eui/utils/browser';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
+import { keys } from '../../utils/keys';
+import { Browser } from '../../utils/browser';
 
 let isSearchSupported: boolean = false;
 

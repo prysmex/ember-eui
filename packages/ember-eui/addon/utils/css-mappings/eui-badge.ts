@@ -1,5 +1,5 @@
 import { euiPaletteColorBlindBehindText } from '../../utils/color';
-import { keysOf } from 'ember-eui/components/common';
+import { keysOf } from '../../components/common';
 import { isColorDark } from '../../helpers/is-color-dark';
 import { hexToRgb } from '../../helpers/hex-to-rgb';
 

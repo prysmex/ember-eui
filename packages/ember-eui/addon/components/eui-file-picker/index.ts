@@ -1,8 +1,8 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
-import { displayMapping } from 'ember-eui/utils/css-mappings/eui-file-picker';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
+import { displayMapping } from '../../utils/css-mappings/eui-file-picker';
 
 export type EuiFilePickerDisplay = keyof typeof displayMapping;
 

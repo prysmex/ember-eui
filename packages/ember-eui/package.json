@@ -1,7 +1,7 @@
 {
   "name": "ember-eui",
   "version": "0.0.57",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
     "elastic",
@@ -59,9 +59,9 @@
     "ember-auto-import": "^1.6.0",
     "ember-cached-decorator-polyfill": "^0.1.1",
     "ember-cli-babel": "^7.13.0",
-    "ember-cli-htmlbars": "^5.3.1",
+    "ember-cli-htmlbars": "^5.3.2",
     "ember-cli-resolve-asset": "^0.3.0",
-    "ember-cli-typescript": "^4.0.0",
+    "ember-cli-typescript": "^4.1.0",
     "ember-element-helper": "^0.3.1",
     "ember-focus-trap": "^0.4.0",
     "ember-in-element-polyfill": "^1.0.0",

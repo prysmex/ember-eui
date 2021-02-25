@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { EuiRangeLevel, LEVEL_COLORS } from '../eui-range-levels';
 import { assert } from '@ember/debug';
-import { isEvenlyDivisibleBy } from 'ember-eui/utils/number';
+import { isEvenlyDivisibleBy } from '../../utils/number';
 import { range } from 'lodash-es';
 import { action } from '@ember/object';
 import { htmlSafe } from '@ember/template';

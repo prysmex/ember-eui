@@ -13,7 +13,7 @@ module.exports = function (defaults) {
           {
             module: require('postcss-import'),
             options: {
-              path: ['node_modules'],
+              path: [path.join(__dirname, '../../node_modules')]
             },
           },
           require('tailwindcss')(
@@ -58,7 +58,7 @@ module.exports = function (defaults) {
       hbs: {
         stripPath: false,
       },
-      sourceDirs: ['public/assets', 'node_modules/@elastic/eui/lib/components/icon'],
+      sourceDirs: ['public/assets', '../../node_modules/@elastic/eui/lib/components/icon'],
     },
   });
 

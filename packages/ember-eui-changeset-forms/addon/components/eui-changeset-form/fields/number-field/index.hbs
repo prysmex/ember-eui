@@ -1,0 +1,18 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    @label={{@label}}
+    @helpText={{@helpText}}
+    @id={{theId}}
+    @error={{this.errors}}
+		@isInvalid={{this.errors.length}}
+		@fullWidth={{@fullWidth}}
+  >
+    <EuiFieldNumber
+      @value={{this.value}}
+      @id={{theId}}
+			@fullWidth={{@fullWidth}}
+      {{on "blur" this.validate}}
+      {{on "input" this.handleInput}}
+    />
+  </EuiFormRow>
+{{/let}}

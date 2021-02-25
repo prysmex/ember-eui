@@ -1,8 +1,8 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { cascadingMenuKeys } from 'ember-eui/utils/accesibility';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
+import { cascadingMenuKeys } from '../../utils/accesibility';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { tabbable } from 'tabbable';
 import { EuiPopoverArgs } from '../eui-popover';
 

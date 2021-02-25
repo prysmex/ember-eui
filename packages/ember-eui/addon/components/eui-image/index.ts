@@ -2,8 +2,8 @@ import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { htmlSafe } from '@ember/string';
 import { action } from '@ember/object';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
-import { sizeMapping } from 'ember-eui/utils/css-mappings/eui-image';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
+import { sizeMapping } from '../../utils/css-mappings/eui-image';
 
 type EuiImageSize = keyof typeof sizeMapping;
 

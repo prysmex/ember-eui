@@ -1,8 +1,8 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { uniqueId } from 'ember-eui/helpers/unique-id';
-import { isWithinRange } from 'ember-eui/utils/number';
+import { uniqueId } from '../../helpers/unique-id';
+import { isWithinRange } from '../../utils/number';
 
 import { EuiRangeInputArgs } from '../eui-range-input/types';
 import { EuiRangeSliderArgs } from '../eui-range-slider/types';
@@ -10,9 +10,9 @@ import { EuiFormControlLayoutArgs } from '../eui-form-control-layout/types';
 import { EuiRangeArgs } from '../eui-range';
 import { EuiRangeLevel } from '../eui-range-levels';
 import { EuiRangeTick } from '../eui-range-ticks';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { later } from '@ember/runloop';
-import { keys } from 'ember-eui/utils/keys';
+import { keys } from '../../utils/keys';
 type ValueMember = number | string;
 
 export interface EuiDualRangeArgs

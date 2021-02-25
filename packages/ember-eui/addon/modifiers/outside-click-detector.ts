@@ -1,5 +1,5 @@
 import Modifier from 'ember-modifier';
-import { uniqueId } from 'ember-eui/helpers/unique-id';
+import { uniqueId } from '../helpers/unique-id';
 import { action } from '@ember/object';
 
 interface OutsideClickDetectorModifierArgs {

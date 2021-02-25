@@ -1,13 +1,13 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { uniqueId } from 'ember-eui/helpers/unique-id';
-import { isWithinRange } from 'ember-eui/utils/number';
+import { uniqueId } from '../../helpers/unique-id';
+import { isWithinRange } from '../../utils/number';
 import { CommonArgs } from '../common';
 import { EuiRangeInputArgs } from '../eui-range-input/types';
 import { EuiRangeLevel } from '../eui-range-levels';
 import { EuiRangeTick } from '../eui-range-ticks';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { later } from '@ember/runloop';
 export interface EuiRangeArgs
   extends CommonArgs,

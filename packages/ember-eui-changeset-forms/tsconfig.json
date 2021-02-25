@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "dummy/tests/*": ["tests/*"],
+      "@glimmer/tracking": [
+        "../../node_modules/ember-cached-decorator-polyfill",
+        "../../node_modules/@glimmer/tracking/dist/types"
+      ],
+      "dummy/*": ["tests/dummy/app/*", "app/*"],
+      "ember-eui-forms": ["addon"],
+      "ember-eui-forms/*": ["addon/*"],
+      "ember-eui-forms/test-support": ["addon-test-support"],
+      "ember-eui-forms/test-support/*": ["addon-test-support/*"],
+      "*": ["types/*"]
+    }
+  },
+  "include": [
+    "app/**/*",
+    "addon/**/*",
+    "tests/**/*",
+    "types/**/*",
+    "test-support/**/*",
+    "addon-test-support/**/*"
+  ]
+}

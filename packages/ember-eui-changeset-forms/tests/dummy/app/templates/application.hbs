@@ -1,0 +1,46 @@
+<EuiPanel @paddingSize="l" style="max-width: 800px; margin-top: 50px; margin:auto;">
+  
+  
+  <EuiChangesetForm
+    @fullWidth={{true}}
+    @changeset={{changeset (hash hola="hello") this.validate
+    }} as |Form changeset|
+  >
+    <Form.TextField
+      @fieldName="hola"
+      @label="Here's a label"
+      @helpText="Some hint"
+    >
+      <:prepend>
+        <EuiFormLabel>
+          Hello
+        </EuiFormLabel>
+      </:prepend>
+    </Form.TextField>
+    <EuiButton @type="submit" @isDisabled={{changeset.isInvalid}}>
+      Submit form
+    </EuiButton>
+  </EuiChangesetForm>
+
+
+
+
+  <EuiSpacer @size="xl" />
+  <EuiChangesetForm
+    @changeset={{changeset this.model this.Validations}} as |Form changeset|
+  >
+    <Form.TextField @fieldName="firstName" @label="First Name" />
+    <Form.TextField @fieldName="lastName" @label="Last Name" />
+    <Form.NumberField @fieldName="age" @label="Age" />
+    <Form.TextField @fieldName="email" @label="Email" />
+    <Form.TextField @fieldName="password" @label="Password" />
+    <Form.TextField
+      @fieldName="passwordConfirmation"
+      @label="Password Confirmation"
+    />
+    <EuiButton @type="submit" @isDisabled={{changeset.isInvalid}}>
+      Submit form
+    </EuiButton>
+    {{log this.model}}
+  </EuiChangesetForm>
+</EuiPanel>

@@ -1,10 +1,10 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
-import { uniqueId } from 'ember-eui/helpers/unique-id';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
+import { uniqueId } from '../../helpers/unique-id';
 import { tracked, cached } from '@glimmer/tracking';
-import { findPopoverPosition } from 'ember-eui/utils/popover';
-import { keys } from 'ember-eui/utils/keys';
+import { findPopoverPosition } from '../../utils/popover';
+import { keys } from '../../utils/keys';
 import { later, cancel, scheduleOnce } from '@ember/runloop';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';

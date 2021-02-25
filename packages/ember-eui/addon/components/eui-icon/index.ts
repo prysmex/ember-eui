@@ -1,12 +1,12 @@
 import Component from '@glimmer/component';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { keysOf, CommonArgs } from '../common';
 import {
   sizeToClassNameMap,
   colorToClassMap,
   typeToPathMap,
-} from 'ember-eui/utils/css-mappings/eui-icon';
-import { uniqueId } from 'ember-eui/helpers/unique-id';
+} from '../../utils/css-mappings/eui-icon';
+import { uniqueId } from '../../helpers/unique-id';
 import { htmlSafe } from '@ember/template';
 import { getOwner } from '@ember/application';
 

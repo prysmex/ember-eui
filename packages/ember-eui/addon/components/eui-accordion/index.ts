@@ -1,9 +1,9 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { uniqueId } from 'ember-eui/helpers/unique-id';
-import { argOrDefaultDecorator as argOrDefault } from 'ember-eui/helpers/arg-or-default';
-import { paddingMapping } from 'ember-eui/utils/css-mappings/eui-accordion';
+import { uniqueId } from '../../helpers/unique-id';
+import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
+import { paddingMapping } from '../../utils/css-mappings/eui-accordion';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 

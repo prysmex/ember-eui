@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { uniqueId } from 'ember-eui/helpers/unique-id';
+import { uniqueId } from '../../helpers/unique-id';
 import { keysOf } from '../common';
 
 interface InsertPositionsMap {

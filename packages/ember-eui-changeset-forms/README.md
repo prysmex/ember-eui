@@ -1,8 +1,9 @@
 ember-eui-forms
 ==============================================================================
 
-[Short description of the addon.]
+`ember-changeset` integration with `<EuiForm />` fields
 
+This package depends on `ember-eui`, so follow up the installation instructions over there.
 
 Compatibility
 ------------------------------------------------------------------------------

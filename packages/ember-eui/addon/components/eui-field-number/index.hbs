@@ -8,7 +8,7 @@
       (if @icon "euiFieldNumber--withIcon")
       (if @fullWidth "euiFieldNumber--fullWidth")
       (if @compressed "euiFieldNumber--compressed")
-      (if (or hasPrepend hasAppend) "euiFieldNumber--inGroup")
+      (if (and (arg-or-default @useGroup true) (or hasPrepend hasAppend)) "euiFieldNumber--inGroup")
       (if @isLoading "euiFieldNumber--isLoading")
       "euiFieldNumber"
     ) as |classes|
@@ -23,6 +23,7 @@
         type="number"
         ...attributes
         {{validatable-control @isInvalid}}
+        {{did-insert (optional @inputRef)}}
       />
     {{else}}
       <EuiFormControlLayout

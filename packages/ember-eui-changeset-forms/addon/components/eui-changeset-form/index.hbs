@@ -1,15 +1,8 @@
 <EuiForm
   @tagName="form"
-  @isInvalid={{@changeset.errors.length}}
-  @error={{@changeset.errors}}
   {{did-insert this.didInsertForm}}
   {{on "submit" this.onSubmit}}
 >
-  <:error as |error|>
-    {{#each error.validation as |validation|}}
-      {{validation}}
-    {{/each}}
-  </:error>
   <:content>
     <EuiChangesetForm::Context
       @changeset={{@changeset}}

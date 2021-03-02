@@ -1328,7 +1328,7 @@
     "@handlebars/parser" "^1.1.0"
     simple-html-tokenizer "^0.5.10"
 
-"@glimmer/tracking@^1.0.0", "@glimmer/tracking@^1.0.1":
+"@glimmer/tracking@^1.0.0", "@glimmer/tracking@^1.0.1", "@glimmer/tracking@^1.0.2":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@glimmer/tracking/-/tracking-1.0.3.tgz#8b9b42aff6c206edeaaea178a95acc1eff62e61e"
   integrity sha512-21WR13vPdzt1IQ6JmPPAu4szjV9yKdmLHV3nD0MLDj6/EoYv1c2PqpFBBlp++6xW8OnyDa++cQ8OFoQDP+MRpA==
@@ -7578,6 +7578,17 @@ ember-composable-helpers@^4.4.1:
     broccoli-funnel "2.0.1"
     ember-cli-babel "^7.11.1"
     resolve "^1.10.0"
+
+ember-concurrency@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/ember-concurrency/-/ember-concurrency-2.0.2.tgz#0fdadb6afae417908970c04492f98f8f2e9d06ec"
+  integrity sha512-dIlSg1NFZpNFJf7gEW0etrzfeivnBZKnjx6cSgbP1QUsaYgECoKXmNnuPK9YPZofqAnRZdCawQv4yMmW5zUNiw==
+  dependencies:
+    "@glimmer/tracking" "^1.0.2"
+    ember-cli-babel "^7.22.1"
+    ember-cli-htmlbars "^5.3.1"
+    ember-compatibility-helpers "^1.2.0"
+    ember-destroyable-polyfill "^2.0.2"
 
 ember-destroyable-polyfill@^2.0.2:
   version "2.0.3"

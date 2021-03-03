@@ -1,0 +1,54 @@
+{{#let (arg-or-default @id (unique-id)) as |id|}}
+  <div
+    class={{class-names
+      "euiCheckableCard"
+      "euiCheckableCard--shadow"
+      "euiCheckableCard--borderRadiusMedium"
+      (if @checked "euiCheckableCard-isChecked")
+      (if @disabled "euiCheckableCard-isDisabled")
+    }}
+  >
+    <div class="euiCheckableCard__row">
+      <div class="euiCheckableCard__control">
+        {{#if (eq @checkableType "checkbox")}}
+          <EuiCheckbox
+            @id={{id}}
+            @checked={{@checked}}
+            disabled={{@disabled}}
+            ...attributes
+          />
+        {{else}}
+          <EuiRadio
+            @id={{id}}
+            @checked={{@checked}}
+            disabled={{@disabled}}
+            ...attributes
+          />
+        {{/if}}
+      </div>
+      <label 
+        class={{class-names
+          "euiCheckableCard__label"
+          (if @disabled "euiCheckableCard__label-isDisabled")
+        }} 
+        htmlFor={{id}}
+        aria-describedby={{if (has-block "content") (concat id "-details")}}
+      >
+        {{#if (has-block "label")}}
+          {{yield to="label"}}
+        {{else}}
+          {{@label}}
+        {{/if}}
+      </label>
+    </div>
+    {{#if (has-block "content")}}
+      <div class="euiCheckableCard__row">
+        {{!-- Empty div for left side background color only --}}
+        <div class="euiCheckableCard__control" />
+        <div id={{concat id "-details"}} class="euiCheckableCard__children">
+          {{yield to="content"}}
+        </div>
+      </div>
+    {{/if}}
+  </div>
+{{/let}}

@@ -33,7 +33,8 @@
     "ember-cli-htmlbars": "^5.2.0",
     "ember-cli-typescript": "^4.1.0",
     "ember-named-blocks-polyfill": "^0.2.3",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#ember-eui-hbs"
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#ember-eui-hbs",
+    "ember-composable-helpers": "^4.4.1"
   },
   "devDependencies": {
     "@ember/optional-features": "^1.3.0",

@@ -1,4 +1,4 @@
-{{#let (has-block "label") (arg-or-default @id (unique-id)) as |hasLabelBlock id|}}
+{{#let (arg-or-default @id (unique-id)) as |id|}}
   <div
     class={{class-names
       "euiCheckableCard"
@@ -7,47 +7,48 @@
       (if @checked "euiCheckableCard-isChecked")
       (if @disabled "euiCheckableCard-isDisabled")
     }}
-    ...attributes
   >
     <div class="euiCheckableCard__row">
       <div class="euiCheckableCard__control">
         {{#if (eq @checkableType "checkbox")}}
-          <div class="euiCheckbox euiCheckbox--noLabel">
-            <EuiCheckbox
-              @id={{id}}
-              @checked={{@checked}}
-              disabled={{@disabled}}
-            />
-          </div>
+          <EuiCheckbox
+            @id={{id}}
+            @checked={{@checked}}
+            disabled={{@disabled}}
+            ...attributes
+          />
         {{else}}
-          <div class="euiRadio euiRadio--noLabel">
-            <EuiRadio
-              @id={{id}}
-              checked={{@checked}}
-              disabled={{@disabled}}
-            />
-          </div>
+          <EuiRadio
+            @id={{id}}
+            @checked={{@checked}}
+            disabled={{@disabled}}
+            ...attributes
+          />
         {{/if}}
       </div>
-      <div class="euiFlexGroup euiFlexGroup--directionRow">
-        {{#if (has-block "icon")}}
-          <div class={{concat "euiFlexItem euiFlexItem--flexGrowZero " @iconClasses}}>
-            {{yield to="icon"}}
-          </div>
+      <label 
+        class={{class-names
+          "euiCheckableCard__label"
+          (if @disabled "euiCheckableCard__label-isDisabled")
+        }} 
+        htmlFor={{id}}
+        aria-describedby={{if (has-block "content") (concat id "-details")}}
+      >
+        {{#if (has-block "label")}}
+          {{yield to="label"}}
+        {{else}}
+          {{@label}}
         {{/if}}
-        <div class="euiFlexItem">
-          <label class={{class-names
-            "euiCheckableCard__label"
-            (if @disabled "euiCheckableCard__label-isDisabled")
-            }} for={{id}}>
-            {{#if hasLabelBlock}}
-              {{yield to="label"}}
-            {{else}}
-              {{@label}}
-            {{/if}}
-          </label>
+      </label>
+    </div>
+    {{#if (has-block "content")}}
+      <div class="euiCheckableCard__row">
+        {{!-- Empty div for left side background color only --}}
+        <div class="euiCheckableCard__control" />
+        <div id={{concat id "-details"}} class="euiCheckableCard__children">
+          {{yield to="content"}}
         </div>
       </div>
-    </div>
+    {{/if}}
   </div>
 {{/let}}

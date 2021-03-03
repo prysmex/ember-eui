@@ -1,1 +1,0 @@
-# Checkable Card

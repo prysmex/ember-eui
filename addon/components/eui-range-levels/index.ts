@@ -20,7 +20,7 @@ export type EuiRangeLevelsArgs = {
   compressed?: boolean;
 };
 
-export default class EuiRangeTicksComponent extends Component<EuiRangeLevelsArgs> {
+export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsArgs> {
   @action
   validateLevels() {
     let { min, max } = this.args;

@@ -17,7 +17,7 @@ type SwitchArgs = {
   type?: 'submit' | 'reset' | 'button';
 };
 
-export default class EuiAccordionAccordionComponent extends Component<SwitchArgs> {
+export default class EuiSwitch extends Component<SwitchArgs> {
   @action
   onClick(e: { target: HTMLInputElement }) {
     if (this.args.disabled) {

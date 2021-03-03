@@ -1,0 +1,13 @@
+<div
+  class="euiToolTipPopover"
+  ...attributes
+  {{did-insert this.setPopoverRef}}
+  {{will-destroy (fn this.setPopoverRef null)}}
+>
+  {{#if @hasTitle}}
+    <div class="euiToolTip__title">
+      {{yield to="title"}}
+    </div>
+  {{/if}}
+  {{yield to="content"}}
+</div>

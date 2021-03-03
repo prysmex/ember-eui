@@ -19,7 +19,7 @@ order: 2
   </:title>
   <:body>
     <p>
-      Two-value input[type=range] elements are not part of the HTML5 specification. Because of this support gap, EuiDualRange cannot expose a native value property for native form to consumption. The React onChange prop is the recommended method for retrieving the upper and lower values.
+      Two-value input[type=range] elements are not part of the HTML5 specification. Because of this support gap, EuiDualRange cannot expose a native value property for native form to consumption.
     </p>
     <p>
       EuiDualRange does use native inputs to help validate step values and range limits. These may be used as form values when showInput is in use. The alternative is to store values in input[type=hidden].
@@ -53,7 +53,6 @@ export default class EuiTextFieldDemo1 extends Component {
   @tracked value = ['', ''];
   @action
   onChange(values) {
-    console.log(values);
     this.value = values;
   }
 }

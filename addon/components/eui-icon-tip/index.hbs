@@ -1,0 +1,37 @@
+{{#let (has-block "content") (has-block "title") as |hasContentBlock hasTitleBlock|}}
+  <EuiToolTip
+    @position={{arg-or-default @position "top"}}
+    @delay={{arg-or-default @delay "regular"}}
+    @hasTitle={{if (or hasTitleBlock @title) true false}}
+    @anchorClassName={{@anchorClassName}}
+    @onMouseOut={{@onMouseOut}}
+    @display={{@display}}
+    ...attributes
+  >
+    <:anchor>
+      <EuiIcon
+        tabindex="0"
+        class={{@iconProps.className}}
+        @type={{arg-or-default @type "questionInCircle"}}
+        @color={{@color}}
+        @size={{@size}}
+        ...attributes
+        aria-label={{arg-or-default @ariaLabel "Info"}}
+      />
+    </:anchor>
+    <:title>
+      {{#if hasTitleBlock}}
+        {{yield to="title"}}
+      {{else}}
+        {{@title}}
+      {{/if}}
+    </:title>
+    <:content>
+      {{#if hasContentBlock}}
+        {{yield to="content"}}
+      {{else}}
+        {{@content}}
+      {{/if}}
+    </:content>
+  </EuiToolTip>
+{{/let}}

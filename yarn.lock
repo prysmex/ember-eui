@@ -5711,6 +5711,24 @@ ember-auto-import@^1.5.3, ember-auto-import@^1.6.0:
     walk-sync "^0.3.3"
     webpack "^4.43.0"
 
+ember-cache-primitive-polyfill@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/ember-cache-primitive-polyfill/-/ember-cache-primitive-polyfill-1.0.1.tgz#a27075443bd87e5af286c1cd8a7df24e3b9f6715"
+  integrity sha512-hSPcvIKarA8wad2/b6jDd/eU+OtKmi6uP+iYQbzi5TQpjsqV6b4QdRqrLk7ClSRRKBAtdTuutx+m+X+WlEd2lw==
+  dependencies:
+    ember-cli-babel "^7.22.1"
+    ember-cli-version-checker "^5.1.1"
+    ember-compatibility-helpers "^1.2.1"
+    silent-error "^1.1.1"
+
+ember-cached-decorator-polyfill@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/ember-cached-decorator-polyfill/-/ember-cached-decorator-polyfill-0.1.1.tgz#988c06808666cbffd621e9c6baa51b7c599c6a05"
+  integrity sha512-mMdzPQuR4D6hNXkdVFfIWTQbBERNFpm5G36sC4DzogQYDcFKQf5QXLVCmK+3KsEKjJOwPeXmClMQTNUfgtb5Ig==
+  dependencies:
+    ember-cache-primitive-polyfill "^1.0.1"
+    ember-cli-babel "^7.21.0"
+
 ember-cli-babel-plugin-helpers@^1.0.0, ember-cli-babel-plugin-helpers@^1.1.0, ember-cli-babel-plugin-helpers@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ember-cli-babel-plugin-helpers/-/ember-cli-babel-plugin-helpers-1.1.1.tgz#5016b80cdef37036c4282eef2d863e1d73576879"
@@ -6402,6 +6420,13 @@ ember-router-generator@^2.0.0:
     "@babel/parser" "^7.4.5"
     "@babel/traverse" "^7.4.5"
     recast "^0.18.1"
+
+ember-set-body-class@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ember-set-body-class/-/ember-set-body-class-1.0.2.tgz#a970933f00e57ece6b6a88b96daf22f2374c3c34"
+  integrity sha512-SEsTwFp9SHTg4LgebhkUuLgYWg1VZD7I1QcrV2sTY583wu216OThoSs5szvS/KgSc1xD1Z22TFvOb848t2hGfw==
+  dependencies:
+    ember-cli-babel "^7.22.1"
 
 ember-set-helper@^1.1.0:
   version "1.1.0"

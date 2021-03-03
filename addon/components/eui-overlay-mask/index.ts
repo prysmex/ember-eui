@@ -1,16 +1,17 @@
 import GlimmerComponent from '@glimmer/component';
 
-export default class EuiOverlayMaskComponent extends GlimmerComponent {
+interface EuiOverlayMaskArgs {}
 
+export default class EuiOverlayMaskComponent extends GlimmerComponent<EuiOverlayMaskArgs> {
   destinationElement = document.body;
 
-  constructor() {
-    super(...arguments)
+  constructor(owner: unknown, args: EuiOverlayMaskArgs) {
+    super(owner, args);
     let body = document.body;
     body.classList.add('euiBody-hasOverlayMask');
   }
 
-  willDestroy () {
+  willDestroy() {
     let body = document.body;
     body.classList.remove('euiBody-hasOverlayMask');
   }

@@ -27,7 +27,7 @@ export type EuiRangeTrackArgs = {
   levels?: EuiRangeLevel[];
 };
 
-export default class EuiRangeToolipComponent extends Component<EuiRangeTrackArgs> {
+export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs> {
   @action
   validateValueIsInStep(value: number) {
     let { min, max, step } = this.args;

@@ -37,7 +37,7 @@ type EuiFilePicker = {
   disabled?: boolean;
 };
 
-export default class EuiFieldSearch extends Component<EuiFilePicker> {
+export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   @tracked fileInput: HTMLInputElement | null = null;
   @tracked promptText: string | null | undefined = null;
   @tracked isHoveringDrop: boolean = false;

@@ -22,7 +22,7 @@ type EuiPortalArgs = {
   portalRef?: (ref: HTMLDivElement | null) => void;
 };
 
-export default class EuiAccordionAccordionComponent extends Component<EuiPortalArgs> {
+export default class EuiPortal extends Component<EuiPortalArgs> {
   @tracked portalNode!: HTMLElement;
 
   constructor(owner: unknown, args: EuiPortalArgs) {

@@ -7807,6 +7807,14 @@ ember-set-helper@^1.1.0:
     ember-cli-babel "^7.18.0"
     ember-cli-htmlbars "^4.2.3"
 
+ember-set-helper@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ember-set-helper/-/ember-set-helper-2.0.0.tgz#afdb6cf2f5750f6f69e38a387f19615560f30a0f"
+  integrity sha512-cnKbQEkPi+plRI9eWj76zt4pjRKM/PsKIlYP2ZcSI7R83c1Zig5DLDUft+1PJI/1/fnPGLB8s3E6hjFBQo+T9g==
+  dependencies:
+    ember-cli-babel "^7.18.0"
+    ember-cli-htmlbars "^4.2.3"
+
 ember-source-channel-url@^1.0.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/ember-source-channel-url/-/ember-source-channel-url-1.2.0.tgz#77eb9d0889e5f5370e6c70fcb2696c63ff4a34a1"

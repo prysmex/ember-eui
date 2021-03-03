@@ -2,7 +2,10 @@
   (arg-or-default @type "button")
   (arg-or-default @showLabel true)
   (arg-or-default @id (unique-id))
-  (unique-id) as |hasLabelBlock type showLabel switchId labelId|
+  (unique-id)
+  (arg-or-default
+    @useLabelBlock true
+  ) as |hasLabelBlock type showLabel switchId labelId useLabelBlock|
 }}
   {{#let (class-names (if @compressed "euiSwitch--compressed") "euiSwitch") as |classes|}}
     <div class={{classes}}>
@@ -31,7 +34,7 @@
       {{#if showLabel}}
         {{! template-lint-disable}}
         <span class="euiSwitch__label" id={{labelId}} {{on "click" this.onClick}}>
-          {{#if (has-block "label")}}
+          {{#if (and useLabelBlock (has-block "label"))}}
             {{yield to="label"}}
           {{else}}
             {{@label}}

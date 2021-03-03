@@ -14,18 +14,16 @@
     @errorClasses={{@errorClasses}}
     ...attributes
   >
-    <EuiFieldText
-      aria-label={{@ariaLabel}}
+    <EuiFieldPassword
       class={{@fieldClasses}}
-      @value={{this.value}}
-      @icon={{@icon}}
+      aria-label={{@ariaLabel}}
       @isInvalid={{this.errors.length}}
       @fullWidth={{@fullWidth}}
       @isLoading={{@isLoading}}
-      @readOnly={{@readOnly}}
-      @inputRef={{@inputRef}}
-      @controlOnly={{@controlOnly}}
       @compressed={{@compressed}}
+      @inputRef={{@inputRef}}
+      @value={{this.value}}
+      @type={{@type}}
       @id={{theId}}
       @useGroup={{or (has-block "prepend") (has-block "append")}}
       {{on "blur" this.validate}}
@@ -37,6 +35,6 @@
       <:append as |classes|>
         {{yield classes to="append"}}
       </:append>
-    </EuiFieldText>
+    </EuiFieldPassword>
   </EuiFormRow>
 {{/let}}

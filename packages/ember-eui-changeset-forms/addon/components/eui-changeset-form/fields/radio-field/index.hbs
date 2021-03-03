@@ -1,0 +1,19 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiRadio
+    class={{@fieldClasses}}
+    aria-label={{@ariaLabel}}
+    @label={{@label}}
+    @useLabelBlock={{has-block "label"}}
+    @id={{theId}}
+    @autoFocus={{@autoFocus}}
+    @compressed={{@compressed}}
+    @name={{@name}}
+    @disabled={{@disabled}}
+    @inputRef={{@inputRef}}
+    {{on "change" this.handleChange}}
+  >
+    <:label>
+      {{yield to="label"}}
+    </:label>
+  </EuiRadio>
+{{/let}}

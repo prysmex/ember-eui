@@ -1,18 +1,45 @@
 {{#let (arg-or-default @id (unique-id)) as |theId|}}
   <EuiFormRow
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
     @label={{@label}}
-    @helpText={{@helpText}}
+    @labelAppend={{@labelAppend}}
     @id={{theId}}
+    @isInvalid={{this.errors.length}}
     @error={{this.errors}}
-		@isInvalid={{this.errors.length}}
-		@fullWidth={{@fullWidth}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    ...attributes
   >
     <EuiFieldNumber
+      class={{@fieldClasses}}
+      aria-label={{@ariaLabel}}
       @value={{this.value}}
+      @icon={{@icon}}
+      @isInvalid={{this.errors.length}}
+      @fullWidth={{@fullWidth}}
+      @isLoading={{@isLoading}}
+      @readOnly={{@readOnly}}
+      @min={{@min}}
+      @max={{@max}}
+      @step={{@step}}
+      @inputRef={{@inputRef}}
+      @controlOnly={{@controlOnly}}
+      @compressed={{@compressed}}
       @id={{theId}}
-			@fullWidth={{@fullWidth}}
+      @useGroup={{or (has-block "prepend") (has-block "append")}}
       {{on "blur" this.validate}}
       {{on "input" this.handleInput}}
-    />
+    >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
+    </EuiFieldNumber>
   </EuiFormRow>
 {{/let}}

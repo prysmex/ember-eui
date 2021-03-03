@@ -14,29 +14,16 @@
     @errorClasses={{@errorClasses}}
     ...attributes
   >
-    <EuiFieldText
+    <EuiCheckboxGroup
       aria-label={{@ariaLabel}}
       class={{@fieldClasses}}
-      @value={{this.value}}
-      @icon={{@icon}}
-      @isInvalid={{this.errors.length}}
-      @fullWidth={{@fullWidth}}
-      @isLoading={{@isLoading}}
-      @readOnly={{@readOnly}}
-      @inputRef={{@inputRef}}
-      @controlOnly={{@controlOnly}}
+      @disabled={{@disabled}}
       @compressed={{@compressed}}
+      @options={{@options}}
+      @idToSelectedMap={{this.arrayToMap}}
+      @legend={{@legend}}
       @id={{theId}}
-      @useGroup={{or (has-block "prepend") (has-block "append")}}
-      {{on "blur" this.validate}}
-      {{on "input" this.handleInput}}
-    >
-      <:prepend as |classes|>
-        {{yield classes to="prepend"}}
-      </:prepend>
-      <:append as |classes|>
-        {{yield classes to="append"}}
-      </:append>
-    </EuiFieldText>
+      @onChange={{this.handleChange}}
+    />
   </EuiFormRow>
 {{/let}}

@@ -14,22 +14,21 @@
     @errorClasses={{@errorClasses}}
     ...attributes
   >
-    <EuiFieldText
+    <EuiSelect
       aria-label={{@ariaLabel}}
       class={{@fieldClasses}}
-      @value={{this.value}}
-      @icon={{@icon}}
+			@options={{@options}}
       @isInvalid={{this.errors.length}}
       @fullWidth={{@fullWidth}}
-      @isLoading={{@isLoading}}
-      @readOnly={{@readOnly}}
+			@isLoading={{@isLoading}}
+			@hasNoInitialSelection={{@hasNoInitialSelection}}
       @inputRef={{@inputRef}}
-      @controlOnly={{@controlOnly}}
+      @value={{this.value}}
       @compressed={{@compressed}}
+			@useGroup={{or (has-block "prepend") (has-block "append")}}
       @id={{theId}}
-      @useGroup={{or (has-block "prepend") (has-block "append")}}
       {{on "blur" this.validate}}
-      {{on "input" this.handleInput}}
+      {{on "change" this.handleInput}}
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}
@@ -37,6 +36,6 @@
       <:append as |classes|>
         {{yield classes to="append"}}
       </:append>
-    </EuiFieldText>
+    </EuiSelect>
   </EuiFormRow>
 {{/let}}

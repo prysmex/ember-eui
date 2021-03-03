@@ -1,0 +1,58 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.errors.length}}
+    @error={{this.errors}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    ...attributes
+  >
+    <EuiRange
+      class={{@fieldClasses}}
+      @compressed={{@compressed}}
+      @readOnly={{@readOnly}}
+      @fullWidth={{@fullWidth}}
+      @id={{theId}}
+      @levels={{@levels}}
+      @step={{@step}}
+      @showInput={{@showInput}}
+      @showLabels={{@showLabels}}
+      @showRange={{@showRange}}
+      @showTicks={{@showTicks}}
+      @showValue={{@showValue}}
+      @ticks={{@ticks}}
+      @tickInternval={{@tickInternval}}
+      @valuePrepend={{@valuePrepend}}
+      @valueAppend={{@valueAppend}}
+      @onChange={{this.handleInput}}
+      @value={{this.value}}
+      @max={{@max}}
+      @isLoading={{@isLoading}}
+      @min={{@min}}
+      @icon={{@icon}}
+      @side={{@side}}
+      @isInvalid={{this.errors.length}}
+      @inputRef={{@inputRef}}
+      @controlOnly={{@controlOnly}}
+      @autoSize={{@autoSize}}
+      aria-label={{@ariaLabel}}
+    >
+      <:valuePrepend>
+        {{yield to="valuePrepend"}}
+      </:valuePrepend>
+      <:value>
+        {{yield to="value"}}
+      </:value>
+      <:valueAppend>
+        {{yield to="valueAppend"}}
+      </:valueAppend>
+    </EuiRange>
+  </EuiFormRow>
+{{/let}}

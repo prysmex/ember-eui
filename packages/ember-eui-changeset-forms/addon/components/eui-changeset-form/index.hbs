@@ -1,14 +1,71 @@
 <EuiForm
   @tagName="form"
-  {{did-insert this.didInsertForm}}
-  {{on "submit" this.onSubmit}}
+  {{on "submit" (fn this.handleSubmit @changeset)}}
+  {{on "reset" (fn this.handleReset @changeset)}}
+  {{did-insert this.validate}}
 >
   <:content>
-    <EuiChangesetForm::Context
-      @changeset={{@changeset}}
-      @fullWidth={{@fullWidth}} as |FormContext|
-    >
-      {{yield FormContext @changeset}}
+    <EuiChangesetForm::Context @changeset={{@changeset}} as |Context|>
+      {{yield
+        (hash
+          TextField=(component
+            Context.TextField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          TextAreaField=(component
+            Context.TextAreaField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          PasswordField=(component
+            Context.PasswordField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          RadioField=(component
+            Context.RadioField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          CheckboxField=(component
+            Context.CheckboxField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          SwitchField=(component
+            Context.SwitchField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          RadioGroupField=(component
+            Context.RadioGroupField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          CheckboxGroupField=(component
+            Context.CheckboxGroupField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          RangeSliderField=(component
+            Context.RangeSliderField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          NumberField=(component
+            Context.NumberField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+          SelectField=(component
+            Context.SelectField
+            fullWidth=@fullWidth
+            hasSubmitted=this.hasSubmitted
+          )
+        )
+        @changeset
+      }}
     </EuiChangesetForm::Context>
   </:content>
 </EuiForm>

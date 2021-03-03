@@ -7,7 +7,7 @@
     (class-names
       (if @fullWidth "euiSelect--fullWidth")
       (if @compressed "euiSelect--compressed")
-      (if (or hasPrepend hasAppend) "euiSelect--inGroup")
+      (if (and (arg-or-default @useGroup true) (or hasPrepend hasAppend)) "euiFieldNumber--inGroup")
       (if @isLoading "euiSelect--isLoading")
       "euiSelect"
     )
@@ -28,7 +28,13 @@
           {{yield prependClasses inputId to="prepend"}}
         </:prepend>
         <:field>
-          <select id={{inputId}} class={{classes}} ...attributes {{validatable-control @isInvalid}}>
+          <select
+            id={{inputId}}
+            class={{classes}}
+            ...attributes
+            {{validatable-control @isInvalid}}
+            {{did-insert (optional @inputRef)}}
+          >
             {{#if hasNoInitialSelection}}
               {{! template-lint-disable}}
               <option

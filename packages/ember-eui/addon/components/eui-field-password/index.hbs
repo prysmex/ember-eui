@@ -10,7 +10,7 @@
       (class-names
         (if @fullWidth "euiFieldPassword--fullWidth")
         (if @compressed "euiFieldPassword--compressed")
-        (if (or hasPrepend hasAppend) "euiFieldPassword--inGroup")
+        (if (and (arg-or-default @useGroup true) (or hasPrepend hasAppend)) "euiFieldNumber--inGroup")
         (if @isLoading "euiFieldPassword--isLoading")
         "euiFieldPassword"
       ) as |classes|
@@ -36,6 +36,7 @@
               type={{inputTypeState.value}}
               ...attributes
               {{validatable-control @isInvalid}}
+              {{did-insert (optional @inputRef)}}
             />
           </:field>
           <:append as |appendClasses|>

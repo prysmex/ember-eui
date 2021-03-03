@@ -16,6 +16,7 @@
     type="text"
     ...attributes
     {{validatable-control @isInvalid}}
+    {{did-insert (optional @inputRef)}}
   >
     {{yield}}
   </textarea>

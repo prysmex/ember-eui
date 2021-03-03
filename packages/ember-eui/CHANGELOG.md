@@ -2,6 +2,14 @@
 
 ### Master
 
+### 0.0.58
+
+🚀 Enhancements
+
+Components
+
+- `<EuiCheckableCard>`
+
 ### 0.0.57
 
 🐛 Bug / Fixes

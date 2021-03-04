@@ -2,13 +2,19 @@
 
 ### Master
 
-### 0.0.58
+### 0.1.1
+
+`Breaking`: moved project to monorepo. Now you should install from `@ember-eui/core`
 
 🚀 Enhancements
 
 Components
 
 - `<EuiCheckableCard>`
+
+Packages
+- Added `changeset-form` inspired by [@frontile/changeset-form](https://github.com/josemarluedke/frontile/tree/master/packages/changeset-form)
+
 
 ### 0.0.57
 

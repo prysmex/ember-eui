@@ -11,6 +11,8 @@
 /packages/**/node_modules/
 /packages/**/dist/
 
+.DS_Store
+
 # misc
 /.env*
 /.pnp*

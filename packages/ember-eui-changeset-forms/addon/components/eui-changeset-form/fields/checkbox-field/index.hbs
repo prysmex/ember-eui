@@ -5,7 +5,7 @@
     @id={{theId}}
     @checked={{or this.value false}}
     @label={{@label}}
-    @useLabelBlock={{has-block "label"}}
+    @isFakeLabelBlock={{not (has-block "label")}}
     @disabled={{@disabled}}
     @compressed={{@compressed}}
     @indeterminate={{@indeterminate}}

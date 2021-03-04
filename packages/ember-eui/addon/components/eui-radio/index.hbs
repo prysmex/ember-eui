@@ -1,11 +1,10 @@
 {{#let
-  (has-block "label")
-  (arg-or-default @id (unique-id))
-  (arg-or-default @useLabelBlock true) as |hasLabelBlock id useLabelBlock|
+  (and (has-block "label") (not (arg-or-default @isFakeLabelBlock false)))
+  (arg-or-default @id (unique-id)) as |hasLabelBlock id|
 }}
   {{#let
     (class-names
-      (if (and (not useLabelBlock) (not hasLabelBlock) (not @label)) "euiRadio--noLabel")
+      (if (not (or hasLabelBlock @label)) "euiRadio--noLabel")
       (if @compressed "euiRadio--compressed")
       "euiRadio"
     ) as |classes|
@@ -22,16 +21,14 @@
         {{did-insert (optional @inputRef)}}
       />
       <div class="euiRadio__circle"></div>
-      {{#if (or (and hasLabelBlock useLabelBlock) @label)}}
-        {{#if (and hasLabelBlock useLabelBlock)}}
-          <label class="euiRadio__label" for={{id}}>
+      {{#if (or hasLabelBlock @label)}}
+        <label class="euiRadio__label" for={{id}}>
+          {{#if hasLabelBlock}}
             {{yield to="label"}}
-          </label>
-        {{else}}
-          <label class="euiRadio__label" for={{id}}>
+          {{else}}
             {{@label}}
-          </label>
-        {{/if}}
+          {{/if}}
+        </label>
       {{/if}}
     </div>
   {{/let}}

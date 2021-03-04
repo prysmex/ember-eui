@@ -3,7 +3,7 @@
     class={{@fieldClasses}}
     aria-label={{@ariaLabel}}
     @label={{@label}}
-    @useLabelBlock={{has-block "label"}}
+    @isFakeLabelBlock={{not (has-block "label")}}
     @id={{theId}}
     @autoFocus={{@autoFocus}}
     @compressed={{@compressed}}

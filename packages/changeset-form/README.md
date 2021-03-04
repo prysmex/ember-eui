@@ -3,7 +3,7 @@
 
 `ember-changeset` integration with `<EuiForm />` fields
 
-This package depends on `@ember-eui/core`, so follow up the installation instructions over there.
+This package depends on [`@ember-eui/core`](../core/README.md), so follow up the installation instructions over there.
 
 Compatibility
 ------------------------------------------------------------------------------

@@ -1,3 +1,3 @@
-# Ember-eui monorepo
+# @ember-eui monorepo
 
-This is the ember-eui monorepo.
+This is the @ember-eui monorepo.

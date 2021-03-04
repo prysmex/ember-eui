@@ -1,1 +1,0 @@
-export { default } from 'ember-eui/components/eui-page-side-bar';

@@ -1,86 +1,86 @@
-<EuiPanel
-  @paddingSize="l"
-  style="max-width: 800px; margin-top: 50px; margin:auto;"
->
-  <EuiChangesetForm
-    @fullWidth={{true}}
-    @changeset={{changeset (hash hola="hello") this.validate
-    }} as |Form changeset|
-  >
-    <Form.TextField
-      @fieldName="hola"
-      @label="Here's a label"
-      @helpText="Some hint"
+<EuiPage @restrictWidth={{true}}>
+  <EuiPanel @paddingSize="l">
+    <EuiChangesetForm
+      @fullWidth={{true}}
+      @changeset={{changeset (hash hola="hello") this.validate
+      }} as |Form changeset|
     >
-      <:prepend as |classes|>
-        <EuiFormLabel class={{classes}}>
-          Hello
-        </EuiFormLabel>
-        <EuiButtonIcon class={{classes}} @size="xs" @iconType="faceHappy" />
-      </:prepend>
-    </Form.TextField>
-    <EuiButton @type="submit" @isDisabled={{changeset.isInvalid}}>
-      Submit form
-    </EuiButton>
-  </EuiChangesetForm>
-  <EuiSpacer @size="xl" />
-  <EuiChangesetForm
-    @changeset={{changeset this.model this.Validations}} as |Form changesetObj|
-  >
-    <EuiFlexGroup @direction="column" @gutterSize="l">
-      <Form.TextField @fieldName="firstName" @label="First Name" />
-      <Form.TextAreaField @fieldName="lastName" @label="Last Name" />
-      <Form.RangeSliderField
-        @fieldName="rangeSlider1"
-        @label="Range slider"
-        @showLabels={{true}}
-        @showValue={{true}}
-        @min={{0}}
-        @max={{300}}
-      />
-      <Form.RadioGroupField
-        @fieldName="radioGroup"
-        @options={{array
-          (hash id="radio-1" label="Radio 1")
-          (hash id="radio-2" label="Radio 2")
-          (hash id="radio-3" label="Radio 3")
-        }}
-        @label="Radio Group"
-      />
-      <Form.CheckboxGroupField
-        @fieldName="checkboxGroup"
-        @options={{array
-          (hash id="checkbox-1" label="Checkbox 1")
-          (hash id="checkbox-2" label="Checkbox 2")
-          (hash id="checkbox-3" label="Checkbox 3")
-        }}
-        @label="Checkbox Group"
-      />
-      <Form.SelectField
-        @fieldName="country"
-        @hasNoInitialSelection={{true}}
-        @options={{array
-          (hash value="mx" text="Mexico")
-          (hash value="pt" text="Portugal")
-          (hash value="us" text="United States")
-        }}
-        @label="Country"
-      />
-      <Form.NumberField @fieldName="age" @label="Age" />
-      <Form.TextField @fieldName="email" @label="Email" />
-      <Form.SwitchField
-        @fieldClasses="euiFlexItem"
-        @fieldName="switch"
-        @label="Switch"
-      />
-      <Form.PasswordField @fieldName="password" @label="Password" />
-      <Form.PasswordField
-        @fieldName="passwordConfirmation"
-        @label="Password Confirmation"
-      />
-      <EuiButton @type="submit" @isDisabled={{changesetObj.isInvalid}}>
+      <Form.TextField
+        @fieldName="hola"
+        @label="Here's a label"
+        @helpText="Some hint"
+      >
+        <:prepend as |classes|>
+          <EuiFormLabel class={{classes}}>
+            Hello
+          </EuiFormLabel>
+          <EuiButtonIcon class={{classes}} @size="xs" @iconType="faceHappy" />
+        </:prepend>
+      </Form.TextField>
+      <EuiButton @type="submit" @isDisabled={{changeset.isInvalid}}>
         Submit form
       </EuiButton>
-    </EuiFlexGroup>
-  </EuiChangesetForm>
-</EuiPanel>
+    </EuiChangesetForm>
+    <EuiSpacer @size="xl" />
+    <EuiChangesetForm
+      @changeset={{changeset this.model this.Validations
+      }} as |Form changesetObj|
+    >
+      <EuiFlexGroup @direction="column" @gutterSize="l">
+        <Form.TextField @fieldName="firstName" @label="First Name" />
+        <Form.TextAreaField @fieldName="lastName" @label="Last Name" />
+        <Form.RangeSliderField
+          @fieldName="rangeSlider1"
+          @label="Range slider"
+          @showLabels={{true}}
+          @showValue={{true}}
+          @min={{0}}
+          @max={{300}}
+        />
+        <Form.RadioGroupField
+          @fieldName="radioGroup"
+          @options={{array
+            (hash id="radio-1" label="Radio 1")
+            (hash id="radio-2" label="Radio 2")
+            (hash id="radio-3" label="Radio 3")
+          }}
+          @label="Radio Group"
+        />
+        <Form.CheckboxGroupField
+          @fieldName="checkboxGroup"
+          @options={{array
+            (hash id="checkbox-1" label="Checkbox 1")
+            (hash id="checkbox-2" label="Checkbox 2")
+            (hash id="checkbox-3" label="Checkbox 3")
+          }}
+          @label="Checkbox Group"
+        />
+        <Form.SelectField
+          @fieldName="country"
+          @hasNoInitialSelection={{true}}
+          @options={{array
+            (hash value="mx" text="Mexico")
+            (hash value="pt" text="Portugal")
+            (hash value="us" text="United States")
+          }}
+          @label="Country"
+        />
+        <Form.NumberField @fieldName="age" @label="Age" />
+        <Form.TextField @fieldName="email" @label="Email" />
+        <Form.SwitchField
+          @fieldClasses="euiFlexItem"
+          @fieldName="switch"
+          @label="Switch"
+        />
+        <Form.PasswordField @fieldName="password" @label="Password" />
+        <Form.PasswordField
+          @fieldName="passwordConfirmation"
+          @label="Password Confirmation"
+        />
+        <EuiButton @type="submit" @isDisabled={{changesetObj.isInvalid}}>
+          Submit form
+        </EuiButton>
+      </EuiFlexGroup>
+    </EuiChangesetForm>
+  </EuiPanel>
+</EuiPage>

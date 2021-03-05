@@ -10,6 +10,8 @@
 
 🚀 Enhancements
 
+- Added `<:title>` and `<:description>` named block to `<EuiCard />`
+
 Components
 
 - `<EuiChangesetForm::Fields::DualRangeSliderField>`

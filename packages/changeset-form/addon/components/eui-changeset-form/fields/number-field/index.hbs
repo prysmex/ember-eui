@@ -30,7 +30,8 @@
       @controlOnly={{@controlOnly}}
       @compressed={{@compressed}}
       @id={{theId}}
-      @useGroup={{or (has-block "prepend") (has-block "append")}}
+      @isFakePrependBlock={{not (has-block "prepend")}}
+      @isFakeAppendBlock={{not (has-block "append")}}
       {{on "blur" this.validate}}
       {{on "input" this.handleInput}}
     >

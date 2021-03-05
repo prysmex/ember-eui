@@ -1,6 +1,6 @@
 {{#let
-  (has-block "prepend")
-  (has-block "append")
+  (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
+  (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
   (arg-or-default @id (unique-id)) as |hasPrepend hasAppend inputId|
 }}
   {{#let

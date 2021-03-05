@@ -1,7 +1,7 @@
 {{#let
   (arg-or-default @type "dual")
-  (has-block "prepend")
-  (has-block "append") 
+  (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
+  (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
   (arg-or-default @id (unique-id))
   as |type hasPrepend hasAppend inputId|
 }}
@@ -10,7 +10,7 @@
       (class-names
         (if @fullWidth "euiFieldPassword--fullWidth")
         (if @compressed "euiFieldPassword--compressed")
-        (if (and (arg-or-default @useGroup true) (or hasPrepend hasAppend)) "euiFieldNumber--inGroup")
+        (if (or hasPrepend hasAppend) "euiFieldPassword--inGroup")
         (if @isLoading "euiFieldPassword--isLoading")
         "euiFieldPassword"
       ) as |classes|

@@ -9,6 +9,8 @@
   @compressed={{@compressed}}
   @fullWidth={{@fullWidth}}
   @controlOnly={{@controlOnly}}
+  @isFakeAppendBlock={{@isFakeAppendBlock}}
+  @isFakePrependBlock={{@isFakePrependBlock}}
   ...attributes
   {{simple-style
     (inline-styles
@@ -16,4 +18,11 @@
       componentArgs=(hash autoSize=(arg-or-default @autoSize true) digitTolerance=@digitTolerance)
     )
   }}
-/>
+>
+  <:prepend as |classes|>
+    {{yield classes to="prepend"}}
+  </:prepend>
+  <:append as |classes|>
+    {{yield classes to="append"}}
+  </:append>
+</EuiFieldNumber>

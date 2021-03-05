@@ -14,23 +14,36 @@
     @errorClasses={{@errorClasses}}
     ...attributes
   >
-    <EuiFieldText
-      aria-label={{@ariaLabel}}
+    <EuiDualRange
       class={{@fieldClasses}}
       @value={{this.value}}
-      @icon={{@icon}}
-      @isInvalid={{this.errors.length}}
       @fullWidth={{@fullWidth}}
-      @isLoading={{@isLoading}}
+      @isInvalid={{this.errors.length}}
+      @levels={{@levels}}
+      @showLabels={{@showLabels}}
+      @showInput={{@showInput}}
+      @tickInternval={{@tickInternval}}
+      @ticks={{@ticks}}
+      aria-label={{@ariaLabel}}
+      @compressed={{@compressed}}
+      @hasFocus={{@hasFocus}}
+      @showRange={{@showRange}}
+      @showTicks={{@showTicks}}
       @readOnly={{@readOnly}}
+      @id={{theId}}
+      @step={{@step}}
+      @showValue={{@showValue}}
+      @onChange={{this.handleInput}}
+      @max={{@max}}
+      @isLoading={{@isLoading}}
+      @min={{@min}}
+      @icon={{@icon}}
+      @side={{@side}}
       @inputRef={{@inputRef}}
       @controlOnly={{@controlOnly}}
-      @compressed={{@compressed}}
-      @id={{theId}}
+      @autoSize={{@autoSize}}
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
-      {{on "blur" this.validate}}
-      {{on "input" this.handleInput}}
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}
@@ -38,6 +51,6 @@
       <:append as |classes|>
         {{yield classes to="append"}}
       </:append>
-    </EuiFieldText>
+    </EuiDualRange>
   </EuiFormRow>
 {{/let}}

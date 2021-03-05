@@ -42,8 +42,13 @@
       @inputRef={{@inputRef}}
       @controlOnly={{@controlOnly}}
       @autoSize={{@autoSize}}
+      @isFakePrependBlock={{not (has-block "prepend")}}
+      @isFakeAppendBlock={{not (has-block "append")}}
       aria-label={{@ariaLabel}}
     >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
       <:valuePrepend>
         {{yield to="valuePrepend"}}
       </:valuePrepend>
@@ -53,6 +58,9 @@
       <:valueAppend>
         {{yield to="valueAppend"}}
       </:valueAppend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
     </EuiRange>
   </EuiFormRow>
 {{/let}}

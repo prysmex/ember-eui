@@ -17,15 +17,16 @@
     <EuiSelect
       aria-label={{@ariaLabel}}
       class={{@fieldClasses}}
-			@options={{@options}}
+      @options={{@options}}
       @isInvalid={{this.errors.length}}
       @fullWidth={{@fullWidth}}
-			@isLoading={{@isLoading}}
-			@hasNoInitialSelection={{@hasNoInitialSelection}}
+      @isLoading={{@isLoading}}
+      @hasNoInitialSelection={{@hasNoInitialSelection}}
       @inputRef={{@inputRef}}
       @value={{this.value}}
       @compressed={{@compressed}}
-			@useGroup={{or (has-block "prepend") (has-block "append")}}
+      @isFakePrependBlock={{not (has-block "prepend")}}
+      @isFakeAppendBlock={{not (has-block "append")}}
       @id={{theId}}
       {{on "blur" this.validate}}
       {{on "change" this.handleInput}}

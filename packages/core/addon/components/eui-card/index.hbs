@@ -65,11 +65,19 @@
             {{@title}}
           </button>
         {{else}}
-          {{@title}}
+          {{#if (has-block "title")}}
+            {{yield to="title"}}
+          {{else}}
+            {{@title}}
+          {{/if}}
         {{/if}}
       </EuiTitle>
       <EuiText @grow={{true}} @size="s" class="euiCard__description">
-        {{@description}}
+        {{#if (has-block "description")}}
+          {{yield to="description"}}
+        {{else}}
+          {{@description}}
+        {{/if}}
       </EuiText>
       {{yield to="body"}}
     </div>

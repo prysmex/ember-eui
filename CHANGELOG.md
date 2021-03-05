@@ -2,6 +2,18 @@
 
 ### Master
 
+### 0.1.4
+
+🐛 Bug / Fixes
+
+- Fixes lots of named blocks issues with wrapped fields
+
+🚀 Enhancements
+
+Components
+
+- `<EuiChangesetForm::Fields::DualRangeSliderField>`
+
 ### 0.1.1
 
 `Breaking`: moved project to monorepo. Now you should install from `@ember-eui/core`

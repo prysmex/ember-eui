@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.1.5
+
+🚀 Enhancements
+
+- Added `<:icon>` named block to `<EuiCard />`
+
 ### 0.1.4
 
 🐛 Bug / Fixes

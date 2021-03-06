@@ -26,17 +26,21 @@
       event=(create-event (hash eventType="Event" trigger="click"))
     }}
   >
-    {{#if (or @image @icon)}}
-      <div class="euiCard__top">
-        {{#if (and @image (not (eq @layout "horizontal")))}}
-          <div class="euiCard__image">
-            <img src={{@image}} alt="card-top" />
-          </div>
-        {{/if}}
-        {{#if @icon}}
-          <EuiIcon class="euiCard__icon" @type={{@icon}} @size={{@iconSize}} />
-        {{/if}}
-      </div>
+    {{#if (has-block "icon")}}
+      {{yield to="icon"}}
+    {{else}}
+      {{#if (or @image @icon)}}
+        <div class="euiCard__top">
+          {{#if (and @image (not (eq @layout "horizontal")))}}
+            <div class="euiCard__image">
+              <img src={{@image}} alt="card-top" />
+            </div>
+          {{/if}}
+          {{#if @icon}}
+            <EuiIcon class="euiCard__icon" @type={{@icon}} @size={{@iconSize}} />
+          {{/if}}
+        </div>
+      {{/if}}
     {{/if}}
     <div class="euiCard__content">
       <EuiTitle

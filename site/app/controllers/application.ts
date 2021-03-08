@@ -46,7 +46,7 @@ export default class ApplicationController extends Controller {
     ]);
     this.sideNavRoutes = [
       ...instructions,
-      ...this.removeDocs(coreNodes),
+      ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
       ...changeset,
     ];
 

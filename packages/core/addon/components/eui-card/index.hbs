@@ -9,7 +9,7 @@
       (if (and (eq @display "plain") (not @selectable)) "euiCard--plain")
       (if @isDisabled "euiCard-isDisabled")
       (if hasBlock "euiCard--hasChildren")
-      (if @icon "euiCard--hasIcon")
+      (if @icon "euiCard--hasIcon" (if has-block "icon" "euiCard--hasIcon"))
       (if @betaBadgeLabel "euiCard--hasBetaBadge")
       (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
       (if @selectable "euiCard--isSelectable")
@@ -26,11 +26,11 @@
       event=(create-event (hash eventType="Event" trigger="click"))
     }}
   >
-    {{#if (has-block "icon")}}
-      {{yield to="icon"}}
-    {{else}}
-      {{#if (or @image @icon)}}
-        <div class="euiCard__top">
+    <div class="euiCard__top">
+      {{#if (has-block "icon")}}
+        {{yield "euiCard__icon" to="icon"}}
+      {{else}}
+        {{#if (or @image @icon)}}
           {{#if (and @image (not (eq @layout "horizontal")))}}
             <div class="euiCard__image">
               <img src={{@image}} alt="card-top" />
@@ -39,9 +39,9 @@
           {{#if @icon}}
             <EuiIcon class="euiCard__icon" @type={{@icon}} @size={{@iconSize}} />
           {{/if}}
-        </div>
+        {{/if}}
       {{/if}}
-    {{/if}}
+    </div>
     <div class="euiCard__content">
       <EuiTitle
         class="euiCard__title"

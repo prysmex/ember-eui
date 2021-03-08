@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.1.10
+
+🐛 Bug / Fixes
+- Add ember-set-body-class to @ember-eui/core `dependencies`
 ### 0.1.9
 
 🐛 Bug / Fixes

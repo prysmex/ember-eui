@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.1.9
+
+🐛 Bug / Fixes
+- EuiOverlayMask bugfixes
 ### 0.1.7
 
 📝 Documentation

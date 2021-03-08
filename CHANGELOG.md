@@ -2,9 +2,15 @@
 
 ### Master
 
+### 0.1.7
+
+📝 Documentation
+- Minor fixes
 ### 0.1.6
 
+📝 Documentation
 - Revamp/extract docs to include changeset-form addon, we no longer use the dummy app, instead use site.
+
 ### 0.1.5
 
 🚀 Enhancements

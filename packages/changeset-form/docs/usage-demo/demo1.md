@@ -91,11 +91,6 @@ export default class DemoCardComponent extends Component {
     password: "",
     passwordConfirmation: "",
   };
-
-  @action
-  validate({ newValue }: { newValue: string }) {
-    return newValue?.length < 5 ? ["Value is too small "] : true;
-  }
 }
 
 ```

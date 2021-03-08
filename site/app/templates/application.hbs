@@ -1,0 +1,44 @@
+<EuiHeader>
+  <EuiHeaderSection @side="left">
+    <EuiHeaderSectionItem @border="none" class="mx-3">
+      Ember Eui
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+  <EuiHeaderSection @side="right">
+    <EuiHeaderSectionItem @border="none">
+      <EuiHeaderLogo
+        @iconType="logoGithub"
+        href="https://github.com/prysmex/ember-eui"
+        target="_blank"
+        rel="noopener noreferrer"
+      />
+    </EuiHeaderSectionItem>
+    <EuiHeaderSectionItem @border="none">
+      <EuiHeaderLogo
+        @iconType="/assets/netlify.svg"
+        href="https://www.netlify.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Hosted
+      </EuiHeaderLogo>
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+</EuiHeader>
+<EuiPage @restrictWidth="1280px" class="p-2 m-auto overflow-hidden">
+  <EuiPageSideBar class="mt-8">
+    <EuiSideNav
+      class="flex-none"
+      @mobileTitle="Elastic UI"
+      @isOpenMobile={{this.isOpenMobile}}
+      @toggleOpenOnMobile={{set this.isOpenMobile}}
+      @items={{this.sideNavRoutes}}
+      @selectedItem={{this.selectedItem}}
+    />
+  </EuiPageSideBar>
+  <EuiPageBody class="flex-1 w-full min-w-0 mt-8 mode-dark" @tagName="div">
+    <EuiPanel class="max-w-full markdown euiCodeBlock">
+      {{outlet}}
+    </EuiPanel>
+  </EuiPageBody>
+</EuiPage>

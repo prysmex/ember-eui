@@ -145,6 +145,11 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
   }
 
   @action
+  setPreventPopover(val: boolean) {
+    this.preventPopoverClose = val;
+  }
+  
+  @action
   closePopover() {
     this.preventPopoverClose = false;
     this.isPopoverOpen = false;

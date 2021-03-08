@@ -32,11 +32,9 @@ module.exports = {
 
     this.emberEuiOptions = Object.assign({}, app.options['@ember-eui/core']);
 
-    this.emberEuiOptions.theme = this.emberEuiOptions.theme
-      ? this.emberEuiOptions.theme
-      : 'light';
+    this.emberEuiOptions.theme = this.emberEuiOptions.theme ? this.emberEuiOptions.theme : 'light';
 
-    if (this.emberEuiOptions.useCompiledCss) {
+    if (this.emberEuiOptions.useCompiledCss !== false) {
       if (this.emberEuiOptions.theme) {
         app.import(
           `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
@@ -47,18 +45,12 @@ module.exports = {
     }
   },
 
-  netlifyRedirects() {
-    return [
-      "/* /index.html 200"
-    ]
-  },
-
   // TODO: Currently the performance of recompiling sass on every change are serious, find a way to improve them.
   treeForStyles(tree) {
     let trees = [];
     let euiScssFiles;
 
-    if (!this.emberEuiOptions.useCompiledCss) {
+    if (this.emberEuiOptions.useCompiledCss === false) {
       euiScssFiles = new Funnel(this.pathBase('@elastic/eui'), {
         srcDir: '/src',
         include: ['**/*.scss'],
@@ -90,8 +82,6 @@ module.exports = {
   },
 
   pathBase(packageName) {
-    return path.dirname(
-      resolve.sync(`${packageName}/package.json`, { basedir: __dirname })
-    );
+    return path.dirname(resolve.sync(`${packageName}/package.json`, { basedir: __dirname }));
   },
 };

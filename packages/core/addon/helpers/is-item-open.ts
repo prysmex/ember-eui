@@ -15,7 +15,6 @@ export function isItemOpen(item: any, selectedItem: string): boolean {
   if (item.items) {
     return item.items.some((item: any) => isItemOpen(item, selectedItem));
   }
-
   return false;
 }
 

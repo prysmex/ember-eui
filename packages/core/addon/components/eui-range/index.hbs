@@ -200,7 +200,7 @@
           @showTicks={{this.showTicks}}
           @showRange={{this.showRange}}
           ...attributes
-          {{on "mousedown" (if this.showInputOnly (set this.preventPopoverClose true) (optional))}}
+          {{on "mousedown" (if this.showInputOnly (fn this.setPreventPopover true) (optional))}}
           {{on "focus" (if (eq this.showInput true) (optional) (optional @onFocus))}}
           {{on "blur" (if this.showInputOnly this.onInputBlur (optional @onBlur))}}
           {{on "change" this.handleOnChange}}

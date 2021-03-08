@@ -1,5 +1,5 @@
 {{#if @ownFocus}}
-  <EuiOverlayMask @onClick={{@onClose}} @headerZindexLocation="below" />
+  <EuiOverlayMask @headerZindexLocation="below" {{on "click" @onClose}} />
 {{/if}}
 {{set-body-class "euiBody--hasFlyout"}}
 <div

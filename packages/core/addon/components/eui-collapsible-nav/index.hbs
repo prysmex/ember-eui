@@ -6,30 +6,24 @@
 {{#if (not (and @navIsDocked (not @showButtonIfDocked)))}}
   {{yield to="button"}}
 {{/if}}
-
 {{!
   The side navigation panel, acts the same way as a flyout
 }}
 {{#if @isOpen}}
   {{#let (unique-id) as |flyoutId|}}
     {{#unless @navIsDocked}}
-      <EuiOverlayMask @onClick={{unless @navIsDocked @onClose}} @headerZindexLocation="below" />
+      <EuiOverlayMask
+        @headerZindexLocation="below"
+        {{on "click" (unless @navIsDocked @onClose (noop))}}
+      />
     {{/unless}}
     <nav
       id={{flyoutId}}
-      class={{class-names
-        "euiCollapsibleNav"
-        (if @navIsDocked "euiCollapsibleNav--isDocked")
-      }}
+      class={{class-names "euiCollapsibleNav" (if @navIsDocked "euiCollapsibleNav--isDocked")}}
       ...attributes
       {{open-collapsible-nav @navIsDocked}}
       {{on-key "Escape" (unless @navIsDocked @onClose)}}
-      {{focus-trap
-        isActive=(not @navIsDocked)
-        focusTrapOptions=(hash
-          allowOutsideClick=true
-        )
-      }}
+      {{focus-trap isActive=(not @navIsDocked) focusTrapOptions=(hash allowOutsideClick=true)}}
     >
       {{yield to="content"}}
       {{!

@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.11
+
+🐛 Bug / Fixes
+- `<EuiCard />` `<:icon>` block fixes
+
 ### 0.1.10
 
 🐛 Bug / Fixes

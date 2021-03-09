@@ -1,0 +1,30 @@
+<div
+  aria-live="polite"
+  role="region"
+  class={{class-names
+    componentName="EuiGlobalToastList"
+    side=(arg-or-default @side "right")
+  }}
+  {{did-insert this.didInsert}}
+  {{on "scroll" this.onScroll}}
+  {{on "mouseenter" this.onMouseEnter}}
+  {{on "mouseleave" this.onMouseLeave}}
+  ...attributes
+>
+  {{#each this.euiToaster.toasts as |toast|}}
+    <EuiToast
+      class={{class-names
+        "euiGlobalToastListItem"
+        (if (get this.toastIdToDismissedMap toast.id) "euiGlobalToastListItem-isDismissed")
+      }}
+      @title={{toast.title}}
+      @body={{toast.body}}
+      @color={{toast.color}}
+      @iconType={{toast.iconType}}
+      @onClose={{queue (fn this.dismissToast toast) toast.onClose}}
+      {{did-insert (fn this.didInsertToast toast)}}
+      {{on "focus" this.onMouseEnter}}
+      {{on "blur" this.onMouseLeave}}
+    />
+  {{/each}}
+</div>

@@ -7,6 +7,15 @@
 🚀 Enhancements
 - expose hasSubmitted for changeset-form
 
+Components
+
+- `<EuiToast>`
+- `<EuiGlobalToastList>`
+
+Services
+
+- `EuiToasterService`
+
 ### 0.1.11
 
 🐛 Bug / Fixes

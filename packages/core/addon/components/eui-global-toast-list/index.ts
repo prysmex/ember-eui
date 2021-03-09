@@ -10,7 +10,6 @@ type EuiToastSide = keyof typeof sideMapping;
 type ToastSide = EuiToastSide | string;
 
 type GlobalToastListArgs = {
-
   toasts: EuiToastProps[];
   dismissToast: (this: EuiGlobalToastList, toast: EuiToastProps) => void;
   toastLifeTimeMs: number;
@@ -42,7 +41,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   listElement: Element | null = null;
   @tracked toastIdToDismissedMap: {
     [toastId: string]: boolean;
-  } = {}
+  } = {};
 
   startScrollingToBottom() {
     this.isScrollingToBottom = true;
@@ -55,8 +54,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
       }
 
       const position = this.listElement.scrollTop;
-      const destination =
-        this.listElement.scrollHeight - this.listElement.clientHeight;
+      const destination = this.listElement.scrollHeight - this.listElement.clientHeight;
       const distanceToDestination = destination - position;
 
       if (distanceToDestination < 5) {
@@ -69,15 +67,11 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
       this.listElement.scrollTop = position + distanceToDestination * 0.25;
 
       if (this.isScrollingToBottom) {
-        this.isScrollingAnimationFrame = window.requestAnimationFrame(
-          scrollToBottom
-        );
+        this.isScrollingAnimationFrame = window.requestAnimationFrame(scrollToBottom);
       }
     };
 
-    this.startScrollingAnimationFrame = window.requestAnimationFrame(
-      scrollToBottom
-    );
+    this.startScrollingAnimationFrame = window.requestAnimationFrame(scrollToBottom);
   }
 
   @action
@@ -109,7 +103,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  onMouseLeave () {
+  onMouseLeave() {
     this.isUserInteracting = false;
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
@@ -120,7 +114,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  onScroll () {
+  onScroll() {
     if (this.listElement) {
       this.isScrolledToBottom =
         this.listElement.scrollHeight - this.listElement.scrollTop ===
@@ -141,9 +135,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
     // Start fading the toast out once its lifetime elapses.
     this.toastIdToTimerMap[toast.id] = new Timer(
       this.dismissToast.bind(this, toast),
-      toast.toastLifeTimeMs != null
-        ? toast.toastLifeTimeMs
-        : this.args.toastLifeTimeMs
+      toast.toastLifeTimeMs != null ? toast.toastLifeTimeMs : this.args.toastLifeTimeMs
     );
   }
 
@@ -166,8 +158,8 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
           delete this.toastIdToDismissedMap[toast.id];
           this.toastIdToDismissedMap = {
             ...this.toastIdToDismissedMap,
-          }
-          this.euiToaster.toasts.removeObject(toast);
+          };
+          this.euiToaster.remove(toast);
         }
       }, TOAST_FADE_OUT_MS)
     );
@@ -175,11 +167,11 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
     this.toastIdToDismissedMap = {
       ...this.toastIdToDismissedMap,
       [toast.id]: true,
-    }
-  };
+    };
+  }
 
-  constructor() {
-    super(...arguments);
+  constructor(owner: unknown, args: GlobalToastListArgs) {
+    super(owner, args);
     this.scheduleAllToastsForDismissal();
   }
 
@@ -204,5 +196,4 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
       }
     }
   }
-  
 }

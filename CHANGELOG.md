@@ -9,6 +9,11 @@
 
 ### 0.1.11
 
+🚀 Enhancements
+- expose hasSubmitted for changeset-form
+
+### 0.1.11
+
 🐛 Bug / Fixes
 - `<EuiCard />` `<:icon>` block fixes
 

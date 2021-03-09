@@ -10,8 +10,7 @@
       "ignoreChanges": [
         "ignored-file",
         "*.md"
-      ],
-      "push": false
+      ]
     },
     "bootstrap": {
       "npmClientArgs": [

@@ -1,5 +1,5 @@
-import Base, { BaseArgs } from "../base";
-import { action } from "@ember/object";
+import Base, { BaseArgs } from '../base';
+import { action } from '@ember/object';
 
 interface EuiChangesetFormCheckboxFieldArgs extends BaseArgs {
   onChange?: (value: boolean, event: InputEvent) => void;

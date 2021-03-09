@@ -1,5 +1,5 @@
-import Base, { BaseArgs } from "../base";
-import { action } from "@ember/object";
+import Base, { BaseArgs } from '../base';
+import { action } from '@ember/object';
 
 interface EuiChangesetFormRadioGroupFieldArgs extends BaseArgs {
   onChange?: (value: string) => void;

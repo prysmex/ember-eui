@@ -1,9 +1,9 @@
-import Component from "@glimmer/component";
-import { action } from "@ember/object";
-import { BufferedChangeset } from "ember-changeset/types";
-import { assert } from "@ember/debug";
-import { later } from "@ember/runloop";
-import { tracked } from "@glimmer/tracking";
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { BufferedChangeset } from 'ember-changeset/types';
+import { assert } from '@ember/debug';
+import { later } from '@ember/runloop';
+import { tracked } from '@glimmer/tracking';
 
 interface EuiChangesetFormArgs {
   changeset: BufferedChangeset;
@@ -20,7 +20,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
 
   constructor(owner: unknown, args: EuiChangesetFormArgs) {
     super(owner, args);
-    assert("Must provide a changeset", this.args.changeset);
+    assert('Must provide a changeset', this.args.changeset);
   }
 
   @action
@@ -38,7 +38,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
   async handleSubmit(changeset: BufferedChangeset, event: Event) {
     event.preventDefault();
 
-    if (typeof this.args.beforeSubmit === "function") {
+    if (typeof this.args.beforeSubmit === 'function') {
       this.args.beforeSubmit(changeset, event);
     }
     await changeset.validate();
@@ -56,7 +56,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
       result = await changeset.save({});
     }
 
-    if (typeof this.args.onSubmit === "function") {
+    if (typeof this.args.onSubmit === 'function') {
       this.args.onSubmit(result.data, event);
     }
   }
@@ -67,7 +67,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
     this.hasSubmitted = false;
 
     const { data } = changeset.rollback();
-    if (typeof this.args.onReset === "function") {
+    if (typeof this.args.onReset === 'function') {
       this.args.onReset(data, event);
     }
   }

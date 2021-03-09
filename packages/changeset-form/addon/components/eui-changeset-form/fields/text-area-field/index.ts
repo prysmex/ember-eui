@@ -1,5 +1,5 @@
-import Base, { BaseArgs } from "../base";
-import { action } from "@ember/object";
+import Base, { BaseArgs } from '../base';
+import { action } from '@ember/object';
 
 interface EuiChangesetFormTextAreaFieldArgs extends BaseArgs {
   onInput?: (value: string, event: InputEvent) => void;
@@ -15,5 +15,4 @@ export default class EuiChangesetFormTextAreaField extends Base<EuiChangesetForm
 
     this.args.onInput?.(value, e);
   }
-
 }

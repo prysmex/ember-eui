@@ -1,5 +1,5 @@
-import Base, { BaseArgs } from "../base";
-import { action } from "@ember/object";
+import Base, { BaseArgs } from '../base';
+import { action } from '@ember/object';
 
 type Values = string[] | [] | undefined;
 
@@ -23,7 +23,7 @@ export default class EuiChangesetFormCheckboxGroupField extends Base<EuiChangese
     return value.reduce((acum, currVal) => {
       return {
         [currVal]: true,
-        ...acum,
+        ...acum
       };
     }, {});
   }

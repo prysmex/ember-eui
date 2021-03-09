@@ -1,15 +1,12 @@
 <div
   aria-live="polite"
   role="region"
-  class={{class-names
-    componentName="EuiGlobalToastList"
-    side=(arg-or-default @side "right")
-  }}
+  class={{class-names componentName="EuiGlobalToastList" side=(arg-or-default @side "right")}}
+  ...attributes
   {{did-insert this.didInsert}}
   {{on "scroll" this.onScroll}}
   {{on "mouseenter" this.onMouseEnter}}
   {{on "mouseleave" this.onMouseLeave}}
-  ...attributes
 >
   {{#each this.euiToaster.toasts as |toast|}}
     <EuiToast

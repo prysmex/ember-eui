@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "0.1.12",
+  "version": "0.1.11",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -135,5 +135,6 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
-  }
+  },
+  "gitHead": "bc16e4d68a4005d00bc54ce36f73d3b12b725b21"
 }

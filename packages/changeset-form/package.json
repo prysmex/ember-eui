@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/changeset-form",
-  "version": "0.1.12",
+  "version": "0.1.11",
   "description": "Ember Eui changeset integration",
   "keywords": [
     "ember-addon",
@@ -27,7 +27,7 @@
     "postpack": "ember ts:clean"
   },
   "dependencies": {
-    "@ember-eui/core": "^0.1.12",
+    "@ember-eui/core": "^0.1.11",
     "@types/ember": "^3.16.4",
     "ember-changeset": "^3.12.0",
     "ember-changeset-validations": "^3.13.0",
@@ -105,5 +105,6 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
-  }
+  },
+  "gitHead": "bc16e4d68a4005d00bc54ce36f73d3b12b725b21"
 }

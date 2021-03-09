@@ -1,11 +1,15 @@
 {
-  "version": "0.1.12",
+  "version": "0.1.11",
   "packages": [
     "packages/*"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,
   "command": {
+    "publish": {
+      "ignoreChanges": ["ignored-file", "*.md"],
+      "push": false
+    },
     "bootstrap": {
       "npmClientArgs": [
         "--frozen-lockfile",

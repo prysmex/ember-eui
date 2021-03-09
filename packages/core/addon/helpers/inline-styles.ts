@@ -26,7 +26,7 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
 
   let finalProperties: FinalProperties = {
     ...properties,
-    ...componentStyles,
+    ...componentStyles
   };
 
   for (let property in finalProperties) {

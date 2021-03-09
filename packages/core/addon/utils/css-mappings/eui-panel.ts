@@ -1,14 +1,14 @@
-export const baseClass: string = 'euiPanel';
+export const baseClass = 'euiPanel';
 
 export const paddingSizeMapping = {
   s: `${baseClass}--paddingSmall`,
   m: `${baseClass}--paddingMedium`,
-  l: `${baseClass}--paddingLarge`,
+  l: `${baseClass}--paddingLarge`
 };
 
 const borderRadiusMapping = {
   none: `${baseClass}--borderRadiusNone`,
-  m: `${baseClass}--borderRadiusMedium`,
+  m: `${baseClass}--borderRadiusMedium`
 };
 
 const colorMapping = {
@@ -19,7 +19,7 @@ const colorMapping = {
   primary: `${baseClass}--primary`,
   success: `${baseClass}--success`,
   warning: `${baseClass}--warning`,
-  danger: `${baseClass}--danger`,
+  danger: `${baseClass}--danger`
 };
 
 const mapping: ComponentMapping = {
@@ -27,8 +27,8 @@ const mapping: ComponentMapping = {
   properties: {
     paddingSize: paddingSizeMapping,
     borderRadius: borderRadiusMapping,
-    color: colorMapping,
-  },
+    color: colorMapping
+  }
 };
 
 export default mapping;

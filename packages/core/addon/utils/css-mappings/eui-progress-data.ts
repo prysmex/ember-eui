@@ -1,4 +1,4 @@
-const baseClass: string = 'euiProgress__data';
+const baseClass = 'euiProgress__data';
 
 const dataColorToClassMap = {
   primary: `${baseClass}--primary`,
@@ -17,14 +17,14 @@ const dataColorToClassMap = {
   vis6: `${baseClass}--vis6`,
   vis7: `${baseClass}--vis7`,
   vis8: `${baseClass}--vis8`,
-  vis9: `${baseClass}--vis9`,
+  vis9: `${baseClass}--vis9`
 };
 
 export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    color: dataColorToClassMap,
-  },
+    color: dataColorToClassMap
+  }
 };
 
 export default mapping;

@@ -27,7 +27,7 @@ export function getRangeTick([ticks, tickValue, min, max, percentageWidth]: [
   return {
     style: tickStyle,
     customTick,
-    label: customTick ? customTick.label : tickValue,
+    label: customTick ? customTick.label : tickValue
   };
 }
 

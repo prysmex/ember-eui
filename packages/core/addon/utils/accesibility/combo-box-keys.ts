@@ -33,5 +33,5 @@ export const comboBoxKeys = {
   ARROW_UP,
   ENTER,
   ESCAPE,
-  TAB,
+  TAB
 };

@@ -36,5 +36,5 @@ export const cascadingMenuKeys = {
   ARROW_RIGHT,
   ARROW_UP,
   ESCAPE,
-  TAB,
+  TAB
 };

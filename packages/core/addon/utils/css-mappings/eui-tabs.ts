@@ -1,21 +1,21 @@
-export const baseClass: string = 'euiTabs';
+export const baseClass = 'euiTabs';
 
 export const displayMapping = {
   condensed: `${baseClass}--condensed`,
-  default: '',
+  default: ''
 };
 
 export const sizeMapping = {
   s: `${baseClass}--small`,
-  m: '',
+  m: ''
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     size: sizeMapping,
-    display: displayMapping,
-  },
+    display: displayMapping
+  }
 };
 
 export default mapping;

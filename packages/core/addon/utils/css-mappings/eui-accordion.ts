@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiAccordion';
+export const baseClass = 'euiAccordion';
 
 export const paddingMapping = {
   none: '',
@@ -6,14 +6,14 @@ export const paddingMapping = {
   s: `${baseClass}__padding--s`,
   m: `${baseClass}__padding--m`,
   l: `${baseClass}__padding--l`,
-  xl: `${baseClass}__padding--xl`,
+  xl: `${baseClass}__padding--xl`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    paddingSize: paddingMapping,
-  },
+    paddingSize: paddingMapping
+  }
 };
 
 export default mapping;

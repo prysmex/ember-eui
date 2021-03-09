@@ -48,5 +48,5 @@ export enum keys {
   PAGE_UP = 'PageUp',
   PAGE_DOWN = 'PageDown',
   END = 'End',
-  HOME = 'Home',
+  HOME = 'Home'
 }

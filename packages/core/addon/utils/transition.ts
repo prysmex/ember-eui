@@ -19,14 +19,16 @@
 
 const GROUP_NUMERIC = /^([\d.]+)(s|ms)/;
 
-function getMilliseconds(value: string, unit: string) {
+function getMilliseconds(value: string, unit: string): number {
   // Given the regex match and capture groups, we can assume `unit` to be either 's' or 'ms'
   const multiplier = unit === 's' ? 1000 : 1;
   return parseFloat(value) * multiplier;
 }
 // Find CSS `transition-duration` and `transition-delay` intervals
 // and return the value of each computed property in 'ms'
-export const getTransitionTimings = (element: Element) => {
+export const getTransitionTimings = (
+  element: Element
+): { durationMatch: number; delayMatch: number } => {
   const computedStyle = window.getComputedStyle(element);
 
   const computedDuration = computedStyle.getPropertyValue('transition-duration');
@@ -47,7 +49,7 @@ function isElementNode(element: Node): element is Element {
 }
 // Uses `getTransitionTimings` to find the total transition time for
 // all elements targeted by a MutationObserver callback
-export const getWaitDuration = (records: MutationRecord[]) => {
+export const getWaitDuration = (records: MutationRecord[]): number => {
   return records.reduce((waitDuration, record) => {
     // only check for CSS transition values for ELEMENT nodes
     if (isElementNode(record.target)) {
@@ -60,7 +62,7 @@ export const getWaitDuration = (records: MutationRecord[]) => {
 };
 
 // Uses `requestAnimationFrame` to perform a given callback after a specified waiting period
-export const performOnFrame = (waitDuration: number, toPerform: () => void) => {
+export const performOnFrame = (waitDuration: number, toPerform: () => void): void => {
   if (waitDuration > 0) {
     const startTime = Date.now();
     const endTime = startTime + waitDuration;
@@ -78,6 +80,9 @@ export const performOnFrame = (waitDuration: number, toPerform: () => void) => {
 };
 
 // Convenience method for combining the result of 'getWaitDuration' directly with 'performOnFrame'
-export const getDurationAndPerformOnFrame = (records: MutationRecord[], toPerform: () => void) => {
+export const getDurationAndPerformOnFrame = (
+  records: MutationRecord[],
+  toPerform: () => void
+): void => {
   performOnFrame(getWaitDuration(records), toPerform);
 };

@@ -11,7 +11,7 @@ export const colorToHexMap = {
   secondary: VIS_COLORS[0],
   accent: VIS_COLORS[2],
   warning: VIS_COLORS[5],
-  danger: VIS_COLORS[9],
+  danger: VIS_COLORS[9]
 };
 
 export const COLORS = keysOf(colorToHexMap);
@@ -20,9 +20,9 @@ export type EuiBadgeColorType = keyof typeof colorToHexMap;
 
 export type ColorType = EuiBadgeColorType | string;
 
-export const baseClass: string = 'euiBadge';
+export const baseClass = 'euiBadge';
 
-export function inlineStyles({ badgeColor }: { badgeColor: ColorType }) {
+export function inlineStyles({ badgeColor }: { badgeColor: ColorType }): Styling {
   let textColor = null;
   let colorHex = 'default';
 
@@ -36,26 +36,26 @@ export function inlineStyles({ badgeColor }: { badgeColor: ColorType }) {
 
   return {
     'background-color': colorHex,
-    color: textColor,
+    color: textColor
   };
 }
 
 export const iconSideMapping = {
   left: `${baseClass}--iconLeft`,
-  right: `${baseClass}--iconRight`,
+  right: `${baseClass}--iconRight`
 };
 
 export const colorMapping = {
-  hollow: `${baseClass}--hollow`,
+  hollow: `${baseClass}--hollow`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     iconSide: iconSideMapping,
-    color: colorMapping,
+    color: colorMapping
   },
-  inlineStyles: inlineStyles,
+  inlineStyles: inlineStyles
 };
 
 export default mapping;

@@ -73,36 +73,36 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
     this._opened = this.args.forceState ? this.args.forceState === 'open' : this.args.initialIsOpen;
   }
 
-  get isOpen() {
+  get isOpen(): boolean {
     return this.args.forceState ? this.args.forceState === 'open' : this._opened;
   }
 
-  get hasIconButton() {
+  get hasIconButton(): boolean | undefined {
     return this.args.extraAction && this.arrowDisplay === 'right';
   }
 
-  get hasArrowDisplay() {
+  get hasArrowDisplay(): boolean {
     return this.arrowDisplay !== 'none';
   }
 
-  get buttonReverse() {
+  get buttonReverse(): boolean {
     return !this.args.extraAction && this.arrowDisplay === 'right';
   }
 
-  get hasLoadingMessage() {
+  get hasLoadingMessage(): boolean {
     return this.isLoadingMessage && this.isLoadingMessage !== true;
   }
 
-  get buttonClasses() {
+  get buttonClasses(): string {
     return [
       'euiAccordion__button',
       this.buttonReverse ? 'euiAccordion__buttonReverse' : '',
-      this.args.buttonClassName,
+      this.args.buttonClassName
     ].join(' ');
   }
 
   @action
-  onToggle() {
+  onToggle(): void {
     if (this.args.forceState) {
       this.args.onToggle && this.args.onToggle(this.args.forceState === 'open' ? false : true);
     } else {

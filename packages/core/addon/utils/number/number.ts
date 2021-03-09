@@ -21,7 +21,7 @@ export const isWithinRange = (
   min: number | string,
   max: number | string,
   value: number | string
-) => {
+): boolean => {
   if (min === '' || max === '' || value === '') {
     return false;
   }
@@ -32,7 +32,7 @@ export const isWithinRange = (
 
 // 1e-6 covers up to 10,000,000,000 factored by a decimal
 const EPSILON = 1e-6;
-export function isEvenlyDivisibleBy(num: number, factor: number) {
+export function isEvenlyDivisibleBy(num: number, factor: number): boolean {
   const remainder = num % factor;
 
   // due to floating point issues the remainder needs to be within a margin instead of exactly 0

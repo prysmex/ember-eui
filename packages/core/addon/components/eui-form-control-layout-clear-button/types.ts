@@ -2,7 +2,7 @@ import { CommonArgs, keysOf } from '../common';
 
 const sizeToClassNameMap = {
   s: 'euiFormControlLayoutClearButton--small',
-  m: null,
+  m: null
 };
 
 export const SIZES = keysOf(sizeToClassNameMap);

@@ -14,13 +14,13 @@ export default modifier(function onEventSimulateEvent(
     _target = element.querySelector(target);
   }
 
-  function dispatch() {
+  function dispatch(): void {
     _target && _target.dispatchEvent(event);
   }
 
   if (target) {
     element.addEventListener(eventName, dispatch);
-    return () => {
+    return (): void => {
       element.removeEventListener(eventName, dispatch);
     };
   }

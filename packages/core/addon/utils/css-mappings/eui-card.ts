@@ -1,16 +1,16 @@
-export const baseClass: string = 'euiCard';
+export const baseClass = 'euiCard';
 
 export const textAlignMapping = {
   left: `${baseClass}--leftAligned`,
   center: `${baseClass}--centerAligned`,
-  right: `${baseClass}--rightAligned`,
+  right: `${baseClass}--rightAligned`
 };
 
 export const paddingSizeMapping = {
   none: `${baseClass}--paddingNone`,
   s: `${baseClass}--paddingSmall`,
   m: `${baseClass}--paddingMedium`,
-  l: `${baseClass}--paddingLarge`,
+  l: `${baseClass}--paddingLarge`
 };
 
 export const selectableColor = {
@@ -18,7 +18,7 @@ export const selectableColor = {
   danger: `${baseClass}--isSelectable--danger`,
   text: `${baseClass}--isSelectable--text`,
   ghost: `${baseClass}--isSelectable--ghost`,
-  success: `${baseClass}--isSelectable--success`,
+  success: `${baseClass}--isSelectable--success`
 };
 
 const mapping: ComponentMapping = {
@@ -26,8 +26,8 @@ const mapping: ComponentMapping = {
   properties: {
     textAlign: textAlignMapping,
     paddingSize: paddingSizeMapping,
-    color: selectableColor,
-  },
+    color: selectableColor
+  }
 };
 
 export default mapping;

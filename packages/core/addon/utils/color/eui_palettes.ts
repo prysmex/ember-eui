@@ -26,6 +26,8 @@ import chroma from 'chroma-js';
 import { colorPalette } from './color_palette';
 
 export type EuiPalette = string[];
+
+/* tslint:disable */
 const flatten = (arr: any[]) => [].concat(...arr);
 
 const euiPalette = function (
@@ -73,7 +75,7 @@ export const euiPaletteColorBlind = ({
   order = 'append',
   direction = 'lighter',
   sortBy = 'default',
-  sortShift = '-100',
+  sortShift = '-100'
 }: EuiPaletteColorBlindProps = {}): EuiPalette => {
   let colors: string[] = [];
 
@@ -87,7 +89,7 @@ export const euiPaletteColorBlind = ({
     '#B9A888', // 6 tan
     '#DA8B45', // 7 orange
     '#AA6556', // 8 brown
-    '#E7664C', // 9 red
+    '#E7664C' // 9 red
   ];
 
   if (sortBy === 'natural') {
@@ -169,7 +171,7 @@ export const euiPaletteForStatus = function (steps: number): EuiPalette {
       euiPaletteColorBlind()[0],
       euiPaletteColorBlind()[5],
       lightNegativeColor,
-      negativeColor,
+      negativeColor
     ],
     steps,
     true

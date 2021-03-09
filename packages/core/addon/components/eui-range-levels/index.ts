@@ -22,8 +22,8 @@ export type EuiRangeLevelsArgs = {
 
 export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsArgs> {
   @action
-  validateLevels() {
-    let { min, max } = this.args;
+  validateLevels(): void {
+    const { min, max } = this.args;
     this.args.levels?.forEach?.((level) => {
       if (level.min < min) {
         assert(`The level min of ${level.min} is lower than the min value of ${min}.`, true);

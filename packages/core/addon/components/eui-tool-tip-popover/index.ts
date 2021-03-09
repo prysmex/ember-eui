@@ -18,14 +18,14 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverArgs> 
     window.addEventListener('resize', this.updateDimensions);
   }
 
-  willDestroy() {
+  willDestroy(): void {
     super.willDestroy();
     document.body.classList.remove('euiBody-hasPortalContent');
     window.removeEventListener('resize', this.updateDimensions);
   }
 
   @action
-  setPopoverRef(popover: HTMLDivElement) {
+  setPopoverRef(popover: HTMLDivElement): void {
     this.popover = popover;
     if (this.args.popoverRef) {
       this.args.popoverRef(popover);
@@ -33,7 +33,7 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverArgs> 
   }
 
   @action
-  updateDimensions() {
+  updateDimensions(): void {
     requestAnimationFrame(() => {
       // Because of this delay, sometimes `positionToolTip` becomes unavailable.
       if (this.popover) {

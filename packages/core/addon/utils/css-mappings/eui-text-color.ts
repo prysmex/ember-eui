@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiTextColor';
+export const baseClass = 'euiTextColor';
 
 export const colorMapping = {
   default: `${baseClass}--default`,
@@ -7,14 +7,14 @@ export const colorMapping = {
   accent: `${baseClass}--accent`,
   danger: `${baseClass}--danger`,
   warning: `${baseClass}--warning`,
-  ghost: `${baseClass}--ghost`,
+  ghost: `${baseClass}--ghost`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    color: colorMapping,
-  },
+    color: colorMapping
+  }
 };
 
 export default mapping;

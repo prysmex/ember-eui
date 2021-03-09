@@ -1,6 +1,6 @@
-import Helper from "@ember/component/helper";
-import { humanize } from "ember-cli-string-helpers/helpers/humanize";
-import { inject as service } from "@ember/service";
+import Helper from '@ember/component/helper';
+import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
+import { inject as service } from '@ember/service';
 
 type Page = {
   id: string;
@@ -38,18 +38,11 @@ function compareFunction(a: Item, b: Item) {
   // a debe ser igual b
   return 0;
 }
-export function getSidenavRoutes([docfyNode, clickHandler]: [
-  DocfyNode,
-  (id: NodeId) => void
-]) {
+export function getSidenavRoutes([docfyNode, clickHandler]: [DocfyNode, (id: NodeId) => void]) {
   return [getItems(docfyNode, clickHandler, docfyNode.name)];
 }
 
-function getItems(
-  docfyNode: DocfyNode,
-  clickHandler: (id: NodeId) => void,
-  parent: string
-): Item {
+function getItems(docfyNode: DocfyNode, clickHandler: (id: NodeId) => void, parent: string): Item {
   let items: Item[] = [];
   if (docfyNode.children.length > 0) {
     let children = docfyNode.children;
@@ -59,15 +52,13 @@ function getItems(
     ...items,
     ...docfyNode.pages.map((page) => {
       return getItemFromPage(page, clickHandler);
-    }),
+    })
   ].sort(compareFunction);
   return {
     name: humanize([docfyNode.label]),
     id: `${parent}-${docfyNode.label}`,
-    onClick:
-      docfyNode.onClick ??
-      clickHandler.bind(clickHandler, `${parent}-${docfyNode.label}`),
-    items,
+    onClick: docfyNode.onClick ?? clickHandler.bind(clickHandler, `${parent}-${docfyNode.label}`),
+    items
   };
 }
 
@@ -77,16 +68,13 @@ function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
     href: page.url,
     name: humanize([page.title]),
     onClick: clickHandler.bind(clickHandler, page.url),
-    items: [],
+    items: []
   };
 }
 
 export default class GetSidenavRoutes extends Helper {
   @service docfy: any;
   compute([name, clickHandler]: [string, (id: NodeId) => void]) {
-    return getSidenavRoutes([
-      this.docfy.findNestedChildrenByName(name),
-      clickHandler,
-    ]);
+    return getSidenavRoutes([this.docfy.findNestedChildrenByName(name), clickHandler]);
   }
 }

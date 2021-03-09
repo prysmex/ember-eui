@@ -24,7 +24,7 @@ type GlobalToastListArgs = {
 const TOAST_FADE_OUT_MS = 250;
 
 export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastListArgs> {
-  @service euiToaster: EuiToasterService;
+  @service declare euiToaster: EuiToasterService;
 
   dismissTimeoutIds: number[] = [];
   toastIdToTimerMap: { [toastId: string]: Timer } = {};
@@ -43,7 +43,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
     [toastId: string]: boolean;
   } = {};
 
-  startScrollingToBottom() {
+  startScrollingToBottom(): void {
     this.isScrollingToBottom = true;
 
     const scrollToBottom = () => {
@@ -75,7 +75,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  didInsertToast(toast: EuiToastProps) {
+  didInsertToast(toast: EuiToastProps): void {
     this.scheduleToastForDismissal(toast);
     if (!this.isUserInteracting) {
       // If the user has scrolled up the toast list then we don't want to annoy them by scrolling
@@ -87,7 +87,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  onMouseEnter() {
+  onMouseEnter(): void {
     // Stop scrolling to bottom if we're in mid-scroll, because the user wants to interact with
     // the list.
     this.isScrollingToBottom = false;
@@ -103,7 +103,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  onMouseLeave() {
+  onMouseLeave(): void {
     this.isUserInteracting = false;
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
@@ -114,7 +114,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  onScroll() {
+  onScroll(): void {
     if (this.listElement) {
       this.isScrolledToBottom =
         this.listElement.scrollHeight - this.listElement.scrollTop ===
@@ -122,7 +122,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
     }
   }
 
-  scheduleAllToastsForDismissal() {
+  scheduleAllToastsForDismissal(): void {
     this.euiToaster.toasts.forEach((toast) => {
       if (!this.toastIdToTimerMap[toast.id]) {
         this.scheduleToastForDismissal(toast);
@@ -131,7 +131,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  scheduleToastForDismissal(toast: EuiToastProps) {
+  scheduleToastForDismissal(toast: EuiToastProps): void {
     // Start fading the toast out once its lifetime elapses.
     this.toastIdToTimerMap[toast.id] = new Timer(
       this.dismissToast.bind(this, toast),
@@ -140,7 +140,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  dismissToast(toast: EuiToastProps) {
+  dismissToast(toast: EuiToastProps): void {
     // Remove the toast after it's done fading out.
     this.dismissTimeoutIds.push(
       window.setTimeout(() => {
@@ -157,7 +157,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
 
           delete this.toastIdToDismissedMap[toast.id];
           this.toastIdToDismissedMap = {
-            ...this.toastIdToDismissedMap,
+            ...this.toastIdToDismissedMap
           };
           this.euiToaster.remove(toast);
         }
@@ -166,7 +166,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
 
     this.toastIdToDismissedMap = {
       ...this.toastIdToDismissedMap,
-      [toast.id]: true,
+      [toast.id]: true
     };
   }
 
@@ -176,11 +176,11 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   @action
-  didInsert(element: Element) {
+  didInsert(element: Element): void {
     this.listElement = element;
   }
 
-  willDestroy() {
+  willDestroy(): void {
     if (this.isScrollingAnimationFrame !== 0) {
       window.cancelAnimationFrame(this.isScrollingAnimationFrame);
     }

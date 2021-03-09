@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiButtonIcon';
+export const baseClass = 'euiButtonIcon';
 
 const colorMapping = {
   accent: `${baseClass}--accent`,
@@ -8,14 +8,14 @@ const colorMapping = {
   subdued: `${baseClass}--subdued`,
   success: `${baseClass}--success`,
   text: `${baseClass}--text`,
-  warning: `${baseClass}--warning`,
+  warning: `${baseClass}--warning`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    color: colorMapping,
-  },
+    color: colorMapping
+  }
 };
 
 export default mapping;

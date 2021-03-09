@@ -18,18 +18,15 @@ export default class EuiToasterService extends Service {
   @tracked toasts: EuiToastProps[] = [];
 
   @action
-  show(props: EuiToastProps) {
+  show(props: EuiToastProps): void {
     if (!props.id) {
       props.id = guidFor(props);
     }
-    this.toasts = [
-      ...this.toasts,
-      props
-    ]
+    this.toasts = [...this.toasts, props];
   }
 
   @action
-  remove(toastToRemove: EuiToastProps) {
+  remove(toastToRemove: EuiToastProps): void {
     this.toasts = this.toasts.filter((toast) => toast !== toastToRemove);
   }
 }

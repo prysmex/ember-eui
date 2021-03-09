@@ -1,11 +1,11 @@
-export const baseClass: string = 'euiRangeHighlight';
+export const baseClass = 'euiRangeHighlight';
 
 export function inlineStyles({
   lowerValue,
   upperValue,
   min,
   max,
-  background,
+  background
 }: {
   lowerValue: number;
   upperValue: number;
@@ -18,14 +18,14 @@ export function inlineStyles({
   return {
     background: background,
     'margin-left': `${leftPosition * 100}%`,
-    width: `${rangeWidth * 100}%`,
+    width: `${rangeWidth * 100}%`
   };
 }
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {},
-  inlineStyles,
+  inlineStyles
 };
 
 export default mapping;

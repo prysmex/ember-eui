@@ -105,7 +105,7 @@ const mapping: Mapping = {
   EuiRangeLevels,
   EuiToolTip,
   EuiToast,
-  EuiGlobalToastList,
+  EuiGlobalToastList
 };
 
 export default mapping;

@@ -1,15 +1,15 @@
-export const baseClass: string = 'euiFilePicker';
+export const baseClass = 'euiFilePicker';
 
 export const displayMapping = {
   none: ``,
-  large: `${baseClass}--large`,
+  large: `${baseClass}--large`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    display: displayMapping,
-  },
+    display: displayMapping
+  }
 };
 
 export default mapping;

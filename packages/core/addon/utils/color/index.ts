@@ -32,5 +32,5 @@ export {
   euiPalettePositive,
   euiPaletteCool,
   euiPaletteWarm,
-  euiPaletteGray,
+  euiPaletteGray
 } from './eui_palettes';

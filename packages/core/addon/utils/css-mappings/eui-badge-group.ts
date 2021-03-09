@@ -1,15 +1,15 @@
-export const baseClass: string = 'euiBadgeGroup';
+export const baseClass = 'euiBadgeGroup';
 
 export const gutterSize = {
   xs: `${baseClass}--gutterExtraSmall`,
-  s: `${baseClass}--gutterSmall`,
+  s: `${baseClass}--gutterSmall`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    gutterSize: gutterSize,
-  },
+    gutterSize: gutterSize
+  }
 };
 
 export default mapping;

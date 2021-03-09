@@ -4,7 +4,7 @@ import { keysOf, CommonArgs } from '../common';
 import {
   sizeToClassNameMap,
   colorToClassMap,
-  typeToPathMap,
+  typeToPathMap
 } from '../../utils/css-mappings/eui-icon';
 import { uniqueId } from '../../helpers/unique-id';
 import { htmlSafe } from '@ember/template';
@@ -20,8 +20,8 @@ export const COLORS: NamedColor[] = keysOf(colorToClassMap);
 
 type NamedColor = keyof typeof colorToClassMap;
 
-function isNamedColor(name: string): name is NamedColor {
-  return colorToClassMap.hasOwnProperty(name);
+function isNamedColor(name: NamedColor | string): name is NamedColor {
+  return Object.prototype.hasOwnProperty.call(colorToClassMap, name);
 }
 
 // We accept arbitrary color strings, which are impossible to type.
@@ -75,7 +75,7 @@ export type EuiIconArgs = CommonArgs & {
 };
 
 function isEuiIconType(x: EuiIconArgs['type']): x is EuiIconType {
-  return typeof x === 'string' && typeToPathMap.hasOwnProperty(x);
+  return typeof x === 'string' && Object.prototype.hasOwnProperty.call(typeToPathMap, x);
 }
 
 export default class EuiIcon extends Component<EuiIconArgs> {
@@ -83,7 +83,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   @argOrDefault('default') color!: IconColor;
 
   get useImage(): boolean {
-    let { type } = this.args;
+    const { type } = this.args;
     return typeof type === 'string' && !isEuiIconType(type) && !this.useSvg;
   }
 
@@ -93,7 +93,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   get icon(): IconType | void {
-    let { type } = this.args;
+    const { type } = this.args;
 
     if (type === null) {
       return undefined;
@@ -107,18 +107,18 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     return type;
   }
 
-  get emptyIcon() {
+  get emptyIcon(): string {
     return this.getEuiIconSvgPath('empty');
   }
 
-  getEuiIconSvgPath(type: EuiIconType) {
+  getEuiIconSvgPath(type: EuiIconType): string {
     const config = getOwner(this).resolveRegistration('config:environment');
     const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg/assets/';
-    let euiIcon = typeToPathMap[type].replace(/_/g, '-').toLowerCase();
+    const euiIcon = typeToPathMap[type].replace(/_/g, '-').toLowerCase();
     return `${svgPath}${euiIcon}`;
   }
 
-  get isAppIcon() {
+  get isAppIcon(): string | boolean {
     const { type } = this.args;
     return (
       type &&
@@ -127,13 +127,13 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     );
   }
 
-  get focusable() {
+  get focusable(): string {
     const { tabIndex } = this.args;
     return tabIndex == null || tabIndex === -1 ? 'false' : 'true';
   }
 
-  get optionalCustomStyles() {
-    let { color } = this;
+  get optionalCustomStyles(): ReturnType<typeof htmlSafe> | string {
+    const { color } = this;
     if (color) {
       if (!isNamedColor(color)) {
         return htmlSafe(`fill: ${color}`);
@@ -142,8 +142,8 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     return '';
   }
 
-  get optionalColorClass() {
-    let { color } = this;
+  get optionalColorClass(): NamedColor | string {
+    const { color } = this;
     if (color) {
       if (isNamedColor(color)) {
         return colorToClassMap[color];
@@ -161,9 +161,9 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     );
   }
 
-  get titleId(): string {
-    let { title } = this.args;
-    let titleId: any;
+  get titleId(): string | undefined {
+    const { title } = this.args;
+    let titleId;
 
     // If no aria-label or aria-labelledby is provided but there's a title, a titleId is generated
     //  The svg aria-labelledby attribute gets this titleId

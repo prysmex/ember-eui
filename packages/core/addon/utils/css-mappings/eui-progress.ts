@@ -1,10 +1,10 @@
-const baseClass: string = 'euiProgress';
+const baseClass = 'euiProgress';
 
 const sizeToClassMapping = {
   xs: `${baseClass}--xs`,
   s: `${baseClass}--s`,
   m: `${baseClass}--m`,
-  l: `${baseClass}--l`,
+  l: `${baseClass}--l`
 };
 
 const colorToClassMap = {
@@ -24,7 +24,7 @@ const colorToClassMap = {
   vis6: `${baseClass}--vis6`,
   vis7: `${baseClass}--vis7`,
   vis8: `${baseClass}--vis8`,
-  vis9: `${baseClass}--vis9`,
+  vis9: `${baseClass}--vis9`
 };
 
 const dataColorToClassMap = {
@@ -44,13 +44,13 @@ const dataColorToClassMap = {
   vis6: `${baseClass}__data--vis6`,
   vis7: `${baseClass}__data--vis7`,
   vis8: `${baseClass}__data--vis8`,
-  vis9: `${baseClass}__data--vis9`,
+  vis9: `${baseClass}__data--vis9`
 };
 
 const positionsToClassMap = {
   fixed: `${baseClass}--fixed`,
   absolute: `${baseClass}--absolute`,
-  static: '',
+  static: ''
 };
 
 export const mapping: ComponentMapping = {
@@ -59,8 +59,8 @@ export const mapping: ComponentMapping = {
     size: sizeToClassMapping,
     position: positionsToClassMap,
     color: colorToClassMap,
-    secondaryColor: dataColorToClassMap,
-  },
+    secondaryColor: dataColorToClassMap
+  }
 };
 
 export default mapping;

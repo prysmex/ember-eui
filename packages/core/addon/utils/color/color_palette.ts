@@ -44,7 +44,7 @@ export function colorPalette(
    * Uses a more static interpolation for non-continuous spectrums
    */
   categorical: boolean = false
-) {
+): string[] {
   let hexStart: string[] = colors.slice();
   let hexEnd: string[] = [];
 
@@ -87,7 +87,7 @@ export function colorPalette(
     hexEnd = colorsRight;
   }
 
-  function createSteps(colors: string[], steps: number) {
+  function createSteps(colors: string[], steps: number): string[] {
     if (!colors.length) {
       return colors;
     }

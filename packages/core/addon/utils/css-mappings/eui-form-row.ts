@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiFormRow';
+export const baseClass = 'euiFormRow';
 
 export const displayMappingToClassMapping = {
   row: '',
@@ -6,14 +6,14 @@ export const displayMappingToClassMapping = {
   columnCompressed: `${baseClass}--compressed ${baseClass}--horizontal`,
   center: '',
   centerCompressed: `${baseClass}--compressed`,
-  columnCompressedSwitch: `${baseClass}--compressed ${baseClass}--horizontal ${baseClass}--hasSwitch`,
+  columnCompressedSwitch: `${baseClass}--compressed ${baseClass}--horizontal ${baseClass}--hasSwitch`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    display: displayMappingToClassMapping,
-  },
+    display: displayMappingToClassMapping
+  }
 };
 
 export default mapping;

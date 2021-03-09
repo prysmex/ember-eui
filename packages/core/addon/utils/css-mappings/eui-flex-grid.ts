@@ -1,8 +1,8 @@
-export const baseClass: string = 'euiFlexGrid';
+export const baseClass = 'euiFlexGrid';
 
 export const directionMapping = {
   row: '',
-  column: `${baseClass}--directionColumn`,
+  column: `${baseClass}--directionColumn`
 };
 
 export const gutterSizeMapping = {
@@ -10,7 +10,7 @@ export const gutterSizeMapping = {
   s: `${baseClass}--gutterSmall`,
   m: `${baseClass}--gutterMedium`,
   l: `${baseClass}--gutterLarge`,
-  xl: `${baseClass}--gutterXLarge`,
+  xl: `${baseClass}--gutterXLarge`
 };
 
 export const columnsMapping = {
@@ -18,7 +18,7 @@ export const columnsMapping = {
   1: `${baseClass}--single`,
   2: `${baseClass}--halves`,
   3: `${baseClass}--thirds`,
-  4: `${baseClass}--fourths`,
+  4: `${baseClass}--fourths`
 };
 
 export const mapping: ComponentMapping = {
@@ -26,8 +26,8 @@ export const mapping: ComponentMapping = {
   properties: {
     direction: directionMapping,
     gutterSize: gutterSizeMapping,
-    columns: columnsMapping,
-  },
+    columns: columnsMapping
+  }
 };
 
 export default mapping;

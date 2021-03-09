@@ -15,7 +15,7 @@ const mutationObserverOptions = {
   attributes: true, // Account for style changes from `className` or `style`
   characterData: true, // Account for text content size differences
   childList: true, // Account for adding/removing child nodes
-  subtree: true, // Account for deep child nodes
+  subtree: true // Account for deep child nodes
 };
 
 interface ResizeObserverArgs {
@@ -28,6 +28,7 @@ interface ResizeObserverArgs {
 
 const makeCompatibleObserver = (node: Element, callback: () => void) => {
   const observer = new MutationObserver(callback);
+  //eslint-disable-next-line
   observer.observe(node, mutationObserverOptions);
 
   window.addEventListener('resize', callback);
@@ -78,20 +79,20 @@ export default class ResizeObserver extends Modifier<ResizeObserverArgs> {
       const boundingRect = element.getBoundingClientRect();
       setSize({
         width: boundingRect.width,
-        height: boundingRect.height,
+        height: boundingRect.height
       });
 
       this.observer = makeResizeObserver(element, () => {
         const boundingRect = element.getBoundingClientRect();
         setSize({
           width: boundingRect.width,
-          height: boundingRect.height,
+          height: boundingRect.height
         });
       })!;
     } else {
       setSize({
         width: 0,
-        height: 0,
+        height: 0
       });
     }
   }

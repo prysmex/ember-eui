@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiButtonEmpty';
+export const baseClass = 'euiButtonEmpty';
 
 const colorMapping = {
   text: `${baseClass}--text`,
@@ -6,19 +6,19 @@ const colorMapping = {
   warning: `${baseClass}--warning`,
   ghost: `${baseClass}--ghost`,
   primary: `${baseClass}--primary`,
-  success: `${baseClass}--success`,
+  success: `${baseClass}--success`
 };
 
 const sizeMapping = {
   xs: `${baseClass}--xSmall`,
   s: `${baseClass}--small`,
-  l: `${baseClass}--large`,
+  l: `${baseClass}--large`
 };
 
 const flushMapping = {
   left: `${baseClass}--flushLeft`,
   right: `${baseClass}--flushRight`,
-  both: `${baseClass}--flushBoth`,
+  both: `${baseClass}--flushBoth`
 };
 
 const mapping: ComponentMapping = {
@@ -26,8 +26,8 @@ const mapping: ComponentMapping = {
   properties: {
     color: colorMapping,
     size: sizeMapping,
-    flush: flushMapping,
-  },
+    flush: flushMapping
+  }
 };
 
 export default mapping;

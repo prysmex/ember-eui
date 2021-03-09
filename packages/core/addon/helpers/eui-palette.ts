@@ -12,7 +12,7 @@ import {
   euiPalettePositive,
   euiPaletteCool,
   euiPaletteWarm,
-  euiPaletteGray,
+  euiPaletteGray
 } from '../utils/color/eui_palettes';
 
 export const PALETTES = {
@@ -27,7 +27,7 @@ export const PALETTES = {
   euiPalettePositive,
   euiPaletteCool,
   euiPaletteWarm,
-  euiPaletteGray,
+  euiPaletteGray
 };
 
 export type palette_keys = keyof typeof PALETTES;

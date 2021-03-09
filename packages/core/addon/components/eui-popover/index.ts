@@ -99,7 +99,7 @@ export type EuiPopoverArgs = {
   /**
    * Standard DOM `style` attribute. Passed to the EuiPanel
    */
-  panelStyle?: HTMLStyleElement;
+  panelStyle?: { [i: string]: string };
   panelRef?: (e: HTMLElement | null) => unknown;
   popoverRef?: (e: HTMLElement) => unknown;
   /**
@@ -150,10 +150,12 @@ const anchorPositionToPopoverPositionMap: {
   up: 'top',
   right: 'right',
   down: 'bottom',
-  left: 'left',
+  left: 'left'
 };
 
-export function getPopoverPositionFromAnchorPosition(anchorPosition: PopoverAnchorPosition) {
+export function getPopoverPositionFromAnchorPosition(
+  anchorPosition: PopoverAnchorPosition
+): EuiPopoverPosition {
   // maps the anchor position to the matching popover position
   // e.g. "upLeft" -> "top", "downRight" -> "bottom"
 
@@ -161,23 +163,30 @@ export function getPopoverPositionFromAnchorPosition(anchorPosition: PopoverAnch
   // starts at the beginning (" ^ ") of anchorPosition and
   // captures all of the characters (" (.*?) ") until the
   // first capital letter (" [A-Z] ") is encountered
-  const [, primaryPosition] = anchorPosition.match(/^(.*?)[A-Z]/)!;
-  return anchorPositionToPopoverPositionMap[primaryPosition as AnchorPosition];
+  const match = anchorPosition.match(/^(.*?)[A-Z]/);
+  if (match?.length && match.length > 1) {
+    return anchorPositionToPopoverPositionMap[match[1] as AnchorPosition];
+  }
+  return anchorPositionToPopoverPositionMap['up'];
 }
 
-export function getPopoverAlignFromAnchorPosition(anchorPosition: PopoverAnchorPosition) {
+export function getPopoverAlignFromAnchorPosition(
+  anchorPosition: PopoverAnchorPosition
+): EuiPopoverPosition {
   // maps the gravity to the matching popover position
   // e.g. "upLeft" -> "left", "rightDown" -> "bottom"
 
   // extract the second positional word from anchorPosition:
   // starts a capture group at the first capital letter
   // and includes everything after it
-  const [, align] = anchorPosition.match(/([A-Z].*)/)!;
-
+  const match = anchorPosition.match(/([A-Z].*)/);
   // this performs two tasks:
   // 1. normalizes the align position by lowercasing it
   // 2. `center` doesn't exist in the lookup map which converts it to `undefined` meaning no align
-  return anchorPositionToPopoverPositionMap[align.toLowerCase() as AnchorPosition];
+  if (match?.length && match.length > 1) {
+    return anchorPositionToPopoverPositionMap[match[1].toLowerCase() as AnchorPosition];
+  }
+  return anchorPositionToPopoverPositionMap['left'];
 }
 
 export const ANCHOR_POSITIONS = Object.keys(anchorPositionMapping);
@@ -186,7 +195,7 @@ export type FocusTarget = HTMLElement | string | (() => HTMLElement);
 
 const DEFAULT_POPOVER_STYLES = {
   top: 50,
-  left: 50,
+  left: 50
 };
 
 function getElementFromInitialFocus(initialFocus?: FocusTarget): HTMLElement | null {
@@ -224,18 +233,18 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   //State
   @tracked prevIsOpen: boolean | undefined;
   @tracked suppressingPopover: boolean | undefined;
-  @tracked isClosing: boolean = false;
-  @tracked isOpening: boolean = false;
+  @tracked isClosing = false;
+  @tracked isOpening = false;
   @tracked popoverStyles: CssProps = {};
   @tracked arrowStyles: CssProps | undefined = {};
-  @tracked arrowPosition: any;
-  @tracked openPosition: any;
-  @tracked isOpenStable: boolean = false;
+  @tracked arrowPosition: EuiPopoverPosition | null = null;
+  @tracked openPosition: EuiPopoverPosition | null = null;
+  @tracked isOpenStable = false;
   @tracked isCurrentlyOpen: boolean | undefined;
   ///
 
-  private respositionTimeout: any;
-  private closingTransitionTimeout: any;
+  private respositionTimeout: ReturnType<typeof later> | null = null;
+  private closingTransitionTimeout: ReturnType<typeof later> | null = null;
   private closingTransitionAnimationFrame: number | undefined;
   private updateFocusAnimationFrame: number | undefined;
   @tracked button: HTMLElement | null = null;
@@ -250,14 +259,14 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  closePopover() {
+  closePopover(): void {
     if (this.isOpen) {
       this.args.closePopover();
     }
   }
 
   @action
-  onEscapeKey(event: Event) {
+  onEscapeKey(event: Event): void {
     if (this.isOpen) {
       event.preventDefault();
       event.stopPropagation();
@@ -266,14 +275,14 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  onKeyDown(event: KeyboardEvent) {
+  onKeyDown(event: KeyboardEvent): void {
     if (event.key === cascadingMenuKeys.ESCAPE) {
       this.onEscapeKey((event as unknown) as Event);
     }
   }
 
   @action
-  onClickOutside(event: Event) {
+  onClickOutside(event: Event): void {
     // only close the popover if the event source isn't the anchor button
     // otherwise, it is up to the anchor to toggle the popover's open status
     if (this.button && this.button.contains(event.target as Node) === false) {
@@ -281,7 +290,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
     }
   }
 
-  updateFocus() {
+  updateFocus(): void {
     // Wait for the DOM to update.
     this.updateFocusAnimationFrame = window.requestAnimationFrame(() => {
       if (!this.ownFocus || !this.panel) {
@@ -334,8 +343,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  onOpenPopover() {
-    cancel(this.closingTransitionTimeout);
+  onOpenPopover(): void {
+    cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
     // We need to set this state a beat after the render takes place, so that the CSS
     // transition can take effect.
     this.closingTransitionAnimationFrame = window.requestAnimationFrame(() => {
@@ -354,7 +363,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
 
           return {
             durationMatch: Math.max(durationMatch, transitionTimings.durationMatch),
-            delayMatch: Math.max(delayMatch, transitionTimings.delayMatch),
+            delayMatch: Math.max(delayMatch, transitionTimings.delayMatch)
           };
         },
         { durationMatch: 0, delayMatch: 0 }
@@ -364,25 +373,25 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
       this,
       () => {
         this.isOpenStable = true;
-        scheduleOnce('afterRender', this, () => {
+        const fn = (): void => {
           this.positionPopoverFixed();
           this.updateFocus();
-        });
+        };
+        scheduleOnce('afterRender', this, fn);
       },
       durationMatch + delayMatch
     );
   }
 
   @action
-  didInsertPopover() {
+  didInsertPopover(): void {
     if (this.suppressingPopover) {
       // component was created with isOpen=true; now that it's inserted
       // stop suppressing and start opening
       this.suppressingPopover = false;
       this.isOpening = true;
-      scheduleOnce('afterRender', this, () => {
-        this.onOpenPopover();
-      });
+      const fn = (): void => this.onOpenPopover();
+      scheduleOnce('afterRender', this, fn);
     }
 
     if (this.args.repositionOnScroll) {
@@ -393,7 +402,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  didUpdateRepositionOnScroll() {
+  didUpdateRepositionOnScroll(): void {
     if (this.args.repositionOnScroll) {
       window.addEventListener('scroll', this.positionPopoverFixed);
     } else {
@@ -402,7 +411,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  didUpdateIsOpen() {
+  didUpdateIsOpen(): void {
     this.isCurrentlyOpen = this.isOpen;
     if (!this.prevIsOpen && this.args.isOpen) {
       this.onOpenPopover();
@@ -424,17 +433,17 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
     this.prevIsOpen = this.args.isOpen;
   }
 
-  willDestroy() {
+  willDestroy(): void {
     super.willDestroy();
     window.removeEventListener('scroll', this.positionPopoverFixed);
-    cancel(this.respositionTimeout);
-    cancel(this.closingTransitionTimeout);
-    cancelAnimationFrame(this.closingTransitionAnimationFrame!);
-    cancelAnimationFrame(this.updateFocusAnimationFrame!);
+    cancel(this.respositionTimeout as ReturnType<typeof later>);
+    cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
+    cancelAnimationFrame(this.closingTransitionAnimationFrame as number);
+    cancelAnimationFrame(this.updateFocusAnimationFrame as number);
   }
 
   @action
-  onMutation(records: MutationRecord[]) {
+  onMutation(records: MutationRecord[]): void {
     const waitDuration = getWaitDuration(records);
     this.positionPopoverFixed();
 
@@ -442,7 +451,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  positionPopover(allowEnforcePosition: boolean) {
+  positionPopover(allowEnforcePosition: boolean): void {
     if (this.button == null || this.panel == null) return;
 
     let position = getPopoverPositionFromAnchorPosition(this.anchorPosition);
@@ -465,10 +474,10 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
           : 8 + (this.args.offset || 0),
       arrowConfig: {
         arrowWidth: 24,
-        arrowBuffer: 10,
+        arrowBuffer: 10
       },
       returnBoundingBox: this.args.attachToAnchor,
-      buffer: this.args.buffer,
+      buffer: this.args.buffer
     });
 
     // the popover's z-index must inherit from the button
@@ -483,7 +492,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
       left: this.args.attachToAnchor && anchorBoundingBox ? anchorBoundingBox.left : left,
       zIndex,
       // Adding `will-change` to reduce risk of a blurry animation in Chrome 86+
-      willChange: 'transform, opacity',
+      willChange: 'transform, opacity'
     };
 
     const willRenderArrow = !this.args.attachToAnchor && this.hasArrow;
@@ -497,41 +506,42 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   get _arrowStyles(): ReturnType<typeof htmlSafe> | undefined {
-    let { arrowStyles } = this;
+    const { arrowStyles } = this;
     return arrowStyles
       ? htmlSafe(`top: ${arrowStyles?.top}px; left: ${arrowStyles?.left}px;`)
       : undefined;
   }
-  get _popoverStyles(): {} {
-    let { panelStyle } = this.args;
-    let { popoverStyles } = this;
+
+  get _popoverStyles(): { [i: string]: string } {
+    const { panelStyle } = this.args;
+    const { popoverStyles } = this;
     return {
       ...panelStyle,
       top: `${popoverStyles.top}px`,
       left: `${popoverStyles.left}px`,
       zIndex: `${popoverStyles.zIndex}`,
-      willChange: 'transform, opacity',
+      willChange: 'transform, opacity'
     };
   }
 
   @action
-  positionPopoverFixed() {
+  positionPopoverFixed(): void {
     this.positionPopover(true);
   }
 
   @action
-  positionPopoverFluid() {
+  positionPopoverFluid(): void {
     this.positionPopover(false);
   }
 
   @action
-  registerButton(btn: HTMLDivElement) {
+  registerButton(btn: HTMLDivElement): void {
     this.button = btn;
     this.args.buttonRef?.(btn);
   }
 
   @action
-  registerPanel(panel: HTMLElement | null) {
+  registerPanel(panel: HTMLElement | null): void {
     this.panel = panel;
     this.args.panelRef?.(panel);
     if (panel == null) {

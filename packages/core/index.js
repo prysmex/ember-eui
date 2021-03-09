@@ -24,6 +24,7 @@ module.exports = {
     } else {
       // Otherwise, we'll use this implementation borrowed from the _findHost()
       // method in ember-cli.
+      //eslint-disable-next-line
       let current = this;
       do {
         app = current.app || app;
@@ -55,7 +56,7 @@ module.exports = {
         srcDir: '/src',
         include: ['**/*.scss'],
         destDir: 'elastic-eui',
-        annotation: 'ElasticEUIScssFunnel',
+        annotation: 'ElasticEUIScssFunnel'
       });
 
       euiScssFiles = new EuiScssFilter(euiScssFiles);
@@ -75,7 +76,7 @@ module.exports = {
     trees.push(tree);
 
     let output = new BroccoliMergeTrees(trees, {
-      overwrite: true,
+      overwrite: true
     });
 
     return this._super.treeForStyles(output);
@@ -83,5 +84,5 @@ module.exports = {
 
   pathBase(packageName) {
     return path.dirname(resolve.sync(`${packageName}/package.json`, { basedir: __dirname }));
-  },
+  }
 };

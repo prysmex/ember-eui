@@ -40,26 +40,26 @@ type EuiFilePicker = {
 export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   @tracked fileInput: HTMLInputElement | null = null;
   @tracked promptText: string | null | undefined = null;
-  @tracked isHoveringDrop: boolean = false;
+  @tracked isHoveringDrop = false;
 
   @argOrDefault('Select or drag and drop a file') initialPromptText!: Component | string | null;
   @argOrDefault(false) compressed!: boolean;
   @argOrDefault('large') display!: string;
 
   @action
-  showDrop() {
+  showDrop(): void {
     if (!this.args.disabled) {
       this.isHoveringDrop = true;
     }
   }
 
   @action
-  hideDrop() {
+  hideDrop(): void {
     this.isHoveringDrop = false;
   }
 
   @action
-  handleChange(filesSelected?: string | null) {
+  handleChange(filesSelected?: string | null): void {
     if (!this.fileInput) return;
 
     if (this.fileInput.files && this.fileInput.files.length > 1) {
@@ -78,7 +78,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   }
 
   @action
-  removeFiles(e: MouseEvent) {
+  removeFiles(e: MouseEvent): void {
     e.stopPropagation();
     e.preventDefault();
 
@@ -89,7 +89,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   }
 
   @action
-  didInsertInput(inputRef: HTMLInputElement) {
+  didInsertInput(inputRef: HTMLInputElement): void {
     this.fileInput = inputRef;
   }
 }

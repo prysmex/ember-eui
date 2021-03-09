@@ -5,7 +5,7 @@ import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-defa
 import { keys } from '../../utils/keys';
 import { Browser } from '../../utils/browser';
 
-let isSearchSupported: boolean = false;
+let isSearchSupported = false;
 
 /**
  * You can find more typing on the template
@@ -30,10 +30,11 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   @tracked inputElement: HTMLInputElement | null = null;
   @tracked value: string | null =
     this.args.value || (this.args.defaultValue ? `${this.args.defaultValue}` : '');
-  @argOrDefault(false) incremental: boolean = false;
+
+  @argOrDefault(false) incremental = false;
 
   @action
-  setValue(e: InputEvent) {
+  setValue(e: InputEvent): void {
     const value = (e.target as HTMLInputElement).value;
     if (this.value !== value) {
       this.value = value;
@@ -42,7 +43,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   }
 
   @action
-  onKeyUp(incremental: boolean, onSearch: (value: string) => void, e: KeyboardEvent) {
+  onKeyUp(incremental: boolean, onSearch: (value: string) => void, e: KeyboardEvent): void {
     this.value = (e.target as HTMLInputElement).value;
     if (this.args.onKeyUp) {
       this.args.onKeyUp(e);
@@ -60,7 +61,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   }
 
   @action
-  onClear() {
+  onClear(): void {
     const nativeInputValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
     const nativeInputValueSetter = nativeInputValue ? nativeInputValue.set : undefined;
     if (nativeInputValueSetter) {
@@ -72,7 +73,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
     if ('Event' in window && typeof Event === 'function') {
       event = new Event('input', {
         bubbles: true,
-        cancelable: false,
+        cancelable: false
       });
     } else {
       // IE11
@@ -96,7 +97,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   }
 
   @action
-  didInsertInput(inputRef: HTMLInputElement) {
+  didInsertInput(inputRef: HTMLInputElement): void {
     this.inputElement = inputRef;
     isSearchSupported = Browser.isEventSupported('search', this.inputElement);
   }

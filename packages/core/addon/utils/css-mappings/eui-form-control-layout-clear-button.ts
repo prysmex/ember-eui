@@ -1,15 +1,15 @@
-export const baseClass: string = 'euiFormRow';
+export const baseClass = 'euiFormRow';
 
 export const sizeMapping = {
   s: 'euiFormControlLayoutClearButton--small',
-  m: '',
+  m: ''
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    size: sizeMapping,
-  },
+    size: sizeMapping
+  }
 };
 
 export default mapping;

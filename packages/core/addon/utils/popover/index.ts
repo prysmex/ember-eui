@@ -40,14 +40,14 @@ const relatedDimension: { [position in EuiPopoverPosition]: Dimension } = {
   top: 'height',
   right: 'width',
   bottom: 'height',
-  left: 'width',
+  left: 'width'
 };
 
 const dimensionPositionAttribute: {
   [dimension in Dimension]: 'top' | 'left';
 } = {
   height: 'top',
-  width: 'left',
+  width: 'left'
 };
 
 const positionComplements: {
@@ -56,7 +56,7 @@ const positionComplements: {
   top: 'bottom',
   right: 'left',
   bottom: 'top',
-  left: 'right',
+  left: 'right'
 };
 
 // always resolving to top/left is taken advantage of by knowing they are the
@@ -67,7 +67,7 @@ const positionSubstitutes: {
   top: 'left',
   right: 'top',
   bottom: 'left',
-  left: 'top',
+  left: 'top'
 };
 
 interface FindPopoverPositionArgs {
@@ -134,7 +134,7 @@ export function findPopoverPosition({
   allowCrossAxis = true,
   container,
   arrowConfig,
-  returnBoundingBox,
+  returnBoundingBox
 }: FindPopoverPositionArgs): FindPopoverPositionResult {
   // find the screen-relative bounding boxes of the anchor, popover, and container
   const anchorBoundingBox = getElementBoundingBox(anchor);
@@ -151,7 +151,7 @@ export function findPopoverPosition({
     bottom: documentHeight,
     left: 0,
     height: documentHeight,
-    width: documentWidth,
+    width: documentWidth
   };
 
   // if no container element is given fall back to using the window viewport
@@ -177,7 +177,9 @@ export function findPopoverPosition({
   // Try the user-desired position first.
   const iterationPositions = [position];
   // keep user-defined alignment in the original positions.
-  const iterationAlignments: Array<undefined | EuiPopoverPosition> = [align];
+  type valuekey = undefined | EuiPopoverPosition;
+
+  const iterationAlignments: valuekey[] = [align];
 
   if (forcePosition !== true) {
     iterationPositions.push(positionComplements[position]); // Try the complementary position.
@@ -215,7 +217,7 @@ export function findPopoverPosition({
       containerBoundingBox,
       offset,
       buffer,
-      arrowConfig,
+      arrowConfig
     });
 
     if (bestFit === undefined || screenCoordinates.fit > bestFit) {
@@ -225,7 +227,7 @@ export function findPopoverPosition({
         position: iterationPosition,
         top: screenCoordinates.top + window.pageYOffset,
         left: screenCoordinates.left + window.pageXOffset,
-        arrow: screenCoordinates.arrow,
+        arrow: screenCoordinates.arrow
       };
 
       // If we've already found the ideal fit, use that position.
@@ -298,7 +300,7 @@ export function getPopoverScreenCoordinates({
   containerBoundingBox,
   arrowConfig,
   offset = 0,
-  buffer = 0,
+  buffer = 0
 }: GetPopoverScreenCoordinatesArgs): GetPopoverScreenCoordinatesResult {
   /**
    * The goal is to find the best way to align the popover content
@@ -351,7 +353,7 @@ export function getPopoverScreenCoordinates({
     containerBoundingBox,
     popoverBoundingBox,
     anchorBoundingBox,
-    arrowConfig,
+    arrowConfig
   });
 
   const primaryAxisDimension = relatedDimension[position]; // "top" -> "height"
@@ -362,12 +364,12 @@ export function getPopoverScreenCoordinates({
     offset,
     popoverBoundingBox,
     anchorBoundingBox,
-    arrowConfig,
+    arrowConfig
   });
 
   const popoverPlacement = {
     [crossAxisFirstSide]: crossAxisPosition,
-    [primaryAxisPositionName]: primaryAxisPosition,
+    [primaryAxisPositionName]: primaryAxisPosition
   };
 
   // calculate the fit of the popover in this location
@@ -388,7 +390,7 @@ export function getPopoverScreenCoordinates({
       bottom: popoverPlacement.top + popoverBoundingBox.height,
       left: popoverPlacement.left,
       width: popoverBoundingBox.width,
-      height: popoverBoundingBox.height,
+      height: popoverBoundingBox.height
     },
     combinedBoundingBox
   );
@@ -396,7 +398,7 @@ export function getPopoverScreenCoordinates({
   const arrow = arrowConfig
     ? {
         [crossAxisFirstSide]: crossAxisArrowPosition! - popoverPlacement[crossAxisFirstSide],
-        [primaryAxisPositionName]: primaryAxisArrowPosition,
+        [primaryAxisPositionName]: primaryAxisArrowPosition
       }
     : undefined;
 
@@ -404,7 +406,7 @@ export function getPopoverScreenCoordinates({
     fit,
     top: popoverPlacement.top,
     left: popoverPlacement.left,
-    arrow: arrow ? { left: arrow.left!, top: arrow.top! } : undefined,
+    arrow: arrow ? { left: arrow.left!, top: arrow.top! } : undefined
   };
 }
 
@@ -440,7 +442,7 @@ function getCrossAxisPosition({
   containerBoundingBox,
   popoverBoundingBox,
   anchorBoundingBox,
-  arrowConfig,
+  arrowConfig
 }: GetCrossAxisPositionArgs): CrossAxisPosition {
   // how much of the popover overflows past either side of the anchor if its centered
   const popoverSizeOnCrossAxis = popoverBoundingBox[crossAxisDimension];
@@ -529,7 +531,7 @@ function getCrossAxisPosition({
 
   return {
     crossAxisPosition,
-    crossAxisArrowPosition,
+    crossAxisArrowPosition
   };
 }
 
@@ -546,8 +548,11 @@ function getPrimaryAxisPosition({
   offset,
   popoverBoundingBox,
   anchorBoundingBox,
-  arrowConfig,
-}: GetPrimaryAxisPositionArgs) {
+  arrowConfig
+}: GetPrimaryAxisPositionArgs): {
+  primaryAxisPosition: number;
+  primaryAxisArrowPosition: number | undefined;
+} {
   // if positioning to the top or left, the target position decreases
   // from the anchor's top or left, otherwise the position adds to the anchor's
   const isOffsetDecreasing = position === 'top' || position === 'left';
@@ -562,7 +567,7 @@ function getPrimaryAxisPosition({
   // find the popover position on the primary axis
   const anchorSizeOnPrimaryAxis = anchorBoundingBox[primaryAxisDimension];
   const primaryAxisOffset = isOffsetDecreasing ? popoverSizeOnPrimaryAxis : anchorSizeOnPrimaryAxis;
-  const contentOffset = (offset + primaryAxisOffset!) * (isOffsetDecreasing ? -1 : 1);
+  const contentOffset = (offset + primaryAxisOffset) * (isOffsetDecreasing ? -1 : 1);
   const primaryAxisPosition = anchorEdgeOrigin + contentOffset;
 
   let primaryAxisArrowPosition;
@@ -573,7 +578,7 @@ function getPrimaryAxisPosition({
 
   return {
     primaryAxisPosition,
-    primaryAxisArrowPosition,
+    primaryAxisArrowPosition
   };
 }
 
@@ -592,7 +597,7 @@ export function getElementBoundingBox(element: HTMLElement): EuiClientRect {
     bottom: rect.bottom,
     left: rect.left,
     height: rect.height,
-    width: rect.width,
+    width: rect.width
   };
 }
 
@@ -635,7 +640,7 @@ export function getAvailableSpace(
       anchorBoundingBox.left -
       containerBoundingBox.left -
       leftBuffer -
-      (offsetSide === 'left' ? offset : 0),
+      (offsetSide === 'left' ? offset : 0)
   };
 }
 
@@ -689,7 +694,7 @@ export function intersectBoundingBoxes(
     bottom,
     left,
     height,
-    width,
+    width
   };
 }
 
@@ -723,6 +728,7 @@ export function getElementZIndex(element: HTMLElement, cousin: HTMLElement): num
 
   // build the array of the element + its offset parents
   const nodesToInspect: HTMLElement[] = [];
+  // eslint-disable-next-line
   while (true) {
     nodesToInspect.push(element);
 

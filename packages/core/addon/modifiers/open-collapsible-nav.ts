@@ -6,7 +6,7 @@ export default modifier(function openCollapsibleNav(_, [navIsDocked]: [boolean])
   }
   document.body.classList.add('euiBody--collapsibleNavIsOpen');
 
-  return () => {
+  return (): void => {
     if (navIsDocked) {
       document.body.classList.remove('euiBody--collapsibleNavIsDocked');
     }

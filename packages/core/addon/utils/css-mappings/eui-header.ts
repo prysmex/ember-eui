@@ -1,21 +1,21 @@
-export const baseClass: string = 'euiHeader';
+export const baseClass = 'euiHeader';
 
 export const themeMapping = {
   dark: `${baseClass}--dark`,
-  default: `${baseClass}--default`,
+  default: `${baseClass}--default`
 };
 
 export const positionMapping = {
   static: `${baseClass}--static`,
-  fixed: `${baseClass}--fixed`,
+  fixed: `${baseClass}--fixed`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     theme: themeMapping,
-    position: positionMapping,
-  },
+    position: positionMapping
+  }
 };
 
 export default mapping;

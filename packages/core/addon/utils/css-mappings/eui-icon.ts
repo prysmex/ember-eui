@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiIcon';
+export const baseClass = 'euiIcon';
 
 export const typeToPathMap = {
   accessibility: 'accessibility',
@@ -405,7 +405,7 @@ export const typeToPathMap = {
   tokenText: 'tokens/tokenText',
   tokenTokenCount: 'tokens/tokenTokenCount',
   tokenSearchType: 'tokens/tokenSearchType',
-  tokenHistogram: 'tokens/tokenHistogram',
+  tokenHistogram: 'tokens/tokenHistogram'
 };
 
 export const sizeToClassNameMap = {
@@ -413,7 +413,7 @@ export const sizeToClassNameMap = {
   m: `${baseClass}--medium`,
   l: `${baseClass}--large`,
   xl: `${baseClass}--xLarge`,
-  xxl: `${baseClass}--xxLarge`,
+  xxl: `${baseClass}--xxLarge`
 };
 
 export const colorToClassMap = {
@@ -425,15 +425,15 @@ export const colorToClassMap = {
   danger: `${baseClass}--danger`,
   text: `${baseClass}--text`,
   subdued: `${baseClass}--subdued`,
-  ghost: `${baseClass}--ghost`,
+  ghost: `${baseClass}--ghost`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     size: sizeToClassNameMap,
-    color: colorToClassMap,
-  },
+    color: colorToClassMap
+  }
 };
 
 export default mapping;

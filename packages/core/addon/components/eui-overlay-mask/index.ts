@@ -7,12 +7,12 @@ export default class EuiOverlayMaskComponent extends GlimmerComponent<EuiOverlay
 
   constructor(owner: unknown, args: EuiOverlayMaskArgs) {
     super(owner, args);
-    let body = document.body;
+    const body = document.body;
     body.classList.add('euiBody-hasOverlayMask');
   }
 
-  willDestroy() {
-    let body = document.body;
+  willDestroy(): void {
+    const body = document.body;
     body.classList.remove('euiBody-hasOverlayMask');
   }
 }

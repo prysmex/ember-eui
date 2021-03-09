@@ -24,6 +24,10 @@ interface ComponentMapping {
   inlineStyles?(styles: Record<string, unknown>): Record<string, unknown>;
 }
 
+interface Styling {
+  [i: string]: string | null;
+}
+
 interface Mapping {
   [componentName: string]: ComponentMapping;
 }

@@ -6,12 +6,12 @@ interface EuiButtomBarArgs {
   bodyClassName: string;
 }
 export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBarArgs> {
-  get affordForDisplacement() {
+  get affordForDisplacement(): boolean {
     return this.args.affordForDisplacement ?? true;
   }
 
   @action
-  didInsert(element: HTMLElement) {
+  didInsert(element: HTMLElement): void {
     if (this.affordForDisplacement) {
       const height = element.clientHeight;
       document.body.style.paddingBottom = `${height}px`;
@@ -23,8 +23,8 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
   }
 
   @action
-  updateDisplacement(element: HTMLElement) {
-    let prevAffordForDisplacement = document.body.style.paddingBottom !== '';
+  updateDisplacement(element: HTMLElement): void {
+    const prevAffordForDisplacement = document.body.style.paddingBottom !== '';
     if (prevAffordForDisplacement !== this.affordForDisplacement) {
       if (this.affordForDisplacement) {
         // start affording for displacement
@@ -39,7 +39,7 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
     //TODO: Add/Remove bodyClassName prop from body classes when updated
   }
 
-  willDestroy() {
+  willDestroy(): void {
     if (this.affordForDisplacement) {
       document.body.style.paddingBottom = '';
     }

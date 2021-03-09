@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiPopover';
+export const baseClass = 'euiPopover';
 
 export const anchorPositionMapping = {
   upCenter: 'euiPopover--anchorUpCenter',
@@ -12,20 +12,20 @@ export const anchorPositionMapping = {
   leftDown: 'euiPopover--anchorLeftDown',
   rightCenter: 'euiPopover--anchorRightCenter',
   rightUp: 'euiPopover--anchorRightUp',
-  rightDown: 'euiPopover--anchorRightDown',
+  rightDown: 'euiPopover--anchorRightDown'
 };
 
 export const displayMapping = {
   inlineBlock: '',
-  block: 'euiPopover--displayBlock',
+  block: 'euiPopover--displayBlock'
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     position: anchorPositionMapping,
-    display: displayMapping,
-  },
+    display: displayMapping
+  }
 };
 
 export default mapping;

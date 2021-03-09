@@ -79,43 +79,43 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
   @argOrDefault(false) showValue!: boolean;
   @argOrDefault([]) levels!: EuiRangeLevel[];
 
-  preventPopoverClose: boolean = false;
+  preventPopoverClose = false;
 
   //State
   @tracked id: string = this.args.id || uniqueId();
-  @tracked isPopoverOpen: boolean = false;
+  @tracked isPopoverOpen = false;
   ///
 
   @action
-  handleOnChange(e: Event & { currentTarget: HTMLInputElement }) {
+  handleOnChange(e: Event & { currentTarget: HTMLInputElement }): void {
     const isValid = isWithinRange(this.min, this.max, e.currentTarget.value);
     if (this.args.onChange) {
       this.args.onChange(e, isValid);
     }
   }
 
-  get isValid() {
+  get isValid(): boolean {
     return isWithinRange(this.min, this.max, this.args.value || '');
   }
 
-  get digitTolerance() {
+  get digitTolerance(): number {
     return Math.max(String(this.min).length, String(this.max).length);
   }
 
-  get showInputOnly() {
+  get showInputOnly(): boolean {
     return this.showInput === 'inputWithPopover';
   }
 
-  get canShowDropdown() {
+  get canShowDropdown(): boolean {
     return this.showInputOnly && !this.args.readOnly && !this.args.disabled;
   }
 
-  get showRangeTooltip() {
+  get showRangeTooltip(): boolean {
     return this.showValue && !!String(this.args.value).length;
   }
 
   @action
-  onInputFocus(e: Event) {
+  onInputFocus(e: Event): void {
     if (this.args.onFocus) {
       this.args.onFocus(e);
     }
@@ -123,7 +123,7 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
   }
 
   @action
-  onInputBlur(e: Event) {
+  onInputBlur(e: Event): void {
     later(
       this,
       () => {
@@ -145,18 +145,18 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
   }
 
   @action
-  setPreventPopover(val: boolean) {
+  setPreventPopover(val: boolean): void {
     this.preventPopoverClose = val;
   }
-  
+
   @action
-  closePopover() {
+  closePopover(): void {
     this.preventPopoverClose = false;
     this.isPopoverOpen = false;
   }
 
   @action
-  setPreventPopoverClose(bool: boolean) {
+  setPreventPopoverClose(bool: boolean): void {
     this.preventPopoverClose = bool;
   }
 }

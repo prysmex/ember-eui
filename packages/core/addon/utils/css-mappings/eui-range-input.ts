@@ -1,8 +1,8 @@
-export const baseClass: string = 'euiRangeInput';
+export const baseClass = 'euiRangeInput';
 
 export function inlineStyles({
   autoSize = true,
-  digitTolerance,
+  digitTolerance
 }: {
   autoSize: boolean;
   digitTolerance: number;
@@ -13,7 +13,7 @@ export function inlineStyles({
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {},
-  inlineStyles,
+  inlineStyles
 };
 
 export default mapping;

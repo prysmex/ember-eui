@@ -1,4 +1,4 @@
-export const baseClass: string = 'euiFlexItem';
+export const baseClass = 'euiFlexItem';
 
 export const growMapping = {
   1: `${baseClass}--flexGrow1`,
@@ -11,14 +11,14 @@ export const growMapping = {
   8: `${baseClass}--flexGrow8`,
   9: `${baseClass}--flexGrow9`,
   10: `${baseClass}--flexGrow10`,
-  false: `${baseClass}--flexGrowZero`,
+  false: `${baseClass}--flexGrowZero`
 };
 
 export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    grow: growMapping,
-  },
+    grow: growMapping
+  }
 };
 
 export default mapping;

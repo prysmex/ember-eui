@@ -16,9 +16,14 @@ export type EuiRangeTooltopArgs = {
   compressed?: boolean;
 };
 
+type Styling = {
+  side: string;
+  style: ReturnType<typeof htmlSafe>;
+};
+
 export default class EuiRangeToolipComponent extends Component<EuiRangeTooltopArgs> {
-  get styling() {
-    let { value, max, min } = this.args;
+  get styling(): Styling {
+    const { value, max, min } = this.args;
     let val = 0;
     if (typeof value === 'number') {
       val = value;
@@ -42,7 +47,7 @@ export default class EuiRangeToolipComponent extends Component<EuiRangeTooltopAr
 
     return {
       side: valuePositionSide,
-      style: htmlSafe(valuePositionStyleStr),
+      style: htmlSafe(valuePositionStyleStr)
     };
   }
 }

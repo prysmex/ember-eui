@@ -30,30 +30,30 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverA
   ///
 
   @action
-  didInsertPanel(panel: HTMLElement) {
+  didInsertPanel(panel: HTMLElement): void {
     this.panel = panel;
     this.setPanelWidth();
   }
 
   @action
-  didInsertInput(input: HTMLElement) {
+  didInsertInput(input: HTMLElement): void {
     this.input = input;
     this.onResize();
   }
 
   @action
-  setPanelWidth(width?: number) {
-    let { panel, inputWidth } = this;
+  setPanelWidth(width?: number): void {
+    const { panel, inputWidth } = this;
     if (panel && (!!inputWidth || !!width)) {
-      const newWidth = !!width ? width : inputWidth;
+      const newWidth = !width ? width : inputWidth;
       panel.style.width = `${newWidth}px`;
       this.args.onPanelResize?.(newWidth);
     }
   }
 
   @action
-  onResize() {
-    let { input } = this;
+  onResize(): void {
+    const { input } = this;
     if (input) {
       const width = input.getBoundingClientRect().width;
       this.inputWidth = width;
@@ -62,8 +62,8 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverA
   }
 
   @action
-  onKeyDown(event: KeyboardEvent) {
-    let { panel } = this;
+  onKeyDown(event: KeyboardEvent): void {
+    const { panel } = this;
     if (panel && event.key === cascadingMenuKeys.TAB) {
       const tabbableItems = tabbable(panel).filter((el: HTMLElement) => {
         return (

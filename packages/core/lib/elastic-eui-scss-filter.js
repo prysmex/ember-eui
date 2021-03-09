@@ -11,7 +11,6 @@ module.exports = class EuiScssFilter extends Filter {
   }
 
   processString(content) {
-    return content.replace("@import '../packages/index';", '')
+    return content.replace("@import '../packages/index';", '');
   }
-
 };

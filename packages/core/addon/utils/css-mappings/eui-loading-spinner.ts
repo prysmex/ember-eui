@@ -1,17 +1,17 @@
-export const baseClass: string = 'euiLoadingSpinner';
+export const baseClass = 'euiLoadingSpinner';
 
 export const sizeMapping = {
   s: `${baseClass}--small`,
   m: `${baseClass}--medium`,
   l: `${baseClass}--large`,
-  xl: `${baseClass}--xLarge`,
+  xl: `${baseClass}--xLarge`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    size: sizeMapping,
-  },
+    size: sizeMapping
+  }
 };
 
 export default mapping;

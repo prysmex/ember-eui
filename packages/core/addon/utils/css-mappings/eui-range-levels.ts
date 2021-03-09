@@ -1,9 +1,9 @@
-export const baseClass: string = 'euiRangeLevels';
+export const baseClass = 'euiRangeLevels';
 
 export function inlineStyles({
   min,
   max,
-  level,
+  level
 }: {
   min: number;
   max: number;
@@ -17,7 +17,7 @@ export function inlineStyles({
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {},
-  inlineStyles,
+  inlineStyles
 };
 
 export default mapping;

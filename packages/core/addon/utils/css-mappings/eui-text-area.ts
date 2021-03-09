@@ -1,17 +1,17 @@
-export const baseClass: string = 'euiTextArea';
+export const baseClass = 'euiTextArea';
 
 export const resizeMapping = {
   vertical: `${baseClass}--resizeVertical`,
   horizontal: `${baseClass}--resizeHorizontal`,
   both: `${baseClass}--resizeBoth`,
-  none: `${baseClass}--resizeNone`,
+  none: `${baseClass}--resizeNone`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    resize: resizeMapping,
-  },
+    resize: resizeMapping
+  }
 };
 
 export default mapping;

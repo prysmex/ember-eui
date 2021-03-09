@@ -3,7 +3,7 @@ import { guidFor } from '@ember/object/internals';
 import { isPresent } from '@ember/utils';
 
 interface Identifiable {
-  ref: number | string | Element | object;
+  ref: number | string | Element | Record<string, unknown>;
 }
 
 /**

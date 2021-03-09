@@ -13,7 +13,7 @@ export type ToolTipDelay = 'regular' | 'long';
 
 const delayToMsMap: { [key in ToolTipDelay]: number } = {
   regular: 250,
-  long: 250 * 5,
+  long: 250 * 5
 };
 
 interface ToolTipStyles {
@@ -26,7 +26,7 @@ interface ToolTipStyles {
 
 const displayToClassNameMap = {
   inlineBlock: undefined,
-  block: 'euiToolTipAnchor--displayBlock',
+  block: 'euiToolTipAnchor--displayBlock'
 };
 
 const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
@@ -39,7 +39,7 @@ const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // the tooltip before it is positioned
   opacity: '0',
   // prevent accidental mouse interaction while positioning
-  visibility: 'hidden',
+  visibility: 'hidden'
 };
 
 type EuiTooltipArgs = {
@@ -95,7 +95,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   @argOrDefault('regular') delay!: ToolTipDelay;
 
   //STATE
-  @tracked visible: boolean = false;
+  @tracked visible = false;
   @tracked calculatedPosition: ToolTipPositions = this.position;
   @tracked toolTipStyles: ToolTipStyles = DEFAULT_TOOLTIP_STYLES;
   @tracked arrowStyles: undefined | { left: string; top: string };
@@ -105,7 +105,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   private timeoutId?: ReturnType<typeof later>;
 
   @action
-  updateAttachTo() {
+  updateAttachTo(): void {
     if (!this.args.attachTo && this._attachTo) {
       this.removeAttachToHandlers();
       this._attachTo = null;
@@ -120,7 +120,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
-  setupAttachToHandlers() {
+  setupAttachToHandlers(): void {
     if (this.attachTo) {
       this.attachTo?.addEventListener('mousemove', this.showToolTip);
       this.attachTo?.addEventListener('keyup', this.onKeyUp);
@@ -132,7 +132,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
-  removeAttachToHandlers() {
+  removeAttachToHandlers(): void {
     if (this.attachTo) {
       this.attachTo?.removeEventListener('mousemove', this.showToolTip);
       this.attachTo?.removeEventListener('keyup', this.onKeyUp);
@@ -143,7 +143,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
-  clearAnimationTimeout() {
+  clearAnimationTimeout(): void {
     if (this.timeoutId) {
       cancel(this.timeoutId);
       this.timeoutId = undefined;
@@ -151,13 +151,13 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
-  visibleDidUpdate(value: boolean) {
+  visibleDidUpdate(value: boolean): void {
     if (this.visible === false && value === true) {
       requestAnimationFrame(this.testAnchor);
     }
   }
 
-  willDestroy() {
+  willDestroy(): void {
     super.willDestroy();
     this.clearAnimationTimeout();
     this.removeAttachToHandlers();
@@ -165,7 +165,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
-  testAnchor() {
+  testAnchor(): void {
     // when the tooltip is visible, this checks if the anchor is still part of document
     // this fixes when the react root is removed from the dom without unmounting
     // https://github.com/elastic/eui/issues/1105
@@ -181,12 +181,12 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
-  didInsertAnchor(ref: HTMLElement) {
+  didInsertAnchor(ref: HTMLElement): void {
     this.anchor = ref;
   }
 
   @action
-  setPopoverRef(ref: HTMLElement) {
+  setPopoverRef(ref: HTMLElement): void {
     this.popover = ref;
 
     // if the popover has been unmounted, clear
@@ -200,14 +200,15 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
-  showToolTip() {
+  showToolTip(): void {
     if (!this.timeoutId && !this.visible) {
+      const fn = (): void => {
+        this.visible = true;
+      };
       this.timeoutId = later(
         this,
         () => {
-          scheduleOnce('afterRender', this, () => {
-            this.visible = true;
-          });
+          scheduleOnce('afterRender', this, fn);
         },
         delayToMsMap[this.delay]
       );
@@ -215,7 +216,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @cached
-  get attachTo() {
+  get attachTo(): Element | null | undefined {
     if (typeof this._attachTo === 'string') {
       return document.querySelector(this._attachTo);
     } else {
@@ -223,12 +224,12 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     }
   }
 
-  get _anchor() {
+  get _anchor(): Element | null {
     return this.attachTo || this.anchor;
   }
 
   @action
-  positionToolTip() {
+  positionToolTip(): void {
     const requestedPosition = this.position;
 
     if (!this._anchor || !this.popover) {
@@ -241,8 +242,8 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
       offset: 16, // offset popover 16px from the anchor
       arrowConfig: {
         arrowWidth: 12,
-        arrowBuffer: 4,
-      },
+        arrowBuffer: 4
+      }
     });
 
     const windowWidth = document.documentElement.clientWidth || window.innerWidth;
@@ -251,7 +252,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     const toolTipStyles: ToolTipStyles = {
       top: `${top}px`,
       left: useRightValue ? 'auto' : `${left}px`,
-      right: useRightValue ? `${windowWidth - left - this.popover.offsetWidth}px` : 'auto',
+      right: useRightValue ? `${windowWidth - left - this.popover.offsetWidth}px` : 'auto'
     };
 
     this.visible = true;
@@ -260,39 +261,40 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     if (arrow) {
       this.arrowStyles = {
         left: `${arrow.left}px`,
-        top: `${arrow?.top}px`,
+        top: `${arrow?.top}px`
       };
     }
   }
 
   @action
-  hideToolTip() {
+  hideToolTip(): void {
     if (this.args.isShown === true) {
       return;
     }
     this.clearAnimationTimeout();
-    scheduleOnce('afterRender', this, () => {
+    const fn = (): void => {
       if (!this.isDestroying || !this.isDestroyed) {
         this.visible = false;
       }
-    });
+    };
+    scheduleOnce('afterRender', this, fn);
   }
 
   @action
-  hasFocusMouseMoveListener() {
+  hasFocusMouseMoveListener(): void {
     this.hideToolTip();
     window.removeEventListener('mousemove', this.hasFocusMouseMoveListener);
   }
 
   @action
-  onKeyUp(event: KeyboardEvent) {
+  onKeyUp(event: KeyboardEvent): void {
     if (event.key === keys.TAB) {
       window.addEventListener('mousemove', this.hasFocusMouseMoveListener);
     }
   }
 
   @action
-  onMouseOut(event: MouseEvent) {
+  onMouseOut(event: MouseEvent): void {
     // Prevent mousing over children from hiding the tooltip by testing for whether the mouse has
     // left the anchor for a non-child.
     if (

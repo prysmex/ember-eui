@@ -23,7 +23,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   capturedDownIds: string[] = [];
 
   @action
-  onClickOutside(e: Event) {
+  onClickOutside(e: Event): void {
     const { isDisabled, onOutsideClick } = this.args.named;
 
     if (isDisabled) {
@@ -45,35 +45,35 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     return onOutsideClick(event);
   }
 
-  didInstall() {
+  didInstall(): void {
     this.id = uniqueId();
     document.addEventListener('mouseup', this.onClickOutside);
     document.addEventListener('touchend', this.onClickOutside);
     this.addElementEvents();
   }
 
-  addElementEvents() {
+  addElementEvents(): void {
     this.element.addEventListener('mousedown', this.onChildMouseDown);
     this.element.addEventListener('touchstart', this.onChildMouseDown);
     this.element.addEventListener('mouseup', this.onChildMouseUp);
     this.element.addEventListener('touchend', this.onChildMouseUp);
   }
 
-  removeElementEvents() {
+  removeElementEvents(): void {
     this.element.removeEventListener('mousedown', this.onChildMouseDown);
     this.element.removeEventListener('touchstart', this.onChildMouseDown);
     this.element.removeEventListener('mouseup', this.onChildMouseUp);
     this.element.removeEventListener('touchend', this.onChildMouseUp);
   }
 
-  willRemove() {
+  willRemove(): void {
     document.removeEventListener('mouseup', this.onClickOutside);
     document.removeEventListener('touchend', this.onClickOutside);
     this.removeElementEvents();
   }
 
   @action
-  onChildClick(event: MouseEvent, cb: (event: MouseEvent) => void) {
+  onChildClick(event: MouseEvent, cb: (event: MouseEvent) => void): void {
     // to support nested click detectors, build an array
     // of detector ids that have been encountered;
 
@@ -86,7 +86,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   }
 
   @action
-  onChildMouseDown(event: MouseEvent) {
+  onChildMouseDown(event: MouseEvent): void {
     this.onChildClick(event, (e) => {
       const nativeEvent = (e as unknown) as EuiEvent;
       this.capturedDownIds = nativeEvent.euiGeneratedBy;
@@ -96,7 +96,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   }
 
   @action
-  onChildMouseUp(event: MouseEvent) {
+  onChildMouseUp(event: MouseEvent): void {
     this.onChildClick(event, (e) => {
       if (this.args.named.onMouseUp) this.args.named.onMouseUp(e);
       if (this.args.named.onTouchEnd) this.args.named.onTouchEnd(e);

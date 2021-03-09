@@ -13,11 +13,13 @@ export interface EuiRangeTick {
   label: Component;
 }
 
+type Value = number | string;
+
 export type EuiRangeTrackArgs = {
   min: number;
   max: number;
   step?: number;
-  value?: number | string | Array<string | number>;
+  value?: Value | Value[];
   compressed?: boolean;
   disabled?: boolean;
   showTicks?: boolean;
@@ -27,10 +29,15 @@ export type EuiRangeTrackArgs = {
   levels?: EuiRangeLevel[];
 };
 
+type Styling = {
+  tickSequence?: number[];
+  styles: ReturnType<typeof htmlSafe>;
+};
+
 export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs> {
   @action
-  validateValueIsInStep(value: number) {
-    let { min, max, step } = this.args;
+  validateValueIsInStep(value: number): number {
+    const { min, max, step } = this.args;
     if (value < min) {
       assert(`The value of ${value} is lower than the min value of ${min}.`, true);
     }
@@ -52,7 +59,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
     min: EuiRangeTrackArgs['min'],
     max: EuiRangeTrackArgs['max'],
     interval?: EuiRangeTrackArgs['tickInterval']
-  ) {
+  ): number[] {
     // Loop from min to max, creating adding values at each interval
     // (adds a very small number to the max since `range` is not inclusive of the max value)
     const toBeInclusive = 0.000000001;
@@ -65,7 +72,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
     step?: EuiRangeTrackArgs['step'],
     tickInterval?: EuiRangeTrackArgs['tickInterval'],
     customTicks?: EuiRangeTick[]
-  ) {
+  ): number[] {
     let ticks;
 
     if (customTicks) {
@@ -96,10 +103,10 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
     return ticks;
   }
 
-  get derivedState() {
+  get derivedState(): Styling {
     let tickSequence;
     let styles;
-    let { showTicks, min, max, step, tickInterval, ticks } = this.args;
+    const { showTicks, min, max, step, tickInterval, ticks } = this.args;
 
     if (showTicks) {
       tickSequence = this.calculateTicks(min, max, step, tickInterval, ticks);
@@ -119,7 +126,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
 
     return {
       tickSequence,
-      styles: htmlSafe(styles as any),
+      styles: htmlSafe(styles as string)
     };
   }
 }

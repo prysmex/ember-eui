@@ -5,6 +5,6 @@ export default class Index extends Route.extend({
 }) {
   // normal class body definition here
   beforeModel() {
-    this.replaceWith('docs.installation')
+    this.replaceWith('docs.installation');
   }
 }

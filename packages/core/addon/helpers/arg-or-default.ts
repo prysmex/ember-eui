@@ -13,13 +13,14 @@ export function argOrDefault([value, defaultValue]: [unknown, unknown]): unknown
   return value !== undefined ? value : defaultValue;
 }
 
+//eslint-disable-next-line
 export function argOrDefaultDecorator<T>(defaultValue: T): Function {
   return function (_target: any, key: string) {
     return {
       get(this: { args: Record<string, T> }): T {
         const value = this.args[key];
         return value !== undefined ? value : defaultValue;
-      },
+      }
     };
   };
 }

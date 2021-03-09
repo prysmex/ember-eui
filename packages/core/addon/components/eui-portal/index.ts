@@ -10,7 +10,7 @@ interface InsertPositionsMap {
 
 export const insertPositions: InsertPositionsMap = {
   after: 'afterend',
-  before: 'beforebegin',
+  before: 'beforebegin'
 };
 
 export const INSERT_POSITIONS: EuiPortalInsertPosition[] = keysOf(insertPositions);
@@ -43,7 +43,7 @@ export default class EuiPortal extends Component<EuiPortalArgs> {
     }
   }
 
-  willDestroy() {
+  willDestroy(): void {
     super.willDestroy();
     if (this.portalNode.parentNode) {
       this.portalNode.parentNode.removeChild(this.portalNode);

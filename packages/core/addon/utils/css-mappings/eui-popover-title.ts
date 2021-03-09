@@ -1,17 +1,17 @@
-export const baseClass: string = 'euiPopoverTitle';
+export const baseClass = 'euiPopoverTitle';
 
 export const paddingMapping = {
   none: `${baseClass}--paddingNone`,
   s: `${baseClass}--paddingSmall`,
   m: `${baseClass}--paddingMedium`,
-  l: `${baseClass}--paddingLarge`,
+  l: `${baseClass}--paddingLarge`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    paddingSize: paddingMapping,
-  },
+    paddingSize: paddingMapping
+  }
 };
 
 export default mapping;

@@ -1,5 +1,9 @@
 import { modifier } from 'ember-modifier';
 
+const hasOwnProperty = function (obj: MutationObserverInit, name: string): boolean {
+  return Object.prototype.hasOwnProperty.call(obj, name);
+};
+
 const makeMutationObserver = (
   node: Element,
   _observerOptions: MutationObserverInit | undefined,
@@ -11,16 +15,18 @@ const makeMutationObserver = (
   // The following logic patches the newer spec in which `attributes: true` can be
   // implied when appropriate (`attributeOldValue` or `attributeFilter` is specified).
   const observerOptions: MutationObserverInit = {
-    ..._observerOptions,
+    ..._observerOptions
   };
   const needsAttributes =
-    observerOptions.hasOwnProperty('attributeOldValue') ||
-    observerOptions.hasOwnProperty('attributeFilter');
-  if (needsAttributes && !observerOptions.hasOwnProperty('attributes')) {
+    hasOwnProperty(observerOptions, 'attributeOldValue') ||
+    hasOwnProperty(observerOptions, 'attributeFilter');
+  if (needsAttributes && !hasOwnProperty(observerOptions, 'attributes')) {
     observerOptions.attributes = true;
   }
 
   const observer = new MutationObserver(callback);
+
+  //eslint-disable-next-line
   observer.observe(node, observerOptions);
 
   return observer;
@@ -31,11 +37,12 @@ export default modifier(function useMutationObserver(
   _positional,
   {
     onMutation,
-    observerOptions,
+    observerOptions
   }: { onMutation: MutationCallback; observerOptions: MutationObserverInit }
 ): void | (() => unknown) {
   if (element != null) {
     const observer = makeMutationObserver(element, observerOptions, onMutation);
+    //eslint-disable-next-line
     return () => observer.disconnect();
   }
 });

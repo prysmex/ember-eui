@@ -19,7 +19,7 @@ type SwitchArgs = {
 
 export default class EuiSwitch extends Component<SwitchArgs> {
   @action
-  onClick(e: { target: HTMLInputElement }) {
+  onClick(e: { target: HTMLInputElement }): void {
     if (this.args.disabled) {
       return;
     }

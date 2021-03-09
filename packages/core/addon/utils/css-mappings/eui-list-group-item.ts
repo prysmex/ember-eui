@@ -1,10 +1,10 @@
-export const baseClass: string = 'euiListGroupItem';
+export const baseClass = 'euiListGroupItem';
 
 export const sizeMapping = {
   xs: `${baseClass}--xSmall`,
   s: `${baseClass}--small`,
   m: `${baseClass}--medium`,
-  l: `${baseClass}--large`,
+  l: `${baseClass}--large`
 };
 
 export const colorMapping = {
@@ -12,15 +12,15 @@ export const colorMapping = {
   primary: `${baseClass}--primary`,
   text: `${baseClass}--text`,
   subdued: `${baseClass}--subdued`,
-  ghost: `${baseClass}--ghost`,
+  ghost: `${baseClass}--ghost`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     size: sizeMapping,
-    color: colorMapping,
-  },
+    color: colorMapping
+  }
 };
 
 export default mapping;

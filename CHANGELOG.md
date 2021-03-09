@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.12
+
+🚀 Enhancements
+- expose hasSubmitted for changeset-form
+
 ### 0.1.11
 
 🐛 Bug / Fixes

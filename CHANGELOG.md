@@ -2,6 +2,19 @@
 
 ### Master
 
+### 0.1.11
+
+🚀 Enhancements
+
+Components
+
+- `<EuiToast>`
+- `<EuiGlobalToastList>`
+
+Services
+
+- `EuiToasterService`
+
 ### 0.1.10
 
 🐛 Bug / Fixes

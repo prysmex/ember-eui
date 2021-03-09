@@ -49,6 +49,8 @@ import EuiRangeHighlight from './eui-range-highlight';
 import EuiRangeInput from './eui-range-input';
 import EuiRangeLevels from './eui-range-levels';
 import EuiToolTip from './eui-tool-tip';
+import EuiToast from './eui-toast';
+import EuiGlobalToastList from './eui-global-toast-list';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -102,6 +104,8 @@ const mapping: Mapping = {
   EuiRangeInput,
   EuiRangeLevels,
   EuiToolTip,
+  EuiToast,
+  EuiGlobalToastList,
 };
 
 export default mapping;

@@ -18,11 +18,11 @@ module.exports = {
       pattern: '**/*.md',
       urlPrefix: 'docs'
     },
-    ...['changeset-form', 'core'].map((pkgName) => {
+    ...['changeset-form', 'core', 'pikaday'].map((pkgName) => {
       return {
         root: path.resolve(__dirname, `../packages/${pkgName}`),
         pattern: '(docs|addon)/**/**/*.md',
-        urlPrefix: `${pkgName}`
+        urlPrefix: `docs/${pkgName}`
       };
     })
   ],

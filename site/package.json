@@ -74,6 +74,7 @@
   "dependencies": {
     "@ember-eui/changeset-form": "^0.1.12",
     "@ember-eui/core": "^0.1.12",
+    "@ember-eui/pikaday": "^0.1.12",
     "@fullhuman/postcss-purgecss": "^4.0.2",
     "autoprefixer": "^10.2.5",
     "ember-cli-resolve-asset": "^0.3.0",

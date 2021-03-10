@@ -38,15 +38,25 @@ function compareFunction(a: Item, b: Item) {
   // a debe ser igual b
   return 0;
 }
-export function getSidenavRoutes([docfyNode, clickHandler]: [DocfyNode, (id: NodeId) => void]) {
+export function getSidenavRoutes([docfyNode, clickHandler]: [
+  DocfyNode,
+  (id: NodeId) => void
+]) {
   return [getItems(docfyNode, clickHandler, docfyNode.name)];
 }
 
-function getItems(docfyNode: DocfyNode, clickHandler: (id: NodeId) => void, parent: string): Item {
+function getItems(
+  docfyNode: DocfyNode,
+  clickHandler: (id: NodeId) => void,
+  parent: string
+): Item {
   let items: Item[] = [];
   if (docfyNode.children.length > 0) {
     let children = docfyNode.children;
-    items = children.map((child) => getItems(child, clickHandler, parent));
+    console.log(parent, docfyNode, children);
+    items = children.map((child) => {
+      return getItems(child, clickHandler, `${parent}-${docfyNode.name}`);
+    });
   }
   items = [
     ...items,
@@ -57,7 +67,9 @@ function getItems(docfyNode: DocfyNode, clickHandler: (id: NodeId) => void, pare
   return {
     name: humanize([docfyNode.label]),
     id: `${parent}-${docfyNode.label}`,
-    onClick: docfyNode.onClick ?? clickHandler.bind(clickHandler, `${parent}-${docfyNode.label}`),
+    onClick:
+      docfyNode.onClick ??
+      clickHandler.bind(clickHandler, `${parent}-${docfyNode.label}`),
     items
   };
 }
@@ -75,6 +87,9 @@ function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
 export default class GetSidenavRoutes extends Helper {
   @service docfy: any;
   compute([name, clickHandler]: [string, (id: NodeId) => void]) {
-    return getSidenavRoutes([this.docfy.findNestedChildrenByName(name), clickHandler]);
+    return getSidenavRoutes([
+      this.docfy.findNestedChildrenByName(name),
+      clickHandler
+    ]);
   }
 }

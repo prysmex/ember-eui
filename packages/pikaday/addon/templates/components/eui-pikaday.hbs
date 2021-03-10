@@ -1,0 +1,28 @@
+{{#let
+  (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
+  (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
+  (arg-or-default @id (unique-id)) as |hasPrepend hasAppend inputId|
+}}
+  <EuiFieldText
+    aria-label={{@ariaLabel}}
+    @icon={{if @icon @icon "calendar"}}
+    @fullWidth={{@fullWidth}}
+    @isLoading={{@isLoading}}
+    @readOnly={{@readOnly}}
+    @inputRef={{@inputRef}}
+    @controlOnly={{@controlOnly}}
+    @compressed={{@compressed}}
+    @id={{inputId}}
+    @clear={{if @clear (fn (optional @clear) null)}}
+    @isFakePrependBlock={{hasPrepend}}
+    @isFakeAppendBlock={{hasAppend}}
+    {{did-insert this.didInsertInput}}
+  >
+    <:prepend as |classes|>
+      {{yield classes to="prepend"}}
+    </:prepend>
+    <:append as |classes|>
+      {{yield classes to="append"}}
+    </:append>
+  </EuiFieldText>
+{{/let}}

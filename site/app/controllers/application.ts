@@ -12,22 +12,21 @@ export default class ApplicationController extends Controller {
 
   init() {
     super.init();
+    const root = this.docfy.nested.children.firstObject;
     const instructions = getSidenavRoutes([
-      this.docfy.findNestedChildrenByName('docs'),
+      { ...root, children: [] },
       (id: NodeId) => {
         this.selectedItem = id;
       }
     ]);
     const coreNodes = getSidenavRoutes([
-      this.docfy.findNestedChildrenByName('core'),
+      root.children.find((child: Item) => child.name === 'core'),
       (id: NodeId) => {
         this.selectedItem = id;
       }
     ]);
 
-    let others = this.docfy.nested.children.filter(
-      (child: Item) => child.name !== 'docs' && child.name !== 'core'
-    );
+    let others = root.children.filter((child: Item) => child.name !== 'core');
 
     const changeset = getSidenavRoutes([
       {

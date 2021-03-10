@@ -2,6 +2,13 @@
 
 ### Master
 
+### 0.1.13
+
+🚀 Enhancements
+
+Addons
+- `@ember-eui/pikaday`
+
 ### 0.1.12
 
 🚀 Enhancements

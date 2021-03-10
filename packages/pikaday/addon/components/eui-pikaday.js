@@ -3,11 +3,13 @@ import Component from '@ember/component';
 import PikadayMixin from 'ember-pikaday/mixins/pikaday';
 import { isEmpty } from '@ember/utils';
 import { action } from '@ember/object';
-import { tagName } from '@ember-decorators/component';
+import { tagName, layout } from '@ember-decorators/component';
+import template from '../templates/components/eui-pikaday';
 
 const defaultFormat = 'YYYY-MM-DD';
 
 @tagName('')
+@layout(template)
 export default class EuiPikaday extends Component.extend(PikadayMixin) {
   useUtc = false;
   yearRange = '1930,currentYear';

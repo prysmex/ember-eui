@@ -95,6 +95,9 @@
   "engines": {
     "node": "10.* || >= 12"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "ember": {
     "edition": "octane"
   },

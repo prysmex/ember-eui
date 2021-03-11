@@ -95,7 +95,7 @@
               }}
               {{on "focus" (if (eq this.showInput true) (optional) (optional @onFocus))}}
               {{on "blur" (if this.showInputOnly this.onInputBlur (optional @onBlur))}}
-              {{on "change" this.handleOnChange}}
+              {{on "input" this.handleOnChange}}
             />
             {{#if this.showRangeTooltip}}
               <EuiRangeTooltip
@@ -203,7 +203,7 @@
           {{on "mousedown" (if this.showInputOnly (fn this.setPreventPopover true) (optional))}}
           {{on "focus" (if (eq this.showInput true) (optional) (optional @onFocus))}}
           {{on "blur" (if this.showInputOnly this.onInputBlur (optional @onBlur))}}
-          {{on "change" this.handleOnChange}}
+          {{on "input" this.handleOnChange}}
         />
         {{#if this.showRangeTooltip}}
           <EuiRangeTooltip

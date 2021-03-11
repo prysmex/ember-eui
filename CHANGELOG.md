@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.1.14
+
+🐛 Bug / Fixes
+- `<EuiGlobalToastList />` Remove padding when empty as expected
 ### 0.1.13
 
 🚀 Enhancements

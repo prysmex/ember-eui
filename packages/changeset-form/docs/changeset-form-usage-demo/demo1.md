@@ -3,9 +3,9 @@
 ```hbs template
 <EuiChangesetForm @changeset={{changeset this.model this.Validations}} as |Form changesetObj|>
   <EuiFlexGroup @direction="column" @gutterSize="l">
-    <Form.TextField @fieldName="firstName" @label="First Name" />
-    <Form.TextAreaField @fieldName="lastName" @label="Last Name" />
-    <Form.RangeSliderField
+    <Form.FieldText @fieldName="firstName" @label="First Name" />
+    <Form.FieldTextArea @fieldName="lastName" @label="Last Name" />
+    <Form.FieldRangeSlider
       @fieldName="rangeSlider1"
       @label="Range slider"
       @showLabels={{true}}
@@ -13,7 +13,7 @@
       @min={{0}}
       @max={{300}}
     />
-    <Form.RadioGroupField
+    <Form.FieldRadioGroup
       @fieldName="radioGroup"
       @options={{array
         (hash id="radio-1" label="Radio 1")
@@ -22,7 +22,7 @@
       }}
       @label="Radio Group"
     />
-    <Form.CheckboxGroupField
+    <Form.FieldCheckboxGroup
       @fieldName="checkboxGroup"
       @options={{array
         (hash id="checkbox-1" label="Checkbox 1")
@@ -31,7 +31,7 @@
       }}
       @label="Checkbox Group"
     />
-    <Form.SelectField
+    <Form.FieldSelect
       @fieldName="country"
       @hasNoInitialSelection={{true}}
       @options={{array
@@ -41,11 +41,11 @@
       }}
       @label="Country"
     />
-    <Form.NumberField @fieldName="age" @label="Age" />
-    <Form.TextField @fieldName="email" @label="Email" />
-    <Form.SwitchField @fieldClasses="euiFlexItem" @fieldName="switch" @label="Switch" />
-    <Form.PasswordField @fieldName="password" @label="Password" />
-    <Form.PasswordField @fieldName="passwordConfirmation" @label="Password Confirmation" />
+    <Form.FieldNumber @fieldName="age" @label="Age" />
+    <Form.FieldText @fieldName="email" @label="Email" />
+    <Form.FieldSwitch @fieldClasses="euiFlexItem" @fieldName="switch" @label="Switch" />
+    <Form.FieldPassword @fieldName="password" @label="Password" />
+    <Form.FieldPassword @fieldName="passwordConfirmation" @label="Password Confirmation" />
     <EuiButton @type="submit" @isDisabled={{changesetObj.isInvalid}}>
       Submit form
     </EuiButton>

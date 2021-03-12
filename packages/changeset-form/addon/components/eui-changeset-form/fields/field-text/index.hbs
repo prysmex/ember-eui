@@ -29,8 +29,9 @@
       @id={{theId}}
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
+      autofocus={{@autofocus}}
       {{on "blur" this.validate}}
-      {{on "input" this.handleInput}}
+      {{on "input" this.handleInput}}      
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}

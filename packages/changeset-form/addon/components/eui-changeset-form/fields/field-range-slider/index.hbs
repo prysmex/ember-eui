@@ -45,6 +45,7 @@
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
       aria-label={{@ariaLabel}}
+      autofocus={{@autofocus}}
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}

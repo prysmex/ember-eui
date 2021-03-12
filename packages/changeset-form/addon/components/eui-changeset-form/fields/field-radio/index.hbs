@@ -11,6 +11,7 @@
     @disabled={{@disabled}}
     @inputRef={{@inputRef}}
     {{on "change" this.handleChange}}
+    ...attributes
   >
     <:label>
       {{yield to="label"}}

@@ -44,6 +44,7 @@
       @autoSize={{@autoSize}}
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
+      autofocus={{@autofocus}}
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}

@@ -1,0 +1,20 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiCheckbox
+    class={{@fieldClasses}}
+    aria-label={{@ariaLabel}}
+    @id={{theId}}
+    @checked={{or this.value false}}
+    @label={{@label}}
+    @isFakeLabelBlock={{not (has-block "label")}}
+    @disabled={{@disabled}}
+    @compressed={{@compressed}}
+    @indeterminate={{@indeterminate}}
+    @inputRef={{@inputRef}}
+    {{on "change" this.handleChange}}
+    ...attributes
+  >
+    <:label>
+      {{yield to="label"}}
+    </:label>
+  </EuiCheckbox>
+{{/let}}

@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.1.14
+
+🐛 Bug / Fixes
+- `<EuiGlobalToastList />` Remove padding when empty as expected
+- `<EuiChangesetForm />` Rename all fields names for consistency
+- - Ej. `<Form.PasswordField />` to `<Form.FieldPassword />`
 ### 0.1.13
 
 🚀 Enhancements

@@ -2,6 +2,8 @@
   aria-live="polite"
   role="region"
   class={{class-names componentName="EuiGlobalToastList" side=(arg-or-default @side "right")}}
+  {{!-- Remove padding manually as formatting adds whitespace to div and :empty selector get ignored --}}
+  style={{unless this.euiToaster.toasts.length "padding:0px;"}} 
   ...attributes
   {{did-insert this.didInsert}}
   {{on "scroll" this.onScroll}}

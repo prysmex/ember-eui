@@ -33,6 +33,7 @@
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
       autofocus={{@autofocus}}
+      placeholder={{@placeholder}}
       {{on "blur" this.validate}}
       {{on "input" this.handleInput}}
     >

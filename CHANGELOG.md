@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.1.16
+
+🐛 Bug / Fixes
+- Adds `@value` to input when controlOnly is `true`
+- Adds placeholder and autofocus to changeset fields
+
 ### 0.1.15
 
 🐛 Bug / Fixes

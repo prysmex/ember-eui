@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.18
+
+🐛 Bug / Fixes
+- Guards for name.length `<EuiAvatar />`
+
 ### 0.1.16
 
 🐛 Bug / Fixes

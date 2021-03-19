@@ -24,8 +24,13 @@ export function inlineStyles({
   name: string;
   avatarColor: string;
 }): Styling {
-  const assignedColor = avatarColor || VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
-  const textColor = isColorDark(...hexToRgb(assignedColor)) ? '#FFFFFF' : '#000000';
+  let assignedColor = avatarColor;
+  if (name && !assignedColor) {
+    assignedColor = VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
+  }
+  const textColor = isColorDark(...hexToRgb(assignedColor || 'base'))
+    ? '#FFFFFF'
+    : '#000000';
 
   return {
     'background-color': assignedColor,

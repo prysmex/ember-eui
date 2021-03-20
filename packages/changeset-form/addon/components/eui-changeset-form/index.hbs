@@ -1,5 +1,6 @@
 <EuiForm
   @tagName="form"
+  ...attributes
   {{on "submit" (fn this.handleSubmit @changeset)}}
   {{on "reset" (fn this.handleReset @changeset)}}
   {{did-insert (fn this.validate @initialValidation)}}

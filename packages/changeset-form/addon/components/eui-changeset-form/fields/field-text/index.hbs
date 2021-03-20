@@ -15,8 +15,9 @@
     ...attributes
   >
     <EuiFieldText
-      aria-label={{@ariaLabel}}
       class={{@fieldClasses}}
+      aria-label={{@ariaLabel}}
+      form={{@formId}}
       @value={{this.value}}
       @icon={{@icon}}
       @isInvalid={{this.errors.length}}

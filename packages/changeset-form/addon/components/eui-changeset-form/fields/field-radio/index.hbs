@@ -1,6 +1,7 @@
 {{#let (arg-or-default @id (unique-id)) as |theId|}}
   <EuiRadio
     class={{@fieldClasses}}
+    form={{@formId}}
     aria-label={{@ariaLabel}}
     @label={{@label}}
     @isFakeLabelBlock={{not (has-block "label")}}

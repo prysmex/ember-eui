@@ -3,6 +3,7 @@
     {{#each @options key="id" as |option|}}
       <EuiRadio
         class={{concat "euiRadioGroup__item" option.className}}
+        form={{@formId}}
         @checked={{eq @idSelected option.id}}
         @disabled={{or @disabled option.disabled}}
         @compressed={{@compressed}}
@@ -16,6 +17,7 @@
     {{#each @options key="id" as |option|}}
       <EuiRadio
         class={{concat "euiRadioGroup__item" option.className}}
+        form={{@formId}}
         @name={{@name}}
         @checked={{eq @idSelected option.id}}
         @disabled={{or @disabled option.disabled}}

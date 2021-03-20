@@ -15,8 +15,9 @@
     ...attributes
   >
     <EuiTextArea
-      aria-label={{@ariaLabel}}
       class={{@fieldClasses}}
+      form={{@formId}}
+      aria-label={{@ariaLabel}}
       @value={{this.value}}
       @isInvalid={{this.errors.length}}
       @fullWidth={{@fullWidth}}

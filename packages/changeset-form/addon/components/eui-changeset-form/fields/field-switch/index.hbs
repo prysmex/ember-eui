@@ -1,6 +1,7 @@
 {{#let (arg-or-default @id (unique-id)) as |theId|}}
   <EuiSwitch
     class={{@fieldClasses}}
+    form={{@formId}}
     aria-label={{@ariaLabel}}
     @id={{theId}}
     @showLabel={{@showLabel}}

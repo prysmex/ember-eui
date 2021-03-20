@@ -2,6 +2,7 @@
   <EuiFormFieldset @legend={{@legend}} @compressed={{@compressed}}>
     {{#each @options key="id" as |option|}}
       <EuiCheckbox
+        form={{@formId}}
         class={{concat "euiCheckboxGroup__item" option.className}}
         @checked={{get @idToSelectedMap option.id}}
         @disabled={{or @disabled option.disabled}}
@@ -15,6 +16,7 @@
   <div ...attributes>
     {{#each @options key="id" as |option|}}
       <EuiCheckbox
+        form={{@formId}}
         class={{concat "euiCheckboxGroup__item" option.className}}
         @checked={{get @idToSelectedMap option.id}}
         @disabled={{or @disabled option.disabled}}

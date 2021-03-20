@@ -2,7 +2,13 @@
 
 ### Master
 
-### 0.1.119
+### 0.1.20
+
+🚀 Enhancements
+
+- Adds id to the `<EuiChangesetForm />` and all the underlaying components
+
+### 0.1.19
 
 🐛 Bug / Fixes
 - Adds splattributes to `<EuiChangesetForm />`

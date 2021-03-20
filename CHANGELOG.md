@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.119
+
+🐛 Bug / Fixes
+- Adds splattributes to `<EuiChangesetForm />`
+
 ### 0.1.18
 
 🐛 Bug / Fixes

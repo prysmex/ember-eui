@@ -1,4 +1,4 @@
-{{#let (unique-id (arg-or-default @id)) as |formId|}}
+{{#let (arg-or-default @id (unique-id)) as |formId|}}
   <EuiForm
     @tagName="form"
     id={{formId}}

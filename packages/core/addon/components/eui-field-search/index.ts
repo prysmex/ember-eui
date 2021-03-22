@@ -28,8 +28,9 @@ type EuiFieldSearchArgs = {
 
 export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   @tracked inputElement: HTMLInputElement | null = null;
-  @tracked value: string | null =
-    this.args.value || (this.args.defaultValue ? `${this.args.defaultValue}` : '');
+  @tracked value: string | undefined =
+    this.args.value ||
+    (this.args.defaultValue ? `${this.args.defaultValue}` : '');
 
   @argOrDefault(false) incremental = false;
 
@@ -43,7 +44,11 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   }
 
   @action
-  onKeyUp(incremental: boolean, onSearch: (value: string) => void, e: KeyboardEvent): void {
+  onKeyUp(
+    incremental: boolean,
+    onSearch: (value: string) => void,
+    e: KeyboardEvent
+  ): void {
     this.value = (e.target as HTMLInputElement).value;
     if (this.args.onKeyUp) {
       this.args.onKeyUp(e);
@@ -54,16 +59,27 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
 
     if (
       onSearch &&
-      ((e.key !== keys.ENTER && incremental) || (e.key === keys.ENTER && !isSearchSupported))
+      ((e.key !== keys.ENTER && incremental) ||
+        (e.key === keys.ENTER && !isSearchSupported))
     ) {
       onSearch((e.target as HTMLInputElement).value);
     }
   }
 
   @action
+  didUpdateValue() {
+    this.value = this.args.value;
+  }
+
+  @action
   onClear(): void {
-    const nativeInputValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
-    const nativeInputValueSetter = nativeInputValue ? nativeInputValue.set : undefined;
+    const nativeInputValue = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      'value'
+    );
+    const nativeInputValueSetter = nativeInputValue
+      ? nativeInputValue.set
+      : undefined;
     if (nativeInputValueSetter) {
       nativeInputValueSetter.call(this.inputElement, '');
     }

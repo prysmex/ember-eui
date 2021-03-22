@@ -9,7 +9,10 @@
       (if @compressed "euiFieldSearch--compressed")
       (if (or hasPrepend hasAppend) "euiFieldSearch--inGroup")
       (if @isLoading "euiFieldSearch--isLoading")
-      (if (and (arg-or-default @isClearable true) @value) "euiFieldSearch--isClearable")
+      (if
+        (and (arg-or-default @isClearable true) @value)
+        "euiFieldSearch--isClearable"
+      )
       "euiFieldSearch"
     ) as |classes|
   }}
@@ -17,7 +20,10 @@
       @icon="search"
       @fullWidth={{@fullWidth}}
       @isLoading={{@isLoading}}
-      @clear={{if (and @isClearable @value (not @readOnly) (not @isDisabled)) this.onClear}}
+      @clear={{if
+        (and @isClearable @value (not @readOnly) (not @isDisabled))
+        this.onClear
+      }}
       @compressed={{@compressed}}
       @useGroup={{or hasPrepend hasAppend}}
     >
@@ -35,6 +41,7 @@
           {{on "search" this.setValue}}
           {{on "change" this.setValue}}
           {{did-insert this.didInsertInput}}
+          {{did-update this.didUpdateValue @value}}
           {{validatable-control @isInvalid}}
         />
       </:field>

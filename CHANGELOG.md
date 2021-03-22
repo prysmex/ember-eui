@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.22
+
+🐛 Bug / Fixes
+- Updates internal `this.value` if `@value` changes for `<EuiFieldSearch />`
+
 ### 0.1.21
 
 🐛 Bug / Fixes

@@ -76,13 +76,15 @@
           {{/if}}
         {{/if}}
       </EuiTitle>
-      <EuiText @grow={{true}} @size="s" class="euiCard__description">
-        {{#if (has-block "description")}}
-          {{yield to="description"}}
-        {{else}}
-          {{@description}}
-        {{/if}}
-      </EuiText>
+      {{#if @description}}
+        <EuiText @grow={{true}} @size="s" class="euiCard__description">
+          {{#if (has-block "description")}}
+            {{yield to="description"}}
+          {{else}}
+            {{@description}}
+          {{/if}}
+        </EuiText>
+      {{/if}}
       {{yield to="body"}}
     </div>
     {{#if @betaBadgeLabel}}

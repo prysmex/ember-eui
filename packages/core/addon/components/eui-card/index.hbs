@@ -76,7 +76,7 @@
           {{/if}}
         {{/if}}
       </EuiTitle>
-      {{#if @description}}
+      {{#if (or @description (has-block "description"))}}
         <EuiText @grow={{true}} @size="s" class="euiCard__description">
           {{#if (has-block "description")}}
             {{yield to="description"}}

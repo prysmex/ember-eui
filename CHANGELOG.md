@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.23
+
+🚀 Enhancements
+- `<EuiCard />` don't show description markup if there's no description block or arg
+
 ### 0.1.22
 
 🐛 Bug / Fixes

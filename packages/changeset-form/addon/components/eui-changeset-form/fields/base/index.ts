@@ -34,7 +34,7 @@ export default class ChangesetFormFieldsBase<
   }
 
   get value(): unknown {
-    return this.args.changeset.get(this.args.fieldName);
+    return this.args.changeset?.get(this.args.fieldName);
   }
 
   get errors(): string[] {
@@ -42,9 +42,10 @@ export default class ChangesetFormFieldsBase<
       return this.args.errors;
     }
 
-    const fieldErrors = this.args.changeset.errors.filter((error) => {
-      return error.key === this.args.fieldName;
-    });
+    const fieldErrors =
+      this.args.changeset?.errors.filter((error) => {
+        return error.key === this.args.fieldName;
+      }) || [];
 
     return fieldErrors.reduce(
       (errors: string[], error: ValidationError): string[] => {
@@ -63,7 +64,7 @@ export default class ChangesetFormFieldsBase<
     later(
       this,
       () => {
-        this.args.changeset.validate(this.args.fieldName);
+        this.args.changeset?.validate(this.args.fieldName);
       },
       1
     );

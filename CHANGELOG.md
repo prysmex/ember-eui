@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.24
+
+🐛 Bug / Fixes
+- Optional chaining for changeset access in changeset-form base field
+
 ### 0.1.23
 
 🚀 Enhancements

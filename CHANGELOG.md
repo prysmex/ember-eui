@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.25
+
+🐛 Bug / Fixes
+- Add optional helper on "onClose" toasts actions
+
 ### 0.1.24
 
 🐛 Bug / Fixes

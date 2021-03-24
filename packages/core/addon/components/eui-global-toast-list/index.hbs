@@ -20,7 +20,7 @@
       @body={{toast.body}}
       @color={{toast.color}}
       @iconType={{toast.iconType}}
-      @onClose={{queue (fn this.dismissToast toast) toast.onClose}}
+      @onClose={{queue (fn this.dismissToast toast) (optional toast.onClose)}}
       {{did-insert (fn this.didInsertToast toast)}}
       {{on "focus" this.onMouseEnter}}
       {{on "blur" this.onMouseLeave}}

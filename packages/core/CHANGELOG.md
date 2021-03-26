@@ -2,10 +2,11 @@
 
 ### Master
 
-### 0.1.25
+### 0.1.26
 
 🐛 Bug / Fixes
 - Add optional helper on "onClose" toasts actions
+- Fix deploys
 
 ### 0.1.24
 

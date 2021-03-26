@@ -1,14 +1,12 @@
 {{! TODO: Eui Tooltip and update this component to support it. }}
-
 <span
-  class={{class-names
-    "euiBetaBadge"
-    (if @iconType "euiBetaBadge--iconOnly")
-  }}
+  class={{class-names "euiBetaBadge" (if @iconType "euiBetaBadge--iconOnly")}}
   title={{@title}}
   ...attributes
 >
-  {{#if @iconType}}
+  {{#if (has-block)}}
+    {{yield}}
+  {{else if @iconType}}
     <EuiIcon
       class="euiBetaBadge__icon"
       @type={{@iconType}}

@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.27
+
+🚀 Enhancements
+- Block for `<EuiBetaBadge />`
+
 ### 0.1.26
 
 🐛 Bug / Fixes

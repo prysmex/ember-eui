@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.28
+
+🐛 Bug / Fixes
+- Remove html type attribute from `<EuiTextArea />` underlaying `<textarea>`
+
 ### 0.1.27
 
 🚀 Enhancements

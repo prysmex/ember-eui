@@ -6,8 +6,6 @@ interface EuiChangesetFormFieldTextAreaArgs extends BaseArgs {
 }
 
 export default class EuiChangesetFormFieldTextArea extends Base<EuiChangesetFormFieldTextAreaArgs> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleInput(e: InputEvent) {
     const value = (e.target as HTMLInputElement).value;

@@ -1,5 +1,6 @@
 {{#let (arg-or-default @id (unique-id)) as |theId|}}
   <EuiFormRow
+    class={{@rowClasses}}
     @labelType={{@labelType}}
     @display={{@display}}
     @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
@@ -12,7 +13,6 @@
     @error={{this.errors}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
-    ...attributes
   >
     <EuiDualRange
       class={{@fieldClasses}}
@@ -46,6 +46,7 @@
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
       autofocus={{@autofocus}}
+      ...attributes
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}

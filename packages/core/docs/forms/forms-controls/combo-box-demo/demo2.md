@@ -10,7 +10,6 @@ order: 2
 		@options={{this.remainingOptions}}
 		@selectedOptions={{this.selected}}
 		@searchEnabled={{true}}
-		@closeOnSelect={{false}}
 		@singleSelection={{hash asPlainText=true}}
 	as |option item|>
 		{{option.label}}

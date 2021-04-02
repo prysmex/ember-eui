@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.1.29
+
+🚀 Enhancements
+- `<EuiComboBox />` first iteration
+
 ### 0.1.28
 
 🐛 Bug / Fixes

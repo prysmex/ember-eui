@@ -12,7 +12,8 @@
       ...attributes
       {{simple-style
         (inline-styles
-          componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+          componentName="EuiBadge"
+          componentArgs=(hash badgeColor=(arg-or-default @color "default"))
         )
       }}
       {{on "click" (optional @onClick)}}
@@ -37,7 +38,8 @@
       ...attributes
       {{simple-style
         (inline-styles
-          componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+          componentName="EuiBadge"
+          componentArgs=(hash badgeColor=(arg-or-default @color "default"))
         )
       }}
     >
@@ -59,14 +61,19 @@
     ...attributes
     {{simple-style
       (inline-styles
-        componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+        componentName="EuiBadge"
+        componentArgs=(hash badgeColor=(arg-or-default @color "default"))
       )
     }}
   >
     <span class="euiBadge__content">
       {{#if hasBlock}}
         {{#if @onClick}}
-          <button class="euiBadge__childButton" type="button" {{on "click" (optional @onClick)}}>
+          <button
+            class="euiBadge__childButton"
+            type="button"
+            {{on "click" (optional @onClick)}}
+          >
             {{yield}}
           </button>
         {{else if @href}}
@@ -80,22 +87,30 @@
         {{/if}}
       {{/if}}
       {{#if @iconOnClick}}
+        {{! template-lint-disable }}
         <button
           type="button"
           class="euiBadge__iconButton"
           aria-label={{@iconOnClickAriaLabel}}
           disabled={{@isDisabled}}
           title={{@iconOnClickAriaLabel}}
+          tabindex={{@closeButtonProps.tabIndex}}
           {{on "click" (optional @iconOnClick)}}
         >
           <EuiIcon
-            class={{class-names "euiBadge__icon" @closeButtonProps}}
+            class={{class-names "euiBadge__icon" @closeButtonProps.iconClasses}}
             @type={{@iconType}}
+            data-selected-index={{@closeButtonProps.dataSelectedIconIndex}}
             @size={{if hasBlock "s" "m"}}
           />
         </button>
+        {{! tempalte-lint-enable}}
       {{else}}
-        <EuiIcon @type={{@iconType}} @size={{if hasBlock "s" "m"}} class="euiBadge__icon" />
+        <EuiIcon
+          @type={{@iconType}}
+          @size={{if hasBlock "s" "m"}}
+          class="euiBadge__icon"
+        />
       {{/if}}
     </span>
   </span>
@@ -110,7 +125,8 @@
     ...attributes
     {{simple-style
       (inline-styles
-        componentName="EuiBadge" componentArgs=(hash badgeColor=(arg-or-default @color "default"))
+        componentName="EuiBadge"
+        componentArgs=(hash badgeColor=(arg-or-default @color "default"))
       )
     }}
   >

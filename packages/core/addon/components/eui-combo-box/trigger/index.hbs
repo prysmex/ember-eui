@@ -1,0 +1,91 @@
+<EuiFormControlLayout
+  @icon="arrowDown"
+  @iconSide="right"
+  @fullWidth={{@fullWidth}}
+  @compressed={{@compressed}}
+  @readOnly={{@readOnly}}
+  @clear={{if (and @select.selected @onClear) @onClear}}
+  {{!-- @isLoading={{@isLoading}} --}}
+>
+  <:field>
+    {{! template-lint-disable }}
+    <ul
+      id="ember-power-select-multiple-options-{{@select.uniqueId}}"
+      class={{class-names
+        "euiComboBox__inputWrap ember-power-select-multiple-options"
+        (if @compressed "euiComboBox__inputWrap--compressed")
+        (if @fullWidth "euiComboBox__inputWrap--fullWidth")
+        (if @singleSelection "euiComboBox__inputWrap--noWrap")
+        (if @isLoading "euiComboBox__inputWrap--isLoading")
+        (if @onClear "euiComboBox__inputWrap--isClearable")
+      }}
+      ...attributes
+      {{did-update this.openChanged @select.isOpen}}
+      {{on "touchstart" this.chooseOption}}
+      {{on "mousedown" this.chooseOption}}
+    >
+      {{! template-lint-enable }}
+      {{#if
+        (or
+          (and @singleSelection (not @select.searchText)) (not @singleSelection)
+        )
+      }}
+        {{#each @select.selected as |opt idx|}}
+          {{#if @selectedItemComponent}}
+            {{component
+              @selectedItemComponent
+              extra=@extra
+              option=opt
+              select=@select
+            }}
+          {{else}}
+            <EuiComboBoxPill
+              class="ember-power-select-multiple-option
+                {{if opt.disabled "ember-power-select-multiple-option--disabled"
+                }}"
+              @option={{opt}}
+              @onClose={{if (or @select.disabled @singleSelection) false true}}
+              @dataSelectedIconIndex={{idx}}
+              @color={{opt.color}}
+              @asPlainText={{@singleSelection.asPlainText}}
+            >
+              {{yield opt @select}}
+            </EuiComboBoxPill>
+          {{/if}}
+        {{else if (and @placeholder (not @searchEnabled))}}
+          <span class="ember-power-select-placeholder">
+            {{@placeholder}}
+          </span>
+        {{/each}}
+      {{/if}}
+      {{#if @searchEnabled}}
+        {{! template-lint-disable }}
+        <div
+          class="euiComboBox__input"
+          style="font-size: 14px; display: inline-block;"
+        >
+          <input
+            class="ember-power-select-trigger-multiple-input euiComboBox__input"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck={{false}}
+            id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
+            value={{@select.searchText}}
+            aria-controls={{@listboxId}}
+            style={{this.triggerMultipleInputStyle}}
+            placeholder={{this.maybePlaceholder}}
+            disabled={{@select.disabled}}
+            tabindex={{@tabindex}}
+            {{on "focus" @onFocus}}
+            {{on "blur" @onBlur}}
+            {{on "input" this.handleInput}}
+            {{on "keydown" this.handleKeydown}}
+            {{did-insert this.storeInputStyles}}
+          />
+        </div>
+        {{! template-lint-enable }}
+      {{/if}}
+    </ul>
+  </:field>
+</EuiFormControlLayout>

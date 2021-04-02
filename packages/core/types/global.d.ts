@@ -52,3 +52,11 @@ interface Tab {
 }
 
 type HEX = string;
+
+interface Select {
+  selected: any;
+  actions: {
+    search: (str: string) => void;
+    choose: (opt: any, select: Select) => void;
+  };
+}

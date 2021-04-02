@@ -1,0 +1,61 @@
+{{#let (component @groupComponent) as |Group|}}
+  {{#if @select.loading}}
+    <EuiText @size="xs" class="euiComboBoxOptionsList__empty">
+      <EuiFlexGroup @gutterSize="s" @justifyContent="center">
+        <EuiFlexItem @grow={{false}}>
+          <EuiLoadingSpinner @size="m" />
+        </EuiFlexItem>
+        <EuiFlexItem @grow={{false}}>
+          {{@loadingMessage}}
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </EuiText>
+  {{else}}
+    {{! template-lint-disable }}
+    <VerticalCollection
+      @items={{this.flattedOptions}}
+      @tagName="div"
+      @estimateHeight={{arg-or-default @rowHeight 29}}
+      @staticHeight={{true}}
+      @bufferSize={{3}}
+      style="max-height: 200px; overflow-y: auto;"
+      role="listbox"
+      aria-controls="ember-power-select-trigger-{{@select.uniqueId}}"
+      ...attributes
+      {{did-insert this.addHandlers}}
+      {{will-destroy this.removeHandlers}} as |opt index|
+    >
+      {{! template-lint-enable }}
+      {{#if (ember-power-select-is-group opt)}}
+        <Group @group={{opt}} @select={{@select}} @extra={{@extra}} />
+      {{else}}
+        <li
+          class="euiFilterSelectItem
+            {{if (eq opt @select.highlighted) " euiFilterSelectItem-isFocused"
+            }}"
+          aria-selected="{{ember-power-select-is-selected opt @select.selected
+            }}"
+          aria-disabled={{if opt.disabled "true"}}
+          aria-current="{{eq opt @select.highlighted}}"
+          data-option-index="{{index}}"
+          role="option"
+          tabindex={{if opt.disabled "-1" "0"}}
+        >
+          <span class="euiComboBoxOption__contentWrapper">
+            <span class="euiComboBoxOption__content">
+              {{yield opt @select}}
+            </span>
+            {{#if (and (eq opt @select.highlighted) (not opt.disabled))}}
+              <EuiBadge
+                class="euiComboBoxOptions__enterBadge"
+                @color="hollow"
+                @iconType="returnKey"
+                aria-hidden="true"
+              />
+            {{/if}}
+          </span>
+        </li>
+      {{/if}}
+    </VerticalCollection>
+  {{/if}}
+{{/let}}

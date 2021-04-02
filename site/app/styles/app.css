@@ -7,7 +7,6 @@
 @import './markdown/dark.css';
 /* @import './markdown/light.css'; */
 @import './highlight.css';
-@import 'ember-eui.css';
 
 *,
 ::before,
@@ -69,8 +68,6 @@ img {
     }
   }
 }
-
-
 
 body.euiBody--headerIsFixed {
   padding-top: 49px;

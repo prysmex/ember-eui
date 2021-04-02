@@ -11,6 +11,7 @@ order: 2
 		@selectedOptions={{this.selected}}
 		@searchEnabled={{true}}
 		@singleSelection={{hash asPlainText=true}}
+    @searchField="label"
 	as |option item|>
 		{{option.label}}
 	</EuiComboBox>

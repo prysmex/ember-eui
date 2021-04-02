@@ -11,6 +11,7 @@ order: 1
 		@selectedOptions={{this.selected}}
 		@searchEnabled={{true}}
 		@closeOnSelect={{false}}
+    @searchField="label"
 	as |option item|>
 		{{option.label}}
 	</EuiComboBox>

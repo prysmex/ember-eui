@@ -5,7 +5,10 @@
       (hash widthClassName="euiPage--restrictWidth-default")
       (if
         (not-eq restrictWidth false)
-        (hash widthClassName="euiPage--restrictWidth-custom" widthStyle=restrictWidth)
+        (hash
+          widthClassName="euiPage--restrictWidth-custom"
+          widthStyle=restrictWidth
+        )
       )
     ) as |styling|
   }}
@@ -16,9 +19,16 @@
         paddingSize=(arg-or-default @paddingSize "m")
       }}
       ...attributes
-      {{style (if styling.widthStyle (inline-styles max-width=styling.widthStyle))}}
+      {{style
+        (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
+      }}
     >
-      {{yield (hash Sidebar=(component "eui-page-sidebar") Body=(component "eui-page-body"))}}
+      {{yield
+        (hash
+          Sidebar=(component "eui-page-side-bar")
+          Body=(component "eui-page-body")
+        )
+      }}
     </div>
   {{/let}}
 {{/let}}

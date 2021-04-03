@@ -60,7 +60,7 @@
             <EuiFormLabel
               class="euiFormRow__label"
               aria-invalid={{@isInvalid}}
-              for={{ifhasChildLabel rowId}}
+              for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
               @isFocused={{and (not isLegend) focusedState.value}}

@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.2.4
+
+🚀 Enhancements
+- Moves splattributes to the wrapped field for changeset-form
+
 ### 0.2.3
 
 🐛 Bug / Fixes

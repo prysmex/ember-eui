@@ -2,7 +2,7 @@
 
 ```hbs template
 <EuiChangesetForm @changeset={{changeset this.model this.Validations}} as |Form changesetObj|>
-  <EuiFlexGroup @direction="column" @gutterSize="l">
+  <EuiFlexGroup @direction="column" @gutterSize="none" >
     <Form.FieldText @fieldName="firstName" @label="First Name" />
     <Form.FieldTextArea @fieldName="lastName" @label="Last Name" />
     <Form.FieldRangeSlider
@@ -41,6 +41,14 @@
       }}
       @label="Country"
     />
+    <Form.FieldComboBox
+      @fieldName="veggies"
+      @label="Choose a veggie"
+      @options={{array "🥦" "🥬" "🍅" "🥑"}}
+      @helpText="100% natural"
+    as |option|>
+      {{option}}
+    </Form.FieldComboBox>
     <Form.FieldNumber @fieldName="age" @label="Age" />
     <Form.FieldText @fieldName="email" @label="Email" />
     <Form.FieldSwitch @fieldClasses="euiFlexItem" @fieldName="switch" @label="Switch" />
@@ -53,44 +61,43 @@
 </EuiChangesetForm>
 ```
 
-
 ```js component
-import Component from "@glimmer/component";
-import { action } from "@ember/object";
-import { tracked } from "@glimmer/tracking";
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 import {
   validatePresence,
   validateLength,
   validateConfirmation,
   validateFormat,
-  validateNumber,
-} from "ember-changeset-validations/validators";
+  validateNumber
+} from 'ember-changeset-validations/validators';
 
 export const Validations = {
   firstName: [validatePresence(true), validateLength({ min: 4 })],
   lastName: validatePresence(true),
+  veggies: validatePresence(true),
   rangeSlider1: validateNumber({ gte: 150 }),
   country: validatePresence(true),
   radioGroup: validatePresence(true),
   checkboxGroup: validatePresence(true),
-  email: validateFormat({ type: "email" }),
+  email: validateFormat({ type: 'email' }),
   password: [validateLength({ min: 8 })],
-  passwordConfirmation: validateConfirmation({ on: "password" }),
+  passwordConfirmation: validateConfirmation({ on: 'password' })
 };
 
 export default class DemoCardComponent extends Component {
   Validations = Validations;
 
   model = {
-    firstName: "Alberto",
-    country: "",
+    firstName: 'Alberto',
+    country: '',
     rangeSlider1: 150,
-    lastName: "",
-    checkboxGroup: ["checkbox-1"],
-    email: "",
-    password: "",
-    passwordConfirmation: "",
+    lastName: '',
+    checkboxGroup: ['checkbox-1'],
+    email: '',
+    password: '',
+    passwordConfirmation: ''
   };
 }
-
 ```

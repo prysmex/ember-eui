@@ -1,4 +1,65 @@
 <PowerSelectMultiple
+  ...attributes
+  @onChange={{pipe this.onChange @onChange}}
+  @onFocus={{@onFocus}}
+  @onBlur={{@onBlur}}
+  @onOpen={{@onOpen}}
+  @onClose={{@onClose}}
+  @placeholderComponent={{@placeholderComponent}}
+  @searchMessage={{@searchMessage}}
+  @noMatchesMessage={{@noMatchesMessage}}
+  @matchTriggerWidth={{@matchTriggerWidth}}
+  @options={{@options}}
+  @selected={{@selectedOptions}}
+  @closeOnSelect={{@closeOnSelect}}
+  @defaultHighlighted={{@defaultHighlighted}}
+  @searchField={{@searchField}}
+  @searchEnabled={{true}}
+  @tabindex={{@tabindex}}
+  @triggerComponent={{component
+    "eui-combo-box/trigger"
+    fullWidth=@fullWidth
+    compressed=@compressed
+    isDisabled=@isDisabled
+    isInvalid=@isInvalid
+    singleSelection=@singleSelection
+  }}
+  @matcher={{@matcher}}
+  @initiallyOpen={{@initiallyOpen}}
+  @typeAheadOptionMatcher={{@typeAheadOptionMatcher}}
+  @buildSelection={{this.buildSelection}}
+  @search={{@search}}
+  @onInput={{@onInput}}
+  @onKeydown={{@onKeydown}}
+  @scrollTo={{this.scrollTo}}
+  @registerAPI={{queue this.registerAPI (optional @registerApi)}}
+  @horizontalPosition={{@horizontalPosition}}
+  @destination={{@destination}}
+  @preventScroll={{@preventScroll}}
+  @renderInPlace={{@renderInPlace}}
+  @verticalPosition={{@verticalPosition}}
+  @disabled={{@disabled}}
+  @calculatePosition={{@calculatePosition}}
+  @eventType={{@eventType}}
+  @ariaLabel={{@ariaLabel}}
+  @required={{@required}}
+  @triggerRole={{@triggerRole}}
+  @title={{@title}}
+  @triggerId={{@triggerId}}
+  @allowClear={{@isClearable}}
+  @loadingMessage={{@loadingMessage}}
+  @selectedItemComponent={{@selectedItemComponent}}
+  @beforeOptionsComponent={{if
+    @beforeOptionsComponent
+    @beforeOptionsComponent
+    null
+  }}
+  @placeholder={{@placeholder}}
+  @searchPlaceholder={{@searchPlaceholder}}
+  @searchMessageComponent={{@searchMessageComponent}}
+  @optionsComponent={{component "eui-combo-box/options" rowHeight=@rowHeight}}
+  @extra={{@extra}}
+  @groupComponent={{component "eui-combo-box/group"}}
   @triggerClass={{class-names
     "euiComboBox"
     (if @compressed "euiComboBox--compressed")
@@ -7,35 +68,9 @@
     (if @isInvalid "euiComboBox--isInvalid")
     (if this.select.isOpen "euiComboBox-isOpen")
   }}
-  @onChange={{pipe this.onChange @onChange}}
-  @allowClear={{@isClearable}}
-  @options={{@options}}
-  @selected={{@selectedOptions}}
-  @destination={{@destination}}
-  @extra={{@extra}}
-  @searchEnabled={{@searchEnabled}}
-  @searchField={{@searchField}}
-  @registerAPI={{this.registerAPI}}
-  @closeOnSelect={{@closeOnSelect}}
-  @triggerComponent={{component
-    "eui-combo-box/trigger"
-    fullWidth=@fullWidth
-    compressed=@compressed
-    isDisabled=@isDisabled
-    isInvalid=@isInvalid
-		singleSelection=@singleSelection
-  }}
-  @optionsComponent={{component "eui-combo-box/options" rowHeight=@rowHeight}}
-  @groupComponent={{component "eui-combo-box/group"}}
-  @beforeOptionsComponent={{if
-    @beforeOptionsComponent
-    @beforeOptionsComponent
-    null
-  }}
-	@buildSelection={{this.buildSelection}}
   @noMatchesMessageComponent={{component "eui-combo-box/no-matches-message"}}
-  @scrollTo={{this.scrollTo}}
-  @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen euiComboBoxOptionsList__rowWrap" as |option i|
+  @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen euiComboBoxOptionsList__rowWrap
+    {{@dropdownClass}}" as |option i|
 >
   {{yield option i}}
 </PowerSelectMultiple>

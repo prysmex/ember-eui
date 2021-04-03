@@ -1,0 +1,43 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.errors.length}}
+    @error={{this.errors}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+  >
+    <EuiComboBox
+      class={{@fieldClasses}}
+      @onChange={{this.handleChange}}
+      @options={{@options}}
+      @singleSelection={{@singleSelection}}
+      @selectedOptions={{this.value}}
+      @searchEnabled={{arg-or-default @searchEnabled true}}
+      @searchField={{arg-or-default @searchField "label"}}
+      aria-label={{@ariaLabel}}
+      form={{@formId}}
+      @isInvalid={{this.errors.length}}
+      @fullWidth={{@fullWidth}}
+      @isLoading={{@isLoading}}
+      @readOnly={{@readOnly}}
+      @controlOnly={{@controlOnly}}
+      @compressed={{@compressed}}
+      @id={{theId}}
+      @onBlur={{queue this.validate (optional @onBlur)}}
+      @onFocus={{@onFocus}}
+      @onClose={{@onClose}}
+      @onOpen={{@onOpen}}
+      ...attributes as |opt index select|
+    >
+      {{yield opt index select}}
+    </EuiComboBox>
+  </EuiFormRow>
+{{/let}}

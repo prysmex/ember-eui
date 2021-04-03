@@ -30,4 +30,9 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
       e.stopPropagation();
     }
   }
+
+  @action
+  submitSearchInput(e) {
+    e.preventDefault();
+  }
 }

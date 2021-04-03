@@ -21,8 +21,7 @@
         @fullWidth={{@fullWidth}}
         @isLoading={{@isLoading}}
         @compressed={{@compressed}}
-        @prepend={{hasPrepend}}
-        @append={{hasAppend}}
+        @useGroup={{or hasPrepend hasAppend}}
       >
         <:prepend as |prependClasses|>
           {{yield prependClasses inputId to="prepend"}}

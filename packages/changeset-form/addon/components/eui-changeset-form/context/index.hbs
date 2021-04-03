@@ -1,9 +1,7 @@
 {{yield
   (hash
     FieldText=(component
-      "eui-changeset-form/fields/field-text"
-      formId=@formId
-      changeset=@changeset
+      "eui-changeset-form/fields/field-text" formId=@formId changeset=@changeset
     )
     FieldTextArea=(component
       "eui-changeset-form/fields/field-text-area"
@@ -57,6 +55,11 @@
     )
     FieldSelect=(component
       "eui-changeset-form/fields/field-select"
+      formId=@formId
+      changeset=@changeset
+    )
+    FieldComboBox=(component
+      "eui-changeset-form/fields/field-combo-box"
       formId=@formId
       changeset=@changeset
     )

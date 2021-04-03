@@ -43,7 +43,7 @@
         >
           <span class="euiComboBoxOption__contentWrapper">
             <span class="euiComboBoxOption__content">
-              {{yield opt @select}}
+              {{yield opt index @select}}
             </span>
             {{#if (and (eq opt @select.highlighted) (not opt.disabled))}}
               <EuiBadge

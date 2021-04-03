@@ -60,9 +60,10 @@
       {{/if}}
       {{#if @searchEnabled}}
         {{! template-lint-disable }}
-        <div
+        <form
           class="euiComboBox__input"
           style="font-size: 14px; display: inline-block;"
+          {{on "submit" this.submitSearchInput}}
         >
           <input
             class="ember-power-select-trigger-multiple-input euiComboBox__input"
@@ -83,7 +84,8 @@
             {{on "keydown" this.handleKeydown}}
             {{did-insert this.storeInputStyles}}
           />
-        </div>
+          {{log "onblur is" @onBlur}}
+        </form>
         {{! template-lint-enable }}
       {{/if}}
     </ul>

@@ -53,7 +53,6 @@ function getItems(
   let items: Item[] = [];
   if (docfyNode.children.length > 0) {
     let children = docfyNode.children;
-    console.log(parent, docfyNode, children);
     items = children.map((child) => {
       return getItems(child, clickHandler, `${parent}-${docfyNode.name}`);
     });

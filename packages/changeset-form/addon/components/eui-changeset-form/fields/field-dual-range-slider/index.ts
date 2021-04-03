@@ -8,8 +8,6 @@ interface EuiChangesetFormFieldDualRangeSliderArgs extends BaseArgs {
 }
 
 export default class EuiChangesetFormFieldDualRangeSlider extends Base<EuiChangesetFormFieldDualRangeSliderArgs> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleInput(e: MinMax) {
     this.args.changeset.set(this.args.fieldName, e);

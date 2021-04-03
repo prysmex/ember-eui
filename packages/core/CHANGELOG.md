@@ -2,6 +2,13 @@
 
 ### Master
 
+### 0.2.0
+
+🚀 Enhancements
+- Changeset Form Components
+- `<EuiComboBox />` Added to changeset-form package
+
+
 ### 0.1.29
 
 🚀 Enhancements

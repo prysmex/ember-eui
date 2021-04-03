@@ -1,21 +1,37 @@
 {{#let (arg-or-default @id (unique-id)) as |theId|}}
-  <EuiRadio
-    class={{@fieldClasses}}
-    form={{@formId}}
-    aria-label={{@ariaLabel}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
     @label={{@label}}
-    @isFakeLabelBlock={{not (has-block "label")}}
+    @labelAppend={{@labelAppend}}
     @id={{theId}}
-    @autoFocus={{@autoFocus}}
-    @compressed={{@compressed}}
-    @name={{@name}}
-    @disabled={{@disabled}}
-    @inputRef={{@inputRef}}
-    {{on "change" this.handleChange}}
-    ...attributes
+    @isInvalid={{this.errors.length}}
+    @error={{this.errors}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
   >
-    <:label>
-      {{yield to="label"}}
-    </:label>
-  </EuiRadio>
+    <EuiRadio
+      class={{@fieldClasses}}
+      form={{@formId}}
+      aria-label={{@ariaLabel}}
+      @radioLabel={{@radioLabel}}
+      @isFakeLabelBlock={{not (has-block "label")}}
+      @id={{theId}}
+      @autoFocus={{@autoFocus}}
+      @compressed={{@compressed}}
+      @name={{@name}}
+      @disabled={{@disabled}}
+      @inputRef={{@inputRef}}
+      ...attributes
+      {{on "change" this.handleChange}}
+    >
+      <:label>
+        {{yield to="label"}}
+      </:label>
+    </EuiRadio>
+  </EuiFormRow>
 {{/let}}

@@ -3,11 +3,15 @@
   (arg-or-default @showLabel true)
   (arg-or-default @id (unique-id))
   (unique-id)
-  (arg-or-default
-    @useLabelBlock true
-  ) as |type showLabel switchId labelId useLabelBlock|
+  (and
+    (has-block "label") (not (arg-or-default @isFakeLabelBlock false))
+  ) as |type showLabel switchId labelId hasLabelBlock|
 }}
-  {{#let (class-names (if @compressed "euiSwitch--compressed") "euiSwitch") as |classes|}}
+  {{#let
+    (class-names
+      (if @compressed "euiSwitch--compressed") "euiSwitch"
+    ) as |classes|
+  }}
     <div class={{classes}}>
       <button
         type={{type}}
@@ -26,15 +30,23 @@
           <span class="euiSwitch__track">
             {{#unless @compressed}}
               <EuiIcon @type="cross" @size="m" class="euiSwitch__icon" />
-              <EuiIcon @type="check" @size="m" class="euiSwitch__icon euiSwitch__icon--checked" />
+              <EuiIcon
+                @type="check"
+                @size="m"
+                class="euiSwitch__icon euiSwitch__icon--checked"
+              />
             {{/unless}}
           </span>
         </span>
       </button>
       {{#if showLabel}}
         {{! template-lint-disable}}
-        <span class="euiSwitch__label" id={{labelId}} {{on "click" this.onClick}}>
-          {{#if (and useLabelBlock (has-block "label"))}}
+        <span
+          class="euiSwitch__label"
+          id={{labelId}}
+          {{on "click" this.onClick}}
+        >
+          {{#if hasLabelBlock}}
             {{yield to="label"}}
           {{else}}
             {{@label}}

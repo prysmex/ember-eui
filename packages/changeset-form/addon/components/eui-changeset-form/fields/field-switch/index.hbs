@@ -23,7 +23,7 @@
       @label={{@switchLabel}}
       @checked={{this.value}}
       @onChange={{this.handleChange}}
-      @useLabelBlock={{has-block "label"}}
+      @isFakeLabelBlock={{not (has-block "label")}}
       @disabled={{@disabled}}
       @compressed={{@compressed}}
       @type={{@type}}

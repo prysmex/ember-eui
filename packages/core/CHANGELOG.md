@@ -2,7 +2,12 @@
 
 ### Master
 
-### 0.2.1
+### 0.2.3
+
+🐛 Bug / Fixes
+- Add `<EuiFormRow />` to changeset-form/fields/switch
+
+### 0.2.2
 
 🐛 Bug / Fixes
 - Typo in ChangesetForm NumberField => FieldNumber

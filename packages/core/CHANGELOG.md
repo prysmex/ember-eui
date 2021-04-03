@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.2.1
+
+🐛 Bug / Fixes
+- Bugfixes in `<EuiFlexGrid />` and `<EuiPage />`
+
 ### 0.2.0
 
 🚀 Enhancements

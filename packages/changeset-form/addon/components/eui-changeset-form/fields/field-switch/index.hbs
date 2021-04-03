@@ -1,21 +1,37 @@
 {{#let (arg-or-default @id (unique-id)) as |theId|}}
-  <EuiSwitch
-    class={{@fieldClasses}}
-    form={{@formId}}
-    aria-label={{@ariaLabel}}
-    @id={{theId}}
-    @showLabel={{@showLabel}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
     @label={{@label}}
-    @checked={{this.value}}
-    @onChange={{this.handleChange}}
-    @useLabelBlock={{has-block "label"}}
-    @disabled={{@disabled}}
-    @compressed={{@compressed}}
-    @type={{@type}}
-    ...attributes
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.errors.length}}
+    @error={{this.errors}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
   >
-    <:label>
-      {{yield to="label"}}
-    </:label>
-  </EuiSwitch>
+    <EuiSwitch
+      class={{@fieldClasses}}
+      form={{@formId}}
+      aria-label={{@ariaLabel}}
+      @id={{theId}}
+      @showLabel={{@showLabel}}
+      @label={{@switchLabel}}
+      @checked={{this.value}}
+      @onChange={{this.handleChange}}
+      @useLabelBlock={{has-block "label"}}
+      @disabled={{@disabled}}
+      @compressed={{@compressed}}
+      @type={{@type}}
+      ...attributes
+    >
+      <:label>
+        {{yield to="label"}}
+      </:label>
+    </EuiSwitch>
+  </EuiFormRow>
 {{/let}}

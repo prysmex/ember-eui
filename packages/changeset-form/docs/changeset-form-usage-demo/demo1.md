@@ -51,7 +51,7 @@
     </Form.FieldComboBox>
     <Form.FieldNumber @fieldName="age" @label="Age" />
     <Form.FieldText @fieldName="email" @label="Email" />
-    <Form.FieldSwitch @fieldClasses="euiFlexItem" @fieldName="switch" @label="Switch" />
+    <Form.FieldSwitch @fieldClasses="euiFlexItem" @fieldName="switch" @label="Switch" @switchLabel="Switch Text"/>
     <Form.FieldPassword @fieldName="password" @label="Password" />
     <Form.FieldPassword @fieldName="passwordConfirmation" @label="Password Confirmation" />
     <EuiButton @type="submit" @isDisabled={{changesetObj.isInvalid}}>

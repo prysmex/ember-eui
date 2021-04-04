@@ -1,29 +1,34 @@
-{{#if @legend}}
-  <EuiFormFieldset @legend={{@legend}} @compressed={{@compressed}}>
-    {{#each @options key="id" as |option|}}
-      <EuiCheckbox
-        form={{@formId}}
-        class={{concat "euiCheckboxGroup__item" option.className}}
-        @checked={{get @idToSelectedMap option.id}}
-        @disabled={{or @disabled option.disabled}}
-        @compressed={{@compressed}}
-				@label={{option.label}}
-        {{on "change" (fn @onChange option.id)}}
-      />
-    {{/each}}
-  </EuiFormFieldset>
-{{else}}
-  <div ...attributes>
-    {{#each @options key="id" as |option|}}
-      <EuiCheckbox
-        form={{@formId}}
-        class={{concat "euiCheckboxGroup__item" option.className}}
-        @checked={{get @idToSelectedMap option.id}}
-        @disabled={{or @disabled option.disabled}}
-        @compressed={{@compressed}}
-				@label={{option.label}}
-        {{on "change" (fn @onChange option.id)}}
-      />
-    {{/each}}
-  </div>
-{{/if}}
+{{#let
+  (arg-or-default @valueKey "id")
+  (arg-or-default @labelKey "label") as |valueKey labelKey|
+}}
+  {{#if @legend}}
+    <EuiFormFieldset @legend={{@legend}} @compressed={{@compressed}}>
+      {{#each @options key=valueKey as |option|}}
+        <EuiCheckbox
+          form={{@formId}}
+          class={{concat "euiCheckboxGroup__item" option.className}}
+          @checked={{get @idToSelectedMap (get option valueKey)}}
+          @disabled={{or @disabled option.disabled}}
+          @compressed={{@compressed}}
+          @label={{get option labelKey}}
+          {{on "change" (fn @onChange (get option valueKey))}}
+        />
+      {{/each}}
+    </EuiFormFieldset>
+  {{else}}
+    <div ...attributes>
+      {{#each @options key=valueKey as |option|}}
+        <EuiCheckbox
+          form={{@formId}}
+          class={{concat "euiCheckboxGroup__item" option.className}}
+          @checked={{get @idToSelectedMap (get option valueKey)}}
+          @disabled={{or @disabled option.disabled}}
+          @compressed={{@compressed}}
+          @label={{get option labelKey}}
+          {{on "change" (fn @onChange (get option valueKey))}}
+        />
+      {{/each}}
+    </div>
+  {{/if}}
+{{/let}}

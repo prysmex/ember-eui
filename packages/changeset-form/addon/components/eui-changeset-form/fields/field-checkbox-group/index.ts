@@ -8,8 +8,6 @@ interface EuiChangesetFormFieldCheckboxGroupArgs extends BaseArgs {
 }
 
 export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangesetFormFieldCheckboxGroupArgs> {
-  form: HTMLFormElement | null = null;
-
   get value(): Values {
     return this.args.changeset.get(this.args.fieldName);
   }

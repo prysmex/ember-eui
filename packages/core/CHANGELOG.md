@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.2.5
+
+🚀 Enhancements
+- `@valueKey` and `@labelKey` for `<EuiCheckboxGroup />` and `<EuiRadioGroup />` so you don't have to map to { id, value }
+
 ### 0.2.4
 
 🚀 Enhancements

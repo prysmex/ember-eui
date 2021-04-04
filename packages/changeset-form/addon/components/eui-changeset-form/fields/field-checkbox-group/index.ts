@@ -1,15 +1,16 @@
 import Base, { BaseArgs } from '../base';
 import { action } from '@ember/object';
 
-type Values = string[] | [] | undefined;
-
 interface EuiChangesetFormFieldCheckboxGroupArgs extends BaseArgs {
-  onChange?: (value: Values) => void;
+  onChange?: (value: string[]) => void;
 }
 
 export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangesetFormFieldCheckboxGroupArgs> {
-  get value(): Values {
-    return this.args.changeset.get(this.args.fieldName);
+  get value(): string[] {
+    return (
+      this.args.changeset.get(this.args.fieldName)?.toArray() ||
+      this.args.changeset.get(this.args.fieldName)
+    );
   }
 
   get arrayToMap() {
@@ -18,17 +19,20 @@ export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangese
   }
 
   transformToMap(value: string[] = []) {
-    return value.reduce((acum, currVal) => {
-      return {
-        [currVal]: true,
-        ...acum
-      };
-    }, {});
+    let valuesMap = value.reduce(
+      (acc, val: string) => {
+        acc[val] = true;
+        return acc;
+      },
+      {} as { [key: string]: boolean }
+    );
+    return valuesMap;
   }
 
   @action
   handleChange(optionId: string) {
-    const value: string[] = this.value || [];
+    let value: string[] = this.value || [];
+
     const found = value.find((v) => v === optionId);
     let newArr = [];
 

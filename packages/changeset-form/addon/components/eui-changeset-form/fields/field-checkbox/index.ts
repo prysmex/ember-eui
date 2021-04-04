@@ -6,7 +6,6 @@ interface EuiChangesetFormChecFieldkboxArgs extends BaseArgs {
 }
 
 export default class EuiChangesetFormFieldCheckbox extends Base<EuiChangesetFormChecFieldkboxArgs> {
-  form: HTMLFormElement | null = null;
 
   @action
   handleChange(e: InputEvent) {

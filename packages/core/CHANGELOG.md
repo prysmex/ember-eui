@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.2.6
+
+🚀 Enhancements
+- Adds `toArray` for changeset-form checkbox group
+
 ### 0.2.5
 
 🚀 Enhancements

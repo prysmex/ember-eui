@@ -59,10 +59,10 @@ export default class Demo1 extends Component {
       value: `${newOption}`,
       label: `${newOption}`
     }
-    this.options.addObject(newOptionStructure)
-    this.remainingOptions.addObject(newOptionStructure)
-    this.selected.addObject(newOptionStructure)
-
+    if(this.options.filter( opt => opt.value == newOptionStructure.value).length == 0){
+      this.options.addObject(newOptionStructure)
+      this.selected.addObject(newOptionStructure)
+    }
   }
 }
 ```

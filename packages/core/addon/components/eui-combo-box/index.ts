@@ -63,6 +63,11 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   }
 
   @action
+  onCreateOption() {
+    return this.select.searchText;
+  }
+
+  @action
   buildSelection(option: any, select: Select) {
     let newSelection = (select.selected || []).slice(0);
     let idx = -1;

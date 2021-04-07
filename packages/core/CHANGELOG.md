@@ -5,6 +5,15 @@
 ### 0.2.6
 
 🚀 Enhancements
+- Fixes performance issues and bugs around ember-changeset, we currently depend on a PR [ember-changeset](https://github.com/poteto/ember-changeset/pull/586)
+
+🐛 Bug / Fixes
+- Adds `ember-composable-helpers` to dependencies
+- renamed `@onInput` to `@onChange` for `<EuiChangesetForm.FormRangeSlider />`
+
+### 0.2.6
+
+🚀 Enhancements
 - Adds `toArray` for changeset-form checkbox group
 
 ### 0.2.5

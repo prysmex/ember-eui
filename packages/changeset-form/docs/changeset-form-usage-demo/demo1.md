@@ -3,8 +3,8 @@
 ```hbs template
 <EuiChangesetForm @changeset={{changeset this.model this.Validations}} as |Form changesetObj|>
   <EuiFlexGroup @direction="column" @gutterSize="none" >
-    <Form.FieldText @fieldName="firstName" @label="First Name" />
-    <Form.FieldTextArea @fieldName="lastName" @label="Last Name" />
+    <Form.FieldText @fieldName="user.firstName" @label="First Name" />
+    <Form.FieldTextArea @fieldName="user.lastName" @label="Last Name" />
     <Form.FieldRangeSlider
       @fieldName="rangeSlider1"
       @label="Range slider"
@@ -49,6 +49,15 @@
     as |option|>
       {{option}}
     </Form.FieldComboBox>
+    <Form.FieldComboBox
+      @fieldName="favVeggie"
+      @label="Now choose your favorite veggie!"
+      @options={{array "🥦" "🥬" "🍅" "🥑"}}
+      @helpText="100% natural"
+      @singleSelection={{hash asPlainText=true}}
+    as |option|>
+      {{option}}
+    </Form.FieldComboBox>
     <Form.FieldNumber @fieldName="age" @label="Age" />
     <Form.FieldText @fieldName="email" @label="Email" />
     <Form.FieldSwitch @fieldClasses="euiFlexItem" @fieldName="switch" @label="Switch" @switchLabel="Switch Text"/>
@@ -74,8 +83,10 @@ import {
 } from 'ember-changeset-validations/validators';
 
 export const Validations = {
-  firstName: [validatePresence(true), validateLength({ min: 4 })],
-  lastName: validatePresence(true),
+  user: {
+    firstName: [validatePresence(true), validateLength({ min: 4 })],
+    lastName: validatePresence(true)
+  },
   veggies: validatePresence(true),
   rangeSlider1: validateNumber({ gte: 150 }),
   country: validatePresence(true),
@@ -90,10 +101,12 @@ export default class DemoCardComponent extends Component {
   Validations = Validations;
 
   model = {
-    firstName: 'Alberto',
+    user: {
+      firstName: 'Alberto',
+      lastName: ''
+    },
     country: '',
     rangeSlider1: 150,
-    lastName: '',
     checkboxGroup: ['checkbox-1'],
     email: '',
     password: '',

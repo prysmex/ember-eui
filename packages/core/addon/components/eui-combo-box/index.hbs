@@ -25,6 +25,7 @@
     isInvalid=@isInvalid
     singleSelection=@singleSelection
     onClose=@removeTag
+    onCreateOption=(if @onCreateOption (pipe this.onCreateOption @onCreateOption))
   }}
   @matcher={{@matcher}}
   @initiallyOpen={{@initiallyOpen}}

@@ -2,7 +2,12 @@
 
 ### Master
 
-### 0.2.6
+### 0.2.8
+
+🐛 Bug / Fixes
+- `ChangesetForm.FieldComboBox` now sets string for singleSelection instead of array of 1 position
+
+### 0.2.7
 
 🚀 Enhancements
 - Fixes performance issues and bugs around ember-changeset, we currently depend on a PR [ember-changeset](https://github.com/poteto/ember-changeset/pull/586)

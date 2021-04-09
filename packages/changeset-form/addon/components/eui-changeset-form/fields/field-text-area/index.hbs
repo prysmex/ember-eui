@@ -25,11 +25,12 @@
       @resize={{@resize}}
       @inputRef={{@inputRef}}
       @id={{theId}}
+      @rows={{@rows}}
       autofocus={{@autofocus}}
       placeholder={{@placeholder}}
+      ...attributes
       {{on "blur" this.validate}}
       {{on "input" this.handleInput}}
-      ...attributes
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}

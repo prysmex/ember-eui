@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.3.2
+
+🐛 Bug / Fixes
+- Pass down @rows to `<ChangesetForm.FieldTextArea />`
+
 ### 0.3.1
 
 🐛 Bug / Fixes

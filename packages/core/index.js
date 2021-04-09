@@ -94,7 +94,7 @@ module.exports = {
     let selectedTheme = this.emberEuiOptions.theme;
 
     let importer = writeFile(
-      'eui-components.scss',
+      'ember-eui-components.scss',
       euiScssFiles ? `@import './elastic-eui/theme_${selectedTheme}.scss';` : ''
     );
 

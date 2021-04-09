@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.3.1
+
+🐛 Bug / Fixes
+- Change name of generated components file for imports.
+
 ### 0.3.0
 
 🚀 Enhancements

@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.3.0
+
+🚀 Enhancements
+- Adds ability to use `<EuiIcon />` inside `<EuiAvatar />`, the downside is an small override on the css, this should be removed later on when we have time to bump elastic-eui styles.
+
 ### 0.2.8
 
 🐛 Bug / Fixes

@@ -1,23 +1,44 @@
-<div
-  class={{class-names
+{{#let
+  (inline-styles
     componentName="EuiAvatar"
-    size=(arg-or-default @size "m")
-    type=(arg-or-default @type "user")
-  }}
-  aria-label={{@name}}
-  title={{@name}}
-  ...attributes
-  {{simple-style
-    (inline-styles
-      componentName="EuiAvatar"
-      componentArgs=(hash name=@name avatarColor=@avatarColor)
-      background-image=(if @imageUrl @imageUrl "none")
+    componentArgs=(hash
+      name=@name
+      color=@color
+      iconColor=@iconColor
+      iconSize=@iconSize
+      iconType=@iconType
     )
-  }}
->
-  {{#if (and @name (not @imageUrl))}}
-    <span aria-hidden="true">
-      {{to-initials @name @initialLength @initials}}
-    </span>
-  {{/if}}
-</div>
+    background-image=(if @imageUrl @imageUrl "none")
+  ) as |inlineStyles|
+}}
+  <div
+    class={{class-names
+      (if @isDisabled "euiAvatar-isDisabled")
+      (if (eq @color "plain") "euiAvatar--plain")
+      componentName="EuiAvatar"
+      size=(arg-or-default @size "m")
+      type=(arg-or-default @type "user")
+    }}
+    aria-label={{@name}}
+    title={{@name}}
+    ...attributes
+    {{simple-style inlineStyles}}
+  >
+    {{#if (and (not @imageUrl) (not @iconType))}}
+      <span aria-hidden="true">
+        {{to-initials @name @initialLength @initials}}
+      </span>
+    {{else if @iconType}}
+      <EuiIcon
+        class="euiAvatar__icon"
+        @size={{or @iconSize @size}}
+        @type={{@iconType}}
+        aria-label={{@name}}
+        @color={{or
+          @iconColor
+          (if (eq @iconColor null) @iconColor inlineStyles.color)
+        }}
+      />
+    {{/if}}
+  </div>
+{{/let}}

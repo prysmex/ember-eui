@@ -19,23 +19,30 @@ export const typeMapping = {
 
 export function inlineStyles({
   name,
-  avatarColor
+  color
 }: {
   name: string;
-  avatarColor: string;
+  color: string;
+  iconColor: string;
 }): Styling {
-  let assignedColor = avatarColor;
-  if (name && !assignedColor) {
-    assignedColor = VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
-  }
-  const textColor = isColorDark(...hexToRgb(assignedColor || 'base'))
-    ? '#FFFFFF'
-    : '#000000';
+  let assignedColor = color;
 
-  return {
-    'background-color': assignedColor,
-    color: textColor
-  };
+  const isNamedColor = color === 'plain' || color === null;
+
+  if (!isNamedColor) {
+    if (name && !assignedColor) {
+      assignedColor = VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
+    }
+    const textColor = isColorDark(...hexToRgb(assignedColor || 'base'))
+      ? '#FFFFFF'
+      : '#000000';
+    return {
+      'background-color': assignedColor,
+      color: textColor
+    };
+  }
+
+  return {};
 }
 
 const mapping: ComponentMapping = {

@@ -22,8 +22,33 @@
   </h4>
 </EuiTitle>
 <EuiSpacer />
-<EuiAvatar @size="m" @type="space" @name="Kibana" initialsLength={{2}} />
-<EuiAvatar @size="m" @type="space" @name="Leonardo Dude" initialsLength={{1}} />
-<EuiAvatar @size="m" @type="space" @name="Not provided" initials="?" />
+<EuiAvatar @size="m" @type="space" @name="Kibana" @initialsLength={{2}} />
+<EuiAvatar @size="m" @type="space" @name="Leonardo Dude" @initialsLength={{1}} />
+<EuiAvatar @size="m" @type="space" @name="Not provided" @initials="?" />
 <EuiAvatar @size="m" @type="space" @name="Engineering Space" @initials="En" @initialsLength={{2}} />
+
+
+<EuiTitle @size="xs">
+  <h4>
+    Icons
+  </h4>
+</EuiTitle>
+<EuiSpacer />
+<EuiAvatar @size="s" @name="Small Size" @iconType="managementApp"/>
+<EuiAvatar @size="m" @name="Medium Size" @iconType="managementApp"/>
+<EuiAvatar @size="l" @name="Large" @iconType="managementApp"/>
+<EuiAvatar @size="xl" @name="Plain color" @color="plain" @iconType="managementApp"/>
+
+<EuiTitle @size="xs">
+  <h4>
+    Colors and Sizes
+  </h4>
+</EuiTitle>
+<EuiSpacer />
+
+<EuiAvatar @name="Avatar color" @iconType="managementApp" @color="#BD10E0"/>
+<EuiAvatar @name="Custom iconColor" @iconType="managementApp" @color="#103148" @iconColor="primary"/>
+<EuiAvatar @name="Null iconColor" @iconType="appSearchApp" @iconColor={{null}} @color="#343741"/>
+<EuiAvatar @name="Large iconSize" @iconType="appSearchApp" @iconSize="l"/>
+
 ```

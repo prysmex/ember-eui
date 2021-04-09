@@ -75,12 +75,14 @@ export type EuiIconArgs = CommonArgs & {
 };
 
 function isEuiIconType(x: EuiIconArgs['type']): x is EuiIconType {
-  return typeof x === 'string' && Object.prototype.hasOwnProperty.call(typeToPathMap, x);
+  return (
+    typeof x === 'string' &&
+    Object.prototype.hasOwnProperty.call(typeToPathMap, x)
+  );
 }
 
 export default class EuiIcon extends Component<EuiIconArgs> {
   @argOrDefault('m') size!: IconSize;
-  @argOrDefault('default') color!: IconColor;
 
   get useImage(): boolean {
     const { type } = this.args;
@@ -89,7 +91,11 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
   get useSvg(): boolean {
     const config = getOwner(this).resolveRegistration('config:environment');
-    return this.args.useSvg ?? config?.['@ember-eui/core']?.['eui-icon']?.useSvg ?? false;
+    return (
+      this.args.useSvg ??
+      config?.['@ember-eui/core']?.['eui-icon']?.useSvg ??
+      false
+    );
   }
 
   get icon(): IconType | void {
@@ -133,7 +139,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   get optionalCustomStyles(): ReturnType<typeof htmlSafe> | string {
-    const { color } = this;
+    const { color } = this.args;
     if (color) {
       if (!isNamedColor(color)) {
         return htmlSafe(`fill: ${color}`);
@@ -143,10 +149,13 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   get optionalColorClass(): NamedColor | string {
-    const { color } = this;
+    const { color } = this.args;
+    console.log(color);
     if (color) {
       if (isNamedColor(color)) {
         return colorToClassMap[color];
+      } else {
+        return 'euiIcon--customColor';
       }
     }
     return '';
@@ -157,7 +166,8 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     const { icon } = this;
 
     return (
-      icon === 'empty' || !(this.args['aria-label'], this.args['aria-labelledby'], this.args.title)
+      icon === 'empty' ||
+      !(this.args['aria-label'], this.args['aria-labelledby'], this.args.title)
     );
   }
 

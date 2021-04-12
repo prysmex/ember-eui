@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.3.4
+
+🐛 Bug / Fixes
+- Remove hardcoded @searchEnabled from `<EuiComboBox />`
+
 ### 0.3.3
 
 🐛 Bug / Fixes

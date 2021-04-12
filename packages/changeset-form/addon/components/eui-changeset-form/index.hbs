@@ -14,6 +14,11 @@
       >
         {{yield
           (hash
+            FieldBase=(component
+              Context.FieldBase
+              fullWidth=@fullWidth
+              hasSubmitted=this.hasSubmitted
+            )
             FieldText=(component
               Context.FieldText
               fullWidth=@fullWidth

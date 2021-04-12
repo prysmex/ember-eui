@@ -1,5 +1,10 @@
 # Demo
 
+** Note: `<EuiChangesetForm::Fields::ComboBox>` is a little bit more manual than the others in order to give you full flexibility of which options are actually selected
+and how to set them for complex or weird use cases, but we keep setting errors for you via the @fieldName
+
+<EuiSpacer />
+
 ```hbs template
 <EuiChangesetForm @changeset={{changeset this.model this.Validations}} as |Form changesetObj|>
   <EuiFlexGroup @direction="column" @gutterSize="none" >
@@ -45,6 +50,8 @@
       @fieldName="veggies"
       @label="Choose a veggie"
       @options={{array "🥦" "🥬" "🍅" "🥑"}}
+      @onChange={{changeset-set changesetObj "veggies"}}
+      @selectedOptions={{changeset-get changesetObj "veggies"}}
       @helpText="100% natural"
     as |option|>
       {{option}}
@@ -54,6 +61,8 @@
       @label="Now choose your favorite veggie!"
       @options={{array "🥦" "🥬" "🍅" "🥑"}}
       @helpText="100% natural"
+      @onChange={{changeset-set changesetObj "favVeggie"}}
+      @selectedOptions={{changeset-get changesetObj "favVeggie"}}
       @singleSelection={{hash asPlainText=true}}
     as |option|>
       {{option}}

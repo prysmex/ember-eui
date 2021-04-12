@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.3.5
+
+🚀 Enhancements
+- Made `<EuiChangesetForm::Fields::FieldComboBox />` more manual but more flexible, now you have to passdown `@selectedOptions` and `@onChange`
+
+
 ### 0.3.4
 
 🐛 Bug / Fixes
@@ -10,12 +16,12 @@
 ### 0.3.3
 
 🐛 Bug / Fixes
-- Remove default searchField from `<ChangesetForm.FieldComboBox />`
+- Remove default searchField from `<EuiChangesetForm::Fields::FieldComboBox />`
 
 ### 0.3.2
 
 🐛 Bug / Fixes
-- Pass down @rows to `<ChangesetForm.FieldTextArea />`
+- Pass down @rows to `<EuiChangesetForm::Fields::FieldTextArea />`
 
 ### 0.3.1
 
@@ -30,7 +36,7 @@
 ### 0.2.8
 
 🐛 Bug / Fixes
-- `ChangesetForm.FieldComboBox` now sets string for singleSelection instead of array of 1 position
+- `<EuiChangesetForm::Fields::FieldComboBox />` now sets string for singleSelection instead of array of 1 position
 
 ### 0.2.7
 
@@ -39,7 +45,7 @@
 
 🐛 Bug / Fixes
 - Adds `ember-composable-helpers` to dependencies
-- renamed `@onInput` to `@onChange` for `<EuiChangesetForm.FormRangeSlider />`
+- renamed `@onInput` to `@onChange` for `<EuiChangesetForm::Fields::FieldRangeSlider />`
 
 ### 0.2.6
 

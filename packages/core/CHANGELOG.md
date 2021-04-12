@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.3.3
+
+🐛 Bug / Fixes
+- Remove default searchField from `<ChangesetForm.FieldComboBox />`
+
 ### 0.3.2
 
 🐛 Bug / Fixes

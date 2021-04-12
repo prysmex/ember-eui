@@ -2,11 +2,15 @@
 
 ### Master
 
-### 0.3.5
+### 0.4.1
+
+🐛 Bug / Fixes
+- Exports `chageset-form/eui-changeset-form/fields/field-base.js`
+
+### 0.4.0
 
 🚀 Enhancements
 - Made `<EuiChangesetForm::Fields::FieldComboBox />` more manual but more flexible, now you have to passdown `@selectedOptions` and `@onChange`
-
 
 ### 0.3.4
 

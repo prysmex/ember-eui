@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.4.3
+
+🚀 Enhancements
+- Bumps ember-changeset with a bugfix for safetely getting target props
+
 ### 0.4.2
 
 🐛 Bug / Fixes

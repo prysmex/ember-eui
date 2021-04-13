@@ -7483,24 +7483,24 @@ ember-cached-decorator-polyfill@^0.1.1:
     ember-cache-primitive-polyfill "^1.0.1"
     ember-cli-babel "^7.21.0"
 
-"ember-changeset-validations@github:betocantu93/ember-changeset-validations#spike-fix-prop-notification":
+"ember-changeset-validations@github:betocantu93/ember-changeset-validations#prop-notification-with-safe-get":
   version "3.14.2"
-  resolved "https://codeload.github.com/betocantu93/ember-changeset-validations/tar.gz/6041474b003a6f55c21272df8bd2481c952e55ac"
+  resolved "https://codeload.github.com/betocantu93/ember-changeset-validations/tar.gz/8014197a8be3c9f19e5b2bcccff681dd04ac1755"
   dependencies:
-    ember-changeset "github:betocantu93/ember-changeset#spike-fix-prop-notification"
+    ember-changeset "github:betocantu93/ember-changeset#prop-notification-with-safe-get"
     ember-cli-babel "^7.11.1"
     ember-cli-htmlbars "^4.0.5"
     ember-get-config "^0.2.4"
     ember-validators "^3.0.1"
 
-"ember-changeset@github:betocantu93/ember-changeset#spike-fix-prop-notification":
+"ember-changeset@github:betocantu93/ember-changeset#prop-notification-with-safe-get":
   version "3.13.2"
-  resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/60891c2c978fe7b46153d8bcf1e3d09768ce74f7"
+  resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/7bf529ca3cfc23db1e9ce83a595ca46c50ea32d4"
   dependencies:
     "@glimmer/tracking" "^1.0.1"
     ember-auto-import "^1.5.2"
     ember-cli-babel "^7.19.0"
-    validated-changeset "~0.14.2"
+    validated-changeset "https://github.com/betocantu93/validated-changeset#spike"
 
 ember-cli-app-version@^3.2.0:
   version "3.2.0"
@@ -17503,10 +17503,9 @@ validate-npm-package-name@^3.0.0:
   dependencies:
     builtins "^1.0.3"
 
-validated-changeset@~0.14.2:
+"validated-changeset@https://github.com/betocantu93/validated-changeset#spike":
   version "0.14.2"
-  resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-0.14.2.tgz#e1f3f869cac64e5b5841fccdd1c8cdfa72d16c34"
-  integrity sha512-HeAXQzP7531BnkAPYu8ZfOCFlkD+nOFl213k5sAntQ0kVkRGokl5VGXGlD3T4ox9nBJPS5FvzvdIX14RnuhLww==
+  resolved "https://github.com/betocantu93/validated-changeset#8b30f6f1cc64517c96c072364a576d534f1af890"
 
 vary@~1.1.2:
   version "1.1.2"

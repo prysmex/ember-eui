@@ -150,7 +150,6 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
   get optionalColorClass(): NamedColor | string {
     const { color } = this.args;
-    console.log(color);
     if (color) {
       if (isNamedColor(color)) {
         return colorToClassMap[color];

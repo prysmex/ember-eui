@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.4.2
+
+🐛 Bug / Fixes
+- Removes console.log
+
 ### 0.4.1
 
 🐛 Bug / Fixes

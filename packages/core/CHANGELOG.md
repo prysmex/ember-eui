@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.4.4
+
+🚀 Enhancements
+- Bumps ember-power-select
+
+
 ### 0.4.3
 
 🚀 Enhancements

@@ -16,6 +16,7 @@
     @clear={{if @clear (fn (optional @clear) null)}}
     @isFakePrependBlock={{hasPrepend}}
     @isFakeAppendBlock={{hasAppend}}
+    ...attributes
     {{did-insert this.didInsertInput}}
   >
     <:prepend as |classes|>

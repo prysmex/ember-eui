@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.4.6
+
+🚀 Enhancements
+- `Splattributes` to pikaday
+
 ### 0.4.5
 
 🚀 Enhancements

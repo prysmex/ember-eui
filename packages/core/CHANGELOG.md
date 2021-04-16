@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.4.5
+
+🚀 Enhancements
+- Bumps ember-changeset spike
+
 ### 0.4.4
 
 🚀 Enhancements

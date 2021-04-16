@@ -29,8 +29,8 @@
   "dependencies": {
     "@ember-eui/core": "^0.4.4",
     "@types/ember": "^3.16.4",
-    "ember-changeset": "github:betocantu93/ember-changeset#prop-notification-with-safe-get",
-    "ember-changeset-validations": "github:betocantu93/ember-changeset-validations#prop-notification-with-safe-get",
+    "ember-changeset": "github:betocantu93/ember-changeset#spike-fix-prop-notification",
+    "ember-changeset-validations": "github:betocantu93/ember-changeset-validations#spike-fix-prop-notification",
     "ember-cli-babel": "^7.21.0",
     "ember-cli-htmlbars": "^5.2.0",
     "ember-cli-typescript": "^4.1.0",

@@ -11,7 +11,8 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
         e.keyCode === 13 &&
         this.args.select.options.length == 0 &&
         this.args.onCreateOption &&
-        this.args.select.searchText.length >= 1
+        this.args.select.searchText.length >= 1 &&
+        this.args.select.results.length == 0
       ) {
         this.args.onCreateOption();
         return false;

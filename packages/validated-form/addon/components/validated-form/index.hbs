@@ -1,5 +1,6 @@
 {{#let (arg-or-default @id (unique-id)) as |formId|}}
-  <form
+  <EuiForm
+    @tagName="form"
     ...attributes
     id={{formId}}
     {{on "submit" this.handleSubmit}}
@@ -23,6 +24,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldText=(component
@@ -31,6 +33,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldPassword=(component
@@ -39,6 +42,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldTextArea=(component
@@ -47,6 +51,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldSelect=(component
@@ -55,6 +60,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldComboBox=(component
@@ -63,6 +69,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldCheckboxGroup=(component
@@ -71,6 +78,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldRadioGroup=(component
@@ -79,6 +87,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldRangeSlider=(component
@@ -87,6 +96,7 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
         FieldRangeDualSlider=(component
@@ -95,9 +105,10 @@
           unregister=this.unregister
           formHasBeenValidated=this.formHasBeenValidated
           onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
           formId=formId
         )
       )
     }}
-  </form>
+  </EuiForm>
 {{/let}}

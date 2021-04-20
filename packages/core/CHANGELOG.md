@@ -1,10 +1,14 @@
 # Ember Eui Changelog
 
 ### Master
+### 0.5.3
+🐛 Bug / Fixes
+- Adds formId to form, and pass down fullScreen
 
 ### 0.5.1...0.5.2
 🏠 Internal
 - Re release 
+
 ### 0.5.0
 
 🚀 Enhancements

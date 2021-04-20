@@ -13,7 +13,7 @@ import { typeOf } from '@ember/utils';
 export function buildValidationMessages(property) {
   const messages = [];
 
-  let emberValidatorConfig = this.args.validations || {};
+  let emberValidatorConfig = this.validations || {};
   let emberValidatorsConfigKeys = Object.keys(emberValidatorConfig);
 
   // execute ember-validators validations

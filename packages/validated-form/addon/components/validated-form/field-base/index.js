@@ -16,6 +16,10 @@ export default class ValidatedFormFieldBase extends Component {
 
   @tracked isTouched = false;
 
+  get validations() {
+    return this.args.validations || {}
+  }
+  
   get hasErrorMessages() {
     return this.validationErrorMessages?.length;
   }

@@ -3,7 +3,7 @@
     @value={{this.fieldText}}
     @label="Field Text maxlength 1"
     @onChange={{set this "fieldText"}}
-    @validations={{hash length=(hash max=1) presence=(hash presence=true)}}
+    @validations={{hash presence=(hash presence=true) format=(hash type="email")}}
   />
   <Form.FieldSelect
     @onChange={{set this "fieldSelect"}}

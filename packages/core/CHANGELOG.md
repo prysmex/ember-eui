@@ -1,6 +1,10 @@
 # Ember Eui Changelog
 
 ### Master
+### 0.5.5
+🐛 Bug / Fixes
+- `@ember-eui/validated-form` use ember-validators fork to stop mutation for date and format validators
+
 ### 0.5.4
 🚀 Enhancements
 - `@ember-eui/validated-form` allow extensability of validations

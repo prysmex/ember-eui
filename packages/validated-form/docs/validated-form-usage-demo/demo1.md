@@ -12,9 +12,9 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
 <ValidatedForm as |Form|>
   <Form.FieldText
     @value={{this.data.fieldText}}
-    @label="Field Text maxlength 1"
+    @label="Email"
     @onChange={{set this.data.fieldText}}
-    @validations={{hash length=(hash max=1) presence=(hash presence=true)}}
+    @validations={{hash  presence=(hash presence=true) format=(hash type="email")}}
   />
   <Form.FieldSelect
     @onChange={{set this.data.fieldSelect}}
@@ -127,5 +127,3 @@ export default class DemoCardComponent extends Component {
   @tracked data = O.create({});
 }
 ```
-
-

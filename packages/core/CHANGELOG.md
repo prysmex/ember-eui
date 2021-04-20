@@ -1,6 +1,10 @@
 # Ember Eui Changelog
 
 ### Master
+### 0.5.4
+🚀 Enhancements
+- `@ember-eui/validated-form` allow extensability of validations
+
 ### 0.5.3
 🐛 Bug / Fixes
 - Adds formId to form, and pass down fullScreen

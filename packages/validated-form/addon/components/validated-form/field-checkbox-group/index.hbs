@@ -1,0 +1,35 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    {{did-update this.didUpdateValue @value}}
+  >
+    <EuiCheckboxGroup
+      class={{@fieldClasses}}
+      @formId={{@formId}}
+      @valueKey={{@valueKey}}
+      @labelKey={{@labelKey}}
+      aria-label={{@ariaLabel}}
+      @disabled={{@disabled}}
+      @compressed={{@compressed}}
+      @options={{@options}}
+      @idToSelectedMap={{this.arrayToMap}}
+      @legend={{@legend}}
+      @id={{theId}}
+      @onChange={{this.handleChange}}
+      autofocus={{@autofocus}}
+      ...attributes
+    />
+  </EuiFormRow>
+{{/let}}

@@ -2606,7 +2606,7 @@
   resolved "https://registry.yarnpkg.com/@types/ember__error/-/ember__error-3.16.1.tgz#752d977f4ee35d4fa66bcfeebae6e85240fc62a6"
   integrity sha512-bnB58krc18B8qgSMsRBbrVbNb4msyb8pMzS9Yo3brw/bRjuPb1ONUrjieAVHeespXlXNJOusvvX/pji641iCPQ==
 
-"@types/ember__object@*", "@types/ember__object@^3.12.3", "@types/ember__object@^3.12.4":
+"@types/ember__object@*", "@types/ember__object@^3.12.3", "@types/ember__object@^3.12.4", "@types/ember__object@^3.12.5":
   version "3.12.5"
   resolved "https://registry.yarnpkg.com/@types/ember__object/-/ember__object-3.12.5.tgz#f3d5ea5e410d52b3e837267e411d72d7469eb844"
   integrity sha512-IToStKZ6bNfkiqjhpnpf24NADNIqrSd3pmpc0ktRilrMZPoHyexcXW6zyGENtpFJE7O7dVjtPh/MzUYYH0urww==
@@ -2623,6 +2623,17 @@
   version "3.16.12"
   resolved "https://registry.yarnpkg.com/@types/ember__routing/-/ember__routing-3.16.12.tgz#eee562e36473626fbdb9e37da50f1484ee9480a3"
   integrity sha512-agY273UcgRGry4ULm/9wYpslU5JF5djEaoreF/FA7CXdnek6TSpQn7G/pjQqsCNDYWxwatmHrn3ffcmGyI4Oiw==
+  dependencies:
+    "@types/ember__component" "*"
+    "@types/ember__controller" "*"
+    "@types/ember__object" "*"
+    "@types/ember__routing" "*"
+    "@types/ember__service" "*"
+
+"@types/ember__routing@^3.16.13":
+  version "3.16.13"
+  resolved "https://registry.yarnpkg.com/@types/ember__routing/-/ember__routing-3.16.13.tgz#d705101ff3f9071bceb05ba442ba3a4bce3685bb"
+  integrity sha512-OesO+0z8B4fWJI1qJAsM9pOYXB9WueaXCAdtkOrAn4yzzaTjDR/XfZ47wDJpO8gmqNtm9wmrycKfDyQRAqH7YA==
   dependencies:
     "@types/ember__component" "*"
     "@types/ember__controller" "*"
@@ -2660,6 +2671,16 @@
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/@types/ember__test-helpers/-/ember__test-helpers-1.7.3.tgz#a3553f5c3318032dcdf03b7b511254b9edf930eb"
   integrity sha512-5LGWJHkdbKYrrA/l4QFeu2WNE0iaz5lBjc980VLzOqyfy2/r4CbZbuHtg+oL5jYQDnB2Udpz9b3EwwM3lg7hsA==
+  dependencies:
+    "@types/ember" "*"
+    "@types/ember__application" "*"
+    "@types/ember__error" "*"
+    "@types/htmlbars-inline-precompile" "*"
+
+"@types/ember__test-helpers@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/ember__test-helpers/-/ember__test-helpers-2.0.0.tgz#b4b8323693789670720f55a51b1f8e6cd6bfbe29"
+  integrity sha512-2FyfVCb0W2OJ2OeZmg5QxLk0K7n5BCsEU8D481y7XNEVkzyQGR3U64umVf0eME/tpW3papAZ+JwS01HtGOSbgA==
   dependencies:
     "@types/ember" "*"
     "@types/ember__application" "*"
@@ -7483,24 +7504,24 @@ ember-cached-decorator-polyfill@^0.1.1:
     ember-cache-primitive-polyfill "^1.0.1"
     ember-cli-babel "^7.21.0"
 
-"ember-changeset-validations@github:betocantu93/ember-changeset-validations#prop-notification-with-safe-get":
+"ember-changeset-validations@github:betocantu93/ember-changeset-validations#spike-fix-prop-notification":
   version "3.14.2"
-  resolved "https://codeload.github.com/betocantu93/ember-changeset-validations/tar.gz/8014197a8be3c9f19e5b2bcccff681dd04ac1755"
+  resolved "https://codeload.github.com/betocantu93/ember-changeset-validations/tar.gz/6041474b003a6f55c21272df8bd2481c952e55ac"
   dependencies:
-    ember-changeset "github:betocantu93/ember-changeset#prop-notification-with-safe-get"
+    ember-changeset "github:betocantu93/ember-changeset#spike-fix-prop-notification"
     ember-cli-babel "^7.11.1"
     ember-cli-htmlbars "^4.0.5"
     ember-get-config "^0.2.4"
     ember-validators "^3.0.1"
 
-"ember-changeset@github:betocantu93/ember-changeset#prop-notification-with-safe-get":
-  version "3.13.2"
-  resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/7bf529ca3cfc23db1e9ce83a595ca46c50ea32d4"
+"ember-changeset@github:betocantu93/ember-changeset#spike-fix-prop-notification":
+  version "3.13.3"
+  resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/a1869059413081658ffce889bf08a912e410544d"
   dependencies:
     "@glimmer/tracking" "^1.0.1"
     ember-auto-import "^1.5.2"
     ember-cli-babel "^7.19.0"
-    validated-changeset "https://github.com/betocantu93/validated-changeset#spike"
+    validated-changeset "~0.14.3"
 
 ember-cli-app-version@^3.2.0:
   version "3.2.0"
@@ -17079,7 +17100,7 @@ typescript-memoize@^1.0.0-alpha.3:
   resolved "https://registry.yarnpkg.com/typescript-memoize/-/typescript-memoize-1.0.1.tgz#0a8199aa28f6fe18517f6e9308ef7bfbe9a98d59"
   integrity sha512-oJNge1qUrOK37d5Y6Ly2txKeuelYVsFtNF6U9kXIN7juudcQaHJQg2MxLOy0CqtkW65rVDYuTCOjnSIVPd8z3w==
 
-typescript@^4.0.3, typescript@^4.2.2, typescript@^4.2.3:
+typescript@^4.0.3, typescript@^4.2.2, typescript@^4.2.3, typescript@^4.2.4:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
   integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
@@ -17503,9 +17524,10 @@ validate-npm-package-name@^3.0.0:
   dependencies:
     builtins "^1.0.3"
 
-"validated-changeset@https://github.com/betocantu93/validated-changeset#spike":
-  version "0.14.2"
-  resolved "https://github.com/betocantu93/validated-changeset#8b30f6f1cc64517c96c072364a576d534f1af890"
+validated-changeset@~0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/validated-changeset/-/validated-changeset-0.14.3.tgz#c17b6f493e1d03a13f9a5660e586175758151f90"
+  integrity sha512-D2WV7j4m8/wHW+pwFdhvVw9sPiq5r6edkSUTVcp9RadERC7dyubeoioZCo26y7TbGN0sPBzmjj9MDV0gS4r3cA==
 
 vary@~1.1.2:
   version "1.1.2"

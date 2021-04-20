@@ -1,0 +1,48 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+		{{did-update this.didUpdateValue @value}}
+  >
+    <EuiFieldText
+      class={{@fieldClasses}}
+      aria-label={{@ariaLabel}}
+      form={{@formId}}
+      @value={{@value}}
+      @icon={{@icon}}
+      @isInvalid={{this.isInvalidAndTouched}}
+      @fullWidth={{@fullWidth}}
+      @isLoading={{@isLoading}}
+      @readOnly={{@readOnly}}
+      @inputRef={{@inputRef}}
+      @controlOnly={{@controlOnly}}
+      @compressed={{@compressed}}
+      @id={{theId}}
+      @isFakePrependBlock={{not (has-block "prepend")}}
+      @isFakeAppendBlock={{not (has-block "append")}}
+      autofocus={{@autofocus}}
+      placeholder={{@placeholder}}
+      {{on "blur" (fn this.setIsTouched true)}}
+      {{on "input" this.handleChange}}
+      ...attributes
+    >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
+    </EuiFieldText>
+  </EuiFormRow>
+{{/let}}

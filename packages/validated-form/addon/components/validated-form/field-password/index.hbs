@@ -1,0 +1,46 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    {{did-update this.didUpdateValue @value}}
+  >
+    <EuiFieldPassword
+      class={{@fieldClasses}}
+      form={{@formId}}
+      aria-label={{@ariaLabel}}
+      @isInvalid={{this.isInvalidAndTouched}}
+      @fullWidth={{@fullWidth}}
+      @isLoading={{@isLoading}}
+      @compressed={{@compressed}}
+      @inputRef={{@inputRef}}
+      @value={{@value}}
+      @type={{@type}}
+      @id={{theId}}
+      @isFakePrependBlock={{not (has-block "prepend")}}
+      @isFakeAppendBlock={{not (has-block "append")}}
+      autofocus={{@autofocus}}
+      placeholder={{@placeholder}}
+      ...attributes
+      {{on "blur" (fn this.setIsTouched true)}}
+      {{on "input" this.handleChange}}
+    >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
+    </EuiFieldPassword>
+  </EuiFormRow>
+{{/let}}

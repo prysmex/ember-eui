@@ -1,0 +1,71 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    {{did-update this.didUpdateValue @value}}
+  >
+    <EuiRange
+      class={{@fieldClasses}}
+      form={{@formId}}
+      @compressed={{@compressed}}
+      @readOnly={{@readOnly}}
+      @fullWidth={{@fullWidth}}
+      @id={{theId}}
+      @levels={{@levels}}
+      @step={{@step}}
+      @showInput={{@showInput}}
+      @showLabels={{@showLabels}}
+      @showRange={{@showRange}}
+      @showTicks={{@showTicks}}
+      @showValue={{@showValue}}
+      @ticks={{@ticks}}
+      @tickInternval={{@tickInternval}}
+      @valuePrepend={{@valuePrepend}}
+      @valueAppend={{@valueAppend}}
+      @onChange={{this.handleChange}}
+      @value={{@value}}
+      @max={{@max}}
+      @isLoading={{@isLoading}}
+      @min={{@min}}
+      @icon={{@icon}}
+      @side={{@side}}
+      @isInvalid={{this.isInvalidAndTouched}}
+      @inputRef={{@inputRef}}
+      @controlOnly={{@controlOnly}}
+      @autoSize={{@autoSize}}
+      @isFakePrependBlock={{not (has-block "prepend")}}
+      @isFakeAppendBlock={{not (has-block "append")}}
+      aria-label={{@ariaLabel}}
+      autofocus={{@autofocus}}
+      ...attributes
+      {{on "blur" (fn this.setIsTouched true)}}
+    >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
+      <:valuePrepend>
+        {{yield to="valuePrepend"}}
+      </:valuePrepend>
+      <:value>
+        {{yield to="value"}}
+      </:value>
+      <:valueAppend>
+        {{yield to="valueAppend"}}
+      </:valueAppend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
+    </EuiRange>
+  </EuiFormRow>
+{{/let}}

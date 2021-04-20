@@ -1,0 +1,44 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+		{{did-update this.didUpdateValue @value}}
+  >
+    <EuiTextArea
+      class={{@fieldClasses}}
+      form={{@formId}}
+      aria-label={{@ariaLabel}}
+      @value={{@value}}
+      @isInvalid={{this.isInvalidAndTouched}}
+      @fullWidth={{@fullWidth}}
+      @compressed={{@compressed}}
+      @resize={{@resize}}
+      @inputRef={{@inputRef}}
+      @id={{theId}}
+      @rows={{@rows}}
+      autofocus={{@autofocus}}
+      placeholder={{@placeholder}}
+      ...attributes
+      {{on "blur" (fn this.setIsTouched true)}}
+      {{on "input" this.handleChange}}
+    >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
+    </EuiTextArea>
+  </EuiFormRow>
+{{/let}}

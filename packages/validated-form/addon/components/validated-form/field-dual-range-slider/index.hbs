@@ -1,0 +1,61 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    {{did-update this.didUpdateValue @value}}
+  >
+    <EuiDualRange
+      class={{@fieldClasses}}
+      form={{@formId}}
+      @value={{this.value}}
+      @fullWidth={{@fullWidth}}
+      @isInvalid={{this.isInvalidAndTouched}}
+      @levels={{@levels}}
+      @showLabels={{@showLabels}}
+      @showInput={{@showInput}}
+      @tickInternval={{@tickInternval}}
+      @ticks={{@ticks}}
+      aria-label={{@ariaLabel}}
+      @compressed={{@compressed}}
+      @hasFocus={{@hasFocus}}
+      @showRange={{@showRange}}
+      @showTicks={{@showTicks}}
+      @readOnly={{@readOnly}}
+      @id={{theId}}
+      @step={{@step}}
+      @showValue={{@showValue}}
+      @onChange={{this.handleChange}}
+      @max={{@max}}
+      @isLoading={{@isLoading}}
+      @min={{@min}}
+      @icon={{@icon}}
+      @side={{@side}}
+      @inputRef={{@inputRef}}
+      @controlOnly={{@controlOnly}}
+      @autoSize={{@autoSize}}
+      @isFakePrependBlock={{not (has-block "prepend")}}
+      @isFakeAppendBlock={{not (has-block "append")}}
+      autofocus={{@autofocus}}
+      ...attributes
+      {{on "blur" (fn this.setIsTouched true)}}
+    >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
+    </EuiDualRange>
+  </EuiFormRow>
+{{/let}}

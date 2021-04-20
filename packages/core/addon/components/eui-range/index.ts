@@ -111,7 +111,7 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
   }
 
   get showRangeTooltip(): boolean {
-    return this.showValue && !!String(this.args.value).length;
+    return this.showValue && !!String(this.args.value).length && this.args.value !== undefined;
   }
 
   @action

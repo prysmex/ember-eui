@@ -28,6 +28,7 @@ module.exports = {
   ],
   labels: {
     docs: 'Documentation',
-    'changeset-form': 'Changeset form'
+    'changeset-form': 'Changeset form',
+    'validated-form': 'Validated form'
   }
 };

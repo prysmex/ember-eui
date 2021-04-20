@@ -1,0 +1,36 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    {{did-update this.didUpdateValue @value}}
+  >
+    <EuiRadioGroup
+      class={{@fieldClasses}}
+      @formId={{@formId}}
+      aria-label={{@ariaLabel}}
+      @disabled={{@disabled}}
+      @valueKey={{@valueKey}}
+      @labelKey={{@labelKey}}
+      @compressed={{@compressed}}
+      @name={{@name}}
+      @options={{@options}}
+      @idSelected={{this.value}}
+      @legend={{@legend}}
+      @id={{theId}}
+      @onChange={{this.handleChange}}
+      autofocus={{@autofocus}}
+      ...attributes
+    />
+  </EuiFormRow>
+{{/let}}

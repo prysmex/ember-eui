@@ -1,0 +1,44 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    {{did-update this.didUpdateValue @selectedOptions}}
+  >
+    <EuiComboBox
+      class={{@fieldClasses}}
+      @onChange={{this.handleChange}}
+      @options={{@options}}
+      @singleSelection={{@singleSelection}}
+      @selectedOptions={{@selectedOptions}}
+      @searchEnabled={{arg-or-default @searchEnabled true}}
+      @searchField={{@searchField}}
+      aria-label={{@ariaLabel}}
+      form={{@formId}}
+      @isInvalid={{this.isInvalidAndTouched}}
+      @fullWidth={{@fullWidth}}
+      @isLoading={{@isLoading}}
+      @readOnly={{@readOnly}}
+      @controlOnly={{@controlOnly}}
+      @compressed={{@compressed}}
+      @id={{theId}}
+      @onBlur={{queue (fn this.setIsTouched true) (optional @onBlur)}}
+      @onFocus={{@onFocus}}
+      @onClose={{@onClose}}
+      @onOpen={{@onOpen}}
+      ...attributes as |opt index select|
+    >
+      {{yield opt index select}}
+    </EuiComboBox>
+  </EuiFormRow>
+{{/let}}

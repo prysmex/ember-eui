@@ -95,6 +95,9 @@
   "ember": {
     "edition": "octane"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "ember-addon": {
     "configPath": "tests/dummy/config"
   }

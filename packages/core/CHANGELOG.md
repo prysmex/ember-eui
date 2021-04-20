@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.5.1
+
+🏠 Internal
+- Re release 
 ### 0.5.0
 
 🚀 Enhancements

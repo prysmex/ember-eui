@@ -111,7 +111,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @validations={{hash length=(hash min=10) presence=(hash presence=true)}}
     @label="Field Text minlength 10"
   />
-  <EuiButton @type="submit" @isDisabled={{Form.isInvalid}}>
+  <EuiButton @type="submit">
     Submit
   </EuiButton>
 </ValidatedForm>
@@ -127,3 +127,5 @@ export default class DemoCardComponent extends Component {
   @tracked data = O.create({});
 }
 ```
+
+

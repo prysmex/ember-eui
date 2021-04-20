@@ -8,7 +8,6 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
 <EuiSpacer />
 
 ```hbs template
-{{log this.data}}
 <ValidatedForm as |Form|>
   <Form.FieldText
     @value={{this.data.fieldText}}

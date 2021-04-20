@@ -29,5 +29,6 @@ export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase
     }
 
     this.args.onChange?.(newArr);
+    this.isTouched = true;
   }
 }

@@ -31,5 +31,6 @@ export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldB
     this.args.onChange?.(newArr);
 
     this.notifyValidityChange();
+    this.isTouched = true;
   }
 }

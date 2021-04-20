@@ -67,21 +67,7 @@ export default class ValidatedForm extends Component {
   }
 
   @action
-  updateValidity({ child, isValid, isTouched, isInvalidAndTouched }) {
-    const childFound = this.childComponents.indexOf(child);
-
-    if (childFound !== -1) {
-      const lastIsValid = child.isValid;
-      const lastIsTouched = child.isTouched;
-
-      if (lastIsValid !== isValid || lastIsTouched !== isTouched) {
-        set(child, 'isValid', isValid);
-        set(child, 'isTouched', isTouched);
-        set(child, 'isInvalidAndTouched', isInvalidAndTouched);
-        this.notifyPropertyChange('childComponents');
-      }
-    }
-
+  updateValidity() {
     this.triggerValidityChange();
   }
 
@@ -109,9 +95,6 @@ export default class ValidatedForm extends Component {
   setNewValidity() {
     next(() => {
       if (!this.isDestroying) {
-        // this.isValid = this.getIsValid();
-        // this.isTouched = this.getIsTouched();
-
         this.args.onValidityChange?.(
           this.isValid,
           this.isTouched,

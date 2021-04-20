@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.4.7
+
+🐛 Bug / Fixes
+- `<EuiPopovers/>` Fix blurry popovers on Chrome due to will-change prop
+
 ### 0.4.6
 
 🚀 Enhancements

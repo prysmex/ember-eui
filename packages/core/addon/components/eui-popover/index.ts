@@ -1,13 +1,20 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { getTransitionTimings, getWaitDuration, performOnFrame } from '../../utils/transition';
+import {
+  getTransitionTimings,
+  getWaitDuration,
+  performOnFrame
+} from '../../utils/transition';
 import { findPopoverPosition, getElementZIndex } from '../../utils/popover';
 import { EuiPopoverPosition } from '../../utils/popover/types';
 import { cascadingMenuKeys } from '../../utils/accesibility';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { tabbable } from 'tabbable';
-import { anchorPositionMapping, displayMapping } from '../../utils/css-mappings/eui-popover';
+import {
+  anchorPositionMapping,
+  displayMapping
+} from '../../utils/css-mappings/eui-popover';
 import { paddingSizeMapping } from '../../utils/css-mappings/eui-panel';
 import { scheduleOnce, later, cancel } from '@ember/runloop';
 import { assert } from '@ember/debug';
@@ -184,7 +191,9 @@ export function getPopoverAlignFromAnchorPosition(
   // 1. normalizes the align position by lowercasing it
   // 2. `center` doesn't exist in the lookup map which converts it to `undefined` meaning no align
   if (match?.length && match.length > 1) {
-    return anchorPositionToPopoverPositionMap[match[1].toLowerCase() as AnchorPosition];
+    return anchorPositionToPopoverPositionMap[
+      match[1].toLowerCase() as AnchorPosition
+    ];
   }
   return anchorPositionToPopoverPositionMap['left'];
 }
@@ -198,7 +207,9 @@ const DEFAULT_POPOVER_STYLES = {
   left: 50
 };
 
-function getElementFromInitialFocus(initialFocus?: FocusTarget): HTMLElement | null {
+function getElementFromInitialFocus(
+  initialFocus?: FocusTarget
+): HTMLElement | null {
   const initialFocusType = typeof initialFocus;
 
   if (initialFocusType === 'string') {
@@ -218,7 +229,6 @@ type CssProps = {
   right?: number;
   bottom?: number;
   zIndex?: number;
-  willChange?: string;
 };
 
 export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
@@ -356,13 +366,19 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
       .call(this.panel ? this.panel.children : [])
       .reduce(
         (
-          { durationMatch, delayMatch }: { durationMatch: number; delayMatch: number },
+          {
+            durationMatch,
+            delayMatch
+          }: { durationMatch: number; delayMatch: number },
           element: HTMLElement
         ) => {
           const transitionTimings = getTransitionTimings(element);
 
           return {
-            durationMatch: Math.max(durationMatch, transitionTimings.durationMatch),
+            durationMatch: Math.max(
+              durationMatch,
+              transitionTimings.durationMatch
+            ),
             delayMatch: Math.max(delayMatch, transitionTimings.delayMatch)
           };
         },
@@ -456,12 +472,22 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
 
     let position = getPopoverPositionFromAnchorPosition(this.anchorPosition);
     let forcePosition = undefined;
-    if (allowEnforcePosition && this.isOpenStable && this.openPosition != null) {
+    if (
+      allowEnforcePosition &&
+      this.isOpenStable &&
+      this.openPosition != null
+    ) {
       position = this.openPosition;
       forcePosition = true;
     }
 
-    const { top, left, position: foundPosition, arrow, anchorBoundingBox } = findPopoverPosition({
+    const {
+      top,
+      left,
+      position: foundPosition,
+      arrow,
+      anchorBoundingBox
+    } = findPopoverPosition({
       container: this.args.container,
       position,
       forcePosition,
@@ -485,14 +511,17 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
     // but a popover triggered inside a flyout will appear over that flyout
     const { zIndex: zIndexProp } = this.args;
     const zIndex =
-      zIndexProp == null ? getElementZIndex(this.button, this.panel) + 2000 : zIndexProp;
+      zIndexProp == null
+        ? getElementZIndex(this.button, this.panel) + 2000
+        : zIndexProp;
 
     const popoverStyles = {
       top,
-      left: this.args.attachToAnchor && anchorBoundingBox ? anchorBoundingBox.left : left,
-      zIndex,
-      // Adding `will-change` to reduce risk of a blurry animation in Chrome 86+
-      willChange: 'transform, opacity'
+      left:
+        this.args.attachToAnchor && anchorBoundingBox
+          ? anchorBoundingBox.left
+          : left,
+      zIndex
     };
 
     const willRenderArrow = !this.args.attachToAnchor && this.hasArrow;
@@ -519,8 +548,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
       ...panelStyle,
       top: `${popoverStyles.top}px`,
       left: `${popoverStyles.left}px`,
-      zIndex: `${popoverStyles.zIndex}`,
-      willChange: 'transform, opacity'
+      zIndex: `${popoverStyles.zIndex}`
     };
   }
 

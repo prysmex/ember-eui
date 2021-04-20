@@ -2,7 +2,10 @@
 
 ### Master
 
-### 0.4.7
+### 0.5.0
+
+🚀 Enhancements
+- `@ember-eui/validated-form` package, to simplier form validations.
 
 🐛 Bug / Fixes
 - `<EuiPopovers/>` Fix blurry popovers on Chrome due to will-change prop

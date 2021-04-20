@@ -1,6 +1,9 @@
 # Ember Eui Changelog
 
 ### Master
+### 0.5.7
+🐛 Bug / Fixes
+- Update `ember-changset-validations` fork to use `#dont-mutate` branch for `ember-validators`
 ### 0.5.6
 🐛 Bug / Fixes
 - Remove typo

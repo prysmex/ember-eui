@@ -3,8 +3,10 @@
     @tagName="form"
     ...attributes
     id={{formId}}
+    @error={{@error}}
+    @errorTitle={{@errorTitle}}
     {{on "submit" this.handleSubmit}}
-    {{on "submit" this.handleReset}}
+    {{on "reset" this.handleReset}}
     {{did-insert this.setNewValidity}}
   >
     {{yield
@@ -26,6 +28,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldText=(component
           "validated-form/field-text"
@@ -35,6 +38,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldPassword=(component
           "validated-form/field-password"
@@ -44,6 +48,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldTextArea=(component
           "validated-form/field-text-area"
@@ -53,6 +58,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldSelect=(component
           "validated-form/field-select"
@@ -62,6 +68,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldComboBox=(component
           "validated-form/field-combo-box"
@@ -71,6 +78,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldCheckboxGroup=(component
           "validated-form/field-checkbox-group"
@@ -80,6 +88,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldRadioGroup=(component
           "validated-form/field-radio-group"
@@ -89,6 +98,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldRangeSlider=(component
           "validated-form/field-range-slider"
@@ -98,6 +108,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldRangeDualSlider=(component
           "validated-form/field-dual-range-slider"
@@ -107,6 +118,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
         FieldSwitch=(component
           "validated-form/field-switch"
@@ -116,6 +128,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
+          isDisabled=@isDisabled
         )
       )
     }}

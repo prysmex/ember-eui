@@ -108,6 +108,15 @@
           fullWidth=@fullWidth
           formId=formId
         )
+        FieldSwitch=(component
+          "validated-form/field-switch"
+          register=this.register
+          unregister=this.unregister
+          formHasBeenValidated=this.formHasBeenValidated
+          onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
+          formId=formId
+        )
       )
     }}
   </EuiForm>

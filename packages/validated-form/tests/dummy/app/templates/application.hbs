@@ -101,6 +101,12 @@
     @label="Field Text minlength 10"
     @onChange={{set this "fieldTextArea"}}
   />
+  <Form.FieldSwitch
+    @validations={{hash presence=(hash presence=true)}}
+    @value={{this.fieldSwitch}}
+    @label="Field must be true"
+    @onChange={{set this "fieldSwitch"}}
+  />
   <EuiButton @type="submit" @isDisabled={{Form.isInvalid}}>
     Submit
   </EuiButton>

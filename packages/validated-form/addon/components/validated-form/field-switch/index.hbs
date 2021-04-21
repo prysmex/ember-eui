@@ -1,0 +1,39 @@
+{{#let (arg-or-default @id (unique-id)) as |theId|}}
+  <EuiFormRow
+    class={{@rowClasses}}
+    @labelType={{@labelType}}
+    @display={{@display}}
+    @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
+    @fullWidth={{@fullWidth}}
+    @hasChildLabel={{@hasChildLabel}}
+    @label={{@label}}
+    @labelAppend={{@labelAppend}}
+    @id={{theId}}
+    @isInvalid={{this.isInvalidAndTouched}}
+    @error={{this.validationErrorMessages}}
+    @helpText={{@helpText}}
+    @errorClasses={{@errorClasses}}
+    {{did-update this.didUpdateValue @value}}
+  >
+    <EuiSwitch
+      class={{@fieldClasses}}
+      form={{@formId}}
+      aria-label={{@ariaLabel}}
+      @id={{theId}}
+      @showLabel={{@showLabel}}
+      @label={{@switchLabel}}
+      @checked={{@value}}
+      @onChange={{this.handleChange}}
+      @isFakeLabelBlock={{not (has-block "label")}}
+      @disabled={{@disabled}}
+      @compressed={{@compressed}}
+      @type={{@type}}
+			{{on "blur" (fn this.setIsTouched true)}}
+      ...attributes
+    >
+      <:label>
+        {{yield to="label"}}
+      </:label>
+    </EuiSwitch>
+  </EuiFormRow>
+{{/let}}

@@ -110,6 +110,12 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @validations={{hash length=(hash min=10) presence=(hash presence=true)}}
     @label="Field Text minlength 10"
   />
+  <Form.FieldSwitch
+    @validations={{hash presence=(hash presence=true)}}
+    @value={{this.data.fieldSwitch}}
+    @label="Field must be true"
+    @onChange={{set this.data.fieldSwitch}}
+  />
   <EuiButton @type="submit">
     Submit
   </EuiButton>

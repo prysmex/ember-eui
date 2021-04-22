@@ -1,7 +1,10 @@
 import { modifier } from 'ember-modifier';
 let counter = 0;
 
-export default modifier(function openCollapsibleNav(_, [navIsDocked]: [boolean]) {
+export default modifier(function openCollapsibleNav(
+  _,
+  [navIsDocked]: [boolean]
+) {
   counter++;
   if (navIsDocked) {
     document.body.classList.add('euiBody--collapsibleNavIsDocked');

@@ -9,7 +9,7 @@ import Messages from 'ember-validators/messages';
 import withDefaults from './with-defaults';
 
 const { keys } = Object;
-const moduleName = `${config.modulePrefix}/validations/messages`;
+const moduleName = `${config.modulePrefix}/validators/messages`;
 
 let cachedRef = null;
 

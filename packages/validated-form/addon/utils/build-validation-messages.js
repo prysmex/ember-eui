@@ -4,6 +4,8 @@ import { get, set } from '@ember/object';
 import { validate } from 'ember-validators';
 import buildMessage from './validation-errors';
 import { typeOf } from '@ember/utils';
+import getMessages from './get-messages';
+import { getOwner } from '@ember/application';
 
 /**
  * Based on ember-paper validation-mixin
@@ -13,6 +15,7 @@ import { typeOf } from '@ember/utils';
 export function buildValidationMessages(property) {
   const messages = [];
 
+  let messageBuilder = getMessages(getOwner(this));
   let emberValidatorConfig = this.validations || {};
   let emberValidatorsConfigKeys = Object.keys(emberValidatorConfig);
 
@@ -30,7 +33,11 @@ export function buildValidationMessages(property) {
       );
       if (isError !== true) {
         messages.push(
-          buildMessage(config.attribute ? config.attribute : null, isError)
+          buildMessage(
+            messageBuilder,
+            config.attribute ? config.attribute : null,
+            isError
+          )
         );
       }
     } catch (error) {
@@ -51,7 +58,7 @@ export function buildValidationMessages(property) {
     let isError = validator.validation(currentValue, validator.params);
 
     if (isError !== true) {
-      messages.push(buildMessage(null, isError));
+      messages.push(buildMessage(messageBuilder, null, isError));
     }
   });
 

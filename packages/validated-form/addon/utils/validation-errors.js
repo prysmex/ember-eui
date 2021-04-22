@@ -7,12 +7,8 @@ import { get } from '@ember/object';
 
 import { assert } from '@ember/debug';
 import { assign } from '@ember/polyfills';
-import config from 'ember-get-config';
-import getMessages from './get-messages';
 
-export default function buildMessage(key, result) {
-  let returnsRaw = get(config, 'changeset-validations.rawOutput') || false;
-  let messages = getMessages();
+export default function buildMessage(messages, key, result) {
 
   let description = messages.getDescriptionFor(key);
 
@@ -23,10 +19,6 @@ export default function buildMessage(key, result) {
   let { type, value, context = {} } = result;
 
   let message = get(messages, type);
-  if (returnsRaw) {
-    context = assign({}, context, { description });
-    return { value, type, message, context };
-  }
 
   if (context.message) {
     let message = context.message;

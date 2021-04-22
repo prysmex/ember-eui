@@ -2,9 +2,12 @@
 
 ### Master
 
-### 0.5.12
+### 0.5.13
 🚀 Enhancements
 - `@ember-eui/validated-form` use `validators/messages` to allow i18n
+
+🐛 Bug / Fixes
+- Fixes an issue were collapsible nav was removing the class while other was still rendered
 
 ### 0.5.12
 🐛 Bug / Fixes

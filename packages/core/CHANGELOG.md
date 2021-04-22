@@ -3,6 +3,10 @@
 ### Master
 
 ### 0.5.12
+🚀 Enhancements
+- `@ember-eui/validated-form` use `validators/messages` to allow i18n
+
+### 0.5.12
 🐛 Bug / Fixes
 - `@ember-eui/validated-form` reverted this.isInvalid for validated-form, it causes rendering issues
 

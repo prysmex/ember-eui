@@ -1,6 +1,10 @@
 # Ember Eui Changelog
 
 ### Master
+### 0.5.10
+🚀 Enhancements
+- `@ember-eui/validated-form` `@isInvalid`, `@invalidCallout` to `<EuiForm />`
+
 ### 0.5.9
 🚀 Enhancements
 - `@ember-eui/validated-form` `@error`, `@errorTitle` to `<EuiForm />`  and pass down `@isDisabled` to all components

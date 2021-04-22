@@ -3,6 +3,8 @@
     @tagName="form"
     ...attributes
     id={{formId}}
+    @isInvalid={{@isInvalid}}
+    @invalidCallout={{@invalidCallout}}
     @error={{@error}}
     @errorTitle={{@errorTitle}}
     {{on "submit" this.handleSubmit}}

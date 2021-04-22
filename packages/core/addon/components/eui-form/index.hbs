@@ -1,6 +1,8 @@
 {{#let
   (arg-or-default @invalidCallout "above")
-  (if (is-array @error) @error (array @error)) as |invalidCallout errors|
+  (if
+    (is-array @error) @error (if @array (array @error))
+  ) as |invalidCallout errors|
 }}
   {{#if (eq @tagName "form")}}
     <form class="euiForm" ...attributes>

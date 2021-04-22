@@ -1,6 +1,19 @@
 # Ember Eui Changelog
 
 ### Master
+
+### 0.5.12
+🐛 Bug / Fixes
+- `@ember-eui/validated-form` reverted this.isInvalid for validated-form, it causes rendering issues
+
+### 0.5.11
+🐛 Bug / Fixes
+- Update `<EuiForm />` `@error` was always showing
+
+### 0.5.10
+🚀 Enhancements
+- `@ember-eui/validated-form` `@isInvalid`, `@invalidCallout` to `<EuiForm />`
+
 ### 0.5.9
 🚀 Enhancements
 - `@ember-eui/validated-form` `@error`, `@errorTitle` to `<EuiForm />`  and pass down `@isDisabled` to all components

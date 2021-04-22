@@ -1,6 +1,11 @@
 # Ember Eui Changelog
 
 ### Master
+
+### 0.5.11
+🐛 Bug / Fixes
+- Update `<EuiForm />` `@error` was always showing
+
 ### 0.5.10
 🚀 Enhancements
 - `@ember-eui/validated-form` `@isInvalid`, `@invalidCallout` to `<EuiForm />`

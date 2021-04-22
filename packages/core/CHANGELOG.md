@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.5.12
+🐛 Bug / Fixes
+- `@ember-eui/validated-form` reverted this.isInvalid for validated-form, it causes rendering issues
+
 ### 0.5.11
 🐛 Bug / Fixes
 - Update `<EuiForm />` `@error` was always showing

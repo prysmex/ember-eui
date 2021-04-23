@@ -44,7 +44,11 @@
                 {{if opt.disabled "ember-power-select-multiple-option--disabled"
                 }}"
               @option={{opt}}
-              @onClose={{if (or @select.disabled @singleSelection) false true}}
+              @onClose={{if
+                (or @select.disabled @singleSelection)
+                false
+                (if @onClose (fn @onClose opt) true)
+              }}
               @dataSelectedIconIndex={{idx}}
               @color={{opt.color}}
               @asPlainText={{@singleSelection.asPlainText}}
@@ -87,11 +91,13 @@
         </form>
         {{! template-lint-enable }}
       {{else}}
+        {{! template-lint-disable }}
         <div
           class="euiComboBox__input"
           style="font-size: 14px; display: inline-block;"
           {{on "submit" this.submitSearchInput}}
         ></div>
+        {{! template-lint-enable }}
       {{/if}}
     </ul>
   </:field>

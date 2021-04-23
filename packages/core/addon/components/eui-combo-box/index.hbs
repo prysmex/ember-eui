@@ -24,7 +24,9 @@
     isInvalid=@isInvalid
     singleSelection=@singleSelection
     onClose=@removeTag
-    onCreateOption=(if @onCreateOption (pipe this.onCreateOption @onCreateOption))
+    onCreateOption=(if
+      @onCreateOption (pipe this.onCreateOption @onCreateOption)
+    )
   }}
   @matcher={{@matcher}}
   @initiallyOpen={{@initiallyOpen}}
@@ -69,7 +71,15 @@
     (if @isInvalid "euiComboBox--isInvalid")
     (if this.select.isOpen "euiComboBox-isOpen")
   }}
-  @noMatchesMessageComponent={{if @onCreateOption (component "eui-combo-box/create-option" onCreateOption=(pipe this.onCreateOption @onCreateOption) select=this.select) (component "eui-combo-box/no-matches-message")}}
+  @noMatchesMessageComponent={{if
+    @onCreateOption
+    (component
+      "eui-combo-box/create-option"
+      onCreateOption=(pipe this.onCreateOption @onCreateOption)
+      select=this.select
+    )
+    (component "eui-combo-box/no-matches-message")
+  }}
   @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen euiComboBoxOptionsList__rowWrap
     {{@dropdownClass}}" as |option i|
 >

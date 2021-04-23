@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.5.14
+🐛 Bug / Fixes
+- `@ember-eui/validated-form` i18n fixes
+
 ### 0.5.13
 🚀 Enhancements
 - `@ember-eui/validated-form` use `validators/messages` to allow i18n

@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.6.1
+🚀 Enhancements
+- `@ember-eui/core` `<EuiComboBox />` now supports onCreateOption, to build tag-like experience
+
 ### 0.6.0
 🏠 Internal
 - Updat `ember-set-helper`

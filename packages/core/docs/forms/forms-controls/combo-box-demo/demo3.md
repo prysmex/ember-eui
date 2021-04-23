@@ -4,7 +4,7 @@ order: 2
 
 # Demo
 
-Using on create options for bubbling new option and handling in onCreateOption function
+Using on create options for bubbling new option and handling in onCreateOption function, you may want to provide a customOptionText, you can assume {searchText} will be interpolated, be sure sanitize your string!
 
 ```hbs template
 	<EuiComboBox
@@ -13,6 +13,7 @@ Using on create options for bubbling new option and handling in onCreateOption f
     @onCreateOption={{this.onCreateOption}}
 		@selectedOptions={{this.selected}}
 		@searchEnabled={{true}}
+    @customOptionText="Do you want to add&#10240{searchText}&#10240to your list?"
     @searchField="label"
 	as |option item|>
 		{{option.label}}

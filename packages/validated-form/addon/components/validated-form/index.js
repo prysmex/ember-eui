@@ -10,16 +10,11 @@ export default class ValidatedForm extends Component {
   lastIsValid;
   lastIsTouched;
 
+  @tracked isInvalid = false;
+  @tracked isTouched = false;
+
   get isValid() {
     return !this.isInvalid;
-  }
-
-  get isTouched() {
-    return this.childComponents.isAny('isTouched');
-  }
-
-  get isInvalid() {
-    return this.childComponents.isAny('isInvalid');
   }
 
   get isInvalidAndTouched() {
@@ -94,6 +89,8 @@ export default class ValidatedForm extends Component {
   @action
   setNewValidity() {
     next(() => {
+      this.isInvalid = !this.getIsValid();
+      this.isTouched = this.getIsTouched();
       if (!this.isDestroying) {
         this.args.onValidityChange?.(
           this.isValid,

@@ -5,6 +5,7 @@
 ### 0.6.3
 🐛 Bug / Fixes
 - General `@disabled` argument standarization across packages.
+- `@ember-eui/validated-form` Fix double rendering issues
 
 ### 0.6.2
 🚀 Enhancements

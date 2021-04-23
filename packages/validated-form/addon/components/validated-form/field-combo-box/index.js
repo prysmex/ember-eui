@@ -12,6 +12,6 @@ export default class ValidatedFormFieldComboBox extends ValidatedFormFieldBase {
       value = isArray(options) ? options[0] : null;
     }
     this.args.onChange(value);
-		this.notifyValidityChange();
+    this.notifyValidityChange();
   }
 }

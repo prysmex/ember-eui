@@ -17,9 +17,9 @@ export default class ValidatedFormFieldBase extends Component {
   @tracked isTouched = false;
 
   get validations() {
-    return this.args.validations || {}
+    return this.args.validations || {};
   }
-  
+
   get hasErrorMessages() {
     return this.validationErrorMessages?.length;
   }
@@ -46,6 +46,18 @@ export default class ValidatedFormFieldBase extends Component {
 
   get customValidations() {
     return this.args.customValidations || [];
+  }
+
+  get label() {
+    return this.args.label || '';
+  }
+
+  get errors() {
+    return this.args.errors || [];
+  }
+
+  get options() {
+    return this.args.options || [];
   }
 
   @cached

@@ -21,7 +21,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiComboBo
   get formattedString(): ReturnType<typeof htmlSafe> {
     let str = unwrap(
       this.args.customOptionText ||
-        'Add&#10240<strong>{searchText}</strong>&#10240as custom option'
+        'Add&nbsp;<strong>{searchText}</strong>&nbsp;as custom option'
     );
     let context = {
       searchText: this.args.select.searchText

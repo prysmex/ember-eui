@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.6.4
+🐛 Bug / Fixes
+- Use `this` in order to be able to override or extend in consuming apps
+- `@ember-eui/core` `<EuiComboBox />` Fix spacing for default `@customOptionLabel`
+
 ### 0.6.3
 🐛 Bug / Fixes
 - General `@disabled` argument standarization across packages.

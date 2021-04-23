@@ -63,7 +63,7 @@ export function buildValidationMessages(property) {
   });
 
   // error messages array
-  let errors = this.args.errors || [];
+  let errors = this.errors || [];
 
   assert('`errors` must be an array', isArray(errors));
 

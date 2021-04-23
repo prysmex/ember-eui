@@ -6,7 +6,7 @@
     @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}
     @fullWidth={{@fullWidth}}
     @hasChildLabel={{@hasChildLabel}}
-    @label={{@label}}
+    @label={{this.label}}
     @labelAppend={{@labelAppend}}
     @id={{theId}}
     @isInvalid={{this.isInvalidAndTouched}}
@@ -18,7 +18,7 @@
     <EuiComboBox
       class={{@fieldClasses}}
       @onChange={{this.handleChange}}
-      @options={{@options}}
+      @options={{this.options}}
       @singleSelection={{@singleSelection}}
       @selectedOptions={{@selectedOptions}}
       @searchEnabled={{arg-or-default @searchEnabled true}}

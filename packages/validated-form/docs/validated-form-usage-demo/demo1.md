@@ -17,7 +17,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
   />
   <Form.FieldSelect
     @onChange={{set this.data "fieldSelect"}}
-    @value={{this.data "fieldSelect"}}
+    @value={{this.data.fieldSelect}}
     @validations={{hash presence=(hash presence=true)}}
     @options={{array
       (hash value="mx" text="Mexico")

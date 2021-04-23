@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.6.3
+🐛 Bug / Fixes
+- General `@disabled` argument standarization across packages.
+
 ### 0.6.2
 🚀 Enhancements
 - `@ember-eui/core` `<EuiComboBox />` now supports @customOptionText

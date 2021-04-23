@@ -14,7 +14,7 @@ order: 1
 <EuiForm>
   {{#let (unique-id) as |inputId|}}
     <EuiFormRow @label="Some Input" @helpText="here's some help text" @id={{inputId}}>
-      <EuiFieldSearch @clear={{set this.text ""}} @id={{inputId}} @onSearch={{set this.searchText}} />
+      <EuiFieldSearch @clear={{set this "text" ""}} @id={{inputId}} @onSearch={{set this "searchText"}} />
     </EuiFormRow>
   {{/let}}
 </EuiForm>

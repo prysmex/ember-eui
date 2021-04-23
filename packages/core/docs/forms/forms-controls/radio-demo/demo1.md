@@ -10,7 +10,7 @@ order: 1
     @id="131"
     @label="I am a checkbox"
     checked={{this.radio1}}
-    {{on "change" (pick "target.checked" (set this.radio1))}}
+    {{on "change" (pick "target.checked" (set this "radio1"))}}
   />
   <EuiRadio
     @id="131d"
@@ -22,7 +22,7 @@ order: 1
     @id="disabled-checkbox"
     @label="I am a checkbox"
     @checked={{this.radio1}}
-    {{on "change" (pick "target.checked" (set this.radio1))}}
+    {{on "change" (pick "target.checked" (set this "radio1"))}}
   />
 </EuiForm>
 ```

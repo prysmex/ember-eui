@@ -50,27 +50,27 @@
         </div>
         <div>
           <EuiText>Gutter size</EuiText>
-          <EuiBadge @color={{if (eq this.gutterSize "none") "primary"}} @onClick={{set this.gutterSize "none"}}>none</EuiBadge>
-          <EuiBadge @color={{if (eq this.gutterSize "s") "primary"}} @onClick={{set this.gutterSize "s"}}>small</EuiBadge>
-          <EuiBadge @color={{if (eq this.gutterSize "m") "primary"}} @onClick={{set this.gutterSize "m"}}>medium</EuiBadge>
+          <EuiBadge @color={{if (eq this.gutterSize "none") "primary"}} @onClick={{set this "gutterSize" "none"}}>none</EuiBadge>
+          <EuiBadge @color={{if (eq this.gutterSize "s") "primary"}} @onClick={{set this "gutterSize" "s"}}>small</EuiBadge>
+          <EuiBadge @color={{if (eq this.gutterSize "m") "primary"}} @onClick={{set this "gutterSize" "m"}}>medium</EuiBadge>
         </div>
         <div>
           <EuiText>Max width</EuiText>
           <EuiBadge
             @color={{if (eq this.maxWidthType "bool") "primary"}}
-            @onClick={{pipe (set this.maxWidthType "bool") (set this.maxWidth false)}}
+            @onClick={{pipe (set this "maxWidthType" "bool") (set this "maxWidth" false)}}
           >
             boolean
           </EuiBadge>
           <EuiBadge
             @color={{if (eq this.maxWidthType "num") "primary"}}
-            @onClick={{pipe (set this.maxWidthType "num") (set this.maxWidth 400)}}
+            @onClick={{pipe (set this "maxWidthType" "num") (set this "maxWidth" 400)}}
           >
             number
           </EuiBadge>
           <EuiBadge
             @color={{if (eq this.maxWidthType "string") "primary"}}
-            @onClick={{pipe (set this.maxWidthType "string") (set this.maxWidth "")}}
+            @onClick={{pipe (set this "maxWidthType" "string") (set this "maxWidth" "")}}
           >
             string
           </EuiBadge>
@@ -112,18 +112,18 @@
         </div>
         <div>
           <EuiText>Size</EuiText>
-          <EuiBadge @color={{if (eq this.size "xs") "primary"}} @onClick={{set this.size "xs"}}>extra small</EuiBadge>
-          <EuiBadge @color={{if (eq this.size "s") "primary"}} @onClick={{set this.size "s"}}>small</EuiBadge>
-          <EuiBadge @color={{if (eq this.size "m") "primary"}} @onClick={{set this.size "m"}}>medium</EuiBadge>
-          <EuiBadge @color={{if (eq this.size "l") "primary"}} @onClick={{set this.size "l"}}>large</EuiBadge>
+          <EuiBadge @color={{if (eq this.size "xs") "primary"}} @onClick={{set this "size" "xs"}}>extra small</EuiBadge>
+          <EuiBadge @color={{if (eq this.size "s") "primary"}} @onClick={{set this "size" "s"}}>small</EuiBadge>
+          <EuiBadge @color={{if (eq this.size "m") "primary"}} @onClick={{set this "size" "m"}}>medium</EuiBadge>
+          <EuiBadge @color={{if (eq this.size "l") "primary"}} @onClick={{set this "size" "l"}}>large</EuiBadge>
         </div>
         <div>
           <EuiText>Color</EuiText>
-          <EuiBadge @color={{if (eq this.color "inherit") "primary"}} @onClick={{set this.color "inherit"}}>inherit</EuiBadge>
-          <EuiBadge @color={{if (eq this.color "text") "primary"}} @onClick={{set this.color "text"}}>text</EuiBadge>
-          <EuiBadge @color={{if (eq this.color "subdued") "primary"}} @onClick={{set this.color "subdued"}}>subdued</EuiBadge>
-          <EuiBadge @color={{if (eq this.color "ghost") "primary"}} @onClick={{set this.color "ghost"}}>ghost</EuiBadge>
-          <EuiBadge @color={{if (eq this.color "primary") "primary"}} @onClick={{set this.color "primary"}}>primary</EuiBadge>
+          <EuiBadge @color={{if (eq this.color "inherit") "primary"}} @onClick={{set this "color" "inherit"}}>inherit</EuiBadge>
+          <EuiBadge @color={{if (eq this.color "text") "primary"}} @onClick={{set this "color" "text"}}>text</EuiBadge>
+          <EuiBadge @color={{if (eq this.color "subdued") "primary"}} @onClick={{set this "color" "subdued"}}>subdued</EuiBadge>
+          <EuiBadge @color={{if (eq this.color "ghost") "primary"}} @onClick={{set this "color" "ghost"}}>ghost</EuiBadge>
+          <EuiBadge @color={{if (eq this.color "primary") "primary"}} @onClick={{set this "color" "primary"}}>primary</EuiBadge>
         </div>
         <div>
           <Input @type="checkbox" @checked={{this.useIconType}} name="useIconType" />

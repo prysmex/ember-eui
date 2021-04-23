@@ -16,14 +16,14 @@ You can optionally pass `@valueKey` and `@labelKey` for a more flexible and ergo
 <EuiRadioGroup
   @options={{this.radios}}
   @idSelected={{this.selectedRadioId}}
-  @onChange={{set this.selectedRadioId}}
+  @onChange={{set this "selectedRadioId"}}
 />
 <EuiSpacer />
 <EuiRadioGroup
   @legend="With legend"
   @options={{this.radios}}
   @idSelected={{this.selectedRadioId}}
-  @onChange={{set this.selectedRadioId}}
+  @onChange={{set this "selectedRadioId"}}
 />
 <EuiSpacer />
 Selected:

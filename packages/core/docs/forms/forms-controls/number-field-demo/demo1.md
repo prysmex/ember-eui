@@ -11,7 +11,7 @@ order: 1
       <EuiFieldNumber
         @value={{this.num}}
         @id={{inputId}}
-        {{on "input" (pick "target.value" (set this.num))}}
+        {{on "input" (pick "target.value" (set this "num"))}}
       />
     </EuiFormRow>
   {{/let}}
@@ -20,7 +20,7 @@ order: 1
       <EuiFieldNumber
         @value={{this.num}}
         @id={{inputId}}
-        {{on "input" (pick "target.value" (set this.num))}}
+        {{on "input" (pick "target.value" (set this "num"))}}
       >
         <:prepend as |classes|>
           <EuiButtonIcon @iconType="faceHappy" class={{classes}} {{on "click" this.salute}} />
@@ -43,7 +43,7 @@ order: 1
       <EuiFieldNumber
         @value={{this.num2}}
         @id={{inputId}}
-        {{on "input" (pick "target.value" (set this.num2))}}
+        {{on "input" (pick "target.value" (set this "num2"))}}
       />
     </EuiFormRow>
   {{/let}}

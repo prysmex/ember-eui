@@ -10,9 +10,9 @@ order: 1
     <EuiFormRow @label="Some Input" @helpText="here's some help text" @id={{inputId}}>
       <EuiFieldText
         @value={{this.num}}
-        @clear={{set this.num ""}}
+        @clear={{set this "num" ""}}
         @id={{inputId}}
-        {{on "input" (pick "target.value" (set this.num))}}
+        {{on "input" (pick "target.value" (set this "num"))}}
       >
         <:prepend as |classes|>
           <EuiButtonIcon
@@ -51,7 +51,7 @@ order: 1
       <EuiFieldText
         @value={{this.num2}}
         @id={{inputId}}
-        {{on "input" (pick "target.value" (set this.num2))}}
+        {{on "input" (pick "target.value" (set this "num2"))}}
       />
     </EuiFormRow>
   {{/let}}

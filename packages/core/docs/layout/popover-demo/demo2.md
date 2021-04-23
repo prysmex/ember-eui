@@ -11,13 +11,13 @@ order: 2
       @ownFocus={{true}}
       @isOpen={{this.pop1}}
       @anchorPosition="downLeft"
-      @closePopover={{set this.pop1 false}}
+      @closePopover={{set this "pop1" false}}
     >
       <:button>
         <EuiButton
           @iconType="arrowDown"
           @iconSide="right"
-          {{on "click" (set this.pop1 true)}}
+          {{on "click" (set this "pop1" true)}}
         >
           downLeft
         </EuiButton>
@@ -42,13 +42,13 @@ order: 2
       @ownFocus={{true}}
       @isOpen={{this.pop2}}
       @anchorPosition="downLeft"
-      @closePopover={{set this.pop2 false}}
+      @closePopover={{set this "pop2" false}}
     >
       <:button>
         <EuiButton
           @iconType="arrowDown"
           @iconSide="right"
-          {{on "click" (set this.pop2 true)}}
+          {{on "click" (set this "pop2" true)}}
         >
           downLeft
         </EuiButton>
@@ -75,13 +75,13 @@ order: 2
       @ownFocus={{true}}
       @isOpen={{this.pod3}}
       @anchorPosition="downLeft"
-      @closePopover={{set this.pod3 false}}
+      @closePopover={{set this "pod3" false}}
     >
       <:button>
         <EuiButton
           @iconType="arrowDown"
           @iconSide="right"
-          {{on "click" (set this.pod3 true)}}
+          {{on "click" (set this "pod3" true)}}
         >
           downLeft
         </EuiButton>

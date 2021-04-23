@@ -8,7 +8,7 @@ order: 1
 <EuiForm>
   {{#let (unique-id) as |inputId|}}
     <EuiFormRow @label="Some Input" @helpText="here's some help text" @id={{inputId}}>
-      <EuiFilePicker @onChange={{set this.files}} />
+      <EuiFilePicker @onChange={{set this "files"}} />
     </EuiFormRow>
   {{/let}}
   {{#each this.files as |file|}}

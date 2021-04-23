@@ -13,7 +13,7 @@ Portal
 </EuiText>
 <EuiSpacer @size="l"/>
 <EuiButton
-  {{on "click" (set this.showPortal (not this.showPortal))}}
+  {{on "click" (set this "showPortal" (not this.showPortal))}}
 >
 	Toggle portal
 </EuiButton>

@@ -74,7 +74,7 @@
     "ember-named-blocks-polyfill": "^0.2.3",
     "ember-power-select": "^4.1.4",
     "ember-set-body-class": "^1.0.2",
-    "ember-set-helper": "^1.1.0",
+    "ember-set-helper": "^2.0.0",
     "ember-style-modifier": "^0.6.0",
     "ember-svg-jar": "github:betocantu93/ember-svg-jar#ember-eui-hbs",
     "ember-truth-helpers": "^2.1.0",

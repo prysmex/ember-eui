@@ -4,7 +4,7 @@
 </EuiText>
 <EuiSpacer/>
 
-<EuiButton @color="primary" {{on "click" (set this.basicBottomBarActive (not this.basicBottomBarActive))}}>
+<EuiButton @color="primary" {{on "click" (set this "basicBottomBarActive" (not this.basicBottomBarActive))}}>
   Toggle appearance of the bottom bar
 </EuiButton>
 
@@ -53,14 +53,14 @@
 </EuiText>
 <EuiSpacer/>
 <EuiButton @color="primary" {{on "click" (queue
-  (set this.affordForDisplacement true)
-  (set this.displacedBottomBarActive true)
+  (set this "affordForDisplacement" true)
+  (set this "displacedBottomBarActive" true)
 )}}>
   Show bottom bar
 </EuiButton>
 <EuiButton @color="primary" {{on "click" (queue
-  (set this.affordForDisplacement false)
-  (set this.displacedBottomBarActive true)
+  (set this "affordForDisplacement" false)
+  (set this "displacedBottomBarActive" true)
 )}}>
   Show bottom bar (without affordForDisplacement behavior)
 </EuiButton>
@@ -72,7 +72,7 @@
           @color="ghost"
           @size="s"
           @iconType="cross"
-          {{on "click" (set this.displacedBottomBarActive false)}}
+          {{on "click" (set this "displacedBottomBarActive" false)}}
         >
           close
         </EuiButtonEmpty>

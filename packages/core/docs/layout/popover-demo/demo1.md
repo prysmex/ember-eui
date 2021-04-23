@@ -12,13 +12,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop1}}
         @anchorPosition="downLeft"
-        @closePopover={{set this.pop1 false}}
+        @closePopover={{set this "pop1" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop1 true)}}
+            {{on "click" (set this "pop1" true)}}
           >
             downLeft
           </EuiButton>
@@ -33,13 +33,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop2}}
         @anchorPosition="downCenter"
-        @closePopover={{set this.pop2 false}}
+        @closePopover={{set this "pop2" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop2 true)}}
+            {{on "click" (set this "pop2" true)}}
           >
             downCenter
           </EuiButton>
@@ -54,13 +54,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop3}}
         @anchorPosition="downRight"
-        @closePopover={{set this.pop3 false}}
+        @closePopover={{set this "pop3" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop3 true)}}
+            {{on "click" (set this "pop3" true)}}
           >
             downRight
           </EuiButton>
@@ -78,13 +78,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop4}}
         @anchorPosition="upLeft"
-        @closePopover={{set this.pop4 false}}
+        @closePopover={{set this "pop4" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop4 true)}}
+            {{on "click" (set this "pop4" true)}}
           >
             upLeft
           </EuiButton>
@@ -99,13 +99,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop5}}
         @anchorPosition="upCenter"
-        @closePopover={{set this.pop5 false}}
+        @closePopover={{set this "pop5" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop5 true)}}
+            {{on "click" (set this "pop5" true)}}
           >
             upCenter
           </EuiButton>
@@ -120,13 +120,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop6}}
         @anchorPosition="upRight"
-        @closePopover={{set this.pop6 false}}
+        @closePopover={{set this "pop6" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop6 true)}}
+            {{on "click" (set this "pop6" true)}}
           >
             upRight
           </EuiButton>
@@ -144,13 +144,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop7}}
         @anchorPosition="leftUp"
-        @closePopover={{set this.pop7 false}}
+        @closePopover={{set this "pop7" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop7 true)}}
+            {{on "click" (set this "pop7" true)}}
           >
             leftUp
           </EuiButton>
@@ -171,13 +171,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop8}}
         @anchorPosition="leftCenter"
-        @closePopover={{set this.pop8 false}}
+        @closePopover={{set this "pop8" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop8 true)}}
+            {{on "click" (set this "pop8" true)}}
           >
             leftCenter
           </EuiButton>
@@ -192,13 +192,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop9}}
         @anchorPosition="leftDown"
-        @closePopover={{set this.pop9 false}}
+        @closePopover={{set this "pop9" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop9 true)}}
+            {{on "click" (set this "pop9" true)}}
           >
             leftDown
           </EuiButton>
@@ -222,13 +222,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop10}}
         @anchorPosition="rightUp"
-        @closePopover={{set this.pop10 false}}
+        @closePopover={{set this "pop10" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop10 true)}}
+            {{on "click" (set this "pop10" true)}}
           >
             rightUp
           </EuiButton>
@@ -249,13 +249,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop11}}
         @anchorPosition="rightCenter"
-        @closePopover={{set this.pop11 false}}
+        @closePopover={{set this "pop11" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop11 true)}}
+            {{on "click" (set this "pop11" true)}}
           >
             rightCenter
           </EuiButton>
@@ -270,13 +270,13 @@ order: 1
         @ownFocus={{true}}
         @isOpen={{this.pop12}}
         @anchorPosition="rightDown"
-        @closePopover={{set this.pop12 false}}
+        @closePopover={{set this "pop12" false}}
       >
         <:button>
           <EuiButton
             @iconType="arrowDown"
             @iconSide="right"
-            {{on "click" (set this.pop12 true)}}
+            {{on "click" (set this "pop12" true)}}
           >
             rightDown
           </EuiButton>

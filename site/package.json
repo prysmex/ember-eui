@@ -54,7 +54,7 @@
     "ember-named-blocks-polyfill": "^0.2.4",
     "ember-qunit": "^4.6.0",
     "ember-resolver": "^8.0.0",
-    "ember-set-helper": "^1.1.0",
+    "ember-set-helper": "^2.0.0",
     "ember-source": "~3.20.2",
     "ember-template-lint": "^2.9.1",
     "eslint": "^7.5.0",

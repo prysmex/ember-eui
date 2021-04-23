@@ -60,7 +60,7 @@
         <EuiRadioGroup
           @options={{this.radios}}
           @idSelected={{this.selectedRadioId}}
-          @onChange={{set this.selectedRadioId}}
+          @onChange={{set this "selectedRadioId"}}
         />
       </:content>
     </EuiCheckableCard>

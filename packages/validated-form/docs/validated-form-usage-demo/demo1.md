@@ -12,12 +12,12 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
   <Form.FieldText
     @value={{this.data.fieldText}}
     @label="Email"
-    @onChange={{set this.data.fieldText}}
+    @onChange={{set this.data "fieldText"}}
     @validations={{hash  presence=(hash presence=true) format=(hash type="email")}}
   />
   <Form.FieldSelect
-    @onChange={{set this.data.fieldSelect}}
-    @value={{this.data.fieldSelect}}
+    @onChange={{set this.data "fieldSelect"}}
+    @value={{this.data "fieldSelect"}}
     @validations={{hash presence=(hash presence=true)}}
     @options={{array
       (hash value="mx" text="Mexico")
@@ -27,7 +27,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @label="Country"
   />
   <Form.FieldComboBox
-    @onChange={{set this.data.fieldComboBoxSingleSelection}}
+    @onChange={{set this.data "fieldComboBoxSingleSelection"}}
     @singleSelection={{true}}
     @selectedOptions={{this.data.fieldComboBoxSingleSelection}}
     @validations={{hash presence=(hash presence=true)}}
@@ -42,7 +42,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     {{option.text}}
   </Form.FieldComboBox>
   <Form.FieldComboBox
-    @onChange={{set this.data.fieldComboBoxMultiple}}
+    @onChange={{set this.data "fieldComboBoxMultiple"}}
     @selectedOptions={{this.data.fieldComboBoxMultiple}}
     @validations={{hash presence=(hash presence=true) length=(hash min=2)}}
     @hasNoInitialSelection={{true}}
@@ -56,7 +56,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     {{option.text}}
   </Form.FieldComboBox>
   <Form.FieldRangeSlider
-    @onChange={{set this.data.rangeSlider}}
+    @onChange={{set this.data "rangeSlider"}}
     @value={{this.data.rangeSlider}}
     @label="Range slider"
     @showLabels={{true}}
@@ -70,7 +70,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @required={{true}}
   />
   <Form.FieldCheckboxGroup
-    @onChange={{set this.data.fieldCheckbox}}
+    @onChange={{set this.data "fieldCheckbox"}}
     @validations={{hash presence=(hash presence=true) length=(hash min=1)}}
     @value={{this.data.fieldCheckbox}}
     @options={{array
@@ -81,7 +81,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @label="Checkbox Group"
   />
   <Form.FieldRadioGroup
-    @onChange={{set this.data.fieldRadioGroup}}
+    @onChange={{set this.data "fieldRadioGroup"}}
     @validations={{hash presence=(hash presence=true)}}
     @value={{this.data.fieldRadioGroup}}
     @options={{array
@@ -93,20 +93,20 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
   />
   <Form.FieldNumber
     @value={{this.data.fieldNumber}}
-    @onChange={{set this.data.fieldNumber}}
+    @onChange={{set this.data "fieldNumber"}}
     @validations={{hash number=(hash lt=10 allowString=true)}}
     @label="Less than 10"
     @errors={{this.data.errors}}
   />
   <Form.FieldPassword
     @value={{this.data.fieldPassword}}
-    @onChange={{set this.data.fieldPassword}}
+    @onChange={{set this.data "fieldPassword"}}
     @validations={{hash presence=(hash presence=true)}}
     @label="Field password"
   />
   <Form.FieldTextArea
     @value={{this.data.fieldTextArea}}
-    @onChange={{set this.data.fieldTextArea}}
+    @onChange={{set this.data "fieldTextArea"}}
     @validations={{hash length=(hash min=10) presence=(hash presence=true)}}
     @label="Field Text minlength 10"
   />
@@ -114,7 +114,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @validations={{hash presence=(hash presence=true)}}
     @value={{this.data.fieldSwitch}}
     @label="Field must be true"
-    @onChange={{set this.data.fieldSwitch}}
+    @onChange={{set this.data "fieldSwitch"}}
   />
   <EuiButton @type="submit">
     Submit

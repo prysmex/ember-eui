@@ -15,8 +15,8 @@ Inserting portals
 </EuiText>
 <EuiSpacer @size="l"/>
 <EuiButton
-	{{did-insert (set this.buttonRef)}}
-  {{on "click" (set this.showPortal (not this.showPortal))}}
+	{{did-insert (set this "buttonRef")}}
+  {{on "click" (set this "showPortal" (not this.showPortal))}}
 >
 	Toggle portal
 </EuiButton>

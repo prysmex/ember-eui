@@ -9,7 +9,7 @@ order: 1
   Text:
   {{this.text1}}
 </EuiTitle>
-<EuiTextArea @value={{this.text1}} {{on "input" (pick "target.value" (set this.text1))}} />
+<EuiTextArea @value={{this.text1}} {{on "input" (pick "target.value" (set this "text1"))}} />
 <EuiSpacer />
 <EuiTitle>
   Text:
@@ -20,7 +20,7 @@ order: 1
   @rows={{10}}
   @resize="both"
   @isInvalid={{true}}
-  {{on "input" (pick "target.value" (set this.text2))}}
+  {{on "input" (pick "target.value" (set this "text2"))}}
 />
 ```
 

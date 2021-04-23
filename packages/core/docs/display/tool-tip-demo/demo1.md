@@ -83,7 +83,7 @@ order: 1
 </EuiButton>
 
 <EuiSpacer @size="xl"/>
-<EuiButton {{on "click" (set this.isShown (not this.isShown))}}>
+<EuiButton {{on "click" (set this "isShown" (not this.isShown))}}>
   {{if this.isShown "isShown true" "isShown false"}}
 </EuiButton>
 <EuiToolTip @position="top" @attachTo={{this.attachTo}} @isShown={{this.isShown}}>

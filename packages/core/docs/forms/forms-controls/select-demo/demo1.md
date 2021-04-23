@@ -12,7 +12,7 @@ order: 1
       @hasNoInitialSelection={{true}}
       @options={{array (hash value="1" text="hello") (hash value="2" text="goodbye")}}
       @id={{selectId}}
-      {{on "change" (pick "target.value" (set this.select1))}}
+      {{on "change" (pick "target.value" (set this "select1"))}}
     >
       <:prepend as |classes|>
         <EuiFormLabel class={{classes}} for={{selectId}}>
@@ -39,7 +39,7 @@ order: 1
       @hasNoInitialSelection={{true}}
       @options={{array (hash value="1" text="hello") (hash value="2" text="goodbye")}}
       @id={{selectId}}
-      {{on "change" (pick "target.value" (set this.select2))}}
+      {{on "change" (pick "target.value" (set this "select2"))}}
     >
       <:prepend as |classes|>
         <EuiFormLabel class={{classes}} for={{selectId}}>

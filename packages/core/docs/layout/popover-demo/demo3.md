@@ -8,14 +8,14 @@ Popover on a fixed element
 Popover content even works on position: fixed; elements. Add the repositionOnScroll boolean prop to ensure the popover realigns to the fixed button on scroll.
 
 ```hbs template
-<EuiButton {{on "click" (set this.isExampleShown true)}}>
+<EuiButton {{on "click" (set this "isExampleShown" true)}}>
   Toggle example
 </EuiButton>
 {{#if this.isExampleShown}}
   <EuiPopover
     @ownFocus={{true}}
     @isOpen={{this.pop1}}
-    @closePopover={{set this.pop1 false}}
+    @closePopover={{set this "pop1" false}}
     @repositionOnScroll={{true}}
     style="position: fixed; bottom: 50px; right: 50px; z-index: 10;"
   >
@@ -24,7 +24,7 @@ Popover content even works on position: fixed; elements. Add the repositionOnScr
         @iconType="arrowDown"
         @iconSide="right"
         @fill={{true}}
-        {{on "click" (set this.pop1 true)}}
+        {{on "click" (set this "pop1" true)}}
       >
         Show fixed popover
       </EuiButton>

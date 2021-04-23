@@ -31,7 +31,7 @@ order: 5
 <EuiSpacer size="xl" />
 <EuiDualRange
   @value={{this.dualValue}}
-  @onChange={{set this.dualValue}}
+  @onChange={{set this "dualValue"}}
   @showTicks={{true}}
   @showInput={{true}}
   @ticks={{array (hash label="20kb" value=20) (hash label="100kb" value=100)}}

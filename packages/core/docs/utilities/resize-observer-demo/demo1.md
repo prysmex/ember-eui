@@ -24,7 +24,7 @@
     <EuiSpacer />
     <EuiFlexGroup>
       <EuiFlexItem @grow={{false}}>
-        <EuiPanel @grow={{false}} {{resize-observer onResize=(set this.dimensions)}}>
+        <EuiPanel @grow={{false}} {{resize-observer onResize=(set this "dimensions")}}>
           <ul>
             {{#each this.items as |item|}}
               <li>
@@ -56,7 +56,7 @@
     <EuiSpacer />
     <EuiFlexGroup>
       <EuiFlexItem @grow={{false}}>
-        <EuiPanel @grow={{false}} {{resize-observer "height" onResize=(set this.dimensions2)}}>
+        <EuiPanel @grow={{false}} {{resize-observer "height" onResize=(set this "dimensions2")}}>
           <ul>
             {{#each this.items as |item|}}
               <li>

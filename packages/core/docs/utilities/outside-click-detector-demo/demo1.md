@@ -2,7 +2,7 @@
 
 ```hbs template
 <EuiButton
-  {{on "click" (set this.disabled (not this.disabled))}}
+  {{on "click" (set this "disabled" (not this.disabled))}}
   {{outside-click-detector onOutsideClick=this.salute isDisabled=this.disabled}}
 >
   {{#if this.disabled}}

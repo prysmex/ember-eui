@@ -19,7 +19,7 @@ order: 2
         <EuiFieldText
           @value={{this.num2}}
           @id={{inputId}}
-          {{on "input" (pick "target.value" (set this.num2))}}
+          {{on "input" (pick "target.value" (set this "num2"))}}
         />
       </:field>
       <:errors as |error|>

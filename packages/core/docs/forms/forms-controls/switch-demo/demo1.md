@@ -10,12 +10,12 @@ order: 1
     @id="131"
     @label="I am a checkbox"
     @checked={{this.switch1}}
-    @onChange={{pick "target.checked" (set this.switch1)}}
+    @onChange={{pick "target.checked" (set this "switch1")}}
   />
   <EuiSwitch
     @id="131d"
     @checked={{this.switch2}}
-    @onChange={{pick "target.checked" (set this.switch2)}}
+    @onChange={{pick "target.checked" (set this "switch2")}}
   >
     <:label>
       Switch with custom Label

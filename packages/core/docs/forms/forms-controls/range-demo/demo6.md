@@ -23,7 +23,7 @@ order: 6
 <EuiSpacer @size="xl" />
 <EuiDualRange
   @value={{this.dualValue}}
-  @onChange={{set this.dualValue}}
+  @onChange={{set this "dualValue"}}
   @showInput="inputWithPopover"
   @showLabels={{true}}
   @levels={{this.levels}}

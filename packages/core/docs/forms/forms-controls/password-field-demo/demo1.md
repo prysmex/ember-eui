@@ -11,7 +11,7 @@ order: 1
       <EuiFieldPassword
         @value={{this.password}}
         @id={{inputId}}
-        {{on "input" (pick "target.value" (set this.password))}}
+        {{on "input" (pick "target.value" (set this "password"))}}
       />
     </EuiFormRow>
   {{/let}}
@@ -30,7 +30,7 @@ order: 1
       <EuiFieldPassword
         @value={{this.password2}}
         @id={{inputId}}
-        {{on "input" (pick "target.value" (set this.password2))}}
+        {{on "input" (pick "target.value" (set this "password2"))}}
       />
     </EuiFormRow>
   {{/let}}

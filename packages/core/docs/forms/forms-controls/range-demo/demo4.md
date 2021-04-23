@@ -48,7 +48,7 @@ order: 4
 <EuiSpacer @size="l" />
 <EuiDualRange
   @value={{this.dualValue}}
-  @onChange={{set this.dualValue}}
+  @onChange={{set this "dualValue"}}
   @ticks={{array (hash label="20kb" value=20) (hash label="100kb" value=100)}}
   @showInput={{true}}
   @showTicks={{true}}

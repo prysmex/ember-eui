@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.6.2
+🚀 Enhancements
+- `@ember-eui/core` `<EuiComboBox />` now supports @customOptionText
+
 ### 0.6.1
 🚀 Enhancements
 - `@ember-eui/core` `<EuiComboBox />` now supports onCreateOption, to build tag-like experience

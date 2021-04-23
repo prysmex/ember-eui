@@ -9,7 +9,7 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
     if (this.args.onKeydown && this.args.onKeydown(e) === false) {
       if (
         this.args.onCreateOption && //if user wants to create an option and
-        e.keyCode === 13 && //And presses [Enter] and
+        e.keyCode === 13 && //presses [Enter] and
         (this.args.select.options.length === 0 || //If There are no options or
           this.args.select.results.length === 0) && //Last search made returned no results and
         this.args.select.searchText.length >= 1 //There's something in the searchText box

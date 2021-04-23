@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.6.0
+🏠 Internal
+- Updat `ember-set-helper`
+
 ### 0.5.14
 🐛 Bug / Fixes
 - `@ember-eui/validated-form` i18n fixes

@@ -20,8 +20,14 @@
       @icon="search"
       @fullWidth={{@fullWidth}}
       @isLoading={{@isLoading}}
+      @disabled={{@disabled}}
       @clear={{if
-        (and @isClearable @value (not @readOnly) (not @isDisabled))
+        (and
+          @isClearable
+          @value
+          (not @readOnly)
+          (and (not @isDisabled) (not @disabled))
+        )
         this.onClear
       }}
       @compressed={{@compressed}}
@@ -35,6 +41,7 @@
           id={{inputId}}
           class={{classes}}
           value={{this.value}}
+          disabled={{@disabled}}
           type="text"
           ...attributes
           {{on "keyup" (fn this.onKeyUp this.incremental @onSearch)}}

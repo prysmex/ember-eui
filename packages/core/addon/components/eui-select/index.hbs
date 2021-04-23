@@ -11,9 +11,13 @@
       (if @isLoading "euiSelect--isLoading")
       "euiSelect"
     )
-    (arg-or-default @hasNoInitialSelection false) as |classes hasNoInitialSelection value|
+    (arg-or-default
+      @hasNoInitialSelection false
+    ) as |classes hasNoInitialSelection value|
   }}
-    {{#let (if hasNoInitialSelection (nullish @value "") @value) as |defaultValue|}}
+    {{#let
+      (if hasNoInitialSelection (nullish @value "") @value) as |defaultValue|
+    }}
       <EuiFormControlLayout
         @clear={{@clear}}
         @icon="arrowDown"
@@ -21,6 +25,7 @@
         @fullWidth={{@fullWidth}}
         @isLoading={{@isLoading}}
         @compressed={{@compressed}}
+        @disabled={{@disabled}}
         @useGroup={{or hasPrepend hasAppend}}
       >
         <:prepend as |prependClasses|>
@@ -30,6 +35,7 @@
           <select
             id={{inputId}}
             class={{classes}}
+            disabled={{@disabled}}
             ...attributes
             {{validatable-control @isInvalid}}
             {{did-insert (optional @inputRef)}}

@@ -20,6 +20,7 @@
         value={{@value}}
         min={{@min}}
         max={{@max}}
+        disabled={{@disabled}}
         type="number"
         ...attributes
         {{validatable-control @isInvalid}}
@@ -33,6 +34,7 @@
         @isLoading={{@isLoading}}
         @compressed={{@compressed}}
         @readOnly={{@readOnly}}
+        @disabled={{@disabled}}
         @useGroup={{or hasPrepend hasAppend}}
       >
         <:prepend as |prependClasses|>
@@ -44,6 +46,7 @@
             class={{classes}}
             value={{@value}}
             type="number"
+            disabled={{@disabled}}
             ...attributes
             {{validatable-control @isInvalid}}
           />

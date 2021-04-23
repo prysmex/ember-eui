@@ -13,7 +13,7 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
-		{{did-update this.didUpdateValue @value}}
+    {{did-update this.didUpdateValue @value}}
   >
     <EuiTextArea
       class={{@fieldClasses}}
@@ -24,6 +24,7 @@
       @fullWidth={{@fullWidth}}
       @compressed={{@compressed}}
       @resize={{@resize}}
+      @disabled={{@disabled}}
       @inputRef={{@inputRef}}
       @id={{theId}}
       @rows={{@rows}}

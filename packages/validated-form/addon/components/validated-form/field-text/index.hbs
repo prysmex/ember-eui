@@ -13,7 +13,7 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
-		{{did-update this.didUpdateValue @value}}
+    {{did-update this.didUpdateValue @value}}
   >
     <EuiFieldText
       class={{@fieldClasses}}
@@ -24,6 +24,7 @@
       @isInvalid={{this.isInvalidAndTouched}}
       @fullWidth={{@fullWidth}}
       @isLoading={{@isLoading}}
+      @disabled={{@disabled}}
       @readOnly={{@readOnly}}
       @inputRef={{@inputRef}}
       @controlOnly={{@controlOnly}}
@@ -33,9 +34,9 @@
       @isFakeAppendBlock={{not (has-block "append")}}
       autofocus={{@autofocus}}
       placeholder={{@placeholder}}
+      ...attributes
       {{on "blur" (fn this.setIsTouched true)}}
       {{on "input" this.handleChange}}
-      ...attributes
     >
       <:prepend as |classes|>
         {{yield classes to="prepend"}}

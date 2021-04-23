@@ -15,10 +15,10 @@
     >
       <:input>
         <EuiFormControlLayoutDelimited
-          @isDisabled={{@disabled}}
           @fullWidth={{this.fullWidth}}
           @compressed={{this.compressed}}
           @readOnly={{@readOnly}}
+          @disabled={{@disabled}}
           @useGroup={{or hasPrepend hasAppend}}
         >
           <:prepend as |prependClasses|>
@@ -45,11 +45,18 @@
               @isFakeAppendBlock={{hasPrepend}}
               @isFakePrependBlock={{hasAppend}}
               @controlOnly={{true}}
+              @disable={{@disable}}
               ...attributes
               {{on "mousedown" (fn this.setPreventPopoverClose true)}}
               {{on-key "_all" this.handleInputKeyDown}}
-              {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
-              {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
+              {{on
+                "focus"
+                (if this.canShowDropdown this.onInputFocus (optional @onFocus))
+              }}
+              {{on
+                "blur"
+                (if this.canShowDropdown this.onInputBlur (optional @onBlur))
+              }}
               {{on "input" this.handleLowerInputChange}}
             />
             <div class="euiRange__horizontalSpacer"></div>
@@ -75,11 +82,18 @@
               @isFakeAppendBlock={{hasPrepend}}
               @isFakePrependBlock={{hasAppend}}
               @controlOnly={{true}}
+              @disable={{@disable}}
               ...attributes
               {{on "mousedown" (fn this.setPreventPopoverClose true)}}
               {{on-key "_all" this.handleInputKeyDown}}
-              {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
-              {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
+              {{on
+                "focus"
+                (if this.canShowDropdown this.onInputFocus (optional @onFocus))
+              }}
+              {{on
+                "blur"
+                (if this.canShowDropdown this.onInputBlur (optional @onBlur))
+              }}
               {{on "input" this.handleUpperInputChange}}
             />
           </:endControl>
@@ -210,6 +224,7 @@
           @isFakeAppendBlock={{true}}
           @isFakePrependBlock={{true}}
           @controlOnly={{true}}
+          @disable={{@disable}}
           ...attributes
           {{on-key "_all" this.handleInputKeyDown}}
           {{on "focus" (optional @onFocus)}}
@@ -326,6 +341,7 @@
           @controlOnly={{this.showInputOnly}}
           @isFakeAppendBlock={{true}}
           @isFakePrependBlock={{true}}
+          @disable={{@disable}}
           ...attributes
           {{on-key "_all" this.handleInputKeyDown}}
           {{on "focus" (optional @onFocus)}}

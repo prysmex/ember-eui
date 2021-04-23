@@ -18,6 +18,7 @@
         id={{inputId}}
         value={{@value}}
         class={{classes}}
+        disabled={{@disabled}}
         type="text"
         ...attributes
         {{validatable-control @isInvalid}}
@@ -31,6 +32,7 @@
         @isLoading={{@isLoading}}
         @compressed={{@compressed}}
         @readOnly={{@readOnly}}
+        @disabled={{@disabled}}
         @useGroup={{or hasPrepend hasAppend}}
       >
         <:prepend as |prependClasses|>
@@ -41,6 +43,7 @@
             id={{inputId}}
             value={{@value}}
             class={{classes}}
+            disabled={{@disabled}}
             type="text"
             ...attributes
             {{validatable-control @isInvalid}}

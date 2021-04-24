@@ -2,6 +2,13 @@ import ValidatedFormFieldBase from '../field-base';
 import { action } from '@ember/object';
 
 export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase {
+  get value() {
+    return (
+      this.args.changeset.get(this.args.fieldName)?.toArray() ||
+      this.args.changeset.get(this.args.fieldName)
+    );
+  }
+
   get arrayToMap() {
     const currArr = this.args.value || [];
     return this.transformToMap(currArr);
@@ -17,7 +24,7 @@ export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase
 
   @action
   handleChange(optionId) {
-    let value = this.args.value || [];
+    let value = this.value || [];
 
     const found = value.find((v) => v === optionId);
     let newArr = [];

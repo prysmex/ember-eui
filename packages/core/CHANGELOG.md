@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.6.5
+🐛 Bug / Fixes
+`@ember-eui/validated-form`
+- fix: ensure using to .toArray() before splatting
+
 ### 0.6.4
 🐛 Bug / Fixes
 - Use `this` in order to be able to override or extend in consuming apps

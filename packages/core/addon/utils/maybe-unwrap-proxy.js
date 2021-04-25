@@ -7,5 +7,6 @@ export function isProxy(o) {
 }
 
 export function maybeUnwrapProxy(o) {
-  return isProxy(o) ? maybeUnwrapProxy(get(o, 'content')) : o;
+  const key = 'content';
+  return isProxy(o) ? maybeUnwrapProxy(get(o, key)) : o;
 }

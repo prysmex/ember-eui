@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { helper } from '@ember/component/helper';
 import { isArray } from '@ember/array';
 import { maybeUnwrapProxy } from '../utils/maybe-unwrap-proxy';

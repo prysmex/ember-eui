@@ -2,6 +2,9 @@
 
 ### Master
 
+### 0.6.8
+🐛 Bug / Fixes
+-re-release
 ### 0.6.7
 🐛 Bug / Fixes
 `@ember-eui/core`

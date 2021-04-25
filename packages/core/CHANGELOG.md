@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.6.7
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix: `{{to-array}}` now unwraps proxies
+
 ### 0.6.6
 🐛 Bug / Fixes
 `@ember-eui/core`

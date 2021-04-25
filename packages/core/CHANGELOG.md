@@ -2,6 +2,11 @@
 
 ### Master
 
+### 0.6.6
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix: `<EuiComboBox />` fix isDisabled class
+
 ### 0.6.5
 🐛 Bug / Fixes
 `@ember-eui/validated-form`

@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.6.10
+🐛 Bug / Fixes
+- fix: Don't use changeset for `@ember-eui/validated-form`
+
 ### 0.6.9
 🐛 Bug / Fixes
 - fix: Pass down `@renderInPlace` to `<ValidatedForm />`

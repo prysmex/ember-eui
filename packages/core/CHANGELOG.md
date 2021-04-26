@@ -2,6 +2,10 @@
 
 ### Master
 
+### 0.6.9
+🐛 Bug / Fixes
+- fix: Pass down `@renderInPlace` to `<ValidatedForm />`
+
 ### 0.6.8
 🐛 Bug / Fixes
 -re-release

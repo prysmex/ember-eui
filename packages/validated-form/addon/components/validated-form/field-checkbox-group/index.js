@@ -1,16 +1,15 @@
 import ValidatedFormFieldBase from '../field-base';
 import { action } from '@ember/object';
+import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
 
 export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldBase {
   get value() {
-    return (
-      this.args.changeset.get(this.args.fieldName)?.toArray() ||
-      this.args.changeset.get(this.args.fieldName)
-    );
+    let value = maybeUnwrapProxy(this.args.value);
+    return value?.toArray() || value;
   }
 
   get arrayToMap() {
-    const currArr = this.args.value || [];
+    const currArr = this.value || [];
     return this.transformToMap(currArr);
   }
 

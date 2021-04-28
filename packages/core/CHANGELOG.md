@@ -2,10 +2,13 @@
 
 ### Master
 
-### 0.6.10
+### 0.6.11
 🐛 Bug / Fixes
 `@ember-eui/core`
 - fix: Add disabled as arg to `<EuiCheckbox />`
+
+`@ember-eui/pikaday`
+- fix: Add disabled arg to `<EuiPikaday />`
 
 ### 0.6.10
 🐛 Bug / Fixes

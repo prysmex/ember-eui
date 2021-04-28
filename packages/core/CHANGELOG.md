@@ -4,6 +4,11 @@
 
 ### 0.6.10
 🐛 Bug / Fixes
+`@ember-eui/core`
+- fix: Add disabled as arg to `<EuiCheckbox />`
+
+### 0.6.10
+🐛 Bug / Fixes
 - fix: Don't use changeset for `@ember-eui/validated-form`
 
 ### 0.6.9

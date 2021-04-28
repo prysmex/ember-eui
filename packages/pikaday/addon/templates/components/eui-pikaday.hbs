@@ -16,6 +16,7 @@
     @clear={{if @clear (fn (optional @clear) null)}}
     @isFakePrependBlock={{hasPrepend}}
     @isFakeAppendBlock={{hasAppend}}
+    @disabled={{@disabled}}
     ...attributes
     {{did-insert this.didInsertInput}}
   >

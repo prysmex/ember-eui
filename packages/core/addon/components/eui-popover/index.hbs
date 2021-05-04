@@ -1,12 +1,15 @@
 {{#let
   (unique-id)
-  (class-names position=this.anchorPosition display=this.display componentName="EuiPopover")
+  (class-names
+    position=this.anchorPosition display=this.display componentName="EuiPopover"
+  )
   (class-names
     "euiPopover__panel"
     (concat "euiPopover__panel--" this.arrowPosition)
     (if this.isOpening "euiPopover__panel-isOpen")
     (if (or (not this.hasArrow) @attachToAnchor) "euiPopover__panel-noArrow")
     (if @attachToAnchor "euiPopover__panel-isAttached")
+    @panelClasses
   ) as |descriptionId classes panelClasses|
 }}
   {{#if this.ownFocus}}
@@ -18,10 +21,17 @@
       {{did-update this.didUpdateIsOpen @isOpen}}
       {{did-update this.didUpdateRepositionOnScroll @repositionOnScroll}}
     >
-      <div class="euiPopover__anchor {{@anchorClassName}}" {{did-insert this.registerButton}}>
+      <div
+        class="euiPopover__anchor {{@anchorClassName}}"
+        {{did-insert this.registerButton}}
+      >
         {{yield to="button"}}
       </div>
-      {{#if (and (not this.suppressingPopover) (or this.isCurrentlyOpen this.isClosing))}}
+      {{#if
+        (and
+          (not this.suppressingPopover) (or this.isCurrentlyOpen this.isClosing)
+        )
+      }}
         <EuiPortal @insert={{@insert}}>
           <EuiPanel
             class={{panelClasses}}
@@ -39,7 +49,9 @@
             {{outside-click-detector onOutsideClick=this.onClickOutside}}
             {{on-key "Escape" this.onEscapeKey}}
             {{focus-trap
-              isActive=(not (or (not this.ownFocus) (not this.isOpenStable) this.isClosing))
+              isActive=(not
+                (or (not this.ownFocus) (not this.isOpenStable) this.isClosing)
+              )
               focusTrapOptions=(hash
                 shouldSelfFocus=true
                 returnFocusOnDeactivate=this.isOpenStable
@@ -51,7 +63,8 @@
             }}
           >
             <div
-              class="euiPopover__panelArrow euiPopover__panelArrow--{{this.arrowPosition}}"
+              class="euiPopover__panelArrow euiPopover__panelArrow--
+                {{this.arrowPosition}}"
               style={{this._arrowStyles}}
             >
               {{yield to="arrowChildren"}}
@@ -85,10 +98,14 @@
       {{did-update this.didUpdateIsOpen @isOpen}}
       {{did-update this.didUpdateRepositionOnScroll @repositionOnScroll}}
     >
-      <div class="euiPopover__anchor {{@anchorClassName}}" {{did-insert this.registerButton}}>
+      <div
+        class="euiPopover__anchor {{@anchorClassName}}"
+        {{did-insert this.registerButton}}
+      >
         {{yield to="button"}}
       </div>
-      {{#if (and (not this.suppressingPopover) (or this.isOpen this.isClosing))}}
+      {{#if (and (not this.suppressingPopover) (or this.isOpen this.isClosing))
+      }}
         <EuiPortal @insert={{@insert}}>
           <EuiPanel
             class={{panelClasses}}
@@ -107,7 +124,8 @@
             {{on-key "Escape" this.onEscapeKey}}
           >
             <div
-              class="euiPopover__panelArrow euiPopover__panelArrow--{{this.arrowPosition}}"
+              class="euiPopover__panelArrow euiPopover__panelArrow--
+                {{this.arrowPosition}}"
               style={{this._arrowStyles}}
             >
               {{yield to="arrowChildren"}}

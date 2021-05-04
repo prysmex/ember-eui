@@ -14,8 +14,13 @@ export default modifier(function onEventSimulateEvent(
     _target = element.querySelector(target);
   }
 
-  function dispatch(): void {
-    _target && _target.dispatchEvent(event);
+  function dispatch(e: MouseEvent): void {
+    if (_target && typeof target === 'string') {
+      // Prevent a recursive behavior catched by the browser
+      if (e.target instanceof Element && e.target.closest(target)) {
+        _target.dispatchEvent(event);
+      }
+    }
   }
 
   if (target) {

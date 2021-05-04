@@ -2,6 +2,15 @@
 
 ### Master
 
+### 0.6.15
+🚀 Enhancements
+`@ember-eui/core`
+- Add MouseEvent type in create-event helper
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix: Prevent recursion on events that bubble in on-event-simulate-event modifier
+
 ### 0.6.14
 🐛 Bug / Fixes
 `@ember-eui/core`

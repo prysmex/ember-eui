@@ -5,6 +5,11 @@
 ### 0.6.12
 🐛 Bug / Fixes
 `@ember-eui/core`
+- fix: piquito for `<EuiPopover />`
+
+### 0.6.12
+🐛 Bug / Fixes
+`@ember-eui/core`
 - fix: add panelClasses to `<EuiPopover />`
 
 ### 0.6.11

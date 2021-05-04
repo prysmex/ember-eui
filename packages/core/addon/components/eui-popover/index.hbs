@@ -126,8 +126,10 @@
             {{on-key "Escape" this.onEscapeKey}}
           >
             <div
-              class="euiPopover__panelArrow euiPopover__panelArrow--
-                {{this.arrowPosition}}"
+              class={{concat
+                "euiPopover__panelArrow euiPopover__panelArrow--"
+                this.arrowPosition
+              }}
               style={{this._arrowStyles}}
             >
               {{yield to="arrowChildren"}}

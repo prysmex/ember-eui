@@ -2,7 +2,12 @@
 
 ### Master
 
-### 0.6.12
+### 0.6.14
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix: piquito for `<EuiPopover />`
+
+### 0.6.13
 🐛 Bug / Fixes
 `@ember-eui/core`
 - fix: piquito for `<EuiPopover />`

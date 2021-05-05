@@ -6,7 +6,7 @@
   }}
   ...attributes
 >
-  <div class="euiAccordion__triggerWrapper">
+  <div class={{class-names "euiAccordion__triggerWrapper" @triggerClassName}}>
     <button
       id={{this.buttonId}}
       aria-controls={{@id}}
@@ -32,24 +32,19 @@
           />
         </span>
       {{/if}}
-      <span
-        class={{concat
-          "euiIEFlexWrapFix "
-          @buttonContentClassName
-        }}
-      >
+      <span class={{concat "euiIEFlexWrapFix " @buttonContentClassName}}>
         {{yield to="buttonContent"}}
       </span>
     </button>
-
     {{#if (and @extraAction (not this.isLoading))}}
-      <div class="euiAccordion__optionalAction">{{@extraAction}}</div>
+      <div class="euiAccordion__optionalAction">
+        {{@extraAction}}
+      </div>
     {{else if this.isLoading}}
       <div class="euiAccordion__optionalAction">
         <EuiLoadingSpinner />
       </div>
     {{/if}}
-
     {{#if this.hasIconButton}}
       <button
         aria-controls={{@id}}
@@ -60,8 +55,8 @@
           "euiAccordion__iconWrapper "
           (if this.hasIconButton "euiAccordion__iconButton ")
         }}
-        {{on "click" this.onToggle}}
         type="button"
+        {{on "click" this.onToggle}}
       >
         <EuiIcon
           class={{class-names
@@ -74,14 +69,11 @@
       </button>
     {{/if}}
   </div>
-
-  <div
-    class="euiAccordion__childWrapper"
-    id={{@id}}
-  >
+  <div class="euiAccordion__childWrapper" id={{@id}}>
     <div
       class={{class-names
         (if this.isLoading " euiAccordion__children-isLoading")
+        @childClassName
         paddingSize=this.paddingSize
         componentName="EuiAccordion"
       }}
@@ -92,7 +84,7 @@
           {{#if this.hasLoadingMessage}}
             {{this.isLoadingMessage}}
           {{else}}
-            {{!-- <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> --}}
+            {{! <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> }}
             Loading...
           {{/if}}
         </span>

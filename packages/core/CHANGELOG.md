@@ -2,12 +2,12 @@
 
 ### Master
 
-### 0.6.16
+### 0.6.17
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
 - Add `@serach` to `<FieldComboBox />`
 
-### 0.6.15
+### 0.6.16
 🚀 Enhancements
 `@ember-eui/core`
 - Add `@triggerClassName` to `<EuiAccordion />`

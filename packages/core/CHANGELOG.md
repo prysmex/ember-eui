@@ -5,6 +5,11 @@
 ### 0.6.15
 🚀 Enhancements
 `@ember-eui/core`
+- Add `@triggerClassName` to `<EuiAccordion />`
+
+### 0.6.15
+🚀 Enhancements
+`@ember-eui/core`
 - Add MouseEvent type in create-event helper
 
 🐛 Bug / Fixes

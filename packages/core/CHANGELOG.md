@@ -5,7 +5,7 @@
 ### 0.6.17
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
-- Add `@serach` to `<FieldComboBox />`
+- Add `@search` to `<FieldComboBox />`
 
 ### 0.6.16
 🚀 Enhancements

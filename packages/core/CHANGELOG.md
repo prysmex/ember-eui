@@ -3,6 +3,10 @@
 ### Master
 
 ### 0.6.18
+🚀 Enhancements
+`@ember-eui/core`
+- Add `@className` to `<EuiCheckbox />`
+
 🐛 Bug / Fixes
 `@ember-eui/core`
 - fix: Fix condition in on-event-simulate-event modifier

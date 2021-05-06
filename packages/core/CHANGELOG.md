@@ -7,6 +7,9 @@
 `@ember-eui/core`
 - fix: Fix condition in on-event-simulate-event modifier
 
+`@ember-eui/validated-form`
+- Add `@searchMessage` to `<FieldComboBox />`
+
 ### 0.6.17
 🐛 Bug / Fixes
 `@ember-eui/validated-form`

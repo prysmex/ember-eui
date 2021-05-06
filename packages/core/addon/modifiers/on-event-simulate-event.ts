@@ -17,7 +17,7 @@ export default modifier(function onEventSimulateEvent(
   function dispatch(e: MouseEvent): void {
     if (_target && typeof target === 'string') {
       // Prevent a recursive behavior catched by the browser
-      if (e.target instanceof Element && e.target.closest(target)) {
+      if (e.target instanceof Element && !e.target.closest(target)) {
         _target.dispatchEvent(event);
       }
     }

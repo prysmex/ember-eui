@@ -2,6 +2,12 @@
 
 ### Master
 
+### 0.7.0
+🚀 Enhancements
+`@ember-eui/*`
+- Pin volta node 12
+- Update ember-svg-jar fork
+
 ### 0.6.18
 🚀 Enhancements
 `@ember-eui/core`

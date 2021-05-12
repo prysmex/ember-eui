@@ -9,5 +9,8 @@
     "@underline/eslint-config-ember-typescript": "^0.10.1",
     "@underline/eslint-config-node": "^0.10.0",
     "lerna": "^3.22.1"
+  },
+  "volta": {
+    "node": "12.22.1"
   }
 }

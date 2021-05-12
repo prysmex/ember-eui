@@ -130,13 +130,16 @@
     "access": "public"
   },
   "engines": {
-    "node": "10.* || >= 12"
+    "node": ">= 12"
   },
   "ember": {
     "edition": "octane"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
+  },
+  "volta": {
+    "node": "12.22.1"
   },
   "gitHead": "bc16e4d68a4005d00bc54ce36f73d3b12b725b21"
 }

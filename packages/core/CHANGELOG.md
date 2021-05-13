@@ -2,6 +2,13 @@
 
 ### Master
 
+
+### 0.7.1
+
+🐛 Bug / Fixes
+
+- Update package.json to ember-svg-jar github:betocantu93/ember-svg-jar#only-resolve-asset-interface
+
 ### 0.7.0
 🚀 Enhancements
 `@ember-eui/*`

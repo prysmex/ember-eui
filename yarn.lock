@@ -5201,7 +5201,7 @@ broccoli-funnel@^3.0.0, broccoli-funnel@^3.0.1, broccoli-funnel@^3.0.3:
     path-posix "^1.0.0"
     walk-sync "^2.0.2"
 
-"broccoli-funnel@github:ef4/broccoli-funnel#c70d060076e14793e8495571f304a976afc754ac":
+broccoli-funnel@ef4/broccoli-funnel#c70d060076e14793e8495571f304a976afc754ac:
   version "2.0.2-ef4.0"
   resolved "https://codeload.github.com/ef4/broccoli-funnel/tar.gz/c70d060076e14793e8495571f304a976afc754ac"
   dependencies:
@@ -7557,7 +7557,7 @@ ember-cached-decorator-polyfill@^0.1.1:
     ember-cli-babel "^7.11.1"
     ember-cli-htmlbars "^4.0.5"
     ember-get-config "^0.2.4"
-    ember-validators "github:betocantu93/ember-validators#dont-mutate"
+    ember-validators "^3.0.1"
 
 "ember-changeset@github:betocantu93/ember-changeset#spike-fix-prop-notification":
   version "3.13.4"
@@ -8457,9 +8457,9 @@ ember-style-modifier@^0.6.0:
     ember-cli-babel "^7.21.0"
     ember-modifier "^2.1.0"
 
-"ember-svg-jar@github:betocantu93/ember-svg-jar#ember-eui-hbs":
-  version "2.2.3"
-  resolved "https://codeload.github.com/betocantu93/ember-svg-jar/tar.gz/590ae1dcbcbb77bc8489070b9f02e5c38ae957bb"
+"ember-svg-jar@github:betocantu93/ember-svg-jar#only-resolve-asset-interface":
+  version "2.3.3"
+  resolved "https://codeload.github.com/betocantu93/ember-svg-jar/tar.gz/e49b7492f8117f2ade9dc9cff3612fbb908ccf06"
   dependencies:
     broccoli-caching-writer "^3.0.3"
     broccoli-concat "^3.7.4"

@@ -35,7 +35,7 @@
     "ember-cli-typescript": "^4.1.0",
     "ember-named-blocks-polyfill": "^0.2.3",
     "ember-pikaday": "^3.0.0",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#ember-eui-hbs"
+    "ember-svg-jar": "github:betocantu93/ember-svg-jar#only-resolve-asset-interface"
   },
   "devDependencies": {
     "@ember/optional-features": "^1.3.0",

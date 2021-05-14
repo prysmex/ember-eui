@@ -65,10 +65,14 @@
       {{/if}}
       {{#if @searchEnabled}}
         {{! template-lint-disable }}
-        <form
+        {{#if (and this.maybePlaceholder (not @select.searchText))}}
+          <p class="euiComboBoxPlaceholder">
+            {{this.maybePlaceholder}}
+          </p>
+        {{/if}}
+        <div
           class="euiComboBox__input"
           style="font-size: 14px; display: inline-block;"
-          {{on "submit" this.submitSearchInput}}
         >
           <input
             class="ember-power-select-trigger-multiple-input euiComboBox__input"
@@ -80,16 +84,16 @@
             value={{@select.searchText}}
             aria-controls={{@listboxId}}
             style={{this.triggerMultipleInputStyle}}
-            placeholder={{this.maybePlaceholder}}
             disabled={{@select.disabled}}
             tabindex={{@tabindex}}
+            form="euiComboBox-input--fakeForm"
             {{on "focus" @onFocus}}
             {{on "blur" @onBlur}}
             {{on "input" this.handleInput}}
             {{on "keydown" this.handleKeydown}}
             {{did-insert this.storeInputStyles}}
           />
-        </form>
+        </div>
         {{! template-lint-enable }}
       {{else}}
         {{! template-lint-disable }}

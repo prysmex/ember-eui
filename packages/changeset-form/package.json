@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/changeset-form",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Ember Eui changeset integration",
   "keywords": [
     "ember-addon",
@@ -27,7 +27,7 @@
     "postpack": "ember ts:clean"
   },
   "dependencies": {
-    "@ember-eui/core": "^0.7.1",
+    "@ember-eui/core": "^0.7.2",
     "@types/ember": "^3.16.4",
     "ember-changeset": "github:betocantu93/ember-changeset#spike-fix-prop-notification",
     "ember-changeset-validations": "github:betocantu93/ember-changeset-validations#spike-fix-prop-notification-with-no-mutation",

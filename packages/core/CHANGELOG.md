@@ -3,6 +3,17 @@
 ### Master
 
 
+### 0.7.2
+
+🐛 Bug / Fixes
+`@ember-eui/*`
+- Fix resolving assets using optional resolve-asset
+
+`@ember-eui/core`
+- `<EuiComboBox />` Fix placeholder styling
+- `<EuiFieldNumber />` Pass @step argument
+
+
 ### 0.7.1
 
 🐛 Bug / Fixes

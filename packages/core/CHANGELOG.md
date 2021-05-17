@@ -3,6 +3,12 @@
 ### Master
 
 
+### 0.7.3
+
+🏠 Internal
+`@ember-eui/core`
+- Update ember-element-helper
+
 ### 0.7.2
 
 🐛 Bug / Fixes

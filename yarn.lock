@@ -8448,9 +8448,9 @@ ember-style-modifier@^0.6.0:
     ember-cli-babel "^7.21.0"
     ember-modifier "^2.1.0"
 
-"ember-svg-jar@github:betocantu93/ember-svg-jar#only-resolve-asset-interface":
+"ember-svg-jar@github:betocantu93/ember-svg-jar#add-bundle-flag":
   version "2.3.3"
-  resolved "https://codeload.github.com/betocantu93/ember-svg-jar/tar.gz/e49b7492f8117f2ade9dc9cff3612fbb908ccf06"
+  resolved "https://codeload.github.com/betocantu93/ember-svg-jar/tar.gz/1d61d9e15133bbeb91ae3a990b3b646bed8b445d"
   dependencies:
     broccoli-caching-writer "^3.0.3"
     broccoli-concat "^3.7.4"

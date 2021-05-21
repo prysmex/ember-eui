@@ -3,9 +3,14 @@
 ### Master
 
 
-### 0.7.4
+### 0.7.5
 
-🏠 Internal
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Remove partial ability to place blocks for `<EuiComboBox />` for now
+### 0.7.5
+
+🚀 Enhancements
 `@ember-eui/*`
 - Add partial ability to place blocks for `<EuiComboBox />`
 ### 0.7.4

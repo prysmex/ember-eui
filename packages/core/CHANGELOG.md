@@ -7,6 +7,11 @@
 
 🏠 Internal
 `@ember-eui/*`
+- Add partial ability to place blocks for `<EuiComboBox />`
+### 0.7.4
+
+🏠 Internal
+`@ember-eui/*`
 - Update package.json to ember-svg-jar github:betocantu93/ember-svg-jar#add-bundle-flag
 
 ### 0.7.3

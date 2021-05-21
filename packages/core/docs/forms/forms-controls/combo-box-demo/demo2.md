@@ -5,16 +5,22 @@ order: 2
 # Demo
 
 ```hbs template
-	<EuiComboBox
-		@onChange={{this.onChange}}
-		@options={{this.remainingOptions}}
-		@selectedOptions={{this.selected}}
-		@searchEnabled={{true}}
-		@singleSelection={{hash asPlainText=true}}
-    @searchField="label"
-	as |option item|>
-		{{option.label}}
-	</EuiComboBox>
+<EuiComboBox
+  @onChange={{this.onChange}}
+  @options={{this.remainingOptions}}
+  @selectedOptions={{this.selected}}
+  @searchEnabled={{true}}
+  @singleSelection={{hash asPlainText=true}}
+  @extra={{hash
+    prependTriggerComponent=(component
+      'eui-form-label' label='Prepend a component'
+    )
+  }}
+  @searchField='label'
+  as |option item|
+>
+  {{option.label}}
+</EuiComboBox>
 ```
 
 ```javascript component

@@ -5,17 +5,18 @@ order: 1
 # Demo
 
 ```hbs template
-	<EuiComboBox
-		@onChange={{this.onChange}}
-		@options={{this.remainingOptions}}
-		@selectedOptions={{this.selected}}
-		@searchEnabled={{true}}
-		@closeOnSelect={{false}}
-    @searchField="label"
-    @placeholder="Select options"
-	as |option item|>
-		{{option.label}}
-	</EuiComboBox>
+<EuiComboBox
+  @onChange={{this.onChange}}
+  @options={{this.remainingOptions}}
+  @selectedOptions={{this.selected}}
+  @searchEnabled={{true}}
+  @closeOnSelect={{false}}
+  @searchField='label'
+  @placeholder='Select options'
+  as |option item|
+>
+  {{option.label}}
+</EuiComboBox>
 ```
 
 ```javascript component

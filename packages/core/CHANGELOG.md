@@ -3,7 +3,13 @@
 ### Master
 
 
-### 0.7.5
+### 0.7.7
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Remove unused modifier function from `<EuiComboBox>` trigger component
+
+### 0.7.6
 
 🐛 Bug / Fixes
 `@ember-eui/core`

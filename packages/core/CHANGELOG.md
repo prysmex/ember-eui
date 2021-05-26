@@ -5,6 +5,12 @@
 
 ### 0.7.7
 
+🚀 Enhancements
+`@ember-eui/core`
+- Add `@target` to `<EuiButton />`
+
+### 0.7.7
+
 🐛 Bug / Fixes
 `@ember-eui/core`
 - Remove unused modifier function from `<EuiComboBox>` trigger component

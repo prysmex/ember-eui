@@ -59,7 +59,6 @@
     "chroma-js": "^2.1.0",
     "ember-auto-import": "^1.6.0",
     "ember-cached-decorator-polyfill": "^0.1.1",
-    "ember-cli-babel": "^7.13.0",
     "ember-cli-htmlbars": "^5.3.2",
     "ember-cli-typescript": "^4.1.0",
     "ember-composable-helpers": "^4.4.1",
@@ -79,6 +78,7 @@
     "ember-truth-helpers": "^2.1.0",
     "lodash-es": "^4.17.21",
     "resolve": "^1.13.1",
+    "ember-cli-babel": "^7.21.0",
     "tabbable": "^5.1.5"
   },
   "devDependencies": {

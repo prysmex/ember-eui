@@ -3,6 +3,12 @@
 ### Master
 
 
+### 0.7.10
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Bump `ember-cli-babel` 
+
 ### 0.7.9
 
 🐛 Bug / Fixes

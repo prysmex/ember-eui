@@ -3,6 +3,12 @@
 ### Master
 
 
+### 0.7.9
+
+🐛 Bug / Fixes
+`@ember-eui/*`
+- Move `ember-cli-resolve-asset` from dependencies to devDependencies.
+
 ### 0.7.8
 
 🚀 Enhancements

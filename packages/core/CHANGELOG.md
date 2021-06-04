@@ -3,6 +3,13 @@
 ### Master
 
 
+### 0.7.11
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Use `ember-set-helper` for `<EuiModal />`
+- Bump `ember-power-select`
+
 ### 0.7.10
 
 🐛 Bug / Fixes

@@ -71,7 +71,7 @@
     "ember-math-helpers": "^2.15.0",
     "ember-modifier": "^2.1.1",
     "ember-named-blocks-polyfill": "^0.2.3",
-    "ember-power-select": "^4.1.4",
+    "ember-power-select": "^4.1.5",
     "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^2.0.0",
     "ember-style-modifier": "^0.6.0",

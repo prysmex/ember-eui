@@ -42,9 +42,6 @@ order: 1
   <:valueAppend>
     🚀
   </:valueAppend>
-  <:max as |maxVal|>
-    The max value is: {{maxVal}}
-  </:max>
 </EuiRange>
 <EuiSpacer @size="xl" />
 ```

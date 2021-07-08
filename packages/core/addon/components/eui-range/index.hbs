@@ -1,8 +1,17 @@
 {{#let
   (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
+  (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
+  (and (not (arg-or-default @isFakeMaxBlock false)) (has-block "max"))
+  (and (not (arg-or-default @isFakeMinBlock false)) (has-block "min"))
+  (and (not (arg-or-default @isFakeValueBlock false)) (has-block "value"))
   (and
-    (not (arg-or-default @isFakeAppendBlock false)) (has-block "append")
-  ) as |hasPrepend hasAppend|
+    (not (arg-or-default @isFakeValueAppendBlock false))
+    (has-block "valueAppend")
+  )
+  (and
+    (not (arg-or-default @isFakeValuePrependBlock false))
+    (has-block "valuePrepend")
+  ) as |hasPrepend hasAppend hasMaxBlock hasMinBlock hasValueBlock hasValueAppendBlock hasValuePrependBlock|
 }}
   {{#if this.showInputOnly}}
     <EuiInputPopover
@@ -58,7 +67,7 @@
         >
           {{#if this.showLabels}}
             <EuiRangeLabel @side="min" @disabled={{@disabled}}>
-              {{#if (has-block "min")}}
+              {{#if hasMinBlock}}
                 {{yield this.min to="min"}}
               {{else}}
                 {{this.min}}
@@ -131,23 +140,32 @@
                 @showTicks={{this.showTicks}}
               >
                 <:valuePrepend>
-                  {{@valuePrepend}}
-                  {{yield to="valuePrepend"}}
+                  {{#if hasValuePrependBlock}}
+                    {{yield to="valuePrepend"}}
+                  {{else}}
+                    {{@valuePrepend}}
+                  {{/if}}
                 </:valuePrepend>
                 <:value>
-                  {{@value}}
-                  {{yield to="value"}}
+                  {{#if hasValueBlock}}
+                    {{yield to="value"}}
+                  {{else}}
+                    {{@value}}
+                  {{/if}}
                 </:value>
                 <:valueAppend>
-                  {{@valueAppend}}
-                  {{yield to="valueAppend"}}
+                  {{#if hasValueAppendBlock}}
+                    {{yield to="valueAppend"}}
+                  {{else}}
+                    {{@valueAppend}}
+                  {{/if}}
                 </:valueAppend>
               </EuiRangeTooltip>
             {{/if}}
           </EuiRangeTrack>
           {{#if this.showLabels}}
             <EuiRangeLabel @side="max" @disabled={{@disabled}}>
-              {{#if (has-block "max")}}
+              {{#if hasMaxBlock}}
                 {{yield this.max to="max"}}
               {{else}}
                 {{this.max}}
@@ -199,7 +217,7 @@
     >
       {{#if this.showLabels}}
         <EuiRangeLabel @side="min" @disabled={{@disabled}}>
-          {{#if (has-block "min")}}
+          {{#if hasMinBlock}}
             {{yield this.min to="min"}}
           {{else}}
             {{this.min}}
@@ -268,26 +286,32 @@
             @showTicks={{this.showTicks}}
           >
             <:valuePrepend>
-              {{@valuePrepend}}
-              {{yield to="valuePrepend"}}
+              {{#if hasValuePrependBlock}}
+                {{yield to="valuePrepend"}}
+              {{else}}
+                {{@valuePrepend}}
+              {{/if}}
             </:valuePrepend>
             <:value>
-              {{#if (has-block "value")}}
+              {{#if hasValueBlock}}
                 {{yield to="value"}}
               {{else}}
                 {{@value}}
               {{/if}}
             </:value>
             <:valueAppend>
-              {{@valueAppend}}
-              {{yield to="valueAppend"}}
+              {{#if hasValueAppendBlock}}
+                {{yield to="valueAppend"}}
+              {{else}}
+                {{@valueAppend}}
+              {{/if}}
             </:valueAppend>
           </EuiRangeTooltip>
         {{/if}}
       </EuiRangeTrack>
       {{#if this.showLabels}}
         <EuiRangeLabel @side="max" @disabled={{@disabled}}>
-          {{#if (has-block "max")}}
+          {{#if hasMaxBlock}}
             {{yield this.max to="max"}}
           {{else}}
             {{this.max}}

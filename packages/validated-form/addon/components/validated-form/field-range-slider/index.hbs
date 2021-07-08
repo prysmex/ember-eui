@@ -47,6 +47,11 @@
       @autoSize={{@autoSize}}
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
+      @isFakeMinBlock={{not (has-block "min")}}
+      @isFakeMaxBlock={{not (has-block "max")}}
+      @isFakeValueBlock={{not (has-block "value")}}
+      @isFakeValuePrependBlock={{not (has-block "valuePrepend")}}
+      @isFakeValueAppendBlock={{not (has-block "valueAppend")}}
       aria-label={{@ariaLabel}}
       autofocus={{@autofocus}}
       ...attributes
@@ -55,6 +60,9 @@
       <:prepend as |classes|>
         {{yield classes to="prepend"}}
       </:prepend>
+      <:min>
+        {{yield to="min"}}
+      </:min>
       <:valuePrepend>
         {{yield to="valuePrepend"}}
       </:valuePrepend>
@@ -64,6 +72,9 @@
       <:valueAppend>
         {{yield to="valueAppend"}}
       </:valueAppend>
+      <:max>
+        {{yield to="max"}}
+      </:max>
       <:append as |classes|>
         {{yield classes to="append"}}
       </:append>

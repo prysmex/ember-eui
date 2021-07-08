@@ -47,6 +47,8 @@
       @autoSize={{@autoSize}}
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
+      @isFakeMinBlock={{not (has-block "min")}}
+      @isFakeMaxBlock={{not (has-block "max")}}
       autofocus={{@autofocus}}
       ...attributes
       {{on "blur" (fn this.setIsTouched true)}}
@@ -54,6 +56,12 @@
       <:prepend as |classes|>
         {{yield classes to="prepend"}}
       </:prepend>
+      <:min>
+        {{yield to="min"}}
+      </:min>
+      <:max>
+        {{yield to="max"}}
+      </:max>
       <:append as |classes|>
         {{yield classes to="append"}}
       </:append>

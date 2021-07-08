@@ -3,6 +3,13 @@
 ### Master
 
 
+### 0.7.13
+
+🚀 Enhancements
+`@ember-eui/core`
+- Add min, max, prependValue, value, appendValue to <EuiRange/>, <EuiDualRange /> for usage in
+ Validated and Changeset Forms addons
+
 ### 0.7.12
 
 🚀 Enhancements

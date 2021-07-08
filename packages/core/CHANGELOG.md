@@ -3,6 +3,12 @@
 ### Master
 
 
+### 0.7.12
+
+🚀 Enhancements
+`@ember-eui/core`
+- Allow to custormize labels and values for `<EuiRange />`
+
 ### 0.7.11
 
 🐛 Bug / Fixes

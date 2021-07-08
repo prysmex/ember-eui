@@ -32,8 +32,14 @@
           @isFakePrependBlock={{hasPrepend}}
           @isFakeAppendBlock={{hasAppend}}
           ...attributes
-          {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
-          {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
+          {{on
+            "focus"
+            (if this.canShowDropdown this.onInputFocus (optional @onFocus))
+          }}
+          {{on
+            "blur"
+            (if this.canShowDropdown this.onInputBlur (optional @onBlur))
+          }}
           {{on "input" this.handleOnChange}}
         >
           <:prepend as |classes|>
@@ -45,10 +51,18 @@
         </EuiRangeInput>
       </:input>
       <:content>
-        <EuiRangeWrapper class="euiRange" @fullWidth={{@fullWidth}} @compressed={{@compressed}}>
+        <EuiRangeWrapper
+          class="euiRange"
+          @fullWidth={{@fullWidth}}
+          @compressed={{@compressed}}
+        >
           {{#if this.showLabels}}
             <EuiRangeLabel @side="min" @disabled={{@disabled}}>
-              {{this.min}}
+              {{#if (has-block "min")}}
+                {{yield this.min to="min"}}
+              {{else}}
+                {{this.min}}
+              {{/if}}
             </EuiRangeLabel>
           {{/if}}
           <EuiRangeTrack
@@ -91,10 +105,20 @@
               ...attributes
               {{on
                 "mousedown"
-                (if this.showInputOnly (fn this.setPreventPopoverClose true) (optional))
+                (if
+                  this.showInputOnly
+                  (fn this.setPreventPopoverClose true)
+                  (optional)
+                )
               }}
-              {{on "focus" (if (eq this.showInput true) (optional) (optional @onFocus))}}
-              {{on "blur" (if this.showInputOnly this.onInputBlur (optional @onBlur))}}
+              {{on
+                "focus"
+                (if (eq this.showInput true) (optional) (optional @onFocus))
+              }}
+              {{on
+                "blur"
+                (if this.showInputOnly this.onInputBlur (optional @onBlur))
+              }}
               {{on "input" this.handleOnChange}}
             />
             {{#if this.showRangeTooltip}}
@@ -123,7 +147,11 @@
           </EuiRangeTrack>
           {{#if this.showLabels}}
             <EuiRangeLabel @side="max" @disabled={{@disabled}}>
-              {{this.max}}
+              {{#if (has-block "max")}}
+                {{yield this.max to="max"}}
+              {{else}}
+                {{this.max}}
+              {{/if}}
             </EuiRangeLabel>
           {{/if}}
           {{#if (and this.showInput (not this.showInputOnly))}}
@@ -146,8 +174,16 @@
                 @isInvalid={{@isInvalid}}
                 @autoSize={{not this.showInputOnly}}
                 ...attributes
-                {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
-                {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
+                {{on
+                  "focus"
+                  (if
+                    this.canShowDropdown this.onInputFocus (optional @onFocus)
+                  )
+                }}
+                {{on
+                  "blur"
+                  (if this.canShowDropdown this.onInputBlur (optional @onBlur))
+                }}
                 {{on "input" this.handleOnChange}}
               />
             {{/if}}
@@ -156,10 +192,18 @@
       </:content>
     </EuiInputPopover>
   {{else}}
-    <EuiRangeWrapper class="euiRange" @fullWidth={{@fullWidth}} @compressed={{@compressed}}>
+    <EuiRangeWrapper
+      class="euiRange"
+      @fullWidth={{@fullWidth}}
+      @compressed={{@compressed}}
+    >
       {{#if this.showLabels}}
         <EuiRangeLabel @side="min" @disabled={{@disabled}}>
-          {{this.min}}
+          {{#if (has-block "min")}}
+            {{yield this.min to="min"}}
+          {{else}}
+            {{this.min}}
+          {{/if}}
         </EuiRangeLabel>
       {{/if}}
       <EuiRangeTrack
@@ -200,9 +244,18 @@
           @showTicks={{this.showTicks}}
           @showRange={{this.showRange}}
           ...attributes
-          {{on "mousedown" (if this.showInputOnly (fn this.setPreventPopover true) (optional))}}
-          {{on "focus" (if (eq this.showInput true) (optional) (optional @onFocus))}}
-          {{on "blur" (if this.showInputOnly this.onInputBlur (optional @onBlur))}}
+          {{on
+            "mousedown"
+            (if this.showInputOnly (fn this.setPreventPopover true) (optional))
+          }}
+          {{on
+            "focus"
+            (if (eq this.showInput true) (optional) (optional @onFocus))
+          }}
+          {{on
+            "blur"
+            (if this.showInputOnly this.onInputBlur (optional @onBlur))
+          }}
           {{on "input" this.handleOnChange}}
         />
         {{#if this.showRangeTooltip}}
@@ -219,8 +272,11 @@
               {{yield to="valuePrepend"}}
             </:valuePrepend>
             <:value>
-              {{@value}}
-              {{yield to="value"}}
+              {{#if (has-block "value")}}
+                {{yield to="value"}}
+              {{else}}
+                {{@value}}
+              {{/if}}
             </:value>
             <:valueAppend>
               {{@valueAppend}}
@@ -231,7 +287,11 @@
       </EuiRangeTrack>
       {{#if this.showLabels}}
         <EuiRangeLabel @side="max" @disabled={{@disabled}}>
-          {{this.max}}
+          {{#if (has-block "max")}}
+            {{yield this.max to="max"}}
+          {{else}}
+            {{this.max}}
+          {{/if}}
         </EuiRangeLabel>
       {{/if}}
       {{#if (and this.showInput (not this.showInputOnly))}}
@@ -256,8 +316,14 @@
             @isFakePrependBlock={{hasPrepend}}
             @isFakeAppendBlock={{hasAppend}}
             ...attributes
-            {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
-            {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
+            {{on
+              "focus"
+              (if this.canShowDropdown this.onInputFocus (optional @onFocus))
+            }}
+            {{on
+              "blur"
+              (if this.canShowDropdown this.onInputBlur (optional @onBlur))
+            }}
             {{on "input" this.handleOnChange}}
           />
         {{/if}}

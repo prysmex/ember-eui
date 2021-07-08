@@ -36,9 +36,15 @@ order: 1
   @valuePrepend="100 -"
   aria-label="An example of EuiRange with valuePrepend prop"
 >
+  <:min as |minVal|>
+    The min value is: {{minVal}}
+  </:min>
   <:valueAppend>
     🚀
   </:valueAppend>
+  <:max as |maxVal|>
+    The max value is: {{maxVal}}
+  </:max>
 </EuiRange>
 <EuiSpacer @size="xl" />
 ```

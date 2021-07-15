@@ -3,6 +3,12 @@
 ### Master
 
 
+### 0.7.14
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Guard to-initials helper for name and initials undefined
+
 ### 0.7.13
 
 🚀 Enhancements

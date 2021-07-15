@@ -8,6 +8,7 @@
 🐛 Bug / Fixes
 `@ember-eui/core`
 - Guard to-initials helper for name and initials undefined
+- Enable `<EuiRangeTrack />` assertions
 
 ### 0.7.13
 

@@ -39,16 +39,16 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
   validateValueIsInStep(value: number): number {
     const { min, max, step } = this.args;
     if (value < min) {
-      assert(`The value of ${value} is lower than the min value of ${min}.`, true);
+      assert(`The value of ${value} is lower than the min value of ${min}.`, false);
     }
     if (value > max) {
-      assert(`The value of ${value} is higher than the max value of ${max}.`, true);
+      assert(`The value of ${value} is higher than the max value of ${max}.`, false);
     }
     // Error out if the value doesn't line up with the sequence of steps
     if (!isEvenlyDivisibleBy(value - min, step !== undefined ? step : 1)) {
       assert(
         `The value of ${value} is not included in the possible sequence provided by the step of ${step}.`,
-        true
+        false
       );
     }
     // Return the value if nothing fails

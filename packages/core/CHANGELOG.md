@@ -3,6 +3,10 @@
 ### Master
 
 
+### 0.7.15
+🐛 Bug / Fixes
+`@ember-eui/validated-form`
+  - Adds ember-cached-decorator-polyfill
 ### 0.7.14
 
 🐛 Bug / Fixes

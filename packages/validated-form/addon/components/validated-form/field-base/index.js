@@ -1,10 +1,9 @@
 import Component from '@glimmer/component';
-import { cached } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import {
   buildValidationMessages,
   notifyValidityChange
 } from '../../../utils/build-validation-messages';
-import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class ValidatedFormFieldBase extends Component {

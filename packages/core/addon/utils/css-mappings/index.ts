@@ -36,6 +36,7 @@ import EuiStepNumber from './eui-step-number';
 import EuiProgress from './eui-progress';
 import EuiProgressData from './eui-progress-data';
 import EuiFormRow from './eui-form-row';
+import EuiDescribedFormGroup from './eui-described-form-group';
 import EuiListGroup from './eui-list-group';
 import EuiListGroupItem from './eui-list-group-item';
 import EuiTextArea from './eui-text-area';
@@ -91,6 +92,7 @@ const mapping: Mapping = {
   EuiProgress,
   EuiProgressData,
   EuiFormRow,
+  EuiDescribedFormGroup,
   EuiListGroup,
   EuiListGroupItem,
   EuiTextArea,

@@ -3,6 +3,13 @@
 ### Master
 
 
+### 0.7.17
+🐛 Bug / Fixes
+`@ember-eui/validated-form`
+  - Adds @placeholder and @dropdownClass
+`@ember-eui/changeset-form`
+  - Adds @placeholder and @dropdownClass
+
 ### 0.7.15
 🐛 Bug / Fixes
 `@ember-eui/validated-form`

@@ -1,6 +1,7 @@
 {{#let
-  (if (or @href @onClick) (unique-id))
-  (if @selectable (unique-id)) as |titleId selectableId|
+  (if @titleId @titleId (if (or @href @onClick) (unique-id)))
+  (if @selectable (unique-id))
+  as |titleId selectableId|
 }}
   <div
     class={{class-names
@@ -11,18 +12,26 @@
       (if hasBlock "euiCard--hasChildren")
       (if @icon "euiCard--hasIcon" (if has-block "icon" "euiCard--hasIcon"))
       (if @betaBadgeLabel "euiCard--hasBetaBadge")
-      (if (or @onClick @href (and @selectable (not @selectable.isDisabled))) "euiCard--isClickable")
+      (if
+        (or titleId (and @selectable (not @selectable.isDisabled)))
+        "euiCard--isClickable"
+      )
       (if @selectable "euiCard--isSelectable")
       (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
       componentName="EuiCard"
       paddingSize=(arg-or-default @paddingSize "m")
       textAlign=(arg-or-default @textAlign "center")
-      color=(if @selectable.isSelected (arg-or-default @selectable.color "success"))
+      color=(if
+        @selectable.isSelected (arg-or-default @selectable.color "success")
+      )
     }}
     ...attributes
     {{on-event-simulate-event
       "click"
-      target=(or (if titleId (concat "#" titleId)) (if selectableId (concat "#" selectableId)))
+      target=(or
+        (if titleId (concat "#" titleId))
+        (if selectableId (concat "#" selectableId))
+      )
       event=(create-event (hash eventType="Event" trigger="click"))
     }}
   >
@@ -37,7 +46,11 @@
             </div>
           {{/if}}
           {{#if @icon}}
-            <EuiIcon class="euiCard__icon" @type={{@icon}} @size={{@iconSize}} />
+            <EuiIcon
+              class="euiCard__icon"
+              @type={{@icon}}
+              @size={{@iconSize}}
+            />
           {{/if}}
         {{/if}}
       {{/if}}
@@ -48,7 +61,9 @@
         @size={{arg-or-default @titleSize "s"}}
         @tag={{arg-or-default @titleElement "span"}}
       >
-        {{#if (and (not @isDisabled) @href)}}
+        {{#if (has-block "title")}}
+          {{yield titleId to="title"}}
+        {{else if (and (not @isDisabled) @href)}}
           <a
             class="euiCard__titleAnchor"
             target={{@target}}
@@ -69,11 +84,7 @@
             {{@title}}
           </button>
         {{else}}
-          {{#if (has-block "title")}}
-            {{yield to="title"}}
-          {{else}}
-            {{@title}}
-          {{/if}}
+          {{@title}}
         {{/if}}
       </EuiTitle>
       {{#if (or @description (has-block "description"))}}

@@ -3,6 +3,11 @@
 ### Master
 
 
+### 0.8.0
+🚀 Enhancements
+`@ember-eui/core`
+- Ease of usage for title block in <EuiCard />
+
 ### 0.7.17
 🐛 Bug / Fixes
 `@ember-eui/validated-form`

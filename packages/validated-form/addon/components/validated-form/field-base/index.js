@@ -1,10 +1,11 @@
 import Component from '@glimmer/component';
-import { cached, tracked } from '@glimmer/tracking';
+import { tracked } from '@glimmer/tracking';
 import {
   buildValidationMessages,
   notifyValidityChange
 } from '../../../utils/build-validation-messages';
 import { action } from '@ember/object';
+import { later } from '@ember/runloop';
 
 export default class ValidatedFormFieldBase extends Component {
   validationProperty = 'args.value';
@@ -13,6 +14,8 @@ export default class ValidatedFormFieldBase extends Component {
   lastIsValid;
   lastIsTouched;
 
+  @tracked _validationErrorMessages = null;
+
   @tracked isTouched = false;
 
   get validations() {
@@ -20,7 +23,7 @@ export default class ValidatedFormFieldBase extends Component {
   }
 
   get hasErrorMessages() {
-    return this.validationErrorMessages?.length;
+    return this._validationErrorMessages?.length;
   }
 
   get isValid() {
@@ -59,13 +62,20 @@ export default class ValidatedFormFieldBase extends Component {
     return this.args.options || [];
   }
 
-  @cached
+  setValidationMessages() {
+    this._validationErrorMessages = buildValidationMessages.call(
+      this,
+      this.validationProperty
+    );
+  }
+
   get validationErrorMessages() {
-    return buildValidationMessages.call(this, this.validationProperty);
+    return this._validationErrorMessages;
   }
 
   constructor() {
     super(...arguments);
+    this.setValidationMessages();
     this.args.register?.(this);
   }
 
@@ -76,7 +86,10 @@ export default class ValidatedFormFieldBase extends Component {
 
   @action
   didUpdateValue() {
-    this.notifyValidityChange();
+    later(() => {
+      this.setValidationMessages();
+      this.notifyValidityChange();
+    });
   }
 
   @action

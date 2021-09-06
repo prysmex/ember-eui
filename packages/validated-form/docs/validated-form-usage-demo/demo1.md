@@ -11,54 +11,59 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
 <ValidatedForm as |Form|>
   <Form.FieldText
     @value={{this.data.fieldText}}
-    @label="Email"
-    @onChange={{set this.data "fieldText"}}
-    @validations={{hash  presence=(hash presence=true) format=(hash type="email")}}
+    @label='Email'
+    @onChange={{set this.data 'fieldText'}}
+    @validations={{hash
+      presence=(hash presence=true)
+      format=(hash type='email')
+    }}
   />
   <Form.FieldSelect
-    @onChange={{set this.data "fieldSelect"}}
+    @onChange={{set this.data 'fieldSelect'}}
     @value={{this.data.fieldSelect}}
     @validations={{hash presence=(hash presence=true)}}
     @options={{array
-      (hash value="mx" text="Mexico")
-      (hash value="pt" text="Portugal")
-      (hash value="us" text="United States")
+      (hash value='mx' text='Mexico')
+      (hash value='pt' text='Portugal')
+      (hash value='us' text='United States')
     }}
-    @label="Country"
+    @label='Country'
   />
   <Form.FieldComboBox
-    @onChange={{set this.data "fieldComboBoxSingleSelection"}}
+    @onChange={{set this.data 'fieldComboBoxSingleSelection'}}
     @singleSelection={{true}}
     @selectedOptions={{this.data.fieldComboBoxSingleSelection}}
     @validations={{hash presence=(hash presence=true)}}
     @required={{true}}
     @options={{array
-      (hash value="mx" text="Mexico")
-      (hash value="pt" text="Portugal")
-      (hash value="us" text="United States")
+      (hash value='mx' text='Mexico')
+      (hash value='pt' text='Portugal')
+      (hash value='us' text='United States')
     }}
-    @label="fieldComboBoxSingleSelection" as |option|
+    @label='fieldComboBoxSingleSelection'
+    as |option|
   >
     {{option.text}}
   </Form.FieldComboBox>
   <Form.FieldComboBox
-    @onChange={{set this.data "fieldComboBoxMultiple"}}
+    @onChange={{set this.data 'fieldComboBoxMultiple'}}
     @selectedOptions={{this.data.fieldComboBoxMultiple}}
     @validations={{hash presence=(hash presence=true) length=(hash min=2)}}
     @hasNoInitialSelection={{true}}
     @options={{array
-      (hash value="mx" text="Mexico")
-      (hash value="pt" text="Portugal")
-      (hash value="us" text="United States")
+      (hash value='mx' text='Mexico')
+      (hash value='pt' text='Portugal')
+      (hash value='us' text='United States')
     }}
-    @label="fieldComboBoxMultiple" as |option|
+    @label='fieldComboBoxMultiple'
+    as |option|
   >
     {{option.text}}
   </Form.FieldComboBox>
   <Form.FieldRangeSlider
-    @onChange={{set this.data "rangeSlider"}}
+    @onChange={{set this.data 'rangeSlider'}}
     @value={{this.data.rangeSlider}}
-    @label="Range slider"
+    @label='Range slider'
     @showLabels={{true}}
     @showValue={{true}}
     @min={{0}}
@@ -70,53 +75,53 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @required={{true}}
   />
   <Form.FieldCheckboxGroup
-    @onChange={{set this.data "fieldCheckbox"}}
+    @onChange={{set this.data 'fieldCheckbox'}}
     @validations={{hash presence=(hash presence=true) length=(hash min=1)}}
     @value={{this.data.fieldCheckbox}}
     @options={{array
-      (hash id="checkbox-1" label="Checkbox 1")
-      (hash id="checkbox-2" label="Checkbox 2")
-      (hash id="checkbox-3" label="Checkbox 3")
+      (hash id='checkbox-1' label='Checkbox 1')
+      (hash id='checkbox-2' label='Checkbox 2')
+      (hash id='checkbox-3' label='Checkbox 3')
     }}
-    @label="Checkbox Group"
+    @label='Checkbox Group'
   />
   <Form.FieldRadioGroup
-    @onChange={{set this.data "fieldRadioGroup"}}
+    @onChange={{set this.data 'fieldRadioGroup'}}
     @validations={{hash presence=(hash presence=true)}}
     @value={{this.data.fieldRadioGroup}}
     @options={{array
-      (hash id="radio-1" label="Radio 1")
-      (hash id="radio-2" label="Radio 2")
-      (hash id="radio-3" label="Radio 3")
+      (hash id='radio-1' label='Radio 1')
+      (hash id='radio-2' label='Radio 2')
+      (hash id='radio-3' label='Radio 3')
     }}
-    @label="Radio Group"
+    @label='Radio Group'
   />
   <Form.FieldNumber
     @value={{this.data.fieldNumber}}
-    @onChange={{set this.data "fieldNumber"}}
+    @onChange={{set this.data 'fieldNumber'}}
     @validations={{hash number=(hash lt=10 allowString=true)}}
-    @label="Less than 10"
+    @label='Less than 10'
     @errors={{this.data.errors}}
   />
   <Form.FieldPassword
     @value={{this.data.fieldPassword}}
-    @onChange={{set this.data "fieldPassword"}}
+    @onChange={{set this.data 'fieldPassword'}}
     @validations={{hash presence=(hash presence=true)}}
-    @label="Field password"
+    @label='Field password'
   />
   <Form.FieldTextArea
     @value={{this.data.fieldTextArea}}
-    @onChange={{set this.data "fieldTextArea"}}
+    @onChange={{set this.data 'fieldTextArea'}}
     @validations={{hash length=(hash min=10) presence=(hash presence=true)}}
-    @label="Field Text minlength 10"
+    @label='Field Text minlength 10'
   />
   <Form.FieldSwitch
     @validations={{hash presence=(hash presence=true)}}
     @value={{this.data.fieldSwitch}}
-    @label="Field must be true"
-    @onChange={{set this.data "fieldSwitch"}}
+    @label='Field must be true'
+    @onChange={{set this.data 'fieldSwitch'}}
   />
-  <EuiButton @type="submit">
+  <EuiButton @type='submit'>
     Submit
   </EuiButton>
 </ValidatedForm>

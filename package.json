@@ -11,8 +11,7 @@
   "standard-version": {
     "skip": {
       "bump": true,
-      "tag": true,
-      "commit": true
+      "tag": true
     }
   },
   "devDependencies": {

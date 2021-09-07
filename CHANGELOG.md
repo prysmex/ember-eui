@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [](https://github.com/prysmex/ember-eui/compare/v1.0.0...v) (2021-09-07)
+
+
+### Bug Fixes
+
+* do not avoid arrays ([56cf111](https://github.com/prysmex/ember-eui/commit/56cf11138a2b116cd6ec39f687dfb46d6307975e))
+
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
 ## [](https://github.com/prysmex/ember-eui/compare/v0.8.0...v) (2021-09-06)
 
 

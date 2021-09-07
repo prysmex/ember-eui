@@ -1,6 +1,5 @@
 import Base, { BaseArgs } from '../base';
 import { action } from '@ember/object';
-import { isArray } from '@ember/array';
 import { assert } from '@ember/debug';
 
 interface EuiChangesetFormFieldComboBoxArgs extends BaseArgs {
@@ -24,11 +23,7 @@ export default class EuiChangesetFormFieldComboBox extends Base<EuiChangesetForm
 
   @action
   handleChange(options: any[]) {
-    let value: any[] | string = options;
-    if (this.args.singleSelection) {
-      value = isArray(options) ? options[0] : null;
-    }
-    this.args.onChange(value);
+    this.args.onChange(options);
     this.validate();
   }
 }

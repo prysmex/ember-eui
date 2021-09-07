@@ -3,6 +3,18 @@
 ### Master
 
 
+### 1.0.1
+🐛 Bug / Fixes
+`@ember-eui/validated-form`
+- do not bubble single values for singleSelection, embrace arrays
+`@ember-eui/changeset-form`
+- do not bubble single values for singleSelection, embrace arrays
+
+### 1.0.0
+💥 Breaking
+`@ember-eui/core`
+- drop to-array casting for eui-combo-box to match elastic ui API
+
 ### 0.8.0
 🚀 Enhancements
 `@ember-eui/core`

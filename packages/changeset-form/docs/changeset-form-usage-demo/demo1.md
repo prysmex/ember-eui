@@ -62,7 +62,7 @@ and how to set them for complex or weird use cases, but we keep setting errors f
       @options={{array "🥦" "🥬" "🍅" "🥑"}}
       @helpText="100% natural"
       @onChange={{changeset-set changesetObj "favVeggie"}}
-      @selectedOptions={{changeset-get changesetObj "favVeggie"}}
+      @selectedOptions={{to-array changeset-get changesetObj "favVeggie"}}
       @singleSelection={{hash asPlainText=true}}
     as |option|>
       {{option}}

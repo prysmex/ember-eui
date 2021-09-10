@@ -3,6 +3,11 @@
 ### Master
 
 
+### 1.0.2
+🐛 Bug / Fixes
+`@ember-eui/core`
+- guard @onClose for pill close button on ComboBox
+
 ### 1.0.1
 🐛 Bug / Fixes
 `@ember-eui/validated-form`

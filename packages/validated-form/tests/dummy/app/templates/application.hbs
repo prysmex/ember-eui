@@ -3,7 +3,10 @@
     @value={{this.fieldText}}
     @label="Field Text maxlength 1"
     @onChange={{set this "fieldText"}}
-    @validations={{hash presence=(hash presence=true) format=(hash type="email")}}
+    @validations={{hash
+      presence=(hash presence=true)
+      format=(hash type="email")
+    }}
   />
   <Form.FieldSelect
     @onChange={{set this "fieldSelect"}}
@@ -28,7 +31,8 @@
       (hash value="pt" text="Portugal")
       (hash value="us" text="United States")
     }}
-    @label="fieldComboBoxSingleSelection" as |option|
+    @label="fieldComboBoxSingleSelection"
+    as |option|
   >
     {{option.text}}
   </Form.FieldComboBox>
@@ -42,7 +46,8 @@
       (hash value="pt" text="Portugal")
       (hash value="us" text="United States")
     }}
-    @label="fieldComboBoxMultiple" as |option|
+    @label="fieldComboBoxMultiple"
+    as |option|
   >
     {{option.text}}
   </Form.FieldComboBox>
@@ -89,6 +94,7 @@
     @label="Less than 10"
     @errors={{this.errors}}
   />
+  {{this.fieldNumber}}
   <Form.FieldPassword
     @validations={{hash presence=(hash presence=true)}}
     @value={{this.fieldPassword}}

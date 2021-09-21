@@ -62,6 +62,17 @@ export default class ValidatedFormFieldBase extends Component {
     return this.args.options || [];
   }
 
+  get validationErrorMessages() {
+    return this._validationErrorMessages;
+  }
+
+  constructor() {
+    super(...arguments);
+    this.args.register?.(this);
+  }
+
+  //Should be executed by the child on start
+  @action
   setValidationMessages() {
     this._validationErrorMessages = buildValidationMessages.call(
       this,
@@ -69,27 +80,18 @@ export default class ValidatedFormFieldBase extends Component {
     );
   }
 
-  get validationErrorMessages() {
-    return this._validationErrorMessages;
-  }
-
-  constructor() {
-    super(...arguments);
-    this.setValidationMessages();
-    this.args.register?.(this);
-  }
-
-  @action
-  notifyValidityChange() {
-    notifyValidityChange.call(this);
-  }
-
+  //Should be executed by the child on value update
   @action
   didUpdateValue() {
     later(() => {
       this.setValidationMessages();
       this.notifyValidityChange();
     });
+  }
+
+  @action
+  notifyValidityChange() {
+    notifyValidityChange.call(this);
   }
 
   @action

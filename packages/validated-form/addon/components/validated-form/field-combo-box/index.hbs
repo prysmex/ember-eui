@@ -13,6 +13,7 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
+    {{did-insert this.setValidationMessages}}
     {{did-update this.didUpdateValue @selectedOptions}}
   >
     <EuiComboBox

@@ -5,7 +5,7 @@ import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
 export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldBase {
   get value() {
     let value = maybeUnwrapProxy(this.args.value);
-    return value?.toArray() || value;
+    return value?.toArray?.() || value;
   }
 
   get arrayToMap() {

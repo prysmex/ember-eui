@@ -3,6 +3,11 @@
 ### Master
 
 
+### 1.0.3
+🐛 Bug / Fixes
+`@ember-eui/validated-form`
+- fix initially building error messages
+
 ### 1.0.2
 🐛 Bug / Fixes
 `@ember-eui/core`

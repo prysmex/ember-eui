@@ -20,6 +20,7 @@
           @selectedTabId={{selectedTab.value}}
           @onClick={{pipe selectedTab.setState (fn onTabClick tab)}}
           @focusFn={{selectedTab.setState}}
+          @disabled={{tab.disabled}}
         >
           {{tab.name}}
         </EuiTab>

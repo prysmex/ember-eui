@@ -3,6 +3,11 @@
 ### Master
 
 
+### 1.0.4
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Pass @disable to `<EuiTab>`
+
 ### 1.0.3
 🐛 Bug / Fixes
 `@ember-eui/validated-form`

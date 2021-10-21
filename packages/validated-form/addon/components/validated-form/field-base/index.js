@@ -84,14 +84,16 @@ export default class ValidatedFormFieldBase extends Component {
   @action
   didUpdateValue() {
     later(() => {
-      this.setValidationMessages();
-      this.notifyValidityChange();
+      if (!this.isDestroyed && !this.isDestroying) {
+        this.setValidationMessages();
+        this.notifyValidityChange();
+      }
     });
   }
 
   @action
   notifyValidityChange() {
-    notifyValidityChange.call(this);
+    notifyValidityChange(this, this.args.onValidityChange);
   }
 
   @action

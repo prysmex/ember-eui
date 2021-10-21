@@ -72,23 +72,23 @@ export function buildValidationMessages(property) {
   return messages;
 }
 
-export function notifyValidityChange() {
-  const isValid = this.isValid;
-  const lastIsValid = this.lastIsValid;
-  const isTouched = this.isTouched;
-  const lastIsTouched = this.lastIsTouched;
-  const isInvalidAndTouched = this.isInvalidAndTouched;
+export function notifyValidityChange(ctx, onValidityChange) {
+  const isValid = ctx.isValid;
+  const lastIsValid = ctx.lastIsValid;
+  const isTouched = ctx.isTouched;
+  const lastIsTouched = ctx.lastIsTouched;
+  const isInvalidAndTouched = ctx.isInvalidAndTouched;
 
   if (lastIsValid !== isValid || lastIsTouched !== isTouched) {
-    this.args.onValidityChange?.({
-      child: this,
+    onValidityChange?.({
+      child: ctx,
       isValid,
       isTouched,
       isInvalidAndTouched
     });
 
-    set(this, 'lastIsValid', isValid);
-    set(this, 'lastIsTouched', isTouched);
+    set(ctx, 'lastIsValid', isValid);
+    set(ctx, 'lastIsTouched', isTouched);
   }
 }
 

@@ -3,6 +3,11 @@
 ### Master
 
 
+### 1.0.5
+🐛 Bug / Fixes
+`@ember-eui/validated-form`
+- fix isDestroying, isDestroyed for validated form
+
 ### 1.0.4
 🐛 Bug / Fixes
 `@ember-eui/core`

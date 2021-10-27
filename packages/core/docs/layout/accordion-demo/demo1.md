@@ -76,6 +76,32 @@ The accordion is
     My content
   </:content>
 </EuiAccordion>
+
+<h1>Nested accordions</h1>
+<EuiAccordion>
+  <:buttonContent>
+    Parent accordion
+  </:buttonContent>
+  <:content>
+    Parent content
+    <EuiAccordion>
+      <:buttonContent>
+        Child accordion
+      </:buttonContent>
+      <:content>
+        Child content
+        <EuiAccordion>
+          <:buttonContent>
+            Grandchild accordion
+          </:buttonContent>
+          <:content>
+            Grandchild content
+          </:content>
+        </EuiAccordion>
+      </:content>
+    </EuiAccordion>
+  </:content>
+</EuiAccordion>
 ```
 
 ```js component

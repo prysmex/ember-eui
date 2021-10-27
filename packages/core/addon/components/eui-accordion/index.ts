@@ -4,6 +4,7 @@ import { tracked } from '@glimmer/tracking';
 import { uniqueId } from '../../helpers/unique-id';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { paddingMapping } from '../../utils/css-mappings/eui-accordion';
+import { htmlSafe } from '@ember/template';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 
@@ -70,11 +71,15 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
   constructor(owner: unknown, args: AccordionArgs) {
     super(owner, args);
 
-    this._opened = this.args.forceState ? this.args.forceState === 'open' : this.args.initialIsOpen;
+    this._opened = this.args.forceState
+      ? this.args.forceState === 'open'
+      : this.args.initialIsOpen;
   }
 
   get isOpen(): boolean {
-    return this.args.forceState ? this.args.forceState === 'open' : this._opened;
+    return this.args.forceState
+      ? this.args.forceState === 'open'
+      : this._opened;
   }
 
   get hasIconButton(): boolean | undefined {
@@ -101,10 +106,15 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
     ].join(' ');
   }
 
+  get childContentStyle(): string | ReturnType<typeof htmlSafe> {
+    return this.isOpen ? '' : htmlSafe(`height: 0px;`);
+  }
+
   @action
   onToggle(): void {
     if (this.args.forceState) {
-      this.args.onToggle && this.args.onToggle(this.args.forceState === 'open' ? false : true);
+      this.args.onToggle &&
+        this.args.onToggle(this.args.forceState === 'open' ? false : true);
     } else {
       this._opened = !this._opened;
       this.args.onToggle && this.args.onToggle(this._opened);

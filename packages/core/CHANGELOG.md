@@ -6,7 +6,7 @@
 ### 1.0.6
 🐛 Bug / Fixes
 `@ember-eui/core`
-- fix nested accordions not hiding child content properly by @mtrunt
+- fix nested accordions not hiding child content properly by `@mtrunt`
 
 📝 Documentation
 - docs for described form

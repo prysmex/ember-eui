@@ -3,6 +3,12 @@
 ### Master
 
 
+### 1.2.0
+🚀 Enhancements
+`@ember-eui/core`
+- add fake input for html form validation to combobox
+
+
 ### 1.1.0
 🚀 Enhancements
 `@ember-eui/core`

@@ -3,7 +3,12 @@
 ### Master
 
 
-### 1.2.0
+### 1.2.2
+🐛 Bug / Fixes
+`@ember-eui/core`
+- add styling for fake input
+
+### 1.2.1
 🐛 Bug / Fixes
 `@ember-eui/core`
 - add tabindex to fake input for `<EuiComboBox />`

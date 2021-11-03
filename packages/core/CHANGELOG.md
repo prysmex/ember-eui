@@ -3,6 +3,14 @@
 ### Master
 
 
+### 1.0.7
+🚀 Enhancements
+`@ember-eui/validated-form`
+- add rowExtra for easier customization
+
+`@ember-eui/changeset-form`
+- add rowExtra for easier customization
+
 ### 1.0.6
 🐛 Bug / Fixes
 `@ember-eui/core`

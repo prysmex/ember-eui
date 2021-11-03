@@ -86,10 +86,14 @@
         {{/if}}
         <div
           class="euiComboBox__input"
-          style="font-size: 14px; display: inline-block;"
+          style="font-size: 14px; display: inline-block; position: relative;"
         >
           <input
+            style="opacity: 0px; width:0px; height:0px; position: absolute; top: 40%; border:solid 1px;"
+            class="fake-input-for-html-form-validity"
             {{validatable-control @isInvalid}}
+          />
+          <input
             class="ember-power-select-trigger-multiple-input euiComboBox__input"
             autocomplete="off"
             autocorrect="off"
@@ -101,7 +105,7 @@
             style={{this.triggerMultipleInputStyle}}
             disabled={{@select.disabled}}
             tabindex={{@tabindex}}
-            form="euiComboBox-input--fakeForm"
+            form="power-select-fake-form"
             {{on "focus" @onFocus}}
             {{on "blur" @onBlur}}
             {{on "input" this.handleInput}}

@@ -3,6 +3,14 @@
 ### Master
 
 
+### 1.1.0
+🚀 Enhancements
+`@ember-eui/core`
+- Pass down isInvalid to `<EuiComboBox>` `<EuiRangeField>`
+
+`@ember-eui/pikaday`
+- Pass down isInvalid to `<EuiPikaday>`
+
 ### 1.0.8
 🚀 Enhancements
 `@ember-eui/validated-form`

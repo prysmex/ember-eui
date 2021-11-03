@@ -1,6 +1,7 @@
 {{#let (arg-or-default @id (unique-id)) as |theId|}}
   <EuiFormRow
     class={{@rowClasses}}
+    @extra={{@rowExtra}}
     @labelType={{@labelType}}
     @display={{@display}}
     @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}

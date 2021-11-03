@@ -50,6 +50,10 @@ export default class ValidatedFormFieldBase extends Component {
     return this.args.customValidations || [];
   }
 
+  get rowExtra() {
+    return this.args.rowExtra || {};
+  }
+
   get label() {
     return this.args.label || '';
   }

@@ -8,6 +8,7 @@ export interface BaseArgs {
   changeset: BufferedChangeset;
   fieldName: string;
   errors?: string[];
+  rowExtra: unknown;
 }
 
 export interface ValidationError {
@@ -31,6 +32,10 @@ export default class ChangesetFormFieldsBase<
       '<EuiChangesetForm> fields must reeceive @fieldName',
       typeof this.args.fieldName !== 'undefined'
     );
+  }
+
+  get rowExtra() {
+    return this.args.rowExtra || {};
   }
 
   get value(): unknown {

@@ -4,6 +4,11 @@
 
 
 ### 1.2.0
+🐛 Bug / Fixes
+`@ember-eui/core`
+- add tabindex to fake input for `<EuiComboBox />`
+
+### 1.2.0
 🚀 Enhancements
 `@ember-eui/core`
 - add fake input for html form validation to combobox

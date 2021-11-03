@@ -3,6 +3,13 @@
 ### Master
 
 
+### 1.0.8
+🚀 Enhancements
+`@ember-eui/validated-form`
+- use this instead of args in template so host can customize for fields
+
+`@ember-eui/changeset-form`
+- use this instead of args in template so host can customize for fields
 ### 1.0.7
 🚀 Enhancements
 `@ember-eui/validated-form`

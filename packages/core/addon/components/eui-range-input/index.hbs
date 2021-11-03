@@ -11,12 +11,15 @@
   @controlOnly={{@controlOnly}}
   @isFakeAppendBlock={{@isFakeAppendBlock}}
   @isFakePrependBlock={{@isFakePrependBlock}}
+  @isInvalid={{@isInvalid}}
   @disable={{@disable}}
   ...attributes
   {{simple-style
     (inline-styles
       componentName="EuiRangeInput"
-      componentArgs=(hash autoSize=(arg-or-default @autoSize true) digitTolerance=@digitTolerance)
+      componentArgs=(hash
+        autoSize=(arg-or-default @autoSize true) digitTolerance=@digitTolerance
+      )
     )
   }}
 >

@@ -3,6 +3,11 @@
 ### Master
 
 
+### 1.3.0
+🚀 Enhancements
+`@ember-eui/core`
+- add errorMessage for validatable-control for i18n or so
+
 ### 1.2.2
 🐛 Bug / Fixes
 `@ember-eui/core`

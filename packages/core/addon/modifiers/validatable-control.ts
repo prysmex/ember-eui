@@ -3,13 +3,13 @@ import { typeOf } from '@ember/utils';
 
 export default modifier(function validatableControl(
   element: HTMLObjectElement,
-  [isInvalid]: [boolean]
+  [isInvalid, errorMessage]: [boolean, string]
 ) {
   if (typeOf(element.setCustomValidity) !== 'function') {
     return;
   }
   if (isInvalid) {
-    element.setCustomValidity('Invalid');
+    element.setCustomValidity(errorMessage || 'Invalid');
   } else {
     element.setCustomValidity('');
   }

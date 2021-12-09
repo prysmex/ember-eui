@@ -15,7 +15,7 @@ module.exports = {
     }
   },
 
-  inDevelopingAddon() {
+  isDevelopingAddon() {
     return true;
   },
 

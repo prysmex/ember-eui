@@ -6,20 +6,7 @@
   @readOnly={{@readOnly}}
   @clear={{if (and @select.selected @onClear) @onClear}}
   @disabled={{@select.disabled}}
-  {{!-- @useGroup={{or @extra.prependTriggerComponent @extra.appendTriggerComponent}} --}}
-  {{!-- @isLoading={{@isLoading}} --}}
 >
-  {{!-- <:prepend as |classes|>
-    {{#if @extra.prependTriggerComponent}}
-      {{#let
-        (component
-          @extra.prependTriggerComponent
-        ) as |PrependTriggerInputComponent|
-      }}
-        <PrependTriggerInputComponent class={{classes}} />
-      {{/let}}
-    {{/if}}
-  </:prepend> --}}
   <:field>
     {{! template-lint-disable }}
     <ul
@@ -125,15 +112,4 @@
       {{/if}}
     </ul>
   </:field>
-  {{!-- <:append as |classes|>
-    {{#if @extra.appendTriggerInputComponent}}
-      {{#let
-        (component
-          @extra.appendTriggerInputComponent
-        ) as |AppendTriggerInputComponent|
-      }}
-        <AppendTriggerInputComponent class={{classes}} />
-      {{/let}}
-    {{/if}}
-  </:append> --}}
 </EuiFormControlLayout>

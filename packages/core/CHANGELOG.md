@@ -11,6 +11,7 @@
 🚀 Enhancements
 `@ember-eui/core`
 - add errorMessage for validatable-control for i18n or so
+
 🏠 Internal
 `@ember-eui/core`
 - update ember-power-select in order to be able to pass attributes to trigger

@@ -5,7 +5,7 @@
 ### 1.2.4
 🏠 Internal
 `@ember-eui/changeset-form`,`@ember-eui/validated-form`
-- Pass down isCleareable to wrapped component
+- Pass down isCleareable to <EuiComboBox /> wrapped components
 
 ### 1.2.3
 🚀 Enhancements

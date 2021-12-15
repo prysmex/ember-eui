@@ -3,6 +3,11 @@
 ### Master
 
 ### 1.2.4
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Fix `<EuiComboBox/>` isClereable
+
+### 1.2.4
 🏠 Internal
 `@ember-eui/changeset-form`,`@ember-eui/validated-form`
 - Pass down isCleareable to wrapped component

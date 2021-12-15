@@ -27,6 +27,7 @@
     onCreateOption=(if
       @onCreateOption (pipe this.onCreateOption @onCreateOption)
     )
+    isClearable=@isClearable
   }}
   @matcher={{@matcher}}
   @initiallyOpen={{@initiallyOpen}}
@@ -81,8 +82,8 @@
     )
     (component "eui-combo-box/no-matches-message")
   }}
-  @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen euiComboBoxOptionsList__rowWrap
-    {{@dropdownClass}}" as |option i|
+  @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen euiComboBoxOptionsList__rowWrap {{@dropdownClass}}"
+  as |option i|
 >
   {{yield option i}}
 </PowerSelectMultiple>

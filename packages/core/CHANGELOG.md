@@ -3,6 +3,11 @@
 ### Master
 
 
+### 1.3.1
+🏠 Internal
+`@ember-eui/changeset-form`,`@ember-eui/validated-form`
+- Pass down isCleareable to wrapped component
+
 ### 1.3.0
 🏠 Internal
 `@ember-eui/core`

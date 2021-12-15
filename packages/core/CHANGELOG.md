@@ -2,21 +2,18 @@
 
 ### Master
 
-
-### 1.3.1
+### 1.2.4
 🏠 Internal
 `@ember-eui/changeset-form`,`@ember-eui/validated-form`
 - Pass down isCleareable to wrapped component
 
-### 1.3.0
-🏠 Internal
-`@ember-eui/core`
-- update ember-power-select in order to be able to pass attributes to trigger
-
-### 1.3.0
+### 1.2.3
 🚀 Enhancements
 `@ember-eui/core`
 - add errorMessage for validatable-control for i18n or so
+🏠 Internal
+`@ember-eui/core`
+- update ember-power-select in order to be able to pass attributes to trigger
 
 ### 1.2.2
 🐛 Bug / Fixes

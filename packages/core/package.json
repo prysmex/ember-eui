@@ -75,7 +75,7 @@
     "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^2.0.0",
     "ember-style-modifier": "^0.6.0",
-    "ember-svg-jar": "github:betocantu93/ember-svg-jar#add-bundle-flag",
+    "ember-svg-jar": "https://github.com/betocantu93/ember-svg-jar.git#add-bundle-flag",
     "ember-truth-helpers": "^2.1.0",
     "lodash-es": "^4.17.21",
     "resolve": "^1.13.1",

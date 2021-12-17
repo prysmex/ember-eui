@@ -2,7 +2,11 @@
 
 ### Master
 
-### 1.2.4
+### 1.2.6
+🐛 Bug / Fixes
+- Update ember-svg-jar dependency
+
+### 1.2.5
 🐛 Bug / Fixes
 `@ember-eui/core`
 - Fix `<EuiComboBox/>` isClereable

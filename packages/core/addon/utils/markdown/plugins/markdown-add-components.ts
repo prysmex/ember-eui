@@ -53,6 +53,7 @@ export default function MarkdownAddComponents(): (
           node.properties.paddingSize = 's';
         } else {
           node.properties.name = 'eui-markdown-format/markdown-code';
+          node.properties.inline = true;
         }
       }
       return node;

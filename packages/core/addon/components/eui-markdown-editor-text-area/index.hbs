@@ -1,0 +1,9 @@
+<textarea
+  class="euiMarkdownEditorTextArea"
+  ...attributes
+  {{style
+    (hash height=(concat (sub @height @markdownFooterHeight) "px"))
+  }}
+>
+  {{yield}}
+</textarea>

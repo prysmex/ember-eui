@@ -63,7 +63,7 @@ module.exports = function (defaults) {
     },
 
     fingerprint: {
-      enabled: true,
+      enabled: env === 'production',
       generateAssetMap: true
     },
 

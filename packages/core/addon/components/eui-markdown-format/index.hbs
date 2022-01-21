@@ -1,0 +1,13 @@
+<div class="euiMarkdownFormat">
+  {{this.result.element}}
+  {{#each this.result.components as |CompNode|}}
+    {{#in-element CompNode.element}}
+      {{#let (component CompNode.name) as |DynamicComponent|}}
+        <DynamicComponent
+          @replaceNode={{optional @replaceNode}}
+          @node={{CompNode}}
+        />
+      {{/let}}
+    {{/in-element}}
+  {{/each}}
+</div>

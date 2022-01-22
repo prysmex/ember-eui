@@ -7,7 +7,7 @@ import {
 import { cached } from '@glimmer/tracking';
 import unified from 'unified';
 import { toDOM } from '../../utils/markdown/plugins/to-dom';
-import { RehypeNode } from '../../utils/markdown/markdown-types';
+import type { RehypeNode } from '../../utils/markdown/markdown-types';
 
 export interface EuiMarkdownEditorToolbarArgs {
   parsingPluginList?: typeof defaultParsingPlugins;

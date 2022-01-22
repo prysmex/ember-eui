@@ -7,11 +7,11 @@ const createDocument = () => {
   return document;
 };
 
-interface Component {}
+export interface DynamicComponent {}
 
 export const toDOM = (tree: RehypeNode) => {
   let document = createDocument();
-  let components: Component[] = [];
+  let components: DynamicComponent[] = [];
 
   const toElements = (parent: Node, nodes: RehypeNode[] = []) => {
     nodes?.forEach((node) => {

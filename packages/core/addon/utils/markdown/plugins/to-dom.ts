@@ -81,6 +81,7 @@ export const toDOM = (tree: RehypeNode) => {
       }
       assert(`Unsupported node '${type}'`, false);
     }
+    return;
   };
 
   let element = toElement(tree);

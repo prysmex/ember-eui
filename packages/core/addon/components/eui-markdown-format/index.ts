@@ -35,12 +35,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   get result() {
     try {
       const processed = this.processor.processSync(this.args.value);
-
-      const { element, components } = toDOM(processed.result as RehypeNode);
-      return {
-        element,
-        components
-      };
+      return toDOM(processed.result as RehypeNode);
       //eslint-disable-next-line
     } catch (e) {
       return this.args.value;

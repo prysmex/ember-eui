@@ -32,6 +32,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   }
 
   @cached
+  //@ts-ignore
   get result() {
     try {
       const processed = this.processor.processSync(this.args.value);

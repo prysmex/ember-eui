@@ -33,14 +33,14 @@ var app = new EmberApp(defaults, {
 
 ```
 
-We use `ember-svg-jar` to create SVGs as TOC (Template only components) with the `hbs` strategy. For fingerprinting and such, `ember-svg-jar#add-bundle-flag` exposes an `svg-jar` service, with a `resolveAsset` callback/hook, so you can implement your own resolver, you could use for example [ember-cli-resolve-assset](https://github.com/buschtoens/ember-cli-resolve-asset).
+We use `ember-svg-jar` to create SVGs as TOC (Template only components) with the `hbs` strategy. For fingerprinting and such, `ember-svg-jar#add-bundle-flag` exposes an `asset-map` service, with a `resolve` callback/hook, so you can implement your own resolver, you could use for example [ember-cli-resolve-assset](https://github.com/buschtoens/ember-cli-resolve-asset).
 
 ```javascript
-import EmberSvgJarService from 'ember-svg-jar/services/svg-jar';
+import EmberSvgJarService from 'ember-svg-jar/services/asset-map';
 import resolveAsset from 'ember-cli-resolve-asset'
 
 export default class SvgJarService extends EmberSvgJarService {
-  resolveAsset(path) {
+  resolve(path) {
     //Here you could implement, for instance ember-cli-ifa, instead of ember-cli-resolve-asset.
     return resolveAsset(path);
   }

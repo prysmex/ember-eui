@@ -24,6 +24,7 @@ var app = new EmberApp(defaults, {
       },
       sourceDirs: [
         'public/assets',
+        '../node_modules/@ember-eui/core/public',
         'node_modules/@elastic/eui/lib/components/icon',
       ],
     },

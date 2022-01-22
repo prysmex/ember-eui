@@ -132,6 +132,16 @@
           formId=formId
           disabled=@isDisabled
         )
+        FieldMarkdownEditor=(component
+          "validated-form/field-markdown-editor"
+          register=this.register
+          unregister=this.unregister
+          formHasBeenValidated=this.formHasBeenValidated
+          onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
+          formId=formId
+          disabled=@isDisabled
+        )
       )
     }}
   </EuiForm>

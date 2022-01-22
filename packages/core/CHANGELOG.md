@@ -2,6 +2,19 @@
 
 ### Master
 
+### 1.3.0 - 1.3.3
+🐛 Bug / Fixes
+- Ts bugs
+
+### 1.3.0
+🚀 Enhancements
+`@ember-eui/core`
+- `<EuiMarkdownEditor />` `<EuiMarkdownFormat />` `<EuiCode />` `<EuiCopy />` `<EuiCodeBlock />`
+
+`@ember-eui/validated-form`
+- `<Form.FieldMarkdownEditor />`
+
+
 ### 1.2.6
 🐛 Bug / Fixes
 - Update ember-svg-jar dependency

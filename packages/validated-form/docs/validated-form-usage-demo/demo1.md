@@ -18,6 +18,13 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
       format=(hash type='email')
     }}
   />
+  <Form.FieldMarkdownEditor
+    @value={{this.data.markdownText}}
+    @label='Markdown'
+    @onChange={{set this.data 'markdownText'}}
+    @validations={{hash presence=(hash presence=true)}}
+    @error={{array "one error"}}
+  />
   <Form.FieldSelect
     @onChange={{set this.data 'fieldSelect'}}
     @value={{this.data.fieldSelect}}

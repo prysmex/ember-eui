@@ -2,6 +2,10 @@
 
 ### Master
 
+### 1.3.0 - 1.3.3
+🐛 Bug / Fixes
+- Ts bugs
+
 ### 1.3.0
 🚀 Enhancements
 `@ember-eui/core`

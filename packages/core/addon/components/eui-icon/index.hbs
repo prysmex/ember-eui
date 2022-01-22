@@ -1,34 +1,39 @@
-{{#if this.useImage}}
-  <img
-    src={{this.icon}}
-    class={{class-names
-      this.optionalColorClass
-      (if this.isAppIcon "euiIcon--app")
-      componentName="EuiIcon"
-      size=this.size
-    }}
-    alt={{if @title @title}}
-    tabIndex={{@tabIndex}}
-    ...attributes
-  />
+{{#if this.icon.inner}}
+  {{! has the shape of a curried component }}
+  {{component this.icon}}
 {{else}}
-  <Svg
-    @name={{this.icon}}
-    @loadingSvg={{this.emptyIcon}}
-    class={{class-names
-      this.optionalColorClass
-      (if this.isAppIcon "euiIcon--app")
-      componentName="EuiIcon"
-      size=this.size
-    }}
-    style={{this.optionalCustomStyles}}
-    tabIndex={{this.tabIndex}}
-    role="image"
-    aria-hidden={{if this.isAriaHidden true}}
-    aria-label={{if @aria-label @aria-label this.titleId}}
-    aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
-    @title={{@title}}
-    @onIconLoad={{@onIconLoad}}
-    ...attributes
-  />
+  {{#if this.useImage}}
+    <img
+      src={{this.icon}}
+      class={{class-names
+        this.optionalColorClass
+        (if this.isAppIcon "euiIcon--app")
+        componentName="EuiIcon"
+        size=this.size
+      }}
+      alt={{if @title @title}}
+      tabIndex={{@tabIndex}}
+      ...attributes
+    />
+  {{else}}
+    <Svg
+      @name={{this.icon}}
+      @loadingSvg={{this.emptyIcon}}
+      class={{class-names
+        this.optionalColorClass
+        (if this.isAppIcon "euiIcon--app")
+        componentName="EuiIcon"
+        size=this.size
+      }}
+      style={{this.optionalCustomStyles}}
+      tabIndex={{this.tabIndex}}
+      role="image"
+      aria-hidden={{if this.isAriaHidden true}}
+      aria-label={{if @aria-label @aria-label this.titleId}}
+      aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
+      @title={{@title}}
+      @onIconLoad={{@onIconLoad}}
+      ...attributes
+    />
+  {{/if}}
 {{/if}}

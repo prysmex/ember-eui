@@ -30,6 +30,7 @@ module.exports = {
   ],
   labels: {
     docs: 'Documentation',
+    'editors': 'Editors & syntax',
     'changeset-form': 'Changeset form',
     'validated-form': 'Validated form'
   }

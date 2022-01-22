@@ -1,0 +1,8 @@
+<EuiToolTip @onMouseOut={{this.resetTooltipText}} ...attributes>
+  <:anchor>
+    {{yield this.copy}}
+  </:anchor>
+  <:content>
+    {{this.tooltipText}}
+  </:content>
+</EuiToolTip>

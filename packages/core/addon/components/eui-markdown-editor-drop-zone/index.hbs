@@ -1,0 +1,21 @@
+<div
+  class={{class-names
+    "euiMarkdownEditorDropZone"
+    (if this.isDragging "euiMarkdownEditorDropZone--isDragging")
+    (if @hasUnacceptedItems "euiMarkdownEditorDropZone--hasError")
+    (if this.isDraggingError "euiMarkdownEditorDropZone--isDraggingError")
+  }}
+>
+  {{yield}}
+  <EuiMarkdownEditorFooter
+    @uiPlugins={{@uiPlugins}}
+    {{!-- openFiles={() => {
+          setHasUnacceptedItems(false);
+          open();
+        }} --}}
+    @isUploadingFiles={{this.isUploadingFiles}}
+    @hasUnacceptedItems={{@hasUnacceptedItems}}
+    {{! dropHandlers={dropHandlers} }}
+    @errors={{@errors}}
+  />
+</div>

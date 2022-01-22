@@ -1,0 +1,33 @@
+{{#if (or (and @isCopyable @innerText) @overflowHeight)}}
+  <div class="euiCodeBlock__controls">
+    {{#if @overflowHeight}}
+      <EuiButtonIcon
+        class="euiCodeBlock__fullScreenButton"
+        @size="s"
+        {{on "click" @toggleFullScreen}}
+        @iconType={{if @isFullScreen "cross" "fullScreen"}}
+        @color="text"
+        aria-label={{if @isFullScreen "Collapse" "Expand"}}
+      />
+
+    {{/if}}
+    {{#if (and @isCopyable @innerText)}}
+      <div class="euiCodeBlock__copyButton">
+        <EuiCopy
+          @textToCopy={{@innerText}}
+          @beforeMessage="Copy"
+          @afterMessage="Copied"
+          as |copy|
+        >
+          <EuiButtonIcon
+            @size="s"
+            {{on "click" copy}}
+            @iconType="copy"
+            @color="text"
+            aria-label="Copy"
+          />
+        </EuiCopy>
+      </div>
+    {{/if}}
+  </div>
+{{/if}}

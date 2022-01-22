@@ -52,8 +52,10 @@ import EuiRangeLevels from './eui-range-levels';
 import EuiToolTip from './eui-tool-tip';
 import EuiToast from './eui-toast';
 import EuiGlobalToastList from './eui-global-toast-list';
+import EuiCodeBlockImpl from './eui-code-block-impl';
 
 const mapping: Mapping = {
+  EuiCodeBlockImpl,
   EuiAccordion,
   EuiIcon,
   EuiModal,

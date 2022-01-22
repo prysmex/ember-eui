@@ -2,6 +2,10 @@
 
 ### Master
 
+### 1.3.4
+🐛 Bug / Fixes
+- Fix docs related to ember-svg-jar and netlify demo
+
 ### 1.3.0 - 1.3.3
 🐛 Bug / Fixes
 - Ts bugs

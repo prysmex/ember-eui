@@ -1,8 +1,8 @@
-import EmberSvgJarService from 'ember-svg-jar/services/svg-jar';
+import EmberSvgJarService from 'ember-svg-jar/services/asset-map';
 import resolveAsset from 'ember-cli-resolve-asset';
 
 export default class SvgJar extends EmberSvgJarService {
-  resolveAsset(path) {
+  resolve(path) {
     return resolveAsset(path);
   }
 }

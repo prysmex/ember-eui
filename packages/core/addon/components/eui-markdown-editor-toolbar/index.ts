@@ -31,7 +31,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
 
   get svgPath() {
     const config = getOwner(this).resolveRegistration('config:environment');
-    const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg';
+    const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg/';
     return svgPath;
   }
 
@@ -55,7 +55,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
         label: 'Task list',
         name: 'tl',
         useSvg: true,
-        iconType: `${this.svgPath}/markdown-checkmark`
+        iconType: `${this.svgPath}markdown-checkmark`
       }
     ];
   }

@@ -29,7 +29,7 @@ type IconColor = string | NamedColor;
 
 export type IconSize = keyof typeof sizeToClassNameMap;
 
-// const SVG_PREI : string | undefined = config['ember-eui'].svgPrefixPath || 'svg/assets';
+// const SVG_PREI : string | undefined = config['ember-eui'].svgPath || 'svg/assets';
 
 export type EuiIconArgs = CommonArgs & {
   /**

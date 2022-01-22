@@ -10,11 +10,11 @@ export default class EuiMarkdownEditorFooterComponent extends Component<EuiMarkd
 
   get svgPath() {
     const config = getOwner(this).resolveRegistration('config:environment');
-    const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg';
+    const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg/';
     return svgPath;
   }
 
   get markdownLogo() {
-    return `${this.svgPath}/markdown-logo`;
+    return `${this.svgPath}markdown-logo`;
   }
 }

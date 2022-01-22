@@ -2,6 +2,10 @@
 
 ### Master
 
+### 1.3.5
+🐛 Bug / Fixes
+- Urls for markdown editor icons
+
 ### 1.3.4
 🐛 Bug / Fixes
 - Fix docs related to ember-svg-jar and netlify demo

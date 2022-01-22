@@ -1,21 +1,19 @@
 import { assert } from '@ember/debug';
+import { RehypeNode } from '../markdown-types';
 
 const attributes = ['src', 'alt', 'href', 'target'];
 
 const createDocument = () => {
-  // if (typeof document === 'undefined') {
-  //   // eslint-disable-next-line no-undef
-  //   let { Document } = FastBoot.require('simple-dom');
-  //   return new Document();
-  // }
   return document;
 };
 
-export const toDOM = (tree) => {
-  let document = createDocument();
-  let components = [];
+interface Component {}
 
-  const toElements = (parent, nodes = []) => {
+export const toDOM = (tree: RehypeNode) => {
+  let document = createDocument();
+  let components: Component[] = [];
+
+  const toElements = (parent: Node, nodes: RehypeNode[] = []) => {
     nodes?.forEach((node) => {
       let el = toElement(node);
       if (el) {
@@ -25,19 +23,22 @@ export const toDOM = (tree) => {
     return parent;
   };
 
-  const createElement = (name: string, node, className: string) => {
+  const createElement = (
+    name: string,
+    node: RehypeNode,
+    className?: string
+  ) => {
     let element = document.createElement(name);
     let properties = node.properties;
     let classNames = [];
     if (properties) {
       if (properties.className) {
-				console.log(properties.className)
-        classNames.push(...properties.className);
+        classNames.push(...(properties.className as string[]));
       }
       for (let key in properties) {
         if (attributes.includes(key)) {
           let value = properties[key];
-          element.setAttribute(key, value);
+          element.setAttribute(key, value as string);
         } else {
           // temporary
           if (key !== 'className') {
@@ -55,7 +56,7 @@ export const toDOM = (tree) => {
     return element;
   };
 
-  const toElement = (node) => {
+  const toElement = (node: RehypeNode) => {
     if (node) {
       let { type } = node;
       if (type === 'root') {

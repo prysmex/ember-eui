@@ -1,6 +1,4 @@
-//@ts-nocheck
 import Component from '@glimmer/component';
-import { EuiPopoverArgs } from '../eui-popover';
 import type MarkdownActions from '../../utils/markdown/markdown-actions';
 import {
   defaultParsingPlugins,
@@ -9,15 +7,14 @@ import {
 import { cached } from '@glimmer/tracking';
 import unified from 'unified';
 import { toDOM } from '../../utils/markdown/plugins/to-dom';
+import { RehypeNode } from '../../utils/markdown/markdown-types';
 
-export interface EuiMarkdownEditorToolbarArgs
-  extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
-  disableFocusTrap?: boolean;
-  fullWidth?: boolean;
-  input: EuiPopoverArgs['button'];
-  inputRef?: EuiPopoverArgs['buttonRef'];
+export interface EuiMarkdownEditorToolbarArgs {
+  parsingPluginList?: typeof defaultParsingPlugins;
+  processingPluginList?: typeof defaultProcessingPlugins;
   viewMode?: string;
   markdownActions: MarkdownActions;
+  value: string;
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarArgs> {
@@ -38,9 +35,8 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   get result() {
     try {
       const processed = this.processor.processSync(this.args.value);
-      // `.result` is intentionally `unknown` (https://github.com/vfile/vfile/pull/53)
-      // cast to something expected.
-      const { element, components } = toDOM(processed.result);
+
+      const { element, components } = toDOM(processed.result as RehypeNode);
       return {
         element,
         components

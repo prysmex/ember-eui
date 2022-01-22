@@ -1,7 +1,11 @@
-export const visit = (node, visitor) => {
+import { RehypeNode } from '../markdown-types';
+
+type Visitor = (node: RehypeNode) => RehypeNode;
+
+export const visit = (node: RehypeNode, visitor: Visitor) => {
   node = visitor(node);
   if (node) {
-    let children = [];
+    let children: RehypeNode[] = [];
     if (node.children) {
       node.children.forEach((child) => {
         child = visit(child, visitor);
@@ -15,13 +19,9 @@ export const visit = (node, visitor) => {
   return node;
 };
 
-export default function MarkdownAddComponents(): (
-  tree: any,
-  file: any
-) => void {
-  return (tree, file) => {
-    visit(tree, (node) => {
-      console.log(node);
+export default function MarkdownAddComponents(): (tree: RehypeNode) => void {
+  return (tree) => {
+    visit(tree, (node: RehypeNode) => {
       if (node.tagName === 'component') {
         node.type = 'component';
       }
@@ -40,19 +40,20 @@ export default function MarkdownAddComponents(): (
       }
       if (node.type === 'element' && node.tagName === 'hr') {
         node.type = 'component';
-        node.properties.name = 'eui-horizontal-rule';
+        node.properties.componentName = 'eui-horizontal-rule';
       }
       if (node.type === 'element' && node.tagName === 'code') {
         node.type = 'component';
-        const hasBreaks = node.children.find((child: any) =>
+        const hasBreaks = node.children?.find((child: RehypeNode) =>
           /\r|\n/.exec(child.value)
         );
         if (hasBreaks) {
-          node.properties.name = 'eui-markdown-format/markdown-code-block';
+          node.properties.componentName =
+            'eui-markdown-format/markdown-code-block';
           node.properties.fontSize = 'm';
           node.properties.paddingSize = 's';
         } else {
-          node.properties.name = 'eui-markdown-format/markdown-code';
+          node.properties.componentName = 'eui-markdown-format/markdown-code';
           node.properties.inline = true;
         }
       }

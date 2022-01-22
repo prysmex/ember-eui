@@ -7,7 +7,7 @@ interface TooltipNodeDetails {
 }
 
 const tooltipPlugin = {
-  name: 'eui-markdown-format/markdown-tooltip',
+  name: 'tooltipPlugin',
   button: {
     label: 'Tooltip',
     iconType: 'editorComment'
@@ -16,7 +16,12 @@ const tooltipPlugin = {
     prefix: '!{tooltip[',
     suffix: ']()}',
     trimFirst: true
-  }
+  },
+  helpText: `
+  \`\`\`md
+  !{tooltip[anchor text](helpful description)}
+  \`\`\`
+  `
 };
 
 const TooltipParser: Plugin = function TooltipParser() {
@@ -90,7 +95,7 @@ const TooltipParser: Plugin = function TooltipParser() {
 
     return eat(`!{tooltip[${tooltipAnchor}](${tooltipText})}`)({
       type: 'component',
-      name: 'eui-markdown-format/markdown-tooltip',
+      componentName: 'eui-markdown-format/markdown-tooltip',
       tooltipText: tooltipText,
       children
     } as TooltipNodeDetails);

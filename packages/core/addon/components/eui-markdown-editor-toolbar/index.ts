@@ -1,18 +1,16 @@
-//@ts-nocheck
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { EuiPopoverArgs } from '../eui-popover';
 import type MarkdownActions from '../../utils/markdown/markdown-actions';
 import { MODE_VIEWING } from '../../utils/markdown/markdown-modes';
+import { cached } from '@glimmer/tracking';
+import { getOwner } from '@ember/application';
+import { Plugin } from 'unified';
 
-export interface EuiMarkdownEditorToolbarArgs
-  extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
-  disableFocusTrap?: boolean;
-  fullWidth?: boolean;
-  input: EuiPopoverArgs['button'];
-  inputRef?: EuiPopoverArgs['buttonRef'];
+export interface EuiMarkdownEditorToolbarArgs {
   viewMode?: string;
   markdownActions: MarkdownActions;
+  uiPlugins: Plugin[];
+  openPluginEditor?: (actionResult: ReturnType<MarkdownActions['do']>) => void;
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarArgs> {
@@ -31,26 +29,36 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     }
   ];
 
-  listButtons = [
-    {
-      id: 'mdUl',
-      label: 'Unordered list',
-      name: 'ul',
-      iconType: 'editorUnorderedList'
-    },
-    {
-      id: 'mdOl',
-      label: 'Ordered list',
-      name: 'ol',
-      iconType: 'editorOrderedList'
-    },
-    {
-      id: 'mdTl',
-      label: 'Task list',
-      name: 'tl',
-      iconType: 'stop'
-    }
-  ];
+  get svgPath() {
+    const config = getOwner(this).resolveRegistration('config:environment');
+    const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg';
+    return svgPath;
+  }
+
+  @cached
+  get listButtons() {
+    return [
+      {
+        id: 'mdUl',
+        label: 'Unordered list',
+        name: 'ul',
+        iconType: 'editorUnorderedList'
+      },
+      {
+        id: 'mdOl',
+        label: 'Ordered list',
+        name: 'ol',
+        iconType: 'editorOrderedList'
+      },
+      {
+        id: 'mdTl',
+        label: 'Task list',
+        name: 'tl',
+        useSvg: true,
+        iconType: `${this.svgPath}/markdown-checkmark`
+      }
+    ];
+  }
 
   quoteCodeLinkButtons = [
     {
@@ -78,7 +86,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   }
 
   get isPreviewing() {
-    this.args.viewMode === MODE_VIEWING;
+    return this.args.viewMode === MODE_VIEWING;
   }
 
   @action

@@ -22,7 +22,7 @@ import { Plugin } from 'unified';
 
 interface CheckboxNodeDetails {
   type: 'component';
-  name: 'eui-markdown-format/markdown-checkbox';
+  componentName: 'eui-markdown-format/markdown-checkbox';
   lead: string;
   label: string;
   isChecked: boolean;
@@ -64,7 +64,7 @@ const CheckboxParser: Plugin = function CheckboxParser() {
 
     return add({
       type: 'component',
-      name: 'eui-markdown-format/markdown-checkbox',
+      componentName: 'eui-markdown-format/markdown-checkbox',
       lead,
       label: text,
       isChecked,

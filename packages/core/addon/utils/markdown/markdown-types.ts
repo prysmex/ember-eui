@@ -43,7 +43,13 @@ export interface RemarkTokenizer {
 
   notInLink?: boolean;
 }
-interface RehypeNode {}
+export interface RehypeNode extends EuiMarkdownAstNode {
+  [index: string]: unknown;
+  tagName: string;
+  children?: RehypeNode[];
+  value: string;
+  type: string;
+}
 interface RemarkRehypeHandlerCallback {
   (
     node: UnistPosition,
@@ -105,6 +111,9 @@ export interface EuiMarkdownAstNode {
   type: string;
   children?: EuiMarkdownAstNode[];
   position: EuiMarkdownAstNodePosition;
+  properties: {
+    [index: string]: unknown;
+  };
 }
 export interface EuiMarkdownAstNodePosition {
   start: { line: number; column: number; offset: number };

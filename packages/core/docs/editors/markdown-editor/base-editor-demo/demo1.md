@@ -5,7 +5,10 @@ order: 1
 # Demo
 
 ```hbs template
-<EuiMarkdownEditor @value={{this.value}} @onChange={{set this 'value'}} />
+<EuiMarkdownEditor
+  @value={{this.value}}
+  @onChange={{set this 'value'}}
+/>
 ```
 
 ```javascript component

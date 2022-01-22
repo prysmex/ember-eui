@@ -1,42 +1,62 @@
-<div class={{class-names "euiMarkdownEditor"}} ...attributes>
+<div
+  class={{class-names
+    "euiMarkdownEditor"
+    (if (eq this.height "full") "euiMarkdownEditor--fullHeight")
+    (if this.isPreviewing "euiMarkdownEditor--isPreviewing")
+  }}
+  {{did-update
+    this.updateCurrentHeight
+    this.currentHeight
+    this.isPreviewing
+    this.height
+    this.autoExpandPreview
+  }}
+>
   <EuiMarkdownEditorToolbar
     @selectedNode={{this.selectedNode}}
     @markdownActions={{this.markdownActions}}
     @onClickPreview={{this.setViewMode}}
     @viewMode={{this.viewMode}}
     @uiPlugins={{this.toolbarPlugins}}
+    {{did-insert this.setEditorToolbarRef}}
   />
   {{#if this.isPreviewing}}
     <div
-      className="euiMarkdownEditorPreview"
-      {{style (hash height=(concat @height "px"))}}
+      class="euiMarkdownEditorPreview"
+      {{did-insert (set this "previewRef")}}
+      {{style (hash height=this.previewHeight)}}
     >
       <EuiMarkdownFormat
         @parsingPluginList={{this.parsingPluginList}}
         @processingPluginList={{this.processingPluginList}}
         @value={{@value}}
-				@replaceNode={{this.replaceNode}}
+        @replaceNode={{this.replaceNode}}
       />
     </div>
   {{/if}}
 
   <div
-    {{style
-      (if this.isPreviewing (hash display="none") (hash display="block"))
-    }}
+    class="euiMarkdownEditor__toggleContainer"
+    {{style height=this.editorToggleContainerHeight}}
   >
-    <EuiMarkdownEditorDropZone>
+    <EuiMarkdownEditorDropZone
+      @uiPlugins={{this.toolbarPlugins}}
+      {{resize-observer onResize=this.onResize}}
+    >
       <EuiMarkdownEditorTextArea
         {{get-cursor-node (get this.parsed "0") this.setSelectedNode}}
         {{did-update this.onParse this.parsed}}
+        {{did-insert this.setTextAreaRef}}
+        disabled={{@disabled}}
         id={{this.editorId}}
-        @height={{@height}}
+        @height={{this.textAreaHeight}}
+        @maxHeight={{this.textAreaMaxHeight}}
         value={{@value}}
         aria-label={{@ariaLabel}}
         aria-labelledby={{@ariaLabelledBy}}
         aria-describedby={{@ariaDescribedBy}}
         {{on "input" (pick "target.value" @onChange)}}
-        {{!-- {{on "focus" (optional)}} --}}
+        ...attributes
       />
     </EuiMarkdownEditorDropZone>
   </div>

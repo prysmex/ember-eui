@@ -3,7 +3,8 @@ import { action } from '@ember/object';
 
 // IE11 and Safari don't support the `ResizeObserver` API at the time of writing
 const hasResizeObserver =
-  typeof window !== 'undefined' && typeof (window as any).ResizeObserver !== 'undefined';
+  typeof window !== 'undefined' &&
+  typeof (window as any).ResizeObserver !== 'undefined';
 
 export interface Observer {
   disconnect: () => void;
@@ -64,7 +65,10 @@ export default class ResizeObserver extends Modifier<ResizeObserverArgs> {
     let [dimension] = this.args.positional;
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
-    if ((doesWidthMatter && width !== this.width) || (doesHeightMatter && height !== this.height)) {
+    if (
+      (doesWidthMatter && width !== this.width) ||
+      (doesHeightMatter && height !== this.height)
+    ) {
       this.width = width;
       this.height = height;
       this.args.named?.onResize({ width, height });

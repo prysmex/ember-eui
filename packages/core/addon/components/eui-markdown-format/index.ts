@@ -5,7 +5,7 @@ import {
   defaultProcessingPlugins
 } from '../../utils/markdown/plugins/markdown-default-plugins';
 import { cached } from '@glimmer/tracking';
-import unified from 'unified';
+import unified, { Processor } from 'unified';
 import { toDOM } from '../../utils/markdown/plugins/to-dom';
 import type { RehypeNode } from '../../utils/markdown/markdown-types';
 
@@ -28,7 +28,17 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
 
   @cached
   get processor() {
-    return unified().use(this.parsingPluginList).use(this.processingPluginList);
+    const Compiler = (tree: any) => {
+      return tree;
+    };
+
+    function identityCompiler(this: Processor) {
+      this.Compiler = Compiler;
+    }
+    return unified()
+      .use(this.parsingPluginList)
+      .use(this.processingPluginList)
+      .use(identityCompiler);
   }
 
   @cached

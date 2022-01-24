@@ -8,6 +8,7 @@ order: 1
 <EuiMarkdownEditor
   @value={{this.value}}
   @onChange={{set this 'value'}}
+  @processingPluginList={{this.processingPlugins}}
 />
 ```
 
@@ -15,8 +16,31 @@ order: 1
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { visit } from '@ember-eui/core/utils/markdown/plugins/markdown-add-components';
+import { defaultProcessingPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins';
+
+
+/*
+ Quick example how you can extend plugins, this plugin adds _blank to `a` elements
+*/
+function TargetBlankProcessingPlugin() {
+  return (tree) => {
+    visit(tree, (node) => {
+      if (node.type === 'element' && node.tagName === 'a') {
+				node.properties.target = '_blank';
+      }
+      return node;
+    });
+  };
+}
+
+const processingPlugins = [
+  ...defaultProcessingPlugins,
+  [TargetBlankProcessingPlugin, {}]
+];
 
 export default class EuiMarkdownEditor1 extends Component {
+  processingPlugins = processingPlugins;
   @tracked value = `## 👋 Hello there!
 
 I'm a **EuiMarkdownEditor** with:
@@ -80,6 +104,16 @@ func main() {
 }
 
 \`\`\`
+
+----
+
+### You can also add tooltips if you want more explanation!
+
+!{tooltip[You can also add tooltips](Some helpful description)}
+
+### And links, check the demo source in how to tweak plugins!
+
+[Access Google!](https://google.com)
 
 `;
 }

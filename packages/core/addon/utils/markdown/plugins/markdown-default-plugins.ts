@@ -34,12 +34,6 @@ import {
   Settings
 } from 'unified';
 import remark2Rehype from 'remark-rehype';
-import { RehypeNode } from '../markdown-types';
-// import * as MarkdownTooltip from './markdown_tooltip';
-// import * as MarkdownCheckbox from './markdown_checkbox';
-// import { markdownLinkValidator } from './markdown_link_validator';
-// import { EuiLink } from '../../link';
-// import { EuiCodeBlock, EuiCode } from '../../code';
 import markdown from 'remark-parse';
 import emoji from 'remark-emoji';
 import all from 'mdast-util-to-hast/lib/all';
@@ -71,29 +65,12 @@ const unknownHandler: Handler = (h, node) => {
 
 export const defaultParsingPlugins = getDefaultEuiMarkdownParsingPlugins();
 
-class Compiler {
-  tree: RehypeNode | null = null;
-  constructor(tree: RehypeNode) {
-    this.tree = tree;
-  }
-
-  compile() {
-    return this.tree;
-  }
-}
-
-function compiler() {
-  //@ts-expect-error
-  this.Compiler = Compiler;
-}
-
 export const getDefaultEuiMarkdownProcessingPlugins = (): [
   [typeof remark2Rehype, Record<string, unknown>],
   ...PluggableList // any additional are generic
 ] => [
   [remark2Rehype, { allowDangerousHtml: true, unknownHandler }],
-  [MarkdownAddComponents, {}],
-  [compiler]
+  [MarkdownAddComponents, {}]
 ];
 
 export const defaultProcessingPlugins =

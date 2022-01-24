@@ -56,6 +56,7 @@
         aria-labelledby={{@ariaLabelledBy}}
         aria-describedby={{@ariaDescribedBy}}
         {{on "input" (pick "target.value" @onChange)}}
+        {{validatable-control @isInvalid}}
         ...attributes
       />
     </EuiMarkdownEditorDropZone>

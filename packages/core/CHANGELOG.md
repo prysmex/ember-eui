@@ -2,9 +2,15 @@
 
 ### Master
 
+### 1.5.0
+🚀 Enhancements
+`@ember-eui/validated-form`
+- Allow providing an markdown-editor componet for easier composability
+
 ### 1.4.0
 🚀 Enhancements
 - Easier extending of processing plugins, add demo
+
 ### 1.3.5
 🐛 Bug / Fixes
 - Urls for markdown editor icons

@@ -2,6 +2,9 @@
 
 ### Master
 
+### 1.4.0
+🚀 Enhancements
+- Easier extending of processing plugins, add demo
 ### 1.3.5
 🐛 Bug / Fixes
 - Urls for markdown editor icons

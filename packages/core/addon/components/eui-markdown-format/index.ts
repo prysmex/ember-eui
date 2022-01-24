@@ -1,5 +1,4 @@
 import Component from '@glimmer/component';
-import type MarkdownActions from '../../utils/markdown/markdown-actions';
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins
@@ -8,12 +7,12 @@ import { cached } from '@glimmer/tracking';
 import unified, { Processor } from 'unified';
 import { toDOM } from '../../utils/markdown/plugins/to-dom';
 import type { RehypeNode } from '../../utils/markdown/markdown-types';
+import type EuiMarkdownEditorComponent from '../eui-markdown-editor';
 
 export interface EuiMarkdownEditorToolbarArgs {
   parsingPluginList?: typeof defaultParsingPlugins;
   processingPluginList?: typeof defaultProcessingPlugins;
-  viewMode?: string;
-  markdownActions: MarkdownActions;
+  replaceNode?: EuiMarkdownEditorComponent['replaceNode'];
   value: string;
 }
 

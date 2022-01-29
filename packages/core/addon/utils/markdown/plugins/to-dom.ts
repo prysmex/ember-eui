@@ -1,3 +1,7 @@
+/*
+This util was extracted from https://github.com/ampatspell/ember-cli-remark-static/blob/v3.0.5/addon/util/to-dom.js
+*/
+
 import { assert } from '@ember/debug';
 import { RehypeNode } from '../markdown-types';
 

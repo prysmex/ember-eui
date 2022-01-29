@@ -40,8 +40,12 @@ interface Options extends IObjectKeys {
  *
  * @param classes - List of classes that will be joined
  */
-export function classNames(classNames: string[] = [], options: Options): string {
+export function classNames(
+  classNames: string[] = [],
+  options: Options & { addBase: boolean }
+): string {
   let { componentName, ...rest } = options;
+  let includeBase = options.addBase !== false;
   let str = `${classNames.join(' ')}`;
   if (options.componentName) {
     assert(
@@ -49,7 +53,9 @@ export function classNames(classNames: string[] = [], options: Options): string 
       cssMappings[options.componentName] !== undefined
     );
     const component = cssMappings[options.componentName];
-    str = `${str} ${component.base}`;
+    if (includeBase) {
+      str = `${str} ${component.base}`;
+    }
 
     for (let key in rest) {
       if (component.properties[key] && component.properties[key][rest[key]]) {

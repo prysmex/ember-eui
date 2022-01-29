@@ -1,0 +1,18 @@
+{{#if @titleElement}}
+  {{#let (element @titleElement) as |TitleElement|}}
+    <EuiTitle @size={{@titleSize}} ...attributes>
+      <TitleElement
+        aria-hidden="true"
+        {{style (if @isColorClass (hash color=@titleColor))}}
+      >
+        {{yield}}
+      </TitleElement>
+    </EuiTitle>
+  {{/let}}
+{{else}}
+  <EuiTitle @size={{@titleSize}} ...attributes>
+    <p aria-hidden="true" {{style (if @isColorClass (hash color=@titleColor))}}>
+      {{yield}}
+    </p>
+  </EuiTitle>
+{{/if}}

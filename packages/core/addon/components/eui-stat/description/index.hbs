@@ -1,0 +1,16 @@
+{{#if @descriptionElement}}
+  {{#let (element @descriptionElement) as |DescriptionElement|}}
+    <EuiText class="euiStat__description" @size="s">
+      <DescriptionElement aria-hidden="true">
+        {{yield}}
+      </DescriptionElement>
+    </EuiText>
+  {{/let}}
+
+{{else}}
+  <EuiText class="euiStat__description" @size="s">
+    <p aria-hidden="true">
+      {{yield}}
+    </p>
+  </EuiText>
+{{/if}}

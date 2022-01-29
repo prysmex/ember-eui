@@ -53,8 +53,10 @@ import EuiToolTip from './eui-tool-tip';
 import EuiToast from './eui-toast';
 import EuiGlobalToastList from './eui-global-toast-list';
 import EuiCodeBlockImpl from './eui-code-block-impl';
+import EuiStat from './eui-stat';
 
 const mapping: Mapping = {
+  EuiStat,
   EuiCodeBlockImpl,
   EuiAccordion,
   EuiIcon,

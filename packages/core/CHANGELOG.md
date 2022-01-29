@@ -2,6 +2,11 @@
 
 ### Master
 
+### 1.6.1
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Add default yield block for `<EuiStat />`
+
 ### 1.6.0
 🚀 Enhancements
 `@ember-eui/core`

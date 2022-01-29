@@ -2,6 +2,10 @@
 
 ### Master
 
+### 1.6.0
+🚀 Enhancements
+`@ember-eui/core`
+- `<EuiStat/>` component!
 ### 1.5.0
 🚀 Enhancements
 `@ember-eui/validated-form`

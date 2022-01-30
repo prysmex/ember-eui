@@ -2,6 +2,10 @@
 
 ### Master
 
+### 1.6.2
+🐛 Bug / Fixes
+`@ember-eui/validated-form`
+- Bubble the change correctly from `<Form.FieldMarkdownEditor />`
 ### 1.6.1
 🐛 Bug / Fixes
 `@ember-eui/core`

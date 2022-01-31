@@ -1,78 +1,94 @@
 # Demo
 
-** Note: `<EuiChangesetForm::Fields::ComboBox>` is a little bit more manual than the others in order to give you full flexibility of which options are actually selected
+\*\* Note: `<EuiChangesetForm::Fields::ComboBox>` is a little bit more manual than the others in order to give you full flexibility of which options are actually selected
 and how to set them for complex or weird use cases, but we keep setting errors for you via the @fieldName
 
 <EuiSpacer />
 
 ```hbs template
-<EuiChangesetForm @changeset={{changeset this.model this.Validations}} as |Form changesetObj|>
-  <EuiFlexGroup @direction="column" @gutterSize="none" >
-    <Form.FieldText @fieldName="user.firstName" @label="First Name" />
-    <Form.FieldTextArea @fieldName="user.lastName" @label="Last Name" />
+<EuiChangesetForm
+  @changeset={{changeset this.model this.Validations}}
+  as |Form changesetObj|
+>
+  <EuiFlexGroup @direction='column' @gutterSize='none'>
+    <Form.FieldText @fieldName='user.firstName' @label='First Name' />
+    <Form.FieldTextArea @fieldName='user.lastName' @label='Last Name' />
     <Form.FieldRangeSlider
-      @fieldName="rangeSlider1"
-      @label="Range slider"
+      @fieldName='rangeSlider1'
+      @label='Range slider'
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
       @max={{300}}
     />
     <Form.FieldRadioGroup
-      @fieldName="radioGroup"
+      @fieldName='radioGroup'
       @options={{array
-        (hash id="radio-1" label="Radio 1")
-        (hash id="radio-2" label="Radio 2")
-        (hash id="radio-3" label="Radio 3")
+        (hash id='radio-1' label='Radio 1')
+        (hash id='radio-2' label='Radio 2')
+        (hash id='radio-3' label='Radio 3')
       }}
-      @label="Radio Group"
+      @label='Radio Group'
     />
     <Form.FieldCheckboxGroup
-      @fieldName="checkboxGroup"
+      @fieldName='checkboxGroup'
       @options={{array
-        (hash id="checkbox-1" label="Checkbox 1")
-        (hash id="checkbox-2" label="Checkbox 2")
-        (hash id="checkbox-3" label="Checkbox 3")
+        (hash id='checkbox-1' label='Checkbox 1')
+        (hash id='checkbox-2' label='Checkbox 2')
+        (hash id='checkbox-3' label='Checkbox 3')
       }}
-      @label="Checkbox Group"
+      @label='Checkbox Group'
     />
     <Form.FieldSelect
-      @fieldName="country"
+      @fieldName='country'
       @hasNoInitialSelection={{true}}
       @options={{array
-        (hash value="mx" text="Mexico")
-        (hash value="pt" text="Portugal")
-        (hash value="us" text="United States")
+        (hash value='mx' text='Mexico')
+        (hash value='pt' text='Portugal')
+        (hash value='us' text='United States')
       }}
-      @label="Country"
+      @label='Country'
     />
     <Form.FieldComboBox
-      @fieldName="veggies"
-      @label="Choose a veggie"
-      @options={{array "🥦" "🥬" "🍅" "🥑"}}
-      @onChange={{changeset-set changesetObj "veggies"}}
-      @selectedOptions={{changeset-get changesetObj "veggies"}}
-      @helpText="100% natural"
-    as |option|>
+      @fieldName='veggies'
+      @label='Choose a veggie'
+      @options={{array '🥦' '🥬' '🍅' '🥑'}}
+      @onChange={{changeset-set changesetObj 'veggies'}}
+      @selectedOptions={{changeset-get changesetObj 'veggies'}}
+      @helpText='100% natural'
+      as |option|
+    >
       {{option}}
     </Form.FieldComboBox>
     <Form.FieldComboBox
-      @fieldName="favVeggie"
-      @label="Now choose your favorite veggie!"
-      @options={{array "🥦" "🥬" "🍅" "🥑"}}
-      @helpText="100% natural"
-      @onChange={{changeset-set changesetObj "favVeggie"}}
-      @selectedOptions={{to-array changeset-get changesetObj "favVeggie"}}
+      @fieldName='favVeggie'
+      @label='Now choose your favorite veggie!'
+      @options={{array '🥦' '🥬' '🍅' '🥑'}}
+      @helpText='100% natural'
+      @onChange={{changeset-set changesetObj 'favVeggie'}}
+      @selectedOptions={{pick
+        'firstObject'
+        (changeset-get changesetObj 'favVeggie')
+      }}
       @singleSelection={{hash asPlainText=true}}
-    as |option|>
+      as |option|
+    >
       {{option}}
     </Form.FieldComboBox>
-    <Form.FieldNumber @fieldName="age" @label="Age" />
-    <Form.FieldText @fieldName="email" @label="Email" />
-    <Form.FieldSwitch @fieldClasses="euiFlexItem" @fieldName="switch" @label="Switch" @switchLabel="Switch Text"/>
-    <Form.FieldPassword @fieldName="password" @label="Password" />
-    <Form.FieldPassword @fieldName="passwordConfirmation" @label="Password Confirmation" />
-    <EuiButton @type="submit" @isDisabled={{changesetObj.isInvalid}}>
+    <Form.FieldNumber @fieldName='age' @label='Age' />
+    <Form.FieldText @fieldName='email' @label='Email' />
+    <Form.FieldSwitch
+      @fieldClasses='euiFlexItem'
+      @fieldName='switch'
+      @label='Switch'
+      @switchLabel='Switch Text'
+    />
+    <Form.FieldPassword @fieldName='password' @label='Password' />
+    <Form.FieldPassword
+      @fieldName='passwordConfirmation'
+      @label='Password Confirmation'
+    />
+    <EuiButton @type='submit' @isDisabled={{changesetObj.isInvalid}}>
       Submit form
     </EuiButton>
   </EuiFlexGroup>

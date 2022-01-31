@@ -12,7 +12,7 @@
       </EuiToolTip>
 
     {{/each}}
-    <span className="euiMarkdownEditorToolbar__divider"></span>
+    <span class="euiMarkdownEditorToolbar__divider"></span>
     {{#each this.listButtons as |item|}}
       <EuiToolTip @content={{item.label}} @delay="long">
         <EuiButtonIcon
@@ -26,7 +26,7 @@
       </EuiToolTip>
 
     {{/each}}
-    <span className="euiMarkdownEditorToolbar__divider"></span>
+    <span class="euiMarkdownEditorToolbar__divider"></span>
     {{#each this.quoteCodeLinkButtons as |item|}}
       <EuiToolTip @content={{item.label}} @delay="long">
         <EuiButtonIcon
@@ -40,7 +40,7 @@
 
     {{/each}}
     {{#if (gte this.uiPlugins.length 0)}}
-      <span className="euiMarkdownEditorToolbar__divider"></span>
+      <span class="euiMarkdownEditorToolbar__divider"></span>
       {{#each this.uiPlugins as |plugin|}}
         {{#let
           (and @selectedNode (eq @selectedNode.type plugin.name))

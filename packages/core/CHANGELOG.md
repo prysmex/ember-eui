@@ -2,6 +2,11 @@
 
 ### Master
 
+### 1.6.3
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Fix inline-styling weird bug
+
 ### 1.6.2
 🐛 Bug / Fixes
 `@ember-eui/validated-form`

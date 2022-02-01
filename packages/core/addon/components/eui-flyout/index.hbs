@@ -2,37 +2,46 @@
   <EuiOverlayMask @headerZindexLocation="below" {{on "click" @onClose}} />
 {{/if}}
 {{set-body-class "euiBody--hasFlyout"}}
-<div
-  role="dialog"
-  class={{class-names
-    (if (eq @maxWidth true) "euiFlyout--maxWidth-default")
-    componentName="EuiFlyout"
-    size=(arg-or-default @size "m")
-  }}
-  tabindex={{0}}
-  ...attributes
-  {{style
-    (if (not (or (eq @maxWidth false) (eq @maxWidth true))) (inline-styles max-width=@maxWidth))
-  }}
-  {{focus-trap
-    isActive=(arg-or-default @isFocusTrapActive true)
-    shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
-    isPaused=(arg-or-default @isFocusTrapPaused false)
-    focusTrapOptions=(arg-or-default
-      @focusTrapOptions (hash allowOutsideClick=true clickOutsideDeactivates=(not @ownFocus))
-    )
-  }}
-  {{on-key "Escape" @onClose}}
->
-  {{#if (and @onClose (not @hideCloseButton))}}
-    <EuiButtonIcon
-      class="euiFlyout__closeButton"
-      aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
-      @iconType="cross"
-      @color="text"
-      data-test-subj="euiFlyoutCloseButton"
-      {{on "click" @onClose}}
-    />
-  {{/if}}
-  {{yield}}
-</div>
+
+{{#let
+  (if
+    (not (or (eq @maxWidth false) (eq @maxWidth true)))
+    (inline-styles max-width=@maxWidth)
+    (hash)
+  )
+  as |inlineStyles|
+}}
+  <div
+    role="dialog"
+    class={{class-names
+      (if (eq @maxWidth true) "euiFlyout--maxWidth-default")
+      componentName="EuiFlyout"
+      size=(arg-or-default @size "m")
+    }}
+    tabindex={{0}}
+    ...attributes
+    {{style inlineStyles}}
+    {{focus-trap
+      isActive=(arg-or-default @isFocusTrapActive true)
+      shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
+      isPaused=(arg-or-default @isFocusTrapPaused false)
+      focusTrapOptions=(arg-or-default
+        @focusTrapOptions
+        (hash allowOutsideClick=true clickOutsideDeactivates=(not @ownFocus))
+      )
+    }}
+    {{on-key "Escape" @onClose}}
+  >
+    {{#if (and @onClose (not @hideCloseButton))}}
+      <EuiButtonIcon
+        class="euiFlyout__closeButton"
+        aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
+        @iconType="cross"
+        @color="text"
+        data-test-subj="euiFlyoutCloseButton"
+        {{on "click" @onClose}}
+      />
+    {{/if}}
+    {{yield}}
+  </div>
+{{/let}}

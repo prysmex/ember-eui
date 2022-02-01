@@ -1,18 +1,24 @@
-<ul
-  class={{class-names
-    (if (eq @maxWidth true) "euiListGroup-maxWidthDefault")
-    (if @bordered "euiListGroup-bordered")
-    (if @flush "euiListGroup-flush")
-    componentName="EuiListGroup"
-    gutterSize=(arg-or-default @gutterSize "s")
-  }}
-  ...attributes
-  {{style
-    (if
-      (and @maxWidth (not-eq @maxWidth true))
-      (inline-styles componentName="EuiListGroup" componentArgs=(hash maxWidth=@maxWidth))
+{{#let
+  (if
+    (and @maxWidth (not-eq @maxWidth true))
+    (inline-styles
+      componentName="EuiListGroup" componentArgs=(hash maxWidth=@maxWidth)
     )
-  }}
->
-  {{yield}}
-</ul>
+    (hash)
+  )
+  as |inlineStyles|
+}}
+  <ul
+    class={{class-names
+      (if (eq @maxWidth true) "euiListGroup-maxWidthDefault")
+      (if @bordered "euiListGroup-bordered")
+      (if @flush "euiListGroup-flush")
+      componentName="EuiListGroup"
+      gutterSize=(arg-or-default @gutterSize "s")
+    }}
+    ...attributes
+    {{style inlineStyles}}
+  >
+    {{yield}}
+  </ul>
+{{/let}}

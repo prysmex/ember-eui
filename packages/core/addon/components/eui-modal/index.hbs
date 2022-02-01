@@ -1,28 +1,37 @@
-<div
-  class={{class-names "euiModal" (if (eq @maxWidth true) "euiModal--maxWidth-default")}}
-  tabindex="0"
-  ...attributes
-  {{style
-    (if
-      (and @maxWidth (not-eq @maxWidth true))
-      (inline-styles componentName="EuiModal" componentArgs=(hash maxWidth=@maxWidth))
+{{#let
+  (if
+    (and @maxWidth (not-eq @maxWidth true))
+    (inline-styles
+      componentName="EuiModal" componentArgs=(hash maxWidth=@maxWidth)
     )
-  }}
-  {{focus-trap
-    isActive=(arg-or-default @isFocusTrapActive true)
-    shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
-    isPaused=(arg-or-default @isFocusTrapPaused false)
-    focusTrapOptions=(arg-or-default @focusTrapOptions (hash))
-  }}
-  {{on-key "Escape" @onClose}}
->
-  <EuiButtonIcon
-    class="euiModal__closeIcon"
-    @iconType="cross"
-    @color="text"
-    {{on "click" @onClose}}
-  />
-  <div class="euiModal__flex">
-    {{yield}}
+    (hash)
+  )
+  as |inlineStyles|
+}}
+  <div
+    class={{class-names
+      "euiModal"
+      (if (eq @maxWidth true) "euiModal--maxWidth-default")
+    }}
+    tabindex="0"
+    ...attributes
+    {{style inlineStyles}}
+    {{focus-trap
+      isActive=(arg-or-default @isFocusTrapActive true)
+      shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
+      isPaused=(arg-or-default @isFocusTrapPaused false)
+      focusTrapOptions=(arg-or-default @focusTrapOptions (hash))
+    }}
+    {{on-key "Escape" @onClose}}
+  >
+    <EuiButtonIcon
+      class="euiModal__closeIcon"
+      @iconType="cross"
+      @color="text"
+      {{on "click" @onClose}}
+    />
+    <div class="euiModal__flex">
+      {{yield}}
+    </div>
   </div>
-</div>
+{{/let}}

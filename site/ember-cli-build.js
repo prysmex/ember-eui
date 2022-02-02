@@ -56,7 +56,7 @@ module.exports = function (defaults) {
 
     // Add options here
     '@ember-eui/core': {
-      theme: 'dark'
+      theme: 'light'
     },
     'ember-cli-netlify': {
       redirects: ['/* /index.html 200']

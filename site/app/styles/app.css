@@ -4,8 +4,8 @@
 
 @import './markdown/markdown.css';
 @import './markdown/structure.css';
-@import './markdown/dark.css';
-/* @import './markdown/light.css'; */
+/* @import './markdown/dark.css'; */
+@import './markdown/light.css';
 @import './highlight.css';
 @import 'ember-eui.scss';
 *,

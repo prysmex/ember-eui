@@ -8524,9 +8524,10 @@ ember-style-modifier@^0.7.0:
     ember-cli-babel "^7.26.6"
     ember-modifier "^3.0.0"
 
-"ember-svg-jar@https://github.com/betocantu93/ember-svg-jar.git#add-bundle-flag":
-  version "2.3.3"
-  resolved "https://github.com/betocantu93/ember-svg-jar.git#c1096229659006111b916bd1b9bbba1b81588e95"
+ember-svg-jar@^2.3.4:
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/ember-svg-jar/-/ember-svg-jar-2.3.4.tgz#ed80aa137db8440e51448f58f09afb6c140e9b5f"
+  integrity sha512-EkY7fGeDevLROkDRsN+654THJT2b3cBVi8YH0v9mDofiASPBOlP3NgDs9q1WA1hU6cP68m08vXk/E40ayIVZzQ==
   dependencies:
     broccoli-caching-writer "^3.0.3"
     broccoli-concat "^3.7.4"
@@ -8538,8 +8539,8 @@ ember-style-modifier@^0.7.0:
     broccoli-svg-optimizer "2.0.0"
     cheerio "^0.22.0"
     console-ui "^3.1.1"
-    ember-cli-babel "^7.22.1"
-    ember-cli-htmlbars "^5.3.1"
+    ember-cli-babel "^7.26.6"
+    ember-cli-htmlbars "^5.7.1"
     json-stable-stringify "^1.0.1"
     lodash "^4.17.15"
     mkdirp "^0.5.1"

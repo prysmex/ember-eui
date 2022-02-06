@@ -79,7 +79,7 @@
     "@fullhuman/postcss-purgecss": "^4.0.2",
     "autoprefixer": "^10.2.5",
     "ember-cli-resolve-asset": "^0.3.0",
-    "ember-svg-jar": "https://github.com/betocantu93/ember-svg-jar.git#add-bundle-flag",
+    "ember-svg-jar": "^2.3.4",
     "postcss-import": "^14.0.0",
     "postcss-nested": "^5.0.3",
     "remark-autolink-headings": "^6.0.1",

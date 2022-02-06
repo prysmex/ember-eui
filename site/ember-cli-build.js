@@ -72,10 +72,6 @@ module.exports = function (defaults) {
     },
 
     svgJar: {
-      strategy: ['hbs'],
-      hbs: {
-        stripPath: false
-      },
       sourceDirs: [
         'public/assets',
         '../node_modules/@ember-eui/core/public',

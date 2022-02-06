@@ -16,24 +16,26 @@
       ...attributes
     />
   {{else}}
-    <Svg
-      @name={{this.icon}}
-      @loadingSvg={{this.emptyIcon}}
-      class={{class-names
-        this.optionalColorClass
-        (if this.isAppIcon "euiIcon--app")
-        componentName="EuiIcon"
-        size=this.size
-      }}
-      style={{this.optionalCustomStyles}}
-      tabIndex={{this.tabIndex}}
-      role="image"
-      aria-hidden={{if this.isAriaHidden true}}
-      aria-label={{if @aria-label @aria-label this.titleId}}
-      aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
-      @title={{@title}}
-      @onIconLoad={{@onIconLoad}}
+    <div
+      class={{class-names "euiIcon" (if this.isAppIcon "euiIcon--app")}}
       ...attributes
-    />
+    >
+      {{svg-jar
+        this.icon
+        class=(class-names
+          this.optionalColorClass
+          (if this.isAppIcon "euiIcon--app")
+          componentName="EuiIcon"
+          addBase=false
+          size=this.size
+        )
+        role="image"
+        aria-hidden=(if this.isAriaHidden "true")
+        aria-label=(if @aria-label @aria-label this.titleId)
+        aria-labelledby=(if @aria-labelledby @aria-labelledby this.titleId)
+        tabindex=this.tabIndex
+        style=this.optionalCustomStyles
+      }}
+    </div>
   {{/if}}
 {{/if}}

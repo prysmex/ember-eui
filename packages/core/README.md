@@ -1,7 +1,6 @@
 # ember-eui
 
 This project aims to provide ember components implementing the css layer of https://elastic.github.io/eui
-
 ### Icons
 
 For icons to work you will need to:
@@ -27,9 +26,9 @@ var app = new EmberApp(defaults, {
 
 ## Compatibility
 
-- Ember.js v3.12 or above
-- Ember CLI v2.13 or above
-- Node.js v10 or above
+* Ember.js v3.20 or above
+* Ember CLI v3.20 or above
+* Node.js v12 or above
 
 ## Installation
 

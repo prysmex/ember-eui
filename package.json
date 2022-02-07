@@ -12,5 +12,8 @@
   },
   "volta": {
     "node": "12.22.1"
+  },
+  "resolutions": {
+    "@embroider/macros": "1.0.0"
   }
 }

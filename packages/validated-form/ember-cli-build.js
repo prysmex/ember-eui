@@ -2,34 +2,31 @@
 
 const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
 
-module.exports = function(defaults) {
+module.exports = function (defaults) {
   let app = new EmberAddon(defaults, {
     // Add options here
 
     // Add options here
-    "@ember-eui/core": {
-      theme: "dark",
+    '@ember-eui/core': {
+      theme: 'dark'
     },
 
     fingerprint: {
       enabled: true,
-      generateAssetMap: true,
+      generateAssetMap: true
     },
 
-    "ember-fetch": {
-      preferNative: true, // Recommended to enable faster preloading for browsers that support it.
+    'ember-fetch': {
+      preferNative: true // Recommended to enable faster preloading for browsers that support it.
     },
 
     svgJar: {
-      strategy: ["hbs"],
-      hbs: {
-        stripPath: false,
-      },
       sourceDirs: [
-        "public/assets",
-        "../../node_modules/@elastic/eui/lib/components/icon",
-      ],
-    },
+        'public/assets',
+        '../node_modules/@ember-eui/core/public',
+        'node_modules/@elastic/eui/lib/components/icon'
+      ]
+    }
   });
 
   /*

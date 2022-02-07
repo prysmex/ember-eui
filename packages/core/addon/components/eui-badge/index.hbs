@@ -67,7 +67,7 @@
     }}
   >
     <span class="euiBadge__content">
-      {{#if hasBlock}}
+      {{#if (has-block)}}
         {{#if @onClick}}
           <button
             class="euiBadge__childButton"
@@ -101,14 +101,14 @@
             class={{class-names "euiBadge__icon" @closeButtonProps.iconClasses}}
             @type={{@iconType}}
             data-selected-index={{@closeButtonProps.dataSelectedIconIndex}}
-            @size={{if hasBlock "s" "m"}}
+            @size={{if (has-block) "s" "m"}}
           />
         </button>
         {{! tempalte-lint-enable}}
       {{else}}
         <EuiIcon
           @type={{@iconType}}
-          @size={{if hasBlock "s" "m"}}
+          @size={{if (has-block) "s" "m"}}
           class="euiBadge__icon"
         />
       {{/if}}

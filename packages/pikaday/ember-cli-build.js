@@ -20,13 +20,10 @@ module.exports = function (defaults) {
     },
 
     svgJar: {
-      strategy: ['hbs'],
-      hbs: {
-        stripPath: false
-      },
       sourceDirs: [
         'public/assets',
-        '../../node_modules/@elastic/eui/lib/components/icon'
+        '../node_modules/@ember-eui/core/public',
+        'node_modules/@elastic/eui/lib/components/icon'
       ]
     }
   });

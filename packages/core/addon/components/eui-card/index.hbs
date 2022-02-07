@@ -9,7 +9,7 @@
       (if (eq @layout "horizontal") "euiCard--horizontal")
       (if (and (eq @display "plain") (not @selectable)) "euiCard--plain")
       (if @isDisabled "euiCard-isDisabled")
-      (if hasBlock "euiCard--hasChildren")
+      (if (has-block) "euiCard--hasChildren")
       (if @icon "euiCard--hasIcon" (if has-block "icon" "euiCard--hasIcon"))
       (if @betaBadgeLabel "euiCard--hasBetaBadge")
       (if

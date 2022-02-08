@@ -66,4 +66,6 @@ export function classNames(
   return str;
 }
 
-export default helper(classNames);
+export default helper<string[], Options & { addBase: boolean }, string>(
+  classNames
+);

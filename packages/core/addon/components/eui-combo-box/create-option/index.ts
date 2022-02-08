@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { isHTMLSafe, htmlSafe } from '@ember/string';
+import { isHTMLSafe, htmlSafe } from '@ember/template';
 import { get } from '@ember/object';
 
 type EuiComboBoxCreateOptionArgs = {

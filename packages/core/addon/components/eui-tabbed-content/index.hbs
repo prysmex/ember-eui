@@ -1,7 +1,7 @@
 {{#let
   (unique-id)
   (optional @onTabClick)
-  (arg-or-default @autoFocus "initial")
+  (arg-or-default @autoFocus 'initial')
   (use-state
     (get-tab-id
       (arg-or-default (or @selectedTab @initialSelectedTab) (object-at 0 @tabs))

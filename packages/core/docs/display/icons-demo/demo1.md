@@ -1,16 +1,6 @@
 # Demo
 
 ```hbs template
-<EuiText style='cursor: pointer;' {{on 'mousemove' this.update}}>
-  You can hover on the icon below, open the network tab, all svgs are loaded on
-  demand!
-  <EuiIcon @type={{this.icon}} />
-  <EuiIcon @type={{this.icon}} @size='m' />
-  <EuiIcon @type={{this.icon}} @size='l' />
-  <EuiIcon @type={{this.icon}} @size='xl' />
-  <EuiIcon @type={{this.icon}} @size='xxl' />
-</EuiText>
-<br />
 <EuiIcon @type='logoGolang' />
 <EuiIcon @type='logoGolang' @size='m' />
 <EuiIcon @type='logoGolang' @size='l' />

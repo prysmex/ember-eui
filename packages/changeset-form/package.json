@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/changeset-form",
-  "version": "1.6.3",
+  "version": "0.0.0",
   "description": "Ember Eui changeset integration",
   "keywords": [
     "ember-addon",

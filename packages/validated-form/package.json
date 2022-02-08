@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/validated-form",
-  "version": "1.6.3",
+  "version": "0.0.0",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon"

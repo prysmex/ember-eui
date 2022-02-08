@@ -29,8 +29,11 @@ var app = new EmberApp(defaults, {
 
 * Ember.js v3.20 or above
 * Ember CLI v3.20 or above
-* Node.js v10 or above
-## Installation
+* Node.js v12 or above
+
+
+Installation
+------------------------------------------------------------------------------
 
 ```
 ember install @ember-eui/core

@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/validated-form",
-  "version": "0.0.0",
+  "version": "1.6.3",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon"
@@ -33,7 +33,7 @@
     "ember-cli-htmlbars": "^5.7.1",
     "ember-cli-typescript": "^4.1.0",
     "ember-composable-helpers": "^4.4.1",
-    "ember-get-config": "^0.3.0",
+    "ember-get-config": "~1.0.2",
     "ember-named-blocks-polyfill": "^0.2.3",
     "ember-svg-jar": "^2.3.4",
     "ember-validators": "github:betocantu93/ember-validators#dont-mutate"
@@ -72,7 +72,6 @@
     "ember-cli": "~3.28.0",
     "ember-cli-dependency-checker": "^3.2.0",
     "ember-cli-inject-live-reload": "^2.1.0",
-    "ember-cli-resolve-asset": "^0.3.0",
     "ember-cli-sri": "^2.1.1",
     "ember-cli-terser": "^4.0.2",
     "ember-cli-typescript-blueprints": "^3.0.0",

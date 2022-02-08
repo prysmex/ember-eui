@@ -48,6 +48,8 @@ module.exports = {
         './lib/*/index.js',
         './server/**/*.js',
         './index.js',
+        './tests/dummy/config/**/*.js',
+        './index.js',
         './tests/dummy/config/**/*.js'
       ],
       parserOptions: {

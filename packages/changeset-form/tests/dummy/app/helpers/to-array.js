@@ -8,6 +8,5 @@ function isEmptied(o, allowNull = false) {
 }
 
 export default helper(function ([o], { allowNull = false }) {
-
   return isArray(o) ? o : isEmptied(o, allowNull) ? [] : [o];
 });

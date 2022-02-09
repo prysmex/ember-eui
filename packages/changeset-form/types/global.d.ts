@@ -1,11 +1,11 @@
 // Types for compiled templates
-declare module "ember-eui-forms/templates/*" {
-  import { TemplateFactory } from "htmlbars-inline-precompile";
+declare module '@ember-eui/changeset-form/templates/*' {
+  import { TemplateFactory } from 'htmlbars-inline-precompile';
   const tmpl: TemplateFactory;
   export default tmpl;
 }
 
-declare module "ember-changeset-validations/*" {
+declare module 'ember-changeset-validations/*' {
   type Options = {};
   type Validator = (options: Options) => unknown;
   const validatePresence: Validator;
@@ -18,6 +18,6 @@ declare module "ember-changeset-validations/*" {
     validateLength,
     validateConfirmation,
     validateFormat,
-    validateNumber,
+    validateNumber
   };
 }

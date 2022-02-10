@@ -2,8 +2,12 @@
 
 ### Master
 
+### 3.0.2
+`@ember-eui/core`
+🐛 Bug / Fixes
+- Fix `<EuiMarkdownEditor />` icons compatibility with ember-source < 3.27
+
 ### 3.0.1
-💥 Breaking change
 `@ember-eui/core`
 🚀 Enhancements
 - No longer need to add icons from public icons in ember-eui/core

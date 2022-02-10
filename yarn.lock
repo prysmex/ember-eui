@@ -1267,12 +1267,12 @@
     ember-cli-version-checker "^5.1.2"
     semver "^7.3.5"
 
-"@embroider/macros@1.0.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.0.0.tgz#2dfab550ba4e03cbf6e3524759949749ced98cc2"
-  integrity sha512-RutDJ27j1eFQulyv83yJm27oSypsMd/UZyy62Q0NU00TIsIgQPCXaDiGIONWcJuAAVbtBRP3X4LMvaBAeq5g+A==
+"@embroider/macros@1.2.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.42.3", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.2.0.tgz#9a2d99225fba6dcb69e795cddad9f4948c2a2b6b"
+  integrity sha512-WD2V3OKXZB73OymI/zC2+MbqIYaAskhjtSOVVY6yG6kWILyVsJ6+fcbNHEnZyGqs4sm0TvHVJfevmA2OXV8Pww==
   dependencies:
-    "@embroider/shared-internals" "1.0.0"
+    "@embroider/shared-internals" "1.2.0"
     assert-never "^1.2.1"
     babel-import-util "^1.1.0"
     ember-cli-babel "^7.26.6"
@@ -1281,10 +1281,10 @@
     resolve "^1.20.0"
     semver "^7.3.2"
 
-"@embroider/shared-internals@1.0.0", "@embroider/shared-internals@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@embroider/shared-internals/-/shared-internals-1.0.0.tgz#b081708ac79e4582f17ba0f3e3796e6612a8976c"
-  integrity sha512-Vx3dmejJxI5MG/qC7or3EUZY0AZBSBNOAR50PYotX3LxUSb4lAm5wISPnFbwEY4bbo2VhL/6XtWjMv8ZMcaP+g==
+"@embroider/shared-internals@1.2.0", "@embroider/shared-internals@^1.0.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@embroider/shared-internals/-/shared-internals-1.2.0.tgz#edb3ca7e8528be713dab01818e8caad2dc937fba"
+  integrity sha512-11RfGuXxT+m2xPcpny/ENHjw53CuKPcrx7222LFQ53+I09hLxsvPCsH8be5E99LePDA46YGX41vxOxxfowD4OQ==
   dependencies:
     babel-import-util "^1.1.0"
     ember-rfc176-data "^0.3.17"
@@ -1295,19 +1295,19 @@
     typescript-memoize "^1.0.1"
 
 "@embroider/test-setup@^0.43.5", "@embroider/test-setup@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@embroider/test-setup/-/test-setup-1.0.0.tgz#f0841345326bcb55eee8437be37f3a8207146b37"
-  integrity sha512-jnrzNyL0mUZ+DTY59s4Yr/V+NgECpwKxuxdKJOr0hNCxC6Kpo5Dagjz22tEyiMOkZhuDdZ4qAqmTUpeu8taLnQ==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@embroider/test-setup/-/test-setup-1.2.0.tgz#89220b1f77b6d16b9100686e28958c7643762d40"
+  integrity sha512-2N/+yqNmiDmh+wCDCPPYFSJX7wInWwQPEEkCU8GHM/S0GUHS6tsMEZK5ZxlbgLDCT/OP2AxGpeWIEBUMgQsA8w==
   dependencies:
     lodash "^4.17.21"
     resolve "^1.20.0"
 
 "@embroider/util@^0.39.1 || ^0.40.0 || ^0.41.0", "@embroider/util@^0.39.1 || ^0.40.0 || ^0.41.0 || ^1.0.0", "@embroider/util@^0.47.2", "@embroider/util@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@embroider/util/-/util-1.0.0.tgz#e15cc055a71019a75265f77485328d25a2843d5d"
-  integrity sha512-WQ6Dg3K5MXRbGP7N8yl1x63djohB4rbBE4qQMriA5blg2cav/eiNT2Vgh//Ft9j+auz46o4lzGmWVtzqVLWgeg==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@embroider/util/-/util-1.2.0.tgz#8aa8413252ca4a566cb482b46be3b41997f36ea2"
+  integrity sha512-uWgEAhMWghljnYxwsSKZkrB3tY9avJlkJoHvjN+ZazwP/5EfsB7Ck++2WEfIOBOOPEoQr1MYHVlvr+hIMwLrVw==
   dependencies:
-    "@embroider/macros" "1.0.0"
+    "@embroider/macros" "1.2.0"
     broccoli-funnel "^3.0.5"
     ember-cli-babel "^7.23.1"
 
@@ -7205,7 +7205,18 @@ ember-changeset-validations@^3.16.0:
     ember-validators "~4.0.0"
     validated-changeset "~1.0.0"
 
-ember-changeset@^3.15.0, "ember-changeset@github:betocantu93/ember-changeset#v3.15.1":
+ember-changeset@^3.15.0:
+  version "3.15.0"
+  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.15.0.tgz#402bbb9b51dc44596415c1c7b0e3a4923b1d3e81"
+  integrity sha512-yLyU3quV96EFjYzYUjIK4je5nnemZdbElYLFnXYJ5StXquCRjdFvL79gst/vs6ZjVFbkRKnLjsVP8YMkED0P2g==
+  dependencies:
+    "@embroider/macros" "^0.42.3"
+    "@glimmer/tracking" "^1.0.1"
+    ember-auto-import "^1.11.3"
+    ember-cli-babel "^7.26.6"
+    validated-changeset "1.0.0"
+
+"ember-changeset@github:betocantu93/ember-changeset#v3.15.1":
   version "3.15.0"
   resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/fea413e284d00389a26d6427ad5c9bd8f280782a"
   dependencies:

@@ -3,7 +3,6 @@ import { action } from '@ember/object';
 import type MarkdownActions from '../../utils/markdown/markdown-actions';
 import { MODE_VIEWING } from '../../utils/markdown/markdown-modes';
 import { cached } from '@glimmer/tracking';
-import MarkdownCheckmarkComponent from './icons/markdown-checkmark';
 
 import { Plugin } from 'unified';
 
@@ -50,7 +49,10 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
         label: 'Task list',
         name: 'tl',
         useSvg: true,
-        iconType: MarkdownCheckmarkComponent
+        iconType: {
+          // this should't be needed when we drop support for 3.24.0
+          component: 'eui-markdown-editor-toolbar/icons/markdown-checkmark'
+        }
       }
     ];
   }

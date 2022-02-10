@@ -5,6 +5,7 @@
       {{! pending implementation}}
       <EuiButtonIcon
         @iconType={{component "eui-loading-spinner"}}
+        @useComponent={{true}}
         {{! aria-label={ariaLabels.uploadingFiles} }}
       />
     {{/if}}
@@ -29,7 +30,8 @@
   </div>
   <EuiButtonIcon
     class="euiMarkdownEditorFooter__help"
-    @iconType={{this.markdownLogo}}
+    @iconType={{component "eui-markdown-editor-footer/icons/markdown-logo"}}
+    @useComponent={{true}}
     @color="text"
     @useSvg={{true}}
     {{! aria-label={ariaLabels.showMarkdownHelp} }}

@@ -1267,7 +1267,7 @@
     ember-cli-version-checker "^5.1.2"
     semver "^7.3.5"
 
-"@embroider/macros@1.2.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.42.3", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0":
+"@embroider/macros@1.2.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.2.0.tgz#9a2d99225fba6dcb69e795cddad9f4948c2a2b6b"
   integrity sha512-WD2V3OKXZB73OymI/zC2+MbqIYaAskhjtSOVVY6yG6kWILyVsJ6+fcbNHEnZyGqs4sm0TvHVJfevmA2OXV8Pww==
@@ -7205,18 +7205,7 @@ ember-changeset-validations@^3.16.0:
     ember-validators "~4.0.0"
     validated-changeset "~1.0.0"
 
-ember-changeset@^3.15.0:
-  version "3.15.0"
-  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.15.0.tgz#402bbb9b51dc44596415c1c7b0e3a4923b1d3e81"
-  integrity sha512-yLyU3quV96EFjYzYUjIK4je5nnemZdbElYLFnXYJ5StXquCRjdFvL79gst/vs6ZjVFbkRKnLjsVP8YMkED0P2g==
-  dependencies:
-    "@embroider/macros" "^0.42.3"
-    "@glimmer/tracking" "^1.0.1"
-    ember-auto-import "^1.11.3"
-    ember-cli-babel "^7.26.6"
-    validated-changeset "1.0.0"
-
-"ember-changeset@github:betocantu93/ember-changeset#v3.15.1":
+ember-changeset@^3.15.0, "ember-changeset@github:betocantu93/ember-changeset#v3.15.1":
   version "3.15.0"
   resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/fea413e284d00389a26d6427ad5c9bd8f280782a"
   dependencies:

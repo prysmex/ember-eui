@@ -3,7 +3,8 @@ import { action } from '@ember/object';
 import type MarkdownActions from '../../utils/markdown/markdown-actions';
 import { MODE_VIEWING } from '../../utils/markdown/markdown-modes';
 import { cached } from '@glimmer/tracking';
-import { getOwner } from '@ember/application';
+import MarkdownCheckmarkComponent from './icons/markdown-checkmark';
+
 import { Plugin } from 'unified';
 
 export interface EuiMarkdownEditorToolbarArgs {
@@ -29,13 +30,6 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     }
   ];
 
-  get svgPath() {
-    //@ts-ignore
-    const config = getOwner(this).resolveRegistration('config:environment');
-    const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg/';
-    return svgPath;
-  }
-
   @cached
   get listButtons() {
     return [
@@ -56,7 +50,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
         label: 'Task list',
         name: 'tl',
         useSvg: true,
-        iconType: `${this.svgPath}markdown-checkmark`
+        iconType: MarkdownCheckmarkComponent
       }
     ];
   }

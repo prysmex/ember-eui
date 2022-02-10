@@ -74,7 +74,6 @@ module.exports = function (defaults) {
     svgJar: {
       sourceDirs: [
         'public/assets',
-        '../node_modules/@ember-eui/core/public',
         '../node_modules/@elastic/eui/lib/components/icon'
       ]
     }

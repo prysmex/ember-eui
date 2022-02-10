@@ -1,6 +1,23 @@
-{{#if this.icon.inner}}
+{{#if this.icon.moduleName}}
   {{! has the shape of a curried component }}
-  {{component this.icon}}
+  {{#let (component this.icon) as |IconComponent|}}
+    {{!template-lint-disable}}
+    <IconComponent
+      class={{class-names
+        this.optionalColorClass
+        (if this.isAppIcon "euiIcon--app")
+        componentName="EuiIcon"
+        size=this.size
+      }}
+      role="image"
+      aria-hidden={{if this.isAriaHidden "true"}}
+      aria-label={{if @aria-label @aria-label this.titleId}}
+      aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
+      tabindex={{this.tabIndex}}
+      style={{this.optionalCustomStyles}}
+      ...attributes
+    />
+  {{/let}}
 {{else}}
   {{#if this.useImage}}
     <img

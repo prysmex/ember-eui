@@ -29,8 +29,6 @@ type IconColor = string | NamedColor;
 
 export type IconSize = keyof typeof sizeToClassNameMap;
 
-// const SVG_PREI : string | undefined = config['ember-eui'].svgPath || 'svg/assets';
-
 export type EuiIconArgs = CommonArgs & {
   /**
    * `Enum` is any of the named icons listed in the docs, `string` is usually a URL to an SVG file, and `elementType` is any Ember Icon SVG component

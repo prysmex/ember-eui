@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { getOwner } from '@ember/application';
+import MarkdownLogoComponent from './icons/markdown-logo';
 
 export interface EuiMarkdownEditorFooterArgs {}
 
@@ -8,14 +8,7 @@ export default class EuiMarkdownEditorFooterComponent extends Component<EuiMarkd
   @tracked isPopoverOpen = false;
   @tracked isShowingHelp = false;
 
-  get svgPath() {
-    //@ts-ignore
-    const config = getOwner(this).resolveRegistration('config:environment');
-    const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg/';
-    return svgPath;
-  }
-
   get markdownLogo() {
-    return `${this.svgPath}markdown-logo`;
+    return MarkdownLogoComponent;
   }
 }

@@ -188,6 +188,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     };
 
     function identityCompiler(this: Processor) {
+      //eslint-disable-next-line
       this.Compiler = Compiler;
     }
     return unified().use(this.parsingPluginList).use(identityCompiler);

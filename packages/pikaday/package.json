@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/pikaday",
-  "version": "1.6.3",
+  "version": "3.0.0",
   "description": "ember-pikaday integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@ember-decorators/component": "^6.1.0",
-    "@ember-eui/core": "^1.6.3",
+    "@ember-eui/core": "^3.0.0",
     "@types/ember": "^3.16.4",
     "ember-cli-babel": "^7.26.6",
     "ember-cli-htmlbars": "^5.7.1",

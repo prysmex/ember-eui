@@ -2,6 +2,11 @@
 
 ### Master
 
+### 2.0.0
+💥 Breaking change
+`@ember-eui/core`
+- Deprecate `ember-svg-jar` `hbs` strategy for now, just use stock `ember-svg-jar`
+
 ### 1.6.3
 🐛 Bug / Fixes
 `@ember-eui/core`

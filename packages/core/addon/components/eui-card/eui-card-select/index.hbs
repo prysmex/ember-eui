@@ -17,7 +17,7 @@
   aria-checked={{@isSelected}}
   ...attributes
 >
-  {{#if hasBlock}}
+  {{#if (has-block)}}
     {{yield}}
   {{else if @isSelected}}
     Selected

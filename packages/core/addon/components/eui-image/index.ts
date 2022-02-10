@@ -1,6 +1,6 @@
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { htmlSafe } from '@ember/string';
+import { htmlSafe } from '@ember/template';
 import { action } from '@ember/object';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { sizeMapping } from '../../utils/css-mappings/eui-image';

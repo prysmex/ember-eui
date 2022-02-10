@@ -42,21 +42,3 @@ var app = new EmberApp(defaults, {
   //...
 });
 ```
-By default, `@ember-eui/core` will only include the compiled css theme version. If by any means you need to extend or access to css variables you can opt in:
-
-```javascript
-// ember-cli-build.js
-var app = new EmberApp(defaults, {
-  //...
-    '@ember-eui/core': {
-      useCompiledCss: false
-    },
-  //...
-});
-```
-
-And then import it inside your app/styles/app.sass, word of caution, the performance of recompiling elastic sass is really noticable, so try to avoid this.
-
-```css
-@import 'ember-eui-core';
-```

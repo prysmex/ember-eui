@@ -90,6 +90,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   get useSvg(): boolean {
+    //@ts-ignore
     const config = getOwner(this).resolveRegistration('config:environment');
     return (
       this.args.useSvg ??

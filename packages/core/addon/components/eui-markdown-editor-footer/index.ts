@@ -9,6 +9,7 @@ export default class EuiMarkdownEditorFooterComponent extends Component<EuiMarkd
   @tracked isShowingHelp = false;
 
   get svgPath() {
+    //@ts-ignore
     const config = getOwner(this).resolveRegistration('config:environment');
     const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg/';
     return svgPath;

@@ -1,10 +1,4 @@
 'use strict';
-const path = require('path');
-const resolve = require('resolve');
-const BroccoliMergeTrees = require('broccoli-merge-trees');
-const writeFile = require('broccoli-file-creator');
-const Funnel = require('broccoli-funnel');
-const EuiScssFilter = require('./lib/elastic-eui-scss-filter');
 
 module.exports = {
   name: require('./package').name,
@@ -53,14 +47,12 @@ module.exports = {
       ? this.emberEuiOptions.theme
       : 'light';
 
-    if (this.emberEuiOptions.useCompiledCss !== false) {
-      if (this.emberEuiOptions.theme) {
-        app.import(
-          `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
-        );
-      } else {
-        app.import('node_modules/@elastic/eui/dist/eui_theme_light.min.css');
-      }
+    if (this.emberEuiOptions.theme) {
+      app.import(
+        `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
+      );
+    } else {
+      app.import('node_modules/@elastic/eui/dist/eui_theme_light.min.css');
     }
 
     this._super.included.apply(this, arguments);
@@ -71,47 +63,5 @@ module.exports = {
       (a) => a.name === 'ember-power-select'
     );
     return emberPowerSelect.contentFor(type, config);
-  },
-
-  // TODO: Currently the performance of recompiling sass on every change are serious, find a way to improve them.
-  treeForStyles(tree) {
-    let trees = [];
-    let euiScssFiles;
-
-    if (this.emberEuiOptions.useCompiledCss === false) {
-      euiScssFiles = new Funnel(this.pathBase('@elastic/eui'), {
-        srcDir: '/src',
-        include: ['**/*.scss'],
-        destDir: 'elastic-eui',
-        annotation: 'ElasticEUIScssFunnel'
-      });
-
-      euiScssFiles = new EuiScssFilter(euiScssFiles);
-
-      trees.push(euiScssFiles);
-    }
-
-    let selectedTheme = this.emberEuiOptions.theme;
-
-    let importer = writeFile(
-      'ember-eui-components.scss',
-      euiScssFiles ? `@import './elastic-eui/theme_${selectedTheme}.scss';` : ''
-    );
-
-    trees.push(importer);
-
-    trees.push(tree);
-
-    let output = new BroccoliMergeTrees(trees, {
-      overwrite: true
-    });
-
-    return this._super.treeForStyles(output);
-  },
-
-  pathBase(packageName) {
-    return path.dirname(
-      resolve.sync(`${packageName}/package.json`, { basedir: __dirname })
-    );
   }
 };

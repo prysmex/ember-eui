@@ -30,6 +30,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   ];
 
   get svgPath() {
+    //@ts-ignore
     const config = getOwner(this).resolveRegistration('config:environment');
     const svgPath = config?.['@ember-eui/core']?.svgPath || 'svg/';
     return svgPath;

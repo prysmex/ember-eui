@@ -20,12 +20,9 @@ module.exports = function (defaults) {
     },
 
     svgJar: {
-      strategy: ['hbs'],
-      hbs: {
-        stripPath: false
-      },
       sourceDirs: [
         'public/assets',
+        '../../node_modules/@ember-eui/core/public',
         '../../node_modules/@elastic/eui/lib/components/icon'
       ]
     }
@@ -38,5 +35,12 @@ module.exports = function (defaults) {
     behave. You most likely want to be modifying `./index.js` or app's build file
   */
 
-  return app.toTree();
+  const { maybeEmbroider } = require('@embroider/test-setup');
+  return maybeEmbroider(app, {
+    skipBabel: [
+      {
+        package: 'qunit'
+      }
+    ]
+  });
 };

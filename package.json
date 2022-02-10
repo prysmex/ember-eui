@@ -6,14 +6,15 @@
     "site"
   ],
   "devDependencies": {
-    "@underline/eslint-config-ember-typescript": "^0.10.1",
-    "@underline/eslint-config-node": "^0.10.0",
+    "@underline/eslint-config-ember-typescript": "^0.12.0",
+    "@underline/eslint-config-node": "^0.12.0",
     "lerna": "^4.0.0"
   },
   "resolutions": {
     "@embroider/macros": "^1.0.0",
     "@embroider/shared-internals": "^1.0.0",
-    "@embroider/util": "^1.0.0"
+    "@embroider/util": "^1.0.0",
+    "@embroider/test-setup": "^1.0.0"
   },
   "volta": {
     "node": "12.22.1"

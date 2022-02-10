@@ -7216,6 +7216,16 @@ ember-changeset@^3.15.0:
     ember-cli-babel "^7.26.6"
     validated-changeset "1.0.0"
 
+"ember-changeset@github:betocantu93/ember-changeset#v3.15.1":
+  version "3.15.0"
+  resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/fea413e284d00389a26d6427ad5c9bd8f280782a"
+  dependencies:
+    "@embroider/macros" "^1.0.0"
+    "@glimmer/tracking" "^1.0.1"
+    ember-auto-import "^1.11.3"
+    ember-cli-babel "^7.26.6"
+    validated-changeset "1.0.0"
+
 ember-cli-app-version@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/ember-cli-app-version/-/ember-cli-app-version-5.0.0.tgz#adad17c6f706f419b223707eec66dd1cd28530c3"

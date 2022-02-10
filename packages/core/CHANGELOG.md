@@ -8,7 +8,6 @@
 - Drops support for ember-source < v3.20.0
 - Drops support for node 10
 - Drops support for importing sass, elastic eui is migrating to emotion, so its better we just focus on that instead of sass, so we no longer dynamically import template only components for now, this could possibly be achieved later post embroider
-- 
 
 🏠 Internal
 `@ember-eui/*`

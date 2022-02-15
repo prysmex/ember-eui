@@ -10,77 +10,78 @@
     <:content>
       <EuiChangesetForm::Context
         @formId={{formId}}
-        @changeset={{@changeset}} as |Context|
+        @changeset={{@changeset}}
+        as |Context|
       >
         {{yield
           (hash
             FieldBase=(component
-              Context.FieldBase
+              (ensure-safe-component Context.FieldBase)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldText=(component
-              Context.FieldText
+              (ensure-safe-component Context.FieldText)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldTextArea=(component
-              Context.FieldTextArea
+              (ensure-safe-component Context.FieldTextArea)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldPassword=(component
-              Context.FieldPassword
+              (ensure-safe-component Context.FieldPassword)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldRadio=(component
-              Context.FieldRadio
+              (ensure-safe-component Context.FieldRadio)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldCheckbox=(component
-              Context.FieldCheckbox
+              (ensure-safe-component Context.FieldCheckbox)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldSwitch=(component
-              Context.FieldSwitch
+              (ensure-safe-component Context.FieldSwitch)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldRadioGroup=(component
-              Context.FieldRadioGroup
+              (ensure-safe-component Context.FieldRadioGroup)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldCheckboxGroup=(component
-              Context.FieldCheckboxGroup
+              (ensure-safe-component Context.FieldCheckboxGroup)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldDualRangeSlider=(component
-              Context.FieldDualRangeSlider
+              (ensure-safe-component Context.FieldDualRangeSlider)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldRangeSlider=(component
-              Context.FieldRangeSlider
+              (ensure-safe-component Context.FieldRangeSlider)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldNumber=(component
-              Context.FieldNumber
+              (ensure-safe-component Context.FieldNumber)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldSelect=(component
-              Context.FieldSelect
+              (ensure-safe-component Context.FieldSelect)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )
             FieldComboBox=(component
-              Context.FieldComboBox
+              (ensure-safe-component Context.FieldComboBox)
               fullWidth=@fullWidth
               hasSubmitted=this.hasSubmitted
             )

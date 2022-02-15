@@ -1,4 +1,4 @@
-{{#let (component @groupComponent) as |Group|}}
+{{#let (component (ensure-safe-component @groupComponent)) as |Group|}}
   {{#if @select.loading}}
     <EuiText @size="xs" class="euiComboBoxOptionsList__empty">
       <EuiFlexGroup @gutterSize="s" @justifyContent="center">
@@ -23,7 +23,8 @@
       aria-controls="ember-power-select-trigger-{{@select.uniqueId}}"
       ...attributes
       {{did-insert this.addHandlers}}
-      {{will-destroy this.removeHandlers}} as |opt index|
+      {{will-destroy this.removeHandlers}}
+      as |opt index|
     >
       {{! template-lint-enable }}
       {{#if (ember-power-select-is-group opt)}}
@@ -31,10 +32,14 @@
       {{else}}
         <li
           class="euiFilterSelectItem
-            {{if (eq opt @select.highlighted) " euiFilterSelectItem-isFocused"
+            {{if
+              (eq opt @select.highlighted)
+              ' euiFilterSelectItem-isFocused'
             }}"
-          aria-selected="{{ember-power-select-is-selected opt @select.selected
-            }}"
+          aria-selected="{{ember-power-select-is-selected
+            opt
+            @select.selected
+          }}"
           aria-disabled={{if opt.disabled "true"}}
           aria-current="{{eq opt @select.highlighted}}"
           data-option-index="{{index}}"

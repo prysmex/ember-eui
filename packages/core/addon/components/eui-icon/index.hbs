@@ -1,6 +1,6 @@
 {{#if @useComponent}}
   {{! has the shape of a curried component }}
-  {{#let (component this.icon) as |IconComponent|}}
+  {{#let (component (ensure-safe-component this.icon)) as |IconComponent|}}
     {{!template-lint-disable}}
     <IconComponent
       class={{class-names

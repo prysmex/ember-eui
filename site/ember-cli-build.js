@@ -4,6 +4,8 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const path = require('path');
 const env = EmberApp.env();
 
+const IS_PRODUCTION = env === 'production';
+
 const purgecssOptions = {
   content: [
     './app/index.html',
@@ -56,7 +58,7 @@ module.exports = function (defaults) {
 
     // Add options here
     '@ember-eui/core': {
-      theme: 'light'
+      theme: 'amsterdam_light'
     },
     'ember-cli-netlify': {
       redirects: ['/* /index.html 200']
@@ -79,5 +81,20 @@ module.exports = function (defaults) {
     }
   });
 
-  return app.toTree();
+  const { Webpack } = require('@embroider/webpack');
+  const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+
+  return require('@embroider/compat').compatBuild(app, Webpack, {
+    staticAddonTestSupportTrees: true,
+    staticAddonTrees: true,
+    staticHelpers: true,
+    staticModifiers: true,
+    staticComponents: false, //turn on when embroider releases version > 1.2.0
+    splitAtRoutes: ['*'],
+    packagerOptions: {
+      webpackConfig: {
+        plugins: [...(!IS_PRODUCTION && [new BundleAnalyzerPlugin()])]
+      }
+    }
+  });
 };

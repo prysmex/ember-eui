@@ -18,7 +18,11 @@
     {{did-update this.didUpdateValue @value}}
   >
     {{#let
-      (component (or @editorComponent "eui-markdown-editor"))
+      (if
+        @editorComponent
+        (component (ensure-safe-component @editorComponent))
+        (component "eui-markdown-editor")
+      )
       as |MarkdownEditor|
     }}
       <MarkdownEditor

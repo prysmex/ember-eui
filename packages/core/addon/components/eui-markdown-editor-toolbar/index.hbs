@@ -20,7 +20,7 @@
           {{on "click" (fn this.handleMdButtonClick item.id)}}
           @iconType={{if
             item.iconType.component
-            (component item.iconType.component)
+            (component (ensure-safe-component item.iconType.component))
             item.iconType
           }}
           @useComponent={{item.iconType.component}}

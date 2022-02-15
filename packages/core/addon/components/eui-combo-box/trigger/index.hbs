@@ -38,7 +38,7 @@
           {{#each @select.selected as |opt idx|}}
             {{#if @selectedItemComponent}}
               {{component
-                @selectedItemComponent
+                (ensure-safe-component @selectedItemComponent)
                 extra=@extra
                 option=opt
                 select=@select
@@ -48,7 +48,7 @@
                 class="ember-power-select-multiple-option
                   {{if
                     opt.disabled
-                    "ember-power-select-multiple-option--disabled"
+                    'ember-power-select-multiple-option--disabled'
                   }}"
                 @option={{opt}}
                 @onClose={{if

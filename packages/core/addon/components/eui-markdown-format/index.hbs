@@ -3,7 +3,10 @@
   {{this.result.element}}
   {{#each this.result.components as |CompNode|}}
     {{#in-element CompNode.element}}
-      {{#let (component CompNode.componentName) as |DynamicComponent|}}
+      {{#let
+        (component (ensure-safe-component CompNode.componentName))
+        as |DynamicComponent|
+      }}
         <DynamicComponent
           @replaceNode={{optional @replaceNode}}
           @node={{CompNode}}

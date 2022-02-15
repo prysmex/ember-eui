@@ -62,6 +62,6 @@
     </span>
   {{/if}}
   {{#if @extraAction}}
-    {{component @extraAction}}
+    {{component (ensure-safe-component @extraAction)}}
   {{/if}}
 </li>

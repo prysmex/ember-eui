@@ -42,6 +42,7 @@
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.6.0",
     "@embroider/test-setup": "^0.43.5",
+    "@embroider/util": "^1.2.0",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
     "@types/ember-qunit": "^5.0.0",

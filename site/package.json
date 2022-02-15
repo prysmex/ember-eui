@@ -30,6 +30,9 @@
     "@ember-eui/validated-form": "^3.0.2",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "2.6.0",
+    "@embroider/compat": "^1.2.0",
+    "@embroider/core": "^1.2.0",
+    "@embroider/webpack": "^1.2.0",
     "@fullhuman/postcss-purgecss": "^4.0.2",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
@@ -103,7 +106,9 @@
     "remark-autolink-headings": "^6.0.1",
     "remark-highlight.js": "^6.0.0",
     "tailwindcss": "^1.8.3",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "webpack": "^5.68.0",
+    "webpack-bundle-analyzer": "^4.5.0"
   },
   "engines": {
     "node": "12.* || 14.* || >= 16"

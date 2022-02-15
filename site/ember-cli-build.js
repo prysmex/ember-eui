@@ -84,6 +84,12 @@ module.exports = function (defaults) {
   const { Webpack } = require('@embroider/webpack');
   const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
+  const plugins = [];
+
+  if (!IS_PRODUCTION) {
+    plugins.push(BundleAnalyzerPlugin);
+  }
+
   return require('@embroider/compat').compatBuild(app, Webpack, {
     staticAddonTestSupportTrees: true,
     staticAddonTrees: true,
@@ -93,7 +99,7 @@ module.exports = function (defaults) {
     splitAtRoutes: ['*'],
     packagerOptions: {
       webpackConfig: {
-        plugins: [...(!IS_PRODUCTION && [new BundleAnalyzerPlugin()])]
+        plugins: plugins
       }
     }
   });

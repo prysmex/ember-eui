@@ -20,6 +20,7 @@ import {
   EuiMarkdownAstNode
 } from '../../utils/markdown/markdown-types';
 import { Processor } from 'unified';
+import { scheduleOnce } from '@ember/runloop';
 
 export interface EuiMarkdownEditorArgs {
   initialViewMode?: string;
@@ -119,7 +120,11 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
       const resizedTextareaHeight =
         this.textareaRef.offsetHeight + this.editorFooterHeight;
 
-      this.currentHeight = resizedTextareaHeight;
+      const update = () => {
+        this.currentHeight = resizedTextareaHeight;
+      };
+
+      scheduleOnce('afterRender', this, update);
     }
   }
 
@@ -144,7 +149,13 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
         // then add an extra pixel for safety and because the scrollHeight value is rounded
         const extraHeight = borderWidth + marginWidth + 1;
 
-        this.currentHeight = previewRef.scrollHeight + extraHeight;
+        const update = () => {
+          if (previewRef) {
+            this.currentHeight = previewRef.scrollHeight + extraHeight;
+          }
+        };
+
+        scheduleOnce('afterRender', this, update);
       }
     }
   }

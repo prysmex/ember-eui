@@ -2,6 +2,15 @@
 
 ### Master
 
+### 3.1.0
+🚀 Enhancements
+`@ember-eui/*`
+- Embroider ready, in order to use staticComponents you need to have `@embroider` > 1.2.0
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiMarkdownFormat />` and `<EuiMarkdownEditor />` styling bugs and double render issues fixed
+
 ### 3.0.2
 `@ember-eui/core`
 🐛 Bug / Fixes

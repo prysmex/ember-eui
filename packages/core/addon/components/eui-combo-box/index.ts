@@ -66,6 +66,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   onCreateOption() {
     let search = this.select.searchText;
     this.select.actions.search('');
+    this.select.actions.select(search);
+    this.select.actions.close();
     return search;
   }
 

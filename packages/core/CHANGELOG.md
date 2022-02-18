@@ -2,6 +2,21 @@
 
 ### Master
 
+### 4.0.0
+💥 Breaking change
+`@ember-eui/*`
+- Your application must depend on `ember-auto-import` > v2.0.0, please refer to the [migration guides](https://github.com/ef4/ember-auto-import/blob/main/docs/upgrade-guide-2.0.md)
+
+🚀 Enhancements
+`@ember-eui/*`
+- ember v4.1.0 support!
+
+🏠 Internal
+`@ember-eui/*`
+- `ember-cli-update` on all packages for ember >v4.1.0
+- Update ember-cli-typescript
+- Update docs dependencies for ember 4 support
+
 ### 3.1.0
 🚀 Enhancements
 `@ember-eui/*`

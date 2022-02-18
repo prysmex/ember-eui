@@ -2,7 +2,11 @@
 
 ### Master
 
-### 1.6.4
+### 1.6.7
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` Call `onChange` after `onCreateOption` is triggered
+### 1.6.5
 🐛 Bug / Fixes
 `@ember-eui/core`
 - `<EuiComboBox />` hide clear button when disabled

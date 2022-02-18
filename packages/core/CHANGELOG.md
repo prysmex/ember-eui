@@ -2,6 +2,12 @@
 
 ### Master
 
+### 1.6.4
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` hide clear button when disabled
+- `<EuiComboBox />` close options dropdown after creating option
+
 ### 1.6.3
 🐛 Bug / Fixes
 `@ember-eui/core`

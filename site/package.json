@@ -1,6 +1,6 @@
 {
   "name": "site",
-  "version": "1.6.6",
+  "version": "1.6.7",
   "private": true,
   "description": "Small description for site goes here",
   "repository": "https://github.com/prysmex/ember-eui",
@@ -72,10 +72,10 @@
     "edition": "octane"
   },
   "dependencies": {
-    "@ember-eui/changeset-form": "^1.6.6",
-    "@ember-eui/core": "^1.6.6",
-    "@ember-eui/pikaday": "^1.6.6",
-    "@ember-eui/validated-form": "^1.6.6",
+    "@ember-eui/changeset-form": "^1.6.7",
+    "@ember-eui/core": "^1.6.7",
+    "@ember-eui/pikaday": "^1.6.7",
+    "@ember-eui/validated-form": "^1.6.7",
     "@fullhuman/postcss-purgecss": "^4.0.2",
     "autoprefixer": "^10.2.5",
     "ember-cli-resolve-asset": "^0.3.0",

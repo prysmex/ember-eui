@@ -87,7 +87,7 @@ module.exports = function (defaults) {
   const plugins = [];
 
   if (!IS_PRODUCTION) {
-    plugins.push(BundleAnalyzerPlugin);
+    plugins.push(new BundleAnalyzerPlugin());
   }
 
   return require('@embroider/compat').compatBuild(app, Webpack, {

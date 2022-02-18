@@ -2,16 +2,19 @@ import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
 import { getSidenavRoutes, Item, NodeId } from '../helpers/get-sidenav-routes';
+import RouterService from '@ember/routing/router-service';
+
+interface Props {}
 
 export default class ApplicationController extends Controller {
-  @service router: any;
+  @service declare router: RouterService;
   @service docfy: any;
   @tracked sideNavRoutes: Item[] = [];
   @tracked isOpenMobile = false;
   @tracked selectedItem: NodeId;
 
-  init() {
-    super.init();
+  constructor(props?: Props) {
+    super(props);
     const root = this.docfy.nested.children.firstObject;
     const instructions = getSidenavRoutes([
       { ...root, children: [] },
@@ -48,8 +51,8 @@ export default class ApplicationController extends Controller {
       ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
       ...changeset
     ];
-
-    this.selectedItem = this.router.location.concreteImplementation.location.pathname;
+    //@ts-expect-error
+    this.selectedItem = this.router.location.location.pathname;
   }
 
   get currentUrlFor() {

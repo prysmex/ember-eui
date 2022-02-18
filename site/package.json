@@ -116,6 +116,6 @@
     "edition": "octane"
   },
   "volta": {
-    "node": "12.22.1"
+    "extends": "../package.json"
   }
 }

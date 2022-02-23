@@ -38,6 +38,15 @@
 💥 Breaking change
 `@ember-eui/core`
 - Deprecate `ember-svg-jar` `hbs` strategy for now, just use stock `ember-svg-jar`
+### 1.6.7
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` Call `onChange` after `onCreateOption` is triggered
+### 1.6.5
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` hide clear button when disabled
+- `<EuiComboBox />` close options dropdown after creating option
 
 ### 1.6.3
 🐛 Bug / Fixes

@@ -27,7 +27,6 @@
     onCreateOption=(if
       @onCreateOption (pipe this.onCreateOption @onCreateOption)
     )
-    isClearable=@isClearable
   }}
   @matcher={{@matcher}}
   @initiallyOpen={{@initiallyOpen}}
@@ -51,7 +50,10 @@
   @triggerRole={{@triggerRole}}
   @title={{@title}}
   @triggerId={{@triggerId}}
-  @allowClear={{@isClearable}}
+  @allowClear={{and
+    (arg-or-default @isClearable true)
+    (not (or @isDisabled @disabled))
+  }}
   @loadingMessage={{@loadingMessage}}
   @selectedItemComponent={{@selectedItemComponent}}
   @beforeOptionsComponent={{@beforeOptionsComponent}}

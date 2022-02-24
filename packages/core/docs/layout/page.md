@@ -1,1 +1,3 @@
-# Page
+<EuiTitle>
+	Page
+</EuiTitle>

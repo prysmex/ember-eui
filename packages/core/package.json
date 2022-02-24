@@ -51,7 +51,7 @@
     ]
   },
   "dependencies": {
-    "@elastic/eui": "31.0.0",
+    "@elastic/eui": "41.4.0",
     "@ember/render-modifiers": "^2.0.4",
     "@html-next/vertical-collection": "html-next/vertical-collection#v3.0.0-0",
     "@types/lodash-es": "^4.17.4",
@@ -63,7 +63,7 @@
     "ember-cli-typescript": "4.2.1",
     "ember-composable-helpers": "^4.4.1",
     "ember-element-helper": "^0.5.5",
-    "ember-focus-trap": "^0.7.0",
+    "ember-focus-trap": "^0.8.0",
     "ember-in-element-polyfill": "^1.0.0",
     "ember-keyboard": "^7.0.1",
     "ember-math-helpers": "^2.15.0",

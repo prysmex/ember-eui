@@ -10,7 +10,7 @@
       (if (and (eq @display "plain") (not @selectable)) "euiCard--plain")
       (if @isDisabled "euiCard-isDisabled")
       (if (has-block) "euiCard--hasChildren")
-      (if @icon "euiCard--hasIcon" (if has-block "icon" "euiCard--hasIcon"))
+      (if @icon "euiCard--hasIcon" (if (has-block) "icon" "euiCard--hasIcon"))
       (if @betaBadgeLabel "euiCard--hasBetaBadge")
       (if
         (or titleId (and @selectable (not @selectable.isDisabled)))

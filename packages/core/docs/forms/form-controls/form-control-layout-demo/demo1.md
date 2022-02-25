@@ -17,7 +17,7 @@
   />
 </EuiFormControlLayout>
 <EuiSpacer @size="m" />
-<EuiFormControlLayout @clear={{optional}}>
+<EuiFormControlLayout @clear={{(optional)}}>
   <input
     type="text"
     class="euiFieldText"
@@ -25,7 +25,7 @@
   />
 </EuiFormControlLayout>
 <EuiSpacer size="m" />
-<EuiFormControlLayout @isLoading={{true}} @clear={{optional}}>
+<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}}>
   <input
     type="text"
     class="euiFieldText"
@@ -49,7 +49,7 @@
   />
 </EuiFormControlLayout>
 <EuiSpacer size="m" />
-<EuiFormControlLayout @clear={{optional}} @icon="search">
+<EuiFormControlLayout @clear={{(optional)}} @icon="search">
   <input
     type="text"
     class="euiFieldText"
@@ -57,7 +57,7 @@
   />
 </EuiFormControlLayout>
 <EuiSpacer size="m" />
-<EuiFormControlLayout @clear={{optional}} @icon="arrowDown" @iconSide="right">
+<EuiFormControlLayout @clear={{(optional)}} @icon="arrowDown" @iconSide="right">
   <input
     type="text"
     class="euiFieldText"
@@ -65,7 +65,7 @@
   />
 </EuiFormControlLayout>
 <EuiSpacer @size="m" />
-<EuiFormControlLayout @isLoading={{true}} @clear={{optional}} @icon="search">
+<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}} @icon="search">
   <input
     type="text"
     class="euiFieldText"
@@ -73,7 +73,7 @@
   />
 </EuiFormControlLayout>
 <EuiSpacer @size="m" />
-<EuiFormControlLayout @isLoading={{true}} @clear={{optional}} @icon="arrowDown" @iconSide="right">
+<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}} @icon="arrowDown" @iconSide="right">
   <input
     type="text"
     class="euiFieldText"
@@ -81,7 +81,7 @@
   />
 </EuiFormControlLayout>
 <EuiSpacer @size="m" />
-<EuiFormControlLayout @isLoading={{true}} @clear={{optional}} @icon="search">
+<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}} @icon="search">
   <input
     type="text"
     class="euiFieldText"
@@ -128,7 +128,7 @@
   </:field>
 </EuiFormControlLayout>
 <EuiSpacer @size="m" />
-<EuiFormControlLayout @isLoading={{true}} @clear={{optional}}>
+<EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}}>
   <:prepend as |classes|>
     <EuiButtonEmpty @size="xs" @iconType="arrowDown" @iconSide="right" class={{classes}}>
       Button

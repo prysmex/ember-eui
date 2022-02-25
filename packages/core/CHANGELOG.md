@@ -7,6 +7,7 @@
 `@ember-eui/core`
 - Fixes some dependencies issues with 4.x breakings
 - Adds a blueprint to install ember-focus-trap in host
+- Fixes `<EuiPikaday />`
 
 ### 4.0.0
 💥 Breaking change

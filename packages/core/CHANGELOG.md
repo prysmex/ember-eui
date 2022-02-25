@@ -2,6 +2,12 @@
 
 ### Master
 
+### 4.0.4
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Fixes some dependencies issues with 4.x breakings
+- Adds a blueprint to install ember-focus-trap in host
+
 ### 4.0.0
 💥 Breaking change
 `@ember-eui/*`

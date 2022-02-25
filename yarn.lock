@@ -1374,7 +1374,7 @@
   resolved "https://registry.yarnpkg.com/@embroider/hbs-loader/-/hbs-loader-1.2.0.tgz#73ef5ed18c22ca1ffcfeaf04e505f75ddc640eaf"
   integrity sha512-xM/piVIQzyhZEVbwLkhZSYt8y0KOHDvY0AXoieia6VwRhNXb/P1q92qDO+uNodNRpq3/aJfkmbgWukiLjkF9rw==
 
-"@embroider/macros@1.2.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.47.2", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0":
+"@embroider/macros@1.2.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.2.0.tgz#9a2d99225fba6dcb69e795cddad9f4948c2a2b6b"
   integrity sha512-WD2V3OKXZB73OymI/zC2+MbqIYaAskhjtSOVVY6yG6kWILyVsJ6+fcbNHEnZyGqs4sm0TvHVJfevmA2OXV8Pww==
@@ -7531,7 +7531,7 @@ ember-auto-import@^1.11.3:
     walk-sync "^0.3.3"
     webpack "^4.43.0"
 
-ember-auto-import@^2.2.0, ember-auto-import@^2.2.3, ember-auto-import@^2.2.4, ember-auto-import@^2.4.0:
+ember-auto-import@^2.2.0, ember-auto-import@^2.2.4, ember-auto-import@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/ember-auto-import/-/ember-auto-import-2.4.0.tgz#91c4797f08315728086e35af954cb60bd23c14bc"
   integrity sha512-BwF6iTaoSmT2vJ9NEHEGRBCh2+qp+Nlaz/Q7roqNSxl5oL5iMRwenPnHhOoBPTYZvPhcV/KgXR5e+pBQ107plQ==
@@ -8191,17 +8191,6 @@ ember-fetch@^8.1.1:
     ember-cli-version-checker "^5.1.2"
     node-fetch "^2.6.1"
     whatwg-fetch "^3.6.2"
-
-ember-focus-trap@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/ember-focus-trap/-/ember-focus-trap-0.8.0.tgz#63a16685ba0ebd1f7d8032dab276c3d67de7e78c"
-  integrity sha512-Iaqi8lmsVXEtW5gQIWa8x3jXGhdpLrq4HRdZl1GHzHL4ys3b7oaPsJl/CS/jjeJPGSQ+tv5IT3Rn36BUZe5Pig==
-  dependencies:
-    "@embroider/macros" "^0.47.2"
-    ember-auto-import "^2.2.3"
-    ember-cli-babel "^7.26.3"
-    ember-modifier-manager-polyfill "^1.2.0"
-    focus-trap "^6.4.0"
 
 ember-focus-trap@^1.0.1:
   version "1.0.1"
@@ -9567,7 +9556,7 @@ focus-lock@^0.10.2:
   dependencies:
     tslib "^2.0.3"
 
-focus-trap@^6.4.0, focus-trap@^6.7.1:
+focus-trap@^6.7.1:
   version "6.7.3"
   resolved "https://registry.yarnpkg.com/focus-trap/-/focus-trap-6.7.3.tgz#b5dc195b49c90001f08a63134471d1e6dd381ddd"
   integrity sha512-8xCEKndV4KrseGhFKKKmczVA14yx1/hnmFICPOjcFjToxCJYj/NHH43tPc3YE/PLnLRNZoFug0EcWkGQde/miQ==

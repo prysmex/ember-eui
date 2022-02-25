@@ -18,24 +18,19 @@ order: 1
   @value={{this.htmlCode}}
   {{on 'input' (pick 'target.value' (set this 'htmlCode'))}}
 />
+<EuiFormRow @label='Choose a Language'>
+  <EuiSelect
+    @value={{this.language}}
+    @hasNoInitialSelection={{true}}
+    @options={{array
+      (hash value='javascript' text='javascript')
+      (hash value='html' text='html')
+      (hash value='golang' text='golang')
+    }}
+    {{on 'change' (pick 'target.value' (set this 'language'))}}
+  />
 
-<EuiSelect
-  @value={{this.language}}
-  @hasNoInitialSelection={{true}}
-  @options={{array
-    (hash value='javascript' text='javascript')
-    (hash value='html' text='html')
-    (hash value='golang' text='golang')
-  }}
-  @id={{selectId}}
-  {{on 'change' (pick 'target.value' (set this 'language'))}}
->
-  <:prepend as |classes|>
-    <EuiFormLabel class={{classes}} for={{selectId}}>
-      Choose a language
-    </EuiFormLabel>
-  </:prepend>
-</EuiSelect>
+</EuiFormRow>
 ```
 
 ```javascript component

@@ -1,7 +1,7 @@
-'use strict'
+'use strict';
 
 module.exports = {
-  description: 'Installs ember-cli-sass',
+  description: 'Installs ember-focus-trap',
 
   normalizeEntityName() {
     // this prevents an error when the entityName is
@@ -9,6 +9,6 @@ module.exports = {
   },
 
   afterInstall() {
-    return this.addAddonToProject('ember-cli-sass');
+    return this.addAddonToProject('ember-focus-trap');
   }
 };

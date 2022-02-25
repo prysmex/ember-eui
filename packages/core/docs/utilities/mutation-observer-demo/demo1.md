@@ -20,7 +20,7 @@
       <EuiFlexItem @grow={{false}}>
         <EuiPanel @grow={{false}}>
           <ul>
-            {{#each items as |item|}}
+            {{#each this.items as |item|}}
               <li>
                 {{item}}
               </li>

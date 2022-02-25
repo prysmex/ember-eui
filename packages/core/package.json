@@ -62,17 +62,14 @@
     "ember-cli-htmlbars": "^6.0.1",
     "ember-cli-typescript": "4.2.1",
     "ember-composable-helpers": "^4.4.1",
-    "ember-element-helper": "^0.5.5",
-    "ember-focus-trap": "^0.7.0",
-    "ember-in-element-polyfill": "^1.0.0",
+    "ember-element-helper": "^0.6.0",
     "ember-keyboard": "^7.0.1",
     "ember-math-helpers": "^2.15.0",
-    "ember-modifier": "^2.1.2",
-    "ember-named-blocks-polyfill": "^0.2.3",
+    "ember-modifier": "^3.1.0",
     "ember-power-select": "^5.0.2",
     "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^2.0.1",
-    "ember-style-modifier": "^0.6.0",
+    "ember-style-modifier": "^0.7.0",
     "ember-svg-jar": "^2.3.4",
     "ember-truth-helpers": "^3.0.0",
     "highlight.js": "^9.18.5",
@@ -90,7 +87,11 @@
     "unified": "^9.2.0",
     "vfile": "^4.2.0"
   },
+  "peerDependencies": {
+    "ember-focus-trap": "^1.0.1"
+  },
   "devDependencies": {
+    "ember-focus-trap": "^1.0.1",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.6.0",
     "@embroider/test-setup": "^1.0.0",
@@ -167,7 +168,8 @@
     "edition": "octane"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config"
+    "configPath": "tests/dummy/config",
+    "defaultBluerprint": "ember-eui-core"
   },
   "volta": {
     "extends": "../../package.json"

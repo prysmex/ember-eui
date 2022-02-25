@@ -86,7 +86,7 @@ module.exports = function (defaults) {
 
   const plugins = [];
 
-  if (!IS_PRODUCTION) {
+  if (!IS_PRODUCTION && process.env.ANALYZER) {
     plugins.push(new BundleAnalyzerPlugin());
   }
 

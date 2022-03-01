@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.0.7
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Since we are no longer exposing sass files, there's no use for this file anymore
+
 ### 4.0.6
 🐛 Bug / Fixes
 `@ember-eui/core`

@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.0.6
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Fix named blocks version
+
 ### 4.0.5
 🐛 Bug / Fixes
 `@ember-eui/core`

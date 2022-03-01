@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -66,6 +66,7 @@
     "ember-keyboard": "^7.0.1",
     "ember-math-helpers": "^2.15.0",
     "ember-modifier": "^3.1.0",
+    "ember-named-blocks-polyfill": "0.2.4",
     "ember-power-select": "^5.0.2",
     "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^2.0.1",
@@ -85,8 +86,7 @@
     "resolve": "^1.13.1",
     "tabbable": "^5.1.5",
     "unified": "^9.2.0",
-    "vfile": "^4.2.0",
-    "ember-named-blocks-polyfill": "0.2.4"
+    "vfile": "^4.2.0"
   },
   "peerDependencies": {
     "ember-focus-trap": "^1.0.1"

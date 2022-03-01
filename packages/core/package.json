@@ -85,7 +85,8 @@
     "resolve": "^1.13.1",
     "tabbable": "^5.1.5",
     "unified": "^9.2.0",
-    "vfile": "^4.2.0"
+    "vfile": "^4.2.0",
+    "ember-named-blocks-polyfill": "0.2.4"
   },
   "peerDependencies": {
     "ember-focus-trap": "^1.0.1"

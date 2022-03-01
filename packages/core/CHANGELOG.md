@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.0.5
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Add ember-named-blocks-polyfill back 
+
 ### 4.0.4
 🐛 Bug / Fixes
 `@ember-eui/core`

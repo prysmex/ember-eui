@@ -19,8 +19,9 @@
       size=(arg-or-default @size "m")
       type=(arg-or-default @type "user")
     }}
-    aria-label={{@name}}
+     aria-label={{if @isDisabled  undefined  @name}}
     title={{@name}}
+    role={{if @isDisabled 'presentation''img'}}
     ...attributes
     {{simple-style inlineStyles}}
   >
@@ -33,7 +34,8 @@
         class="euiAvatar__icon"
         @size={{or @iconSize @size}}
         @type={{@iconType}}
-        aria-label={{@name}}
+        aria-label={{if @isDisabled  undefined  @name}}
+        role={{if @isDisabled 'presentation''img'}}
         @color={{or
           @iconColor
           (if (eq @iconColor null) @iconColor inlineStyles.color)

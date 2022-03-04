@@ -55,6 +55,12 @@ export default class EuiPikadayComponent extends Component {
   }
 
   @action
+  registerPikaday(pikaday) {
+    this.pikaday = pikaday;
+    this.args.register?.(pikaday);
+  }
+
+  @action
   onClose() {
     if (this.isDestroying) {
       return;

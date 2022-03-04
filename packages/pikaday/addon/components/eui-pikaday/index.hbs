@@ -38,8 +38,10 @@
       firstDay=this.firstDay
       container=@container
       bound=@bound
+      register=this.registerPikaday
+      moment=@moment
     }}
-    {{on 'change' this.didChange}}
+    {{on "change" this.didChange}}
     {{did-insert this.registerField}}
   >
     <:prepend as |classes|>

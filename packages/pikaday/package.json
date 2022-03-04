@@ -38,7 +38,7 @@
     "ember-cli-htmlbars": "^6.0.1",
     "ember-cli-typescript": "4.2.1",
     "ember-named-blocks-polyfill": "^0.2.3",
-    "ember-pikaday": "^4.0.0",
+    "ember-pikaday-prysmex": "~4.3.0",
     "ember-svg-jar": "^2.3.4"
   },
   "devDependencies": {

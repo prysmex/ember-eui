@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.0.8
+🐛 Bug / Fixes
+`@ember-eui/pikaday`
+- Make component much more flexible for easier extending or composition
+
 ### 4.0.7
 🐛 Bug / Fixes
 `@ember-eui/core`

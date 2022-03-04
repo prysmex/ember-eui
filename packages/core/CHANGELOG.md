@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.0.9
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon>` added hardcoded styling meanwhile we add back svgs to hbs components
+
 ### 4.0.8
 🐛 Bug / Fixes
 `@ember-eui/pikaday`

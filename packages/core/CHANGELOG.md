@@ -2,6 +2,31 @@
 
 ### Master
 
+### 4.0.9
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon>` added hardcoded styling meanwhile we add back svgs to hbs components
+
+### 4.0.8
+🐛 Bug / Fixes
+`@ember-eui/pikaday`
+- Make component much more flexible for easier extending or composition
+
+### 4.0.7
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Since we are no longer exposing sass files, there's no use for this file anymore
+
+### 4.0.6
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Fix named blocks version
+
+### 4.0.5
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Add ember-named-blocks-polyfill back 
+
 ### 4.0.4
 🐛 Bug / Fixes
 `@ember-eui/core`

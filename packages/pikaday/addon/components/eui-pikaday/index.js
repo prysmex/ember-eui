@@ -2,6 +2,8 @@ import Component from '@glimmer/component';
 import { action } from '@ember/object';
 
 export default class EuiPikadayComponent extends Component {
+  field = null;
+
   get format() {
     return this.args.format || 'DD.MM.YYYY';
   }
@@ -48,6 +50,11 @@ export default class EuiPikadayComponent extends Component {
   }
 
   @action
+  registerField(field) {
+    this.field = field;
+  }
+
+  @action
   onClose() {
     if (this.isDestroying) {
       return;
@@ -56,6 +63,14 @@ export default class EuiPikadayComponent extends Component {
       this.onSelect(null);
     }
     this.args.onClose?.();
+  }
+
+  @action
+  onOpen() {
+    if (this.isDestroying) {
+      return;
+    }
+    this.args.onOpen?.();
   }
 
   #heardValue;

@@ -170,7 +170,7 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config",
-    "defaultBluerprint": "ember-eui-core"
+    "defaultBlueprint": "ember-eui-core"
   },
   "volta": {
     "extends": "../../package.json"

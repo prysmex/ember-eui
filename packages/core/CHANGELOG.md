@@ -6,6 +6,7 @@
 🐛 Bug / Fixes
 `@ember-eui/core`
 - @html-next/vertical-collection depend on npm released version 3.0.0-1
+- bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticComponents flag!
 
 ### 4.0.9
 🐛 Bug / Fixes

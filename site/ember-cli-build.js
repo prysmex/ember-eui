@@ -95,7 +95,7 @@ module.exports = function (defaults) {
     staticAddonTrees: true,
     staticHelpers: true,
     staticModifiers: true,
-    staticComponents: false, //turn on when embroider releases version > 1.2.0
+    staticComponents: true,
     splitAtRoutes: ['*'],
     packagerOptions: {
       webpackConfig: {

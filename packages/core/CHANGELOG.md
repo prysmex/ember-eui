@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.0.10
+🐛 Bug / Fixes
+`@ember-eui/core`
+- @html-next/vertical-collection depend on npm released version 3.0.0-1
+
 ### 4.0.9
 🐛 Bug / Fixes
 `@ember-eui/core`

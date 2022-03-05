@@ -53,7 +53,7 @@
   "dependencies": {
     "@elastic/eui": "31.0.0",
     "@ember/render-modifiers": "^2.0.4",
-    "@html-next/vertical-collection": "html-next/vertical-collection#v3.0.0-0",
+    "@html-next/vertical-collection": "3.0.0-1",
     "@types/lodash-es": "^4.17.4",
     "chroma-js": "^2.1.0",
     "ember-auto-import": "^2.2.4",

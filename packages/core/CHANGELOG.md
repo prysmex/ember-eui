@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.1.1
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix typo in package json defaultBlueprint
+
 ### 4.1.0
 🐛 Bug / Fixes
 `@ember-eui/core`

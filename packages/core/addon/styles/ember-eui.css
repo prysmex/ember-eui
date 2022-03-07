@@ -1,3 +1,15 @@
 .euiIcon {
   line-height: 1; /* added while we support back hbs svgs components */
 }
+
+.euiMarkdownEditor--fullHeight {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  height: 100%;
+}
+
+.euiMarkdownEditor--isPreviewing .euiMarkdownEditor__toggleContainer {
+  display: none;
+}

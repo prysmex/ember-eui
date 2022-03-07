@@ -1,7 +1,5 @@
 import { RehypeNode } from '../markdown-types';
-//@ts-ignore
 import EuiMarkdownFormatMarkdownCode from '../../../components/eui-markdown-format/markdown-code';
-//@ts-ignore
 import EuiMarkdownFormatMarkdownCodeBlock from '../../../components/eui-markdown-format/markdown-code-block';
 
 type Visitor = (node: RehypeNode) => RehypeNode;

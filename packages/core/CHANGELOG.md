@@ -2,6 +2,16 @@
 
 ### Master
 
+### 4.2.0
+🚀 Enhancements
+`@ember-eui/core`
+- Remove blueprint, inspired by https://github.com/mikkopaderes/ember-cloud-firestore-adapter README.md we should teach users to install peerDependencies manually, which is now required.
+- Update docs for this change.
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix markdown editor icons
+
 ### 4.1.1
 🐛 Bug / Fixes
 `@ember-eui/core`

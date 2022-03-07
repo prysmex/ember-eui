@@ -1,6 +1,11 @@
 # Installation
 
-You can start by installing the core
+This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
+
+1. `npm info @ember-eui/core peerDependencies`
+
+
+Once you've installed it, you can now install the addon itself:
 
 1. `ember install @ember-eui/core`
 

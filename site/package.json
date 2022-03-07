@@ -115,6 +115,7 @@
     "edition": "octane"
   },
   "volta": {
-    "extends": "../package.json"
+    "extends": "../package.json",
+    "yarn": "1.22.17"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -89,8 +89,8 @@
     "vfile": "^4.2.0"
   },
   "peerDependencies": {
-    "ember-focus-trap": "^1.0.1",
-    "ember-auto-import": "^2.2.4"
+    "ember-auto-import": "^2.2.4",
+    "ember-focus-trap": "^1.0.1"
   },
   "devDependencies": {
     "@ember/optional-features": "^2.0.0",

@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.2.1
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix markdown editor components
+
 ### 4.2.0
 🚀 Enhancements
 `@ember-eui/core`

@@ -25,7 +25,7 @@
     singleSelection=@singleSelection
     onClose=@removeTag
     onCreateOption=(if
-      @onCreateOption (pipe this.onCreateOption @onCreateOption)
+      @onCreateOption this.onCreateOption
     )
   }}
   @matcher={{@matcher}}
@@ -79,7 +79,7 @@
     (component
       "eui-combo-box/create-option"
       customOptionText=@customOptionText
-      onCreateOption=(pipe this.onCreateOption @onCreateOption)
+      onCreateOption=this.onCreateOption
       select=this.select
     )
     (component "eui-combo-box/no-matches-message")

@@ -1,4 +1,13 @@
-<div class="euiHealth" ...attributes>
+{{#let
+  (inline-styles
+    componentName="EuiHealth"
+  ) as |inlineStyles|
+}}
+
+<div class={{class-names
+      componentName="EuiHealth"
+      textSize=(arg-or-default @textSize "m")   
+    }} ...attributes>
   <div
     class="
       euiFlexGroup
@@ -14,3 +23,4 @@
      </div>
   </div>
 </div>
+{{/let}}

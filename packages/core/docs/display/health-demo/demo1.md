@@ -32,8 +32,16 @@
 </EuiPanel>
 <EuiSpacer />
 <EuiTitle @size='m'>
-  Initials
+  Text sizes
 </EuiTitle>
+<EuiSpacer />
+<EuiText>
+  <p>
+    Match the text size of EuiHealth to your context by passing xs / s / m /
+    inherit to the textSize prop. The inherit style will get its font size from
+    the parent element.
+  </p>
+</EuiText>
 <EuiSpacer />
 <EuiPanel @color='subdued'>
   <EuiHealth @color='subdued' @textSize='xs'>

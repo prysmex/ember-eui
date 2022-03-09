@@ -119,6 +119,11 @@ bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticCompone
 💥 Breaking change
 `@ember-eui/core`
 - Deprecate `ember-svg-jar` `hbs` strategy for now, just use stock `ember-svg-jar`
+
+### 1.6.10
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` fixes to `onCreateOption`
 ### 1.6.7
 🐛 Bug / Fixes
 `@ember-eui/core`

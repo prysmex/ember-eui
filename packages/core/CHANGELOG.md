@@ -2,6 +2,10 @@
 
 ### Master
 
+### 4.2.4
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon />` Drop wrapping svg div, add futurist css override
 ### 4.2.3
 🐛 Bug / Fixes
 `@ember-eui/core`

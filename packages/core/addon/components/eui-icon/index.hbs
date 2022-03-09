@@ -4,6 +4,7 @@
     {{!template-lint-disable}}
     <IconComponent
       class={{class-names
+        @iconClasses
         this.optionalColorClass
         (if this.isAppIcon "euiIcon--app")
         componentName="EuiIcon"
@@ -23,6 +24,7 @@
     <img
       src={{this.icon}}
       class={{class-names
+        @iconClasses
         this.optionalColorClass
         (if this.isAppIcon "euiIcon--app")
         componentName="EuiIcon"
@@ -36,6 +38,7 @@
     {{svg-jar
       this.icon
       class=(class-names
+        @iconClasses
         this.optionalColorClass
         (if this.isAppIcon "euiIcon--app")
         componentName="EuiIcon"

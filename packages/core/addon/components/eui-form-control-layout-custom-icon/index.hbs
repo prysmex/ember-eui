@@ -6,7 +6,7 @@
     {{on "click" @onClick}}
   >
     <EuiIcon
-      class="euiFormControlLayoutCustomIcon__icon"
+      @iconClasses="euiFormControlLayoutCustomIcon__icon"
       @type={{@type}}
       @size={{@size}}
       aria-hidden="true"
@@ -15,7 +15,7 @@
 {{else}}
   <span class="euiFormControlLayoutCustomIcon" ...attributes>
     <EuiIcon
-      class="euiFormControlLayoutCustomIcon__icon"
+      @iconClasses="euiFormControlLayoutCustomIcon__icon"
       @type={{@type}}
       @size={{@size}}
       aria-hidden="true"

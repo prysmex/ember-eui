@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.2.5
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon />` for now use @iconClasses to pass down classes when using svg-jar
+
 ### 4.2.4
 🐛 Bug / Fixes
 `@ember-eui/core`

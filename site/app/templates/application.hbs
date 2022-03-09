@@ -1,35 +1,21 @@
 <EuiHeader @theme="dark">
   <EuiHeaderSection @side="left">
-    
-    <EuiHeaderLogo
-        @iconType="/assets/elastic.svg"
-        
-      >
-     Ember EUI
 
-      </EuiHeaderLogo>
-      
+    <EuiHeaderLogo @iconType="/assets/elastic.svg">
+      Ember EUI
+    </EuiHeaderLogo>
+
   </EuiHeaderSection>
   <EuiHeaderSection @side="right">
     <EuiHeaderSectionItem @border="none">
       <EuiHeaderLogo
-        @iconType="logoGithub"  
-        
+        class="text-white"
+        @iconType="logoGithub"
         href="https://github.com/prysmex/ember-eui"
         target="_blank"
         rel="noopener noreferrer"
       />
-     
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem @border="none">
-      <EuiHeaderLogo
-        @iconType="/assets/netlify.svg"
-        href="https://www.netlify.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Hosted
-      </EuiHeaderLogo>
+
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>

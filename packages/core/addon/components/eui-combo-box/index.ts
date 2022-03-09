@@ -7,6 +7,7 @@ import { isEqual } from '@ember/utils';
 
 interface EuiComboBoxArgs {
   singleSelection: boolean;
+  onCreateOption?: (search: string) => boolean | undefined;
 }
 
 interface Select {
@@ -64,9 +65,19 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
 
   @action
   onCreateOption() {
-    let search = this.select.searchText;
+    let option;
+    if (
+      this.args.onCreateOption &&
+      typeof this.args.onCreateOption === 'function'
+    ) {
+      // The `onCreateOption` function can be used to sanitize the input or explicitly return `false` to reject the input
+      option = this.args.onCreateOption(this.select.searchText);
+      if (option === false) {
+        return;
+      }
+    }
+    let search = option || this.select.searchText;
     this.select.actions.search('');
-    this.select.actions.select(search);
     this.select.actions.close();
     return search;
   }

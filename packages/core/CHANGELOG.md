@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.2.3
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Cherry pick 1.6.x fix commit hash https://github.com/prysmex/ember-eui/commit/c4b8a4a259f6b86c2be516fd7427f5e48b28cecd
+
 ### 4.2.2
 🐛 Bug / Fixes
 `@ember-eui/core`

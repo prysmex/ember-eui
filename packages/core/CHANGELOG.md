@@ -2,6 +2,10 @@
 
 ### Master
 
+### 1.6.10
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` fixes to `onCreateOption`
 ### 1.6.7
 🐛 Bug / Fixes
 `@ember-eui/core`

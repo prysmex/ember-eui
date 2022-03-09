@@ -1,17 +1,25 @@
-<EuiHeader>
+<EuiHeader @theme="dark">
   <EuiHeaderSection @side="left">
-    <EuiHeaderSectionItem @border="none" class="mx-3">
-      Ember Eui
-    </EuiHeaderSectionItem>
+    
+    <EuiHeaderLogo
+        @iconType="/assets/elastic.svg"
+        
+      >
+     Ember EUI
+
+      </EuiHeaderLogo>
+      
   </EuiHeaderSection>
   <EuiHeaderSection @side="right">
     <EuiHeaderSectionItem @border="none">
       <EuiHeaderLogo
-        @iconType="logoGithub"
+        @iconType="logoGithub"  
+        
         href="https://github.com/prysmex/ember-eui"
         target="_blank"
         rel="noopener noreferrer"
       />
+     
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem @border="none">
       <EuiHeaderLogo

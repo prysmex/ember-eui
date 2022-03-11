@@ -3,7 +3,7 @@ import { action } from '@ember/object';
 import type MarkdownActions from '../../utils/markdown/markdown-actions';
 import { MODE_VIEWING } from '../../utils/markdown/markdown-modes';
 import { cached } from '@glimmer/tracking';
-
+import MarkdownCheckmark from './icons/markdown-checkmark';
 import { Plugin } from 'unified';
 
 export interface EuiMarkdownEditorToolbarArgs {
@@ -14,7 +14,7 @@ export interface EuiMarkdownEditorToolbarArgs {
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarArgs> {
-  boldItalicButtons = [
+  boldItalicsButtons = [
     {
       id: 'mdBold',
       label: 'Bold',
@@ -50,8 +50,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
         name: 'tl',
         useSvg: true,
         iconType: {
-          // this should't be needed when we drop support for 3.24.0
-          component: 'eui-markdown-editor-toolbar/icons/markdown-checkmark'
+          component: MarkdownCheckmark
         }
       }
     ];

@@ -8,11 +8,11 @@
     ...attributes
   >
     {{#if (eq @status "complete")}}
-      <EuiIcon class="euiStepNumber__icon" @type="check" @size={{iconSize}} />
+      <EuiIcon @iconClasses="euiStepNumber__icon" @type="check" @size={{iconSize}} />
     {{else if (eq @status "warning")}}
-      <EuiIcon class="euiStepNumber__icon" @type="alert" @size={{iconSize}} />
+      <EuiIcon @iconClasses="euiStepNumber__icon" @type="alert" @size={{iconSize}} />
     {{else if (eq @status "danger")}}
-      <EuiIcon class="euiStepNumber__icon" @type="cross" @size={{iconSize}} />
+      <EuiIcon @iconClasses="euiStepNumber__icon" @type="cross" @size={{iconSize}} />
     {{else if (eq @status "loading")}}
       <EuiLoadingSpinner class="euiStepNumber__loader" @size={{if (eq iconSize "s") "l" "xl"}} />
     {{else}}

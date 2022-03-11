@@ -20,7 +20,7 @@
   >
     {{#if @iconType}}
       <EuiIcon
-        class="euiToastHeader__icon"
+        @iconClasses="euiToastHeader__icon"
         @type={{@iconType}}
         @size="m"
         aria-hidden="true"

@@ -21,12 +21,12 @@
     @isInvalid={{@isInvalid}}
     ...attributes
     {{pikaday
-      @options
+      this.options
       value=this.value
       onSelect=this.onSelect
       setDefaultDate=true
       defaultDate=@defaultDate
-      onOpen=@onOpen
+      onOpen=this.onOpen
       onDraw=this.onDraw
       onClose=this.onClose
       format=this.format
@@ -38,8 +38,11 @@
       firstDay=this.firstDay
       container=@container
       bound=@bound
+      register=this.registerPikaday
+      moment=@moment
     }}
-    {{on 'change' this.didChange}}
+    {{on "change" this.didChange}}
+    {{did-insert this.registerField}}
   >
     <:prepend as |classes|>
       {{yield classes to="prepend"}}

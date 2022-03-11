@@ -19,10 +19,11 @@
 
 import { RemarkTokenizer } from '../markdown-types';
 import { Plugin } from 'unified';
+import EuiMarkdownFormatMarkdownCheckbox from '../../../components/eui-markdown-format/markdown-checkbox';
 
 interface CheckboxNodeDetails {
   type: 'component';
-  componentName: 'eui-markdown-format/markdown-checkbox';
+  componentName: any;
   lead: string;
   label: string;
   isChecked: boolean;
@@ -64,7 +65,7 @@ const CheckboxParser: Plugin = function CheckboxParser() {
 
     return add({
       type: 'component',
-      componentName: 'eui-markdown-format/markdown-checkbox',
+      componentName: EuiMarkdownFormatMarkdownCheckbox,
       lead,
       label: text,
       isChecked,

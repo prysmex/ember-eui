@@ -1,6 +1,11 @@
 # Installation
 
-You can start by installing the core
+This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
+
+1. `npm info @ember-eui/core peerDependencies`
+
+
+Once you've installed it, you can now install the addon itself:
 
 1. `ember install @ember-eui/core`
 
@@ -10,9 +15,9 @@ if so, you can force that all packages use the same dependency with npm `overrid
 
 ```
 "resolutions": {
-    "@embroider/macros": "^1.0.0",
-    "@embroider/shared-internals": "^1.0.0",
-    "@embroider/util": "^1.0.0"
+    "@embroider/macros": "^1.3.0",
+    "@embroider/shared-internals": "^1.3.0",
+    "@embroider/util": "^1.3.0"
   }
 ```
 

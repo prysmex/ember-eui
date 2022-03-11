@@ -29,11 +29,11 @@
           <span class="euiSwitch__thumb"></span>
           <span class="euiSwitch__track">
             {{#unless @compressed}}
-              <EuiIcon @type="cross" @size="m" class="euiSwitch__icon" />
+              <EuiIcon @type="cross" @size="m" @iconClasses="euiSwitch__icon" />
               <EuiIcon
                 @type="check"
                 @size="m"
-                class="euiSwitch__icon euiSwitch__icon--checked"
+                @iconClasses="euiSwitch__icon euiSwitch__icon--checked"
               />
             {{/unless}}
           </span>

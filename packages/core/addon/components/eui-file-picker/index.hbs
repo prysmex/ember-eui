@@ -30,7 +30,6 @@
           class="euiFilePicker__input"
           disabled={{@disabled}}
           aria-describedby={{promptId}}
-          ...attributes
           {{on "dragover" this.showDrop}}
           {{on "dragleave" this.hideDrop}}
           {{on "drop" this.hideDrop}}
@@ -40,7 +39,7 @@
         />
         <div class="euiFilePicker__prompt" id={{promptId}}>
           <EuiIcon
-            class="euiFilePicker__icon"
+            @iconClasses="euiFilePicker__icon"
             @type="importAction"
             @size={{if true "m" "l"}}
             aria-hidden="true"
@@ -58,7 +57,7 @@
                 class="euiFilePicker__clearButton"
                 {{on "click" this.removeFiles}}
               >
-                <EuiIcon class="euiFilePicker__clearIcon" @type="cross" />
+                <EuiIcon @iconClasses="euiFilePicker__clearIcon" @type="cross" />
               </button>
             {{else}}
               <EuiButtonEmpty

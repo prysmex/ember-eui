@@ -58,7 +58,7 @@
       </figcaption>
     </figure>
     <EuiIcon
-      class="euiImage-isFullScreenCloseIcon"
+      @iconClasses="euiImage-isFullScreenCloseIcon"
       @type="cross"
       @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
     />

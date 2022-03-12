@@ -6,7 +6,7 @@ export interface EuiSideNavArgs {
    */
   children: Component;
 
-  mobileBreakpoints: string[];
+  mobileBreakpoints?: string[];
 }
 
 export default class EuiSideNavComponent extends Component<EuiSideNavArgs> {
@@ -16,7 +16,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavArgs> {
 
   get contentClasses() {
     return `euiSideNav__content ${this.mobileBreakpoints
-      .map((breakpointName) => {
+      .map?.((breakpointName) => {
         return `euiSideNav__contentMobile-${breakpointName}`;
       })
       .join(' ')}`;

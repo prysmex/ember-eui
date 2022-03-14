@@ -25,6 +25,7 @@ import EuiCardSelect from './eui-card-select';
 import EuiHeaderSection from './eui-header-section';
 import EuiHeaderSectionItem from './eui-header-section-item';
 import EuiHeader from './eui-header';
+import EuiHealth from './eui-health';
 import EuiButtonIcon from './eui-button-icon';
 import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
@@ -85,6 +86,7 @@ const mapping: Mapping = {
   EuiHeaderSection,
   EuiHeaderSectionItem,
   EuiHeader,
+  EuiHealth,
   EuiButton,
   EuiButtonIcon,
   EuiHorizontalRule,

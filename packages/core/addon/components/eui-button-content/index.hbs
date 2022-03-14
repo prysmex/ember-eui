@@ -6,14 +6,18 @@
   ...attributes
 >
   {{#if @isLoading}}
-    <EuiLoadingSpinner class="euiButtonContent__spinner" @size="m" />
+    <EuiLoadingSpinner
+      class="euiButtonContent__spinner"
+      @size={{arg-or-default @iconSize "m"}}
+    />
   {{else if @iconType}}
     <EuiIcon
       @iconClasses="euiButtonContent__icon {{@iconClasses}}"
       @type={{@iconType}}
-      @size="m"
+      @size={{arg-or-default @iconSize "m"}}
       @useSvg={{@useSvg}}
       @useComponent={{@useComponent}}
+      @color="inherit"
     />
   {{/if}}
   <span class={{@textClasses}}>

@@ -419,14 +419,14 @@ export const sizeToClassNameMap = {
 
 export const colorToClassMap = {
   primary: `${baseClass}--primary`,
-  secondary: `${baseClass}--secondary`,
   success: `${baseClass}--success`,
   accent: `${baseClass}--accent`,
   warning: `${baseClass}--warning`,
   danger: `${baseClass}--danger`,
   text: `${baseClass}--text`,
   subdued: `${baseClass}--subdued`,
-  ghost: `${baseClass}--ghost`
+  ghost: `${baseClass}--ghost`,
+  inherit: `${baseClass}--inherit`
 };
 
 const mapping: ComponentMapping = {

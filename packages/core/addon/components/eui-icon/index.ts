@@ -129,6 +129,10 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     );
   }
 
+  get appIconHasColor() {
+    return this.args.color && this.args.color !== 'default';
+  }
+
   get focusable(): string {
     const { tabIndex } = this.args;
     return tabIndex == null || tabIndex === -1 ? 'false' : 'true';

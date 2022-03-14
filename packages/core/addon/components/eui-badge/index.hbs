@@ -98,7 +98,11 @@
           {{on "click" (optional @iconOnClick)}}
         >
           <EuiIcon
-            @iconClasses={{class-names "euiBadge__icon" @closeButtonProps.iconClasses}}
+            @color="inherit"
+            @iconClasses={{class-names
+              "euiBadge__icon"
+              @closeButtonProps.iconClasses
+            }}
             @type={{@iconType}}
             data-selected-index={{@closeButtonProps.dataSelectedIconIndex}}
             @size={{if (has-block) "s" "m"}}
@@ -107,6 +111,7 @@
         {{! tempalte-lint-enable}}
       {{else}}
         <EuiIcon
+          @color="inherit"
           @type={{@iconType}}
           @size={{if (has-block) "s" "m"}}
           @iconClasses="euiBadge__icon"

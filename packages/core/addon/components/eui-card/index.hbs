@@ -11,7 +11,7 @@
       (if @isDisabled "euiCard-isDisabled")
       (if (has-block) "euiCard--hasChildren")
       (if @icon "euiCard--hasIcon" (if (has-block) "icon" "euiCard--hasIcon"))
-      (if @betaBadgeLabel "euiCard--hasBetaBadge")
+      (if @betaBadgeProps.label "euiCard--hasBetaBadge")
       (if
         (or titleId (and @selectable (not @selectable.isDisabled)))
         "euiCard--isClickable"
@@ -98,12 +98,13 @@
       {{/if}}
       {{yield to="body"}}
     </div>
-    {{#if @betaBadgeLabel}}
+    {{#if @betaBadgeProps.Label}}
       <span class="euiCard__betaBadgeWrapper">
         <EuiBetaBadge
           class="euiCard__betaBadge"
-          @label={{@betaBadgeLabel}}
-          @title={{@betaBadgeLabel}}
+          @label={{@betaBadgeProps.label}}
+          @title={{@betaBadgeProps.title}}
+          @tooltipContent={{@betaBadgeProps.tooltipContent}}
         />
       </span>
     {{/if}}

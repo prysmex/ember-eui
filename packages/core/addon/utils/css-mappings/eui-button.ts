@@ -6,7 +6,8 @@ const sizeMapping = {
 
 const colorMapping = {
   primary: `${baseClass}--primary`,
-  secondary: `${baseClass}--secondary`,
+  accent: `${baseClass}--accent`,
+  success: `${baseClass}--success`,
   warning: `${baseClass}--warning`,
   danger: `${baseClass}--danger`,
   ghost: `${baseClass}--ghost`,

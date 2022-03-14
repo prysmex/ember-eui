@@ -7,7 +7,8 @@ export const colorMapping = {
   accent: `${baseClass}--accent`,
   danger: `${baseClass}--danger`,
   warning: `${baseClass}--warning`,
-  ghost: `${baseClass}--ghost`
+  ghost: `${baseClass}--ghost`,
+  primary: `${baseClass}--primary`
 };
 
 const mapping: ComponentMapping = {

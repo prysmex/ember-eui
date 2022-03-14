@@ -1,1 +1,3 @@
-# Health
+<EuiTitle @size="l">
+Badge
+</EuiTitle>

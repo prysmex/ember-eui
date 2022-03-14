@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/pikaday",
-  "version": "4.0.4",
+  "version": "4.2.5",
   "description": "ember-pikaday integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -31,14 +31,14 @@
   },
   "dependencies": {
     "@ember-decorators/component": "^6.1.0",
-    "@ember-eui/core": "^4.0.4",
+    "@ember-eui/core": "^4.2.5",
     "@types/ember": "^3.16.4",
     "ember-auto-import": "^2.4.0",
     "ember-cli-babel": "^7.26.11",
     "ember-cli-htmlbars": "^6.0.1",
     "ember-cli-typescript": "4.2.1",
     "ember-named-blocks-polyfill": "^0.2.3",
-    "ember-pikaday": "^4.0.0",
+    "ember-pikaday-prysmex": "~4.3.0",
     "ember-svg-jar": "^2.3.4"
   },
   "devDependencies": {

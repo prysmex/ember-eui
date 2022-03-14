@@ -5,7 +5,7 @@ import { uniqueId } from '../../helpers/unique-id';
 import { tracked, cached } from '@glimmer/tracking';
 import { findPopoverPosition } from '../../utils/popover';
 import { keys } from '../../utils/keys';
-import { later, cancel, scheduleOnce } from '@ember/runloop';
+import { later, cancel, scheduleOnce, next } from '@ember/runloop';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
 
@@ -118,9 +118,11 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     }
 
     if (this.args.attachTo && this.args.attachTo !== this._attachTo) {
-      this.removeAttachToHandlers();
-      this._attachTo = this.args.attachTo;
-      this.setupAttachToHandlers();
+      next(() => {
+        this.removeAttachToHandlers();
+        this._attachTo = this.args.attachTo;
+        this.setupAttachToHandlers();
+      });
     }
   }
 
@@ -248,13 +250,16 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
       }
     });
 
-    const windowWidth = document.documentElement.clientWidth || window.innerWidth;
+    const windowWidth =
+      document.documentElement.clientWidth || window.innerWidth;
     const useRightValue = windowWidth / 2 < left;
 
     const toolTipStyles: ToolTipStyles = {
       top: `${top}px`,
       left: useRightValue ? 'auto' : `${left}px`,
-      right: useRightValue ? `${windowWidth - left - this.popover.offsetWidth}px` : 'auto'
+      right: useRightValue
+        ? `${windowWidth - left - this.popover.offsetWidth}px`
+        : 'auto'
     };
 
     this.visible = true;
@@ -313,7 +318,8 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     // left the anchor for a non-child.
     if (
       this._anchor === event.relatedTarget ||
-      (this._anchor != null && !this._anchor.contains(event.relatedTarget as Node))
+      (this._anchor != null &&
+        !this._anchor.contains(event.relatedTarget as Node))
     ) {
       if (!this.hasFocus) {
         this.hideToolTip();

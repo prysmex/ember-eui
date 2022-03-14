@@ -2,6 +2,80 @@
 
 ### Master
 
+### 4.2.5
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon />` for now use @iconClasses to pass down classes when using svg-jar
+
+### 4.2.4
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon />` Drop wrapping svg div, add futurist css override
+### 4.2.3
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Cherry pick 1.6.x fix commit hash https://github.com/prysmex/ember-eui/commit/c4b8a4a259f6b86c2be516fd7427f5e48b28cecd
+- Use next for updating the attachTo for `<EuiToolTip />`
+
+### 4.2.2
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix typing issues
+
+### 4.2.1
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix markdown editor components
+
+### 4.2.0
+🚀 Enhancements
+`@ember-eui/core`
+- Remove blueprint, inspired by https://github.com/mikkopaderes/ember-cloud-firestore-adapter README.md we should teach users to install peerDependencies manually, which is now required.
+- Update docs for this change.
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix markdown editor icons
+
+### 4.1.1
+🐛 Bug / Fixes
+`@ember-eui/core`
+- fix typo in package json defaultBlueprint
+
+### 4.1.0
+🐛 Bug / Fixes
+`@ember-eui/core`
+- @html-next/vertical-collection depend on npm released version 3.0.0-1
+
+🚀 Enhancements
+`@ember-eui/*` 
+bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticComponents flag!
+
+### 4.0.9
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon>` added hardcoded styling meanwhile we add back svgs to hbs components
+
+### 4.0.8
+🐛 Bug / Fixes
+`@ember-eui/pikaday`
+- Make component much more flexible for easier extending or composition
+
+### 4.0.7
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Since we are no longer exposing sass files, there's no use for this file anymore
+
+### 4.0.6
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Fix named blocks version
+
+### 4.0.5
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Add ember-named-blocks-polyfill back 
+
 ### 4.0.4
 🐛 Bug / Fixes
 `@ember-eui/core`
@@ -60,6 +134,11 @@
 💥 Breaking change
 `@ember-eui/core`
 - Deprecate `ember-svg-jar` `hbs` strategy for now, just use stock `ember-svg-jar`
+
+### 1.6.10
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` fixes to `onCreateOption`
 ### 1.6.7
 🐛 Bug / Fixes
 `@ember-eui/core`

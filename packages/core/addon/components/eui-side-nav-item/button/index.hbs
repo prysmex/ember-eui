@@ -1,15 +1,27 @@
-<span class="euiSideNavItemButton__content">
-  {{#if @icon}}
-    <EuiIcon
-      @type={{@icon}}
-      @size="m"
-      class={{class-names "euiSideNavItemButton__icon" @buttonIconClasses}}
-    />
-  {{/if}}
-  <span class="euiSideNavItemButton__label">
-    {{yield}}
+{{#let (arg-or-default @truncate true) as |truncate|}}
+  <span class="euiSideNavItemButton__content">
+    {{#if @icon}}
+      <EuiIcon
+        @type={{@icon}}
+        @size="m"
+        class={{class-names "euiSideNavItemButton__icon" @buttonIconClasses}}
+      />
+    {{/if}}
+
+    <EuiInnerText as |setRef innerText|>
+      <span
+        class={{class-names
+          "euiSideNavItemButton__label"
+          (if truncate "euiSideNavItemButton__label--truncated")
+        }}
+        {{did-insert setRef}}
+        title={{if truncate innerText}}
+      >
+        {{yield}}
+      </span>
+    </EuiInnerText>
+    {{#if @caret}}
+      <EuiIcon @type="arrowDown" @color="subdued" @size="s" />
+    {{/if}}
   </span>
-  {{#if @caret}}
-    <EuiIcon @type="arrowDown" @color="subdued" @size="s" />
-  {{/if}}
-</span>
+{{/let}}

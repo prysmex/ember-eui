@@ -1,5 +1,6 @@
 import { RemarkTokenizer } from '../markdown-types';
 import { Plugin } from 'unified';
+import EuiMarkdownFormatMarkdownTooltip from '../../../components/eui-markdown-format/markdown-tooltip';
 
 interface TooltipNodeDetails {
   type: 'component';
@@ -95,7 +96,7 @@ const TooltipParser: Plugin = function TooltipParser() {
 
     return eat(`!{tooltip[${tooltipAnchor}](${tooltipText})}`)({
       type: 'component',
-      componentName: 'eui-markdown-format/markdown-tooltip',
+      componentName: EuiMarkdownFormatMarkdownTooltip,
       tooltipText: tooltipText,
       children
     } as TooltipNodeDetails);

@@ -23,7 +23,7 @@
           }}
         >
           <EuiIcon
-            class={{class-names
+            @iconClasses={{class-names
               "euiAccordion__icon"
               (if this.isOpen "euiAccordion__icon-isOpen")
             }}
@@ -59,7 +59,7 @@
         {{on "click" this.onToggle}}
       >
         <EuiIcon
-          class={{class-names
+          @iconClasses={{class-names
             "euiAccordion__icon"
             (if this.isOpen "euiAccordion__icon-isOpen")
           }}

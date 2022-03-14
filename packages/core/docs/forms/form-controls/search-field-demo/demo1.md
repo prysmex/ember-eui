@@ -7,7 +7,7 @@ order: 1
 ```hbs template
 <EuiTitle>
   Search Text:
-  <EuiTextColor @color="secondary">
+  <EuiTextColor @color="success">
     {{this.searchText}}
   </EuiTextColor>
 </EuiTitle>

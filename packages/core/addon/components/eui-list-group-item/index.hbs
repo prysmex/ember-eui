@@ -18,7 +18,7 @@
       ...attributes
     >
       {{#if @iconType}}
-        <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+        <EuiIcon @iconClasses="euiListGroupItem__icon" @type={{@iconType}} />
       {{/if}}
       <span class="euiListGroupItem__label">
         {{#if (has-block)}}
@@ -37,7 +37,7 @@
       ...attributes
     >
       {{#if @iconType}}
-        <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+        <EuiIcon @iconClasses="euiListGroupItem__icon" @type={{@iconType}} />
       {{/if}}
       <span class="euiListGroupItem__label">
         {{#if (has-block)}}
@@ -50,7 +50,7 @@
   {{else}}
     <span class="euiListGroupItem__text" ...attributes>
       {{#if @iconType}}
-        <EuiIcon class="euiListGroupItem__icon" @type={{@iconType}} />
+        <EuiIcon @iconClasses="euiListGroupItem__icon" @type={{@iconType}} />
       {{/if}}
       <span class="euiListGroupItem__label">
         {{#if (has-block)}}

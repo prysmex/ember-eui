@@ -8,7 +8,7 @@
   {{#if @notification}}
     {{#if (eq @notification true)}}
       <EuiIcon
-        class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
+        @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
         @color={{arg-or-default @notificationColor "accent"}}
         @type="dot"
         @size="l"

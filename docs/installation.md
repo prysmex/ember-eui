@@ -1,4 +1,12 @@
-# Installation
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Installation
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
 
 This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
 
@@ -22,7 +30,11 @@ if so, you can force that all packages use the same dependency with npm `overrid
 ```
 
 
-### Icons
+<EuiTitle>
+  <h3>
+    Icons
+  </h3>
+</EuiTitle>
 
 For icons to work you will need to:
 
@@ -45,7 +57,11 @@ var app = new EmberApp(defaults, {
 ```
 
 
-### Styles and Theming
+<EuiTitle>
+  <h3>
+    Styles and Theming
+  </h3>
+</EuiTitle>
 
 `theme`: You can specify the theme you want  
 

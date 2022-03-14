@@ -29,7 +29,7 @@ ValueText can be and should be a `@valueText` prop and `:valueText` named block.
 
 <EuiProgress
   @max={{100}}
-  @color="secondary"
+  @color="success"
   @size="l"
   @value={{this.value1}}
 >

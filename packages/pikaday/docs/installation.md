@@ -1,4 +1,12 @@
-# Installation
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Installation
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
 
 `ember-pikaday` for `@ember-eui/core`
 

@@ -13,7 +13,10 @@ interface Identifiable {
  *
  * @param { any } ref
  */
-export function uniqueId(_?: any[], { ref }: { ref?: Identifiable } = {}): string {
+export function uniqueId(
+  _?: any[],
+  { ref }: { ref?: Identifiable } = {}
+): string {
   return isPresent(ref) ? guidFor(ref) : guidFor({});
 }
 

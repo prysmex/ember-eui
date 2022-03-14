@@ -53,8 +53,8 @@ and how to set them for complex or weird use cases, but we keep setting errors f
       @fieldName='veggies'
       @label='Choose a veggie'
       @options={{array '🥦' '🥬' '🍅' '🥑'}}
-      @onChange={{changeset-set changesetObj 'veggies'}}
-      @selectedOptions={{changeset-get changesetObj 'veggies'}}
+      @onChange={{set changesetObj 'veggies'}}
+      @selectedOptions={{get changesetObj 'veggies'}}
       @helpText='100% natural'
       as |option|
     >
@@ -65,10 +65,10 @@ and how to set them for complex or weird use cases, but we keep setting errors f
       @label='Now choose your favorite veggie!'
       @options={{array '🥦' '🥬' '🍅' '🥑'}}
       @helpText='100% natural'
-      @onChange={{changeset-set changesetObj 'favVeggie'}}
+      @onChange={{set changesetObj 'favVeggie'}}
       @selectedOptions={{pick
         'firstObject'
-        (changeset-get changesetObj 'favVeggie')
+        (get changesetObj 'favVeggie')
       }}
       @singleSelection={{hash asPlainText=true}}
       as |option|

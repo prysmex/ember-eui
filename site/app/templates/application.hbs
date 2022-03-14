@@ -1,27 +1,21 @@
-<EuiHeader>
+<EuiHeader @theme="dark">
   <EuiHeaderSection @side="left">
-    <EuiHeaderSectionItem @border="none" class="mx-3">
-      Ember Eui
-    </EuiHeaderSectionItem>
+
+    <EuiHeaderLogo @iconType="/assets/elastic.svg">
+      Ember EUI
+    </EuiHeaderLogo>
+
   </EuiHeaderSection>
   <EuiHeaderSection @side="right">
     <EuiHeaderSectionItem @border="none">
       <EuiHeaderLogo
+        class="text-white"
         @iconType="logoGithub"
         href="https://github.com/prysmex/ember-eui"
         target="_blank"
         rel="noopener noreferrer"
       />
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem @border="none">
-      <EuiHeaderLogo
-        @iconType="/assets/netlify.svg"
-        href="https://www.netlify.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Hosted
-      </EuiHeaderLogo>
+
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
@@ -29,7 +23,7 @@
   <EuiPageSideBar class="mt-8">
     <EuiSideNav
       class="flex-none"
-      @mobileTitle="Elastic UI"
+      @heading="Elastic UI"
       @isOpenMobile={{this.isOpenMobile}}
       @toggleOpenOnMobile={{set this "isOpenMobile"}}
       @items={{this.sideNavRoutes}}

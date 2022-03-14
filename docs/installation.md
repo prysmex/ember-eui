@@ -1,6 +1,19 @@
-# Installation
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Installation
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
 
-You can start by installing the core
+This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
+
+1. `npm info @ember-eui/core peerDependencies`
+
+
+Once you've installed it, you can now install the addon itself:
 
 1. `ember install @ember-eui/core`
 
@@ -10,14 +23,18 @@ if so, you can force that all packages use the same dependency with npm `overrid
 
 ```
 "resolutions": {
-    "@embroider/macros": "^1.0.0",
-    "@embroider/shared-internals": "^1.0.0",
-    "@embroider/util": "^1.0.0"
+    "@embroider/macros": "^1.3.0",
+    "@embroider/shared-internals": "^1.3.0",
+    "@embroider/util": "^1.3.0"
   }
 ```
 
 
-### Icons
+<EuiTitle>
+  <h3>
+    Icons
+  </h3>
+</EuiTitle>
 
 For icons to work you will need to:
 
@@ -40,7 +57,11 @@ var app = new EmberApp(defaults, {
 ```
 
 
-### Styles and Theming
+<EuiTitle>
+  <h3>
+    Styles and Theming
+  </h3>
+</EuiTitle>
 
 `theme`: You can specify the theme you want  
 

@@ -27,7 +27,7 @@ order: 2
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="secondary" {{on "click" this.setComplete}}>
+          <EuiButton @color="success" {{on "click" this.setComplete}}>
             Set Complete
           </EuiButton>
         </EuiFlexItem>

@@ -15,7 +15,7 @@
           backwaters
         </EuiTextColor>
         of the
-        <EuiTextColor @color="secondary">
+        <EuiTextColor @color="success">
           unfashionable
         </EuiTextColor>
         end of the
@@ -54,7 +54,7 @@
           </EuiTextColor>
         </li>
         <li>
-          <EuiTextColor @color="secondary">
+          <EuiTextColor @color="success">
             Secondary color
           </EuiTextColor>
         </li>

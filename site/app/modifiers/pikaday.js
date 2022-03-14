@@ -1,2 +1,2 @@
-import 'ember-pikaday/pikaday.css';
-export { default } from 'ember-pikaday/modifiers/pikaday';
+import 'ember-pikaday-prysmex/pikaday.css';
+export { default } from 'ember-pikaday-prysmex/modifiers/pikaday';

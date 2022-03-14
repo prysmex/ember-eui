@@ -1,4 +1,12 @@
-# Installation
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Installation
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
 
 Another form validation library for ember-eui, great for easy forms.
 

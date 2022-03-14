@@ -3,7 +3,7 @@ export const baseClass = 'euiTextColor';
 export const colorMapping = {
   default: `${baseClass}--default`,
   subdued: `${baseClass}--subdued`,
-  secondary: `${baseClass}--secondary`,
+  success: `${baseClass}--success`,
   accent: `${baseClass}--accent`,
   danger: `${baseClass}--danger`,
   warning: `${baseClass}--warning`,

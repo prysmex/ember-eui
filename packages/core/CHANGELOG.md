@@ -2,6 +2,21 @@
 
 ### Master
 
+### 4.2.5
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon />` for now use @iconClasses to pass down classes when using svg-jar
+
+### 4.2.4
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiIcon />` Drop wrapping svg div, add futurist css override
+### 4.2.3
+🐛 Bug / Fixes
+`@ember-eui/core`
+- Cherry pick 1.6.x fix commit hash https://github.com/prysmex/ember-eui/commit/c4b8a4a259f6b86c2be516fd7427f5e48b28cecd
+- Use next for updating the attachTo for `<EuiToolTip />`
+
 ### 4.2.2
 🐛 Bug / Fixes
 `@ember-eui/core`
@@ -119,6 +134,11 @@ bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticCompone
 💥 Breaking change
 `@ember-eui/core`
 - Deprecate `ember-svg-jar` `hbs` strategy for now, just use stock `ember-svg-jar`
+
+### 1.6.10
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` fixes to `onCreateOption`
 ### 1.6.7
 🐛 Bug / Fixes
 `@ember-eui/core`

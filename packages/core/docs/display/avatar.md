@@ -1,1 +1,3 @@
-# Avatar
+<EuiTitle @size="l">
+Avatar
+</EuiTitle>

@@ -7,9 +7,11 @@
       iconColor=@iconColor
       iconSize=@iconSize
       iconType=@iconType
+      imageUrl=@imageUrl
+      initials=@initials
     )
-    background-image=(if @imageUrl @imageUrl "none")
-  ) as |inlineStyles|
+  )
+  as |inlineStyles|
 }}
   <div
     class={{class-names
@@ -19,9 +21,9 @@
       size=(arg-or-default @size "m")
       type=(arg-or-default @type "user")
     }}
-     aria-label={{if @isDisabled  undefined  @name}}
+    aria-label={{if @isDisabled undefined @name}}
     title={{@name}}
-    role={{if @isDisabled  'presentation'  'img'}}
+    role={{if @isDisabled "presentation" "img"}}
     ...attributes
     {{simple-style inlineStyles}}
   >
@@ -34,8 +36,8 @@
         @iconClasses="euiAvatar__icon"
         @size={{or @iconSize @size}}
         @type={{@iconType}}
-        aria-label={{if @isDisabled  undefined  @name}}
-        role={{if @isDisabled  'presentation'  'img'}}
+        aria-label={{@name}}
+        role={{if @isDisabled "presentation" "img"}}
         @color={{or
           @iconColor
           (if (eq @iconColor null) @iconColor inlineStyles.color)

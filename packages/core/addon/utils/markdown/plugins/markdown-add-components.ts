@@ -1,4 +1,6 @@
 import { RehypeNode } from '../markdown-types';
+import EuiMarkdownFormatMarkdownCode from '../../../components/eui-markdown-format/markdown-code';
+import EuiMarkdownFormatMarkdownCodeBlock from '../../../components/eui-markdown-format/markdown-code-block';
 
 type Visitor = (node: RehypeNode) => RehypeNode;
 
@@ -48,12 +50,11 @@ export default function MarkdownAddComponents(): (tree: RehypeNode) => void {
           /\r|\n/.exec(child.value)
         );
         if (hasBreaks) {
-          node.properties.componentName =
-            'eui-markdown-format/markdown-code-block';
+          node.properties.componentName = EuiMarkdownFormatMarkdownCodeBlock;
           node.properties.fontSize = 'm';
           node.properties.paddingSize = 's';
         } else {
-          node.properties.componentName = 'eui-markdown-format/markdown-code';
+          node.properties.componentName = EuiMarkdownFormatMarkdownCode;
           node.properties.inline = true;
         }
       }

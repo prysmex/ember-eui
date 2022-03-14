@@ -31,7 +31,7 @@
       </span>
     {{else if @iconType}}
       <EuiIcon
-        class="euiAvatar__icon"
+        @iconClasses="euiAvatar__icon"
         @size={{or @iconSize @size}}
         @type={{@iconType}}
         aria-label={{if @isDisabled  undefined  @name}}

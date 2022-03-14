@@ -137,7 +137,7 @@
       </EuiBadge>
     </Group.item>
     <Group.item>
-      <EuiBadge @iconType="check" @iconSide="right" @color="secondary">
+      <EuiBadge @iconType="check" @iconSide="right" @color="success">
         Example of a good ol' badge group item 3
       </EuiBadge>
     </Group.item>

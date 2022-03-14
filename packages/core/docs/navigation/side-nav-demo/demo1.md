@@ -2,11 +2,25 @@
 
 ```hbs template
 <EuiSideNav
-  @mobileTitle="Test Mobile Title"
+  @mobileTitle='Mobile Title'
+  @heading='Title'
   @isOpenMobile={{true}}
   @items={{this.sideNavItems}}
   @selectedItem={{this.selectedItem}}
+  @truncate={{true}} {{! you can also truncate per item }}
 />
+
+<EuiSpacer />
+<EuiSideNav
+  @isOpenMobile={{true}}
+  @items={{this.sideNavItems}}
+  @selectedItem={{this.selectedItem}}
+  @truncate={{true}} {{! you can also truncate per item }}
+>
+  <:heading>
+    <EuiIcon @type="faceHappy"/> Header!
+  </:heading>
+</EuiSideNav>
 ```
 
 ```js component
@@ -25,7 +39,7 @@ export default class DemoSideNavComponent extends Component {
       ...data,
       id: name,
       name,
-      onClick,
+      onClick
     };
   }
 
@@ -38,14 +52,15 @@ export default class DemoSideNavComponent extends Component {
       createItem('Elasticsearch', {
         icon: 'logoElasticsearch',
         items: [
-          createItem('Data sources'),
+          createItem('Data sources', { disabled: true }),
           createItem('Users'),
           createItem('Roles'),
           createItem('Watches'),
           createItem(
-            'Extremely long title will become truncated when the browser is narrow enough'
-          ),
-        ],
+            'Extremely long title will become truncated when the browser is narrow enough',
+            { truncate: true }
+          )
+        ]
       }),
       createItem('Kibana', {
         icon: 'logoKibana',
@@ -57,31 +72,32 @@ export default class DemoSideNavComponent extends Component {
                 items: [
                   createItem('Time stuff', {
                     icon: 'clock',
+                    emphasize: true
                   }),
                   createItem('Lion stuff', {
                     icon: 'stats',
                     items: [
                       createItem('Hello sstuff', {
                         icon: 'logoGolang',
-                      }),
-                    ],
-                  }),
-                ],
+                        disabled: true
+                      })
+                    ]
+                  })
+                ]
               }),
-              createItem('Visualizations'),
-            ],
+              createItem('Visualizations')
+            ]
           }),
           createItem('Index Patterns'),
           createItem('Saved Objects'),
-          createItem('Reporting'),
-        ],
+          createItem('Reporting')
+        ]
       }),
       createItem('Logstash', {
         icon: 'logoLogstash',
-        items: [createItem('Pipeline viewer')],
-      }),
+        items: [createItem('Pipeline viewer')]
+      })
     ];
   }
 }
-
 ```

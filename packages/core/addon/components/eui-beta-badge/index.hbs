@@ -8,7 +8,7 @@
     {{yield}}
   {{else if @iconType}}
     <EuiIcon
-      class="euiBetaBadge__icon"
+      @iconClasses="euiBetaBadge__icon"
       @type={{@iconType}}
       @size="m"
       aria-hidden="true"

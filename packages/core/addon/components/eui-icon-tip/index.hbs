@@ -11,11 +11,10 @@
     <:anchor>
       <EuiIcon
         tabindex="0"
-        class={{@iconProps.className}}
+        @iconClasses={{@iconProps.className}}
         @type={{arg-or-default @type "questionInCircle"}}
         @color={{@color}}
         @size={{@size}}
-        ...attributes
         aria-label={{arg-or-default @ariaLabel "Info"}}
       />
     </:anchor>

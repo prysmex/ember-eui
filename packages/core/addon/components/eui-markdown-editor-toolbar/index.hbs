@@ -18,11 +18,7 @@
         <EuiButtonIcon
           @color="text"
           {{on "click" (fn this.handleMdButtonClick item.id)}}
-          @iconType={{if
-            item.iconType.component
-            (component (ensure-safe-component item.iconType.component))
-            item.iconType
-          }}
+          @iconType={{or item.iconType.component item.iconType}}
           @useComponent={{item.iconType.component}}
           aria-label={{item.label}}
           @useSvg={{item.useSvg}}

@@ -2,6 +2,15 @@
 
 This is the @ember-eui monorepo.
 
+This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
+
+1. `npm info @ember-eui/core peerDependencies`
+
+
+Once you've installed it, you can now install the addon itself:
+
+1. `ember install @ember-eui/core`
+
 ## Demo
 
 You can see a live demo and documentation for the components here [demo](https://ember-eui.netlify.app)

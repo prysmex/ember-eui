@@ -1,6 +1,12 @@
 {{#if (and @href (not @isDisabled))}}
   <a
-    class={{class-names componentName="EuiButtonIcon" color=(arg-or-default @color "primary")}}
+    class={{class-names
+      (if @isDisabled "euiButtonIcon-isDisabled")
+      componentName="EuiButtonIcon"
+      display=(arg-or-default @display "empty")
+      color=(arg-or-default @color "primary")
+      size=(arg-or-default @size "xs")
+    }}
     href={{@href}}
     target={{@target}}
     ...attributes
@@ -12,13 +18,20 @@
         @size={{arg-or-default @iconSize "m"}}
         @useSvg={{@useSvg}}
         @useComponent={{@useComponent}}
+        @color="inherit"
         aria-hidden="true"
       />
     {{/if}}
   </a>
 {{else}}
   <button
-    class={{class-names componentName="EuiButtonIcon" color=(arg-or-default @color "primary")}}
+    class={{class-names
+      (if @isDisabled "euiButtonIcon-isDisabled")
+      componentName="EuiButtonIcon"
+      display=(arg-or-default @display "empty")
+      color=(arg-or-default @color "primary")
+      size=(arg-or-default @size "xs")
+    }}
     disabled={{@isDisabled}}
     aria-pressed={{if @isSelected "true" "false"}}
     type={{if @type @type "button"}}
@@ -30,6 +43,7 @@
         @type={{@iconType}}
         @size={{@iconSize}}
         @useSvg={{@useSvg}}
+        @color="inherit"
         @useComponent={{@useComponent}}
         aria-hidden="true"
       />

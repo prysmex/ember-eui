@@ -6,7 +6,7 @@ order: 2
 
 ```hbs template
 <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
-  <EuiFlexItem @grow={{false}}>
+ <EuiFlexItem @grow={{false}}>
     <EuiIconTip
       @content="Source maps allow browser dev tools to map minified code to the original source code"
       @position="right"
@@ -24,9 +24,12 @@ order: 2
 <EuiSpacer />
 <EuiText>
   <p>
-    Pass a position utility class via iconProps to shift
-        for better alignment.
-    <EuiIconTip @type="iInCircle" @color="subdued" @iconProps={{hash className="eui-alignTop"}}>
+    Pass a position utility class via iconProps to shift for better alignment.
+    <EuiIconTip
+      @type="iInCircle"
+      @color="subdued"
+      @iconProps={{hash className="eui-alignTop"}}
+    >
       <:content>
         <span>
           This was passed .eui-alignTop

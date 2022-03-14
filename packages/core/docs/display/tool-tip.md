@@ -2,7 +2,7 @@
   <EuiPageHeaderSection>
     <EuiTitle @size="l">
       <h1>
-        Tool Tip
+        Tooltip
       </h1>
     </EuiTitle>
   </EuiPageHeaderSection>

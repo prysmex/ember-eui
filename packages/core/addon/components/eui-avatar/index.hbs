@@ -21,7 +21,7 @@
     }}
      aria-label={{if @isDisabled  undefined  @name}}
     title={{@name}}
-    role={{if @isDisabled 'presentation''img'}}
+    role={{if @isDisabled  'presentation'  'img'}}
     ...attributes
     {{simple-style inlineStyles}}
   >
@@ -35,7 +35,7 @@
         @size={{or @iconSize @size}}
         @type={{@iconType}}
         aria-label={{if @isDisabled  undefined  @name}}
-        role={{if @isDisabled 'presentation''img'}}
+        role={{if @isDisabled  'presentation'  'img'}}
         @color={{or
           @iconColor
           (if (eq @iconColor null) @iconColor inlineStyles.color)

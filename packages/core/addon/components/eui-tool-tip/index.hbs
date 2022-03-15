@@ -7,8 +7,8 @@
     <span
       {{did-insert this.updateAttachTo}}
       {{did-update this.updateAttachTo @attachTo}}
-      {{did-update (if (eq @isShown true) this.showToolTip this.hideToolTip) @isShown}}
-      {{did-insert (if (eq @isShown true) this.showToolTip this.hideToolTip)}}
+      {{did-update (if (eq @isShown true) this.onFocus this.onBlur) @isShown}}
+      {{did-insert (if (eq @isShown true) this.onFocus this.onBlur)}}
     ></span>
   {{else}}
     <span
@@ -20,12 +20,11 @@
       }}
       {{did-insert this.didInsertAnchor}}
       {{on "mouseover" this.showToolTip}}
-      {{on "keyup" this.onKeyUp}}
-      {{on "focusin" this.showToolTip}}
-      {{on "focusout" this.hideToolTip}}
+      {{on "focusin" this.onFocus}}
+      {{on "focusout" this.onBlur}}
       {{on "mouseout" this.onMouseOut}}
-      {{did-update (if (eq @isShown true) this.showToolTip this.hideToolTip) @isShown}}
-      {{did-insert (if (eq @isShown true) this.showToolTip this.hideToolTip)}}
+      {{did-update (if (eq @isShown true) this.onFocus this.onBlur) @isShown}}
+      {{did-insert (if (eq @isShown true) this.onFocus this.onBlur)}}
     >
       {{#if hasAnchorBlock}}
         {{yield this.id to="anchor"}}

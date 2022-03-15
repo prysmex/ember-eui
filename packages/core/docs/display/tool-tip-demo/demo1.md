@@ -36,8 +36,7 @@ order: 1
     </EuiToolTip>
   </p>
   <p>
-    This tooltip has a long delay because it might be in a repeatable
-        component
+    This tooltip has a long delay because it might be in a repeatable component
     <EuiToolTip @delay="long" @content="Here is some tooltip text">
       <EuiButtonEmpty>
         Wink
@@ -53,40 +52,68 @@ order: 1
 </EuiText>
 <EuiSpacer @size="xl" />
 <p>
-  <EuiToolTip @position="top" @content="Here is some tooltip text" @display="block">
+  <EuiToolTip
+    @position="top"
+    @content="Here is some tooltip text"
+    @display="block"
+  >
     <EuiButton @fullWidth={{true}}>
       I am a block level tooltip, applied to a button with fullWidth
     </EuiButton>
   </EuiToolTip>
 </p>
 <EuiSpacer />
-<EuiToolTip @position="right" @content="Works on anything">
-  <EuiFieldText placeholder="Hover over me" aria-label="ToolTip appears on hover" />
+<EuiToolTip
+  @position="right"
+  @content="Tooltip remains visible when the child is focused"
+>
+  <EuiFieldText
+    placeholder="Hover over me"
+    aria-label="ToolTip appears on hover"
+  />
 </EuiToolTip>
 <EuiSpacer />
 
 <EuiText>
-  If you want to attach and control the ToolTip to something programatically you can optionally pass an attachTo string or element
-  and use the content named block, also you can pass isShown as true to show the tooltip without user interaction
+  If you want to attach and control the ToolTip to something programatically you
+  can optionally pass an attachTo string or element and use the content named
+  block, also you can pass isShown as true to show the tooltip without user
+  interaction
 </EuiText>
 
-<EuiSpacer @size="xl"/>
+<EuiSpacer @size="xl" />
 
-<EuiButton @color="danger" id="attachTo1" {{on "mouseenter" this.updateAttachTo}}>
+<EuiButton
+  @color="danger"
+  id="attachTo1"
+  {{on "mouseenter" this.updateAttachTo}}
+>
   You can hover me, attach to 1
 </EuiButton>
-<EuiButton @color="primary" id="attachTo2" {{on "mouseenter" this.updateAttachTo}}>
+<EuiButton
+  @color="primary"
+  id="attachTo2"
+  {{on "mouseenter" this.updateAttachTo}}
+>
   You can hover me, attach to 2
 </EuiButton>
-<EuiButton @color="warning" id="attachTo3" {{on "mouseenter" this.updateAttachTo}}>
+<EuiButton
+  @color="warning"
+  id="attachTo3"
+  {{on "mouseenter" this.updateAttachTo}}
+>
   You can hover me, attach to 3
 </EuiButton>
 
-<EuiSpacer @size="xl"/>
+<EuiSpacer @size="xl" />
 <EuiButton {{on "click" (set this "isShown" (not this.isShown))}}>
   {{if this.isShown "isShown true" "isShown false"}}
 </EuiButton>
-<EuiToolTip @position="top" @attachTo={{this.attachTo}} @isShown={{this.isShown}}>
+<EuiToolTip
+  @position="top"
+  @attachTo={{this.attachTo}}
+  @isShown={{this.isShown}}
+>
   <:content>
     <p>
       Works on any kind of element — buttons, inputs, you name it!

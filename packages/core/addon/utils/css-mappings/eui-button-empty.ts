@@ -1,18 +1,18 @@
 export const baseClass = 'euiButtonEmpty';
 
 const colorMapping = {
-  text: `${baseClass}--text`,
-  danger: `${baseClass}--danger`,
-  warning: `${baseClass}--warning`,
-  ghost: `${baseClass}--ghost`,
   primary: `${baseClass}--primary`,
+  danger: `${baseClass}--danger`,
+  text: `${baseClass}--text`,
+  ghost: `${baseClass}--ghost`,
+  warning: `${baseClass}--warning`,
   success: `${baseClass}--success`
 };
 
 const sizeMapping = {
   xs: `${baseClass}--xSmall`,
   s: `${baseClass}--small`,
-  l: `${baseClass}--large`
+  m: ''
 };
 
 const flushMapping = {

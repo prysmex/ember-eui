@@ -2,7 +2,6 @@ const baseClass = 'euiProgress__data';
 
 const dataColorToClassMap = {
   primary: `${baseClass}--primary`,
-  secondary: `${baseClass}--secondary`,
   success: `${baseClass}--success`,
   warning: `${baseClass}--warning`,
   danger: `${baseClass}--danger`,

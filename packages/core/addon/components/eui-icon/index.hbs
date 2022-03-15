@@ -4,8 +4,9 @@
     {{!template-lint-disable}}
     <IconComponent
       class={{class-names
+        @iconClasses
         this.optionalColorClass
-        (if this.isAppIcon "euiIcon--app")
+        (if (and this.isAppIcon (not this.appIconHasColor)) "euiIcon--app")
         componentName="EuiIcon"
         size=this.size
       }}
@@ -15,6 +16,7 @@
       aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
       tabindex={{this.tabIndex}}
       style={{this.optionalCustomStyles}}
+      color={{@color}}
       ...attributes
     />
   {{/let}}
@@ -23,36 +25,34 @@
     <img
       src={{this.icon}}
       class={{class-names
+        @iconClasses
         this.optionalColorClass
-        (if this.isAppIcon "euiIcon--app")
+        (if (and this.isAppIcon (not this.appIconHasColor)) "euiIcon--app")
         componentName="EuiIcon"
         size=this.size
       }}
+      color={{@color}}
       alt={{if @title @title}}
       tabIndex={{@tabIndex}}
       ...attributes
     />
   {{else}}
-    <div
-      class={{class-names "euiIcon" (if this.isAppIcon "euiIcon--app")}}
-      ...attributes
-    >
-      {{svg-jar
-        this.icon
-        class=(class-names
-          this.optionalColorClass
-          (if this.isAppIcon "euiIcon--app")
-          componentName="EuiIcon"
-          addBase=false
-          size=this.size
-        )
-        role="image"
-        aria-hidden=(if this.isAriaHidden "true")
-        aria-label=(if @aria-label @aria-label this.titleId)
-        aria-labelledby=(if @aria-labelledby @aria-labelledby this.titleId)
-        tabindex=this.tabIndex
-        style=this.optionalCustomStyles
-      }}
-    </div>
+    {{svg-jar
+      this.icon
+      class=(class-names
+        @iconClasses
+        this.optionalColorClass
+        (if (and this.isAppIcon (not this.appIconHasColor)) "euiIcon--app")
+        componentName="EuiIcon"
+        size=this.size
+      )
+      color=@color
+      role="image"
+      aria-hidden=(if this.isAriaHidden "true")
+      aria-label=(if @aria-label @aria-label this.titleId)
+      aria-labelledby=(if @aria-labelledby @aria-labelledby this.titleId)
+      tabindex=this.tabIndex
+      style=this.optionalCustomStyles
+    }}
   {{/if}}
 {{/if}}

@@ -8,7 +8,7 @@ export const VIS_COLORS = euiPaletteColorBlindBehindText();
 export const colorToHexMap = {
   default: '#d3dae6',
   primary: VIS_COLORS[1],
-  secondary: VIS_COLORS[0],
+  success: VIS_COLORS[0],
   accent: VIS_COLORS[2],
   warning: VIS_COLORS[5],
   danger: VIS_COLORS[9]
@@ -22,7 +22,11 @@ export type ColorType = EuiBadgeColorType | string;
 
 export const baseClass = 'euiBadge';
 
-export function inlineStyles({ badgeColor }: { badgeColor: ColorType }): Styling {
+export function inlineStyles({
+  badgeColor
+}: {
+  badgeColor: ColorType;
+}): Styling {
   let textColor = null;
   let colorHex = 'default';
 

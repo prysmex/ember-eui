@@ -7,6 +7,59 @@ order: 1
 <div>
   <EuiFlexGroup>
     <EuiFlexItem>
+      <EuiStat
+        @title='22,123'
+        @description='Default Color'
+        @titleColor='default'
+        @titleSize='s'
+      />
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiStat
+        @title='22,123'
+        @description='Subdued Color'
+        @titleColor='subdued'
+        @titleSize='s'
+      />
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiStat
+        @title='22,123'
+        @description='Primary Color'
+        @titleColor='primary'
+        @titleSize='s'
+      />
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiStat
+        @title='22,123'
+        @description='Success Color'
+        @titleColor='success'
+        @titleSize='s'
+      />
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiStat
+        @title='22,123'
+        @description='Danger Color'
+        @titleColor='danger'
+        @titleSize='s'
+      />
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiStat
+        @title='22,123'
+        @description='Accent Color'
+        @titleColor='accent'
+        @titleSize='s'
+      />
+    </EuiFlexItem>
+  </EuiFlexGroup>
+</div>
+<EuiSpacer />
+<div>
+  <EuiFlexGroup>
+    <EuiFlexItem>
       <EuiStat @title='7,600 mm' @description='Total people' />
     </EuiFlexItem>
   </EuiFlexGroup>

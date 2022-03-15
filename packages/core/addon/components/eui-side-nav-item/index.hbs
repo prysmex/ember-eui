@@ -6,19 +6,24 @@
     (if (and (eq @depth 0) @icon) "euiSideNavItem--rootIcon")
     (if (gt @depth 1) "euiSideNavItem--branch")
     (if @items.length "euiSideNavItem--hasChildItems")
+    (if @emphasize "euiSideNavItem--emphasized")
   }}
 >
   {{#let
     (class-names
       "euiSideNavItemButton"
       (if (or @onClick @href) "euiSideNavItemButton--isClickable")
-      (if (and (gt @depth 0) @isOpen (not @isSelected)) "euiSideNavItemButton-isOpen")
+      (if
+        (and (gt @depth 0) @isOpen (not @isSelected))
+        "euiSideNavItemButton-isOpen"
+      )
       (if @isSelected "euiSideNavItemButton-isSelected")
-      @className
+      @buttonClassName
     )
-    (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected)) as |className caret|
+    (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected))
+    as |className caret|
   }}
-    {{#if @href}}
+    {{#if (and @href (not @disabled))}}
       <a
         class={{className}}
         href={{@href}}
@@ -34,10 +39,16 @@
           {{yield}}
         </EuiSideNavItem::Button>
       </a>
-    {{else if @onClick}}
-      <button type="button" class={{className}} {{on "click" @onClick}}>
+    {{else if (or @onClick @disabled)}}
+      <button
+        type="button"
+        class={{className}}
+        disabled={{@disabled}}
+        {{on "click" @onClick}}
+      >
         <EuiSideNavItem::Button
           @icon={{@icon}}
+          @truncate={{@truncate}}
           @buttonIconClasses={{@buttonIconClasses}}
           @caret={{caret}}
         >
@@ -48,6 +59,7 @@
       <div class={{className}}>
         <EuiSideNavItem::Button
           @icon={{@icon}}
+          @truncate={{@truncate}}
           @buttonIconClasses={{@buttonIconClasses}}
           @caret={{caret}}
         >
@@ -59,25 +71,40 @@
   {{#if (or (eq @depth 0) (and @items.length @isOpen))}}
     <div class="euiSideNavItem__items">
       {{#each @items as |item|}}
-        <EuiSideNavItem
-          @selectedItem={{@selectedItem}}
-          @isOpen={{is-item-open item @selectedItem}}
-          @isSelected={{eq item.id @selectedItem}}
-          @isParent={{not (not item.items)}}
-          @icon={{item.icon}}
-          @onClick={{item.onClick}}
-          @href={{item.href}}
-          @className={{item.className}}
-          @rel={{item.rel}}
-          @target={{item.target}}
-          @items={{item.items}}
-          @key={{item.id}}
-          @depth={{add @depth 1}}
-          @name={{item.name}}
-          @renderItem={{item.renderItem}}
-        >
-          {{item.name}}
-        </EuiSideNavItem>
+        {{#let
+          (and
+            (gt @depth 0)
+            (not item.onClick)
+            (not item.href)
+            (not (not item.items))
+          )
+          as |childrenOnly|
+        }}
+          <EuiSideNavItem
+            @selectedItem={{@selectedItem}}
+            @isOpen={{is-item-open item @selectedItem}}
+            @isSelected={{and (not childrenOnly) (eq item.id @selectedItem)}}
+            @isParent={{not (not item.items)}}
+            @icon={{item.icon}}
+            @onClick={{item.onClick}}
+            @href={{item.href}}
+            @className={{item.className}}
+            @rel={{item.rel}}
+            @target={{item.target}}
+            @items={{item.items}}
+            @key={{item.id}}
+            @depth={{add @depth 1}}
+            @name={{item.name}}
+            @renderItem={{item.renderItem}}
+            @disabled={{item.disabled}}
+            @truncate={{item.truncate}}
+            @emphasize={{item.emphasize}}
+            @buttonClassName={{item.buttonClassName}}
+            @childrenOnly={{childrenOnly}}
+          >
+            {{item.name}}
+          </EuiSideNavItem>
+        {{/let}}
       {{/each}}
     </div>
   {{/if}}

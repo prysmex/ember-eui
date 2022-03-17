@@ -8,12 +8,12 @@
   </:content>
 </EuiAccordion>
 <br />
-<h1>
+<EuiTitle @size="xs">
   Accordion with
   <b>
     forceState
   </b>
-</h1>
+</EuiTitle>
 The accordion is
 {{this.accordionState}}
 <br />
@@ -39,12 +39,12 @@ The accordion is
   </:content>
 </EuiAccordion>
 <br />
-<h1>
+<EuiTitle @size="xs">
   Accordion with
   <b>
     isLoading = true
   </b>
-</h1>
+</EuiTitle>
 <EuiAccordion @isLoading={{true}}>
   <:buttonContent>
     "You spin my head right round"
@@ -62,12 +62,12 @@ The accordion is
   </:content>
 </EuiAccordion>
 <br />
-<h1>
+<EuiTitle @size="xs">
   Accordion with
   <b>
-    arrowDisplay = left
+    arrowDisplay = right
   </b>
-</h1>
+</EuiTitle>
 <EuiAccordion @arrowDisplay="right">
   <:buttonContent>
     Clickable Title
@@ -76,8 +76,41 @@ The accordion is
     My content
   </:content>
 </EuiAccordion>
+<br />
 
-<h1>Nested accordions</h1>
+<EuiTitle @size="xs">
+  Accordion with
+  <b>
+    arrowDisplay = left
+  </b>
+</EuiTitle>
+<EuiAccordion @arrowDisplay="left">
+  <:buttonContent>
+    Clickable Title
+  </:buttonContent>
+  <:content>
+    My content
+  </:content>
+</EuiAccordion>
+<br />
+
+<EuiTitle @size="xs">
+  Accordion with
+  <b>
+    arrowDisplay = none
+  </b>
+</EuiTitle>
+<EuiAccordion @arrowDisplay="none">
+  <:buttonContent>
+    Clickable Title
+  </:buttonContent>
+  <:content>
+    My content
+  </:content>
+</EuiAccordion>
+<br />
+
+<EuiTitle @size="xs">Nested accordions</EuiTitle>
 <EuiAccordion>
   <:buttonContent>
     Parent accordion

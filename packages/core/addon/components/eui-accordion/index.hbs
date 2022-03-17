@@ -7,32 +7,30 @@
   ...attributes
 >
   <div class={{class-names "euiAccordion__triggerWrapper" @triggerClassName}}>
+    {{#if this.hasArrowDisplay}}
+      <button
+        type="button"
+        tabindex="-1"
+        class={{class-names
+          this.iconButtonClasses
+          "euiAccordion__icon"
+          (if this.isOpen "euiAccordion__iconButton-isOpen")
+        }}
+        {{on "click" this.onToggle}}
+      >
+        <EuiIcon @type="arrowRight" @size="m" />
+      </button>
+    {{/if}}
     <button
-      id={{this.buttonId}}
+      type="button"
+      id={{arg-or-default this.buttonProps.id (unique-id)}}
+      class={{class-names this.buttonClasses}}
       aria-controls={{@id}}
       aria-expanded={{this.isOpen}}
-      class={{this.buttonClasses}}
-      type="button"
+      aria-labelledby={{arg-or-default this.buttonProps.id (unique-id)}}
       {{on "click" this.onToggle}}
     >
-      {{#if this.hasArrowDisplay}}
-        <span
-          class={{concat
-            "euiAccordion__iconWrapper "
-            (if this.hasIconButton "euiAccordion__iconButton ")
-          }}
-        >
-          <EuiIcon
-            @iconClasses={{class-names
-              "euiAccordion__icon"
-              (if this.isOpen "euiAccordion__icon-isOpen")
-            }}
-            @type="arrowRight"
-            @size="m"
-          />
-        </span>
-      {{/if}}
-      <span class={{concat "euiIEFlexWrapFix " @buttonContentClassName}}>
+      <span class={{class-names this.buttonContentClasses}}>
         {{yield to="buttonContent"}}
       </span>
     </button>
@@ -53,7 +51,10 @@
         tabIndex={{-1}}
         class={{concat
           "euiAccordion__iconWrapper "
-          (if this.hasIconButton "euiAccordion__iconButton ")
+          "euiAccordion__icon "
+          this.iconButtonClasses
+          (if this.hasIconButton " euiAccordion__iconButton ")
+          (if this.isOpen "euiAccordion__iconButton-isOpen")
         }}
         type="button"
         {{on "click" this.onToggle}}
@@ -69,7 +70,11 @@
       </button>
     {{/if}}
   </div>
-  <div class="euiAccordion__childWrapper" style={{this.childContentStyle}} id={{@id}}>
+  <div
+    class="euiAccordion__childWrapper"
+    style={{this.childContentStyle}}
+    id={{@id}}
+  >
     <div
       class={{class-names
         (if this.isLoading " euiAccordion__children-isLoading")

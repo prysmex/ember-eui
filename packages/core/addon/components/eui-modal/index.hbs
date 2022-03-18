@@ -8,6 +8,7 @@
   )
   as |inlineStyles|
 }}
+ <EuiOverlayMask @headerZindexLocation={{arg-or-default @headerZindexLocation "above"}}>
   <div
     class={{class-names
       "euiModal"
@@ -34,4 +35,5 @@
       {{yield}}
     </div>
   </div>
+ </EuiOverlayMask>
 {{/let}}

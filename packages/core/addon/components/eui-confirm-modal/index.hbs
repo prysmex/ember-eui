@@ -1,34 +1,36 @@
-<EuiModal class="euiModal--confirmation" @onClose={{@onCancel}} ...attributes>
-  {{#if @title}}
-    <EuiModalHeader>
-      <EuiModalHeaderTitle>
-        {{@title}}
-      </EuiModalHeaderTitle>
-    </EuiModalHeader>
-  {{/if}}
-  {{#if (has-block)}}
-    <EuiModalBody>
-      {{yield}}
-    </EuiModalBody>
-  {{else if @message}}
-    <EuiModalBody>
-      <EuiText>
-        {{@message}}
-      </EuiText>
-    </EuiModalBody>
-  {{/if}}
-  <EuiModalFooter>
-    <EuiButtonEmpty {{on "click" @onCancel}}>
-      {{@cancelButtonText}}
-    </EuiButtonEmpty>
-    <EuiButton
-      @fill={{true}}
-      @color={{@buttonColor}}
-      @isDisabled={{@confirmButtonDisabled}}
-      @isLoading={{@confirmButtonIsLoading}}
-      {{on "click" @onConfirm}}
-    >
-      {{@confirmButtonText}}
-    </EuiButton>
-  </EuiModalFooter>
-</EuiModal>
+ <EuiOverlayMask @headerZindexLocation={{arg-or-default @headerZindexLocation "above"}}>
+  <EuiModal class="euiModal--confirmation" @onClose={{@onCancel}} ...attributes>
+    {{#if @title}}
+      <EuiModalHeader>
+        <EuiModalHeaderTitle>
+          {{@title}}
+        </EuiModalHeaderTitle>
+      </EuiModalHeader>
+    {{/if}}
+    {{#if (has-block)}}
+      <EuiModalBody>
+        {{yield}}
+      </EuiModalBody>
+    {{else if @message}}
+      <EuiModalBody>
+        <EuiText>
+          {{@message}}
+        </EuiText>
+      </EuiModalBody>
+    {{/if}}
+    <EuiModalFooter>
+      <EuiButtonEmpty {{on "click" @onCancel}}>
+        {{@cancelButtonText}}
+      </EuiButtonEmpty>
+      <EuiButton
+        @fill={{true}}
+        @color={{@buttonColor}}
+        @isDisabled={{@confirmButtonDisabled}}
+        @isLoading={{@confirmButtonIsLoading}}
+        {{on "click" @onConfirm}}
+      >
+        {{@confirmButtonText}}
+      </EuiButton>
+    </EuiModalFooter>
+  </EuiModal>
+ </EuiOverlayMask>

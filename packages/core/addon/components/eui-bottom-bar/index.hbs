@@ -1,29 +1,50 @@
-{{!-- TODO: Add landmarkSupport after having an <EuiI18n> component support --}}
-<EuiPortal>
+{{! TODO: Add landmarkSupport after having an <EuiI18n> component support }}
+{{#if this.usePortal}}
+  <EuiPortal>
+    <section
+      {{simple-style this.bottomBarStyles}}
+      class={{class-names
+        componentName="EuiBottomBar"
+        paddingSize=(arg-or-default @paddingSize "m")
+        positionType=(arg-or-default this.position "fixed")
+      }}
+      {{did-insert this.didInsert}}
+      {{did-update this.updateDisplacement this.affordForDisplacement}}
+      ...attributes
+    >
+      {{yield}}
+    </section>
+  </EuiPortal>
+{{else}}
   <section
+    {{simple-style this.bottomBarStyles}}
     class={{class-names
       componentName="EuiBottomBar"
       paddingSize=(arg-or-default @paddingSize "m")
+      positionType=(arg-or-default this.position "fixed")
     }}
-    {{!-- aria-label={{if @landmarkHeading @landmarkHeading "Page level controls"}} --}}
+    aria-label={{if @landmarkHeading @landmarkHeading "Page level controls"}}
     {{did-insert this.didInsert}}
     {{did-update this.updateDisplacement this.affordForDisplacement}}
     ...attributes
   >
-    {{!-- <div {{screen-reader-only}}>
+    <div {{screen-reader-only}}>
       <h2>
         {{if @landmarkHeading @landmarkHeading "Page level controls"}}
       </h2>
-    </div> --}}
+    </div>
     {{yield}}
   </section>
-  {{!-- <div {{screen-reader-only}}>
+  <div {{screen-reader-only}}>
     <p aria-live="assertive">
       {{#if @landmarkHeading}}
-        There is a new region landmark called {{@landmarkHeading}} with page level controls at the end of the document.
+        There is a new region landmark called
+        {{@landmarkHeading}}
+        with page level controls at the end of the document.
       {{else}}
-        There is a new region landmark with page level controls at the end of the document.
+        There is a new region landmark with page level controls at the end of
+        the document.
       {{/if}}
     </p>
-  </div> --}}
-</EuiPortal>
+  </div>
+{{/if}}

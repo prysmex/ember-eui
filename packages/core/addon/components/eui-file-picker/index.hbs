@@ -30,10 +30,11 @@
           class="euiFilePicker__input"
           disabled={{@disabled}}
           aria-describedby={{promptId}}
+          multiple
           {{on "dragover" this.showDrop}}
           {{on "dragleave" this.hideDrop}}
           {{on "drop" this.hideDrop}}
-          {{on "change" (fn this.handleChange this.filesSelected)}}
+          {{on "change" this.handleChange}}
 					{{did-insert this.didInsertInput}}
           {{validatable-control @isInvalid}}
         />

@@ -42,7 +42,10 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   @tracked promptText: string | null | undefined = null;
   @tracked isHoveringDrop = false;
 
-  @argOrDefault('Select or drag and drop a file') initialPromptText!: Component | string | null;
+  @argOrDefault('Select or drag and drop a file') initialPromptText!:
+    | Component
+    | string
+    | null;
   @argOrDefault(false) compressed!: boolean;
   @argOrDefault('large') display!: string;
 
@@ -59,11 +62,17 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   }
 
   @action
-  handleChange(filesSelected?: string | null): void {
+  handleChange(): void {
     if (!this.fileInput) return;
 
     if (this.fileInput.files && this.fileInput.files.length > 1) {
-      this.promptText = `${this.fileInput.files.length} ${filesSelected}`;
+      this.promptText = `${this.fileInput.files.length} files selected`;
+      // TODO: Change when EuiI18n is available
+      // <EuiI18n
+      //   token="euiFilePicker.filesSelected"
+      //   default="{fileCount} files selected"
+      //   values={{ fileCount: this.fileInput.files.length }}
+      // />
     } else if (this.fileInput.files && this.fileInput.files.length === 0) {
       this.promptText = null;
     } else {
@@ -78,14 +87,16 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   }
 
   @action
-  removeFiles(e: MouseEvent): void {
-    e.stopPropagation();
-    e.preventDefault();
+  removeFiles(e?: MouseEvent): void {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
 
     if (!this.fileInput) return;
 
     this.fileInput.value = '';
-    this.handleChange(null);
+    this.handleChange();
   }
 
   @action

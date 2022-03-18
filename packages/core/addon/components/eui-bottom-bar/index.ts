@@ -63,7 +63,6 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
 
   @action
   didInsert(element: HTMLElement): void {
-    console.log(this.affordForDisplacement, this.usePortal);
     if (this.affordForDisplacement && this.usePortal) {
       const height = element.clientHeight;
       document.body.style.paddingBottom = `${height}px`;

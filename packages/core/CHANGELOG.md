@@ -2,6 +2,22 @@
 
 ### Master
 
+### 5.0.0
+💥 Breaking change
+`@ember-eui/core`
+- Deprecate `<EuiFlyoutBody::Content />` and `<EuiFlyoutBody::Banner>`, we now use named blocks `<:content>` `<:banner>`
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiOverlayMask />` now correctly only executes outside clicks, you must provide `{{@onClick}}` argument for that.
+
+🚀 Enhancements
+`@ember-eui/core`
+Update core components to @elastic/eui v4.1.4
+- `<EuiFlyout>`
+- `<EuiCollapsibleNav>`
+
+
 ### 4.2.5
 🐛 Bug / Fixes
 `@ember-eui/core`

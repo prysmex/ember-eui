@@ -1,24 +1,28 @@
-# Demo
+---
+order: 1
+---
+# Collapsible nav
 
 ```hbs template
-<EuiTitle @size="s">
+<EuiTitle @size='s'>
   Collapsible Nav
 </EuiTitle>
 <EuiCollapsibleNav
   @isOpen={{this.collNavIsOpen}}
   @onClose={{this.closeCollapsibleNav}}
   @showCloseButton={{true}}
-  @navIsDocked={{this.navIsDocked}}
+  @size={{240}}
+  @isDocked={{this.navIsDocked}}
 >
-  <:button>
-    <EuiButton {{on "click" this.openCollapsibleNav}}>
-      Open Collapsible Nav
+  <:button as |handlers|>
+    <EuiButton {{on 'click' this.openCollapsibleNav}} {{handlers}}>
+      Toggle nav
     </EuiButton>
   </:button>
   <:content>
     <EuiCollapsibleNavGroup
-      @iconType="alert"
-      @background="dark"
+      @iconType='alert'
+      @background='dark'
       @initialIsOpen={{false}}
       @isCollapsible={{true}}
     >
@@ -30,8 +34,8 @@
       </:content>
     </EuiCollapsibleNavGroup>
     <EuiCollapsibleNavGroup
-      @iconType="check"
-      @background="light"
+      @iconType='check'
+      @background='light'
       @initialIsOpen={{false}}
       @isCollapsible={{true}}
     >
@@ -47,49 +51,22 @@
         </EuiButtonEmpty>
       </:content>
     </EuiCollapsibleNavGroup>
-    <EuiCollapsibleNavGroup @iconType="alert" @initialIsOpen={{true}} @isCollapsible={{true}}>
+    <EuiCollapsibleNavGroup
+      @iconType='alert'
+      @initialIsOpen={{true}}
+      @isCollapsible={{true}}
+    >
       <:title>
         Submenu 3
       </:title>
       <:content>
-        <EuiButton {{on "click" this.toggleDockedNav}}>
-          {{unless this.navIsDocked "Dock it!" "Undock it!"}}
+        <EuiButton {{on 'click' this.toggleDockedNav}}>
+          {{unless this.navIsDocked 'Dock it!' 'Undock it!'}}
         </EuiButton>
       </:content>
     </EuiCollapsibleNavGroup>
   </:content>
 </EuiCollapsibleNav>
-<EuiSpacer />
-<EuiTitle @size="s">
-  Collapsible Nav Group
-</EuiTitle>
-<EuiSpacer />
-<EuiCollapsibleNavGroup>
-  <:content>
-    BASIC WITH NOTHING
-  </:content>
-</EuiCollapsibleNavGroup>
-<EuiCollapsibleNavGroup @iconType="alert" @background="light">
-  <:title>
-    Hello My friends!
-  </:title>
-  <:content>
-    This is not collapsible! But the bottom one is!
-  </:content>
-</EuiCollapsibleNavGroup>
-<EuiCollapsibleNavGroup
-  @iconType="alert"
-  @background="dark"
-  @initialIsOpen={{false}}
-  @isCollapsible={{true}}
->
-  <:title>
-    Click me!!
-  </:title>
-  <:content>
-    This is the collapsible content!!!
-  </:content>
-</EuiCollapsibleNavGroup>
 ```
 
 ```js component

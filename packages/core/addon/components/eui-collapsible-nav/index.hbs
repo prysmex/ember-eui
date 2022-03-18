@@ -1,47 +1,38 @@
-{{!
-  Trigger button itself
-  By using a named block you can place any button as the trigger:
-  eg. HeaderSectionItem, EuiButton, EuiButtonIcon, or any custom button
-}}
-{{#if (not (and @navIsDocked (not @showButtonIfDocked)))}}
-  {{yield to="button"}}
-{{/if}}
-{{!
-  The side navigation panel, acts the same way as a flyout
-}}
-{{#if @isOpen}}
-  {{#let (unique-id) as |flyoutId|}}
-    {{#unless @navIsDocked}}
-      <EuiOverlayMask
-        @headerZindexLocation="below"
-        {{on "click" (unless @navIsDocked @onClose (noop))}}
-      />
-    {{/unless}}
-    <nav
-      id={{flyoutId}}
-      class={{class-names "euiCollapsibleNav" (if @navIsDocked "euiCollapsibleNav--isDocked")}}
+<span
+  {{this.onWindowResize
+    isDocked=this.isDocked
+    functionToCallOnWindowResize=this.functionToCallOnWindowResize
+  }}
+></span>
+{{#let (arg-or-default @id (unique-id)) as |flyoutID|}}
+
+  {{#if (not (and this.navIsDocked (not this.showButtonIfDocked)))}}
+    {{yield
+      (modifier this.triggerHandlers isOpen=@isOpen flyoutID=flyoutID)
+      to="button"
+    }}
+  {{/if}}
+
+  {{#if (or @isOpen this.navIsDocked)}}
+    <EuiFlyout
+      id={{flyoutID}}
+      class="euiCollapsibleNav"
+      @as={{this.as}}
+      @size={{this.size}}
+      @side={{this.side}}
+      @role={{this.role}}
+      @ownFocus={{this.ownFocus}}
+      @outsideClickCloses={{this.outsideClickCloses}}
+      @closeButtonPosition={{this.closeButtonPosition}}
+      @paddingSize={{this.paddingSize}}
+      @type={{if this.navIsDocked "push" "overlay"}}
+      @hideCloseButton={{this.navIsDocked}}
+      @pushMinBreakpoint={{this.dockedBreakpoint}}
+      @onClose={{@onClose}}
+      {{this.windowResize}}
       ...attributes
-      {{open-collapsible-nav @navIsDocked}}
-      {{on-key "Escape" (unless @navIsDocked @onClose)}}
-      {{focus-trap isActive=(not @navIsDocked) focusTrapOptions=(hash allowOutsideClick=true)}}
     >
       {{yield to="content"}}
-      {{!
-        Close button is for accessibility purposes only
-        To close, use ESC key, or click outside the Nav.
-        Commented for the time being
-      }}
-      {{!-- {{#if @showCloseButton}}
-        <EuiButtonEmpty
-          @onClick={{unless @navIsDocked @onClose}}
-          @size="xs"
-          @textClasses="euiCollapsibleNav__closeButtonText"
-          @iconType="cross"
-          class="euiCollapsibleNav__closeButton"
-        >
-          {{@closeButtonLabel}}
-        </EuiButtonEmpty>
-      {{/if}} --}}
-    </nav>
-  {{/let}}
-{{/if}}
+    </EuiFlyout>
+  {{/if}}
+{{/let}}

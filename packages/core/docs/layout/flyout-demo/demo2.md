@@ -1,48 +1,63 @@
 ---
 order: 2
 ---
+# More complicated flyout
 
-# Demo 2
+<EuiSpacer />
+
+<EuiText>
+  <p>
+
+This component also comes with related child components for ease of creating headers, footers and scrolling body content. <strong>EuiFlyoutHeader</strong> and <strong>EuiFlyoutFooter</strong> are pinned to the top and bottom of the flyout, respectively, to allow for always visible navigation and actions. The <strong>EuiFlyoutBody</strong> component will then automatically overflow.
+
+  </p>
+  </EuiText>
 
 ```hbs template
-<EuiButton {{on "click" this.openFlyout}}>
+<EuiButton {{on 'click' this.openFlyout}}>
   Small Flyout w/o Overlay
 </EuiButton>
 
 {{#if this.flyout2Open}}
-  <EuiFlyout @ownFocus={{false}} @size="s" @onClose={{this.closeFlyout}}>
+  <EuiFlyout @size='s' @onClose={{this.closeFlyout}}>
     <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle @size="l">Small Welcome!</EuiTitle>
+      <EuiTitle @size='l'>Small Welcome!</EuiTitle>
     </EuiFlyoutHeader>
     <EuiFlyoutBody>
-      <EuiFlyoutBody::Content>
-        <EuiText>
-          <p>
-            Far out in the uncharted backwaters of the unfashionable
-            end of the western spiral arm of the Galaxy lies a small unregarded yellow sun.
-          </p>
-          <EuiHorizontalRule margin="s" @size="half"/>
-          <p>
-            Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant
-            little blue green planet whose ape- descended life forms are so amazingly primitive that
-            they still think digital watches are a pretty neat idea.
-          </p>
-          <EuiHorizontalRule margin="s" @size="half"/>
-          <p>
-            This planet has - or rather had - a problem, which was this: most of the people living on it were unhappy
-            for pretty much of the time. Many solutions were suggested for this problem, but most of these were
-            largely concerned with the movements of small green pieces of paper, which is odd because on the whole
-            it was not the small green pieces of paper that were unhappy.
-          </p>
-        </EuiText>
-      </EuiFlyoutBody::Content>
+
+      <EuiText>
+        <p>
+          Far out in the uncharted backwaters of the unfashionable end of the
+          western spiral arm of the Galaxy lies a small unregarded yellow sun.
+        </p>
+        <EuiHorizontalRule margin='s' @size='half' />
+        <p>
+          Orbiting this at a distance of roughly ninety-two million miles is an
+          utterly insignificant little blue green planet whose ape- descended
+          life forms are so amazingly primitive that they still think digital
+          watches are a pretty neat idea.
+        </p>
+        <EuiHorizontalRule margin='s' @size='half' />
+        <p>
+          This planet has - or rather had - a problem, which was this: most of
+          the people living on it were unhappy for pretty much of the time. Many
+          solutions were suggested for this problem, but most of these were
+          largely concerned with the movements of small green pieces of paper,
+          which is odd because on the whole it was not the small green pieces of
+          paper that were unhappy.
+        </p>
+      </EuiText>
+
     </EuiFlyoutBody>
     <EuiFlyoutFooter>
-      <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
-        <EuiButton {{on "click" (fn this.closeFlyout "flyout2Open")}}>
+      <EuiFlexGroup @justifyContent='spaceBetween' @gutterSize='s'>
+        <EuiButton {{on 'click' (fn this.closeFlyout 'flyout2Open')}}>
           Cancel
         </EuiButton>
-        <EuiButton @fill={{true}} {{on "click" (fn this.closeFlyout "flyout2Open")}}>
+        <EuiButton
+          @fill={{true}}
+          {{on 'click' (fn this.closeFlyout 'flyout2Open')}}
+        >
           Send
         </EuiButton>
       </EuiFlexGroup>

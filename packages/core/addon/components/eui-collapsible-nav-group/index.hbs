@@ -1,76 +1,124 @@
-{{#let (unique-id) as |groupId|}}
-  {{#if (and @isCollapsible (has-block "title"))}}
-    <EuiAccordion
-      id={{groupId}}
-      class={{class-names
-        (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
-        componentName="EuiCollapsibleNavGroup"
-        backgroundColor=(arg-or-default @background "none")
-      }}
-      @buttonClassName="euiCollapsibleNavGroup__heading"
-      @initialIsOpen={{arg-or-default @initialIsOpen true}}
-      @arrowDisplay="right"
-      ...attributes
-    >
-      <:buttonContent>
-        <EuiFlexGroup @gutterSize="m" @alignItems="center" @responsive={{false}}>
-          {{#if @iconType}}
-            <div class="euiFlexItem euiFlexItem--flexGrowZero">
-              <EuiIcon @type={{@iconType}} @size={{arg-or-default @iconSize "l"}} />
-            </div>
-          {{/if}}
-          <EuiFlexItem>
-            <EuiTitle
-              id={{concat groupId "__title"}}
-              class="euiCollapsibleNavGroup__title"
-              @tagName={{arg-or-default @titleTagName "h3"}}
-              @size={{arg-or-default @titleSize "xxs"}}
-            >
-              {{yield to="title"}}
-            </EuiTitle>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </:buttonContent>
-      <:content>
-        <div class="euiCollapsibleNavGroup__children">
-          {{yield to="content"}}
-        </div>
-      </:content>
-    </EuiAccordion>
-  {{else}}
-    <div
-      id={{groupId}}
-      class={{class-names
-        (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
-        componentName="EuiCollapsibleNavGroup"
-        backgroundColor=(arg-or-default @background "none")
-      }}
-      ...attributes
-    >
-      {{#if (has-block "title")}}
-        <div class="euiCollapsibleNavGroup__heading">
-          <EuiFlexGroup @gutterSize="m" @alignItems="center" @responsive={{false}}>
+{{#let
+  (arg-or-default @id (unique-id))
+  (arg-or-default @titleElement "h3")
+  as |groupID titleElement|
+}}
+  {{#let (concat groupID "__title") as |titleID|}}
+    {{#if (and @isCollapsible (has-block "title"))}}
+      <EuiAccordion
+        id={{groupID}}
+        class={{class-names
+          (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
+          componentName="EuiCollapsibleNavGroup"
+          backgroundColor=(arg-or-default @background "none")
+        }}
+        @buttonClassName="euiCollapsibleNavGroup__heading"
+        @initialIsOpen={{arg-or-default @initialIsOpen true}}
+        @arrowDisplay="right"
+        ...attributes
+      >
+        <:buttonContent>
+          <EuiFlexGroup
+            @gutterSize="m"
+            @alignItems="center"
+            @responsive={{false}}
+          >
             {{#if @iconType}}
-              <div class="euiFlexItem euiFlexItem--flexGrowZero">
-                <EuiIcon @type={{@iconType}} @size={{@iconSize}} />
-              </div>
+              <EuiFlexItem @grow={{false}}>
+                <EuiIcon
+                  @type={{@iconType}}
+                  @size={{arg-or-default @iconSize "l"}}
+                />
+              </EuiFlexItem>
             {{/if}}
             <EuiFlexItem>
-             <EuiTitle
-                id={{concat groupId "__title"}}
-                class="euiCollapsibleNavGroup__title"
+              <EuiTitle
+                id={{concat groupID "__title"}}
                 @tagName={{arg-or-default @titleTagName "h3"}}
                 @size={{arg-or-default @titleSize "xxs"}}
               >
-                {{yield to="title"}}
+                {{#if (not-eq titleElement "h3")}}
+                  {{#let (element titleElement) as |TitleElement|}}
+                    <TitleElement
+                      id={{titleID}}
+                      class="euiCollapsibleNavGroup__title"
+                    >
+                      {{yield to="title"}}
+                    </TitleElement>
+                  {{/let}}
+                {{else}}
+                  <h3 id={{titleID}} class="euiCollapsibleNavGroup__title">
+                    {{yield to="title"}}
+                  </h3>
+                {{/if}}
               </EuiTitle>
             </EuiFlexItem>
           </EuiFlexGroup>
-        </div>
-      {{/if}}
-      <div class="euiCollapsibleNavGroup__children">
-        {{yield to="content"}}
+        </:buttonContent>
+        <:content>
+          {{#if (has-block "content")}}
+            <div class="euiCollapsibleNavGroup__children">
+              {{yield to="content"}}
+            </div>
+          {{/if}}
+        </:content>
+      </EuiAccordion>
+    {{else}}
+      <div
+        id={{groupID}}
+        class={{class-names
+          (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
+          componentName="EuiCollapsibleNavGroup"
+          backgroundColor=(arg-or-default @background "none")
+        }}
+        ...attributes
+      >
+        {{#if (has-block "title")}}
+          <div class="euiCollapsibleNavGroup__heading">
+            <EuiFlexGroup
+              @gutterSize="m"
+              @alignItems="center"
+              @responsive={{false}}
+            >
+              {{#if @iconType}}
+                <EuiFlexItem @grow={{false}}>
+                  <EuiIcon
+                    @type={{@iconType}}
+                    @size={{arg-or-default @iconSize "l"}}
+                  />
+                </EuiFlexItem>
+              {{/if}}
+              <EuiFlexItem>
+                <EuiTitle
+                  id={{concat groupID "__title"}}
+                  @tagName={{arg-or-default @titleTagName "h3"}}
+                  @size={{arg-or-default @titleSize "xxs"}}
+                >
+                  {{#if (not-eq titleElement "h3")}}
+                    {{#let (element titleElement) as |TitleElement|}}
+                      <TitleElement
+                        id={{titleID}}
+                        class="euiCollapsibleNavGroup__title"
+                      >
+                        {{yield to="title"}}
+                      </TitleElement>
+                    {{/let}}
+                  {{else}}
+                    <h3 id={{titleID}} class="euiCollapsibleNavGroup__title">
+                      {{yield to="title"}}
+                    </h3>
+                  {{/if}}
+                </EuiTitle>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </div>
+        {{/if}}
+        {{#if (has-block "content")}}
+          <div class="euiCollapsibleNavGroup__children">
+            {{yield to="content"}}
+          </div>
+        {{/if}}
       </div>
-    </div>
-  {{/if}}
+    {{/if}}
+  {{/let}}
 {{/let}}

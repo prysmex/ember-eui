@@ -1,4 +1,4 @@
- <EuiOverlayMask @headerZindexLocation={{arg-or-default @headerZindexLocation "above"}}>
+ <EuiOverlayMask @headerZindexLocation={{arg-or-default @headerZindexLocation "above"}} @onClick={{@onClick}}>
   <EuiModal class="euiModal--confirmation" @onClose={{@onCancel}} ...attributes>
     {{#if @title}}
       <EuiModalHeader>

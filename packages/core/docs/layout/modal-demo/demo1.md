@@ -179,6 +179,98 @@
   </EuiConfirmModal>
 
 {{/if}}
+<EuiSpacer />
+<EuiTitle>
+  Loading Modal
+</EuiTitle>
+<EuiButton
+  @color='primary'
+  {{on 'click' (fn this.activateModal 'loadingModalActive')}}
+>
+  Activate Loading Modal
+</EuiButton>
+{{#if this.loadingModalActive}}
+
+  <EuiConfirmModal
+    @title='Refresh the page?'
+    @onConfirm={{this.reloadPage}}
+    @buttonColor='primary'
+    @confirmButtonText='Refresh'
+    @cancelButtonText='Cancel'
+    @isLoading={{true}}
+    @onCancel={{fn this.deactivateModal 'loadingModalActive'}}
+  >
+    <EuiText>
+      Eui Modal with isLoading true
+    </EuiText>
+  </EuiConfirmModal>
+{{/if}}
+<EuiSpacer />
+<EuiTitle>
+  Widths
+</EuiTitle>
+<EuiButton
+  @color='primary'
+  {{on 'click' (fn this.activateModal 'widthModalActive')}}
+>
+  Show Confirm Modal
+</EuiButton>
+<EuiSpacer />
+<EuiText>
+  Modals start with a minimum width of 400px, just enough to display form rows.
+  They will grow to fit the contents until it reaches the specified maxWidth,
+  the default of which is set to the medium breakpoint. If the modal is not
+  growing wide enough to fit your contents, you can pass a specific style.width,
+  just remember that modals will always shrink to fit the window width.
+</EuiText>
+{{#if this.widthModalActive}}
+
+  <EuiModal
+    @onClose={{fn this.deactivateModal 'widthModalActive'}}
+    @initialFocus='#focusee'
+    style='width: 800px'
+  >
+    <EuiModalHeader>
+      <EuiTitle @size='m'>
+        Basic Modal
+      </EuiTitle>
+    </EuiModalHeader>
+    <EuiModalBody>
+      <EuiText>
+        <p>
+          Hello there!
+        </p>
+        <p>
+          This modal has many
+          <a id='focusee' href='#'>
+            different
+          </a>
+          <a href='#'>
+            focusable
+          </a>
+          <a href='#'>
+            items
+          </a>
+          .
+        </p>
+      </EuiText>
+    </EuiModalBody>
+    <EuiModalFooter>
+      <EuiButtonEmpty
+        {{on 'click' (fn this.deactivateModal 'widthModalActive')}}
+      >
+        Cancel
+      </EuiButtonEmpty>
+      <EuiButton
+        {{on 'click' (fn this.deactivateModal 'widthModalActive')}}
+        @color='primary'
+        @fill={{true}}
+      >
+        Submit
+      </EuiButton>
+    </EuiModalFooter>
+  </EuiModal>
+{{/if}}
 ```
 
 ```js component
@@ -190,6 +282,8 @@ export default class DemoModalComponent extends Component {
   @tracked basicModalActive = false;
   @tracked overflowModalActive = false;
   @tracked confirmModalActive = false;
+  @tracked widthModalActive = false;
+  @tracked loadingModalActive = false;
 
   @action
   activateModal(modal) {

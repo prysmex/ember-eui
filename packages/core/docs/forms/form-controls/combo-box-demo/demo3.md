@@ -7,17 +7,18 @@ order: 2
 Using on create options for bubbling new option and handling in onCreateOption function, you may want to provide a customOptionText, you can assume {searchText} will be interpolated, be sure sanitize your string!
 
 ```hbs template
-	<EuiComboBox
-		@onChange={{this.onChange}}
-		@options={{this.remainingOptions}}
-    @onCreateOption={{this.onCreateOption}}
-		@selectedOptions={{this.selected}}
-		@searchEnabled={{true}}
-    @customOptionText="Do you want to add&nbsp;{searchText}&nbsp;to your list?"
-    @searchField="label"
-	as |option item|>
-		{{option.label}}
-	</EuiComboBox>
+<EuiComboBox
+  @onChange={{this.onChange}}
+  @options={{this.remainingOptions}}
+  @onCreateOption={{this.onCreateOption}}
+  @selectedOptions={{this.selected}}
+  @searchEnabled={{true}}
+  @customOptionText='Do you want to add&nbsp;<strong>{searchText}</strong>&nbsp;to your list?'
+  @searchField='label'
+  as |option item|
+>
+  {{option.label}}
+</EuiComboBox>
 ```
 
 ```javascript component
@@ -59,10 +60,13 @@ export default class Demo1 extends Component {
     const newOptionStructure = {
       value: `${newOption}`,
       label: `${newOption}`
-    }
-    if(this.options.filter( opt => opt.value == newOptionStructure.value).length == 0){
-      this.options.addObject(newOptionStructure)
-      this.selected.addObject(newOptionStructure)
+    };
+    if (
+      this.options.filter((opt) => opt.value == newOptionStructure.value)
+        .length == 0
+    ) {
+      this.options.addObject(newOptionStructure);
+      this.selected.addObject(newOptionStructure);
     }
   }
 }

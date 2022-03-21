@@ -1384,7 +1384,7 @@
   resolved "https://registry.yarnpkg.com/@embroider/hbs-loader/-/hbs-loader-1.5.0.tgz#a007573a591e6cdb18eb2077bb35bac5c9a58a39"
   integrity sha512-//fSJEE+FQaLDRpJKEP64pg5R4qQtL1oH/HKtaUK+nXPKHwYwaOXQegtrv3UJwFjuL9H84QbLLZxjKa8TnhTLg==
 
-"@embroider/macros@1.5.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.42.3", "@embroider/macros@^0.47.1", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0", "@embroider/macros@^1.2.0", "@embroider/macros@^1.5.0":
+"@embroider/macros@1.5.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.47.1", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0", "@embroider/macros@^1.2.0", "@embroider/macros@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.5.0.tgz#8c67666359e7814d91cdeac2fd96c896080473b3"
   integrity sha512-QqNsWmIJ8LvwWg+YAfB+nfcRZ49hAJNTJAKt2IDpgZDKa/FYj/Mp75UWfJ1BJvB3KUq50OQCOv4TZ3ZcU9h/TQ==
@@ -7639,18 +7639,7 @@ ember-changeset-validations@^3.16.0:
     ember-validators "~4.0.0"
     validated-changeset "~1.0.0"
 
-ember-changeset@^3.15.0:
-  version "3.15.0"
-  resolved "https://registry.yarnpkg.com/ember-changeset/-/ember-changeset-3.15.0.tgz#402bbb9b51dc44596415c1c7b0e3a4923b1d3e81"
-  integrity sha512-yLyU3quV96EFjYzYUjIK4je5nnemZdbElYLFnXYJ5StXquCRjdFvL79gst/vs6ZjVFbkRKnLjsVP8YMkED0P2g==
-  dependencies:
-    "@embroider/macros" "^0.42.3"
-    "@glimmer/tracking" "^1.0.1"
-    ember-auto-import "^1.11.3"
-    ember-cli-babel "^7.26.6"
-    validated-changeset "1.0.0"
-
-"ember-changeset@github:betocantu93/ember-changeset#v3.15.1":
+ember-changeset@^3.15.0, "ember-changeset@github:betocantu93/ember-changeset#v3.15.1":
   version "3.15.0"
   resolved "https://codeload.github.com/betocantu93/ember-changeset/tar.gz/fea413e284d00389a26d6427ad5c9bd8f280782a"
   dependencies:

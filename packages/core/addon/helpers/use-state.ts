@@ -1,6 +1,7 @@
 import { helper } from '@ember/component/helper';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { scheduleOnce } from '@ember/runloop';
 
 /**
  * @param value - initial value to use, undefined if not provided.
@@ -17,7 +18,10 @@ class SingleUseState<T> {
 
   @action
   setState(value: T): T {
-    this.value = value;
+    const updater = () => {
+      this.value = value;
+    };
+    scheduleOnce('afterRender', this, updater);
     return value;
   }
 }

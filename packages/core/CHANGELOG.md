@@ -2,6 +2,12 @@
 
 ### Master
 
+### 4.2.6
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` fix css and html issues for amsterdam theme
+- `{{use-state}}` schedule changes for afterRender
+
 ### 4.2.5
 🐛 Bug / Fixes
 `@ember-eui/core`

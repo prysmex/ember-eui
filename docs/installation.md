@@ -15,9 +15,9 @@ if so, you can force that all packages use the same dependency with npm `overrid
 
 ```
 "resolutions": {
-    "@embroider/macros": "^1.3.0",
-    "@embroider/shared-internals": "^1.3.0",
-    "@embroider/util": "^1.3.0"
+    "@embroider/macros": "^1.5.0",
+    "@embroider/shared-internals": "^1.5.0",
+    "@embroider/util": "^1.5.0"
   }
 ```
 

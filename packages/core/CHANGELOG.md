@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.3.0
+🚀 Enhancements
+`@ember-eui/flatpickr`
+- New addon plug in, @ember-eui/flatpickr!
+
 ### 4.2.6
 🐛 Bug / Fixes
 `@ember-eui/core`

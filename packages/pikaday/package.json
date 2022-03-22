@@ -30,7 +30,6 @@
     "postpack": "ember ts:clean"
   },
   "dependencies": {
-    "@ember-decorators/component": "^6.1.0",
     "@ember-eui/core": "^4.2.6",
     "@types/ember": "^3.16.4",
     "ember-auto-import": "^2.4.0",

@@ -1,35 +1,35 @@
 ---
-order: 1
+order: 5
 ---
-
-# Demo
-
 ```hbs template
+<EuiTitle>
+  Widths
+</EuiTitle>
+<EuiSpacer />
 <EuiText>
-  Each <strong>EuiModal</strong> requires a specific set of nested child components. They can be
-  omitted if necessary, but the order cannot be changed or interrupted. Modals
-  come a wrapping <strong>EuiOverlayMask</strong> to obscure the content beneath, but unlike
-  flyouts, modals cannot be dismissed by clicking on the overlay mask. This is
-  inline with our modal usage guidelines which requires there to be a primary
-  action button, even if that button simply closes the modal.
+  Modals start with a minimum width of 400px, just enough to display form rows.
+  They will grow to fit the contents until it reaches the specified maxWidth,
+  the default of which is set to the medium breakpoint. If the modal is not
+  growing wide enough to fit your contents, you can pass a specific style.width,
+  just remember that modals will always shrink to fit the window width.
 </EuiText>
 <EuiSpacer />
 <EuiButton
   @color='primary'
-  {{on 'click' (fn this.activateModal 'basicModalActive')}}
+  {{on 'click' (fn this.activateModal 'widthModalActive')}}
 >
-  Show Modal
+  Show Width Modal
 </EuiButton>
-{{#if this.basicModalActive}}
+{{#if this.widthModalActive}}
 
   <EuiModal
-    @onClose={{fn this.deactivateModal 'basicModalActive'}}
+    @onClose={{fn this.deactivateModal 'widthModalActive'}}
     @initialFocus='#focusee'
-    @maxWidth='90%'
+    style='width: 800px'
   >
     <EuiModalHeader>
       <EuiTitle @size='m'>
-        Basic Modal
+        Basic Modal width 800 px width
       </EuiTitle>
     </EuiModalHeader>
     <EuiModalBody>
@@ -54,12 +54,12 @@ order: 1
     </EuiModalBody>
     <EuiModalFooter>
       <EuiButtonEmpty
-        {{on 'click' (fn this.deactivateModal 'basicModalActive')}}
+        {{on 'click' (fn this.deactivateModal 'widthModalActive')}}
       >
         Cancel
       </EuiButtonEmpty>
       <EuiButton
-        {{on 'click' (fn this.deactivateModal 'basicModalActive')}}
+        {{on 'click' (fn this.deactivateModal 'widthModalActive')}}
         @color='primary'
         @fill={{true}}
       >
@@ -77,7 +77,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoModalComponent extends Component {
-  @tracked basicModalActive = false;
+  @tracked widthModalActive = false;
 
   @action
   activateModal(modal) {

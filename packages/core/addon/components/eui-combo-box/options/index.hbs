@@ -31,6 +31,7 @@
         <Group @group={{opt}} @select={{@select}} @extra={{@extra}} />
       {{else}}
         <li
+          style={{html-safe (concat "height:" (arg-or-default @rowHeight 29) "px;")}}
           class="euiFilterSelectItem
             {{if
               (eq opt @select.highlighted)
@@ -52,7 +53,7 @@
             </span>
             {{#if (and (eq opt @select.highlighted) (not opt.disabled))}}
               <EuiBadge
-                class="euiComboBoxOptions__enterBadge"
+                class="euiComboBoxOption__enterBadge"
                 @color="hollow"
                 @iconType="returnKey"
                 aria-hidden="true"

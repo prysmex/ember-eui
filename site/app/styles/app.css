@@ -18,7 +18,9 @@
 img {
   border: none;
 }
-
+button {
+  line-height: normal;
+}
 .docfy-demo__description {
   @apply border rounded-t;
 

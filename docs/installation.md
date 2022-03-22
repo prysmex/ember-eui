@@ -70,7 +70,7 @@ var app = new EmberApp(defaults, {
 var app = new EmberApp(defaults, {
   //...
     '@ember-eui/core': {
-      theme: 'dark', //light, dark, amsterdam_dark, amsterdam_light 
+      theme: 'amsterdam_light', //light, dark, amsterdam_dark, amsterdam_light 
     },
   //...
 });

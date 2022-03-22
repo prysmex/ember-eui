@@ -20,6 +20,12 @@ Update core components to @elastic/eui v4.1.4
 
 - `<EuiFlyout>`
 - `<EuiCollapsibleNav>`
+
+### 4.3.0
+🚀 Enhancements
+`@ember-eui/flatpickr`
+- New addon plug in, @ember-eui/flatpickr!
+
 ### 4.2.6
 🐛 Bug / Fixes
 `@ember-eui/core`

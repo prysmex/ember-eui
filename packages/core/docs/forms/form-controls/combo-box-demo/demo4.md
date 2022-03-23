@@ -16,14 +16,7 @@ You can group options together. The groups won’t match against the search valu
   @customOptionText='Do you want to add&nbsp;{searchText}&nbsp;to your list?'
   @searchField='label'
   as |option item|
->
-  <:prepend>
-    Test
-  </:prepend>
-  <:field>
-    {{option.label}}
-  </:field>
-</EuiComboBox>
+/>
 ```
 
 ```javascript component

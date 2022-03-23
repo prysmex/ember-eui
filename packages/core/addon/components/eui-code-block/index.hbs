@@ -1,10 +1,133 @@
-<EuiCodeBlockImpl
-  @inline={{false}}
-  @language={{@language}}
-  @transparentBackground={{@transparentBackground}}
-  @isCopyable={{@isCopyable}}
-  @overflowHeight={{@overflowHeight}}
-  ...attributes
->
+{{#in-element this.codeTarget}}
   {{yield}}
-</EuiCodeBlockImpl>
+{{/in-element}}
+<EuiInnerText as |setInnerTextRef innerText|>
+  {{#let
+    (class-names
+      "euiCodeBlock"
+      (if
+        (or this.showCopyButton this.showFullScreenButton)
+        "euiCodeBlock--hasControl"
+      )
+      (if
+        (and this.showCopyButton this.showFullScreenButton)
+        "euiCodeBlock--hasBothControls"
+      )
+      (if this.lineNumbersConfig.show "euiCodeBlock--hasLineNumbers")
+    )
+    (class-names
+      "euiCodeBlock__pre"
+      (if
+        (or (eq this.whiteSpace "pre") this.isVirtualized)
+        "euiCodeBlock__pre--whiteSpacePre"
+      )
+      (if
+        (and (eq this.whiteSpace "pre-wrap") (not this.isVirtualized))
+        "euiCodeBlock__pre--whiteSpacePreWrap"
+      )
+      (if this.isVirtualized "euiCodeBlock__pre--isVirtualized")
+    )
+    (component "eui-code-block/virtualized")
+    (component "eui-code-block/controls")
+    (component "eui-code-block/full-screen-display")
+    as |wrapperClasses preClasses VirtualizedCodeBlock Controls FullScreenDisplay|
+  }}
+    <div
+      class={{class-names
+        wrapperClasses
+        (if this.transparentBackground "euiCodeBlock--transparentBackground")
+        componentName="EuiCodeBlock"
+        fontSize=this.fontSize
+        paddingSize=this.paddingSize
+      }}
+      {{style this.optionalStyles}}
+      {{this.highlightTargetModifier
+        element=this.codeTarget
+        language=this.language
+        lineNumbersConfig=this.lineNumbersConfig
+        onChange=this.updateCode
+        codeElement=this.code
+        codeFullScreenElement=this.codeFullScreen
+      }}
+    >
+      {{#if this.isVirtualized}}
+        {{!virtualized}}
+        <VirtualizedCodeBlock
+          @data={{this.data}}
+          @rowHeight={{this.rowHeight}}
+        />
+      {{else}}
+        {{!template-lint-disable}}
+        <pre
+          class={{preClasses}}
+          {{style this.optionalStyles}}
+          tabindex={{this.tabIndex}}
+          {{did-insert (set this "wrapperRef")}}
+          {{resize-observer onResize=this.doesOverflow}}
+          {{mutation-observer
+            onMutation=this.doesOverflow
+            observerOptions=(hash subtree=true childList=true)
+          }}
+          {{did-insert setInnerTextRef}}
+        >
+          {{!template-lint-enable}}
+          <code
+            class="euiCodeBlock__code"
+            data-code-language={{this.language}}
+            {{did-insert (set this "code")}}
+            {{will-destroy (set this "code" null)}}
+            ...attributes
+          ></code>
+        </pre>
+
+      {{/if}}
+
+      <Controls
+        @isFullScreen={{this.isFullScreen}}
+        @showFullScreenButton={{this.showFullScreenButton}}
+        @toggleFullScreen={{this.toggleFullScreen}}
+        @showCopyButton={{this.showCopyButton}}
+        @textToCopy={{this.textToCopyHelper
+          isVirtualized=this.isVirtualized
+          innerText=(this.cleanTextHelper innerText)
+          element=this.data.element
+        }}
+      />
+
+      {{#if this.isFullScreen}}
+        <FullScreenDisplay class={{wrapperClasses}}>
+          {{#if this.isVirtualized}}
+            <VirtualizedCodeBlock
+              @data={{this.data}}
+              @rowHeight={{this.rowHeight}}
+            />
+          {{else}}
+            <pre
+              class={{preClasses}}
+              tabindex="0"
+              {{on-key "Escape" this.closeFullScreen}}
+            >
+              <code
+                class="euiCodeBlock__code"
+                data-code-language={{this.language}}
+                {{did-insert (set this "codeFullScreen")}}
+                {{will-destroy (set this "codeFullScreen" null)}}
+              ></code>
+            </pre>
+            <Controls
+              @isFullScreen={{this.isFullScreen}}
+              @showFullScreenButton={{this.showFullScreenButton}}
+              @toggleFullScreen={{this.toggleFullScreen}}
+              @showCopyButton={{this.showCopyButton}}
+              @textToCopy={{this.textToCopyHelper
+                isVirtualized=this.isVirtualized
+                innerText=(this.cleanTextHelper innerText)
+                element=this.data.element
+              }}
+            />
+          {{/if}}
+        </FullScreenDisplay>
+      {{/if}}
+    </div>
+  {{/let}}
+</EuiInnerText>

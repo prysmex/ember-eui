@@ -41,7 +41,6 @@ import { Handler } from 'mdast-util-to-hast';
 import * as MarkdownCheckbox from '../plugins/markdown-checkbox';
 import MarkdownAddComponents from '../plugins/markdown-add-components';
 import breaks from 'remark-breaks';
-import highlight from 'remark-highlight.js';
 import * as MarkdownTooltip from '../plugins/markdown-tooltip';
 
 export type DefaultEuiMarkdownParsingPlugins = PluggableList;
@@ -49,7 +48,7 @@ export type DefaultEuiMarkdownParsingPlugins = PluggableList;
 export const getDefaultEuiMarkdownParsingPlugins =
   (): DefaultEuiMarkdownParsingPlugins => [
     [markdown, {}],
-    [highlight, {}],
+    // [highlight, {}],
     [emoji, { emoticon: false }],
     //@ts-ignore
     [breaks, {}],

@@ -1,0 +1,39 @@
+<VerticalCollection
+  @items={{@data}}
+  @tagName="pre"
+  @estimateHeight={{arg-or-default @rowHeight 29}}
+  @staticHeight={{true}}
+  @bufferSize={{3}}
+  ...attributes
+  as |opt index|
+>
+  {{! template-lint-enable }}
+  {{#if (ember-power-select-is-group opt)}}
+    <Group @group={{opt}} @select={{@select}} @extra={{@extra}} />
+  {{else}}
+    <li
+      class="euiFilterSelectItem
+        {{if (eq opt @select.highlighted) ' euiFilterSelectItem-isFocused'}}"
+      aria-selected="{{ember-power-select-is-selected opt @select.selected}}"
+      aria-disabled={{if opt.disabled "true"}}
+      aria-current="{{eq opt @select.highlighted}}"
+      data-option-index="{{index}}"
+      role="option"
+      tabindex={{if opt.disabled "-1" "0"}}
+    >
+      <span class="euiComboBoxOption__contentWrapper">
+        <span class="euiComboBoxOption__content">
+          {{yield opt index @select}}
+        </span>
+        {{#if (and (eq opt @select.highlighted) (not opt.disabled))}}
+          <EuiBadge
+            class="euiComboBoxOptions__enterBadge"
+            @color="hollow"
+            @iconType="returnKey"
+            aria-hidden="true"
+          />
+        {{/if}}
+      </span>
+    </li>
+  {{/if}}
+</VerticalCollection>

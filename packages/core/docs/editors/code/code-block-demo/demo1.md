@@ -7,6 +7,7 @@ order: 1
 ```hbs template
 <div>
   <EuiCodeBlock
+    @lineNumbers={{true}}
     @language={{this.language}}
     @isCopyable={{true}}
     @overflowHeight='500px'

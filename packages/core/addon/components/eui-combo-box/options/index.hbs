@@ -28,7 +28,7 @@
     >
       {{! template-lint-enable }}
       {{#if (ember-power-select-is-group opt)}}
-        <Group @group={{opt}} @select={{@select}} @extra={{@extra}} />
+        <Group @group={{opt}} @select={{@select}} @extra={{@extra}} style={{html-safe (concat "height:" (arg-or-default @rowHeight 29) "px;")}} />
       {{else}}
         <li
           style={{html-safe (concat "height:" (arg-or-default @rowHeight 29) "px;")}}

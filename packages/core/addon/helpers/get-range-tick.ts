@@ -6,6 +6,25 @@ export interface EuiRangeTick {
   label: string;
 }
 
+export function calculateOffset(
+  position: number,
+  value: number,
+  bound: number
+) {
+  const threshold = 30;
+  let offset = value === bound ? 0 : EUI_THUMB_SIZE / 2;
+  if (offset !== 0) {
+    // Estimating offset by eye. Trying to account for range scaling at both ends.
+    offset =
+      position <= threshold ? offset + (1 / position) * threshold : offset;
+    offset =
+      position >= 100 - threshold
+        ? offset - (1 / (100 - position)) * threshold
+        : offset;
+  }
+  return offset;
+}
+
 export function calculateThumbPosition(
   value: number,
   min: number,

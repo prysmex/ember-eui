@@ -3,6 +3,7 @@
     "euiRangeTrack"
     (if @disabled "euiRangeTrack--disabled")
     (if @showTicks "euiRangeTrack--hasTicks")
+    (if (and @levels (gt @levels.length 0)) "euiRangeTrack--hasLevels")
   }}
   style={{if this.derivedState.styles this.derivedState.styles}}
   ...attributes
@@ -19,6 +20,7 @@
       @max={{@max}}
       @min={{@min}}
       @showTicks={{@showTicks}}
+      @trackWidth={{this.trackEl.clientWidth}}
     />
   {{/if}}
   {{#if this.derivedState.tickSequence}}

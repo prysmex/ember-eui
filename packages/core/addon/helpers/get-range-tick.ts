@@ -1,19 +1,42 @@
 import { helper } from '@ember/component/helper';
+import { EUI_THUMB_SIZE } from '../utils/range';
 
 export interface EuiRangeTick {
   value: number;
   label: string;
 }
 
-export function getRangeTick([ticks, tickValue, min, max, percentageWidth]: [
-  EuiRangeTick[],
-  number,
-  number,
-  number,
-  number
-]) {
+export function calculateThumbPosition(
+  value: number,
+  min: number,
+  max: number,
+  width: number,
+  thumbSize: number = EUI_THUMB_SIZE
+): number {
+  // Calculate the left position based on value
+  const decimal = (value - min) / (max - min);
+  // Must be between 0-100%
+  let valuePosition = decimal <= 1 ? decimal : 1;
+  valuePosition = valuePosition >= 0 ? valuePosition : 0;
+
+  const trackWidth = width ?? 0;
+  const thumbToTrackRatio = thumbSize / trackWidth;
+  const trackPositionScale = (1 - thumbToTrackRatio) * 100;
+
+  return valuePosition * trackPositionScale;
+}
+
+export function getRangeTick([
+  ticks,
+  tickValue,
+  min,
+  max,
+  percentageWidth,
+  trackWidth = 0
+]: [EuiRangeTick[], number, number, number, number, number]) {
   let tickStyle: string = '';
   let customTick;
+
   if (ticks) {
     customTick = ticks.find((o) => o.value === tickValue);
 
@@ -21,7 +44,10 @@ export function getRangeTick([ticks, tickValue, min, max, percentageWidth]: [
       tickStyle = `left: ${((customTick.value - min) / (max - min)) * 100}%;`;
     }
   } else {
-    tickStyle = `width: ${tickStyle} ${percentageWidth}%`;
+    let position = calculateThumbPosition(tickValue, min, max, trackWidth);
+
+    tickStyle = `left: calc(${position}% + ${EUI_THUMB_SIZE / 2}px);`;
+    tickStyle += `width: ${percentageWidth}%;`;
   }
 
   return {

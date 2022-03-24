@@ -1,8 +1,13 @@
 <div
-  class="euiRangeTrack {{if @disabled "euiRangeTrack--disabled"}}"
+  class={{class-names
+    "euiRangeTrack"
+    (if @disabled "euiRangeTrack--disabled")
+    (if @showTicks "euiRangeTrack--hasTicks")
+  }}
   style={{if this.derivedState.styles this.derivedState.styles}}
   ...attributes
   {{did-insert (fn this.validateValueIsInStep @max)}}
+  {{did-insert this.registerTrack}}
   {{did-update (fn this.validateValueIsInStep @max) @max}}
   {{did-update (fn this.validateValueIsInStep @max) @min}}
   {{did-update (fn this.validateValueIsInStep @max) @step}}
@@ -27,6 +32,7 @@
       @max={{@max}}
       @interval={{or @tickInterval @step}}
       @onChange={{@onChange}}
+      @trackWidth={{this.trackEl.clientWidth}}
     />
   {{/if}}
   {{yield}}

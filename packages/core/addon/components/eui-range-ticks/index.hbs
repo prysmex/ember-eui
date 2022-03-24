@@ -5,7 +5,7 @@
 >
   {{#each @tickSequence key="value" as |tickValue|}}
     {{#let
-      (get-range-tick @ticks tickValue @min @max this.percentageWidth) as |derivedState|
+      (get-range-tick @ticks tickValue @min @max this.percentageWidth @trackWidth) as |derivedState|
     }}
       <button
         type="button"

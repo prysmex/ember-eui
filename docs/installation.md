@@ -23,9 +23,9 @@ if so, you can force that all packages use the same dependency with npm `overrid
 
 ```
 "resolutions": {
-    "@embroider/macros": "^1.3.0",
-    "@embroider/shared-internals": "^1.3.0",
-    "@embroider/util": "^1.3.0"
+    "@embroider/macros": "^1.5.0",
+    "@embroider/shared-internals": "^1.5.0",
+    "@embroider/util": "^1.5.0"
   }
 ```
 
@@ -70,7 +70,7 @@ var app = new EmberApp(defaults, {
 var app = new EmberApp(defaults, {
   //...
     '@ember-eui/core': {
-      theme: 'dark', //light, dark, amsterdam_dark, amsterdam_light 
+      theme: 'amsterdam_light', //light, dark, amsterdam_dark, amsterdam_light 
     },
   //...
 });

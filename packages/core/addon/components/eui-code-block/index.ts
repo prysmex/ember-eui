@@ -160,6 +160,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockArgs> {
   highlightTargetModifier = highlightModifier;
   cleanTextHelper = cleanTextHelper;
   textToCopyHelper = textToCopyHelper;
+  fontSizeToRowHeightMap = fontSizeToRowHeightMap;
 
   //fake element where yield writes to, so we can observe and clone a highlighted version to code and codeFullSceen
   @tracked codeTarget: undefined | HTMLElement;

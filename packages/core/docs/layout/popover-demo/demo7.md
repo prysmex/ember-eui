@@ -1,40 +1,36 @@
 ---
-order: 1
+order: 7
 ---
-
-# Demo
 
 ```hbs template
 <div>
+  <EuiTitle>
+    Popover with block level display
+  </EuiTitle>
+  <EuiSpacer />
   <EuiText>
-    Use the
-    <strong>EuiPopover</strong>
-    component to hide controls or options behind a clickable element. A popover
-    is temporary so keep tasks simple and narrowly focused. While the visibility
-    of the popover is maintained by the consuming application, popovers will
-    automatically close when clicking outside of the popover bounds. Therefore
-    all work done in a popover should automatically be saved. Avoid popover
-    inception (popover triggering another popover), and instead use a
-    EuiContextMenu to swap the popover panel content.
+    Popover anchors default to <EuiCode>display: inline-block;</EuiCode> so they do not force a display on inline triggers. If you do need to change this, just add <EuiCode>display="block"</EuiCode>
   </EuiText>
   <EuiSpacer />
   <EuiPopover
     @ownFocus={{true}}
     @isOpen={{this.popover}}
     @anchorPosition='downLeft'
+    @display='block'
     @closePopover={{set this 'popover' false}}
   >
     <:button>
       <EuiButton
         @iconType='arrowDown'
         @iconSide='right'
+        @fullWidth={{true}}
         {{on 'click' (set this 'popover' true)}}
       >
-        Show Popover
+        This button is expanded
       </EuiButton>
     </:button>
     <:content>
-      Popover content that’s wider than the default width
+      This is a popover
     </:content>
   </EuiPopover>
 </div>

@@ -78,7 +78,7 @@ export type EuiPopoverArgs = {
    * document.querySelector() to find the DOM node), or a function that
    * returns a DOM node
    */
-  initialFocus?: FocusTarget;
+  initialFocus?: FocusTarget | false;
   /**
    * Passed directly to EuiPortal for DOM positioning. Both properties are
    * required if prop is specified
@@ -234,7 +234,7 @@ type CssProps = {
 export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   // Defaults
   @argOrDefault(false) isOpen!: boolean;
-  @argOrDefault(false) ownFocus!: boolean;
+  @argOrDefault(true) ownFocus!: boolean;
   @argOrDefault('downCenter') anchorPosition!: PopoverAnchorPosition;
   @argOrDefault('m') panelPaddingSize!: PanelPaddingSize;
   @argOrDefault(true) hasArrow!: boolean;
@@ -259,6 +259,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   private updateFocusAnimationFrame: number | undefined;
   @tracked button: HTMLElement | null = null;
   @tracked panel: HTMLElement | null = null;
+  @tracked hasSetInitialFocus: boolean = false;
 
   constructor(owner: unknown, args: EuiPopoverArgs) {
     super(owner, args);
@@ -303,12 +304,15 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   updateFocus(): void {
     // Wait for the DOM to update.
     this.updateFocusAnimationFrame = window.requestAnimationFrame(() => {
-      if (!this.ownFocus || !this.panel) {
+      if (!this.ownFocus || !this.panel || this.args.initialFocus === false) {
         return;
       }
 
       // If we've already focused on something inside the panel, everything's fine.
-      if (this.panel.contains(document.activeElement)) {
+      if (
+        this.hasSetInitialFocus &&
+        this.panel.contains(document.activeElement)
+      ) {
         return;
       }
 
@@ -331,8 +335,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
         // there isn't a focus target, one of two reasons:
         // #1 is the whole panel hidden? If so, schedule another check
         // #2 panel is visible but no tabbables exist, move focus to the panel
-        const panelVisibility = window.getComputedStyle(this.panel).visibility;
-        if (panelVisibility === 'hidden') {
+        const panelVisibility = window.getComputedStyle(this.panel).opacity;
+        if (panelVisibility === '0') {
           // #1
           this.updateFocus();
         } else {
@@ -348,7 +352,10 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
         }
       }
 
-      if (focusTarget != null) focusTarget.focus();
+      if (focusTarget != null) {
+        this.hasSetInitialFocus = true;
+        focusTarget.focus();
+      }
     });
   }
 
@@ -451,7 +458,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
 
   willDestroy(): void {
     super.willDestroy();
-    window.removeEventListener('scroll', this.positionPopoverFixed);
+    window.removeEventListener('scroll', this.positionPopoverFixed, true);
     cancel(this.respositionTimeout as ReturnType<typeof later>);
     cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
     cancelAnimationFrame(this.closingTransitionAnimationFrame as number);

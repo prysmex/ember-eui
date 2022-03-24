@@ -1,27 +1,22 @@
 ---
-order: 1
+order: 6
 ---
-
-# Demo
 
 ```hbs template
 <div>
+  <EuiTitle>
+    Panel class name
+  </EuiTitle>
+  <EuiSpacer />
   <EuiText>
-    Use the
-    <strong>EuiPopover</strong>
-    component to hide controls or options behind a clickable element. A popover
-    is temporary so keep tasks simple and narrowly focused. While the visibility
-    of the popover is maintained by the consuming application, popovers will
-    automatically close when clicking outside of the popover bounds. Therefore
-    all work done in a popover should automatically be saved. Avoid popover
-    inception (popover triggering another popover), and instead use a
-    EuiContextMenu to swap the popover panel content.
+    Use the <EuiCode>panelClassName</EuiCode> prop to pass a custom class to the panel containing the popover contents.
   </EuiText>
   <EuiSpacer />
   <EuiPopover
     @ownFocus={{true}}
     @isOpen={{this.popover}}
     @anchorPosition='downLeft'
+    @panelClasses='bg-blue'
     @closePopover={{set this 'popover' false}}
   >
     <:button>
@@ -30,11 +25,11 @@ order: 1
         @iconSide='right'
         {{on 'click' (set this 'popover' true)}}
       >
-        Show Popover
+        Text scaling
       </EuiButton>
     </:button>
     <:content>
-      Popover content that’s wider than the default width
+      This has a custom class that applies some css.
     </:content>
   </EuiPopover>
 </div>

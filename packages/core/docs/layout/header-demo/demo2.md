@@ -1,38 +1,20 @@
 ---
-order: 1
+order: 2
 ---
 
-# Demo
-
 ```hbs template
-<EuiText>
-  The header is made up of
-  <strong>many</strong>
-  individual components starting with
-  <strong>EuiHeader</strong>
-  as the container. You can manually configure your header with the following
-  related components:
-  <br />
-  <br />
-
-  <ul>
-    <li><strong>EuiHeaderSection</strong>: Left/right containers with flex
-      properties.</li>
-    <li>
-      <strong>EuiHeaderSectionItem</strong>: Containers for individual header
-      items as flex items.</li>
-    <li><strong>EuiHeaderSectionItemButton</strong>: Specialized button that
-      extends EuiButtonEmpty but styled to fit the height of the header with
-      additional
-      <EuiCode>notification</EuiCode>
-      props.</li>
-    <li><strong>EuiHeaderLogo</strong>: A helpful component for creating a
-      linked logo that fits within the header sizing.</li>
-    <!-- <li><strong>EuiHeaderBreadcrumbs</strong>: A set of EuiBreadcrumbs
-      specifically stylized to fit inside the header.</li> -->
-  </ul>
-</EuiText>
+<EuiTitle @size='s'>
+  Sections
+</EuiTitle>
 <EuiSpacer />
+<EuiText>
+  Alternatively, you can pass an array of objects to the <EuiCode>sections</EuiCode> prop that
+  takes a key of <EuiCode>items</EuiCode> (array of children to wrap in an <strong>EuiHeaderSectionItem</strong>)
+  and/or breadcrumbs (array of breadcrumb objects). Each item in the array will
+  be wrapped in an <strong>EuiHeaderSection</strong>. <strong>Note</strong>: Passing <EuiCode>sections</EuiCode> and <EuiCode>children</EuiCode> will
+  disregard the <EuiCode>children</EuiCode> as it is not easily interpreted at what location the
+  children should be placed.
+</EuiText>
 <EuiHeader>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
@@ -56,19 +38,8 @@ order: 1
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem @border='left'>
-      <EuiHeaderSectionItemButton
-        aria-controls='header1'
-        aria-expanded={{this.isOpen}}
-        aria-haspopup='true'
-        aria-label='Account menu'
-        onClick={{this.onMenuButtonClick}}
-      >
-        <EuiAvatar
-          @name='David Martinez'
-          @type='user'
-          @initialLength={{2}}
-          @size='s'
-        />
+      <EuiHeaderSectionItemButton @disabled={{true}}>
+        <EuiIcon @type='search' @size='m' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem @border='left'>
@@ -78,11 +49,12 @@ order: 1
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem @border='left'>
       <EuiHeaderSectionItemButton
+        @notification='1'
+        @notificationColor='accent'
         @disabled={{true}}
         aria-label='Apps menu with 1 new app'
-        @notification='1'
       >
-        <EuiIcon @type='apps' size='m' />
+        <EuiIcon @type='apps' @size='m' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
@@ -95,16 +67,10 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
-  @tracked isOpen = false;
-
   @action
   onClick(e) {
     e.preventDefault();
   }
 
-  @action
-  onMenuButtonClick(e) {
-    e.preventDefault();
-  }
 }
 ```

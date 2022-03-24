@@ -1,7 +1,8 @@
 <button
-  class="euiHeaderSectionItem__button"
+  class="euiButtonEmpty euiButtonEmpty--text euiHeaderSectionItemButton {{if @disabled 'euiButtonEmpty-isDisabled' ''}}"
   type="button"
   ...attributes
+  disabled={{@disabled}}
   {{on "click" (optional @onClick)}}
 >
   {{yield}}

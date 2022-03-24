@@ -16,7 +16,7 @@ order: 6
     @ownFocus={{true}}
     @isOpen={{this.popover}}
     @anchorPosition='downLeft'
-    @panelClasses='bg-blue'
+    @panelClasses='background-blue'
     @closePopover={{set this 'popover' false}}
   >
     <:button>

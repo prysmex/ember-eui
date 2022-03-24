@@ -29,13 +29,31 @@ order: 9
   >
     <:input>
       <EuiFieldText
-        @value={{this.num2}}
-        {{on 'input' (pick 'target.value' (set this 'num2'))}}
+        @value={{this.num1}}
+        {{on 'input' (pick 'target.value' (set this 'num1'))}}
         {{on 'focus' (set this 'popover' true)}}
       />
     </:input>
     <:content>
       This is a popover
+    </:content>
+  </EuiInputPopover>
+  <EuiSpacer @size='l'/>
+  <EuiInputPopover
+    @isOpen={{this.popover2}}
+    @closePopover={{set this 'popover2' false}}
+  >
+    <:input>
+      <EuiFieldText
+        @value={{this.num2}}
+        style={{concat 'width: ' this.width 'px'}}
+        {{on 'input' (pick 'target.value' (set this 'num2'))}}
+        {{on 'focus' (queue (set this 'popover2' true) (fn this.setInputWidth 400))}}
+        {{on 'blur' (fn this.setInputWidth 200)}}
+      />
+    </:input>
+    <:content>
+      This is a popover that modifies inputs width
     </:content>
   </EuiInputPopover>
 </div>
@@ -48,6 +66,14 @@ import { tracked } from '@glimmer/tracking';
 
 export default class PopoverDemo1 extends Component {
   @tracked popover = false;
+  @tracked popover2 = false;
+  @tracked width = 200;
+  @tracked num1 = '';
   @tracked num2 = '';
+
+  @action
+  setInputWidth(width) {
+    this.width = width;
+  }
 }
 ```

@@ -47,3 +47,8 @@ body.euiBody--headerIsFixed {
     height: calc(100% - 49px);
   }
 }
+
+.background-blue {
+  background-color: blue !important;
+  color: white;
+}

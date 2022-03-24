@@ -1,6 +1,6 @@
 {{#let
-  (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
-  (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
+  (not (has-block "prepend"))
+  (not (has-block "append"))
   (and (not (arg-or-default @isFakeMaxBlock false)) (has-block "max"))
   (and (not (arg-or-default @isFakeMinBlock false)) (has-block "min"))
   (and (not (arg-or-default @isFakeValueBlock false)) (has-block "value"))
@@ -61,7 +61,10 @@
       </:input>
       <:content>
         <EuiRangeWrapper
-          class="euiRange"
+          class={{class-names
+            "euiRange"
+            (if this.showInput "euiRange--hasInput")
+          }}
           @fullWidth={{@fullWidth}}
           @compressed={{@compressed}}
         >
@@ -211,7 +214,10 @@
     </EuiInputPopover>
   {{else}}
     <EuiRangeWrapper
-      class="euiRange"
+      class={{class-names
+        "euiRange"
+        (if this.showInput "euiRange--hasInput")
+      }}
       @fullWidth={{@fullWidth}}
       @compressed={{@compressed}}
     >

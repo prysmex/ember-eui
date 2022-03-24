@@ -6,7 +6,8 @@ import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-defa
 import { tabbable } from 'tabbable';
 import { EuiPopoverArgs } from '../eui-popover';
 
-export interface EuiInputPopoverArgs extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
+export interface EuiInputPopoverArgs
+  extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
   disableFocusTrap?: boolean;
   fullWidth?: boolean;
   input: EuiPopoverArgs['button'];
@@ -44,8 +45,8 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverA
   @action
   setPanelWidth(width?: number): void {
     const { panel, inputWidth } = this;
-    if (panel && (!!inputWidth || !!width)) {
-      const newWidth = !width ? width : inputWidth;
+    const newWidth = width || inputWidth;
+    if (panel && !!newWidth) {
       panel.style.width = `${newWidth}px`;
       this.args.onPanelResize?.(newWidth);
     }
@@ -74,7 +75,8 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverA
       });
       if (
         this.args.disableFocusTrap ||
-        (tabbableItems.length && tabbableItems[tabbableItems.length - 1] === document.activeElement)
+        (tabbableItems.length &&
+          tabbableItems[tabbableItems.length - 1] === document.activeElement)
       ) {
         this.args.closePopover?.();
       }

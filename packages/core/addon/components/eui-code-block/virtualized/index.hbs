@@ -1,3 +1,12 @@
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
 {{#let (unique-id) as |theID|}}
   <EuiAutoSizer as |styles|>
     <pre
@@ -6,9 +15,7 @@
       style="position: relative; overflow: auto;"
       id={{theID}}
       ...attributes
-    >
-      {{!template-lint-enable}}
-      <VerticalCollection
+    ><VerticalCollection
         @items={{@data}}
         @tagName="code"
         class="euiCodeBlock__code"
@@ -18,9 +25,6 @@
         @staticHeight={{true}}
         @containerSelector={{concat "#" theID}}
         as |opt index|
-      >
-        {{this.getHtmlContent opt index @rowHeight}}
-      </VerticalCollection>
-    </pre>
+      >{{this.getHtmlContent opt index @rowHeight}}</VerticalCollection></pre>
   </EuiAutoSizer>
 {{/let}}

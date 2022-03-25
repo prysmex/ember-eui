@@ -1,3 +1,12 @@
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
+{{!-- DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY --}}
 {{#in-element this.codeTarget}}
   {{yield}}
 {{/in-element}}
@@ -74,15 +83,12 @@
             observerOptions=(hash subtree=true childList=true)
           }}
           {{did-insert setInnerTextRef}}
-        >
-          {{!template-lint-enable}}
-          <code
+        ><code
             class="euiCodeBlock__code"
             data-code-language={{this.language}}
             {{did-insert (set this "code")}}
             ...attributes
-          ></code>
-        </pre>
+          ></code></pre>
 
       {{/if}}
 
@@ -115,13 +121,11 @@
               class={{preClasses}}
               tabindex="0"
               {{on-key "Escape" this.closeFullScreen}}
-            >
-              <code
+            ><code
                 class="euiCodeBlock__code"
                 data-code-language={{this.language}}
                 {{did-insert (set this "codeFullScreen")}}
-              ></code>
-            </pre>
+              ></code></pre>
           {{/if}}
           <Controls
             @isFullScreen={{this.isFullScreen}}

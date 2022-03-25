@@ -4,38 +4,42 @@ order: 3
 
 ```hbs template
 <EuiTitle @size='s'>
-  Header links
+  Fixed header
 </EuiTitle>
 <EuiSpacer />
 <EuiText>
-  In addition to the components mentioned prior, which lend themselves to more
-  application style navigation patterns,
-  <strong>EuiHeaderLinks</strong>
-  and
-  <strong>EuiHeaderLink</strong>
-  supply the ability to inline a list of navigational or menu style links.
-  <strong>EuiHeaderLinks</strong>
-  comes with responsive functionality built-in which will convert the inline
-  list of links to a popover list triggered by a
-  <strong>EuiHeaderSectionItemButton</strong>. You can adjust at which
-  breakpoints to switch to the popover display by passing your own array of
-  named breakpoints to
-  <EuiCode>popoverBreakpoints</EuiCode>.
+  Most consumers need a header that does not scroll away with the page contents.
+  You can apply this display by applying the property <EuiCode>position="fixed"</EuiCode>. This
+  will also add a class of <EuiCode>.euiBody--headerIsFixed</EuiCode> to the window body. <br />
+  You will then need to apply your own padding to this body class to afford for the
+  header height. EUI supplies a helper mixin that also accounts for this height
+  in flyouts and the collapsible nav. Simply add <EuiCode>@include euiHeaderAffordForFixed;</EuiCode> anywhere in your SASS.
 </EuiText>
-<EuiHeader>
+<EuiSpacer />
+<EuiButtonEmpty {{on "click" (fn this.toggleHeaderPosition "header1Fixed")}}>
+  Toggle Header 1
+</EuiButtonEmpty>
+<EuiSpacer />
+<EuiHeader @position={{if this.header1Fixed "fixed"}}>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
       <EuiHeaderLogo>Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
-  <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItem @border='left'>
-      <EuiHeaderLinks @gutterSize='xs' @popoverBreakpoints='s'>
-        <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
-        <EuiHeaderLink>Code</EuiHeaderLink>
-        <EuiHeaderLink @iconType='help'>Help</EuiHeaderLink>
-      </EuiHeaderLinks>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
 </EuiHeader>
+```
+
+```js component
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+
+export default class DemoHeaderComponent extends Component {
+  @tracked header1Fixed = false;
+
+  @action
+  toggleHeaderPosition(header) {
+    this[header] = !this[header];
+  }
+}
 ```

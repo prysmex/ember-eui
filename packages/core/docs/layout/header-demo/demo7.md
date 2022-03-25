@@ -1,40 +1,61 @@
 ---
-order: 7
+order: 8
 ---
 
 ```hbs template
 <EuiTitle @size='s'>
-  Header notifications
+  Stacked headers
 </EuiTitle>
 <EuiSpacer />
 <EuiText>
-  To alert or notify users about the additional information they are receiving,
-  use the <strong>EuiHeaderSectionItemButton</strong> <EuiCode>notification</EuiCode> prop. You can pass a node that
-  will render inside a <strong>EuiBadgeNotification</strong> or pass <EuiCode>true</EuiCode> to render a simple dot.
-  You can also animate the button by calling the <EuiCode>euiAnimate()</EuiCode> method on the
-  <strong>EuiHeaderSectionItemButton</strong> <EuiCode>ref</EuiCode>.
+  Stacking multiple headers provides a great way to separate global navigation
+  concerns. However, the
+  <EuiCode>position="fixed"</EuiCode>
+  option will not be aware of the number of headers. If you do need fixed
+  <strong>and</strong>
+  stacked headers, you will need to apply the SASS helper mixin and pass in the
+  correct height to afford for.
 </EuiText>
 <EuiSpacer />
-<EuiButton {{on 'click' this.notify}}>
-  Notify
-</EuiButton>
-<EuiButton {{on 'click' this.reset}}>
-  Reset
-</EuiButton>
+<EuiSwitch
+  @label={{'Make header fixed position'}}
+  @checked={{this.isFixedPosition}}
+  @onChange={{set this 'isFixedPosition' (not this.isFixedPosition)}}
+/>
 <EuiSpacer />
-<EuiHeader @position={{if this.header1Fixed 'fixed'}}>
+<EuiHeader @position={{if this.isFixedPosition 'fixed'}} @theme='dark'>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
       <EuiHeaderLogo>Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItemButton  @notification={{if this.notificationNumber true false}} @notificationColor='accent'>
-        <EuiIcon @type='bell' />
+    <EuiHeaderSectionItem>
+      <EuiHeaderSectionItemButton>
+        <EuiAvatar @name='John Doe' />
       </EuiHeaderSectionItemButton>
-      <EuiHeaderSectionItemButton @notification={{this.notificationNumber}} @notificationColor='accent'>
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+</EuiHeader>
+<EuiHeader @position={{if this.isFixedPosition 'fixed'}}>
+  <EuiHeaderSection @side='left'>
+    <EuiHeaderSectionItem @border='right'>
+      <EuiHeaderSectionItemButton>
+        <EuiAvatar
+          @name='Planta Prysmex'
+          @type='space'
+          @initialLength={{2}}
+          @size='s'
+        />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+  <EuiHeaderSection @side='right'>
+    <EuiHeaderSectionItem>
+      <EuiHeaderSectionItemButton @notification={{true}}>
         <EuiIcon @type='cheer' />
       </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
 ```
@@ -45,17 +66,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
-  @tracked notificationNumber = 0;
-
-  @action
-  notify() {
-    this.notificationNumber += 1;
-    // headerUpdatesRef.current?.euiAnimate();
-  }
-
-  @action
-  reset() {
-    this.notificationNumber = 0;
-  }
+  @tracked isFixedPosition = false;
 }
 ```

@@ -4,42 +4,56 @@ order: 4
 
 ```hbs template
 <EuiTitle @size='s'>
-  Fixed header
+  Dark theme
 </EuiTitle>
 <EuiSpacer />
 <EuiText>
-  Most consumers need a header that does not scroll away with the page contents.
-  You can apply this display by applying the property <EuiCode>position="fixed"</EuiCode>. This
-  will also add a class of <EuiCode>.euiBody--headerIsFixed</EuiCode> to the window body. <br />
-  You will then need to apply your own padding to this body class to afford for the
-  header height. EUI supplies a helper mixin that also accounts for this height
-  in flyouts and the collapsible nav. Simply add <EuiCode>@include euiHeaderAffordForFixed;</EuiCode> anywhere in your SASS.
+  To make site-wide navigation more prominent,
+  <strong>EuiHeader</strong>
+  supports reversing the colors to dark theme with
+  <EuiCode>theme="dark"</EuiCode>. However, it only supports a
+  <strong>limited set of children</strong>
+  that will also shift their theme. These components include
+  <strong>EuiHeaderLogo</strong>,
+  <strong>EuiHeaderLink(s)</strong>,
+  <strong>EuiHeaderSectionItemButton</strong>
+  and
+  <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not
+  render correctly without custom configurations.
 </EuiText>
 <EuiSpacer />
-<EuiButtonEmpty {{on "click" (fn this.toggleHeaderPosition "header1Fixed")}}>
-  Toggle Header 1
-</EuiButtonEmpty>
-<EuiSpacer />
-<EuiHeader @position={{if this.header1Fixed "fixed"}}>
+<EuiHeader @theme='dark'>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
       <EuiHeaderLogo>Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
+    <EuiHeaderSectionItem @border='right'>
+      <EuiHeaderLinks @gutterSize='xs'>
+        <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
+        <EuiHeaderLink>Code</EuiHeaderLink>
+        <EuiHeaderLink @iconType='help'>Help</EuiHeaderLink>
+      </EuiHeaderLinks>
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+  <EuiHeaderSection @side='left'>
+    <EuiHeaderSectionItem @border='left'>
+      <EuiBadge @iconType='arrowDown' @iconSide='right'>
+        Production logs
+      </EuiBadge>
+    </EuiHeaderSectionItem>
+    <EuiHeaderSectionItem @border='left'>
+      <EuiHeaderSectionItemButton
+        aria-label='2 Notifications'
+        @notification={{'2'}}
+      >
+        <EuiIcon @type='cheer' size='m' />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
+    <EuiHeaderSectionItem @border='left'>
+      <EuiHeaderSectionItemButton aria-label='Account menu'>
+        <EuiAvatar @name='John Username' @size='s' />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
-```
-
-```js component
-import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-
-export default class DemoHeaderComponent extends Component {
-  @tracked header1Fixed = false;
-
-  @action
-  toggleHeaderPosition(header) {
-    this[header] = !this[header];
-  }
-}
 ```

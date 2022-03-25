@@ -30,7 +30,7 @@ order: 2
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem @border='left'>
-      <EuiHeaderLinks @gutterSize='xs' @popoverBreakpoints='s'>
+      <EuiHeaderLinks @gutterSize='xs'>
         <EuiHeaderLink @isActive={{true}} @href='https://www.google.com'>Docs</EuiHeaderLink>
         <EuiHeaderLink>Code</EuiHeaderLink>
         <EuiHeaderLink @iconType='help'>Help</EuiHeaderLink>

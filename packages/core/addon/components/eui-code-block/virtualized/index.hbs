@@ -1,22 +1,25 @@
 {{#let (unique-id) as |theID|}}
-  <pre
-    style="height:300px; display:block; overflow: scroll; position:relative;"
-    id={{theID}}
-    ...attributes
-  >
-    <VerticalCollection
-      @items={{@data}}
-      @tagName="code"
-      class="euiCodeBlock__code"
-      style="min-height: 100%;width: 100%; background-color: red;"
-      data-code-language={{@language}}
-      @estimateHeight={{@rowHeight}}
-      @staticHeight={{true}}
-      @bufferSize={{1}}
-      @containerSelector={{concat "#" theID}}
-      as |opt index|
+  <EuiAutoSizer as |styles|>
+    <pre
+      {{style styles}}
+      {{!template-lint-disable}}
+      style="position: relative; overflow: auto;"
+      id={{theID}}
+      ...attributes
     >
-      {{this.getHtmlContent opt index @rowHeight}}
-    </VerticalCollection>
-  </pre>
+      {{!template-lint-enable}}
+      <VerticalCollection
+        @items={{@data}}
+        @tagName="code"
+        class="euiCodeBlock__code"
+        data-code-language={{@language}}
+        @estimateHeight={{@rowHeight}}
+        @bufferSize={{40}}
+        @containerSelector={{concat "#" theID}}
+        as |opt index|
+      >
+        {{this.getHtmlContent opt index @rowHeight}}
+      </VerticalCollection>
+    </pre>
+  </EuiAutoSizer>
 {{/let}}

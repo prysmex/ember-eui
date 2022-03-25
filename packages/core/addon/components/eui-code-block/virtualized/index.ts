@@ -14,7 +14,8 @@ export default class EuiCodeBlockVirtualizedComponent extends Component {
     if (span) {
       span.style.position = 'absolute';
       span.style.height = `${rowHeight}px`;
-      span.style.top = `${(index + 1) * rowHeight}px`;
+      span.style.left = '0';
+      span.style.top = `${index * rowHeight}px`;
     }
     return span;
   });

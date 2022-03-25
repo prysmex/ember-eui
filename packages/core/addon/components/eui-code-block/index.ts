@@ -80,12 +80,12 @@ const highlightModifier = modifier(
     {
       element: targetEle,
       language = 'text',
-      lineNumberConfig = { start: 1, show: false },
+      lineNumbersConfig = { start: 1, show: false },
       onChange
     }: {
       element: Element | undefined;
       language: EuiCodeSharedProps['language'];
-      lineNumberConfig: LineNumbersFinal;
+      lineNumbersConfig: LineNumbersFinal;
       onChange: ({
         data,
         element
@@ -97,6 +97,7 @@ const highlightModifier = modifier(
   ) => {
     let observer: undefined | MutationObserver;
 
+    console.log(lineNumbersConfig);
     const getHighlighedHtml = () => {
       const html = (targetEle?.textContent ? targetEle.textContent : '').trim();
 
@@ -104,7 +105,7 @@ const highlightModifier = modifier(
       if (typeof html !== 'string') {
         data = [];
       } else {
-        data = highlightByLine(html, language, lineNumberConfig);
+        data = highlightByLine(html, language, lineNumbersConfig);
       }
 
       return {
@@ -222,8 +223,8 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockArgs> {
       return {
         [property]:
           typeof overflowHeight === 'string'
-            ? `${overflowHeight}px`
-            : overflowHeight
+            ? overflowHeight
+            : `${overflowHeight}px`
       };
     }
     return {};
@@ -275,12 +276,12 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockArgs> {
       const code = this.code;
       const codeFullScreen = this.codeFullScreen;
 
-      if (code) {
+      if (code && !this.isFullScreen) {
         this.data = resp;
         code.innerHTML = resp.element.innerHTML;
       }
 
-      if (codeFullScreen) {
+      if (codeFullScreen && this.isFullScreen) {
         this.data = resp;
         codeFullScreen.innerHTML = resp.element.innerHTML;
       }

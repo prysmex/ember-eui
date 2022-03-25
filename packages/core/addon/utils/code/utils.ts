@@ -6,6 +6,7 @@
  * Side Public License, v 1.
  */
 
+import { typeOf } from '@ember/utils';
 import { listLanguages, highlight, AST, RefractorNode } from 'refractor';
 import { CommonArgs } from '../../components/common';
 
@@ -33,7 +34,16 @@ const createDocument = () => {
   return document;
 };
 
-const attributes = ['src', 'alt', 'href', 'target', 'title'];
+const attributes = [
+  'src',
+  'alt',
+  'href',
+  'target',
+  'title',
+  'data-line-number',
+  'aria-hidden',
+  'style'
+];
 export interface DynamicComponent {}
 
 export const getHtmlContent = (nodes: RefractorNode[]) => {
@@ -66,7 +76,15 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
         for (let key in properties) {
           if (attributes.includes(key)) {
             let value = properties[key];
-            element.setAttribute(key, value as string);
+            if (key === 'style') {
+              console.log(value);
+              Object.keys(value).forEach((k: string) => {
+                //@ts-ignore
+                element.style[k] = `${value[k]}`;
+              });
+            } else {
+              element.setAttribute(key, value as string);
+            }
           } else {
             // temporary
             if (key !== 'className') {
@@ -243,7 +261,7 @@ function wrapLines(
             type: 'element',
             tagName: 'span',
             properties: {
-              style: { width },
+              style: { width: `${width}px` },
               ['data-line-number']: lineNumber,
               ['aria-hidden']: true,
               className: ['euiCodeBlock__lineNumber']
@@ -255,7 +273,7 @@ function wrapLines(
             tagName: 'span',
             properties: {
               style: {
-                marginLeft: width + $euiSizeS,
+                marginLeft: `${width + $euiSizeS}px`,
                 width: `calc(100% - ${width}px)`
               },
               className: ['euiCodeBlock__lineText']

@@ -1,24 +1,21 @@
 ---
-order: 1
+order: 2
 ---
 
-# Code block
+# Copy
 
 <EuiText>
   <p>
-    <strong>EuiCodeBlock</strong> can be used to create multi-line code blocks with configurable font and padding sizes
+    Adding the <EuiCode>isCopyable</EuiCode> prop allows users to copy the text content of the code block.
   </p>
 </EuiText>
 
 ```hbs template
-<EuiCodeBlock @language='jsx' @fontSize='m' @paddingSize='m'>
-  {{this.jsCode}}
-</EuiCodeBlock>
 <EuiCodeBlock
   @language='jsx'
   @fontSize='m'
   @paddingSize='m'
-  @transparentBackground={{true}}
+  @isCopyable={{true}}
 >
   {{this.jsCode}}
 </EuiCodeBlock>

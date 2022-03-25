@@ -1,0 +1,12 @@
+<EuiOverlayMask>
+  <div
+    class="euiCodeBlock--fontLarge euiCodeBlock--paddingLarge euiCodeBlock-isFullScreen"
+    {{focus-trap
+      isActive=true
+      focusTrapOptions=(hash clickOutsideDeactivates=true)
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </div>
+</EuiOverlayMask>

@@ -1,43 +1,41 @@
 <nav class="euiHeaderLinks">
-  {{#if this.hasMobileVersion}}
-    <EuiHideFor @sizes={{this.popoverBreakpoints}}>
-      <div
-        class={{class-names
-          "euiHeaderLinks__list"
-          componentName="EuiHeaderLinks"
-          gutterSize=(arg-or-default @gutterSize "xs")
-        }}
-      >
-        {{yield}}
-      </div>
-    </EuiHideFor>
-  {{/if}}
-
-  {{!-- {{#if this.hasMobileVersion}} --}}
-  <EuiShowFor @sizes={{this.popoverBreakpoints}}>
-    <EuiPopover
-      @isOpen={{this.pop1}}
-      @anchorPosition="downRight"
-      @paddingSize="none"
-      @closePopover={{set this "pop1" false}}
+  <EuiHideFor @sizes={{this.popoverBreakpoints}}>
+    <div
+      class={{class-names
+        "euiHeaderLinks__list"
+        componentName="EuiHeaderLinks"
+        gutterSize=(arg-or-default @gutterSize "xs")
+      }}
     >
-      <:button>
-        <EuiButtonEmpty  @color="text" {{on "click" (set this "pop1" true)}}>
-          <EuiIcon @type="apps" />
-        </EuiButtonEmpty>
-      </:button>
-      <:content>
-        <div
-          class={{class-names
-            "euiHeaderLinks__mobileList"
-            componentName="EuiHeaderLinks"
-            mobileGutterSize=(arg-or-default @gutterSize "xs")
-          }}
-        >
-          {{yield}}
-        </div>
-      </:content>
-    </EuiPopover>
-  </EuiShowFor>
-  {{!-- {{/if}} --}}
+      {{yield}}
+    </div>
+  </EuiHideFor>
+
+  {{#if this.hasMobileVersion}}
+    <EuiShowFor @sizes={{this.popoverBreakpoints}}>
+      <EuiPopover
+        @isOpen={{this.pop1}}
+        @anchorPosition="downRight"
+        @panelPaddingSize={{@panelPaddingSize}}
+        @closePopover={{set this "pop1" false}}
+      >
+        <:button>
+          <EuiButtonEmpty @color="text" {{on "click" (set this "pop1" true)}}>
+            <EuiIcon @type="apps" />
+          </EuiButtonEmpty>
+        </:button>
+        <:content>
+          <div
+            class={{class-names
+              "euiHeaderLinks__mobileList"
+              componentName="EuiHeaderLinks"
+              mobileGutterSize=(arg-or-default @gutterSize "xs")
+            }}
+          >
+            {{yield}}
+          </div>
+        </:content>
+      </EuiPopover>
+    </EuiShowFor>
+  {{/if}}
 </nav>

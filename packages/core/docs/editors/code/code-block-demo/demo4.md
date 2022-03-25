@@ -2,7 +2,7 @@
 order: 4
 ---
 
-# whiteSpace
+# White space
 
 <EuiText>
   <p>

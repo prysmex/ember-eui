@@ -2,7 +2,7 @@
 order: 2
 ---
 
-# isCopyable
+# Copy
 
 <EuiText>
   <p>

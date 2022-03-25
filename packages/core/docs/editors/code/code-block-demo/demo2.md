@@ -11,11 +11,14 @@ order: 2
 </EuiText>
 
 ```hbs template
-<EuiPanel>
-  <EuiCodeBlock @language='jsx' @fontSize='m' @paddingSize='m' @isCopyable={{true}}>
-    {{this.jsCode}}
-  </EuiCodeBlock>
-</EuiPanel>
+<EuiCodeBlock
+  @language='jsx'
+  @fontSize='m'
+  @paddingSize='m'
+  @isCopyable={{true}}
+>
+  {{this.jsCode}}
+</EuiCodeBlock>
 ```
 
 ```javascript component

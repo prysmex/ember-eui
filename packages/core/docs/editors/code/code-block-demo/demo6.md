@@ -11,16 +11,14 @@ order: 6
 </EuiText>
 
 ```hbs template
-<EuiPanel>
-  <EuiCodeBlock
-    @language='json'
-    @fontSize='m'
-    @paddingSize='m'
-    @lineNumbers={{hash start=32 highlight='32, 34-37, 40'}}
-  >
-    {{this.jsonCode}}
-  </EuiCodeBlock>
-</EuiPanel>
+<EuiCodeBlock
+  @language='json'
+  @fontSize='m'
+  @paddingSize='m'
+  @lineNumbers={{hash start=32 highlight='32, 34-37, 40'}}
+>
+  {{this.jsonCode}}
+</EuiCodeBlock>
 ```
 
 ```javascript component

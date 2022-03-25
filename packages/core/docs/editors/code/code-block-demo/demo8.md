@@ -5,32 +5,30 @@ order: 8
 # Flyout
 
 ```hbs template
-<EuiPanel>
-  <EuiButton {{on 'click' (set this 'showFlyout' true)}}>
-    Show flyout example
-  </EuiButton>
+<EuiButton {{on 'click' (set this 'showFlyout' true)}}>
+  Show flyout example
+</EuiButton>
 
-  {{#if this.showFlyout}}
-    <EuiFlyout @onClose={{set this 'showFlyout' false}}>
-      <EuiFlyoutHeader @hasBorder={{true}}>
-        <EuiTitle size='m'>
-          <h2 id='flyoutTitle'>A flyout with just code</h2>
-        </EuiTitle>
-      </EuiFlyoutHeader>
-      <div style='height: 100%'>
-        <EuiCodeBlock
-          @language='json'
-          @isCopyable={{true}}
-          @overflowHeight='100%'
-          @lineNumbers={{true}}
-          @isVirtualized={{true}}
-        >
-          {{this.jsonCode}}
-        </EuiCodeBlock>
-      </div>
-    </EuiFlyout>
-  {{/if}}
-</EuiPanel>
+{{#if this.showFlyout}}
+  <EuiFlyout @onClose={{set this 'showFlyout' false}}>
+    <EuiFlyoutHeader @hasBorder={{true}}>
+      <EuiTitle size='m'>
+        <h2 id='flyoutTitle'>A flyout with just code</h2>
+      </EuiTitle>
+    </EuiFlyoutHeader>
+    <div style='height: 100%'>
+      <EuiCodeBlock
+        @language='json'
+        @isCopyable={{true}}
+        @overflowHeight='100%'
+        @lineNumbers={{true}}
+        @isVirtualized={{true}}
+      >
+        {{this.jsonCode}}
+      </EuiCodeBlock>
+    </div>
+  </EuiFlyout>
+{{/if}}
 ```
 
 ```javascript component

@@ -11,18 +11,18 @@ order: 4
 </EuiText>
 
 ```hbs template
-<EuiPanel>
-  <EuiCodeBlock
-    @language='ts'
-		@fontSize="m"
-		@paddingSize="m"
-    @overflowHeight={{300}}
-		@isCopyable={{true}}
-		@whiteSpace="pre"
-  >
-    export default () => (
-  <div>In this example, the whiteSpace property is set to pre. All the whitespaces will be kept as is and the text only wraps when line breaks are in the content.</div>
-);
-  </EuiCodeBlock>
-</EuiPanel>
+<EuiCodeBlock
+  @language='ts'
+  @fontSize='m'
+  @paddingSize='m'
+  @overflowHeight={{300}}
+  @isCopyable={{true}}
+  @whiteSpace='pre'
+>
+  export default () => (
+  <div>In this example, the whiteSpace property is set to pre. All the
+    whitespaces will be kept as is and the text only wraps when line breaks are
+    in the content.</div>
+  );
+</EuiCodeBlock>
 ```

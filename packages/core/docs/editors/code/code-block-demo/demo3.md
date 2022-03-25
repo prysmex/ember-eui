@@ -11,16 +11,14 @@ order: 3
 </EuiText>
 
 ```hbs template
-<EuiPanel>
-  <EuiCodeBlock
-    @language='sql'
-    @fontSize='m'
-    @paddingSize='m'
-		@overflowHeight={{150}}
-  >
-    {{this.sqlCode}}
-  </EuiCodeBlock>
-</EuiPanel>
+<EuiCodeBlock
+  @language='sql'
+  @fontSize='m'
+  @paddingSize='m'
+  @overflowHeight={{150}}
+>
+  {{this.sqlCode}}
+</EuiCodeBlock>
 ```
 
 ```javascript component

@@ -11,12 +11,16 @@ div.docfy-demo__example {
   flex-direction: column;
   border-color: #d3dae6;
   background-color: #fff;
-  border: 1px solid #D3DAE6;
-  border-left: 1px solid #D3DAE6;
-  border-right: 1px solid #D3DAE6;
-  border-top: 1px solid #D3DAE6;
+  border: 1px solid #d3dae6;
+  border-left: 1px solid #d3dae6;
+  border-right: 1px solid #d3dae6;
+  border-top: 1px solid #d3dae6;
   border-style: solid solid none solid;
   box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 16px;
 }
 
 .docfy-demo__description {

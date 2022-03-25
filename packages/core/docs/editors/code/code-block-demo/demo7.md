@@ -16,19 +16,17 @@ order: 7
 </EuiText>
 
 ```hbs template
-<EuiPanel>
-  <div style='height:300px'>
-    <EuiCodeBlock
-      @language="json"
-      @isCopyable={{true}}
-      @overflowHeight='100%'
-      @lineNumbers={{true}}
-      @isVirtualized={{true}}
-    >
-      {{this.htmlCode}}
-    </EuiCodeBlock>
-  </div>
-</EuiPanel>
+<div style='height:300px'>
+  <EuiCodeBlock
+    @language='json'
+    @isCopyable={{true}}
+    @overflowHeight='100%'
+    @lineNumbers={{true}}
+    @isVirtualized={{true}}
+  >
+    {{this.htmlCode}}
+  </EuiCodeBlock>
+</div>
 ```
 
 ```javascript component

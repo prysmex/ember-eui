@@ -21,7 +21,6 @@ export default class EuiCodeComponent extends Component<EuiCodeArgs> {
   constructor(owner: unknown, args: EuiCodeArgs) {
     super(owner, args);
     this.codeTarget = document.createElement('div');
-    document.body.appendChild(this.codeTarget);
     this.setupObserver();
   }
 
@@ -51,7 +50,6 @@ export default class EuiCodeComponent extends Component<EuiCodeArgs> {
         this.codeTarget?.textContent ? this.codeTarget.textContent : ''
       ).trim();
 
-      console.log(html);
       let data: RefractorNode[];
       if (typeof html !== 'string') {
         data = [];

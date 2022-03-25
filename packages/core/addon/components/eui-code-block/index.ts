@@ -97,7 +97,6 @@ const highlightModifier = modifier(
   ) => {
     let observer: undefined | MutationObserver;
 
-    console.log(lineNumbersConfig);
     const getHighlighedHtml = () => {
       const html = (targetEle?.textContent ? targetEle.textContent : '').trim();
 

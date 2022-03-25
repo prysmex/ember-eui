@@ -6,7 +6,6 @@
  * Side Public License, v 1.
  */
 
-import { typeOf } from '@ember/utils';
 import { listLanguages, highlight, AST, RefractorNode } from 'refractor';
 import { CommonArgs } from '../../components/common';
 
@@ -77,7 +76,6 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
           if (attributes.includes(key)) {
             let value = properties[key];
             if (key === 'style') {
-              console.log(value);
               Object.keys(value).forEach((k: string) => {
                 //@ts-ignore
                 element.style[k] = `${value[k]}`;

@@ -33,44 +33,33 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Settings
 } from 'unified';
-import remark2Rehype from 'remark-rehype';
 import markdown from 'remark-parse';
 import emoji from 'remark-emoji';
-import all from 'mdast-util-to-hast/lib/all';
-import { Handler } from 'mdast-util-to-hast';
-import * as MarkdownCheckbox from '../plugins/markdown-checkbox';
-import MarkdownAddComponents from '../plugins/markdown-add-components';
 import breaks from 'remark-breaks';
-import * as MarkdownTooltip from '../plugins/markdown-tooltip';
+import highlight from '../../remark/remark-prismjs';
+import * as MarkdownCheckbox from '../markdown-checkbox';
+import * as MarkdownTooltip from '../markdown-tooltip';
 
 export type DefaultEuiMarkdownParsingPlugins = PluggableList;
 
-export const getDefaultEuiMarkdownParsingPlugins =
-  (): DefaultEuiMarkdownParsingPlugins => [
+export const getDefaultEuiMarkdownParsingPlugins = ({
+  exclude
+}: { exclude?: Array<'tooltip'> } = {}): DefaultEuiMarkdownParsingPlugins => {
+  const excludeSet = new Set(exclude);
+  const parsingPlugins: PluggableList = [
     [markdown, {}],
-    // [highlight, {}],
+    [highlight, {}],
     [emoji, { emoticon: false }],
     //@ts-ignore
     [breaks, {}],
-    [MarkdownTooltip.parser, {}],
+    // [markdownLinkValidator, {}],
     [MarkdownCheckbox.parser, {}]
-    // [MarkdownCheckbox.parser, {}],
-    // [markdownLinkValidator, {}]
   ];
 
-const unknownHandler: Handler = (h, node) => {
-  return h(node, node.type, node, all(h, node));
+  if (!excludeSet.has('tooltip'))
+    parsingPlugins.push([MarkdownTooltip.parser, {}]);
+
+  return parsingPlugins;
 };
 
 export const defaultParsingPlugins = getDefaultEuiMarkdownParsingPlugins();
-
-export const getDefaultEuiMarkdownProcessingPlugins = (): [
-  [typeof remark2Rehype, Record<string, unknown>],
-  ...PluggableList // any additional are generic
-] => [
-  [remark2Rehype, { allowDangerousHtml: true, unknownHandler }],
-  [MarkdownAddComponents, {}]
-];
-
-export const defaultProcessingPlugins =
-  getDefaultEuiMarkdownProcessingPlugins();

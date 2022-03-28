@@ -19,4 +19,5 @@ You can see a live demo and documentation for the components here [demo](https:/
 - [@ember-eui/core](./packages/core/README.md)
 - [@ember-eui/changeset-form](./packages/changeset-form/README.md)
 - [@ember-eui/pikaday](./packages/pikaday/README.md)
+- [@ember-eui/flatpickr](./packages/flatpickr/README.md)
 - [@ember-eui/validated-form](./packages/validated-form/README.md)

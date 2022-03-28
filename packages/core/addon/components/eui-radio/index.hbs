@@ -22,7 +22,10 @@
       />
       <div class="euiRadio__circle"></div>
       {{#if (or hasLabelBlock @label)}}
-        <label class="euiRadio__label" for={{id}}>
+        <label
+          class={{class-names "euiRadio__label" @labelProps.className}}
+          for={{id}}
+        >
           {{#if hasLabelBlock}}
             {{yield to="label"}}
           {{else}}

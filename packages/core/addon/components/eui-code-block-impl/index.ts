@@ -4,7 +4,7 @@ import { tracked } from '@glimmer/tracking';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { PaddingSize, FontSize } from '../eui-code-block';
 //@ts-ignore
-import hljs from 'highlight.js';
+// import hljs from 'highlight.js';
 import { keys } from '../../utils/keys';
 import { scheduleOnce } from '@ember/runloop';
 
@@ -75,6 +75,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiCodeImp
   }
 
   willDestroy(): void {
+    super.willDestroy();
     this.observer?.disconnect();
   }
 
@@ -96,14 +97,14 @@ export default class EuiAccordionAccordionComponent extends Component<EuiCodeImp
 
       if (language) {
         if (code) {
-          hljs.highlightBlock(code);
+          // hljs.highlightBlock(code);
         }
       }
 
       if (this.codeFullScreen) {
         this.codeFullScreen.innerHTML = html;
         if (language) {
-          hljs.highlightBlock(this.codeFullScreen);
+          // hljs.highlightBlock(this.codeFullScreen);
         }
       }
     };

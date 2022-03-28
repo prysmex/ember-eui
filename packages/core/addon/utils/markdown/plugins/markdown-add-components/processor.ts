@@ -1,6 +1,7 @@
-import { RehypeNode } from '../markdown-types';
-import EuiMarkdownFormatMarkdownCode from '../../../components/eui-markdown-format/markdown-code';
-import EuiMarkdownFormatMarkdownCodeBlock from '../../../components/eui-markdown-format/markdown-code-block';
+import { RehypeNode } from '../../markdown-types';
+import EuiMarkdownFormatMarkdownCode from '../../../../components/eui-markdown-format/markdown-code';
+import EuiMarkdownFormatMarkdownCodeBlock from '../../../../components/eui-markdown-format/markdown-code-block';
+import { FENCED_CLASS } from '../../remark/remark-prismjs';
 
 type Visitor = (node: RehypeNode) => RehypeNode;
 
@@ -21,7 +22,9 @@ export const visit = (node: RehypeNode, visitor: Visitor) => {
   return node;
 };
 
-export default function MarkdownAddComponents(): (tree: RehypeNode) => void {
+export const processor = function MarkdownAddComponents(): (
+  tree: RehypeNode
+) => void {
   return (tree) => {
     visit(tree, (node: RehypeNode) => {
       if (node.tagName === 'component') {
@@ -46,8 +49,12 @@ export default function MarkdownAddComponents(): (tree: RehypeNode) => void {
       }
       if (node.type === 'element' && node.tagName === 'code') {
         node.type = 'component';
-        const hasBreaks = node.children?.find((child: RehypeNode) =>
-          /\r|\n/.exec(child.value)
+        const hasBreaks = node.children?.find(
+          (child: RehypeNode) =>
+            /\r|\n/.exec(child.value) ||
+            ((node.properties.className as string[]) &&
+              (node.properties.className as string[]).indexOf(FENCED_CLASS) >
+                -1)
         );
         if (hasBreaks) {
           node.properties.componentName = EuiMarkdownFormatMarkdownCodeBlock;
@@ -61,4 +68,4 @@ export default function MarkdownAddComponents(): (tree: RehypeNode) => void {
       return node;
     });
   };
-}
+};

@@ -13,7 +13,7 @@ export default class EuiOverlayMaskComponent extends GlimmerComponent<EuiOverlay
   @action
   onClick(e: MouseEvent) {
     if (e.target === this.overlayMaskNode) {
-      this.args.onClick();
+      this.args.onClick?.();
     }
   }
 }

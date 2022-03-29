@@ -1,0 +1,43 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "dummy/tests/*": [
+        "tests/*"
+      ],
+      "@glimmer/tracking": [
+        "../../node_modules/ember-cached-decorator-polyfill",
+        "../../node_modules/@glimmer/tracking/dist/types"
+      ],
+      "dummy/*": [
+        "tests/dummy/app/*",
+        "app/*"
+      ],
+      "flatpickr": [
+        "addon"
+      ],
+      "flatpickr/*": [
+        "addon/*"
+      ],
+      "flatpickr/test-support": [
+        "addon-test-support"
+      ],
+      "flatpickr/test-support/*": [
+        "addon-test-support/*"
+      ],
+      "*": [
+        "types/*"
+      ]
+    },
+    "experimentalDecorators": true
+  },
+  "include": [
+    "app/**/*",
+    "addon/**/*",
+    "tests/**/*",
+    "types/**/*",
+    "test-support/**/*",
+    "addon-test-support/**/*"
+  ]
+}

@@ -2,30 +2,38 @@
 order: 1
 ---
 
-# Demo 1
+# EuiFlyout
 
-Click on the hamburger icon in the Header Nav to open the flyout!
+<EuiText>
+  <p>
+  <strong>EuiFlyout</strong> is a fixed position panel that pops in from the side of the window. It should be used to reveal more detailed contextual information or to provide complex forms without losing the user's current state. It is a good alternative to <a href="/docs/core/docs/layout/modal">modals</a> when the action is not transient.
+  </p>
+  <p>
+  Like modals, you control the visibilty of the flyout using your own state management, but <strong>EuiFlyout</strong> requires an <EuiCode>onClose</EuiCode> handler for it's internal dismiss buttons.
+  </p>
+</EuiText>
 
 ```hbs template
-<EuiButton {{on "click" this.openFlyout}}>
+<EuiButton {{on 'click' this.openFlyout}}>
   Small Flyout
 </EuiButton>
 {{#if this.flyoutOpen}}
-  <EuiFlyout @ownFocus={{true}} @size="s" @onClose={{this.closeFlyout}}>
+  <EuiFlyout
+    @size='s'
+    @onClose={{this.closeFlyout}}
+  >
     <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle @size="l">Small Welcome!</EuiTitle>
+      <EuiTitle @size='l'>Small Welcome!</EuiTitle>
     </EuiFlyoutHeader>
     <EuiFlyoutBody>
-      <EuiFlyoutBody::Content>
-        Content
-      </EuiFlyoutBody::Content>
+      Content
     </EuiFlyoutBody>
     <EuiFlyoutFooter>
-      <EuiFlexGroup @justifyContent="spaceBetween" @gutterSize="s">
-        <EuiButton {{on "click" this.closeFlyout}}>
+      <EuiFlexGroup @justifyContent='spaceBetween' @gutterSize='s'>
+        <EuiButton {{on 'click' this.closeFlyout}}>
           Cancel
         </EuiButton>
-        <EuiButton @fill={{true}} {{on "click" this.closeFlyout}}>
+        <EuiButton @fill={{true}} {{on 'click' this.closeFlyout}}>
           Send
         </EuiButton>
       </EuiFlexGroup>

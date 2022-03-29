@@ -194,6 +194,8 @@
                 @isLoading={{and @showInputOnly @isLoading}}
                 @isInvalid={{@isInvalid}}
                 @autoSize={{not this.showInputOnly}}
+                @isFakePrependBlock={{hasPrepend}}
+                @isFakeAppendBlock={{hasAppend}}
                 ...attributes
                 {{on
                   "focus"
@@ -206,7 +208,14 @@
                   (if this.canShowDropdown this.onInputBlur (optional @onBlur))
                 }}
                 {{on "input" this.handleOnChange}}
-              />
+              >
+                <:prepend as |classes|>
+                  {{yield classes to="prepend"}}
+                </:prepend>
+                <:append as |classes|>
+                  {{yield classes to="append"}}
+                </:append>
+              </EuiRangeInput>
             {{/if}}
           {{/if}}
         </EuiRangeWrapper>
@@ -355,7 +364,14 @@
               (if this.canShowDropdown this.onInputBlur (optional @onBlur))
             }}
             {{on "input" this.handleOnChange}}
-          />
+          >
+            <:prepend as |classes|>
+              {{yield classes to="prepend"}}
+            </:prepend>
+            <:append as |classes|>
+              {{yield classes to="append"}}
+            </:append>
+          </EuiRangeInput>
         {{/if}}
       {{/if}}
     </EuiRangeWrapper>

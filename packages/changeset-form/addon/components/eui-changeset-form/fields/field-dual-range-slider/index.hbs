@@ -32,6 +32,7 @@
       @showRange={{@showRange}}
       @showTicks={{@showTicks}}
       @readOnly={{@readOnly}}
+      {{!template-lint-disable}}
       @id={{theId}}
       @step={{@step}}
       @showValue={{@showValue}}
@@ -48,6 +49,7 @@
       @isFakeAppendBlock={{not (has-block "append")}}
       @isFakeMinBlock={{not (has-block "min")}}
       @isFakeMaxBlock={{not (has-block "max")}}
+      disabled={{@disabled}}
       autofocus={{@autofocus}}
       ...attributes
     >

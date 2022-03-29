@@ -6,8 +6,17 @@ and how to set them for complex or weird use cases, but we keep setting errors f
 <EuiSpacer />
 
 ```hbs template
+<EuiFormRow @label='You can disable the form entirely'>
+  <EuiSwitch
+    @label='Disable form'
+    @checked={{this.isDisabled}}
+    @onChange={{pick 'target.checked' (set this 'isDisabled')}}
+  />
+</EuiFormRow>
+<EuiSpacer />
 <EuiChangesetForm
   @changeset={{changeset this.model this.Validations}}
+  @isDisabled={{this.isDisabled}}
   as |Form changesetObj|
 >
   <EuiFlexGroup @direction='column' @gutterSize='none'>
@@ -66,10 +75,7 @@ and how to set them for complex or weird use cases, but we keep setting errors f
       @options={{array '🥦' '🥬' '🍅' '🥑'}}
       @helpText='100% natural'
       @onChange={{set changesetObj 'favVeggie'}}
-      @selectedOptions={{pick
-        'firstObject'
-        (get changesetObj 'favVeggie')
-      }}
+      @selectedOptions={{pick 'firstObject' (get changesetObj 'favVeggie')}}
       @singleSelection={{hash asPlainText=true}}
       as |option|
     >
@@ -124,6 +130,7 @@ export const Validations = {
 
 export default class DemoCardComponent extends Component {
   Validations = Validations;
+  @tracked isDisabled = false;
 
   model = {
     user: {

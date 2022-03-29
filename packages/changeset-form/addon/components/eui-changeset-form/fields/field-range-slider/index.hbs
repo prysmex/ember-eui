@@ -21,6 +21,7 @@
       @compressed={{@compressed}}
       @readOnly={{@readOnly}}
       @fullWidth={{@fullWidth}}
+      {{!template-lint-disable}}
       @id={{theId}}
       @levels={{@levels}}
       @step={{@step}}
@@ -51,6 +52,7 @@
       @isFakeValueBlock={{not (has-block "value")}}
       @isFakeValuePrependBlock={{not (has-block "valuePrepend")}}
       @isFakeValueAppendBlock={{not (has-block "valueAppend")}}
+      disabled={{@disabled}}
       aria-label={{@ariaLabel}}
       autofocus={{@autofocus}}
       ...attributes

@@ -20,7 +20,7 @@
     "eui-combo-box/trigger"
     fullWidth=@fullWidth
     compressed=@compressed
-    disabled=@disabled
+    disabled=@isDisabled
     isInvalid=@isInvalid
     singleSelection=@singleSelection
     onClose=@removeTag
@@ -42,7 +42,7 @@
   @preventScroll={{@preventScroll}}
   @renderInPlace={{@renderInPlace}}
   @verticalPosition={{@verticalPosition}}
-  @disabled={{@disabled}}
+  @disabled={{@isDisabled}}
   @calculatePosition={{@calculatePosition}}
   @eventType={{@eventType}}
   @ariaLabel={{@ariaLabel}}
@@ -52,7 +52,7 @@
   @triggerId={{@triggerId}}
   @allowClear={{and
     (arg-or-default @isClearable true)
-    (not (or @isDisabled @disabled))
+    (not @isDisabled)
   }}
   @loadingMessage={{@loadingMessage}}
   @selectedItemComponent={{@selectedItemComponent}}
@@ -66,7 +66,7 @@
     "euiComboBox"
     (if @compressed "euiComboBox--compressed")
     (if @fullWidth "euiComboBox--fullWidth")
-    (if (or @isDisabled @disabled) "euiComboBox-isDisabled")
+    (if @isDisabled "euiComboBox-isDisabled")
     (if @isInvalid "euiComboBox--isInvalid")
     (if this.select.isOpen "euiComboBox-isOpen")
   }}

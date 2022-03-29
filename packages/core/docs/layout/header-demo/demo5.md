@@ -1,5 +1,5 @@
 ---
-order: 7
+order: 5
 ---
 
 ```hbs template

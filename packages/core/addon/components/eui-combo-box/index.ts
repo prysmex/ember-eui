@@ -1,8 +1,8 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-// @ts-ignore
-import { indexOfOption } from 'ember-power-select/utils/group-utils';
 import { tracked } from '@glimmer/tracking';
+//@ts-ignore
+import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { isEqual } from '@ember/utils';
 
 interface EuiComboBoxArgs {
@@ -20,6 +20,17 @@ interface Select {
 export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   @tracked select: any = null;
 
+  //This is to allow scrolling between virtualized groups
+  get opts() {
+    //@ts-ignore
+    return this.select.results.reduce((acc, curr) => {
+      return [
+        ...acc,
+        ...(emberPowerSelectIsGroup([curr]) ? [curr, ...curr.options] : [curr])
+      ];
+    }, []);
+  }
+
   @action
   scrollTo(option: any, select: { results: []; uniqueId: string }): void {
     let optionsList = document.querySelector(
@@ -28,10 +39,12 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
     if (!optionsList) {
       return;
     }
-    let index = indexOfOption(select.results, option);
+    let index = this.opts.indexOf(option);
+
     if (index === -1) {
       return;
     }
+
     let optionElement = optionsList.querySelector(
       `[data-option-index="${index}"]`
     ) as HTMLElement;

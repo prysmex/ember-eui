@@ -16,7 +16,9 @@ You can group options together. The groups won’t match against the search valu
   @customOptionText='Do you want to add&nbsp;{searchText}&nbsp;to your list?'
   @searchField='label'
   as |option item|
-/>
+>
+  {{option.label}}
+</EuiComboBox>
 ```
 
 ```javascript component
@@ -32,17 +34,18 @@ export default class Demo1 extends Component {
   constructor() {
     super(...arguments);
     this.options = [
-      { groupName: 'Group 1', options: this.generateArray(3) },
-      { groupName: 'Group 2', options: this.generateArray(5) }
+      { value: 'No group option', label: 'No group option', color: 'red' },
+      { groupName: 'Group 1', options: this.generateArray('group1', 3) },
+      { groupName: 'Group 2', options: this.generateArray('group2', 5) }
     ];
     this.groupedOptions = this.options.slice();
   }
-  generateArray(n) {
+  generateArray(prefix, n) {
     let arr = [];
     for (let i = 0; i < n - 1; i++) {
       arr[i] = {
         value: i,
-        label: `Number ${i}`,
+        label: `${prefix} Number ${i}`,
         color: '#' + (((1 << 24) * Math.random()) | 0).toString(16)
       };
     }

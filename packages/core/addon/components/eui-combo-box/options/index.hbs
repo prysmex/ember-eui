@@ -28,10 +28,20 @@
     >
       {{! template-lint-enable }}
       {{#if (ember-power-select-is-group opt)}}
-        <Group @group={{opt}} @select={{@select}} @extra={{@extra}} style={{html-safe (concat "height:" (arg-or-default @rowHeight 29) "px;")}} />
+        <Group
+          @group={{opt}}
+          @select={{@select}}
+          @extra={{@extra}}
+          style={{html-safe
+            (concat "height:" (arg-or-default @rowHeight 29) "px;")
+          }}
+          data-option-index="{{index}}"
+        />
       {{else}}
         <li
-          style={{html-safe (concat "height:" (arg-or-default @rowHeight 29) "px;")}}
+          style={{html-safe
+            (concat "height:" (arg-or-default @rowHeight 29) "px;")
+          }}
           class="euiFilterSelectItem
             {{if
               (eq opt @select.highlighted)

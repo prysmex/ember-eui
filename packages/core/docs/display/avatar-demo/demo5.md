@@ -13,24 +13,26 @@ While <strong>EuiAvatar</strong> doesn't accept any interactive behaviors itself
 </EuiText>
 
 ```hbs template
-<EuiAvatar
-  @size='m'
-  @type='space'
-  @isDisabled={{true}}
-  @name='Leonardo Dude'
-  @initialsLength={{1}}
-/>
-<EuiAvatar @size='m' @isDisabled={{true}} @name='Two Words' />
-<EuiAvatar
-  @size='m'
-  @isDisabled={{true}}
-  @name='Cat'
-  @imageUrl='https://source.unsplash.com/64x64/?cat'
-/>
-<EuiAvatar
-  @size='m'
-  @isDisabled={{true}}
-  @name='Medium Size'
-  @iconType='managementApp'
-/>
+<div>
+  <EuiAvatar
+    @size='m'
+    @type='space'
+    @isDisabled={{true}}
+    @name='Leonardo Dude'
+    @initialsLength={{1}}
+  />
+  <EuiAvatar @size='m' @isDisabled={{true}} @name='Two Words' />
+  <EuiAvatar
+    @size='m'
+    @isDisabled={{true}}
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+  <EuiAvatar
+    @size='m'
+    @isDisabled={{true}}
+    @name='Medium Size'
+    @iconType='managementApp'
+  />
+</div>
 ```

@@ -11,32 +11,36 @@ The <strong>EuiAvatar</strong> component typically creates a user icon. It will 
 </EuiText>
 
 ```hbs template
-<EuiAvatar @size='s' @name='Raphael' />
-<EuiAvatar @size='m' @name='Donatello' />
-<EuiAvatar @size='l' @name='Leonardo' @color='#BD10E0' />
-<EuiAvatar @size='xl' @name='Michelangelo' />
+<div>
+  <EuiAvatar @size='s' @name='Raphael' />
+  <EuiAvatar @size='m' @name='Donatello' />
+  <EuiAvatar @size='l' @name='Leonardo' @color='#BD10E0' />
+  <EuiAvatar @size='xl' @name='Michelangelo' />
+</div>
 <EuiSpacer />
 <EuiTitle @size='xs'>
   With image
 </EuiTitle>
-<EuiAvatar
-  @size='s'
-  @name='Cat'
-  @imageUrl='https://source.unsplash.com/64x64/?cat'
-/>
-<EuiAvatar
-  @size='m'
-  @name='Cat'
-  @imageUrl='https://source.unsplash.com/64x64/?cat'
-/>
-<EuiAvatar
-  @size='l'
-  @name='Cat'
-  @imageUrl='https://source.unsplash.com/64x64/?cat'
-/>
-<EuiAvatar
-  @size='xl'
-  @name='Cat'
-  @imageUrl='https://source.unsplash.com/64x64/?cat'
-/>
+<div>
+  <EuiAvatar
+    @size='s'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+  <EuiAvatar
+    @size='m'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+  <EuiAvatar
+    @size='l'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+  <EuiAvatar
+    @size='xl'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+</div>
 ```

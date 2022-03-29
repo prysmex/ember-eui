@@ -13,19 +13,21 @@ The avatar <EuiCode>type</EuiCode>, which primarily defines the shape, is keywor
 </EuiText>
 
 ```hbs template
-<EuiAvatar @size='s' @type='space' @name='Kibana' @initialsLength={{2}} />
-<EuiAvatar
-  @size='m'
-  @type='space'
-  @name='Leonardo Dude'
-  @initialsLength={{1}}
-/>
-<EuiAvatar @size='l' @type='space' @name='Not provided' @initials='?' />
-<EuiAvatar
-  @size='xl'
-  @type='space'
-  @name='Engineering Space'
-  @initials='En'
-  @initialsLength={{2}}
-/>
+<div>
+  <EuiAvatar @size='s' @type='space' @name='Kibana' @initialsLength={{2}} />
+  <EuiAvatar
+    @size='m'
+    @type='space'
+    @name='Leonardo Dude'
+    @initialsLength={{1}}
+  />
+  <EuiAvatar @size='l' @type='space' @name='Not provided' @initials='?' />
+  <EuiAvatar
+    @size='xl'
+    @type='space'
+    @name='Engineering Space'
+    @initials='En'
+    @initialsLength={{2}}
+  />
+</div>
 ```

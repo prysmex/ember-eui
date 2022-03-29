@@ -18,32 +18,36 @@ If your icon has multiples or custom colors like a logo, you can keep the defaul
 <EuiTitle @size='xs'>
   Icon colors and sizes
 </EuiTitle>
-<EuiAvatar @size='s' @name='Small Size' @iconType='managementApp' />
-<EuiAvatar @size='m' @name='Medium Size' @iconType='managementApp' />
-<EuiAvatar @size='l' @name='Large' @iconType='managementApp' />
-<EuiAvatar
-  @size='xl'
-  @name='Plain color'
-  @color='plain'
-  @iconType='managementApp'
-/>
+<div>
+  <EuiAvatar @size='s' @name='Small Size' @iconType='managementApp' />
+  <EuiAvatar @size='m' @name='Medium Size' @iconType='managementApp' />
+  <EuiAvatar @size='l' @name='Large' @iconType='managementApp' />
+  <EuiAvatar
+    @size='xl'
+    @name='Plain color'
+    @color='plain'
+    @iconType='managementApp'
+  />
+</div>
 
 <EuiTitle @size='xs'>
   Icon colors and sizes
 </EuiTitle>
 <EuiSpacer />
-<EuiAvatar @name='Avatar color' @iconType='managementApp' @color='#BD10E0' />
-<EuiAvatar
-  @name='Custom iconColor'
-  @iconType='managementApp'
-  @color='#E6F1FA'
-  @iconColor='primary'
-/>
-<EuiAvatar
-  @name='Null iconColor'
-  @iconType='managementApp'
-  @iconColor={{null}}
-  @color='#D3DAE6'
-/>
-<EuiAvatar @name='Large iconSize' @iconType='managementApp' @iconSize='l' />
+<div>
+  <EuiAvatar @name='Avatar color' @iconType='managementApp' @color='#BD10E0' />
+  <EuiAvatar
+    @name='Custom iconColor'
+    @iconType='managementApp'
+    @color='#E6F1FA'
+    @iconColor='primary'
+  />
+  <EuiAvatar
+    @name='Null iconColor'
+    @iconType='managementApp'
+    @iconColor={{null}}
+    @color='#D3DAE6'
+  />
+  <EuiAvatar @name='Large iconSize' @iconType='managementApp' @iconSize='l' />
+</div>
 ```

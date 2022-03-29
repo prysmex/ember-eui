@@ -17,22 +17,26 @@ The initials displayed in the avatar try to be smart based on the name prop. If 
   Single vs multi-word
 </EuiTitle>
 <EuiSpacer />
-<EuiAvatar @size='m' @name='Single' />
-<EuiAvatar @size='m' @name='Two Words' />
-<EuiAvatar @size='m' @name='More Than Two Words' />
-<EuiAvatar @size='m' @name='lowercase words' />
+<div>
+  <EuiAvatar @size='m' @name='Single' />
+  <EuiAvatar @size='m' @name='Two Words' />
+  <EuiAvatar @size='m' @name='More Than Two Words' />
+  <EuiAvatar @size='m' @name='lowercase words' />
+</div>
 <EuiSpacer />
 <EuiTitle @size='xs'>
   Custom
 </EuiTitle>
 <EuiSpacer />
-<EuiAvatar @size='m' @name='Kibana' @initialsLength={{2}} />
-<EuiAvatar @size='m' @name='Leonardo Dude' @initialsLength={{1}} />
-<EuiAvatar @size='m' @name='Not provided' @initials='?' />
-<EuiAvatar
-  @size='m'
-  @name='Engineering Space'
-  @initials='En'
-  @initialsLength={{2}}
-/>
+<div>
+  <EuiAvatar @size='m' @name='Kibana' @initialsLength={{2}} />
+  <EuiAvatar @size='m' @name='Leonardo Dude' @initialsLength={{1}} />
+  <EuiAvatar @size='m' @name='Not provided' @initials='?' />
+  <EuiAvatar
+    @size='m'
+    @name='Engineering Space'
+    @initials='En'
+    @initialsLength={{2}}
+  />
+</div>
 ```

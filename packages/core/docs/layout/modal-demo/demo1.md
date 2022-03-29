@@ -2,9 +2,8 @@
 order: 1
 ---
 
-# Demo
+# Modal
 
-```hbs template
 <EuiText>
   Each <strong>EuiModal</strong> requires a specific set of nested child components. They can be
   omitted if necessary, but the order cannot be changed or interrupted. Modals
@@ -13,7 +12,8 @@ order: 1
   inline with our modal usage guidelines which requires there to be a primary
   action button, even if that button simply closes the modal.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiButton
   @color='primary'
   {{on 'click' (fn this.activateModal 'basicModalActive')}}

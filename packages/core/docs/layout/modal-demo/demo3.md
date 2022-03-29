@@ -1,11 +1,10 @@
 ---
 order: 3
 ---
+
+# Confirm Modal
+
 ```hbs template
-<EuiTitle>
-  Confirm Modal
-</EuiTitle>
-<EuiSpacer />
 <EuiButton
   @color='primary'
   {{on 'click' (fn this.activateModal 'confirmModalActive')}}

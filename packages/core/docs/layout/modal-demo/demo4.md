@@ -1,15 +1,14 @@
 ---
 order: 4
 ---
-```hbs template
-<EuiTitle>
-  Loading Modal
-</EuiTitle>
-<EuiSpacer />
+
+# Loading modal
+
 <EuiText>
   <strong>EuiConfirmModal</strong> supports being able to apply loading and disabled states to the confirm button with the <EuiCode>confirmButtonDisabled</EuiCode> and <EuiCode>isLoading</EuiCode> props respectively. This is helpful to indicate the fetching of data and/or to wait for a user's input before enabling the confirm action.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiButton
   @color='primary'
   {{on 'click' (fn this.activateModal 'loadingModalActive')}}
@@ -28,7 +27,8 @@ order: 4
     @onCancel={{fn this.deactivateModal 'loadingModalActive'}}
   >
     <EuiText>
-      Eui Modal with isLoading true and a timeout for removing is loading spinner
+      Eui Modal with isLoading true and a timeout for removing is loading
+      spinner
     </EuiText>
   </EuiConfirmModal>
 {{/if}}
@@ -46,9 +46,9 @@ export default class DemoModalComponent extends Component {
   @action
   activateModal(modal) {
     this[modal] = true;
-    setTimeout(()=> {
+    setTimeout(() => {
       this.isLoading = false;
-    },3500)
+    }, 3500);
   }
 
   @action

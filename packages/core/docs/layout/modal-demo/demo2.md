@@ -1,11 +1,10 @@
 ---
 order: 2
 ---
+
+# Overflow test
+
 ```hbs template
-<EuiTitle>
-  Overflow Test
-</EuiTitle>
-<EuiSpacer />
 <EuiButton
   @color='primary'
   {{on 'click' (fn this.activateModal 'overflowModalActive')}}

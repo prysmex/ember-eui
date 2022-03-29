@@ -1,11 +1,9 @@
 ---
 order: 5
 ---
-```hbs template
-<EuiTitle>
-  Widths
-</EuiTitle>
-<EuiSpacer />
+
+# Widths
+
 <EuiText>
   Modals start with a minimum width of 400px, just enough to display form rows.
   They will grow to fit the contents until it reaches the specified maxWidth,
@@ -13,7 +11,8 @@ order: 5
   growing wide enough to fit your contents, you can pass a specific style.width,
   just remember that modals will always shrink to fit the window width.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiButton
   @color='primary'
   {{on 'click' (fn this.activateModal 'widthModalActive')}}

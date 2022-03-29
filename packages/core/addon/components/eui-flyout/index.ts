@@ -92,7 +92,6 @@ const classesModifier = modifier(
 
       if (isPushed) {
         if (side === 'right') {
-          console.log(dimensions)
           document.body.style.paddingRight = `${dimensions.width}px`;
         } else if (side === 'left') {
           document.body.style.paddingLeft = `${dimensions.width}px`;

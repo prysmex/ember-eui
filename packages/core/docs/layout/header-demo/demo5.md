@@ -2,11 +2,8 @@
 order: 5
 ---
 
-```hbs template
-<EuiTitle @size='s'>
-  Portal content in the header
-</EuiTitle>
-<EuiSpacer />
+# Portal content in the header
+
 <EuiText>
   Use an
   <strong>EuiHeaderSectionItemButton</strong>
@@ -21,7 +18,8 @@ order: 5
   <EuiCode>repositionOnScroll</EuiCode>
   prop to the popover.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiFlexGroup @alignItems='center' @gutterSize='m'>
   <EuiFlexItem @grow={{false}}>
     <EuiSwitch
@@ -51,7 +49,11 @@ order: 5
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem @border='left'>
-      <EuiHeaderSectionItemButton {{on 'click' (set this 'isFlyoutOpen' true)}} @notification='3' @notificationColor='accent'>
+      <EuiHeaderSectionItemButton
+        {{on 'click' (set this 'isFlyoutOpen' true)}}
+        @notification='3'
+        @notificationColor='accent'
+      >
         <EuiIcon @type='bell' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>

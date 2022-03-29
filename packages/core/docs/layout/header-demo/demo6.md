@@ -2,11 +2,8 @@
 order: 6
 ---
 
-```hbs template
-<EuiTitle @size='s'>
-  Header notifications
-</EuiTitle>
-<EuiSpacer />
+# Header notifications
+
 <EuiText>
   To alert or notify users about the additional information they are receiving,
   use the <strong>EuiHeaderSectionItemButton</strong> <EuiCode>notification</EuiCode> prop. You can pass a node that
@@ -14,13 +11,20 @@ order: 6
   You can also animate the button by calling the <EuiCode>euiAnimate()</EuiCode> method on the
   <strong>EuiHeaderSectionItemButton</strong> <EuiCode>ref</EuiCode>.
 </EuiText>
-<EuiSpacer />
-<EuiButton {{on 'click' this.notify}}>
-  Notify
-</EuiButton>
-<EuiButton {{on 'click' this.reset}}>
-  Reset
-</EuiButton>
+
+```hbs template
+<EuiFlexGroup>
+  <EuiFlexItem>
+    <EuiButton {{on 'click' this.notify}}>
+      Notify
+    </EuiButton>
+  </EuiFlexItem>
+  <EuiFlexItem>
+    <EuiButton {{on 'click' this.reset}}>
+      Reset
+    </EuiButton>
+  </EuiFlexItem>
+</EuiFlexGroup>
 <EuiSpacer />
 <EuiHeader @position={{if this.header1Fixed 'fixed'}}>
   <EuiHeaderSection @side='left'>
@@ -29,12 +33,18 @@ order: 6
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItemButton  @notification={{if this.notificationNumber true false}} @notificationColor='accent'>
-        <EuiIcon @type='bell' />
-      </EuiHeaderSectionItemButton>
-      <EuiHeaderSectionItemButton @notification={{this.notificationNumber}} @notificationColor='accent'>
-        <EuiIcon @type='cheer' />
-      </EuiHeaderSectionItemButton>
+    <EuiHeaderSectionItemButton
+      @notification={{if this.notificationNumber true false}}
+      @notificationColor='accent'
+    >
+      <EuiIcon @type='bell' />
+    </EuiHeaderSectionItemButton>
+    <EuiHeaderSectionItemButton
+      @notification={{this.notificationNumber}}
+      @notificationColor='accent'
+    >
+      <EuiIcon @type='cheer' />
+    </EuiHeaderSectionItemButton>
   </EuiHeaderSection>
 </EuiHeader>
 ```

@@ -2,11 +2,8 @@
 order: 2
 ---
 
-```hbs template
-<EuiTitle @size='s'>
-  Header links
-</EuiTitle>
-<EuiSpacer />
+# Header links
+
 <EuiText>
   In addition to the components mentioned prior, which lend themselves to more
   application style navigation patterns,
@@ -22,6 +19,8 @@ order: 2
   named breakpoints to
   <EuiCode>popoverBreakpoints</EuiCode>.
 </EuiText>
+
+```hbs template
 <EuiHeader>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
@@ -31,7 +30,10 @@ order: 2
   <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem @border='left'>
       <EuiHeaderLinks @gutterSize='xs'>
-        <EuiHeaderLink @isActive={{true}} @href='https://www.google.com'>Docs</EuiHeaderLink>
+        <EuiHeaderLink
+          @isActive={{true}}
+          @href='https://www.google.com'
+        >Docs</EuiHeaderLink>
         <EuiHeaderLink>Code</EuiHeaderLink>
         <EuiHeaderLink @iconType='help'>Help</EuiHeaderLink>
       </EuiHeaderLinks>

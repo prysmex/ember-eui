@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "4.2.5",
+  "version": "4.3.0",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -55,6 +55,7 @@
     "@ember/render-modifiers": "^2.0.4",
     "@html-next/vertical-collection": "3.0.0-1",
     "@types/lodash-es": "^4.17.4",
+    "@types/refractor": "^3.0.0",
     "chroma-js": "^2.1.0",
     "ember-auto-import": "^2.4.0",
     "ember-cached-decorator-polyfill": "^0.1.4",
@@ -74,19 +75,19 @@
     "ember-style-modifier": "^0.7.0",
     "ember-svg-jar": "^2.3.4",
     "ember-truth-helpers": "^3.0.0",
-    "highlight.js": "^9.18.5",
     "lodash-es": "^4.17.21",
     "mdast-util-to-hast": "^10.0.0",
+    "refractor": "^3.5.0",
     "rehype-raw": "^5.0.0",
     "rehype-stringify": "^8.0.0",
     "remark-breaks": "^3.0.2",
     "remark-emoji": "^2.1.0",
-    "remark-highlight.js": "^6.0.0",
     "remark-parse": "^8.0.3",
     "remark-rehype": "^8.0.0",
     "resolve": "^1.13.1",
     "tabbable": "^5.1.5",
     "unified": "^9.2.0",
+    "unist-util-visit": "^2.0.3",
     "vfile": "^4.2.0"
   },
   "peerDependencies": {

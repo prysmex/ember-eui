@@ -34,7 +34,10 @@
       @readOnly={{@readOnly}}
       @controlOnly={{@controlOnly}}
       @compressed={{@compressed}}
+      {{!template-lint-disable}}
       @id={{theId}}
+      @onCreateOption={{@onCreateOption}}
+      @customOptionText={{@customOptionText}}
       @onBlur={{queue this.validate (optional @onBlur)}}
       @onFocus={{@onFocus}}
       @onClose={{@onClose}}

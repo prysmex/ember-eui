@@ -17,9 +17,9 @@
  * under the License.
  */
 
-import { RemarkTokenizer } from '../markdown-types';
+import { RemarkTokenizer } from '../../markdown-types';
 import { Plugin } from 'unified';
-import EuiMarkdownFormatMarkdownCheckbox from '../../../components/eui-markdown-format/markdown-checkbox';
+import EuiMarkdownFormatMarkdownCheckbox from '../../../../components/eui-markdown-format/markdown-checkbox';
 
 interface CheckboxNodeDetails {
   type: 'component';
@@ -29,7 +29,7 @@ interface CheckboxNodeDetails {
   isChecked: boolean;
 }
 
-const CheckboxParser: Plugin = function CheckboxParser() {
+export const CheckboxParser: Plugin = function CheckboxParser() {
   const Parser = this.Parser;
   const tokenizers = Parser.prototype.blockTokenizers;
   const methods = Parser.prototype.blockMethods;
@@ -77,5 +77,3 @@ const CheckboxParser: Plugin = function CheckboxParser() {
   tokenizers.checkbox = tokenizeCheckbox;
   methods.splice(methods.indexOf('list'), 0, 'checkbox'); // Run it just before default `list` plugin to inject our own idea of checkboxes.
 };
-
-export { CheckboxParser as parser };

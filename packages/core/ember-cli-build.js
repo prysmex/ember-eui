@@ -8,7 +8,7 @@ module.exports = function (defaults) {
 
     // Add options here
     '@ember-eui/core': {
-      theme: 'dark'
+      theme: 'amsterdam_light'
     },
 
     fingerprint: {

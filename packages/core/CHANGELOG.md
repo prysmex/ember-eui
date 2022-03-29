@@ -2,6 +2,11 @@
 
 ### Master
 
+### 4.4.0
+🚀 Enhancements
+`@ember-eui/changeset-form`
+- Pass disabled to all form components
+
 ### 4.3.0
 🚀 Enhancements
 `@ember-eui/flatpickr`

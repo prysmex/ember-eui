@@ -81,6 +81,8 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
   @argOrDefault('left') arrowDisplay!: AccordionArgs['arrowDisplay'];
 
   @tracked _opened;
+  @tracked childWrapper: HTMLDivElement | null = null;
+  @tracked childContent: HTMLDivElement | null = null;
 
   constructor(owner: unknown, args: AccordionArgs) {
     super(owner, args);
@@ -90,22 +92,24 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
       : this.args.initialIsOpen;
   }
 
+  get buttonElement() {
+    return this.args.element === 'fieldset' ? 'legend' : 'button';
+  }
+
+  get buttonElementIsFocusable() {
+    return this.buttonElement === 'button';
+  }
+
+  get _arrowDisplay() {
+    return this.arrowDisplay === 'none' && !this.buttonElementIsFocusable
+      ? 'left'
+      : this.arrowDisplay;
+  }
+
   get isOpen(): boolean {
     return this.args.forceState
       ? this.args.forceState === 'open'
       : this._opened;
-  }
-
-  get hasIconButton(): boolean | undefined {
-    return this.arrowDisplay === 'right';
-  }
-
-  get hasArrowDisplay(): boolean {
-    return this.arrowDisplay !== 'none' && this.arrowDisplay !== 'right';
-  }
-
-  get buttonReverse(): boolean {
-    return !this.args.extraAction && this.arrowDisplay === 'right';
   }
 
   get hasLoadingMessage(): boolean {
@@ -127,28 +131,32 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
     ].join(' ');
   }
 
-  get iconButtonClasses(): string {
-    return [
-      'euiAccordion__iconButton',
-      'euiButtonIcon',
-      'euiButtonIcon--text',
-      'euiButtonIcon--empty',
-      'euiButtonIcon--xSmall'
-    ].join(' ');
+  get childContentStyle(): string | ReturnType<typeof htmlSafe> {
+    return this._opened ? '' : htmlSafe(`height: 0px;`);
   }
 
-  get childContentStyle(): string | ReturnType<typeof htmlSafe> {
-    return this.isOpen ? '' : htmlSafe(`height: 0px;`);
-  }
+  setChildContentHeight = () => {
+    const { forceState } = this.args;
+    requestAnimationFrame(() => {
+      const height =
+        this.childContent && (forceState ? forceState === 'open' : this._opened)
+          ? this.childContent.clientHeight
+          : 0;
+      this.childWrapper &&
+        this.childWrapper.setAttribute('style', `height: ${height}px`);
+    });
+  };
 
   @action
   onToggle(): void {
     if (this.args.forceState) {
-      this.args.onToggle &&
-        this.args.onToggle(this.args.forceState === 'open' ? false : true);
+      this.args.onToggle?.(this.args.forceState === 'open' ? false : true);
     } else {
       this._opened = !this._opened;
-      this.args.onToggle && this.args.onToggle(this._opened);
+      if (this._opened && this.childWrapper) {
+        this.childWrapper.focus();
+      }
+      this.args.onToggle?.(this._opened);
     }
   }
 }

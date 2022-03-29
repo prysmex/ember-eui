@@ -87,7 +87,9 @@
           (if this.isLoading "euiAccordion__children-isLoading")
           @childClassName
         }}
-        {{did-insert (set this "childContent")}}
+        {{did-insert
+          (queue (set this "childContent") this.setChildContentHeight)
+        }}
         {{resize-observer onResize=this.setChildContentHeight}}
       >
         {{#if (and this.isLoading this.isLoadingMessage)}}

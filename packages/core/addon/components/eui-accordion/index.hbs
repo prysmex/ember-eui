@@ -7,7 +7,6 @@
     class={{class-names
       (if this.isOpen "euiAccordion-isOpen")
       componentName="EuiAccordion"
-      paddingSize=this.paddingSize
     }}
     ...attributes
   >
@@ -15,7 +14,7 @@
       {{#if (eq this._arrowDisplay "left")}}
         <EuiButtonIcon
           @color="text"
-          class={{class-names
+          @iconClasses={{class-names
             "euiAccordion__iconButton"
             (if this.isOpen "euiAccordion__iconButton-isOpen")
             (if
@@ -103,7 +102,14 @@
             {{/if}}
           </span>
         {{else}}
-          {{yield to="content"}}
+          <div
+            class={{class-names
+              componentName="EuiAccordion"
+              paddingSize=this.paddingSize
+            }}
+          >
+            {{yield to="content"}}
+          </div>
         {{/if}}
       </div>
     </div>

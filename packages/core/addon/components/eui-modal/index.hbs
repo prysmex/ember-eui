@@ -9,7 +9,6 @@
   as |inlineStyles|
 }}
   <EuiOverlayMask
-    @headerZindexLocation={{arg-or-default @headerZindexLocation "above"}}
     @onClick={{if @clickOutsideToClose (optional @onClose) (noop)}}
   >
     <div
@@ -26,7 +25,7 @@
         isPaused=(arg-or-default @isFocusTrapPaused false)
         focusTrapOptions=(arg-or-default @focusTrapOptions (hash))
       }}
-      {{on-key "Escape" @onClose}}
+      {{on-key "Escape" (prevent-default (stop-propagation @onClose))}}
     >
       <EuiButtonIcon
         class="euiModal__closeIcon"

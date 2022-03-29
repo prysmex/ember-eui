@@ -18,7 +18,8 @@
     "Mario Trujillo",
     "Victor Aguilar",
     "Diego Zubieta",
-    "Gustavo Rodriguez"
+    "Gustavo Rodriguez",
+    "Gerardo Pérez"
   ],
   "directories": {
     "doc": "doc",
@@ -88,7 +89,8 @@
     "tabbable": "^5.1.5",
     "unified": "^9.2.0",
     "unist-util-visit": "^2.0.3",
-    "vfile": "^4.2.0"
+    "vfile": "^4.2.0",
+    "ember-event-helpers": "^0.1.1"
   },
   "peerDependencies": {
     "ember-auto-import": "^2.2.4",
@@ -126,6 +128,7 @@
     "@types/rsvp": "^4.0.4",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
+    "ember": "^1.0.3",
     "ember-cli": "~4.1.1",
     "ember-cli-dependency-checker": "^3.2.0",
     "ember-cli-inject-live-reload": "^2.1.0",
@@ -152,6 +155,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-qunit": "^7.2.0",
+    "install": "^0.13.0",
     "loader.js": "^4.7.0",
     "lodash-es": "^4.17.21",
     "mdast-util-to-hast": "^10.0.0",

@@ -43,6 +43,7 @@
           value={{this.value}}
           disabled={{@disabled}}
           type="text"
+          placeholder={{@placeholder}}
           ...attributes
           {{on "keyup" (fn this.onKeyUp this.incremental @onSearch)}}
           {{on "search" this.setValue}}

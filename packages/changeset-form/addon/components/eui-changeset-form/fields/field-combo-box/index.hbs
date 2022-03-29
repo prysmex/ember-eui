@@ -28,6 +28,7 @@
       aria-label={{@ariaLabel}}
       form={{@formId}}
       @isInvalid={{this.errors.length}}
+      @isDisabled={{@isDisabled}}
       @fullWidth={{@fullWidth}}
       @isClearable={{@isClearable}}
       @isLoading={{@isLoading}}
@@ -43,7 +44,8 @@
       @onClose={{@onClose}}
       @onOpen={{@onOpen}}
       @extra={{@extra}}
-      ...attributes as |opt index select|
+      ...attributes
+      as |opt index select|
     >
       {{yield opt index select}}
     </EuiComboBox>

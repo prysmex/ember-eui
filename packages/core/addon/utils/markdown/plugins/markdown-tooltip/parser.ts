@@ -1,31 +1,13 @@
-import { RemarkTokenizer } from '../markdown-types';
+import { RemarkTokenizer } from '../../markdown-types';
 import { Plugin } from 'unified';
-import EuiMarkdownFormatMarkdownTooltip from '../../../components/eui-markdown-format/markdown-tooltip';
+import EuiMarkdownFormatMarkdownTooltip from '../../../../components/eui-markdown-format/markdown-tooltip';
 
 interface TooltipNodeDetails {
   type: 'component';
   tooltipText: string;
 }
 
-const tooltipPlugin = {
-  name: 'tooltipPlugin',
-  button: {
-    label: 'Tooltip',
-    iconType: 'editorComment'
-  },
-  formatting: {
-    prefix: '!{tooltip[',
-    suffix: ']()}',
-    trimFirst: true
-  },
-  helpText: `
-  \`\`\`md
-  !{tooltip[anchor text](helpful description)}
-  \`\`\`
-  `
-};
-
-const TooltipParser: Plugin = function TooltipParser() {
+export const TooltipParser: Plugin = function TooltipParser() {
   const Parser = this.Parser;
   const tokenizers = Parser.prototype.inlineTokenizers;
   const methods = Parser.prototype.inlineMethods;
@@ -110,5 +92,3 @@ const TooltipParser: Plugin = function TooltipParser() {
   tokenizers.tooltip = tokenizeTooltip;
   methods.splice(methods.indexOf('text'), 0, 'tooltip');
 };
-
-export { tooltipPlugin as plugin, TooltipParser as parser };

@@ -3,9 +3,24 @@
 }
 
 div.docfy-demo__example {
-  @apply p-4 border-t border-l border-r border-solid rounded-t;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-top-right-radius: 6px;
+  flex-grow: 0;
+  display: flex;
+  flex-direction: column;
   border-color: #d3dae6;
+  background-color: #fff;
+  border: 1px solid #d3dae6;
+  border-left: 1px solid #d3dae6;
+  border-right: 1px solid #d3dae6;
+  border-top: 1px solid #d3dae6;
   border-style: solid solid none solid;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 16px;
 }
 
 .docfy-demo__description {

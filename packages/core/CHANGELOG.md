@@ -20,6 +20,10 @@ Update core components to @elastic/eui v4.1.4
 
 - `<EuiFlyout>`
 - `<EuiCollapsibleNav>`
+### 4.4.0
+🚀 Enhancements
+`@ember-eui/changeset-form`
+- Pass disabled to all form components
 
 ### 4.3.0
 🚀 Enhancements

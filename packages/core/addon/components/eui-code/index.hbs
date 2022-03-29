@@ -1,9 +1,15 @@
-<EuiCodeBlockImpl
-  @inline={{true}}
-  @language={{@language}}
-  @transparentBackground={{@transparentBackground}}
-	@overflowHeight={{@overflowHeight}}
-  ...attributes
->
+{{#in-element this.codeTarget}}
   {{yield}}
-</EuiCodeBlockImpl>
+{{/in-element}}
+<code
+  class={{class-names
+    "euiCode"
+    (if @transparentBackground "euiCode--transparentBackground")
+  }}
+  data-code-language={{arg-or-default @language "text"}}
+  {{did-insert (set this "code")}}
+  {{did-insert this.update}}
+  {{did-update this.update this.language}}
+  {{did-update this.update this.language}}
+  ...attributes
+></code>

@@ -2,9 +2,8 @@
 order: 1
 ---
 
-# Demo
+# Header
 
-```hbs template
 <EuiText>
   The header is made up of
   <strong>many</strong>
@@ -32,7 +31,8 @@ order: 1
       specifically stylized to fit inside the header.</li> -->
   </ul>
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiHeader>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>

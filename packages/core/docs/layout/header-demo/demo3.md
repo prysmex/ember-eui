@@ -2,11 +2,8 @@
 order: 3
 ---
 
-```hbs template
-<EuiTitle @size='s'>
-  Fixed header
-</EuiTitle>
-<EuiSpacer />
+# Fixed header
+
 <EuiText>
   Most consumers need a header that does not scroll away with the page contents.
   You can apply this display by applying the property <EuiCode>position="fixed"</EuiCode>. This
@@ -15,7 +12,8 @@ order: 3
   header height. EUI supplies a helper mixin that also accounts for this height
   in flyouts and the collapsible nav. Simply add <EuiCode>@include euiHeaderAffordForFixed;</EuiCode> anywhere in your SASS.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiButtonEmpty {{on "click" (fn this.toggleHeaderPosition "header1Fixed")}}>
   Toggle Header 1
 </EuiButtonEmpty>

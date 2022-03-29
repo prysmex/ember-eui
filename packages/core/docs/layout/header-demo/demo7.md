@@ -1,12 +1,9 @@
 ---
-order: 8
+order: 7
 ---
 
-```hbs template
-<EuiTitle @size='s'>
-  Stacked headers
-</EuiTitle>
-<EuiSpacer />
+# Stacked headers
+
 <EuiText>
   Stacking multiple headers provides a great way to separate global navigation
   concerns. However, the
@@ -16,7 +13,8 @@ order: 8
   stacked headers, you will need to apply the SASS helper mixin and pass in the
   correct height to afford for.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiSwitch
   @label={{'Make header fixed position'}}
   @checked={{this.isFixedPosition}}

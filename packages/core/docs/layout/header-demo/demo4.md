@@ -2,11 +2,8 @@
 order: 4
 ---
 
-```hbs template
-<EuiTitle @size='s'>
-  Dark theme
-</EuiTitle>
-<EuiSpacer />
+# Dark theme
+
 <EuiText>
   To make site-wide navigation more prominent,
   <strong>EuiHeader</strong>
@@ -21,7 +18,8 @@ order: 4
   <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not
   render correctly without custom configurations.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiHeader @theme='dark'>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>

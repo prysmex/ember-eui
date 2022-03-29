@@ -2,7 +2,7 @@
 order: 4
 ---
 
-# Demo
+# Groups
 
 You can group options together. The groups won’t match against the search value.
 

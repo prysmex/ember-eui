@@ -1,13 +1,19 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
+import { tracked, cached } from '@glimmer/tracking';
 //@ts-ignore
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { isEqual } from '@ember/utils';
 
+interface PromiseProxy<T> extends Promise<T> {
+  content: any;
+}
+
 interface EuiComboBoxArgs {
   singleSelection: boolean;
   onCreateOption?: (search: string) => boolean | undefined;
+  options: any[];
+  search?: (term: string, select: Select) => any[] | PromiseProxy<any[]>;
 }
 
 interface Select {
@@ -17,18 +23,83 @@ interface Select {
   };
 }
 
+interface Arrayable<T> {
+  toArray(): T[];
+}
+const isArrayable = <T>(coll: any): coll is Arrayable<T> => {
+  return typeof coll.toArray === 'function';
+};
+
+const toPlainArray = <T>(collection: T[] | Arrayable<T>): T[] => {
+  if (isArrayable<T>(collection)) {
+    return collection.toArray();
+  } else {
+    return collection;
+  }
+};
+
 export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   @tracked select: any = null;
+  @tracked private _resolvedOptions?: any[];
+  @tracked searchText = '';
+  @tracked private _searchResult?: any[];
+  private _filterResultsCache: {
+    results: any[];
+    options: any[];
+    searchText: string;
+  } = { results: [], options: [], searchText: this.searchText };
 
   //This is to allow scrolling between virtualized groups
+  @cached
   get opts() {
     //@ts-ignore
-    return this.select.results.reduce((acc, curr) => {
-      return [
-        ...acc,
-        ...(emberPowerSelectIsGroup([curr]) ? [curr, ...curr.options] : [curr])
-      ];
+    return this.results.reduce((acc, curr) => {
+      if (emberPowerSelectIsGroup([curr])) {
+        acc.push(curr, ...curr.options);
+      } else {
+        acc.push(curr);
+      }
+      return acc;
     }, []);
+  }
+
+  @cached
+  get options(): any[] {
+    if (this._resolvedOptions) return toPlainArray(this._resolvedOptions);
+    if (this.args.options) {
+      return toPlainArray(this.args.options as any[]);
+    } else {
+      return [];
+    }
+  }
+
+  @cached
+  get results(): any[] {
+    if (this.searchText.length > 0) {
+      if (this.args.search) {
+        return toPlainArray(this._searchResult || this.options);
+      } else {
+        if (
+          this._filterResultsCache.options === this.options &&
+          this._filterResultsCache.searchText === this.searchText
+        ) {
+          // This is an optimization to avoid filtering several times, which may be a bit expensive
+          // if there are many options, if neither the options nor the searchtext have changed
+          return this._filterResultsCache.results;
+        }
+        //@ts-ignore
+        let results = this._filter(this.options, this.searchText);
+        //eslint-disable-next-line
+        this._filterResultsCache = {
+          results,
+          options: this.options,
+          searchText: this.searchText
+        };
+        return results;
+      }
+    } else {
+      return this.options;
+    }
   }
 
   @action
@@ -39,6 +110,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
     if (!optionsList) {
       return;
     }
+
     let index = this.opts.indexOf(option);
 
     if (index === -1) {

@@ -9,6 +9,7 @@ interface IObjectKeys {
 }
 interface Options extends IObjectKeys {
   size: string;
+  side: string;
   paddingSize: string;
   textAlign: string;
   color: string;

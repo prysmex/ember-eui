@@ -1,3 +1,9 @@
-<EuiTitle @size="l">
-	Side nav
-</EuiTitle>
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Side nav
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>

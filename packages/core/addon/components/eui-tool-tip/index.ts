@@ -22,6 +22,7 @@ interface ToolTipStyles {
   right?: string | 'auto';
   opacity?: string;
   visibility?: 'hidden';
+  display?: 'inlineBlock';
 }
 
 const displayToClassNameMap = {
@@ -39,7 +40,8 @@ const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // the tooltip before it is positioned
   opacity: '0',
   // prevent accidental mouse interaction while positioning
-  visibility: 'hidden'
+  visibility: 'hidden',
+  display: 'inlineBlock'
 };
 
 type EuiTooltipArgs = {
@@ -85,6 +87,8 @@ type EuiTooltipArgs = {
    * hidden.
    */
   onMouseOut?: (event: MouseEvent) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 export default class EuiToolTip extends Component<EuiTooltipArgs> {
@@ -96,6 +100,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
 
   //STATE
   @tracked visible = false;
+  @tracked hasFocus = false;
   @tracked calculatedPosition: ToolTipPositions = this.position;
   @tracked toolTipStyles: ToolTipStyles = DEFAULT_TOOLTIP_STYLES;
   @tracked arrowStyles: undefined | { left: string; top: string };
@@ -123,24 +128,22 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
 
   @action
   setupAttachToHandlers(): void {
-    if (this.attachTo) {
+    if (this._attachTo) {
       this.attachTo?.addEventListener('mousemove', this.showToolTip);
-      this.attachTo?.addEventListener('keyup', this.onKeyUp);
-      this.attachTo?.addEventListener('focusin', this.showToolTip);
+      this.attachTo?.addEventListener('focusin', this.onFocus);
       this.attachTo?.addEventListener('mouseout', this.onMouseOut);
-      this.attachTo?.addEventListener('focusout', this.hideToolTip);
+      this.attachTo?.addEventListener('focusout', this.onBlur);
       this.positionToolTip();
     }
   }
 
   @action
   removeAttachToHandlers(): void {
-    if (this.attachTo) {
+    if (this._attachTo) {
       this.attachTo?.removeEventListener('mousemove', this.showToolTip);
-      this.attachTo?.removeEventListener('keyup', this.onKeyUp);
-      this.attachTo?.removeEventListener('focusin', this.showToolTip);
+      this.attachTo?.removeEventListener('focusin', this.onFocus);
       this.attachTo?.removeEventListener('mouseout', this.onMouseOut);
-      this.attachTo?.removeEventListener('focusout', this.hideToolTip);
+      this.attachTo?.removeEventListener('focusout', this.onBlur);
     }
   }
 
@@ -163,7 +166,6 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
     super.willDestroy();
     this.clearAnimationTimeout();
     this.removeAttachToHandlers();
-    window.removeEventListener('mousemove', this.hasFocusMouseMoveListener);
   }
 
   @action
@@ -299,6 +301,18 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   @action
+  onFocus(): void {
+    this.hasFocus = true;
+    this.showToolTip();
+  }
+
+  @action
+  onBlur(): void {
+    this.hasFocus = false;
+    this.hideToolTip();
+  }
+
+  @action
   onMouseOut(event: MouseEvent): void {
     // Prevent mousing over children from hiding the tooltip by testing for whether the mouse has
     // left the anchor for a non-child.
@@ -307,7 +321,9 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
       (this._anchor != null &&
         !this._anchor.contains(event.relatedTarget as Node))
     ) {
-      this.hideToolTip();
+      if (!this.hasFocus) {
+        this.hideToolTip();
+      }
     }
 
     if (this.args.onMouseOut) {

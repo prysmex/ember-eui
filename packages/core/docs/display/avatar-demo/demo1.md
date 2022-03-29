@@ -1,54 +1,46 @@
-# Demo
+---
+order: 1
+---
+
+<EuiText>
+  <p>
+
+The <strong>EuiAvatar</strong> component typically creates a user icon. It will accept <EuiCode>name</EuiCode> (required) and <EuiCode>image</EuiCode> props and will configure the display and accessibility as needed. By default, the background colors come from the set of colors used for visualizations. Otherwise you can pass a hex value to the <EuiCode>color</EuiCode> prop.
+
+  </p>
+</EuiText>
 
 ```hbs template
-<EuiAvatar @size="s" @name="Raphael" />
-<EuiAvatar @size="m" @name="Donatello" />
-<EuiAvatar @size="l" @name="Leonardo" @color="#BD10E0" />
-<EuiAvatar @size="xl" @name="Michelangelo" />
+<div>
+  <EuiAvatar @size='s' @name='Raphael' />
+  <EuiAvatar @size='m' @name='Donatello' />
+  <EuiAvatar @size='l' @name='Leonardo' @color='#BD10E0' />
+  <EuiAvatar @size='xl' @name='Michelangelo' />
+</div>
 <EuiSpacer />
-<EuiAvatar @size="s" @name="Cat" @imageUrl="https://source.unsplash.com/64x64/?cat" />
-<EuiAvatar @size="m" @name="Cat" @imageUrl="https://source.unsplash.com/64x64/?cat" />
-<EuiAvatar @size="l" @name="Cat" @imageUrl="https://source.unsplash.com/64x64/?cat" />
-<EuiAvatar @size="xl" @name="Cat" @imageUrl="https://source.unsplash.com/64x64/?cat" />
-<EuiSpacer />
-<EuiAvatar @size="m" @name="Single" />
-<EuiAvatar @size="m" @name="Two Words" />
-<EuiAvatar @size="m" @name="More Than Two Words" />
-<EuiAvatar @size="m" @name="lowercase words" />
-<EuiSpacer />
-<EuiTitle @size="xs">
-  <h4>
-    Custom & Spaces type
-  </h4>
+<EuiTitle @size='xs'>
+  With image
 </EuiTitle>
-<EuiSpacer />
-<EuiAvatar @size="m" @type="space" @name="Kibana" @initialsLength={{2}} />
-<EuiAvatar @size="m" @type="space" @name="Leonardo Dude" @initialsLength={{1}} />
-<EuiAvatar @size="m" @type="space" @name="Not provided" @initials="?" />
-<EuiAvatar @size="m" @type="space" @name="Engineering Space" @initials="En" @initialsLength={{2}} />
-
-
-<EuiTitle @size="xs">
-  <h4>
-    Icons
-  </h4>
-</EuiTitle>
-<EuiSpacer />
-<EuiAvatar @size="s" @name="Small Size" @iconType="managementApp"/>
-<EuiAvatar @size="m" @name="Medium Size" @iconType="managementApp"/>
-<EuiAvatar @size="l" @name="Large" @iconType="managementApp"/>
-<EuiAvatar @size="xl" @name="Plain color" @color="plain" @iconType="managementApp"/>
-
-<EuiTitle @size="xs">
-  <h4>
-    Colors and Sizes
-  </h4>
-</EuiTitle>
-<EuiSpacer />
-
-<EuiAvatar @name="Avatar color" @iconType="managementApp" @color="#BD10E0"/>
-<EuiAvatar @name="Custom iconColor" @iconType="managementApp" @color="#103148" @iconColor="primary"/>
-<EuiAvatar @name="Null iconColor" @iconType="appSearchApp" @iconColor={{null}} @color="#343741"/>
-<EuiAvatar @name="Large iconSize" @iconType="appSearchApp" @iconSize="l"/>
-
+<div>
+  <EuiAvatar
+    @size='s'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+  <EuiAvatar
+    @size='m'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+  <EuiAvatar
+    @size='l'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+  <EuiAvatar
+    @size='xl'
+    @name='Cat'
+    @imageUrl='https://source.unsplash.com/64x64/?cat'
+  />
+</div>
 ```

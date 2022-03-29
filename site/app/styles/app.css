@@ -2,68 +2,40 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@import './markdown/markdown.css';
-@import './markdown/structure.css';
+/* @import './markdown/markdown.css'; */
+/* @import './markdown/structure.css'; */
 /* @import './markdown/dark.css'; */
 @import './markdown/light.css';
 @import './highlight.css';
-*,
-::before,
-::after {
-  border-style: none;
-  box-sizing: border-box;
-  border-width: 0;
-  border-color: unset;
-}
-img {
-  border: none;
+
+#examples {
+  @apply mt-10 text-xl;
 }
 
-.docfy-demo__description {
-  @apply border rounded-t;
-
-  &__header {
-    @apply flex justify-between;
-
-    &__title {
-      @apply mb-4 font-medium leading-tight;
+.prose h2,
+.prose h3,
+.prose h4,
+.docfy-demo__description__header__title {
+  & > a {
+    @apply ml-6;
+    &::before {
+      content: '#';
+      color: #1a1c21;
+      @apply absolute pr-2 -ml-6 opacity-100;
     }
 
-    &__edit-url {
-      @apply text-sm;
-    }
-  }
+    @screen lg {
+      @apply ml-0;
 
-  &__content {
-    @apply markdown;
-  }
-}
-
-.docfy-demo__snippets {
-  &__tabs {
-    @apply px-2 border-l border-r;
-
-    &__button {
-      @apply p-2 mr-2 border-b-4;
-
-      &--active,
-      &:hover {
-        @apply border-blue-500;
+      &::before {
+        @apply pr-1 opacity-0;
       }
     }
   }
-}
-
-.docfy-demo__snippet {
-  pre {
-    @apply flex mt-8 text-gray-200 bg-gray-800;
-    @apply text-sm leading-normal;
-    @apply font-mono;
-    @apply rounded-b;
-    font-weight: 400;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
+  &:hover {
+    margin-left: 10px;
+    & > a::before {
+      @apply opacity-100;
     }
   }
 }

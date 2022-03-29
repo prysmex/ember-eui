@@ -32,6 +32,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     };
 
     function identityCompiler(this: Processor) {
+      //eslint-disable-next-line
       this.Compiler = Compiler;
     }
     return unified()
@@ -41,7 +42,6 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   }
 
   @cached
-  //@ts-ignore
   get result() {
     try {
       const processed = this.processor.processSync(this.args.value);

@@ -1,8 +1,5 @@
 {{set-body-class "euiBody-hasOverlayMask"}}
-{{#in-element
-  this.destinationElement
-  insertBefore=null
-}}
+{{#in-element this.destinationElement insertBefore=null}}
   <div
     class={{class-names
       "euiOverlayMask"
@@ -12,6 +9,9 @@
         "euiOverlayMask--belowHeader"
       )
     }}
+    {{did-insert (set this "overlayMaskNode")}}
+    {{! template-lint-disable }}
+    {{on "click" this.onClick}}
     ...attributes
   >
     {{yield}}

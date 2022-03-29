@@ -1,47 +1,134 @@
-{{#if @ownFocus}}
-  <EuiOverlayMask @headerZindexLocation="below" {{on "click" @onClose}} />
-{{/if}}
-{{set-body-class "euiBody--hasFlyout"}}
-
 {{#let
-  (if
-    (not (or (eq @maxWidth false) (eq @maxWidth true)))
-    (inline-styles max-width=@maxWidth)
-    (hash)
+  (class-names
+    (if (eq this.maxWidth true) "euiFlyout--maxWidth-default")
+    componentName="EuiFlyout"
+    type=this.type
+    side=this.side
+    size=this.size
+    padding=this.paddingSize
   )
-  as |inlineStyles|
+  (class-names
+    "euiFlyout__closeButton"
+    (concat "euiFlyout__closeButton--" this.closeButtonPosition)
+    (or @closeButtonProps.className @closeButtonProps.classes)
+  )
+  (modifier
+    "focus-trap"
+    isActive=(arg-or-default @isFocusTrapActive true)
+    shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
+    isPaused=this.isPushed
+    focusTrapOptions=(arg-or-default
+      @focusTrapOptions
+      (hash allowOutsideClick=true clickOutsideDeactivates=(not this.ownFocus))
+    )
+  )
+  (modifier
+    "outside-click-detector"
+    isDisabled=(or this.isPushed (not this.outsideClickCloses))
+    onOutsideClick=this.onClose
+  )
+  (modifier "style" this.styles)
+  (modifier "on-key" "Escape" this.onClose)
+  (modifier
+    this.classesModifier
+    type=this.type
+    isPushed=this.isPushed
+    side=this.side
+    dimensions=this.dimensions
+    functionToCallOnWindowResize=this.functionToCallOnWindowResize
+  )
+  (modifier "resize-observer" onResize=this.onResize)
+  (element this.as)
+  as |classes closeButtonClasses focusTrap outsideClickDetector currentStyles onEscape classesModifier resizeObserver Element|
 }}
-  <div
-    role="dialog"
-    class={{class-names
-      (if (eq @maxWidth true) "euiFlyout--maxWidth-default")
-      componentName="EuiFlyout"
-      size=(arg-or-default @size "m")
-    }}
-    tabindex={{0}}
-    ...attributes
-    {{style inlineStyles}}
-    {{focus-trap
-      isActive=(arg-or-default @isFocusTrapActive true)
-      shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
-      isPaused=(arg-or-default @isFocusTrapPaused false)
-      focusTrapOptions=(arg-or-default
-        @focusTrapOptions
-        (hash allowOutsideClick=true clickOutsideDeactivates=(not @ownFocus))
-      )
-    }}
-    {{on-key "Escape" @onClose}}
-  >
-    {{#if (and @onClose (not @hideCloseButton))}}
-      <EuiButtonIcon
-        class="euiFlyout__closeButton"
-        aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
-        @iconType="cross"
-        @color="text"
-        data-test-subj="euiFlyoutCloseButton"
-        {{on "click" @onClose}}
-      />
-    {{/if}}
-    {{yield}}
-  </div>
+
+  {{#if (and this.ownFocus (not this.isPushed))}}
+    <EuiOverlayMask @headerZindexLocation="below" @onClick={{this.onClose}}>
+      <Element
+        role={{this.role}}
+        class={{classes}}
+        tabindex={{-1}}
+        {{currentStyles}}
+        {{focusTrap}}
+        {{outsideClickDetector}}
+        {{classesModifier}}
+        {{resizeObserver}}
+        ...attributes
+      >
+        {{#if (and @onClose (not @hideCloseButton))}}
+          <EuiButtonIcon
+            @display={{if
+              (eq this.closeButtonPosition "outside")
+              "fill"
+              "empty"
+            }}
+            @iconType="cross"
+            @color="text"
+            aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
+            data-test-subj="euiFlyoutCloseButton"
+            class={{closeButtonClasses}}
+            {{on "click" this.onButtonCloseClicked}}
+          />
+        {{/if}}
+        {{yield}}
+      </Element>
+    </EuiOverlayMask>
+  {{else if (not this.isPushed)}}
+    <EuiPortal>
+      <Element
+        role={{this.role}}
+        class={{classes}}
+        tabindex={{-1}}
+        {{currentStyles}}
+        {{focusTrap}}
+        {{outsideClickDetector}}
+        {{classesModifier}}
+        {{resizeObserver}}
+        ...attributes
+      >
+        {{#if (and @onClose (not @hideCloseButton))}}
+          <EuiButtonIcon
+            @display={{if
+              (eq this.closeButtonPosition "outside")
+              "fill"
+              "empty"
+            }}
+            @iconType="cross"
+            @color="text"
+            aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
+            data-test-subj="euiFlyoutCloseButton"
+            class={{closeButtonClasses}}
+            {{on "click" this.onButtonCloseClicked}}
+          />
+        {{/if}}
+        {{yield}}
+      </Element>
+    </EuiPortal>
+  {{else}}
+    <Element
+      role={{this.role}}
+      class={{classes}}
+      tabindex={{-1}}
+      {{currentStyles}}
+      {{focusTrap}}
+      {{outsideClickDetector}}
+      {{onEscape}}
+      {{classesModifier}}
+      {{resizeObserver}}
+      ...attributes
+    >
+      {{#if (and @onClose (not @hideCloseButton))}}
+        <EuiButtonIcon
+          @display={{if (eq this.closeButtonPosition "outside") "fill" "empty"}}
+          @iconType="cross"
+          @color="text"
+          aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
+          data-test-subj="euiFlyoutCloseButton"
+          class={{closeButtonClasses}}
+          {{on "click" this.onButtonCloseClicked}}
+        />
+      {{/if}}
+      {{yield}}
+    </Element>
+  {{/if}}
 {{/let}}

@@ -9,7 +9,6 @@ const sizeToClassMapping = {
 
 const colorToClassMap = {
   primary: `${baseClass}--primary`,
-  secondary: `${baseClass}--secondary`,
   success: `${baseClass}--success`,
   warning: `${baseClass}--warning`,
   danger: `${baseClass}--danger`,
@@ -29,7 +28,6 @@ const colorToClassMap = {
 
 const dataColorToClassMap = {
   primary: `${baseClass}__data--primary`,
-  secondary: `${baseClass}__data--secondary`,
   success: `${baseClass}__data--success`,
   warning: `${baseClass}__data--warning`,
   danger: `${baseClass}__data--danger`,

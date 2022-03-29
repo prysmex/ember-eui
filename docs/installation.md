@@ -1,4 +1,12 @@
-# Installation
+<EuiPageHeader>
+  <EuiPageHeaderSection>
+    <EuiTitle @size="l">
+      <h1>
+        Installation
+      </h1>
+    </EuiTitle>
+  </EuiPageHeaderSection>
+</EuiPageHeader>
 
 This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
 
@@ -15,14 +23,18 @@ if so, you can force that all packages use the same dependency with npm `overrid
 
 ```
 "resolutions": {
-    "@embroider/macros": "^1.3.0",
-    "@embroider/shared-internals": "^1.3.0",
-    "@embroider/util": "^1.3.0"
+    "@embroider/macros": "^1.5.0",
+    "@embroider/shared-internals": "^1.5.0",
+    "@embroider/util": "^1.5.0"
   }
 ```
 
 
-### Icons
+<EuiTitle>
+  <h3>
+    Icons
+  </h3>
+</EuiTitle>
 
 For icons to work you will need to:
 
@@ -45,7 +57,11 @@ var app = new EmberApp(defaults, {
 ```
 
 
-### Styles and Theming
+<EuiTitle>
+  <h3>
+    Styles and Theming
+  </h3>
+</EuiTitle>
 
 `theme`: You can specify the theme you want  
 
@@ -54,7 +70,7 @@ var app = new EmberApp(defaults, {
 var app = new EmberApp(defaults, {
   //...
     '@ember-eui/core': {
-      theme: 'dark', //light, dark, amsterdam_dark, amsterdam_light 
+      theme: 'amsterdam_light', //light, dark, amsterdam_dark, amsterdam_light 
     },
   //...
 });

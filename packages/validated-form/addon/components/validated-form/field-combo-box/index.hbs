@@ -38,12 +38,15 @@
       @readOnly={{@readOnly}}
       @controlOnly={{@controlOnly}}
       @compressed={{@compressed}}
+      {{!template-lint-disable}}
       @id={{theId}}
+      @onCreateOption={{@onCreateOption}}
+      @customOptionText={{@customOptionText}}
       @onBlur={{queue (fn this.setIsTouched true) (optional @onBlur)}}
       @onFocus={{@onFocus}}
       @onClose={{@onClose}}
       @onOpen={{@onOpen}}
-      @disabled={{@disabled}}
+      @isDisabled={{@isDisabled}}
       @renderInPlace={{@renderInPlace}}
       @extra={{@extra}}
       ...attributes

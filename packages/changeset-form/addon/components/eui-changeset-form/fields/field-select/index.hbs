@@ -29,7 +29,9 @@
       @compressed={{@compressed}}
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
+      {{!template-lint-disable}}
       @id={{theId}}
+      @disabled={{@disabled}}
       autofocus={{@autofocus}}
       {{on "blur" this.validate}}
       {{on "change" this.handleInput}}

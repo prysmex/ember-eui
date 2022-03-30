@@ -2,35 +2,26 @@
 order: 1
 ---
 
-# Demo
+# Code block
+
+<EuiText>
+  <p>
+    <strong>EuiCodeBlock</strong> can be used to create multi-line code blocks with configurable font and padding sizes
+  </p>
+</EuiText>
 
 ```hbs template
-<div>
-  <EuiCodeBlock
-    @language={{this.language}}
-    @isCopyable={{true}}
-    @overflowHeight='500px'
-  >
-    {{this.htmlCode}}
-  </EuiCodeBlock>
-</div>
-<EuiTextArea
-  @value={{this.htmlCode}}
-  {{on 'input' (pick 'target.value' (set this 'htmlCode'))}}
-/>
-<EuiFormRow @label='Choose a Language'>
-  <EuiSelect
-    @value={{this.language}}
-    @hasNoInitialSelection={{true}}
-    @options={{array
-      (hash value='javascript' text='javascript')
-      (hash value='html' text='html')
-      (hash value='golang' text='golang')
-    }}
-    {{on 'change' (pick 'target.value' (set this 'language'))}}
-  />
-
-</EuiFormRow>
+<EuiCodeBlock @language='jsx' @fontSize='m' @paddingSize='m'>
+  {{this.jsCode}}
+</EuiCodeBlock>
+<EuiCodeBlock
+  @language='jsx'
+  @fontSize='m'
+  @paddingSize='m'
+  @transparentBackground={{true}}
+>
+  {{this.jsCode}}
+</EuiCodeBlock>
 ```
 
 ```javascript component
@@ -39,19 +30,9 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class EuiMarkdownEditor1 extends Component {
-  @tracked language = 'html';
-  @tracked value = `### hehe
-  - [ ] hola
-  - [ ] hola
-  - [x] hola
-  \`\`\`javascript
-    class Human {}
-  \`\`\`
-  `;
-  @tracked htmlCode = `<!--I'm an example of HTML-->
-<div>
-  asdf
-</div>
+  jsCode = `
+/* I'm an example of JS */ 
+import Component from '@glimmer/component';
 `;
 }
 ```

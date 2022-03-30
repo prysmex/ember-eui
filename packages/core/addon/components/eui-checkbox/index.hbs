@@ -24,7 +24,10 @@
       />
       <div class="euiCheckbox__square"></div>
       {{#if (or hasLabelBlock @label)}}
-        <label class="euiCheckbox__label" for={{id}}>
+        <label
+          class={{class-names "euiCheckbox__label" @labelProps.className}}
+          for={{id}}
+        >
           {{#if hasLabelBlock}}
             {{yield to="label"}}
           {{else}}

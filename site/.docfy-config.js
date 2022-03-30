@@ -18,7 +18,7 @@ module.exports = {
       pattern: '**/*.md',
       urlPrefix: 'docs'
     },
-    ...['changeset-form', 'core', 'pikaday', 'validated-form'].map(
+    ...['changeset-form', 'core', 'pikaday', 'validated-form', 'flatpickr'].map(
       (pkgName) => {
         return {
           root: path.resolve(__dirname, `../packages/${pkgName}`),

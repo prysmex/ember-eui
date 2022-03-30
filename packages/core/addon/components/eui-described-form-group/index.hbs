@@ -7,7 +7,7 @@
   ...attributes
 >
   <EuiFlexGroup @gutterSize={{arg-or-default @gutterSize "l"}}>
-    <EuiFlexItem>
+    <EuiFlexItem @grow={{@descriptionFlexItemProps.grow}}>
       <EuiTitle class="euiDescribedFormGroup__title" @size={{@titleSize}}>
         {{yield to="title"}}
       </EuiTitle>
@@ -25,6 +25,7 @@
         componentName="EuiDescribedFormGroup"
         paddingSize=(arg-or-default @titleSize "xs")
       }}
+      @grow={{@fieldFlexItemProps.grow}}
     >
       {{yield}}
     </EuiFlexItem>

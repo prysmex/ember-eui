@@ -1,3 +1,4 @@
+
 {{#if (and (or @onClick @href) (not @iconType))}}
   {{#if @onClick}}
     <button
@@ -95,6 +96,7 @@
           disabled={{@isDisabled}}
           title={{@iconOnClickAriaLabel}}
           tabindex={{@closeButtonProps.tabIndex}}
+          data-selected-index={{@closeButtonProps.dataSelectedIconIndex}}
           {{on "click" (optional @iconOnClick)}}
         >
           <EuiIcon
@@ -104,7 +106,6 @@
               @closeButtonProps.iconClasses
             }}
             @type={{@iconType}}
-            data-selected-index={{@closeButtonProps.dataSelectedIconIndex}}
             @size={{if (has-block) "s" "m"}}
           />
         </button>

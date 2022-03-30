@@ -1,6 +1,7 @@
 export const baseClass = 'euiPanel';
 
 export const paddingSizeMapping = {
+  
   s: `${baseClass}--paddingSmall`,
   m: `${baseClass}--paddingMedium`,
   l: `${baseClass}--paddingLarge`
@@ -10,6 +11,8 @@ const borderRadiusMapping = {
   none: `${baseClass}--borderRadiusNone`,
   m: `${baseClass}--borderRadiusMedium`
 };
+
+
 
 const colorMapping = {
   transparent: `${baseClass}--transparent`,

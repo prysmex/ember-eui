@@ -2,323 +2,480 @@
 
 ### Master
 
-### 4.2.5
+### 5.0.0
+
+💥 Breaking change
+`@ember-eui/core`
+
+- Deprecate `<EuiFlyoutBody::Content />` and `<EuiFlyoutBody::Banner>`, we now use named blocks `<:content>` `<:banner>`
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
+- `<EuiOverlayMask />` now correctly only executes outside clicks, you must provide `{{@onClick}}` argument for that.
+
+🚀 Enhancements
+`@ember-eui/core`
+Update core components to @elastic/eui v4.1.4
+
+- `<EuiFlyout>`
+- `<EuiCollapsibleNav>`
+### 4.4.0
+🚀 Enhancements
+`@ember-eui/changeset-form`
+- Pass disabled to all form components
+
+### 4.3.0
+🚀 Enhancements
+`@ember-eui/flatpickr`
+- New addon plug in, @ember-eui/flatpickr!
+
+### 4.2.6
+🐛 Bug / Fixes
+`@ember-eui/core`
+- `<EuiComboBox />` fix css and html issues for amsterdam theme
+- `{{use-state}}` schedule changes for afterRender
+
+### 4.2.5
+
+🐛 Bug / Fixes
+`@ember-eui/core`
+
 - `<EuiIcon />` for now use @iconClasses to pass down classes when using svg-jar
 
 ### 4.2.4
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - `<EuiIcon />` Drop wrapping svg div, add futurist css override
+
 ### 4.2.3
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Cherry pick 1.6.x fix commit hash https://github.com/prysmex/ember-eui/commit/c4b8a4a259f6b86c2be516fd7427f5e48b28cecd
 - Use next for updating the attachTo for `<EuiToolTip />`
 
 ### 4.2.2
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix typing issues
 
 ### 4.2.1
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix markdown editor components
 
 ### 4.2.0
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - Remove blueprint, inspired by https://github.com/mikkopaderes/ember-cloud-firestore-adapter README.md we should teach users to install peerDependencies manually, which is now required.
 - Update docs for this change.
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix markdown editor icons
 
 ### 4.1.1
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix typo in package json defaultBlueprint
 
 ### 4.1.0
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - @html-next/vertical-collection depend on npm released version 3.0.0-1
 
 🚀 Enhancements
-`@ember-eui/*` 
+`@ember-eui/*`
 bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticComponents flag!
 
 ### 4.0.9
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - `<EuiIcon>` added hardcoded styling meanwhile we add back svgs to hbs components
 
 ### 4.0.8
+
 🐛 Bug / Fixes
 `@ember-eui/pikaday`
+
 - Make component much more flexible for easier extending or composition
 
 ### 4.0.7
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Since we are no longer exposing sass files, there's no use for this file anymore
 
 ### 4.0.6
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Fix named blocks version
 
 ### 4.0.5
+
 🐛 Bug / Fixes
 `@ember-eui/core`
-- Add ember-named-blocks-polyfill back 
+
+- Add ember-named-blocks-polyfill back
 
 ### 4.0.4
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Fixes some dependencies issues with 4.x breakings
 - Adds a blueprint to install ember-focus-trap in host
 - Fixes `<EuiPikaday />`
 
 ### 4.0.0
+
 💥 Breaking change
 `@ember-eui/*`
+
 - Your application must depend on `ember-auto-import` > v2.0.0, please refer to the [migration guides](https://github.com/ef4/ember-auto-import/blob/main/docs/upgrade-guide-2.0.md)
 
 🚀 Enhancements
 `@ember-eui/*`
+
 - ember v4.1.0 support!
 
 🏠 Internal
 `@ember-eui/*`
+
 - `ember-cli-update` on all packages for ember >v4.1.0
 - Update ember-cli-typescript
 - Update docs dependencies for ember 4 support
 
 ### 3.1.0
+
 🚀 Enhancements
 `@ember-eui/*`
+
 - Embroider ready, in order to use staticComponents you need to have `@embroider` > 1.2.0
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - `<EuiMarkdownFormat />` and `<EuiMarkdownEditor />` styling bugs and double render issues fixed
 
 ### 3.0.2
+
 `@ember-eui/core`
 🐛 Bug / Fixes
+
 - Fix `<EuiMarkdownEditor />` icons compatibility with ember-source < 3.27
 
 ### 3.0.1
+
 `@ember-eui/core`
 🚀 Enhancements
+
 - No longer need to add icons from public icons in ember-eui/core
 
 ### 3.0.0
+
 💥 Breaking change
 `@ember-eui/*`
+
 - Drops support for ember-source < v3.20.0
 - Drops support for node 10
 - Drops support for importing sass, elastic eui is migrating to emotion, so its better we just focus on that instead of sass, so we no longer dynamically import template only components for now, this could possibly be achieved later post embroider
 
 🏠 Internal
 `@ember-eui/*`
+
 - `ember-cli-update --to=3.28.0` on all packages
 - Update ember-cli-typescript
 - Remove some deprecations like new imports paths and helpers usage and `#with` helper
 
 ### 2.0.0
+
 💥 Breaking change
 `@ember-eui/core`
+
 - Deprecate `ember-svg-jar` `hbs` strategy for now, just use stock `ember-svg-jar`
 
 ### 1.6.10
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - `<EuiComboBox />` fixes to `onCreateOption`
+
 ### 1.6.7
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - `<EuiComboBox />` Call `onChange` after `onCreateOption` is triggered
+
 ### 1.6.5
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - `<EuiComboBox />` hide clear button when disabled
 - `<EuiComboBox />` close options dropdown after creating option
 
 ### 1.6.3
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Fix inline-styling weird bug
 
 ### 1.6.2
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
+
 - Bubble the change correctly from `<Form.FieldMarkdownEditor />`
+
 ### 1.6.1
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Add default yield block for `<EuiStat />`
 
 ### 1.6.0
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - `<EuiStat/>` component!
+
 ### 1.5.0
+
 🚀 Enhancements
 `@ember-eui/validated-form`
+
 - Allow providing an markdown-editor componet for easier composability
 
 ### 1.4.0
+
 🚀 Enhancements
+
 - Easier extending of processing plugins, add demo
 
 ### 1.3.5
+
 🐛 Bug / Fixes
+
 - Urls for markdown editor icons
 
 ### 1.3.4
+
 🐛 Bug / Fixes
+
 - Fix docs related to ember-svg-jar and netlify demo
 
 ### 1.3.0 - 1.3.3
+
 🐛 Bug / Fixes
+
 - Ts bugs
 
 ### 1.3.0
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - `<EuiMarkdownEditor />` `<EuiMarkdownFormat />` `<EuiCode />` `<EuiCopy />` `<EuiCodeBlock />`
 
 `@ember-eui/validated-form`
+
 - `<Form.FieldMarkdownEditor />`
 
-
 ### 1.2.6
+
 🐛 Bug / Fixes
+
 - Update ember-svg-jar dependency
 
 ### 1.2.5
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Fix `<EuiComboBox/>` isClereable
 
 ### 1.2.4
+
 🏠 Internal
 `@ember-eui/changeset-form`,`@ember-eui/validated-form`
+
 - Pass down isCleareable to <EuiComboBox /> wrapped components
 
 ### 1.2.3
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - add errorMessage for validatable-control for i18n or so
 
 🏠 Internal
 `@ember-eui/core`
+
 - update ember-power-select in order to be able to pass attributes to trigger
 
 ### 1.2.2
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - add styling for fake input
 
 ### 1.2.1
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - add tabindex to fake input for `<EuiComboBox />`
 
 ### 1.2.0
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - add fake input for html form validation to combobox
 
-
 ### 1.1.0
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - Pass down isInvalid to `<EuiComboBox>` `<EuiRangeField>`
 
 `@ember-eui/pikaday`
+
 - Pass down isInvalid to `<EuiPikaday>`
 
 ### 1.0.8
+
 🚀 Enhancements
 `@ember-eui/validated-form`
+
 - use this instead of args in template so host can customize for fields
 
 `@ember-eui/changeset-form`
+
 - use this instead of args in template so host can customize for fields
+
 ### 1.0.7
+
 🚀 Enhancements
 `@ember-eui/validated-form`
+
 - add rowExtra for easier customization
 
 `@ember-eui/changeset-form`
+
 - add rowExtra for easier customization
 
 ### 1.0.6
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix nested accordions not hiding child content properly by `@mtrunt`
 
 📝 Documentation
+
 - docs for described form
 
 ### 1.0.5
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
+
 - fix isDestroying, isDestroyed for validated form
 
 ### 1.0.4
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Pass @disable to `<EuiTab>`
 
 ### 1.0.3
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
+
 - fix initially building error messages
 
 ### 1.0.2
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - guard @onClose for pill close button on ComboBox
 
 ### 1.0.1
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
+
 - do not bubble single values for singleSelection, embrace arrays
-`@ember-eui/changeset-form`
+  `@ember-eui/changeset-form`
 - do not bubble single values for singleSelection, embrace arrays
 
 ### 1.0.0
+
 💥 Breaking
 `@ember-eui/core`
+
 - drop to-array casting for eui-combo-box to match elastic ui API
 
 ### 0.8.0
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - Ease of usage for title block in `<EuiCard />`
 
 ### 0.7.17
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
-  - Adds @placeholder and @dropdownClass
-`@ember-eui/changeset-form`
-  - Adds @placeholder and @dropdownClass
+
+- Adds @placeholder and @dropdownClass
+  `@ember-eui/changeset-form`
+- Adds @placeholder and @dropdownClass
 
 ### 0.7.15
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
-  - Adds ember-cached-decorator-polyfill
+
+- Adds ember-cached-decorator-polyfill
+
 ### 0.7.14
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Guard to-initials helper for name and initials undefined
 - Enable `<EuiRangeTrack />` assertions
 
@@ -326,19 +483,22 @@ bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticCompone
 
 🚀 Enhancements
 `@ember-eui/core`
+
 - Add min, max, prependValue, value, appendValue to <EuiRange/>, <EuiDualRange /> for usage in
- Validated and Changeset Forms addons
+  Validated and Changeset Forms addons
 
 ### 0.7.12
 
 🚀 Enhancements
 `@ember-eui/core`
+
 - Allow to custormize labels and values for `<EuiRange />`
 
 ### 0.7.11
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Use `ember-set-helper` for `<EuiModal />`
 - Bump `ember-power-select`
 
@@ -346,58 +506,69 @@ bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticCompone
 
 🐛 Bug / Fixes
 `@ember-eui/core`
-- Bump `ember-cli-babel` 
+
+- Bump `ember-cli-babel`
 
 ### 0.7.9
 
 🐛 Bug / Fixes
 `@ember-eui/*`
+
 - Move `ember-cli-resolve-asset` from dependencies to devDependencies.
 
 ### 0.7.8
 
 🚀 Enhancements
 `@ember-eui/core`
+
 - Add `@target` to `<EuiButton />`
 
 ### 0.7.7
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Remove unused modifier function from `<EuiComboBox>` trigger component
 
 ### 0.7.6
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - Remove partial ability to place blocks for `<EuiComboBox />` for now
+
 ### 0.7.5
 
 🚀 Enhancements
 `@ember-eui/*`
+
 - Add partial ability to place blocks for `<EuiComboBox />`
+
 ### 0.7.4
 
 🏠 Internal
 `@ember-eui/*`
+
 - Update package.json to ember-svg-jar github:betocantu93/ember-svg-jar#add-bundle-flag
 
 ### 0.7.3
 
 🏠 Internal
 `@ember-eui/core`
+
 - Update ember-element-helper
 
 ### 0.7.2
 
 🐛 Bug / Fixes
 `@ember-eui/*`
+
 - Fix resolving assets using optional resolve-asset
 
 `@ember-eui/core`
+
 - `<EuiComboBox />` Fix placeholder styling
 - `<EuiFieldNumber />` Pass @step argument
-
 
 ### 0.7.1
 
@@ -406,327 +577,428 @@ bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticCompone
 - Update package.json to ember-svg-jar github:betocantu93/ember-svg-jar#only-resolve-asset-interface
 
 ### 0.7.0
+
 🚀 Enhancements
 `@ember-eui/*`
+
 - Pin volta node 12
 - Update ember-svg-jar fork
 
 ### 0.6.18
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - Add `@className` to `<EuiCheckbox />`
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: Fix condition in on-event-simulate-event modifier
 
 `@ember-eui/validated-form`
+
 - Add `@searchMessage` to `<FieldComboBox />`
 
 ### 0.6.17
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
+
 - Add `@search` to `<FieldComboBox />`
 
 ### 0.6.16
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - Add `@triggerClassName` to `<EuiAccordion />`
 
 ### 0.6.15
+
 🚀 Enhancements
 `@ember-eui/core`
+
 - Add MouseEvent type in create-event helper
 
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: Prevent recursion on events that bubble in on-event-simulate-event modifier
 
 ### 0.6.14
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: piquito for `<EuiPopover />`
 
 ### 0.6.13
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: piquito for `<EuiPopover />`
 
 ### 0.6.12
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: add panelClasses to `<EuiPopover />`
 
 ### 0.6.11
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: Add disabled as arg to `<EuiCheckbox />`
 
 `@ember-eui/pikaday`
+
 - fix: Add disabled arg to `<EuiPikaday />`
 
 ### 0.6.10
+
 🐛 Bug / Fixes
+
 - fix: Don't use changeset for `@ember-eui/validated-form`
 
 ### 0.6.9
+
 🐛 Bug / Fixes
+
 - fix: Pass down `@renderInPlace` to `<ValidatedForm />`
 
 ### 0.6.8
+
 🐛 Bug / Fixes
 -re-release
+
 ### 0.6.7
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: `{{to-array}}` now unwraps proxies
 
 ### 0.6.6
+
 🐛 Bug / Fixes
 `@ember-eui/core`
+
 - fix: `<EuiComboBox />` fix isDisabled class
 
 ### 0.6.5
+
 🐛 Bug / Fixes
 `@ember-eui/validated-form`
+
 - fix: ensure using to .toArray() before splatting
 
 ### 0.6.4
+
 🐛 Bug / Fixes
+
 - Use `this` in order to be able to override or extend in consuming apps
 - `@ember-eui/core` `<EuiComboBox />` Fix spacing for default `@customOptionLabel`
 
 ### 0.6.3
+
 🐛 Bug / Fixes
+
 - General `@disabled` argument standarization across packages.
 - `@ember-eui/validated-form` Fix double rendering issues
 
 ### 0.6.2
+
 🚀 Enhancements
+
 - `@ember-eui/core` `<EuiComboBox />` now supports @customOptionText
 
 ### 0.6.1
+
 🚀 Enhancements
+
 - `@ember-eui/core` `<EuiComboBox />` now supports onCreateOption, to build tag-like experience
 
 ### 0.6.0
+
 🏠 Internal
+
 - Updat `ember-set-helper`
 
 ### 0.5.14
+
 🐛 Bug / Fixes
+
 - `@ember-eui/validated-form` i18n fixes
 
 ### 0.5.13
+
 🚀 Enhancements
+
 - `@ember-eui/validated-form` use `validators/messages` to allow i18n
 
 🐛 Bug / Fixes
+
 - Fixes an issue were collapsible nav was removing the class while other was still rendered
 
 ### 0.5.12
+
 🐛 Bug / Fixes
+
 - `@ember-eui/validated-form` reverted this.isInvalid for validated-form, it causes rendering issues
 
 ### 0.5.11
+
 🐛 Bug / Fixes
+
 - Update `<EuiForm />` `@error` was always showing
 
 ### 0.5.10
+
 🚀 Enhancements
+
 - `@ember-eui/validated-form` `@isInvalid`, `@invalidCallout` to `<EuiForm />`
 
 ### 0.5.9
+
 🚀 Enhancements
-- `@ember-eui/validated-form` `@error`, `@errorTitle` to `<EuiForm />`  and pass down `@isDisabled` to all components
+
+- `@ember-eui/validated-form` `@error`, `@errorTitle` to `<EuiForm />` and pass down `@isDisabled` to all components
 
 ### 0.5.8
+
 🚀 Enhancements
+
 - `@ember-eui/validated-form` adds `<EuiSwitch />`
 
 ### 0.5.7
+
 🐛 Bug / Fixes
+
 - Update `ember-changset-validations` fork to use `#dont-mutate` branch for `ember-validators`
 
 ### 0.5.6
+
 🐛 Bug / Fixes
+
 - Remove typo
 
 ### 0.5.5
+
 🐛 Bug / Fixes
+
 - `@ember-eui/validated-form` use ember-validators fork to stop mutation for date and format validators
 
 ### 0.5.4
+
 🚀 Enhancements
+
 - `@ember-eui/validated-form` allow extensability of validations
 
 ### 0.5.3
+
 🐛 Bug / Fixes
+
 - Adds formId to form, and pass down fullScreen
 
 ### 0.5.1...0.5.2
+
 🏠 Internal
-- Re release 
+
+- Re release
 
 ### 0.5.0
 
 🚀 Enhancements
+
 - `@ember-eui/validated-form` package, to simplier form validations.
 
 🐛 Bug / Fixes
+
 - `<EuiPopovers/>` Fix blurry popovers on Chrome due to will-change prop
 
 ### 0.4.6
 
 🚀 Enhancements
+
 - `Splattributes` to pikaday
 
 ### 0.4.5
 
 🚀 Enhancements
+
 - Bumps ember-changeset spike
 
 ### 0.4.4
 
 🚀 Enhancements
-- Bumps ember-power-select
 
+- Bumps ember-power-select
 
 ### 0.4.3
 
 🚀 Enhancements
+
 - Bumps ember-changeset with a bugfix for safetely getting target props
 
 ### 0.4.2
 
 🐛 Bug / Fixes
+
 - Removes console.log
 
 ### 0.4.1
 
 🐛 Bug / Fixes
+
 - Exports `chageset-form/eui-changeset-form/fields/field-base.js`
 
 ### 0.4.0
 
 🚀 Enhancements
+
 - Made `<EuiChangesetForm::Fields::FieldComboBox />` more manual but more flexible, now you have to passdown `@selectedOptions` and `@onChange`
 
 ### 0.3.4
 
 🐛 Bug / Fixes
+
 - Remove hardcoded @searchEnabled from `<EuiComboBox />`
 
 ### 0.3.3
 
 🐛 Bug / Fixes
+
 - Remove default searchField from `<EuiChangesetForm::Fields::FieldComboBox />`
 
 ### 0.3.2
 
 🐛 Bug / Fixes
+
 - Pass down @rows to `<EuiChangesetForm::Fields::FieldTextArea />`
 
 ### 0.3.1
 
 🐛 Bug / Fixes
+
 - Change name of generated components file for imports.
 
 ### 0.3.0
 
 🚀 Enhancements
+
 - Adds ability to use `<EuiIcon />` inside `<EuiAvatar />`, the downside is an small override on the css, this should be removed later on when we have time to bump elastic-eui styles.
 
 ### 0.2.8
 
 🐛 Bug / Fixes
+
 - `<EuiChangesetForm::Fields::FieldComboBox />` now sets string for singleSelection instead of array of 1 position
 
 ### 0.2.7
 
 🚀 Enhancements
+
 - Fixes performance issues and bugs around ember-changeset, we currently depend on a PR [ember-changeset](https://github.com/poteto/ember-changeset/pull/586)
 
 🐛 Bug / Fixes
+
 - Adds `ember-composable-helpers` to dependencies
 - renamed `@onInput` to `@onChange` for `<EuiChangesetForm::Fields::FieldRangeSlider />`
 
 ### 0.2.6
 
 🚀 Enhancements
+
 - Adds `toArray` for changeset-form checkbox group
 
 ### 0.2.5
 
 🚀 Enhancements
+
 - `@valueKey` and `@labelKey` for `<EuiCheckboxGroup />` and `<EuiRadioGroup />` so you don't have to map to { id, value }
 
 ### 0.2.4
 
 🚀 Enhancements
+
 - Moves splattributes to the wrapped field for changeset-form
 
 ### 0.2.3
 
 🐛 Bug / Fixes
+
 - Add `<EuiFormRow />` to changeset-form/fields/switch
 
 ### 0.2.2
 
 🐛 Bug / Fixes
+
 - Typo in ChangesetForm NumberField => FieldNumber
 
 ### 0.2.1
 
 🐛 Bug / Fixes
+
 - Bugfixes in `<EuiFlexGrid />` and `<EuiPage />`
 
 ### 0.2.0
 
 🚀 Enhancements
+
 - Changeset Form Components
 - `<EuiComboBox />` Added to changeset-form package
-
 
 ### 0.1.29
 
 🚀 Enhancements
+
 - `<EuiComboBox />` first iteration
 
 ### 0.1.28
 
 🐛 Bug / Fixes
+
 - Remove html type attribute from `<EuiTextArea />` underlaying `<textarea>`
 
 ### 0.1.27
 
 🚀 Enhancements
+
 - Block for `<EuiBetaBadge />`
 
 ### 0.1.26
 
 🐛 Bug / Fixes
+
 - Add optional helper on "onClose" toasts actions
 - Fix deploys
 
 ### 0.1.24
 
 🐛 Bug / Fixes
+
 - Optional chaining for changeset access in changeset-form base field
 
 ### 0.1.23
 
 🚀 Enhancements
+
 - `<EuiCard />` don't show description markup if there's no description block or arg
 
 ### 0.1.22
 
 🐛 Bug / Fixes
+
 - Updates internal `this.value` if `@value` changes for `<EuiFieldSearch />`
 
 ### 0.1.21
 
 🐛 Bug / Fixes
+
 - Fix `arg-or-default` for id on `<EuiChangesetForm />`
 
 ### 0.1.20
@@ -738,22 +1010,26 @@ bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticCompone
 ### 0.1.19
 
 🐛 Bug / Fixes
+
 - Adds splattributes to `<EuiChangesetForm />`
 
 ### 0.1.18
 
 🐛 Bug / Fixes
+
 - Guards for name.length `<EuiAvatar />`
 
 ### 0.1.16
 
 🐛 Bug / Fixes
+
 - Adds `@value` to input when controlOnly is `true`
 - Adds placeholder and autofocus to changeset fields
 
 ### 0.1.15
 
 🐛 Bug / Fixes
+
 - `<EuiGlobalToastList />` Remove padding when empty as expected
 - `<EuiChangesetForm />` Rename all fields names for consistency
 - - Ej. `<Form.PasswordField />` to `<Form.FieldPassword />`
@@ -763,11 +1039,13 @@ bump @embroider 1.3.0 regenerating yarn.lock, this finally enables staticCompone
 🚀 Enhancements
 
 Addons
+
 - `@ember-eui/pikaday`
 
 ### 0.1.12
 
 🚀 Enhancements
+
 - expose hasSubmitted for changeset-form
 
 Components
@@ -782,23 +1060,31 @@ Services
 ### 0.1.11
 
 🐛 Bug / Fixes
+
 - `<EuiCard />` `<:icon>` block fixes
 
 ### 0.1.10
 
 🐛 Bug / Fixes
+
 - Add ember-set-body-class to @ember-eui/core `dependencies`
+
 ### 0.1.9
 
 🐛 Bug / Fixes
+
 - EuiOverlayMask bugfixes
+
 ### 0.1.7
 
 📝 Documentation
+
 - Minor fixes
+
 ### 0.1.6
 
 📝 Documentation
+
 - Revamp/extract docs to include changeset-form addon, we no longer use the dummy app, instead use site.
 
 ### 0.1.5
@@ -832,8 +1118,8 @@ Components
 - `<EuiCheckableCard>`
 
 Packages
-- Added `changeset-form` inspired by [@frontile/changeset-form](https://github.com/josemarluedke/frontile/tree/master/packages/changeset-form)
 
+- Added `changeset-form` inspired by [@frontile/changeset-form](https://github.com/josemarluedke/frontile/tree/master/packages/changeset-form)
 
 ### 0.0.57
 

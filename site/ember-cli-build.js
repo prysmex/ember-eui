@@ -1,5 +1,7 @@
 'use strict';
 
+process.env.EMBROIDER_REBUILD_ADDONS = '@docfy/ember';
+
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const path = require('path');
 const env = EmberApp.env();
@@ -15,6 +17,8 @@ const purgecssOptions = {
     '../node_modules/**/*.hbs'
   ]
 };
+
+
 
 module.exports = function (defaults) {
   let postcssPlugins = [

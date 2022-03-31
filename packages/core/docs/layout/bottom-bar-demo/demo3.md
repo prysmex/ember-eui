@@ -20,30 +20,36 @@ order: 3
 </EuiText>
 
 ```hbs template
-<EuiButton
-  @color='primary'
-  {{on
-    'click'
-    (queue
-      (set this 'affordForDisplacement' true)
-      (set this 'displacedBottomBarActive' true)
-    )
-  }}
->
-  Show bottom bar
-</EuiButton>
-<EuiButton
-  @color='primary'
-  {{on
-    'click'
-    (queue
-      (set this 'affordForDisplacement' false)
-      (set this 'displacedBottomBarActive' true)
-    )
-  }}
->
-  Show bottom bar (without affordForDisplacement behavior)
-</EuiButton>
+<EuiFlexGroup>
+  <EuiFlexItem>
+    <EuiButton
+      @color='primary'
+      {{on
+        'click'
+        (queue
+          (set this 'affordForDisplacement' true)
+          (set this 'displacedBottomBarActive' true)
+        )
+      }}
+    >
+      Show bottom bar
+    </EuiButton>
+  </EuiFlexItem>
+  <EuiFlexItem>
+    <EuiButton
+      @color='primary'
+      {{on
+        'click'
+        (queue
+          (set this 'affordForDisplacement' false)
+          (set this 'displacedBottomBarActive' true)
+        )
+      }}
+    >
+      Show bottom bar (without affordForDisplacement behavior)
+    </EuiButton>
+  </EuiFlexItem>
+</EuiFlexGroup>
 {{#if this.displacedBottomBarActive}}
   <EuiBottomBar @affordForDisplacement={{this.affordForDisplacement}}>
     <EuiFlexGroup @justifyContent='flexEnd'>

@@ -1,5 +1,4 @@
 {{! TODO: Add landmarkSupport after having an <EuiI18n> component support }}
-  {{log this.bottomBarStyles}}
 {{#if this.usePortal}}
   <EuiPortal>
     <section
@@ -10,7 +9,6 @@
         paddingSize=(arg-or-default @paddingSize "m")
         positionType=(arg-or-default this.position "fixed")
       }}
-      {{did-insert this.didInsert}}
       {{this.updateDisplacementModifier
         affordForDisplacement=this.affordForDisplacement
         usePortal=this.usePortal
@@ -18,7 +16,7 @@
         bodyClassName=@bodyClassName
       }}
       ...attributes
-    >
+    >´
       {{yield}}
     </section>
   </EuiPortal>
@@ -32,7 +30,6 @@
       positionType=(arg-or-default this.position "fixed")
     }}
     aria-label={{if @landmarkHeading @landmarkHeading "Page level controls"}}
-    {{did-insert this.didInsert}}
     {{this.updateDisplacementModifier
       affordForDisplacement=this.affordForDisplacement
       usePortal=this.usePortal

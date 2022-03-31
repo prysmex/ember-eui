@@ -1,5 +1,4 @@
 import GlimmerComponent from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { modifier } from 'ember-modifier';
 
@@ -90,18 +89,6 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
       return `left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`;
     } else {
       return `top:${this.top}px;left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`;
-    }
-  }
-
-  @action
-  didInsert(element: HTMLElement): void {
-    if (this.affordForDisplacement && this.usePortal) {
-      const height = element.clientHeight;
-      document.body.style.paddingBottom = `${height}px`;
-    }
-
-    if (this.args.bodyClassName) {
-      document.body.classList.add(this.args.bodyClassName);
     }
   }
 }

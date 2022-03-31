@@ -35,6 +35,11 @@ type EuiFilePicker = {
   isInvalid?: boolean;
   isLoading?: boolean;
   disabled?: boolean;
+
+  /**
+   * Optionally pass a fn to get the instance of the component to access it programatically
+   */
+  ref?: (c: typeof EuiFilePickerComponent) => void;
 };
 
 export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
@@ -46,6 +51,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
     | Component
     | string
     | null;
+
   @argOrDefault(false) compressed!: boolean;
   @argOrDefault('large') display!: string;
 
@@ -102,5 +108,6 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   @action
   didInsertInput(inputRef: HTMLInputElement): void {
     this.fileInput = inputRef;
+    this.args.ref?.(this as any as typeof EuiFilePickerComponent);
   }
 }

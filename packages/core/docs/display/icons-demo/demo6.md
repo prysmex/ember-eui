@@ -18,8 +18,7 @@ order: 6
     <EuiFlexItem>
       <EuiCopy
         @textToCopy={{size}}
-        @beforeMessage='Click to Copy'
-        @afterMessage='Copied'
+        @afterMessage='logoElasticStack Copied'
         as |copy|
       >
         <EuiPanel

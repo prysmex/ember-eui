@@ -17,16 +17,11 @@ order: 7
   {{#each this.iconColors as |color|}}
     <EuiFlexItem>
       <EuiCopy
-        @textToCopy={{color}}
-        @beforeMessage='Click to Copy'
+        @textToCopy={{concat '@color=' '"' color '"'}}
         @afterMessage='Copied'
         as |copy|
       >
-        <EuiPanel
-          @paddingSize='s'
-          @hasShadow={{false}}
-          @onClick={{copy}}
-        >
+        <EuiPanel @paddingSize='s' @hasShadow={{false}} @onClick={{copy}}>
           <EuiIcon @type='brush' @color={{color}} />
           <small>
             {{color}}
@@ -55,16 +50,11 @@ order: 7
   {{#each this.iconColors as |color|}}
     <EuiFlexItem>
       <EuiCopy
-        @textToCopy={{color}}
-        @beforeMessage='Click to Copy'
+        @textToCopy={{concat '@color=' '"' color '"'}}
         @afterMessage='Copied'
         as |copy|
       >
-        <EuiPanel
-          @paddingSize='s'
-          @hasShadow={{false}}
-          @onClick={{copy}}
-        >
+        <EuiPanel @paddingSize='s' @hasShadow={{false}} @onClick={{copy}}>
           <EuiIcon @type='gisApp' @color={{color}} />
           <small>
             {{color}}

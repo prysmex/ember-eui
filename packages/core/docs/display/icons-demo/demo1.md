@@ -18,15 +18,10 @@ order: 1
     <EuiFlexItem>
       <EuiCopy
         @textToCopy={{icon}}
-        @beforeMessage='Click to Copy'
-        @afterMessage='Copied'
+        @afterMessage={{concat icon ' Copied'}}
         as |copy|
       >
-        <EuiPanel
-          @paddingSize='s'
-          @hasShadow={{false}}
-          @onClick={{copy}}
-        >
+        <EuiPanel @paddingSize='s' @hasShadow={{false}} @onClick={{copy}}>
           <EuiIcon @type='{{icon}}' />
           <small>
             {{icon}}

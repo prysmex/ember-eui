@@ -22,15 +22,27 @@
       role="listbox"
       aria-controls="ember-power-select-trigger-{{@select.uniqueId}}"
       ...attributes
+      {{did-update this.setFlattedOptions @options}}
       {{did-insert this.addHandlers}}
       {{will-destroy this.removeHandlers}}
       as |opt index|
     >
       {{! template-lint-enable }}
       {{#if (ember-power-select-is-group opt)}}
-        <Group @group={{opt}} @select={{@select}} @extra={{@extra}} />
+        <Group
+          @group={{opt}}
+          @select={{@select}}
+          @extra={{@extra}}
+          style={{html-safe
+            (concat "height:" (arg-or-default @rowHeight 29) "px;")
+          }}
+          data-option-index="{{index}}"
+        />
       {{else}}
         <li
+          style={{html-safe
+            (concat "height:" (arg-or-default @rowHeight 29) "px;")
+          }}
           class="euiFilterSelectItem
             {{if
               (eq opt @select.highlighted)
@@ -52,7 +64,7 @@
             </span>
             {{#if (and (eq opt @select.highlighted) (not opt.disabled))}}
               <EuiBadge
-                class="euiComboBoxOptions__enterBadge"
+                class="euiComboBoxOption__enterBadge"
                 @color="hollow"
                 @iconType="returnKey"
                 aria-hidden="true"

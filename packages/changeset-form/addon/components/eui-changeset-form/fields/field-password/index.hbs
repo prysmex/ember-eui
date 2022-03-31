@@ -26,9 +26,11 @@
       @inputRef={{@inputRef}}
       @value={{this.value}}
       @type={{@type}}
+      {{!template-lint-disable}}
       @id={{theId}}
       @isFakePrependBlock={{not (has-block "prepend")}}
       @isFakeAppendBlock={{not (has-block "append")}}
+      @disabled={{@disabled}}
       autofocus={{@autofocus}}
       placeholder={{@placeholder}}
       {{on "blur" this.validate}}

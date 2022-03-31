@@ -18,14 +18,6 @@
   font-weight: 500;
 }
 
-.euiMarkdownEditor--fullHeight {
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  height: 100%;
-}
-
-.euiMarkdownEditor--isPreviewing .euiMarkdownEditor__toggleContainer {
-  display: none;
+.ember-basic-dropdown-content {
+  z-index: 99999
 }

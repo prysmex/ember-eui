@@ -5,7 +5,7 @@ This util was extracted from https://github.com/ampatspell/ember-cli-remark-stat
 import { assert } from '@ember/debug';
 import { RehypeNode } from '../markdown-types';
 
-const attributes = ['src', 'alt', 'href', 'target'];
+const attributes = ['src', 'alt', 'href', 'target', 'title'];
 
 const createDocument = () => {
   return document;

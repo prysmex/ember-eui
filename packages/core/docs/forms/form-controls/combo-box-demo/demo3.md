@@ -1,23 +1,26 @@
 ---
-order: 2
+order: 3
 ---
 
-# Demo
+# Virtualized
 
-Using on create options for bubbling new option and handling in onCreateOption function, you may want to provide a customOptionText, you can assume {searchText} will be interpolated, be sure sanitize your string!
+<EuiText>
+	<p>
+		<strong>EuiComboBoxList</strong> uses <a href="https://github.com/html-next/vertical-collection">vertical collection</a> to only render visible options to be super fast no matter how many options there are.
+	</p>
+</EuiText>
 
 ```hbs template
-	<EuiComboBox
-		@onChange={{this.onChange}}
-		@options={{this.remainingOptions}}
-    @onCreateOption={{this.onCreateOption}}
-		@selectedOptions={{this.selected}}
-		@searchEnabled={{true}}
-    @customOptionText="Do you want to add&nbsp;{searchText}&nbsp;to your list?"
-    @searchField="label"
-	as |option item|>
-		{{option.label}}
-	</EuiComboBox>
+<EuiComboBox
+  @onChange={{this.onChange}}
+  @options={{this.remainingOptions}}
+  @selectedOptions={{this.selected}}
+  @searchEnabled={{true}}
+  @searchField='label'
+  as |option item|
+>
+  {{option.label}}
+</EuiComboBox>
 ```
 
 ```javascript component
@@ -31,7 +34,7 @@ export default class Demo1 extends Component {
   @tracked remainingOptions = [];
   constructor() {
     super(...arguments);
-    this.options = this.generateArray(100);
+    this.options = this.generateArray(100000);
     this.remainingOptions = this.options.slice();
   }
   generateArray(n) {
@@ -52,18 +55,6 @@ export default class Demo1 extends Component {
       (opt) => !selected.includes(opt)
     );
     this.selected = selected;
-  }
-
-  @action
-  onCreateOption(newOption) {
-    const newOptionStructure = {
-      value: `${newOption}`,
-      label: `${newOption}`
-    }
-    if(this.options.filter( opt => opt.value == newOptionStructure.value).length == 0){
-      this.options.addObject(newOptionStructure)
-      this.selected.addObject(newOptionStructure)
-    }
   }
 }
 ```

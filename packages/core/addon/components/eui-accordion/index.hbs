@@ -1,96 +1,117 @@
-<div
-  class={{class-names
-    (if this.isOpen "euiAccordion-isOpen")
-    componentName="EuiAccordion"
-    paddingSize=this.paddingSize
-  }}
-  ...attributes
->
-  <div class={{class-names "euiAccordion__triggerWrapper" @triggerClassName}}>
-    <button
-      id={{this.buttonId}}
-      aria-controls={{@id}}
-      aria-expanded={{this.isOpen}}
-      class={{this.buttonClasses}}
-      type="button"
-      {{on "click" this.onToggle}}
-    >
-      {{#if this.hasArrowDisplay}}
-        <span
-          class={{concat
-            "euiAccordion__iconWrapper "
-            (if this.hasIconButton "euiAccordion__iconButton ")
+{{#let
+  (element (arg-or-default @element "div"))
+  (element this.buttonElement)
+  as |Element ButtonElement|
+}}
+  <Element
+    class={{class-names
+      (if this.isOpen "euiAccordion-isOpen")
+      componentName="EuiAccordion"
+    }}
+    ...attributes
+  >
+    <div class={{class-names "euiAccordion__triggerWrapper" @triggerClassName}}>
+      {{#if (eq this._arrowDisplay "left")}}
+        <EuiButtonIcon
+          @color="text"
+          @iconClasses={{class-names
+            "euiAccordion__iconButton"
+            (if this.isOpen "euiAccordion__iconButton-isOpen")
+            (if
+              (eq this._arrowDisplay "right") "euiAccordion__iconButton--right"
+            )
+            (if @arrowProps.className @arrowProps.className)
           }}
-        >
-          <EuiIcon
-            @iconClasses={{class-names
-              "euiAccordion__icon"
-              (if this.isOpen "euiAccordion__icon-isOpen")
-            }}
-            @type="arrowRight"
-            @size="m"
-          />
-        </span>
+          @iconType="arrowRight"
+          {{on "click" this.onToggle}}
+          aria-controls={{@id}}
+          aria-expanded={{this.isOpen}}
+          aria-labelledby={{this.buttonId}}
+          tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
+        />
       {{/if}}
-      <span class={{concat "euiIEFlexWrapFix " @buttonContentClassName}}>
-        {{yield to="buttonContent"}}
-      </span>
-    </button>
-    {{#if (and @extraAction (not this.isLoading))}}
-      <div class="euiAccordion__optionalAction">
-        {{@extraAction}}
-      </div>
-    {{else if this.isLoading}}
-      <div class="euiAccordion__optionalAction">
-        <EuiLoadingSpinner />
-      </div>
-    {{/if}}
-    {{#if this.hasIconButton}}
-      <button
+      <ButtonElement
+        type="button"
+        id={{arg-or-default this.buttonProps.id (unique-id)}}
+        class={{this.buttonClasses}}
         aria-controls={{@id}}
         aria-expanded={{this.isOpen}}
-        aria-labelledby={{this.buttonId}}
-        tabIndex={{-1}}
-        class={{concat
-          "euiAccordion__iconWrapper "
-          (if this.hasIconButton "euiAccordion__iconButton ")
-        }}
-        type="button"
+        aria-labelledby={{arg-or-default this.buttonProps.id (unique-id)}}
         {{on "click" this.onToggle}}
       >
-        <EuiIcon
-          @iconClasses={{class-names
-            "euiAccordion__icon"
-            (if this.isOpen "euiAccordion__icon-isOpen")
-          }}
-          @type="arrowRight"
-          @size="m"
-        />
-      </button>
-    {{/if}}
-  </div>
-  <div class="euiAccordion__childWrapper" style={{this.childContentStyle}} id={{@id}}>
-    <div
-      class={{class-names
-        (if this.isLoading " euiAccordion__children-isLoading")
-        @childClassName
-        paddingSize=this.paddingSize
-        componentName="EuiAccordion"
-      }}
-    >
-      {{#if (and this.isLoading this.isLoadingMessage)}}
-        <EuiLoadingSpinner class="euiAccordion__spinner" />
-        <span>
-          {{#if this.hasLoadingMessage}}
-            {{this.isLoadingMessage}}
-          {{else}}
-            {{! <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> }}
-            Loading...
-          {{/if}}
+        <span class={{this.buttonContentClasses}}>
+          {{yield to="buttonContent"}}
         </span>
-      {{else}}
-        {{yield to="content"}}
+      </ButtonElement>
+      {{#if (and @extraAction (not this.isLoading))}}
+        <div class="euiAccordion__optionalAction">
+          {{yield to="extraAction"}}
+        </div>
+      {{else if this.isLoading}}
+        <div class="euiAccordion__optionalAction">
+          <EuiLoadingSpinner />
+        </div>
+      {{/if}}
+      {{#if (eq this._arrowDisplay "right")}}
+        <EuiButtonIcon
+          @color="text"
+          class={{class-names
+            "euiAccordion__iconButton"
+            (if this.isOpen "euiAccordion__iconButton-isOpen")
+            (if
+              (eq this._arrowDisplay "right") "euiAccordion__iconButton--right"
+            )
+            (if @arrowProps.className @arrowProps.className)
+          }}
+          @iconType="arrowRight"
+          {{on "click" this.onToggle}}
+          aria-controls={{@id}}
+          aria-expanded={{this.isOpen}}
+          aria-labelledby={{this.buttonId}}
+          tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
+        />
       {{/if}}
     </div>
-  </div>
-</div>
+    <div
+      class="euiAccordion__childWrapper"
+      style={{this.childContentStyle}}
+      id={{@id}}
+      {{did-insert (set this "childWrapper")}}
+      tabindex="-1"
+      role="region"
+      aria-labelledby={{this.buttonId}}
+    >
+      <div
+        class={{class-names
+          (if this.isLoading "euiAccordion__children-isLoading")
+          @childClassName
+        }}
+        {{did-insert
+          (queue (set this "childContent") this.setChildContentHeight)
+        }}
+        {{resize-observer onResize=this.setChildContentHeight}}
+      >
+        {{#if (and this.isLoading this.isLoadingMessage)}}
+          <EuiLoadingSpinner class="euiAccordion__spinner" />
+          <span>
+            {{#if this.hasLoadingMessage}}
+              {{this.isLoadingMessage}}
+            {{else}}
+              {{! <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> }}
+              Loading...
+            {{/if}}
+          </span>
+        {{else}}
+          <div
+            class={{class-names
+              componentName="EuiAccordion"
+              paddingSize=this.paddingSize
+            }}
+          >
+            {{yield to="content"}}
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </Element>
+{{/let}}

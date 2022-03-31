@@ -8,30 +8,34 @@
   )
   as |inlineStyles|
 }}
-  <div
-    class={{class-names
-      "euiModal"
-      (if (eq @maxWidth true) "euiModal--maxWidth-default")
-    }}
-    tabindex="0"
-    ...attributes
-    {{style inlineStyles}}
-    {{focus-trap
-      isActive=(arg-or-default @isFocusTrapActive true)
-      shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
-      isPaused=(arg-or-default @isFocusTrapPaused false)
-      focusTrapOptions=(arg-or-default @focusTrapOptions (hash))
-    }}
-    {{on-key "Escape" @onClose}}
+  <EuiOverlayMask
+    @onClick={{if @clickOutsideToClose (optional @onClose) (noop)}}
   >
-    <EuiButtonIcon
-      class="euiModal__closeIcon"
-      @iconType="cross"
-      @color="text"
-      {{on "click" @onClose}}
-    />
-    <div class="euiModal__flex">
-      {{yield}}
+    <div
+      class={{class-names
+        "euiModal"
+        (if (eq @maxWidth true) "euiModal--maxWidth-default")
+      }}
+      tabindex="0"
+      ...attributes
+      {{style inlineStyles}}
+      {{focus-trap
+        isActive=(arg-or-default @isFocusTrapActive true)
+        shouldSelfFocus=(arg-or-default @shouldSelfFocus true)
+        isPaused=(arg-or-default @isFocusTrapPaused false)
+        focusTrapOptions=(arg-or-default @focusTrapOptions (hash))
+      }}
+      {{on-key "Escape" (prevent-default (stop-propagation @onClose))}}
+    >
+      <EuiButtonIcon
+        class="euiModal__closeIcon"
+        @iconType="cross"
+        @color="text"
+        {{on "click" @onClose}}
+      />
+      <div class="euiModal__flex">
+        {{yield}}
+      </div>
     </div>
-  </div>
+  </EuiOverlayMask>
 {{/let}}

@@ -13,17 +13,20 @@ order: 1
   </p>
   <p>
     You can also pass a language in like
-    <EuiCode language='html'>{{this.htmlCode}}</EuiCode>.
+    <EuiCode @language='html'>{{this.htmlCode}}</EuiCode>.
   </p>
   <p>
     Make the background transparent like this
-    <EuiCode @language='html' @transparentBackground={{true}}>
+    <EuiCode @transparentBackground={{true}} @language='html'>
       {{this.htmlCode}}
     </EuiCode>
     .
   </p>
 </EuiText>
-<EuiTextArea @value={{this.htmlCode}} {{on "input" (pick "target.value" (set this "htmlCode"))}}/>
+<EuiTextArea
+  @value={{this.htmlCode}}
+  {{on 'input' (pick 'target.value' (set this 'htmlCode'))}}
+/>
 ```
 
 ```javascript component

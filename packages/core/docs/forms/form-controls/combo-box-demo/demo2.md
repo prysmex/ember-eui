@@ -2,7 +2,13 @@
 order: 2
 ---
 
-# Demo
+# Disabled
+
+<EuiText>
+	<p>
+		Set the prop <EuiCode> isDisabled </EuiCode> to make the combo box disabled.
+	</p>
+</EuiText>
 
 ```hbs template
 <EuiComboBox
@@ -10,12 +16,7 @@ order: 2
   @options={{this.remainingOptions}}
   @selectedOptions={{this.selected}}
   @searchEnabled={{true}}
-  @singleSelection={{hash asPlainText=true}}
-  @extra={{hash
-    prependTriggerComponent=(component
-      'eui-form-label' label='Prepend a component'
-    )
-  }}
+	@isDisabled={{true}}
   @searchField='label'
   as |option item|
 >
@@ -36,6 +37,7 @@ export default class Demo1 extends Component {
     super(...arguments);
     this.options = this.generateArray(100);
     this.remainingOptions = this.options.slice();
+    this.selected = [this.options[0]];
   }
   generateArray(n) {
     let arr = [];

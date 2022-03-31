@@ -28,19 +28,24 @@
       aria-label={{@ariaLabel}}
       form={{@formId}}
       @isInvalid={{this.errors.length}}
+      @isDisabled={{@isDisabled}}
       @fullWidth={{@fullWidth}}
       @isClearable={{@isClearable}}
       @isLoading={{@isLoading}}
       @readOnly={{@readOnly}}
       @controlOnly={{@controlOnly}}
       @compressed={{@compressed}}
+      {{!template-lint-disable}}
       @id={{theId}}
+      @onCreateOption={{@onCreateOption}}
+      @customOptionText={{@customOptionText}}
       @onBlur={{queue this.validate (optional @onBlur)}}
       @onFocus={{@onFocus}}
       @onClose={{@onClose}}
       @onOpen={{@onOpen}}
       @extra={{@extra}}
-      ...attributes as |opt index select|
+      ...attributes
+      as |opt index select|
     >
       {{yield opt index select}}
     </EuiComboBox>

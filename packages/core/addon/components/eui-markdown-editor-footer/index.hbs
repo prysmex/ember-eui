@@ -39,34 +39,34 @@
   />
 
   {{#if this.isShowingHelp}}
-    <EuiOverlayMask>
-      <EuiModal @onClose={{set this "isShowingHelp" false}}>
-        <EuiModalHeader>
-          <EuiTitle>
-            <h3>
-              Syntax Help
-              {{! <EuiI18n
+
+    <EuiModal @onClose={{set this "isShowingHelp" false}}>
+      <EuiModalHeader>
+        <EuiTitle>
+          <h3>
+            Syntax Help
+            {{! <EuiI18n
                 token="euiMarkdownEditorFooter.syntaxTitle"
                 default="Syntax help"
               /> }}
-            </h3>
-          </EuiTitle>
-        </EuiModalHeader>
-        <EuiModalBody>
+          </h3>
+        </EuiTitle>
+      </EuiModalHeader>
+      <EuiModalBody>
 
-          <EuiText>
-            <p>The editor uses</p>
-            <a
-              href="https://github.github.com/gfm/"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              Github flavored markdown
-            </a>
-            <p>You can also utilize these additional syntax plugins to add rich
-              content to yoru text.</p>
+        <EuiText>
+          <p>The editor uses</p>
+          <a
+            href="https://github.github.com/gfm/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Github flavored markdown
+          </a>
+          <p>You can also utilize these additional syntax plugins to add rich
+            content to yoru text.</p>
 
-            {{! <EuiI18n
+          {{! <EuiI18n
                     tokens={[
                       'euiMarkdownEditorFooter.descriptionPrefix',
                       'euiMarkdownEditorFooter.descriptionSuffix',
@@ -87,24 +87,23 @@
                       </p>
                     )}
                   </EuiI18n> }}
-          </EuiText>
-          <EuiHorizontalRule />
-          {{#each @uiPlugins as |uiPlugin|}}
-            {{#if uiPlugin.helpText}}
-              <EuiTitle size="xxs">
-                <p>
-                  <strong>{{uiPlugin.name}}</strong>
-                </p>
-              </EuiTitle>
-              <EuiSpacer size="s" />
-              <EuiMarkdownFormat @value={{uiPlugin.helpText}} />
-              <EuiSpacer size="l" />
+        </EuiText>
+        <EuiHorizontalRule />
+        {{#each @uiPlugins as |uiPlugin|}}
+          {{#if uiPlugin.helpText}}
+            <EuiTitle size="xxs">
+              <p>
+                <strong>{{uiPlugin.name}}</strong>
+              </p>
+            </EuiTitle>
+            <EuiSpacer size="s" />
+            <EuiMarkdownFormat @value={{uiPlugin.helpText}} />
+            <EuiSpacer size="l" />
 
-            {{/if}}
-          {{/each}}
-        </EuiModalBody>
-      </EuiModal>
-    </EuiOverlayMask>
+          {{/if}}
+        {{/each}}
+      </EuiModalBody>
+    </EuiModal>
 
   {{/if}}
 </div>

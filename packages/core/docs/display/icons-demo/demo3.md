@@ -25,9 +25,8 @@ order: 3
       >
         <EuiPanel
           @paddingSize='s'
-          {{on 'click' copy}}
           @hasShadow={{false}}
-          @isClickable={{true}}
+          @onClick={{copy}}
         >
           <EuiIcon @type='{{icon}}' @size='xl' />
           <small>

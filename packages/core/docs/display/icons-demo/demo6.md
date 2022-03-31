@@ -24,9 +24,8 @@ order: 6
       >
         <EuiPanel
           @paddingSize='s'
-          {{on 'click' copy}}
           @hasShadow={{false}}
-          @isClickable={{true}}
+          @onClick={{copy}}
         >
           <EuiIcon @type='logoElasticStack' @size={{size}} />
           <small>

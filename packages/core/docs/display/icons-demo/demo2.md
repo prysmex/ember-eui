@@ -20,9 +20,8 @@ order: 2
       >
         <EuiPanel
           @paddingSize='s'
-          {{on 'click' copy}}
           @hasShadow={{false}}
-          @isClickable={{true}}
+          @onClick={{copy}}
         >
           <EuiIcon @type='{{icon}}' />
           <small>

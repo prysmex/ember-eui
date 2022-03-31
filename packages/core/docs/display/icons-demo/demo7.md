@@ -24,9 +24,8 @@ order: 7
       >
         <EuiPanel
           @paddingSize='s'
-          {{on 'click' copy}}
           @hasShadow={{false}}
-          @isClickable={{true}}
+          @onClick={{copy}}
         >
           <EuiIcon @type='brush' @color={{color}} />
           <small>
@@ -63,9 +62,8 @@ order: 7
       >
         <EuiPanel
           @paddingSize='s'
-          {{on 'click' copy}}
           @hasShadow={{false}}
-          @isClickable={{true}}
+          @onClick={{copy}}
         >
           <EuiIcon @type='gisApp' @color={{color}} />
           <small>

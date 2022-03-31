@@ -1,6 +1,6 @@
 {{#let
-  (not (has-block "prepend"))
-  (not (has-block "append"))
+  (and (arg-or-default @isPrependProvided true) (has-block "prepend"))
+  (and (arg-or-default @isAppendProvided true) (has-block "append"))
   (and (not (arg-or-default @isFakeMaxBlock false)) (has-block "max"))
   (and (not (arg-or-default @isFakeMinBlock false)) (has-block "min"))
   (and (not (arg-or-default @isFakeValueBlock false)) (has-block "value"))
@@ -38,8 +38,8 @@
           @isLoading={{and @showInputOnly @isLoading}}
           @isInvalid={{@isInvalid}}
           @autoSize={{not this.showInputOnly}}
-          @isFakePrependBlock={{hasPrepend}}
-          @isFakeAppendBlock={{hasAppend}}
+          @isPrependProvided={{hasPrepend}}
+          @isAppendProvided={{hasAppend}}
           ...attributes
           {{on
             "focus"
@@ -194,8 +194,8 @@
                 @isLoading={{and @showInputOnly @isLoading}}
                 @isInvalid={{@isInvalid}}
                 @autoSize={{not this.showInputOnly}}
-                @isFakePrependBlock={{hasPrepend}}
-                @isFakeAppendBlock={{hasAppend}}
+                @isPrependProvided={{hasPrepend}}
+                @isAppendProvided={{hasAppend}}
                 ...attributes
                 {{on
                   "focus"
@@ -352,8 +352,8 @@
             @isLoading={{and @showInputOnly @isLoading}}
             @isInvalid={{@isInvalid}}
             @autoSize={{not this.showInputOnly}}
-            @isFakePrependBlock={{hasPrepend}}
-            @isFakeAppendBlock={{hasAppend}}
+            @isPrependProvided={{hasPrepend}}
+            @isAppendProvided={{hasAppend}}
             ...attributes
             {{on
               "focus"

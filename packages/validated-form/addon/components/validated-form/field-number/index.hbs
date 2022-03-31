@@ -35,8 +35,8 @@
       @controlOnly={{@controlOnly}}
       @compressed={{@compressed}}
       @id={{theId}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       autofocus={{@autofocus}}
       placeholder={{@placeholder}}
       ...attributes

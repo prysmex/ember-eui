@@ -1,15 +1,22 @@
 {{! TODO: Add landmarkSupport after having an <EuiI18n> component support }}
+  {{log this.bottomBarStyles}}
 {{#if this.usePortal}}
   <EuiPortal>
     <section
-      {{simple-style this.bottomBarStyles}}
+      style={{this.bottomBarStyles}}
+      {{resize-observer onResize=(set this "dimensions")}}
       class={{class-names
         componentName="EuiBottomBar"
         paddingSize=(arg-or-default @paddingSize "m")
         positionType=(arg-or-default this.position "fixed")
       }}
       {{did-insert this.didInsert}}
-      {{did-update this.updateDisplacement this.affordForDisplacement}}
+      {{this.updateDisplacementModifier
+        affordForDisplacement=this.affordForDisplacement
+        usePortal=this.usePortal
+        dimensions=this.dimensions
+        bodyClassName=@bodyClassName
+      }}
       ...attributes
     >
       {{yield}}
@@ -17,7 +24,8 @@
   </EuiPortal>
 {{else}}
   <section
-    {{simple-style this.bottomBarStyles}}
+    style={{this.bottomBarStyles}}
+    {{resize-observer onResize=(set this "dimensions")}}
     class={{class-names
       componentName="EuiBottomBar"
       paddingSize=(arg-or-default @paddingSize "m")
@@ -25,7 +33,12 @@
     }}
     aria-label={{if @landmarkHeading @landmarkHeading "Page level controls"}}
     {{did-insert this.didInsert}}
-    {{did-update this.updateDisplacement this.affordForDisplacement}}
+    {{this.updateDisplacementModifier
+      affordForDisplacement=this.affordForDisplacement
+      usePortal=this.usePortal
+      dimensions=this.dimensions
+      bodyClassName=@bodyClassName
+    }}
     ...attributes
   >
     <div {{screen-reader-only}}>

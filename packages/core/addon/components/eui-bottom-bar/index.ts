@@ -1,5 +1,7 @@
 import GlimmerComponent from '@glimmer/component';
 import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 
 interface EuiButtomBarArgs {
   affordForDisplacement: boolean;
@@ -13,7 +15,46 @@ interface EuiButtomBarArgs {
   left: number;
   bottom: number;
 }
+
+const updateDisplacementModifier = modifier(function (
+  element: Element,
+  _pos: unknown[],
+  {
+    affordForDisplacement,
+    usePortal,
+    bodyClassName,
+    dimensions
+  }: {
+    affordForDisplacement: boolean;
+    usePortal: boolean;
+    bodyClassName: string;
+    dimensions: { height: number };
+  }
+) {
+  if (affordForDisplacement && usePortal) {
+    document.body.style.paddingBottom = `${dimensions.height}px`;
+  }
+
+  if (bodyClassName) {
+    document.body.classList.add(bodyClassName);
+  }
+
+  return () => {
+    if (affordForDisplacement && usePortal) {
+      document.body.style.paddingBottom = '';
+    }
+
+    if (bodyClassName) {
+      document.body.classList.remove(bodyClassName);
+    }
+  };
+});
+
 export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBarArgs> {
+  updateDisplacementModifier = updateDisplacementModifier;
+
+  @tracked dimensions: { height: number; width: number } | undefined;
+
   get affordForDisplacement(): boolean {
     return this.position !== 'fixed'
       ? false
@@ -44,20 +85,11 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
     return this.args.bottom ? this.args.bottom : 0;
   }
 
-  get bottomBarStyles(): { [i: string]: string } {
+  get bottomBarStyles(): string {
     if (this.position === 'fixed') {
-      return {
-        left: `${this.left}px`,
-        right: `${this.right}px`,
-        bottom: `${this.bottom}px`
-      };
+      return `left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`;
     } else {
-      return {
-        top: `${this.top}px`,
-        left: `${this.left}px`,
-        right: `${this.right}px`,
-        bottom: `${this.bottom}px`
-      };
+      return `top:${this.top}px;left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`;
     }
   }
 
@@ -70,33 +102,6 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
 
     if (this.args.bodyClassName) {
       document.body.classList.add(this.args.bodyClassName);
-    }
-  }
-
-  @action
-  updateDisplacement(element: HTMLElement): void {
-    const prevAffordForDisplacement = document.body.style.paddingBottom !== '';
-    if (prevAffordForDisplacement !== this.affordForDisplacement) {
-      if (this.affordForDisplacement && this.usePortal) {
-        // start affording for displacement
-        const height = element.clientHeight;
-        document.body.style.paddingBottom = `${height}px`;
-      } else {
-        // stop affording for displacement
-        document.body.style.paddingBottom = '';
-      }
-    }
-
-    //TODO: Add/Remove bodyClassName prop from body classes when updated
-  }
-
-  willDestroy(): void {
-    if (this.affordForDisplacement) {
-      document.body.style.paddingBottom = '';
-    }
-
-    if (this.args.bodyClassName) {
-      document.body.classList.remove(this.args.bodyClassName);
     }
   }
 }

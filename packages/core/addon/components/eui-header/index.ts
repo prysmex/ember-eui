@@ -1,8 +1,13 @@
+import Component from '@glimmer/component';
+
 import { modifier } from 'ember-modifier';
 
 let euiHeaderFixedCounter = 0;
 
-export default modifier(function fixedHeader(_, [position]: [string]): void | (() => unknown) {
+const fixedHeaderModifier = modifier(function fixedHeader(
+  _,
+  [position]: [string]
+): void | (() => unknown) {
   if (position === 'fixed') {
     // Increment fixed header counter for each fixed header
     euiHeaderFixedCounter++;
@@ -17,3 +22,7 @@ export default modifier(function fixedHeader(_, [position]: [string]): void | ((
     };
   }
 });
+
+export default class EuiHeaderComponent extends Component {
+  fixedHeader = fixedHeaderModifier;
+}

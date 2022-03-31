@@ -32,7 +32,7 @@
       color=(arg-or-default @color "primary")
       size=(arg-or-default @size "xs")
     }}
-    disabled={{@isDisabled}}
+    disabled={{or @isDisabled @disabled}}
     aria-pressed={{if @isSelected "true" "false"}}
     type={{if @type @type "button"}}
     ...attributes

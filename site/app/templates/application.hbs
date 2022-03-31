@@ -19,7 +19,7 @@
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
-<EuiPage @restrictWidth="1280px" class="p-2 pb-12 m-auto overflow-hidden">
+<EuiPage @restrictWidth="1280px" class="p-2 pb-12 m-auto">
   <EuiPageSideBar class="mt-8">
     <EuiSideNav
       class="flex-none"
@@ -31,7 +31,7 @@
     />
   </EuiPageSideBar>
   <EuiPageBody class="flex-1 w-full min-w-0 mt-8 mode-dark" @tagName="div">
-    <EuiPanel class="max-w-full markdown euiCodeBlock">
+    <EuiPanel class="max-w-full markdown">
       {{outlet}}
     </EuiPanel>
   </EuiPageBody>

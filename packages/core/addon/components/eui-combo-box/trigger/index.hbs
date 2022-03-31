@@ -8,6 +8,7 @@
     (and @select.selected @allowClear)
     (fn @select.actions.select (array))
   }}
+  @isLoading={{@isLoading}}
   @disabled={{@select.disabled}}
 >
   <:field>
@@ -89,6 +90,7 @@
             autocomplete="off"
             autocorrect="off"
             autocapitalize="off"
+            autofocus={{@autoFocus}}
             spellcheck={{false}}
             id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
             value={{@select.searchText}}

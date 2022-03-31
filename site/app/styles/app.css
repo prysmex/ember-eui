@@ -49,3 +49,7 @@ body.euiBody--headerIsFixed {
     height: calc(100% - 49px);
   }
 }
+
+.euiBadge__iconButton svg {
+  pointer-events: none;
+}

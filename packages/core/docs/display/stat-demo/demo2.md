@@ -1,48 +1,50 @@
-# Demo
+---
+order: 2
+---
 
-<EuiTitle>Title size</EuiTitle>
+# Applying color
+
 <EuiText>
-title uses the <EuiCode>EuiTitle</EuiCode> component and thus uses the same sizing property
-values (applied via the titleSize property). Although all EuiTitle sizes are
-available, suggested sizes include <EuiCode>'l' | 'm' | 's' | 'xs' | 'xxs' | 'xxxs'</EuiCode>. By
-default, the size is set to large <EuiCode>l</EuiCode>. The @description label cannot be
-re-sized via component properties.
+<p>
+<EuiCode>title</EuiCode> can be altered using the color property. By default, it will appear in <EuiCode>full</EuiCode> color. For proper color contrast, only a limited set of EUI colors are offered. See the Props tab above for a list of available colors.
+</p>
 </EuiText>
-<EuiSpacer/>
 
 ```hbs template
 <div>
   <EuiFlexGroup>
     <EuiFlexItem>
-      <EuiStat @title='1,000,000' @description='Large size' @titleSize='l' />
+      <EuiStat @title='1' @description='Default color' />
     </EuiFlexItem>
     <EuiFlexItem>
-      <EuiStat @title='1,000,000' @description='Medium size' @titleSize='m' />
+      <EuiStat @title='10' @description='Subdued color' @titleColor='subdued' />
     </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiStat @title='1,000,000' @description='Small size' @titleSize='s' />
-    </EuiFlexItem>
-  </EuiFlexGroup>
-  <EuiFlexGroup>
     <EuiFlexItem>
       <EuiStat
-        @title='1,000,000'
-        @description='Extra small size'
-        @titleSize='xs'
+        @title='100'
+        @description='Primary color'
+        @titleColor='primary'
       />
     </EuiFlexItem>
     <EuiFlexItem>
       <EuiStat
-        @title='1,000,000'
-        @description='Extra extra small size'
-        @titleSize='xxs'
+        @title='1,000'
+        @description='Success color'
+        @titleColor='success'
       />
     </EuiFlexItem>
     <EuiFlexItem>
       <EuiStat
-        @title='1,000,000'
-        @description='Extra extra extra small size'
-        @titleSize='xxxs'
+        @title='10,000'
+        @description='Danger color'
+        @titleColor='danger'
+      />
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiStat
+        @title='100,000'
+        @description='Accent color'
+        @titleColor='accent'
       />
     </EuiFlexItem>
   </EuiFlexGroup>

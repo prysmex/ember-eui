@@ -1,21 +1,30 @@
-# Demo
+---
+order: 1
+---
+
+# Padding
+
+<EuiText>
+  <p>
+The most basic use is to simply add padding around your content.
+  </p>
+</EuiText>
 
 ```hbs template
-<EuiFlexGroup @direction="column" @gutterSize="xl">
-  <EuiFlexItem>
-    <EuiPanel @color="danger">
-      This is panel without borders
-    </EuiPanel>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiPanel @borderRadius="none" @color="danger">
-      This is panel without border radius
-    </EuiPanel>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiPanel @borderRadius="none" @paddingSize="none" @color="danger">
-      This is panel without padding and without border-radius
-    </EuiPanel>
-  </EuiFlexItem>
-</EuiFlexGroup>
+<EuiSpacer @size='l' />
+<EuiPanel @paddingSize='none'>
+  <EuiCode>paddingSize=&quot;none&quot;</EuiCode>
+</EuiPanel>
+<EuiSpacer @size='l' />
+<EuiPanel @paddingSize='s'>
+  <EuiCode>paddingSize=&quot;s&quot;</EuiCode>
+</EuiPanel>
+<EuiSpacer @size='l' />
+<EuiPanel @paddingSize='m'>
+  <EuiCode>paddingSize=&quot;m&quot; (default)</EuiCode>
+</EuiPanel>
+<EuiSpacer @size='l' />
+<EuiPanel @paddingSize='l'>
+  <EuiCode>paddingSize=&quot;l&quot;</EuiCode>
+</EuiPanel>
 ```

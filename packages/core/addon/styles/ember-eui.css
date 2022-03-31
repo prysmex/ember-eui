@@ -17,3 +17,7 @@
   overflow-x: hidden;
   font-weight: 500;
 }
+
+.ember-basic-dropdown-content {
+  z-index: 99999
+}

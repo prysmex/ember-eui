@@ -1,16 +1,29 @@
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
-import { cached } from '@glimmer/tracking';
+import { tracked } from '@glimmer/tracking';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
-  @cached
-  get flattedOptions() {
-    return this.args.options.reduce((acc, curr) => {
-      return [
-        ...acc,
-        ...(emberPowerSelectIsGroup([curr]) ? [curr, ...curr.options] : [curr])
-      ];
-    }, []);
+  @tracked flattedOptions = [];
+  _optionsCache = [];
+
+  setFlattedOptions = () => {
+    if (this._optionsCache !== this.args.options) {
+      this.flattedOptions = this.args.options?.reduce((acc, curr) => {
+        if (emberPowerSelectIsGroup([curr])) {
+          acc.push(curr, ...curr.options);
+        } else {
+          acc.push(curr);
+        }
+        return acc;
+      }, []);
+      this._optionsCache = this.args.options;
+    }
+  };
+
+  constructor() {
+    super(...arguments);
+    this.setFlattedOptions();
+    this._optionsCache = this.args.options;
   }
 
   _optionFromIndex(index) {

@@ -7,20 +7,19 @@
     display=this.display
     componentName="EuiFilePicker"
   )
-  (arg-or-default @id (unique-id)) as |classes inputId|
+  (arg-or-default @id (unique-id))
+  as |classes inputId|
 }}
   {{#let
     (if inputId (concat inputId "-filePicker__prompt") (unique-id))
     (not-eq this.promptText null)
-    (eq this.display "default") as |promptId isOverridingInitialPrompt normalFormControl|
+    (eq this.display "default")
+    as |promptId isOverridingInitialPrompt normalFormControl|
   }}
     <div
       class="{{classes}}
-
-        {{if this.isHoveringDrop "euiFilePicker__showDrop"}}
-
-        {{if isOverridingInitialPrompt "euiFilePicker--hasFiles"}}"
-      ...attributes
+        {{if this.isHoveringDrop 'euiFilePicker__showDrop'}}
+        {{if isOverridingInitialPrompt 'euiFilePicker--hasFiles'}}"
     >
       <div class="euiFilePicker__wrap">
         <input
@@ -33,9 +32,10 @@
           {{on "dragover" this.showDrop}}
           {{on "dragleave" this.hideDrop}}
           {{on "drop" this.hideDrop}}
-          {{on "change" (fn this.handleChange this.filesSelected)}}
-					{{did-insert this.didInsertInput}}
+          {{on "change" this.handleChange}}
+          {{did-insert this.didInsertInput}}
           {{validatable-control @isInvalid}}
+          ...attributes
         />
         <div class="euiFilePicker__prompt" id={{promptId}}>
           <EuiIcon
@@ -57,7 +57,10 @@
                 class="euiFilePicker__clearButton"
                 {{on "click" this.removeFiles}}
               >
-                <EuiIcon @iconClasses="euiFilePicker__clearIcon" @type="cross" />
+                <EuiIcon
+                  @iconClasses="euiFilePicker__clearIcon"
+                  @type="cross"
+                />
               </button>
             {{else}}
               <EuiButtonEmpty

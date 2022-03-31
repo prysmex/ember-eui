@@ -39,7 +39,7 @@
         size=size
         flush=@flush
       }}
-      disabled={{or @isLoading @isDisabled}}
+      disabled={{or @isLoading @isDisabled @disabled}}
       type={{if @type @type "button"}}
       aria-pressed={{@isSelected}}
       ...attributes

@@ -1,9 +1,9 @@
-<button
-  class="euiButtonEmpty euiButtonEmpty--text euiHeaderSectionItemButton {{if @disabled 'euiButtonEmpty-isDisabled' ''}}"
-  type="button"
+<EuiButtonEmpty
+  class="euiHeaderSectionItemButton"
   ...attributes
-  disabled={{@disabled}}
-  href={{@href}}
+  @isDisabled={{@disabled}}
+  @href={{@href}}
+  @color={{arg-or-default @color "text"}}
   {{on "click" (optional @onClick)}}
 >
   {{yield}}
@@ -24,4 +24,4 @@
       </EuiNotificationBadge>
     {{/if}}
   {{/if}}
-</button>
+</EuiButtonEmpty>

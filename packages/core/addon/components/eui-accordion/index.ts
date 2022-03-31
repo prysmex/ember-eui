@@ -1,19 +1,33 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { uniqueId } from '../../helpers/unique-id';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { paddingMapping } from '../../utils/css-mappings/eui-accordion';
 import { htmlSafe } from '@ember/template';
+import { CommonArgs } from '../common';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 
 type AccordionArgs = {
   id: string;
+
+  element?: 'div' | 'fieldset';
   /**
    * Class that will apply to the trigger for the accordion.
    */
   buttonClassName?: string;
+
+  buttonProps?: CommonArgs;
+
+  /**
+   * Applied to the main button receiving the `onToggle` event.
+   * Anything other than the default `button` does not support removing the arrow display (for accessibility of focus).
+   */
+  buttonElement?: 'div' | 'legend' | 'button';
+  /**
+   * Extra props to pass to the EuiButtonIcon containing the arrow.
+   */
+  arrowProps?: 'iconType' | 'onClick' | 'aria-labelledby';
   /**
    * Class that will apply to the trigger content for the accordion.
    */
@@ -54,6 +68,8 @@ type AccordionArgs = {
    * Choose whether the loading message replaces the content. Customize the message by passing a node
    */
   isLoadingMessage?: boolean | Component;
+
+  isOpen?: boolean;
 };
 
 export default class EuiAccordionAccordionComponent extends Component<AccordionArgs> {
@@ -65,8 +81,8 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
   @argOrDefault('left') arrowDisplay!: AccordionArgs['arrowDisplay'];
 
   @tracked _opened;
-
-  buttonId: string = uniqueId();
+  @tracked childWrapper: HTMLDivElement | null = null;
+  @tracked childContent: HTMLDivElement | null = null;
 
   constructor(owner: unknown, args: AccordionArgs) {
     super(owner, args);
@@ -76,22 +92,24 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
       : this.args.initialIsOpen;
   }
 
+  get buttonElement() {
+    return this.args.element === 'fieldset' ? 'legend' : 'button';
+  }
+
+  get buttonElementIsFocusable() {
+    return this.buttonElement === 'button';
+  }
+
+  get _arrowDisplay() {
+    return this.arrowDisplay === 'none' && !this.buttonElementIsFocusable
+      ? 'left'
+      : this.arrowDisplay;
+  }
+
   get isOpen(): boolean {
     return this.args.forceState
       ? this.args.forceState === 'open'
       : this._opened;
-  }
-
-  get hasIconButton(): boolean | undefined {
-    return this.args.extraAction && this.arrowDisplay === 'right';
-  }
-
-  get hasArrowDisplay(): boolean {
-    return this.arrowDisplay !== 'none';
-  }
-
-  get buttonReverse(): boolean {
-    return !this.args.extraAction && this.arrowDisplay === 'right';
   }
 
   get hasLoadingMessage(): boolean {
@@ -101,23 +119,44 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
   get buttonClasses(): string {
     return [
       'euiAccordion__button',
-      this.buttonReverse ? 'euiAccordion__buttonReverse' : '',
-      this.args.buttonClassName
+      this.args.buttonClassName,
+      this.args.buttonProps?.className
+    ].join(' ');
+  }
+
+  get buttonContentClasses(): string {
+    return [
+      'euiAccordion__buttonContent',
+      this.args.buttonContentClassName
     ].join(' ');
   }
 
   get childContentStyle(): string | ReturnType<typeof htmlSafe> {
-    return this.isOpen ? '' : htmlSafe(`height: 0px;`);
+    return this._opened ? '' : htmlSafe(`height: 0px;`);
   }
+
+  setChildContentHeight = () => {
+    const { forceState } = this.args;
+    requestAnimationFrame(() => {
+      const height =
+        this.childContent && (forceState ? forceState === 'open' : this._opened)
+          ? this.childContent.clientHeight
+          : 0;
+      this.childWrapper &&
+        this.childWrapper.setAttribute('style', `height: ${height}px`);
+    });
+  };
 
   @action
   onToggle(): void {
     if (this.args.forceState) {
-      this.args.onToggle &&
-        this.args.onToggle(this.args.forceState === 'open' ? false : true);
+      this.args.onToggle?.(this.args.forceState === 'open' ? false : true);
     } else {
       this._opened = !this._opened;
-      this.args.onToggle && this.args.onToggle(this._opened);
+      if (this._opened && this.childWrapper) {
+        this.childWrapper.focus();
+      }
+      this.args.onToggle?.(this._opened);
     }
   }
 }

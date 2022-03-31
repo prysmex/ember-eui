@@ -20,7 +20,8 @@
     @apply ml-6;
     &::before {
       content: '#';
-      @apply absolute pr-2 -ml-4 opacity-100;
+      color: #1a1c21;
+      @apply absolute pr-2 -ml-6 opacity-100;
     }
 
     @screen lg {
@@ -32,6 +33,7 @@
     }
   }
   &:hover {
+    margin-left: 10px;
     & > a::before {
       @apply opacity-100;
     }
@@ -51,4 +53,8 @@ body.euiBody--headerIsFixed {
 .background-blue {
   background-color: blue !important;
   color: white;
+}
+
+.euiBadge__iconButton svg {
+  pointer-events: none;
 }

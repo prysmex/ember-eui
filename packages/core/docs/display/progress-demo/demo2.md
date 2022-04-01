@@ -1,44 +1,29 @@
-# Demo 2
+---
+order: 2
+---
 
-To make a progress bar actually progressable, you should pass down the `@max` prop.
+# Progress with values
 
-`:label` prop is used as a named block.
+<EuiText>
+<p>Once the <EuiCode @language="text">max</EuiCode> and <EuiCode @language="text">value</EuiCode> props are set, it will act as a determinate progress bar. This is rendered using an HTML5 <EuiCode @language="text">progress</EuiCode> tag.</p>
 
-`@value` is the number value of the progress bar that is passed down as a HTML attribute to the `<progress />` tag.
-
-ValueText can be and should be a `@valueText` prop and `:valueText` named block. Whenever the `@valueText` prop is passed as TRUE, that means you want the `@value` prop to be displayed atop the progress bar. When set to false or not passed at all, that means you DON'T want `@value` to be displayed OR that you are passing a custom `:valueText` named block.<br><br>
+</EuiText>
 
 ```hbs template
-<EuiButton {{on "click" this.increaseValue1}}>
+<EuiButton {{on 'click' this.increaseValue1}}>
   Click!
 </EuiButton>
-<EuiSpacer @size="m" />
+<EuiSpacer @size='m' />
 <EuiProgress
   @max={{100}}
-  @color="primary"
-  @size="l"
+  @color='primary'
+  @size='l'
   @value={{this.value1}}
   @valueText={{true}}
 >
   <:label>
     Click it!
   </:label>
-</EuiProgress>
-
-<EuiSpacer @size="m" />
-
-<EuiProgress
-  @max={{100}}
-  @color="success"
-  @size="l"
-  @value={{this.value1}}
->
-  <:label>
-    Click it!
-  </:label>
-  <:valueText>
-    {{this.value1Text}}
-  </:valueText>
 </EuiProgress>
 ```
 

@@ -56,8 +56,10 @@ import EuiGlobalToastList from './eui-global-toast-list';
 import EuiCodeBlock from './eui-code-block';
 import EuiStat from './eui-stat';
 import EuiHeaderLinks from './eui-header-links';
+import EuiLink from './eui-link';
 
 const mapping: Mapping = {
+  EuiLink,
   EuiStat,
   EuiCodeBlock,
   EuiAccordion,

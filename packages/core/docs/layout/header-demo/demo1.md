@@ -54,6 +54,10 @@ order: 1
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
+  <EuiHeaderBreadcrumbs
+    aria-label='Header breadcrumbs example'
+    @breadcrumbs={{this.breadcrumbs}}
+  />
   <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem @border='left'>
       <EuiHeaderSectionItemButton
@@ -96,6 +100,42 @@ import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
   @tracked isOpen = false;
+
+  breadcrumbs = [
+    {
+      text: 'Management',
+      href: '#',
+      onClick: (e) => {
+        e.preventDefault();
+      },
+      'data-test-subj': 'breadcrumbsAnimals',
+      className: 'customClass'
+    },
+    {
+      text: 'Truncation test is here for a really long item',
+      href: '#',
+      onClick: (e) => {
+        e.preventDefault();
+      }
+    },
+    {
+      text: 'Hidden',
+      href: '#',
+      onClick: (e) => {
+        e.preventDefault();
+      }
+    },
+    {
+      text: 'Users',
+      href: '#',
+      onClick: (e) => {
+        e.preventDefault();
+      }
+    },
+    {
+      text: 'Create'
+    }
+  ];
 
   @action
   onClick(e) {

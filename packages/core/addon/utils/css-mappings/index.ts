@@ -57,8 +57,10 @@ import EuiCodeBlock from './eui-code-block';
 import EuiStat from './eui-stat';
 import EuiHeaderLinks from './eui-header-links';
 import EuiLink from './eui-link';
+import EuiBetaBadge from './eui-beta-badge';
 
 const mapping: Mapping = {
+  EuiBetaBadge,
   EuiLink,
   EuiStat,
   EuiCodeBlock,

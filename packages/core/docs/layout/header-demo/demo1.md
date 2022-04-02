@@ -36,15 +36,10 @@ order: 1
 <EuiHeader>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderLogo
-        @iconType='logoElastic'
-        href='#'
-        @onClick={{this.onClick}}
-        aria-label='Go to home page'
-      />
+      <EuiHeaderLogo @iconType='logoElastic' aria-label='Go to home page' />
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderSectionItemButton>
+      <EuiHeaderSectionItemButton @ref={{set this 'btn'}}>
         <EuiAvatar
           @name='Planta Prysmex'
           @type='space'
@@ -60,20 +55,63 @@ order: 1
   />
   <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem @border='left'>
-      <EuiHeaderSectionItemButton
-        aria-controls='header1'
-        aria-expanded={{this.isOpen}}
-        aria-haspopup='true'
-        aria-label='Account menu'
-        onClick={{this.onMenuButtonClick}}
+      <EuiPopover
+        @isOpen={{this.userPopover}}
+        @closePopover={{set this 'userPopover' false}}
       >
-        <EuiAvatar
-          @name='David Martinez'
-          @type='user'
-          @initialLength={{2}}
-          @size='s'
-        />
-      </EuiHeaderSectionItemButton>
+        <:button>
+          <EuiHeaderSectionItemButton
+            aria-controls='header1'
+            aria-expanded={{this.isOpen}}
+            aria-haspopup='true'
+            aria-label='Account menu'
+            @onClick={{this.onMenuButtonClick}}
+          >
+            <EuiAvatar
+              @name='David Martinez'
+              @type='user'
+              @initialLength={{2}}
+              @size='s'
+            />
+          </EuiHeaderSectionItemButton>
+        </:button>
+        <:content>
+          <div style='width:320px;'>
+            <EuiFlexGroup
+              @gutterSize='m'
+              class='euiHeaderProfile'
+              @responsive={{false}}
+            >
+              <EuiFlexItem @grow={{false}}>
+                <EuiAvatar @name='David Martinez' @size='xl' />
+              </EuiFlexItem>
+
+              <EuiFlexItem>
+                <EuiText>
+                  <p>David Martinez</p>
+                </EuiText>
+
+                <EuiSpacer @size='m' />
+
+                <EuiFlexGroup>
+                  <EuiFlexItem>
+                    <EuiFlexGroup @justifyContent='spaceBetween'>
+                      <EuiFlexItem @grow={{false}}>
+                        <EuiLink>Edit profile</EuiLink>
+                      </EuiFlexItem>
+
+                      <EuiFlexItem @grow={{false}}>
+                        <EuiLink>Log out</EuiLink>
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </div>
+        </:content>
+      </EuiPopover>
+
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem @border='left'>
       <EuiHeaderSectionItemButton @notification='3' @notificationColor='accent'>
@@ -81,13 +119,57 @@ order: 1
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem @border='left'>
-      <EuiHeaderSectionItemButton
-        @disabled={{true}}
-        aria-label='Apps menu with 1 new app'
-        @notification='1'
+
+      <EuiPopover
+        @isOpen={{this.appsPopover}}
+        @closePopover={{set this 'appsPopover' false}}
       >
-        <EuiIcon @type='apps' size='m' />
-      </EuiHeaderSectionItemButton>
+        <:button>
+          <EuiHeaderSectionItemButton
+            aria-label='Apps menu with 1 new app'
+            @notification='1'
+            @onClick={{set this 'appsPopover' true}}
+          >
+            <EuiIcon @type='apps' size='m' />
+          </EuiHeaderSectionItemButton>
+        </:button>
+        <:content>
+          <div style='width:320px;'>
+            <EuiFlexGroup
+              @gutterSize='m'
+              class='euiHeaderProfile'
+              @responsive={{false}}
+            >
+              <EuiFlexItem @grow={{false}}>
+                <EuiAvatar @name='David Martinez' @size='xl' />
+              </EuiFlexItem>
+
+              <EuiFlexItem>
+                <EuiText>
+                  <p>David Martinez</p>
+                </EuiText>
+
+                <EuiSpacer @size='m' />
+
+                <EuiFlexGroup>
+                  <EuiFlexItem>
+                    <EuiFlexGroup @justifyContent='spaceBetween'>
+                      <EuiFlexItem @grow={{false}}>
+                        <EuiLink>Edit profile</EuiLink>
+                      </EuiFlexItem>
+
+                      <EuiFlexItem @grow={{false}}>
+                        <EuiLink>Log out</EuiLink>
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </div>
+        </:content>
+      </EuiPopover>
+
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
@@ -100,6 +182,84 @@ import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
   @tracked isOpen = false;
+  @tracked userPopover = false;
+  @tracked appsPopover = false;
+  @tracked btn;
+
+  spacesValues = [
+    {
+      label: 'Sales team',
+      prepend: {
+        type: 'space',
+        name: 'Sales Team',
+        size: 's'
+      },
+      checked: 'on'
+    },
+    {
+      label: 'Engineering',
+      prepend: {
+        type: 'space',
+        name: 'Engineering',
+        size: 's'
+      }
+    },
+    {
+      label: 'Security',
+      prepend: {
+        type: 'space',
+        name: 'Security',
+        size: 's'
+      }
+    },
+    {
+      label: 'Default',
+      prepend: {
+        type: 'space',
+        name: 'Default',
+        size: 's'
+      }
+    }
+  ];
+
+  additionalSpaces = [
+    {
+      label: 'Sales team 2',
+      prepend: {
+        type: 'space',
+        name: 'Sales Team 2',
+        size: 's'
+      }
+    },
+    {
+      label: 'Engineering 2',
+      prepend: {
+        type: 'space',
+        name: 'Engineering 2',
+        size: 's'
+      }
+    },
+    {
+      label: 'Security 2',
+      prepend: {
+        type: 'space',
+        name: 'Security 2',
+        size: 's'
+      }
+    },
+    {
+      label: 'Default 2',
+      prepend: {
+        type: 'space',
+        name: 'Default 2',
+        size: 's'
+      }
+    }
+  ];
+
+  animate = () => {
+    this.btn?.euiAnimate?.();
+  };
 
   breadcrumbs = [
     {
@@ -145,6 +305,7 @@ export default class DemoHeaderComponent extends Component {
   @action
   onMenuButtonClick(e) {
     e.preventDefault();
+    this.userPopover = true;
   }
 }
 ```

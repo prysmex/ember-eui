@@ -3,10 +3,16 @@
   ...attributes
   @isDisabled={{@disabled}}
   @href={{@href}}
-  @color={{arg-or-default @color "text"}}
+  @color="text"
+  {{did-insert (set this "buttonRef")}}
   {{on "click" (optional @onClick)}}
 >
-  {{yield}}
+  <span
+    {{did-insert this.setAnimationTargetRef}}
+    class="euiHeaderSectionItemButton__content"
+  >
+    {{yield}}
+  </span>
   {{#if @notification}}
     {{#if (eq @notification true)}}
       <EuiIcon
@@ -15,13 +21,23 @@
         @type="dot"
         @size="l"
       />
-    {{else}}
-      <EuiNotificationBadge
-        class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge"
-        @color={{arg-or-default @notificationColor "accent"}}
-      >
-        {{@notification}}
-      </EuiNotificationBadge>
+    {{else if @notification}}
+      <EuiHideFor @sizes={{array "xs"}}>
+        <EuiNotificationBadge
+          class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge"
+          @color={{arg-or-default @notificationColor "accent"}}
+        >
+          {{@notification}}
+        </EuiNotificationBadge>
+      </EuiHideFor>
+      <EuiShowFor @sizes={{array "xs"}}>
+        <EuiIcon
+          @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
+          @color={{arg-or-default @notificationColor "accent"}}
+          @type="dot"
+          @size="l"
+        />
+      </EuiShowFor>
     {{/if}}
   {{/if}}
 </EuiButtonEmpty>

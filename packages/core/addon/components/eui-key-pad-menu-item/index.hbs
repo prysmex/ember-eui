@@ -1,0 +1,66 @@
+{{#let
+  (if @checkable "label" (if (and @href (not @isDisabled)) "a" "button"))
+  (arg-or-default @id (unique-id))
+  (and @href (not @isDisabled))
+  as |ElementTag itemId useHref|
+}}
+  {{#let (element ElementTag) as |Element|}}
+    <Element
+      id={{itemId}}
+      href={{if useHref @href}}
+      target={{if useHref @target}}
+      aria-current={{if (and useHref @isSelected) @isSelected}}
+      for={{if @checkable itemId}}
+      disabled={{if (and (not useHref) (not @checkable)) @isDisabled}}
+      type={{if (and (not useHref) (not @checkable)) "button"}}
+      aria-pressed={{if (and (not useHref) (not @checkable)) @isSelected}}
+      class={{class-names
+        "euiKeyPadMenuItem"
+        (if @betaBadgeLabel "euiKeyPadMenuItem--hasBetaBadge")
+        (if @checkable "euiKeyPadMenuItem--checkable")
+        (if @isDisabled "euiKeyPadMenuItem-isDisabled")
+        (if @isSelected "euiKeyPadMenuItem-isSelected")
+      }}
+      ...attributes
+    >
+      <span class="euiKeyPadMenuItem__inner">
+        {{#if @checkable}}
+          {{#if (eq @checkable "single")}}
+            {{! template-lint-disable no-duplicate-id }}
+            <EuiRadio
+              id={{itemId}}
+              class="euiKeyPadMenuItem__checkableInput"
+              @checked={{@isSelected}}
+              @disabled={{@isDisabled}}
+              @name={{@name}}
+              value={{@value}}
+              {{on "change" (fn @onChange itemId @value)}}
+            />
+          {{else}}
+            <EuiCheckbox
+              id={{itemId}}
+              class="euiKeyPadMenuItem__checkableInput"
+              @checked={{@isSelected}}
+              @disabled={{@isDisabled}}
+              @name={{@name}}
+              {{on "change" (fn @onChange itemId)}}
+            />
+          {{/if}}
+        {{else}}
+          <EuiBetaBadge
+            @size="s"
+            @color="subdued"
+            class="euiKeyPadMenuItem__betaBadge"
+            @label={{this.charAt @betaBadgeLabel 0}}
+            @title={{@betaBadgeLabel}}
+            @iconType={{@betaBadgeIconType}}
+            @tooltipContent={{@betaBadgeTooltipContent}}
+          />
+        {{/if}}
+        <span class="euiKeyPadMenuItem__icon">{{yield}}</span>
+        <span class="euiKeyPadMenuItem__label">{{@label}}</span>
+      </span>
+    </Element>
+
+  {{/let}}
+{{/let}}

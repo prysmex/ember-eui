@@ -288,7 +288,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   @action
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === cascadingMenuKeys.ESCAPE) {
-      this.onEscapeKey((event as unknown) as Event);
+      this.onEscapeKey(event as unknown as Event);
     }
   }
 
@@ -418,7 +418,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
     }
 
     if (this.args.repositionOnScroll) {
-      window.addEventListener('scroll', this.positionPopoverFixed);
+      window.addEventListener('scroll', this.positionPopoverFixed, true);
     }
 
     this.updateFocus();
@@ -427,9 +427,9 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   @action
   didUpdateRepositionOnScroll(): void {
     if (this.args.repositionOnScroll) {
-      window.addEventListener('scroll', this.positionPopoverFixed);
+      window.addEventListener('scroll', this.positionPopoverFixed, true);
     } else {
-      window.removeEventListener('scroll', this.positionPopoverFixed);
+      window.removeEventListener('scroll', this.positionPopoverFixed, true);
     }
   }
 

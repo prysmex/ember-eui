@@ -1,6 +1,7 @@
 {{#let
   (and (has-block "label") (not (arg-or-default @isFakeLabelBlock false)))
-  (arg-or-default @id (unique-id)) as |hasLabelBlock id|
+  (arg-or-default @id (unique-id))
+  as |hasLabelBlock id|
 }}
   {{#let
     (class-names
@@ -9,7 +10,9 @@
       (if @compressed "euiCheckbox--compressed")
       "euiCheckbox"
       @className
-    ) as |classes|
+      @containerClass
+    )
+    as |classes|
   }}
     <div class={{classes}}>
       <input
@@ -19,7 +22,7 @@
         checked={{@checked}}
         disabled={{@disabled}}
         ...attributes
-        {{invalidate-indeterminate @indeterminate @checked}}
+        {{this.invalidateIndeterminate @indeterminate @checked}}
         {{did-insert (optional @inputRef)}}
       />
       <div class="euiCheckbox__square"></div>

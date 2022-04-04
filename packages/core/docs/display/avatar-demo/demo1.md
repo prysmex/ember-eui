@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Basic
+
 <EuiText>
   <p>
 

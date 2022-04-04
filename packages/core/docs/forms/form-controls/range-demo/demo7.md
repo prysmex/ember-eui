@@ -16,9 +16,10 @@ order: 7
 <EuiRange
   @min={{100}}
   @max={{200}}
-  @value={{20}}
+  @value={{this.value}}
   @showLabels={{true}}
   @showValue={{true}}
+  @onChange={{pick 'target.value' (set this 'value')}}
 />
 <EuiSpacer @size='xl' />
 <EuiTitle>
@@ -28,7 +29,7 @@ order: 7
   @min={{100}}
   @max={{200}}
   @value={{this.value}}
-  @onChange={{this.onChange}}
+  @onChange={{pick 'target.value' (set this 'value')}}
   @showLabels={{true}}
   @showValue={{true}}
   @showInput={{true}}
@@ -41,7 +42,7 @@ order: 7
   @min={{100}}
   @max={{200}}
   @value={{this.value}}
-  @onChange={{this.onChange}}
+  @onChange={{pick 'target.value' (set this 'value')}}
   @showLabels={{true}}
   @showValue={{true}}
   @showInput='inputWithPopover'
@@ -54,7 +55,7 @@ order: 7
   @min={{100}}
   @max={{200}}
   @value={{this.value}}
-  @onChange={{this.onChange}}
+  @onChange={{pick 'target.value' (set this 'value')}}
   @showLabels={{true}}
   @showValue={{true}}
   @showInput='inputWithPopover'
@@ -70,8 +71,8 @@ order: 7
 <EuiDualRange
   @min={{100}}
   @max={{200}}
-  @value={{this.value}}
-  @onChange={{this.onChange}}
+  @value={{this.valueDual}}
+  @onChange={{set this 'valueDual'}}
   @showLabels={{true}}
   @showValue={{true}}
   @showInput='inputWithPopover'
@@ -101,8 +102,8 @@ order: 7
 <EuiDualRange
   @min={{100}}
   @max={{200}}
-  @value={{this.value}}
-  @onChange={{this.onChange}}
+  @value={{this.valueDual}}
+  @onChange={{set this 'valueDual'}}
   @showLabels={{true}}
   @showValue={{true}}
   @showInput={{true}}
@@ -118,8 +119,8 @@ order: 7
 <EuiDualRange
   @min={{100}}
   @max={{200}}
-  @value={{this.value}}
-  @onChange={{this.onChange}}
+  @value={{this.valueDual}}
+  @onChange={{set this 'valueDual'}}
   @showLabels={{true}}
   @showValue={{true}}
 />
@@ -180,7 +181,7 @@ order: 7
     </Form.FieldRangeSlider>
     <EuiSpacer />
     <Form.FieldDualRangeSlider
-      @fieldName='rangeSlider1'
+      @fieldName='rangeSlider2'
       @label='Dual slider with popover'
       @showLabels={{true}}
       @showValue={{true}}
@@ -194,7 +195,7 @@ order: 7
     </Form.FieldDualRangeSlider>
     <EuiSpacer />
     <Form.FieldDualRangeSlider
-      @fieldName='rangeSlider1'
+      @fieldName='rangeSlider2'
       @label='Dual slider with inputs'
       @showLabels={{true}}
       @showValue={{true}}
@@ -204,7 +205,7 @@ order: 7
     />
     <EuiSpacer />
     <Form.FieldDualRangeSlider
-      @fieldName='rangeSlider1'
+      @fieldName='rangeSlider2'
       @label='Plain dual slider'
       @showLabels={{true}}
       @showValue={{true}}
@@ -223,8 +224,9 @@ order: 7
 <ValidatedForm as |Form|>
   <EuiFlexGroup @direction='column' @gutterSize='none'>
     <Form.FieldRangeSlider
-      @fieldName='rangeSlider1'
       @label='Range slider'
+      @value={{this.validatedData.rangeSlider1}}
+      @onChange={{set this.validatedData 'rangeSlider1'}}
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
@@ -236,8 +238,9 @@ order: 7
     />
     <EuiSpacer />
     <Form.FieldRangeSlider
-      @fieldName='rangeSlider1'
       @label='Range slider with input'
+      @value={{this.validatedData.rangeSlider1}}
+      @onChange={{set this.validatedData 'rangeSlider1'}}
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
@@ -250,8 +253,9 @@ order: 7
     />
     <EuiSpacer />
     <Form.FieldRangeSlider
-      @fieldName='rangeSlider1'
       @label='Range slider with append'
+      @value={{this.validatedData.rangeSlider1}}
+      @onChange={{set this.validatedData 'rangeSlider1'}}
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
@@ -268,8 +272,9 @@ order: 7
     </Form.FieldRangeSlider>
     <EuiSpacer />
     <Form.FieldRangeSlider
-      @fieldName='rangeSlider1'
       @label='Range slider with popover'
+      @value={{this.validatedData.rangeSlider1}}
+      @onChange={{set this.validatedData 'rangeSlider1'}}
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
@@ -286,17 +291,15 @@ order: 7
     </Form.FieldRangeSlider>
     <EuiSpacer />
     <Form.FieldDualRangeSlider
-      @fieldName='rangeSlider1'
       @label='Dual slider with popover'
+      @value={{this.validatedData.rangeSlider2}}
+      @onChange={{set this.validatedData 'rangeSlider2'}}
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
       @max={{300}}
       @showInput='inputWithPopover'
-      @validations={{hash
-        number=(hash gte=0 lte=100 allowString=true)
-        presence=(hash presence=true)
-      }}
+      @validations={{hash presence=(hash presence=true)}}
     >
       <:append as |classes|>
         <EuiFormLabel class={{classes}}>Append</EuiFormLabel>
@@ -304,30 +307,26 @@ order: 7
     </Form.FieldDualRangeSlider>
     <EuiSpacer />
     <Form.FieldDualRangeSlider
-      @fieldName='rangeSlider1'
       @label='Dual slider with inputs'
+      @value={{this.validatedData.rangeSlider2}}
+      @onChange={{set this.validatedData 'rangeSlider2'}}
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
       @max={{300}}
       @showInput={{true}}
-      @validations={{hash
-        number=(hash gte=0 lte=100 allowString=true)
-        presence=(hash presence=true)
-      }}
+      @validations={{hash presence=(hash presence=true)}}
     />
     <EuiSpacer />
     <Form.FieldDualRangeSlider
-      @fieldName='rangeSlider1'
       @label='Plain dual slider'
+      @value={{this.validatedData.rangeSlider2}}
+      @onChange={{set this.validatedData 'rangeSlider2'}}
       @showLabels={{true}}
       @showValue={{true}}
       @min={{0}}
       @max={{300}}
-      @validations={{hash
-        number=(hash gte=0 lte=100 allowString=true)
-        presence=(hash presence=true)
-      }}
+      @validations={{hash presence=(hash presence=true)}}
     />
     <EuiButton @type='submit'>
       Submit form
@@ -343,10 +342,8 @@ import { action } from '@ember/object';
 
 export default class DemoCardComponent extends Component {
   @tracked value = 0;
+  @tracked valueDual = [0, 0];
+  @tracked validatedData = {};
   changeset = {};
-  @action
-  onChange(e) {
-    this.value = e.target.value;
-  }
 }
 ```

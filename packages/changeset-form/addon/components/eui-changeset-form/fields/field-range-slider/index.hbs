@@ -45,8 +45,8 @@
       @inputRef={{@inputRef}}
       @controlOnly={{@controlOnly}}
       @autoSize={{@autoSize}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       @isFakeMinBlock={{not (has-block "min")}}
       @isFakeMaxBlock={{not (has-block "max")}}
       @isFakeValueBlock={{not (has-block "value")}}

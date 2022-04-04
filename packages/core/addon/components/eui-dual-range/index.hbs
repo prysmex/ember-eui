@@ -1,10 +1,9 @@
 {{#let
-  (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
-  (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
+  (and (arg-or-default @isPrependProvided true) (has-block "prepend"))
+  (and (arg-or-default @isAppendProvided true) (has-block "append"))
   (and (not (arg-or-default @isFakeMaxBlock false)) (has-block "max"))
-  (and
-    (not (arg-or-default @isFakeMinBlock false)) (has-block "min")
-  ) as |hasPrepend hasAppend hasMaxBlock hasMinBlock|
+  (and (not (arg-or-default @isFakeMinBlock false)) (has-block "min"))
+  as |hasPrepend hasAppend hasMaxBlock hasMinBlock|
 }}
   {{#if this.showInputOnly}}
     <EuiInputPopover
@@ -44,8 +43,8 @@
               @autoSize={{false}}
               @fullWidth={{this.fullWidth}}
               @isInvalid={{@isInvalid}}
-              @isFakeAppendBlock={{hasPrepend}}
-              @isFakePrependBlock={{hasAppend}}
+              @isPrependProvided={{hasAppend}}
+              @isAppendProvided={{hasPrepend}}
               @controlOnly={{true}}
               @disable={{@disable}}
               ...attributes
@@ -60,11 +59,16 @@
                 (if this.canShowDropdown this.onInputBlur (optional @onBlur))
               }}
               {{on "input" this.handleLowerInputChange}}
-            />
-            <div class="euiRange__horizontalSpacer"></div>
+            >
+              <:prepend as |classes|>
+                {{yield classes to="prepend"}}
+              </:prepend>
+              <:append as |classes|>
+                {{yield classes to="append"}}
+              </:append>
+            </EuiRangeInput>
           </:startControl>
           <:endControl as |classes|>
-            <div class="euiRange__horizontalSpacer"></div>
             <EuiRangeInput
               class={{classes}}
               aria-label={{@maxInputProps.ariaLabel}}
@@ -81,8 +85,8 @@
               @autoSize={{false}}
               @fullWidth={{this.fullWidth}}
               @isInvalid={{@isInvalid}}
-              @isFakeAppendBlock={{hasPrepend}}
-              @isFakePrependBlock={{hasAppend}}
+              @isPrependProvided={{hasAppend}}
+              @isAppendProvided={{hasPrepend}}
               @controlOnly={{true}}
               @disable={{@disable}}
               ...attributes
@@ -97,7 +101,14 @@
                 (if this.canShowDropdown this.onInputBlur (optional @onBlur))
               }}
               {{on "input" this.handleUpperInputChange}}
-            />
+            >
+              <:prepend as |classes|>
+                {{yield classes to="prepend"}}
+              </:prepend>
+              <:append as |classes|>
+                {{yield classes to="append"}}
+              </:append>
+            </EuiRangeInput>
           </:endControl>
           <:append as |appendClasses|>
             {{yield appendClasses to="append"}}
@@ -232,8 +243,8 @@
           @readOnly={{@readOnly}}
           @fullWidth={{this.fullWidth}}
           @isInvalid={{@isInvalid}}
-          @isFakeAppendBlock={{true}}
-          @isFakePrependBlock={{true}}
+          @isPrependProvided={{false}}
+          @isAppendProvided={{false}}
           @controlOnly={{true}}
           @disable={{@disable}}
           ...attributes
@@ -358,8 +369,8 @@
           @fullWidth={{this.fullWidth}}
           @isInvalid={{@isInvalid}}
           @controlOnly={{this.showInputOnly}}
-          @isFakeAppendBlock={{true}}
-          @isFakePrependBlock={{true}}
+          @isPrependProvided={{false}}
+          @isAppendProvided={{false}}
           @disable={{@disable}}
           ...attributes
           {{on-key "_all" this.handleInputKeyDown}}

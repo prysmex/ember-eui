@@ -10,7 +10,7 @@ order: 2
 
 ```hbs template
 <EuiFlexGroup>
-  <EuiFlexItem grow='{false}'>
+  <EuiFlexItem @grow={{false}}>
     <EuiImage
       @size='m'
       @hasShadow={{true}}
@@ -20,7 +20,7 @@ order: 2
       @url='https://source.unsplash.com/2000x1000/?Nature'
     />
   </EuiFlexItem>
-  <EuiFlexItem grow='{false}'>
+  <EuiFlexItem @grow={{false}}>
     <EuiImage
       @size='m'
       @hasShadow={{true}}

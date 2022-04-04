@@ -153,7 +153,14 @@ export default class EuiBreadcrumbsComponent extends Component<EuiBreadcrumbsCom
   }
 
   get max() {
-    return this.args.max || 5;
+    if (this.args.max === null) {
+      return null;
+    }
+    return this.args.max ?? 5;
+  }
+
+  get truncate() {
+    return this.args.truncate ?? true;
   }
 
   get calculatedMax(): EuiBreadcrumbsComponentArgs['max'] {

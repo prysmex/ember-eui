@@ -12,6 +12,7 @@ export type OneOf<T, K extends keyof T> = Omit<T, K> &
   { [k in K]: Pick<Required<T>, k> & { [k1 in Exclude<K, k>]?: never } }[K];
 
 export interface CommonArgs {
+  className?: string;
   'aria-label'?: string;
   'data-test-subj'?: string;
 }

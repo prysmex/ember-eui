@@ -1,15 +1,36 @@
-<div
-  class={{class-names
-    (if (not-eq @hasShadow false) "euiPanel--hasShadow" "euiPanel--noShadow")
-    (if (eq @grow false) "euiPanel--flexGrowZero")
-    (if (eq @hasBorder true) "euiPanel--hasBorder")
-    (if (eq @hasBorder false) "euiPanel--noBorder")
-    componentName="EuiPanel"
-    paddingSize=(arg-or-default @paddingSize "m")
-    borderRadius=(arg-or-default @borderRadius "m")
-    color=(arg-or-default @color "plain")
-  }}
-  ...attributes
->
-  {{yield}}
-</div>
+{{#if @onClick}}
+  <div
+    role="button"
+    class={{class-names
+      "euiPanel--isClickable"
+      (if (not-eq @hasShadow false) "euiPanel--hasShadow" "euiPanel--noShadow")
+      (if (eq @grow false) "euiPanel--flexGrowZero")
+      (if (eq @hasBorder true) "euiPanel--hasBorder")
+      (if (eq @hasBorder false) "euiPanel--noBorder")
+      componentName="EuiPanel"
+      paddingSize=(arg-or-default @paddingSize "m")
+      borderRadius=(arg-or-default @borderRadius "m")
+      color=(arg-or-default @color "plain")
+    }}
+    {{on "click" @onClick}}
+    ...attributes
+  >
+    {{yield}}
+  </div>
+{{else}}
+  <div
+    class={{class-names
+      (if (not-eq @hasShadow false) "euiPanel--hasShadow" "euiPanel--noShadow")
+      (if (eq @grow false) "euiPanel--flexGrowZero")
+      (if (eq @hasBorder true) "euiPanel--hasBorder")
+      (if (eq @hasBorder false) "euiPanel--noBorder")
+      componentName="EuiPanel"
+      paddingSize=(arg-or-default @paddingSize "m")
+      borderRadius=(arg-or-default @borderRadius "m")
+      color=(arg-or-default @color "plain")
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </div>
+{{/if}}

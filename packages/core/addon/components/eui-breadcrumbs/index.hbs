@@ -1,0 +1,98 @@
+<nav
+  {{this.onWidowResize
+    functionToCallOnWindowResize=this.functionToCallOnWindowResize
+  }}
+  class={{class-names
+    "euiBreadcrumbs"
+    (if this.truncate "euiBreadcrumbs--truncate")
+  }}
+  ...attributes
+>
+  <ol class="euiBreadcrumbs__list">
+
+    {{#each this.limitedBreadcrumbs.breadcrumbs as |breadcrumb index|}}
+
+      {{#if breadcrumb.ellipsis}}
+        {{#let (use-state false) as |popOverState|}}
+          <li class="euiBreadcrumb euiBreadcrumb--collapsed">
+            <EuiPopover
+              @isOpen={{popOverState.value}}
+              @closePopover={{fn popOverState.setState false}}
+            >
+              <:button>
+                <EuiLink
+                  class="euiBreadcrumb__content"
+                  @color="subdued"
+                  @aria-label="See collapsed breadcrumbs"
+                  title="See collapsed breadcrumbs"
+                  {{on "click" (fn popOverState.setState true)}}
+                >
+                  &hellip;<EuiIcon @type="arrowDown" @size="s" />
+                </EuiLink>
+              </:button>
+              <:content>
+                <EuiBreadcrumbs
+                  class="euiBreadcrumbs__inPopover"
+                  @breadcrumbs={{this.limitedBreadcrumbs.overflowBreadcrumbs}}
+                  @responsive={{false}}
+                  @truncate={{false}}
+                  @max={{0}}
+                />
+              </:content>
+            </EuiPopover>
+
+          </li>
+
+        {{/let}}
+      {{else}}
+        <EuiInnerText as |setInnerTextRef innerText|>
+          {{#let
+            (eq index (sub this.limitedBreadcrumbs.breadcrumbs.length 1))
+            (if (eq innerText "") undefined innerText)
+            as |isLastBreadcrumb title|
+          }}
+            <li
+              class={{class-names
+                "euiBreadcrumb"
+                (if isLastBreadcrumb "euiBreadcrumb--last")
+                (if breadcrumb.truncate "euiBreadcrumb--truncate")
+              }}
+            >
+              {{#if (and (not breadcrumb.href) (not breadcrumb.onClick))}}
+                <span
+                  {{did-insert setInnerTextRef}}
+                  title={{title}}
+                  class={{class-names
+                    "euiBreadcrumb__content"
+                    breadcrumb.className
+                  }}
+                  aria-current={{if isLastBreadcrumb "page" undefined}}
+                >
+                  {{breadcrumb.text}}
+                </span>
+              {{else}}
+                <EuiLink
+                  {{did-insert setInnerTextRef}}
+                  @color={{if isLastBreadcrumb "text" "subdued"}}
+                  @onClick={{breadcrumb.onClick}}
+                  @href={{breadcrumb.href}}
+                  title={{title}}
+                  class={{class-names
+                    "euiBreadcrumb__content"
+                    breadcrumb.className
+                  }}
+                  aria-current={{if isLastBreadcrumb "page" undefined}}
+                >
+                  {{breadcrumb.text}}
+                </EuiLink>
+              {{/if}}
+
+            </li>
+          {{/let}}
+        </EuiInnerText>
+      {{/if}}
+
+    {{/each}}
+
+  </ol>
+</nav>

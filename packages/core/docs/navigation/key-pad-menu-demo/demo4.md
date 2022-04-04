@@ -13,7 +13,7 @@ order: 4
 
 </EuiText>
 
-# Beta item
+# Checkable
 
 ```hbs template
 <EuiKeyPadMenu @checkable={{hash legend='Multi select as checkboxes'}}>
@@ -23,7 +23,7 @@ order: 4
     @isSelected={{this.multiSelect1isSelected}}
     @id={{this.keypadMultiSelectButtonId__1}}
     @label='Check one'
-    @onChange={{set this 'multiSelect1isSelected'}}
+    @onChange={{fn this.toggleCheckbox 'multiSelect1isSelected'}}
   >
     <EuiIcon @type='faceHappy' @size='l' />
   </EuiKeyPadMenuItem>
@@ -32,7 +32,7 @@ order: 4
     @isSelected={{this.multiSelect2isSelected}}
     @id={{this.keypadMultiSelectButtonId__2}}
     @label='Check two'
-    @onChange={{set this 'multiSelect2isSelected'}}
+    @onChange={{fn this.toggleCheckbox 'multiSelect2isSelected'}}
   >
     <EuiIcon @type='faceNeutral' @size='l' />
   </EuiKeyPadMenuItem>
@@ -41,6 +41,7 @@ order: 4
     @id={{this.keypadMultiSelectButtonId__3}}
     @label='Disabled'
     @isDisabled={{true}}
+    @onChange={{fn this.toggleCheckbox 'multiSelect2isSelected'}}
   >
     <EuiIcon @type='faceSad' @size='l' />
   </EuiKeyPadMenuItem>
@@ -58,5 +59,13 @@ export default class DemoSideNavComponent extends Component {
   keypadMultiSelectButtonId__1 = 'keypaddemo41';
   keypadMultiSelectButtonId__2 = 'keypaddemo42';
   keypadMultiSelectButtonId__3 = 'keypaddemo43';
+
+  toggleCheckbox = (name) => {
+    if (this[name]) {
+      this[name] = false;
+      return;
+    }
+    this[name] = true;
+  };
 }
 ```

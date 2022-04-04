@@ -6,7 +6,6 @@
 }}
   {{#let (element ElementTag) as |Element|}}
     <Element
-      id={{itemId}}
       href={{if useHref @href}}
       target={{if useHref @target}}
       aria-current={{if (and useHref @isSelected) @isSelected}}
@@ -21,6 +20,7 @@
         (if @isDisabled "euiKeyPadMenuItem-isDisabled")
         (if @isSelected "euiKeyPadMenuItem-isSelected")
       }}
+      rel={{if useHref "noreferrer"}}
       ...attributes
     >
       <span class="euiKeyPadMenuItem__inner">
@@ -29,7 +29,7 @@
             {{! template-lint-disable no-duplicate-id }}
             <EuiRadio
               id={{itemId}}
-              class="euiKeyPadMenuItem__checkableInput"
+              @containerClass="euiKeyPadMenuItem__checkableInput"
               @checked={{@isSelected}}
               @disabled={{@isDisabled}}
               @name={{@name}}
@@ -39,7 +39,7 @@
           {{else}}
             <EuiCheckbox
               id={{itemId}}
-              class="euiKeyPadMenuItem__checkableInput"
+              @containerClass="euiKeyPadMenuItem__checkableInput"
               @checked={{@isSelected}}
               @disabled={{@isDisabled}}
               @name={{@name}}

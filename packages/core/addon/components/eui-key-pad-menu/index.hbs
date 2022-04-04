@@ -1,0 +1,16 @@
+{{#if @checkable.legend}}
+  <fieldset
+    class="euiKeyPadMenu"
+    aria-label={{@checkable.ariaLegend}}
+    ...attributes
+  >
+    <EuiFormLabel @type="legend">
+      {{@checkable.legend}}
+    </EuiFormLabel>
+    {{yield}}
+  </fieldset>
+{{else}}
+  <ul class="euiKeyPadMenu" ...attributes>
+    {{yield (component "eui-key-pad-menu/key")}}
+  </ul>
+{{/if}}

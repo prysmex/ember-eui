@@ -26,7 +26,7 @@ order: 6
   </EuiFlexItem>
 </EuiFlexGroup>
 <EuiSpacer />
-<EuiHeader @position={{if this.header1Fixed 'fixed'}}>
+<EuiHeader>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
       <EuiHeaderLogo>Elastic</EuiHeaderLogo>

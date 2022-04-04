@@ -1,5 +1,5 @@
 <div
-  {{fixed-header @position}}
+  {{this.fixedHeader @position}}
   class={{class-names
     componentName="EuiHeader"
     theme=(arg-or-default @theme "default")
@@ -7,5 +7,20 @@
   }}
   ...attributes
 >
-  {{yield}}
+  {{#if @sections}}
+    {{#each @sections as |section|}}
+      {{#each @section.items as |itemSection|}}
+        <EuiHeaderSection>
+          <EuiHeaderSectionItem @border={{section.borders}}>
+            {{itemSection.text}}
+          </EuiHeaderSectionItem>
+        </EuiHeaderSection>
+      {{/each}}
+      {{#each @section.breadcrumbs as |breadcrumbs|}}
+        <EuiHeaderBreadcrumbs @breadcrumbs={{breadcrumbs}} />
+      {{/each}}
+    {{/each}}
+  {{else}}
+    {{yield}}
+  {{/if}}
 </div>

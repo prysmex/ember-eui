@@ -2,7 +2,8 @@
   {{#let
     (eq @selectedTabId id)
     (fn @onClick id)
-    (fn (optional @focusFn) id) as |isSelected onClick focusFn|
+    (fn (optional @focusFn) id)
+    as |isSelected onClick focusFn|
   }}
     {{#if (and @href (not @disabled))}}
       <a
@@ -18,7 +19,7 @@
         disabled={{@disabled}}
         ...attributes
         {{on "click" onClick}}
-        {{focus-tab @selectedTabId @disabled focusFn}}
+        {{this.focusTabModifier @selectedTabId @disabled focusFn}}
       >
         <span class="euiTab__content">
           {{yield}}
@@ -38,7 +39,7 @@
         disabled={{@disabled}}
         ...attributes
         {{on "click" onClick}}
-        {{focus-tab @selectedTabId @disabled focusFn}}
+        {{this.focusTabModifier @selectedTabId @disabled focusFn}}
       >
         <span class="euiTab__content">
           {{yield}}

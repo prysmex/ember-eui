@@ -13,6 +13,7 @@ import { EuiRangeTick } from '../eui-range-ticks';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { later } from '@ember/runloop';
 import { keys } from '../../utils/keys';
+import { EUI_THUMB_SIZE } from '../../utils/range';
 type ValueMember = number | string;
 
 export interface EuiDualRangeArgs
@@ -177,16 +178,28 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
     // Determine thumb movement based on slider interaction
     if (!this.isValid) {
       // Non-standard positioning follows
-      this._determineInvalidThumbMovement(newVal, this.lowerValue, this.upperValue, e);
+      this._determineInvalidThumbMovement(
+        newVal,
+        this.lowerValue,
+        this.upperValue,
+        e
+      );
     } else {
       // Standard positioning based on click event proximity to thumb locations
-      this._determineValidThumbMovement(newVal, this.lowerValue, this.upperValue, e);
+      this._determineValidThumbMovement(
+        newVal,
+        this.lowerValue,
+        this.upperValue,
+        e
+      );
     }
   }
 
   @action
   _handleOnChange(lower: ValueMember, upper: ValueMember, e: Event): void {
-    const isValid = isWithinRange(this.min, upper, lower) && isWithinRange(lower, this.max, upper);
+    const isValid =
+      isWithinRange(this.min, upper, lower) &&
+      isWithinRange(lower, this.max, upper);
     this.args.onChange([lower, upper], isValid, e);
   }
 
@@ -198,15 +211,23 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   @action
   _resetToRangeEnds(e: KeyboardEvent): void {
     // Arbitrary decision to pass `min` instead of `max`. Result is the same.
-    this._determineInvalidThumbMovement(this.min, this.lowerValue, this.upperValue, e);
+    this._determineInvalidThumbMovement(
+      this.min,
+      this.lowerValue,
+      this.upperValue,
+      e
+    );
   }
 
   @action
   _isDirectionalKeyPress(event: KeyboardEvent): boolean {
     return (
-      [keys.ARROW_UP, keys.ARROW_RIGHT, keys.ARROW_DOWN, keys.ARROW_LEFT].indexOf(
-        event.key as keys
-      ) > -1
+      [
+        keys.ARROW_UP,
+        keys.ARROW_RIGHT,
+        keys.ARROW_DOWN,
+        keys.ARROW_LEFT
+      ].indexOf(event.key as keys) > -1
     );
   }
 
@@ -303,7 +324,6 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
     let valuePosition = decimal <= 1 ? decimal : 1;
     valuePosition = valuePosition >= 0 ? valuePosition : 0;
 
-    const EUI_THUMB_SIZE = 16;
     const trackWidth =
       this.args.showInput === 'inputWithPopover' && !!width
         ? width
@@ -325,11 +345,17 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   get calculateLowerValueThumbPositionStyle(): { left: string } {
-    return this.calculateThumbPositionStyle(Number(this.lowerValue) || this.min, this.rangeWidth);
+    return this.calculateThumbPositionStyle(
+      Number(this.lowerValue) || this.min,
+      this.rangeWidth
+    );
   }
 
   get calculateUpperValueThumbPositionStyle(): { left: string } {
-    return this.calculateThumbPositionStyle(Number(this.upperValue) || this.max, this.rangeWidth);
+    return this.calculateThumbPositionStyle(
+      Number(this.upperValue) || this.max,
+      this.rangeWidth
+    );
   }
 
   @action

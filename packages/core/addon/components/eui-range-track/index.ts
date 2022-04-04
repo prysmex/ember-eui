@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { EuiRangeLevel, LEVEL_COLORS } from '../eui-range-levels';
 import { assert } from '@ember/debug';
 import { isEvenlyDivisibleBy } from '../../utils/number';
@@ -35,14 +36,28 @@ type Styling = {
 };
 
 export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs> {
+  @tracked
+  trackEl: HTMLElement | undefined;
+
+  @action
+  registerTrack(el: HTMLElement) {
+    this.trackEl = el;
+  }
+
   @action
   validateValueIsInStep(value: number): number {
     const { min, max, step } = this.args;
     if (value < min) {
-      assert(`The value of ${value} is lower than the min value of ${min}.`, false);
+      assert(
+        `The value of ${value} is lower than the min value of ${min}.`,
+        false
+      );
     }
     if (value > max) {
-      assert(`The value of ${value} is higher than the max value of ${max}.`, false);
+      assert(
+        `The value of ${value} is higher than the max value of ${max}.`,
+        false
+      );
     }
     // Error out if the value doesn't line up with the sequence of steps
     if (!isEvenlyDivisibleBy(value - min, step !== undefined ? step : 1)) {
@@ -95,7 +110,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
     // Error out if there are too many ticks to render
     if (ticks.length > 20) {
       assert(
-        `The number of ticks to render is too high (${ticks.length}), reduce the interval.`,
+        `The number of ticks to render is too high (${ticks.length}), increase the interval.`,
         true
       );
     }
@@ -105,7 +120,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
 
   get derivedState(): Styling {
     let tickSequence;
-    let styles;
+    let styles = '';
     const { showTicks, min, max, step, tickInterval, ticks } = this.args;
 
     if (showTicks) {
@@ -114,7 +129,9 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
       // Calculate if any extra margin should be added to the inputWrapper
       // because of longer tick labels on the ends
       const lengthOfMinLabel = String(tickSequence[0]).length;
-      const lenghtOfMaxLabel = String(tickSequence[tickSequence.length - 1]).length;
+      const lenghtOfMaxLabel = String(
+        tickSequence[tickSequence.length - 1]
+      ).length;
       const isLastTickTheMax = tickSequence[tickSequence.length - 1] === max;
       if (lengthOfMinLabel > 2) {
         styles = `margin-left: ${lengthOfMinLabel / 5}em`;
@@ -126,7 +143,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
 
     return {
       tickSequence,
-      styles: htmlSafe(styles as string)
+      styles: htmlSafe(styles)
     };
   }
 }

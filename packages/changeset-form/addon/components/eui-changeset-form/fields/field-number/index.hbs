@@ -34,8 +34,8 @@
       {{!template-lint-disable}}
       @id={{theId}}
       @disabled={{@disabled}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       autofocus={{@autofocus}}
       placeholder={{@placeholder}}
       {{on "blur" this.validate}}

@@ -1,6 +1,6 @@
 {{#let
-  (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
-  (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
+  (and (arg-or-default @isPrependProvided true) (has-block "prepend"))
+  (and (arg-or-default @isAppendProvided true) (has-block "append"))
   (and (not (arg-or-default @isFakeMaxBlock false)) (has-block "max"))
   (and (not (arg-or-default @isFakeMinBlock false)) (has-block "min"))
   (and (not (arg-or-default @isFakeValueBlock false)) (has-block "value"))
@@ -38,8 +38,8 @@
           @isLoading={{and @showInputOnly @isLoading}}
           @isInvalid={{@isInvalid}}
           @autoSize={{not this.showInputOnly}}
-          @isFakePrependBlock={{hasPrepend}}
-          @isFakeAppendBlock={{hasAppend}}
+          @isPrependProvided={{hasPrepend}}
+          @isAppendProvided={{hasAppend}}
           ...attributes
           {{on
             "focus"
@@ -61,7 +61,10 @@
       </:input>
       <:content>
         <EuiRangeWrapper
-          class="euiRange"
+          class={{class-names
+            "euiRange"
+            (if this.showInput "euiRange--hasInput")
+          }}
           @fullWidth={{@fullWidth}}
           @compressed={{@compressed}}
         >
@@ -191,6 +194,8 @@
                 @isLoading={{and @showInputOnly @isLoading}}
                 @isInvalid={{@isInvalid}}
                 @autoSize={{not this.showInputOnly}}
+                @isPrependProvided={{hasPrepend}}
+                @isAppendProvided={{hasAppend}}
                 ...attributes
                 {{on
                   "focus"
@@ -203,7 +208,14 @@
                   (if this.canShowDropdown this.onInputBlur (optional @onBlur))
                 }}
                 {{on "input" this.handleOnChange}}
-              />
+              >
+                <:prepend as |classes|>
+                  {{yield classes to="prepend"}}
+                </:prepend>
+                <:append as |classes|>
+                  {{yield classes to="append"}}
+                </:append>
+              </EuiRangeInput>
             {{/if}}
           {{/if}}
         </EuiRangeWrapper>
@@ -211,7 +223,10 @@
     </EuiInputPopover>
   {{else}}
     <EuiRangeWrapper
-      class="euiRange"
+      class={{class-names
+        "euiRange"
+        (if this.showInput "euiRange--hasInput")
+      }}
       @fullWidth={{@fullWidth}}
       @compressed={{@compressed}}
     >
@@ -337,8 +352,8 @@
             @isLoading={{and @showInputOnly @isLoading}}
             @isInvalid={{@isInvalid}}
             @autoSize={{not this.showInputOnly}}
-            @isFakePrependBlock={{hasPrepend}}
-            @isFakeAppendBlock={{hasAppend}}
+            @isPrependProvided={{hasPrepend}}
+            @isAppendProvided={{hasAppend}}
             ...attributes
             {{on
               "focus"
@@ -349,7 +364,14 @@
               (if this.canShowDropdown this.onInputBlur (optional @onBlur))
             }}
             {{on "input" this.handleOnChange}}
-          />
+          >
+            <:prepend as |classes|>
+              {{yield classes to="prepend"}}
+            </:prepend>
+            <:append as |classes|>
+              {{yield classes to="append"}}
+            </:append>
+          </EuiRangeInput>
         {{/if}}
       {{/if}}
     </EuiRangeWrapper>

@@ -2,7 +2,7 @@
   class={{class-names
     "euiRangeLevels"
     (if @showTicks "euiRangeLevels--hasTicks")
-    (if @compresses "euiRangeLevels--compressed")
+    (if @compressed "euiRangeLevels--compressed")
   }}
   {{did-insert this.validateLevels}}
   {{did-update this.validateLevels @levels}}
@@ -14,7 +14,7 @@
       class="euiRangeLevel euiRangeLevel--{{level.color}}"
       {{simple-style
         (inline-styles
-          componentName="EuiRangeLevels" componentArgs=(hash level=level max=@max min=@min)
+          componentName="EuiRangeLevels" componentArgs=(hash level=level max=@max min=@min trackWidth=@trackWidth)
         )
       }}
     ></span>

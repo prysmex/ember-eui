@@ -1,12 +1,16 @@
-<figure
-  class={{class-names
-    (unless (eq @hasShadow false) "euiImage--hasShadow")
-    componentName="EuiImage"
-    size=@size
-  }}
-  ...attributes
->
-  {{#if @allowFullScreen}}
+{{#if @allowFullScreen}}
+  <figure
+    class={{class-names
+      "euiImage--allowFullScreen"
+      (unless (eq @hasShadow false) "euiImage--hasShadow")
+      float=@float
+      margin=@margin
+      componentName="EuiImage"
+      size=@size
+    }}
+    ...attributes
+  >
+
     <button
       class="euiImage__button"
       type="button"
@@ -15,43 +19,77 @@
       {{on "click" this.toggleFullscreen}}
     >
       <img
-        src={{@url}}
+        src={{or @src @url}}
         class="euiImage__img"
         style={{this.sizeStyle}}
         alt={{@alt}}
       />
       <EuiIcon
-        class="euiImage__icon"
+        @iconClasses="euiImage__icon"
         @type="fullScreen"
         @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
       />
     </button>
-  {{else}}
+
+    {{#if @caption}}
+      <figcaption class="euiImage__caption">
+        {{@caption}}
+      </figcaption>
+    {{/if}}
+  </figure>
+
+{{else}}
+
+  <figure
+    class={{class-names
+      (unless (eq @hasShadow false) "euiImage--hasShadow")
+      float=@float
+      margin=@margin
+      componentName="EuiImage"
+      size=@size
+    }}
+    ...attributes
+  >
+
     <img
-      src={{@url}}
+      src={{or @src @url}}
       class="euiImage__img"
       style={{this.sizeStyle}}
       alt={{@alt}}
     />
-  {{/if}}
-  {{#if @caption}}
-    <figcaption class="euiImage__caption">
-      {{@caption}}
-    </figcaption>
-  {{/if}}
-</figure>
+
+    {{#if @caption}}
+      <figcaption class="euiImage__caption">
+        {{@caption}}
+      </figcaption>
+    {{/if}}
+  </figure>
+
+{{/if}}
+
 {{#if this.isFullscreen}}
   <EuiOverlayMask
     @headerZindexLocation="above"
-    {{on "click" this.toggleFullscreen}}
+    @onClick={{this.toggleFullscreen}}
   >
-    <figure class="euiImage euiImage-isFullScreen">
+    <figure
+      class="euiImage euiImage-isFullScreen"
+      {{focus-trap focusTrapOptions=(hash clickOutsideDeactivates=true)}}
+    >
       <button
         class="euiImage__button"
         type="button"
         {{on "click" this.toggleFullscreen}}
+        {{on-key
+          "Escape"
+          (prevent-default (stop-propagation this.toggleFullscreen))
+        }}
       >
-        <img class="euiImage-isFullScreen__img" src={{@url}} alt={{@alt}} />
+        <img
+          class="euiImage-isFullScreen__img"
+          src={{or @src @url}}
+          alt={{@alt}}
+        />
       </button>
       <figcaption class="euiImage__caption">
         {{@caption}}

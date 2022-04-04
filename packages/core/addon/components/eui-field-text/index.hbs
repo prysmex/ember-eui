@@ -20,6 +20,7 @@
         class={{classes}}
         disabled={{@disabled}}
         type="text"
+        placeholder={{@placeholder}}
         ...attributes
         {{validatable-control @isInvalid}}
         {{did-insert (optional @inputRef)}}
@@ -45,6 +46,7 @@
             class={{classes}}
             disabled={{@disabled}}
             type="text"
+            placeholder={{@placeholder}}
             ...attributes
             {{validatable-control @isInvalid}}
           />

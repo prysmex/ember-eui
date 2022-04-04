@@ -53,12 +53,17 @@ import EuiRangeLevels from './eui-range-levels';
 import EuiToolTip from './eui-tool-tip';
 import EuiToast from './eui-toast';
 import EuiGlobalToastList from './eui-global-toast-list';
-import EuiCodeBlockImpl from './eui-code-block-impl';
+import EuiCodeBlock from './eui-code-block';
 import EuiStat from './eui-stat';
+import EuiHeaderLinks from './eui-header-links';
+import EuiLink from './eui-link';
+import EuiBetaBadge from './eui-beta-badge';
 
 const mapping: Mapping = {
+  EuiBetaBadge,
+  EuiLink,
   EuiStat,
-  EuiCodeBlockImpl,
+  EuiCodeBlock,
   EuiAccordion,
   EuiIcon,
   EuiModal,
@@ -113,7 +118,8 @@ const mapping: Mapping = {
   EuiRangeLevels,
   EuiToolTip,
   EuiToast,
-  EuiGlobalToastList
+  EuiGlobalToastList,
+  EuiHeaderLinks
 };
 
 export default mapping;

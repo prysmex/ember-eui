@@ -20,7 +20,7 @@
     <EuiDualRange
       class={{@fieldClasses}}
       form={{@formId}}
-      @value={{this.value}}
+      @value={{@value}}
       @fullWidth={{@fullWidth}}
       @isInvalid={{this.isInvalidAndTouched}}
       @levels={{@levels}}
@@ -47,8 +47,8 @@
       @inputRef={{@inputRef}}
       @controlOnly={{@controlOnly}}
       @autoSize={{@autoSize}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       @isFakeMinBlock={{not (has-block "min")}}
       @isFakeMaxBlock={{not (has-block "max")}}
       autofocus={{@autofocus}}

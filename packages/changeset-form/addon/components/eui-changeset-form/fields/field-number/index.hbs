@@ -31,9 +31,11 @@
       @inputRef={{@inputRef}}
       @controlOnly={{@controlOnly}}
       @compressed={{@compressed}}
+      {{!template-lint-disable}}
       @id={{theId}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
+      @disabled={{@disabled}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       autofocus={{@autofocus}}
       placeholder={{@placeholder}}
       {{on "blur" this.validate}}

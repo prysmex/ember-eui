@@ -21,6 +21,7 @@
       @compressed={{@compressed}}
       @readOnly={{@readOnly}}
       @fullWidth={{@fullWidth}}
+      {{!template-lint-disable}}
       @id={{theId}}
       @levels={{@levels}}
       @step={{@step}}
@@ -44,13 +45,14 @@
       @inputRef={{@inputRef}}
       @controlOnly={{@controlOnly}}
       @autoSize={{@autoSize}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       @isFakeMinBlock={{not (has-block "min")}}
       @isFakeMaxBlock={{not (has-block "max")}}
       @isFakeValueBlock={{not (has-block "value")}}
       @isFakeValuePrependBlock={{not (has-block "valuePrepend")}}
       @isFakeValueAppendBlock={{not (has-block "valueAppend")}}
+      disabled={{@disabled}}
       aria-label={{@ariaLabel}}
       autofocus={{@autofocus}}
       ...attributes

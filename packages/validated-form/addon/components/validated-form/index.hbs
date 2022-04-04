@@ -80,7 +80,7 @@
           onValidityChange=this.onChildValidityChange
           fullWidth=@fullWidth
           formId=formId
-          disabled=@isDisabled
+          isDisabled=@isDisabled
         )
         FieldCheckboxGroup=(component
           "validated-form/field-checkbox-group"
@@ -112,7 +112,7 @@
           formId=formId
           disabled=@isDisabled
         )
-        FieldRangeDualSlider=(component
+        FieldDualRangeSlider=(component
           "validated-form/field-dual-range-slider"
           register=this.register
           unregister=this.unregister

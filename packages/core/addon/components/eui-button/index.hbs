@@ -3,12 +3,12 @@
     class={{class-names
       (if @fill "euiButton--fill")
       (if @fullWidth "euiButton--fullWidth")
-      (if (or @isLoading @isDisabled) "euiButton-isDisabled")
+      (if (or @isLoading @isDisabled @disabled) "euiButton-isDisabled")
       componentName="EuiButton"
       color=(arg-or-default @color "primary")
       size=@size
     }}
-    disabled={{or @isLoading @isDisabled}}
+    disabled={{or @isLoading @isDisabled @disabled}}
     href={{@href}}
     target={{@target}}
     aria-pressed={{if @isSelected "true" null}}
@@ -32,12 +32,12 @@
     class={{class-names
       (if @fill "euiButton--fill")
       (if @fullWidth "euiButton--fullWidth")
-      (if (or @isLoading @isDisabled) "euiButton-isDisabled")
+      (if (or @isLoading @isDisabled @disabled) "euiButton-isDisabled")
       componentName="EuiButton"
       color=(arg-or-default @color "primary")
       size=@size
     }}
-    disabled={{or @isLoading @isDisabled}}
+    disabled={{or @isLoading @isDisabled @disabled}}
     type={{if @type @type "button"}}
     aria-pressed={{if @isSelected "true" null}}
     ...attributes

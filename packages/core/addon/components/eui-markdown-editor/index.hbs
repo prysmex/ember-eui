@@ -44,7 +44,10 @@
       {{resize-observer onResize=this.onResize}}
     >
       <EuiMarkdownEditorTextArea
-        {{get-cursor-node (get this.parsed "0") this.setSelectedNode}}
+        {{this.getCursorNodeModifier
+          (get this.parsed "0")
+          this.setSelectedNode
+        }}
         {{did-update this.onParse this.parsed}}
         {{did-insert this.setTextAreaRef}}
         disabled={{@disabled}}

@@ -5,13 +5,28 @@ export const sizeMapping = {
   m: `${baseClass}--medium`,
   l: `${baseClass}--large`,
   xl: `${baseClass}--xlarge`,
-  fullWidth: `${baseClass}--fullWidth`
+  fullWidth: `${baseClass}--fullWidth`,
+  original: `${baseClass}----original`
+};
+
+export const marginMapping = {
+  s: `${baseClass}--marginSmall`,
+  m: `${baseClass}--marginMedium`,
+  l: `${baseClass}--marginLarge`,
+  xl: `${baseClass}--marginXlarge`
+};
+
+export const floatMapping = {
+  left: `${baseClass}--floatLeft`,
+  right: `${baseClass}--floatRight`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    size: sizeMapping
+    size: sizeMapping,
+    float: floatMapping,
+    margin: marginMapping
   }
 };
 

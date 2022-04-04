@@ -10,11 +10,12 @@
     (if (or (not this.hasArrow) @attachToAnchor) "euiPopover__panel-noArrow")
     (if @attachToAnchor "euiPopover__panel-isAttached")
     @panelClasses
-  ) as |descriptionId classes panelClasses|
+  )
+  as |descriptionId classes panelClasses|
 }}
   {{#if this.ownFocus}}
     <div
-      class="{{if this.isOpening "euiPopover-isOpen"}} {{classes}}"
+      class="{{if this.isOpening 'euiPopover-isOpen'}} {{classes}}"
       ...attributes
       {{did-insert this.didInsertPopover}}
       {{did-insert (optional @popoverRef)}}
@@ -33,9 +34,9 @@
         )
       }}
         <EuiPortal @insert={{@insert}}>
+          {{! template-lint-disable no-positive-tabindex }}
           <EuiPanel
             class={{panelClasses}}
-            tabindex={{if this.ownFocus "0"}}
             aria-live={{if this.ownFocus "off" "assertive"}}
             role="dialog"
             aria-label={{@ariaLabel}}
@@ -48,6 +49,7 @@
             {{did-insert this.registerPanel}}
             {{outside-click-detector onOutsideClick=this.onClickOutside}}
             {{on-key "Escape" this.onEscapeKey}}
+            tabindex={{this.tabindex}}
             {{focus-trap
               isActive=(not
                 (or (not this.ownFocus) (not this.isOpenStable) this.isClosing)
@@ -77,6 +79,7 @@
               </p>
             {{/if}}
             <div
+              tabindex={{this.tabindex}}
               {{mutation-observer
                 onMutation=this.onMutation
                 observerOptions=(hash
@@ -106,7 +109,8 @@
       >
         {{yield to="button"}}
       </div>
-      {{#if (and (not this.suppressingPopover) (or this.isOpen this.isClosing))
+      {{#if
+        (and (not this.suppressingPopover) (or this.isOpen this.isClosing))
       }}
         <EuiPortal @insert={{@insert}}>
           <EuiPanel

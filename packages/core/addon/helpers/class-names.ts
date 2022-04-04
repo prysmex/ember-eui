@@ -12,6 +12,7 @@ interface Options extends IObjectKeys {
   side: string;
   paddingSize: string;
   textAlign: string;
+  textStyle: string;
   color: string;
   verticalPosition: string;
   horizontalPosition: string;

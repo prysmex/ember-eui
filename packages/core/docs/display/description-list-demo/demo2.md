@@ -24,7 +24,7 @@ order: 2
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoComponent extends Component {
+export default class extends Component {
   favoriteVideoGames = [
     {
       title: 'Name',

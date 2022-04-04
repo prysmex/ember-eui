@@ -2,13 +2,9 @@
 order: 5
 ---
 
-```hbs template
-<div>
-  <EuiTitle>
-    Popover padding sizes
-  </EuiTitle>
-  <EuiSpacer />
-  <EuiText>
+# Popover padding sizes
+
+<EuiText>
     Use the
     <EuiCode>panelPaddingSize</EuiCode>
     prop to adjust the padding of the panel content. When using popover titles
@@ -19,7 +15,9 @@ order: 5
     of
     <strong>EuiPopoverFooter</strong>.
   </EuiText>
-  <EuiSpacer />
+
+```hbs template
+<div>
   <EuiFlexGroup>
     <EuiFlexItem @grow={{false}}>
       <EuiPopover
@@ -149,7 +147,8 @@ order: 5
           </EuiPopoverTitle>
           <div style='width: 300px;'>
             <EuiText size='s'>
-              You can adjust both the panelPaddingSize and the paddingSize at the same time
+              You can adjust both the panelPaddingSize and the paddingSize at
+              the same time
             </EuiText>
           </div>
           <EuiPopoverFooter>
@@ -163,11 +162,7 @@ order: 5
   </EuiFlexGroup>
   <EuiSpacer @size='l' />
 
-
-
-
-
-   <EuiFlexGroup>
+  <EuiFlexGroup>
     <EuiFlexItem @grow={{false}}>
       <EuiPopover
         @ownFocus={{true}}
@@ -224,7 +219,8 @@ order: 5
           </EuiPopoverTitle>
           <div style='width: 300px;'>
             <EuiText size='s'>
-              You can adjust both the panelPaddingSize and the paddingSize at the same time
+              You can adjust both the panelPaddingSize and the paddingSize at
+              the same time
             </EuiText>
           </div>
           <EuiPopoverFooter @paddingSize='m'>

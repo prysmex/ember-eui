@@ -1,17 +1,14 @@
 ---
 order: 7
 ---
+# Popover with block level display
+
+<EuiText>
+    Popover anchors default to <EuiCode>display: inline-block;</EuiCode> so they do not force a display on inline triggers. If you do need to change this, just add <EuiCode>display="block"</EuiCode>
+  </EuiText>
 
 ```hbs template
 <div>
-  <EuiTitle>
-    Popover with block level display
-  </EuiTitle>
-  <EuiSpacer />
-  <EuiText>
-    Popover anchors default to <EuiCode>display: inline-block;</EuiCode> so they do not force a display on inline triggers. If you do need to change this, just add <EuiCode>display="block"</EuiCode>
-  </EuiText>
-  <EuiSpacer />
   <EuiPopover
     @ownFocus={{true}}
     @isOpen={{this.popover}}

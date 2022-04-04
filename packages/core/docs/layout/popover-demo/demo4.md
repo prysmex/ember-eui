@@ -2,11 +2,7 @@
 order: 4
 ---
 
-```hbs template
-<EuiTitle>
-  Popover titles and footers
-</EuiTitle>
-<EuiSpacer />
+# Popover titles and footers
 <EuiText>
   Popovers often need titling. Use the
   <strong>EuiPopoverTitle</strong>
@@ -16,7 +12,8 @@ order: 4
   <strong>EuiPopoverFooter</strong>
   for smaller captions or call to action buttons.
 </EuiText>
-<EuiSpacer />
+
+```hbs template
 <EuiPopover
   @ownFocus={{true}}
   @isOpen={{this.pop1}}

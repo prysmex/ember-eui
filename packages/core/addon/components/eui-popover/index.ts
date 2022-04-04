@@ -147,6 +147,8 @@ export type EuiPopoverArgs = {
    * Usually takes the `id` of the popover title
    */
   'aria-labelledby'?: string;
+
+  tabindex?: string | number;
 };
 
 type AnchorPosition = 'up' | 'right' | 'down' | 'left';
@@ -257,9 +259,9 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   private closingTransitionTimeout: ReturnType<typeof later> | null = null;
   private closingTransitionAnimationFrame: number | undefined;
   private updateFocusAnimationFrame: number | undefined;
+  private hasSetInitialFocus: boolean = false;
   @tracked button: HTMLElement | null = null;
   @tracked panel: HTMLElement | null = null;
-  @tracked hasSetInitialFocus: boolean = false;
 
   constructor(owner: unknown, args: EuiPopoverArgs) {
     super(owner, args);
@@ -557,6 +559,13 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
       left: `${popoverStyles.left}px`,
       zIndex: `${popoverStyles.zIndex}`
     };
+  }
+
+  get tabindex() {
+    if (this.ownFocus) {
+      return this.args.tabindex ?? '0';
+    }
+    return '-1';
   }
 
   @action

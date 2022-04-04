@@ -2,18 +2,16 @@
 order: 10
 ---
 
-```hbs template
-<div>
-  <EuiTitle>
-    Removing the focus trap
-  </EuiTitle>
-  <EuiSpacer />
-  <EuiText>
+# Removing the focus trap
+
+<EuiText>
     If the popover should not trap focus within itself, then you can remove it
     with
-    <EuiCode>ownFocus={false}</EuiCode>.
+    <EuiCode @language="jsx">ownFocus={false}</EuiCode>.
   </EuiText>
-  <EuiSpacer />
+
+```hbs template
+<div>
   <EuiPopover
     @ownFocus={{false}}
     @isOpen={{this.popover}}
@@ -31,16 +29,33 @@ order: 10
     </:button>
     <:content>
       <EuiFormRow
-        label='Generate a public snapshot?'
-        id={{unique-id}}
+        @label='Generate a public snapshot?'
+        @id={{(unique-id)}}
+        @hasChildLabel={{false}}
       >
         <EuiSwitch
-          name='switch'
-          label='Snapshot data'
-          checked={{true}}
-          onChange={{noop}}
+          @name='switch'
+          @label='Snapshot data'
+          @checked={{true}}
+          @onChange={{(noop)}}
         />
       </EuiFormRow>
+
+      <EuiFormRow
+        @label='Include the following in the embed'
+        @id={{(unique-id)}}
+      >
+        <EuiSwitch
+          @name='switch'
+          @label='Current time range'
+          @checked={{true}}
+          @onChange={{(noop)}}
+        />
+      </EuiFormRow>
+
+      <EuiSpacer />
+
+      <EuiButton @fill={{true}}>Copy IFRAME code</EuiButton>
     </:content>
   </EuiPopover>
 </div>

@@ -2,16 +2,15 @@
 order: 3
 ---
 
-```hbs template
-<EuiTitle>
-  Popover on a fixed element
-</EuiTitle>
-<EuiSpacer />
+# Popover on a fixed element
+
 <EuiText>
   Popover content even works on <EuiCode>position: fixed;</EuiCode>
   elements. Add the <EuiCode>repositionOnScroll</EuiCode> boolean prop to ensure the popover
   realigns to the fixed button on scroll.
 </EuiText>
+
+```hbs template
 <EuiButton {{on 'click' this.toggleExampleShown}}>
   Toggle example
 </EuiButton>

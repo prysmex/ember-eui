@@ -2,13 +2,9 @@
 order: 9
 ---
 
-```hbs template
-<div>
-  <EuiTitle>
-    Popover attached to input element
-  </EuiTitle>
-  <EuiSpacer />
-  <EuiText>
+# Popover attached to input element
+
+ <EuiText>
     <strong>EuiInputPopover</strong>
     is a specialized popover component intended to be used with form elements.
     Stylistically, the popover panel is"attached" to the input. Functionally,
@@ -22,7 +18,9 @@ order: 9
     <EuiCode>type=number</EuiCode>
     inputs as they natively bind to the down key.
   </EuiText>
-  <EuiSpacer />
+
+```hbs template
+<div>
   <EuiInputPopover
     @isOpen={{this.popover}}
     @closePopover={{set this 'popover' false}}
@@ -38,7 +36,7 @@ order: 9
       This is a popover
     </:content>
   </EuiInputPopover>
-  <EuiSpacer @size='l'/>
+  <EuiSpacer @size='l' />
   <EuiInputPopover
     @isOpen={{this.popover2}}
     @closePopover={{set this 'popover2' false}}
@@ -48,7 +46,10 @@ order: 9
         @value={{this.num2}}
         style={{concat 'width: ' this.width 'px'}}
         {{on 'input' (pick 'target.value' (set this 'num2'))}}
-        {{on 'focus' (queue (set this 'popover2' true) (fn this.setInputWidth 400))}}
+        {{on
+          'focus'
+          (queue (set this 'popover2' true) (fn this.setInputWidth 400))
+        }}
         {{on 'blur' (fn this.setInputWidth 200)}}
       />
     </:input>

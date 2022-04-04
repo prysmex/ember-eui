@@ -2,22 +2,31 @@
 order: 1
 ---
 
-# Demo
+# Basic
 
-```hbs template
-<div>
-  <EuiText>
+<EuiText>
+  <p>
     Use the
     <strong>EuiPopover</strong>
     component to hide controls or options behind a clickable element. A popover
-    is temporary so keep tasks simple and narrowly focused. While the visibility
+    is temporary so keep tasks simple and narrowly focused.
+   </p>
+   <p> 
+    While the visibility
     of the popover is maintained by the consuming application, popovers will
     automatically close when clicking outside of the popover bounds. Therefore
-    all work done in a popover should automatically be saved. Avoid popover
+    all work done in a popover should automatically be saved. 
+    </p>
+    <p>
+    Avoid popover
     inception (popover triggering another popover), and instead use a
     EuiContextMenu to swap the popover panel content.
-  </EuiText>
-  <EuiSpacer />
+    </p>
+
+</EuiText>
+
+```hbs template
+<div>
   <EuiPopover
     @ownFocus={{true}}
     @isOpen={{this.popover}}

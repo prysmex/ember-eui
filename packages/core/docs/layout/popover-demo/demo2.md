@@ -1,12 +1,10 @@
 ---
 order: 2
 ---
-```hbs template
-<div>
-  <EuiTitle>
-    Anchor position
-  </EuiTitle>
-  <EuiText>
+
+# Anchor position
+
+<EuiText>
     The alignment and arrow on your popover can be set with the
     <EuiCode>anchorPosition</EuiCode>
     prop. These positions will update based upon screen real estate.<br /><br />
@@ -18,6 +16,10 @@ order: 2
         position will appear relative to the popover.</li>
     </ul>
   </EuiText>
+  
+```hbs template
+<div>
+  
   <EuiFlexGroup>
     <EuiFlexItem @grow={{false}}>
       <EuiPopover

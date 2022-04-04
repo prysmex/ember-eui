@@ -2,16 +2,14 @@
 order: 6
 ---
 
-```hbs template
-<div>
-  <EuiTitle>
-    Panel class name
-  </EuiTitle>
-  <EuiSpacer />
-  <EuiText>
+# Panel class name
+
+<EuiText>
     Use the <EuiCode>panelClassName</EuiCode> prop to pass a custom class to the panel containing the popover contents.
   </EuiText>
-  <EuiSpacer />
+
+```hbs template
+<div>
   <EuiPopover
     @ownFocus={{true}}
     @isOpen={{this.popover}}

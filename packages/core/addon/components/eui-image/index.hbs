@@ -1,6 +1,11 @@
 <figure
   class={{class-names
     (unless (eq @hasShadow false) "euiImage--hasShadow")
+    (if (eq @float "left") "euiImage--floatLeft")
+    (if (eq @float "right") "euiImage--floatRight")
+    (if (eq @margin "s") "euiImage--marginSmall")
+    (if (eq @margin "m") "euiImage--marginLarge")
+    (if (eq @margin "l") "euiImage--marginXlarge")
     componentName="EuiImage"
     size=@size
   }}
@@ -15,7 +20,7 @@
       {{on "click" this.toggleFullscreen}}
     >
       <img
-        src={{@url}}
+        src={{or @src @url}}
         class="euiImage__img"
         style={{this.sizeStyle}}
         alt={{@alt}}
@@ -28,7 +33,7 @@
     </button>
   {{else}}
     <img
-      src={{@url}}
+      src={{or @src @url}}
       class="euiImage__img"
       style={{this.sizeStyle}}
       alt={{@alt}}
@@ -51,7 +56,7 @@
         type="button"
         {{on "click" this.toggleFullscreen}}
       >
-        <img class="euiImage-isFullScreen__img" src={{@url}} alt={{@alt}} />
+        <img class="euiImage-isFullScreen__img" src={{or @src @url}} alt={{@alt}} />
       </button>
       <figcaption class="euiImage__caption">
         {{@caption}}

@@ -8,10 +8,25 @@ export const sizeMapping = {
   fullWidth: `${baseClass}--fullWidth`
 };
 
+export const marginMapping = { 
+  s: `${baseClass}--marginSmall`,
+  m: `${baseClass}--marginMedium`,
+  l: `${baseClass}--marginLarge`,
+  xl: `${baseClass}--marginXlarge`,
+};
+
+export const floatMapping ={
+
+  left: `${baseClass}--floatLeft`,
+  right: `${baseClass}--floatRight`,
+};
+
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    size: sizeMapping
+    size: sizeMapping,
+    float: floatMapping,
+    margin: marginMapping,
   }
 };
 

@@ -21,9 +21,21 @@
         {{on "click" onClick}}
         {{this.focusTabModifier @selectedTabId @disabled focusFn}}
       >
+        {{#if (has-block "prepend")}}
+          <span className="euiTab__prepend">
+            {{yield to="prepend"}}
+          </span>
+        {{/if}}
+
         <span class="euiTab__content">
           {{yield}}
         </span>
+
+        {{#if (has-block "append")}}
+          <span className="euiTab__append">
+            {{yield to="append"}}
+          </span>
+        {{/if}}
       </a>
     {{else}}
       <button
@@ -41,9 +53,21 @@
         {{on "click" onClick}}
         {{this.focusTabModifier @selectedTabId @disabled focusFn}}
       >
+        {{#if (has-block "prepend")}}
+          <span className="euiTab__prepend">
+            {{yield to="prepend"}}
+          </span>
+        {{/if}}
+
         <span class="euiTab__content">
           {{yield}}
         </span>
+
+        {{#if (has-block "append")}}
+          <span className="euiTab__append">
+            {{yield to="append"}}
+          </span>
+        {{/if}}
       </button>
     {{/if}}
   {{/let}}

@@ -1,8 +1,13 @@
-{{#let (use-state (get-tab-id @selectedTab)) as |selectedTab|}}
+{{#let
+  (use-state (get-tab-id @selectedTab))
+  (if (eq @display "condensed") false (arg-or-default @bottomBorder true))
+  as |selectedTab bottomBorder|
+}}
   <div
     role="tablist"
     class={{class-names
       (if (arg-or-default @expand false) "euiTabs--expand")
+      (if bottomBorder "euiTabs--bottomBorder")
       @className
       componentName="EuiTabs"
       display=(arg-or-default @display "default")

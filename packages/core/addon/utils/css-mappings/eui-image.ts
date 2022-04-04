@@ -5,7 +5,8 @@ export const sizeMapping = {
   m: `${baseClass}--medium`,
   l: `${baseClass}--large`,
   xl: `${baseClass}--xlarge`,
-  fullWidth: `${baseClass}--fullWidth`
+  fullWidth: `${baseClass}--fullWidth`,
+  original: `${baseClass}----original`
 };
 
 export const marginMapping = { 

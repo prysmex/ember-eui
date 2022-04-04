@@ -1,19 +1,23 @@
+
+{{#if @allowFullScreen}}
 <figure
   class={{class-names
+    "euiImage euiImage--allowFullScreen"
     (unless (eq @hasShadow false) "euiImage--hasShadow")
     (if (eq @float "left") "euiImage--floatLeft")
     (if (eq @float "right") "euiImage--floatRight")
     (if (eq @margin "s") "euiImage--marginSmall")
-    (if (eq @margin "m") "euiImage--marginLarge")
-    (if (eq @margin "l") "euiImage--marginXlarge")
+    (if (eq @margin "m") "euiImage--marginMedium")
+    (if (eq @margin "l") "euiImage--marginLarge")
+    (if (eq @margin "xl") "euiImage--marginXlarge")
     componentName="EuiImage"
     size=@size
   }}
   ...attributes
 >
-  {{#if @allowFullScreen}}
+ 
     <button
-      class="euiImage__button"
+      class="euiImage__button "
       type="button"
       aria-label={{@ariaLabel}}
       data-test-subj={{@dataTestSubj}}
@@ -31,20 +35,50 @@
         @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
       />
     </button>
-  {{else}}
-    <img
-      src={{or @src @url}}
-      class="euiImage__img"
-      style={{this.sizeStyle}}
-      alt={{@alt}}
-    />
-  {{/if}}
+  
+ 
   {{#if @caption}}
     <figcaption class="euiImage__caption">
       {{@caption}}
     </figcaption>
   {{/if}}
 </figure>
+
+{{else}}
+
+
+<figure
+  class={{class-names
+    "euiImage"
+    (unless (eq @hasShadow false) "euiImage--hasShadow")
+    (if (eq @float "left") "euiImage--floatLeft")
+    (if (eq @float "right") "euiImage--floatRight")
+    (if (eq @margin "s") "euiImage--marginSmall")
+    (if (eq @margin "m") "euiImage--marginMedium")
+    (if (eq @margin "l") "euiImage--marginLarge")
+    (if (eq @margin "xl") "euiImage--marginXlarge")
+    componentName="EuiImage"
+    size=@size
+  }}
+  ...attributes
+>
+ 
+    <img
+      src={{or @src @url}}
+      class="euiImage__img"
+      style={{this.sizeStyle}}
+      alt={{@alt}}
+    />
+ 
+  {{#if @caption}}
+    <figcaption class="euiImage__caption">
+      {{@caption}}
+    </figcaption>
+  {{/if}}
+</figure>
+
+ {{/if}}
+
 {{#if this.isFullscreen}}
   <EuiOverlayMask
     @headerZindexLocation="above"

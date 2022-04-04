@@ -70,13 +70,20 @@
 {{#if this.isFullscreen}}
   <EuiOverlayMask
     @headerZindexLocation="above"
-    {{on "click" this.toggleFullscreen}}
+    @onClick={{this.toggleFullscreen}}
   >
-    <figure class="euiImage euiImage-isFullScreen">
+    <figure
+      class="euiImage euiImage-isFullScreen"
+      {{focus-trap focusTrapOptions=(hash clickOutsideDeactivates=true)}}
+    >
       <button
         class="euiImage__button"
         type="button"
         {{on "click" this.toggleFullscreen}}
+        {{on-key
+          "Escape"
+          (prevent-default (stop-propagation this.toggleFullscreen))
+        }}
       >
         <img
           class="euiImage-isFullScreen__img"

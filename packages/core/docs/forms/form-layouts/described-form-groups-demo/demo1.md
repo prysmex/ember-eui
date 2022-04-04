@@ -13,7 +13,7 @@ order: 1
     Will be wrapped in a small, subdued EuiText block.
   </:description>
   <:default>
-    <EuiFormRow @label='Text field'>
+    <EuiFormRow @label='Text field' @helpText='Im helping!'>
       <EuiFieldText />
     </EuiFormRow>
   </:default>
@@ -25,7 +25,7 @@ order: 1
     </h3>
   </:title>
   <:default>
-    <EuiFormRow @label='Text field'>
+    <EuiFormRow @label='Text field' @helpText={{array 'Im helping!' 'Me too!'}}>
       <EuiFieldText />
     </EuiFormRow>
   </:default>
@@ -41,7 +41,14 @@ order: 1
   </:description>
   <:default>
     <EuiFormRow @label='Text field'>
-      <EuiFieldText />
+      <:field>
+        <EuiFieldText />
+      </:field>
+      <:helpText>
+        Im helping!
+        <br />
+        Me too!
+      </:helpText>
     </EuiFormRow>
     <EuiFormRow @label='Text field'>
       <EuiFilePicker />
@@ -59,7 +66,9 @@ order: 1
     </h3>
   </:title>
   <:description>
-    By default, EuiDescribedFormGroup will be double the default width of form elements. However, you can pass fullWidth prop to this, the individual field and row components to expand to their container.
+    By default, EuiDescribedFormGroup will be double the default width of form
+    elements. However, you can pass fullWidth prop to this, the individual field
+    and row components to expand to their container.
   </:description>
   <:default>
     <EuiFormRow @label='Use a switch instead of a single checkbox'>

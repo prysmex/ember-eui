@@ -15,7 +15,7 @@
   (use-state false)
   (arg-or-default
     @id (unique-id)
-  ) 
+  )
   (arg-or-default @hasChildLabel true)
   as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel|
 }}
@@ -52,7 +52,7 @@
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not isLegend) focusedState.value}}
+              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
             >
               {{yield @label to="label"}}
             </EuiFormLabel>
@@ -63,7 +63,7 @@
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not isLegend) focusedState.value}}
+              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
             >
               {{@label}}
             </EuiFormLabel>
@@ -147,7 +147,7 @@
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not isLegend) focusedState.value}}
+              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
             >
               {{yield @label to="label"}}
             </EuiFormLabel>
@@ -158,7 +158,7 @@
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not isLegend) focusedState.value}}
+              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
             >
               {{@label}}
             </EuiFormLabel>
@@ -202,9 +202,13 @@
               {{yield to="helpText"}}
             </EuiFormHelpText>
           {{else}}
-            <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
-              {{@helpText}}
-            </EuiFormHelpText>
+            {{#let (if (is-array @helpText) @helpText (array @helpText)) as |helpTexts|}}
+              {{#each helpTexts as |helpText i|}}
+                <EuiFormHelpText id="{{rowId}}-help-{{i}}" class={{@helpTextClasses}}>
+                  {{helpText}}
+                </EuiFormHelpText>
+              {{/each}}
+            {{/let}}
           {{/if}}
         {{/if}}
       </div>

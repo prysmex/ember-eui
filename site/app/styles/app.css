@@ -50,6 +50,11 @@ body.euiBody--headerIsFixed {
   }
 }
 
+.background-blue {
+  background-color: blue !important;
+  color: white;
+}
+
 .euiBadge__iconButton svg {
   pointer-events: none;
 }

@@ -78,7 +78,7 @@ export type EuiPopoverArgs = {
    * document.querySelector() to find the DOM node), or a function that
    * returns a DOM node
    */
-  initialFocus?: FocusTarget;
+  initialFocus?: FocusTarget | false;
   /**
    * Passed directly to EuiPortal for DOM positioning. Both properties are
    * required if prop is specified
@@ -147,6 +147,8 @@ export type EuiPopoverArgs = {
    * Usually takes the `id` of the popover title
    */
   'aria-labelledby'?: string;
+
+  tabindex?: string | number;
 };
 
 type AnchorPosition = 'up' | 'right' | 'down' | 'left';
@@ -234,7 +236,7 @@ type CssProps = {
 export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   // Defaults
   @argOrDefault(false) isOpen!: boolean;
-  @argOrDefault(false) ownFocus!: boolean;
+  @argOrDefault(true) ownFocus!: boolean;
   @argOrDefault('downCenter') anchorPosition!: PopoverAnchorPosition;
   @argOrDefault('m') panelPaddingSize!: PanelPaddingSize;
   @argOrDefault(true) hasArrow!: boolean;
@@ -257,6 +259,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   private closingTransitionTimeout: ReturnType<typeof later> | null = null;
   private closingTransitionAnimationFrame: number | undefined;
   private updateFocusAnimationFrame: number | undefined;
+  private hasSetInitialFocus: boolean = false;
   @tracked button: HTMLElement | null = null;
   @tracked panel: HTMLElement | null = null;
 
@@ -287,7 +290,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   @action
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === cascadingMenuKeys.ESCAPE) {
-      this.onEscapeKey((event as unknown) as Event);
+      this.onEscapeKey(event as unknown as Event);
     }
   }
 
@@ -303,12 +306,15 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   updateFocus(): void {
     // Wait for the DOM to update.
     this.updateFocusAnimationFrame = window.requestAnimationFrame(() => {
-      if (!this.ownFocus || !this.panel) {
+      if (!this.ownFocus || !this.panel || this.args.initialFocus === false) {
         return;
       }
 
       // If we've already focused on something inside the panel, everything's fine.
-      if (this.panel.contains(document.activeElement)) {
+      if (
+        this.hasSetInitialFocus &&
+        this.panel.contains(document.activeElement)
+      ) {
         return;
       }
 
@@ -331,8 +337,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
         // there isn't a focus target, one of two reasons:
         // #1 is the whole panel hidden? If so, schedule another check
         // #2 panel is visible but no tabbables exist, move focus to the panel
-        const panelVisibility = window.getComputedStyle(this.panel).visibility;
-        if (panelVisibility === 'hidden') {
+        const panelVisibility = window.getComputedStyle(this.panel).opacity;
+        if (panelVisibility === '0') {
           // #1
           this.updateFocus();
         } else {
@@ -348,7 +354,10 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
         }
       }
 
-      if (focusTarget != null) focusTarget.focus();
+      if (focusTarget != null) {
+        this.hasSetInitialFocus = true;
+        focusTarget.focus();
+      }
     });
   }
 
@@ -411,7 +420,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
     }
 
     if (this.args.repositionOnScroll) {
-      window.addEventListener('scroll', this.positionPopoverFixed);
+      window.addEventListener('scroll', this.positionPopoverFixed, true);
     }
 
     this.updateFocus();
@@ -420,9 +429,9 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   @action
   didUpdateRepositionOnScroll(): void {
     if (this.args.repositionOnScroll) {
-      window.addEventListener('scroll', this.positionPopoverFixed);
+      window.addEventListener('scroll', this.positionPopoverFixed, true);
     } else {
-      window.removeEventListener('scroll', this.positionPopoverFixed);
+      window.removeEventListener('scroll', this.positionPopoverFixed, true);
     }
   }
 
@@ -451,7 +460,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
 
   willDestroy(): void {
     super.willDestroy();
-    window.removeEventListener('scroll', this.positionPopoverFixed);
+    window.removeEventListener('scroll', this.positionPopoverFixed, true);
     cancel(this.respositionTimeout as ReturnType<typeof later>);
     cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
     cancelAnimationFrame(this.closingTransitionAnimationFrame as number);
@@ -550,6 +559,13 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
       left: `${popoverStyles.left}px`,
       zIndex: `${popoverStyles.zIndex}`
     };
+  }
+
+  get tabindex() {
+    if (this.ownFocus) {
+      return this.args.tabindex ?? '0';
+    }
+    return '-1';
   }
 
   @action

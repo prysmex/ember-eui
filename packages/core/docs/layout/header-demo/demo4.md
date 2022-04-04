@@ -5,53 +5,53 @@ order: 4
 # Dark theme
 
 <EuiText>
-  To make site-wide navigation more prominent,
-  <strong>EuiHeader</strong>
-  supports reversing the colors to dark theme with
-  <EuiCode>theme="dark"</EuiCode>. However, it only supports a
-  <strong>limited set of children</strong>
-  that will also shift their theme. These components include
-  <strong>EuiHeaderLogo</strong>,
-  <strong>EuiHeaderLink(s)</strong>,
-  <strong>EuiHeaderSectionItemButton</strong>
-  and
-  <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not
-  render correctly without custom configurations.
+  <p>
+  To make site-wide navigation more prominent, <strong>EuiHeader</strong> supports reversing the colors to dark theme with <EuiCode>theme="dark"</EuiCode>. However, it only supports a <strong>limited set of children</strong> that will also shift their theme. These components include <strong>EuiHeaderLogo</strong>, <strong>EuiHeaderLink(s)</strong>, <strong>EuiHeaderSectionItemButton</strong> and <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not render correctly without custom configurations.
+  </p>
 </EuiText>
 
 ```hbs template
 <EuiHeader @theme='dark'>
-  <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem @border='right'>
+  <EuiHeaderSection @side='left' @border='right'>
+    <EuiHeaderSectionItem>
       <EuiHeaderLogo>Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderLinks @gutterSize='xs'>
+    <EuiHeaderSectionItem>
+      <EuiHeaderLinks aria-label='App navigation dark theme example'>
         <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
         <EuiHeaderLink>Code</EuiHeaderLink>
-        <EuiHeaderLink @iconType='help'>Help</EuiHeaderLink>
+        <EuiHeaderLink @iconType='help'> Help</EuiHeaderLink>
       </EuiHeaderLinks>
     </EuiHeaderSectionItem>
+
   </EuiHeaderSection>
-  <EuiHeaderSection @side='left'>
+  <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem @border='left'>
       <EuiBadge @iconType='arrowDown' @iconSide='right'>
         Production logs
       </EuiBadge>
     </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem @border='left'>
+    <EuiHeaderSectionItem>
       <EuiHeaderSectionItemButton
+        @notification='2'
         aria-label='2 Notifications'
-        @notification={{'2'}}
       >
-        <EuiIcon @type='cheer' size='m' />
+        <EuiIcon @type='cheer' @size='m' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem @border='left'>
+
+    <EuiHeaderSectionItem>
       <EuiHeaderSectionItemButton aria-label='Account menu'>
         <EuiAvatar @name='John Username' @size='s' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
+
   </EuiHeaderSection>
 </EuiHeader>
+```
+
+```js component
+import Component from '@glimmer/component';
+
+export default class DemoHeaderComponent extends Component {}
 ```

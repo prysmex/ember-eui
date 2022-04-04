@@ -33,18 +33,24 @@ order: 6
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItemButton
-      @notification={{if this.notificationNumber true false}}
-      @notificationColor='accent'
-    >
-      <EuiIcon @type='bell' />
-    </EuiHeaderSectionItemButton>
-    <EuiHeaderSectionItemButton
-      @notification={{this.notificationNumber}}
-      @notificationColor='accent'
-    >
-      <EuiIcon @type='cheer' />
-    </EuiHeaderSectionItemButton>
+    <EuiHeaderSectionItem>
+      <EuiHeaderSectionItemButton
+        @notification={{if this.notificationNumber true false}}
+        @notificationColor='accent'
+        @ref={{set this 'bellRef'}}
+      >
+        <EuiIcon @type='bell' />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
+    <EuiHeaderSectionItem>
+      <EuiHeaderSectionItemButton
+        @notification={{this.notificationNumber}}
+        @notificationColor='accent'
+        @ref={{set this 'cheerRef'}}
+      >
+        <EuiIcon @type='cheer' />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
 ```
@@ -56,11 +62,19 @@ import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
   @tracked notificationNumber = 0;
+  bellRef;
+  cheerRef;
+
+  @action
+  animate() {
+    this.bellRef?.euiAnimate();
+    this.cheerRef?.euiAnimate();
+  }
 
   @action
   notify() {
     this.notificationNumber += 1;
-    // headerUpdatesRef.current?.euiAnimate();
+    this.animate();
   }
 
   @action

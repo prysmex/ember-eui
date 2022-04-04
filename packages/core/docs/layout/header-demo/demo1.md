@@ -123,6 +123,7 @@ order: 1
       <EuiPopover
         @isOpen={{this.appsPopover}}
         @closePopover={{set this 'appsPopover' false}}
+        @anchorPosition="downRight"
       >
         <:button>
           <EuiHeaderSectionItemButton
@@ -134,39 +135,35 @@ order: 1
           </EuiHeaderSectionItemButton>
         </:button>
         <:content>
-          <div style='width:320px;'>
-            <EuiFlexGroup
-              @gutterSize='m'
-              class='euiHeaderProfile'
-              @responsive={{false}}
-            >
-              <EuiFlexItem @grow={{false}}>
-                <EuiAvatar @name='David Martinez' @size='xl' />
-              </EuiFlexItem>
+          <EuiKeyPadMenu id='headerAppKeyPadMenuId' style="width: 288px">
+            <EuiKeyPadMenuItem @label='Discover'>
+              <EuiIcon @type='discoverApp' @size='l' />
+            </EuiKeyPadMenuItem>
 
-              <EuiFlexItem>
-                <EuiText>
-                  <p>David Martinez</p>
-                </EuiText>
+            <EuiKeyPadMenuItem @label='Dashboard'>
+              <EuiIcon @type='dashboardApp' @size='l' />
+            </EuiKeyPadMenuItem>
 
-                <EuiSpacer @size='m' />
+            <EuiKeyPadMenuItem @label='Dev Tools'>
+              <EuiIcon @type='devToolsApp' @size='l' />
+            </EuiKeyPadMenuItem>
 
-                <EuiFlexGroup>
-                  <EuiFlexItem>
-                    <EuiFlexGroup @justifyContent='spaceBetween'>
-                      <EuiFlexItem @grow={{false}}>
-                        <EuiLink>Edit profile</EuiLink>
-                      </EuiFlexItem>
+            <EuiKeyPadMenuItem @label='Machine Learning'>
+              <EuiIcon @type='machineLearningApp' @size='l' />
+            </EuiKeyPadMenuItem>
 
-                      <EuiFlexItem @grow={{false}}>
-                        <EuiLink>Log out</EuiLink>
-                      </EuiFlexItem>
-                    </EuiFlexGroup>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </div>
+            <EuiKeyPadMenuItem @label='Graph'>
+              <EuiIcon @type='graphApp' @size='l' />
+            </EuiKeyPadMenuItem>
+
+            <EuiKeyPadMenuItem @label='Visualize'>
+              <EuiIcon @type='visualizeApp' @size='l' />
+            </EuiKeyPadMenuItem>
+
+            <EuiKeyPadMenuItem @label='Timelion' @betaBadgeLabel='Beta'>
+              <EuiIcon @type='timelionApp' @size='l' />
+            </EuiKeyPadMenuItem>
+          </EuiKeyPadMenu>
         </:content>
       </EuiPopover>
 

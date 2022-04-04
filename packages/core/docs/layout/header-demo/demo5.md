@@ -5,173 +5,140 @@ order: 5
 # Portal content in the header
 
 <EuiText>
-  Use an
-  <strong>EuiHeaderSectionItemButton</strong>
-  to display additional information in popovers or flyouts, such as a user
-  profile or news feed. When using
-  <strong>EuiFlyout</strong>, be sure to wrap it in a
-  <strong>EuiPortal</strong>. When using an
-  <strong>EuiPopover</strong>
-  in conjunction with a
-  <strong>fixed</strong>
-  header, be sure to add the
-  <EuiCode>repositionOnScroll</EuiCode>
-  prop to the popover.
+  <p>
+    Use an <strong>EuiHeaderSectionItemButton</strong> to display additional information in <EuiLink @href="/docs/core/docs/layout/popover">popovers</EuiLink> or <EuiLink @href="/docs/core/docs/layout/flyout">flyouts</EuiLink>, such as a user profile or news feed. When using <EuiLink @href="/docs/core/docs/layout/flyout">EuiFlyout</EuiLink>, be sure to wrap it in a <EuiLink @href="/docs/core/docs/utilities/portal">EuiPortal</EuiLink>. When using an <EuiLink @href="">EuiPopover</EuiLink> in conjunction with a <strong>fixed</strong> header, be sure to add the <EuiCode>repositionOnScroll</EuiCode> prop to the popover.
+  </p>
 </EuiText>
 
 ```hbs template
 <EuiFlexGroup @alignItems='center' @gutterSize='m'>
   <EuiFlexItem @grow={{false}}>
     <EuiSwitch
-      @label={{'Make header fixed position'}}
-      @checked={{this.isFixedPosition}}
-      @onChange={{this.toggleFixedPosition}}
+      @label='Make header fixed position'
+      @checked={{eq this.position 'fixed'}}
+      @onChange={{this.setPosition}}
     />
   </EuiFlexItem>
 
   <EuiFlexItem @grow={{false}}>
     <EuiSwitch
-      @label={{'Change theme to dark'}}
-      @checked={{this.isDarkTheme}}
-      @onChange={{this.toggleDarkTheme}}
+      @label='Change theme to dark'
+      @checked={{eq this.theme 'dark'}}
+      @onChange={{this.setTheme}}
     />
   </EuiFlexItem>
 </EuiFlexGroup>
+
 <EuiSpacer />
-<EuiHeader
-  @position={{if this.isFixedPosition 'fixed'}}
-  @theme={{if this.isDarkTheme 'dark'}}
->
+<EuiHeader @position={{this.position}} @theme={{this.theme}}>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
       <EuiHeaderLogo>Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
   <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItem @border='left'>
+    <EuiHeaderSectionItem>
       <EuiHeaderSectionItemButton
-        {{on 'click' (set this 'isFlyoutOpen' true)}}
-        @notification='3'
-        @notificationColor='accent'
+        @notification={{true}}
+        aria-controls='headerFlyoutNewsFeed'
+        aria-expanded={{this.flyout}}
+        aria-haspopup='true'
+        aria-label='Alerts feed: Updates available'
+        {{on 'click' (set this 'flyout' true)}}
       >
         <EuiIcon @type='bell' />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
-    <EuiPopover
-      @isOpen={{this.isNotificationPopoverOpen}}
-      @anchorPosition='downCenter'
-      @repositionOnScroll={{true}}
-      @closePopover={{set this 'isNotificationPopoverOpen' false}}
-    >
-      <:button>
-        <EuiHeaderSectionItem>
+    <EuiHeaderSectionItem>
+      <EuiPopover
+        @isOpen={{this.popover}}
+        @closePopover={{set this 'popover' false}}
+        @panelPaddingSize='none'
+      >
+        <:button>
           <EuiHeaderSectionItemButton
-            @onClick={{set
-              this
-              'isNotificationPopoverOpen'
-              (not this.isNotificationPopoverOpen)
-            }}
-            @notification='1'
-            @notificationColor='accent'
+            @notification={{6}}
+            aria-controls='headerPopoverNewsFeed'
+            aria-expanded={{this.popover}}
+            aria-haspopup='true'
+            aria-label='News feed: Updates available'
+            {{on 'click' (set this 'popover' (not this.popover))}}
           >
-            <EuiIcon
-              @type='cheer'
-              @notification='1'
-              @notificationColor='accent'
-            />
+            <EuiIcon @type='cheer' />
           </EuiHeaderSectionItemButton>
-        </EuiHeaderSectionItem>
-      </:button>
-      <:content>
-        <EuiPopoverTitle @paddingSize='m'>
-          WHATS NEW
-        </EuiPopoverTitle>
-        <EuiText>
-          Popover content will go here
-        </EuiText>
-        <EuiPopoverFooter @paddingSize='s'>
-          <EuiText @color='subdued' @size='s'>
-            <p>Version 7.0</p>
-          </EuiText>
-        </EuiPopoverFooter>
-      </:content>
-    </EuiPopover>
-    <EuiPopover
-      @isOpen={{this.isProfilePopoverOpen}}
-      @anchorPosition='downCenter'
-      @repositionOnScroll={{true}}
-      @closePopover={{set this 'isProfilePopoverOpen' false}}
-      @paddingSize='m'
-    >
-      <:button>
-        <EuiHeaderSectionItem>
-          <EuiHeaderSectionItemButton
-            @onClick={{set
-              this
-              'isProfilePopoverOpen'
-              (not this.isProfilePopoverOpen)
-            }}
-          >
-            <EuiAvatar @name='John Doe' @initialLength={{2}} />
-          </EuiHeaderSectionItemButton>
-        </EuiHeaderSectionItem>
-      </:button>
-      <:content>
-        <div style='width: 320;'>
-          <EuiFlexGroup
-            @gutterSize='m'
-            @className='euiHeaderProfile'
-            @responsive={{false}}
-          >
-            <EuiFlexItem @grow={{false}}>
-              <EuiAvatar @name='John Doe' @size='xl' />
-            </EuiFlexItem>
+        </:button>
+        <:content>
+          <EuiPopoverTitle @paddingSize='s'>What&apos;s new</EuiPopoverTitle>
+          <div style='max-height:40vh; overflow-y: auto; padding: 4px'>
+            <EuiSpacer size='s' />
+            {{#each this.alerts as |alert|}}
+              <EuiHeaderAlert>
+                <:title>
+                  {{alert.title}}
+                </:title>
+                <:action>
+                  <EuiLink>{{alert.action}}</EuiLink>
+                </:action>
+                <:text>
+                  {{alert.text}}
+                </:text>
+                <:date>
+                  {{alert.date}}
+                </:date>
+                <:badge>
+                  <EuiBadge>{{alert.badge}}</EuiBadge>
+                </:badge>
+              </EuiHeaderAlert>
+            {{/each}}
+          </div>
+          <EuiPopoverFooter @paddingSize='s'>
+            <EuiText @color='subdued' @size='s'>
+              <p>Version 7.0</p>
+            </EuiText>
+          </EuiPopoverFooter>
+        </:content>
+      </EuiPopover>
 
-            <EuiFlexItem>
-              <EuiText>
-                <p>John Doe</p>
-              </EuiText>
-
-              <EuiSpacer @size='m' />
-
-              <EuiFlexGroup>
-                <EuiFlexItem>
-                  <EuiFlexGroup @justifyContent='spaceBetween'>
-                    <EuiFlexItem @grow={{false}}>
-                      <EuiText>Edit profile</EuiText>
-                    </EuiFlexItem>
-
-                    <EuiFlexItem @grow={{false}}>
-                      <EuiText>Log out</EuiText>
-                    </EuiFlexItem>
-                  </EuiFlexGroup>
-                </EuiFlexItem>
-              </EuiFlexGroup>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </div>
-      </:content>
-    </EuiPopover>
+    </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
-{{#if this.isFlyoutOpen}}
+
+{{#if this.flyout}}
   <EuiPortal>
-    <EuiFlyout @onClose={{set this 'isFlyoutOpen' false}} @size='s'>
+    <EuiFlyout @onClose={{set this 'flyout' false}} @size='s'>
       <EuiFlyoutHeader @hasBorder={{true}}>
         <EuiTitle @size='s'>
-          WHATS NEW
+          <h2>What&apos;s new</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
-        Flyout body
+        {{#each this.alerts as |alert|}}
+          <EuiHeaderAlert>
+            <:title>
+              {{alert.title}}
+            </:title>
+            <:action>
+              <EuiLink>{{alert.action}}</EuiLink>
+            </:action>
+            <:text>
+              {{alert.text}}
+            </:text>
+            <:date>
+              {{alert.date}}
+            </:date>
+            <:badge>
+              <EuiBadge>{{alert.badge}}</EuiBadge>
+            </:badge>
+          </EuiHeaderAlert>
+        {{/each}}
       </EuiFlyoutBody>
       <EuiFlyoutFooter>
         <EuiFlexGroup @justifyContent='spaceBetween' @alignItems='center'>
           <EuiFlexItem @grow={{false}}>
             <EuiButtonEmpty
               @iconType='cross'
+              @onClick={{set this 'flyout' false}}
               @flush='left'
-              {{on 'click' (set this 'isFlyoutOpen' false)}}
             >
               Close
             </EuiButtonEmpty>
@@ -184,7 +151,9 @@ order: 5
         </EuiFlexGroup>
       </EuiFlyoutFooter>
     </EuiFlyout>
+
   </EuiPortal>
+
 {{/if}}
 ```
 
@@ -194,21 +163,70 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
-  @tracked header1Fixed = false;
-  @tracked isFixedPosition = false;
-  @tracked isDarkTheme = false;
-  @tracked isProfilePopoverOpen = false;
-  @tracked isNotificationPopoverOpen = false;
-  @tracked isFlyoutOpen = false;
+  @tracked flyout = false;
+  @tracked popover = false;
+  @tracked position = 'static';
+  @tracked theme = 'default';
 
-  @action
-  toggleFixedPosition() {
-    this.isFixedPosition = !this.isFixedPosition;
-  }
+  alerts = [
+    {
+      title: 'Control access to features',
+      text: 'Show or hide applications and features per space in Kibana.',
+      action: 'Learn about feature controls',
+      date: '1 May 2019',
+      badge: 7.1
+    },
+    {
+      title: 'Kibana 7.0 is turning heads',
+      text: 'Simplified navigation, responsive dashboards, dark mode… pick your favorite.',
+      action: 'Read the blog',
+      date: '10 April 2019',
+      badge: 7.0
+    },
+    {
+      title: 'Enter dark mode',
+      text: 'Kibana now supports the easy-on-the-eyes theme across the entire UI.',
+      action: 'Go to Advanced Settings',
+      date: '10 April 2019',
+      badge: 7.0
+    },
+    {
+      title: 'Pixel-perfect Canvas is production ready',
+      text: 'Your creative space for visualizing data awaits.',
+      action: 'Watch the webinar',
+      date: '26 March 2019',
+      badge: 6.7
+    },
+    {
+      title: '6.7 release notes',
+      text: 'Stay up-to-date on the latest and greatest features.',
+      action: 'Check out the docs',
+      date: '26 March 2019',
+      badge: 6.7
+    },
+    {
+      title: 'Rollups made simple in Kibana',
+      text: 'Save space and preserve the integrity of your data directly in the UI.',
+      action: 'Read the blog',
+      date: '10 January 2019',
+      badge: 6.5
+    }
+  ];
 
-  @action
-  toggleDarkTheme() {
-    this.isDarkTheme = !this.isDarkTheme;
-  }
+  setPosition = (e) => {
+    if (e.target.checked) {
+      this.position = 'fixed';
+    } else {
+      this.position = 'static';
+    }
+  };
+
+  setTheme = (e) => {
+    if (e.target.checked) {
+      this.theme = 'dark';
+    } else {
+      this.theme = 'default';
+    }
+  };
 }
 ```

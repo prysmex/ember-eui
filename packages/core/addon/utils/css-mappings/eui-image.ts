@@ -9,17 +9,16 @@ export const sizeMapping = {
   original: `${baseClass}----original`
 };
 
-export const marginMapping = { 
+export const marginMapping = {
   s: `${baseClass}--marginSmall`,
   m: `${baseClass}--marginMedium`,
   l: `${baseClass}--marginLarge`,
-  xl: `${baseClass}--marginXlarge`,
+  xl: `${baseClass}--marginXlarge`
 };
 
-export const floatMapping ={
-
+export const floatMapping = {
   left: `${baseClass}--floatLeft`,
-  right: `${baseClass}--floatRight`,
+  right: `${baseClass}--floatRight`
 };
 
 const mapping: ComponentMapping = {
@@ -27,7 +26,7 @@ const mapping: ComponentMapping = {
   properties: {
     size: sizeMapping,
     float: floatMapping,
-    margin: marginMapping,
+    margin: marginMapping
   }
 };
 

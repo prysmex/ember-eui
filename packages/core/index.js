@@ -45,14 +45,16 @@ module.exports = {
 
     this.emberEuiOptions.theme = this.emberEuiOptions.theme
       ? this.emberEuiOptions.theme
-      : 'light';
+      : 'amsterdam_light';
 
     if (this.emberEuiOptions.theme) {
       app.import(
         `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
       );
     } else {
-      app.import('node_modules/@elastic/eui/dist/eui_theme_light.min.css');
+      app.import(
+        'node_modules/@elastic/eui/dist/eui_theme_amsterdam_light.min.css'
+      );
     }
 
     this._super.included.apply(this, arguments);

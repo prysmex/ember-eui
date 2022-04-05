@@ -3,9 +3,11 @@
   (if @selectable (unique-id))
   as |titleId selectableId|
 }}
-  <div
+  <EuiPanel
     class={{class-names
-      "euiCard--shadow"
+    (if (not-eq @hasShadow false) "euiPanel--hasShadow" "euiPanel--noShadow")
+    (if (eq @hasBorder true) "euiPanel--hasBorder")
+    (if (eq @hasBorder false) "euiPanel--noBorder")
       (if (eq @layout "horizontal") "euiCard--horizontal")
       (if (and (eq @display "plain") (not @selectable)) "euiCard--plain")
       (if @isDisabled "euiCard-isDisabled")
@@ -14,7 +16,7 @@
       (if @betaBadgeProps.label "euiCard--hasBetaBadge")
       (if
         (or titleId (and @selectable (not @selectable.isDisabled)))
-        "euiCard--isClickable"
+        "euiCard--isClickable euiPanel--isClickable"
       )
       (if @selectable "euiCard--isSelectable")
       (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
@@ -98,7 +100,7 @@
       {{/if}}
       {{yield to="body"}}
     </div>
-    {{#if @betaBadgeProps.Label}}
+   {{#if @betaBadgeProps.label}}
       <span class="euiCard__betaBadgeWrapper">
         <EuiBetaBadge
           class="euiCard__betaBadge"
@@ -128,5 +130,5 @@
         {{on "click" (optional @selectable.onClick)}}
       />
     {{/if}}
-  </div>
+  </EuiPanel>
 {{/let}}

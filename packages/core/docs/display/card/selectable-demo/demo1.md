@@ -17,8 +17,8 @@
         <EuiButtonEmpty
           @iconType='iInCircle'
           @size='xs'
-          @onClick={{this.punchIt}}
           @aria-label='See more details about Sketch'
+          {{on 'click' (stop-propagation this.punchIt)}}
         >
           More details
         </EuiButtonEmpty>
@@ -40,8 +40,8 @@
         <EuiButtonEmpty
           @iconType='iInCircle'
           @size='xs'
-          @onClick={{this.punchIt}}
           @aria-label='See more details about Sketch'
+          {{on 'click' (stop-propagation this.punchIt)}}
         >
           More details
         </EuiButtonEmpty>
@@ -61,10 +61,10 @@
     >
       <:footer>
         <EuiButtonEmpty
-          @iconType='iInCircle'
           @size='xs'
-          @onClick={{this.punchIt}}
+          @iconType='iInCircle'
           @aria-label='See more details about Sketch'
+          {{on 'click' (stop-propagation this.punchIt)}}
         >
           More details
         </EuiButtonEmpty>

@@ -9,13 +9,16 @@ order: 1
 </EuiText>
 
 ```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiCheckableCard
-      @checkableType='checkbox'
-      @label='I am a checkbox'
-      @checked={{true}}
-    />
-  </EuiFlexItem>
-</EuiFlexGroup>
+{{#let (use-state false) as |checkState|}}
+  <EuiFlexGroup>
+    <EuiFlexItem>
+      <EuiCheckableCard
+        @checkableType='checkbox'
+        @label='I am a checkbox'
+        @checked={{checkState.value}}
+        {{on 'change' (fn checkState.setState (not checkState.value))}}
+      />
+    </EuiFlexItem>
+  </EuiFlexGroup>
+{{/let}}
 ```

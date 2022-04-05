@@ -1,9 +1,7 @@
 {{#let (arg-or-default @id (unique-id)) as |id|}}
   <div
- 
     class={{class-names
     "euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow euiPanel--hasBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row euiCheckableCard"
-      
       (if @checked "euiCheckableCard-isChecked")
       (if @disabled "euiCheckableCard__label-isDisabled")
     }}

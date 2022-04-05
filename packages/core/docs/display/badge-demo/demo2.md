@@ -13,7 +13,7 @@ Badges can use icons on the left and right (default) sides.
 </EuiText>
 
 ```hbs template
-<EuiPanel>
+<EuiPanel @hasShadow={{false}}>
   <EuiBadge
     @iconType='https://iconarchive.com/download/i103537/sensibleworld/starwars/Death-Star.ico'
     @iconSide='right'

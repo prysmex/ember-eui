@@ -11,7 +11,7 @@ Badges can also be made to render anchor tags by passing an href.
 </EuiText>
 
 ```hbs template
-<EuiPanel @color='subdued'>
+<EuiPanel @hasShadow={{false}}>
   <EuiBadge
     @href='https://starwars.fandom.com/wiki/Main_Page'
     @iconType='https://iconarchive.com/download/i103537/sensibleworld/starwars/Death-Star.ico'

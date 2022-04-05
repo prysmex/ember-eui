@@ -11,7 +11,7 @@ order: 1
 </EuiText>
 
 ```hbs template
-<EuiPanel>
+<EuiPanel @hasShadow={{false}}>
   <EuiTitle @size='xs'>
     Accepted color names
   </EuiTitle>

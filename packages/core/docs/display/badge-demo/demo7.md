@@ -16,7 +16,7 @@ To ensure proper wrapping, truncation and spacing of multiple badges, it is advi
 </EuiText>
 
 ```hbs template
-<EuiSpacer />
+<EuiSpacer @hasShadow={{false}} />
 <EuiPanel style='max-width: 200px;' @color='subdued'>
   <EuiBadgeGroup @gutterSize='s' as |Group|>
     <Group.item>

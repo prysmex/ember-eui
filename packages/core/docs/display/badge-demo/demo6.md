@@ -16,7 +16,7 @@ They can also be used in conjunction with EuiCards.
 </EuiText>
 
 ```hbs template
-<EuiPanel>
+<EuiPanel @hasShadow={{false}}>
   <EuiBetaBadge @label='Beta' @title='Philly' />
   <EuiBetaBadge @label='Beta' @title='Philly' />
   <EuiBetaBadge @label='B' @title='Philly' />
@@ -24,19 +24,29 @@ They can also be used in conjunction with EuiCards.
   <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
   <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
   <EuiSpacer @size='xs' />
-  <EuiBetaBadge @label='Beta' @title='Philly' />
-  <EuiBetaBadge @label='Beta' @title='Philly' />
-  <EuiBetaBadge @label='B' @title='Philly' />
-  <EuiBetaBadge @label='B' @title='Philly' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
+  <EuiBetaBadge @label='Beta' @title='Philly' @color='accent' />
+  <EuiBetaBadge @label='Beta' @title='Philly' @color='accent' />
+  <EuiBetaBadge @label='B' @title='Philly' @color='accent' />
+  <EuiBetaBadge @label='B' @title='Philly' @color='accent' />
+  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='accent' />
+  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='accent' />
   <EuiSpacer @size='xs' />
-  <EuiBetaBadge @label='Beta' @title='Philly' />
-  <EuiBetaBadge @label='Beta' @title='Philly' />
-  <EuiBetaBadge @label='B' @title='Philly' />
-  <EuiBetaBadge @label='B' @title='Philly' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
+  <EuiBetaBadge @label='Beta' @title='Philly' @color='subdued' />
+  <EuiBetaBadge @label='Beta' @title='Philly' @color='subdued' />
+  <EuiBetaBadge @label='B' @title='Philly' @color='subdued' />
+  <EuiBetaBadge @label='B' @title='Philly' @color='subdued' />
+  <EuiBetaBadge
+    @label='Lab'
+    @title='Coat'
+    @iconType='beaker'
+    @color='subdued'
+  />
+  <EuiBetaBadge
+    @label='Lab'
+    @title='Coat'
+    @iconType='beaker'
+    @color='subdued'
+  />
   <EuiSpacer />
   <EuiTitle @size='m'>
     Beta badges will also line up nicely with titles

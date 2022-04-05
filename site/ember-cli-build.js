@@ -8,18 +8,6 @@ const env = EmberApp.env();
 
 const IS_PRODUCTION = env === 'production';
 
-const purgecssOptions = {
-  content: [
-    './app/index.html',
-    './app/**/*.hbs',
-    '../**/*.md',
-    './node_modules/**/*.hbs',
-    '../node_modules/**/*.hbs'
-  ]
-};
-
-
-
 module.exports = function (defaults) {
   let postcssPlugins = [
     {
@@ -32,11 +20,6 @@ module.exports = function (defaults) {
     require('postcss-nested'),
     require('autoprefixer')
   ];
-
-  if (env !== 'development' || process.env.PURGE_CSS === 'true') {
-    const purgecss = require('@fullhuman/postcss-purgecss')(purgecssOptions);
-    postcssPlugins.push(purgecss);
-  }
 
   let app = new EmberApp(defaults, {
     postcssOptions: {

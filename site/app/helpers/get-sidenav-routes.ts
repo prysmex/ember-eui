@@ -26,6 +26,7 @@ export type Item = {
   name: string;
   items: Item[];
   onClick: boolean | ((id: NodeId) => void);
+  forceOpen?: boolean;
 };
 
 function compareFunction(a: Item, b: Item) {

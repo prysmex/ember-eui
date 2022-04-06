@@ -19,20 +19,18 @@
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
-<EuiPage @restrictWidth="1280px" class="p-2 pb-12 m-auto">
-  <EuiPageSideBar class="mt-8">
-    <EuiSideNav
-      class="flex-none"
-      @heading="Elastic UI"
-      @isOpenMobile={{this.isOpenMobile}}
-      @toggleOpenOnMobile={{set this "isOpenMobile"}}
-      @items={{this.sideNavRoutes}}
-      @selectedItem={{this.selectedItem}}
-    />
-  </EuiPageSideBar>
-  <EuiPageBody class="flex-1 w-full min-w-0 mt-8 mode-dark" @tagName="div">
-    <EuiPanel class="max-w-full markdown">
-      {{outlet}}
-    </EuiPanel>
-  </EuiPageBody>
-</EuiPage>
+<EuiPageTemplate
+  @paddingSize="none"
+  @pageSideBar={{component
+    "side-nav"
+    heading="Elastic UI"
+    onSearch=this.onSearch
+    searchValue=this.searchValue
+    isOpenMobile=this.isOpenMobile
+    toggleOpenOnMobile=(set this "isOpenMobile")
+    items=this.currentSideNavRoutes
+    selectedItem=this.selectedItem
+  }}
+>
+  {{outlet}}
+</EuiPageTemplate>

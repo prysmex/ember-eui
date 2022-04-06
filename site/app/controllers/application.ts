@@ -10,8 +10,10 @@ export default class ApplicationController extends Controller {
   @service declare router: RouterService;
   @service docfy: any;
   @tracked sideNavRoutes: Item[] = [];
+  @tracked currentSideNavRoutes: Item[] = [];
   @tracked isOpenMobile = false;
   @tracked selectedItem: NodeId;
+  @tracked searchValue?: string;
 
   constructor(props?: Props) {
     super(props);
@@ -51,6 +53,7 @@ export default class ApplicationController extends Controller {
       ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
       ...changeset
     ];
+    this.currentSideNavRoutes = this.sideNavRoutes;
     //@ts-expect-error
     this.selectedItem = this.router.location.location.pathname;
   }
@@ -71,4 +74,59 @@ export default class ApplicationController extends Controller {
     }
     return nodes;
   }
+
+  filterSideNav(str: string, nodes: Item[], depth: number = 0): Item[] {
+    //@ts-ignore
+    return nodes.reduce<Item[]>((acum, curr) => {
+      if (depth === 0) {
+        const foundItems = this.filterSideNav(str, curr.items, depth + 1);
+        if (foundItems.length > 0) {
+          acum.push({ ...curr, forceOpen: true, items: foundItems });
+        }
+        return acum;
+      }
+
+      let toAdd: Item = {
+        items: [],
+        name: '',
+        id: '',
+        onClick: true,
+        forceOpen: true
+      };
+
+      curr.items.forEach((item) => {
+        toAdd.items = this.filterSideNav(str, [item], depth + 1);
+      });
+
+      if (
+        curr.name.toLowerCase().indexOf(str?.toLowerCase()) > -1 ||
+        toAdd.items.length > 0
+      ) {
+        toAdd = {
+          ...toAdd,
+          ...curr,
+          items: toAdd.items
+        };
+      }
+
+      if (toAdd.name !== '') {
+        acum.push(toAdd);
+      }
+
+      return acum;
+    }, []);
+  }
+
+  onSearch = (str: string) => {
+    this.searchValue = str;
+    if (!str) {
+      this.currentSideNavRoutes = this.sideNavRoutes;
+    } else {
+      this.currentSideNavRoutes = this.filterSideNav(
+        str,
+        this.sideNavRoutes,
+        0
+      );
+    }
+  };
 }

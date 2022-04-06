@@ -2,9 +2,10 @@
   (arg-or-default @tagName "div")
   (arg-or-default @restrictWidth false)
   (arg-or-default @borderRadius "none")
-  (arg-or-default @paddingSize "l")
+  (arg-or-default @paddingSize (if @panelled "l" "none"))
   as |tagName restrictWidth borderRadius paddingSize|
 }}
+
   {{#let
     (if
       (eq restrictWidth true)
@@ -25,7 +26,7 @@
           componentName="EuiPageBody"
           borderRadiusSize=borderRadius
         }}
-        @paddingSize={{"none"}}
+        @paddingSize={{paddingSize}}
         @borderRadius={{borderRadius}}
         {{!-- @paddingSize={{arg-or-default @paddingSize "none"}} --}}
         {{!-- @restrictWidth={{@restrictWidth}} --}}
@@ -46,34 +47,20 @@
       </EuiPanel>
     {{else}}
       {{#let (element tagName) as |Tag|}}
-        <EuiPanel
+        <Tag
           class={{class-names
             componentName="EuiPageBody"
             borderRadiusSize=borderRadius
+            paddingSize=paddingSize
           }}
-          @paddingSize={{"none"}}
-          @borderRadius={{borderRadius}}
-          {{!-- @paddingSize={{arg-or-default @paddingSize "none"}} --}}
-          {{!-- @restrictWidth={{@restrictWidth}} --}}
-          {{style
-            (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
+          style={{if
+            styling.widthStyle
+            (inline-styles max-width=styling.widthStyle)
           }}
+          ...attributes
         >
-          <Tag
-            class={{class-names
-              componentName="EuiPageBody"
-              borderRadiusSize=borderRadius
-              paddingSize=paddingSize
-            }}
-            style={{if
-              styling.widthStyle
-              (inline-styles max-width=styling.widthStyle)
-            }}
-            ...attributes
-          >
-            {{yield}}
-          </Tag>
-        </EuiPanel>
+          {{yield}}
+        </Tag>
       {{/let}}
     {{/if}}
   {{/let}}

@@ -1,7 +1,7 @@
 export const baseClass = 'euiPanel';
 
 export const paddingSizeMapping = {
-
+  none: '',
   s: `${baseClass}--paddingSmall`,
   m: `${baseClass}--paddingMedium`,
   l: `${baseClass}--paddingLarge`

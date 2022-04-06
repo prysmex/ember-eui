@@ -83,6 +83,7 @@
     "ember-flatpickr": "^3.2.2",
     "ember-focus-trap": "^1.0.1",
     "ember-href-to": "^5.0.0",
+    "ember-intl": "^5.7.2",
     "ember-load-initializers": "^2.1.2",
     "ember-page-title": "^7.0.0",
     "ember-qunit": "^5.1.5",

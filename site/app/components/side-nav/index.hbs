@@ -4,13 +4,11 @@
     <EuiFieldSearch
       @placeholder="Search"
       @onSearch={{@onSearch}}
-			@incremental={{true}}
-			@clear={{fn @onSearch ""}}
+      @incremental={{true}}
+      @clear={{fn @onSearch ""}}
     />
   </EuiFlexItem>
-  <EuiFlexItem
-    class="guideSideNav__content"
-  >
+  <EuiFlexItem class="guideSideNav__content">
     <EuiSideNav
       @heading={{@heading}}
       @isOpenMobile={{@isOpenMobile}}

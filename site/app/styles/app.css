@@ -96,3 +96,26 @@ body.euiBody--headerIsFixed {
       rgba(255, 0, 0, 0) 0
     );
 }
+
+.euiBody--headerIsFixed #guide {
+  min-height: calc(100vh - 48px);
+}
+#guide {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+html {
+  font-family: Inter, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.14286;
+  font-weight: 400;
+  text-size-adjust: 100%;
+  font-kerning: normal;
+  height: 100%;
+  background-color: rgb(248, 250, 253);
+  color: rgb(52, 55, 65);
+}

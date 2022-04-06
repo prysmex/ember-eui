@@ -1,4 +1,13 @@
-# Demo
+# Flatpickr
+
+<EuiText>
+  <p><EuiLink @target="_blank" @href="https://shipshapecode.github.io/ember-flatpickr/docs/usage">ember-flatpickr</EuiLink> for <strong>@ember-eui/core</strong> integration</p>
+
+<p>We use <strong>ember-flatpickr</strong>, so any <strong>ember-cli-build</strong> options from it are available.</p>
+
+<p><EuiCodeBlock @isCopyable={{true}}>ember install @ember-eui/flatpickr</EuiCodeBlock></p>
+
+</EuiText>
 
 ```hbs template
 <EuiFlatpickr

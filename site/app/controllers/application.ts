@@ -1,7 +1,13 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-import { getSidenavRoutes, Item, NodeId } from '../helpers/get-sidenav-routes';
+import {
+  DocfyNode,
+  getSidenavRoutes,
+  Item,
+  NodeId,
+  Page
+} from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
 
 interface Props {}
@@ -32,7 +38,12 @@ export default class ApplicationController extends Controller {
     ]);
 
     let others = root.children.filter((child: Item) => child.name !== 'core');
-
+    others = this.removeDocsFromDocfyNodes(others);
+    console.log(others);
+    const finalOthersPages = others.reduce((prev: Page[], curr: DocfyNode) => {
+      prev.push(...curr.pages);
+      return prev;
+    }, []);
     const changeset = getSidenavRoutes([
       {
         id: 'addons',
@@ -41,8 +52,8 @@ export default class ApplicationController extends Controller {
         },
         name: 'Addons',
         label: 'Addons',
-        children: others,
-        pages: []
+        children: [],
+        pages: finalOthersPages
       },
       (id: NodeId) => {
         this.selectedItem = id;
@@ -64,6 +75,20 @@ export default class ApplicationController extends Controller {
     } else {
       return '';
     }
+  }
+
+  removeDocsFromDocfyNodes(nodes: DocfyNode[]) {
+    nodes.forEach((node) => {
+      //Changeset-form node
+      let firstChild = node.children.firstObject;
+      if (firstChild?.label === 'Documentation') {
+        let docPages = firstChild.pages;
+        node.pages = docPages;
+        node.children = [];
+      }
+    });
+    console.log(nodes);
+    return nodes;
   }
 
   removeDocs(nodes: Item[]) {

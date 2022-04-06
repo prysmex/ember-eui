@@ -1,7 +1,18 @@
-# Demo
+# Changeset form
 
-\*\* Note: `<EuiChangesetForm::Fields::ComboBox>` is a little bit more manual than the others in order to give you full flexibility of which options are actually selected
-and how to set them for complex or weird use cases, but we keep setting errors for you via the @fieldName
+<EuiText>
+  <p><EuiLink @target="_blank" @href="https://github.com/poteto/ember-changeset">ember-changeset</EuiLink> with <strong>@ember-eui/core</strong> integration.</p>
+
+<p><EuiCodeBlock @isCopyable={{true}}>ember install @ember-eui/changeset-form</EuiCodeBlock></p>
+
+<EuiCallOut>
+  <:body>
+    Note: <EuiCode @language="hbs">{{t "changeset_form.note"}}</EuiCode> is a little bit more manual than the others in order to give you full flexibility of which options are actually selected
+and how to set them for complex or weird use cases, but we keep setting errors for you via the <EuiCode>@fieldName</EuiCode>
+  </:body>
+</EuiCallOut>
+
+</EuiText>
 
 <EuiSpacer />
 

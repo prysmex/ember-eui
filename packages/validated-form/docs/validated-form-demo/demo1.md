@@ -1,11 +1,16 @@
-# Demo
+# Validated form
 
-Inspired on `ember-paper`'s `<PaperForm/>`
-The idea is simple, `ValidatedForm` yields most basic `@ember-eui/core` components with some wiring to keep the form state on sync.
-It used `ember-validators` by default. To provide describe validations ergonomically you'd just pass a hash where each key is a valid
-ember-valitador validator, `length`, `presence`, `number` and the values, the `config` expected by those.
+<EuiText>
+  <p>Inspired on <strong>ember-paper</strong>'s <EuiCode>{{t "validated_form.ember_paper"}}</EuiCode></p>
 
-<EuiSpacer />
+  <p>The idea is simple, <strong>ValidatedForm</strong> yields most basic <strong>@ember-eui/core</strong> components with some wiring to keep the form state on sync.</p>
+
+  <p>It uses <EuiLink @target="_blank" @href="https://github.com/offirgolan/ember-validators">ember-validators</EuiLink> by default to describe the validations. To provide the validations ergonomically you'd just pass a hash where each key is a valid
+ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode>, <EuiCode>number</EuiCode>, the values and the <EuiCode>config</EuiCode> expected by those.</p>
+
+<p><EuiCodeBlock @isCopyable={{true}}>ember install @ember-eui/validated-form</EuiCodeBlock></p>
+
+</EuiText>
 
 ```hbs template
 <ValidatedForm as |Form|>
@@ -23,7 +28,7 @@ ember-valitador validator, `length`, `presence`, `number` and the values, the `c
     @label='Markdown'
     @onChange={{set this.data 'markdownText'}}
     @validations={{hash presence=(hash presence=true)}}
-    @error={{array "one error"}}
+    @error={{array 'one error'}}
   />
   <Form.FieldSelect
     @onChange={{set this.data 'fieldSelect'}}

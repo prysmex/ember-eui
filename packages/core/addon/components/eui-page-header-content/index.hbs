@@ -171,7 +171,9 @@
             class="euiPageHeaderContent__rightSideItems"
           >
             {{#each @rightSideItems as |rightSideItem|}}
-              {{rightSideItem}}
+              <EuiFlexItem @grow={{false}}>
+                {{rightSideItem}}
+              </EuiFlexItem>
             {{/each}}
           </EuiFlexGroup>
         </EuiFlexItem>

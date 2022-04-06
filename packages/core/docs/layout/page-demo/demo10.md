@@ -21,7 +21,7 @@ order: 10
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
-    rightSideItems=(array (component 'eui-button-title' title='Go full screen')(component 'eui-button-title' title='Go full screen'))
+    rightSideItems=(array (component 'eui-button-title' title='Go full screen' color='warning')(component 'eui-button-title' title='Do something'))
   }}
 >
   <EuiFlexGrid @columns={{2}}>

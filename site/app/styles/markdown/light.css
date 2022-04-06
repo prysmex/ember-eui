@@ -1,0 +1,76 @@
+div.docfy-demo__example {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-top-right-radius: 6px;
+  flex-grow: 0;
+  display: flex;
+  flex-direction: column;
+  border-color: #d3dae6;
+  background-color: #fff;
+  border: 1px solid #d3dae6;
+  border-left: 1px solid #d3dae6;
+  border-right: 1px solid #d3dae6;
+  border-top: 1px solid #d3dae6;
+  border-style: solid solid none solid;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 16px;
+}
+
+.docfy-demo__description {
+  @apply pb-5;
+
+  &__header {
+    @apply flex items-center justify-between mb-4;
+
+    &__title {
+      font-size: 1.92857rem;
+      word-wrap: break-word;
+      color: #1a1c21;
+      line-height: 2.28571rem;
+      font-weight: 700;
+    }
+
+    &__edit-url {
+      @apply text-xs;
+      &:hover {
+        @apply text-gray-800;
+      }
+    }
+  }
+}
+
+.docfy-demo__snippets {
+  &__tabs {
+    @apply border-t border-l border-r;
+    padding: 4px 12px;
+    border-color: #d3dae6;
+    border-style: solid solid none solid;
+
+    &__button {
+      @apply p-2 mr-2 text-gray-700 border-b-4 border-transparent;
+
+      &--active,
+      &:hover {
+        @apply border-blue-700;
+        border-bottom-style: solid;
+      }
+    }
+  }
+}
+
+.docfy-demo__snippet {
+  @apply border rounded-b;
+
+  pre {
+    @apply p-4;
+    @apply flex text-gray-200 bg-gray-800;
+    @apply text-sm leading-normal;
+    @apply font-mono;
+    @apply rounded-b;
+    @apply overflow-auto;
+    scrollbar-width: none;
+  }
+}

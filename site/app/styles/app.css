@@ -119,3 +119,23 @@ html {
   background-color: rgb(248, 250, 253);
   color: rgb(52, 55, 65);
 }
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .euiBody--headerIsFixed .euiPageSideBar--sticky {
+    max-height: calc(100vh - 48px);
+    top: 48px;
+  }
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .euiBody--headerIsFixed .euiPageSideBar--sticky {
+    max-height: calc(100vh - 48px);
+    top: 48px;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .euiBody--headerIsFixed .euiPageSideBar--sticky {
+    max-height: calc(100vh - 48px);
+    top: 48px;
+  }
+}

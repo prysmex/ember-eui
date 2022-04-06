@@ -26,9 +26,12 @@ order: 4
       <EuiTitle>No spice</EuiTitle>
       <EuiSpacer />
       <EuiLoadingContent @lines={{8}} />
+      <EuiButton>
+        Go to full screen
+      </EuiButton>
     </:content>
     <:footer>
-      Hola mundo
+      Footer
     </:footer>
   </EuiEmptyPrompt>
 </EuiPageTemplate>

@@ -8,11 +8,11 @@
   {{#let
     (if
       (eq restrictWidth true)
-      (hash widthClassName="euiPageBody--restrictWidth-default")
+      (hash widthClassName="euiPageBody--restrictWidth-custom")
       (if
         (eq restrictWidth false)
         (hash
-          widthClassName="euiPageBody--restrictWidth-custom"
+          widthClassName="euiPageBody--restrictWidth-default"
           widthStyle=restrictWidth
         )
       )
@@ -24,6 +24,7 @@
         class={{class-names
           componentName="EuiPageBody"
           borderRadiusSize=borderRadius
+          paddingSize=paddingSize
         }}
         @paddingSize={{"none"}}
         @borderRadius={{borderRadius}}
@@ -46,21 +47,21 @@
       </EuiPanel>
     {{else}}
       {{#let (element tagName) as |Tag|}}
-        <EuiPanel
+        {{!-- <EuiPanel
           class={{class-names
             componentName="EuiPageBody"
             borderRadiusSize=borderRadius
           }}
           @paddingSize={{"none"}}
           @borderRadius={{borderRadius}}
-          {{!-- @paddingSize={{arg-or-default @paddingSize "none"}} --}}
-          {{!-- @restrictWidth={{@restrictWidth}} --}}
+          @restrictWidth={{@restrictWidth}}
           {{style
             (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
           }}
-        >
+        > --}}
           <Tag
             class={{class-names
+              (if styling.widthClassName styling.widthClassName)
               componentName="EuiPageBody"
               borderRadiusSize=borderRadius
               paddingSize=paddingSize
@@ -73,7 +74,7 @@
           >
             {{yield}}
           </Tag>
-        </EuiPanel>
+        {{!-- </EuiPanel> --}}
       {{/let}}
     {{/if}}
   {{/let}}

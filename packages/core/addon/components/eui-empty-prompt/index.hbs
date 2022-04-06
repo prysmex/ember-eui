@@ -2,10 +2,11 @@
   class={{class-names
     (if @layout (concat "euiEmptyPrompt--" @layout) "euiEmptyPrompt--vertical")
     componentName="EuiEmptyPrompt"
-    paddingSize=@paddingSize
+    paddingSize=(arg-or-default @paddingSize "l")
   }}
   @paddingSize="none"
   @color={{arg-or-default @color "transparent"}}
+  @hasBorder={{@hasBorder}}
 >
   <div className="euiEmptyPrompt__main">
     {{#if (has-block "icon")}}
@@ -22,7 +23,7 @@
           }}</div>
       {{else}}
         {{#if @title}}
-          <EuiTitle @size={{@titleSize}}>{{@title}}</EuiTitle>
+          <EuiTitle @size={{arg-or-default @titleSize "m"}}>{{@title}}</EuiTitle>
         {{/if}}
         {{#if @body}}
           <EuiTextColor @color="subdued">

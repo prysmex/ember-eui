@@ -38,7 +38,7 @@ order: 7
       <EuiFlexItem class='eui-fullHeight'>
         <EuiFlexGroup class='eui-fullHeight' @gutterSize='l'>
           <EuiFlexItem @grow={{2}}>
-            <EuiPanel tabIndex={{0}} class='eui-yScroll' @hasShadow={{false}}>
+            <EuiPanel tabindex={{0}} class='eui-yScroll' @hasShadow={{false}}>
               <EuiLoadingContent @lines={{8}} />
               <EuiSpacer />
               <EuiLoadingContent @lines={{8}} />

@@ -50,6 +50,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
   // Defaults
   @argOrDefault(460) minHeight!: number;
   @argOrDefault(false) fullHeight!: boolean;
+  @argOrDefault('l') paddingSize!: string;
   @argOrDefault('default') template!: typeof TEMPLATES[number];
 
   get classes() {

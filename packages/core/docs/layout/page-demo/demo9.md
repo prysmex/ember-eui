@@ -10,9 +10,10 @@ order: 9
 
 ```hbs template
 <EuiPageTemplate
-  @grow={{true}}
   @template='centeredContent'
-  @paddingSize="l"
+  @pageContentProps={{hash
+    paddingSize='none'
+  }}
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'

@@ -2,8 +2,7 @@
   (arg-or-default @tagName "div")
   (arg-or-default @restrictWidth false)
   (arg-or-default @borderRadius "none")
-  (arg-or-default @paddingSize "l")
-  as |tagName restrictWidth borderRadius paddingSize|
+  as |tagName restrictWidth borderRadius|
 }}
   {{#let
     (if
@@ -24,7 +23,7 @@
         class={{class-names
           componentName="EuiPageBody"
           borderRadiusSize=borderRadius
-          paddingSize=paddingSize
+          paddingSize=@paddingSize
         }}
         @paddingSize={{"none"}}
         @borderRadius={{borderRadius}}
@@ -64,7 +63,7 @@
               (if styling.widthClassName styling.widthClassName)
               componentName="EuiPageBody"
               borderRadiusSize=borderRadius
-              paddingSize=paddingSize
+              paddingSize=@paddingSize
             }}
             style={{if
               styling.widthStyle

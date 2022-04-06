@@ -1,9 +1,12 @@
-<div
+<header
   class={{class-names
     (if @bottomBorder "euiPageHeader--bottomBorder")
     (if @responsive "euiPageHeader--responsive")
     (if (and @pageTitle @tabs) "euiPageHeader--tabsAtBottom")
-    (if (and @tabs (not @pageTitle)(not @rightSideItems)(not @description)) "euiPageHeader--onlyTabs")
+    (if
+      (and @tabs (not @pageTitle) (not @rightSideItems) (not @description))
+      "euiPageHeader--onlyTabs"
+    )
     (if (eq @responsive "reverse") "euiPageHeader--responsiveReverse")
     (if
       @alignItems (concat "euiPageHeader--" @alignItems) "euiPageHeader--center"
@@ -30,4 +33,4 @@
   >
     {{yield}}
   </EuiPageHeaderContent>
-</div>
+</header>

@@ -25,12 +25,7 @@
         (inline-styles min-height="460px;")
       }}
     >
-      {{yield
-        (hash
-          Sidebar=(component "eui-page-side-bar")
-          Body=(component "eui-page-body")
-        )
-      }}
+      {{yield}}
     </div>
   {{/let}}
 {{/let}}

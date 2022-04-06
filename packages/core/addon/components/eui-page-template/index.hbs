@@ -90,40 +90,51 @@
       </EuiPageSideBar>
     {{/if}}
     {{#if (or (has-block "pageSideBar") @pageSideBar)}}
-      <EuiPageBody @panelled={{true}} @paddingSize={{@paddingSize}}>
-        <EuiPageBody>
-          {{#if (has-block "pageHeader")}}
-            {{yield to="pageHeader"}}
-          {{else if @pageHeader}}
-            <EuiPageHeader
-              @restrictWidth={{@restrictWidth}}
-              @paddingSize={{@paddingSize}}
-              @responsive={{arg-or-default @responsive true}}
-              @rightSideItems={{@pageHeader.rightSideItems}}
-              @iconType={{@pageHeader.iconType}}
-              @tabs={{@pageHeader.tabs}}
-              @pageTitle={{@pageHeader.pageTitle}}
-            />
-          {{/if}}
-          <EuiPageContent
-            @borderRadius="none"
-            @verticalPosition="center"
-            @horizontalPosition="center"
-            @hasShadow={{false}}
-            @color="subdued"
-            @paddingSize={{@paddingSize}}
-            style="display: flex"
-            class={{this.pageContentProps}}
-            {{!-- style={{display: "flex"}} --}}
+      <EuiPageBody
+        @panelled={{true}}
+        @paddingSize={{@paddingSize}}
+        class={{this.pageBodyProps}}
+      >
+        {{#if (has-block "pageHeader")}}
+          {{yield to="pageHeader"}}
+        {{else if @pageHeader}}
+          <EuiPageHeader
+            @restrictWidth={{@restrictWidth}}
+            @paddingSize={{if
+              (or @pageHeader (has-block "pageHeader"))
+              ""
+              @paddingSize
+            }}
+            @responsive={{arg-or-default @responsive true}}
+            @rightSideItems={{@pageHeader.rightSideItems}}
+            @iconType={{@pageHeader.iconType}}
+            @tabs={{@pageHeader.tabs}}
+            @pageTitle={{@pageHeader.pageTitle}}
+          />
+        {{/if}}
+        <EuiPageContent
+          @verticalPosition="center"
+          @horizontalPosition="center"
+          @hasShadow={{false}}
+          @color="subdued"
+          @paddingSize={{@paddingSize}}
+          style={{if
+            (or @pageHeader (has-block "pageHeader"))
+            ""
+            "display: flex"
+          }}
+          class={{this.pageContentProps}}
+        >
+          <EuiPageContentBody
+            @restrictWidth={{@restrictWidth}}
+            class={{this.pageContentBodyProps}}
           >
-            <EuiPageContentBody @restrictWidth={{@restrictWidth}}>
-              {{yield to="default"}}
-            </EuiPageContentBody>
-          </EuiPageContent>
-        </EuiPageBody>
+            {{yield to="default"}}
+          </EuiPageContentBody>
+        </EuiPageContent>
       </EuiPageBody>
     {{else}}
-      <EuiPageBody>
+      <EuiPageBody class={{this.pageBodyProps}}>
         {{#if (has-block "pageHeader")}}
           {{yield to="pageHeader"}}
         {{else if @pageHeader}}
@@ -139,17 +150,25 @@
         {{/if}}
         <EuiPageContent
           @borderRadius="none"
-          @verticalPosition="center"
-          @horizontalPosition="center"
-          @hasShadow={{false}}
-          @color="subdued"
+          @hasShadow="{false}}"
           @paddingSize={{@paddingSize}}
           style="display: flex"
-          {{!-- style={{display: "flex"}} --}}
         >
-          <EuiPageContentBody @restrictWidth={{@restrictWidth}}>
-            {{yield to="default"}}
-          </EuiPageContentBody>
+          <EuiPageContent
+            @verticalPosition="center"
+            @horizontalPosition="center"
+            @hasShadow={{false}}
+            @color="subdued"
+            @paddingSize={{@paddingSize}}
+            class={{this.pageContentProps}}
+          >
+            <EuiPageContentBody
+              @restrictWidth={{@restrictWidth}}
+              class={{this.pageContentBodyProps}}
+            >
+              {{yield to="default"}}
+            </EuiPageContentBody>
+          </EuiPageContent>
         </EuiPageContent>
       </EuiPageBody>
     {{/if}}

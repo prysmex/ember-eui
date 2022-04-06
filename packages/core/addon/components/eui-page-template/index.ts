@@ -57,12 +57,32 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
   }
 
   get fullHeightClass() {
-    return this.fullHeight && this.canFullHeight
-      ? 'eui-fullHeight eui-yScroll'
-      : '';
+    return this.fullHeight && this.canFullHeight ? 'eui-fullHeight ' : '';
+  }
+
+  get yScrollClass() {
+    return this.fullHeight && this.canFullHeight ? 'eui-yScroll ' : '';
   }
 
   get canFullHeight() {
     return this.template === 'default' || this.template === 'empty';
+  }
+
+  get pageBodyProps() {
+    return this.fullHeightClass;
+    // ...pageBodyProps,
+    // className: classNames(fullHeightClass, pageBodyProps?.className),
+  }
+
+  get pageContentProps() {
+    return this.yScrollClass;
+    // ...pageContentProps,
+    // className: classNames(yScrollClass, pageContentProps?.className),
+  }
+
+  get pageContentBodyProps() {
+    return this.fullHeightClass;
+    // ...pageContentBodyProps,
+    //className: classNames(fullHeightClass, pageContentBodyProps?.className),
   }
 }

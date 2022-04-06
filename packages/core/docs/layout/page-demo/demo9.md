@@ -16,7 +16,7 @@ order: 9
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
-    rightSideItems='eui-button'
+    rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
   }}
 >
   <EuiEmptyPrompt

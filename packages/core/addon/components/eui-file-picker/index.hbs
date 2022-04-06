@@ -29,6 +29,7 @@
           class="euiFilePicker__input"
           disabled={{@disabled}}
           aria-describedby={{promptId}}
+          multiple={{@multiple}}
           {{on "dragover" this.showDrop}}
           {{on "dragleave" this.hideDrop}}
           {{on "drop" this.hideDrop}}

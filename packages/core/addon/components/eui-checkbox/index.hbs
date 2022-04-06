@@ -22,7 +22,7 @@
         checked={{@checked}}
         disabled={{@disabled}}
         ...attributes
-        {{this.invalidateIndeterminate @indeterminate @checked}}
+        {{this.indeterminateModifier @indeterminate @checked}}
         {{did-insert (optional @inputRef)}}
       />
       <div class="euiCheckbox__square"></div>

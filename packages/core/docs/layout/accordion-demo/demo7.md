@@ -2,79 +2,65 @@
 order: 7
 ---
 
-```hbs template
-<EuiTitle>
-  Loading state
-</EuiTitle>
-<EuiSpacer />
+# When content changes dynamically
+
 <EuiText>
-  Use the
-  <EuiCode>isLoading</EuiCode>
-  prop when not all of the accordion's content is ready yet. When using
-  <EuiCode>isLoading</EuiCode>, the content of
-  <EuiCode>extraAction</EuiCode>
-  is replaced with a loading spinner.<br /><br />
-  Manage the content of the accordion using
-  <EuiCode>isLoadingMessage</EuiCode>. By default, it is set to
-  <EuiCode>false</EuiCode>
-  and the content will remain unaltered. Set it to
-  <EuiCode>true</EuiCode>
-  to show a default loading message or pass a node to show a custom loading
-  message.
+  If an accordion’s content changes height while the accordion is open, it will
+  resize dynamically.
 </EuiText>
-<EuiSpacer />
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiText>
-      isLoadingMessage:
-    </EuiText>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) false)}}>
-      False
-    </EuiButtonEmpty>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) true)}}>
-      True
-    </EuiButtonEmpty>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButtonEmpty
-      {{on
-        'click'
-        (fn (mut this.isLoadingMessage) 'This is a custom loading message')
-      }}
-    >
-      Custom
-    </EuiButtonEmpty>
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer />
-<EuiAccordion
-  @isLoading={{true}}
-  @isLoadingMessage={{this.isLoadingMessage}}
-  @extraAction={{true}}
->
+ 
+```hbs template
+<EuiAccordion @paddingSize='s'>
   <:buttonContent>
-    Accordion is loading, click to toggle
+    Click me to toggle close / open
   </:buttonContent>
   <:content>
+    <EuiButton
+      @size='s'
+      @iconType='plusInCircleFilled'
+      {{on 'click' (fn this.incrementDecreaseRows 'add')}}
+    >
+      Increase height to
+      {{add this.counter 1}}
+      items
+    </EuiButton>
+    <EuiButton
+      @size='s'
+      @iconType='minusInCircleFilled'
+      {{on 'click' (fn this.incrementDecreaseRows 'sub')}}
+      @isDisabled={{eq this.counter 1}}
+    >
+      Decrease height to
+      {{sub this.counter 1}}
+      items
+    </EuiButton>
+    <EuiSpacer />
     <EuiPanel @color='subdued'>
-      Opened content
+      <ul>
+        {{#each (range 0 this.counter) as |row|}}
+          <li> Row {{row}}</li>
+        {{/each}}
+      </ul>
     </EuiPanel>
   </:content>
-  <:extraAction>
-    <EuiButton size='s'>Extra action!</EuiButton>
-  </:extraAction>
 </EuiAccordion>
 ```
 
 ```js component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default class AccordionDemo1Component extends Component {
-  @tracked isLoadingMessage = false;
+export default class AccordionDemo8Component extends Component {
+  @tracked counter = 1;
+
+  @action
+  incrementDecreaseRows(actionType) {
+    if (actionType == 'add') {
+      this.counter++;
+    } else {
+      this.counter--;
+    }
+  }
 }
 ```

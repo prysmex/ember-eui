@@ -63,3 +63,36 @@ body.euiBody--headerIsFixed {
   margin-right: auto;
   width: 100%;
 }
+
+.guideSideNav__content {
+  padding: 0 24px 24px;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.guideSideNav__content::-webkit-scrollbar-corner,
+.guideSideNav__content::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.guideSideNav__search {
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  padding: 8px 8px 16px;
+}
+
+.guideSideNav {
+  background: linear-gradient(
+      160deg,
+      rgba(211, 218, 230, 0.3) 0,
+      rgba(211, 218, 230, 0.3) 32px,
+      rgba(255, 0, 0, 0) 0
+    ),
+    linear-gradient(
+      175deg,
+      rgba(211, 218, 230, 0.3) 0,
+      rgba(211, 218, 230, 0.3) 16px,
+      rgba(255, 0, 0, 0) 0
+    );
+}

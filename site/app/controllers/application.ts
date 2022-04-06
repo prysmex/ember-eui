@@ -95,7 +95,7 @@ export default class ApplicationController extends Controller {
       };
 
       curr.items.forEach((item) => {
-        toAdd.items = this.filterSideNav(str, [item], depth + 1);
+        toAdd.items.push(...this.filterSideNav(str, [item], depth + 1));
       });
 
       if (

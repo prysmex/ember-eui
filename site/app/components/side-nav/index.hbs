@@ -1,6 +1,6 @@
 {{!template-lint-disable}}
 <EuiFlexGroup @direction="column" class="h-full" @gutterSize="none">
-  <EuiFlexItem @grow={{false}} style="padding: 8px 8px 16px">
+  <EuiFlexItem @grow={{false}} class="guideSideNav__search">
     <EuiFieldSearch
       @placeholder="Search"
       @onSearch={{@onSearch}}
@@ -9,7 +9,7 @@
     />
   </EuiFlexItem>
   <EuiFlexItem
-    style="padding: 0 24px 24px; height: 100%; overflow-x: hidden; overflow-y: auto;"
+    class="guideSideNav__content"
   >
     <EuiSideNav
       @heading={{@heading}}

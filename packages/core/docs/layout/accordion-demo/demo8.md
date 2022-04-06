@@ -2,47 +2,48 @@
 order: 8
 ---
 
-```hbs template
-<EuiTitle>
-  When content changes dynamically
-</EuiTitle>
-<EuiSpacer />
+# Interactive content in the trigger
+
 <EuiText>
-  If an accordion’s content changes height while the accordion is open, it will
-  resize dynamically.
+  <p>
+  Passing interactive content like links, buttons, or form elements as the
+  <EuiCode>buttonContent</EuiCode>, will cause issues with the wrapping button
+  element. To fix this, you can change this wrapping element to a div using
+  <EuiCode>buttonElement="div"</EuiCode>.
+  </p>
+  <p>
+  If you don't want the interactive content to trigger the accordion expansion,
+  you will have to apply
+  <EuiCode>e.stopPropagation</EuiCode>
+  to your element manually.
+  </p>
 </EuiText>
+
+```hbs template
+<EuiCallOut @iconType='accessibility' @color='warning'>
+  <:body>
+    <EuiText>
+      Accordions need a focusable button for accessibility, so changing the
+      element to anything other than a button will enforce the display of the
+      arrow.
+    </EuiText>
+  </:body>
+</EuiCallOut>
 <EuiSpacer />
-<EuiAccordion @paddingSize='s'>
+<EuiAccordion @paddingSize='s' @buttonElement="div">
   <:buttonContent>
-    Click me to toggle close / open
+    <EuiText
+      onClick={{this.onClick}}
+      href='#/layout/accordion#interactive-content-in-the-trigger'
+    >
+      This is a nested link
+    </EuiText>
   </:buttonContent>
   <:content>
-    <EuiButton
-      @size='s'
-      @iconType='plusInCircleFilled'
-      {{on 'click' (fn this.incrementDecreaseRows 'add')}}
-    >
-      Increase height to
-      {{add this.counter 1}}
-      items
-    </EuiButton>
-    <EuiButton
-      @size='s'
-      @iconType='minusInCircleFilled'
-      {{on 'click' (fn this.incrementDecreaseRows 'sub')}}
-      @isDisabled={{eq this.counter 1}}
-    >
-      Decrease height to
-      {{sub this.counter 1}}
-      items
-    </EuiButton>
-    <EuiSpacer />
     <EuiPanel @color='subdued'>
-      <ul>
-        {{#each (range 0 this.counter) as |row|}}
-          <li> Row {{row}}</li>
-        {{/each}}
-      </ul>
+      Any content inside of
+      <strong>EuiAccordion</strong>
+      will appear here.
     </EuiPanel>
   </:content>
 </EuiAccordion>
@@ -54,15 +55,10 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class AccordionDemo8Component extends Component {
-  @tracked counter = 1;
 
   @action
-  incrementDecreaseRows(actionType) {
-    if (actionType == 'add') {
-      this.counter++;
-    } else {
-      this.counter--;
-    }
+  onClick(e) {
+    e.stopPropagation();
   }
 }
 ```

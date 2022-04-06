@@ -1,4 +1,4 @@
-<EuiHeader @theme="dark">
+<EuiHeader @theme="dark" @position="fixed">
   <EuiHeaderSection @side="left">
     <EuiHeaderSectionItem @border="right">
       <EuiHeaderLogo @iconType="/assets/elastic.svg">
@@ -19,18 +19,21 @@
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
 </EuiHeader>
-<EuiPageTemplate
-  @paddingSize="none"
-  @pageSideBar={{component
-    "side-nav"
-    heading="Elastic UI"
-    onSearch=this.onSearch
-    searchValue=this.searchValue
-    isOpenMobile=this.isOpenMobile
-    toggleOpenOnMobile=(set this "isOpenMobile")
-    items=this.currentSideNavRoutes
-    selectedItem=this.selectedItem
-  }}
->
-  {{outlet}}
+<EuiPageTemplate @paddingSize="none">
+  <:pageSideBar>
+    <EuiPageSideBar @sticky={{true}} @paddingSize="none" class="guideSideNav">
+      <SideNav
+        @heading="Elastic UI"
+        @onSearch={{this.onSearch}}
+        @searchValue={{this.searchValue}}
+        @isOpenMobile={{this.isOpenMobile}}
+        @toggleOpenOnMobile={{set this "isOpenMobile"}}
+        @items={{this.currentSideNavRoutes}}
+        @selectedItem={{this.selectedItem}}
+      />
+    </EuiPageSideBar>
+  </:pageSideBar>
+  <:default>
+    {{outlet}}
+  </:default>
 </EuiPageTemplate>

@@ -1,48 +1,39 @@
 {{#let
-  (if @titleId @titleId (if (or @href @onClick) (unique-id)))
   (if @selectable (unique-id))
-  as |titleId selectableId|
+  (and
+    (not @isDisabled)
+    (or @onClick @href (and @selectable (not @selectable.isDisabled)))
+  )
+  (arg-or-default @titleElement "span")
+  (arg-or-default @layout "vertical")
+  as |selectableId isClickable titleElement layout|
 }}
   <EuiPanel
     class={{class-names
-    (if (not-eq @hasShadow false) "euiPanel--hasShadow" "euiPanel--noShadow")
-    (if (eq @hasBorder true) "euiPanel--hasBorder")
-    (if (eq @hasBorder false) "euiPanel--noBorder")
-      (if (eq @layout "horizontal") "euiCard--horizontal")
-      (if (and (eq @display "plain") (not @selectable)) "euiCard--plain")
-      (if @isDisabled "euiCard-isDisabled")
-      (if (has-block) "euiCard--hasChildren")
-      (if @icon "euiCard--hasIcon" (if (has-block) "icon" "euiCard--hasIcon"))
+      (if (eq layout "horizontal") "euiCard--horizontal")
+      (if isClickable "euiCard--isClickable")
       (if @betaBadgeProps.label "euiCard--hasBetaBadge")
-      (if
-        (or titleId (and @selectable (not @selectable.isDisabled)))
-        "euiCard--isClickable euiPanel--isClickable"
-      )
+      (if @icon "euiCard--hasIcon" (if (has-block "icon") "euiCard--hasIcon"))
       (if @selectable "euiCard--isSelectable")
       (if (and @selectable @selectable.isSelected) "euiCard-isSelected")
+      (if @isDisabled "euiCard-isDisabled")
+      this.selectableColorClass
       componentName="EuiCard"
-      paddingSize=(arg-or-default @paddingSize "m")
       textAlign=(arg-or-default @textAlign "center")
-      color=(if
-        @selectable.isSelected (arg-or-default @selectable.color "success")
-      )
     }}
+    @color={{if @isDisabled "subdued" @display}}
+    @onClick={{if isClickable this.outerOnClick}}
+    @hasShadow={{or @isDisabled @display}}
+    @hasBorder={{if @display @display undefined}}
+    @paddingSize={{@paddingSize}}
     ...attributes
-    {{on-event-simulate-event
-      "click"
-      target=(or
-        (if titleId (concat "#" titleId))
-        (if selectableId (concat "#" selectableId))
-      )
-      event=(create-event (hash eventType="Event" trigger="click"))
-    }}
   >
     <div class="euiCard__top">
       {{#if (has-block "icon")}}
         {{yield "euiCard__icon" to="icon"}}
       {{else}}
         {{#if (or @image @icon)}}
-          {{#if (and @image (not (eq @layout "horizontal")))}}
+          {{#if (and @image (not (eq layout "horizontal")))}}
             <div class="euiCard__image">
               <img src={{@image}} alt="card-top" />
             </div>
@@ -58,49 +49,64 @@
       {{/if}}
     </div>
     <div class="euiCard__content">
-      <EuiTitle
-        class="euiCard__title"
-        @size={{arg-or-default @titleSize "s"}}
-        @tag={{arg-or-default @titleElement "span"}}
-      >
+      <EuiTitle class="euiCard__title" @size={{arg-or-default @titleSize "s"}}>
         {{#if (has-block "title")}}
-          {{yield titleId to="title"}}
+          {{yield (set this "link") to="title"}}
         {{else if (and (not @isDisabled) @href)}}
           <a
             class="euiCard__titleAnchor"
             target={{@target}}
             disabled={{@isDisabled}}
             href={{@href}}
-            id={{titleId}}
+            {{did-insert (set this "link")}}
           >
-            {{@title}}
+            {{#if (not-eq titleElement "span")}}
+              {{#let (element titleElement) as |TitleElement|}}
+                <TitleElement>{{@title}}</TitleElement>
+              {{/let}}
+            {{else}}
+              <span>{{@title}}</span>
+            {{/if}}
+
           </a>
         {{else if (or @isDisabled @onClick)}}
           <button
             type="button"
             class="euiCard__titleButton"
             disabled={{@isDisabled}}
-            id={{titleId}}
+            {{did-insert (set this "link")}}
             {{on "click" (optional @onClick)}}
           >
-            {{@title}}
+            {{#if (not-eq titleElement "span")}}
+              {{#let (element titleElement) as |TitleElement|}}
+                <TitleElement>{{@title}}</TitleElement>
+              {{/let}}
+            {{else}}
+              <span>{{@title}}</span>
+            {{/if}}
           </button>
         {{else}}
-          {{@title}}
+          {{#if (not-eq titleElement "span")}}
+            {{#let (element titleElement) as |TitleElement|}}
+              <TitleElement>{{@title}}</TitleElement>
+            {{/let}}
+          {{else}}
+            <span>{{@title}}</span>
+          {{/if}}
         {{/if}}
       </EuiTitle>
       {{#if (or @description (has-block "description"))}}
         <EuiText @grow={{true}} @size="s" class="euiCard__description">
           {{#if (has-block "description")}}
-            {{yield to="description"}}
+            <p>{{yield to="description"}}</p>
           {{else}}
-            {{@description}}
+            <p>{{@description}}</p>
           {{/if}}
         </EuiText>
       {{/if}}
       {{yield to="body"}}
     </div>
-   {{#if @betaBadgeProps.label}}
+    {{#if @betaBadgeProps.label}}
       <span class="euiCard__betaBadgeWrapper">
         <EuiBetaBadge
           class="euiCard__betaBadge"
@@ -110,13 +116,17 @@
         />
       </span>
     {{/if}}
-    {{#if (and (not (eq @layout "horizontal")) (has-block "footer"))}}
+    {{#if (and (eq layout "vertical") (or (has-block "footer") @footer))}}
       <div class="euiCard__footer">
-        {{yield to="footer"}}
+        {{#if (has-block "footer")}}
+          {{yield to="footer"}}
+        {{else}}
+          {{@footer}}
+        {{/if}}
       </div>
     {{/if}}
     {{#if @selectable}}
-      <EuiCard::EuiCardSelect
+      <EuiCardSelect
         @type={{@selectable.type}}
         @buttonId={{selectableId}}
         @isSelected={{@selectable.isSelected}}
@@ -127,6 +137,7 @@
         @href={{@selectable.href}}
         @iconSide={{@selectable.iconSide}}
         @flush={{@selectable.flush}}
+        {{did-insert (set this "link")}}
         {{on "click" (optional @selectable.onClick)}}
       />
     {{/if}}

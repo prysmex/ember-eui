@@ -12,6 +12,7 @@ order: 9
 <EuiPageTemplate
   @grow={{true}}
   @template='centeredContent'
+  @paddingSize="l"
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'

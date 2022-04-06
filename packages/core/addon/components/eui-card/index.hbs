@@ -33,7 +33,7 @@
         {{yield "euiCard__icon" to="icon"}}
       {{else}}
         {{#if (or @image @icon)}}
-          {{#if (and @image (not (eq layout "horizontal")))}}
+          {{#if (and @image (not-eq layout "horizontal"))}}
             <div class="euiCard__image">
               <img src={{@image}} alt="card-top" />
             </div>

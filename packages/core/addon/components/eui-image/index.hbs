@@ -27,7 +27,7 @@
       <EuiIcon
         @iconClasses="euiImage__icon"
         @type="fullScreen"
-        @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
+        @color={{if (not-eq @fullScreenIconColor "dark") "ghost"}}
       />
     </button>
 
@@ -98,7 +98,7 @@
     <EuiIcon
       @iconClasses="euiImage-isFullScreenCloseIcon"
       @type="cross"
-      @color={{if (not (eq @fullScreenIconColor "dark")) "ghost"}}
+      @color={{if (not-eq @fullScreenIconColor "dark") "ghost"}}
     />
   </EuiOverlayMask>
 {{/if}}

@@ -2,7 +2,7 @@
   <EuiPageHeaderSection>
     <EuiTitle @size="l">
       <h1>
-        Checkable
+        Beta badge
       </h1>
     </EuiTitle>
   </EuiPageHeaderSection>

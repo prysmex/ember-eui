@@ -53,7 +53,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
     | null;
 
   @argOrDefault(false) compressed!: boolean;
-  @argOrDefault('large') display!: string;
+  @argOrDefault('') display!: string;
 
   @action
   showDrop(): void {

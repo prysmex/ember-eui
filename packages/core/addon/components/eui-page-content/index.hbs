@@ -1,4 +1,11 @@
 {{! TODO: Add Beta Badge Component for Beta Label props}}
+{{!-- <div
+  class={{class-names
+    componentName="EuiPageBody"
+    borderRadiusSize=@borderRadius
+    paddingSize=@paddingSize
+  }}
+> --}}
 <EuiPanel
   class={{class-names
     componentName="EuiPageContent"
@@ -6,14 +13,12 @@
     horizontalPosition=@horizontalPosition
   }}
   @hasShadow={{@hasShadow}}
+  @hasBorder={{@hasBorder}}
   @paddingSize={{@paddingSize}}
+  @borderRadius={{@borderRadius}}
   @grow={{@grow}}
   ...attributes
 >
-  {{yield
-    (hash
-      Header=(component "eui-page-content-header")
-      Body=(component "eui-page-content-body")
-    )
-  }}
+  {{yield}}
 </EuiPanel>
+{{! </div> }}

@@ -1,0 +1,61 @@
+<EuiPanel
+  class={{class-names
+    (if @layout (concat "euiEmptyPrompt--" @layout) "euiEmptyPrompt--vertical")
+    componentName="EuiEmptyPrompt"
+    paddingSize=@paddingSize
+  }}
+  @paddingSize="none"
+  @color={{arg-or-default @color "transparent"}}
+>
+  <div className="euiEmptyPrompt__main">
+    {{#if (has-block "icon")}}
+      <div className="euiEmptyPrompt__icon">{{yield to="icon"}}</div>
+    {{else if @iconType}}
+      <div className="euiEmptyPrompt__icon">
+        <EuiIcon @type={{@iconType}} @size="xxl" @color={{@iconColor}} />
+      </div>
+    {{/if}}
+    <div className="euiEmptyPrompt__content">
+      {{#if (has-block "content")}}
+        <div className="euiEmptyPrompt__contentInner">{{yield
+            to="content"
+          }}</div>
+      {{else}}
+        {{#if @title}}
+          <EuiTitle @size={{@titleSize}}>{{@title}}</EuiTitle>
+        {{/if}}
+        {{#if @body}}
+          <EuiTextColor @color="subdued">
+            {{#if @title}}
+              <EuiSpacer @size="m" />
+            {{/if}}
+            <EuiText>
+              {{@body}}
+            </EuiText>
+          </EuiTextColor>
+        {{/if}}
+        {{#if @actions}}
+          <EuiFlexGroup
+            class="euiEmptyPrompt__actions"
+            @gutterSize="m"
+            @alignItems="center"
+            @justifyContent="center"
+            @direction={{if @isVerticalLayout "column" "row"}}
+          >
+            {{#each @actions as |action|}}
+              <EuiFlexItem @grow={{false}}>
+                {{action}}
+              </EuiFlexItem>
+            {{/each}}
+          </EuiFlexGroup>
+        {{/if}}
+      {{/if}}
+    </div>
+  </div>
+
+  {{#if (has-block "footer")}}
+    <div className="euiEmptyPrompt__footer">
+      {{yield to="footer"}}
+    </div>
+  {{/if}}
+</EuiPanel>

@@ -2,7 +2,7 @@
   <div
     role="button"
     class={{class-names
-      "euiPanel--isClickable"
+      (if (arg-or-default @isClickable true) "euiPanel--isClickable")
       (if (not-eq @hasShadow false) "euiPanel--hasShadow" "euiPanel--noShadow")
       (if (eq @grow false) "euiPanel--flexGrowZero")
       (if (eq @hasBorder true) "euiPanel--hasBorder")

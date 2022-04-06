@@ -1,7 +1,18 @@
 ---
 order: 1
 ---
-
+<EuiText>
+  Generally, tooltips should provide short, <strong>non-essential</strong>, contextual information, usually naming or describing with more detail. If you need interactive content or anything other than text, we recommend using <strong>EuiPopover</strong> instead.
+</EuiText>
+<EuiSpacer />
+<EuiCallOut @color="warning" @size="s" @iconType="accessibility" @title="Putting anything other than plain text in a tooltip is lost on screen readers." />
+<EuiSpacer />
+<EuiText>
+  Wrap <strong>EuiToolTip</strong> around any item that you need a tooltip for and provide the <EuiCode>content</EuiCode> and optionally the <EuiCode>title</EuiCode>. The <EuiCode>position</EuiCode> prop will take a suggested position, but will change it if the tooltip gets too close to the edge of the screen.
+</EuiText>
+<EuiSpacer />
+<EuiCallOut @color="warning"  @size="s" @iconType="accessibility" @title="Anchoring a tooltip to a non-interactive element makes it difficult for keyboard-only and screen reader users to read." />
+<EuiSpacer />
 <EuiText>
   <p>
 Wrap <strong>EuiToolTip</strong> around any item that you need a tooltip for and provide the content and optionally the title. The position prop will take a suggested position, but will change it if the tooltip gets too close to the edge of the screen.

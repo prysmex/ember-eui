@@ -8,11 +8,17 @@ export const horizontalMapping = {
   center: `${baseClass}--horizontalCenter`
 };
 
+const borderRadiusMapping = {
+  none: `${baseClass}--borderRadiusNone`,
+  m: `${baseClass}--borderRadiusMedium`
+};
+
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     verticalPosition: verticalMapping,
-    horizontalPosition: horizontalMapping
+    horizontalPosition: horizontalMapping,
+    borderRadius: borderRadiusMapping,
   }
 };
 

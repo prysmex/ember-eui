@@ -1,0 +1,255 @@
+{{#if (eq this.template "centeredBody")}}
+  <EuiPage
+    @className={{this.classes}}
+    @paddingSize={{@paddingSize}}
+    @grow={{@grow}}
+    {{! {...rest} }}
+    {{! style={pageStyle} }}
+  >
+    {{#if @pageSideBar}}
+      {{@pageSideBar}}
+    {{else if (has-block "pageSideBar")}}
+      <EuiPageSideBar
+        @sticky={{true}}
+        @paddingSize={{@paddingSize}}
+        {{! {...pageSideBarProps} }}
+      >
+        {{yield to="pageSideBar"}}
+      </EuiPageSideBar>
+    {{else}}
+    {{/if}}
+    <EuiPageBody @paddingSize={{@paddingSize}} {{! {...pageBodyProps} }}>
+      {{#if @pageHeader}}
+        {{@pageHeader}}
+      {{else if (has-block "pageHeaderContent")}}
+        <EuiPageHeader
+          @restrictWidth={{@restrictWidth}}
+          {{!-- @paddingSize={{@paddingSize}} --}}
+          {{!-- @bottomBorder={{@bottomBorder}} --}}
+          {{! {...pageHeader} }}
+        >
+          {{yield to="pageHeaderContent"}}
+        </EuiPageHeader>
+      {{else}}
+      {{/if}}
+      {{! {/* Extra page body to get the correct alignment and padding of the centered EuiPageContent */} }}
+      <EuiPageContent
+        @verticalPosition="center"
+        @horizontalPosition="center"
+        @paddingSize={{@paddingSize}}
+        {{! {...pageContentProps} }}
+      >
+        <EuiPageContentBody
+          @paddingSize="none"
+          @restrictWidth={{@restrictWidth}}
+          {{! {...pageContentBodyProps} }}
+        >
+          {{yield to="content"}}
+        </EuiPageContentBody>
+      </EuiPageContent>
+    </EuiPageBody>
+  </EuiPage>
+{{else if (eq this.template "centeredContent")}}
+  <EuiPage
+    class={{this.classes}}
+    @paddingSize="none"
+    @grow={{@grow}}
+    {{! {...rest} }}
+    {{! style={pageStyle} }}
+  >
+    {{#if (has-block "pageSideBar")}}
+      {{yield to="pageSideBar"}}
+    {{else if @pageSideBar}}
+      <EuiPageSideBar @sticky={{true}} @paddingSize={{@paddingSize}}>
+        {{@pageSideBar}}
+      </EuiPageSideBar>
+    {{/if}}
+    <EuiPageBody>
+      {{#if (has-block "pageHeader")}}
+        {{yield to="pageHeader"}}
+      {{else if @pageHeader}}
+        <EuiPageHeader
+          @restrictWidth={{@restrictWidth}}
+          @paddingSize={{@paddingSize}}
+          @responsive={{arg-or-default @responsive true}}
+          @rightSideItems={{@pageHeader.rightSideItems}}
+          @iconType={{@pageHeader.iconType}}
+          @tabs={{@pageHeader.tabs}}
+          @pageTitle={{@pageHeader.pageTitle}}
+        />
+      {{/if}}
+      <EuiPageContent
+        @borderRadius="none"
+        @verticalPosition="center"
+        @horizontalPosition="center"
+        @hasShadow={{false}}
+        @color="subdued"
+        @paddingSize={{@paddingSize}}
+        style="display: flex"
+        {{!-- style={{display: "flex"}} --}}
+      >
+        <EuiPageContentBody @restrictWidth={{@restrictWidth}}>
+          {{yield to="default"}}
+        </EuiPageContentBody>
+      </EuiPageContent>
+    </EuiPageBody>
+  </EuiPage>
+{{else if (eq this.template "empty")}}
+  <EuiPage
+    class={{this.classes}}
+    @paddingSize={{@paddingSize}}
+    @grow={{@grow}}
+    {{! {...rest} }}
+    {{! style={pageStyle} }}
+  >
+    {{#if (has-block "pageSideBar")}}
+      {{yield to="pageSideBar"}}
+    {{else if @pageSideBar}}
+      <EuiPageSideBar @sticky={{true}} @paddingSize={{@paddingSize}}>
+        {{@pageSideBar}}
+      </EuiPageSideBar>
+    {{/if}}
+    <EuiPageBody @restrictWidth={{@restrictWidth}} {{! {...pageBodyProps} }}>
+      {{#if (has-block "pageHeader")}}
+        {{yield to="pageHeader"}}
+      {{else if @pageHeader}}
+        <EuiPageHeader
+          @restrictWidth={{@restrictWidth}}
+          @bottomBorder={{true}}
+          @paddingSize={{@paddingSize}}
+          @responsive={{arg-or-default @responsive true}}
+          @rightSideItems={{@pageHeader.rightSideItems}}
+          @iconType={{@pageHeader.iconType}}
+          @tabs={{@pageHeader.tabs}}
+          @pageTitle={{@pageHeader.pageTitle}}
+        />
+      {{/if}}
+      <EuiPageContent
+        @hasBorder={{false}}
+        @hasShadow={{false}}
+        @paddingSize={{"none"}}
+        @color={{"transparent"}}
+        @borderRadius={{"none"}}
+        {{! {...pageContentProps} }}
+      >
+        <EuiPageContentBody
+          @paddingSize="none"
+          {{! {...pageContentBodyProps} }}
+        >
+          {{yield to="default"}}
+        </EuiPageContentBody>
+      </EuiPageContent>
+    </EuiPageBody>
+  </EuiPage>
+{{else}}
+  <EuiPage
+    class={{this.classes}}
+    @paddingSize="none"
+    @grow={{@grow}}
+    @style={{@pageStyle}}
+  >
+    {{#if (has-block "pageSideBar")}}
+      {{yield to="pageSideBar"}}
+    {{else if @pageSideBar}}
+      <EuiPageSideBar @sticky={{true}} @paddingSize={{@paddingSize}}>
+        {{@pageSideBar}}
+      </EuiPageSideBar>
+    {{/if}}
+    {{! <EuiPageBody {...pageBodyProps}> }}
+    {{#if (or (has-block "bottomBar") @bottomBar)}}
+      <EuiPageBody @panelled={{true}} @paddingSize="none">
+        <EuiPageBody>
+          {{#if (has-block "pageHeader")}}
+            {{yield to="pageHeader"}}
+          {{else if @pageHeader}}
+            <EuiPageHeader
+              @restrictWidth={{@restrictWidth}}
+              @paddingSize={{@paddingSize}}
+              @responsive={{arg-or-default @responsive true}}
+              @rightSideItems={{@pageHeader.rightSideItems}}
+              @iconType={{@pageHeader.iconType}}
+              @tabs={{@pageHeader.tabs}}
+              @pageTitle={{@pageHeader.pageTitle}}
+            />
+          {{/if}}
+
+          <EuiPageContent
+            {{! @hasBorder={pageHeader === undefined ? false : undefined} }}
+            @hasBorder={{false}}
+            @hasShadow={{false}}
+            @paddingSize={{"none"}}
+            @color={{"plain"}}
+            @borderRadius={{"none"}}
+            {{! {...pageContentProps} }}
+          >
+            <EuiPageContentBody
+              @restrictWidth={{@restrictWidth}}
+              @paddingSize={{@paddingSize}}
+              @borderRadius={{@borderRadius}}
+              {{! {...pageContentBodyProps} }}
+            >
+              {{yield to="default"}}
+            </EuiPageContentBody>
+          </EuiPageContent>
+        </EuiPageBody>
+        {{#if (has-block "bottomBar")}}
+          {{yield to="bottomBar"}}
+        {{else if @bottomBar}}
+          <EuiBottomBar
+            @paddingSize={{@paddingSize}}
+            @position={{if
+              (and this.canFullHeight this.fullHeight)
+              "static"
+              "sticky"
+            }}
+            {{! {...(bottomBarProps as unknown)} }}
+          >
+            {{! {/* Wrapping the contents with EuiPageContentBody allows us to match the restrictWidth to keep the contents aligned */} }}
+            <EuiPageContentBody
+              @paddingSize={{"none"}}
+              @restrictWidth={{@restrictWidth}}
+            >
+              {{@bottomBar}}
+            </EuiPageContentBody>
+          </EuiBottomBar>
+        {{/if}}
+      </EuiPageBody>
+    {{else}}
+      <EuiPageBody>
+        {{#if (has-block "pageHeader")}}
+          {{yield to="pageHeader"}}
+        {{else if @pageHeader}}
+          <EuiPageHeader
+            @restrictWidth={{@restrictWidth}}
+            @paddingSize={{@paddingSize}}
+            @responsive={{arg-or-default @responsive true}}
+            @rightSideItems={{@pageHeader.rightSideItems}}
+            @iconType={{@pageHeader.iconType}}
+            @tabs={{@pageHeader.tabs}}
+            @pageTitle={{@pageHeader.pageTitle}}
+            @description={{@pageHeader.description}}
+          />
+        {{/if}}
+
+        <EuiPageContent
+          {{! @hasBorder={pageHeader === undefined ? false : undefined} }}
+          @hasBorder={{false}}
+          @hasShadow={{false}}
+          @paddingSize={{"none"}}
+          @color={{"plain"}}
+          @borderRadius={{"none"}}
+          {{! {...pageContentProps} }}
+        >
+          <EuiPageContentBody
+            @restrictWidth={{@restrictWidth}}
+            @paddingSize={{@paddingSize}}
+            @borderRadius={{@borderRadius}}
+            {{! {...pageContentBodyProps} }}
+          >
+            {{yield to="default"}}
+          </EuiPageContentBody>
+        </EuiPageContent>
+      </EuiPageBody>
+    {{/if}}
+  </EuiPage>
+{{/if}}

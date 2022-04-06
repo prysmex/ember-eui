@@ -14,6 +14,7 @@
   }}
     <div
       class={{class-names
+        (if @grow "euiPage--grow" "")
         styling.widthClassName
         componentName="EuiPage"
         paddingSize=(arg-or-default @paddingSize "m")

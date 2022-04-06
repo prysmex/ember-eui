@@ -7,18 +7,17 @@ const paddingSizeMapping = {
   l: `${baseClass}--paddingLarge`
 };
 
-const positionMapping = {
-  none: '',
+const positionTypeMapping = {
   fixed: `${baseClass}--fixed`,
-  static: `${baseClass}--static`,
-  sticky: `${baseClass}--sticky`
+  sticky: `${baseClass}--sticky`,
+  static: `${baseClass}--static`
 };
 
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     paddingSize: paddingSizeMapping,
-    positionType: positionMapping
+    positionType: positionTypeMapping
   }
 };
 

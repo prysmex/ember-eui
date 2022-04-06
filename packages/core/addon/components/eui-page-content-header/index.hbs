@@ -2,7 +2,13 @@
   class={{class-names
     "euiPageContentHeader"
     (if @responsive "euiPageContentHeader--responsive")
+    (if
+      @restrictWidth
+      "euiPanel--restrictWidth-custom"
+      "euiPanel--restrictWidth-default"
+    )
   }}
+  {{style (inline-styles width=@restrictWidth)}}
   ...attributes
 >
   {{yield

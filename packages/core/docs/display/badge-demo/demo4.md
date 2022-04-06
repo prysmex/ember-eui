@@ -12,7 +12,7 @@ of repeated statuses, e.g. in tables.
 </EuiText>
 
 ```hbs template
-<EuiPanel>
+<EuiPanel @hasShadow={{false}}>
   <EuiBadge @color='success'>
     Healthy
   </EuiBadge>

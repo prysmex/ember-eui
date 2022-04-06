@@ -1,13 +1,10 @@
 <EuiButtonEmpty
-  class={{class-names
-    componentName="EuiCardSelect"
-    color=(if @color @color (if @isSelected "success" "text"))
-  }}
+  class={{class-names this.selectColorClass componentName="EuiCardSelect"}}
   id={{@buttonId}}
   @color={{arg-or-default @color "text"}}
   @size="xs"
   @isDisabled={{@isDisabled}}
-  @iconType={{if @isSelected "check" @iconType}}
+  @iconType={{if @isSelected "check" undefined}}
   @isLoading={{@isLoading}}
   @href={{@href}}
   @iconSide={{@iconSide}}

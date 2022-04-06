@@ -1,15 +1,16 @@
 {{#let (arg-or-default @id (unique-id)) as |id|}}
   <div
     class={{class-names
-      "euiCheckableCard"
-      "euiCheckableCard--shadow"
-      "euiCheckableCard--borderRadiusMedium"
+    "euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow euiPanel--hasBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row euiCheckableCard"
       (if @checked "euiCheckableCard-isChecked")
-      (if @disabled "euiCheckableCard-isDisabled")
+      (if @disabled "euiCheckableCard__label-isDisabled")
     }}
   >
-    <div class="euiCheckableCard__row">
-      <div class="euiCheckableCard__control">
+    <div class={{class-names
+    "euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--subdued euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero euiPanel--isClickable euiSplitPanel__inner"
+    (if @checked "euiPanel--primary")
+    }}>
+     
         {{#if (eq @checkableType "checkbox")}}
           <EuiCheckbox
             @id={{id}}
@@ -25,7 +26,8 @@
             ...attributes
           />
         {{/if}}
-      </div>
+    </div>
+   <div class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiSplitPanel__inner">
       <label 
         class={{class-names
           "euiCheckableCard__label"
@@ -40,15 +42,19 @@
           {{@label}}
         {{/if}}
       </label>
-    </div>
+     
+   
     {{#if (has-block "content")}}
-      <div class="euiCheckableCard__row">
+    
         {{!-- Empty div for left side background color only --}}
-        <div class="euiCheckableCard__control" />
+        
         <div id={{concat id "-details"}} class="euiCheckableCard__children">
           {{yield to="content"}}
         </div>
-      </div>
+      
     {{/if}}
+
+     
+ </div>
   </div>
 {{/let}}

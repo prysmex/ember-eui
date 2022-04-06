@@ -13,7 +13,7 @@ Badges can have <EuiCode>onClick</EuiCode> events applied to the badge itself or
 </EuiText>
 
 ```hbs template
-<EuiPanel @color='subdued'>
+<EuiPanel @hasShadow={{false}}>
 
   <EuiBadge
     @color='primary'

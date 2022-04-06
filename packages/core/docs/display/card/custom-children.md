@@ -2,7 +2,7 @@
   <EuiPageHeaderSection>
     <EuiTitle @size="l">
       <h1>
-        Checkable
+        Custom children
       </h1>
     </EuiTitle>
   </EuiPageHeaderSection>

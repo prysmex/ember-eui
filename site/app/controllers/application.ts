@@ -9,6 +9,7 @@ import {
   Page
 } from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
+import config from 'ember-get-config';
 
 interface Props {}
 
@@ -37,14 +38,17 @@ export default class ApplicationController extends Controller {
       }
     ]);
 
-    let others = root.children.filter((child: Item) => child.name !== 'core');
+    let others = root.children.filter(
+      (child: Item) => child.name !== 'core' && child.name !== 'package'
+    );
+
     others = this.removeDocsFromDocfyNodes(others);
-    console.log(others);
     const finalOthersPages = others.reduce((prev: Page[], curr: DocfyNode) => {
       prev.push(...curr.pages);
       return prev;
     }, []);
-    const changeset = getSidenavRoutes([
+
+    const addons = getSidenavRoutes([
       {
         id: 'addons',
         onClick: () => (id: NodeId) => {
@@ -59,10 +63,25 @@ export default class ApplicationController extends Controller {
         this.selectedItem = id;
       }
     ]);
+
+    let packagesNode = root.children.filter(
+      (child: Item) => child.name === 'package'
+    );
+
+    packagesNode = this.removeDocsFromDocfyNodes(packagesNode);
+
+    const packageRoutes = getSidenavRoutes([
+      packagesNode?.[0],
+      (id: NodeId) => {
+        this.selectedItem = id;
+      }
+    ]);
+
     this.sideNavRoutes = [
       ...instructions,
       ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
-      ...changeset
+      ...addons,
+      ...packageRoutes
     ];
     this.currentSideNavRoutes = this.sideNavRoutes;
     //@ts-expect-error
@@ -87,7 +106,6 @@ export default class ApplicationController extends Controller {
         node.children = [];
       }
     });
-    console.log(nodes);
     return nodes;
   }
 
@@ -154,4 +172,9 @@ export default class ApplicationController extends Controller {
       );
     }
   };
+
+  get currentVersion() {
+    if (config.environment === 'development') return 'Local';
+    else return config.version;
+  }
 }

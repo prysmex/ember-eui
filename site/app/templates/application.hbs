@@ -6,6 +6,14 @@
           Ember EUI
         </EuiHeaderLogo>
       </EuiHeaderSectionItem>
+      <EuiHeaderSectionItem @border="right">
+        <EuiBadge
+          @href="/docs/package/changelog"
+          @color={{if (eq this.currentVersion "Local") "warning"}}
+        >
+          {{this.currentVersion}}
+        </EuiBadge>
+      </EuiHeaderSectionItem>
     </EuiHeaderSection>
     <EuiHeaderSection @side="right">
       <EuiHeaderSectionItem @border="none">

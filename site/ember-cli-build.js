@@ -86,7 +86,20 @@ module.exports = function (defaults) {
     splitAtRoutes: ['*'],
     packagerOptions: {
       webpackConfig: {
-        plugins: plugins
+        plugins: plugins,
+        module: {
+          rules: [
+            {
+              test: /CHANGELOG.md$/,
+              use: [
+                {
+                  loader: path.resolve('./stringify-loader.js'),
+                  options: {}
+                }
+              ]
+            }
+          ]
+        }
       }
     }
   });

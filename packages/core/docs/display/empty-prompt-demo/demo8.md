@@ -7,7 +7,7 @@ order: 8
 <EuiText>
  When using a <strong>EuiEmptyPrompt</strong> in a <strong>EuiPageTemplate</strong>, pay attention to the template you’re passing. The template will determine which <EuiCode>color</EuiCode> and <EuiCode>hasBorder</EuiCode> prop you should use to ensure consistency across our Elastic products.
 
- The folowwing example shows the usage of a <strong>EuiEmptyPrompt</strong> in a page template where the template is set to <EuiCode>"empty"</EuiCode>.
+ <!-- The following example shows the usage of a <strong>EuiEmptyPrompt</strong> in a page template where the template is set to "empty". -->
 </EuiText>
 
 ```hbs template

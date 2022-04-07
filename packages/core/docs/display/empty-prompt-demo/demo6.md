@@ -5,8 +5,8 @@ order: 6
 # Layout
 
 <EuiText>
- <!-- You can supply a <EuiCode>layout</EuiCode> of either <EuiCode>"horizontal"</EuiCode> or <EuiCode>"vertical"</EuiCode> with the default being <EuiCode>vertical</EuiCode>. When creating empty states we want the content to be short and straight to the point. So most of the time, the <EuiCode>vertical</EuiCode> layout is enough.
-  All the content will be center aligned and this type of text alignment only works with small content. When you have longer body text with multiple calls to action, you can use the <EuiCode>horizontal</EuiCode> layout. This layout works best when you can provide a larger graphic like an illustration as the <EuiCode>icon</EuiCode>. For consistency, we recommend providing the illustration using a <strong>EuiImage</strong> with <EuiCode>size="fullWidth"</EuiCode>. -->
+ You can supply a <EuiCode>layout</EuiCode> of either <EuiCode>"horizontal"</EuiCode> or <EuiCode>"vertical"</EuiCode> with the default being <EuiCode>vertical</EuiCode>. When creating empty states we want the content to be short and straight to the point. So most of the time, the <EuiCode>vertical</EuiCode> layout is enough.
+  All the content will be center aligned and this type of text alignment only works with small content. When you have longer body text with multiple calls to action, you can use the <EuiCode>horizontal</EuiCode> layout. This layout works best when you can provide a larger graphic like an illustration as the <EuiCode>icon</EuiCode>. For consistency, we recommend providing the illustration using a <strong>EuiImage</strong> with <EuiCode>size="fullWidth"</EuiCode>.
 </EuiText>
 
 ```hbs template

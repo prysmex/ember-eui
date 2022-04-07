@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "4.4.0",
+  "version": "5.0.0-alpha.0",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -65,6 +65,7 @@
     "ember-cli-typescript": "4.2.1",
     "ember-composable-helpers": "^4.4.1",
     "ember-element-helper": "^0.5.5",
+    "ember-event-helpers": "^0.1.1",
     "ember-in-element-polyfill": "^1.0.0",
     "ember-keyboard": "^7.0.1",
     "ember-math-helpers": "^2.15.0",
@@ -89,8 +90,7 @@
     "tabbable": "^5.1.5",
     "unified": "^9.2.0",
     "unist-util-visit": "^2.0.3",
-    "vfile": "^4.2.0",
-    "ember-event-helpers": "^0.1.1"
+    "vfile": "^4.2.0"
   },
   "peerDependencies": {
     "ember-auto-import": "^2.2.4",

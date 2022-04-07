@@ -102,7 +102,7 @@ export function colorPalette(
   const stepsLeft = createSteps(hexStart, numColorsLeft);
   const stepsRight = createSteps(hexEnd, numColorsRight);
 
-  return (even && diverging ? stepsLeft.slice(0, stepsLeft.length - 1) : stepsLeft).concat(
-    stepsRight.slice(1)
-  );
+  return (
+    even && diverging ? stepsLeft.slice(0, stepsLeft.length - 1) : stepsLeft
+  ).concat(stepsRight.slice(1));
 }

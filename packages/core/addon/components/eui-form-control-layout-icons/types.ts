@@ -5,7 +5,10 @@ import { EuiFormControlLayoutClearButtonArgs } from '../eui-form-control-layout-
 
 export const ICON_SIDES: ['left', 'right'] = ['left', 'right'];
 
-type IconShape = DistributiveOmit<EuiFormControlLayoutCustomIconArgs, 'type' | 'iconRef'> & {
+type IconShape = DistributiveOmit<
+  EuiFormControlLayoutCustomIconArgs,
+  'type' | 'iconRef'
+> & {
   type: IconType;
   side?: typeof ICON_SIDES[number];
   ref?: EuiFormControlLayoutCustomIconArgs['iconRef'];

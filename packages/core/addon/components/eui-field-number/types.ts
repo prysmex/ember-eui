@@ -3,7 +3,10 @@ import { EuiFormControlLayoutArgs } from '../eui-form-control-layout/types';
 
 import { IconType } from '../eui-icon';
 
-export type EuiFieldNumberArgs = Omit<HTMLInputElement, 'min' | 'max' | 'readOnly' | 'step'> &
+export type EuiFieldNumberArgs = Omit<
+  HTMLInputElement,
+  'min' | 'max' | 'readOnly' | 'step'
+> &
   CommonArgs & {
     icon?: IconType;
     isInvalid?: boolean;

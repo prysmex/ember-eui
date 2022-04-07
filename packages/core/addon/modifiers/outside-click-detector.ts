@@ -31,7 +31,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
       return;
     }
 
-    const event = (e as unknown) as EuiEvent;
+    const event = e as unknown as EuiEvent;
 
     if (
       (event.euiGeneratedBy && event.euiGeneratedBy.includes(this.id)) ||
@@ -78,9 +78,9 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     // of detector ids that have been encountered;
 
     if (event.hasOwnProperty('euiGeneratedBy')) {
-      ((event as unknown) as EuiEvent).euiGeneratedBy.push(this.id);
+      (event as unknown as EuiEvent).euiGeneratedBy.push(this.id);
     } else {
-      ((event as unknown) as EuiEvent).euiGeneratedBy = [this.id];
+      (event as unknown as EuiEvent).euiGeneratedBy = [this.id];
     }
     if (cb) cb(event);
   }
@@ -88,7 +88,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   @action
   onChildMouseDown(event: MouseEvent): void {
     this.onChildClick(event, (e) => {
-      const nativeEvent = (e as unknown) as EuiEvent;
+      const nativeEvent = e as unknown as EuiEvent;
       this.capturedDownIds = nativeEvent.euiGeneratedBy;
       if (this.args.named.onMouseDown) this.args.named.onMouseDown(e);
       if (this.args.named.onTouchStart) this.args.named.onTouchStart(e);

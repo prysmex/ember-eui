@@ -20,7 +20,7 @@ import {
 } from './processing-plugins';
 
 export const getDefaultEuiMarkdownPlugins = (
-  config: undefined | { exclude?: Array<'tooltip'> }
+  config: undefined | { exclude?: 'tooltip'[] }
 ): {
   parsingPlugins: DefaultEuiMarkdownParsingPlugins;
   processingPlugins: DefaultEuiMarkdownProcessingPlugins;

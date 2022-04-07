@@ -1,6 +1,9 @@
 import { modifier } from 'ember-modifier';
 
-const hasOwnProperty = function (obj: MutationObserverInit, name: string): boolean {
+const hasOwnProperty = function (
+  obj: MutationObserverInit,
+  name: string
+): boolean {
   return Object.prototype.hasOwnProperty.call(obj, name);
 };
 

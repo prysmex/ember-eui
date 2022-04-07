@@ -1,7 +1,10 @@
 import { helper } from '@ember/component/helper';
 import { assert } from '@ember/debug';
 
-export function getTabId([tabOrId]: [Tab | string | number]): string | number | undefined {
+export function getTabId([tabOrId]: [Tab | string | number]):
+  | string
+  | number
+  | undefined {
   if (tabOrId === undefined) {
     return;
   }
@@ -10,7 +13,10 @@ export function getTabId([tabOrId]: [Tab | string | number]): string | number | 
     return tabOrId;
   }
 
-  assert('The passed `tab` object needs to have the `id` property', tabOrId.id !== undefined);
+  assert(
+    'The passed `tab` object needs to have the `id` property',
+    tabOrId.id !== undefined
+  );
   return tabOrId.id;
 }
 

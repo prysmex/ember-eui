@@ -64,6 +64,7 @@
     "autoprefixer": "^10.2.5",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
+    "broccoli-file-creator": "^2.1.1",
     "ember-auto-import": "^2.4.0",
     "ember-cli": "~4.1.1",
     "ember-cli-app-version": "^5.0.0",
@@ -121,5 +122,8 @@
   },
   "volta": {
     "extends": "../package.json"
+  },
+  "dependencies": {
+    "broccoli-funnel": "^3.0.8"
   }
 }

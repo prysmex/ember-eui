@@ -1,7 +1,4 @@
-
-
 export const baseClass = 'euiHealth';
-
 
 export const sizeToClassNameMap = {
   xs: `${baseClass}--textSizeXS`,
@@ -13,7 +10,7 @@ export const sizeToClassNameMap = {
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    textSize: sizeToClassNameMap,
+    textSize: sizeToClassNameMap
   }
 };
 

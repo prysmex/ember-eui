@@ -6,7 +6,7 @@ export const TEMPLATES = [
   'default',
   'centeredBody',
   'centeredContent',
-  'empty',
+  'empty'
 ] as const;
 
 export type EuiPageTemplateProps = {

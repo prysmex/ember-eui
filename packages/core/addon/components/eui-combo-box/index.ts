@@ -67,7 +67,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   get options(): any[] {
     if (this._resolvedOptions) return toPlainArray(this._resolvedOptions);
     if (this.args.options) {
-      return toPlainArray(this.args.options as any[]);
+      return toPlainArray(this.args.options);
     } else {
       return [];
     }

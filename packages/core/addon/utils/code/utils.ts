@@ -70,7 +70,7 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
       let classNames = [];
       if (properties) {
         if (properties.className) {
-          classNames.push(...(properties.className as string[]));
+          classNames.push(...properties.className);
         }
         for (let key in properties) {
           if (attributes.includes(key)) {

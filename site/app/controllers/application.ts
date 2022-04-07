@@ -10,8 +10,14 @@ import {
 } from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
 import config from 'ember-get-config';
+import { changeTheme } from '../utils/change-theme';
 
 interface Props {}
+
+type ThemeShape = {
+  name: string;
+  key: string;
+};
 
 export default class ApplicationController extends Controller {
   @service declare router: RouterService;
@@ -21,9 +27,32 @@ export default class ApplicationController extends Controller {
   @tracked isOpenMobile = false;
   @tracked selectedItem: NodeId;
   @tracked searchValue?: string;
+  @tracked currentTheme?: ThemeShape | null;
+  @tracked themePopover: boolean = false;
+  themes: ThemeShape[] = [
+    {
+      name: 'Light',
+      key: 'light'
+    },
+    {
+      name: 'Dark',
+      key: 'dark'
+    },
+    {
+      name: 'Amsterdam Light',
+      key: 'amsterdam_light'
+    },
+    {
+      name: 'Amsterdam Dark',
+      key: 'amsterdam_dark'
+    }
+  ];
 
   constructor(props?: Props) {
     super(props);
+    this.currentTheme =
+      this.themes.findBy('key', window?.localStorage?.getItem('theme')) ||
+      this.themes[0];
     const root = this.docfy.nested.children.firstObject;
     const instructions = getSidenavRoutes([
       { ...root, children: [] },
@@ -177,4 +206,9 @@ export default class ApplicationController extends Controller {
     if (config.environment === 'development') return 'Local';
     else return config.version;
   }
+
+  setTheme = (theme: ThemeShape) => {
+    changeTheme(theme.key);
+    this.currentTheme = theme;
+  };
 }

@@ -5,6 +5,7 @@ process.env.EMBROIDER_REBUILD_ADDONS = '@docfy/ember';
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const path = require('path');
 const env = EmberApp.env();
+const Funnel = require('broccoli-funnel');
 
 const IS_PRODUCTION = env === 'production';
 
@@ -45,7 +46,7 @@ module.exports = function (defaults) {
 
     // Add options here
     '@ember-eui/core': {
-      theme: 'amsterdam_light'
+      includeCss: false
     },
     'ember-cli-netlify': {
       redirects: ['/* /index.html 200']
@@ -77,6 +78,16 @@ module.exports = function (defaults) {
     plugins.push(new BundleAnalyzerPlugin());
   }
 
+  const themesFunnel = new Funnel('../node_modules/@elastic/eui/dist', {
+    files: [
+      'eui_theme_light.css',
+      'eui_theme_dark.css',
+      'eui_theme_amsterdam_light.css',
+      'eui_theme_amsterdam_dark.css'
+    ],
+    destDir: '@ember-eui/themes'
+  });
+
   return require('@embroider/compat').compatBuild(app, Webpack, {
     staticAddonTestSupportTrees: true,
     staticAddonTrees: true,
@@ -84,6 +95,7 @@ module.exports = function (defaults) {
     staticModifiers: true,
     staticComponents: true,
     splitAtRoutes: ['*'],
+    extraPublicTrees: [themesFunnel],
     packagerOptions: {
       webpackConfig: {
         plugins: plugins,

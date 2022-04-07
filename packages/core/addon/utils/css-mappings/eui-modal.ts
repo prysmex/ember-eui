@@ -1,7 +1,11 @@
 import { typeOf } from '@ember/utils';
 export const baseClass = 'euiModal';
 
-export function inlineStyles({ maxWidth }: { maxWidth: string | number }): Styling {
+export function inlineStyles({
+  maxWidth
+}: {
+  maxWidth: string | number;
+}): Styling {
   let value = typeOf(maxWidth) === 'number' ? `${maxWidth}px` : `${maxWidth}`;
 
   return {

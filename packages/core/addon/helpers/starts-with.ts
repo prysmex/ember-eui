@@ -1,6 +1,8 @@
 import { helper } from '@ember/component/helper';
 
-export function startsWith([needle, word]: [string, string] /*, hash*/): boolean {
+export function startsWith(
+  [needle, word]: [string, string] /*, hash*/
+): boolean {
   return word?.startsWith(needle) || false;
 }
 

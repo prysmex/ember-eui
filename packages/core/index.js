@@ -47,7 +47,10 @@ module.exports = {
       ? this.emberEuiOptions.theme
       : 'amsterdam_light';
 
-    if (this.emberEuiOptions.theme) {
+    if (
+      this.emberEuiOptions.theme &&
+      this.emberEuiOptions.includeCss !== false
+    ) {
       app.import(
         `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
       );

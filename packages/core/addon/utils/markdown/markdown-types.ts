@@ -50,17 +50,16 @@ export interface RehypeNode extends EuiMarkdownAstNode {
   value: string;
   type: string;
 }
-interface RemarkRehypeHandlerCallback {
-  (
-    node: UnistPosition,
-    tagName: string,
-    props: Record<string, unknown>,
-    children: RehypeNode[]
-  ): RehypeNode;
-}
-export interface RemarkRehypeHandler {
-  (h: RemarkRehypeHandlerCallback, node: UnistNode): RehypeNode;
-}
+type RemarkRehypeHandlerCallback = (
+  node: UnistPosition,
+  tagName: string,
+  props: Record<string, unknown>,
+  children: RehypeNode[]
+) => RehypeNode;
+export type RemarkRehypeHandler = (
+  h: RemarkRehypeHandlerCallback,
+  node: UnistNode
+) => RehypeNode;
 
 export interface EuiMarkdownEditorUiPluginEditorProps<NodeShape> {
   node: NodeShape | null;

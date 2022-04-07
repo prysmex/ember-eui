@@ -110,7 +110,7 @@
     </EuiFlexGroup>
     {{#if @bottomContent}}
       <div class="euiPageHeaderContent__bottom">
-        hola mundo
+        {{@bottomContent}}
       </div>
     {{/if}}
   {{else}}
@@ -121,45 +121,81 @@
       gutterSize="l"
     >
       <EuiFlexItem>
-        <EuiTitle {{! {...pageTitleProps}  }} @size="l">
-          <h1>
-            {{#if @iconType}}
-              <EuiIcon
-                @size="xl"
-                {{! {...iconProps} }}
-                @type={{@iconType}}
-                class="euiPageHeaderContent__titleIcon"
-              />
-            {{/if}}
-            {{#if @pageTitle}}
-              {{@pageTitle}}
-            {{/if}}
-          </h1>
-        </EuiTitle>
-
-        {{#if @tabs}}
-          <EuiSpacer />
-          <EuiTabs>
-            {{#each @tabs as |tab|}}
-              <EuiTab
-                @isSelected={{tab.isSelected}}
-                @onClick={{optional tab.onClick}}
-              >
-                {{tab.label}}
-              </EuiTab>
-            {{/each}}
-          </EuiTabs>
-        {{/if}}
-        {{#if @description}}
-          <EuiSpacer />
-          <EuiText @grow={{false}}>
-            <p>{{@description}}</p>
-          </EuiText>
-        {{/if}}
         {{#if @bottomContent}}
           <div class="euiPageHeaderContent__bottom">
-            Hola mundo
+            {{@bottomContent}}
+            <EuiTitle {{! {...pageTitleProps}  }} @size="l">
+              <h1>
+                {{#if @iconType}}
+                  <EuiIcon
+                    @size="xl"
+                    {{! {...iconProps} }}
+                    @type={{@iconType}}
+                    class="euiPageHeaderContent__titleIcon"
+                  />
+                {{/if}}
+                {{#if @pageTitle}}
+                  {{@pageTitle}}
+                {{/if}}
+              </h1>
+            </EuiTitle>
+
+            {{#if @tabs}}
+              <EuiSpacer />
+              <EuiTabs>
+                {{#each @tabs as |tab|}}
+                  <EuiTab
+                    @isSelected={{tab.isSelected}}
+                    @onClick={{optional tab.onClick}}
+                  >
+                    {{tab.label}}
+                  </EuiTab>
+                {{/each}}
+              </EuiTabs>
+            {{/if}}
+            {{#if @description}}
+              <EuiSpacer />
+              <EuiText @grow={{false}}>
+                <p>{{@description}}</p>
+              </EuiText>
+            {{/if}}
           </div>
+        {{else}}
+          <EuiTitle {{! {...pageTitleProps}  }} @size="l">
+            <h1>
+              {{#if @iconType}}
+                <EuiIcon
+                  @size="xl"
+                  {{! {...iconProps} }}
+                  @type={{@iconType}}
+                  class="euiPageHeaderContent__titleIcon"
+                />
+              {{/if}}
+              {{#if @pageTitle}}
+                {{@pageTitle}}
+              {{/if}}
+            </h1>
+          </EuiTitle>
+
+          {{#if @tabs}}
+            <EuiSpacer />
+            <EuiTabs>
+              {{#each @tabs as |tab|}}
+                <EuiTab
+                  @isSelected={{tab.isSelected}}
+                  @onClick={{optional tab.onClick}}
+                >
+                  {{tab.label}}
+                </EuiTab>
+              {{/each}}
+            </EuiTabs>
+          {{/if}}
+          {{#if @description}}
+            <EuiSpacer />
+            <EuiText @grow={{false}}>
+              <p>{{@description}}</p>
+            </EuiText>
+          {{/if}}
         {{/if}}
       </EuiFlexItem>
       {{#if @rightSideItems}}

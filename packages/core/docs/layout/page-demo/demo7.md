@@ -30,25 +30,29 @@ order: 7
     @direction='column'
     @responsive={{false}}
   >
-    <EuiFlexItem @grow={{false}}>
-      <EuiPanel @color='danger' />
-    </EuiFlexItem>
-    <EuiSpacer @size='l' />
-    <EuiFlexItem class='eui-fullHeight'>
-      <EuiFlexGroup class='eui-fullHeight' @gutterSize='l'>
-        <EuiFlexItem @grow={{2}}>
-          <EuiPanel tabIndex={{0}} class='eui-yScroll' @hasShadow={{false}}>
-            <EuiLoadingContent @lines={{8}} />
-          </EuiPanel>
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <EuiPanel @hasShadow={{false}} />
-          <EuiSpacer />
-          <EuiButton>
-            Go full screen
-          </EuiButton>
-        </EuiFlexItem>
-      </EuiFlexGroup>
+    <EuiFlexItem class='eui-yScroll'>
+      <EuiFlexItem @grow={{false}}>
+        <EuiPanel @color='danger' />
+      </EuiFlexItem>
+      <EuiSpacer @size='l' />
+      <EuiFlexItem class='eui-fullHeight'>
+        <EuiFlexGroup class='eui-fullHeight' @gutterSize='l'>
+          <EuiFlexItem @grow={{2}}>
+            <EuiPanel tabindex={{0}} class='eui-yScroll' @hasShadow={{false}}>
+              <EuiLoadingContent @lines={{8}} />
+              <EuiSpacer />
+              <EuiLoadingContent @lines={{8}} />
+            </EuiPanel>
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiPanel @hasShadow={{false}} />
+            <EuiSpacer />
+            <EuiButton>
+              Go full screen
+            </EuiButton>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiFlexItem>
     </EuiFlexItem>
   </EuiFlexGroup>
 </EuiPageTemplate>

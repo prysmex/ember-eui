@@ -10,12 +10,14 @@ order: 9
 
 ```hbs template
 <EuiPageTemplate
-  @grow={{true}}
   @template='centeredContent'
+  @pageContentProps={{hash
+    paddingSize='none'
+  }}
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
-    rightSideItems='eui-button'
+    rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
   }}
 >
   <EuiEmptyPrompt

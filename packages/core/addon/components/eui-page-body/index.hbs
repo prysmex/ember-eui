@@ -9,11 +9,11 @@
   {{#let
     (if
       (eq restrictWidth true)
-      (hash widthClassName="euiPageBody--restrictWidth-default")
+      (hash widthClassName="euiPageBody--restrictWidth-custom")
       (if
         (eq restrictWidth false)
         (hash
-          widthClassName="euiPageBody--restrictWidth-custom"
+          widthClassName="euiPageBody--restrictWidth-default"
           widthStyle=restrictWidth
         )
       )
@@ -25,6 +25,7 @@
         class={{class-names
           componentName="EuiPageBody"
           borderRadiusSize=borderRadius
+          paddingSize=@paddingSize
         }}
         @paddingSize={{paddingSize}}
         @borderRadius={{borderRadius}}

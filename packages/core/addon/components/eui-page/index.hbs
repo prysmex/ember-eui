@@ -22,14 +22,10 @@
       ...attributes
       {{style
         (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
+        (inline-styles min-height="460px;")
       }}
     >
-      {{yield
-        (hash
-          Sidebar=(component "eui-page-side-bar")
-          Body=(component "eui-page-body")
-        )
-      }}
+      {{yield}}
     </div>
   {{/let}}
 {{/let}}

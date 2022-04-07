@@ -3,6 +3,7 @@ order: 4
 ---
 
 # Centered Body
+
 <EuiSpacer />
 <EuiText>
   When the content for the page is minimal or in an empty/pre-setup state, the page content can be centered vertically and horizontally. We recommend then using the <strong>EuiEmptyPrompt</strong> for the content.
@@ -15,21 +16,23 @@ order: 4
 </EuiCallOut>
 
 ```hbs template
-<EuiPageTemplate @template="centeredBody">
-  <:pageSideBar>
-    <EuiLoadingContent @lines={{8}} />
-  </:pageSideBar>
-  <:content>
-    <EuiEmptyPrompt @paddingSize="l">
-      <:content>
-        <EuiTitle>No spice</EuiTitle>
-        <EuiSpacer />
-        <EuiLoadingContent @lines={{8}} />
-      </:content>
-      <:footer>
-        Hola mundo
-      </:footer>
-    </EuiEmptyPrompt>
-  </:content>
+<EuiPageTemplate
+  @template='centeredBody'
+  @grow={{true}}
+  @pageSideBar={{component 'eui-loading-content' lines=8}}
+>
+  <EuiEmptyPrompt @paddingSize='l'>
+    <:content>
+      <EuiTitle>No spice</EuiTitle>
+      <EuiSpacer />
+      <EuiLoadingContent @lines={{8}} />
+      <EuiButton>
+        Go to full screen
+      </EuiButton>
+    </:content>
+    <:footer>
+      Footer
+    </:footer>
+  </EuiEmptyPrompt>
 </EuiPageTemplate>
 ```

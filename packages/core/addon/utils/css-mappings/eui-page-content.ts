@@ -18,7 +18,7 @@ const mapping: ComponentMapping = {
   properties: {
     verticalPosition: verticalMapping,
     horizontalPosition: horizontalMapping,
-    borderRadius: borderRadiusMapping,
+    borderRadius: borderRadiusMapping
   }
 };
 

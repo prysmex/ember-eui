@@ -50,6 +50,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
   // Defaults
   @argOrDefault(460) minHeight!: number;
   @argOrDefault(false) fullHeight!: boolean;
+  @argOrDefault('l') paddingSize!: string;
   @argOrDefault('default') template!: typeof TEMPLATES[number];
 
   get classes() {
@@ -57,12 +58,32 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
   }
 
   get fullHeightClass() {
-    return this.fullHeight && this.canFullHeight
-      ? 'eui-fullHeight eui-yScroll'
-      : '';
+    return this.fullHeight && this.canFullHeight ? 'eui-fullHeight ' : '';
+  }
+
+  get yScrollClass() {
+    return this.fullHeight && this.canFullHeight ? 'eui-yScroll ' : '';
   }
 
   get canFullHeight() {
     return this.template === 'default' || this.template === 'empty';
+  }
+
+  get pageBodyProps() {
+    return this.fullHeightClass;
+    // ...pageBodyProps,
+    // className: classNames(fullHeightClass, pageBodyProps?.className),
+  }
+
+  get pageContentProps() {
+    return this.yScrollClass;
+    // ...pageContentProps,
+    // className: classNames(yScrollClass, pageContentProps?.className),
+  }
+
+  get pageContentBodyProps() {
+    return this.fullHeightClass;
+    // ...pageContentBodyProps,
+    //className: classNames(fullHeightClass, pageContentBodyProps?.className),
   }
 }

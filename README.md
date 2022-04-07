@@ -13,7 +13,7 @@ Once you've installed it, you can now install the addon itself:
 
 ## Demo
 
-You can see a live demo and documentation for the components here [demo](https://ember-eui.netlify.app)
+You can see a live [demo and documentation](https://ember-eui.netlify.app)
 
 ## Packages
 - [@ember-eui/core](./packages/core/README.md)

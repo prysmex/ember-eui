@@ -13,7 +13,7 @@ export type DefaultEuiMarkdownUiPlugins = EuiMarkdownEditorUiPlugin[];
 
 export const getDefaultEuiMarkdownUiPlugins = ({
   exclude
-}: { exclude?: Array<'tooltip'> } = {}): DefaultEuiMarkdownUiPlugins => {
+}: { exclude?: 'tooltip'[] } = {}): DefaultEuiMarkdownUiPlugins => {
   const excludeSet = new Set(exclude);
   const uiPlugins = [];
 

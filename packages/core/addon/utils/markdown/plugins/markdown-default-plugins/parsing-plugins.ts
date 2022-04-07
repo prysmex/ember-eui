@@ -44,7 +44,7 @@ export type DefaultEuiMarkdownParsingPlugins = PluggableList;
 
 export const getDefaultEuiMarkdownParsingPlugins = ({
   exclude
-}: { exclude?: Array<'tooltip'> } = {}): DefaultEuiMarkdownParsingPlugins => {
+}: { exclude?: 'tooltip'[] } = {}): DefaultEuiMarkdownParsingPlugins => {
   const excludeSet = new Set(exclude);
   const parsingPlugins: PluggableList = [
     [markdown, {}],

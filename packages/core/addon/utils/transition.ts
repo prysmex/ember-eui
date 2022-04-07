@@ -31,7 +31,9 @@ export const getTransitionTimings = (
 ): { durationMatch: number; delayMatch: number } => {
   const computedStyle = window.getComputedStyle(element);
 
-  const computedDuration = computedStyle.getPropertyValue('transition-duration');
+  const computedDuration = computedStyle.getPropertyValue(
+    'transition-duration'
+  );
   const durationMatchArray = computedDuration.match(GROUP_NUMERIC);
   const durationMatch = durationMatchArray
     ? getMilliseconds(durationMatchArray[1], durationMatchArray[2])
@@ -39,7 +41,9 @@ export const getTransitionTimings = (
 
   const computedDelay = computedStyle.getPropertyValue('transition-delay');
   const delayMatchArray = computedDelay.match(GROUP_NUMERIC);
-  const delayMatch = delayMatchArray ? getMilliseconds(delayMatchArray[1], delayMatchArray[2]) : 0;
+  const delayMatch = delayMatchArray
+    ? getMilliseconds(delayMatchArray[1], delayMatchArray[2])
+    : 0;
 
   return { durationMatch, delayMatch };
 };
@@ -62,7 +66,10 @@ export const getWaitDuration = (records: MutationRecord[]): number => {
 };
 
 // Uses `requestAnimationFrame` to perform a given callback after a specified waiting period
-export const performOnFrame = (waitDuration: number, toPerform: () => void): void => {
+export const performOnFrame = (
+  waitDuration: number,
+  toPerform: () => void
+): void => {
   if (waitDuration > 0) {
     const startTime = Date.now();
     const endTime = startTime + waitDuration;

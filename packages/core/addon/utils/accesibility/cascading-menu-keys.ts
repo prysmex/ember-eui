@@ -28,7 +28,14 @@
  * TAB: Normal tabbing navigation is still supported.
  */
 
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ESCAPE, TAB } from '../keys';
+import {
+  ARROW_DOWN,
+  ARROW_LEFT,
+  ARROW_RIGHT,
+  ARROW_UP,
+  ESCAPE,
+  TAB
+} from '../keys';
 
 export const cascadingMenuKeys = {
   ARROW_DOWN,

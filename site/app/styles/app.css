@@ -145,3 +145,16 @@ html {
   padding: 4px 12px;
   padding-bottom: 0;
 }
+
+@media only screen and (max-width: 574px) {
+  .guideSideNav__content {
+    padding: 0;
+    border-top: 1px solid #d3dae6;
+  }
+  .guideSideNav__search {
+    padding: 8px;
+  }
+  .guideSideNav {
+    width: 100%;
+  }
+}

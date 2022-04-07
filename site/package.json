@@ -1,6 +1,6 @@
 {
   "name": "site",
-  "version": "4.4.0",
+  "version": "5.0.0-alpha.1",
   "private": true,
   "description": "Small description for site goes here",
   "repository": "https://github.com/prysmex/ember-eui",
@@ -24,11 +24,11 @@
   },
   "devDependencies": {
     "@docfy/ember": "^0.5.0",
-    "@ember-eui/changeset-form": "^4.4.0",
-    "@ember-eui/core": "^4.4.0",
-    "@ember-eui/flatpickr": "^4.4.0",
-    "@ember-eui/pikaday": "^4.4.0",
-    "@ember-eui/validated-form": "^4.4.0",
+    "@ember-eui/changeset-form": "^5.0.0-alpha.1",
+    "@ember-eui/core": "^5.0.0-alpha.1",
+    "@ember-eui/flatpickr": "^5.0.0-alpha.1",
+    "@ember-eui/pikaday": "^5.0.0-alpha.1",
+    "@ember-eui/validated-form": "^5.0.0-alpha.1",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "2.6.0",
     "@embroider/compat": "^1.5.0",
@@ -64,6 +64,7 @@
     "autoprefixer": "^10.2.5",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
+    "broccoli-file-creator": "^2.1.1",
     "ember-auto-import": "^2.4.0",
     "ember-cli": "~4.1.1",
     "ember-cli-app-version": "^5.0.0",
@@ -82,6 +83,7 @@
     "ember-fetch": "^8.1.1",
     "ember-flatpickr": "^3.2.2",
     "ember-focus-trap": "^1.0.1",
+    "ember-get-config": "^1.0.4",
     "ember-href-to": "^5.0.0",
     "ember-intl": "^5.7.2",
     "ember-load-initializers": "^2.1.2",
@@ -120,5 +122,8 @@
   },
   "volta": {
     "extends": "../package.json"
+  },
+  "dependencies": {
+    "broccoli-funnel": "^3.0.8"
   }
 }

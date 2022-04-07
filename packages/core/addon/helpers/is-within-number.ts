@@ -7,7 +7,10 @@ type Comparator = {
   value: number | string;
 };
 
-export function isWithinRange(_: unknown[], { min, max, value }: Comparator): boolean {
+export function isWithinRange(
+  _: unknown[],
+  { min, max, value }: Comparator
+): boolean {
   return isWithin(min, max, value);
 }
 

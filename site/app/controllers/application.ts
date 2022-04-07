@@ -9,8 +9,15 @@ import {
   Page
 } from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
+import config from 'ember-get-config';
+import { changeTheme } from '../utils/change-theme';
 
 interface Props {}
+
+type ThemeShape = {
+  name: string;
+  key: string;
+};
 
 export default class ApplicationController extends Controller {
   @service declare router: RouterService;
@@ -20,9 +27,32 @@ export default class ApplicationController extends Controller {
   @tracked isOpenMobile = false;
   @tracked selectedItem: NodeId;
   @tracked searchValue?: string;
+  @tracked currentTheme?: ThemeShape | null;
+  @tracked themePopover: boolean = false;
+  themes: ThemeShape[] = [
+    {
+      name: 'Light',
+      key: 'light'
+    },
+    {
+      name: 'Dark',
+      key: 'dark'
+    },
+    {
+      name: 'Amsterdam Light',
+      key: 'amsterdam_light'
+    },
+    {
+      name: 'Amsterdam Dark',
+      key: 'amsterdam_dark'
+    }
+  ];
 
   constructor(props?: Props) {
     super(props);
+    this.currentTheme =
+      this.themes.findBy('key', window?.localStorage?.getItem('theme')) ||
+      this.themes[0];
     const root = this.docfy.nested.children.firstObject;
     const instructions = getSidenavRoutes([
       { ...root, children: [] },
@@ -37,14 +67,17 @@ export default class ApplicationController extends Controller {
       }
     ]);
 
-    let others = root.children.filter((child: Item) => child.name !== 'core');
+    let others = root.children.filter(
+      (child: Item) => child.name !== 'core' && child.name !== 'package'
+    );
+
     others = this.removeDocsFromDocfyNodes(others);
-    console.log(others);
     const finalOthersPages = others.reduce((prev: Page[], curr: DocfyNode) => {
       prev.push(...curr.pages);
       return prev;
     }, []);
-    const changeset = getSidenavRoutes([
+
+    const addons = getSidenavRoutes([
       {
         id: 'addons',
         onClick: () => (id: NodeId) => {
@@ -59,10 +92,25 @@ export default class ApplicationController extends Controller {
         this.selectedItem = id;
       }
     ]);
+
+    let packagesNode = root.children.filter(
+      (child: Item) => child.name === 'package'
+    );
+
+    packagesNode = this.removeDocsFromDocfyNodes(packagesNode);
+
+    const packageRoutes = getSidenavRoutes([
+      packagesNode?.[0],
+      (id: NodeId) => {
+        this.selectedItem = id;
+      }
+    ]);
+
     this.sideNavRoutes = [
       ...instructions,
       ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
-      ...changeset
+      ...addons,
+      ...packageRoutes
     ];
     this.currentSideNavRoutes = this.sideNavRoutes;
     //@ts-expect-error
@@ -87,7 +135,6 @@ export default class ApplicationController extends Controller {
         node.children = [];
       }
     });
-    console.log(nodes);
     return nodes;
   }
 
@@ -153,5 +200,15 @@ export default class ApplicationController extends Controller {
         0
       );
     }
+  };
+
+  get currentVersion() {
+    if (config.environment === 'development') return 'Local';
+    else return config.version;
+  }
+
+  setTheme = (theme: ThemeShape) => {
+    changeTheme(theme.key);
+    this.currentTheme = theme;
   };
 }

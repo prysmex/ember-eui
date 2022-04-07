@@ -96,7 +96,8 @@ export const euiPaletteColorBlind = ({
     // Sort the colors based on the color wheel, but shifting the values based on sortShift
     base = [...base].sort(function (a, b) {
       return (
-        chroma(a).set('hsl.h', sortShift).hsl()[0] - chroma(b).set('hsl.h', sortShift).hsl()[0]
+        chroma(a).set('hsl.h', sortShift).hsl()[0] -
+        chroma(b).set('hsl.h', sortShift).hsl()[0]
       );
     });
   }
@@ -134,9 +135,13 @@ export const euiPaletteColorBlind = ({
   return colors;
 };
 
-export const euiPaletteColorBlindBehindText = (paletteProps: EuiPaletteColorBlindProps = {}) => {
+export const euiPaletteColorBlindBehindText = (
+  paletteProps: EuiPaletteColorBlindProps = {}
+) => {
   const originalPalette = euiPaletteColorBlind(paletteProps);
-  const newPalette = originalPalette.map((color) => chroma(color).brighten(0.5).hex());
+  const newPalette = originalPalette.map((color) =>
+    chroma(color).brighten(0.5).hex()
+  );
   return newPalette;
 };
 
@@ -160,7 +165,11 @@ export const euiPaletteForStatus = function (steps: number): EuiPalette {
   }
   if (steps <= 3) {
     return euiPalette(
-      [euiPaletteColorBlind()[0], euiPaletteColorBlind()[5], lightNegativeColor],
+      [
+        euiPaletteColorBlind()[0],
+        euiPaletteColorBlind()[5],
+        lightNegativeColor
+      ],
       steps,
       true
     );
@@ -196,7 +205,11 @@ export const euiPaletteComplimentary = function (steps: number): EuiPalette {
     return [euiPaletteColorBlind()[1]];
   }
 
-  return euiPalette([euiPaletteColorBlind()[1], euiPaletteColorBlind()[7]], steps, true);
+  return euiPalette(
+    [euiPaletteColorBlind()[1], euiPaletteColorBlind()[7]],
+    steps,
+    true
+  );
 };
 
 export const euiPaletteNegative = function (steps: number): EuiPalette {
@@ -236,5 +249,9 @@ export const euiPaletteGray = function (steps: number): EuiPalette {
     return ['#98a2b3'];
   }
 
-  return euiPalette(['white', '#d3dae6', '#98a2b3', '#69707d', '#343741'], steps, false);
+  return euiPalette(
+    ['white', '#d3dae6', '#98a2b3', '#69707d', '#343741'],
+    steps,
+    false
+  );
 };

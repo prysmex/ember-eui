@@ -1,1 +1,1 @@
-export { default } from '@ember-eui/core/components/eui-page-content-header'
+export { default } from '@ember-eui/core/components/eui-page-content-header';

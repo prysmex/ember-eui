@@ -32,6 +32,9 @@ export const PALETTES = {
 
 export type palette_keys = keyof typeof PALETTES;
 
-export default helper(function ([paletteName, steps]: [palette_keys, number]): EuiPalette {
+export default helper(function ([paletteName, steps]: [
+  palette_keys,
+  number
+]): EuiPalette {
   return PALETTES[paletteName](steps);
 });

@@ -16,12 +16,16 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
   let componentStyles = {};
 
   if (componentName) {
-    assert(`Could not find component ${componentName} in cssMappings.`, cssMappings[componentName]);
+    assert(
+      `Could not find component ${componentName} in cssMappings.`,
+      cssMappings[componentName]
+    );
     assert(
       `Could not find inlineStyles in ${componentName}'s cssMapping.`,
       cssMappings[componentName].inlineStyles
     );
-    componentStyles = cssMappings[componentName].inlineStyles?.(componentArgs) || {};
+    componentStyles =
+      cssMappings[componentName].inlineStyles?.(componentArgs) || {};
   }
 
   let finalProperties: FinalProperties = {
@@ -30,7 +34,10 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
   };
 
   for (let property in finalProperties) {
-    if (property === 'background-image' && finalProperties[property] !== 'none') {
+    if (
+      property === 'background-image' &&
+      finalProperties[property] !== 'none'
+    ) {
       finalProperties[property] = `url(${finalProperties[property]})`;
     } else {
       finalProperties[property] = `${finalProperties[property]}`;

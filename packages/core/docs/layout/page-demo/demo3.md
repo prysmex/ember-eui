@@ -43,7 +43,7 @@ order: 3
     rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
   }}
   @pageSideBar={{component 'eui-loading-content' lines=8}}
-  @bottomBar={{'hola mundo'}}
+  @bottomBar={{component "eui-button-title" title="Save"}}
 >
   <EuiLoadingContent @lines={{16}} />
 </EuiPageTemplate>

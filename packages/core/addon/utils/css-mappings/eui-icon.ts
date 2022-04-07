@@ -428,8 +428,7 @@ export const typeToPathMap = {
   tokenText: 'tokenText',
   tokenTokenCount: 'tokenTokenCount',
   tokenSearchType: 'tokenSearchType',
-  tokenHistogram: 'tokenHistogram',
-
+  tokenHistogram: 'tokenHistogram'
 };
 
 export const sizeToClassNameMap = {

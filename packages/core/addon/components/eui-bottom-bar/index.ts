@@ -16,7 +16,7 @@ export interface EuiButtomBarArgs {
 }
 
 const updateDisplacementModifier = modifier(function (
-  element: Element,
+  _element: Element,
   _pos: unknown[],
   {
     affordForDisplacement,

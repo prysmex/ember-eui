@@ -54,7 +54,7 @@ export type DefaultEuiMarkdownProcessingPlugins = [
 
 export const getDefaultEuiMarkdownProcessingPlugins = ({
   exclude
-}: { exclude?: Array<'tooltip'> } = {}) => {
+}: { exclude?: 'tooltip'[] } = {}) => {
   exclude;
   const plugins: DefaultEuiMarkdownProcessingPlugins = [
     [remark2Rehype, { allowDangerousHtml: true, unknownHandler }],

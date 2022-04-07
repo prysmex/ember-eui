@@ -56,8 +56,13 @@ export default class EuiImage extends GlimmerComponent<ImageArgs> {
 
   get sizeStyle(): ReturnType<typeof htmlSafe> | string {
     const size = this.args.size;
-    if ((typeof size === 'string' || typeof size === 'number') && !this.sizeClass) {
-      return htmlSafe(`max-height:${this.args.size}px; max-width:${this.args.size}px; width:auto;`);
+    if (
+      (typeof size === 'string' || typeof size === 'number') &&
+      !this.sizeClass
+    ) {
+      return htmlSafe(
+        `max-height:${this.args.size}px; max-width:${this.args.size}px; width:auto;`
+      );
     }
     return '';
   }

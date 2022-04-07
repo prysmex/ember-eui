@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+//@ts-ignore
 import createDetectElementResize from '../../utils/detect-element-resize';
 
 type Size = {
@@ -114,6 +115,7 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerCompone
         nonce,
         this._window
       );
+      //@ts-ignore
       this._detectElementResize.addResizeListener(
         this._parentNode,
         this._onResize

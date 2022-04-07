@@ -119,7 +119,7 @@ export const SIZES = keysOf(sizeMapping);
 export type EuiFlyoutSize = typeof SIZES[number];
 
 function isEuiFlyoutSizeNamed(value: any): value is EuiFlyoutSize {
-  return SIZES.includes(value as any);
+  return SIZES.includes(value);
 }
 
 export default class EuiCollapsibleNavComponent extends Component<EuiCollapsibleNavArgs> {

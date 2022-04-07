@@ -68,15 +68,13 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
       this.listElement.scrollTop = position + distanceToDestination * 0.25;
 
       if (this.isScrollingToBottom) {
-        this.isScrollingAnimationFrame = window.requestAnimationFrame(
-          scrollToBottom
-        );
+        this.isScrollingAnimationFrame =
+          window.requestAnimationFrame(scrollToBottom);
       }
     };
 
-    this.startScrollingAnimationFrame = window.requestAnimationFrame(
-      scrollToBottom
-    );
+    this.startScrollingAnimationFrame =
+      window.requestAnimationFrame(scrollToBottom);
   }
 
   @action
@@ -188,6 +186,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   willDestroy(): void {
+    super.willDestroy(...arguments);
     if (this.isScrollingAnimationFrame !== 0) {
       window.cancelAnimationFrame(this.isScrollingAnimationFrame);
     }

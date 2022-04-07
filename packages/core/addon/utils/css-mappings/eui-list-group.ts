@@ -7,7 +7,11 @@ export const gutterSizeMapping = {
   m: `${baseClass}--gutterMedium`
 };
 
-export function inlineStyles({ maxWidth }: { maxWidth: string | number }): Styling {
+export function inlineStyles({
+  maxWidth
+}: {
+  maxWidth: string | number;
+}): Styling {
   const value = typeOf(maxWidth) === 'number' ? `${maxWidth}px` : `${maxWidth}`;
 
   return {

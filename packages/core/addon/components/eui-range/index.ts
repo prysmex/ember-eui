@@ -3,15 +3,14 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { uniqueId } from '../../helpers/unique-id';
 import { isWithinRange } from '../../utils/number';
-import { CommonArgs } from '../common';
 import { EuiRangeInputArgs } from '../eui-range-input/types';
 import { EuiRangeLevel } from '../eui-range-levels';
 import { EuiRangeTick } from '../eui-range-ticks';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { later } from '@ember/runloop';
+
 export interface EuiRangeArgs
-  extends CommonArgs,
-    Omit<EuiRangeInputArgs, 'onChange' | 'digitTolerance'> {
+  extends Omit<EuiRangeInputArgs, 'onChange' | 'digitTolerance'> {
   compressed?: boolean;
   readOnly?: boolean;
   fullWidth?: boolean;
@@ -111,7 +110,11 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
   }
 
   get showRangeTooltip(): boolean {
-    return this.showValue && !!String(this.args.value).length && this.args.value !== undefined;
+    return (
+      this.showValue &&
+      !!String(this.args.value).length &&
+      this.args.value !== undefined
+    );
   }
 
   @action

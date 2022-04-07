@@ -1,63 +1,60 @@
 ---
-order: 2
+order: 4
 ---
 
 # Statuses
 
+<EuiText>
+<p>Steps can optionally include <EuiCode>status</EuiCode> prop that will alter the look of the number prefix. The options are <EuiCode>incomplete</EuiCode>, <EuiCode>complete</EuiCode>, <EuiCode>warning</EuiCode>, <EuiCode>danger</EuiCode>, <EuiCode>disabled</EuiCode> and <EuiCode>loading</EuiCode>. This is used mostly as a final step when you need to make some sort of final check.</p>
+</EuiText>
+
 ```hbs template
 <EuiSteps>
-  <EuiStep
-    @step={{1}}
-    @title="Step 1"
-  >
+  <EuiStep @step={{1}} @title='Step 1'>
     You do this!
   </EuiStep>
-  <EuiStep
-    @title="Step 2"
-    @status={{this.status}}
-    @step={{2}}
-  >
-    You did good! {{if (eq this.status "danger") "(or not)"}}
-    <EuiSubSteps>
-      Click the buttons below to change status!
+  <EuiStep @title='Step 2' @status={{this.status}} @step={{2}}>
+    We are fancy buttons just waiting to be pushed!
+    <div>
+      <EuiSpacer />
       <EuiFlexGroup>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="danger" {{on "click" this.setDanger}}>
+          <EuiButton @color='danger' {{on 'click' this.setDanger}}>
             Set Danger
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="success" {{on "click" this.setComplete}}>
+          <EuiButton @color='success' {{on 'click' this.setComplete}}>
             Set Complete
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="warning" {{on "click" this.setWarning}}>
+          <EuiButton @color='warning' {{on 'click' this.setWarning}}>
             Set Warning
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButton @color="primary" {{on "click" this.setLoading}}>
+          <EuiButton @color='primary' {{on 'click' this.setLoading}}>
             Set Loading
           </EuiButton>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty {{on "click" this.setDisabled}}>
+          <EuiButtonEmpty {{on 'click' this.setDisabled}}>
             Set Disabled
           </EuiButtonEmpty>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty {{on "click" this.setIncomplete}}>
+          <EuiButtonEmpty {{on 'click' this.setIncomplete}}>
             Set Incomplete
           </EuiButtonEmpty>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty {{on "click" this.reset}}>
+          <EuiButtonEmpty {{on 'click' this.reset}}>
             Reset
           </EuiButtonEmpty>
         </EuiFlexItem>
       </EuiFlexGroup>
-    </EuiSubSteps>
+    </div>
   </EuiStep>
 </EuiSteps>
 ```

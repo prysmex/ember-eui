@@ -13,28 +13,25 @@ Badges can have <EuiCode>onClick</EuiCode> events applied to the badge itself or
 </EuiText>
 
 ```hbs template
-<EuiPanel @hasShadow={{false}}>
-
-  <EuiBadge
-    @color='primary'
-    @iconType='cross'
-    @iconSide='right'
-    @iconOnClick={{this.clickIcon}}
-    @onClick={{this.clickBadge}}
-  >
-    Clickable
-  </EuiBadge>
-  <EuiBadge @onClick={{this.clickBadge}} @iconType='check' @color='#c5c5c5'>
-    Click Text Only!
-  </EuiBadge>
-  <EuiBadge
-    @iconOnClick={{this.clickIcon}}
-    @color='#c9c9c9'
-    @iconType='returnKey'
-  >
-    Click Icon Only!
-  </EuiBadge>
-</EuiPanel>
+<EuiBadge
+  @color='primary'
+  @iconType='cross'
+  @iconSide='right'
+  @iconOnClick={{this.clickIcon}}
+  @onClick={{this.clickBadge}}
+>
+  Clickable
+</EuiBadge>
+<EuiBadge @onClick={{this.clickBadge}} @iconType='check' @color='#c5c5c5'>
+  Click Text Only!
+</EuiBadge>
+<EuiBadge
+  @iconOnClick={{this.clickIcon}}
+  @color='#c9c9c9'
+  @iconType='returnKey'
+>
+  Click Icon Only!
+</EuiBadge>
 ```
 
 ```js component

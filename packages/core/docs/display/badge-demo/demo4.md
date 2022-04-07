@@ -12,18 +12,16 @@ of repeated statuses, e.g. in tables.
 </EuiText>
 
 ```hbs template
-<EuiPanel @hasShadow={{false}}>
-  <EuiBadge @color='success'>
-    Healthy
-  </EuiBadge>
-  <EuiBadge @color='warning'>
-    Warning
-  </EuiBadge>
-  <EuiBadge @color='danger'>
-    Critical
-  </EuiBadge>
-  <EuiBadge @color='default'>
-    Unknown
-  </EuiBadge>
-</EuiPanel>
+<EuiBadge @color='success'>
+  Healthy
+</EuiBadge>
+<EuiBadge @color='warning'>
+  Warning
+</EuiBadge>
+<EuiBadge @color='danger'>
+  Critical
+</EuiBadge>
+<EuiBadge @color='default'>
+  Unknown
+</EuiBadge>
 ```

@@ -13,10 +13,7 @@ Used to showcase the number of notifications, alerts, or hidden selections.
 </EuiText>
 
 ```hbs template
-<EuiPanel @hasShadow={{false}}>
-  <EuiNotificationBadge>
-    3
-  </EuiNotificationBadge>
-
-</EuiPanel>
+<EuiNotificationBadge>
+  3
+</EuiNotificationBadge>
 ```

@@ -16,56 +16,44 @@ They can also be used in conjunction with EuiCards.
 </EuiText>
 
 ```hbs template
-<EuiPanel @hasShadow={{false}}>
+<EuiBetaBadge @label='Beta' @title='Philly' />
+<EuiBetaBadge @label='Beta' @title='Philly' />
+<EuiBetaBadge @label='B' @title='Philly' />
+<EuiBetaBadge @label='B' @title='Philly' />
+<EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
+<EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
+<EuiSpacer @size='xs' />
+<EuiBetaBadge @label='Beta' @title='Philly' @color='accent' />
+<EuiBetaBadge @label='Beta' @title='Philly' @color='accent' />
+<EuiBetaBadge @label='B' @title='Philly' @color='accent' />
+<EuiBetaBadge @label='B' @title='Philly' @color='accent' />
+<EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='accent' />
+<EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='accent' />
+<EuiSpacer @size='xs' />
+<EuiBetaBadge @label='Beta' @title='Philly' @color='subdued' />
+<EuiBetaBadge @label='Beta' @title='Philly' @color='subdued' />
+<EuiBetaBadge @label='B' @title='Philly' @color='subdued' />
+<EuiBetaBadge @label='B' @title='Philly' @color='subdued' />
+<EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='subdued' />
+<EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='subdued' />
+<EuiSpacer />
+<EuiTitle @size='m'>
+  Beta badges will also line up nicely with titles
   <EuiBetaBadge @label='Beta' @title='Philly' />
-  <EuiBetaBadge @label='Beta' @title='Philly' />
-  <EuiBetaBadge @label='B' @title='Philly' />
-  <EuiBetaBadge @label='B' @title='Philly' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' />
-  <EuiSpacer @size='xs' />
-  <EuiBetaBadge @label='Beta' @title='Philly' @color='accent' />
-  <EuiBetaBadge @label='Beta' @title='Philly' @color='accent' />
-  <EuiBetaBadge @label='B' @title='Philly' @color='accent' />
-  <EuiBetaBadge @label='B' @title='Philly' @color='accent' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='accent' />
-  <EuiBetaBadge @label='Lab' @title='Coat' @iconType='beaker' @color='accent' />
-  <EuiSpacer @size='xs' />
-  <EuiBetaBadge @label='Beta' @title='Philly' @color='subdued' />
-  <EuiBetaBadge @label='Beta' @title='Philly' @color='subdued' />
-  <EuiBetaBadge @label='B' @title='Philly' @color='subdued' />
-  <EuiBetaBadge @label='B' @title='Philly' @color='subdued' />
-  <EuiBetaBadge
-    @label='Lab'
-    @title='Coat'
-    @iconType='beaker'
-    @color='subdued'
-  />
-  <EuiBetaBadge
-    @label='Lab'
-    @title='Coat'
-    @iconType='beaker'
-    @color='subdued'
-  />
-  <EuiSpacer />
-  <EuiTitle @size='m'>
-    Beta badges will also line up nicely with titles
-    <EuiBetaBadge @label='Beta' @title='Philly' />
-  </EuiTitle>
-  <EuiTitle @size='xs'>
-    Clickable beta badges
-  </EuiTitle>
-  <EuiSpacer />
-  <EuiBetaBadge
-    @label='Lab'
-    @title='Coat'
-    @iconType='beaker'
-    @onClick={{this.clickBetaBadge}}
-  />
-  <EuiBetaBadge
-    @label='Beta'
-    @title='Philly'
-    @href='http://www.elastic.co/subscriptions'
-  />
-</EuiPanel>
+</EuiTitle>
+<EuiTitle @size='xs'>
+  Clickable beta badges
+</EuiTitle>
+<EuiSpacer />
+<EuiBetaBadge
+  @label='Lab'
+  @title='Coat'
+  @iconType='beaker'
+  @onClick={{this.clickBetaBadge}}
+/>
+<EuiBetaBadge
+  @label='Beta'
+  @title='Philly'
+  @href='http://www.elastic.co/subscriptions'
+/>
 ```

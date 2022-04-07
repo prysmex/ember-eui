@@ -16,53 +16,49 @@ To ensure proper wrapping, truncation and spacing of multiple badges, it is advi
 </EuiText>
 
 ```hbs template
-<EuiSpacer @hasShadow={{false}} />
-<EuiPanel style='max-width: 200px;' @color='subdued'>
-  <EuiBadgeGroup @gutterSize='s' as |Group|>
-    <Group.item>
-      <EuiBadge @href='#' @color='accent'>
-        Example of a good ol' badge group item 1
-      </EuiBadge>
-    </Group.item>
-    <Group.item>
-      <EuiBadge @iconType='check' @color='primary'>
-        Example of a good ol' badge group item 2
-      </EuiBadge>
-    </Group.item>
-    <Group.item>
-      <EuiBadge @iconType='check' @iconSide='right' @color='success'>
-        Example of a good ol' badge group item 3
-      </EuiBadge>
-    </Group.item>
-    <Group.item>
-      <EuiBadge @onClick={{this.clickBadge}} @color='#fffeee'>
-        Example of a good ol' badge group item 4
-      </EuiBadge>
-    </Group.item>
-    <Group.item>
-      <EuiBadge
-        @onClick={{this.clickBadge}}
-        @iconType='cross'
-        @iconOnClick={{this.clickIcon}}
-        @color='#e5e5e5'
-      >
-        Example of a good ol' badge group item 5
-      </EuiBadge>
-    </Group.item>
-    <Group.item>
-      <EuiBadge
-        @onClick={{this.clickBadge}}
-        @iconSide='right'
-        @iconType='cross'
-        @iconOnClick={{this.clickIcon}}
-        @color='#f5f5f5'
-      >
-        Example of a good ol' badge group item 6
-      </EuiBadge>
-    </Group.item>
-  </EuiBadgeGroup>
-</EuiPanel>
-<EuiSpacer />
+<EuiBadgeGroup @gutterSize='s' as |Group|>
+  <Group.item>
+    <EuiBadge @href='#' @color='accent'>
+      Example of a good ol' badge group item 1
+    </EuiBadge>
+  </Group.item>
+  <Group.item>
+    <EuiBadge @iconType='check' @color='primary'>
+      Example of a good ol' badge group item 2
+    </EuiBadge>
+  </Group.item>
+  <Group.item>
+    <EuiBadge @iconType='check' @iconSide='right' @color='success'>
+      Example of a good ol' badge group item 3
+    </EuiBadge>
+  </Group.item>
+  <Group.item>
+    <EuiBadge @onClick={{this.clickBadge}} @color='#fffeee'>
+      Example of a good ol' badge group item 4
+    </EuiBadge>
+  </Group.item>
+  <Group.item>
+    <EuiBadge
+      @onClick={{this.clickBadge}}
+      @iconType='cross'
+      @iconOnClick={{this.clickIcon}}
+      @color='#e5e5e5'
+    >
+      Example of a good ol' badge group item 5
+    </EuiBadge>
+  </Group.item>
+  <Group.item>
+    <EuiBadge
+      @onClick={{this.clickBadge}}
+      @iconSide='right'
+      @iconType='cross'
+      @iconOnClick={{this.clickIcon}}
+      @color='#f5f5f5'
+    >
+      Example of a good ol' badge group item 6
+    </EuiBadge>
+  </Group.item>
+</EuiBadgeGroup>
 ```
 
 ```js component

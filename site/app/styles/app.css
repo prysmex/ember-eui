@@ -1,53 +1,14 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
-/* @import './markdown/markdown.css'; */
-/* @import './markdown/structure.css'; */
-/* @import './markdown/dark.css'; */
-/* @import './markdown/light.css'; */
-@import './highlight.css';
-
-#examples {
-  @apply mt-10 text-xl;
-}
-
-.prose h2,
-.prose h3,
-.prose h4,
-.docfy-demo__description__header__title {
-  & > a {
-    @apply ml-6;
-    &::before {
-      content: '#';
-      color: #1a1c21;
-      @apply absolute pr-2 -ml-6 opacity-100;
-    }
-
-    @screen lg {
-      @apply ml-0;
-
-      &::before {
-        @apply pr-1 opacity-0;
-      }
-    }
-  }
-  &:hover {
-    margin-left: 10px;
-    & > a::before {
-      @apply opacity-100;
-    }
-  }
-}
-
 body.euiBody--headerIsFixed {
   padding-top: 49px;
-
   .euiFlyout,
   .euiCollapsibleNav {
     top: 49px;
     height: calc(100% - 49px);
   }
+}
+
+#examples {
+  display: none;
 }
 
 .background-blue {
@@ -143,7 +104,10 @@ html {
 /* Elastic UI docs specific */
 .guideSectionTabs {
   padding: 4px 12px;
-  padding-bottom: 0;
+}
+
+.guideSectionTabs--open {
+  padding-bottom: 0px;
 }
 
 @media only screen and (max-width: 574px) {
@@ -157,4 +121,14 @@ html {
   .guideSideNav {
     width: 100%;
   }
+}
+
+.guideSection+.guideSection {
+  margin-top: 32px;
+}
+
+.guideSectionExampleCode__link {
+  text-align: right;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }

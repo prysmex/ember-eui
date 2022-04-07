@@ -1,4 +1,4 @@
-<EuiPanel
+<EuiSplitPanel::Inner
   class="docfy-demo__snippets"
   @borderRadius="none"
   @hasBorder={{false}}
@@ -6,29 +6,49 @@
   @paddingSize="none"
   @color="subdued"
 >
-  <EuiFlexGroup @gutterSize="none" @responsive={{false}} @wrap={{true}} @alignItems="center">
+  <EuiFlexGroup
+    @gutterSize="none"
+    @responsive={{false}}
+    @wrap={{true}}
+    @alignItems="center"
+  >
     <EuiFlexItem>
-      <EuiTabs class="guideSectionTabs" @display="condensed" @size="s" as |Tab|>
+      <EuiTabs
+        class={{class-names
+          "guideSectionTabs"
+          (if this.isSingleSelected "guideSectionTabs--open")
+        }}
+        @display="condensed"
+        @size="s"
+      >
         {{#each this.snippets as |snippet|}}
-          <Tab
+          <EuiTab
             class="docfy-demo__snippets__tabs__button"
             @id={{snippet.id}}
-            @onClick={{fn this.setActiveSnippet snippet.id}}
+            @isSelected={{eq this.active snippet.id}}
+            {{on
+              "click"
+              (fn
+                this.setActiveSnippet
+                (if (eq this.active snippet.id) "" snippet.id)
+              )
+            }}
           >
             {{snippet.name}}
-          </Tab>
+          </EuiTab>
         {{/each}}
       </EuiTabs>
     </EuiFlexItem>
   </EuiFlexGroup>
-
-  <EuiHorizontalRule @margin="none" />
-
+  {{#if this.active}}
+    <EuiHorizontalRule @margin="none" />
+  {{/if}}
   {{yield
     (component
       "docfy-demo/snippet"
       registerSnippet=this.registerSnippet
       active=this.active
+      multiple=true
     )
   }}
-</EuiPanel>
+</EuiSplitPanel::Inner>

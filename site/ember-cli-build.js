@@ -17,7 +17,6 @@ module.exports = function (defaults) {
         path: [path.join(__dirname, '../node_modules')]
       }
     },
-    require('tailwindcss')(path.join('app', 'styles', 'tailwind.config.js')),
     require('postcss-nested'),
     require('autoprefixer')
   ];

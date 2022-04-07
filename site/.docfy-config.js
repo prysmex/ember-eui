@@ -10,7 +10,7 @@ module.exports = {
         behavior: 'wrap'
       }
     ],
-    highlight
+    // highlight
   ],
   sources: [
     {

@@ -1,7 +1,6 @@
 {{#let
-  (use-state (get-tab-id @selectedTab))
   (if (eq @display "condensed") false (arg-or-default @bottomBorder true))
-  as |selectedTab bottomBorder|
+  as |bottomBorder|
 }}
   <div
     role="tablist"
@@ -15,13 +14,6 @@
     }}
     ...attributes
   >
-    {{yield
-      (component
-        "eui-tab"
-        onClick=selectedTab.setState
-        selectedTabId=selectedTab.value
-        focusFn=selectedTab.setState
-      )
-    }}
+    {{yield}}
   </div>
 {{/let}}

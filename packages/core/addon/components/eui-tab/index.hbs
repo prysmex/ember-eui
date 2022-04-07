@@ -1,76 +1,63 @@
 {{#let (arg-or-default @id (unique-id)) as |id|}}
-  {{#let
-    (eq @selectedTabId id)
-    (optional @onClick)
-    (optional @focusFn)
-    as |isSelected onClick focusFn|
-  }}
-    {{#if (and @href (not @disabled))}}
-      <a
-        id={{id}}
-        role="tab"
-        aria-selected={{isSelected}}
-        class={{class-names
-          "euiTab"
-          (if isSelected "euiTab-isSelected")
-          (if @disabled "euiTab-isDisabled")
-        }}
-        href={{@href}}
-        disabled={{@disabled}}
-        ...attributes
-        {{on "click" onClick}}
-        {{on "click" (fn focusFn id)}}
-        {{this.focusTabModifier id @selectedTabId @disabled focusFn onClick}}
-      >
-        {{#if (has-block "prepend")}}
-          <span className="euiTab__prepend">
-            {{yield to="prepend"}}
-          </span>
-        {{/if}}
-
-        <span class="euiTab__content">
-          {{yield}}
+  {{#if (and @href (not @disabled))}}
+    <a
+      id={{id}}
+      role="tab"
+      aria-selected={{not (not @isSelected)}}
+      class={{class-names
+        "euiTab"
+        (if @isSelected "euiTab-isSelected")
+        (if @disabled "euiTab-isDisabled")
+      }}
+      href={{@href}}
+      disabled={{@disabled}}
+      ...attributes
+    >
+      {{#if (has-block "prepend")}}
+        <span className="euiTab__prepend">
+          {{yield to="prepend"}}
         </span>
+      {{/if}}
 
-        {{#if (has-block "append")}}
-          <span className="euiTab__append">
-            {{yield to="append"}}
-          </span>
-        {{/if}}
-      </a>
-    {{else}}
-      <button
-        id={{id}}
-        role="tab"
-        aria-selected={{isSelected}}
-        type="button"
-        class={{class-names
-          "euiTab"
-          (if isSelected "euiTab-isSelected")
-          (if @disabled "euiTab-isDisabled")
-        }}
-        disabled={{@disabled}}
-        ...attributes
-        {{on "click" onClick}}
-        {{on "click" (fn focusFn id)}}
-        {{this.focusTabModifier id @selectedTabId @disabled focusFn onClick}}
-      >
-        {{#if (has-block "prepend")}}
-          <span className="euiTab__prepend">
-            {{yield to="prepend"}}
-          </span>
-        {{/if}}
+      <span class="euiTab__content">
+        {{yield}}
+      </span>
 
-        <span class="euiTab__content">
-          {{yield}}
+      {{#if (has-block "append")}}
+        <span className="euiTab__append">
+          {{yield to="append"}}
         </span>
+      {{/if}}
+    </a>
+  {{else}}
+    <button
+      id={{id}}
+      role="tab"
+      aria-selected={{not (not @isSelected)}}
+      type="button"
+      class={{class-names
+        "euiTab"
+        (if @isSelected "euiTab-isSelected")
+        (if @disabled "euiTab-isDisabled")
+      }}
+      disabled={{@disabled}}
+      ...attributes
+    >
+      {{#if (has-block "prepend")}}
+        <span className="euiTab__prepend">
+          {{yield to="prepend"}}
+        </span>
+      {{/if}}
 
-        {{#if (has-block "append")}}
-          <span className="euiTab__append">
-            {{yield to="append"}}
-          </span>
-        {{/if}}
-      </button>
-    {{/if}}
-  {{/let}}
+      <span class="euiTab__content">
+        {{yield}}
+      </span>
+
+      {{#if (has-block "append")}}
+        <span className="euiTab__append">
+          {{yield to="append"}}
+        </span>
+      {{/if}}
+    </button>
+  {{/if}}
 {{/let}}

@@ -4,9 +4,9 @@ order: 7
 
 # More types of empty states
 
-<!-- <EuiText>
+<EuiText>
  <strong>EuiEmptyPrompt</strong> can be used for more than just empty pages. The following example showcases different types of empty states that you can create with the <strong>EuiEmptyPrompt</strong>. For a full list see the usage guidelines.
-</EuiText> -->
+</EuiText>
 
 ```hbs template
 {{#let (unique-id) as |selectId|}}

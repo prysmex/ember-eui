@@ -4,11 +4,11 @@ order: 8
 
 # Using in a page template
 
-<!-- <EuiText>
+<EuiText>
  When using a <strong>EuiEmptyPrompt</strong> in a <strong>EuiPageTemplate</strong>, pay attention to the template you’re passing. The template will determine which <EuiCode>color</EuiCode> and <EuiCode>hasBorder</EuiCode> prop you should use to ensure consistency across our Elastic products.
 
-The following example shows the usage of a <strong>EuiEmptyPrompt</strong> in a page template where the template is set to <EuiCode>"empty"</EuiCode>.
-</EuiText> -->
+ The folowwing example shows the usage of a <strong>EuiEmptyPrompt</strong> in a page template where the template is set to <EuiCode>"empty"</EuiCode>.
+</EuiText>
 
 ```hbs template
 <EuiPageTemplate
@@ -50,14 +50,8 @@ The following example shows the usage of a <strong>EuiEmptyPrompt</strong> in a 
 ```js component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 
 export default class DemoComponent extends Component {
   @tracked illustration = 'https://source.unsplash.com/64x64/?cat';
-
-  @action
-  onClick(e) {
-    e.preventDefault();
-  }
 }
 ```

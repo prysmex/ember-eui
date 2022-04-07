@@ -1,0 +1,14 @@
+<span
+  class={{class-names
+    "euiLoadingLogo "
+    (if
+      (eq @size "m")
+      "euiLoadingLogo--medium"
+      (if (eq @size "l") "euiLoadingLogo--large" "euiLoadingLogo--xLarge")
+    )
+  }}
+>
+  <span className="euiLoadingLogo__icon">
+    <EuiIcon @type={{arg-or-default @logo "logoKibana"}} @size={{arg-or-default @size "m"}} />
+  </span>
+</span>

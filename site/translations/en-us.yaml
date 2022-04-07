@@ -1,0 +1,6 @@
+pikaday:
+  styles_instructions: "//app/modifiers/pikaday.js\n//Opt-in to using pikaday's default CSS\nimport 'ember-pikaday-prysmex/pikaday.css';\nexport '{' default '}' from 'ember-pikaday-prysmex/modifiers/pikaday';"
+changeset_form:
+  note: <EuiChangesetForm::Fields::ComboBox>
+validated_form:
+  ember_paper: <PaperForm/>

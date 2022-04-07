@@ -1,7 +1,3 @@
-.docfy-demo {
-  @apply mt-8 mb-12;
-}
-
 div.docfy-demo__example {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;

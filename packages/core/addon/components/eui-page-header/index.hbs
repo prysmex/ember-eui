@@ -1,11 +1,36 @@
-<div
+<header
   class={{class-names
-    "euiPageHeader"
+    (if @bottomBorder "euiPageHeader--bottomBorder")
     (if @responsive "euiPageHeader--responsive")
+    (if (and @pageTitle @tabs) "euiPageHeader--tabsAtBottom")
+    (if
+      (and @tabs (not @pageTitle) (not @rightSideItems) (not @description))
+      "euiPageHeader--onlyTabs"
+    )
+    (if (eq @responsive "reverse") "euiPageHeader--responsiveReverse")
+    (if
+      @alignItems (concat "euiPageHeader--" @alignItems) "euiPageHeader--center"
+    )
+    (if
+      @restrictWidth
+      "euiPageHeader--restrictWidth-custom"
+      "euiPageHeader--restrictWidth-default"
+    )
+    componentName="EuiPageHeader"
+    paddingSize=@paddingSize
   }}
   ...attributes
 >
-  {{yield
-    (hash Section=(component "eui-page-header-section"))
-  }}
-</div>
+  <EuiPageHeaderContent
+    @alignItems={{@alignItems}}
+    @responsive={{@responsive}}
+    @pageTitle={{@pageTitle}}
+    @iconType={{@iconType}}
+    @tabs={{@tabs}}
+    @description={{@description}}
+    @rightSideItems={{@rightSideItems}}
+    @restrictWidth={{@restrictWidth}}
+  >
+    {{yield}}
+  </EuiPageHeaderContent>
+</header>

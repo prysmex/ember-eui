@@ -59,6 +59,11 @@ import EuiHeaderLinks from './eui-header-links';
 import EuiLink from './eui-link';
 import EuiBetaBadge from './eui-beta-badge';
 import EuiDescriptionList from './eui-description-list';
+import EuiPageSideBar from './eui-page-side-bar';
+import EuiPageBody from './eui-page-body';
+import EuiPageHeader from './eui-page-header';
+import EuiPageContentBody from './eui-page-content-body';
+import EuiEmptyPrompt from './eui-empty-prompt';
 
 const mapping: Mapping = {
   EuiDescriptionList,
@@ -121,7 +126,12 @@ const mapping: Mapping = {
   EuiToolTip,
   EuiToast,
   EuiGlobalToastList,
-  EuiHeaderLinks
+  EuiHeaderLinks,
+  EuiPageSideBar,
+  EuiPageBody,
+  EuiPageHeader,
+  EuiPageContentBody,
+  EuiEmptyPrompt
 };
 
 export default mapping;

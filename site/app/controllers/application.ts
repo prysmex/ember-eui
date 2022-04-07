@@ -1,8 +1,15 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
-import { getSidenavRoutes, Item, NodeId } from '../helpers/get-sidenav-routes';
+import {
+  DocfyNode,
+  getSidenavRoutes,
+  Item,
+  NodeId,
+  Page
+} from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
+import config from 'ember-get-config';
 
 interface Props {}
 
@@ -10,8 +17,10 @@ export default class ApplicationController extends Controller {
   @service declare router: RouterService;
   @service docfy: any;
   @tracked sideNavRoutes: Item[] = [];
+  @tracked currentSideNavRoutes: Item[] = [];
   @tracked isOpenMobile = false;
   @tracked selectedItem: NodeId;
+  @tracked searchValue?: string;
 
   constructor(props?: Props) {
     super(props);
@@ -29,9 +38,17 @@ export default class ApplicationController extends Controller {
       }
     ]);
 
-    let others = root.children.filter((child: Item) => child.name !== 'core');
+    let others = root.children.filter(
+      (child: Item) => child.name !== 'core' && child.name !== 'package'
+    );
 
-    const changeset = getSidenavRoutes([
+    others = this.removeDocsFromDocfyNodes(others);
+    const finalOthersPages = others.reduce((prev: Page[], curr: DocfyNode) => {
+      prev.push(...curr.pages);
+      return prev;
+    }, []);
+
+    const addons = getSidenavRoutes([
       {
         id: 'addons',
         onClick: () => (id: NodeId) => {
@@ -39,18 +56,34 @@ export default class ApplicationController extends Controller {
         },
         name: 'Addons',
         label: 'Addons',
-        children: others,
-        pages: []
+        children: [],
+        pages: finalOthersPages
       },
       (id: NodeId) => {
         this.selectedItem = id;
       }
     ]);
+
+    let packagesNode = root.children.filter(
+      (child: Item) => child.name === 'package'
+    );
+
+    packagesNode = this.removeDocsFromDocfyNodes(packagesNode);
+
+    const packageRoutes = getSidenavRoutes([
+      packagesNode?.[0],
+      (id: NodeId) => {
+        this.selectedItem = id;
+      }
+    ]);
+
     this.sideNavRoutes = [
       ...instructions,
       ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
-      ...changeset
+      ...addons,
+      ...packageRoutes
     ];
+    this.currentSideNavRoutes = this.sideNavRoutes;
     //@ts-expect-error
     this.selectedItem = this.router.location.location.pathname;
   }
@@ -63,6 +96,19 @@ export default class ApplicationController extends Controller {
     }
   }
 
+  removeDocsFromDocfyNodes(nodes: DocfyNode[]) {
+    nodes.forEach((node) => {
+      //Changeset-form node
+      let firstChild = node.children.firstObject;
+      if (firstChild?.label === 'Documentation') {
+        let docPages = firstChild.pages;
+        node.pages = docPages;
+        node.children = [];
+      }
+    });
+    return nodes;
+  }
+
   removeDocs(nodes: Item[]) {
     let firstChild = nodes.firstObject;
     if (firstChild?.items?.firstObject?.name === 'Documentation') {
@@ -70,5 +116,65 @@ export default class ApplicationController extends Controller {
       firstChild.items = docItems;
     }
     return nodes;
+  }
+
+  filterSideNav(str: string, nodes: Item[], depth: number = 0): Item[] {
+    //@ts-ignore
+    return nodes.reduce<Item[]>((acum, curr) => {
+      if (depth === 0) {
+        const foundItems = this.filterSideNav(str, curr.items, depth + 1);
+        if (foundItems.length > 0) {
+          acum.push({ ...curr, forceOpen: true, items: foundItems });
+        }
+        return acum;
+      }
+
+      let toAdd: Item = {
+        items: [],
+        name: '',
+        id: '',
+        onClick: true,
+        forceOpen: true
+      };
+
+      curr.items.forEach((item) => {
+        toAdd.items.push(...this.filterSideNav(str, [item], depth + 1));
+      });
+
+      if (
+        curr.name.toLowerCase().indexOf(str?.toLowerCase()) > -1 ||
+        toAdd.items.length > 0
+      ) {
+        toAdd = {
+          ...toAdd,
+          ...curr,
+          items: toAdd.items
+        };
+      }
+
+      if (toAdd.name !== '') {
+        acum.push(toAdd);
+      }
+
+      return acum;
+    }, []);
+  }
+
+  onSearch = (str: string) => {
+    this.searchValue = str;
+    if (!str) {
+      this.currentSideNavRoutes = this.sideNavRoutes;
+    } else {
+      this.currentSideNavRoutes = this.filterSideNav(
+        str,
+        this.sideNavRoutes,
+        0
+      );
+    }
+  };
+
+  get currentVersion() {
+    if (config.environment === 'development') return 'Local';
+    else return config.version;
   }
 }

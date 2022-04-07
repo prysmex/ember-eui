@@ -1,0 +1,10 @@
+<EuiPanel
+  class="euiSplitPanel__inner"
+  @hasShadow={{arg-or-default @hasShadow false}}
+  @color={{arg-or-default @color "transparent"}}
+  @borderRadius={{arg-or-default @borderRadius "none"}}
+  @hasBorder={{arg-or-default @hasBorder false}}
+  ...attributes
+>
+	{{yield}}
+</EuiPanel>

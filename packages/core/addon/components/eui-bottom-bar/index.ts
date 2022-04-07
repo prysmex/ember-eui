@@ -2,7 +2,7 @@ import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { modifier } from 'ember-modifier';
 
-interface EuiButtomBarArgs {
+export interface EuiButtomBarArgs {
   affordForDisplacement: boolean;
   bodyClassName: string;
   position?: 'fixed' | 'static' | 'sticky';

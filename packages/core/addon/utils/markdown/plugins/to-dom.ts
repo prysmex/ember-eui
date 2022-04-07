@@ -82,6 +82,8 @@ export const toDOM = (tree: RehypeNode) => {
           ...properties
         });
         return element;
+      } else if (type === 'raw') {
+        return document.createTextNode(node.value);
       }
       assert(`Unsupported node '${type}'`, false);
     }

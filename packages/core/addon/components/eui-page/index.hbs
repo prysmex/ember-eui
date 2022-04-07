@@ -14,6 +14,7 @@
   }}
     <div
       class={{class-names
+        (if @grow "euiPage--grow" "")
         styling.widthClassName
         componentName="EuiPage"
         paddingSize=(arg-or-default @paddingSize "m")
@@ -21,14 +22,10 @@
       ...attributes
       {{style
         (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
+        (inline-styles min-height="460px;")
       }}
     >
-      {{yield
-        (hash
-          Sidebar=(component "eui-page-side-bar")
-          Body=(component "eui-page-body")
-        )
-      }}
+      {{yield}}
     </div>
   {{/let}}
 {{/let}}

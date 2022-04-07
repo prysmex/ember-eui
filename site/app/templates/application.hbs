@@ -1,38 +1,47 @@
-<EuiHeader @theme="dark">
-  <EuiHeaderSection @side="left">
-    <EuiHeaderSectionItem @border="right">
-      <EuiHeaderLogo @iconType="/assets/elastic.svg">
-        Ember EUI
-      </EuiHeaderLogo>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-  <EuiHeaderSection @side="right">
-    <EuiHeaderSectionItem @border="none">
-      <EuiHeaderLogo
-        class="text-white"
-        @iconType="logoGithub"
-        href="https://github.com/prysmex/ember-eui"
-        target="_blank"
-        rel="noopener noreferrer"
-      />
+<div id="guide">
+  <EuiHeader @theme="dark" @position="fixed">
+    <EuiHeaderSection @side="left">
+      <EuiHeaderSectionItem @border="right">
+        <EuiHeaderLogo @iconType="/assets/elastic.svg">
+          Ember EUI
+        </EuiHeaderLogo>
+      </EuiHeaderSectionItem>
+      <EuiHeaderSectionItem @border="right">
+        <EuiBadge
+          @href="/docs/package/changelog"
+          @color={{if (eq this.currentVersion "Local") "warning"}}
+        >
+          {{this.currentVersion}}
+        </EuiBadge>
+      </EuiHeaderSectionItem>
+    </EuiHeaderSection>
+    <EuiHeaderSection @side="right">
+      <EuiHeaderSectionItem @border="none">
+        <EuiHeaderLogo
+          class="text-white"
+          @iconType="logoGithub"
+          href="https://github.com/prysmex/ember-eui"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
 
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-</EuiHeader>
-<EuiPage @restrictWidth="1280px" class="p-2 pb-12 m-auto">
-  <EuiPageSideBar class="mt-8">
-    <EuiSideNav
-      class="flex-none"
-      @heading="Elastic UI"
-      @isOpenMobile={{this.isOpenMobile}}
-      @toggleOpenOnMobile={{set this "isOpenMobile"}}
-      @items={{this.sideNavRoutes}}
-      @selectedItem={{this.selectedItem}}
-    />
-  </EuiPageSideBar>
-  <EuiPageBody class="flex-1 w-full min-w-0 mt-8 mode-dark" @tagName="div">
-    <EuiPanel class="max-w-full markdown">
+      </EuiHeaderSectionItem>
+    </EuiHeaderSection>
+  </EuiHeader>
+  <EuiPage @paddingSize="none" @grow={{true}}>
+    <EuiPageSideBar @sticky={{true}} @paddingSize="none" class="guideSideNav">
+      <SideNav
+        @heading="Elastic UI"
+        @onSearch={{this.onSearch}}
+        @searchValue={{this.searchValue}}
+        @isOpenMobile={{this.isOpenMobile}}
+        @toggleOpenOnMobile={{set this "isOpenMobile"}}
+        @items={{this.currentSideNavRoutes}}
+        @selectedItem={{this.selectedItem}}
+      />
+    </EuiPageSideBar>
+    <EuiPageBody @panelled={{true}}>
       {{outlet}}
-    </EuiPanel>
-  </EuiPageBody>
-</EuiPage>
+    </EuiPageBody>
+  </EuiPage>
+</div>

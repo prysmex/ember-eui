@@ -2,58 +2,69 @@
 order: 6
 ---
 
+# Loading state
+
+<!-- <EuiText>
+  Use the
+  <EuiCode>isLoading</EuiCode>
+  prop when not all of the accordion's content is ready yet. When using
+  <EuiCode>isLoading</EuiCode>, the content of
+  <EuiCode>extraAction</EuiCode>
+  is replaced with a loading spinner.<br /><br />
+  Manage the content of the accordion using
+  <EuiCode>isLoadingMessage</EuiCode>. By default, it is set to
+  <EuiCode>false</EuiCode>
+  and the content will remain unaltered. Set it to
+  <EuiCode>true</EuiCode>
+  to show a default loading message or pass a node to show a custom loading
+  message.
+</EuiText> -->
+
 ```hbs template
-<EuiTitle>
-  Controlling toggled state
-</EuiTitle>
-<EuiSpacer />
-<EuiText>
-  Typically, the open and closed state of
-  <strong>EuiAccordion</strong>
-  is maintained by the component's internal state. Though, you can manually
-  control it with:
-  <ul>
-    <li><EuiCode>forceState</EuiCode>: Accepts either
-      <EuiCode>'open'</EuiCode>
-      or
-      <EuiCode>'closed'</EuiCode>.</li>
-    <li><EuiCode>onToggle</EuiCode>: A callback function returning
-      <EuiCode>true</EuiCode>
-      if the accordion is open</li>
-  </ul>
-</EuiText>
-<EuiSpacer />
 <EuiFlexGroup>
   <EuiFlexItem>
-    <EuiButton {{on 'click' (fn (mut this.accordionState) 'open')}}>
-      Open
-    </EuiButton>
+    <EuiText>
+      isLoadingMessage:
+    </EuiText>
   </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiButton {{on 'click' (fn (mut this.accordionState) 'closed')}}>
-      Close
-    </EuiButton>
+  <EuiFlexItem @grow={{false}}>
+    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) false)}}>
+      False
+    </EuiButtonEmpty>
+  </EuiFlexItem>
+  <EuiFlexItem @grow={{false}}>
+    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) true)}}>
+      True
+    </EuiButtonEmpty>
+  </EuiFlexItem>
+  <EuiFlexItem @grow={{false}}>
+    <EuiButtonEmpty
+      {{on
+        'click'
+        (fn (mut this.isLoadingMessage) 'This is a custom loading message')
+      }}
+    >
+      Custom
+    </EuiButtonEmpty>
   </EuiFlexItem>
 </EuiFlexGroup>
 <EuiSpacer />
 <EuiAccordion
-  @forceState={{this.accordionState}}
-  @onToggle={{if
-    (eq this.accordionState 'open')
-    (fn (mut this.accordionState) 'closed')
-    (fn (mut this.accordionState) 'open')
-  }}
+  @isLoading={{true}}
+  @isLoadingMessage={{this.isLoadingMessage}}
+  @extraAction={{true}}
 >
   <:buttonContent>
-    I am a controlled accordion
+    Accordion is loading, click to toggle
   </:buttonContent>
   <:content>
     <EuiPanel @color='subdued'>
-      Any content inside of
-      <strong>EuiAccordion</strong>
-      will appear here.
+      Opened content
     </EuiPanel>
   </:content>
+  <:extraAction>
+    <EuiButton size='s'>Extra action!</EuiButton>
+  </:extraAction>
 </EuiAccordion>
 ```
 
@@ -62,6 +73,6 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
 export default class AccordionDemo1Component extends Component {
-  @tracked accordionState = false;
+  @tracked isLoadingMessage = false;
 }
 ```

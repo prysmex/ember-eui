@@ -2,48 +2,100 @@
 order: 9
 ---
 
-```hbs template
-<EuiTitle>
-  Interactive content in the trigger
-</EuiTitle>
-<EuiSpacer />
-<EuiText>
-  Passing interactive content like links, buttons, or form elements as the
-  <EuiCode>buttonContent</EuiCode>, will cause issues with the wrapping button
-  element. To fix this, you can change this wrapping element to a div using
-  <EuiCode>buttonElement="div"</EuiCode>.<br /><br />
+# Styled for forms
 
-  If you don't want the interactive content to trigger the accordion expansion,
-  you will have to apply
-  <EuiCode>e.stopPropagation()</EuiCode>
-  to your element manually.
+<EuiText>
+<p>
+  Since accordions are unstyled by default, EUI also provides a few classes you
+  can add to parts of the EuiAccordion to give it more style, like when using
+  with forms.
+  <ul>
+    <li><EuiCode>.euiAccordionForm</EuiCode>: Applied to the
+      <EuiCode>className</EuiCode>, adds top and bottom borders</li>
+    <li><EuiCode>.euiAccordionForm__button</EuiCode> : Applied to the
+      <EuiCode>buttonClassName</EuiCode>, adds extra padding to the button for
+      better spacing</li>
+    <li><EuiCode>.euiAccordionForm__extraAction</EuiCode> : Applied to the button
+      passed to
+      <EuiCode>extraAction</EuiCode>, will visually hide it until hover or focus</li>
+  </ul>
+</p>
+<p>
+  We also recommend creating a fieldset/legend combination for better
+  accessibility and DOM structure by passing
+  <EuiCode>element="fieldset"</EuiCode>. This will set the entire accordion as a
+  <EuiCode>"fieldset"</EuiCode>
+  and automatically change the buttonElement to a
+  <EuiCode>"legend"</EuiCode>.
+</p>
 </EuiText>
-<EuiSpacer />
-<EuiCallOut @iconType='accessibility' @color='warning'>
-  <:body>
-    <EuiText>
-      Accordions need a focusable button for accessibility, so changing the
-      element to anything other than a button will enforce the display of the
-      arrow.
-    </EuiText>
-  </:body>
-</EuiCallOut>
-<EuiSpacer />
-<EuiAccordion @paddingSize='s' @buttonElement="div">
+
+```hbs template
+<EuiAccordion
+  @paddingSize='l'
+  @element='fieldset'
+  @className='euiAccordionForm'
+  @buttonClassName='euiAccordionForm__button'
+  @extraAction={{true}}
+>
   <:buttonContent>
     <EuiText
-      onClick={{this.onClick}}
-      href='#/layout/accordion#interactive-content-in-the-trigger'
+      @onClick={{this.onClick}}
+      @href='#/layout/accordion#interactive-content-in-the-trigger'
+      @size='xs'
     >
-      This is a nested link
+      <div>
+        <EuiFlexGroup
+          @gutterSize='s'
+          @alignItems='center'
+          @responsive={{false}}
+        >
+          <EuiFlexItem @grow={{false}}>
+            <EuiIcon @type='logoWebhook' @size='m' />
+          </EuiFlexItem>
+
+          <EuiFlexItem>
+            <EuiTitle @size='xs'>
+              <h3>Webhook</h3>
+            </EuiTitle>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+
+        <EuiText @size='s'>
+          <p>
+            <EuiTextColor @color='subdued'>
+              Will send a POST request to www.example.com/some/path/
+            </EuiTextColor>
+          </p>
+        </EuiText>
+      </div>
     </EuiText>
   </:buttonContent>
   <:content>
-    <EuiPanel @color='subdued'>
-      Any content inside of
-      <strong>EuiAccordion</strong>
-      will appear here.
-    </EuiPanel>
+    <EuiForm @component='form'>
+      <EuiFlexGroup>
+        <EuiFlexItem>
+          <EuiFormRow @label='Username'>
+            <EuiFieldText @icon='user' @placeholder='John' />
+          </EuiFormRow>
+        </EuiFlexItem>
+
+        <EuiFlexItem>
+          <EuiFormRow
+            @label='Password'
+            @helpText='Must include one number and one symbol'
+          >
+            <EuiFieldPassword @icon='lock' />
+          </EuiFormRow>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+
+      <EuiSpacer @size='m' />
+
+      <EuiFormRow @label='Body'>
+        <EuiTextArea @placeholder='I am a textarea, put some content in me!' />
+      </EuiFormRow>
+    </EuiForm>
   </:content>
 </EuiAccordion>
 ```
@@ -54,7 +106,6 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class AccordionDemo8Component extends Component {
-
   @action
   onClick(e) {
     e.stopPropagation();

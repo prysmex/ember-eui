@@ -1,0 +1,27 @@
+{{#let
+  (arg-or-default @direction "column")
+  (arg-or-default @responsive (array "xs" "s"))
+  as |direction responsive|
+}}
+  <EuiPanel
+    class={{class-names
+      "euiSplitPanel"
+      (if (eq direction "row") "euiSplitPanel--row")
+      (if this.isResponsive "euiSplitPanel-isResponsive")
+    }}
+    @grow={{arg-or-default @grow false}}
+    @paddingSize={{arg-or-default @paddingSize "none"}}
+    @hasShadow={{@hasShadow}}
+    @color={{@color}}
+    @borderRadius={{@borderRadius}}
+    @hasBorder={{@hasBorder}}
+    {{this.isWithinBreakpointsModifier
+      sizes=responsive
+      isActive=(not (not responsive))
+      setIsWithinBreakpointsValue=(set this "isResponsive")
+    }}
+    ...attributes
+  >
+    {{yield}}
+  </EuiPanel>
+{{/let}}

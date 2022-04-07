@@ -1,34 +1,66 @@
 {{#let
   (arg-or-default @tagName "div")
-  (arg-or-default @restrictWidth false) as |tagName restrictWidth|
+  (arg-or-default @restrictWidth false)
+  (arg-or-default @borderRadius "none")
+  (arg-or-default @paddingSize (if @panelled "l" "none"))
+  as |tagName restrictWidth borderRadius paddingSize|
 }}
+
   {{#let
     (if
       (eq restrictWidth true)
-      (hash widthClassName="euiPageBody--restrictWidth-default")
+      (hash widthClassName="euiPageBody--restrictWidth-custom")
       (if
-        (not-eq restrictWidth false)
-        (hash widthClassName="euiPageBody--restrictWidth-custom" widthStyle=restrictWidth)
+        (eq restrictWidth false)
+        (hash
+          widthClassName="euiPageBody--restrictWidth-default"
+          widthStyle=restrictWidth
+        )
       )
-    ) as |styling|
+    )
+    as |styling|
   }}
-    {{#if (eq tagName "div")}}
-      <div
-        class={{class-names styling.widthClassName "euiPageBody"}}
+    {{#if @panelled}}
+      <EuiPanel
+        class={{class-names
+          componentName="EuiPageBody"
+          borderRadiusSize=borderRadius
+          paddingSize=@paddingSize
+        }}
+        @paddingSize={{paddingSize}}
+        @borderRadius={{borderRadius}}
+        {{!-- @paddingSize={{arg-or-default @paddingSize "none"}} --}}
+        {{!-- @restrictWidth={{@restrictWidth}} --}}
         ...attributes
-        {{style (if styling.widthStyle (inline-styles max-width=styling.widthStyle))}}
+        {{style
+          (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
+        }}
       >
-        {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))}}
-      </div>
+        {{!-- <div
+          class={{class-names
+            componentName="EuiPageBody"
+            borderRadiusSize=borderRadius
+            paddingSize=paddingSize
+          }}
+        > --}}
+        {{yield}}
+        {{! </div> }}
+      </EuiPanel>
     {{else}}
       {{#let (element tagName) as |Tag|}}
         <Tag
-          class={{class-names styling.widthClassName "euiPageBody"}}
-          style={{if styling.widthStyle (inline-styles max-width=styling.widthStyle)}}
+          class={{class-names
+            componentName="EuiPageBody"
+            borderRadiusSize=borderRadius
+            paddingSize=paddingSize
+          }}
+          style={{if
+            styling.widthStyle
+            (inline-styles max-width=styling.widthStyle)
+          }}
           ...attributes
         >
-          {{yield (hash Header=(component "eui-page-header") Content=(component "eui-page-content"))
-          }}
+          {{yield}}
         </Tag>
       {{/let}}
     {{/if}}

@@ -58,3 +58,84 @@ body.euiBody--headerIsFixed {
 .euiBadge__iconButton svg {
   pointer-events: none;
 }
+.euiPanel--restrictWidth-custom {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.guideSideNav__content {
+  padding: 0 24px 24px;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.guideSideNav__content::-webkit-scrollbar-corner,
+.guideSideNav__content::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.guideSideNav__search {
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  padding: 8px 8px 16px;
+}
+
+.guideSideNav {
+  background: linear-gradient(
+      160deg,
+      rgba(211, 218, 230, 0.3) 0,
+      rgba(211, 218, 230, 0.3) 32px,
+      rgba(255, 0, 0, 0) 0
+    ),
+    linear-gradient(
+      175deg,
+      rgba(211, 218, 230, 0.3) 0,
+      rgba(211, 218, 230, 0.3) 16px,
+      rgba(255, 0, 0, 0) 0
+    );
+}
+
+.euiBody--headerIsFixed #guide {
+  min-height: calc(100vh - 48px);
+}
+#guide {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+html {
+  font-family: Inter, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.14286;
+  font-weight: 400;
+  text-size-adjust: 100%;
+  font-kerning: normal;
+  height: 100%;
+  background-color: rgb(248, 250, 253);
+  color: rgb(52, 55, 65);
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .euiBody--headerIsFixed .euiPageSideBar--sticky {
+    max-height: calc(100vh - 48px);
+    top: 48px;
+  }
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .euiBody--headerIsFixed .euiPageSideBar--sticky {
+    max-height: calc(100vh - 48px);
+    top: 48px;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .euiBody--headerIsFixed .euiPageSideBar--sticky {
+    max-height: calc(100vh - 48px);
+    top: 48px;
+  }
+}

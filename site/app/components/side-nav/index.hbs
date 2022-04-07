@@ -1,0 +1,20 @@
+{{!template-lint-disable}}
+<EuiFlexGroup @direction="column" class="h-full" @gutterSize="none">
+  <EuiFlexItem @grow={{false}} class="guideSideNav__search">
+    <EuiFieldSearch
+      @placeholder="Search"
+      @onSearch={{@onSearch}}
+      @incremental={{true}}
+      @clear={{fn @onSearch ""}}
+    />
+  </EuiFlexItem>
+  <EuiFlexItem class="guideSideNav__content">
+    <EuiSideNav
+      @heading={{@heading}}
+      @isOpenMobile={{@isOpenMobile}}
+      @toggleOpenOnMobile={{@toggleOpenOnMobile}}
+      @items={{@items}}
+      @selectedItem={{@selectedItem}}
+    />
+  </EuiFlexItem>
+</EuiFlexGroup>

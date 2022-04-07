@@ -2,7 +2,7 @@ import Helper from '@ember/component/helper';
 import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
 import { inject as service } from '@ember/service';
 
-type Page = {
+export type Page = {
   id: string;
   url: string;
   title: string;
@@ -10,7 +10,7 @@ type Page = {
 
 export type NodeId = string | number | undefined;
 
-type DocfyNode = {
+export type DocfyNode = {
   id: NodeId;
   label: string;
   name: string;
@@ -26,6 +26,7 @@ export type Item = {
   name: string;
   items: Item[];
   onClick: boolean | ((id: NodeId) => void);
+  forceOpen?: boolean;
 };
 
 function compareFunction(a: Item, b: Item) {

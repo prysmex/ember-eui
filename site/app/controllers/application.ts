@@ -31,20 +31,20 @@ export default class ApplicationController extends Controller {
   @tracked themePopover: boolean = false;
   themes: ThemeShape[] = [
     {
-      name: 'Light',
-      key: 'light'
-    },
-    {
-      name: 'Dark',
-      key: 'dark'
-    },
-    {
       name: 'Amsterdam Light',
       key: 'amsterdam_light'
     },
     {
       name: 'Amsterdam Dark',
       key: 'amsterdam_dark'
+    },
+    {
+      name: 'Light',
+      key: 'light'
+    },
+    {
+      name: 'Dark',
+      key: 'dark'
     }
   ];
 

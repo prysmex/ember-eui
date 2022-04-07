@@ -1,0 +1,16 @@
+<EuiPanel
+  id={{@id}}
+  class="docfy-demo"
+  @hasBorder={{true}}
+  @paddingSize="none"
+  @hasShadow={{false}}
+  ...attributes>
+  {{yield
+    (hash
+      Example=(component "docfy-demo/example")
+      Description=(component "docfy-demo/description" id=@id)
+      Snippet=(component "docfy-demo/snippet")
+      Snippets=(component "docfy-demo/snippets")
+    )
+  }}
+</EuiPanel>

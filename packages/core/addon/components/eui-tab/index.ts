@@ -4,18 +4,17 @@ import { modifier } from 'ember-modifier';
 
 const focusTabModifier = modifier(function focusTab(
   _element: HTMLElement,
-  [selectedTabId, isDisabled, focusFn]: [
+  [tabId, selectedTabId, isDisabled, focusFn, onFocusFn]: [
+    string | number,
     Tab,
     boolean,
-    (...args: unknown[]) => void,
-    boolean
+    (...args: unknown[]) => any,
+    (...args: unknown[]) => any
   ]
 ) {
   if (selectedTabId === undefined && !isDisabled) {
-    const fn = () => {
-      focusFn();
-    };
-    scheduleOnce('afterRender', null, fn);
+    scheduleOnce('afterRender', null, focusFn, tabId);
+    scheduleOnce('afterRender', null, onFocusFn, tabId);
   }
 });
 

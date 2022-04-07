@@ -1,0 +1,34 @@
+<EuiPanel
+  class="docfy-demo__snippets"
+  @borderRadius="none"
+  @hasBorder={{false}}
+  @hasShadow={{false}}
+  @paddingSize="none"
+  @color="subdued"
+>
+  <EuiFlexGroup @gutterSize="none" @responsive={{false}} @wrap={{true}} @alignItems="center">
+    <EuiFlexItem>
+      <EuiTabs class="guideSectionTabs" @display="condensed" @size="s" as |Tab|>
+        {{#each this.snippets as |snippet|}}
+          <Tab
+            class="docfy-demo__snippets__tabs__button"
+            @id={{snippet.id}}
+            @onClick={{fn this.setActiveSnippet snippet.id}}
+          >
+            {{snippet.name}}
+          </Tab>
+        {{/each}}
+      </EuiTabs>
+    </EuiFlexItem>
+  </EuiFlexGroup>
+
+  <EuiHorizontalRule @margin="none" />
+
+  {{yield
+    (component
+      "docfy-demo/snippet"
+      registerSnippet=this.registerSnippet
+      active=this.active
+    )
+  }}
+</EuiPanel>

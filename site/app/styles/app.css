@@ -5,7 +5,7 @@
 /* @import './markdown/markdown.css'; */
 /* @import './markdown/structure.css'; */
 /* @import './markdown/dark.css'; */
-@import './markdown/light.css';
+/* @import './markdown/light.css'; */
 @import './highlight.css';
 
 #examples {
@@ -138,4 +138,10 @@ html {
     max-height: calc(100vh - 48px);
     top: 48px;
   }
+}
+
+/* Elastic UI docs specific */
+.guideSectionTabs {
+  padding: 4px 12px;
+  padding-bottom: 0;
 }

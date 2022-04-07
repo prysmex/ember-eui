@@ -1,8 +1,8 @@
 {{#let (arg-or-default @id (unique-id)) as |id|}}
   {{#let
     (eq @selectedTabId id)
-    (fn @onClick id)
-    (fn (optional @focusFn) id)
+    (optional @onClick)
+    (optional @focusFn)
     as |isSelected onClick focusFn|
   }}
     {{#if (and @href (not @disabled))}}
@@ -19,7 +19,8 @@
         disabled={{@disabled}}
         ...attributes
         {{on "click" onClick}}
-        {{this.focusTabModifier @selectedTabId @disabled focusFn}}
+        {{on "click" (fn focusFn id)}}
+        {{this.focusTabModifier id @selectedTabId @disabled focusFn onClick}}
       >
         {{#if (has-block "prepend")}}
           <span className="euiTab__prepend">
@@ -51,7 +52,8 @@
         disabled={{@disabled}}
         ...attributes
         {{on "click" onClick}}
-        {{this.focusTabModifier @selectedTabId @disabled focusFn}}
+        {{on "click" (fn focusFn id)}}
+        {{this.focusTabModifier id @selectedTabId @disabled focusFn onClick}}
       >
         {{#if (has-block "prepend")}}
           <span className="euiTab__prepend">

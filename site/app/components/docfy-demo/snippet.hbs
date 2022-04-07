@@ -1,0 +1,13 @@
+{{#if this.isActive}}
+  <EuiCodeBlock
+    class="docfy-demo__snippet"
+    @language={{this.language}}
+    @paddingSize="m"
+    @isCopyable={{true}}
+    @fontSize="m"
+    @overflowHeight={{400}}
+    ...attributes
+  >
+    {{yield}}
+  </EuiCodeBlock>
+{{/if}}

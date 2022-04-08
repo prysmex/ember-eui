@@ -48,29 +48,6 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui">
       </EuiPanel>
       <EuiSpacer @size="xxl" />
 
-<EuiFlexGroup @justifyContent="spaceAround">
-
-<EuiFlexItem @grow={{false}}>
-
-<EuiText @textAlign='center'><p>
-This project exists thanks to all the people who contribute
-
-</p>
-<p><EuiLink @href="https://github.com/prysmex/ember-eui">
-<strong>Contributing</strong>
-</EuiLink></p>
-</EuiText>
-<EuiImage
-@size='xl'
-@hasShadow={{false}}
-@alt='contrib'
-@url='https://contrib.rocks/image?repo=prysmex/ember-eui'
-/>
-
-</EuiFlexItem>
-
- </EuiFlexGroup>
-
 <EuiSpacer @size="xxl" />
 
 <EuiFlexGrid @columns={{4}} >
@@ -163,6 +140,57 @@ This project exists thanks to all the people who contribute
 </EuiFlexGrid>
 
 <EuiSpacer @size="xl" />
+
+<EuiFlexGroup @justifyContent="spaceAround">
+
+<EuiFlexItem @grow={{false}}>
+
+<EuiText @textAlign='center'><p>
+This project exists thanks to all the people who contribute
+
+</p>
+<p><EuiLink @href="https://github.com/prysmex/ember-eui">
+<strong>Contributing</strong>
+</EuiLink></p>
+</EuiText>
+<EuiImage
+@size='xl'
+@hasShadow={{false}}
+@alt='contrib'
+@url='https://contrib.rocks/image?repo=prysmex/ember-eui'
+/>
+
+</EuiFlexItem>
+
+ </EuiFlexGroup>
+
+  <div>
+  <EuiSpacer @size="xl" />
+        <EuiText @size="xs" @textAlign="center" @color="subdued">
+          <p>
+            EUI is dual-licensed under
+            <EuiLink @href="https://github.com/elastic/eui/blob/main/licenses/ELASTIC-LICENSE-2.0.md">
+              Elastic License 2.0
+            </EuiLink>
+            and
+            <EuiLink @href="https://github.com/elastic/eui/blob/main/licenses/SSPL-LICENSE.md">
+              Server Side Public License, v 1
+            </EuiLink>
+            | Crafted with
+            <span
+              role="img"
+              aria-label="love"
+              className="guideHome__footerHeart"
+            >
+              ❤️
+            </span>
+            by 
+            <EuiLink @href="https://github.com/prysmex/ember-eui" @external={{false}} @target="_blank">
+            Prysmex
+            </EuiLink>
+          </p>
+        </EuiText>
+      </div>
 
 </EuiPageContentBody>
 </EuiPageContent>

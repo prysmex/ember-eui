@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="212" height="106" viewBox="0 0 212 106">
+  <defs>
+    <clipPath id="clip-Modals">
+      <rect width="212" height="106"/>
+    </clipPath>
+  </defs>
+  <g id="Modals" clip-path="url(#clip-Modals)">
+    <rect width="212" height="106" fill="#e2e7f1"/>
+    <rect id="Rectangle_42" data-name="Rectangle 42" width="80" height="80" rx="6" transform="translate(66 13)" fill="#fff"/>
+    <rect id="Rectangle_43" data-name="Rectangle 43" width="26" height="4" transform="translate(78 25)" fill="#d3dae6"/>
+    <rect id="Rectangle_44" data-name="Rectangle 44" width="57" height="4" transform="translate(78 32)" fill="#d3dae6"/>
+    <rect id="Rectangle_45" data-name="Rectangle 45" width="26" height="8" transform="translate(109 78)" fill="#2594e5"/>
+  </g>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="212" height="106" viewBox="0 0 212 106">
+  <defs>
+    <clipPath id="clip-Pages">
+      <rect width="212" height="106"/>
+    </clipPath>
+  </defs>
+  <g id="Pages" clip-path="url(#clip-Pages)">
+    <rect width="212" height="106" fill="#e2e7f1"/>
+    <rect id="Rectangle_26" data-name="Rectangle 26" width="25" height="50" rx="4" transform="translate(10 39)" fill="#d3dae6"/>
+    <rect id="Rectangle_28" data-name="Rectangle 28" width="162" height="50" rx="3" transform="translate(40 39)" fill="#fff"/>
+    <rect id="Rectangle_40" data-name="Rectangle 40" width="192" height="18" rx="3" transform="translate(10 17)" fill="#343741"/>
+    <rect id="Rectangle_41" data-name="Rectangle 41" width="86" height="6" transform="translate(45 45)" fill="#d3dae6"/>
+  </g>
+</svg>

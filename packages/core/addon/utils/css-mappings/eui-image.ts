@@ -6,7 +6,7 @@ export const sizeMapping = {
   l: `${baseClass}--large`,
   xl: `${baseClass}--xlarge`,
   fullWidth: `${baseClass}--fullWidth`,
-  original: `${baseClass}----original`
+  original: `${baseClass}--original`
 };
 
 export const marginMapping = {

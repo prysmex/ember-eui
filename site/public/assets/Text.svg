@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="212" height="106" viewBox="0 0 212 106">
+  <defs>
+    <clipPath id="clip-Text">
+      <rect width="212" height="106"/>
+    </clipPath>
+  </defs>
+  <g id="Text" clip-path="url(#clip-Text)">
+    <rect width="212" height="106" fill="#e2e7f1"/>
+    <rect id="Rectangle_41" data-name="Rectangle 41" width="162" height="11" transform="translate(20 23)" fill="#343741"/>
+    <rect id="Rectangle_46" data-name="Rectangle 46" width="86" height="11" transform="translate(20 42)" fill="#c6ccd9"/>
+    <rect id="Rectangle_47" data-name="Rectangle 47" width="68" height="11" transform="translate(38 60)" fill="#c6ccd9"/>
+    <rect id="Rectangle_48" data-name="Rectangle 48" width="68" height="11" transform="translate(38 78)" fill="#c6ccd9"/>
+    <rect id="Rectangle_49" data-name="Rectangle 49" width="11" height="11" rx="5.5" transform="translate(20 78)" fill="#343741"/>
+    <rect id="Rectangle_50" data-name="Rectangle 50" width="11" height="11" rx="5.5" transform="translate(20 60)" fill="#343741"/>
+  </g>
+</svg>

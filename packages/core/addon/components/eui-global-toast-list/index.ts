@@ -186,7 +186,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
   }
 
   willDestroy(): void {
-    super.willDestroy(...arguments);
+    super.willDestroy();
     if (this.isScrollingAnimationFrame !== 0) {
       window.cancelAnimationFrame(this.isScrollingAnimationFrame);
     }

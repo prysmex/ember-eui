@@ -1,25 +1,54 @@
 ---
-order: 2
+order: 3
 ---
 
-# Controlled tabbed content
+# Bottom border
 
 <EuiText>
-<p>You can also use the <code class="euiCode" data-code-language="text">selectedTab</code> and <code class="euiCode" data-code-language="text">onTabClick</code> props to take complete control over tab selection. This can be useful if you want to change tabs based on user interaction with another part of the UI.</p>
+<p>The <EuiCode>bottomBorder</EuiCode> helps to separate the tab group from the content below and is on by default. However, some components like <a href="/docs/core/docs/layout/flyout">flyouts</a> already provide borders which can act as the divider. In this case you can turn the border off with <EuiCode>bottomBorder<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span></EuiCode>.</p>
 </EuiText>
 
 ```hbs template
-<EuiButton @color='primary' {{on 'click' this.cycleTabs}}>
-  Next tab
+<EuiButton {{on 'click' this.openFlyout}}>
+  Show tabs flyout header
 </EuiButton>
-Outer selected tab:
-{{get (object-at this.tabsIndex2 this.tabsItems1) 'name'}}
-<EuiTabbedContent
-  @tabs={{this.tabsItems1}}
-  @selectedTab={{object-at this.tabsIndex2 this.tabsItems1}}
-/>
-
-<EuiSpacer />
+{{#if this.flyoutOpen}}
+  <EuiFlyout @onClose={{this.closeFlyout}}>
+    <EuiFlyoutHeader @hasBorder={{true}}>
+      <EuiTitle @size='m'>
+        <h2>Flyout header</h2>
+      </EuiTitle>
+      <EuiSpacer @size='s' />
+      <EuiText @color='subdued'>
+        Put navigation items in the header, and cross tab actions in a footer.
+      </EuiText>
+      <EuiSpacer @size='s' />
+      <EuiTabs @bottomBorder={{false}} style='margin-bottom: -24px;'>
+        {{#each this.tabs as |tab|}}
+          <EuiTab
+            {{on 'click' (set this 'selectedTab' tab)}}
+            @isSelected={{eq this.selectedTab.id tab.id}}
+          >
+            {{tab.name}}
+          </EuiTab>
+        {{/each}}
+      </EuiTabs>
+    </EuiFlyoutHeader>
+    <EuiFlyoutBody>
+      {{this.selectedTab.content}}
+    </EuiFlyoutBody>
+    <EuiFlyoutFooter>
+      <EuiFlexGroup @justifyContent='spaceBetween' @gutterSize='s'>
+        <EuiButton {{on 'click' this.closeFlyout}}>
+          Cancel
+        </EuiButton>
+        <EuiButton @fill={{true}} {{on 'click' this.closeFlyout}}>
+          Send
+        </EuiButton>
+      </EuiFlexGroup>
+    </EuiFlyoutFooter>
+  </EuiFlyout>
+{{/if}}
 ```
 
 ```js component
@@ -28,12 +57,24 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class DemoTabsComponent extends Component {
-  @tracked tabsIndex2 = 0;
+  @tracked selectedTab;
+
+  @tracked flyoutOpen = false;
+
+  @action
+  openFlyout() {
+    this.flyoutOpen = true;
+  }
+
+  @action
+  closeFlyout(flyout) {
+    this.flyoutOpen = false;
+  }
 
   constructor() {
     super(...arguments);
 
-    this.tabsItems1 = [
+    this.tabs = [
       {
         id: 'cobalt--id',
         name: 'Cobalt',
@@ -61,19 +102,8 @@ export default class DemoTabsComponent extends Component {
           ' Monosodium glutamate (MSG, also known as sodium glutamate) is the sodium salt of glutamic acid, one of the most abundant naturally occurring non-essential amino acids. Monosodium glutamate is found naturally in tomatoes, cheese and other foods.'
       }
     ];
-  }
 
-  sayMyName(tab) {
-    alert(`I am ${tab.name || tab.id}`);
-  }
-
-  @action
-  cycleTabs() {
-    this.tabsIndex2++;
-
-    if (this.tabsIndex2 >= this.tabsItems2.length) {
-      this.tabsIndex2 = 0;
-    }
+    this.selectedTab = this.tabs[0];
   }
 }
 ```

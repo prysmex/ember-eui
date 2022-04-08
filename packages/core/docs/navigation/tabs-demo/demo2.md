@@ -1,15 +1,46 @@
 ---
-order: 1
+order: 2
 ---
 
-# Tabbed Content
+# Tab sizes
 
 <EuiText>
-<p><strong>EuiTabbedContent</strong> makes it easier to associate tabs with content based on the selected tab. Use the <EuiCode>initialSelectedTab</EuiCode> prop to specify which tab to initially select.</p>
+<p><strong>EuiTabs</strong> allow a <EuiCode>size</EuiCode> prop. In general you should always use the default (medium) size. The small size is best for when placing inside popovers or other small containers. Reserve using the large size for when using as primary page navigation, like inside of <a href="#/layout/page-header"><strong>EuiPageHeader</strong></a>.</p><p>You can also use the <EuiCode>expand</EuiCode> prop to evenly stretch each tab horizontally.</p>
 </EuiText>
 
 ```hbs template
-<EuiTabbedContent @tabs={{this.tabsItems1}} />
+<div>
+  <EuiPopover
+    @ownFocus={{true}}
+    @isOpen={{this.popover}}
+    @anchorPosition='downLeft'
+    @closePopover={{set this 'popover' false}}
+  >
+    <:button>
+      <EuiButton
+        @iconType='arrowDown'
+        @iconSide='right'
+        {{on 'click' (set this 'popover' true)}}
+      >
+        Show Popover
+      </EuiButton>
+    </:button>
+    <:content>
+      <EuiTabs>
+        {{#each this.tabs as |tab|}}
+          <EuiTab
+            @isSelected={{eq this.selectedTab.id tab.id}}
+            {{on 'click' (set this 'selectedTab' tab)}}
+          >
+            {{tab.name}}
+          </EuiTab>
+        {{/each}}
+      </EuiTabs>
+      <EuiSpacer />
+      {{this.selectedTab.content}}
+    </:content>
+  </EuiPopover>
+</div>
 ```
 
 ```js component
@@ -18,39 +49,25 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class DemoTabsComponent extends Component {
-  @tracked tabsIndex2 = 0;
+  @tracked selectedTab;
 
   constructor() {
     super(...arguments);
 
-    this.tabsItems1 = [
+    this.tabs = [
       {
-        id: 'cobalt--id',
-        name: 'Cobalt',
-        content:
-          ' Cobalt is a chemical element with symbol Co and atomic number 27. Like nickel, cobalt is found in the Earth&rsquo;s crust only in chemically combined form, save for small deposits found in alloys of natural meteoric iron. The free element, produced by reductive smelting, is a hard, lustrous, silver-gray metal.'
+        id: 'example1',
+        name: 'Example 1',
+        content: 'Example 1 content.'
       },
       {
-        id: 'dextrose--id',
-        name: 'Dextrose',
-        content:
-          'Intravenous sugar solution, also known as dextrose solution, is a mixture of dextrose (glucose) and water. It is used to treat low blood sugar or water loss without electrolyte loss.'
-      },
-      {
-        id: 'hydrogen--id',
-        name: 'Hydrogen',
-        prepend: 'heatmap',
-        disabled: true,
-        content:
-          'Intravenous sugar solution, also known as dextrose solution, is a mixture of dextrose (glucose) and water. It is used to treat low blood sugar or water loss without electrolyte loss.'
-      },
-      {
-        id: 'monosodium_glutammate--id',
-        name: 'Monosodium Glutamate',
-        content:
-          ' Monosodium glutamate (MSG, also known as sodium glutamate) is the sodium salt of glutamic acid, one of the most abundant naturally occurring non-essential amino acids. Monosodium glutamate is found naturally in tomatoes, cheese and other foods.'
+        id: 'example2',
+        name: 'Example 2',
+        content: 'Example 2 content.'
       }
     ];
+
+    this.selectedTab = this.tabs[0];
   }
 }
 ```

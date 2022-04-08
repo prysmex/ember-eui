@@ -1,45 +1,32 @@
-{{#let
-  (unique-id)
-  (optional @onTabClick)
-  (arg-or-default @autoFocus 'initial')
-  (use-state
-    (get-tab-id
-      (arg-or-default (or @selectedTab @initialSelectedTab) (object-at 0 @tabs))
-    )
-  )
-  as |id onTabClick autoFocus selectedTab|
-}}
+{{#let (unique-id) as |rootId|}}
   <div class={{@className}} ...attributes>
     <EuiTabs
-      @selectedTab={{selectedTab.value}}
       @expand={{@expand}}
       @display={{@display}}
       @size={{@size}}
-      as |EuiTab|
+      {{on "focus" this.initializeFocus}}
+      {{did-insert this.setTabsRef}}
     >
       {{#each @tabs as |tab|}}
         <EuiTab
           @id={{tab.id}}
-          aria-controls={{id}}
-          @selectedTabId={{selectedTab.value}}
-          @onClick={{pipe selectedTab.setState (fn onTabClick tab)}}
-          @focusFn={{selectedTab.setState}}
+          aria-controls={{rootId}}
+          @isSelected={{eq tab.id this.selectedTab.id}}
           @disabled={{tab.disabled}}
+          {{on "click" (fn this.onTabClick tab)}}
         >
           {{tab.name}}
         </EuiTab>
       {{/each}}
     </EuiTabs>
-    {{#let (find-by "id" selectedTab.value @tabs) as |currentTab|}}
-      {{#if currentTab}}
-        <div role="tabpanel" id={{id}} aria-labelledby={{currentTab.id}}>
-          {{#if (has-block "selectedTabContent")}}
-            {{yield currentTab to="selectedTabContent"}}
-          {{else}}
-            {{currentTab.content}}
-          {{/if}}
-        </div>
-      {{/if}}
+    {{#let (find-by "id" this.selectedTab.id @tabs) as |currentTab|}}
+      <div role="tabpanel" id={{rootId}} aria-labelledby={{currentTab.id}}>
+        {{#if (has-block "selectedTabContent")}}
+          {{yield currentTab to="selectedTabContent"}}
+        {{else}}
+          {{currentTab.content}}
+        {{/if}}
+      </div>
     {{/let}}
   </div>
 {{/let}}

@@ -1,36 +1,27 @@
 ---
-order: 4
+order: 1
 ---
 
-# Tab sizes
 
 <EuiText>
-<p><strong>EuiTabs</strong> allow a <EuiCode>size</EuiCode> prop. In general you should always use the default (medium) size. The small size is best for when placing inside popovers or other small containers. Reserve using the large size for when using as primary page navigation, like inside of <a href="#/layout/page-header"><strong>EuiPageHeader</strong></a>.</p>
-<p>You can also use the <EuiCode>expand</EuiCode> prop to evenly stretch each tab horizontally.</p>
+<p><strong>EuiTabs</strong> is a wrapping component that requires <strong>EuiTab</strong> components as direct children. You control the displayed contents and current state through props on EuiTab like <EuiCode>isSelected</EuiCode> and <EuiCode>onClick</EuiCode>.</p><p>Use the <EuiCode>prepend</EuiCode> and <EuiCode>append</EuiCode> tab props to add content before and after the tab label respectively.</p>
 </EuiText>
 
 ```hbs template
-<div>
-  <EuiPopover
-    @ownFocus={{true}}
-    @isOpen={{this.popover}}
-    @anchorPosition='downLeft'
-    @closePopover={{set this 'popover' false}}
-  >
-    <:button>
-      <EuiButton
-        @iconType='arrowDown'
-        @iconSide='right'
-        {{on 'click' (set this 'popover' true)}}
-      >
-        Show Popover
-      </EuiButton>
-    </:button>
-    <:content>
-      <EuiTabbedContent @tabs={{this.tabsItems1}} />
-    </:content>
-  </EuiPopover>
-</div>
+<EuiTabs>
+  {{#each this.tabs as |tab|}}
+    <EuiTab
+      @isSelected={{eq tab.id this.selectedTab.id}}
+      {{on 'click' (set this 'selectedTab' tab)}}
+    >
+      {{tab.name}}
+    </EuiTab>
+  {{/each}}
+</EuiTabs>
+<EuiSpacer />
+<EuiText>
+  {{this.selectedTab.content}}
+</EuiText>
 ```
 
 ```js component
@@ -39,54 +30,38 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class DemoTabsComponent extends Component {
-  @tracked tabsIndex2 = 0;
-
+  @tracked selectedTab = 0;
+  @tracked tabs = [
+    {
+      id: 'cobalt--id',
+      name: 'Cobalt',
+      content:
+        ' Cobalt is a chemical element with symbol Co and atomic number 27. Like nickel, cobalt is found in the Earth&rsquo;s crust only in chemically combined form, save for small deposits found in alloys of natural meteoric iron. The free element, produced by reductive smelting, is a hard, lustrous, silver-gray metal.'
+    },
+    {
+      id: 'dextrose--id',
+      name: 'Dextrose',
+      content:
+        'Intravenous sugar solution, also known as dextrose solution, is a mixture of dextrose (glucose) and water. It is used to treat low blood sugar or water loss without electrolyte loss.'
+    },
+    {
+      id: 'hydrogen--id',
+      name: 'Hydrogen',
+      prepend: 'heatmap',
+      disabled: true,
+      content:
+        'Intravenous sugar solution, also known as dextrose solution, is a mixture of dextrose (glucose) and water. It is used to treat low blood sugar or water loss without electrolyte loss.'
+    },
+    {
+      id: 'monosodium_glutammate--id',
+      name: 'Monosodium Glutamate',
+      content:
+        ' Monosodium glutamate (MSG, also known as sodium glutamate) is the sodium salt of glutamic acid, one of the most abundant naturally occurring non-essential amino acids. Monosodium glutamate is found naturally in tomatoes, cheese and other foods.'
+    }
+  ];
   constructor() {
     super(...arguments);
-
-    this.tabsItems1 = [
-      {
-        id: 'example1',
-        name: 'Example 1',
-        content: 'Example 1 content.'
-      },
-      {
-        id: 'example2',
-        name: 'Example 2',
-        content: 'Example 2 content.'
-      }
-    ];
-
-    this.tabsItems2 = [
-      {
-        id: 'one',
-        name: 'Click me 1!',
-        content: "Same ol' 1 content."
-      },
-      {
-        id: 'two',
-        name: 'Click me 2!',
-        content: "Same ol' 2 content."
-      },
-      {
-        id: 'three',
-        name: 'Click me 3!',
-        content: "Same ol' 3 content."
-      }
-    ];
-  }
-
-  sayMyName(tab) {
-    alert(`I am ${tab.name || tab.id}`);
-  }
-
-  @action
-  cycleTabs() {
-    this.tabsIndex2++;
-
-    if (this.tabsIndex2 >= this.tabsItems2.length) {
-      this.tabsIndex2 = 0;
-    }
+    this.selectedTab = this.tabs[0];
   }
 }
 ```

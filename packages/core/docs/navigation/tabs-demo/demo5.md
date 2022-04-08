@@ -1,20 +1,25 @@
 ---
-order: 4
+order: 5
 ---
 
-# Tabbed content
+# Controlled tabbed content
 
 <EuiText>
-<p><strong>EuiTabbedContent</strong> makes it easier to associate tabs with content based on the selected tab. Use the <EuiCode>initialSelectedTab</EuiCode> prop to specify which tab to initially select.</p>
+<p>You can also use the <code class="euiCode" data-code-language="text">selectedTab</code> and <code class="euiCode" data-code-language="text">onTabClick</code> props to take complete control over tab selection. This can be useful if you want to change tabs based on user interaction with another part of the UI.</p>
 </EuiText>
 
 ```hbs template
-<EuiTabbedContent
-  @tabs={{this.tabs}}
-  @initialSelectedTab={{object-at this.tabs 1}}
-  @autoFocus='selected'
-  @onTabClick={{fn this.sayMyName}}
+<EuiButton
+  @color='primary'
+  {{on 'click' this.cycleTabs}}
+  @iconType='arrowRight'
+  @iconSide='right'
 >
+  Cycle through tabs
+</EuiButton>
+Outer selected tab:
+{{this.selectedTab.name}}
+<EuiTabbedContent @tabs={{this.tabs}} @selectedTab={{this.selectedTab}}>
   <:selectedTabContent as |selected|>
     <EuiSpacer />
     <EuiText>
@@ -22,6 +27,8 @@ order: 4
     </EuiText>
   </:selectedTabContent>
 </EuiTabbedContent>
+
+<EuiSpacer />
 ```
 
 ```js component
@@ -30,7 +37,7 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class DemoTabsComponent extends Component {
-  @tracked tabsIndex2 = 0;
+  @tracked selectedTab;
 
   constructor() {
     super(...arguments);
@@ -63,19 +70,17 @@ export default class DemoTabsComponent extends Component {
           ' Monosodium glutamate (MSG, also known as sodium glutamate) is the sodium salt of glutamic acid, one of the most abundant naturally occurring non-essential amino acids. Monosodium glutamate is found naturally in tomatoes, cheese and other foods.'
       }
     ];
-  }
 
-  sayMyName(tab) {
-    alert(`I am ${tab.name || tab.id}`);
+    this.selectedTab = this.tabs[0];
   }
 
   @action
   cycleTabs() {
-    this.tabsIndex2++;
-
-    if (this.tabsIndex2 >= this.tabsItems2.length) {
-      this.tabsIndex2 = 0;
-    }
+    const tabs = this.tabs;
+    const selectedTabIndex = tabs.indexOf(this.selectedTab);
+    const nextTabIndex =
+      selectedTabIndex < tabs.length - 1 ? selectedTabIndex + 1 : 0;
+    this.selectedTab = tabs[nextTabIndex];
   }
 }
 ```

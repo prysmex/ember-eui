@@ -2,7 +2,7 @@
   <EuiHeader @theme="dark" @position="fixed">
     <EuiHeaderSection @side="left">
       <EuiHeaderSectionItem @border="right">
-        <EuiHeaderLogo @iconType="/assets/elastic.svg">
+        <EuiHeaderLogo @iconType="/assets/euivector.svg">
           Ember EUI
         </EuiHeaderLogo>
       </EuiHeaderSectionItem>
@@ -30,30 +30,35 @@
               @iconType="arrowDown"
               {{on "click" (set this "themePopover" true)}}
             >
-              {{this.currentTheme.name}}
+              {{this.themeManager.currentTheme.name}}
             </EuiButton>
           </:button>
           <:content>
             <div class="euiContextMenuPanel" tabindex="-1">
-              {{#each this.themes as |theme|}}
+              {{#each this.themeManager.themes as |theme|}}
                 <button
                   type="button"
                   class="euiContextMenuItem euiContextMenuItem--small"
-                  {{on "click" (fn this.setTheme theme)}}
+                  {{on "click" (fn this.themeManager.changeTheme theme)}}
                 >
                   <span class="euiContextMenu__itemLayout">
                     <EuiIcon
-                      @type={{if (eq this.currentTheme.key theme.key) "check" "empty"}}
+                      @type={{if
+                        (eq this.themeManager.currentTheme.key theme.key)
+                        "check"
+                        "empty"
+                      }}
                       @iconClasses="euiContextMenu__icon"
                     />
-                    <span class="euiContextMenuItem__text">{{theme.name}}</span>
+                    <span class="euiContextMenuItem__text">
+                      {{theme.name}}
+                    </span>
                   </span>
                 </button>
               {{/each}}
             </div>
           </:content>
         </EuiPopover>
-
       </EuiHeaderSectionItem>
       <EuiHeaderSectionItem @border="none">
         <EuiHeaderLogo
@@ -63,7 +68,6 @@
           target="_blank"
           rel="noopener noreferrer"
         />
-
       </EuiHeaderSectionItem>
     </EuiHeaderSection>
   </EuiHeader>

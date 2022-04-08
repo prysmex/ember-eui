@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="212" height="106" viewBox="0 0 212 106">
+  <defs>
+    <clipPath id="clip-Cards">
+      <rect width="212" height="106"/>
+    </clipPath>
+  </defs>
+  <g id="Cards" clip-path="url(#clip-Cards)">
+    <rect width="212" height="106" fill="#e2e7f1"/>
+    <rect id="Rectangle_26" data-name="Rectangle 26" width="58" height="65" rx="4" transform="translate(10 21)" fill="#2594e5"/>
+    <rect id="Rectangle_28" data-name="Rectangle 28" width="125" height="29" rx="3" transform="translate(77 57)" fill="#fff"/>
+    <path id="Rectangle_30" data-name="Rectangle 30" d="M0,0H58a0,0,0,0,1,0,0V25a4,4,0,0,1-4,4H4a4,4,0,0,1-4-4V0A0,0,0,0,1,0,0Z" transform="translate(10 57)" fill="#fff"/>
+    <rect id="Rectangle_27" data-name="Rectangle 27" width="26" height="4" transform="translate(13 69)" fill="#d3dae6"/>
+    <rect id="Rectangle_31" data-name="Rectangle 31" width="52" height="4" transform="translate(13 62)" fill="#d3dae6"/>
+    <rect id="Rectangle_32" data-name="Rectangle 32" width="125" height="28" rx="3" transform="translate(77 21)" fill="#fff"/>
+    <circle id="Ellipse_9" data-name="Ellipse 9" cx="5" cy="5" r="5" transform="translate(83 27)" fill="#f14e98"/>
+    <rect id="Rectangle_33" data-name="Rectangle 33" width="26" height="4" transform="translate(97 30)" fill="#d3dae6"/>
+    <rect id="Rectangle_34" data-name="Rectangle 34" width="99" height="4" transform="translate(97 37)" fill="#d3dae6"/>
+    <circle id="Ellipse_10" data-name="Ellipse 10" cx="5" cy="5" r="5" transform="translate(83 64)" fill="#02bfb3"/>
+    <rect id="Rectangle_35" data-name="Rectangle 35" width="26" height="4" transform="translate(97 67)" fill="#d3dae6"/>
+    <rect id="Rectangle_36" data-name="Rectangle 36" width="99" height="4" transform="translate(97 74)" fill="#d3dae6"/>
+  </g>
+</svg>

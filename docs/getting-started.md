@@ -1,12 +1,8 @@
-<EuiPageHeader>
-  <EuiPageHeaderSection>
-    <EuiTitle @size="l">
-      <h1>
-        Installation
-      </h1>
-    </EuiTitle>
-  </EuiPageHeaderSection>
-</EuiPageHeader>
+---
+order: 2
+---
+
+<EuiPageHeader @pageTitle="Getting started" />
 
 <EuiSpacer />
 

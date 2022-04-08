@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="212" height="106" viewBox="0 0 212 106">
+  <defs>
+    <clipPath id="clip-Buttons">
+      <rect width="212" height="106"/>
+    </clipPath>
+  </defs>
+  <g id="Buttons" clip-path="url(#clip-Buttons)">
+    <rect width="212" height="106" fill="#e2e7f1"/>
+    <rect id="Rectangle_26" data-name="Rectangle 26" width="82" height="29" rx="4" transform="translate(65 39)" fill="#2594e5"/>
+    <rect id="Rectangle_27" data-name="Rectangle 27" width="68" height="6" transform="translate(72 50)" fill="#fff"/>
+  </g>
+</svg>

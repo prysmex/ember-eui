@@ -1,10 +1,8 @@
 import Route from '@ember/routing/route';
 
-export default class Index extends Route.extend({
-  // anything which *must* be merged to prototype here
-}) {
+export default class Index extends Route {
   // normal class body definition here
   beforeModel() {
-    this.replaceWith('docs.installation');
+    this.replaceWith('docs.introduction');
   }
 }

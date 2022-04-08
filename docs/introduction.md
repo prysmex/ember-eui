@@ -25,7 +25,7 @@
 <p>
 This project aims to implement <EuiLink @href="https://github.com/elastic/eui">
 <strong>The Elastic UI framework (EUI)</strong>
-</EuiLink> css and components in the <EuiLink @external={{true}} @href="https://www.youtube.com/watch?v=GFeRTO1LOuM">ember way</EuiLink>
+</EuiLink> css and components in the <EuiLink @target="_blank" @href="https://www.youtube.com/watch?v=GFeRTO1LOuM">ember way</EuiLink>
 </p>
 
 </EuiText>

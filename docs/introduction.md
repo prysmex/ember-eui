@@ -1,3 +1,6 @@
+---
+  order: 1
+---
 <EuiPageContent
 @hasShadow={{false}}
 @hasBorder={{false}}
@@ -15,14 +18,14 @@
 <EuiSpacer />
 <EuiSpacer />
 <EuiTitle @size="s">
-<h2>All the power of Elastic design system, now on Ember JS</h2>
+<h2>Ember JS components for Elastic design system</h2>
 </EuiTitle>
 <EuiSpacer @size="s" />
 <EuiText @grow={{false}}>
 <p>
 This project aims to implement <EuiLink @href="https://github.com/elastic/eui">
 <strong>The Elastic UI framework (EUI)</strong>
-</EuiLink> css and components in the ember way. 
+</EuiLink> css and components in the <EuiLink @external={{true}} @href="https://www.youtube.com/watch?v=GFeRTO1LOuM">ember way</EuiLink>
 </p>
 
 </EuiText>

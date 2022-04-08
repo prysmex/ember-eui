@@ -10,49 +10,23 @@ import {
 } from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
 import config from 'ember-get-config';
-import { changeTheme } from '../utils/change-theme';
+import type ThemeManager from 'site/services/theme-manager';
 
 interface Props {}
-
-type ThemeShape = {
-  name: string;
-  key: string;
-};
 
 export default class ApplicationController extends Controller {
   @service declare router: RouterService;
   @service docfy: any;
+  @service declare themeManager: ThemeManager;
   @tracked sideNavRoutes: Item[] = [];
   @tracked currentSideNavRoutes: Item[] = [];
   @tracked isOpenMobile = false;
   @tracked selectedItem: NodeId;
   @tracked searchValue?: string;
-  @tracked currentTheme?: ThemeShape | null;
   @tracked themePopover: boolean = false;
-  themes: ThemeShape[] = [
-    {
-      name: 'Amsterdam Light',
-      key: 'amsterdam_light'
-    },
-    {
-      name: 'Amsterdam Dark',
-      key: 'amsterdam_dark'
-    },
-    {
-      name: 'Light',
-      key: 'light'
-    },
-    {
-      name: 'Dark',
-      key: 'dark'
-    }
-  ];
 
   constructor(props?: Props) {
     super(props);
-    this.currentTheme =
-      this.themes.findBy('key', window?.localStorage?.getItem('theme')) ||
-      this.themes[0];
     const root = this.docfy.nested.children.firstObject;
     const instructions = getSidenavRoutes([
       { ...root, children: [] },
@@ -106,8 +80,9 @@ export default class ApplicationController extends Controller {
       }
     ]);
 
+    instructions[0].items = instructions[0].items.reverse();
     this.sideNavRoutes = [
-      ...instructions,
+      ...instructions.sortBy('name:asc'),
       ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
       ...addons,
       ...packageRoutes
@@ -204,11 +179,6 @@ export default class ApplicationController extends Controller {
 
   get currentVersion() {
     if (config.environment === 'development') return 'Local';
-    else return config.version;
+    else return `v${config.version}`;
   }
-
-  setTheme = (theme: ThemeShape) => {
-    changeTheme(theme.key);
-    this.currentTheme = theme;
-  };
 }

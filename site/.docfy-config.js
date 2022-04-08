@@ -9,7 +9,7 @@ module.exports = {
       {
         behavior: 'wrap'
       }
-    ],
+    ]
     // highlight
   ],
   sources: [

@@ -1,9 +1,1 @@
-<EuiPageHeader>
-  <EuiPageHeaderSection>
-    <EuiTitle @size="l">
-      <h1>
-        Comment List
-      </h1>
-    </EuiTitle>
-  </EuiPageHeaderSection>
-</EuiPageHeader>
+<EuiPageHeader @pageTitle="Comment List"/>

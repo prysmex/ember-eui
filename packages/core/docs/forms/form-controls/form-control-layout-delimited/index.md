@@ -2,15 +2,7 @@
 title: Form control layout delimited
 ---
 
-<EuiPageHeader>
-  <EuiPageHeaderSection>
-    <EuiTitle @size="l">
-      <h1>
-        Form control layout delimited
-      </h1>
-    </EuiTitle>
-  </EuiPageHeaderSection>
-</EuiPageHeader>
+<EuiPageHeader @pageTitle="Form control layout delimited"/>
 
 <EuiSpacer />
 

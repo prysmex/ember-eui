@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Basic Empty prompt
-
 <EuiText>
  While no one piece of content is required, each <strong>EuiEmptyPrompt</strong> should contain at least a <EuiCode>title</EuiCode> (wrapped in an HTML heading element) and/or a <EuiCode>description</EuiCode>. They usually contain one or more <EuiCode>actions</EuiCode> that promotes the primary call-to-actions. You can also provide a <EuiCode>footer</EuiCode> to direct users towards making informed decisions.
 </EuiText>

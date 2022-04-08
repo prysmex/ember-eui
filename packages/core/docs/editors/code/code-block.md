@@ -1,12 +1,4 @@
-<EuiPageHeader>
-  <EuiPageHeaderSection>
-    <EuiTitle @size="l">
-      <h1>
-        Code
-      </h1>
-    </EuiTitle>
-  </EuiPageHeaderSection>
-</EuiPageHeader>
+<EuiPageHeader @pageTitle="Code"/>
 
 <EuiSpacer />
 <EuiCallOut>
@@ -25,3 +17,5 @@
   JSX code (often React) has distinct language syntaxes from the base JavaScript and TypeScript languages. For these instances, use <EuiCode @language="jsx">language="jsx"</EuiCode> or <EuiCode @language="tsx">language="tsx"</EuiCode>.
 </p>
 </EuiText>
+
+<EuiHorizontalRule />

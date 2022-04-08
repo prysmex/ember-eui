@@ -3,15 +3,7 @@ order: 1
 title: Checkbox
 ---
 
-<EuiPageHeader>
-  <EuiPageHeaderSection>
-    <EuiTitle @size="l">
-      <h1>
-        Checkbox
-      </h1>
-    </EuiTitle>
-  </EuiPageHeaderSection>
-</EuiPageHeader>
+<EuiPageHeader @pageTitle="Checkbox"/>
 
 <EuiSpacer />
 

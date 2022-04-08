@@ -2,7 +2,6 @@
 order: 1
 ---
 
-# Description list
 
 <EuiText>
 	<p>

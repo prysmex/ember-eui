@@ -10,35 +10,32 @@ order: 2
 </EuiText>
 
 ```hbs template
-<EuiPanel @hasShadow={{false}}>
+<EuiToolTip
+  @position='top'
+  @content='Works on any kind of element &mdash; buttons, inputs, you name it!'
+>
+  <EuiButton>Hover me</EuiButton>
+  <EuiSpacer />
+</EuiToolTip>
+<p>
   <EuiToolTip
     @position='top'
-    @content='Works on any kind of element &mdash; buttons, inputs, you name it!'
+    @content='Here is some tooltip text'
+    @display='block'
   >
-    <EuiButton>Hover me</EuiButton>
-    <EuiSpacer />
+    <EuiButton @fullWidth={{true}}>
+      I am a block level tooltip, applied to a button with fullWidth
+    </EuiButton>
   </EuiToolTip>
-  <p>
-    <EuiToolTip
-      @position='top'
-      @content='Here is some tooltip text'
-      @display='block'
-    >
-      <EuiButton @fullWidth={{true}}>
-        I am a block level tooltip, applied to a button with fullWidth
-      </EuiButton>
-    </EuiToolTip>
-  </p>
-  <EuiSpacer />
-  <EuiToolTip
-    @position='right'
-    @content='Tooltip remains visible when the child is focused'
-  >
-    <EuiFieldText
-      placeholder='Hover over me'
-      aria-label='ToolTip appears on hover'
-    />
-  </EuiToolTip>
-
-</EuiPanel>
+</p>
+<EuiSpacer />
+<EuiToolTip
+  @position='right'
+  @content='Tooltip remains visible when the child is focused'
+>
+  <EuiFieldText
+    placeholder='Hover over me'
+    aria-label='ToolTip appears on hover'
+  />
+</EuiToolTip>
 ```

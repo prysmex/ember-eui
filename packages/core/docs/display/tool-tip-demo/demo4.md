@@ -2,21 +2,18 @@
 order: 4
 ---
 
-```hbs template
-<EuiTitle>
-  Attaching to
-</EuiTitle>
-<EuiSpacer />
+# Attaching to
 
 <EuiText>
+<p>
   If you want to attach and control the ToolTip to something programatically you
   can optionally pass an attachTo string or element and use the content named
   block, also you can pass isShown as true to show the tooltip without user
   interaction
+  </p>
 </EuiText>
 
-<EuiSpacer @size='xl' />
-
+```hbs template
 <EuiButton
   @color='danger'
   id='attachTo1'

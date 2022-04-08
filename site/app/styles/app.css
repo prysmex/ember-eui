@@ -132,3 +132,19 @@ html {
   padding-top: 8px;
   padding-bottom: 8px;
 }
+p>p:last-child{
+  margin: 0px;
+}
+
+.docfy-demo__description__header__edit-url {
+  margin-bottom: 10px;
+  float: right;
+  display: inline-block;
+}
+
+a span.icon-link:hover {
+  
+}
+div.docfy-demo__description__header > h2 > a > span {
+  /* content: '#'; */
+}

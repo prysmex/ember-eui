@@ -23,25 +23,3 @@ order: 1
   </:footer>
 </EuiEmptyPrompt>
 ```
-
-```js component
-import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-
-export default class DemoIconComponent extends Component {
-  tabs = [
-    { label: 'Tab 1', isSelected: true },
-    {
-      label: 'Tab 2',
-      onClick: this.setShowBottomBar
-    }
-  ];
-  @tracked showing = false;
-
-  @action
-  setSHowBottomBar() {
-    this.showing = !this.showing;
-  }
-}
-```

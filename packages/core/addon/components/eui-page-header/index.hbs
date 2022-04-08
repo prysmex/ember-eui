@@ -12,9 +12,9 @@
       @alignItems (concat "euiPageHeader--" @alignItems) "euiPageHeader--center"
     )
     (if
-      @restrictWidth
-      "euiPageHeader--restrictWidth-custom"
+      (eq @restrictWidth true)
       "euiPageHeader--restrictWidth-default"
+      (if (not-eq @restrictWidth false) "euiPageHeader--restrictWidth-custom")
     )
     componentName="EuiPageHeader"
     paddingSize=@paddingSize

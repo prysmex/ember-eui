@@ -148,3 +148,15 @@ a span.icon-link:hover {
 div.docfy-demo__description__header > h2 > a > span {
   /* content: '#'; */
 }
+
+button {
+  font-family: Inter, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+}
+
+.guideSectionTabs__tab>* {
+  font-weight: 500!important;
+}
+
+.text-white {
+  color: white;
+}

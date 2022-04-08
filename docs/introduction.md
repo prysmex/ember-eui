@@ -157,6 +157,7 @@ This project exists thanks to all the people who contribute
 </EuiLink></p>
 </EuiText>
 <EuiImage
+style="overflow-x: auto";
 @size='xl'
 @hasShadow={{false}}
 @alt='contrib'

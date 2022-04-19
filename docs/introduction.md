@@ -1,6 +1,7 @@
 ---
-  order: 1
+order: 1
 ---
+
 <EuiPageContent
 @hasShadow={{false}}
 @hasBorder={{false}}
@@ -32,7 +33,7 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui">
 <EuiSpacer @size="l" />
 <EuiFlexGroup @gutterSize="s" @wrap={{true}} @responsive={{false}}>
 <EuiFlexItem grow={{false}}>
-<EuiLink @href="/docs/installation">
+<EuiLink @href="/docs/getting-started">
 <strong>Getting started</strong>
 </EuiLink>
 </EuiFlexItem>

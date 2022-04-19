@@ -1,3 +1,6 @@
+
+<img src="site/public/assets/euivector.svg" alt="logo" height="200">
+
 # @ember-eui monorepo
 
 This is the @ember-eui monorepo.

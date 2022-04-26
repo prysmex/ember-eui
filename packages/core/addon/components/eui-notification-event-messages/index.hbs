@@ -1,0 +1,49 @@
+<div
+  class="euiNotificationEventMessages"
+  ...attributes
+>
+  {{#let
+    @messages.firstObject
+    (without @messages.firstObject @messages)
+  as |first rest|}}
+    
+    {{#if first}}
+      <EuiText @size="s" @color="subdued">
+        <p>{{first}}</p>
+      </EuiText>
+    {{/if}}
+
+    {{#if rest}}
+
+      <EuiAccordion
+        {{!-- onToggle={{@onToggle}} --}}
+        {{!-- @buttonProps={{hash
+          aria-label = accordionAriaLabelButtonText
+        }} --}}
+        id={{concat 'euiNotificationEventMessagesAccordion' (unique-id)}}
+        class="euiNotificationEventMessages__accordion"
+        @buttonClassName="euiNotificationEventMessages__accordionButton"
+        @arrowDisplay="none"
+      >
+        <:buttonContent as |isOpen|>
+          {{@accordionButtonText}}
+          {{#unless isOpen}}
+            ({{@accordionHideText}})
+          {{/unless}}
+        </:buttonContent>
+
+        <:content>
+          <div class="euiNotificationEventMessages__accordionContent">
+            {{#each rest as |msg|}}
+              <EuiText @size="s" @color="subdued">
+                <p>{{msg}}</p>
+              </EuiText>
+            {{/each}}
+          </div>
+        </:content>
+
+      </EuiAccordion>
+    {{/if}}
+
+  {{/let}}
+</div>

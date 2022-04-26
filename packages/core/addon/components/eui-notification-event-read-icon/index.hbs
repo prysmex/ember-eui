@@ -1,0 +1,21 @@
+{{!-- ToDo: title and aria-label translations --}}
+<div
+  class={{class-names
+    'euiNotificationEventReadIcon'
+    (if @isRead 'euiNotificationEventReadIcon--isRead')
+  }}
+   ...attributes
+  >
+  <EuiIcon
+    @type="dot"
+    aria-label={{if
+      @isRead
+      (concat @eventName ' is read')
+      (concat @eventName ' is unread')
+    }}
+    title={{if @isRead 'Read' 'Unread'}}
+    @color="primary"
+    data-test-subj={{concat @id '-notificationEventReadIcon'}}
+    id={{@id}}
+  />
+</div>

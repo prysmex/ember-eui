@@ -11,7 +11,7 @@
     {{/if}}
 
     {{#if @showCopyButton}}
-      <div className="euiCodeBlock__copyButton">
+      <div class="euiCodeBlock__copyButton">
         <EuiCopy @textToCopy={{@textToCopy}} @afterMessage="Copied" as |copy|>
           <EuiButtonIcon
             {{on "click" copy}}

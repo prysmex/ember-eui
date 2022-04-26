@@ -40,12 +40,12 @@
         {{on "click" this.onToggle}}
       >
         <span class={{this.buttonContentClasses}}>
-          {{yield to="buttonContent"}}
+          {{yield this.isOpen to="buttonContent"}}
         </span>
       </ButtonElement>
       {{#if (and @extraAction (not this.isLoading))}}
         <div class="euiAccordion__optionalAction">
-          {{yield to="extraAction"}}
+          {{yield this.isOpen to="extraAction"}}
         </div>
       {{else if this.isLoading}}
         <div class="euiAccordion__optionalAction">

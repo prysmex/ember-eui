@@ -1,0 +1,89 @@
+{{#let (unique-id) as |id|}}
+  <article
+    aria-labelledby={{id}}
+    key={{@id}}
+    class={{class-names
+      'euiNotificationEvent'
+      (if (eq (type-of @isRead) "boolean") 'euiNotificationEvent--withReadState')
+    }}
+    ...attributes
+  >
+
+    {{#if (eq (type-of @isRead) "boolean")}}
+      <div class="euiNotificationEvent__readButton">
+        {{#if @onRead}}
+          <EuiNotificationEventReadButton
+            @id={{@id}}
+            @isRead={{@isRead}}
+            @eventName={{@title}}
+            {{on "click" @onRead}}
+          />
+        {{else}}
+          <EuiNotificationEventReadIcon
+            @id={{@id}}
+            @isRead={{@isRead}}
+            @eventName={{@title}}
+          />
+        {{/if}}
+      </div>
+    {{/if}}
+
+    <div class="euiNotificationEvent__content">
+      <EuiNotificationEventMeta
+        @id={{@id}}
+        @type={{@type}}
+        @event={{@title}}
+        @severity={{@severity}}
+        @badgeColor={{@badgeColor}}
+        @iconType={{@iconType}}
+        @iconAriaLabel={{@iconAriaLabel}}
+        @time={{@time}}
+        @onOpenContextMenu={{@onOpenContextMenu}}
+        @eventName={{@title}}
+        @hasContextMenu={{has-block 'contextMenu'}}
+      >
+        {{yield to='contextMenu'}}
+      </EuiNotificationEventMeta>
+
+      {{#let
+        (class-names
+          'euiNotificationEvent__title'
+          (if @isRead 'euiNotificationEvent__title--isRead')
+        )
+        (arg-or-default
+          @headingLevel
+          'h2'
+        )
+      as |classNames headingLevel|}}
+        {{#if @onClickTitle}}
+          <EuiLink
+            @onClick={{@onClickTitle}}
+          >
+            <TextBlock @tagName={{headingLevel}} id={{id}} class={{classNames}}>
+              {{@title}}
+            </TextBlock>
+          </EuiLink>
+        {{else if @title}}
+          <TextBlock @tagName={{headingLevel}} id={{id}} class={{classNames}}>
+            {{@title}}
+          </TextBlock>
+        {{/if}}
+      {{/let}}
+
+      <EuiNotificationEventMessages
+        @messages={{@messages}}
+        @eventName={{@title}}
+        @accordionButtonText={{@accordionButtonText}}
+        @accordionHideText={{@accordionHideText}}
+      />
+
+      {{#if (has-block 'primaryAction')}}
+        <div class="euiNotificationEvent__primaryAction">
+          {{yield to='primaryAction'}}
+        </div>
+      {{/if}}
+
+    </div>
+
+  </article>
+{{/let}}

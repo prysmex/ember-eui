@@ -3,8 +3,8 @@
   ...attributes
 >
   {{#let
-    @messages.firstObject
-    (without @messages.firstObject @messages)
+    (object-at 0 @messages)
+    (without (object-at 0 @messages) @messages)
   as |first rest|}}
     
     {{#if first}}

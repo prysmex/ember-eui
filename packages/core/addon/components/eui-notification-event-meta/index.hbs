@@ -1,7 +1,7 @@
-<div 
+<div
   class={{class-names
     'euiNotificationEventMeta'
-    (if @onOpenContextMenu 'euiNotificationEventMeta--hasContextMenu')
+    (if @hasContextMenu 'euiNotificationEventMeta--hasContextMenu')
   }}
   ...attributes
 >
@@ -36,7 +36,7 @@
     <span class="euiNotificationEventMeta__time">{{@time}}</span>
   </div>
 
-  {{#if @onOpenContextMenu}}
+  {{#if @hasContextMenu}}
     {{#let (unique-id) (use-state false) as |randomPopoverId isPopoverOpen|}}
       <div class="euiNotificationEventMeta__contextMenuWrapper">
         <EuiPopover
@@ -66,7 +66,7 @@
           <:content>
             <div
               {{on 'click' (queue
-                @onOpenContextMenu
+                (optional @onOpenContextMenu)
                 (fn isPopoverOpen.setState false)
               )}}
               role="button"

@@ -2,34 +2,16 @@
 order: 1
 ---
 
-# Notification event
+# Basic
 
 ```hbs template
-
-<EuiTabs>
-  {{#each this.tabs as |tab|}}
-
-    <EuiTab
-      @isSelected={{eq tab.id this.selectedTab.id}}
-      {{on 'click' (fn this.onTabSelection tab)}}
-    >
-      {{tab.name}}
-    </EuiTab>
-  {{/each}}
-</EuiTabs>
-
-<EuiSpacer/>
-
 {{#let (slice
   0 this.messagesCount this.messages
 ) as |msgs|}}
   <EuiPanel @paddingSize='xs'>
     <EuiNotificationEvent
-      @isRead={{this.isRead}}
-      @onRead={{this.selectedTab.onRead}}
       @type='Hey!'
       @badgeColor='primary'
-      @onOpenContextMenu={{this.onOpenContextMenu}}
       @time='1 min'
       @title='Some nice title'
       @messages={{msgs}}
@@ -37,28 +19,16 @@ order: 1
       @accordionButtonText={{concat '+ ' (sub msgs.length 1) ' more'}}
       @accordionHideText='hide'
     >
-      <:contextMenu>
-        <!-- ToDo Missing EuiContextMenu component -->
-        <button class="euiContextMenuItem" type="button">
-          <span class="euiContextMenu__itemLayout">
-            <span class="euiContextMenuItem__text">Mark as read</span>
-          </span>
-        </button>
-        <button class="euiContextMenuItem" type="button">
-          <span class="euiContextMenu__itemLayout">
-            <span class="euiContextMenuItem__text">Delete</span>
-          </span>
-        </button>
-      </:contextMenu>
 
-    <!-- <:primaryAction>
+    <:primaryAction>
       <EuiButtonEmpty
+        style="display: {{if this.showPrimaryAction '' 'none'}};"
         @flush="left"
         @size="s"
       >
         Do something!
       </EuiButtonEmpty>
-    </:primaryAction> -->
+    </:primaryAction>
 
     </EuiNotificationEvent>
   </EuiPanel>
@@ -76,6 +46,11 @@ Messages count:
   @showLabels={{true}}
 />
 
+<EuiSwitch
+  @label='Show primary action'
+  @checked={{this.showPrimaryAction}}
+  @onChange={{pick 'target.checked' (set this 'showPrimaryAction')}}
+/>
 ```
 
 ```js component
@@ -83,10 +58,9 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DemoCardComponent extends Component {
-  @tracked selectedTab;
-  @tracked isRead;
+export default class NotificationEvent1Component extends Component {
   @tracked messagesCount;
+  @tracked showPrimaryAction;
   
   messages = [
     'This is a message',
@@ -94,50 +68,16 @@ export default class DemoCardComponent extends Component {
     'hmmm...'
   ]
 
-  tabs = [
-    {
-      id: 'basic',
-      name: 'Basic',
-      isRead: null
-    },
-    {
-      id: 'icon',
-      name: 'Icon',
-      isRead: false
-    },
-    {
-      id: 'button',
-      name: 'Button',
-      isRead: false,
-      onRead: this.onRead
-    }
-  ];
-
   constructor() {
     super(...arguments);
     this.messagesCount = 1;
-    this.selectedTab = this.tabs[0];
-    this.isRead = null;
-  }
-
-  @action
-  onRead() {
-    this.isRead = !this.isRead
-  }
-
-  @action
-  onTabSelection(obj) {
-    this.isRead = obj.isRead;
-    this.selectedTab = obj
-  }
-
-  @action
-  onOpenContextMenu(){
+    this.showPrimaryAction = false;
   }
 
   @action
   setMessagesCount(e){
     this.messagesCount = e.target.value;
   }
+
 }
 ```

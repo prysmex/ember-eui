@@ -14,7 +14,7 @@
       (concat @eventName ' is unread')
     }}
     title={{if @isRead 'Read' 'Unread'}}
-    @color="primary"
+    @color={{arg-or-default @readIconColor 'primary'}}
     data-test-subj={{concat @id '-notificationEventReadIcon'}}
     id={{@id}}
   />

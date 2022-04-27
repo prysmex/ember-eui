@@ -23,6 +23,7 @@
             @id={{@id}}
             @isRead={{@isRead}}
             @eventName={{@title}}
+            @readIconColor={{@readIconColor}}
           />
         {{/if}}
       </div>
@@ -41,6 +42,7 @@
         @onOpenContextMenu={{@onOpenContextMenu}}
         @eventName={{@title}}
         @hasContextMenu={{has-block 'contextMenu'}}
+        @iconColor={{@iconColor}}
       >
         {{yield to='contextMenu'}}
       </EuiNotificationEventMeta>
@@ -55,9 +57,10 @@
           'h2'
         )
       as |classNames headingLevel|}}
-        {{#if @onClickTitle}}
+        {{#if (or @href @onClickTitle)}}
           <EuiLink
             @onClick={{@onClickTitle}}
+            @href={{@href}}
           >
             <TextBlock @tagName={{headingLevel}} id={{id}} class={{classNames}}>
               {{@title}}

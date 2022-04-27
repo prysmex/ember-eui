@@ -21,3 +21,7 @@
 .ember-basic-dropdown-content {
   z-index: 99999
 }
+
+.euiBadge__iconButton svg {
+  pointer-events: none;
+}

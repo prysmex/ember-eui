@@ -1,148 +1,114 @@
-<div
-  class={{class-names
-    "euiPageHeaderContent"
-    (if @restrictWidth "euiPanel--restrictWidth-custom" "")
-  }}
-  {{style (inline-styles width=@restrictWidth)}}
-  ...attributes
->
-
-  {{#if (eq @alignItems "top")}}
-    <EuiFlexGroup
-      class="euiPageHeaderContent__top"
-      @responsive={{@responsive}}
-      @alignItems={{if @pageTitle "flexStart" "baseline"}}
-      @gutterSize="l"
-    >
-      {{#if (eq @responsive "reverse")}}
-        {{#if @rightSideItems}}
-          <EuiFlexItem @grow={{false}}>
-            <EuiFlexGroup
-              @wrap={{true}}
-              @responsive={{false}}
-              {{! {...rightSideGroupProps} }}
-              class="euiPageHeaderContent__rightSideItems"
-            >
-              {{!-- {{#each @rightSideItems as |rightSideItem|}}
-                {{component rightSideItem}}
-              {{/each}} --}}
-            </EuiFlexGroup>
-          </EuiFlexItem>
-        {{/if}}
-        <EuiFlexItem>
-          <EuiTitle {{! {...pageTitleProps}  }} @size="l">
-            <h1>
-              {{#if @iconType}}
-                <EuiIcon
-                  @size="xl"
-                  {{! {...iconProps} }}
-                  @type={{@iconType}}
-                  class="euiPageHeaderContent__titleIcon"
-                />
-              {{/if}}
-              {{#if @pageTitle}}
-                {{@pageTitle}}
-              {{/if}}
-            </h1>
-          </EuiTitle>
-
-          {{#if @tabs}}
-            <EuiSpacer />
-            <EuiTabs>
-              {{#each @tabs as |tab|}}
-                <EuiTab
-                  @isSelected={{tab.isSelected}}
-                  @onClick={{optional tab.onClick}}
-                >
-                  {{tab.label}}
-                </EuiTab>
-              {{/each}}
-            </EuiTabs>
-          {{/if}}
-        </EuiFlexItem>
-      {{else}}
-        <EuiFlexItem>
-          <EuiTitle {{! {...pageTitleProps}  }} @size="l">
-            <h1>
-              {{#if @iconType}}
-                <EuiIcon
-                  @size="xl"
-                  {{! {...iconProps} }}
-                  @type={{@iconType}}
-                  class="euiPageHeaderContent__titleIcon"
-                />
-              {{/if}}
-              {{#if @pageTitle}}
-                {{@pageTitle}}
-              {{/if}}
-            </h1>
-          </EuiTitle>
-
-          {{#if @tabs}}
-            <EuiSpacer />
-            <EuiTabs>
-              {{#each @tabs as |tab|}}
-                <EuiTab
-                  @isSelected={{tab.isSelected}}
-                  @onClick={{optional tab.onClick}}
-                >
-                  {{tab.label}}
-                </EuiTab>
-              {{/each}}
-            </EuiTabs>
-          {{/if}}
-        </EuiFlexItem>
-        {{#if @rightSideItems}}
-          <EuiFlexItem @grow={{false}}>
-            <EuiFlexGroup
-              @wrap={{true}}
-              @responsive={{false}}
-              {{! {...rightSideGroupProps} }}
-              class="euiPageHeaderContent__rightSideItems"
-            >
-              {{!-- {{#each @rightSideItems as |rightSideItem|}}
-                {{component rightSideItem}}
-              {{/each}} --}}
-            </EuiFlexGroup>
-          </EuiFlexItem>
-        {{/if}}
-      {{/if}}
-    </EuiFlexGroup>
-    {{#if @bottomContent}}
-      <div class="euiPageHeaderContent__bottom">
-        {{@bottomContent}}
-      </div>
+{{#let
+  (arg-or-default @responsive true)
+  (arg-or-default @alignItems "top")
+  (use-state false)
+  (and (arg-or-default @isDescriptionProvided true) (has-block "description"))
+  (and
+    (arg-or-default @isRightSideItemsProvided true) (has-block "rightSideItems")
+  )
+  (or
+    (and (arg-or-default @isPageTitleProvided true) (has-block "pageTitle"))
+    @pageTitle
+  )
+  (and (arg-or-default @isDefaultProvided true) (has-block "default"))
+  as |responsive alignItems isResponsiveBreakpoint hasDescription hasRightSideItems hasPageTitle hasDefault|
+}}
+  <div
+    class={{class-names
+      "euiPageHeaderContent"
+      (if @restrictWidth "euiPanel--restrictWidth-custom" "")
+    }}
+    {{style (inline-styles width=@restrictWidth)}}
+    {{use-is-within-breakpoints
+      sizes=(array "xs" "s")
+      isActive=(not (not responsive))
+      setIsWithinBreakpointsValue=isResponsiveBreakpoint.setState
+    }}
+    ...attributes
+  >
+    {{#if @breadcrumbs}}
+      <EuiBreadcrumbs
+        @breadcrumbs={{@breadcrumbs}}
+        class={{@breadcrumbProps.className}}
+      />
+      <EuiSpacer @size="s" />
     {{/if}}
-  {{else}}
-    <EuiFlexGroup
-      @responsive={{@responsive}}
-      class="euiPageHeaderContent__top"
-      @alignItems={{if (eq @alignItems "bottom") "flexEnd" @alignItems}}
-      gutterSize="l"
-    >
-      <EuiFlexItem>
-        {{#if @bottomContent}}
-          <div class="euiPageHeaderContent__bottom">
-            {{@bottomContent}}
-            <EuiTitle {{! {...pageTitleProps}  }} @size="l">
-              <h1>
+    {{#if (or (eq alignItems "top") isResponsiveBreakpoint.value)}}
+      <EuiFlexGroup
+        class="euiPageHeaderContent__top"
+        @responsive={{not (not responsive)}}
+        @alignItems={{if hasPageTitle "flexStart" "baseline"}}
+        @gutterSize="l"
+      >
+        {{#if (and isResponsiveBreakpoint.value (eq responsive "reverse"))}}
+          {{#if hasRightSideItems}}
+            <EuiFlexItem @grow={{false}}>
+              <EuiFlexGroup
+                @wrap={{true}}
+                @responsive={{false}}
+                class={{class-names
+                  "euiPageHeaderContent__rightSideItems"
+                  @rightSideGroupProps.className
+                }}
+              >
+                {{yield
+                  (component "eui-flex-item" grow=false)
+                  to="rightSideItems"
+                }}
+              </EuiFlexGroup>
+            </EuiFlexItem>
+          {{/if}}
+          <EuiFlexItem>
+            {{#if (and (not hasPageTitle) @tabs)}}
+              <EuiTabs @size="xl" @display="condensed" @bottomBorder={{false}}>
+                {{#each @tabs as |tab|}}
+                  <EuiTab
+                    @isSelected={{tab.isSelected}}
+                    @href={{tab.href}}
+                    {{on "click" (optional tab.onClick)}}
+                  >
+                    {{tab.label}}
+                  </EuiTab>
+                {{/each}}
+              </EuiTabs>
+            {{/if}}
+            {{#if hasPageTitle}}
+              <EuiTitle
+                class={{@pageTitleProps.className}}
+                @size="l"
+                @tagName="h1"
+              >
                 {{#if @iconType}}
                   <EuiIcon
                     @size="xl"
-                    {{! {...iconProps} }}
                     @type={{@iconType}}
-                    class="euiPageHeaderContent__titleIcon"
+                    @iconClasses={{class-names
+                      "euiPageHeaderContent__titleIcon"
+                      @iconProps.className
+                    }}
                   />
                 {{/if}}
                 {{#if @pageTitle}}
                   {{@pageTitle}}
+                  {{yield to="pageTitle"}}
                 {{/if}}
-              </h1>
-            </EuiTitle>
+              </EuiTitle>
+            {{/if}}
 
-            {{#if @tabs}}
+            {{#if (and hasPageTitle @tabs)}}
               <EuiSpacer />
-              <EuiTabs>
+            {{/if}}
+            {{#if hasDescription}}
+              <EuiText @grow={{false}}>
+                {{@description}}
+                {{yield to="description"}}
+              </EuiText>
+            {{/if}}
+          </EuiFlexItem>
+        {{else}}
+          <EuiFlexItem>
+            {{#if (and (not hasPageTitle) @tabs)}}
+              <EuiTabs @size="xl" @display="condensed" @bottomBorder={{false}}>
                 {{#each @tabs as |tab|}}
                   <EuiTab
                     @isSelected={{tab.isSelected}}
@@ -153,33 +119,64 @@
                 {{/each}}
               </EuiTabs>
             {{/if}}
-            {{#if @description}}
+            {{#if hasPageTitle}}
+              <EuiTitle
+                class={{@pageTitleProps.className}}
+                @size="l"
+                @tagName="h1"
+              >
+                {{#if @iconType}}
+                  <EuiIcon
+                    @size="xl"
+                    @type={{@iconType}}
+                    @iconClasses={{class-names
+                      "euiPageHeaderContent__titleIcon"
+                      @iconProps.className
+                    }}
+                  />
+                {{/if}}
+                {{#if @pageTitle}}
+                  {{@pageTitle}}
+                  {{yield to="pageTitle"}}
+                {{/if}}
+              </EuiTitle>
+            {{/if}}
+
+            {{#if (or hasPageTitle @tabs)}}
               <EuiSpacer />
+            {{/if}}
+            {{#if hasDescription}}
               <EuiText @grow={{false}}>
-                <p>{{@description}}</p>
+                {{@description}}
+                {{yield to="description"}}
               </EuiText>
             {{/if}}
-          </div>
-        {{else}}
-          <EuiTitle {{! {...pageTitleProps}  }} @size="l">
-            <h1>
-              {{#if @iconType}}
-                <EuiIcon
-                  @size="xl"
-                  {{! {...iconProps} }}
-                  @type={{@iconType}}
-                  class="euiPageHeaderContent__titleIcon"
-                />
-              {{/if}}
-              {{#if @pageTitle}}
-                {{@pageTitle}}
-              {{/if}}
-            </h1>
-          </EuiTitle>
-
-          {{#if @tabs}}
-            <EuiSpacer />
-            <EuiTabs>
+          </EuiFlexItem>
+          {{#if hasRightSideItems}}
+            <EuiFlexItem @grow={{false}}>
+              <EuiFlexGroup
+                @wrap={{true}}
+                @responsive={{false}}
+                class={{class-names
+                  "euiPageHeaderContent__rightSideItems"
+                  @rightSideGroupProps.className
+                }}
+              >
+                {{yield
+                  (component "eui-flex-item" grow=false)
+                  to="rightSideItems"
+                }}
+              </EuiFlexGroup>
+            </EuiFlexItem>
+          {{/if}}
+        {{/if}}
+      </EuiFlexGroup>
+      {{#if (or hasDefault (and hasPageTitle @tabs))}}
+        <div class="euiPageHeaderContent__bottom">
+          <EuiSpacer />
+          {{yield to="default"}}
+          {{#if hasPageTitle}}
+            <EuiTabs @size="l" @display="condensed" @bottomBorder={{false}}>
               {{#each @tabs as |tab|}}
                 <EuiTab
                   @isSelected={{tab.isSelected}}
@@ -190,30 +187,98 @@
               {{/each}}
             </EuiTabs>
           {{/if}}
-          {{#if @description}}
+        </div>
+      {{/if}}
+    {{else}}
+      <EuiFlexGroup
+        class="euiPageHeaderContent__top"
+        @responsive={{not (not responsive)}}
+        @alignItems={{if (eq alignItems "bottom") "flexEnd" alignItems}}
+        @gutterSize="l"
+      >
+        <EuiFlexItem>
+          {{#if (and (not hasPageTitle) @tabs)}}
+            <EuiTabs @size="xl" @display="condensed" @bottomBorder={{false}}>
+              {{#each @tabs as |tab|}}
+                <EuiTab
+                  @isSelected={{tab.isSelected}}
+                  @href={{tab.href}}
+                  {{on "click" (optional tab.onClick)}}
+                >
+                  {{tab.label}}
+                </EuiTab>
+              {{/each}}
+            </EuiTabs>
+          {{/if}}
+          {{#if hasPageTitle}}
+            <EuiTitle
+              class={{@pageTitleProps.className}}
+              @size="l"
+              @tagName="h1"
+            >
+              {{#if @iconType}}
+                <EuiIcon
+                  @size="xl"
+                  @type={{@iconType}}
+                  @iconClasses={{class-names
+                    "euiPageHeaderContent__titleIcon"
+                    @iconProps.className
+                  }}
+                />
+              {{/if}}
+              {{#if @pageTitle}}
+                {{@pageTitle}}
+                {{yield to="pageTitle"}}
+              {{/if}}
+            </EuiTitle>
+          {{/if}}
+
+          {{#if (and hasPageTitle @tabs)}}
             <EuiSpacer />
+          {{/if}}
+          {{#if hasDescription}}
             <EuiText @grow={{false}}>
-              <p>{{@description}}</p>
+              {{@description}}
+              {{yield to="description"}}
             </EuiText>
           {{/if}}
-        {{/if}}
-      </EuiFlexItem>
-      {{#if @rightSideItems}}
-        <EuiFlexItem @grow={{false}}>
-          <EuiFlexGroup
-            @wrap={{true}}
-            @responsive={{false}}
-            {{! {...rightSideGroupProps} }}
-            class="euiPageHeaderContent__rightSideItems"
-          >
-            {{#each @rightSideItems as |rightSideItem|}}
-              <EuiFlexItem @grow={{false}}>
-                {{rightSideItem}}
-              </EuiFlexItem>
-            {{/each}}
-          </EuiFlexGroup>
+          {{#if (or hasDefault (and hasPageTitle @tabs))}}
+            <div class="euiPageHeaderContent__bottom">
+              <EuiSpacer />
+              {{yield to="default"}}
+              {{#if hasPageTitle}}
+                <EuiTabs @size="l" @display="condensed" @bottomBorder={{false}}>
+                  {{#each @tabs as |tab|}}
+                    <EuiTab
+                      @isSelected={{tab.isSelected}}
+                      @onClick={{optional tab.onClick}}
+                    >
+                      {{tab.label}}
+                    </EuiTab>
+                  {{/each}}
+                </EuiTabs>
+              {{/if}}
+            </div>
+          {{/if}}
         </EuiFlexItem>
-      {{/if}}
-    </EuiFlexGroup>
-  {{/if}}
-</div>
+        {{#if hasRightSideItems}}
+          <EuiFlexItem @grow={{false}}>
+            <EuiFlexGroup
+              @wrap={{true}}
+              @responsive={{false}}
+              class={{class-names
+                "euiPageHeaderContent__rightSideItems"
+                @rightSideGroupProps.className
+              }}
+            >
+              {{yield
+                (component "eui-flex-item" grow=false)
+                to="rightSideItems"
+              }}
+            </EuiFlexGroup>
+          </EuiFlexItem>
+        {{/if}}
+      </EuiFlexGroup>
+    {{/if}}
+  </div>
+{{/let}}

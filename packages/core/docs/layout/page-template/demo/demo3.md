@@ -37,14 +37,19 @@ order: 3
 ```hbs template
 <EuiPageTemplate
   @grow={{true}}
-  @pageHeader={{hash
-    iconType='logoElastic'
-    pageTitle='Page Title'
-    rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
-  }}
+  @pageHeader={{hash iconType='logoElastic' pageTitle='Page Title'}}
   @pageSideBar={{component 'eui-loading-content' lines=8}}
-  @bottomBar={{component "eui-button-title" title="Save"}}
+  @bottomBar={{component 'eui-button-title' title='Save'}}
 >
-  <EuiLoadingContent @lines={{16}} />
+  <:pageHeaderRightSideItems as |Item|>
+    <Item>
+      <EuiButton>
+        Go to full screen
+      </EuiButton>
+    </Item>
+  </:pageHeaderRightSideItems>
+  <:default>
+    <EuiLoadingContent @lines={{16}} />
+  </:default>
 </EuiPageTemplate>
 ```

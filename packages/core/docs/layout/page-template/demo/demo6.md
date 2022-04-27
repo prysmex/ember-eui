@@ -20,11 +20,19 @@ order: 6
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
-    rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
     tabs=this.tabs
   }}
 >
-  <EuiLoadingContent @lines={{16}} />
+  <:pageHeaderRightSideItems as |Item|>
+    <Item>
+      <EuiButton>
+        Go to full screen
+      </EuiButton>
+    </Item>
+  </:pageHeaderRightSideItems>
+  <:default>
+    <EuiLoadingContent @lines={{16}} />
+  </:default>
 </EuiPageTemplate>
 ```
 

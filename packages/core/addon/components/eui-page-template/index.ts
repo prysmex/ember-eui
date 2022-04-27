@@ -28,8 +28,16 @@ export const TEMPLATES = [
   'empty'
 ] as const;
 
+interface NormalProps {
+  className?: string;
+}
+
 export type EuiPageTemplateProps = {
   template?: typeof TEMPLATES[number];
+
+  pageBodyProps: NormalProps;
+  pageContentProps: NormalProps;
+  pageContentBodyProps: NormalProps;
   /**
   //  * Gets passed along to the #EuiBottomBar component if `bottomBar` has contents
   //  */
@@ -54,7 +62,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
   @argOrDefault('default') template!: typeof TEMPLATES[number];
 
   get classes() {
-    return 'euiPageTemplate '.concat(this.fullHeightClass);
+    return `euiPageTemplate ${this.fullHeightClass}`;
   }
 
   get fullHeightClass() {
@@ -69,21 +77,15 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
     return this.template === 'default' || this.template === 'empty';
   }
 
-  get pageBodyProps() {
-    return this.fullHeightClass;
-    // ...pageBodyProps,
-    // className: classNames(fullHeightClass, pageBodyProps?.className),
+  get pageBodyClass() {
+    return `${this.fullHeightClass} ${this.args.pageBodyProps?.className}`;
   }
 
-  get pageContentProps() {
-    return this.yScrollClass;
-    // ...pageContentProps,
-    // className: classNames(yScrollClass, pageContentProps?.className),
+  get pageContentPropsClass() {
+    return `${this.yScrollClass} ${this.args.pageContentProps?.className}`;
   }
 
-  get pageContentBodyProps() {
-    return this.fullHeightClass;
-    // ...pageContentBodyProps,
-    //className: classNames(fullHeightClass, pageContentBodyProps?.className),
+  get pageContentBodyPropsClass() {
+    return `${this.fullHeightClass} ${this.args.pageContentBodyProps?.className}`;
   }
 }

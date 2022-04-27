@@ -3,6 +3,7 @@ order: 5
 ---
 
 # Centered Content
+
 <EuiSpacer />
 <EuiText>
   Similar to the previous example, you can create a centered panel to emphasize incompleteness even with a page header. For this setup, we recommend using setting <strong>EuiPageContent</strong> to use the <EuiCode>subdued</EuiCode> color as to not have nested shadows.
@@ -18,13 +19,22 @@ order: 5
 <EuiPageTemplate
   @grow={{true}}
   @template='centeredContent'
-  @pageHeader={{hash
-    iconType='logoElastic'
-    pageTitle='Page Title'
-    rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
-  }}
+  @pageHeader={{hash iconType='logoElastic' pageTitle='Page Title'}}
   @pageSideBar={{component 'eui-loading-content' lines=8}}
 >
-  <EuiEmptyPrompt @paddingSize="l" @title='No spice' @body={{component 'eui-loading-content' lines=8}}/>
+  <:pageHeaderRightSideItems as |Item|>
+    <Item>
+      <EuiButton>
+        Go to full screen
+      </EuiButton>
+    </Item>
+  </:pageHeaderRightSideItems>
+  <:default>
+    <EuiEmptyPrompt
+      @paddingSize='l'
+      @title='No spice'
+      @body={{component 'eui-loading-content' lines=8}}
+    />
+  </:default>
 </EuiPageTemplate>
 ```

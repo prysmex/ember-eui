@@ -21,22 +21,36 @@ order: 10
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
-    rightSideItems=(array (component 'eui-button-title' title='Go full screen' color='warning')(component 'eui-button-title' title='Do something'))
   }}
 >
-  <EuiFlexGrid @columns={{2}}>
-    <EuiFlexItem>
-      <EuiPanel style='height: 200px' />
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiPanel style='height: 200px' />
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiPanel style='height: 200px' />
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiPanel style='height: 200px' />
-    </EuiFlexItem>
-  </EuiFlexGrid>
+  <:pageHeaderRightSideItems as |Item|>
+    <Item>
+      <EuiButton @color='warning'>
+        Go to full screen
+      </EuiButton>
+    </Item>
+    <Item>
+      <EuiButton>
+        Do something
+      </EuiButton>
+    </Item>
+  </:pageHeaderRightSideItems>
+  <:default>
+    <EuiFlexGrid @columns={{2}}>
+      <EuiFlexItem>
+        <EuiPanel style='height: 200px' />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiPanel style='height: 200px' />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiPanel style='height: 200px' />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiPanel style='height: 200px' />
+      </EuiFlexItem>
+    </EuiFlexGrid>
+  </:default>
+
 </EuiPageTemplate>
 ```

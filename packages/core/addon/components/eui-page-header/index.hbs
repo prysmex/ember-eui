@@ -1,36 +1,97 @@
-<header
-  class={{class-names
-    (if @bottomBorder "euiPageHeader--bottomBorder")
-    (if @responsive "euiPageHeader--responsive")
-    (if (and @pageTitle @tabs) "euiPageHeader--tabsAtBottom")
-    (if
-      (and @tabs (not @pageTitle) (not @rightSideItems) (not @description))
-      "euiPageHeader--onlyTabs"
+{{#let
+  (eui-page-restrict-width (arg-or-default @restrictWidth false) @style)
+  (arg-or-default @responsive true)
+  (and (arg-or-default @isDefaultProvided true) (has-block "default"))
+  (or
+    (and (arg-or-default @isDescriptionProvided true) (has-block "description"))
+    @description
+  )
+  (or
+    (and (arg-or-default @isPageTitleProvided true) (has-block "pageTitle"))
+    @pageTitle
+  )
+  (or
+    (and
+      (arg-or-default @isRightSideItemsProvided true)
+      (has-block "rightSideItems")
     )
-    (if (eq @responsive "reverse") "euiPageHeader--responsiveReverse")
-    (if
-      @alignItems (concat "euiPageHeader--" @alignItems) "euiPageHeader--center"
+    @rightSideItems
+  )
+  as |propsForRestrictedPageWidth responsive isDefaultProvided isDescriptionProvided isPageTitleProvided isRightSideItemsProvided|
+}}
+  {{#let
+    (class-names
+      (if
+        propsForRestrictedPageWidth.widthClassName
+        (concat "euiPageHeader--" propsForRestrictedPageWidth.widthClassName)
+      )
+      (if @bottomBorder "euiPageHeader--bottomBorder")
+      (if responsive "euiPageHeader--responsive")
+      (if (eq responsive "reverse") "euiPageHeader--responsiveReverse")
+      (if (and isPageTitleProvided @tabs) "euiPageHeader--tabsAtBottom")
+      (if
+        (and
+          @tabs
+          (not isPageTitleProvided)
+          (not isRightSideItemsProvided)
+          (not isDescriptionProvided)
+          (not isDefaultProvided)
+        )
+        "euiPageHeader--onlyTabs"
+      )
+      (if
+        @alignItems
+        (concat "euiPageHeader--" @alignItems)
+        "euiPageHeader--center"
+      )
+      componentName="EuiPageHeader"
+      paddingSize=@paddingSize
     )
-    (if
-      (eq @restrictWidth true)
-      "euiPageHeader--restrictWidth-default"
-      (if (not-eq @restrictWidth false) "euiPageHeader--restrictWidth-custom")
-    )
-    componentName="EuiPageHeader"
-    paddingSize=@paddingSize
+    as |classes|
   }}
-  ...attributes
->
-  <EuiPageHeaderContent
-    @alignItems={{@alignItems}}
-    @responsive={{@responsive}}
-    @pageTitle={{@pageTitle}}
-    @iconType={{@iconType}}
-    @tabs={{@tabs}}
-    @description={{@description}}
-    @rightSideItems={{@rightSideItems}}
-    @restrictWidth={{@restrictWidth}}
-  >
-    {{yield}}
-  </EuiPageHeaderContent>
-</header>
+    {{#if
+      (and
+        (not @tabs)
+        (not isPageTitleProvided)
+        (not isDescriptionProvided)
+        (not isRightSideItemsProvided)
+      )
+    }}
+      <header class={{classes}} ...attributes>
+        {{yield to="default"}}
+      </header>
+    {{else}}
+      {{!template-lint-disable}}
+      <header class={{classes}} ...attributes>
+        <EuiPageHeaderContent
+          @dumb={{@dumb}}
+          @alignItems={{@alignItems}}
+          @responsive={{responsive}}
+          @pageTitle={{@pageTitle}}
+          @iconType={{@iconType}}
+          @breadcrumbs={{@breadcrumbs}}
+          @tabs={{@tabs}}
+          @description={{@description}}
+          @restrictWidth={{@restrictWidth}}
+          @isDescriptionProvided={{not (not isDescriptionProvided)}}
+          @isPageTitleProvided={{not (not isPageTitleProvided)}}
+          @isRightSideItemsProvided={{not (not isRightSideItemsProvided)}}
+          @isDefaultProvided={{not (not isDefaultProvided)}}
+        >
+          <:pageTitle>
+            {{yield to="pageTitle"}}
+          </:pageTitle>
+          <:rightSideItems as |item|>
+            {{yield item to="rightSideItems"}}
+          </:rightSideItems>
+          <:description>
+            {{yield to="description"}}
+          </:description>
+          <:default>
+            {{yield to="default"}}
+          </:default>
+        </EuiPageHeaderContent>
+      </header>
+    {{/if}}
+  {{/let}}
+{{/let}}

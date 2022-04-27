@@ -66,12 +66,22 @@ order: 1
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
-    rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
     tabs=this.tabs
   }}
-  @pageSideBar={{component 'eui-loading-content' lines=8}}
 >
-  <EuiLoadingContent @lines={{16}} />
+  <:pageSideBar>
+    <EuiLoadingContent @lines={{8}} />
+  </:pageSideBar>
+  <:pageHeaderRightSideItems as |Item|>
+    <Item>
+      <EuiButton>
+        Go Full Screen
+      </EuiButton>
+    </Item>
+  </:pageHeaderRightSideItems>
+  <:default>
+    <EuiLoadingContent @lines={{16}} />
+  </:default>
 </EuiPageTemplate>
 ```
 

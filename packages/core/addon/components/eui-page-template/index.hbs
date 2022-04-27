@@ -8,17 +8,21 @@
     }}
     @grow={{arg-or-default @grow true}}
     {{style (inline-styles min-height=(concat this.minHeight "px"))}}
-    {{! {...rest} }}
-    {{! style={pageStyle} }}
+    ...attributes
   >
     {{#if (has-block "pageSideBar")}}
       {{yield to="pageSideBar"}}
     {{else if @pageSideBar}}
-      <EuiPageSideBar @sticky={{true}} @paddingSize={{@paddingSize}}>
+      <EuiPageSideBar
+        class={{@pageSideBarProps.className}}
+        @sticky={{true}}
+        @paddingSize={{@paddingSize}}
+      >
         {{@pageSideBar}}
       </EuiPageSideBar>
     {{/if}}
     <EuiPageBody
+      class={{@pageBodyProps.className}}
       @paddingSize={{if
         (or @pageSideBar (has-block "pageSideBar"))
         (arg-or-default @paddingSize "l")
@@ -29,7 +33,6 @@
         "false"
         @restrictWidth
       }}
-      {{! {...pageBodyProps} }}
     >
       {{#if (has-block "pageHeader")}}
         {{yield to="pageHeader"}}
@@ -47,26 +50,42 @@
           }}
           @paddingSize={{@paddingSize}}
           @responsive={{arg-or-default @responsive true}}
-          @rightSideItems={{@pageHeader.rightSideItems}}
           @iconType={{@pageHeader.iconType}}
           @tabs={{@pageHeader.tabs}}
           @pageTitle={{@pageHeader.pageTitle}}
-        />
+          @isPageTitleProvided={{has-block "pageHeaderPageTitle"}}
+          @isDefaultProvided={{has-block "pageHeaderDefault"}}
+          @isDescriptionProvided={{has-block "pageHeaderDescription"}}
+          @isRightSideItemsProvided={{has-block "pageHeaderRightSideItems"}}
+        >
+          <:pageTitle>
+            {{yield to="pageHeaderPageTitle"}}
+          </:pageTitle>
+          <:default>
+            {{yield to="pageHeaderDefault"}}
+          </:default>
+          <:description>
+            {{yield to="pageHeaderDescription"}}
+          </:description>
+          <:rightSideItems as |item|>
+            {{yield item to="pageHeaderRightSideItems"}}
+          </:rightSideItems>
+        </EuiPageHeader>
       {{/if}}
       <EuiPageContent
+        class={{@pageContentProps.className}}
         @verticalPosition="center"
         @horizontalPosition="center"
         @paddingSize={{arg-or-default @paddingSize "none"}}
-        {{! {...pageContentProps} }}
       >
         <EuiPageContentBody
+          class={{@pageContentBodyProps.className}}
           @paddingSize={{if
             (or @pageSideBar (has-block "pageSideBar"))
             @paddingSize
             "none"
           }}
           @restrictWidth={{@restrictWidth}}
-          {{! {...pageContentBodyProps} }}
         >
           {{yield to="default"}}
         </EuiPageContentBody>
@@ -79,13 +98,16 @@
     @paddingSize="none"
     @grow={{arg-or-default @grow true}}
     {{style (inline-styles min-height=(concat this.minHeight "px"))}}
-    {{! {...rest} }}
-    {{! style={pageStyle} }}
+    ...attributes
   >
     {{#if (has-block "pageSideBar")}}
       {{yield to="pageSideBar"}}
     {{else if @pageSideBar}}
-      <EuiPageSideBar @sticky={{true}} @paddingSize={{@paddingSize}}>
+      <EuiPageSideBar
+        class={{@pageSideBarProps.className}}
+        @sticky={{true}}
+        @paddingSize={{@paddingSize}}
+      >
         {{@pageSideBar}}
       </EuiPageSideBar>
     {{/if}}
@@ -93,7 +115,7 @@
       <EuiPageBody
         @panelled={{true}}
         @paddingSize={{arg-or-default @paddingSize "l"}}
-        class={{this.pageBodyProps}}
+        class={{this.pageBodyClass}}
       >
         {{#if (has-block "pageHeader")}}
           {{yield to="pageHeader"}}
@@ -106,12 +128,29 @@
               this.paddingSize
             }}
             @responsive={{arg-or-default @responsive true}}
-            @rightSideItems={{@pageHeader.rightSideItems}}
             @iconType={{@pageHeader.iconType}}
             @tabs={{@pageHeader.tabs}}
             @pageTitle={{@pageHeader.pageTitle}}
-          />
+            @isPageTitleProvided={{has-block "pageHeaderPageTitle"}}
+            @isDefaultProvided={{has-block "pageHeaderDefault"}}
+            @isDescriptionProvided={{has-block "pageHeaderDescription"}}
+            @isRightSideItemsProvided={{has-block "pageHeaderRightSideItems"}}
+          >
+            <:pageTitle>
+              {{yield to="pageHeaderPageTitle"}}
+            </:pageTitle>
+            <:default>
+              {{yield to="pageHeaderDefault"}}
+            </:default>
+            <:description>
+              {{yield to="pageHeaderDescription"}}
+            </:description>
+            <:rightSideItems as |item|>
+              {{yield item to="pageHeaderRightSideItems"}}
+            </:rightSideItems>
+          </EuiPageHeader>
         {{/if}}
+
         <EuiPageContent
           @verticalPosition="center"
           @horizontalPosition="center"
@@ -123,18 +162,18 @@
             ""
             "display: flex"
           }}
-          class={{this.pageContentProps}}
+          class={{this.pageContentPropsClass}}
         >
           <EuiPageContentBody
             @restrictWidth={{@restrictWidth}}
-            class={{this.pageContentBodyProps}}
+            class={{this.pageContentBodyPropsClass}}
           >
             {{yield to="default"}}
           </EuiPageContentBody>
         </EuiPageContent>
       </EuiPageBody>
     {{else}}
-      <EuiPageBody class={{this.pageBodyProps}} @paddingSize="l">
+      <EuiPageBody class={{this.pageBodyClass}} @paddingSize="l">
         {{#if (has-block "pageHeader")}}
           {{yield to="pageHeader"}}
         {{else if @pageHeader}}
@@ -142,11 +181,27 @@
             @restrictWidth={{@restrictWidth}}
             @paddingSize={{this.paddingSize}}
             @responsive={{arg-or-default @responsive true}}
-            @rightSideItems={{@pageHeader.rightSideItems}}
             @iconType={{@pageHeader.iconType}}
             @tabs={{@pageHeader.tabs}}
             @pageTitle={{@pageHeader.pageTitle}}
-          />
+            @isPageTitleProvided={{has-block "pageHeaderPageTitle"}}
+            @isDefaultProvided={{has-block "pageHeaderDefault"}}
+            @isDescriptionProvided={{has-block "pageHeaderDescription"}}
+            @isRightSideItemsProvided={{has-block "pageHeaderRightSideItems"}}
+          >
+            <:pageTitle>
+              {{yield to="pageHeaderPageTitle"}}
+            </:pageTitle>
+            <:default>
+              {{yield to="pageHeaderDefault"}}
+            </:default>
+            <:description>
+              {{yield to="pageHeaderDescription"}}
+            </:description>
+            <:rightSideItems as |item|>
+              {{yield item to="pageHeaderRightSideItems"}}
+            </:rightSideItems>
+          </EuiPageHeader>
         {{/if}}
         <EuiPageContent
           @borderRadius="none"
@@ -160,11 +215,11 @@
             @hasShadow={{false}}
             @color="subdued"
             @paddingSize={{@pageContentProps.paddingSize}}
-            class={{this.pageContentProps}}
+            class={{this.pageContentPropsClass}}
           >
             <EuiPageContentBody
               @restrictWidth={{@restrictWidth}}
-              class={{this.pageContentBodyProps}}
+              class={{this.pageContentBodyPropsClass}}
             >
               {{yield to="default"}}
             </EuiPageContentBody>
@@ -183,8 +238,7 @@
     }}
     @grow={{arg-or-default @grow true}}
     {{style (inline-styles min-height=(concat this.minHeight "px"))}}
-    {{! {...rest} }}
-    {{! style={pageStyle} }}
+    ...attributes
   >
     {{#if (has-block "pageSideBar")}}
       {{yield to="pageSideBar"}}
@@ -204,7 +258,7 @@
         @paddingSize
         "none"
       }}
-      class={{this.pageBodyProps}}
+      class={{this.pageBodyClass}}
     >
       {{#if (has-block "pageHeader")}}
         {{yield to="pageHeader"}}
@@ -222,11 +276,27 @@
           }}
           @bottomBorder={{@bottomBorder}}
           @responsive={{arg-or-default @responsive true}}
-          @rightSideItems={{@pageHeader.rightSideItems}}
           @iconType={{@pageHeader.iconType}}
           @tabs={{@pageHeader.tabs}}
           @pageTitle={{@pageHeader.pageTitle}}
-        />
+          @isPageTitleProvided={{has-block "pageHeaderPageTitle"}}
+          @isDefaultProvided={{has-block "pageHeaderDefault"}}
+          @isDescriptionProvided={{has-block "pageHeaderDescription"}}
+          @isRightSideItemsProvided={{has-block "pageHeaderRightSideItems"}}
+        >
+          <:pageTitle>
+            {{yield to="pageHeaderPageTitle"}}
+          </:pageTitle>
+          <:default>
+            {{yield to="pageHeaderDefault"}}
+          </:default>
+          <:description>
+            {{yield to="pageHeaderDescription"}}
+          </:description>
+          <:rightSideItems as |item|>
+            {{yield item to="pageHeaderRightSideItems"}}
+          </:rightSideItems>
+        </EuiPageHeader>
       {{/if}}
       <EuiPageContent
         @hasBorder={{false}}
@@ -234,7 +304,7 @@
         @paddingSize={{"none"}}
         @color={{"transparent"}}
         @borderRadius={{"none"}}
-        class={{this.pageContentProps}}
+        class={{this.pageContentPropsClass}}
       >
         <EuiPageContentBody
           @paddingSize={{if
@@ -247,7 +317,7 @@
             @restrictWidth
             false
           }}
-          class={{this.pageContentBodyProps}}
+          class={{this.pageContentBodyPropsClass}}
         >
           {{#if (and this.fullHeight this.canFullHeight)}}
             <EuiFlexGroup
@@ -282,7 +352,7 @@
     @paddingSize="none"
     @grow={{arg-or-default @grow true}}
     {{style (inline-styles min-height=(concat this.minHeight "px"))}}
-    {{!-- @style={{@pageStyle}} --}}
+    ...attributes
   >
     {{#if (has-block "pageSideBar")}}
       {{yield to="pageSideBar"}}
@@ -291,12 +361,11 @@
         {{@pageSideBar}}
       </EuiPageSideBar>
     {{/if}}
-    {{! <EuiPageBody {...pageBodyProps}> }}
     {{#if (or (has-block "bottomBar") @bottomBar)}}
       <EuiPageBody
         @panelled={{true}}
         @paddingSize="none"
-        class={{this.pageBodyProps}}
+        class={{this.pageBodyClass}}
       >
         <EuiPageBody @paddingSize="l">
           {{#if (has-block "pageHeader")}}
@@ -306,11 +375,27 @@
               @restrictWidth={{@restrictWidth}}
               @paddingSize={{@paddingSize}}
               @responsive={{arg-or-default @responsive true}}
-              @rightSideItems={{@pageHeader.rightSideItems}}
               @iconType={{@pageHeader.iconType}}
               @tabs={{@pageHeader.tabs}}
               @pageTitle={{@pageHeader.pageTitle}}
-            />
+              @isPageTitleProvided={{has-block "pageHeaderPageTitle"}}
+              @isDefaultProvided={{has-block "pageHeaderDefault"}}
+              @isDescriptionProvided={{has-block "pageHeaderDescription"}}
+              @isRightSideItemsProvided={{has-block "pageHeaderRightSideItems"}}
+            >
+              <:pageTitle>
+                {{yield to="pageHeaderPageTitle"}}
+              </:pageTitle>
+              <:default>
+                {{yield to="pageHeaderDefault"}}
+              </:default>
+              <:description>
+                {{yield to="pageHeaderDescription"}}
+              </:description>
+              <:rightSideItems as |item|>
+                {{yield item to="pageHeaderRightSideItems"}}
+              </:rightSideItems>
+            </EuiPageHeader>
           {{/if}}
 
           <EuiPageContent
@@ -320,13 +405,13 @@
             @paddingSize={{"none"}}
             @color={{"plain"}}
             @borderRadius={{"none"}}
-            class={{this.pageContentProps}}
+            class={{this.pageContentPropsClass}}
           >
             <EuiPageContentBody
               @restrictWidth={{@restrictWidth}}
               @paddingSize={{@paddingSize}}
               @borderRadius={{@borderRadius}}
-              class={{this.pageContentBodyProps}}
+              class={{this.pageContentBodyPropsClass}}
             >
               {{yield to="default"}}
             </EuiPageContentBody>
@@ -363,12 +448,28 @@
             @restrictWidth={{@restrictWidth}}
             @paddingSize={{@paddingSize}}
             @responsive={{arg-or-default @responsive true}}
-            @rightSideItems={{@pageHeader.rightSideItems}}
             @iconType={{@pageHeader.iconType}}
             @tabs={{@pageHeader.tabs}}
             @pageTitle={{@pageHeader.pageTitle}}
             @description={{@pageHeader.description}}
-          />
+            @isPageTitleProvided={{has-block "pageHeaderPageTitle"}}
+            @isDefaultProvided={{has-block "pageHeaderDefault"}}
+            @isDescriptionProvided={{has-block "pageHeaderDescription"}}
+            @isRightSideItemsProvided={{has-block "pageHeaderRightSideItems"}}
+          >
+            <:pageTitle>
+              {{yield to="pageHeaderPageTitle"}}
+            </:pageTitle>
+            <:default>
+              {{yield to="pageHeaderDefault"}}
+            </:default>
+            <:description>
+              {{yield to="pageHeaderDescription"}}
+            </:description>
+            <:rightSideItems as |item|>
+              {{yield item to="pageHeaderRightSideItems"}}
+            </:rightSideItems>
+          </EuiPageHeader>
         {{/if}}
 
         <EuiPageContent
@@ -378,13 +479,13 @@
           @paddingSize={{"none"}}
           @color={{"plain"}}
           @borderRadius={{"none"}}
-          class={{this.pageContentProps}}
+          class={{this.pageContentPropsClass}}
         >
           <EuiPageContentBody
             @restrictWidth={{@restrictWidth}}
             @paddingSize={{@paddingSize}}
             @borderRadius={{@borderRadius}}
-            class={{this.pageContentBodyProps}}
+            class={{this.pageContentBodyPropsClass}}
           >
             {{#if (and this.fullHeight this.canFullHeight)}}
               <EuiFlexGroup

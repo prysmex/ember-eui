@@ -16,9 +16,6 @@ body.euiBody--headerIsFixed {
   color: white;
 }
 
-.euiBadge__iconButton svg {
-  pointer-events: none;
-}
 .euiPanel--restrictWidth-custom {
   margin-left: auto;
   margin-right: auto;
@@ -143,7 +140,7 @@ p>p:last-child{
 }
 
 a span.icon-link:hover {
-  
+
 }
 div.docfy-demo__description__header > h2 > a > span {
   /* content: '#'; */

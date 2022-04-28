@@ -1,5 +1,16 @@
-{{#let (unique-id) as |id|}}
-  <article
+{{#let
+  (unique-id)
+  (element (arg-or-default @tagName 'article'))
+  (and
+    (arg-or-default @hasContextMenuBlock true)
+    (has-block 'contextMenu')
+  )
+  (and
+    (arg-or-default @hasPrimaryActionBlock true)
+    (has-block 'primaryAction')
+  )
+as |id Element hasContextMenuBlock hasPrimaryActionBlock|}}
+  <Element
     aria-labelledby={{id}}
     key={{@id}}
     class={{class-names
@@ -41,7 +52,7 @@
         @time={{@time}}
         @onOpenContextMenu={{@onOpenContextMenu}}
         @eventName={{@title}}
-        @hasContextMenu={{has-block 'contextMenu'}}
+        @hasDefaultBlock={{hasContextMenuBlock}}
         @iconColor={{@iconColor}}
       >
         {{yield to='contextMenu'}}
@@ -59,15 +70,17 @@
       as |classNames headingLevel|}}
         {{#if (or @href @onClickTitle)}}
           <EuiLink
-            @onClick={{@onClickTitle}}
+            class={{classNames}}
+            id={{id}}
             @href={{@href}}
+            {{on 'click' (optional @onClickTitle)}}
           >
-            <TextBlock @tagName={{headingLevel}} id={{id}} class={{classNames}}>
+            <TextBlock @tagName={{headingLevel}}>
               {{@title}}
             </TextBlock>
           </EuiLink>
         {{else if @title}}
-          <TextBlock @tagName={{headingLevel}} id={{id}} class={{classNames}}>
+          <TextBlock id={{id}} class={{classNames}} @tagName={{headingLevel}}>
             {{@title}}
           </TextBlock>
         {{/if}}
@@ -80,7 +93,7 @@
         @accordionHideText={{@accordionHideText}}
       />
 
-      {{#if (has-block 'primaryAction')}}
+      {{#if hasPrimaryActionBlock}}
         <div class="euiNotificationEvent__primaryAction">
           {{yield to='primaryAction'}}
         </div>
@@ -88,5 +101,5 @@
 
     </div>
 
-  </article>
+  </Element>
 {{/let}}

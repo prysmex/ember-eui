@@ -9,7 +9,7 @@ export const sizeMapping = {
   s: `${baseClass}--small`,
   m: '',
   l: `${baseClass}--large`,
-  xl: `${baseClass}--xLarge`
+  xl: `${baseClass}--xlarge`
 };
 
 const mapping: ComponentMapping = {

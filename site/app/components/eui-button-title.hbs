@@ -1,3 +1,21 @@
-<EuiButton @color={{@color}} @iconType={{@iconType}} @flush={{@flush}}>
-  {{@title}}
-</EuiButton>
+{{#if @buttonEmpty}}
+  <EuiButtonEmpty
+    @color={{@color}}
+    @iconType={{@iconType}}
+    @flush={{@flush}}
+    @href={{@href}}
+    {{on "click" (optional @onClick)}}
+  >
+    {{@title}}
+  </EuiButtonEmpty>
+{{else}}
+  <EuiButton
+    @color={{@color}}
+    @iconType={{@iconType}}
+    @flush={{@flush}}
+    @href={{@href}}
+    {{on "click" (optional @onClick)}}
+  >
+    {{@title}}
+  </EuiButton>
+{{/if}}

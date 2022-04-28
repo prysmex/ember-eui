@@ -1,12 +1,7 @@
-import Component from '@glimmer/component';
-import {
-  EuiBreakpointSize,
-  isWithinBreakpoints
-} from '../../../utils/breakpoint';
+import { EuiBreakpointSize, isWithinBreakpoints } from '../utils/breakpoint';
 import { modifier } from 'ember-modifier';
-import { tracked } from '@glimmer/tracking';
 
-const isWithinBreakpointsModifier = modifier(function (
+export default modifier(function (
   _element: Element,
   _pos: unknown[],
   {
@@ -31,7 +26,3 @@ const isWithinBreakpointsModifier = modifier(function (
 
   return () => window.removeEventListener('resize', handleResize);
 });
-export default class EuiSplitPanelOuterComponent extends Component {
-  isWithinBreakpointsModifier = isWithinBreakpointsModifier;
-  @tracked isResponsive = false;
-}

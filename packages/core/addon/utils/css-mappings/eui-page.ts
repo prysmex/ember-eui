@@ -19,10 +19,16 @@ export const paddingSizeMapping = {
   l: `${baseClass}--paddingLarge`
 };
 
+export const directionMapping = {
+  row: '',
+  column: `${baseClass}--column`
+};
+
 const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
-    paddingSize: paddingSizeMapping
+    paddingSize: paddingSizeMapping,
+    direction: directionMapping
   }
 };
 

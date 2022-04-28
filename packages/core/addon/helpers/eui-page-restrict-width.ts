@@ -15,13 +15,15 @@ export function restrictWidth(
   style?: Record<string, unknown>
 ) {
   let widthClassName;
-  let newStyle = {};
+  let newStyle = {
+    ...(style || {})
+  };
 
   if (restrictWidth === true) {
     widthClassName = 'restrictWidth-default';
   } else if (restrictWidth !== false) {
     widthClassName = 'restrictWidth-custom';
-    newStyle = { ...style, maxWidth: restrictWidth };
+    newStyle = { ...newStyle, maxWidth: restrictWidth };
   }
 
   return { widthClassName, newStyle };

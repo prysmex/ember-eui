@@ -38,8 +38,10 @@ order: 2
     tabs=this.tabs
     description='Restricting the width to 75%.'
   }}
-  @pageSideBar={{component 'eui-loading-content' lines=8}}
 >
+  <:pageSideBar>
+    <EuiLoadingContent @lines={{8}} />
+  </:pageSideBar>
   <:pageHeaderRightSideItems as |Item|>
     <Item>
       <EuiButton>

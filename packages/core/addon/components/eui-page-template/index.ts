@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { EuiButtomBarArgs } from '../eui-bottom-bar';
+import { tracked } from '@glimmer/tracking';
 // import { action } from '@ember/object';
 // import { tracked } from '@glimmer/tracking';
 // import {
@@ -52,14 +53,36 @@ export type EuiPageTemplateProps = {
    * Minimum height in which to enforce scrolling
    */
   minHeight?: number;
+
+  restrictWidth?: boolean | number | string;
 };
 
 export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
   // Defaults
-  @argOrDefault(460) minHeight!: number;
   @argOrDefault(false) fullHeight!: boolean;
-  @argOrDefault('l') paddingSize!: string;
   @argOrDefault('default') template!: typeof TEMPLATES[number];
+
+  @tracked isWithinBreakpoints = false;
+
+  setIsWithinBreakpoints = (value: boolean) => {
+    this.isWithinBreakpoints = value;
+  };
+
+  get minHeight() {
+    const minHeight = this.args.minHeight ?? 460;
+    if (typeof this.args.minHeight === 'number') {
+      return `${minHeight}px`;
+    }
+    return minHeight;
+  }
+
+  get restrictWidth() {
+    const width = this.args.restrictWidth ?? true;
+    if (typeof this.args.restrictWidth === 'number') {
+      return `${width}px`;
+    }
+    return width;
+  }
 
   get classes() {
     return `euiPageTemplate ${this.fullHeightClass}`;
@@ -74,10 +97,13 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
   }
 
   get canFullHeight() {
-    return this.template === 'default' || this.template === 'empty';
+    return (
+      this.isWithinBreakpoints &&
+      (this.template === 'default' || this.template === 'empty')
+    );
   }
 
-  get pageBodyClass() {
+  get pageBodyPropsClass() {
     return `${this.fullHeightClass} ${this.args.pageBodyProps?.className}`;
   }
 

@@ -68,6 +68,7 @@ order: 1
     pageTitle='Page Title'
     tabs=this.tabs
   }}
+  @hasBottomBarBlock={{this.showing}}
 >
   <:pageSideBar>
     <EuiLoadingContent @lines={{8}} />
@@ -82,27 +83,38 @@ order: 1
   <:default>
     <EuiLoadingContent @lines={{16}} />
   </:default>
+  <:bottomBar>
+    Bottom bar
+  </:bottomBar>
 </EuiPageTemplate>
 ```
 
 ```js component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 
 export default class DemoIconComponent extends Component {
-  tabs = [
-    { label: 'Tab 1', isSelected: true },
-    {
-      label: 'Tab 2',
-      onClick: this.setShowBottomBar
-    }
-  ];
+  @tracked selectedTab = true;
   @tracked showing = false;
 
-  @action
-  setSHowBottomBar() {
-    this.showing = !this.showing;
+  get tabs() {
+    return [
+      {
+        label: 'Tab 1',
+        isSelected: this.selectedTab,
+        onClick: this.setShowBottomBar.bind(this, true)
+      },
+      {
+        label: 'Tab 2',
+        isSelected: !this.selectedTab,
+        onClick: this.setShowBottomBar.bind(this, false)
+      }
+    ];
   }
+
+  setShowBottomBar = (val) => {
+    this.selectedTab = val;
+    this.showing = !val;
+  };
 }
 ```

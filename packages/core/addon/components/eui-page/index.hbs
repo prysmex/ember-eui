@@ -1,27 +1,22 @@
-{{#let (arg-or-default @restrictWidth false) as |restrictWidth|}}
-  {{#let
-    (if
-      (eq restrictWidth true)
-      (hash widthClassName="euiPage--restrictWidth-default")
-      (if
-        (not-eq restrictWidth false)
-        (hash
-          widthClassName="euiPage--restrictWidth-custom"
-          widthStyle=restrictWidth
-        )
-      )
-    ) as |styling|
-  }}
+{{#let
+  (arg-or-default @restrictWidth false)
+  (arg-or-default @paddingSize "m")
+  (arg-or-default @grow true)
+  (arg-or-default @direction "row")
+  as |restrictWidth paddingSize grow direction|
+}}
+  {{#let (eui-page-restrict-width restrictWidth @style) as |styling|}}
     <div
       class={{class-names
-        (if @grow "euiPage--grow" "")
-        styling.widthClassName
+        (if grow "euiPage--grow")
+        (concat "euiPage--" styling.widthClassName)
         componentName="EuiPage"
-        paddingSize=(arg-or-default @paddingSize "m")
+        paddingSize=paddingSize
+        direction=direction
       }}
       ...attributes
       {{style
-        (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
+        (if styling.newStyle (inline-styles styling.newStyle))
         (inline-styles min-height="460px;")
       }}
     >

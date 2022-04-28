@@ -38,9 +38,10 @@ order: 3
 <EuiPageTemplate
   @grow={{true}}
   @pageHeader={{hash iconType='logoElastic' pageTitle='Page Title'}}
-  @pageSideBar={{component 'eui-loading-content' lines=8}}
-  @bottomBar={{component 'eui-button-title' title='Save'}}
 >
+  <:pageSideBar>
+    <EuiLoadingContent @lines={{8}} />
+  </:pageSideBar>
   <:pageHeaderRightSideItems as |Item|>
     <Item>
       <EuiButton>
@@ -51,5 +52,10 @@ order: 3
   <:default>
     <EuiLoadingContent @lines={{16}} />
   </:default>
+  <:bottomBar>
+    <EuiButton>
+      Save
+    </EuiButton>
+  </:bottomBar>
 </EuiPageTemplate>
 ```

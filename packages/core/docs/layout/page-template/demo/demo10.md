@@ -17,10 +17,12 @@ order: 10
 ```hbs template
 <EuiPageTemplate
   @grow={{true}}
+  @restrictWidth={{false}}
   @template='empty'
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
+    bottomBorder=true
   }}
 >
   <:pageHeaderRightSideItems as |Item|>

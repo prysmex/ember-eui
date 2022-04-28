@@ -1,41 +1,39 @@
 {{#let
   (eui-page-restrict-width (arg-or-default @restrictWidth false) @style)
   (arg-or-default @responsive true)
-  (and (arg-or-default @isDefaultProvided true) (has-block "default"))
+  (and (arg-or-default @hasDefaultBlock true) (has-block "default"))
   (or
-    (and (arg-or-default @isDescriptionProvided true) (has-block "description"))
+    (and (arg-or-default @hasDescriptionBlock true) (has-block "description"))
     @description
   )
   (or
-    (and (arg-or-default @isPageTitleProvided true) (has-block "pageTitle"))
+    (and (arg-or-default @hasPageTitleBlock true) (has-block "pageTitle"))
     @pageTitle
   )
   (or
     (and
-      (arg-or-default @isRightSideItemsProvided true)
-      (has-block "rightSideItems")
+      (arg-or-default @hasRightSideItemsBlock true) (has-block "rightSideItems")
     )
     @rightSideItems
   )
-  as |propsForRestrictedPageWidth responsive isDefaultProvided isDescriptionProvided isPageTitleProvided isRightSideItemsProvided|
+  as |styling responsive hasDefaultBlock hasDescriptionBlock hasPageTitleBlock hasRightSideItemsBlock|
 }}
   {{#let
     (class-names
       (if
-        propsForRestrictedPageWidth.widthClassName
-        (concat "euiPageHeader--" propsForRestrictedPageWidth.widthClassName)
+        styling.widthClassName (concat "euiPageHeader--" styling.widthClassName)
       )
       (if @bottomBorder "euiPageHeader--bottomBorder")
       (if responsive "euiPageHeader--responsive")
       (if (eq responsive "reverse") "euiPageHeader--responsiveReverse")
-      (if (and isPageTitleProvided @tabs) "euiPageHeader--tabsAtBottom")
+      (if (and hasPageTitleBlock @tabs) "euiPageHeader--tabsAtBottom")
       (if
         (and
           @tabs
-          (not isPageTitleProvided)
-          (not isRightSideItemsProvided)
-          (not isDescriptionProvided)
-          (not isDefaultProvided)
+          (not hasPageTitleBlock)
+          (not hasRightSideItemsBlock)
+          (not hasDescriptionBlock)
+          (not hasDefaultBlock)
         )
         "euiPageHeader--onlyTabs"
       )
@@ -52,19 +50,18 @@
     {{#if
       (and
         (not @tabs)
-        (not isPageTitleProvided)
-        (not isDescriptionProvided)
-        (not isRightSideItemsProvided)
+        (not hasPageTitleBlock)
+        (not hasDescriptionBlock)
+        (not hasRightSideItemsBlock)
       )
     }}
-      <header class={{classes}} ...attributes>
+      <header class={{classes}} {{style styling.newStyle}} ...attributes>
         {{yield to="default"}}
       </header>
     {{else}}
       {{!template-lint-disable}}
-      <header class={{classes}} ...attributes>
+      <header class={{classes}} {{style styling.newStyle}} ...attributes>
         <EuiPageHeaderContent
-          @dumb={{@dumb}}
           @alignItems={{@alignItems}}
           @responsive={{responsive}}
           @pageTitle={{@pageTitle}}
@@ -73,10 +70,10 @@
           @tabs={{@tabs}}
           @description={{@description}}
           @restrictWidth={{@restrictWidth}}
-          @isDescriptionProvided={{not (not isDescriptionProvided)}}
-          @isPageTitleProvided={{not (not isPageTitleProvided)}}
-          @isRightSideItemsProvided={{not (not isRightSideItemsProvided)}}
-          @isDefaultProvided={{not (not isDefaultProvided)}}
+          @hasDescriptionBlock={{not (not hasDescriptionBlock)}}
+          @hasPageTitleBlock={{not (not hasPageTitleBlock)}}
+          @hasRightSideItemsBlock={{not (not hasRightSideItemsBlock)}}
+          @hasDefaultBlock={{not (not hasDefaultBlock)}}
         >
           <:pageTitle>
             {{yield to="pageTitle"}}

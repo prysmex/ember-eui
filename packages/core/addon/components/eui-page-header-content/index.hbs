@@ -2,16 +2,16 @@
   (arg-or-default @responsive true)
   (arg-or-default @alignItems "top")
   (use-state false)
-  (and (arg-or-default @isDescriptionProvided true) (has-block "description"))
+  (and (arg-or-default @hasDescriptionBlock true) (has-block "description"))
   (and
-    (arg-or-default @isRightSideItemsProvided true) (has-block "rightSideItems")
+    (arg-or-default @hasRightSideItemsBlock true) (has-block "rightSideItems")
   )
   (or
-    (and (arg-or-default @isPageTitleProvided true) (has-block "pageTitle"))
+    (and (arg-or-default @hasPageTitleBlock true) (has-block "pageTitle"))
     @pageTitle
   )
-  (and (arg-or-default @isDefaultProvided true) (has-block "default"))
-  as |responsive alignItems isResponsiveBreakpoint hasDescription hasRightSideItems hasPageTitle hasDefault|
+  (and (arg-or-default @hasDefaultBlock true) (has-block "default"))
+  as |responsive alignItems isResponsiveBreakpoint hasDescriptionBlock hasRightSideItemsBlock hasPageTitleBlock hasDefaultBlock|
 }}
   <div
     class={{class-names
@@ -37,11 +37,11 @@
       <EuiFlexGroup
         class="euiPageHeaderContent__top"
         @responsive={{not (not responsive)}}
-        @alignItems={{if hasPageTitle "flexStart" "baseline"}}
+        @alignItems={{if hasPageTitleBlock "flexStart" "baseline"}}
         @gutterSize="l"
       >
         {{#if (and isResponsiveBreakpoint.value (eq responsive "reverse"))}}
-          {{#if hasRightSideItems}}
+          {{#if hasRightSideItemsBlock}}
             <EuiFlexItem @grow={{false}}>
               <EuiFlexGroup
                 @wrap={{true}}
@@ -59,7 +59,7 @@
             </EuiFlexItem>
           {{/if}}
           <EuiFlexItem>
-            {{#if (and (not hasPageTitle) @tabs)}}
+            {{#if (and (not hasPageTitleBlock) @tabs)}}
               <EuiTabs @size="xl" @display="condensed" @bottomBorder={{false}}>
                 {{#each @tabs as |tab|}}
                   <EuiTab
@@ -72,7 +72,7 @@
                 {{/each}}
               </EuiTabs>
             {{/if}}
-            {{#if hasPageTitle}}
+            {{#if hasPageTitleBlock}}
               <EuiTitle
                 class={{@pageTitleProps.className}}
                 @size="l"
@@ -95,10 +95,10 @@
               </EuiTitle>
             {{/if}}
 
-            {{#if (and hasPageTitle @tabs)}}
-              <EuiSpacer />
-            {{/if}}
-            {{#if hasDescription}}
+            {{#if hasDescriptionBlock}}
+              {{#if (or hasPageTitleBlock @tabs)}}
+                <EuiSpacer />
+              {{/if}}
               <EuiText @grow={{false}}>
                 {{@description}}
                 {{yield to="description"}}
@@ -107,19 +107,19 @@
           </EuiFlexItem>
         {{else}}
           <EuiFlexItem>
-            {{#if (and (not hasPageTitle) @tabs)}}
+            {{#if (and (not hasPageTitleBlock) @tabs)}}
               <EuiTabs @size="xl" @display="condensed" @bottomBorder={{false}}>
                 {{#each @tabs as |tab|}}
                   <EuiTab
                     @isSelected={{tab.isSelected}}
-                    @onClick={{optional tab.onClick}}
+                    {{on "click" (optional tab.onClick)}}
                   >
                     {{tab.label}}
                   </EuiTab>
                 {{/each}}
               </EuiTabs>
             {{/if}}
-            {{#if hasPageTitle}}
+            {{#if hasPageTitleBlock}}
               <EuiTitle
                 class={{@pageTitleProps.className}}
                 @size="l"
@@ -142,17 +142,17 @@
               </EuiTitle>
             {{/if}}
 
-            {{#if (or hasPageTitle @tabs)}}
-              <EuiSpacer />
-            {{/if}}
-            {{#if hasDescription}}
+            {{#if hasDescriptionBlock}}
+              {{#if (or hasPageTitleBlock @tabs)}}
+                <EuiSpacer />
+              {{/if}}
               <EuiText @grow={{false}}>
                 {{@description}}
                 {{yield to="description"}}
               </EuiText>
             {{/if}}
           </EuiFlexItem>
-          {{#if hasRightSideItems}}
+          {{#if hasRightSideItemsBlock}}
             <EuiFlexItem @grow={{false}}>
               <EuiFlexGroup
                 @wrap={{true}}
@@ -171,16 +171,16 @@
           {{/if}}
         {{/if}}
       </EuiFlexGroup>
-      {{#if (or hasDefault (and hasPageTitle @tabs))}}
+      {{#if (or hasDefaultBlock (and hasPageTitleBlock @tabs))}}
         <div class="euiPageHeaderContent__bottom">
           <EuiSpacer />
           {{yield to="default"}}
-          {{#if hasPageTitle}}
+          {{#if hasPageTitleBlock}}
             <EuiTabs @size="l" @display="condensed" @bottomBorder={{false}}>
               {{#each @tabs as |tab|}}
                 <EuiTab
                   @isSelected={{tab.isSelected}}
-                  @onClick={{optional tab.onClick}}
+                  {{on "click" (optional tab.onClick)}}
                 >
                   {{tab.label}}
                 </EuiTab>
@@ -197,7 +197,7 @@
         @gutterSize="l"
       >
         <EuiFlexItem>
-          {{#if (and (not hasPageTitle) @tabs)}}
+          {{#if (and (not hasPageTitleBlock) @tabs)}}
             <EuiTabs @size="xl" @display="condensed" @bottomBorder={{false}}>
               {{#each @tabs as |tab|}}
                 <EuiTab
@@ -210,7 +210,7 @@
               {{/each}}
             </EuiTabs>
           {{/if}}
-          {{#if hasPageTitle}}
+          {{#if hasPageTitleBlock}}
             <EuiTitle
               class={{@pageTitleProps.className}}
               @size="l"
@@ -233,25 +233,25 @@
             </EuiTitle>
           {{/if}}
 
-          {{#if (and hasPageTitle @tabs)}}
-            <EuiSpacer />
-          {{/if}}
-          {{#if hasDescription}}
+          {{#if hasDescriptionBlock}}
+            {{#if (or hasPageTitleBlock @tabs)}}
+              <EuiSpacer />
+            {{/if}}
             <EuiText @grow={{false}}>
               {{@description}}
               {{yield to="description"}}
             </EuiText>
           {{/if}}
-          {{#if (or hasDefault (and hasPageTitle @tabs))}}
+          {{#if (or hasDefaultBlock (and hasPageTitleBlock @tabs))}}
             <div class="euiPageHeaderContent__bottom">
               <EuiSpacer />
               {{yield to="default"}}
-              {{#if hasPageTitle}}
+              {{#if hasPageTitleBlock}}
                 <EuiTabs @size="l" @display="condensed" @bottomBorder={{false}}>
                   {{#each @tabs as |tab|}}
                     <EuiTab
                       @isSelected={{tab.isSelected}}
-                      @onClick={{optional tab.onClick}}
+                      {{on "click" (optional tab.onClick)}}
                     >
                       {{tab.label}}
                     </EuiTab>
@@ -261,7 +261,7 @@
             </div>
           {{/if}}
         </EuiFlexItem>
-        {{#if hasRightSideItems}}
+        {{#if hasRightSideItemsBlock}}
           <EuiFlexItem @grow={{false}}>
             <EuiFlexGroup
               @wrap={{true}}

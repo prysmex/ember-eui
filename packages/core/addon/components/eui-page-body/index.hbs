@@ -1,63 +1,46 @@
 {{#let
-  (arg-or-default @tagName "div")
   (arg-or-default @restrictWidth false)
+  (arg-or-default @tagName "div")
   (arg-or-default @borderRadius "none")
   (arg-or-default @paddingSize (if @panelled "l" "none"))
-  as |tagName restrictWidth borderRadius paddingSize|
+  as |restrictWidth tagName borderRadius paddingSize|
 }}
 
-  {{#let
-    (if
-      (eq restrictWidth true)
-      (hash widthClassName="euiPageBody--restrictWidth-custom")
-      (if
-        (eq restrictWidth false)
-        (hash
-          widthClassName="euiPageBody--restrictWidth-default"
-          widthStyle=restrictWidth
-        )
-      )
-    )
-    as |styling|
-  }}
+  {{#let (eui-page-restrict-width restrictWidth @style) as |styling|}}
     {{#if @panelled}}
       <EuiPanel
         class={{class-names
+          (if (eq borderRadius "none") "euiPageBody--borderRadiusNone")
+          (if
+            styling.widthClassName
+            (concat "euiPageBody--" styling.widthClassName)
+          )
           componentName="EuiPageBody"
-          borderRadiusSize=borderRadius
           paddingSize=@paddingSize
         }}
         @paddingSize={{paddingSize}}
         @borderRadius={{borderRadius}}
-        {{!-- @paddingSize={{arg-or-default @paddingSize "none"}} --}}
-        {{!-- @restrictWidth={{@restrictWidth}} --}}
+        @color={{@color}}
+        @hasBorder={{@hasBorder}}
+        @hasShadow={{@hasShadow}}
+        {{style styling.newStyle}}
         ...attributes
-        {{style
-          (if styling.widthStyle (inline-styles max-width=styling.widthStyle))
-        }}
       >
-        {{!-- <div
-          class={{class-names
-            componentName="EuiPageBody"
-            borderRadiusSize=borderRadius
-            paddingSize=paddingSize
-          }}
-        > --}}
         {{yield}}
-        {{! </div> }}
       </EuiPanel>
     {{else}}
       {{#let (element tagName) as |Tag|}}
         <Tag
           class={{class-names
+            (if (eq borderRadius "none") "euiPageBody--borderRadiusNone")
+            (if
+              styling.widthClassName
+              (concat "euiPageBody--" styling.widthClassName)
+            )
             componentName="EuiPageBody"
-            borderRadiusSize=borderRadius
-            paddingSize=paddingSize
+            paddingSize=@paddingSize
           }}
-          style={{if
-            styling.widthStyle
-            (inline-styles max-width=styling.widthStyle)
-          }}
+          {{style styling.newStyle}}
           ...attributes
         >
           {{yield}}

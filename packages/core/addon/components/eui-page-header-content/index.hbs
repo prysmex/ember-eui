@@ -88,10 +88,10 @@
                     }}
                   />
                 {{/if}}
-                {{#if @pageTitle}}
-                  {{@pageTitle}}
-                  {{yield to="pageTitle"}}
-                {{/if}}
+
+                {{@pageTitle}}
+                {{yield to="pageTitle"}}
+
               </EuiTitle>
             {{/if}}
 
@@ -135,10 +135,9 @@
                     }}
                   />
                 {{/if}}
-                {{#if @pageTitle}}
-                  {{@pageTitle}}
-                  {{yield to="pageTitle"}}
-                {{/if}}
+
+                {{@pageTitle}}
+                {{yield to="pageTitle"}}
               </EuiTitle>
             {{/if}}
 
@@ -226,10 +225,9 @@
                   }}
                 />
               {{/if}}
-              {{#if @pageTitle}}
-                {{@pageTitle}}
-                {{yield to="pageTitle"}}
-              {{/if}}
+
+              {{@pageTitle}}
+              {{yield to="pageTitle"}}
             </EuiTitle>
           {{/if}}
 

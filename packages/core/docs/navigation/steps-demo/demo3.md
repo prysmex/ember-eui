@@ -13,7 +13,6 @@ order: 5
 <EuiStepsHorizontal>
   <EuiStepHorizontal
     @title='Completed step 1'
-    @status='complete'
     @step={{1}}
     @isComplete={{true}}
   />

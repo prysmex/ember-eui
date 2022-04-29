@@ -2,18 +2,23 @@
   (if
     @disabled
     "disabled"
-    (if @isComplete "complete" (if @isSelected "current" (if @status @status (unless @status "incomplete"))))
-  ) as |status|
+    (if
+      @isComplete
+      "complete"
+      (if @isSelected "current" (arg-or-default @status "incomplete"))
+    )
+  )
+  as |status|
 }}
   <li class="euiStepHorizontal__item" aria-current={{if @isSelected "step"}}>
     <button
       type="button"
       class={{class-names
         "euiStepHorizontal"
-        (if @isSelected "euiStepHorizontal-isSelected")
-        (if @disabled "euiStepHorizontal-isDisabled")
-        (if @isComplete "euiStepHorizontal-isComplete")
-        (if (and (not @isSelected) (not @isComplete)) "euiStepHorizontal-isIncomplete")
+        (if (eq status "current") "euiStepHorizontal-isSelected")
+        (if (eq status "complete") "euiStepHorizontal-isComplete")
+        (if (eq status "incomplete") "euiStepHorizontal-isIncomplete")
+        (if (eq status "disabled") "euiStepHorizontal-isDisabled")
       }}
       title={{@title}}
       disabled={{@disabled}}

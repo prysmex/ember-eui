@@ -2,7 +2,7 @@
   (if
     @disabled
     "disabled"
-    (if @isComplete "complete" (if @isSelected @status (unless @status "incomplete")))
+    (if @isComplete "complete" (if @isSelected "current" (if @status @status (unless @status "incomplete"))))
   ) as |status|
 }}
   <li class="euiStepHorizontal__item" aria-current={{if @isSelected "step"}}>
@@ -11,7 +11,7 @@
       class={{class-names
         "euiStepHorizontal"
         (if @isSelected "euiStepHorizontal-isSelected")
-        (if @isDisabled "isDisabled")
+        (if @disabled "euiStepHorizontal-isDisabled")
         (if @isComplete "euiStepHorizontal-isComplete")
         (if (and (not @isSelected) (not @isComplete)) "euiStepHorizontal-isIncomplete")
       }}

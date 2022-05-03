@@ -13,7 +13,6 @@ order: 1
 <EuiFlexGroup @alignItems="center" >
 <EuiFlexItem>
 <EuiTitle @size="l">
-
 <h1>Ember EUI</h1>
 </EuiTitle>
 <EuiSpacer />
@@ -24,9 +23,12 @@ order: 1
 <EuiSpacer @size="s" />
 <EuiText @grow={{false}}>
 <p>
-This project aims to implement <EuiLink @href="https://github.com/elastic/eui">
+This project aims to implement <EuiLink @href="https://github.com/elastic/eui" @external={{false}} @target="_blank">
 <strong>The Elastic UI framework (EUI)</strong>
-</EuiLink> css and components in the <EuiLink @target="_blank" @href="https://www.youtube.com/watch?v=GFeRTO1LOuM">ember way</EuiLink>
+</EuiLink> css and components in the <EuiLink 
+  @target="_blank" 
+  @external={{false}}
+  @href="https://www.youtube.com/watch?v=GFeRTO1LOuM">ember way</EuiLink>
 </p>
 
 </EuiText>
@@ -174,11 +176,16 @@ style="overflow-x: auto"
         <EuiText @size="xs" @textAlign="center" @color="subdued">
           <p>
             EUI is dual-licensed under
-            <EuiLink @href="https://github.com/elastic/eui/blob/main/licenses/ELASTIC-LICENSE-2.0.md">
+            <EuiLink 
+              @href="https://github.com/elastic/eui/blob/main/licenses/ELASTIC-LICENSE-2.0.md" 
+              @external={{false}} 
+              @target="_blank">
               Elastic License 2.0
             </EuiLink>
             and
-            <EuiLink @href="https://github.com/elastic/eui/blob/main/licenses/SSPL-LICENSE.md">
+            <EuiLink @href="https://github.com/elastic/eui/blob/main/licenses/SSPL-LICENSE.md"
+              @external={{false}}
+              @target="_blank">
               Server Side Public License, v 1
             </EuiLink>
             | Crafted with
@@ -190,7 +197,7 @@ style="overflow-x: auto"
               ❤️
             </span>
             by 
-            <EuiLink @href="https://github.com/prysmex/ember-eui" @external={{false}} @target="_blank">
+            <EuiLink @href="https://prysmex.com" @external={{false}} @target="_blank">
             Prysmex
             </EuiLink>
           </p>

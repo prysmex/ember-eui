@@ -66,33 +66,55 @@ order: 1
   @pageHeader={{hash
     iconType='logoElastic'
     pageTitle='Page Title'
-    rightSideItems=(array (component 'eui-button-title' title='Go full screen'))
     tabs=this.tabs
   }}
-  @pageSideBar={{component 'eui-loading-content' lines=8}}
+  @hasBottomBarBlock={{this.showing}}
 >
-  <EuiLoadingContent @lines={{16}} />
+  <:pageSideBar>
+    <EuiLoadingContent @lines={{8}} />
+  </:pageSideBar>
+  <:pageHeaderRightSideItems as |Item|>
+    <Item>
+      <EuiButton>
+        Go Full Screen
+      </EuiButton>
+    </Item>
+  </:pageHeaderRightSideItems>
+  <:default>
+    <EuiLoadingContent @lines={{16}} />
+  </:default>
+  <:bottomBar>
+    Bottom bar
+  </:bottomBar>
 </EuiPageTemplate>
 ```
 
 ```js component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 
 export default class DemoIconComponent extends Component {
-  tabs = [
-    { label: 'Tab 1', isSelected: true },
-    {
-      label: 'Tab 2',
-      onClick: this.setShowBottomBar
-    }
-  ];
+  @tracked selectedTab = true;
   @tracked showing = false;
 
-  @action
-  setSHowBottomBar() {
-    this.showing = !this.showing;
+  get tabs() {
+    return [
+      {
+        label: 'Tab 1',
+        isSelected: this.selectedTab,
+        onClick: this.setShowBottomBar.bind(this, true)
+      },
+      {
+        label: 'Tab 2',
+        isSelected: !this.selectedTab,
+        onClick: this.setShowBottomBar.bind(this, false)
+      }
+    ];
   }
+
+  setShowBottomBar = (val) => {
+    this.selectedTab = val;
+    this.showing = !val;
+  };
 }
 ```

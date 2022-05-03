@@ -11,7 +11,7 @@ order: 4
 ```hbs template
 <EuiTabbedContent
   @tabs={{this.tabs}}
-  @initialSelectedTab={{object-at this.tabs 1}}
+  @initialSelectedTab={{object-at 1 this.tabs}}
   @autoFocus='selected'
   @onTabClick={{fn this.sayMyName}}
 >

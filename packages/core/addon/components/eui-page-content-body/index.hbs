@@ -1,15 +1,16 @@
-<div
-  class={{class-names
-    (if
-      @restrictWidth
-      "euiPage--restrictWidth-custom"
-      "euiPage--restrictWidth-default"
-    )
-    componentName="EuiPageContentBody"
-    paddingSize=@paddingSize
-  }}
-  {{style (inline-styles width=@restrictWidth)}}
-  ...attributes
->
-  {{yield}}
-</div>
+{{#let
+  (eui-page-restrict-width (arg-or-default @restrictWidth false) @style)
+  as |styling|
+}}
+  <div
+    class={{class-names
+      (concat "euiPage--" styling.widthClassName)
+      componentName="EuiPageContentBody"
+      paddingSize=@paddingSize
+    }}
+    {{style styling.newStyle}}
+    ...attributes
+  >
+    {{yield}}
+  </div>
+{{/let}}

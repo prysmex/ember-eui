@@ -43,7 +43,7 @@
           {{yield to="buttonContent"}}
         </span>
       </ButtonElement>
-      {{#if (and @extraAction (not this.isLoading))}}
+      {{#if (and @extraAction (has-block "extraAction") (not this.isLoading))}}
         <div class="euiAccordion__optionalAction">
           {{yield to="extraAction"}}
         </div>

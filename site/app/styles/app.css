@@ -27,9 +27,6 @@ body.euiBody--headerIsFixed {
 
 .guideSideNav__content {
   padding: 0 24px 24px;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
 }
 
 .guideSideNav__content::-webkit-scrollbar-corner,
@@ -159,4 +156,8 @@ button {
 
 .text-white {
   color: white;
+}
+
+.h-full {
+  height: 100%
 }

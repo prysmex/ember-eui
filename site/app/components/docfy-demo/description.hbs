@@ -2,12 +2,11 @@
 <div class="docfy-demo__description" ...attributes>
   <div class="docfy-demo__description__header">
     {{#if @title}}
-      <EuiTitle class="docfy-demo__description__header__title">
-        <a href="#{{@id}}">
-          <span class="icon icon-link"></span>
+        <a href="#{{@id}}" id={{@id}}>
+          <EuiTitle class="docfy-demo__description__header__title" style="padding-top: 60px; margin-top: -60px">
+            {{@title}}
+          </EuiTitle>
         </a>
-        {{@title}}
-      </EuiTitle>
     {{/if}}
     {{#if @editUrl}}
       <a
@@ -25,4 +24,4 @@
     {{yield}}
   </div>
 </div>
-<EuiSpacer @size="l" />
+<EuiSpacer />

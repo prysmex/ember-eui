@@ -1,7 +1,8 @@
-{{yield (hash Description=(component "docfy-demo/description" id=@id))}}
+{{yield (hash
+  Description=(component "docfy-demo/description" id=@id)
+)}}
 
 <EuiSplitPanel::Outer
-  id={{@id}}
   class="docfy-demo guideSection euiSplitPanel"
   @hasBorder={{true}}
   @paddingSize="none"
@@ -17,3 +18,4 @@
     )
   }}
 </EuiSplitPanel::Outer>
+<EuiSpacer @size="l" />

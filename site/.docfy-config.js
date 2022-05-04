@@ -31,6 +31,8 @@ module.exports = {
   labels: {
     docs: 'Documentation',
     editors: 'Editors & syntax',
+    tabular: 'Tabular content',
+    charts: 'Elastic chards',
     'changeset-form': 'Changeset form',
     'validated-form': 'Validated form'
   }

@@ -1,1 +1,0 @@
-<EuiPageHeader @pageTitle="Modal"/>

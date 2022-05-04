@@ -14,6 +14,17 @@ import type ThemeManager from 'site/services/theme-manager';
 
 interface Props {}
 
+const coreSectionsOrder = [
+  'layout',
+  'navigation',
+  'display',
+  'forms',
+  'tabular',
+  'editors',
+  'charts',
+  'utilities'
+]
+
 export default class ApplicationController extends Controller {
   @service declare router: RouterService;
   @service docfy: any;
@@ -27,69 +38,8 @@ export default class ApplicationController extends Controller {
 
   constructor(props?: Props) {
     super(props);
-    const root = this.docfy.nested.children.firstObject;
-    const instructions = getSidenavRoutes([
-      { ...root, children: [] },
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
-    const coreNodes = getSidenavRoutes([
-      root.children.find((child: Item) => child.name === 'core'),
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
 
-    let others = root.children.filter(
-      (child: Item) => child.name !== 'core' && child.name !== 'package'
-    );
-
-    others = this.removeDocsFromDocfyNodes(others);
-    const finalOthersPages = others.reduce((prev: Page[], curr: DocfyNode) => {
-      prev.push(...curr.pages);
-      return prev;
-    }, []);
-
-    const addons = getSidenavRoutes([
-      {
-        id: 'addons',
-        onClick: () => (id: NodeId) => {
-          this.selectedItem = id;
-        },
-        name: 'Addons',
-        label: 'Addons',
-        children: [],
-        pages: finalOthersPages
-      },
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
-
-    let packagesNode = root.children.filter(
-      (child: Item) => child.name === 'package'
-    );
-
-    packagesNode = this.removeDocsFromDocfyNodes(packagesNode);
-
-    const packageRoutes = getSidenavRoutes([
-      packagesNode?.[0],
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
-
-    instructions[0].items = instructions[0].items.reverse();
-    this.sideNavRoutes = [
-      ...instructions.sortBy('name:asc'),
-      ...(this.removeDocs(coreNodes)?.firstObject?.items || []),
-      ...addons,
-      ...packageRoutes
-    ];
-    this.currentSideNavRoutes = this.sideNavRoutes;
-    //@ts-expect-error
-    this.selectedItem = this.router.location.location.pathname;
+    this.initializeSidenav()
   }
 
   get currentUrlFor() {
@@ -100,26 +50,120 @@ export default class ApplicationController extends Controller {
     }
   }
 
-  removeDocsFromDocfyNodes(nodes: DocfyNode[]) {
-    nodes.forEach((node) => {
-      //Changeset-form node
-      let firstChild = node.children.firstObject;
-      if (firstChild?.label === 'Documentation') {
-        let docPages = firstChild.pages;
-        node.pages = docPages;
-        node.children = [];
+  initializeSidenav() {
+
+    // uppermost node
+    const docsNode = this.docfy.nested.children.firstObject;
+
+    // -- Documentation section
+
+    const docsNodeRoutes = getSidenavRoutes([
+      { ...docsNode, children: [] },
+      (id: NodeId) => {
+        this.selectedItem = id;
       }
+    ]);
+
+    // -- Display, Forms, Layout, Utilities, Editors & Syntax, Navigation sections
+    let coreNode = docsNode.children.find((child: DocfyNode) => child.name === 'core')
+    let coreNodes = this._getDocsNode(coreNode)?.children
+    let coreNodeRoutes = coreSectionsOrder?.reduce<Item[]>((acum, curr) => {
+      let node = coreNodes?.find((child: DocfyNode) => child.name == curr)
+      if (node){
+        // build routes for node
+        let nodeRoutes = getSidenavRoutes([
+          node,
+          (id: NodeId) => {
+            this.selectedItem = id;
+          }
+        ])
+
+        // add fake items based on page headings to simulate 'on this page' feature inside sidebar
+        node.pages.forEach((page: Page) => {
+          let headings = page?.headings?.firstObject?.headings
+          let item = nodeRoutes?.firstObject?.items?.find((item: Item) => item.name == page.title )
+
+          if(item) {
+            // set disabled to page item
+            item.disabled = !!page.frontmatter.disabled
+  
+            // create fake items
+            headings?.forEach((heading: any) => {
+              item?.items.push(
+                {
+                  id: `fake-${heading.id}`,
+                  items: [],
+                  name: heading.title,
+                  onClick: ((id: NodeId) => null),
+                  href: `#${heading.id}`,
+                  disabled: item.disabled || !!page.frontmatter.disabled_demos?.includes(heading.title)
+                }
+              )
+            });
+          }
+
+        })
+
+        acum.push(...nodeRoutes)
+      }
+      return acum
+    }, [])
+
+    // -- Addons section
+    let fakeNode = {
+      id: 'addons',
+      onClick: () => (id: NodeId) => {
+        this.selectedItem = id;
+      },
+      name: 'Addons',
+      label: 'Addons',
+      children: [],
+      pages: []
+    }
+
+    docsNode.children.forEach((child: DocfyNode) => {
+      if(child.name == 'core' || child.name == 'package'){
+        return
+      }
+      let innerDocsNode = this._getDocsNode(child)
+      fakeNode.children.push(...innerDocsNode?.children)
+      fakeNode.pages.push(...innerDocsNode?.pages)
     });
-    return nodes;
+
+    const addonsRoutes = getSidenavRoutes([
+      fakeNode,
+      (id: NodeId) => {
+        this.selectedItem = id;
+      }
+    ]);
+
+    // -- Package section
+
+    let packageNode = docsNode.children.find(
+      (child: Item) => child.name === 'package'
+    );
+
+    const packageRoutes = getSidenavRoutes([
+      packageNode,
+      (id: NodeId) => {
+        this.selectedItem = id;
+      }
+    ]);
+
+    // set state
+    this.sideNavRoutes = [
+      ...docsNodeRoutes,
+      ...coreNodeRoutes,
+      ...addonsRoutes,
+      ...packageRoutes
+    ];
+    this.currentSideNavRoutes = this.sideNavRoutes;
+    //@ts-expect-error
+    this.selectedItem = this.router.location.location.pathname;
   }
 
-  removeDocs(nodes: Item[]) {
-    let firstChild = nodes.firstObject;
-    if (firstChild?.items?.firstObject?.name === 'Documentation') {
-      let docItems = firstChild.items.firstObject.items;
-      firstChild.items = docItems;
-    }
-    return nodes;
+  _getDocsNode(node: DocfyNode) {
+    return node.children?.firstObject
   }
 
   filterSideNav(str: string, nodes: Item[], depth: number = 0): Item[] {

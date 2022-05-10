@@ -21,6 +21,7 @@ order: 6
 </EuiText>
 
 ```hbs template
+<TodoText @text="missing EuiButtonGroup component"/>
 <EuiFlexGroup>
   <EuiFlexItem>
     <EuiButton {{on 'click' (fn (mut this.accordionState) 'open')}}>

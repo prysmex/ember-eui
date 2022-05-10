@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Header
-
 <EuiText>
   The header is made up of
   <strong>many</strong>
@@ -33,47 +31,113 @@ order: 1
 </EuiText>
 
 ```hbs template
+
+<TodoText @text="missing EuiSelectableTemplateSitewide and EuiSelectable components"/>
+<EuiSpacer/>
+
 <EuiHeader>
+
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
       <EuiHeaderLogo @iconType='logoElastic' aria-label='Go to home page' />
     </EuiHeaderSectionItem>
+    
+    <!-- spaces -->
     <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderSectionItemButton @ref={{set this 'btn'}}>
-        <EuiAvatar
-          @name='Planta Prysmex'
-          @type='space'
-          @initialLength={{2}}
-          @size='s'
-        />
-      </EuiHeaderSectionItemButton>
+
+      <!-- <EuiPopover
+        @isOpen={{isOpen}}
+        @anchorPosition="downLeft"
+        @closePopover={{set this 'spacePopover' false}}
+        @panelPaddingSize="none"
+      >
+        <EuiSelectable
+          searchable={{this.listIsExtended}}
+          searchProps={{this.todo}}
+          options={{this.spaces}}
+          singleSelection="always"
+          style="width: 300"
+          onChange={{onChange}}
+          listProps={{this.todo}}
+        >
+          <:button>
+            <EuiHeaderSectionItemButton
+              aria-controls='header1'
+              aria-expanded={{this.spacePopover}}
+              aria-haspopup='true'
+              aria-label='Account menu'
+              @onClick={{this.onMenuButtonClick}}
+            >
+              <EuiAvatar
+                @name={{this.space.label}}
+                @type='space'
+                @initialLength={{2}}
+                @size='s'
+              />
+            </EuiHeaderSectionItemButton>
+          </:button>
+          <:content>
+            <EuiPopoverTitle paddingSize="s">
+              TODO: search
+            </EuiPopoverTitle>
+            TODO: list
+            <EuiPopoverFooter paddingSize="s">
+              <EuiButton
+                size="s"
+                @fullWidth={{true}}
+                onClick={{this.addMoreSpaces}}
+                disabled={{this.listIsExtended}}
+              >
+                Add more spaces
+              </EuiButton>
+            </EuiPopoverFooter>
+          </:content>
+        </EuiSelectable>
+      </EuiPopover> -->
+
     </EuiHeaderSectionItem>
   </EuiHeaderSection>
+
   <EuiHeaderBreadcrumbs
     aria-label='Header breadcrumbs example'
     @breadcrumbs={{this.breadcrumbs}}
   />
+
   <EuiHeaderSection @side='right'>
+
+    <!-- search -->
+    <EuiHeaderSectionItem @border='left'>
+      <EuiHeaderSectionItemButton
+        @ref={{set this 'cheerRef'}}
+      >
+        <EuiIcon @type='search' />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
+
+    <!-- profile -->
     <EuiHeaderSectionItem @border='left'>
       <EuiPopover
         @isOpen={{this.userPopover}}
         @closePopover={{set this 'userPopover' false}}
       >
         <:button>
+
           <EuiHeaderSectionItemButton
             aria-controls='header1'
-            aria-expanded={{this.isOpen}}
+            aria-expanded={{this.userPopover}}
             aria-haspopup='true'
             aria-label='Account menu'
             @onClick={{this.onMenuButtonClick}}
           >
             <EuiAvatar
-              @name='David Martinez'
+              @name={{this.name}}
               @type='user'
               @initialLength={{2}}
               @size='s'
             />
           </EuiHeaderSectionItemButton>
+
+
         </:button>
         <:content>
           <div style='width:320px;'>
@@ -83,12 +147,12 @@ order: 1
               @responsive={{false}}
             >
               <EuiFlexItem @grow={{false}}>
-                <EuiAvatar @name='David Martinez' @size='xl' />
+                <EuiAvatar @name={{this.name}} @size='xl' />
               </EuiFlexItem>
 
               <EuiFlexItem>
                 <EuiText>
-                  <p>David Martinez</p>
+                  <p>{{this.name}}</p>
                 </EuiText>
 
                 <EuiSpacer @size='m' />
@@ -111,15 +175,10 @@ order: 1
           </div>
         </:content>
       </EuiPopover>
-
     </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem @border='left'>
-      <EuiHeaderSectionItemButton @notification='3' @notificationColor='accent'>
-        <EuiIcon @type='bell' @size='m' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem @border='left'>
 
+    <!-- apps -->
+    <EuiHeaderSectionItem @border='left'>
       <EuiPopover
         @isOpen={{this.appsPopover}}
         @closePopover={{set this 'appsPopover' false}}
@@ -136,38 +195,16 @@ order: 1
         </:button>
         <:content>
           <EuiKeyPadMenu id='headerAppKeyPadMenuId' style="width: 288px">
-            <EuiKeyPadMenuItem @label='Discover'>
-              <EuiIcon @type='discoverApp' @size='l' />
-            </EuiKeyPadMenuItem>
-
-            <EuiKeyPadMenuItem @label='Dashboard'>
-              <EuiIcon @type='dashboardApp' @size='l' />
-            </EuiKeyPadMenuItem>
-
-            <EuiKeyPadMenuItem @label='Dev Tools'>
-              <EuiIcon @type='devToolsApp' @size='l' />
-            </EuiKeyPadMenuItem>
-
-            <EuiKeyPadMenuItem @label='Machine Learning'>
-              <EuiIcon @type='machineLearningApp' @size='l' />
-            </EuiKeyPadMenuItem>
-
-            <EuiKeyPadMenuItem @label='Graph'>
-              <EuiIcon @type='graphApp' @size='l' />
-            </EuiKeyPadMenuItem>
-
-            <EuiKeyPadMenuItem @label='Visualize'>
-              <EuiIcon @type='visualizeApp' @size='l' />
-            </EuiKeyPadMenuItem>
-
-            <EuiKeyPadMenuItem @label='Timelion' @betaBadgeLabel='Beta'>
-              <EuiIcon @type='timelionApp' @size='l' />
-            </EuiKeyPadMenuItem>
+            {{#each this.apps as |appObj|}}
+              <EuiKeyPadMenuItem @label={{appObj.label}}>
+                <EuiIcon @type={{appObj.type}} @size='l' />
+              </EuiKeyPadMenuItem>
+            {{/each}}
           </EuiKeyPadMenu>
         </:content>
       </EuiPopover>
-
     </EuiHeaderSectionItem>
+
   </EuiHeaderSection>
 </EuiHeader>
 ```
@@ -178,124 +215,105 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
-  @tracked isOpen = false;
+  @tracked spacePopover = false;
   @tracked userPopover = false;
   @tracked appsPopover = false;
   @tracked btn;
-
-  spacesValues = [
+  @tracked spaces = [
     {
-      label: 'Sales team',
-      prepend: {
-        type: 'space',
-        name: 'Sales Team',
-        size: 's'
-      },
-      checked: 'on'
+      label: 'Sales Team'
     },
     {
-      label: 'Engineering',
-      prepend: {
-        type: 'space',
-        name: 'Engineering',
-        size: 's'
-      }
+      label: 'Engineering'
     },
     {
-      label: 'Security',
-      prepend: {
-        type: 'space',
-        name: 'Security',
-        size: 's'
-      }
+      label: 'Security'
     },
     {
-      label: 'Default',
-      prepend: {
-        type: 'space',
-        name: 'Default',
-        size: 's'
-      }
+      label: 'Default'
     }
   ];
+  @tracked space = this.spaces.firstObject
 
   additionalSpaces = [
     {
-      label: 'Sales team 2',
-      prepend: {
-        type: 'space',
-        name: 'Sales Team 2',
-        size: 's'
-      }
+      label: 'Sales Team 2'
     },
     {
-      label: 'Engineering 2',
-      prepend: {
-        type: 'space',
-        name: 'Engineering 2',
-        size: 's'
-      }
+      label: 'Engineering 2'
     },
     {
-      label: 'Security 2',
-      prepend: {
-        type: 'space',
-        name: 'Security 2',
-        size: 's'
-      }
+      label: 'Security 2'
     },
     {
-      label: 'Default 2',
-      prepend: {
-        type: 'space',
-        name: 'Default 2',
-        size: 's'
-      }
+      label: 'Default 2'
     }
   ];
 
-  animate = () => {
-    this.btn?.euiAnimate?.();
-  };
+  apps = [
+    {
+      label: 'Discover',
+      type: 'discoverApp'
+    },
+    {
+      label: 'Dashboard',
+      type: 'dashboardApp'
+    },
+    {
+      label: 'Dev Tools',
+      type: 'devToolsApp'
+    },
+    {
+      label: 'Machine Learning',
+      type: 'machineLearningApp'
+    },
+    {
+      label: 'Graph',
+      type: 'graphApp'
+    },
+    {
+      label: 'Visualize',
+      type: 'visualizeApp'
+    },
+    {
+      label: 'Timelion',
+      type: 'timelionApp'
+    }
+  ]
+
+  name = 'John Username'
 
   breadcrumbs = [
     {
       text: 'Management',
       href: '#',
-      onClick: (e) => {
-        e.preventDefault();
-      },
-      'data-test-subj': 'breadcrumbsAnimals',
-      className: 'customClass'
+      onClick: this.breadcrumOnClick
     },
     {
       text: 'Truncation test is here for a really long item',
       href: '#',
-      onClick: (e) => {
-        e.preventDefault();
-      }
+      onClick: this.breadcrumOnClick
     },
     {
       text: 'Hidden',
       href: '#',
-      onClick: (e) => {
-        e.preventDefault();
-      }
+      onClick: this.breadcrumOnClick
     },
     {
       text: 'Users',
       href: '#',
-      onClick: (e) => {
-        e.preventDefault();
-      }
+      onClick: this.breadcrumOnClick
     },
     {
       text: 'Create'
     }
   ];
 
-  @action
-  onClick(e) {
+  get listIsExtended() {
+    return this.spaces.length > 4
+  }
+
+  breadcrumOnClick(e) {
     e.preventDefault();
   }
 

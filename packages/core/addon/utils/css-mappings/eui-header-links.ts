@@ -17,7 +17,7 @@ export const mobileGutterSizeMapping = {
 };
 
 const mapping: ComponentMapping = {
-  base: baseClass,
+  base: '',
   properties: {
     gutterSize: gutterSizeMapping,
     mobileGutterSize: mobileGutterSizeMapping

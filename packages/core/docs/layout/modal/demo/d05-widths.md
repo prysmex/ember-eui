@@ -15,54 +15,35 @@ order: 5
 ```hbs template
 <EuiButton
   @color='primary'
-  {{on 'click' (fn this.activateModal 'widthModalActive')}}
+  {{on 'click' (fn this.activateModal 'modalActive')}}
 >
-  Show Width Modal
+  Show modal with custom width
 </EuiButton>
-{{#if this.widthModalActive}}
+{{#if this.modalActive}}
 
   <EuiModal
-    @onClose={{fn this.deactivateModal 'widthModalActive'}}
-    @initialFocus='#focusee'
-    style='width: 800px'
+    @onClose={{fn this.deactivateModal 'modalActive'}}
+    style='width: {{this.width}}px'
   >
     <EuiModalHeader>
-      <EuiTitle @size='m'>
-        Basic Modal width 800 px width
+      <EuiTitle>
+        Modal title
       </EuiTitle>
     </EuiModalHeader>
     <EuiModalBody>
-      <EuiText>
-        <p>
-          Hello there!
-        </p>
-        <p>
-          This modal has many
-          <a id='focusee' href='#'>
-            different
-          </a>
-          <a href='#'>
-            focusable
-          </a>
-          <a href='#'>
-            items
-          </a>
-          .
-        </p>
-      </EuiText>
+      This modal has the following setup:
+      <EuiSpacer/>
+      <EuiCodeBlock @isCopyable={{true}}>
+        {{this.code}}
+      </EuiCodeBlock>
     </EuiModalBody>
     <EuiModalFooter>
-      <EuiButtonEmpty
-        {{on 'click' (fn this.deactivateModal 'widthModalActive')}}
-      >
-        Cancel
-      </EuiButtonEmpty>
       <EuiButton
-        {{on 'click' (fn this.deactivateModal 'widthModalActive')}}
+        {{on 'click' (fn this.deactivateModal 'modalActive')}}
         @color='primary'
         @fill={{true}}
       >
-        Submit
+        close
       </EuiButton>
     </EuiModalFooter>
   </EuiModal>
@@ -76,7 +57,12 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoModalComponent extends Component {
-  @tracked widthModalActive = false;
+  @tracked modalActive = false;
+  width = 800
+
+  code = `
+    <EuiModal style='width: ${this.width}'>...</EuiModal>
+  `
 
   @action
   activateModal(modal) {
@@ -86,11 +72,6 @@ export default class DemoModalComponent extends Component {
   @action
   deactivateModal(modal) {
     this[modal] = false;
-  }
-
-  @action
-  reloadPage() {
-    location.reload();
   }
 }
 ```

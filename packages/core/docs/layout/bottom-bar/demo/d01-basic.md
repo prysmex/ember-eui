@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Basic
-
 <EuiText>
   <p>
   <strong>EuiBottomBar</strong> is a simple wrapper component that does nothing but affix a dark bar (usually filled with buttons) to the bottom of the page. Use it when you have really long pages or complicated, multi-page forms. In the case of forms, only invoke it if a form is in a savable state.

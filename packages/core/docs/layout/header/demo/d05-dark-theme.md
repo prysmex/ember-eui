@@ -12,8 +12,8 @@ order: 5
 
 ```hbs template
 <EuiHeader @theme='dark'>
-  <EuiHeaderSection @side='left' @border='right'>
-    <EuiHeaderSectionItem>
+  <EuiHeaderSection @side='left'>
+    <EuiHeaderSectionItem @border='right'>
       <EuiHeaderLogo>Elastic</EuiHeaderLogo>
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem>

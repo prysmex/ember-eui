@@ -21,7 +21,7 @@ order: 3
 
   <EuiHeaderSectionItem>
     <EuiHeaderLinks aria-label='App navigation links example'>
-      <EuiHeaderLink @isActive={{false}}>Docs</EuiHeaderLink>
+      <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
 
       <EuiHeaderLink>Code</EuiHeaderLink>
 

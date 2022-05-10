@@ -32,12 +32,12 @@ order: 9
 <EuiSpacer />
 <EuiAccordion @paddingSize='s' @buttonElement="div">
   <:buttonContent>
-    <EuiText
+    <EuiLink
       onClick={{this.onClick}}
-      href='#/layout/accordion#interactive-content-in-the-trigger'
+      @href='#docfy-demo-docs-layout-accordion-d09-interactive-content-in-the-trigger'
     >
       This is a nested link
-    </EuiText>
+    </EuiLink>
   </:buttonContent>
   <:content>
     <EuiPanel @color='subdued'>

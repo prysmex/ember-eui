@@ -18,34 +18,10 @@ order: 8
     />
   </EuiFlexItem>
 </EuiFlexGroup>
+
 <EuiSpacer />
-<EuiHeader @position={{this.position}}>
-  <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderLogo>Elastic</EuiHeaderLogo>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-  <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton
-        @notification={{if this.notificationNumber true false}}
-        @notificationColor='accent'
-        @ref={{set this 'bellRef'}}
-      >
-        <EuiIcon @type='bell' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton
-        @notification={{this.notificationNumber}}
-        @notificationColor='accent'
-        @ref={{set this 'cheerRef'}}
-      >
-        <EuiIcon @type='cheer' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-</EuiHeader>
+
+<!-- header 1 -->
 <EuiHeader @position={{this.position}} @theme='dark'>
   <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem @border='right'>
@@ -55,16 +31,46 @@ order: 8
   <EuiHeaderSection @side='right'>
     <EuiHeaderSectionItem>
       <EuiHeaderSectionItemButton
-        @notification={{if this.notificationNumber true false}}
-        @notificationColor='accent'
-        @ref={{set this 'bellRef'}}
+        aria-label='Account menu'
       >
-        <EuiIcon @type='bell' />
+        <EuiAvatar
+          @name='John Username'
+          @type='user'
+          @initialLength={{2}}
+          @size='s'
+        />
       </EuiHeaderSectionItemButton>
     </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+</EuiHeader>
+
+<!-- header 2 -->
+<EuiHeader @position={{this.position}}>
+  <EuiHeaderSection @side='left'>
     <EuiHeaderSectionItem>
       <EuiHeaderSectionItemButton
-        @notification={{this.notificationNumber}}
+        @border='right'
+        aria-label='Account menu'
+      >
+        <EuiAvatar
+          @name="Default Space"
+          @type='space'
+          @initialLength={{2}}
+          @size='s'
+        />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+
+  <EuiHeaderBreadcrumbs
+    aria-label='Header breadcrumbs example'
+    @breadcrumbs={{this.breadcrumbs}}
+  />
+
+  <EuiHeaderSection @side='right'>
+    <EuiHeaderSectionItem>
+      <EuiHeaderSectionItemButton
+        @notification={{true}}
         @notificationColor='accent'
         @ref={{set this 'cheerRef'}}
       >
@@ -82,6 +88,21 @@ import { action } from '@ember/object';
 
 export default class DemoHeaderComponent extends Component {
   @tracked position = 'static';
+
+  breadcrumbs = [
+    {
+      text: 'Management',
+      href: '#',
+      onClick: this.breadcrumOnClick
+    },
+    {
+      text: 'Users'
+    }
+  ];
+
+  breadcrumOnClick(e) {
+    e.preventDefault();
+  } 
 
   setPosition = (e) => {
     if (e.target.checked) {

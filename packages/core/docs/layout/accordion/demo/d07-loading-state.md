@@ -21,6 +21,7 @@ order: 7
 </EuiText> -->
 
 ```hbs template
+<TodoText @text="missing EuiButtonGroup component"/>
 <EuiFlexGroup>
   <EuiFlexItem>
     <EuiText>

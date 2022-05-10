@@ -17,15 +17,29 @@ Another way to allow for continued interactions of the page content while a flyo
 
 ```hbs template
 <EuiButton {{on 'click' this.openFlyout}}>
-  Toggle flyout
+  Toggle pushed flyout
 </EuiButton>
 
 {{#if this.flyout2Open}}
   <EuiFlyout @type='push' @size='s' @onClose={{this.closeFlyout}}>
     <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle @size='l'>Small Welcome!</EuiTitle>
+      <EuiTitle @size='l'>A pushed flyout</EuiTitle>
     </EuiFlyoutHeader>
-    <EuiFlyoutBody />
+    <EuiFlyoutBody>
+      <EuiText>
+        <p>
+          A pushed flyout typically contains more information about a particular piece of data or complex form controls for editing.
+        </p>
+        <p>
+          Also, it is good to include a close button in the footer for a larger hit target than the small close button provides.
+        </p>
+      </EuiText>
+    </EuiFlyoutBody>
+    <EuiFlyoutFooter>
+      <EuiButton {{on 'click' this.closeFlyout}}>
+        Close
+      </EuiButton>
+    </EuiFlyoutFooter>
   </EuiFlyout>
 {{/if}}
 ```

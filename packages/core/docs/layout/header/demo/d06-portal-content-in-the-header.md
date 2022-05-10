@@ -53,6 +53,7 @@ order: 6
       <EuiPopover
         @isOpen={{this.popover}}
         @closePopover={{set this 'popover' false}}
+        @anchorPosition='leftCenter'
         @panelPaddingSize='none'
       >
         <:button>
@@ -86,7 +87,7 @@ order: 6
                   {{alert.date}}
                 </:date>
                 <:badge>
-                  <EuiBadge>{{alert.badge}}</EuiBadge>
+                  <EuiBadge @color={{alert.badgeColor}}>{{alert.badge}}</EuiBadge>
                 </:badge>
               </EuiHeaderAlert>
             {{/each}}
@@ -127,7 +128,11 @@ order: 6
               {{alert.date}}
             </:date>
             <:badge>
-              <EuiBadge>{{alert.badge}}</EuiBadge>
+              <EuiBadge
+                @color={{alert.badgeColor}}
+              >
+                {{alert.badge}}
+              </EuiBadge>
             </:badge>
           </EuiHeaderAlert>
         {{/each}}
@@ -174,42 +179,48 @@ export default class DemoHeaderComponent extends Component {
       text: 'Show or hide applications and features per space in Kibana.',
       action: 'Learn about feature controls',
       date: '1 May 2019',
-      badge: 7.1
+      badge: '7.1',
+      badgeColor: 'default'
     },
     {
       title: 'Kibana 7.0 is turning heads',
       text: 'Simplified navigation, responsive dashboards, dark mode… pick your favorite.',
       action: 'Read the blog',
       date: '10 April 2019',
-      badge: 7.0
+      badge: '7.0',
+      badgeColor: 'hollow'
     },
     {
       title: 'Enter dark mode',
       text: 'Kibana now supports the easy-on-the-eyes theme across the entire UI.',
       action: 'Go to Advanced Settings',
       date: '10 April 2019',
-      badge: 7.0
+      badge: '7.0',
+      badgeColor: 'hollow'
     },
     {
       title: 'Pixel-perfect Canvas is production ready',
       text: 'Your creative space for visualizing data awaits.',
       action: 'Watch the webinar',
       date: '26 March 2019',
-      badge: 6.7
+      badge: '6.7',
+      badgeColor: 'hollow'
     },
     {
       title: '6.7 release notes',
       text: 'Stay up-to-date on the latest and greatest features.',
       action: 'Check out the docs',
       date: '26 March 2019',
-      badge: 6.7
+      badge: '6.7',
+      badgeColor: 'hollow'
     },
     {
       title: 'Rollups made simple in Kibana',
       text: 'Save space and preserve the integrity of your data directly in the UI.',
       action: 'Read the blog',
       date: '10 January 2019',
-      badge: 6.5
+      badge: '6.5',
+      badgeColor: 'hollow'
     }
   ];
 

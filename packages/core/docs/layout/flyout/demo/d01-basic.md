@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Basic
-
 <EuiText>
   <p>
   <strong>EuiFlyout</strong> is a fixed position panel that pops in from the side of the window. It should be used to reveal more detailed contextual information or to provide complex forms without losing the user's current state. It is a good alternative to <a href="/docs/core/docs/layout/modal">modals</a> when the action is not transient.
@@ -15,29 +13,27 @@ order: 1
 
 ```hbs template
 <EuiButton {{on 'click' this.openFlyout}}>
-  Small Flyout
+  A typical flyout
 </EuiButton>
 {{#if this.flyoutOpen}}
   <EuiFlyout
-    @size='s'
+    @size='m'
     @onClose={{this.closeFlyout}}
   >
     <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle @size='l'>Small Welcome!</EuiTitle>
+      <EuiTitle @size='l'>A typical flyout</EuiTitle>
     </EuiFlyoutHeader>
     <EuiFlyoutBody>
-      Content
+      <EuiText>
+        For consistency across the many flyouts, please utilize the following code for implementing the flyout with a header.
+      </EuiText>
+      <EuiCodeBlock
+        @isCopyable={{false}}
+        @language="html"
+      >
+        Some code
+      </EuiCodeBlock>
     </EuiFlyoutBody>
-    <EuiFlyoutFooter>
-      <EuiFlexGroup @justifyContent='spaceBetween' @gutterSize='s'>
-        <EuiButton {{on 'click' this.closeFlyout}}>
-          Cancel
-        </EuiButton>
-        <EuiButton @fill={{true}} {{on 'click' this.closeFlyout}}>
-          Send
-        </EuiButton>
-      </EuiFlexGroup>
-    </EuiFlyoutFooter>
   </EuiFlyout>
 {{/if}}
 ```

@@ -5,28 +5,62 @@ order: 3
 # Confirm Modal
 
 ```hbs template
-<EuiButton
-  @color='primary'
-  {{on 'click' (fn this.activateModal 'confirmModalActive')}}
->
-  Show Confirm Modal
-</EuiButton>
+
+<!-- buttons -->
+
+<EuiFlexGroup>
+  <EuiFlexItem>
+    <EuiButton
+      @color='primary'
+      {{on 'click' (fn this.activateModal 'confirmModalActive')}}
+    >
+      Show confirm modal
+    </EuiButton>
+  </EuiFlexItem>
+  <EuiFlexItem>
+    <EuiButton
+      @color='primary'
+      {{on 'click' (fn this.activateModal 'dangerousConfirmModalActive')}}
+    >
+      Show dangerous confirm modal
+    </EuiButton>
+  </EuiFlexItem>
+</EuiFlexGroup>
+
+<!-- modals -->
+
 {{#if this.confirmModalActive}}
   <EuiConfirmModal
-    @title='Refresh the page?'
-    @onConfirm={{this.reloadPage}}
+    @title='Do this thing'
+    @onConfirm={{fn this.deactivateModal 'confirmModalActive'}}
     @buttonColor='primary'
-    @confirmButtonText='Refresh'
-    @cancelButtonText='Cancel'
+    @confirmButtonText='Yes, do it'
+    @cancelButtonText="No, don't do it"
     @onCancel={{fn this.deactivateModal 'confirmModalActive'}}
   >
     <EuiText>
-      This action will trash all unsaved changes
+      <p>You are about to do something</p>
+      <p>Are you sure you want to do this?</p>
     </EuiText>
   </EuiConfirmModal>
-
 {{/if}}
-<EuiSpacer />
+
+{{#if this.dangerousConfirmModalActive}}
+  <EuiConfirmModal
+    @title='Do this destructive thing'
+    @onConfirm={{fn this.deactivateModal 'dangerousConfirmModalActive'}}
+    @buttonColor='danger'
+    @confirmButtonText='Yes, do it'
+    @cancelButtonText="No, don't do it"
+    @onCancel={{fn this.deactivateModal 'dangerousConfirmModalActive'}}
+  >
+    <EuiText>
+      <p>You’re about to destroy something.</p>
+      <p>Are you sure you want to do this?</p>
+    </EuiText>
+  </EuiConfirmModal>
+{{/if}}
+
 ```
 
 ```js component
@@ -36,6 +70,7 @@ import { action } from '@ember/object';
 
 export default class DemoModalComponent extends Component {
   @tracked confirmModalActive = false;
+  @tracked dangerousConfirmModalActive = false;
 
   @action
   activateModal(modal) {
@@ -47,9 +82,5 @@ export default class DemoModalComponent extends Component {
     this[modal] = false;
   }
 
-  @action
-  reloadPage() {
-    location.reload();
-  }
 }
 ```

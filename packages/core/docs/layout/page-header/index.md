@@ -1,6 +1,5 @@
 ---
-order: 1
-title: Page Header
+title: Page header
 ---
 
 <EuiPageHeader @pageTitle="Page Header" @bottomBorder={{true}}>

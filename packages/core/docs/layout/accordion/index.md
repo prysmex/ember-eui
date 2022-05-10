@@ -4,6 +4,7 @@ title: Accordion
 
 <EuiPageHeader @pageTitle="Accordion"/>
 <EuiSpacer @size="l" />
+
 <EuiCallOut
   @title='Take care when including flex group content within accordions'>
   <:body>

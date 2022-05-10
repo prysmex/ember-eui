@@ -19,7 +19,7 @@ All the inner flyout components inherit their padding from the wrapping <strong>
   Show flyout to test padding sizes
 </EuiButton>
 
-{{#if this.flyout2Open}}
+{{#if this.flyoutOpen}}
   <EuiFlyout
     @paddingSize={{this.padding}}
     @onClose={{this.closeFlyout}}
@@ -28,34 +28,38 @@ All the inner flyout components inherit their padding from the wrapping <strong>
       <EuiTitle @size='l'>Small Welcome!</EuiTitle>
     </EuiFlyoutHeader>
     <EuiFlyoutBody>
-      <EuiFlexGroup>
-        <EuiFlexItem>
-          {{#each this.paddings as |padding|}}
-            <EuiButton
-              @color={{if (eq padding.id this.padding) 'primary' 'text'}}
-              {{on 'click' (set this 'padding' padding.id)}}
-            >
-              {{padding.label}}
-            </EuiButton>
-          {{/each}}
+      <:banner>
+        <EuiCallOut
+          @title='The banner left and right padding is medium to match that of flyout'
+        />
+      </:banner>
 
-          <EuiButton {{on 'click' this.toggleSide}}>
-            change from
-            {{this.side}}
-          </EuiButton>
-        </EuiFlexItem>
-      </EuiFlexGroup>
+      <:default>
+        <TodoText @text="missing EuiButtonGroup component"/>
+        <EuiFlexGroup>
+          <EuiFlexItem>
+            {{#each this.paddings as |padding|}}
+              <EuiButton
+                @color={{if (eq padding.id this.padding) 'primary' 'text'}}
+                {{on 'click' (set this 'padding' padding.id)}}
+              >
+                {{padding.label}}
+              </EuiButton>
+            {{/each}}
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </:default>
     </EuiFlyoutBody>
     <EuiFlyoutFooter>
       <EuiFlexGroup @justifyContent='spaceBetween' @gutterSize='s'>
-        <EuiButton {{on 'click' (fn this.closeFlyout 'flyout2Open')}}>
-          Cancel
-        </EuiButton>
+        <EuiButtonEmpty @iconType="cross" {{on 'click' this.closeFlyout}}>
+          Close
+        </EuiButtonEmpty>
         <EuiButton
           @fill={{true}}
-          {{on 'click' (fn this.closeFlyout 'flyout2Open')}}
+          {{on 'click' this.closeFlyout}}
         >
-          Send
+          Save
         </EuiButton>
       </EuiFlexGroup>
     </EuiFlyoutFooter>
@@ -69,18 +73,8 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoFlyoutDemo2Component extends Component {
-  @tracked flyout2Open = false;
+  @tracked flyoutOpen = false;
   @tracked padding = 'l';
-  @tracked side = 'right';
-
-  @action
-  toggleSide() {
-    if (this.side === 'right') {
-      this.side = 'left';
-    } else {
-      this.side = 'right';
-    }
-  }
 
   paddings = [
     {
@@ -103,12 +97,12 @@ export default class DemoFlyoutDemo2Component extends Component {
 
   @action
   openFlyout() {
-    this.flyout2Open = true;
+    this.flyoutOpen = true;
   }
 
   @action
   closeFlyout(flyout) {
-    this.flyout2Open = false;
+    this.flyoutOpen = false;
   }
 }
 ```

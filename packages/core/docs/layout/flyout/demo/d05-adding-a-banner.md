@@ -16,10 +16,10 @@ To highlight some information at the top of a flyout, you can pass an <a href="/
 
 ```hbs template
 <EuiButton {{on 'click' this.openFlyout}}>
-  Show flyout to test padding sizes
+  Show flyout with banner
 </EuiButton>
 
-{{#if this.flyout2Open}}
+{{#if this.flyoutOpen}}
   <EuiFlyout  @onClose={{this.closeFlyout}}>
     <EuiFlyoutHeader @hasBorder={{true}}>
       <EuiTitle @size='l'>Small Welcome!</EuiTitle>
@@ -29,7 +29,7 @@ To highlight some information at the top of a flyout, you can pass an <a href="/
         <EuiCallOut>
           <:body>
             Here’s some stuff that you need to know. This banner helps highlight
-            important information.
+            important information. <EuiLink @href="#">View docs</EuiLink>
           </:body>
         </EuiCallOut>
       </:banner>
@@ -44,16 +44,16 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoFlyoutDemo2Component extends Component {
-  @tracked flyout2Open = false;
+  @tracked flyoutOpen = false;
 
   @action
   openFlyout() {
-    this.flyout2Open = true;
+    this.flyoutOpen = true;
   }
 
   @action
   closeFlyout(flyout) {
-    this.flyout2Open = false;
+    this.flyoutOpen = false;
   }
 }
 ```

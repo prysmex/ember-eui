@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Modal
-
 <!-- <EuiText>
 Each <strong>EuiModal</strong> requires a specific set of nested child components. They can be omitted if necessary, but the order cannot be changed or interrupted.
 

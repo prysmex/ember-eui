@@ -15,6 +15,7 @@ import type ThemeManager from 'site/services/theme-manager';
 interface Props {}
 
 const coreSectionsOrder = [
+  'templates',
   'layout',
   'navigation',
   'display',
@@ -95,13 +96,12 @@ export default class ApplicationController extends Controller {
                   items: [],
                   name: heading.title,
                   onClick: ((id: NodeId) => null),
-                  href: `#${heading.id}`,
+                  href: `${window.location.origin}${page.url}#${heading.id}`,
                   disabled: item.disabled || !!page.frontmatter.disabled_demos?.includes(heading.title)
                 }
               )
             });
           }
-
         })
 
         acum.push(...nodeRoutes)

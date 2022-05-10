@@ -16,7 +16,7 @@
       <EuiPopover
         @isOpen={{this.pop1}}
         @anchorPosition="downRight"
-        @panelPaddingSize={{@panelPaddingSize}}
+        @panelPaddingSize={{arg-or-default @panelPaddingSize 'none'}}
         @closePopover={{set this "pop1" false}}
       >
         <:button>

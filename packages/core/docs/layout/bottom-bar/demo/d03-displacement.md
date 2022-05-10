@@ -20,6 +20,7 @@ order: 3
 </EuiText>
 
 ```hbs template
+<TodoText @text="missing euiButtonGroupButton component"/>
 <EuiFlexGroup>
   <EuiFlexItem>
     <EuiButton

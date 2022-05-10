@@ -31,19 +31,15 @@ order: 10
 </EuiText>
 
 ```hbs template
-<EuiAccordion
-  @paddingSize='l'
-  @element='fieldset'
-  @className='euiAccordionForm'
-  @buttonClassName='euiAccordionForm__button'
-  @extraAction={{true}}
->
-  <:buttonContent>
-    <EuiText
-      @onClick={{this.onClick}}
-      @href='#/layout/accordion#interactive-content-in-the-trigger'
-      @size='xs'
-    >
+<div>
+  <EuiAccordion
+    class='euiAccordionForm'
+    @paddingSize='l'
+    @element='fieldset'
+    @buttonClassName='euiAccordionForm__button'
+    @extraAction={{true}}
+  >
+    <:buttonContent>
       <div>
         <EuiFlexGroup
           @gutterSize='s'
@@ -69,35 +65,43 @@ order: 10
           </p>
         </EuiText>
       </div>
-    </EuiText>
-  </:buttonContent>
-  <:content>
-    <EuiForm @component='form'>
-      <EuiFlexGroup>
-        <EuiFlexItem>
-          <EuiFormRow @label='Username'>
-            <EuiFieldText @icon='user' @placeholder='John' />
-          </EuiFormRow>
-        </EuiFlexItem>
+    </:buttonContent>
+    <:content>
+      <EuiForm @component='form'>
+        <EuiFlexGroup @gutterSize="l">
+          <EuiFlexItem>
+            <EuiFormRow @label='Username'>
+              <EuiFieldText @icon='user' @placeholder='John' />
+            </EuiFormRow>
+          </EuiFlexItem>
 
-        <EuiFlexItem>
-          <EuiFormRow
-            @label='Password'
-            @helpText='Must include one number and one symbol'
-          >
-            <EuiFieldPassword @icon='lock' />
-          </EuiFormRow>
-        </EuiFlexItem>
-      </EuiFlexGroup>
+          <EuiFlexItem>
+            <EuiFormRow
+              @label='Password'
+              @helpText='Must include one number and one symbol'
+            >
+              <EuiFieldPassword @icon='lock' />
+            </EuiFormRow>
+          </EuiFlexItem>
+        </EuiFlexGroup>
 
-      <EuiSpacer @size='m' />
+        <EuiSpacer @size='m' />
 
-      <EuiFormRow @label='Body'>
-        <EuiTextArea @placeholder='I am a textarea, put some content in me!' />
-      </EuiFormRow>
-    </EuiForm>
-  </:content>
-</EuiAccordion>
+        <EuiFormRow @label='Body'>
+          <EuiTextArea placeholder='I am a textarea, put some content in me!' />
+        </EuiFormRow>
+      </EuiForm>
+    </:content>
+  <:extraAction>
+    <EuiButtonIcon
+      @iconType="cross"
+      @color="danger"
+      class="euiAccordionForm__extraAction"
+      aria-label="Delete"
+    />
+  </:extraAction>
+  </EuiAccordion>
+</div>
 ```
 
 ```js component
@@ -106,9 +110,5 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class AccordionDemo8Component extends Component {
-  @action
-  onClick(e) {
-    e.stopPropagation();
-  }
 }
 ```

@@ -15,9 +15,10 @@ body.euiBody--headerIsFixed {
   display: none;
 }
 
-.background-blue {
-  background-color: blue !important;
-  color: white;
+.guideDemo__textLines {
+  background-image: linear-gradient(rgba(0,119,204,0.1) 1px, transparent 1px);
+  background-size: 100% 12px;
+  background-position-y: -1px;
 }
 
 .euiPanel--restrictWidth-custom {
@@ -162,6 +163,19 @@ button {
 .flex-demo .euiFlexItem {
   padding: 16px;
   background: rgba(27,169,245,0.1);
+}
+
+.guideDemo__highlightSpacer .euiCode {
+  -webkit-align-self: flex-start;
+  align-self: flex-start;
+  margin-bottom: 16px;
+}
+.guideDemo__highlightSpacer .euiSpacer {
+  background: rgba(27,169,245,0.1);
+}
+
+.docfy-demo__description__content>* {
+  margin-bottom: 24px;
 }
 
 .horizontal-rule-demo>div {

@@ -19,7 +19,7 @@ Flyouts come in three predefined <EuiCode>sizes</EuiCode> of <EuiCode>'s' | 'm' 
   Show flyout to test widths
 </EuiButton>
 
-{{#if this.flyout2Open}}
+{{#if this.flyoutOpen}}
   <EuiFlyout
     @size={{this.size}}
     @onClose={{this.closeFlyout}}
@@ -30,6 +30,7 @@ Flyouts come in three predefined <EuiCode>sizes</EuiCode> of <EuiCode>'s' | 'm' 
     <EuiFlyoutBody>
       <EuiFlexGroup>
         <EuiFlexItem>
+          <TodoText @text="missing EuiButtonGroup component"/>
           {{#each this.sizes as |size|}}
             <EuiButton
               @color={{if (eq size.id this.size) 'primary' 'text'}}
@@ -41,19 +42,6 @@ Flyouts come in three predefined <EuiCode>sizes</EuiCode> of <EuiCode>'s' | 'm' 
         </EuiFlexItem>
       </EuiFlexGroup>
     </EuiFlyoutBody>
-    <EuiFlyoutFooter>
-      <EuiFlexGroup @justifyContent='spaceBetween' @gutterSize='s'>
-        <EuiButton {{on 'click' (fn this.closeFlyout 'flyout2Open')}}>
-          Cancel
-        </EuiButton>
-        <EuiButton
-          @fill={{true}}
-          {{on 'click' (fn this.closeFlyout 'flyout2Open')}}
-        >
-          Send
-        </EuiButton>
-      </EuiFlexGroup>
-    </EuiFlyoutFooter>
   </EuiFlyout>
 {{/if}}
 ```
@@ -64,7 +52,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class DemoFlyoutDemo2Component extends Component {
-  @tracked flyout2Open = false;
+  @tracked flyoutOpen = false;
   @tracked size = 's';
 
   sizes = [
@@ -88,12 +76,12 @@ export default class DemoFlyoutDemo2Component extends Component {
 
   @action
   openFlyout() {
-    this.flyout2Open = true;
+    this.flyoutOpen = true;
   }
 
   @action
   closeFlyout(flyout) {
-    this.flyout2Open = false;
+    this.flyoutOpen = false;
   }
 }
 ```

@@ -73,7 +73,15 @@
               {{else}}
                 <EuiLink
                   {{did-insert setInnerTextRef}}
-                  @color={{if isLastBreadcrumb "text" "subdued"}}
+                  @color={{if
+                    breadcrumb.color
+                    breadcrumb.color
+                    (if
+                      isLastBreadcrumb
+                      "text"
+                      "subdued"
+                    )
+                  }}
                   @onClick={{breadcrumb.onClick}}
                   @href={{breadcrumb.href}}
                   title={{title}}

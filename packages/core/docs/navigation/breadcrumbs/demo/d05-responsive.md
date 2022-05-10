@@ -18,6 +18,20 @@ order: 5
   @responsive={{false}}
   aria-label='An example of non-responsive EuiBreadcrumbs'
 />
+
+<EuiText>
+	<p>
+		Alternatively, you can change number of breadcrumbs that show per breakpoint by passing a custom responsive object.
+  </p>
+</EuiText>
+
+
+<EuiBreadcrumbs
+  @breadcrumbs={{this.breadcrumbs}}
+  @responsive={{hash xs=1 s=3 m=5 xl=6}}
+	@max={{null}}
+  aria-label='An example of custom responsive EuiBreadcrumbs'
+/>
 ```
 
 ```js component

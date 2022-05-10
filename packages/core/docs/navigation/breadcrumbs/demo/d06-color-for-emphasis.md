@@ -2,7 +2,7 @@
 order: 6
 ---
 
-# Custom responsive hash
+# Color for emphasis
 
 <EuiText>
 	<p>
@@ -23,38 +23,27 @@ order: 6
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',
-      href: '#'
-    },
-    {
-      text: 'Metazoans',
-      href: '#'
-    },
-    {
-      text: 'Chordates',
-      href: '#'
-    },
-    {
-      text: 'Vertebrates',
-      href: '#'
-    },
-    {
-      text: 'Tetrapods',
-      href: '#'
+      href: '#',
+      color: 'primary',
+      onClick: (e) => e.preventDefault(),
     },
     {
       text: 'Reptiles',
-      href: '#'
+      color: 'primary',
     },
     {
-      text: 'Boa constrictor',
-      href: '#'
+      text: 'Boa constrictor', // todo support icon
+      title: 'Boa constrictor has an error',
+      href: '#',
+      color: 'danger',
+      onClick: (e) => e.preventDefault(),
     },
     {
-      text: 'Nebulosa subspecies'
+      text: 'Edit',
     }
   ];
 }

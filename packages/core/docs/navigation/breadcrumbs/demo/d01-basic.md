@@ -31,13 +31,16 @@ order: 1
     @truncate={{false}}
     aria-label='An example of EuiBreadcrumbs'
   />
-  <EuiSpacer size='xs' />
+  <EuiSpacer @size='xs' />
   <EuiPageHeader>
-    <EuiPageHeaderSection>
-      <EuiTitle>
-        Boa constrictor
-      </EuiTitle>
-    </EuiPageHeaderSection>
+    <:pageTitle>
+      Boa constrictor
+    </:pageTitle>
+    <:rightSideItems as |Item|>
+      <Item>
+        <EuiButton>Cancel</EuiButton>
+      </Item>
+    </:rightSideItems>
   </EuiPageHeader>
 </EuiPageContent>
 ```

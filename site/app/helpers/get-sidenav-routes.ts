@@ -2,10 +2,19 @@ import Helper from '@ember/component/helper';
 import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
 import { inject as service } from '@ember/service';
 
+export type Heading = {
+  headings: Heading[];
+};
+
 export type Page = {
   id: string;
   url: string;
   title: string;
+  headings: Heading[];
+  frontmatter: {
+    disabled: boolean;
+    disabled_demos: string[];
+  };
 };
 
 export type NodeId = string | number | undefined;
@@ -27,6 +36,7 @@ export type Item = {
   items: Item[];
   onClick: boolean | ((id: NodeId) => void);
   forceOpen?: boolean;
+  disabled?: boolean;
 };
 
 function compareFunction(a: Item, b: Item) {

@@ -1,6 +1,7 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
+
 import {
   DocfyNode,
   getSidenavRoutes,
@@ -24,7 +25,7 @@ const coreSectionsOrder = [
   'editors',
   'charts',
   'utilities'
-]
+];
 
 export default class ApplicationController extends Controller {
   @service declare router: RouterService;
@@ -40,7 +41,14 @@ export default class ApplicationController extends Controller {
   constructor(props?: Props) {
     super(props);
 
-    this.initializeSidenav()
+    this.initializeSidenav();
+
+    this.router.on('routeDidChange', () => {
+      //@ts-expect-error
+      this.selectedItem = this.router.location.location.pathname;
+    });
+    //@ts-expect-error
+    this.selectedItem = this.router.location.location.pathname;
   }
 
   get currentUrlFor() {
@@ -52,12 +60,11 @@ export default class ApplicationController extends Controller {
   }
 
   initializeSidenav() {
-
     // uppermost node
     const docsNode = this.docfy.nested.children.firstObject;
 
     // -- Documentation section
-
+    // TODO: remove the onClick that just sets selectedItem, it shouldn't be needed with the new docs structure
     const docsNodeRoutes = getSidenavRoutes([
       { ...docsNode, children: [] },
       (id: NodeId) => {
@@ -66,48 +73,52 @@ export default class ApplicationController extends Controller {
     ]);
 
     // -- Display, Forms, Layout, Utilities, Editors & Syntax, Navigation sections
-    let coreNode = docsNode.children.find((child: DocfyNode) => child.name === 'core')
-    let coreNodes = this._getDocsNode(coreNode)?.children
+    let coreNode = docsNode.children.find(
+      (child: DocfyNode) => child.name === 'core'
+    );
+    let coreNodes = this._getDocsNode(coreNode)?.children;
     let coreNodeRoutes = coreSectionsOrder?.reduce<Item[]>((acum, curr) => {
-      let node = coreNodes?.find((child: DocfyNode) => child.name == curr)
-      if (node){
+      let node = coreNodes?.find((child: DocfyNode) => child.name == curr);
+      if (node) {
         // build routes for node
         let nodeRoutes = getSidenavRoutes([
           node,
           (id: NodeId) => {
             this.selectedItem = id;
           }
-        ])
+        ]);
 
         // add fake items based on page headings to simulate 'on this page' feature inside sidebar
         node.pages.forEach((page: Page) => {
-          let headings = page?.headings?.firstObject?.headings
-          let item = nodeRoutes?.firstObject?.items?.find((item: Item) => item.name == page.title )
+          let headings = page?.headings?.firstObject?.headings;
+          let item = nodeRoutes?.firstObject?.items?.find(
+            (item: Item) => item.name == page.title
+          );
 
-          if(item) {
+          if (item) {
             // set disabled to page item
-            item.disabled = !!page.frontmatter.disabled
-  
+            item.disabled = !!page.frontmatter.disabled;
+
             // create fake items
             headings?.forEach((heading: any) => {
-              item?.items.push(
-                {
-                  id: `fake-${heading.id}`,
-                  items: [],
-                  name: heading.title,
-                  onClick: ((id: NodeId) => null),
-                  href: `${window.location.origin}${page.url}#${heading.id}`,
-                  disabled: item.disabled || !!page.frontmatter.disabled_demos?.includes(heading.title)
-                }
-              )
+              item?.items.push({
+                id: `fake-${heading.id}`,
+                items: [],
+                name: heading.title,
+                onClick: () => null,
+                href: `${window.location.origin}${page.url}#${heading.id}`,
+                disabled:
+                  item.disabled ||
+                  !!page.frontmatter.disabled_demos?.includes(heading.title)
+              });
             });
           }
-        })
+        });
 
-        acum.push(...nodeRoutes)
+        acum.push(...nodeRoutes);
       }
-      return acum
-    }, [])
+      return acum;
+    }, []);
 
     // -- Addons section
     let fakeNode = {
@@ -119,15 +130,15 @@ export default class ApplicationController extends Controller {
       label: 'Addons',
       children: [],
       pages: []
-    }
+    } as DocfyNode;
 
     docsNode.children.forEach((child: DocfyNode) => {
-      if(child.name == 'core' || child.name == 'package'){
-        return
+      if (child.name == 'core' || child.name == 'package') {
+        return;
       }
-      let innerDocsNode = this._getDocsNode(child)
-      fakeNode.children.push(...innerDocsNode?.children)
-      fakeNode.pages.push(...innerDocsNode?.pages)
+      let innerDocsNode = this._getDocsNode(child);
+      fakeNode.children.push(...(innerDocsNode?.children || []));
+      fakeNode.pages.push(...(innerDocsNode?.pages || []));
     });
 
     const addonsRoutes = getSidenavRoutes([
@@ -158,12 +169,10 @@ export default class ApplicationController extends Controller {
       ...packageRoutes
     ];
     this.currentSideNavRoutes = this.sideNavRoutes;
-    //@ts-expect-error
-    this.selectedItem = this.router.location.location.pathname;
   }
 
   _getDocsNode(node: DocfyNode) {
-    return node.children?.firstObject
+    return node.children?.firstObject;
   }
 
   filterSideNav(str: string, nodes: Item[], depth: number = 0): Item[] {

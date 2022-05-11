@@ -327,6 +327,7 @@ export default class CodesandboxLink extends Component<Args> {
       }
     };
 
+    //@ts-expect-error
     return getParameters(config);
   }
 }

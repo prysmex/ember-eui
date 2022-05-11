@@ -1,0 +1,10 @@
+<form
+  action="https://codesandbox.io/api/v1/sandboxes/define"
+  method="POST"
+  target="_blank"
+  ...attributes
+>
+  <input type="hidden" name="parameters" value={{this.params}} />
+  <input type="hidden" name="query" value="file=/app/components/demo.hbs"/>
+  {{yield}}
+</form>

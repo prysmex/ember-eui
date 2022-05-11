@@ -1,6 +1,6 @@
 'use strict';
 
-process.env.EMBROIDER_REBUILD_ADDONS = '@docfy/ember';
+process.env.EMBROIDER_REBUILD_ADDONS = 'prysmex-docfy-ember';
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const path = require('path');
@@ -25,22 +25,8 @@ module.exports = function (defaults) {
     postcssOptions: {
       compile: {
         enabled: true,
-        cacheInclude: [/.*\.css$/, /.tailwind\.config\.js$/],
         plugins: postcssPlugins
       }
-    },
-
-    'ember-composable-helpers': {
-      only: [
-        'optional',
-        'find-by',
-        'pipe',
-        'object-at',
-        'noop',
-        'repeat',
-        'pick',
-        'queue'
-      ]
     },
 
     // Add options here

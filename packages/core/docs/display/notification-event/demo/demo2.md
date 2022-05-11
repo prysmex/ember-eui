@@ -35,18 +35,11 @@ order: 2
       @accordionHideText='hide'
     >
       <:contextMenu>
-        <!-- ToDo Missing EuiContextMenu component -->
-        <button
-          class="euiContextMenuItem"
-          type="button"
+        <EuiContextMenuItem
           {{on 'click' this.onRead}}
         >
-          <span class="euiContextMenu__itemLayout">
-            <span class="euiContextMenuItem__text">
-              Mark as {{if this.isRead 'unread' 'read'}}
-            </span>
-          </span>
-        </button>
+          Mark as {{if this.isRead 'unread' 'read'}}
+        </EuiContextMenuItem>
       </:contextMenu>
 
       <:primaryAction>

@@ -12,20 +12,12 @@ export default class ThemeManager extends Service {
 
   themes: ThemeShape[] = [
     {
-      name: 'Amsterdam Light',
+      name: 'Light',
       key: 'amsterdam_light'
     },
     {
-      name: 'Amsterdam Dark',
-      key: 'amsterdam_dark'
-    },
-    {
-      name: 'Light',
-      key: 'light'
-    },
-    {
       name: 'Dark',
-      key: 'dark'
+      key: 'amsterdam_dark'
     }
   ];
 

@@ -1,137 +1,139 @@
 import EuiAccordion from './eui-accordion';
-import EuiIcon from './eui-icon';
-import EuiModal from './eui-modal';
-import EuiLoadingSpinner from './eui-loading-spinner';
-import EuiImage from './eui-image';
-import EuiSpacer from './eui-spacer';
-import EuiTabs from './eui-tabs';
-import EuiTitle from './eui-title';
-import EuiTextAlign from './eui-text-align';
-import EuiTextColor from './eui-text-color';
-import EuiText from './eui-text';
-import EuiPanel from './eui-panel';
-import EuiPageContent from './eui-page-content';
 import EuiAvatar from './eui-avatar';
+import EuiBadge from './eui-badge';
+import EuiBadgeGroup from './eui-badge-group';
+import EuiBetaBadge from './eui-beta-badge';
+import EuiBottomBar from './eui-bottom-bar';
+import EuiButton from './eui-button';
+import EuiButtonEmpty from './eui-button-empty';
+import EuiButtonIcon from './eui-button-icon';
 import EuiCallOut from './eui-call-out';
+import EuiCard from './eui-card';
+import EuiCardSelect from './eui-card-select';
+import EuiCodeBlock from './eui-code-block';
+import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
+import EuiCommentEvent from './eui-comment-event';
+import EuiCommentTimelineIcon from './eui-comment-timeline-icon';
+import EuiContextMenuItem from './eui-context-menu-item';
+import EuiDescribedFormGroup from './eui-described-form-group';
+import EuiDescriptionList from './eui-description-list';
+import EuiEmptyPrompt from './eui-empty-prompt';
+import EuiFilePicker from './eui-file-picker';
+import EuiFlexGrid from './eui-flex-grid';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
-import EuiFlexGrid from './eui-flex-grid';
-import EuiNotificationBadge from './eui-notification-badge';
-import EuiBadgeGroup from './eui-badge-group';
-import EuiBadge from './eui-badge';
-import EuiCard from './eui-card';
-import EuiButtonEmpty from './eui-button-empty';
-import EuiCardSelect from './eui-card-select';
+import EuiFlyout from './eui-flyout';
+import EuiFormRow from './eui-form-row';
+import EuiGlobalToastList from './eui-global-toast-list';
+import EuiHeader from './eui-header';
+import EuiHeaderLinks from './eui-header-links';
 import EuiHeaderSection from './eui-header-section';
 import EuiHeaderSectionItem from './eui-header-section-item';
-import EuiHeader from './eui-header';
 import EuiHealth from './eui-health';
-import EuiButtonIcon from './eui-button-icon';
-import EuiButton from './eui-button';
 import EuiHorizontalRule from './eui-horizontal-rule';
-import EuiCommentTimelineIcon from './eui-comment-timeline-icon';
-import EuiCommentEvent from './eui-comment-event';
-import EuiFlyout from './eui-flyout';
-import EuiCollapsibleNavGroup from './eui-collapsible-nav-group';
-import EuiStepNumber from './eui-step-number';
-import EuiProgress from './eui-progress';
-import EuiProgressData from './eui-progress-data';
-import EuiFormRow from './eui-form-row';
-import EuiDescribedFormGroup from './eui-described-form-group';
+import EuiIcon from './eui-icon';
+import EuiImage from './eui-image';
+import EuiLink from './eui-link';
 import EuiListGroup from './eui-list-group';
 import EuiListGroupItem from './eui-list-group-item';
-import EuiTextArea from './eui-text-area';
-import EuiFilePicker from './eui-file-picker';
-import EuiBottomBar from './eui-bottom-bar';
+import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiModal from './eui-modal';
+import EuiNotificationBadge from './eui-notification-badge';
 import EuiPage from './eui-page';
+import EuiPageBody from './eui-page-body';
+import EuiPageContent from './eui-page-content';
+import EuiPageContentBody from './eui-page-content-body';
+import EuiPageHeader from './eui-page-header';
+import EuiPageSideBar from './eui-page-side-bar';
+import EuiPanel from './eui-panel';
 import EuiPopover from './eui-popover';
-import EuiPopoverTitle from './eui-popover-title';
 import EuiPopoverFooter from './eui-popover-footer';
+import EuiPopoverTitle from './eui-popover-title';
+import EuiProgress from './eui-progress';
+import EuiProgressData from './eui-progress-data';
 import EuiRangeHighlight from './eui-range-highlight';
 import EuiRangeInput from './eui-range-input';
 import EuiRangeLevels from './eui-range-levels';
-import EuiToolTip from './eui-tool-tip';
-import EuiToast from './eui-toast';
-import EuiGlobalToastList from './eui-global-toast-list';
-import EuiCodeBlock from './eui-code-block';
+import EuiSpacer from './eui-spacer';
 import EuiStat from './eui-stat';
-import EuiHeaderLinks from './eui-header-links';
-import EuiLink from './eui-link';
-import EuiBetaBadge from './eui-beta-badge';
-import EuiDescriptionList from './eui-description-list';
-import EuiPageSideBar from './eui-page-side-bar';
-import EuiPageBody from './eui-page-body';
-import EuiPageHeader from './eui-page-header';
-import EuiPageContentBody from './eui-page-content-body';
-import EuiEmptyPrompt from './eui-empty-prompt';
+import EuiStepNumber from './eui-step-number';
+import EuiTabs from './eui-tabs';
+import EuiText from './eui-text';
+import EuiTextAlign from './eui-text-align';
+import EuiTextArea from './eui-text-area';
+import EuiTextColor from './eui-text-color';
+import EuiTitle from './eui-title';
+import EuiToast from './eui-toast';
+import EuiToolTip from './eui-tool-tip';
 
 const mapping: Mapping = {
-  EuiDescriptionList,
-  EuiBetaBadge,
-  EuiLink,
-  EuiStat,
-  EuiCodeBlock,
   EuiAccordion,
-  EuiIcon,
-  EuiModal,
-  EuiImage,
-  EuiLoadingSpinner,
-  EuiSpacer,
-  EuiTabs,
-  EuiTitle,
-  EuiTextAlign,
-  EuiTextColor,
-  EuiText,
-  EuiPanel,
-  EuiPageContent,
   EuiAvatar,
+  EuiBadge,
+  EuiBadgeGroup,
+  EuiBetaBadge,
+  EuiBottomBar,
+  EuiButton,
+  EuiButtonEmpty,
+  EuiButtonIcon,
   EuiCallOut,
+  EuiCard,
+  EuiCardSelect,
+  EuiCodeBlock,
+  EuiCollapsibleNavGroup,
+  EuiCommentEvent,
+  EuiCommentTimelineIcon,
+  EuiContextMenuItem,
+  EuiDescribedFormGroup,
+  EuiDescriptionList,
+  EuiEmptyPrompt,
+  EuiFilePicker,
+  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFlexGrid,
-  EuiNotificationBadge,
-  EuiBadgeGroup,
-  EuiBadge,
-  EuiCard,
-  EuiButtonEmpty,
-  EuiCardSelect,
+  EuiFlyout,
+  EuiFormRow,
+  EuiGlobalToastList,
+  EuiHeader,
+  EuiHeaderLinks,
   EuiHeaderSection,
   EuiHeaderSectionItem,
-  EuiHeader,
   EuiHealth,
-  EuiButton,
-  EuiButtonIcon,
   EuiHorizontalRule,
-  EuiCommentTimelineIcon,
-  EuiCommentEvent,
-  EuiFlyout,
-  EuiCollapsibleNavGroup,
-  EuiStepNumber,
-  EuiProgress,
-  EuiProgressData,
-  EuiFormRow,
-  EuiDescribedFormGroup,
+  EuiIcon,
+  EuiImage,
+  EuiLink,
   EuiListGroup,
   EuiListGroupItem,
-  EuiTextArea,
-  EuiFilePicker,
-  EuiBottomBar,
+  EuiLoadingSpinner,
+  EuiModal,
+  EuiNotificationBadge,
   EuiPage,
+  EuiPageBody,
+  EuiPageContent,
+  EuiPageContentBody,
+  EuiPageHeader,
+  EuiPageSideBar,
+  EuiPanel,
   EuiPopover,
-  EuiPopoverTitle,
   EuiPopoverFooter,
+  EuiPopoverTitle,
+  EuiProgress,
+  EuiProgressData,
   EuiRangeHighlight,
   EuiRangeInput,
   EuiRangeLevels,
-  EuiToolTip,
+  EuiSpacer,
+  EuiStat,
+  EuiStepNumber,
+  EuiTabs,
+  EuiText,
+  EuiTextAlign,
+  EuiTextArea,
+  EuiTextColor,
+  EuiTitle,
   EuiToast,
-  EuiGlobalToastList,
-  EuiHeaderLinks,
-  EuiPageSideBar,
-  EuiPageBody,
-  EuiPageHeader,
-  EuiPageContentBody,
-  EuiEmptyPrompt
+  EuiToolTip,
 };
 
 export default mapping;

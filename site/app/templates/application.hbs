@@ -34,29 +34,21 @@
             </EuiButton>
           </:button>
           <:content>
-            <div class="euiContextMenuPanel" tabindex="-1">
+            <EuiContextMenuPanel>
               {{#each this.themeManager.themes as |theme|}}
-                <button
-                  type="button"
-                  class="euiContextMenuItem euiContextMenuItem--small"
+                <EuiContextMenuItem
+                  @size='s'
+                  @icon={{if
+                    (eq this.themeManager.currentTheme.key theme.key)
+                    "check"
+                    "empty"
+                  }}
                   {{on "click" (fn this.themeManager.changeTheme theme)}}
                 >
-                  <span class="euiContextMenu__itemLayout">
-                    <EuiIcon
-                      @type={{if
-                        (eq this.themeManager.currentTheme.key theme.key)
-                        "check"
-                        "empty"
-                      }}
-                      @iconClasses="euiContextMenu__icon"
-                    />
-                    <span class="euiContextMenuItem__text">
-                      {{theme.name}}
-                    </span>
-                  </span>
-                </button>
+                  {{theme.name}}
+                </EuiContextMenuItem>
               {{/each}}
-            </div>
+            </EuiContextMenuPanel>
           </:content>
         </EuiPopover>
       </EuiHeaderSectionItem>

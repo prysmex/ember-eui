@@ -54,7 +54,7 @@
   "dependencies": {
     "@elastic/eui": "41.4.0",
     "@ember/render-modifiers": "^2.0.4",
-    "@html-next/vertical-collection": "3.0.0-1",
+    "@html-next/vertical-collection": "3.0.0",
     "@types/lodash-es": "^4.17.4",
     "@types/refractor": "^3.0.0",
     "chroma-js": "^2.1.0",

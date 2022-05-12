@@ -50,7 +50,7 @@ export function inlineStyles({
   if (!isNamedColor) {
     checkValidColor(color);
 
-    name = name.length ? name : '';
+    name = name ? name : '';
     assignedColor =
       color || VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
 

@@ -4,3 +4,47 @@ changeset_form:
   note: <EuiChangesetForm::Fields::ComboBox>
 validated_form:
   ember_paper: <PaperForm/>
+getting_started:
+  package_configuration: |-
+    "resolutions": '{
+      "@embroider/macros": "^1.5.0",
+      "@embroider/shared-internals": "^1.5.0",
+      "@embroider/util": "^1.5.0"
+    '}
+  icons_configuration: |- 
+      //ember-cli-build.js
+      var app = new EmberApp(defaults, '{
+        //...
+        svgJar': '{
+          sourceDirs: [
+            "public/assets",
+            "node_modules/@elastic/eui/lib/components/icon"
+          ]
+        '}
+      '});
+  build_configuration: |- 
+    //ember-cli-build.js
+    var app = new EmberApp(defaults, '{
+      //...
+      "@ember-eui/core"': '{
+        theme: "amsterdam_light" //light, dark, amsterdam_dark, amsterdam_light , defaults to amsterdam_light
+      '}
+      //...
+    '});
+  runtime_configuration: |- 
+    //config/environment.js
+    module.exports = function (environment) '{
+      '//...
+      let ENV = '{
+        '//...
+        "@ember-eui/core"': '{
+          euiComboBoxOptionsHeight': 33
+        '}
+        '//...
+      '};
+    '};
+  
+
+
+
+  

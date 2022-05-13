@@ -19,13 +19,9 @@ Once you've installed it, you can now install the addon itself:
 You _might_ get babel errors for a dependency mistmatch between embroider packages, here's a [link](https://github.com/embroider-build/embroider/issues/1077) for more info,
 if so, you can force that all packages use the same dependency with npm `overrides` or yarn `resolutions`, here's a the sample for yarn that you could add to your package.json
 
-```text
-"resolutions": {
-    "@embroider/macros": "^1.5.0",
-    "@embroider/shared-internals": "^1.5.0",
-    "@embroider/util": "^1.5.0"
-  }
-```
+<EuiCodeBlock @language="json" @isCopyable={{true}}>
+{{t "getting_started.package_configuration"}}
+</EuiCodeBlock>
 
 <EuiTitle>
   <h3>
@@ -38,38 +34,22 @@ For icons to work you will need to:
 - install `ember-svg-jar`
 - add the following `ember-svg-jar` options to your `ember-cli-build.js`:
 
-```javascript
-// ember-cli-build.js
-var app = new EmberApp(defaults, {
-  //...
-  svgJar: {
-    sourceDirs: [
-      'public/assets',
-      'node_modules/@elastic/eui/lib/components/icon'
-    ]
-  }
-  //...
-});
-```
+<EuiCodeBlock @language="ts" @isCopyable={{true}}>
+{{t "getting_started.icons_configuration"}}
+</EuiCodeBlock>
 
 <EuiTitle>
   <h3>
-    Styles and Theming
+    Build Configuration, Styles and Theming
   </h3>
 </EuiTitle>
 
-`theme`: You can specify the theme you want
+<EuiCode>theme</EuiCode>: You can specify the theme you want
+<EuiSpacer />
 
-```javascript
-// ember-cli-build.js
-var app = new EmberApp(defaults, {
-  //...
-  '@ember-eui/core': {
-    theme: 'amsterdam_light' //light, dark, amsterdam_dark, amsterdam_light , defaults to amsterdam_light
-  }
-  //...
-});
-```
+<EuiCodeBlock @language="ts" @isCopyable={{true}}>
+{{t "getting_started.build_configuration"}}
+</EuiCodeBlock>
 
 <EuiTitle>
   <h3>
@@ -77,21 +57,11 @@ var app = new EmberApp(defaults, {
   </h3>
 </EuiTitle>
 
-`euiComboBoxOptionsHeight`: Set default height fot combo box's options
+<EuiCode>euiComboBoxOptionsHeight</EuiCode>: Set default height for <EuiCode>{{"<EuiComboBox />"}}</EuiCode> options
+<EuiSpacer />
 
-```javascript
-// config/environment.js
-module.exports = function (environment) {
-  //...
-  let ENV = {
-    //...
-    '@ember-eui/core': {
-        euiComboBoxOptionsHeight: 33
-    },
-    //...
-  }
-  //...
-});
-```
+<EuiCodeBlock @language="ts" @isCopyable={{true}}>
+{{t "getting_started.runtime_configuration"}}
+</EuiCodeBlock>
 
 </EuiText>

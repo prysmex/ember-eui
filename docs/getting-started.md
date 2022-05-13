@@ -71,4 +71,27 @@ var app = new EmberApp(defaults, {
 });
 ```
 
+<EuiTitle>
+  <h3>
+    Runtime configuration
+  </h3>
+</EuiTitle>
+
+`euiComboBoxOptionsHeight`: Set default height fot combo box's options
+
+```javascript
+// config/environment.js
+module.exports = function (environment) {
+  //...
+  let ENV = {
+    //...
+    '@ember-eui/core': {
+        euiComboBoxOptionsHeight: 33
+    },
+    //...
+  }
+  //...
+});
+```
+
 </EuiText>

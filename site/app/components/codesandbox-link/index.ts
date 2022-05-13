@@ -7,8 +7,6 @@ import config from 'ember-get-config';
 
 const packageJson = config.packageJson;
 
-console.log(config);
-
 interface Args {
   theme?: string;
   componentName: string;

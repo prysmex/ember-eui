@@ -1,4 +1,6 @@
-{{#let (component (ensure-safe-component @groupComponent)) as |Group|}}
+{{#let
+  (component (ensure-safe-component @groupComponent))
+as |Group|}}
   {{#if @select.loading}}
     <EuiText @size="xs" class="euiComboBoxOptionsList__empty">
       <EuiFlexGroup @gutterSize="s" @justifyContent="center">
@@ -15,7 +17,7 @@
     <VerticalCollection
       @items={{this.flattedOptions}}
       @tagName="div"
-      @estimateHeight={{arg-or-default @rowHeight 29}}
+      @estimateHeight={{this.rowHeight}}
       @staticHeight={{true}}
       @bufferSize={{3}}
       style="max-height: 200px; overflow-y: auto;"
@@ -34,14 +36,14 @@
           @select={{@select}}
           @extra={{@extra}}
           style={{html-safe
-            (concat "height:" (arg-or-default @rowHeight 29) "px;")
+            (concat "height:" this.rowHeight "px;")
           }}
           data-option-index="{{index}}"
         />
       {{else}}
         <li
           style={{html-safe
-            (concat "height:" (arg-or-default @rowHeight 29) "px;")
+            (concat "height:" this.rowHeight "px;")
           }}
           class="euiFilterSelectItem
             {{if

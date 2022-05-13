@@ -1,7 +1,9 @@
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { tracked } from '@glimmer/tracking';
+import config from 'ember-get-config';
 
+const rowHeight = config['@ember-eui/core']?.euiComboBoxOptionsHeight || 29;
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @tracked flattedOptions = [];
   _optionsCache = [];
@@ -33,5 +35,9 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
       option = option.options[parseInt(parts[i], 10)];
     }
     return option;
+  }
+
+  get rowHeight() {
+    return this.args.rowHeight ?? rowHeight
   }
 }

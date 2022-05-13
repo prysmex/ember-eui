@@ -23,7 +23,10 @@ export function argOrDefault(
 }
 
 //eslint-disable-next-line
-export function argOrDefaultDecorator<T>(defaultValue: T, configKey?: string) {
+export function argOrDefaultDecorator<T>(
+  defaultValue: T,
+  configKey?: string
+): any {
   return function (_target: any, key: string) {
     return {
       get(this: { args: Record<string, T> }): T {

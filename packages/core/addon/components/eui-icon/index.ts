@@ -117,7 +117,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   getEuiIconSvgPath(type: EuiIconType): string {
-    return typeToPathMap[type].replace('tokens/', '');
+    return typeToPathMap[type];
   }
 
   get isAppIcon(): string | boolean {

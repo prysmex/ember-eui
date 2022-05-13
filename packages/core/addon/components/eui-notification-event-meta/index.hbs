@@ -65,7 +65,7 @@ as |hasDefaultBlock|}}
                 @iconType="boxesVertical"
                 @color="text"
                 data-test-subj={{concat @id '-notificationEventMetaButton'}}
-                {{on 'click' (fn isPopoverOpen.setState true)}}
+                {{on 'click' (if isPopoverOpen.value (fn isPopoverOpen.setState false) (fn isPopoverOpen.setState true))}}
               />
             </:button>
 

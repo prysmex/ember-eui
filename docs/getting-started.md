@@ -10,11 +10,15 @@ order: 2
 
 This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
 
-1. `npm info @ember-eui/core peerDependencies`
+<EuiCodeBlock @isCopyable={{true}}>{{"npm info @ember-eui/core peerDependencies"}}</EuiCodeBlock>
+
+<EuiSpacer />
 
 Once you've installed it, you can now install the addon itself:
 
-2. `ember install @ember-eui/core`
+<EuiCodeBlock @isCopyable={{true}}>{{"ember install @ember-eui/core"}}</EuiCodeBlock>
+
+<EuiSpacer />
 
 You _might_ get babel errors for a dependency mistmatch between embroider packages, here's a [link](https://github.com/embroider-build/embroider/issues/1077) for more info,
 if so, you can force that all packages use the same dependency with npm `overrides` or yarn `resolutions`, here's a the sample for yarn that you could add to your package.json

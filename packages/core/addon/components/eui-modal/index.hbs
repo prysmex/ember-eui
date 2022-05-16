@@ -27,14 +27,12 @@
       }}
       {{on-key "Escape" (prevent-default (stop-propagation (optional @onClose)))}}
     >
-      {{#if (and @onClose (not @hideCloseButton))}}
-        <EuiButtonIcon
-          class="euiModal__closeIcon"
-          @iconType="cross"
-          @color="text"
-          {{on "click" (optional @onClose)}}
-        />
-      {{/if}}
+      <EuiButtonIcon
+        class="euiModal__closeIcon"
+        @iconType="cross"
+        @color="text"
+        {{on "click" (optional @onClose)}}
+      />
       <div class="euiModal__flex">
         {{yield}}
       </div>

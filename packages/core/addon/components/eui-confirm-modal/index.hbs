@@ -4,34 +4,20 @@
   ...attributes
 >
   
-  {{#if @title}}
+  {{#if (or @title (has-block 'title'))}}
     <EuiModalHeader>
       <EuiModalHeaderTitle>
         {{@title}}
+        {{yield to='title'}}
       </EuiModalHeaderTitle>
     </EuiModalHeader>
-  {{else}}
-    {{yield to='header'}}
   {{/if}}
 
-  {{#if @message}}
+  {{#if (or @message (has-block))}}
     <EuiModalBody>
       <EuiText>
         {{@message}}
-      </EuiText>
-    </EuiModalBody>
-  {{else}}
-    {{yield to='body'}}
-  {{/if}}
-
-  {{#if (has-block)}}
-    <EuiModalBody>
-      {{yield}}
-    </EuiModalBody>
-  {{else if @message}}
-    <EuiModalBody>
-      <EuiText>
-        {{@message}}
+        {{yield}}
       </EuiText>
     </EuiModalBody>
   {{/if}}

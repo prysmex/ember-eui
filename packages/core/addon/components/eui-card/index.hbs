@@ -28,26 +28,31 @@
     @paddingSize={{@paddingSize}}
     ...attributes
   >
-    <div class="euiCard__top">
-      {{#if (has-block "icon")}}
-        {{yield "euiCard__icon" to="icon"}}
-      {{else}}
-        {{#if (or @image @icon)}}
-          {{#if (and @image (not-eq layout "horizontal"))}}
-            <div class="euiCard__image">
-              <img src={{@image}} alt="card-top" />
-            </div>
-          {{/if}}
-          {{#if @icon}}
-            <EuiIcon
-              @iconClasses="euiCard__icon"
-              @type={{@icon}}
-              @size={{@iconSize}}
-            />
+
+    {{#if (or (has-block "icon") (or @image @icon))}}
+      <div class="euiCard__top">
+        {{#if (has-block "icon")}}
+          {{yield "euiCard__icon" to="icon"}}
+        {{else}}
+          {{#if (or @image @icon)}}
+            {{#if (and @image (not-eq layout "horizontal"))}}
+              <div class="euiCard__image">
+                <img src={{@image}} alt="card-top" />
+              </div>
+            {{/if}}
+            {{#if @icon}}
+              <EuiIcon
+                @iconClasses="euiCard__icon"
+                @type={{@icon}}
+                @size={{@iconSize}}
+              />
+            {{/if}}
           {{/if}}
         {{/if}}
-      {{/if}}
-    </div>
+      </div>
+    {{/if}}
+
+
     <div class="euiCard__content">
       <EuiTitle class="euiCard__title" @size={{arg-or-default @titleSize "s"}}>
         {{#if (has-block "title")}}

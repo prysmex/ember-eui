@@ -1,22 +1,27 @@
-<EuiModal class="euiModal--confirmation" @onClose={{@onCancel}} ...attributes>
-  {{#if @title}}
+<EuiModal
+  class="euiModal--confirmation"
+  @onClose={{@onCancel}}
+  ...attributes
+>
+  
+  {{#if (or @title (has-block 'title'))}}
     <EuiModalHeader>
       <EuiModalHeaderTitle>
         {{@title}}
+        {{yield to='title'}}
       </EuiModalHeaderTitle>
     </EuiModalHeader>
   {{/if}}
-  {{#if (has-block)}}
-    <EuiModalBody>
-      {{yield}}
-    </EuiModalBody>
-  {{else if @message}}
+
+  {{#if (or @message (has-block))}}
     <EuiModalBody>
       <EuiText>
         {{@message}}
+        {{yield}}
       </EuiText>
     </EuiModalBody>
   {{/if}}
+
   <EuiModalFooter>
     <EuiButtonEmpty {{on "click" @onCancel}}>
       {{@cancelButtonText}}
@@ -31,4 +36,5 @@
       {{@confirmButtonText}}
     </EuiButton>
   </EuiModalFooter>
+
 </EuiModal>

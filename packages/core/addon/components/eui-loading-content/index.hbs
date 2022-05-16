@@ -12,7 +12,12 @@
       )
     )
   }}
-    <span class="euiLoadingContent__singleLine">
+    <span
+      class={{class-names
+        "euiLoadingContent__singleLine"
+        @singleLineClasses
+      }}
+    >
       <span class="euiLoadingContent__singleLineBackground" />
     </span>
   {{/each}}

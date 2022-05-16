@@ -54,6 +54,7 @@ import EuiProgressData from './eui-progress-data';
 import EuiRangeHighlight from './eui-range-highlight';
 import EuiRangeInput from './eui-range-input';
 import EuiRangeLevels from './eui-range-levels';
+import EuiSelectableListItem from './eui-selectable-list-item';
 import EuiSpacer from './eui-spacer';
 import EuiStat from './eui-stat';
 import EuiStepNumber from './eui-step-number';
@@ -123,6 +124,7 @@ const mapping: Mapping = {
   EuiRangeHighlight,
   EuiRangeInput,
   EuiRangeLevels,
+  EuiSelectableListItem,
   EuiSpacer,
   EuiStat,
   EuiStepNumber,

@@ -37,7 +37,7 @@
             <EuiContextMenuPanel>
               {{#each this.themeManager.themes as |theme|}}
                 <EuiContextMenuItem
-                  @size='s'
+                  @size="s"
                   @icon={{if
                     (eq this.themeManager.currentTheme.key theme.key)
                     "check"
@@ -63,8 +63,13 @@
       </EuiHeaderSectionItem>
     </EuiHeaderSection>
   </EuiHeader>
-  <EuiPage @paddingSize="none" @grow={{true}}>
-    <EuiPageSideBar @sticky={{true}} @paddingSize="none" class="guideSideNav">
+  <EuiPageTemplate
+    @paddingSize="none"
+    @grow={{true}}
+    @restrictWidth="78%"
+    @grow={{true}}
+  >
+    <:pageSideBar>
       <SideNav
         @onSearch={{this.onSearch}}
         @searchValue={{this.searchValue}}
@@ -73,9 +78,10 @@
         @items={{this.currentSideNavRoutes}}
         @selectedItem={{this.selectedItem}}
       />
-    </EuiPageSideBar>
-    <EuiPageBody @panelled={{true}}>
+    </:pageSideBar>
+    <:default>
+      <EuiSpacer @size="l" />
       {{outlet}}
-    </EuiPageBody>
-  </EuiPage>
+    </:default>
+  </EuiPageTemplate>
 </div>

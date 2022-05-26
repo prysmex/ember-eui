@@ -2,9 +2,6 @@
 order: 1
 ---
 
-<EuiText>
-  Generally, tooltips should provide short, <strong>non-essential</strong>, contextual information, usually naming or describing with more detail. If you need interactive content or anything other than text, we recommend using <strong>EuiPopover</strong> instead.
-</EuiText>
 <EuiSpacer />
 <EuiCallOut @color="warning" @size="s" @iconType="accessibility" @title="Putting anything other than plain text in a tooltip is lost on screen readers." />
 <EuiSpacer />

@@ -2,6 +2,7 @@
 title: Stat
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Stat"/>
 
 <EuiText>

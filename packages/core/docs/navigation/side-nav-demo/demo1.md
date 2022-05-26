@@ -1,5 +1,3 @@
-# Demo
-
 ```hbs template
 <EuiSideNav
   @mobileTitle='Mobile Title'
@@ -7,7 +5,8 @@
   @isOpenMobile={{true}}
   @items={{this.sideNavItems}}
   @selectedItem={{this.selectedItem}}
-  @truncate={{true}} {{! you can also truncate per item }}
+  @truncate={{true}}
+  {{! you can also truncate per item }}
 />
 
 <EuiSpacer />
@@ -15,10 +14,12 @@
   @isOpenMobile={{true}}
   @items={{this.sideNavItems}}
   @selectedItem={{this.selectedItem}}
-  @truncate={{true}} {{! you can also truncate per item }}
+  @truncate={{true}}
+  {{! you can also truncate per item }}
 >
   <:heading>
-    <EuiIcon @type="faceHappy"/> Header!
+    <EuiIcon @type='faceHappy' />
+    Header!
   </:heading>
 </EuiSideNav>
 ```

@@ -1,6 +1,8 @@
 ---
 title: Textarea
 ---
+
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Textarea"/>
 
 <EuiSpacer />

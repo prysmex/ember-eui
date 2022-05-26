@@ -2,6 +2,7 @@
 title: Range
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Range"/>
 
 <EuiSpacer />

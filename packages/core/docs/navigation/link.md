@@ -1,1 +1,2 @@
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Link"/>

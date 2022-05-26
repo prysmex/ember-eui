@@ -1,11 +1,9 @@
-# Demo
-
 ```hbs template
-<EuiButton @color="primary" {{on "click" this.showRandomToast}}>
+<EuiButton @color='primary' {{on 'click' this.showRandomToast}}>
   Add toast to global toast list
 </EuiButton>
 
-<EuiSpacer @size="l" />
+<EuiSpacer @size='l' />
 
 <EuiGlobalToastList @toastLifeTimeMs={{3000}} />
 ```
@@ -22,11 +20,11 @@ export default class DemoToastListComponent extends Component {
   @action
   showRandomToast() {
     this.euiToaster.show({
-      onClose: function() {
+      onClose: function () {
         console.log('A toast is being closed');
       },
       ...this.toasts[Math.floor(Math.random() * 4)]
-    })
+    });
   }
 
   toasts = [
@@ -35,25 +33,25 @@ export default class DemoToastListComponent extends Component {
       body: 'This toast overrides the default toastLifeTimeMs value and will be around for 15 seconds.',
       color: 'warning',
       iconType: 'clock',
-      toastLifeTimeMs: 15000,
+      toastLifeTimeMs: 15000
     },
     {
       title: `Download complete!`,
       body: 'Thanks for your patience!',
-      color: 'success',
+      color: 'success'
     },
     {
       title: `Logging you out soon, due to inactivity`,
       body: 'This is a security measure.',
       color: 'warning',
-      iconType: 'user',
+      iconType: 'user'
     },
-     {
+    {
       title: `Oops, there was an error`,
       body: 'Sorry. We’ll try not to let it happen it again.',
       color: 'danger',
-      iconType: 'help',
+      iconType: 'help'
     }
-  ]
+  ];
 }
 ```

@@ -2,6 +2,7 @@
 title: Avatar
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Avatar"/>
 <EuiHorizontalRule />
 <EuiText>

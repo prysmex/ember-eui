@@ -2,7 +2,8 @@
 title: CallOut
 ---
 
-<EuiPageHeader @pageTitle="CallOut"/>
+<EuiSpacer/>
+<EuiPageHeader @pageTitle="Callout"/>
 
 <EuiSpacer />
   <EuiText>

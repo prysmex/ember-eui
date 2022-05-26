@@ -1,11 +1,9 @@
-# Demo
-
 ```hbs template
-<EuiButtonEmpty {{on "click" this.toggle}} @color="primary">
-    Click here to test Overlay
+<EuiButtonEmpty {{on 'click' this.toggle}} @color='primary'>
+  Click here to test Overlay
 </EuiButtonEmpty>
 {{#if this.showOverlay}}
-  <EuiOverlayMask @headerZindexLocation="above" {{on "click" this.toggle}}>
+  <EuiOverlayMask @headerZindexLocation='above' {{on 'click' this.toggle}}>
     This is a plain overlay!!
   </EuiOverlayMask>
 {{/if}}

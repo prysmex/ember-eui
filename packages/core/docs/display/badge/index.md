@@ -2,6 +2,7 @@
 title: Badge
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Badge"/>
 <EuiHorizontalRule />
 <EuiText>

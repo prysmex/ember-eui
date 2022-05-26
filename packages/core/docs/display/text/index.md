@@ -2,6 +2,7 @@
 title: Text
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Text"/>
 
 <EuiText>

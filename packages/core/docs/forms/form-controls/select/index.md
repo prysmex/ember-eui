@@ -1,7 +1,7 @@
 ---
 title: Select
 ---
-
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Select"/>
 
 <EuiSpacer />

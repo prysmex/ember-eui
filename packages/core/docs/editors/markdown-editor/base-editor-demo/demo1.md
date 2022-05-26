@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Demo
-
 ```hbs template
 <EuiMarkdownEditor
   @value={{this.value}}
@@ -19,7 +17,6 @@ import { action } from '@ember/object';
 import { visit } from '@ember-eui/core/utils/markdown/plugins/markdown-add-components';
 import { defaultProcessingPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins';
 
-
 /*
  Quick example how you can extend plugins, this plugin adds _blank to `a` elements
 */
@@ -27,7 +24,7 @@ function TargetBlankProcessingPlugin() {
   return (tree) => {
     visit(tree, (node) => {
       if (node.type === 'element' && node.tagName === 'a') {
-				node.properties.target = '_blank';
+        node.properties.target = '_blank';
       }
       return node;
     });

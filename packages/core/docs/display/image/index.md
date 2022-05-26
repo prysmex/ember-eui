@@ -2,6 +2,7 @@
 title: Image
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Image"/>
 
  <EuiSpacer />

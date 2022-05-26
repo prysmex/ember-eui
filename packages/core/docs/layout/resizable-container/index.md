@@ -12,4 +12,5 @@ disabled_demos:
   - d08-collapsible-panels-with-external-control
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Resizable container"/>

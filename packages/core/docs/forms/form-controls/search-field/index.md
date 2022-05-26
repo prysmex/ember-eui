@@ -1,7 +1,7 @@
 ---
 title: Search field
 ---
-
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Search field"/>
 
 <EuiSpacer />

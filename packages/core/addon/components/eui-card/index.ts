@@ -13,6 +13,11 @@ type EuiCardComponentArgs = {
    * Class that will apply to the card content section.
    */
   contentClassName?: string;
+
+  /**
+   * Class that will apply to the card footer section.
+   */
+  footerClassName?: string;
 };
 
 export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
@@ -40,5 +45,9 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
 
   get contentClasses(): string {
     return ['euiCard__content', this.args.contentClassName].join(' ');
+  }
+
+  get footerClasses(): string {
+    return ['euiCard__footer', this.args.footerClassName].join(' ');
   }
 }

@@ -122,7 +122,7 @@
       </span>
     {{/if}}
     {{#if (and (eq layout "vertical") (or (has-block "footer") @footer))}}
-      <div class="euiCard__footer">
+      <div class={{this.footerClasses}}>
         {{#if (has-block "footer")}}
           {{yield to="footer"}}
         {{else}}

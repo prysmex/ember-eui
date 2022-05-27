@@ -30,7 +30,7 @@
   >
 
     {{#if (or (has-block "icon") (or @image @icon))}}
-      <div class="euiCard__top">
+      <div class={{this.topClasses}}>
         {{#if (has-block "icon")}}
           {{yield "euiCard__icon" to="icon"}}
         {{else}}
@@ -53,7 +53,7 @@
     {{/if}}
 
 
-    <div class="euiCard__content">
+    <div class={{this.contentClasses}}>
       <EuiTitle class="euiCard__title" @size={{arg-or-default @titleSize "s"}}>
         {{#if (has-block "title")}}
           {{yield (set this "link") to="title"}}

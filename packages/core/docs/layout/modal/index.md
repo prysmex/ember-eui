@@ -1,7 +1,7 @@
 ---
 title: Modal
 ---
-
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Modal"/>
 
 <EuiSpacer @size="l" />

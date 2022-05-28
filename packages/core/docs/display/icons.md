@@ -1,2 +1,0 @@
-<EuiPageHeader @pageTitle="Icons"/>
-<EuiHorizontalRule />

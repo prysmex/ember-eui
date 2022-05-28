@@ -1,5 +1,3 @@
-# Demo
-
 ```hbs template
 <EuiFormControlLayoutDelimited @delimiter='+'>
   <:prepend as |classes|>

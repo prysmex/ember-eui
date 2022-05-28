@@ -2,6 +2,7 @@
 title: Switch
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Switch"/>
 
 <EuiSpacer />

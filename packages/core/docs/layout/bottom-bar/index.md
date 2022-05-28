@@ -2,6 +2,7 @@
 title: Bottom bar
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Bottom bar"/>
 
 <EuiSpacer/>

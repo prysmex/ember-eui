@@ -2,6 +2,7 @@
 title: Form control layout
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Form control layout"/>
 
 <EuiSpacer />

@@ -6,4 +6,5 @@ disabled_demos:
   - d02-options
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Sitewide search"/>

@@ -2,6 +2,7 @@
 title: Button
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Button"/>
 <EuiSpacer @size="l" />
 

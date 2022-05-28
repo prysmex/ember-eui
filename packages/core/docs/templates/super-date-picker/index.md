@@ -8,5 +8,5 @@ disabled_demos:
   - d04-auto-refresh
   - d05-elastic-pattern-with-kql
 ---
-
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Sitewide search"/>

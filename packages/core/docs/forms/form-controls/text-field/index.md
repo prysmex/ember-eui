@@ -1,7 +1,7 @@
 ---
 title: Text field
 ---
-
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Text field"/>
 
 <EuiSpacer />

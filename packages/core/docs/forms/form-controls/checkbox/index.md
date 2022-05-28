@@ -3,6 +3,7 @@ order: 1
 title: Checkbox
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Checkbox"/>
 
 <EuiSpacer />

@@ -1,7 +1,7 @@
 ---
 title: Radio group
 ---
-
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Radio group"/>
 
 <EuiSpacer />

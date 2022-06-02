@@ -64,7 +64,7 @@
     "ember-cli-htmlbars": "^6.0.1",
     "ember-cli-typescript": "4.2.1",
     "ember-composable-helpers": "^4.4.1",
-    "ember-element-helper": "^0.5.5",
+    "ember-element-helper": "^0.6.0",
     "ember-event-helpers": "^0.1.1",
     "ember-in-element-polyfill": "^1.0.0",
     "ember-keyboard": "^7.0.1",

@@ -8,7 +8,11 @@
 >
   <EuiFlexGroup @gutterSize={{arg-or-default @gutterSize "l"}}>
     <EuiFlexItem @grow={{@descriptionFlexItemProps.grow}}>
-      <EuiTitle class="euiDescribedFormGroup__title" @size={{@titleSize}}>
+      <EuiTitle
+        class="euiDescribedFormGroup__title"
+        @size={{@titleSize}}
+        @tagName={{@titleTagName}}
+      >
         {{yield to="title"}}
       </EuiTitle>
       <EuiText

@@ -1,14 +1,17 @@
+---
+title: Code
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Code"/>
 
-<EuiSpacer />
+<EuiSpacer @size='l' />
+
 <EuiCallOut>
   <:body>
     <strong>EuiCode</strong> and <strong>EuiCodeBlock</strong> are intended to render static lines or blocks of code in <strong>read-only</strong> contexts. If you need capabilities to edit, or want to print long code (e.g., printing JSON from an API), we recommend installing a version of Monaco. If you are building within the Kibana platform, you can use their CodeEditor.
   </:body>
 </EuiCallOut>
-
-<EuiSpacer />
 
 <EuiText>
 <p>
@@ -20,3 +23,4 @@
 </EuiText>
 
 <EuiHorizontalRule />
+<EuiSpacer/>

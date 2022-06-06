@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Inline
+
 ```hbs template
 <EuiText>
   <p>

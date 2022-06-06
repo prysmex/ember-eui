@@ -1,2 +1,0 @@
-<EuiSpacer/>
-<EuiPageHeader @pageTitle="Inline"/>

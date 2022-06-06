@@ -15,14 +15,12 @@ order: 1
 <EuiSpacer/>
 
 <EuiCallOut @iconType='accessibility' @color='warning'>
-  <:title>
-    For accessibility, it is highly recommended to provide a descriptive
-    <EuiCode>aria-label</EuiCode>
-    for each set of breadcrumbs.
-  </:title>
+<:title>
+For accessibility, it is highly recommended to provide a descriptive
+<EuiCode>aria-label</EuiCode>
+for each set of breadcrumbs.
+</:title>
 </EuiCallOut>
-
-# Basic
 
 ```hbs template
 <EuiPageContent role={{null}}>

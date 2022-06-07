@@ -14,8 +14,6 @@ order: 1
 </EuiText>
 <EuiSpacer/>
 
-# Basic
-
 ```hbs template
 <EuiCallOut @iconType='accessibility' @color='warning'>
   <:body>

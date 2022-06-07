@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Basic
-
 <EuiText>
   <p>
     <strong>EuiComboBox </strong> ember's implementation uses <a href="https://ember-power-select.com">ember-power-select</a> under the hood for a rich selector, so please refer to it if needed.

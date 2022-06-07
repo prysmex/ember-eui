@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Basic
-
 <EuiText>
 	<p>
 		<strong>EuiLink</strong> is any anchor or button element that is designed to display nicely within a block of text. It also provides more anchor-specific styling onto links and makes sure they are accessible.

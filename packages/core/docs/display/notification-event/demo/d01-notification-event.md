@@ -2,12 +2,8 @@
 order: 1
 ---
 
-# Basic
-
 ```hbs template
-{{#let (slice
-  0 this.messagesCount this.messages
-) as |msgs|}}
+{{#let (slice 0 this.messagesCount this.messages) as |msgs|}}
   <EuiPanel @paddingSize='xs'>
     <EuiNotificationEvent
       @type='Hey!'
@@ -20,21 +16,21 @@ order: 1
       @accordionHideText='hide'
     >
 
-    <:primaryAction>
-      <EuiButtonEmpty
-        style="display: {{if this.showPrimaryAction '' 'none'}};"
-        @flush="left"
-        @size="s"
-      >
-        Do something!
-      </EuiButtonEmpty>
-    </:primaryAction>
+      <:primaryAction>
+        <EuiButtonEmpty
+          style='display: {{if this.showPrimaryAction "" "none"}};'
+          @flush='left'
+          @size='s'
+        >
+          Do something!
+        </EuiButtonEmpty>
+      </:primaryAction>
 
     </EuiNotificationEvent>
   </EuiPanel>
 {{/let}}
 
-<EuiSpacer/>
+<EuiSpacer />
 
 Messages count:
 <EuiRange
@@ -61,12 +57,8 @@ import { action } from '@ember/object';
 export default class NotificationEvent1Component extends Component {
   @tracked messagesCount;
   @tracked showPrimaryAction;
-  
-  messages = [
-    'This is a message',
-    "Wait, there's more",
-    'hmmm...'
-  ]
+
+  messages = ['This is a message', "Wait, there's more", 'hmmm...'];
 
   constructor() {
     super(...arguments);
@@ -75,9 +67,8 @@ export default class NotificationEvent1Component extends Component {
   }
 
   @action
-  setMessagesCount(e){
+  setMessagesCount(e) {
     this.messagesCount = e.target.value;
   }
-
 }
 ```

@@ -1,0 +1,33 @@
+{{#let this.lookupedTokens as |result|}}
+  {{#if this.isI18nTokensShape}}
+    {{#if this.i18n.renderComponent}}
+      {{yield
+        (component
+          (ensure-safe-component this.i18n.renderComponent) tokens=result
+        )
+      }}
+    {{else}}
+      {{#each
+        (if (not-eq (type-of result) "array") (array result) result)
+        as |token index|
+      }}
+        {{yield (component "eui-i18n/render" token=token) index result}}
+      {{/each}}
+    {{/if}}
+  {{else}}
+    {{#if this.i18n.renderComponent}}
+      {{yield
+        (component
+          (ensure-safe-component this.i18n.renderComponent) tokens=result
+        )
+      }}
+    {{else}}
+      {{#each
+        (if (not-eq (type-of result) "array") (array result) result)
+        as |token index|
+      }}
+        {{yield (component "eui-i18n/render" token=token) index result}}
+      {{/each}}
+    {{/if}}
+  {{/if}}
+{{/let}}

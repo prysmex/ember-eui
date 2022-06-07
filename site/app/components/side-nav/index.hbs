@@ -1,5 +1,10 @@
 {{!template-lint-disable}}
-<EuiFlexGroup @direction="column" class="h-full" @gutterSize="none" @responsive={{false}}>
+<EuiFlexGroup
+  @direction="column"
+  class="h-full"
+  @gutterSize="none"
+  @responsive={{false}}
+>
   <EuiFlexItem @grow={{false}} class="guideSideNav__search">
     <EuiFieldSearch
       @placeholder="Search"
@@ -15,6 +20,7 @@
       @toggleOpenOnMobile={{@toggleOpenOnMobile}}
       @items={{@items}}
       @selectedItem={{@selectedItem}}
+      @paddingSize={{@paddingSize}}
     />
   </EuiFlexItem>
 </EuiFlexGroup>

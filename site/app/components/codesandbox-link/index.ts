@@ -33,7 +33,6 @@ function removeDeps(deps: Record<string, string>) {
 
 export default class CodesandboxLink extends Component<Args> {
   get params() {
-    console.log(this.args.componentName);
     const hbsFile = docfySnippets.components[this.args.componentName].hbs;
     const jsFile = docfySnippets.components[this.args.componentName].js;
 

@@ -4,7 +4,7 @@ order: 1
 
 <EuiText>
 <p>
-Render strings to components
+	Render strings to components, you can provide a hash containing custom tokens via <EuiCode>{{"@i18n"}}</EuiCode> or override i18n/index.js in your host app to export a hash containg them
 </p>
 </EuiText>
 

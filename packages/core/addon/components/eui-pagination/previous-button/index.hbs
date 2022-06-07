@@ -1,0 +1,27 @@
+<EuiI18n
+  @token="euiPagination.previousPage"
+  @default="Previous page, {page}"
+  @values={{hash page=@activePage}}
+  as |Token|
+>
+  <Token as |previousPage|>
+    <EuiI18n
+      @token="euiPagination.disabledPreviousPage"
+      @default="Previous page"
+      as |InnerToken|
+    >
+      <InnerToken as |disabledPreviousPage|>
+        <EuiButtonIcon
+          {{on "click" (fn @safeClick (sub @activePage 1))}}
+          @iconType="arrowLeft"
+          @color="text"
+          aria-label={{if (eq @activePage 0) disabledPreviousPage previousPage}}
+          aria-controls={{if @props.aria-controls @props.aria-controls}}
+          href={{if @props.href @props.href}}
+          disabled={{eq @props.disabled true}}
+          ...attributes
+        />
+      </InnerToken>
+    </EuiI18n>
+  </Token>
+</EuiI18n>

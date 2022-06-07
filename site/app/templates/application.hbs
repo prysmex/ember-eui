@@ -63,10 +63,9 @@
       </EuiHeaderSectionItem>
     </EuiHeaderSection>
   </EuiHeader>
-  <EuiPageTemplate @grow={{true}}>
+  <EuiPageTemplate @paddingSize="none" @grow={{true}}>
     <:pageSideBar>
       <SideNav
-        @paddingSize="none"
         @onSearch={{this.onSearch}}
         @searchValue={{this.searchValue}}
         @isOpenMobile={{this.isOpenMobile}}

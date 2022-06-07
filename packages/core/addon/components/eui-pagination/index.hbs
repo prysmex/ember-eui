@@ -14,17 +14,21 @@
             page=(component
               "eui-pagination/button-wrapper"
               pageIndex=this.activePage
-              sharedButtonProps=this.sharedButtonProps
+              props=this.sharedButtonProps
+              inList=false
             )
             total=(component
               "eui-pagination/button-wrapper"
               pageIndex=(sub this.pageCount 1)
-              sharedButtonProps=this.sharedButtonProps
+              props=this.sharedButtonProps
+              inList=false
             )
           }}
           as |Token|
         >
-          <Token />
+          <Token as |value|>
+            {{value}}
+          </Token>
         </EuiI18n>
       </EuiText>
     </EuiHideFor>

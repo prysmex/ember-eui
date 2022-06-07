@@ -2,6 +2,7 @@
 title: Password field
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Password field"/>
 
 <EuiSpacer />

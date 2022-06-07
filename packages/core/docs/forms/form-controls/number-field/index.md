@@ -2,6 +2,7 @@
 title: Number field
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Number field"/>
 
 <EuiText>

@@ -1,3 +1,4 @@
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Code"/>
 
 <EuiSpacer />

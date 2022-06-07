@@ -2,6 +2,7 @@
 title: Panel
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Panel"/>
 
 <EuiText>

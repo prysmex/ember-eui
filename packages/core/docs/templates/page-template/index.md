@@ -2,9 +2,11 @@
 title: Page template
 ---
 
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="Page template"/>
-
+<EuiSpacer />
 <EuiText>
+
   <p>
   Page layouts are modular and fit together in a precise manner, though certain
   parts can also be added or removed as needed. EUI provides both the indivdual

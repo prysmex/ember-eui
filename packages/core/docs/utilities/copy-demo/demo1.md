@@ -2,8 +2,6 @@
 order: 1
 ---
 
-# Copy
-
 <EuiText>
 	<p>
 	The <strong>EuiCopy</strong> component is a utility for copying text to clipboard. Wrap a function that returns a component. The first argument will be a <EuiCode>copy</EuiCode> function

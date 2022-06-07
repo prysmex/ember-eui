@@ -1,7 +1,7 @@
 ---
 title: File picker
 ---
-
+<EuiSpacer/>
 <EuiPageHeader @pageTitle="File picker"/>
 
 <EuiSpacer />

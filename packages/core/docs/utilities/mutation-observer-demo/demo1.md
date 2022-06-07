@@ -1,5 +1,3 @@
-# Demo
-
 ```hbs template
 <div>
   <p>
@@ -12,7 +10,11 @@
       onMutation=this.onMutation
     }}
   >
-    <EuiButton @color={{this.buttonColor}} @fill="{true}" {{on "click" this.toggleButtonColor}}>
+    <EuiButton
+      @color={{this.buttonColor}}
+      @fill='{true}'
+      {{on 'click' this.toggleButtonColor}}
+    >
       Toggle button color
     </EuiButton>
     <EuiSpacer />
@@ -26,8 +28,8 @@
               </li>
             {{/each}}
           </ul>
-          <EuiSpacer size="s" />
-          <EuiButtonEmpty {{on "click" this.addItem}}>
+          <EuiSpacer size='s' />
+          <EuiButtonEmpty {{on 'click' this.addItem}}>
             add item
           </EuiButtonEmpty>
         </EuiPanel>
@@ -60,7 +62,8 @@ export default class OutsideClickDetectorComponentDemo1 extends GlimmerComponent
 
   @action
   onMutation([{ type }]) {
-    this.lastMutation = type === 'attributes' ? 'button class name changed' : 'DOM tree changed';
+    this.lastMutation =
+      type === 'attributes' ? 'button class name changed' : 'DOM tree changed';
   }
 }
 ```

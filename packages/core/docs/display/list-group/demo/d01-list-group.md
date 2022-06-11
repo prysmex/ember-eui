@@ -1,3 +1,12 @@
+---
+order: 1
+---
+
+ <EuiText>
+    <p>The <strong>EuiListGroup</strong> component is used to present <strong>EuiListGroupItems</strong> in a neatly formatted list. Use the <EuiCode>flush</EuiCode> and <EuiCode>bordered</EuiCode> properties for full-width and bordered presentations, respectively.
+Adjust the <EuiCode>gutterSize</EuiCode> prop to increase or decrease the spacing between items.</p>
+</EuiText>
+
 ```hbs template
 <EuiFlexGroup>
   <EuiFlexItem>
@@ -47,153 +56,7 @@
           <Input @type='checkbox' @checked={{this.flush}} name='flushed' />
           <label for='flushed'>Flush</label>
         </div>
-        <div>
-          <EuiText>Gutter size</EuiText>
-          <EuiBadge
-            @color={{if (eq this.gutterSize 'none') 'primary'}}
-            @onClick={{set this 'gutterSize' 'none'}}
-          >none</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.gutterSize 's') 'primary'}}
-            @onClick={{set this 'gutterSize' 's'}}
-          >small</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.gutterSize 'm') 'primary'}}
-            @onClick={{set this 'gutterSize' 'm'}}
-          >medium</EuiBadge>
-        </div>
-        <div>
-          <EuiText>Max width</EuiText>
-          <EuiBadge
-            @color={{if (eq this.maxWidthType 'bool') 'primary'}}
-            @onClick={{pipe
-              (set this 'maxWidthType' 'bool')
-              (set this 'maxWidth' false)
-            }}
-          >
-            boolean
-          </EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.maxWidthType 'num') 'primary'}}
-            @onClick={{pipe
-              (set this 'maxWidthType' 'num')
-              (set this 'maxWidth' 400)
-            }}
-          >
-            number
-          </EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.maxWidthType 'string') 'primary'}}
-            @onClick={{pipe
-              (set this 'maxWidthType' 'string')
-              (set this 'maxWidth' '')
-            }}
-          >
-            string
-          </EuiBadge>
-        </div>
-        <div>
-          {{#if (eq this.maxWidthType 'bool')}}
-            <Input
-              @type='checkbox'
-              @checked={{this.maxWidth}}
-              name='maxwidth'
-            />
-            <label for='maxwidth'>{{this.maxWidth}}</label>
-          {{else if (eq this.maxWidthType 'num')}}
-            <label for='maxwidth'>Enter value</label>
-            <input
-              type='number'
-              value={{this.maxWidth}}
-              {{on 'input' this.parseToNum}}
-              name='maxwidth'
-            />
-          {{else}}
-            <label for='maxwidth'>Enter value</label>
-            <Input @value={{this.maxWidth}} name='maxwidth' />
-          {{/if}}
-        </div>
-      </EuiFlexItem>
-      <EuiFlexItem>
-        <EuiTitle @size='xs'>First Item</EuiTitle>
-        <div>
-          <Input @type='checkbox' @checked={{this.useHref}} name='useHref' />
-          <label for='useHref'>use Href</label>
-        </div>
-        <div>
-          <Input
-            @type='checkbox'
-            @checked={{this.useOnClick}}
-            name='useOnClick'
-          />
-          <label for='useOnClick'>use onClick</label>
-        </div>
-        <div>
-          <Input @type='checkbox' @checked={{this.isActive}} name='isActive' />
-          <label for='isActive'>isActive</label>
-        </div>
-        <div>
-          <Input
-            @type='checkbox'
-            @checked={{this.isDisabled}}
-            name='isDisabled'
-          />
-          <label for='isDisabled'>isDisabled</label>
-        </div>
-        <div>
-          <Input @type='checkbox' @checked={{this.wrapText}} name='wrapText' />
-          <label for='wrapText'>wrapText</label>
-        </div>
-        <div>
-          <EuiText>Size</EuiText>
-          <EuiBadge
-            @color={{if (eq this.size 'xs') 'primary'}}
-            @onClick={{set this 'size' 'xs'}}
-          >extra small</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.size 's') 'primary'}}
-            @onClick={{set this 'size' 's'}}
-          >small</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.size 'm') 'primary'}}
-            @onClick={{set this 'size' 'm'}}
-          >medium</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.size 'l') 'primary'}}
-            @onClick={{set this 'size' 'l'}}
-          >large</EuiBadge>
-        </div>
-        <div>
-          <EuiText>Color</EuiText>
-          <EuiBadge
-            @color={{if (eq this.color 'inherit') 'primary'}}
-            @onClick={{set this 'color' 'inherit'}}
-          >inherit</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.color 'text') 'primary'}}
-            @onClick={{set this 'color' 'text'}}
-          >text</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.color 'subdued') 'primary'}}
-            @onClick={{set this 'color' 'subdued'}}
-          >subdued</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.color 'ghost') 'primary'}}
-            @onClick={{set this 'color' 'ghost'}}
-          >ghost</EuiBadge>
-          <EuiBadge
-            @color={{if (eq this.color 'primary') 'primary'}}
-            @onClick={{set this 'color' 'primary'}}
-          >primary</EuiBadge>
-        </div>
-        <div>
-          <Input
-            @type='checkbox'
-            @checked={{this.useIconType}}
-            name='useIconType'
-          />
-          <label for='useIconType'>use iconType</label>
-        </div>
+
       </EuiFlexItem>
     </EuiFlexGroup>
   </EuiFlexItem>

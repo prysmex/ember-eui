@@ -1,0 +1,34 @@
+<EuiText
+  class="euiDatePopoverContent__padded--large"
+  @size="s"
+  @color="subdued"
+>
+  <p>
+    {{!-- <EuiI18n
+      token="euiDatePopoverContent.nowTabContent"
+      default='Setting the time to "now" means that on every refresh this
+    time will be set to the time of the refresh.'
+    /> --}}
+    Setting the time to "now" means that on every refresh this time will be set to the time of the refresh.
+  </p>
+  <EuiButton
+    @fullWidth={{true}}
+    @size="s"
+    @fill={{true}}
+    {{on "click" (fn @onChange "now")}}
+  >
+    {{#if (eq @position "start")}}
+      Set start date and time to now
+    {{else}}
+      Set end date and time to now
+    {{/if}}
+      {{!-- <EuiI18n
+        token="euiDatePopoverContent.nowTabButtonStart"
+        default="Set start date and time to now"
+      />
+      <EuiI18n
+        token="euiDatePopoverContent.nowTabButtonEnd"
+        default="Set end date and time to now"
+      /> --}}
+  </EuiButton>
+</EuiText>

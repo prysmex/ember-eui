@@ -1,0 +1,32 @@
+<EuiTabbedContent
+  @className="euiDatePopoverContent"
+  @tabs={{this.tabs}}
+  @initialSelectedTab={{this.initialSelectedTab}}
+  @autoFocus="selected"
+  @expand={{true}}
+  @size="s"
+  {{!-- onTabClick={onTabClick} --}}
+>
+  <:selectedTabContent as |selected|>
+    {{#if (eq selected.id "relative")}}
+      <EuiSuperDatePicker::DatePopover::RelativeTab
+        @value={{this.toAbsoluteStringHelper
+          @value
+          (arg-or-default @roundUp false)
+        }}
+        @onChange={{@onChange}}
+        @labelPrefix={{this.labelPrefix}}
+        @roundUp={{this.roundUp}}
+        @dateFormat={{@dateFormat}}
+        @locale={{@locale}}
+        @position={{@position}}
+        @timeOptions={{@timeOptions}}
+      />
+    {{else if (eq selected.id "now")}}
+      <EuiSuperDatePicker::DatePopover::NowTab
+        @position={{@position}}
+        @onChange={{@onChange}}
+      />
+    {{/if}}
+  </:selectedTabContent>
+</EuiTabbedContent>

@@ -1,0 +1,49 @@
+{{#let
+  (class-names
+    "euiDatePopoverButton"
+    (concat "euiDatePopoverButton--" @position)
+    (if @compressed "euiDatePopoverButton--compressed")
+    (if this.isOpen "euiDatePopoverButton-isSelected")
+    (if @isInvalid "euiDatePopoverButton-isInvalid")
+    (if @needsUpdating "euiDatePopoverButton-needsUpdating")
+    (if @isDisabled "euiDatePopoverButton-disabled")
+  )
+  as |classes|
+}}
+  <EuiPopover
+    @className={{@className}}
+    @isOpen={{this.isOpen}}
+    @closePopover={{set this "isOpen" false}}
+    @anchorPosition={{this.anchorPosition}}
+    @panelPaddingSize="none"
+    @display="block"
+  >
+    <:button>
+      <button
+        type="button"
+        {{!-- onClick={onPopoverToggle} --}}
+        class={{classes}}
+        title={{this.formattedValue}}
+        disabled={{@isDisabled}}
+        ...attributes
+        {{on "click" (set this "isOpen" (not this.isOpen))}}
+      >
+        {{this.formattedValue}}
+      </button>
+    </:button>
+
+    <:content>
+      <EuiSuperDatePicker::DatePopover::EuiDatePopoverContent
+        @position={{@position}}
+        @value={{@value}}
+        @roundUp={{@roundUp}}
+        @dateFormat={{@dateFormat}}
+        @timeFormat={{@timeFormat}}
+        @locale={{@locale}}
+        @utcOffset={{@utcOffset}}
+        @timeOptions={{@timeOptions}}
+        @onChange={{@onChange}}
+      />
+    </:content>
+  </EuiPopover>
+{{/let}}

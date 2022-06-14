@@ -1,0 +1,26 @@
+<EuiButton
+  class={{class-names
+    "euiSuperUpdateButton"
+    @className
+  }}
+  {{!-- @minWidth={{118}} --}}
+  @fill={{@fill}}
+  @textClasses={{@textClasses}}
+  @color={{if (or @needsUpdate @isLoading) "success" "primary"}}
+  @iconType={{if (or @needsUpdate @isLoading) "kqlFunction" "refresh"}}
+  @isDisabled={{@isDisabled}}
+  @isLoading={{@isLoading}}
+  @size={{@size}}
+  {{on "click" @onClick}}
+  ...attributes
+>
+  {{#if (or @needsUpdate @isLoading)}}
+    {{#if @isLoading}}
+      Updating
+    {{else}}
+      Update
+    {{/if}}
+  {{else}}
+    Refresh
+  {{/if}}
+</EuiButton>

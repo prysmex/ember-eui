@@ -52,6 +52,7 @@
     ]
   },
   "dependencies": {
+    "@elastic/datemath": "^5.0.3",
     "@elastic/eui": "41.4.0",
     "@ember/render-modifiers": "^2.0.4",
     "@html-next/vertical-collection": "3.0.0",
@@ -79,6 +80,7 @@
     "ember-truth-helpers": "^3.0.0",
     "lodash-es": "^4.17.21",
     "mdast-util-to-hast": "^10.0.0",
+    "moment": "^2.29.3",
     "refractor": "^3.5.0",
     "rehype-raw": "^5.0.0",
     "rehype-stringify": "^8.0.0",

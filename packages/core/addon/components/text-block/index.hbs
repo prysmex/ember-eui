@@ -26,4 +26,8 @@
 	<p ...attributes>
 		{{yield}}
 	</p>
+{{else if (eq @tagName "legend")}}
+	<legend ...attributes>
+		{{yield}}
+	</legend>
 {{/if}}

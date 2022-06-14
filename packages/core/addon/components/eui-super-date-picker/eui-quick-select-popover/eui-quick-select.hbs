@@ -1,0 +1,132 @@
+{{#let (unique-id) as |legendId|}}
+  <fieldset>
+    {{!-- <EuiI18n
+      token="euiQuickSelect.legendText"
+      default="Quick select a time range"
+    >
+      {(legendText: string) => (
+        // Legend needs to be the first thing in a fieldset, but we want the visible title within the flex.
+        // So we hide it, but allow screen readers to see it
+        <EuiScreenReaderOnly>
+          <legend id={{legendId}} class="euiFormLabel">
+            {legendText}
+          </legend>
+        </EuiScreenReaderOnly>
+      )}
+    </EuiI18n> --}}
+    <EuiFlexGroup
+      @responsive={{false}}
+      @alignItems="center"
+      @justifyContent="spaceBetween"
+      @gutterSize="s"
+    >
+      <EuiFlexItem @grow={{false}}>
+        {{#let "Quick select" as |quickSelectTitle|}}
+          {{!-- <EuiI18n
+            token="euiQuickSelect.quickSelectTitle"
+            default="Quick select"
+          > --}}
+            <div aria-hidden class="euiFormLabel">
+              {{quickSelectTitle}}
+            </div>
+          {{!-- </EuiI18n> --}}
+        {{/let}}
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
+          <EuiFlexItem @grow={{false}}>
+            {{#let "Previous time window" as |previousLabel|}}
+              {{!-- <EuiI18n
+                token="euiQuickSelect.previousLabel"
+                default="Previous time window"
+              > --}}
+                <EuiToolTip @content={{previousLabel}}>
+                  <EuiButtonIcon
+                    aria-label={{previousLabel}}
+                    @iconType="arrowLeft"
+                    {{on "click" this.stepBackward}}
+                  />
+                </EuiToolTip>
+              {{!-- </EuiI18n> --}}
+            {{/let}}
+          </EuiFlexItem>
+          <EuiFlexItem @grow={{false}}>
+            {{#let "Next time window" as |nextLabel|}}
+              {{!-- <EuiI18n
+                token="euiQuickSelect.nextLabel"
+                default="Next time window"
+              > --}}
+                <EuiToolTip @content={{nextLabel}}>
+                  <EuiButtonIcon
+                    aria-label={{nextLabel}}
+                    @iconType="arrowRight"
+                    {{on "click" this.stepForward}}
+                  />
+                </EuiToolTip>
+              {{!-- </EuiI18n> --}}
+            {{/let}}
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer @size="s" />
+    <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
+      <EuiFlexItem>
+        {{#let "Time tense" as |tenseLabel|}}
+          {{!-- <EuiI18n token="euiQuickSelect.tenseLabel" default="Time tense"> --}}
+            <EuiSelect
+              @compressed={{true}}
+              @onKeyDown={{this.handleKeyDown}}
+              aria-label={{tenseLabel}}
+              aria-describedby={{concat this.timeSelectionId " " legendId}}
+              @value={{this.timeTense}}
+              @options={{@timeOptions.timeTenseOptions}}
+              {{on "change" (pick "target.value" (set this "timeTense"))}}
+            />
+          {{!-- </EuiI18n> --}}
+        {{/let}}
+      </EuiFlexItem>
+      <EuiFlexItem>
+        {{#let "Time value" as |valueLabel|}}
+          {{!-- <EuiI18n token="euiQuickSelect.valueLabel" default="Time value"> --}}
+            <EuiFieldNumber
+              @compressed={{true}}
+              @onKeyDown={{this.handleKeyDown}}
+              aria-describedby={{concat this.timeSelectionId " " legendId}}
+              aria-label={{valueLabel}}
+              @value={{this.timeValue}}
+              @onChange={{this.onTimeValueChange}}
+            />
+          {{!-- </EuiI18n> --}}
+        {{/let}}
+      </EuiFlexItem>
+      <EuiFlexItem>
+        {{#let "Time unit" as |unitLabel|}}
+          {{!-- <EuiI18n token="euiQuickSelect.unitLabel" default="Time unit"> --}}
+            <EuiSelect
+              @compressed={{true}}
+              @onKeyDown={{this.handleKeyDown}}
+              aria-label={{unitLabel}}
+              aria-describedby={{concat this.timeSelectionId " " legendId}}
+              @value={{this.timeUnits}}
+              @options={{@timeOptions.timeUnitsOptions}}
+              {{on "change" (pick "target.value" (set this "timeUnits"))}}
+            />
+          {{!-- </EuiI18n> --}}
+        {{/let}}
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton
+          aria-describedby={{concat this.timeSelectionId " " legendId}}
+          class="euiQuickSelect__applyButton"
+          @size="s"
+          @disabled={{lte this.timeValue 0}}
+          {{on "click" this.applyQuickSelect}}
+        >
+          {{!-- <EuiI18n token="euiQuickSelect.applyButton" default="Apply" /> --}}
+          Apply
+        </EuiButton>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </fieldset>
+{{/let}}

@@ -29,6 +29,12 @@ module.exports = function (defaults) {
       }
     },
 
+    'ember-cli-favicon': {
+      enabled: true,
+
+      iconPath: 'assets/euivector.svg' // icon path related to `public` folder
+    },
+
     // Add options here
     '@ember-eui/core': {
       includeCss: false
@@ -64,12 +70,7 @@ module.exports = function (defaults) {
   }
 
   const themesFunnel = new Funnel('../node_modules/@elastic/eui/dist', {
-    files: [
-      'eui_theme_light.css',
-      'eui_theme_dark.css',
-      'eui_theme_amsterdam_light.css',
-      'eui_theme_amsterdam_dark.css'
-    ],
+    files: ['eui_theme_amsterdam_light.css', 'eui_theme_amsterdam_dark.css'],
     destDir: '@ember-eui/themes'
   });
 

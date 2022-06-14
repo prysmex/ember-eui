@@ -63,12 +63,7 @@
       </EuiHeaderSectionItem>
     </EuiHeaderSection>
   </EuiHeader>
-  <EuiPageTemplate
-    @paddingSize="none"
-    @grow={{true}}
-    @restrictWidth="78%"
-    @grow={{true}}
-  >
+  <EuiPageTemplate @paddingSize="none" @grow={{true}}>
     <:pageSideBar>
       <SideNav
         @onSearch={{this.onSearch}}

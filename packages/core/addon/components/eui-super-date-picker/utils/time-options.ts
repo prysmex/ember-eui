@@ -7,7 +7,7 @@
  */
 
 import { EuiSelectOption } from '@elastic/eui';
-import { useEuiI18n } from '.';
+import { useEuiI18n } from '@ember-eui/core/i18n';
 
 import { TimeUnitId, RelativeOption, DurationRange } from '../types/global';
 
@@ -180,11 +180,3 @@ export const useI18nTimeOptions = (): TimeOptions => {
     commonDurationRanges
   };
 };
-
-// // Render function of the above, used by class components that can't use hooks
-// export const RenderI18nTimeOptions = (props: {
-//   children: (args: TimeOptions) => any;
-// }) => {
-//   const timeOptions = useI18nTimeOptions();
-//   return props.children(timeOptions);
-// };

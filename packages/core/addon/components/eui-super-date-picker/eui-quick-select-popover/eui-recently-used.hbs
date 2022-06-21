@@ -5,11 +5,15 @@
       @tagName="legend"
       @size="xxxs"
     >
-      {{!-- <EuiI18n
-        token="euiRecentlyUsed.legend"
-        default="Recently used date ranges"
-      /> --}}
-      Recently used date ranges
+      <EuiI18n
+        @token="euiRecentlyUsed.legend"
+        @default="Recently used date ranges"
+        as |Token|
+      >
+        <Token as |value|>
+          {{value}}
+        </Token>
+      </EuiI18n>
     </EuiTitle>
     <div className="euiQuickSelectPopover__section">
       <EuiFlexGrid

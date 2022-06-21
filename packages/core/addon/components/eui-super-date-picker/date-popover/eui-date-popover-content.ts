@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { toAbsoluteString, getDateMode } from '../utils';
 import { helper } from '@ember/component/helper';
+import { useEuiI18n } from '@ember-eui/core/i18n';
 
 interface EuiDatePopoverContentArgs {
   value: string;
@@ -27,30 +28,25 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
 
   toAbsoluteStringHelper = toAbsoluteStringHelper;
 
-  // get value() {
-  //   console.log(
-  //     this.args.value,
-  //     toAbsoluteString(this.args.value, this.roundUp)
-  //   );
-
-  //   return toAbsoluteString(this.args.value, this.roundUp);
-  // }
-
   get labelPrefix() {
-    return this.args.position === 'start' ? 'startDateLabel' : 'endDateLabel';
+    return this.args.position === 'start'
+      ? useEuiI18n('euiDatePopoverContent.startDateLabel', 'Start date')
+      : useEuiI18n('euiDatePopoverContent.endDateLabel', 'End date');
   }
 
   get tabs() {
     return [
       {
+        id: 'absolute',
+        name: useEuiI18n('euiDatePopoverContent.absoluteTabLabel', 'Absolute')
+      },
+      {
         id: 'relative',
-        name: 'Relative',
-        content: 'Test'
+        name: useEuiI18n('euiDatePopoverContent.relativeTabLabel', 'Relative')
       },
       {
         id: 'now',
-        name: 'Now',
-        content: 'Test'
+        name: useEuiI18n('euiDatePopoverContent.nowTabLabel', 'Now')
       }
     ];
   }

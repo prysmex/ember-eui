@@ -9,6 +9,7 @@
 import moment, { LocaleSpecifier } from 'moment';
 import dateMath from '@elastic/datemath';
 import { RelativeParts, ShortDate } from '../types/global';
+import { useEuiI18n } from '@ember-eui/core/i18n';
 
 /**
  * Reusable format time string util
@@ -72,11 +73,6 @@ export const useFormatTimeString = (
 
   return timeString;
 };
-
-export function useEuiI18n(token: string, defaultValue: string, values?: Record<string, unknown>): string {
-  console.warn('useEuiI18n function is not implemented', token);
-  return defaultValue;
-}
 
 export function toAbsoluteString(value: string, roundUp: boolean = false) {
   const valueAsMoment = dateMath.parse(value, { roundUp });

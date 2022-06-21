@@ -31,15 +31,6 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
     const roundUp = this.args.roundUp ?? false;
     const locale = this.args.locale ?? 'en';
 
-    console.log(
-      useFormatTimeString(
-        this.args.value,
-        this.args.dateFormat,
-        roundUp,
-        locale
-      )
-    );
-
     return useFormatTimeString(
       this.args.value,
       this.args.dateFormat,

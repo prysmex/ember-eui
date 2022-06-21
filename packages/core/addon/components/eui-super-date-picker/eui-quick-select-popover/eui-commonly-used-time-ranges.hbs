@@ -5,11 +5,15 @@
       @tagName="legend"
       @size="xxxs"
     >
-      {{!-- <EuiI18n
-        token="euiCommonlyUsedTimeRanges.legend"
-        default="Commonly used"
-      /> --}}
-      Commonly used
+      <EuiI18n
+        @token="euiCommonlyUsedTimeRanges.legend"
+        @default="Commonly used"
+        as |Token|
+      >
+        <Token as |value|>
+          {{value}}
+        </Token>
+      </EuiI18n>
     </EuiTitle>
     <div className="euiQuickSelectPopover__section">
       <EuiFlexGrid

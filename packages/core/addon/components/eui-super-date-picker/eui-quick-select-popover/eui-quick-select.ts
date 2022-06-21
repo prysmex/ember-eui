@@ -26,7 +26,7 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectArgs> {
     const {
       timeTense: timeTenseDefault,
       timeUnits: timeUnitsDefault,
-      timeValue: timeValueDefault,
+      timeValue: timeValueDefault
     } = parseTimeParts(this.args.start, this.args.end);
 
     this.timeTense =

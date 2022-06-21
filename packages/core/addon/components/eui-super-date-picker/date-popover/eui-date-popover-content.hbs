@@ -29,6 +29,7 @@
       />
     {{else if (eq selected.id "absolute")}}
       <EuiSuperDatePicker::DatePopover::AbsoluteTab
+        @value={{@value}}
         @roundUp={{this.roundUp}}
         @dateFormat={{@dateFormat}}
         @locale={{@locale}}

@@ -32,21 +32,29 @@
         <div class="react-datepicker__header">
           <div class="react-datepicker__header__dropdown react-datepicker__header__dropdown--scroll">
             <div class="react-datepicker__month-dropdown-container react-datepicker__month-dropdown-container--scroll">
-              <div class="react-datepicker__month-read-view">
-                <EuiSelect
-                  @value={{this.month}}
-                  @options={{this.monthNames}}
-                  {{on "change" (pick "target.value" (set this "month"))}}
-                />
+              {{!template-lint-disable}}
+              <div class="react-datepicker__month-read-view" style="padding: 0;">
+                <EuiFlexItem @grow="1">
+                  <EuiSelect
+                    @compressed={{true}}
+                    @value={{this.month}}
+                    @options={{this.monthNames}}
+                    {{on "change" (pick "target.value" (set this "month"))}}
+                  />
+                </EuiFlexItem>
               </div>
             </div>
             <div class="react-datepicker__year-dropdown-container react-datepicker__year-dropdown-container--scroll">
-              <div class="react-datepicker__year-read-view">
-                <EuiSelect
-                  @value={{this.year}}
-                  @options={{this.years}}
-                  {{on "change" (pick "target.value" (set this "year"))}}
-                />
+              {{!template-lint-disable}}
+              <div class="react-datepicker__year-read-view" style="padding: 0;">
+                <EuiFlexItem @grow="1">
+                  <EuiSelect
+                    @compressed={{true}}
+                    @value={{this.year}}
+                    @options={{this.years}}
+                    {{on "change" (pick "target.value" (set this "year"))}}
+                  />
+                </EuiFlexItem>
               </div>
             </div>
           </div>

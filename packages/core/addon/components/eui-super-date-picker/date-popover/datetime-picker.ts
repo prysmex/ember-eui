@@ -35,15 +35,16 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
   @tracked selectedDate?: moment.Moment;
   @tracked selectedTime?: string;
   @tracked today: moment.Moment;
+
   momentConfig: {
-    year?: number;
-    month?: number;
-    day?: number;
-    hour?: number;
-    minute?: number;
-    second?: number;
-    millisecond?: number;
-  } = {};
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    second: number;
+    millisecond: number;
+  };
 
   isSameDayHelper = isSameDayHelper;
 
@@ -57,11 +58,27 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
       this.monthMoment = moment([this.year, this.month]);
     }
 
-    // const now = new Date();
-    this.month = this.monthMoment.month();
-    this.year = this.monthMoment.year();
+    this.momentConfig = {
+      year: this.monthMoment.year(),
+      month: this.monthMoment.month(),
+      day: this.monthMoment.date(),
+      hour: this.monthMoment.hour(),
+      minute: this.monthMoment.minute(),
+      second: 0,
+      millisecond: 0
+    };
+
+    this.month = this.momentConfig.month;
+    this.year = this.momentConfig.year;
+    let hour = this.momentConfig.hour;
+    let minute = this.momentConfig.minute;
+    let hourStr = hour < 10 ? `0${hour}` : hour;
+    let minuteStr = minute < 10 ? `0${minute}` : minute;
+    this.selectedTime = `${hourStr}:${minuteStr}`;
+
+    this.offset = this.monthMoment.clone().startOf('month').day();
+
     this.today = moment();
-    this.offset = this.monthMoment.day();
   }
 
   get monthNames() {
@@ -137,7 +154,7 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
   updateDate() {
     this.year = this.monthMoment.year();
     this.month = this.monthMoment.month();
-    this.offset = this.monthMoment.day();
+    this.offset = this.monthMoment.clone().startOf('month').day();
   }
 
   @action selectTime(time: string) {

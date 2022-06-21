@@ -40,7 +40,7 @@
 </EuiForm>
 <EuiPopoverFooter @paddingSize="s">
   <EuiSwitch
-    @label={{"i18n.translation.key"}}
+    @label={{this.roundingLabel}}
     @checked={{this.round}}
     @onChange={{pick 'target.checked' this.onRoundChange}}
   />

@@ -6,6 +6,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { parseRelativeParts } from '../utils';
 import { EuiDatePopoverContentProps } from '@elastic/eui';
+import { TimeOptions } from '../utils/time-options';
 
 interface RelativeTabArgs {
   dateFormat: string;
@@ -15,14 +16,14 @@ interface RelativeTabArgs {
   roundUp?: boolean;
   position: 'start' | 'end';
   labelPrefix: string;
-  // timeOptions: TimeOptions;
+  timeOptions: TimeOptions;
 }
 
 export default class RelativeTab extends Component<RelativeTabArgs> {
   @tracked count?: number;
   @tracked unit;
+  @tracked round;
 
-  round;
   roundUnit;
 
   constructor(owner: unknown, args: RelativeTabArgs) {
@@ -49,6 +50,10 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
       : parsedValue
           .locale(this.args.locale || 'en')
           .format(this.args.dateFormat);
+  }
+
+  get roundingLabel() {
+    return this.args.timeOptions.relativeRoundingLabels[this.unit![0]];
   }
 
   @action onCountChange(e: InputEvent) {

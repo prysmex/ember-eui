@@ -27,11 +27,18 @@ function useEuiI18n<DEFAULTS extends string[]>(
   defaultValues: DEFAULTS
 ): string | any[];
 function useEuiI18n(...args: any[]): string | any[] {
+  let _i18n = i18n;
+  // Look for a bound context
+  if (this && this.mapping) {
+    // @ts-expect-error this alias is fine
+    _i18n = this;
+  }
+
   if (typeof args[0] === 'string') {
     const [token, defaultValue, values] = args;
     return lookupToken({
       token,
-      i18nMapping: i18n.mapping,
+      i18nMapping: _i18n.mapping,
       valueDefault: defaultValue,
       values
     });
@@ -40,8 +47,8 @@ function useEuiI18n(...args: any[]): string | any[] {
     return tokens.map((token, idx) =>
       lookupToken({
         token,
-        i18nMapping: i18n.mapping,
-        valueDefault: defaultValues[idx],
+        i18nMapping: _i18n.mapping,
+        valueDefault: defaultValues[idx]
       })
     );
   }

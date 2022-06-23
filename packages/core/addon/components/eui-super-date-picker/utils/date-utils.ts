@@ -24,9 +24,9 @@ export function isDayDisabled(
     (minDate && day.isBefore(minDate, 'day')) ||
     (maxDate && day.isAfter(maxDate, 'day')) ||
     (excludeDates &&
-      excludeDates.some(excludeDate => isSameDay(day, excludeDate))) ||
+      excludeDates.some((excludeDate) => isSameDay(day, excludeDate))) ||
     (includeDates &&
-      !includeDates.some(includeDate => isSameDay(day, includeDate))) ||
+      !includeDates.some((includeDate) => isSameDay(day, includeDate))) ||
     (filterDate && !filterDate(day.clone())) ||
     false
   );

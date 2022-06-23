@@ -1,6 +1,7 @@
 import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { getOwner } from '@ember/application';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { LocaleSpecifier } from 'moment';
 import {
@@ -117,7 +118,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   }
 
   get timeOptions() {
-    return useI18nTimeOptions();
+    return useI18nTimeOptions(getOwner(this));
   }
 
   setTime({ start, end }: DurationRange) {

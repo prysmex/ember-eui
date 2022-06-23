@@ -5,9 +5,8 @@
  * in compliance with, at your election, the Elastic License 2.0 or the Server
  * Side Public License, v 1.
  */
-
 import { EuiSelectOption } from '@elastic/eui';
-import { useEuiI18n } from '@ember-eui/core/i18n';
+import { useEuiI18n as _useEuiI18n } from '@ember-eui/core/i18n';
 
 import { TimeUnitId, RelativeOption, DurationRange } from '../types/global';
 
@@ -27,7 +26,13 @@ export type TimeOptions = {
  * i18n'd time options, mostly used in EuiSelects (except for a few cases)
  * used in EuiSuperDatePicker child sub-components
  */
-export const useI18nTimeOptions = (): TimeOptions => {
+export const useI18nTimeOptions = (owner?: unknown): TimeOptions => {
+  let useEuiI18n = _useEuiI18n;
+  // Bind the i18n service when the owner is passed
+  if (owner) {
+    useEuiI18n = _useEuiI18n.bind(owner.lookup('service:eui-i18n'));
+  }
+
   /**
    * Quick select panel
    */

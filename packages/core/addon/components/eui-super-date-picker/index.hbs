@@ -60,11 +60,11 @@
               @isInvalid={{this.isInvalid}}
               @timeOptions={{this.timeOptions}}
               @needsUpdating={{this.hasChanged}}
+              @locale={{@locale}}
               {{!--
               isInvalid={isInvalid}
               utcOffset={utcOffset}
               timeFormat={timeFormat}
-              locale={locale || contextLocale}
               isOpen={this.state.isStartDatePopoverOpen}
               onPopoverToggle={this.onStartDatePopoverToggle}
               onPopoverClose={this.onStartDatePopoverClose}
@@ -85,10 +85,10 @@
               @timeOptions={{this.timeOptions}}
               @roundUp={{true}}
               @needsUpdating={{this.hasChanged}}
+              @locale={{@locale}}
               {{!--
               utcOffset={utcOffset}
               timeFormat={timeFormat}
-              locale={locale || contextLocale}
               isOpen={this.state.isStartDatePopoverOpen}
               onPopoverToggle={this.onStartDatePopoverToggle}
               onPopoverClose={this.onStartDatePopoverClose}

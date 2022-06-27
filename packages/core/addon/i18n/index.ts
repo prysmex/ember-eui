@@ -29,6 +29,7 @@ function useEuiI18n<DEFAULTS extends string[]>(
 function useEuiI18n(...args: any[]): string | any[] {
   let _i18n = i18n;
   // Look for a bound context
+  // @ts-expect-error TODO: type this?
   if (this && this.mapping) {
     // @ts-expect-error this alias is fine
     _i18n = this;

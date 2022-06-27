@@ -9,7 +9,7 @@
 import moment, { LocaleSpecifier } from 'moment';
 import dateMath from '@elastic/datemath';
 import { RelativeParts, ShortDate } from '../types/global';
-import { useEuiI18n } from '@ember-eui/core/i18n';
+import { useEuiI18n as _useEuiI18n } from '@ember-eui/core/i18n';
 
 /**
  * Reusable format time string util
@@ -44,8 +44,15 @@ export const useFormatTimeString = (
   timeString: string,
   dateFormat: string,
   roundUp = false,
-  locale: LocaleSpecifier = 'en'
+  locale: LocaleSpecifier = 'en',
+  owner?: unknown
 ): string => {
+  let useEuiI18n = _useEuiI18n;
+  // Bind the i18n service when the owner is passed
+  if (owner) {
+    useEuiI18n = _useEuiI18n.bind(owner.lookup('service:eui-i18n'));
+  }
+
   // i18n'd strings
   const nowDisplay = useEuiI18n('euiPrettyDuration.now', 'now');
   const invalidDateDisplay = useEuiI18n(

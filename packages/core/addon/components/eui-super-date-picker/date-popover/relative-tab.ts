@@ -82,7 +82,6 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
       roundUnit: this.roundUnit,
       unit: this.unit
     });
-    console.log(date);
     this.args.onChange(date);
   }
 }

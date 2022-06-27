@@ -109,7 +109,7 @@
         @isDisabled={{or @isDisabled this.isInvalid}}
         @needsUpdate={{this.hasChanged}}
         @fill={{true}}
-        {{!-- @iconOnly={{eq @showUpdateButton "iconOnly"}} --}}
+        @iconOnly={{eq this.showUpdateButton "iconOnly"}}
         {{!--
         showTooltip={
           !this.state.isStartDatePopoverOpen &&

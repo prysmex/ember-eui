@@ -10,6 +10,7 @@
   {{#let
     (class-names
       (if @compressed "euiSwitch--compressed") "euiSwitch"
+      @containerClass
     ) as |classes|
   }}
     <div class={{classes}}>

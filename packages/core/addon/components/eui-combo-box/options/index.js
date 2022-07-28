@@ -1,16 +1,15 @@
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
-import { tracked } from '@glimmer/tracking';
 import config from 'ember-get-config';
 
 const rowHeight = config['@ember-eui/core']?.euiComboBoxOptionsHeight || 29;
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
-  @tracked flattedOptions = [];
   _optionsCache = [];
 
-  setFlattedOptions = () => {
+  get flattedOptions() {
     if (this._optionsCache !== this.args.options) {
-      this.flattedOptions = this.args.options?.reduce((acc, curr) => {
+      this._optionsCache = this.args.options;
+      return this.args.options?.reduce((acc, curr) => {
         if (emberPowerSelectIsGroup([curr])) {
           acc.push(curr, ...curr.options);
         } else {
@@ -18,14 +17,8 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
         }
         return acc;
       }, []);
-      this._optionsCache = this.args.options;
     }
-  };
-
-  constructor() {
-    super(...arguments);
-    this.setFlattedOptions();
-    this._optionsCache = this.args.options;
+    return this._optionsCache;
   }
 
   _optionFromIndex(index) {
@@ -38,6 +31,6 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
   }
 
   get rowHeight() {
-    return this.args.rowHeight ?? rowHeight
+    return this.args.rowHeight ?? rowHeight;
   }
 }

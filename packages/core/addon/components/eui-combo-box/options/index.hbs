@@ -1,9 +1,11 @@
-{{#let
-  (component (ensure-safe-component @groupComponent))
-as |Group|}}
+{{#let (component (ensure-safe-component @groupComponent)) as |Group|}}
   {{#if @select.loading}}
     <EuiText @size="xs" class="euiComboBoxOptionsList__empty">
-      <EuiFlexGroup @gutterSize="s" @justifyContent="center">
+      <EuiFlexGroup
+        @gutterSize="s"
+        @justifyContent="center"
+        @responsive={{false}}
+      >
         <EuiFlexItem @grow={{false}}>
           <EuiLoadingSpinner @size="m" />
         </EuiFlexItem>
@@ -35,16 +37,12 @@ as |Group|}}
           @group={{opt}}
           @select={{@select}}
           @extra={{@extra}}
-          style={{html-safe
-            (concat "height:" this.rowHeight "px;")
-          }}
+          style={{html-safe (concat "height:" this.rowHeight "px;")}}
           data-option-index="{{index}}"
         />
       {{else}}
         <li
-          style={{html-safe
-            (concat "height:" this.rowHeight "px;")
-          }}
+          style={{html-safe (concat "height:" this.rowHeight "px;")}}
           class="euiFilterSelectItem
             {{if
               (eq opt @select.highlighted)

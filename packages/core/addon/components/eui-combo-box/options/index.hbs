@@ -26,7 +26,6 @@
       role="listbox"
       aria-controls="ember-power-select-trigger-{{@select.uniqueId}}"
       ...attributes
-      {{did-update this.setFlattedOptions @options}}
       {{did-insert this.addHandlers}}
       {{will-destroy this.removeHandlers}}
       as |opt index|

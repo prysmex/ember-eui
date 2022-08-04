@@ -26,6 +26,13 @@ interface DatetimePickerArgs {
   onChange: (value: any) => void;
 }
 
+interface Day {
+  day: number;
+  month: number;
+  year: number;
+  isOutside: boolean;
+}
+
 export default class DatetimePicker extends Component<DatetimePickerArgs> {
   @tracked month: number = 0;
   @tracked year: number = 0;
@@ -113,7 +120,9 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
 
   get days() {
     // Used for showing days outside of the current month
-    const prevMonth = moment([this.year, this.month - 1]);
+    // const prevMonth = moment([this.year, this.month - 1]);
+    const prevMonth = this.monthMoment.clone().subtract(1, 'month');
+    const nextMonth = this.monthMoment.clone().add(1, 'month');
     const offset = this.offset;
     let daysInMonth = this.monthMoment.daysInMonth();
     let daysInPrevMonth = prevMonth.daysInMonth();
@@ -129,6 +138,8 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
     for (let i = 0, d = daysInPrevMonth; i < offset; i++, d--) {
       daysArray.unshift({
         day: d,
+        month: prevMonth.month(),
+        year: prevMonth.year(),
         isOutside: true
       });
     }
@@ -136,6 +147,8 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
     for (let d = 1, i = daysInMonth + offset; i < 42; d++, i++) {
       daysArray.push({
         day: d,
+        month: nextMonth.month(),
+        year: nextMonth.year(),
         isOutside: true
       });
     }
@@ -168,12 +181,20 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
     this.args.onChange(this.selectedDate);
   }
 
-  @action selectDate(day: number) {
-    this.momentConfig.year = this.year;
-    this.momentConfig.month = this.month;
-    this.momentConfig.day = day;
+  @action selectDate(day: Day) {
+    // Only outside days will have year/month
+    this.momentConfig.year = day.year || this.year;
+    this.momentConfig.month = day.month || this.month;
+    this.momentConfig.day = day.day;
     this.selectedDate = moment(this.momentConfig);
     this.args.onChange(this.selectedDate);
+
+    // Update the state to show the selected month properly
+    if (day.isOutside) {
+      this.monthMoment.month(day.month);
+      this.monthMoment.year(day.year);
+      this.updateDate();
+    }
   }
 
   // @action setSelected(date, event, keepInput) {
@@ -219,6 +240,11 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
   //     this.setState({ inputValue: null });
   //   }
   // }
+
+  @action setMonth(month: string) {
+    this.monthMoment.month(parseInt(month));
+    this.updateDate();
+  }
 
   @action increaseMonth() {
     this.monthMoment.add(1, 'month');

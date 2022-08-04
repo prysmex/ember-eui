@@ -39,7 +39,7 @@
                     @compressed={{true}}
                     @value={{this.month}}
                     @options={{this.monthNames}}
-                    {{on "change" (pick "target.value" (set this "month"))}}
+                    {{on "change" (pick "target.value" this.setMonth)}}
                   />
                 </EuiFlexItem>
               </div>
@@ -77,11 +77,20 @@
                   role="button"
                   class={{concat
                     "react-datepicker__day"
-                    (if (this.isSameDayHelper this.year this.month day.day this.selectedDate) " react-datepicker__day--selected")
-                    (if (this.isSameDayHelper this.year this.month day.day this.today) " react-datepicker__day--today")
+                    (if
+                      (and
+                        (not day.isOutside)
+                        (this.isSameDayHelper this.year this.month day.day this.selectedDate)
+                      )
+                      " react-datepicker__day--selected"
+                    )
+                    (if
+                        (this.isSameDayHelper this.year this.month day.day this.today)
+                      " react-datepicker__day--today"
+                    )
                     (if day.isOutside " react-datepicker__day--outside-month")
                   }}
-                  {{on "click" (fn this.selectDate day.day)}}
+                  {{on "click" (fn this.selectDate day)}}
                 >
                   <div class="react-datepicker__day-text">{{day.day}}</div>
                 </div>

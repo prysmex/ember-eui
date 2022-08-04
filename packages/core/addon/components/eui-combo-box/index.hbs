@@ -29,6 +29,7 @@
     )
     isLoading=@isLoading
     autoFocus=(and (not @isDisabled) @autoFocus)
+    icon=@triggerIcon
   }}
   @matcher={{@matcher}}
   @initiallyOpen={{@initiallyOpen}}
@@ -70,7 +71,7 @@
     (if @compressed "euiComboBox--compressed")
     (if @fullWidth "euiComboBox--fullWidth")
     (if @isDisabled "euiComboBox-isDisabled")
-    (if @isInvalid "euiComboBox--isInvalid")
+    (if @isInvalid "euiComboBox-isInvalid")
     (if this.select.isOpen "euiComboBox-isOpen")
   }}
   @noMatchesMessageComponent={{if

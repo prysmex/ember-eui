@@ -13,7 +13,7 @@ export const alignMapping = {
 };
 
 export const textStyleMapping = {
-  center: `${baseClass}--reverse`,
+  reverse: `${baseClass}--reverse`,
   normal: ''
 };
 

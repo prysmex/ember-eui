@@ -27,28 +27,27 @@ function useEuiI18n<DEFAULTS extends string[]>(
   defaultValues: DEFAULTS
 ): string | any[];
 function useEuiI18n(...args: any[]): string | any[] {
-  let _i18n = i18n;
-  // Look for a bound context
+  let _lookupToken = lookupToken;
   // @ts-expect-error TODO: type this?
-  if (this && this.mapping) {
+  if (this && this.lookupFn) {
     // @ts-expect-error this alias is fine
-    _i18n = this;
+    _lookupToken = this.lookupFn;
   }
 
   if (typeof args[0] === 'string') {
     const [token, defaultValue, values] = args;
-    return lookupToken({
+    return _lookupToken({
       token,
-      i18nMapping: _i18n.mapping,
+      i18nMapping: i18n.mapping,
       valueDefault: defaultValue,
       values
     });
   } else {
     const [tokens, defaultValues] = args as [string[], string[]];
     return tokens.map((token, idx) =>
-      lookupToken({
+      _lookupToken({
         token,
-        i18nMapping: _i18n.mapping,
+        i18nMapping: i18n.mapping,
         valueDefault: defaultValues[idx]
       })
     );
@@ -56,13 +55,11 @@ function useEuiI18n(...args: any[]): string | any[] {
 }
 
 function lookupToken(options: lookupTokenOptions) {
-  const {
-    token,
-    i18nMapping,
-    valueDefault,
-    i18nMappingFunc,
-    values = {}
-  } = options;
+  const { token, i18nMapping, valueDefault, values = {} } = options;
+
+  const i18nMappingFunc =
+    // @ts-expect-error TODO: type this?
+    this && this.lookupFn ? this.lookupFn : options.i18nMappingFunc;
 
   let renderable = (i18nMapping && i18nMapping[token]) || valueDefault;
 

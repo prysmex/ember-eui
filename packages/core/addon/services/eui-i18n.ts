@@ -1,6 +1,12 @@
 import Service from '@ember/service';
 import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
+
+interface LookupOptions {
+  token: string;
+  valueDefault: string;
+  i18nMapping?: Record<string, unknown>;
+  values?: Record<string, unknown>;
+}
 
 function flatten(
   acc: Record<string, unknown> = {},
@@ -20,10 +26,15 @@ function flatten(
 }
 
 export default class EuiI18n extends Service {
-  @tracked translations = {};
+  translations = {};
+  lookupFn: ((opts: LookupOptions) => string) | null = null;
 
   get mapping() {
     return this.translations;
+  }
+
+  @action setLookupFn(fn: (opts: LookupOptions) => string) {
+    this.lookupFn = fn;
   }
 
   @action addTranslations(translations: Record<string, unknown>) {

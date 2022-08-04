@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { inject as service } from '@ember/service';
 
 //@ts-ignore
 import { i18n, I18nShape, lookupToken } from '@ember-eui/core/i18n';
@@ -13,6 +14,9 @@ interface Args {
 }
 
 export default class EuiI18nComponent extends Component<Args> {
+  // @ts-expect-error TODO: type
+  @service euiI18n;
+
   get isI18nTokensShape() {
     return this.args.tokens != null;
   }
@@ -22,16 +26,18 @@ export default class EuiI18nComponent extends Component<Args> {
   }
 
   get lookupedTokens() {
+    const _lookupToken = this.euiI18n.lookupFn || lookupToken;
+
     if (this.isI18nTokensShape) {
       return this.args.tokens?.map((token, idx) =>
-        lookupToken({
+        _lookupToken({
           token,
           i18nMapping: i18n.mapping,
           valueDefault: this.args.defaults![idx]
         })
       );
     } else {
-      return lookupToken({
+      return _lookupToken({
         token: this.args.token!,
         i18nMapping: i18n.mapping,
         valueDefault: this.args.default!,

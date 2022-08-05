@@ -79,6 +79,7 @@
     "ember-cli-string-helpers": "^5.0.0",
     "ember-cli-terser": "^4.0.2",
     "ember-cli-typescript": "4.2.1",
+    "moment": "^2.29.3",
     "ember-cli-typescript-blueprints": "^3.0.0",
     "ember-export-application-global": "^2.0.1",
     "ember-fetch": "^8.1.1",

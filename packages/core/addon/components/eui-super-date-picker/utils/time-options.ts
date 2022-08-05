@@ -6,7 +6,7 @@
  * Side Public License, v 1.
  */
 import { EuiSelectOption } from '@elastic/eui';
-import { useEuiI18n as _useEuiI18n } from '@ember-eui/core/i18n';
+import type EuiI18n from 'core/services/eui-i18n';
 
 import { TimeUnitId, RelativeOption, DurationRange } from '../types/global';
 
@@ -26,29 +26,25 @@ export type TimeOptions = {
  * i18n'd time options, mostly used in EuiSelects (except for a few cases)
  * used in EuiSuperDatePicker child sub-components
  */
-export const useI18nTimeOptions = (owner?: unknown): TimeOptions => {
-  let useEuiI18n = _useEuiI18n;
-  // Bind the i18n service when the owner is passed
-  if (owner) {
-    useEuiI18n = _useEuiI18n.bind(owner.lookup('service:eui-i18n'));
-  }
+export const useI18nTimeOptions = (euiI18nService: EuiI18n): TimeOptions => {
+  let lookupToken = euiI18nService.lookupToken;
 
   /**
    * Quick select panel
    */
   const timeTenseOptions = [
-    { value: LAST, text: useEuiI18n('euiTimeOptions.last', 'Last') },
-    { value: NEXT, text: useEuiI18n('euiTimeOptions.next', 'Next') }
+    { value: LAST, text: lookupToken('euiTimeOptions.last', 'Last') },
+    { value: NEXT, text: lookupToken('euiTimeOptions.next', 'Next') }
   ];
 
   const timeUnitsOptions = [
-    { value: 's', text: useEuiI18n('euiTimeOptions.seconds', 'Seconds') },
-    { value: 'm', text: useEuiI18n('euiTimeOptions.minutes', 'Minutes') },
-    { value: 'h', text: useEuiI18n('euiTimeOptions.hours', 'Hours') },
-    { value: 'd', text: useEuiI18n('euiTimeOptions.days', 'Days') },
-    { value: 'w', text: useEuiI18n('euiTimeOptions.weeks', 'Weeks') },
-    { value: 'M', text: useEuiI18n('euiTimeOptions.months', 'Months') },
-    { value: 'y', text: useEuiI18n('euiTimeOptions.years', 'Years') }
+    { value: 's', text: lookupToken('euiTimeOptions.seconds', 'Seconds') },
+    { value: 'm', text: lookupToken('euiTimeOptions.minutes', 'Minutes') },
+    { value: 'h', text: lookupToken('euiTimeOptions.hours', 'Hours') },
+    { value: 'd', text: lookupToken('euiTimeOptions.days', 'Days') },
+    { value: 'w', text: lookupToken('euiTimeOptions.weeks', 'Weeks') },
+    { value: 'M', text: lookupToken('euiTimeOptions.months', 'Months') },
+    { value: 'y', text: lookupToken('euiTimeOptions.years', 'Years') }
   ];
 
   /**
@@ -56,71 +52,71 @@ export const useI18nTimeOptions = (owner?: unknown): TimeOptions => {
    */
   const relativeOptions: RelativeOption[] = [
     {
-      text: useEuiI18n('euiTimeOptions.secondsAgo', 'Seconds ago'),
+      text: lookupToken('euiTimeOptions.secondsAgo', 'Seconds ago'),
       value: 's'
     },
     {
-      text: useEuiI18n('euiTimeOptions.minutesAgo', 'Minutes ago'),
+      text: lookupToken('euiTimeOptions.minutesAgo', 'Minutes ago'),
       value: 'm'
     },
     {
-      text: useEuiI18n('euiTimeOptions.hoursAgo', 'Hours ago'),
+      text: lookupToken('euiTimeOptions.hoursAgo', 'Hours ago'),
       value: 'h'
     },
     {
-      text: useEuiI18n('euiTimeOptions.daysAgo', 'Days ago'),
+      text: lookupToken('euiTimeOptions.daysAgo', 'Days ago'),
       value: 'd'
     },
     {
-      text: useEuiI18n('euiTimeOptions.weeksAgo', 'Weeks ago'),
+      text: lookupToken('euiTimeOptions.weeksAgo', 'Weeks ago'),
       value: 'w'
     },
     {
-      text: useEuiI18n('euiTimeOptions.monthsAgo', 'Months ago'),
+      text: lookupToken('euiTimeOptions.monthsAgo', 'Months ago'),
       value: 'M'
     },
     {
-      text: useEuiI18n('euiTimeOptions.yearsAgo', 'Years ago'),
+      text: lookupToken('euiTimeOptions.yearsAgo', 'Years ago'),
       value: 'y'
     },
     {
-      text: useEuiI18n('euiTimeOptions.secondsFromNow', 'Seconds from now'),
+      text: lookupToken('euiTimeOptions.secondsFromNow', 'Seconds from now'),
       value: 's+'
     },
     {
-      text: useEuiI18n('euiTimeOptions.minutesFromNow', 'Minutes from now'),
+      text: lookupToken('euiTimeOptions.minutesFromNow', 'Minutes from now'),
       value: 'm+'
     },
     {
-      text: useEuiI18n('euiTimeOptions.hoursFromNow', 'Hours from now'),
+      text: lookupToken('euiTimeOptions.hoursFromNow', 'Hours from now'),
       value: 'h+'
     },
     {
-      text: useEuiI18n('euiTimeOptions.daysFromNow', 'Days from now'),
+      text: lookupToken('euiTimeOptions.daysFromNow', 'Days from now'),
       value: 'd+'
     },
     {
-      text: useEuiI18n('euiTimeOptions.weeksFromNow', 'Weeks from now'),
+      text: lookupToken('euiTimeOptions.weeksFromNow', 'Weeks from now'),
       value: 'w+'
     },
     {
-      text: useEuiI18n('euiTimeOptions.monthsFromNow', 'Months from now'),
+      text: lookupToken('euiTimeOptions.monthsFromNow', 'Months from now'),
       value: 'M+'
     },
     {
-      text: useEuiI18n('euiTimeOptions.yearsFromNow', 'Years from now'),
+      text: lookupToken('euiTimeOptions.yearsFromNow', 'Years from now'),
       value: 'y+'
     }
   ];
 
   const relativeRoundingLabels = {
-    s: useEuiI18n('euiTimeOptions.roundToSecond', 'Round to the second'),
-    m: useEuiI18n('euiTimeOptions.roundToMinute', 'Round to the minute'),
-    h: useEuiI18n('euiTimeOptions.roundToHour', 'Round to the hour'),
-    d: useEuiI18n('euiTimeOptions.roundToDay', 'Round to the day'),
-    w: useEuiI18n('euiTimeOptions.roundToWeek', 'Round to the week'),
-    M: useEuiI18n('euiTimeOptions.roundToMonth', 'Round to the month'),
-    y: useEuiI18n('euiTimeOptions.roundToYear', 'Round to the year')
+    s: lookupToken('euiTimeOptions.roundToSecond', 'Round to the second'),
+    m: lookupToken('euiTimeOptions.roundToMinute', 'Round to the minute'),
+    h: lookupToken('euiTimeOptions.roundToHour', 'Round to the hour'),
+    d: lookupToken('euiTimeOptions.roundToDay', 'Round to the day'),
+    w: lookupToken('euiTimeOptions.roundToWeek', 'Round to the week'),
+    M: lookupToken('euiTimeOptions.roundToMonth', 'Round to the month'),
+    y: lookupToken('euiTimeOptions.roundToYear', 'Round to the year')
   };
 
   /**
@@ -137,42 +133,42 @@ export const useI18nTimeOptions = (owner?: unknown): TimeOptions => {
     {
       start: 'now/d',
       end: 'now/d',
-      label: useEuiI18n('euiTimeOptions.today', 'Today')
+      label: lookupToken('euiTimeOptions.today', 'Today')
     },
     {
       start: 'now/w',
       end: 'now/w',
-      label: useEuiI18n('euiTimeOptions.thisWeek', 'This week')
+      label: lookupToken('euiTimeOptions.thisWeek', 'This week')
     },
     {
       start: 'now/M',
       end: 'now/M',
-      label: useEuiI18n('euiTimeOptions.thisMonth', 'This month')
+      label: lookupToken('euiTimeOptions.thisMonth', 'This month')
     },
     {
       start: 'now/y',
       end: 'now/y',
-      label: useEuiI18n('euiTimeOptions.thisYear', 'This year')
+      label: lookupToken('euiTimeOptions.thisYear', 'This year')
     },
     {
       start: 'now-1d/d',
       end: 'now-1d/d',
-      label: useEuiI18n('euiTimeOptions.yesterday', 'Yesterday')
+      label: lookupToken('euiTimeOptions.yesterday', 'Yesterday')
     },
     {
       start: 'now/w',
       end: 'now',
-      label: useEuiI18n('euiTimeOptions.weekToDate', 'Week to date')
+      label: lookupToken('euiTimeOptions.weekToDate', 'Week to date')
     },
     {
       start: 'now/M',
       end: 'now',
-      label: useEuiI18n('euiTimeOptions.monthToDate', 'Month to date')
+      label: lookupToken('euiTimeOptions.monthToDate', 'Month to date')
     },
     {
       start: 'now/y',
       end: 'now',
-      label: useEuiI18n('euiTimeOptions.yearToDate', 'Year to date')
+      label: lookupToken('euiTimeOptions.yearToDate', 'Year to date')
     }
   ];
 

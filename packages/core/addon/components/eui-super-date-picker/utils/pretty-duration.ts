@@ -1,4 +1,5 @@
-import { DATE_MODES, getDateMode, useEuiI18n } from '.';
+import type EuiI18n from 'core/services/eui-i18n';
+import { DATE_MODES, getDateMode } from '.';
 import { DurationRange, ShortDate } from '../types/global';
 
 /**
@@ -7,78 +8,98 @@ import { DurationRange, ShortDate } from '../types/global';
  * will have different grammar/positions for time than English
  */
 
-export const useRelativeDurationI18n = (duration: number) => ({
-  s: useEuiI18n(
-    'euiPrettyDuration.lastDurationSeconds',
-    ({ duration }) => `Last ${duration} second${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  's+': useEuiI18n(
-    'euiPrettyDuration.nextDurationSeconds',
-    ({ duration }) => `Next ${duration} second${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  m: useEuiI18n(
-    'euiPrettyDuration.lastDurationMinutes',
-    ({ duration }) => `Last ${duration} minute${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  'm+': useEuiI18n(
-    'euiPrettyDuration.nextDurationMinutes',
-    ({ duration }) => `Next ${duration} minute${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  h: useEuiI18n(
-    'euiPrettyDuration.lastDurationHours',
-    ({ duration }) => `Last ${duration} hour${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  'h+': useEuiI18n(
-    'euiPrettyDuration.nextDurationHours',
-    ({ duration }) => `Next ${duration} hour${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  d: useEuiI18n(
-    'euiPrettyDuration.lastDurationDays',
-    ({ duration }) => `Last ${duration} day${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  'd+': useEuiI18n(
-    'euiPrettyDuration.nexttDurationDays',
-    ({ duration }) => `Next ${duration} day${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  w: useEuiI18n(
-    'euiPrettyDuration.lastDurationWeeks',
-    ({ duration }) => `Last ${duration} week${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  'w+': useEuiI18n(
-    'euiPrettyDuration.nextDurationWeeks',
-    ({ duration }) => `Next ${duration} week${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  M: useEuiI18n(
-    'euiPrettyDuration.lastDurationMonths',
-    ({ duration }) => `Last ${duration} month${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  'M+': useEuiI18n(
-    'euiPrettyDuration.nextDurationMonths',
-    ({ duration }) => `Next ${duration} month${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  y: useEuiI18n(
-    'euiPrettyDuration.lastDurationYears',
-    ({ duration }) => `Last ${duration} year${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-  'y+': useEuiI18n(
-    'euiPrettyDuration.nextDurationYears',
-    ({ duration }) => `Next ${duration} year${duration === 1 ? '' : 's'}`,
-    { duration }
-  ),
-});
+export const useRelativeDurationI18n = <T extends number = number>(
+  duration: T,
+  euiI18n: EuiI18n
+) => {
+  const lookupToken = euiI18n.lookupToken;
+  return {
+    s: lookupToken(
+      'euiPrettyDuration.lastDurationSeconds',
+      ({ duration }: { duration: T }) =>
+        `Last ${duration} second${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    's+': lookupToken(
+      'euiPrettyDuration.nextDurationSeconds',
+      ({ duration }: { duration: T }) =>
+        `Next ${duration} second${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    m: lookupToken(
+      'euiPrettyDuration.lastDurationMinutes',
+      ({ duration }: { duration: T }) =>
+        `Last ${duration} minute${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    'm+': lookupToken(
+      'euiPrettyDuration.nextDurationMinutes',
+      ({ duration }: { duration: T }) =>
+        `Next ${duration} minute${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    h: lookupToken(
+      'euiPrettyDuration.lastDurationHours',
+      ({ duration }: { duration: T }) =>
+        `Last ${duration} hour${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    'h+': lookupToken(
+      'euiPrettyDuration.nextDurationHours',
+      ({ duration }: { duration: T }) =>
+        `Next ${duration} hour${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    d: lookupToken(
+      'euiPrettyDuration.lastDurationDays',
+      ({ duration }: { duration: T }) =>
+        `Last ${duration} day${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    'd+': lookupToken(
+      'euiPrettyDuration.nexttDurationDays',
+      ({ duration }: { duration: T }) =>
+        `Next ${duration} day${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    w: lookupToken(
+      'euiPrettyDuration.lastDurationWeeks',
+      ({ duration }: { duration: T }) =>
+        `Last ${duration} week${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    'w+': lookupToken(
+      'euiPrettyDuration.nextDurationWeeks',
+      ({ duration }: { duration: T }) =>
+        `Next ${duration} week${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    M: lookupToken(
+      'euiPrettyDuration.lastDurationMonths',
+      ({ duration }: { duration: T }) =>
+        `Last ${duration} month${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    'M+': lookupToken(
+      'euiPrettyDuration.nextDurationMonths',
+      ({ duration }: { duration: T }) =>
+        `Next ${duration} month${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    y: lookupToken(
+      'euiPrettyDuration.lastDurationYears',
+      ({ duration }: { duration: T }) =>
+        `Last ${duration} year${duration === 1 ? '' : 's'}`,
+      { duration }
+    ),
+    'y+': lookupToken(
+      'euiPrettyDuration.nextDurationYears',
+      ({ duration }: { duration: T }) =>
+        `Next ${duration} year${duration === 1 ? '' : 's'}`,
+      { duration }
+    )
+  };
+};
 
 const hasRangeMatch = (
   timeFrom: ShortDate,

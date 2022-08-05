@@ -2,7 +2,8 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { useFormatTimeString } from '../utils';
 import { LocaleSpecifier } from 'moment';
-import { getOwner } from '@ember/application';
+import { inject as service } from '@ember/service';
+import type EuiI18n from 'core/services/eui-i18n';
 
 interface EuiDatePopoverButtonArgs {
   className?: string;
@@ -26,6 +27,7 @@ interface EuiDatePopoverButtonArgs {
 }
 
 export default class EuiDatePopoverButton extends Component<EuiDatePopoverButtonArgs> {
+  @service declare euiI18n: EuiI18n;
   @tracked isOpen = false;
 
   get formattedValue() {
@@ -37,7 +39,7 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
       this.args.dateFormat,
       roundUp,
       locale,
-      getOwner(this)
+      this.euiI18n
     );
   }
 

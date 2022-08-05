@@ -1,7 +1,6 @@
 import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { getOwner } from '@ember/application';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import { LocaleSpecifier } from 'moment';
 import {
@@ -13,6 +12,8 @@ import {
 import { isRangeInvalid } from './utils';
 import { useI18nTimeOptions } from './utils/time-options';
 import { OnRefreshProps, OnTimeChangeProps } from '@elastic/eui';
+import type EuiI18n from '../../services/eui-i18n';
+import { inject as service } from '@ember/service';
 
 interface EuiSuperDatePickerArgs {
   commonlyUsedRanges?: DurationRange[];
@@ -98,6 +99,8 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   // recentlyUsedRanges: [],
   @argOrDefault(1000) refreshInterval!: Milliseconds;
 
+  @service declare euiI18n: EuiI18n;
+
   @tracked start: ShortDate;
   @tracked end: ShortDate;
   @tracked isInvalid = false;
@@ -118,7 +121,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   }
 
   get timeOptions() {
-    return useI18nTimeOptions(getOwner(this));
+    return useI18nTimeOptions(this.euiI18n);
   }
 
   setTime({ start, end }: DurationRange) {

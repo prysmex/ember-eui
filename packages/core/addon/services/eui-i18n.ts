@@ -55,6 +55,14 @@ export default class EuiI18n extends Service {
     });
   }
 
+  getTokenFromMapping(
+    token: lookupTokenOptions['token'],
+    i18nMapping: lookupTokenOptions['i18nMapping'],
+    valueDefault: lookupTokenOptions['valueDefault']
+  ) {
+    return (i18nMapping && i18nMapping[token]) || valueDefault;
+  }
+
   @action
   _lookupToken(options: lookupTokenOptions) {
     const {
@@ -64,7 +72,7 @@ export default class EuiI18n extends Service {
       values = {}
     } = options;
 
-    let renderable = (i18nMapping && i18nMapping[token]) || valueDefault;
+    let renderable = this.getTokenFromMapping(token, i18nMapping, valueDefault);
 
     if (typeof renderable === 'function') {
       renderable = renderable(values);

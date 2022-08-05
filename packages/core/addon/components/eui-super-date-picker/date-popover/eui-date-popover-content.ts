@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { toAbsoluteString, getDateMode } from '../utils';
 import { helper } from '@ember/component/helper';
 import { inject as service } from '@ember/service';
-import type EuiI18n from 'core/services/eui-i18n';
+import type EuiI18n from '../../../services/eui-i18n';
 
 interface EuiDatePopoverContentArgs {
   value: string;

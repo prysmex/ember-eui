@@ -9,7 +9,7 @@
 import moment, { LocaleSpecifier } from 'moment';
 import dateMath from '@elastic/datemath';
 import { RelativeParts, ShortDate } from '../types/global';
-import type EuiI18n from 'core/services/eui-i18n';
+import type EuiI18n from '../../../services/eui-i18n';
 
 /**
  * Reusable format time string util

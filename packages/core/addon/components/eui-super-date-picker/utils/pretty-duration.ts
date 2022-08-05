@@ -1,4 +1,4 @@
-import type EuiI18n from 'core/services/eui-i18n';
+import type EuiI18n from '../../../services/eui-i18n';
 import { DATE_MODES, getDateMode } from '.';
 import { DurationRange, ShortDate } from '../types/global';
 

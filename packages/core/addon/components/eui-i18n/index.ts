@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import type EuiI18n from 'core/services/eui-i18n';
+import type EuiI18n from '../../services/eui-i18n';
 
 interface Args {
   tokens?: string[];

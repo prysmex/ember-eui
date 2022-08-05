@@ -6,7 +6,7 @@
  * Side Public License, v 1.
  */
 import { EuiSelectOption } from '@elastic/eui';
-import type EuiI18n from 'core/services/eui-i18n';
+import type EuiI18n from '../../../services/eui-i18n';
 
 import { TimeUnitId, RelativeOption, DurationRange } from '../types/global';
 

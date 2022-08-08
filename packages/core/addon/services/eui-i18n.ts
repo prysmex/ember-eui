@@ -2,11 +2,11 @@ import Service from '@ember/service';
 import { action } from '@ember/object';
 import { processStringToChildren } from '../i18n/util';
 
-interface lookupTokenOptions {
+interface LookupTokenOptions {
   token: string;
   i18nMapping?: Record<string, string>;
   valueDefault: string | ((values: Record<string, unknown>) => string);
-  values?: { [key: string]: any };
+  values?: Record<string, unknown>;
   //@ts-expect-error TODO: type this?
   render?: I18nShape['render'];
 }
@@ -56,15 +56,15 @@ export default class EuiI18n extends Service {
   }
 
   getTokenFromMapping(
-    token: lookupTokenOptions['token'],
-    i18nMapping: lookupTokenOptions['i18nMapping'],
-    valueDefault: lookupTokenOptions['valueDefault']
+    token: LookupTokenOptions['token'],
+    valueDefault: LookupTokenOptions['valueDefault'],
+    i18nMapping: LookupTokenOptions['i18nMapping']
   ) {
     return (i18nMapping && i18nMapping[token]) || valueDefault;
   }
 
   @action
-  _lookupToken(options: lookupTokenOptions) {
+  _lookupToken(options: LookupTokenOptions) {
     const {
       token,
       i18nMapping = this.mapping,
@@ -72,7 +72,7 @@ export default class EuiI18n extends Service {
       values = {}
     } = options;
 
-    let renderable = this.getTokenFromMapping(token, i18nMapping, valueDefault);
+    let renderable = this.getTokenFromMapping(token, valueDefault, i18nMapping);
 
     if (typeof renderable === 'function') {
       renderable = renderable(values);

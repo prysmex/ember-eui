@@ -2,8 +2,8 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { toAbsoluteString, getDateMode } from '../utils';
 import { helper } from '@ember/component/helper';
-import { useEuiI18n as _useEuiI18n } from '@ember-eui/core/i18n';
 import { inject as service } from '@ember/service';
+import type EuiI18n from '../../../services/eui-i18n';
 
 interface EuiDatePopoverContentArgs {
   value: string;
@@ -25,43 +25,44 @@ const toAbsoluteStringHelper = helper(function ([value, roundUp]: [
 });
 
 export default class EuiDatePopoverContent extends Component<EuiDatePopoverContentArgs> {
-  @service euiI18n;
+  @service declare euiI18n: EuiI18n;
   @tracked selectedTab = 0;
-  useEuiI18n;
   toAbsoluteStringHelper = toAbsoluteStringHelper;
-
-  constructor(owner: unknown, args: EuiDatePopoverContentArgs) {
-    super(owner, args);
-
-    // bind the function
-    this.useEuiI18n = _useEuiI18n.bind(this.euiI18n);
-  }
 
   get labelPrefix() {
     return this.args.position === 'start'
-      ? this.useEuiI18n('euiDatePopoverContent.startDateLabel', 'Start date')
-      : this.useEuiI18n('euiDatePopoverContent.endDateLabel', 'End date');
+      ? this.euiI18n.lookupToken(
+          'euiDatePopoverContent.startDateLabel',
+          'Start date'
+        )
+      : this.euiI18n.lookupToken(
+          'euiDatePopoverContent.endDateLabel',
+          'End date'
+        );
   }
 
   get tabs() {
     return [
       {
         id: 'absolute',
-        name: this.useEuiI18n(
+        name: this.euiI18n.lookupToken(
           'euiDatePopoverContent.absoluteTabLabel',
           'Absolute'
         )
       },
       {
         id: 'relative',
-        name: this.useEuiI18n(
+        name: this.euiI18n.lookupToken(
           'euiDatePopoverContent.relativeTabLabel',
           'Relative'
         )
       },
       {
         id: 'now',
-        name: this.useEuiI18n('euiDatePopoverContent.nowTabLabel', 'Now')
+        name: this.euiI18n.lookupToken(
+          'euiDatePopoverContent.nowTabLabel',
+          'Now'
+        )
       }
     ];
   }

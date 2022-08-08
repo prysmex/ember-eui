@@ -80,7 +80,6 @@
     "ember-truth-helpers": "^3.0.0",
     "lodash-es": "^4.17.21",
     "mdast-util-to-hast": "^10.0.0",
-    "moment": "^2.29.3",
     "refractor": "^3.5.0",
     "rehype-raw": "^5.0.0",
     "rehype-stringify": "^8.0.0",
@@ -96,9 +95,11 @@
   },
   "peerDependencies": {
     "ember-auto-import": "^2.2.4",
+    "moment": "^2.29.3",
     "ember-focus-trap": "^1.0.1"
   },
   "devDependencies": {
+    "moment": "^2.29.3",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.6.0",
     "@embroider/test-setup": "^1.5.0",

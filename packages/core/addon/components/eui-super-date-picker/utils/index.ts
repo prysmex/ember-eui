@@ -9,7 +9,7 @@
 import moment, { LocaleSpecifier } from 'moment';
 import dateMath from '@elastic/datemath';
 import { RelativeParts, ShortDate } from '../types/global';
-import { useEuiI18n as _useEuiI18n } from '@ember-eui/core/i18n';
+import type EuiI18n from '../../../services/eui-i18n';
 
 /**
  * Reusable format time string util
@@ -45,17 +45,13 @@ export const useFormatTimeString = (
   dateFormat: string,
   roundUp = false,
   locale: LocaleSpecifier = 'en',
-  owner?: unknown
+  euiI18nService: EuiI18n
 ): string => {
-  let useEuiI18n = _useEuiI18n;
-  // Bind the i18n service when the owner is passed
-  if (owner) {
-    useEuiI18n = _useEuiI18n.bind(owner.lookup('service:eui-i18n'));
-  }
+  let lookupToken = euiI18nService.lookupToken;
 
   // i18n'd strings
-  const nowDisplay = useEuiI18n('euiPrettyDuration.now', 'now');
-  const invalidDateDisplay = useEuiI18n(
+  const nowDisplay = lookupToken('euiPrettyDuration.now', 'now');
+  const invalidDateDisplay = lookupToken(
     'euiPrettyDuration.invalid',
     'Invalid date'
   );
@@ -66,12 +62,12 @@ export const useFormatTimeString = (
   }
 
   if (timeString === 'now') {
-    return nowDisplay;
+    return nowDisplay as string;
   }
 
   const tryParse = dateMath.parse(timeString, { roundUp: roundUp });
   if (!moment(tryParse).isValid()) {
-    return invalidDateDisplay;
+    return invalidDateDisplay as string;
   }
 
   if (moment.isMoment(tryParse)) {
@@ -118,6 +114,7 @@ export function parseRelativeParts(value: string) {
   const duration = moment.duration(moment().diff(dateMath.parse(value)));
   let unitOp = '';
   for (let i = 0; i < relativeUnitsFromLargestToSmallest.length; i++) {
+    //@ts-ignore
     const asRelative = duration.as(relativeUnitsFromLargestToSmallest[i]);
     if (asRelative < 0) unitOp = '+';
     if (Math.abs(asRelative) > 1) {

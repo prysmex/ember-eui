@@ -4,7 +4,7 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { sideMapping } from 'core/utils/css-mappings/eui-global-toast-list';
 import Timer from '../../utils/timer';
-import EuiToasterService, { EuiToastProps } from 'core/services/eui-toaster';
+import EuiToasterService, { EuiToastProps } from '../../services/eui-toaster';
 
 type EuiToastSide = keyof typeof sideMapping;
 type ToastSide = EuiToastSide | string;

@@ -7,8 +7,6 @@ interface LookupTokenOptions {
   i18nMapping?: Record<string, string>;
   valueDefault: string | ((values: Record<string, unknown>) => string);
   values?: Record<string, unknown>;
-  //@ts-expect-error TODO: type this?
-  render?: I18nShape['render'];
 }
 
 function flatten(

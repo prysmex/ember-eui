@@ -66,6 +66,7 @@
   <EuiPageTemplate @paddingSize="none" @grow={{true}}>
     <:pageSideBar>
       <SideNav
+        @isClearable={{true}}
         @onSearch={{this.onSearch}}
         @searchValue={{this.searchValue}}
         @isOpenMobile={{this.isOpenMobile}}

@@ -1,0 +1,60 @@
+<EuiPopover
+  @isOpen={{this.isOpen}}
+  @closePopover={{set this "isOpen" false}}
+  @anchorPosition="downLeft"
+  @anchorClassName="euiQuickSelectPopover__anchor"
+>
+  <:button>
+    <EuiButtonEmpty
+      class="euiFormControlLayout__prepend"
+      @textClasses="euiQuickSelectPopover__buttonText"
+      @size="xs"
+      @iconType="arrowDown"
+      @iconSide="right"
+      @isDisabled={{@isDisabled}}
+      {{on "click" (set this "isOpen" (not this.isOpen))}}
+    >
+      <EuiIcon @type="calendar" />
+    </EuiButtonEmpty>
+  </:button>
+
+  <:content>
+    <div
+      class="euiQuickSelectPopover__content"
+    >
+      <EuiSuperDatePicker::EuiQuickSelectPopover::EuiQuickSelect
+        @applyTime={{this.applyTime}}
+        @start={{@start}}
+        @end={{@end}}
+        @timeOptions={{@timeOptions}}
+        {{!-- prevQuickSelect={prevQuickSelect} --}}
+      />
+
+      {{#if (gt @commonlyUsedRanges.length 0)}}
+        <EuiHorizontalRule @margin="s" />
+        <EuiSuperDatePicker::EuiQuickSelectPopover::EuiCommonlyUsedTimeRanges
+          @applyTime={{this.applyTime}}
+          @commonlyUsedRanges={{@commonlyUsedRanges}}
+        />
+      {{/if}}
+
+      {{#if (gt @recentlyUsedRanges.length 0)}}
+        <EuiHorizontalRule @margin="s" />
+        <EuiSuperDatePicker::EuiQuickSelectPopover::EuiRecentlyUsed
+          @applyTime={{this.applyTime}}
+          @commonlyUsedRanges={{@commonlyUsedRanges}}
+          @dateFormat={{@dateFormat}}
+          @recentlyUsedRanges={{@recentlyUsedRanges}}
+        />
+      {{/if}}
+
+      {{!-- {this.renderCustomQuickSelectPanels()} --}}
+      {{!-- <EuiHorizontalRule @margin="s" />
+      <EuiRefreshInterval
+        onRefreshChange={applyRefreshInterval}
+        isPaused={isPaused}
+        refreshInterval={refreshInterval}
+      /> --}}
+    </div>
+  </:content>
+</EuiPopover>

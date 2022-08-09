@@ -1,0 +1,125 @@
+<div class="euiDatePicker euiDatePicker--inline">
+  <EuiFormControlLayout
+    {{!-- @icon={{optionalIcon}}
+    @fullWidth={{fullWidth}}
+    @clear={selected && onClear ? { onClick: onClear } : undefined}
+    @isLoading={isLoading} --}}
+  >
+    <div class="react-datepicker">
+      <button
+        type="button"
+        class="react-datepicker__navigation react-datepicker__navigation--previous"
+        aria-label="Previous month"
+        {{on "click" this.decreaseMonth}}
+      >
+        <EuiIcon
+          @iconClasses="euiButtonIcon__icon"
+          @type="arrowLeft"
+        />
+      </button>
+      <button
+        type="button"
+        class="react-datepicker__navigation react-datepicker__navigation--next"
+        aria-label="Next month"
+        {{on "click" this.increaseMonth}}
+      >
+        <EuiIcon
+          @iconClasses="euiButtonIcon__icon {{@iconClasses}}"
+          @type="arrowRight"
+        />
+      </button>
+      <div class="react-datepicker__month-container">
+        <div class="react-datepicker__header">
+          <div class="react-datepicker__header__dropdown react-datepicker__header__dropdown--scroll">
+            <div class="react-datepicker__month-dropdown-container react-datepicker__month-dropdown-container--scroll">
+              {{!template-lint-disable}}
+              <div class="react-datepicker__month-read-view" style="padding: 0;">
+                <EuiFlexItem @grow="1">
+                  <EuiSelect
+                    @compressed={{true}}
+                    @value={{this.month}}
+                    @options={{this.monthNames}}
+                    {{on "change" (pick "target.value" this.setMonth)}}
+                  />
+                </EuiFlexItem>
+              </div>
+            </div>
+            <div class="react-datepicker__year-dropdown-container react-datepicker__year-dropdown-container--scroll">
+              {{!template-lint-disable}}
+              <div class="react-datepicker__year-read-view" style="padding: 0;">
+                <EuiFlexItem @grow="1">
+                  <EuiSelect
+                    @compressed={{true}}
+                    @value={{this.year}}
+                    @options={{this.years}}
+                    {{on "change" (pick "target.value" (set this "year"))}}
+                  />
+                </EuiFlexItem>
+              </div>
+            </div>
+          </div>
+          <div class="react-datepicker__day-names">
+            <div class="react-datepicker__day-name">Su</div>
+            <div class="react-datepicker__day-name">Mo</div>
+            <div class="react-datepicker__day-name">Tu</div>
+            <div class="react-datepicker__day-name">We</div>
+            <div class="react-datepicker__day-name">Th</div>
+            <div class="react-datepicker__day-name">Fr</div>
+            <div class="react-datepicker__day-name">Sa</div>
+          </div>
+        </div>
+
+        <div class="react-datepicker__month react-datepicker__month--accessible">
+          {{#each this.days as |days|}}
+            <div class="react-datepicker__week">
+              {{#each days as |day|}}
+                <div
+                  role="button"
+                  class={{concat
+                    "react-datepicker__day"
+                    (if
+                      (and
+                        (not day.isOutside)
+                        (this.isSameDayHelper this.year this.month day.day this.selectedDate)
+                      )
+                      " react-datepicker__day--selected"
+                    )
+                    (if
+                        (this.isSameDayHelper this.year this.month day.day this.today)
+                      " react-datepicker__day--today"
+                    )
+                    (if day.isOutside " react-datepicker__day--outside-month")
+                  }}
+                  {{on "click" (fn this.selectDate day)}}
+                >
+                  <div class="react-datepicker__day-text">{{day.day}}</div>
+                </div>
+              {{/each}}
+            </div>
+          {{/each}}
+        </div>
+      </div>
+
+      <div class="react-datepicker__time-container">
+        <div class="react-datepicker__time">
+          <div class="react-datepicker__time-box react-datepicker__time-box--accessible">
+            <ul class="react-datepicker__time-list">
+              {{#each this.times as |time|}}
+                <li
+                  role="option"
+                  class={{concat
+                    "react-datepicker__time-list-item"
+                    (if (eq time this.selectedTime) " react-datepicker__time-list-item--selected")
+                  }}
+                  {{on "click" (fn this.selectTime time)}}
+                >
+                  {{time}}
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </EuiFormControlLayout>
+</div>

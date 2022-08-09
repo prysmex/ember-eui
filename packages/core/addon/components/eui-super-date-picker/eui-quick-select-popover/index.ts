@@ -1,0 +1,25 @@
+import { action } from '@ember/object';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { ApplyTime } from '../types/global';
+
+interface EuiQuickSelectPopoverArgs {
+  applyTime: ApplyTime;
+}
+
+export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopoverArgs> {
+  @tracked isOpen = false;
+
+  @action applyTime({ start, end, quickSelect, keepPopoverOpen = false }) {
+    this.args.applyTime({
+      start,
+      end
+    });
+    // if (quickSelect) {
+    //   this.setState({ prevQuickSelect: quickSelect });
+    // }
+    if (!keepPopoverOpen) {
+      this.isOpen = false;
+    }
+  }
+}

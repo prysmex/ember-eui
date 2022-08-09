@@ -6,12 +6,7 @@
  * Side Public License, v 1.
  */
 
-import {
-  isBoolean,
-  isString,
-  isNumber,
-  isUndefined
-} from '../../utils/predicate';
+import { isBoolean, isString, isNumber, isUndefined } from '../utils/predicate';
 import { get } from '@ember/object';
 import { assert } from '@ember/debug';
 

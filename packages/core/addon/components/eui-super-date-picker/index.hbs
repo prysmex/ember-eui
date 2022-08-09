@@ -1,0 +1,123 @@
+<EuiFlexGroup
+  @gutterSize="s"
+  @responsive={{false}}
+  class={{class-names
+    "euiSuperDatePicker__flexWrapper"
+    (unless this.showUpdateButton "euiSuperDatePicker__flexWrapper--noUpdateButton")
+    (if this.isAutoRefreshOnly "euiSuperDatePicker__flexWrapper--isAutoRefreshOnly")
+    (if @isQuickSelectOnly "euiSuperDatePicker__flexWrapper--isQuickSelectOnly")
+    (if (eq this.width "full") "euiSuperDatePicker__flexWrapper--fullWidth")
+    (if (eq this.width "auto") "euiSuperDatePicker__flexWrapper--autoWidth")
+  }}
+>
+  <EuiFlexItem>
+    <EuiFormControlLayout
+      class="euiSuperDatePicker"
+      @compressed={{@compressed}}
+      @isDisabled={{@isDisabled}}
+      @useGroup={{true}}
+      {{!-- @fullWidth={{this.fullWidth}} --}}
+      {{!-- @readOnly={{@readOnly}} --}}
+    >
+      <:prepend>
+        <EuiSuperDatePicker::EuiQuickSelectPopover
+          @start={{this.start}}
+          @end={{this.end}}
+          @applyTime={{this.applyQuickTime}}
+          @timeOptions={{this.timeOptions}}
+          @isDisabled={{@isDisabled}}
+          @dateFormat={{this.dateFormat}}
+          @commonlyUsedRanges={{arg-or-default
+            @commonlyUsedRanges
+            this.timeOptions.commonDurationRanges
+          }}
+          {{!-- @applyRefreshInterval={{if @onRefreshChange this.onRefreshChange}} --}}
+          {{!-- commonlyUsedRanges={commonlyUsedRanges}
+          customQuickSelectPanels={customQuickSelectPanels}
+          isPaused={isPaused}
+          recentlyUsedRanges={recentlyUsedRanges}
+          refreshInterval={refreshInterval} --}}
+        />
+      </:prepend>
+
+      <:field>
+        <EuiSuperDatePicker::EuiDatePickerRange
+          @className="euiDatePickerRange--inGroup"
+          @iconType={{false}}
+          @isInvalid={{this.isInvalid}}
+          @disabled={{@isDisabled}}
+          @isCustom={{true}}
+        >
+          <:startDateControl>
+            <EuiSuperDatePicker::DatePopover::EuiDatePopoverButton
+              @className="euiSuperDatePicker__startPopoverButton"
+              @value={{this.start}}
+              @compressed={{@compressed}}
+              @position="start"
+              @isDisabled={{@isDisabled}}
+              @dateFormat={{this.dateFormat}}
+              @onChange={{this.setStart}}
+              @isInvalid={{this.isInvalid}}
+              @timeOptions={{this.timeOptions}}
+              @needsUpdating={{this.hasChanged}}
+              @locale={{@locale}}
+              {{!--
+              isInvalid={isInvalid}
+              utcOffset={utcOffset}
+              timeFormat={timeFormat}
+              isOpen={this.state.isStartDatePopoverOpen}
+              onPopoverToggle={this.onStartDatePopoverToggle}
+              onPopoverClose={this.onStartDatePopoverClose}
+              --}}
+            />
+          </:startDateControl>
+
+          <:endDateControl>
+            <EuiSuperDatePicker::DatePopover::EuiDatePopoverButton
+              @className="euiSuperDatePicker__startPopoverButton"
+              @value={{this.end}}
+              @compressed={{@compressed}}
+              @position="end"
+              @isDisabled={{@isDisabled}}
+              @dateFormat={{this.dateFormat}}
+              @onChange={{this.setEnd}}
+              @isInvalid={{this.isInvalid}}
+              @timeOptions={{this.timeOptions}}
+              @roundUp={{true}}
+              @needsUpdating={{this.hasChanged}}
+              @locale={{@locale}}
+              {{!--
+              utcOffset={utcOffset}
+              timeFormat={timeFormat}
+              isOpen={this.state.isStartDatePopoverOpen}
+              onPopoverToggle={this.onStartDatePopoverToggle}
+              onPopoverClose={this.onStartDatePopoverClose}
+              --}}
+            />
+          </:endDateControl>
+        </EuiSuperDatePicker::EuiDatePickerRange>
+      </:field>
+    </EuiFormControlLayout>
+  </EuiFlexItem>
+
+  {{#if this.showUpdateButton}}
+    <EuiFlexItem @grow={{false}}>
+      <EuiSuperDatePicker::EuiSuperUpdateButton
+        @size={{if @compressed "s" "m"}}
+        @onClick={{this.handleClickUpdateButton}}
+        @isLoading={{@isLoading}}
+        @isDisabled={{or @isDisabled this.isInvalid}}
+        @needsUpdate={{this.hasChanged}}
+        @fill={{true}}
+        @iconOnly={{eq this.showUpdateButton "iconOnly"}}
+        {{!--
+        showTooltip={
+          !this.state.isStartDatePopoverOpen &&
+          !this.state.isEndDatePopoverOpen
+        }
+        responsive
+        --}}
+      />
+    </EuiFlexItem>
+  {{/if}}
+</EuiFlexGroup>

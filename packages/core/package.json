@@ -52,6 +52,7 @@
     ]
   },
   "dependencies": {
+    "@elastic/datemath": "^5.0.3",
     "@elastic/eui": "41.4.0",
     "@ember/render-modifiers": "^2.0.4",
     "@html-next/vertical-collection": "3.0.0",
@@ -94,9 +95,11 @@
   },
   "peerDependencies": {
     "ember-auto-import": "^2.2.4",
+    "moment": "^2.29.3",
     "ember-focus-trap": "^1.0.1"
   },
   "devDependencies": {
+    "moment": "^2.29.3",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.6.0",
     "@embroider/test-setup": "^1.5.0",

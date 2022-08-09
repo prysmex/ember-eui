@@ -1,0 +1,47 @@
+<EuiForm class="euiDatePopoverContent__padded">
+  <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
+    <EuiFlexItem>
+      <EuiFormRow
+        {{!-- isInvalid={isInvalid}
+        error={getErrorMessage({
+          numberInputError,
+          dateInputError,
+        })} --}}
+      >
+        <EuiFieldNumber
+          @compressed={{true}}
+          @value={{this.count}}
+          @min="0"
+          {{on "input" this.onCountChange}}
+          {{!--
+          isInvalid={isInvalid} --}}
+        />
+      </EuiFormRow>
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiSelect
+        @compressed={{true}}
+        @value={{this.unit}}
+        @options={{@timeOptions.relativeOptions}}
+        {{on "change" (pick "target.value" this.onUnitChange)}}
+      />
+    </EuiFlexItem>
+  </EuiFlexGroup>
+  <EuiSpacer @size="s" />
+  <EuiFieldText
+    @compressed={{true}}
+    @value={{this.formattedValue}}
+    @readOnly={{true}}
+  >
+    <:prepend>
+      <EuiFormLabel>{{@labelPrefix}}</EuiFormLabel>
+    </:prepend>
+  </EuiFieldText>
+</EuiForm>
+<EuiPopoverFooter @paddingSize="s">
+  <EuiSwitch
+    @label={{this.roundingLabel}}
+    @checked={{this.round}}
+    @onChange={{pick 'target.checked' this.onRoundChange}}
+  />
+</EuiPopoverFooter>

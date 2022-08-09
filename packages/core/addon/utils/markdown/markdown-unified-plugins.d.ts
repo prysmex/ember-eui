@@ -6,22 +6,8 @@
  * Side Public License, v 1.
  */
 
-declare module 'remark-emoji' {
-  import { Plugin } from 'unified';
-  const RemarkEmoji: Plugin;
-  export = RemarkEmoji;
-}
-
 declare module 'remark-highlight.js' {
   import { Plugin } from 'unified';
   const RemarkHighlight: Plugin;
   export = RemarkHighlight;
-}
-
-declare module 'mdast-util-to-hast/lib/all' {
-  import { Node } from 'unist';
-  import { H } from 'mdast-util-to-hast';
-
-  const all: (h: H, node: Node) => Node[];
-  export = all;
 }

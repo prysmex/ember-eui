@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "5.8.5",
+  "version": "5.9.0",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -95,11 +95,10 @@
   },
   "peerDependencies": {
     "ember-auto-import": "^2.2.4",
-    "moment": "^2.29.3",
-    "ember-focus-trap": "^1.0.1"
+    "ember-focus-trap": "^1.0.1",
+    "moment": "^2.29.3"
   },
   "devDependencies": {
-    "moment": "^2.29.3",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.6.0",
     "@embroider/test-setup": "^1.5.0",
@@ -162,6 +161,7 @@
     "loader.js": "^4.7.0",
     "lodash-es": "^4.17.21",
     "mdast-util-to-hast": "^10.0.0",
+    "moment": "^2.29.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.5.1",
     "qunit": "^2.17.2",

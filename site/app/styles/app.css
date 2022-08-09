@@ -16,7 +16,10 @@ body.euiBody--headerIsFixed {
 }
 
 .guideDemo__textLines {
-  background-image: linear-gradient(rgba(0,119,204,0.1) 1px, transparent 1px);
+  background-image: linear-gradient(
+    rgba(0, 119, 204, 0.1) 1px,
+    transparent 1px
+  );
   background-size: 100% 12px;
   background-position-y: -1px;
 }
@@ -100,7 +103,20 @@ html {
   }
 }
 
+.pageBodyShadow {
+  box-shadow: rgb(0 0 0 / 8%) 0px 0.9px 4px, rgb(0 0 0 / 6%) 0px 2.6px 8px,
+    rgb(0 0 0 / 5%) 0px 5.7px 12px, rgb(0 0 0 / 4%) 0px 15px 15px;
+}
 /* Elastic UI docs specific */
+
+.docfy-demo__description {
+  padding: 24px;
+}
+
+.docfy-demo {
+  padding-inline: 24px;
+}
+
 .guideSectionTabs {
   padding: 4px 12px;
 }
@@ -122,7 +138,7 @@ html {
   }
 }
 
-.guideSection+.guideSection {
+.guideSection + .guideSection {
   margin-top: 32px;
 }
 
@@ -131,7 +147,7 @@ html {
   padding-top: 8px;
   padding-bottom: 8px;
 }
-p>p:last-child{
+p > p:last-child {
   margin: 0px;
 }
 
@@ -142,7 +158,6 @@ p>p:last-child{
 }
 
 a span.icon-link:hover {
-
 }
 div.docfy-demo__description__header > h2 > a > span {
   /* content: '#'; */
@@ -152,8 +167,8 @@ button {
   font-family: Inter, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 }
 
-.guideSectionTabs__tab>* {
-  font-weight: 500!important;
+.guideSectionTabs__tab > * {
+  font-weight: 500 !important;
 }
 
 .text-white {
@@ -162,7 +177,7 @@ button {
 
 .flex-demo .euiFlexItem {
   padding: 16px;
-  background: rgba(27,169,245,0.1);
+  background: rgba(27, 169, 245, 0.1);
 }
 
 .guideDemo__highlightSpacer .euiCode {
@@ -171,18 +186,18 @@ button {
   margin-bottom: 16px;
 }
 .guideDemo__highlightSpacer .euiSpacer {
-  background: rgba(27,169,245,0.1);
+  background: rgba(27, 169, 245, 0.1);
 }
 
-.docfy-demo__description__content>* {
+.docfy-demo__description__content > * {
   margin-bottom: 24px;
 }
 
-.horizontal-rule-demo>div {
-  background: rgba(0,119,204,0.1);
+.horizontal-rule-demo > div {
+  background: rgba(0, 119, 204, 0.1);
   padding: 0.1px;
   margin-bottom: 16px;
 }
 .h-full {
-  height: 100%
+  height: 100%;
 }

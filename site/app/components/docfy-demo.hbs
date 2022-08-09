@@ -1,21 +1,23 @@
 {{yield (hash Description=(component "docfy-demo/description" id=@id))}}
 
-<EuiSplitPanel::Outer
-  class="docfy-demo guideSection euiSplitPanel"
-  @hasBorder={{true}}
-  @paddingSize="none"
-  @hasShadow={{false}}
-  @grow={{false}}
-  ...attributes
->
-  {{yield
-    (hash
-      Example=(component "docfy-demo/example" id=@id)
-      Snippet=(component "docfy-demo/snippet" id=@id)
-      Snippets=(component "docfy-demo/snippets" id=@id)
-    )
-  }}
-</EuiSplitPanel::Outer>
+<div class="docfy-demo">
+  <EuiSplitPanel::Outer
+    class="guideSection euiSplitPanel"
+    @hasBorder={{true}}
+    @paddingSize="none"
+    @hasShadow={{false}}
+    @grow={{false}}
+    ...attributes
+  >
+    {{yield
+      (hash
+        Example=(component "docfy-demo/example" id=@id)
+        Snippet=(component "docfy-demo/snippet" id=@id)
+        Snippets=(component "docfy-demo/snippets" id=@id)
+      )
+    }}
+  </EuiSplitPanel::Outer>
+</div>
 
 <EuiSpacer @size="l" />
 <EuiSpacer @size="l" />

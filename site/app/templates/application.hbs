@@ -63,7 +63,11 @@
       </EuiHeaderSectionItem>
     </EuiHeaderSection>
   </EuiHeader>
-  <EuiPageTemplate @paddingSize="none" @grow={{true}}>
+  <EuiPageTemplate
+    @paddingSize="none"
+    @grow={{true}}
+    @pageBodyProps={{hash className="pageBodyShadow"}}
+  >
     <:pageSideBar>
       <SideNav
         @isClearable={{true}}

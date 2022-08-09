@@ -88,7 +88,12 @@ export function toAbsoluteString(value: string, roundUp: boolean = false) {
   return valueAsMoment.toISOString();
 }
 
-export function parseRelativeParts(value: string) {
+export function parseRelativeParts(value: string): {
+  count: number;
+  unit: string;
+  round: boolean;
+  roundUnit?: string;
+} {
   const matches =
     typeof value === 'string' &&
     value.match(/now(([-+])([0-9]+)([smhdwMy])(\/[smhdwMy])?)?/);
@@ -114,7 +119,7 @@ export function parseRelativeParts(value: string) {
   const duration = moment.duration(moment().diff(dateMath.parse(value)));
   let unitOp = '';
   for (let i = 0; i < relativeUnitsFromLargestToSmallest.length; i++) {
-    //@ts-ignore
+    // @ts-expect-error this is a string with the accepted time units
     const asRelative = duration.as(relativeUnitsFromLargestToSmallest[i]);
     if (asRelative < 0) unitOp = '+';
     if (Math.abs(asRelative) > 1) {

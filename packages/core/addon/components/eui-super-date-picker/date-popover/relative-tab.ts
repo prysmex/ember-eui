@@ -5,7 +5,7 @@ import { LocaleSpecifier } from 'moment';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { parseRelativeParts } from '../utils';
-import { EuiDatePopoverContentProps } from '@elastic/eui';
+import { EuiDatePopoverContentProps, TimeUnitId } from '@elastic/eui';
 import { TimeOptions } from '../utils/time-options';
 
 interface RelativeTabArgs {
@@ -21,8 +21,8 @@ interface RelativeTabArgs {
 
 export default class RelativeTab extends Component<RelativeTabArgs> {
   @tracked count?: number;
-  @tracked unit;
-  @tracked round;
+  @tracked unit: TimeUnitId = 'm';
+  @tracked round = false;
 
   roundUnit;
 
@@ -31,7 +31,7 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
     const parsed = parseRelativeParts(this.args.value);
     if (parsed) {
       this.count = parsed.count;
-      this.unit = parsed.unit;
+      this.unit = parsed.unit as TimeUnitId;
       this.round = parsed.round;
       this.roundUnit = parsed.roundUnit;
     }
@@ -53,7 +53,9 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
   }
 
   get roundingLabel() {
-    return this.args.timeOptions.relativeRoundingLabels[this.unit![0]];
+    return this.args.timeOptions.relativeRoundingLabels[
+      <TimeUnitId>this.unit[0]
+    ];
   }
 
   @action onCountChange(e: InputEvent) {
@@ -63,7 +65,7 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
   }
 
   @action onUnitChange(unit: string) {
-    this.unit = unit;
+    this.unit = unit as TimeUnitId;
     this.handleChange();
   }
 
@@ -79,7 +81,7 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
     const date = toRelativeStringFromParts({
       count: this.count,
       round: this.round,
-      roundUnit: this.roundUnit,
+      roundUnit: this.roundUnit as TimeUnitId,
       unit: this.unit
     });
     this.args.onChange(date);

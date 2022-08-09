@@ -7,11 +7,17 @@ import { NEXT, TimeOptions } from '../utils/time-options';
 import moment from 'moment';
 import dateMath from '@elastic/datemath';
 
+interface EuiQuickSelectState {
+  timeTense: string;
+  timeValue: number;
+  timeUnits: TimeUnitId;
+}
+
 interface EuiQuickSelectArgs {
   applyTime: ApplyTime;
   start: string;
   end: string;
-  // prevQuickSelect?: EuiQuickSelectState;
+  prevQuickSelect?: EuiQuickSelectState;
   timeOptions: TimeOptions;
 }
 

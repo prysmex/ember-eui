@@ -52,14 +52,18 @@ export default class AbsoluteTab extends Component<AbsoluteTabArgs> {
     this.isTextInvalid = false;
   }
 
-  @action handleTextChange(e) {
-    const valueAsMoment = moment(e.target.value, this.args.dateFormat, true);
+  @action handleTextChange(e: InputEvent) {
+    const valueAsMoment = moment(
+      (e.target as HTMLInputElement).value,
+      this.args.dateFormat,
+      true
+    );
     const dateIsValid = valueAsMoment.isValid();
     if (dateIsValid) {
       this.args.onChange(valueAsMoment.toISOString());
     }
 
-    this.textInputValue = e.target.value;
+    this.textInputValue = (e.target as HTMLInputElement).value;
     this.isTextInvalid = !dateIsValid;
     this.valueAsMoment = dateIsValid ? valueAsMoment : null;
   }
@@ -68,8 +72,8 @@ export default class AbsoluteTab extends Component<AbsoluteTabArgs> {
   // blur the input and focus again to trigger the change event
   // and call `handleTextChange` with the updated value
   // and keep the field focused
-  @action triggerChange(e) {
-    e.target.blur();
-    e.target.focus();
+  @action triggerChange(e: InputEvent) {
+    (e.target as HTMLInputElement).blur();
+    (e.target as HTMLInputElement).focus();
   }
 }

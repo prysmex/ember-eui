@@ -57,6 +57,7 @@ export const parseTimeParts = (start: string, end: string): QuickSelect => {
   const duration = moment.duration(moment().diff(dateMath.parse(value)));
   let unitOp = '';
   for (let i = 0; i < relativeUnitsFromLargestToSmallest.length; i++) {
+    // @ts-expect-error this is a string with the accepted time units
     const as = duration.as(relativeUnitsFromLargestToSmallest[i]);
     if (as < 0) {
       unitOp = '+';
@@ -64,7 +65,7 @@ export const parseTimeParts = (start: string, end: string): QuickSelect => {
     if (Math.abs(as) > 1) {
       return {
         timeValue: Math.round(Math.abs(as)),
-        timeUnits: relativeUnitsFromLargestToSmallest[i],
+        timeUnits: relativeUnitsFromLargestToSmallest[i] as TimeUnitId,
         timeTense: unitOp === '+' ? NEXT : LAST
       };
     }

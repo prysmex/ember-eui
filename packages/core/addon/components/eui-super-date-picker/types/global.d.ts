@@ -1,3 +1,5 @@
+import { Moment } from 'moment';
+
 export interface DurationRange {
   end: ShortDate;
   label?: string;
@@ -36,6 +38,8 @@ export type OnRefreshChangeArgs = {
 export type ApplyRefreshInterval = (args: OnRefreshChangeArgs) => void;
 
 interface ApplyTimeArgs extends DurationRange {
+  start: string;
+  end: string;
   keepPopoverOpen?: boolean;
   quickSelect?: QuickSelect;
 }

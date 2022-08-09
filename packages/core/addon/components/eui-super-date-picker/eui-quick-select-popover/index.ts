@@ -10,7 +10,16 @@ interface EuiQuickSelectPopoverArgs {
 export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopoverArgs> {
   @tracked isOpen = false;
 
-  @action applyTime({ start, end, quickSelect, keepPopoverOpen = false }) {
+  @action applyTime({
+    start,
+    end,
+    keepPopoverOpen = false
+  }: {
+    start: string;
+    end: string;
+    quickSelect?: { timeTense: string; timeValue: number; timeUnits: string };
+    keepPopoverOpen?: boolean;
+  }) {
     this.args.applyTime({
       start,
       end

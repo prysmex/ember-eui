@@ -25,6 +25,7 @@
       style="max-height: 200px; overflow-y: auto;"
       role="listbox"
       aria-controls="ember-power-select-trigger-{{@select.uniqueId}}"
+      class={{@class}}
       ...attributes
       {{did-insert this.addHandlers}}
       {{will-destroy this.removeHandlers}}

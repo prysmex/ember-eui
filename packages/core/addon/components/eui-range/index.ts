@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { uniqueId } from '../../helpers/unique-id';
+import { guidFor } from '@ember/object/internals';
 import { isWithinRange } from '../../utils/number';
 import { EuiRangeInputArgs } from '../eui-range-input/types';
 import { EuiRangeLevel } from '../eui-range-levels';
@@ -81,7 +81,7 @@ export default class EuiRangeComponent extends Component<EuiRangeArgs> {
   preventPopoverClose = false;
 
   //State
-  @tracked id: string = this.args.id || uniqueId();
+  @tracked id: string = this.args.id || guidFor({});
   @tracked isPopoverOpen = false;
   ///
 

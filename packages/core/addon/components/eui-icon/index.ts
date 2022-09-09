@@ -6,7 +6,7 @@ import {
   colorToClassMap,
   typeToPathMap
 } from '../../utils/css-mappings/eui-icon';
-import { uniqueId } from '../../helpers/unique-id';
+import { guidFor } from '@ember/object/internals';
 import { htmlSafe } from '@ember/template';
 import { getOwner } from '@ember/application';
 
@@ -178,7 +178,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     //  The svg aria-labelledby attribute gets this titleId
     //  The svg title element gets this titleId as an id
     if (!this.args['aria-label'] && !this.args['aria-labelledby'] && title) {
-      titleId = uniqueId();
+      titleId = guidFor({});
     }
     return titleId;
   }

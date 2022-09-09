@@ -38,7 +38,8 @@
     "ember-cli-typescript": "4.2.1",
     "ember-named-blocks-polyfill": "^0.2.3",
     "ember-pikaday-prysmex": "~4.3.0",
-    "ember-svg-jar": "^2.3.4"
+    "ember-svg-jar": "^2.3.4",
+    "ember-unique-id-helper-polyfill": "^1.2.2"
   },
   "devDependencies": {
     "@ember/optional-features": "^2.0.0",

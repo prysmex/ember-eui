@@ -91,7 +91,8 @@
     "tabbable": "^5.1.5",
     "unified": "^9.2.0",
     "unist-util-visit": "^2.0.3",
-    "vfile": "^4.2.0"
+    "vfile": "^4.2.0",
+    "ember-unique-id-helper-polyfill": "^1.2.2"
   },
   "peerDependencies": {
     "ember-auto-import": "^2.2.4",

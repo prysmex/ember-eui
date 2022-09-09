@@ -11,7 +11,7 @@ import {
   defaultParsingPlugins,
   defaultProcessingPlugins
 } from '../../utils/markdown/plugins/markdown-default-plugins';
-import { uniqueId } from '../../helpers/unique-id';
+import { guidFor } from '@ember/object/internals';
 import unified from 'unified';
 import * as MarkdownTooltipPlugin from '../../utils/markdown/plugins/markdown-tooltip';
 import {
@@ -121,7 +121,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   declare processingPluginList: typeof defaultProcessingPlugins;
 
   @tracked selectedNode: Node | null = null;
-  @tracked editorId = this.args.editorId ?? uniqueId();
+  @tracked editorId = this.args.editorId ?? guidFor({});
   @tracked viewMode = this.args.initialViewMode || MODE_EDITING;
   @tracked textareaRef: HTMLTextAreaElement | null = null;
   @tracked previewRef: HTMLDivElement | null = null;

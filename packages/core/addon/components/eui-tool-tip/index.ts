@@ -1,11 +1,11 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
-import { uniqueId } from '../../helpers/unique-id';
 import { tracked, cached } from '@glimmer/tracking';
 import { findPopoverPosition } from '../../utils/popover';
 import { keys } from '../../utils/keys';
 import { later, cancel, scheduleOnce, next } from '@ember/runloop';
+import { guidFor } from '@ember/object/internals';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
 
@@ -104,7 +104,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   @tracked calculatedPosition: ToolTipPositions = this.position;
   @tracked toolTipStyles: ToolTipStyles = DEFAULT_TOOLTIP_STYLES;
   @tracked arrowStyles: undefined | { left: string; top: string };
-  @tracked id: string = this.args.id || uniqueId();
+  @tracked id: string = this.args.id || guidFor({});
   @tracked _attachTo: undefined | HTMLElement | string | null = null;
 
   private timeoutId?: ReturnType<typeof later>;

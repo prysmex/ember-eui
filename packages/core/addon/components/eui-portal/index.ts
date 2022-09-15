@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { uniqueId } from '../../helpers/unique-id';
+import { guidFor } from '@ember/object/internals';
 import { keysOf } from '../common';
 
 interface InsertPositionsMap {
@@ -32,7 +32,7 @@ export default class EuiPortal extends Component<EuiPortalArgs> {
     const { insert } = this.args;
 
     this.portalNode = document.createElement('div');
-    this.portalNode.id = `${uniqueId()}-portal`;
+    this.portalNode.id = `${guidFor({})}-portal`;
 
     if (insert == null) {
       // no insertion defined, append to body

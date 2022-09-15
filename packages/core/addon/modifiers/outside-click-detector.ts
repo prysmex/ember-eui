@@ -1,5 +1,5 @@
 import Modifier from 'ember-modifier';
-import { uniqueId } from '../helpers/unique-id';
+import { guidFor } from '@ember/object/internals';
 import { action } from '@ember/object';
 
 interface OutsideClickDetectorModifierArgs {
@@ -46,7 +46,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   }
 
   didInstall(): void {
-    this.id = uniqueId();
+    this.id = guidFor({});
     document.addEventListener('mouseup', this.onClickOutside);
     document.addEventListener('touchend', this.onClickOutside);
     this.addElementEvents();

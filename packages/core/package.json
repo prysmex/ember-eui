@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "5.10.1",
+  "version": "5.10.2",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -78,6 +78,7 @@
     "ember-style-modifier": "^0.7.0",
     "ember-svg-jar": "^2.3.4",
     "ember-truth-helpers": "^3.0.0",
+    "ember-unique-id-helper-polyfill": "^1.2.2",
     "lodash-es": "^4.17.21",
     "mdast-util-to-hast": "^10.0.0",
     "refractor": "^3.5.0",

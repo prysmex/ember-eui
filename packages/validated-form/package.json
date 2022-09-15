@@ -33,7 +33,6 @@
     "ember-cli-htmlbars": "^6.0.1",
     "ember-cli-typescript": "4.2.1",
     "ember-composable-helpers": "^4.4.1",
-    "ember-get-config": "~1.0.2",
     "ember-named-blocks-polyfill": "^0.2.3",
     "ember-svg-jar": "^2.3.4",
     "ember-validators": "^4.1.2"

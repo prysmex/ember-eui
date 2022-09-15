@@ -10,7 +10,6 @@ import {
   Page
 } from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
-import config from 'ember-get-config';
 import type ThemeManager from 'site/services/theme-manager';
 
 interface Props {}
@@ -231,6 +230,8 @@ export default class ApplicationController extends Controller {
   };
 
   get currentVersion() {
+    //@ts-ignore
+    const config = getOwner(this).resolveRegistration('config:environment');
     if (config.environment === 'development') return 'Local';
     else return `v${config.version}`;
   }

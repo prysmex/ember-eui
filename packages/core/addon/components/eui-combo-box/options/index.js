@@ -1,8 +1,7 @@
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
-import config from 'ember-get-config';
+import { getOwner } from '@ember/application';
 
-const rowHeight = config['@ember-eui/core']?.euiComboBoxOptionsHeight || 29;
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   _optionsCache = [];
 
@@ -30,7 +29,15 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
     return option;
   }
 
+  get configRowHeight() {
+    return (
+      getOwner(this).resolveRegistration('config:environment')[
+        '@ember-eui/core'
+      ]?.euiComboBoxOptionsHeight || 29
+    );
+  }
+
   get rowHeight() {
-    return this.args.rowHeight ?? rowHeight;
+    return this.args.rowHeight ?? this.configRowHeight;
   }
 }

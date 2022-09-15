@@ -1,5 +1,6 @@
 import { helper } from '@ember/component/helper';
 import { assert } from '@ember/debug';
+//@ts-ignore
 import euiConfigs from '@ember-eui/core/utils/eui-config';
 import { get } from '@ember/object';
 

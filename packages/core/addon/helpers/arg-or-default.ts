@@ -1,7 +1,6 @@
 import { helper } from '@ember/component/helper';
 import { assert } from '@ember/debug';
-//@ts-ignore
-import config from 'ember-get-config';
+import euiConfigs from '@ember-eui/core/utils/eui-config';
 import { get } from '@ember/object';
 
 /**
@@ -18,7 +17,7 @@ export function argOrDefault(
   assert('`defaultValue` must be provided', defaultValue !== undefined);
   let configValue;
   if (configKey) {
-    configValue = get(config, configKey);
+    configValue = get(euiConfigs, configKey);
   }
   return value !== undefined ? value : configValue || defaultValue;
 }

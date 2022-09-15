@@ -20,7 +20,6 @@ function removeDeps(deps: Record<string, string>) {
         !key.match(/ember-intl/gi) &&
         !key.match(/ember-href-to/gi) &&
         !key.match(/ember-cli-netlify/gi) &&
-        !key.match(/ember-get-config/gi) &&
         !key.match(/docfy/gi) &&
         !key.match(/webpack-bundle-analyzer/gi)
       );

@@ -8,7 +8,8 @@ import {
 } from '../../utils/css-mappings/eui-icon';
 import { uniqueId } from '../../helpers/unique-id';
 import { htmlSafe } from '@ember/template';
-import { getOwner } from '@ember/application';
+//@ts-ignore
+import euiConfig from '@ember-eui/core/utils/eui-config';
 
 export const TYPES = keysOf(typeToPathMap);
 
@@ -88,11 +89,9 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   }
 
   get useSvg(): boolean {
-    //@ts-ignore
-    const config = getOwner(this).resolveRegistration('config:environment');
     return (
       this.args.useSvg ??
-      config?.['@ember-eui/core']?.['eui-icon']?.useSvg ??
+      euiConfig?.['@ember-eui/core']?.['eui-icon']?.useSvg ??
       false
     );
   }

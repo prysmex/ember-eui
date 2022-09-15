@@ -11,6 +11,7 @@ import {
 } from '../helpers/get-sidenav-routes';
 import RouterService from '@ember/routing/router-service';
 import type ThemeManager from 'site/services/theme-manager';
+import { getOwner } from '@ember/application';
 
 interface Props {}
 

@@ -32,15 +32,15 @@ getting_started:
       //...
     '});
   runtime_configuration: |- 
-    //config/environment.js
-    module.exports = function (environment) '{
+    //utils/eui-config.js
+    export default '{
       '//...
-      let ENV = '{
-        '//...
         "@ember-eui/core"': '{
+          euiButtonIcon': '{
+            size': 'xs'
+          '}
           euiComboBoxOptionsHeight': 33
         '}
-        '//...
       '};
     '};
   

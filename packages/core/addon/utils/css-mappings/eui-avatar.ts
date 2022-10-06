@@ -45,6 +45,8 @@ export function inlineStyles({
 
   if (imageUrl) {
     avatarStyle.backgroundImage = `url(${imageUrl})`;
+  } else {
+    avatarStyle.backgroundImage = 'none';
   }
 
   if (!isNamedColor) {

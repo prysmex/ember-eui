@@ -241,6 +241,10 @@ export default class DatetimePicker extends Component<DatetimePickerArgs> {
   //   }
   // }
 
+  @action setYear(year: string) {
+    this.year = parseInt(year);
+  }
+
   @action setMonth(month: string) {
     this.monthMoment.month(parseInt(month));
     this.updateDate();

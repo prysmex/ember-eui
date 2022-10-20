@@ -52,7 +52,7 @@
                     @compressed={{true}}
                     @value={{this.year}}
                     @options={{this.years}}
-                    {{on "change" (pick "target.value" (set this "year"))}}
+                    {{on "change" (pick "target.value" this.setYear)}}
                   />
                 </EuiFlexItem>
               </div>

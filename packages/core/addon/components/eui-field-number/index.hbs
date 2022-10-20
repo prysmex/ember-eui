@@ -46,9 +46,11 @@
             id={{inputId}}
             class={{classes}}
             value={{@value}}
+            min={{@min}}
+            max={{@max}}
+            disabled={{@disabled}}
             step={{@step}}
             type="number"
-            disabled={{@disabled}}
             ...attributes
             {{validatable-control @isInvalid}}
           />

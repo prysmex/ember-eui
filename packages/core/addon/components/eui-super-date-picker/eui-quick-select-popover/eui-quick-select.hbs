@@ -106,7 +106,7 @@
               aria-describedby={{concat this.timeSelectionId " " legendId}}
               aria-label={{valueLabel}}
               @value={{this.timeValue}}
-              @onChange={{this.onTimeValueChange}}
+              {{on "input" (pick "target.value" (set this "timeValue"))}}
             />
           </Token>
         </EuiI18n>

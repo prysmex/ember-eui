@@ -4,40 +4,19 @@ order: 8
 
 # Split buttons
 
+<EuiText>
+<p>EUI split buttons specifically. Instead, we recommend using separate buttons for the main and overflow actions. You can achieve this by simply using the <EuiCode>display</EuiCode> and <EuiCode>size</EuiCode> args <strong>EuiButtonIcon</strong> to match that of the primary action button.</p>
+</EuiText>
 
 ```hbs template
-<TodoText/>
-<!-- <EuiFlexGroup @responsive={{false}} @gutterSize="xs" @alignItems="center">
+<EuiFlexGroup @responsive={{false}} @gutterSize='xs' @alignItems='center'>
   <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" @iconType="calendar">
+    <EuiButton @size='s' @iconType='calendar'>
       Last 15 min
     </EuiButton>
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
-
-    <EuiPopover
-      @ownFocus={{true}}
-      @isOpen={{this.popover}}
-      @anchorPosition='downCenter'
-      @closePopover={{set this 'popover' false}}
-    >
-      <:button>
-        <EuiButton
-          @iconType='arrowDown'
-          @iconSide='right'
-          {{on 'click' (set this 'popover' true)}}
-        >
-          Show Popover
-        </EuiButton>
-      </:button>
-      <:content>
-        <EuiText @size="m" style="width: 300px;">
-          <p>
-            Popover content that’s wider than the default width
-          </p>
-        </EuiText>
-      </:content>
-    </EuiPopover>
+    <EuiButtonIcon @iconType='boxesVertical' @display='base' @size='s' />
   </EuiFlexItem>
-</EuiFlexGroup> -->
+</EuiFlexGroup>
 ```

@@ -1,4 +1,3 @@
-// import config from 'ember-get-config';
 // import Ember from 'ember';
 
 export function registerLibrary() {

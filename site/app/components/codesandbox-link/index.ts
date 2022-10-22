@@ -2,10 +2,7 @@ import Component from '@glimmer/component';
 import { getParameters } from 'codesandbox/lib/api/define';
 //@ts-expect-error
 import docfySnippets from 'site/docfy-snippets.json';
-
-import config from 'ember-get-config';
-
-const packageJson = config.packageJson;
+import { getOwner } from '@ember/application';
 
 interface Args {
   theme?: string;
@@ -23,7 +20,6 @@ function removeDeps(deps: Record<string, string>) {
         !key.match(/ember-intl/gi) &&
         !key.match(/ember-href-to/gi) &&
         !key.match(/ember-cli-netlify/gi) &&
-        !key.match(/ember-get-config/gi) &&
         !key.match(/docfy/gi) &&
         !key.match(/webpack-bundle-analyzer/gi)
       );
@@ -42,6 +38,10 @@ export default class CodesandboxLink extends Component<Args> {
     const testsNameSpace = `tests`;
     const configNameSpace = `config`;
     const theme = this.args.theme || 'amsterdam_light';
+
+    const packageJson =
+      //@ts-ignore
+      getOwner(this).resolveRegistration('config:environment').packageJson;
 
     const removedDeps = removeDeps(packageJson.devDependencies);
     delete packageJson.dependencies;

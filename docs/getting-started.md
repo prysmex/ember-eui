@@ -57,7 +57,7 @@ For icons to work you will need to:
 
 <EuiTitle>
   <h3>
-    Runtime configuration
+    Runtime configuration, you can override utils/eui-config and export an object with your desired configs
   </h3>
 </EuiTitle>
 

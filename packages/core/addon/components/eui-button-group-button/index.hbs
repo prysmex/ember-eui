@@ -1,0 +1,57 @@
+{{#let
+  (if @isDisabled "button" @element)
+  (unique-id)
+  (class-names
+    (if @isSelected "euiButtonGroupButton-isSelected")
+    (if @isIconOnly "euiButtonGroupButton-isIconOnly")
+  )
+  as |element newId classes|
+}}
+  {{#let (not-eq @element "label") as |isNotLabel|}}
+    <EuiInnerText as |setInnerTextRef innerText|>
+      <EuiButton
+        @baseClassName="euiButtonGroupButton"
+        class={{classes}}
+        @element={{element}}
+        @fill={{and (not-eq @size "compressed") @isSelected}}
+        @isDisabled={{@isDisabled}}
+        @size={{if (eq @size "compressed") "s" @size}}
+        @color={{@color}}
+        @contentClasses={{@contentClasses}}
+        @iconSide={{@iconSide}}
+        @iconType={{@iconType}}
+        @iconSize={{@iconSize}}
+        @iconClasses={{@iconClasses}}
+        @isLoading={{@isLoading}}
+        @textClasses={{class-names
+          @textClasses
+          (if
+            @isIconOnly "euiScreenReaderOnly" "euiButtonGroupButton__textShift"
+          )
+        }}
+        @isSelected={{if isNotLabel @isSelected}}
+        type={{if isNotLabel @type}}
+        htmlFor={{if (eq element "label") newId}}
+        id={{if isNotLabel newId}}
+        title={{innerText}}
+        {{on "click" (if isNotLabel (fn @onChange @id) (noop))}}
+        {{did-insert setInnerTextRef}}
+        ...attributes
+      >
+        {{#if (eq element "label")}}
+          <input
+            id={{newId}}
+            class="euiScreenReaderOnly"
+            name={{@name}}
+            checked={{@isSelected}}
+            disabled={{@isDisabled}}
+            value={{@value}}
+            type="radio"
+            {{on "change" (fn @onChange @id @value)}}
+          />
+        {{/if}}
+        {{@label}}
+      </EuiButton>
+    </EuiInnerText>
+  {{/let}}
+{{/let}}

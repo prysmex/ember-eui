@@ -7,6 +7,8 @@ import EuiBottomBar from './eui-bottom-bar';
 import EuiButton from './eui-button';
 import EuiButtonEmpty from './eui-button-empty';
 import EuiButtonIcon from './eui-button-icon';
+import EuiButtonGroup from './eui-button-group';
+import EuiButtonGroupButton from './eui-button-group-button';
 import EuiCallOut from './eui-call-out';
 import EuiCard from './eui-card';
 import EuiCardSelect from './eui-card-select';
@@ -77,6 +79,8 @@ const mapping: Mapping = {
   EuiButton,
   EuiButtonEmpty,
   EuiButtonIcon,
+  EuiButtonGroup,
+  EuiButtonGroupButton,
   EuiCallOut,
   EuiCard,
   EuiCardSelect,
@@ -135,7 +139,7 @@ const mapping: Mapping = {
   EuiTextColor,
   EuiTitle,
   EuiToast,
-  EuiToolTip,
+  EuiToolTip
 };
 
 export default mapping;

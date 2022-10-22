@@ -45,58 +45,57 @@ import Component from '@glimmer/component';
 import { guidFor } from '@ember/object/internals';
 import { tracked } from '@glimmer/tracking';
 
+const basicButtonGroupPrefix = guidFor({});
+const multiSelectButtonGroupPrefix = guidFor({});
+const disabledButtonGroupPrefix = guidFor({});
 export default class extends Component {
-  basicButtonGroupPrefix = guidFor({});
-  multiSelectButtonGroupPrefix = guidFor({});
-  disabledButtonGroupPrefix = guidFor({});
-
-  @tracked toggleIdSelected = `${this.basicButtonGroupPrefix}__1`;
-  @tracked toggleIdDisabled = `${this.disabledButtonGroupPrefix}__1`;
+  @tracked toggleIdSelected = `${basicButtonGroupPrefix}__1`;
+  @tracked toggleIdDisabled = `${disabledButtonGroupPrefix}__1`;
   @tracked toggleIdToSelectedMap = {
-    [`${this.multiSelectButtonGroupPrefix}__1`]: true
+    [`${multiSelectButtonGroupPrefix}__1`]: true
   };
 
   toggleButtons = [
     {
-      id: `${this.basicButtonGroupPrefix}__0`,
+      id: `${basicButtonGroupPrefix}__0`,
       label: 'Option one'
     },
     {
-      id: `${this.basicButtonGroupPrefix}__1`,
+      id: `${basicButtonGroupPrefix}__1`,
       label: 'Option two is selected by default'
     },
     {
-      id: `${this.basicButtonGroupPrefix}__2`,
+      id: `${basicButtonGroupPrefix}__2`,
       label: 'Option three'
     }
   ];
 
   toggleButtonsDisabled = [
     {
-      id: `${this.disabledButtonGroupPrefix}__0`,
+      id: `${disabledButtonGroupPrefix}__0`,
       label: 'Option one'
     },
     {
-      id: `${this.disabledButtonGroupPrefix}__1`,
+      id: `${disabledButtonGroupPrefix}__1`,
       label: 'Option two is selected by default'
     },
     {
-      id: `${this.disabledButtonGroupPrefix}__2`,
+      id: `${disabledButtonGroupPrefix}__2`,
       label: 'Option three'
     }
   ];
 
   toggleButtonsMulti = [
     {
-      id: `${this.multiSelectButtonGroupPrefix}__0`,
+      id: `${multiSelectButtonGroupPrefix}__0`,
       label: 'Option one'
     },
     {
-      id: `${this.multiSelectButtonGroupPrefix}__1`,
+      id: `${multiSelectButtonGroupPrefix}__1`,
       label: 'Option two is selected by default'
     },
     {
-      id: `${this.multiSelectButtonGroupPrefix}__2`,
+      id: `${multiSelectButtonGroupPrefix}__2`,
       label: 'Option three'
     }
   ];

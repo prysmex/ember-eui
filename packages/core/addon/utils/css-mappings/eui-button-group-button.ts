@@ -1,18 +1,9 @@
-export const baseClass = 'euiButton';
+export const baseClass = 'euiButtonGroupButton';
+import { colors } from './eui-button';
 
 const sizeMapping = {
   s: `${baseClass}--small`,
   m: ''
-};
-
-export const colors = {
-  primary: `--primary`,
-  accent: `--accent`,
-  success: `--success`,
-  warning: `--warning`,
-  danger: `--danger`,
-  ghost: `--ghost`,
-  text: `--text`
 };
 
 const colorMapping = {

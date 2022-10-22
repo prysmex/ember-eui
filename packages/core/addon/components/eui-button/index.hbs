@@ -1,10 +1,25 @@
-{{#if (and @href (not (or @isLoading @isDisabled)))}}
-  <a
+{{#let
+  (arg-or-default @baseClassName "euiButton")
+  (if
+    @element
+    (element @element)
+    (if
+      (and @href (not (or @isLoading @isDisabled)))
+      (element "a")
+      (element "button")
+    )
+  )
+  as |baseClassName Element|
+}}
+  <Element
     class={{class-names
-      (if @fill "euiButton--fill")
-      (if @fullWidth "euiButton--fullWidth")
-      (if (or @isLoading @isDisabled @disabled) "euiButton-isDisabled")
-      componentName="EuiButton"
+      (if @fill (concat baseClassName "--fill"))
+      (if @fullWidth (concat baseClassName "--fullWidth"))
+      (if
+        (or @isLoading @isDisabled @disabled)
+        (concat baseClassName "-isDisabled")
+      )
+      componentName=(classify baseClassName)
       color=(arg-or-default @color "primary")
       size=@size
     }}
@@ -18,6 +33,7 @@
       class="euiButton__content {{@contentClasses}}"
       @isLoading={{@isLoading}}
       @iconType={{@iconType}}
+      @iconSize={{@iconSize}}
       @iconSide={{@iconSide}}
       @iconClasses={{@iconClasses}}
       @useSvg={{@useSvg}}
@@ -26,33 +42,5 @@
     >
       {{yield}}
     </EuiButtonContent>
-  </a>
-{{else}}
-  <button
-    class={{class-names
-      (if @fill "euiButton--fill")
-      (if @fullWidth "euiButton--fullWidth")
-      (if (or @isLoading @isDisabled @disabled) "euiButton-isDisabled")
-      componentName="EuiButton"
-      color=(arg-or-default @color "primary")
-      size=@size
-    }}
-    disabled={{or @isLoading @isDisabled @disabled}}
-    type={{if @type @type "button"}}
-    aria-pressed={{if @isSelected "true" null}}
-    ...attributes
-  >
-    <EuiButtonContent
-      class="euiButton__content {{@contentClasses}}"
-      @isLoading={{@isLoading}}
-      @iconType={{@iconType}}
-      @iconSide={{@iconSide}}
-      @iconClasses={{@iconClasses}}
-      @useSvg={{@useSvg}}
-      @useComponent={{@useComponent}}
-      @textClasses={{class-names "euiButton__text" @textClasses}}
-    >
-      {{yield}}
-    </EuiButtonContent>
-  </button>
-{{/if}}
+  </Element>
+{{/let}}

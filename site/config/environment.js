@@ -24,6 +24,14 @@ module.exports = function (environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+    },
+    '@ember-eui/core': {
+      euiButtonIcon: {
+        size: 'xs'
+      },
+      euiIcon: {
+        useSvg: true
+      }
     }
   };
 

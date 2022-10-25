@@ -8,8 +8,7 @@ import {
 } from '../../utils/css-mappings/eui-icon';
 import { guidFor } from '@ember/object/internals';
 import { htmlSafe } from '@ember/template';
-//@ts-ignore
-import euiConfig from '@ember-eui/core/utils/eui-config';
+import config from 'ember-get-config';
 
 export const TYPES = keysOf(typeToPathMap);
 
@@ -91,7 +90,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
   get useSvg(): boolean {
     return (
       this.args.useSvg ??
-      euiConfig?.['@ember-eui/core']?.['eui-icon']?.useSvg ??
+      config?.['@ember-eui/core']?.['euiIcon']?.useSvg ??
       false
     );
   }

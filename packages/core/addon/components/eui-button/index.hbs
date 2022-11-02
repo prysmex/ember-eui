@@ -2,45 +2,44 @@
   (arg-or-default @baseClassName "euiButton")
   (if
     @element
-    (element @element)
-    (if
-      (and @href (not (or @isLoading @isDisabled)))
-      (element "a")
-      (element "button")
-    )
+    @element
+    (if (and @href (not (or @isLoading @isDisabled))) "a" "button")
   )
-  as |baseClassName Element|
+  as |baseClassName theElement|
 }}
-  <Element
-    class={{class-names
-      (if @fill (concat baseClassName "--fill"))
-      (if @fullWidth (concat baseClassName "--fullWidth"))
-      (if
-        (or @isLoading @isDisabled @disabled)
-        (concat baseClassName "-isDisabled")
-      )
-      componentName=(classify baseClassName)
-      color=(arg-or-default @color "primary")
-      size=@size
-    }}
-    disabled={{or @isLoading @isDisabled @disabled}}
-    href={{@href}}
-    target={{@target}}
-    aria-pressed={{if @isSelected "true" null}}
-    ...attributes
-  >
-    <EuiButtonContent
-      class="euiButton__content {{@contentClasses}}"
-      @isLoading={{@isLoading}}
-      @iconType={{@iconType}}
-      @iconSize={{@iconSize}}
-      @iconSide={{@iconSide}}
-      @iconClasses={{@iconClasses}}
-      @useSvg={{@useSvg}}
-      @useComponent={{@useComponent}}
-      @textClasses={{class-names "euiButton__text" @textClasses}}
+  {{#let (element theElement) as |Element|}}
+    <Element
+      class={{class-names
+        (if @fill (concat baseClassName "--fill"))
+        (if @fullWidth (concat baseClassName "--fullWidth"))
+        (if
+          (or @isLoading @isDisabled @disabled)
+          (concat baseClassName "-isDisabled")
+        )
+        componentName=(classify baseClassName)
+        color=(arg-or-default @color "primary")
+        size=@size
+      }}
+      disabled={{or @isLoading @isDisabled @disabled}}
+      href={{@href}}
+      target={{@target}}
+      aria-pressed={{if @isSelected "true" null}}
+      type={{if (eq theElement "button") (arg-or-default @type "button") null}}
+      ...attributes
     >
-      {{yield}}
-    </EuiButtonContent>
-  </Element>
+      <EuiButtonContent
+        class="euiButton__content {{@contentClasses}}"
+        @isLoading={{@isLoading}}
+        @iconType={{@iconType}}
+        @iconSize={{@iconSize}}
+        @iconSide={{@iconSide}}
+        @iconClasses={{@iconClasses}}
+        @useSvg={{@useSvg}}
+        @useComponent={{@useComponent}}
+        @textClasses={{class-names "euiButton__text" @textClasses}}
+      >
+        {{yield}}
+      </EuiButtonContent>
+    </Element>
+  {{/let}}
 {{/let}}

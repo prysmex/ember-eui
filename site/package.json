@@ -1,6 +1,6 @@
 {
   "name": "site",
-  "version": "5.12.4",
+  "version": "5.12.5",
   "private": true,
   "description": "Small description for site goes here",
   "repository": "https://github.com/prysmex/ember-eui",
@@ -22,11 +22,11 @@
     "test:ember": "ember test"
   },
   "devDependencies": {
-    "@ember-eui/changeset-form": "^5.12.4",
-    "@ember-eui/core": "^5.12.4",
-    "@ember-eui/flatpickr": "^5.12.4",
-    "@ember-eui/pikaday": "^5.12.4",
-    "@ember-eui/validated-form": "^5.12.4",
+    "@ember-eui/changeset-form": "^5.12.5",
+    "@ember-eui/core": "^5.12.5",
+    "@ember-eui/flatpickr": "^5.12.5",
+    "@ember-eui/pikaday": "^5.12.5",
+    "@ember-eui/validated-form": "^5.12.5",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "2.6.0",
     "@embroider/compat": "^1.5.0",

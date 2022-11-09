@@ -94,7 +94,7 @@
 <EuiSpacer @size='m' />
 <EuiFormControlLayout>
   <:prepend as |classes|>
-    <EuiFormLabel htmlFor='textField19' class={{classes}}>
+    <EuiFormLabel for='textField19' class={{classes}}>
       Label
     </EuiFormLabel>
   </:prepend>
@@ -109,7 +109,7 @@
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @readOnly={{true}}>
   <:prepend as |classes|>
-    <EuiFormLabel htmlFor='textField19a' class={{classes}}>
+    <EuiFormLabel for='textField19a' class={{classes}}>
       Read only
     </EuiFormLabel>
   </:prepend>

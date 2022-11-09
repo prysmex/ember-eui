@@ -1,39 +1,42 @@
 {{#let (arg-or-default @id (unique-id)) as |id|}}
   <div
     class={{class-names
-    "euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow euiPanel--hasBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row euiCheckableCard"
+      "euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow euiPanel--hasBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row euiCheckableCard"
       (if @checked "euiCheckableCard-isChecked")
       (if @disabled "euiCheckableCard__label-isDisabled")
     }}
   >
-    <div class={{class-names
-    "euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--subdued euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero euiPanel--isClickable euiSplitPanel__inner"
-    (if @checked "euiPanel--primary")
-    }}>
-     
-        {{#if (eq @checkableType "checkbox")}}
-          <EuiCheckbox
-            @id={{id}}
-            @checked={{@checked}}
-            disabled={{@disabled}}
-            ...attributes
-          />
-        {{else}}
-          <EuiRadio
-            @id={{id}}
-            @checked={{@checked}}
-            disabled={{@disabled}}
-            ...attributes
-          />
-        {{/if}}
+    <div
+      class={{class-names
+        "euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--subdued euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero euiPanel--isClickable euiSplitPanel__inner"
+        (if @checked "euiPanel--primary")
+      }}
+    >
+      {{#if (eq @checkableType "checkbox")}}
+        <EuiCheckbox
+          @id={{id}}
+          @checked={{@checked}}
+          disabled={{@disabled}}
+          ...attributes
+        />
+      {{else}}
+        <EuiRadio
+          @id={{id}}
+          @checked={{@checked}}
+          disabled={{@disabled}}
+          ...attributes
+        />
+      {{/if}}
     </div>
-   <div class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiSplitPanel__inner">
-      <label 
+    <div
+      class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiSplitPanel__inner"
+    >
+      <label
         class={{class-names
           "euiCheckableCard__label"
           (if @disabled "euiCheckableCard__label-isDisabled")
-        }} 
-        htmlFor={{id}}
+        }}
+        for={{id}}
         aria-describedby={{if (has-block "content") (concat id "-details")}}
       >
         {{#if (has-block "label")}}
@@ -42,19 +45,17 @@
           {{@label}}
         {{/if}}
       </label>
-     
-   
-    {{#if (has-block "content")}}
-    
-        {{!-- Empty div for left side background color only --}}
-        
+
+      {{#if (has-block "content")}}
+
+        {{! Empty div for left side background color only }}
+
         <div id={{concat id "-details"}} class="euiCheckableCard__children">
           {{yield to="content"}}
         </div>
-      
-    {{/if}}
 
-     
- </div>
+      {{/if}}
+
+    </div>
   </div>
 {{/let}}

@@ -31,7 +31,7 @@
         }}
         @isSelected={{if isNotLabel @isSelected}}
         type={{if isNotLabel @type}}
-        htmlFor={{if (eq element "label") newId}}
+        for={{if (eq element "label") newId}}
         id={{if isNotLabel newId}}
         title={{innerText}}
         {{on "click" (if isNotLabel (fn @onChange @id) (noop))}}

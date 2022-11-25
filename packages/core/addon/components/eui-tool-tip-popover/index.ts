@@ -16,12 +16,14 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverArgs> 
     super(owner, args);
     document.body.classList.add('euiBody-hasPortalContent');
     window.addEventListener('resize', this.updateDimensions);
+    window.addEventListener('scroll', this.updateDimensions, true);
   }
 
   willDestroy(): void {
     super.willDestroy();
     document.body.classList.remove('euiBody-hasPortalContent');
     window.removeEventListener('resize', this.updateDimensions);
+    window.removeEventListener('scroll', this.updateDimensions, true);
   }
 
   @action

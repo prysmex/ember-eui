@@ -4,36 +4,51 @@
   (arg-or-default @id (unique-id))
   as |hasPrepend hasAppend inputId|
 }}
-  <EuiFieldText
-    aria-label={{@ariaLabel}}
-    @icon={{if @icon @icon "calendar"}}
-    @fullWidth={{@fullWidth}}
-    @isLoading={{@isLoading}}
-    @readOnly={{@readOnly}}
-    @inputRef={{@inputRef}}
-    @controlOnly={{@controlOnly}}
-    @compressed={{@compressed}}
-    @id={{inputId}}
-    @isFakePrependBlock={{hasPrepend}}
-    @isFakeAppendBlock={{hasAppend}}
-    @disabled={{@disabled}}
-    @isInvalid={{@isInvalid}}
-    ...attributes
-    {{did-insert this.onInsert}}
-    {{will-destroy this.onWillDestroy}}
-    {{did-update this.onAltFormatUpdated @altFormat}}
-    {{did-update this.onAltInputClassUpdated @altInputClass}}
-    {{did-update this.onDateUpdated @date}}
-    {{did-update this.onDisabledUpdated @disabled}}
-    {{did-update this.onLocaleUpdated @locale}}
-    {{did-update this.onMaxDateUpdated @maxDate}}
-    {{did-update this.onMinDateUpdated @minDate}}
-  >
-    <:prepend as |classes|>
-      {{yield classes to="prepend"}}
-    </:prepend>
-    <:append as |classes|>
-      {{yield classes to="append"}}
-    </:append>
-  </EuiFieldText>
+  <EuiFormControlLayout
+      @fullWidth={{@fullWidth}}
+      @disabled={{@disabled}}
+      @clear={{if
+        (and
+          @clear
+          @date
+          (and (not @isDisabled) (not @disabled))
+        )
+        @clear
+      }}
+      @compressed={{@compressed}}
+      @useGroup={{or hasPrepend hasAppend}}
+    >
+    <EuiFieldText
+      aria-label={{@ariaLabel}}
+      @icon={{if @icon @icon "calendar"}}
+      @fullWidth={{@fullWidth}}
+      @isLoading={{@isLoading}}
+      @readOnly={{@readOnly}}
+      @inputRef={{@inputRef}}
+      @controlOnly={{@controlOnly}}
+      @compressed={{@compressed}}
+      @id={{inputId}}
+      @isFakePrependBlock={{hasPrepend}}
+      @isFakeAppendBlock={{hasAppend}}
+      @disabled={{@disabled}}
+      @isInvalid={{@isInvalid}}
+      ...attributes
+      {{did-insert this.onInsert}}
+      {{will-destroy this.onWillDestroy}}
+      {{did-update this.onAltFormatUpdated @altFormat}}
+      {{did-update this.onAltInputClassUpdated @altInputClass}}
+      {{did-update this.onDateUpdated @date}}
+      {{did-update this.onDisabledUpdated @disabled}}
+      {{did-update this.onLocaleUpdated @locale}}
+      {{did-update this.onMaxDateUpdated @maxDate}}
+      {{did-update this.onMinDateUpdated @minDate}}
+    >
+      <:prepend as |classes|>
+        {{yield classes to="prepend"}}
+      </:prepend>
+      <:append as |classes|>
+        {{yield classes to="append"}}
+      </:append>
+    </EuiFieldText>
+  </EuiFormControlLayout>
 {{/let}}

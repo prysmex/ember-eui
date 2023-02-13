@@ -26,6 +26,7 @@
   @defaultDate={{this.date}}
   @defaultHour={{12}}
   @defaultMinute={{0}}
+  @clear={{set this "date"}}
   @disable={{this.datesToDisable}}
   @disableMobile={{false}}
   @enable={{this.datesToEnable}}

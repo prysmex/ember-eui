@@ -9,7 +9,7 @@
     @disabled={{@disabled}}
     @clear={{if
       (and @clear @date (and (not @isDisabled) (not @disabled)))
-      @clear
+      this.onClear
     }}
     @compressed={{@compressed}}
     @useGroup={{or hasPrepend hasAppend}}

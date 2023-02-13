@@ -5,19 +5,15 @@
   as |hasPrepend hasAppend inputId|
 }}
   <EuiFormControlLayout
-      @fullWidth={{@fullWidth}}
-      @disabled={{@disabled}}
-      @clear={{if
-        (and
-          @clear
-          @date
-          (and (not @isDisabled) (not @disabled))
-        )
-        @clear
-      }}
-      @compressed={{@compressed}}
-      @useGroup={{or hasPrepend hasAppend}}
-    >
+    @fullWidth={{@fullWidth}}
+    @disabled={{@disabled}}
+    @clear={{if
+      (and @clear @date (and (not @isDisabled) (not @disabled)))
+      @clear
+    }}
+    @compressed={{@compressed}}
+    @useGroup={{or hasPrepend hasAppend}}
+  >
     <EuiFieldText
       aria-label={{@ariaLabel}}
       @icon={{if @icon @icon "calendar"}}
@@ -43,11 +39,11 @@
       {{did-update this.onMaxDateUpdated @maxDate}}
       {{did-update this.onMinDateUpdated @minDate}}
     >
-      <:prepend as |classes|>
-        {{yield classes to="prepend"}}
+      <:prepend as |classes finalId|>
+        {{yield classes finalId to="prepend"}}
       </:prepend>
-      <:append as |classes|>
-        {{yield classes to="append"}}
+      <:append as |classes finalId|>
+        {{yield classes finalId to="append"}}
       </:append>
     </EuiFieldText>
   </EuiFormControlLayout>

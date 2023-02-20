@@ -149,6 +149,10 @@ export type EuiPopoverArgs = {
   'aria-labelledby'?: string;
 
   tabindex?: string | number;
+
+  focusTrapOptions?: {
+    onClickOutside?: (e: Event) => void;
+  };
 };
 
 type AnchorPosition = 'up' | 'right' | 'down' | 'left';
@@ -296,10 +300,14 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
 
   @action
   onClickOutside(event: Event): void {
-    // only close the popover if the event source isn't the anchor button
-    // otherwise, it is up to the anchor to toggle the popover's open status
-    if (this.button && this.button.contains(event.target as Node) === false) {
-      this.closePopover();
+    if (this.args.focusTrapOptions?.onClickOutside) {
+      this.args.focusTrapOptions.onClickOutside(event);
+    } else {
+      // only close the popover if the event source isn't the anchor button
+      // otherwise, it is up to the anchor to toggle the popover's open status
+      if (this.button && this.button.contains(event.target as Node) === false) {
+        this.closePopover();
+      }
     }
   }
 

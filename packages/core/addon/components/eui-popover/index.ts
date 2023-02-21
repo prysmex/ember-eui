@@ -283,8 +283,10 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  onEscapeKey(event: Event): void {
+  onEscapeKey(event: Event, ekEvent?: Event): void {
     if (this.isOpen) {
+      ekEvent?.stopPropagation();
+      ekEvent?.stopImmediatePropagation();
       event.preventDefault();
       event.stopPropagation();
       this.closePopover();
@@ -292,9 +294,9 @@ export default class EuiPopoverComponent extends Component<EuiPopoverArgs> {
   }
 
   @action
-  onKeyDown(event: KeyboardEvent): void {
+  onKeyDown(event: KeyboardEvent, ekEvent: KeyboardEvent): void {
     if (event.key === cascadingMenuKeys.ESCAPE) {
-      this.onEscapeKey(event as unknown as Event);
+      this.onEscapeKey(event as unknown as Event, ekEvent as unknown as Event);
     }
   }
 

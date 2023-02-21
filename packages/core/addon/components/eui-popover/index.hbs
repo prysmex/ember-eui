@@ -56,9 +56,7 @@
             @paddingSize={{this.panelPaddingSize}}
             {{simple-style this._popoverStyles}}
             {{did-insert this.registerPanel}}
-            {{outside-click-detector
-              onOutsideClick=(arg-or-default this.onClickOutside)
-            }}
+            {{outside-click-detector onOutsideClick=this.onClickOutside}}
             {{on-key "Escape" this.onEscapeKey}}
             {{focus-trap
               isActive=(not

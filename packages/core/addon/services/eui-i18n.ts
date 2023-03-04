@@ -56,6 +56,7 @@ export default class EuiI18n extends Service {
   getTokenFromMapping(
     token: LookupTokenOptions['token'],
     valueDefault: LookupTokenOptions['valueDefault'],
+    _values: LookupTokenOptions['values'],
     i18nMapping: LookupTokenOptions['i18nMapping']
   ) {
     return (i18nMapping && i18nMapping[token]) || valueDefault;
@@ -70,7 +71,12 @@ export default class EuiI18n extends Service {
       values = {}
     } = options;
 
-    let renderable = this.getTokenFromMapping(token, valueDefault, i18nMapping);
+    let renderable = this.getTokenFromMapping(
+      token,
+      valueDefault,
+      values,
+      i18nMapping
+    );
 
     if (typeof renderable === 'function') {
       renderable = renderable(values);

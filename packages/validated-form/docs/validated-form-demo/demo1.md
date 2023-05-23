@@ -133,6 +133,14 @@ ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode
     @label='Field must be true'
     @onChange={{set this.data 'fieldSwitch'}}
   />
+  <Form.FieldNestedForm as |NestedForm|>
+    <NestedForm.FieldText
+      @validations={{hash presence=(hash presence=true)}}
+      @label='Nested form field text'
+      @value={{this.data.nestedFormFieldText}}
+      @onChange={{set this.data 'nestedFormFieldText'}}
+    />
+  </Form.FieldNestedForm>
   <EuiButton @type='submit'>
     Submit
   </EuiButton>

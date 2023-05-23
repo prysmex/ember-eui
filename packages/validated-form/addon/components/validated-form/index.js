@@ -13,6 +13,16 @@ export default class ValidatedForm extends Component {
   @tracked isInvalid = false;
   @tracked isTouched = false;
 
+  constructor() {
+    super(...arguments);
+    this.args.register?.(this);
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.args.unregister?.(this);
+  }
+
   get isValid() {
     return !this.isInvalid;
   }

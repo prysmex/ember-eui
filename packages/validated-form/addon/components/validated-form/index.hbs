@@ -142,6 +142,16 @@
           formId=formId
           disabled=@isDisabled
         )
+        FieldNestedForm=(component
+          "validated-form"
+          register=this.register
+          unregister=this.unregister
+          formHasBeenValidated=this.formHasBeenValidated
+          onValidityChange=this.onChildValidityChange
+          fullWidth=@fullWidth
+          formId=formId
+          disabled=@isDisabled
+        )
       )
     }}
   </EuiForm>

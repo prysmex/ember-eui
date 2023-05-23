@@ -1,6 +1,6 @@
 {{#let (arg-or-default @id (unique-id)) as |formId|}}
   <EuiForm
-    @tagName="form"
+    @tagName={{arg-or-default @tagName "form"}}
     ...attributes
     id={{formId}}
     @isInvalid={{@isInvalid}}

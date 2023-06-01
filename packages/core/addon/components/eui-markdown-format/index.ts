@@ -3,7 +3,7 @@ import {
   defaultParsingPlugins,
   defaultProcessingPlugins
 } from '../../utils/markdown/plugins/markdown-default-plugins';
-import { cached } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import unified, { Processor } from 'unified';
 import { toDOM } from '../../utils/markdown/plugins/to-dom';
 import type { RehypeNode } from '../../utils/markdown/markdown-types';
@@ -17,6 +17,8 @@ export interface EuiMarkdownEditorToolbarArgs {
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarArgs> {
+  @tracked rootNode?: HTMLDivElement;
+
   get parsingPluginList() {
     return this.args.parsingPluginList || defaultParsingPlugins;
   }
@@ -24,6 +26,10 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   get processingPluginList() {
     return this.args.processingPluginList || defaultProcessingPlugins;
   }
+
+  setRootNode = (node: HTMLDivElement) => {
+    this.rootNode = node;
+  };
 
   @cached
   get processor() {
@@ -43,12 +49,15 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
 
   @cached
   get result() {
-    try {
-      const processed = this.processor.processSync(this.args.value);
-      return toDOM(processed.result as RehypeNode);
-      //eslint-disable-next-line
-    } catch (e) {
-      return this.args.value;
+    if (this.rootNode) {
+      try {
+        const processed = this.processor.processSync(this.args.value);
+        return toDOM(processed.result as RehypeNode, this.rootNode);
+        //eslint-disable-next-line
+      } catch (e) {
+        return this.args.value;
+      }
     }
+    return this.args.value;
   }
 }

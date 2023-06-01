@@ -5,9 +5,9 @@
   @grow={{@grow}}
   @size={{@textSize}}
   @textAlign={{@textAlign}}
+  {{did-insert this.setRootNode}}
   ...attributes
 >
-  {{this.result.element}}
   {{#each this.result.components as |CompNode|}}
     {{#in-element CompNode.element}}
       {{#let

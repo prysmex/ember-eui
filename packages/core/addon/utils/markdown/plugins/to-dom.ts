@@ -13,7 +13,7 @@ const createDocument = () => {
 
 export interface DynamicComponent {}
 
-export const toDOM = (tree: RehypeNode) => {
+export const toDOM = (tree: RehypeNode, rootNode?: HTMLDivElement) => {
   let document = createDocument();
   let components: DynamicComponent[] = [];
 
@@ -64,6 +64,9 @@ export const toDOM = (tree: RehypeNode) => {
     if (node) {
       let { type } = node;
       if (type === 'root') {
+        if (rootNode) {
+          return toElements(rootNode, node.children);
+        }
         let element = createElement('div', node, 'root');
         return toElements(element, node.children);
       } else if (type === 'element') {

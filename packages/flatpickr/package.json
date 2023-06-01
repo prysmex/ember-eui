@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/flatpickr",
-  "version": "5.15.0",
+  "version": "5.15.1",
   "description": "ember-flatpickr integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -30,7 +30,7 @@
     "postpack": "ember ts:clean"
   },
   "dependencies": {
-    "@ember-eui/core": "^5.15.0",
+    "@ember-eui/core": "^5.15.1",
     "@types/ember": "^3.16.4",
     "ember-auto-import": "^2.4.0",
     "ember-cli-babel": "^7.26.11",

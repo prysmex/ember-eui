@@ -5,7 +5,7 @@ import {
 } from '../../utils/markdown/plugins/markdown-default-plugins';
 import { cached, tracked } from '@glimmer/tracking';
 import unified, { Processor } from 'unified';
-import { toDOM } from '../../utils/markdown/plugins/to-dom';
+import { DynamicComponent, toDOM } from '../../utils/markdown/plugins/to-dom';
 import type { RehypeNode } from '../../utils/markdown/markdown-types';
 import type EuiMarkdownEditorComponent from '../eui-markdown-editor';
 
@@ -18,6 +18,14 @@ export interface EuiMarkdownEditorToolbarArgs {
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarArgs> {
   @tracked rootNode?: HTMLDivElement;
+  @tracked result?:
+    | {
+        element: Node | undefined;
+        components: DynamicComponent[];
+      }
+    | string;
+
+  _lastValue?: string;
 
   get parsingPluginList() {
     return this.args.parsingPluginList || defaultParsingPlugins;
@@ -29,6 +37,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
 
   setRootNode = (node: HTMLDivElement) => {
     this.rootNode = node;
+    this.update();
   };
 
   @cached
@@ -47,17 +56,19 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
       .use(identityCompiler);
   }
 
-  @cached
-  get result() {
+  update = () => {
     if (this.rootNode) {
+      if (this.args.value === this._lastValue) return;
+      this._lastValue = this.args.value;
+      this.rootNode.innerHTML = '';
       try {
         const processed = this.processor.processSync(this.args.value);
-        return toDOM(processed.result as RehypeNode, this.rootNode);
+        this.result = toDOM(processed.result as RehypeNode, this.rootNode);
         //eslint-disable-next-line
       } catch (e) {
-        return this.args.value;
+        this.result = this.args.value;
       }
     }
-    return this.args.value;
-  }
+    this.result = this.args.value;
+  };
 }

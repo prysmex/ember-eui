@@ -29,6 +29,23 @@ export default class DemoToastListComponent extends Component {
 
   toasts = [
     {
+      title: 'You can use markdown for body too!',
+      useMarkdownFormat: true,
+      body: `
+  ##### This tooltip is using markdown!
+
+  You can pass \`useMarkdownFormat: true\`
+
+  [click here](https://www.google.com)
+
+  \`\`\`typescript
+    class Hello {
+      @tracked count = 1;
+    }
+  \`\`\`
+      `
+    },
+    {
       title: `Long toast`,
       body: 'This toast overrides the default toastLifeTimeMs value and will be around for 15 seconds.',
       color: 'warning',

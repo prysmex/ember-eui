@@ -1,20 +1,17 @@
-<div  
+<div
   class={{class-names
     componentName="EuiToast"
     color=(arg-or-default @color "none")
-  }} 
+  }}
   ...attributes
 >
-  {{!-- TODO: Translate strings when EuiI18n is available --}}
+  {{! TODO: Translate strings when EuiI18n is available }}
   <p {{screen-reader-only}}>
     A new notification appears
   </p>
 
   <div
-    class={{class-names
-      "euiToastHeader"
-      (if @body "euiToastHeader--withBody")
-    }}
+    class={{class-names "euiToastHeader" (if @body "euiToastHeader--withBody")}}
     aria-label="Notification"
     data-test-subj="euiToastHeader"
   >
@@ -45,8 +42,12 @@
   {{/if}}
 
   {{#if @body}}
-    <EuiText @size="s" class="euiToastBody">
-      {{@body}}
-    </EuiText>
+    {{#if @useMarkdownFormat}}
+      <EuiMarkdownFormat @value={{@body}} />
+    {{else}}
+      <EuiText @size="s" class="euiToastBody">
+        {{@body}}
+      </EuiText>
+    {{/if}}
   {{/if}}
 </div>

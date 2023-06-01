@@ -11,6 +11,7 @@ export interface EuiToastProps {
   color?: ToastColor;
   iconType?: string;
   toastLifeTimeMs?: number;
+  useMarkdownFormat?: boolean;
   onClose?: () => void;
 }
 

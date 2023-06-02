@@ -14,36 +14,43 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
+    @isFakeLabelBlock={{not (has-block "label")}}
     {{did-insert this.setValidationMessages}}
     {{did-update this.didUpdateValue @value}}
   >
-    <EuiSelect
-      aria-label={{@ariaLabel}}
-      class={{@fieldClasses}}
-      form={{@formId}}
-      @options={{this.options}}
-      @isInvalid={{this.isInvalidAndTouchedh}}
-      @fullWidth={{@fullWidth}}
-      @isLoading={{@isLoading}}
-      @hasNoInitialSelection={{@hasNoInitialSelection}}
-      @inputRef={{@inputRef}}
-      @disabled={{@disabled}}
-      @value={{@value}}
-      @compressed={{@compressed}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
-      @id={{theId}}
-      autofocus={{@autofocus}}
-      ...attributes
-      {{on "blur" (fn this.setIsTouched true)}}
-      {{on "change" this.handleChange}}
-    >
-      <:prepend as |classes|>
-        {{yield classes to="prepend"}}
-      </:prepend>
-      <:append as |classes|>
-        {{yield classes to="append"}}
-      </:append>
-    </EuiSelect>
+    <:label>
+      {{yield to="label"}}
+    </:label>
+
+    <:field>
+      <EuiSelect
+        aria-label={{@ariaLabel}}
+        class={{@fieldClasses}}
+        form={{@formId}}
+        @options={{this.options}}
+        @isInvalid={{this.isInvalidAndTouchedh}}
+        @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @hasNoInitialSelection={{@hasNoInitialSelection}}
+        @inputRef={{@inputRef}}
+        @disabled={{@disabled}}
+        @value={{@value}}
+        @compressed={{@compressed}}
+        @isFakePrependBlock={{not (has-block "prepend")}}
+        @isFakeAppendBlock={{not (has-block "append")}}
+        @id={{theId}}
+        autofocus={{@autofocus}}
+        ...attributes
+        {{on "blur" (fn this.setIsTouched true)}}
+        {{on "change" this.handleChange}}
+      >
+        <:prepend as |classes|>
+          {{yield classes to="prepend"}}
+        </:prepend>
+        <:append as |classes|>
+          {{yield classes to="append"}}
+        </:append>
+      </EuiSelect>
+    </:field>
   </EuiFormRow>
 {{/let}}

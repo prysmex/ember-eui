@@ -14,28 +14,34 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
+    @isFakeLabelBlock={{not (has-block "label")}}
     {{did-insert this.setValidationMessages}}
     {{did-update this.didUpdateValue @value}}
   >
-    <EuiSwitch
-      class={{@fieldClasses}}
-      form={{@formId}}
-      aria-label={{@ariaLabel}}
-      @id={{theId}}
-      @showLabel={{@showLabel}}
-      @label={{@switchLabel}}
-      @checked={{@value}}
-      @onChange={{this.handleChange}}
-      @isFakeLabelBlock={{not (has-block "label")}}
-      @disabled={{@disabled}}
-      @compressed={{@compressed}}
-      @type={{@type}}
-			{{on "blur" (fn this.setIsTouched true)}}
-      ...attributes
-    >
-      <:label>
-        {{yield to="label"}}
-      </:label>
-    </EuiSwitch>
+    <:label>
+      {{yield to="label"}}
+    </:label>
+    <:field>
+      <EuiSwitch
+        class={{@fieldClasses}}
+        form={{@formId}}
+        aria-label={{@ariaLabel}}
+        @id={{theId}}
+        @showLabel={{@showLabel}}
+        @label={{@switchLabel}}
+        @checked={{@value}}
+        @onChange={{this.handleChange}}
+        @isFakeLabelBlock={{not (has-block "switch-label")}}
+        @disabled={{@disabled}}
+        @compressed={{@compressed}}
+        @type={{@type}}
+        {{on "blur" (fn this.setIsTouched true)}}
+        ...attributes
+      >
+        <:label>
+          {{yield to="switch-label"}}
+        </:label>
+      </EuiSwitch>
+    </:field>
   </EuiFormRow>
 {{/let}}

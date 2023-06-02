@@ -14,36 +14,42 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
+    @isFakeLabelBlock={{not (has-block "label")}}
     {{did-insert this.setValidationMessages}}
     {{did-update this.didUpdateValue @value}}
   >
-    <EuiFieldPassword
-      class={{@fieldClasses}}
-      form={{@formId}}
-      aria-label={{@ariaLabel}}
-      @isInvalid={{this.isInvalidAndTouched}}
-      @fullWidth={{@fullWidth}}
-      @isLoading={{@isLoading}}
-      @compressed={{@compressed}}
-      @inputRef={{@inputRef}}
-      @value={{@value}}
-      @type={{@type}}
-      @id={{theId}}
-      @disabled={{@disabled}}
-      @isFakePrependBlock={{not (has-block "prepend")}}
-      @isFakeAppendBlock={{not (has-block "append")}}
-      autofocus={{@autofocus}}
-      placeholder={{@placeholder}}
-      ...attributes
-      {{on "blur" (fn this.setIsTouched true)}}
-      {{on "input" this.handleChange}}
-    >
-      <:prepend as |classes|>
-        {{yield classes to="prepend"}}
-      </:prepend>
-      <:append as |classes|>
-        {{yield classes to="append"}}
-      </:append>
-    </EuiFieldPassword>
+    <:label>
+      {{yield to="label"}}
+    </:label>
+    <:field>
+      <EuiFieldPassword
+        class={{@fieldClasses}}
+        form={{@formId}}
+        aria-label={{@ariaLabel}}
+        @isInvalid={{this.isInvalidAndTouched}}
+        @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @compressed={{@compressed}}
+        @inputRef={{@inputRef}}
+        @value={{@value}}
+        @type={{@type}}
+        @id={{theId}}
+        @disabled={{@disabled}}
+        @isFakePrependBlock={{not (has-block "prepend")}}
+        @isFakeAppendBlock={{not (has-block "append")}}
+        autofocus={{@autofocus}}
+        placeholder={{@placeholder}}
+        ...attributes
+        {{on "blur" (fn this.setIsTouched true)}}
+        {{on "input" this.handleChange}}
+      >
+        <:prepend as |classes|>
+          {{yield classes to="prepend"}}
+        </:prepend>
+        <:append as |classes|>
+          {{yield classes to="append"}}
+        </:append>
+      </EuiFieldPassword>
+    </:field>
   </EuiFormRow>
 {{/let}}

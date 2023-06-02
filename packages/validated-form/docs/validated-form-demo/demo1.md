@@ -119,8 +119,11 @@ ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode
     @value={{this.data.fieldPassword}}
     @onChange={{set this.data 'fieldPassword'}}
     @validations={{hash presence=(hash presence=true)}}
-    @label='Field password'
-  />
+  >
+    <:label>
+      Field password
+    </:label>    
+  </Form.FieldPassword>
   <Form.FieldTextArea
     @value={{this.data.fieldTextArea}}
     @onChange={{set this.data 'fieldTextArea'}}

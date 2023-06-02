@@ -14,41 +14,47 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
+    @isFakeLabelBlock={{not (has-block "label")}}
     {{did-insert this.setValidationMessages}}
     {{did-update this.didUpdateValue @value}}
   >
-    {{#let
-      (if
-        @editorComponent
-        (component (ensure-safe-component @editorComponent))
-        (component "eui-markdown-editor")
-      )
-      as |MarkdownEditor|
-    }}
-      <MarkdownEditor
-        class={{@fieldClasses}}
-        form={{@formId}}
-        aria-label={{@ariaLabel}}
-        @value={{@value}}
-        @isInvalid={{this.isInvalidAndTouched}}
-        @disabled={{@disabled}}
-        @editorId={{theId}}
-        @onChange={{this.handleChange}}
-        @ariaDescribedBy={{@ariaDescribedBy}}
-        @ariaLabel={{@ariaLabel}}
-        @ariaLabelledBy={{@ariaLabelledBy}}
-        autofocus={{@autofocus}}
-        placeholder={{@placeholder}}
-        @onParse={{@onParse}}
-        @parsingPluginList={{@parsingPluginList}}
-        @uiPlugins={{@uiPlugins}}
-        @height={{@height}}
-        @maxHeight={{@maxHeight}}
-        @autoExpandPreview={{@autoExpandPreview}}
-        @initialViewMode={{@initialViewMode}}
-        ...attributes
-        {{on "blur" (fn this.setIsTouched true)}}
-      />
-    {{/let}}
+    <:label>
+      {{yield to="label"}}
+    </:label>
+    <:field>
+      {{#let
+        (if
+          @editorComponent
+          (component (ensure-safe-component @editorComponent))
+          (component "eui-markdown-editor")
+        )
+        as |MarkdownEditor|
+      }}
+        <MarkdownEditor
+          class={{@fieldClasses}}
+          form={{@formId}}
+          aria-label={{@ariaLabel}}
+          @value={{@value}}
+          @isInvalid={{this.isInvalidAndTouched}}
+          @disabled={{@disabled}}
+          @editorId={{theId}}
+          @onChange={{this.handleChange}}
+          @ariaDescribedBy={{@ariaDescribedBy}}
+          @ariaLabel={{@ariaLabel}}
+          @ariaLabelledBy={{@ariaLabelledBy}}
+          autofocus={{@autofocus}}
+          placeholder={{@placeholder}}
+          @onParse={{@onParse}}
+          @parsingPluginList={{@parsingPluginList}}
+          @uiPlugins={{@uiPlugins}}
+          @height={{@height}}
+          @maxHeight={{@maxHeight}}
+          @autoExpandPreview={{@autoExpandPreview}}
+          @initialViewMode={{@initialViewMode}}
+          ...attributes
+          {{on "blur" (fn this.setIsTouched true)}}
+        />
+      {{/let}}
+    </:field>
   </EuiFormRow>
 {{/let}}

@@ -14,42 +14,49 @@
     @error={{this.validationErrorMessages}}
     @helpText={{@helpText}}
     @errorClasses={{@errorClasses}}
+    @isFakeLabelBlock={{not (has-block "label")}}
     {{did-insert this.setValidationMessages}}
     {{did-update this.didUpdateValue @value}}
   >
-    <EuiFieldNumber
-      class={{@fieldClasses}}
-      form={{@formId}}
-      aria-label={{@ariaLabel}}
-      @value={{@value}}
-      @icon={{@icon}}
-      @isInvalid={{this.isInvalidAndTouched}}
-      @fullWidth={{@fullWidth}}
-      @isLoading={{@isLoading}}
-      @readOnly={{@readOnly}}
-      @disabled={{@disabled}}
-      @min={{@min}}
-      @max={{@max}}
-      @step={{@step}}
-      @inputRef={{@inputRef}}
-      @controlOnly={{@controlOnly}}
-      @compressed={{@compressed}}
-      @id={{theId}}
-      @clear={{@clear}}
-      @isPrependProvided={{has-block "prepend"}}
-      @isAppendProvided={{has-block "append"}}
-      autofocus={{@autofocus}}
-      placeholder={{@placeholder}}
-      ...attributes
-      {{on "blur" (fn this.setIsTouched true)}}
-      {{on "input" this.handleChange}}
-    >
-      <:prepend as |classes|>
-        {{yield classes to="prepend"}}
-      </:prepend>
-      <:append as |classes|>
-        {{yield classes to="append"}}
-      </:append>
-    </EuiFieldNumber>
+    <:label>
+      {{yield to="label"}}
+    </:label>
+
+    <:field>
+      <EuiFieldNumber
+        class={{@fieldClasses}}
+        form={{@formId}}
+        aria-label={{@ariaLabel}}
+        @value={{@value}}
+        @icon={{@icon}}
+        @isInvalid={{this.isInvalidAndTouched}}
+        @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @readOnly={{@readOnly}}
+        @disabled={{@disabled}}
+        @min={{@min}}
+        @max={{@max}}
+        @step={{@step}}
+        @inputRef={{@inputRef}}
+        @controlOnly={{@controlOnly}}
+        @compressed={{@compressed}}
+        @id={{theId}}
+        @clear={{@clear}}
+        @isPrependProvided={{has-block "prepend"}}
+        @isAppendProvided={{has-block "append"}}
+        autofocus={{@autofocus}}
+        placeholder={{@placeholder}}
+        ...attributes
+        {{on "blur" (fn this.setIsTouched true)}}
+        {{on "input" this.handleChange}}
+      >
+        <:prepend as |classes|>
+          {{yield classes to="prepend"}}
+        </:prepend>
+        <:append as |classes|>
+          {{yield classes to="append"}}
+        </:append>
+      </EuiFieldNumber>
+    </:field>
   </EuiFormRow>
 {{/let}}

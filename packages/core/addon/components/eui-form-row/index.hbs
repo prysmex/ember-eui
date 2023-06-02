@@ -13,18 +13,17 @@
   (if (is-array @error) @error (array @error))
   (and @label (eq @labelType "legend"))
   (use-state false)
-  (arg-or-default
-    @id (unique-id)
-  )
+  (arg-or-default @id (unique-id))
   (arg-or-default @hasChildLabel true)
-  as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel|
+  (and (not (arg-or-default @isFakeLabelBlock false)) (has-block "label"))
+  as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel hasLabelBlock|
 }}
   {{#if (eq @legendType "legend")}}
     <fieldset class={{classes}} id="{{rowId}}-row" ...attributes>
-      {{#if (or @label @labelAppend (has-block "label"))}}
+      {{#if (or @label @labelAppend hasLabelBlock)}}
         <div class="euiFormRow__labelWrapper">
           {{#if isLegend}}
-            {{#if (has-block "label")}}
+            {{#if hasLabelBlock}}
               <EuiFormLabel
                 class="euiFormRow__label"
                 for={{rowId}}
@@ -45,14 +44,18 @@
                 {{@label}}
               </EuiFormLabel>
             {{/if}}
-          {{else if (has-block "label")}}
+          {{else if hasLabelBlock}}
             <EuiFormLabel
               class="euiFormRow__label"
               aria-invalid={{@isInvalid}}
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
+              @isFocused={{and
+                (not @isDisabled)
+                (not isLegend)
+                focusedState.value
+              }}
             >
               {{yield @label to="label"}}
             </EuiFormLabel>
@@ -63,7 +66,11 @@
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
+              @isFocused={{and
+                (not @isDisabled)
+                (not isLegend)
+                focusedState.value
+              }}
             >
               {{@label}}
             </EuiFormLabel>
@@ -80,7 +87,12 @@
         {{else}}
           {{yield}}
         {{/if}}
-        {{#if (or (and (has-block "errors") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
+        {{#if
+          (or
+            (and (has-block "errors") @isInvalid)
+            (and (gt errors.length 0) @isInvalid)
+          )
+        }}
           {{#if (has-block "errors")}}
             {{#each errors as |error i|}}
               <EuiFormErrorText
@@ -116,10 +128,10 @@
     </fieldset>
   {{else}}
     <div class={{classes}} id="{{rowId}}-row" ...attributes>
-      {{#if (or @label @labelAppend (has-block "label"))}}
+      {{#if (or @label @labelAppend hasLabelBlock)}}
         <div class="euiFormRow__labelWrapper">
           {{#if isLegend}}
-            {{#if (has-block "label")}}
+            {{#if hasLabelBlock}}
               <EuiFormLabel
                 class="euiFormRow__label"
                 for={{rowId}}
@@ -140,14 +152,18 @@
                 {{@label}}
               </EuiFormLabel>
             {{/if}}
-          {{else if (has-block "label")}}
+          {{else if hasLabelBlock}}
             <EuiFormLabel
               class="euiFormRow__label"
               aria-invalid={{@isInvalid}}
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
+              @isFocused={{and
+                (not @isDisabled)
+                (not isLegend)
+                focusedState.value
+              }}
             >
               {{yield @label to="label"}}
             </EuiFormLabel>
@@ -158,7 +174,11 @@
               for={{if hasChildLabel rowId}}
               @isInvalid={{@isInvalid}}
               @type={{@labelType}}
-              @isFocused={{and (not @isDisabled) (not isLegend) focusedState.value}}
+              @isFocused={{and
+                (not @isDisabled)
+                (not isLegend)
+                focusedState.value
+              }}
             >
               {{@label}}
             </EuiFormLabel>
@@ -175,7 +195,12 @@
         {{else}}
           {{yield}}
         {{/if}}
-        {{#if (or (and (has-block "errors") @isInvalid) (and (gt errors.length 0) @isInvalid))}}
+        {{#if
+          (or
+            (and (has-block "errors") @isInvalid)
+            (and (gt errors.length 0) @isInvalid)
+          )
+        }}
           {{#if (has-block "errors")}}
             {{#each errors as |error i|}}
               <EuiFormErrorText
@@ -202,9 +227,15 @@
               {{yield to="helpText"}}
             </EuiFormHelpText>
           {{else}}
-            {{#let (if (is-array @helpText) @helpText (array @helpText)) as |helpTexts|}}
+            {{#let
+              (if (is-array @helpText) @helpText (array @helpText))
+              as |helpTexts|
+            }}
               {{#each helpTexts as |helpText i|}}
-                <EuiFormHelpText id="{{rowId}}-help-{{i}}" class={{@helpTextClasses}}>
+                <EuiFormHelpText
+                  id="{{rowId}}-help-{{i}}"
+                  class={{@helpTextClasses}}
+                >
                   {{helpText}}
                 </EuiFormHelpText>
               {{/each}}

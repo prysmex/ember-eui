@@ -90,6 +90,7 @@
           (queue (set this "childContent") this.setChildContentHeight)
         }}
         {{resize-observer onResize=this.setChildContentHeight}}
+        {{did-update this.setChildContentHeight @forceState}}
       >
         {{#if (and this.isLoading this.isLoadingMessage)}}
           <EuiLoadingSpinner class="euiAccordion__spinner" />

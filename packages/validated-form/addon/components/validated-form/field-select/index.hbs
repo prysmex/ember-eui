@@ -16,6 +16,7 @@
     @errorClasses={{@errorClasses}}
     @isFakeLabelBlock={{not (has-block "label")}}
     {{did-insert this.setValidationMessages}}
+    {{did-update this.didUpdateValue @validations}}
     {{did-update this.didUpdateValue @value}}
   >
     <:label>

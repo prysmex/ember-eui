@@ -1322,11 +1322,11 @@
   integrity sha512-//fSJEE+FQaLDRpJKEP64pg5R4qQtL1oH/HKtaUK+nXPKHwYwaOXQegtrv3UJwFjuL9H84QbLLZxjKa8TnhTLg==
 
 "@embroider/macros@1.5.0", "@embroider/macros@^0.41.0", "@embroider/macros@^0.47.1", "@embroider/macros@^0.50.0 || ^1.0.0", "@embroider/macros@^1.0.0", "@embroider/macros@^1.2.0", "@embroider/macros@^1.5.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.9.0.tgz#0df2a56fdd93f11fddea450b6ca83cc2119b5008"
-  integrity sha512-12ElrRT+mX3aSixGHjHnfsnyoH1hw5nM+P+Ax0ITZdp6TaAvWZ8dENnVHltdnv4ssHiX0EsVEXmqbIIdMN4nLA==
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@embroider/macros/-/macros-1.11.1.tgz#62eeb5bb7907ad01bdf750510c7f46c0192b6605"
+  integrity sha512-yg4Pl5Sw26lKrrtLwk2UEgYkKkztq+Hatn67QYL5A3I3T4IE/bRA3o6xvIslrJNnhyER7jCc2pwusxt3O4HubA==
   dependencies:
-    "@embroider/shared-internals" "1.8.3"
+    "@embroider/shared-internals" "2.1.0"
     assert-never "^1.2.1"
     babel-import-util "^1.1.0"
     ember-cli-babel "^7.26.6"
@@ -1345,7 +1345,7 @@
     ember-cli-babel "^7.26.6"
     ember-cli-htmlbars "^5.7.1"
 
-"@embroider/shared-internals@1.5.0", "@embroider/shared-internals@1.8.3", "@embroider/shared-internals@^0.50.2", "@embroider/shared-internals@^1.0.0", "@embroider/shared-internals@^1.5.0":
+"@embroider/shared-internals@1.5.0", "@embroider/shared-internals@2.1.0", "@embroider/shared-internals@^0.50.2", "@embroider/shared-internals@^1.0.0", "@embroider/shared-internals@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@embroider/shared-internals/-/shared-internals-1.5.0.tgz#d3883f13571be36fcdbc59c65c785db7b6d8186e"
   integrity sha512-kdR7Fh2YdzsNofJO+DJxLfrlMbW4/NNf78aMXgE21z/tg9GO5W2mKlI1DzsO2JlO5yfZdiYfqb9C9vSLJEx14A==
@@ -2955,6 +2955,11 @@
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.0.tgz#23509ebc1fa32f1b4d50d6a66c4032d5b8eaabdc"
   integrity sha512-/ceqdqeRraGolFTcfoXNiqjyQhZzbINDngeoAq9GoHa8PPK1yNzTaxWjA6BFWp5Ua9JpXEMSS4s5i9tS0hOJtw==
+
+"@types/chroma-js@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@types/chroma-js/-/chroma-js-2.4.0.tgz#476a16ae848c77478079d6749236fdb98837b92c"
+  integrity sha512-JklMxityrwjBTjGY2anH8JaTx3yjRU3/sEHSblLH1ba5lqcSh1LnImXJZO5peJfXyqKYWjHTGy4s5Wz++hARrw==
 
 "@types/component-emitter@^1.2.10":
   version "1.2.11"

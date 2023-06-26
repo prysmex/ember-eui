@@ -16,13 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import { ComponentType, ReactNode } from 'react';
 import { VFile } from 'vfile';
 import { Node as UnistNode, Position as UnistPosition } from 'unist';
 import { Parser } from 'remark-parse';
 import { VFileMessage } from 'vfile-message';
 import { IconType } from '../../components/eui-icon';
+import Component from '@glimmer/component';
 
 export interface RemarkParser {
   Parser: typeof Parser;
@@ -78,9 +77,9 @@ export interface PluginWithImmediateFormatting {
   editor?: never;
 }
 
-export interface PluginWithDelayedFormatting<NodeShape> {
+export interface PluginWithDelayedFormatting<T> {
   formatting?: never;
-  editor: ComponentType<EuiMarkdownEditorUiPluginEditorProps<NodeShape>>;
+  editor: T;
 }
 
 export type EuiMarkdownEditorUiPlugin<NodeShape = any> = {
@@ -89,7 +88,7 @@ export type EuiMarkdownEditorUiPlugin<NodeShape = any> = {
     label: string;
     iconType: IconType;
   };
-  helpText?: ReactNode;
+  helpText?: Component;
 } & (PluginWithImmediateFormatting | PluginWithDelayedFormatting<NodeShape>);
 
 export interface EuiMarkdownFormatting {

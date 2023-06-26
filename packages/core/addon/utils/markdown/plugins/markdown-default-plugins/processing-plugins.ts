@@ -34,6 +34,7 @@ import {
   Settings
 } from 'unified';
 import remark2Rehype from 'remark-rehype';
+//@ts-expect-error
 import all from 'mdast-util-to-hast/lib/all';
 import { Options as Remark2RehypeOptions, Handler } from 'mdast-util-to-hast';
 import * as MarkdownAddComponents from '../markdown-add-components';

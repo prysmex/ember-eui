@@ -188,7 +188,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     let { isPreviewing, autoExpandPreview, height, previewRef, currentHeight } =
       this;
     if (isPreviewing && autoExpandPreview && height !== 'full' && previewRef) {
-      // @ts-expect-error
+      //@ts-ignore
       if (previewRef.scrollHeight > currentHeight) {
         // scrollHeight does not include the border or margin
         // so we ask for the computed value for those,

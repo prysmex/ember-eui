@@ -55,7 +55,7 @@ module.exports = function (defaults) {
     svgJar: {
       sourceDirs: [
         'public/assets',
-        '../node_modules/@elastic/eui/lib/components/icon'
+        '../node_modules/@ember-eui/core/vendor/icon'
       ]
     }
   });
@@ -69,8 +69,11 @@ module.exports = function (defaults) {
     plugins.push(new BundleAnalyzerPlugin());
   }
 
-  const themesFunnel = new Funnel('../node_modules/@elastic/eui/dist', {
-    files: ['eui_theme_amsterdam_light.css', 'eui_theme_amsterdam_dark.css'],
+  const themesFunnel = new Funnel('../node_modules/@ember-eui/core/vendor', {
+    files: [
+      'eui_theme_amsterdam_light.min.css',
+      'eui_theme_amsterdam_dark.min.css'
+    ],
     destDir: '@ember-eui/themes'
   });
 

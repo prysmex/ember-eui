@@ -51,13 +51,9 @@ module.exports = {
       this.emberEuiOptions.theme &&
       this.emberEuiOptions.includeCss !== false
     ) {
-      app.import(
-        `node_modules/@elastic/eui/dist/eui_theme_${this.emberEuiOptions.theme}.min.css`
-      );
+      app.import(`vendor/eui_theme_${this.emberEuiOptions.theme}.min.css`);
     } else {
-      app.import(
-        'node_modules/@elastic/eui/dist/eui_theme_amsterdam_light.min.css'
-      );
+      app.import('vendor/eui_theme_amsterdam_light.min.css');
     }
 
     this._super.included.apply(this, arguments);

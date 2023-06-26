@@ -8,7 +8,7 @@ export function changeTheme(theme: string) {
 
   link.type = 'text/css';
   link.rel = 'stylesheet';
-  link.href = `/@ember-eui/themes/eui_theme_${theme}.css`;
+  link.href = `/@ember-eui/themes/eui_theme_${theme}.min.css`;
   link.id = 'current-ember-eui-theme';
   link.dataset.theme = theme;
 

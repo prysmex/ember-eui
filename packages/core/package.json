@@ -53,7 +53,6 @@
   },
   "dependencies": {
     "@elastic/datemath": "^5.0.3",
-    "@elastic/eui": "41.4.0",
     "@ember/render-modifiers": "^2.0.4",
     "@html-next/vertical-collection": "4.0.0",
     "@types/lodash-es": "^4.17.4",

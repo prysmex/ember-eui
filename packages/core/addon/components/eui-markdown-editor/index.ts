@@ -140,6 +140,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     super(owner, args);
     this.markdownActions = new MarkdownActions(
       this.editorId,
+      // @ts-expect-error
       this.toolbarPlugins
     );
     this.currentHeight = this.height;
@@ -187,6 +188,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     let { isPreviewing, autoExpandPreview, height, previewRef, currentHeight } =
       this;
     if (isPreviewing && autoExpandPreview && height !== 'full' && previewRef) {
+      // @ts-expect-error
       if (previewRef.scrollHeight > currentHeight) {
         // scrollHeight does not include the border or margin
         // so we ask for the computed value for those,

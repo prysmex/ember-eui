@@ -21,6 +21,7 @@ export const getDefaultEuiMarkdownUiPlugins = ({
 
   // @ts-ignore __originatedFromEui is a custom property
   uiPlugins.__originatedFromEui = true;
+  // @ts-ignore __originatedFromEui is a custom property
   return uiPlugins;
 };
 

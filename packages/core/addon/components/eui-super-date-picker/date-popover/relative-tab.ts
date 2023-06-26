@@ -5,14 +5,13 @@ import { LocaleSpecifier } from 'moment';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { parseRelativeParts } from '../utils';
-import { EuiDatePopoverContentProps, TimeUnitId } from '@elastic/eui';
 import { TimeOptions } from '../utils/time-options';
 
 interface RelativeTabArgs {
   dateFormat: string;
   locale?: LocaleSpecifier;
   value: string;
-  onChange: EuiDatePopoverContentProps['onChange'];
+  onChange: any;
   roundUp?: boolean;
   position: 'start' | 'end';
   labelPrefix: string;
@@ -21,7 +20,7 @@ interface RelativeTabArgs {
 
 export default class RelativeTab extends Component<RelativeTabArgs> {
   @tracked count?: number;
-  @tracked unit: TimeUnitId = 'm';
+  @tracked unit: any = 'm';
   @tracked round = false;
 
   roundUnit;
@@ -31,7 +30,7 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
     const parsed = parseRelativeParts(this.args.value);
     if (parsed) {
       this.count = parsed.count;
-      this.unit = parsed.unit as TimeUnitId;
+      this.unit = parsed.unit as any;
       this.round = parsed.round;
       this.roundUnit = parsed.roundUnit;
     }
@@ -53,9 +52,8 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
   }
 
   get roundingLabel() {
-    return this.args.timeOptions.relativeRoundingLabels[
-      <TimeUnitId>this.unit[0]
-    ];
+    //@ts-expect-error
+    return this.args.timeOptions.relativeRoundingLabels[this.unit[0]];
   }
 
   @action onCountChange(e: InputEvent) {
@@ -65,7 +63,7 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
   }
 
   @action onUnitChange(unit: string) {
-    this.unit = unit as TimeUnitId;
+    this.unit = unit as any;
     this.handleChange();
   }
 
@@ -81,7 +79,7 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
     const date = toRelativeStringFromParts({
       count: this.count,
       round: this.round,
-      roundUnit: this.roundUnit as TimeUnitId,
+      roundUnit: this.roundUnit as any,
       unit: this.unit
     });
     this.args.onChange(date);

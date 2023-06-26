@@ -34,7 +34,7 @@ function isElement(value: any) {
  * @param {string} input
  * @param {RenderableValues} values
  * @param {Function} i18nMappingFunc
- * @returns {string | React.ReactChild[]}
+ * @returns {string}
  */
 export function processStringToChildren(
   input: string,

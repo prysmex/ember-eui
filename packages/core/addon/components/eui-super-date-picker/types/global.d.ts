@@ -1,5 +1,3 @@
-import { Moment } from 'moment';
-
 export interface DurationRange {
   end: ShortDate;
   label?: string;

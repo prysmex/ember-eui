@@ -11,7 +11,6 @@ import {
 } from './types/global';
 import { isRangeInvalid } from './utils';
 import { useI18nTimeOptions } from './utils/time-options';
-import { OnRefreshProps, OnTimeChangeProps } from '@elastic/eui';
 import type EuiI18n from '../../services/eui-i18n';
 import { inject as service } from '@ember/service';
 
@@ -50,7 +49,7 @@ interface EuiSuperDatePickerArgs {
    * If a promise is returned, the next refresh interval will not start until the promise has resolved.
    * If the promise rejects the refresh interval will stop and the error thrown
    */
-  onRefresh?: (props: OnRefreshProps) => void;
+  onRefresh?: (props: any) => void;
   /**
    * Callback for when the refresh interval changes.
    * Supply onRefreshChange to show refresh interval inputs in quick select popover
@@ -59,7 +58,7 @@ interface EuiSuperDatePickerArgs {
   /**
    * Callback for when the time changes.
    */
-  onTimeChange: (props: OnTimeChangeProps) => void;
+  onTimeChange: (props: any) => void;
   // recentlyUsedRanges?: DurationRange[];
   /**
    * Refresh interval in milliseconds
@@ -136,7 +135,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
         end,
         isQuickSelection: false,
         isInvalid: this.isInvalid
-      } as OnTimeChangeProps);
+      } as any);
     }
   }
 

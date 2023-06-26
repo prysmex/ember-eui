@@ -7,7 +7,7 @@ import type EuiI18n from '../../../services/eui-i18n';
 
 interface EuiDatePopoverContentArgs {
   value: string;
-  onChange(date: string | null, event?: React.SyntheticEvent<any>): void;
+  onChange(date: string | null, event?: any): void;
   roundUp?: boolean;
   dateFormat: string;
   timeFormat: string;

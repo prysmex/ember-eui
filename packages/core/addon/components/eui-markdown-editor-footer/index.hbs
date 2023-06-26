@@ -65,28 +65,6 @@
           </a>
           <p>You can also utilize these additional syntax plugins to add rich
             content to yoru text.</p>
-
-          {{! <EuiI18n
-                    tokens={[
-                      'euiMarkdownEditorFooter.descriptionPrefix',
-                      'euiMarkdownEditorFooter.descriptionSuffix',
-                    ]}
-                    defaults={[
-                      'This editor uses',
-                      'You can also utilize these additional syntax plugins to add rich content to your text.',
-                    ]}>
-                    {([descriptionPrefix, descriptionSuffix]: ReactChild[]) => (
-                      <p>
-                        {descriptionPrefix}{' '}
-                        <a
-                          href="https://github.github.com/gfm/"
-                          target="_blank">
-                          Github flavored markdown
-                        </a>
-                        . {descriptionSuffix}
-                      </p>
-                    )}
-                  </EuiI18n> }}
         </EuiText>
         <EuiHorizontalRule />
         {{#each @uiPlugins as |uiPlugin|}}

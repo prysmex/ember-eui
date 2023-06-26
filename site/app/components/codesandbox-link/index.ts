@@ -291,7 +291,7 @@ export default class CodesandboxLink extends Component<Args> {
 							svgJar: {
 								sourceDirs: [
 									'public/assets',
-									'node_modules/@elastic/eui/lib/components/icon'
+									'node_modules/@ember-eui/core/vendor/icon'
 								]
 							}
 						});

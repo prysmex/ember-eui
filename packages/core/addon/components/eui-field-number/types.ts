@@ -25,13 +25,13 @@ export type EuiFieldNumberArgs = Omit<
 
     /**
      * Creates an input group with element(s) coming before input.
-     * `string` | `ReactElement` or an array of these
+     * `string` | `Component` or an array of these
      */
     prepend?: EuiFormControlLayoutArgs['prepend'];
 
     /**
      * Creates an input group with element(s) coming after input.
-     * `string` | `ReactElement` or an array of these
+     * `string` | `Component` or an array of these
      */
     append?: EuiFormControlLayoutArgs['append'];
 

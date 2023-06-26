@@ -5,7 +5,6 @@
  * in compliance with, at your election, the Elastic License 2.0 or the Server
  * Side Public License, v 1.
  */
-import { EuiSelectOption } from '@elastic/eui';
 import type EuiI18n from '../../../services/eui-i18n';
 
 import { TimeUnitId, RelativeOption, DurationRange } from '../types/global';
@@ -14,11 +13,11 @@ export const LAST = 'last';
 export const NEXT = 'next';
 
 export type TimeOptions = {
-  timeTenseOptions: EuiSelectOption[];
-  timeUnitsOptions: EuiSelectOption[];
+  timeTenseOptions: any[];
+  timeUnitsOptions: any[];
   relativeOptions: RelativeOption[];
   relativeRoundingLabels: { [id in TimeUnitId]: string };
-  refreshUnitsOptions: EuiSelectOption[];
+  refreshUnitsOptions: any[];
   commonDurationRanges: DurationRange[];
 };
 

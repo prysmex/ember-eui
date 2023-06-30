@@ -24,7 +24,7 @@ order: 5
 </EuiText>
 <EuiSpacer />
 <EuiEmptyPrompt
-  @iconType='alert'
+  @iconType='warning'
   @color='danger'
   @title='Error loading Dashboards'
   @body='There was an error loading the Dashboard application. Contact your

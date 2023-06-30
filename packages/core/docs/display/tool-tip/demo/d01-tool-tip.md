@@ -59,7 +59,7 @@ Wrap <strong>EuiToolTip</strong> around any item that you need a tooltip for and
   <p>
     This tooltip appears on the bottom of this icon:
     <EuiToolTip @position='bottom' @content='Here is some tooltip text'>
-      <EuiIcon tabindex='0' @type='alert' @title='Icon with tooltip' />
+      <EuiIcon tabindex='0' @type='warning' @title='Icon with tooltip' />
     </EuiToolTip>
   </p>
 </EuiText>

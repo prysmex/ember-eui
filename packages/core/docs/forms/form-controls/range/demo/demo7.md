@@ -87,7 +87,7 @@ order: 7
   Dual range with append
 </EuiTitle>
 <EuiCallOut
-  @iconType='alert'
+  @iconType='warning'
   @title='Content blocks and `showInput`'
   @color='warning'
 >

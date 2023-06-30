@@ -60,7 +60,7 @@ Following are samples demonstrating how you might assemble and display <strong>E
           @textAlign='right'
           @isLoading={{this.isLoading}}
         >
-          <EuiIcon @type='alert' @color='danger' />
+          <EuiIcon @type='warning' @color='danger' />
         </EuiStat>
       </EuiPanel>
     </EuiFlexItem>

@@ -21,7 +21,7 @@ order: 1
   </:button>
   <:content>
     <EuiCollapsibleNavGroup
-      @iconType='alert'
+      @iconType='warning'
       @background='dark'
       @initialIsOpen={{false}}
       @isCollapsible={{true}}
@@ -52,7 +52,7 @@ order: 1
       </:content>
     </EuiCollapsibleNavGroup>
     <EuiCollapsibleNavGroup
-      @iconType='alert'
+      @iconType='warning'
       @initialIsOpen={{true}}
       @isCollapsible={{true}}
     >

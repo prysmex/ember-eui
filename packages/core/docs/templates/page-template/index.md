@@ -28,7 +28,7 @@ title: Page template
 <EuiCallOut
   @color="danger"
   @title='Do not nest multiple EuiPageTemplate components.'
-  @iconType='alert'
+  @iconType='warning'
 >
   <:body>
     The template is a very fragile component that will cause unexpected results if nested.

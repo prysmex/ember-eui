@@ -26,7 +26,7 @@ It accepts all the same props as <strong>EuiToolTip</strong>. For convenience, y
 <EuiIconTip
   @ariaLabel='Warning'
   @size='xl'
-  @type='alert'
+  @type='warning'
   @color='warning'
   @content='I do not think it means what you think it means'
 />

@@ -43,6 +43,7 @@
             {{yield appendClasses inputId to="append"}}
             {{#if (eq type "dual")}}
               <EuiButtonIcon
+                tabindex="-1"
                 @iconType={{if isVisible "eyeClosed" "eye"}}
                 {{on
                   "click"

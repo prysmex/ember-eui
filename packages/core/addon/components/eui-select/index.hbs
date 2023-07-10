@@ -50,7 +50,11 @@
             {{! template-lint-enable}}
           {{/if}}
           {{#each @options as |opt|}}
-            <option value={{opt.value}} selected={{eq @value opt.value}}>
+            <option
+              value={{opt.value}}
+              selected={{eq @value opt.value}}
+              disabled={{eq opt.disabled true}}
+            >
               {{opt.text}}
             </option>
           {{/each}}

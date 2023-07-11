@@ -68,6 +68,9 @@ export default class ValidatedForm extends Component {
   unregister(child) {
     if (!this.isDestroyed) {
       schedule('afterRender', this, this.removeChild, child);
+      // When adding a child the validation gets calculated on a `did-insert` modifier
+      // for removal there's no modifier so it gets called here
+      schedule('afterRender', this, this.triggerValidityChange);
     }
   }
 

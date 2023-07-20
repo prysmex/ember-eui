@@ -41,18 +41,11 @@ module.exports = {
       'node_modules/ember-basic-dropdown/vendor/ember-basic-dropdown.css'
     );
 
-    this.emberEuiOptions = Object.assign({}, app.options['@ember-eui/core']);
+    let addonConfig = Object.assign({}, app.options['@ember-eui/core']);
 
-    this.emberEuiOptions.theme = this.emberEuiOptions.theme
-      ? this.emberEuiOptions.theme
-      : 'amsterdam_light';
-
-    if (
-      this.emberEuiOptions.theme &&
-      this.emberEuiOptions.includeCss !== false
-    ) {
+    if (addonConfig.theme) {
       app.import(`vendor/eui_theme_${this.emberEuiOptions.theme}.min.css`);
-    } else {
+    } else if (addonConfig.theme !== false) {
       app.import('vendor/eui_theme_amsterdam_light.min.css');
     }
 

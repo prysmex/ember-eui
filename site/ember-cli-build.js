@@ -37,7 +37,7 @@ module.exports = function (defaults) {
 
     // Add options here
     '@ember-eui/core': {
-      includeCss: false
+      theme: false
     },
     'ember-cli-netlify': {
       redirects: ['/* /index.html 200']

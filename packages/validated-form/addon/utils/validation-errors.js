@@ -1,10 +1,10 @@
 import { assign } from '@ember/polyfills';
 
-export default function buildMessage(messages, key, result) {
+export default function buildMessage(messages, key, result = {}) {
   let description = messages.getDescriptionFor(key);
 
-  if (result.message) {
-    return result.message;
+  if (result?.context?.message) {
+    return result.context.message;
   }
 
   let { type, context = {} } = result;

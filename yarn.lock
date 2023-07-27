@@ -1200,13 +1200,6 @@
     ember-cli-babel "^7.26.11"
     ember-modifier-manager-polyfill "^1.2.0"
 
-"@ember/string@^3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@ember/string/-/string-3.1.1.tgz#0a5ac0d1e4925259e41d5c8d55ef616117d47ff0"
-  integrity sha512-UbXJ+k3QOrYN4SRPHgXCqYIJ+yWWUg1+vr0H4DhdQPTy8LJfyqwZ2tc5uqpSSnEXE+/1KopHBE5J8GDagAg5cg==
-  dependencies:
-    ember-cli-babel "^7.26.6"
-
 "@ember/test-helpers@2.6.0", "@ember/test-helpers@^2.6.0":
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/@ember/test-helpers/-/test-helpers-2.6.0.tgz#d687515c6ab49ba72717fc62046970ef4a72ea9c"
@@ -1402,7 +1395,7 @@
     lodash "^4.17.21"
     resolve "^1.20.0"
 
-"@embroider/util@^0.39.1 || ^0.40.0 || ^0.41.0 || ^1.0.0", "@embroider/util@^1.11.0", "@embroider/util@^1.5.0":
+"@embroider/util@^0.39.1 || ^0.40.0 || ^0.41.0 || ^1.0.0", "@embroider/util@^1.0.0", "@embroider/util@^1.11.0", "@embroider/util@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@embroider/util/-/util-1.5.0.tgz#0c7da82a75052daca7c709d6888b72a1da19822e"
   integrity sha512-CoE98WDnRtXPn8x8SJkWHGw7frikRIetpImwwC9qyse/AvSoOsS4B5U0G8omZLMvwm2IEc9NemlDrS4ZyUlJ/A==
@@ -8162,7 +8155,7 @@ ember-auto-import@^2.5.0, ember-auto-import@^2.6.3:
     typescript-memoize "^1.0.0-alpha.3"
     walk-sync "^3.0.0"
 
-ember-basic-dropdown@^7.2.1:
+ember-basic-dropdown@^7.0.1:
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/ember-basic-dropdown/-/ember-basic-dropdown-7.2.1.tgz#897d1f6f04090233fa0b978f07293d20f3167592"
   integrity sha512-9LS+OHNlLu/dr5QutpL+q9YKT97SBqCfDm6PzFuw9DKqs80/auil2JWe0bSRVL6BuQpBUhXDK6DtyA4a4JNK7A==
@@ -8363,7 +8356,7 @@ ember-cli-htmlbars@^6.0.0, ember-cli-htmlbars@^6.0.1:
     strip-bom "^4.0.0"
     walk-sync "^2.2.0"
 
-ember-cli-htmlbars@^6.1.1, ember-cli-htmlbars@^6.2.0:
+ember-cli-htmlbars@^6.1.0, ember-cli-htmlbars@^6.1.1, ember-cli-htmlbars@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/ember-cli-htmlbars/-/ember-cli-htmlbars-6.2.0.tgz#18ec48ee1c93f9eed862a64eb24a9d14604f1dfc"
   integrity sha512-j5EGixjGau23HrqRiW/JjoAovg5UBHfjbyN7wX5ekE90knIEqUUj1z/Mo/cTx/J2VepQ2lE6HdXW9LWQ/WdMtw==
@@ -8729,10 +8722,10 @@ ember-composable-helpers@^4.4.1:
     ember-cli-babel "^7.26.3"
     resolve "^1.10.0"
 
-"ember-concurrency@^2.0.0 || ^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ember-concurrency/-/ember-concurrency-3.0.0.tgz#dc691998b08f8bb7166480229db437f92971f599"
-  integrity sha512-MUsOgl4qLkINxrY+9FuohSOsn7Ytd3xCxu9mThSrMPatxomscZz/0lT4M95S7xy2aNO4o/zGfAEULECQ09YkWA==
+ember-concurrency@^2.0.0:
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/ember-concurrency/-/ember-concurrency-2.3.7.tgz#52d786e37704b9054da1952638797e23714ec0e1"
+  integrity sha512-sz6sTIXN/CuLb5wdpauFa+rWXuvXXSnSHS4kuNzU5GSMDX1pLBWSuovoUk61FUe6CYRqBmT1/UushObwBGickQ==
   dependencies:
     "@babel/helper-plugin-utils" "^7.12.13"
     "@babel/types" "^7.12.13"
@@ -9002,21 +8995,20 @@ ember-pikaday-prysmex@~4.3.0:
     "@embroider/addon-shim" "^0.50.2"
     ember-modifier "^3.0.0"
 
-ember-power-select@^7.0.1:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/ember-power-select/-/ember-power-select-7.1.0.tgz#32157e60656b8ddb218d7f35cdebb2f68554cbae"
-  integrity sha512-SFJ3INAbwru1SJv3Tb/RSn/ohIARkfHhCyi6IgoLuztMAURTF6dXgJy/+7RLJGUejUbxJqm8ON1A4RhOmL1G+g==
+ember-power-select@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/ember-power-select/-/ember-power-select-7.0.0.tgz#fda9e693141c6f22e1578ca4788afe5c4491ad45"
+  integrity sha512-FKeeF1PqYw5XfPPGoHP0aPG0X/3W15v9O2nk0z54oVeLIUTn2R3Ry9iSLa0/mAjDi1Cn7Zdnyki4Z1oM2aWOuA==
   dependencies:
-    "@ember/string" "^3.1.1"
-    "@embroider/util" "^1.11.0"
+    "@embroider/util" "^1.0.0"
     "@glimmer/component" "^1.1.2"
     "@glimmer/tracking" "^1.1.2"
     ember-assign-helper "^0.4.0"
-    ember-basic-dropdown "^7.2.1"
+    ember-basic-dropdown "^7.0.1"
     ember-cli-babel "^7.26.11"
-    ember-cli-htmlbars "^6.2.0"
+    ember-cli-htmlbars "^6.1.0"
     ember-cli-typescript "^5.0.0"
-    ember-concurrency "^2.0.0 || ^3.0.0"
+    ember-concurrency "^2.0.0"
     ember-text-measurer "^0.6.0"
     ember-truth-helpers "^3.1.0"
 

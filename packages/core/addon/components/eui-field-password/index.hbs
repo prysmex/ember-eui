@@ -2,15 +2,17 @@
   (arg-or-default @type "dual")
   (and (not (arg-or-default @isFakePrependBlock false)) (has-block "prepend"))
   (and (not (arg-or-default @isFakeAppendBlock false)) (has-block "append"))
-  (arg-or-default @id (unique-id)) as |type hasPrepend hasAppend inputId|
+  (arg-or-default @id (unique-id)) 
+  as |type hasPrepend hasAppend inputId|
 }}
   {{#let (use-state (if (eq type "dual") "password" type)) as |inputTypeState|}}
     {{#let
       (class-names
         (if @fullWidth "euiFieldPassword--fullWidth")
         (if @compressed "euiFieldPassword--compressed")
-        (if (or hasPrepend hasAppend) "euiFieldPassword--inGroup")
+        (if (or hasPrepend hasAppend (eq type "dual")) "euiFieldPassword--inGroup")
         (if @isLoading "euiFieldPassword--isLoading")
+        (if (eq type "dual") "euiFieldPassword--withToggle")
         "euiFieldPassword"
       ) as |classes|
     }}

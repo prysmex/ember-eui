@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/pikaday",
-  "version": "6.5.7-beta-1",
+  "version": "6.5.8-beta-1.0",
   "description": "ember-pikaday integration with @ember-eui/core",
   "keywords": [
     "ember-addon",

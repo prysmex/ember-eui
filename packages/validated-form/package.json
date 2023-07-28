@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/validated-form",
-  "version": "6.5.8-beta-1.0",
+  "version": "6.5.8",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon"
@@ -115,5 +115,5 @@
   "volta": {
     "extends": "../../package.json"
   },
-  "gitHead": "6f189735dcb10c84d8124c565430b822910860de"
+  "gitHead": "b211c56fa5b00d630b4663e4bf3dec68710f6289"
 }

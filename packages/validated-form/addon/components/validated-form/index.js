@@ -40,14 +40,21 @@ export default class ValidatedForm extends Component {
   }
 
   @action
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
     if (this.isInvalid) {
       this.childComponents.setEach('isTouched', true);
       this.args.onInvalid?.();
     } else {
       this.childComponents.setEach('isTouched', false);
-      this.args.onSubmit?.();
+      try {
+        await this.args.onSubmit?.();
+      } catch (e) {
+        this.childComponents.setEach('isTouched', true);
+        this.childComponents.forEach((child) => {
+          child.didUpdateValue();
+        });
+      }
     }
   }
 

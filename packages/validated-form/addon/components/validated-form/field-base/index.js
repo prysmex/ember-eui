@@ -23,7 +23,7 @@ export default class ValidatedFormFieldBase extends Component {
   }
 
   get hasErrorMessages() {
-    return this._validationErrorMessages?.length;
+    return this._validationErrorMessages?.length || this.error?.length > 0;
   }
 
   get isValid() {
@@ -58,8 +58,8 @@ export default class ValidatedFormFieldBase extends Component {
     return this.args.label || '';
   }
 
-  get errors() {
-    return this.args.errors || [];
+  get error() {
+    return this.args.error || [];
   }
 
   get options() {
@@ -67,7 +67,23 @@ export default class ValidatedFormFieldBase extends Component {
   }
 
   get validationErrorMessages() {
-    return this._validationErrorMessages;
+    let error = [];
+    if (this.error.length > 0) {
+      error.push(...this.error);
+    }
+
+    if (
+      this._validationErrorMessages &&
+      this._validationErrorMessages.length > 0
+    ) {
+      error.push(...this._validationErrorMessages);
+    }
+
+    if (error.length === 0) {
+      return null;
+    }
+
+    return error;
   }
 
   constructor() {

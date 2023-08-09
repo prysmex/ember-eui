@@ -51,9 +51,6 @@ export default class ValidatedForm extends Component {
         await this.args.onSubmit?.();
       } catch (e) {
         this.childComponents.setEach('isTouched', true);
-        this.childComponents.forEach((child) => {
-          child.didUpdateValue();
-        });
       }
     }
   }

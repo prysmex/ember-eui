@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "7.0.4",
+  "version": "7.0.5",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -186,5 +186,5 @@
   "volta": {
     "extends": "../../package.json"
   },
-  "gitHead": "5392970e8294484f94f7aec054548cbbc5b424c4"
+  "gitHead": "24923fd705ec7e84d4e77f8145e0bc2f9fb12af7"
 }

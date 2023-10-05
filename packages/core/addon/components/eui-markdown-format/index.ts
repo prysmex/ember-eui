@@ -8,6 +8,8 @@ import unified, { Processor } from 'unified';
 import { toDOM } from '../../utils/markdown/plugins/to-dom';
 import type { RehypeNode } from '../../utils/markdown/markdown-types';
 import type EuiMarkdownEditorComponent from '../eui-markdown-editor';
+import { isArray } from '@ember/array';
+
 export interface EuiMarkdownEditorToolbarArgs {
   parsingPluginList?: typeof defaultParsingPlugins;
   processingPluginList?: typeof defaultProcessingPlugins;
@@ -45,7 +47,11 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   get rootClasses(): string[] {
     let baseClasses = ['euiMarkdownFormat', 'euiText', 'euiText--medium'];
     if (this.args.rootClasses) {
-      baseClasses = baseClasses.concat(this.args.rootClasses);
+      let rootClasses = isArray(this.args.rootClasses)
+        ? this.args.rootClasses
+        : (this.args.rootClasses as string)?.split(' ') || [];
+
+      baseClasses = baseClasses.concat(rootClasses);
     }
     return baseClasses;
   }

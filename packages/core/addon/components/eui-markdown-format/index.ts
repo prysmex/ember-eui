@@ -13,6 +13,8 @@ export interface EuiMarkdownEditorToolbarArgs {
   processingPluginList?: typeof defaultProcessingPlugins;
   replaceNode?: EuiMarkdownEditorComponent['replaceNode'];
   value: string;
+  //you can pass in a string or an array of strings to be added to the root element
+  rootClasses?: string | string[];
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarArgs> {
@@ -40,12 +42,20 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
       .use(identityCompiler);
   }
 
+  get rootClasses(): string[] {
+    let baseClasses = ['euiMarkdownFormat', 'euiText', 'euiText--medium'];
+    if (this.args.rootClasses) {
+      baseClasses = baseClasses.concat(this.args.rootClasses);
+    }
+    return baseClasses;
+  }
+
   @cached
   get result() {
     try {
       const processed = this.processor.processSync(this.args.value);
       return toDOM(processed.result as RehypeNode, {
-        rootClasses: ['euiMarkdownFormat', 'euiText', 'euiText--medium']
+        rootClasses: this.rootClasses
       });
       //eslint-disable-next-line
     } catch (e) {

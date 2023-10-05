@@ -13,7 +13,12 @@ const createDocument = () => {
 
 export interface DynamicComponent {}
 
-export const toDOM = (tree: RehypeNode, rootNode?: HTMLDivElement) => {
+export const toDOM = (
+  tree: RehypeNode,
+  options?: {
+    rootClasses?: string[];
+  }
+) => {
   let document = createDocument();
   let components: DynamicComponent[] = [];
 
@@ -30,14 +35,14 @@ export const toDOM = (tree: RehypeNode, rootNode?: HTMLDivElement) => {
   const createElement = (
     name: string,
     node: RehypeNode,
-    className?: string
+    classesToAdd?: string[] | string
   ) => {
     let element = document.createElement(name);
     let properties = node.properties;
-    let classNames = [];
+    let finalClassNames = [];
     if (properties) {
       if (properties.className) {
-        classNames.push(...(properties.className as string[]));
+        finalClassNames.push(...(properties.className as string[]));
       }
       for (let key in properties) {
         if (attributes.includes(key)) {
@@ -51,12 +56,15 @@ export const toDOM = (tree: RehypeNode, rootNode?: HTMLDivElement) => {
         }
       }
     }
-    if (className) {
-      classNames.push(className);
+    if (classesToAdd) {
+      if (Array.isArray(classesToAdd)) {
+        finalClassNames.push(...classesToAdd);
+      } else {
+        finalClassNames.push(classesToAdd);
+      }
     }
-    if (classNames.length) {
-      element.setAttribute('class', classNames.join(' '));
-    }
+
+    element.classList.add(...finalClassNames);
     return element;
   };
 
@@ -64,10 +72,11 @@ export const toDOM = (tree: RehypeNode, rootNode?: HTMLDivElement) => {
     if (node) {
       let { type } = node;
       if (type === 'root') {
-        if (rootNode) {
-          return toElements(rootNode, node.children);
-        }
-        let element = createElement('div', node, 'root');
+        let element = createElement(
+          'div',
+          node,
+          options?.rootClasses || ['root']
+        );
         return toElements(element, node.children);
       } else if (type === 'element') {
         let element = createElement(node.tagName, node);
@@ -76,7 +85,9 @@ export const toDOM = (tree: RehypeNode, rootNode?: HTMLDivElement) => {
         return document.createTextNode(node.value);
       } else if (type === 'component') {
         let { inline } = node.properties;
-        let element = createElement(inline ? 'span' : 'div', node, 'component');
+        let element = createElement(inline ? 'span' : 'div', node, [
+          'component'
+        ]);
         let { _children, ...properties } = node.properties;
         let content = toElements(document.createElement('span'), node.children);
         components.push({

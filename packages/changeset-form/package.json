@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/changeset-form",
-  "version": "7.0.7",
+  "version": "7.0.8",
   "description": "Ember Eui changeset integration",
   "keywords": [
     "ember-addon",
@@ -30,7 +30,7 @@
     "postpack": "ember ts:clean"
   },
   "dependencies": {
-    "@ember-eui/core": "^7.0.7",
+    "@ember-eui/core": "^7.0.8",
     "ember-changeset": "github:betocantu93/ember-changeset#v3.15.1",
     "ember-changeset-validations": "^3.16.0",
     "ember-cli-babel": "^7.26.11",
@@ -121,5 +121,5 @@
   "volta": {
     "extends": "../../package.json"
   },
-  "gitHead": "24923fd705ec7e84d4e77f8145e0bc2f9fb12af7"
+  "gitHead": "da05dd340490e986a590380b6042fd802d479dc3"
 }

@@ -1,14 +1,6 @@
 {{! This hbs was inspired by https://github.com/ampatspell/ember-cli-remark-static/blob/v3.0.5/addon/components/remark.hbs }}
-<EuiText
-  class="euiMarkdownFormat"
-  @color={{@color}}
-  @grow={{@grow}}
-  @size={{@textSize}}
-  @textAlign={{@textAlign}}
-  {{did-insert this.setRootNode}}
-  {{did-update this.update @value}}
-  ...attributes
->
+{{#if this.result}}
+  {{this.result.element}}
   {{#each this.result.components as |CompNode|}}
     {{#in-element CompNode.element}}
       {{#let
@@ -22,4 +14,4 @@
       {{/let}}
     {{/in-element}}
   {{/each}}
-</EuiText>
+{{/if}}

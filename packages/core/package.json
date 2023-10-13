@@ -76,7 +76,7 @@
     "ember-power-select": "7.1.2",
     "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^2.0.1",
-    "ember-style-modifier": "^0.7.0",
+    "ember-style-modifier": "^3.0.1",
     "ember-svg-jar": "^2.3.4",
     "ember-truth-helpers": "^3.0.0",
     "ember-unique-id-helper-polyfill": "^1.2.2",

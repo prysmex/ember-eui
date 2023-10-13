@@ -9109,15 +9109,7 @@ ember-source@~4.1.0:
     semver "^7.3.4"
     silent-error "^1.1.1"
 
-ember-style-modifier@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/ember-style-modifier/-/ember-style-modifier-0.7.0.tgz#85b3dfd7e4bc2bd546df595f2dab4fb141cf7d87"
-  integrity sha512-iDzffiwJcb9j6gu3g8CxzZOTvRZ0BmLMEFl+uyqjiaj72VVND9+HbLyQRw1/ewPAtinhSktxxTTdwU/JO+stLw==
-  dependencies:
-    ember-cli-babel "^7.26.6"
-    ember-modifier "^3.0.0"
-
-"ember-style-modifier@^0.8.0 || ^1.0.0 || ^2.0.0 || ^3.0.0":
+"ember-style-modifier@^0.8.0 || ^1.0.0 || ^2.0.0 || ^3.0.0", ember-style-modifier@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ember-style-modifier/-/ember-style-modifier-3.0.1.tgz#96aaaa2b713108725b81d8b934ec445ece6b89c3"
   integrity sha512-WHRVIiqY/dpwDtVWlnHW0P4Z+Jha8QEwfaQdIF2ckJL77ZKdjbV2j1XZymS0Nzj61EGx5BM+YEsGL16r3hLv2A==

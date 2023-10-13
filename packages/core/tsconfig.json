@@ -14,6 +14,7 @@
       "core/*": ["addon/*"],
       "core/test-support": ["addon-test-support"],
       "core/test-support/*": ["addon-test-support/*"],
+      "@ember/destroyable": ["../../node_modules/ember-destroyable-polyfill"],
       "*": ["types/*"]
     }
   },

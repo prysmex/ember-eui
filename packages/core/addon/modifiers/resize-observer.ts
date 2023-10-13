@@ -1,5 +1,6 @@
 import Modifier from 'ember-modifier';
 import { action } from '@ember/object';
+import { registerDestructor } from '@ember/destroyable';
 
 // IE11 and Safari don't support the `ResizeObserver` API at the time of writing
 const hasResizeObserver =
@@ -60,9 +61,13 @@ export default class ResizeObserver extends Modifier<ResizeObserverArgs> {
   width: number = 0;
   observer: Observer | null = null;
 
+  element!: Element;
+  named!: ResizeObserverArgs['named'];
+  positional!: ResizeObserverArgs['positional'];
+
   @action
   setSize({ width, height }: { width: number; height: number }) {
-    let [dimension] = this.args.positional;
+    let [dimension] = this.positional;
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
     if (
@@ -71,11 +76,24 @@ export default class ResizeObserver extends Modifier<ResizeObserverArgs> {
     ) {
       this.width = width;
       this.height = height;
-      this.args.named?.onResize({ width, height });
+      this.named?.onResize({ width, height });
     }
   }
 
-  didInstall() {
+  //@ts-expect-error dont know how to type this
+  modify(
+    element: Element,
+    positional: ['width' | 'height'],
+    named: { onResize: (dimensions: { height: number; width: number }) => void }
+  ) {
+    this.element = element;
+    this.named = named;
+    this.positional = positional;
+    this._setup();
+    registerDestructor(this, () => this._teardown());
+  }
+
+  _setup() {
     let { setSize, element } = this;
     if (element != null) {
       // ResizeObserver's first call to the observation callback is scheduled in the future
@@ -101,7 +119,7 @@ export default class ResizeObserver extends Modifier<ResizeObserverArgs> {
     }
   }
 
-  willRemove() {
+  _teardown() {
     this.observer?.disconnect();
   }
 }

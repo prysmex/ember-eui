@@ -1,6 +1,7 @@
 import Modifier from 'ember-modifier';
 import { guidFor } from '@ember/object/internals';
 import { action } from '@ember/object';
+import { registerDestructor } from '@ember/destroyable';
 
 interface OutsideClickDetectorModifierArgs {
   positional: [];
@@ -22,9 +23,13 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   id!: string;
   capturedDownIds: string[] = [];
 
+  element!: Element;
+  named!: OutsideClickDetectorModifierArgs['named'];
+  positional!: OutsideClickDetectorModifierArgs['positional'];
+
   @action
   onClickOutside(e: Event): void {
-    const { isDisabled, onOutsideClick } = this.args.named;
+    const { isDisabled, onOutsideClick } = this.named;
 
     if (isDisabled) {
       this.capturedDownIds = [];
@@ -45,11 +50,30 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     return onOutsideClick(event);
   }
 
-  didInstall(): void {
+  //@ts-expect-error dont know how to type this
+  modify(
+    element: Element,
+    positional: OutsideClickDetector['positional'],
+    named: OutsideClickDetector['named']
+  ): void {
+    this.element = element;
+    this.named = named;
+    this.positional = positional;
+    this._setup();
+    registerDestructor(this, () => this._teardown());
+  }
+
+  _setup(): void {
     this.id = guidFor({});
     document.addEventListener('mouseup', this.onClickOutside);
     document.addEventListener('touchend', this.onClickOutside);
     this.addElementEvents();
+  }
+
+  _teardown(): void {
+    document.removeEventListener('mouseup', this.onClickOutside);
+    document.removeEventListener('touchend', this.onClickOutside);
+    this.removeElementEvents();
   }
 
   addElementEvents(): void {
@@ -64,12 +88,6 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     this.element.removeEventListener('touchstart', this.onChildMouseDown);
     this.element.removeEventListener('mouseup', this.onChildMouseUp);
     this.element.removeEventListener('touchend', this.onChildMouseUp);
-  }
-
-  willRemove(): void {
-    document.removeEventListener('mouseup', this.onClickOutside);
-    document.removeEventListener('touchend', this.onClickOutside);
-    this.removeElementEvents();
   }
 
   @action
@@ -90,16 +108,16 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     this.onChildClick(event, (e) => {
       const nativeEvent = e as unknown as EuiEvent;
       this.capturedDownIds = nativeEvent.euiGeneratedBy;
-      if (this.args.named.onMouseDown) this.args.named.onMouseDown(e);
-      if (this.args.named.onTouchStart) this.args.named.onTouchStart(e);
+      this.named?.onMouseDown?.(e);
+      this.named?.onTouchStart?.(e);
     });
   }
 
   @action
   onChildMouseUp(event: MouseEvent): void {
     this.onChildClick(event, (e) => {
-      if (this.args.named.onMouseUp) this.args.named.onMouseUp(e);
-      if (this.args.named.onTouchEnd) this.args.named.onTouchEnd(e);
+      this.named?.onMouseUp?.(e);
+      this.named?.onTouchEnd?.(e);
     });
   }
 }

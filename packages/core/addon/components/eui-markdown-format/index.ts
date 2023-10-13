@@ -49,7 +49,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     if (this.args.rootClasses) {
       let rootClasses = isArray(this.args.rootClasses)
         ? this.args.rootClasses
-        : (this.args.rootClasses as string)?.split(' ') || [];
+        : (this.args.rootClasses as string)?.trim()?.split(' ') || [];
 
       baseClasses = baseClasses.concat(rootClasses);
     }

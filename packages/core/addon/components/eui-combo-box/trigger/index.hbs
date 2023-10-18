@@ -69,44 +69,44 @@
         {{/each}}
       {{/if}}
       {{#if @searchEnabled}}
-        {{! template-lint-disable }}
         {{#if (and this.maybePlaceholder (not @select.searchText))}}
           <p class="euiComboBoxPlaceholder">
             {{this.maybePlaceholder}}
           </p>
         {{/if}}
-        <div
-          class="euiComboBox__input"
-          style="font-size: 14px; display: inline-block; position: relative;"
-        >
-          <input
-            tabindex="-1"
-            style="opacity: 0px; width:0px; height:0px; position: absolute; top: 40%; border:solid 1px transparent !important; margin:0px !important;"
-            class="fake-input-for-html-form-validity"
-            {{validatable-control @isInvalid}}
-          />
-          <input
-            class="ember-power-select-trigger-multiple-input euiComboBox__input"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            autofocus={{@autoFocus}}
-            spellcheck={{false}}
-            id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
-            value={{@select.searchText}}
-            aria-controls={{@listboxId}}
-            style={{this.triggerMultipleInputStyle}}
-            disabled={{@select.disabled}}
-            tabindex={{@tabindex}}
-            form="power-select-fake-form"
-            {{on "focus" @onFocus}}
-            {{on "blur" @onBlur}}
-            {{on "input" this.handleInput}}
-            {{on "keydown" this.handleKeydown}}
-            {{did-insert this.storeInputStyles}}
-          />
-        </div>
-        {{! template-lint-enable }}
+
+        {{#let
+          (component
+            "eui-combo-box/trigger/input"
+            select=@select
+            ariaActiveDescendant=@ariaActiveDescendant
+            ariaLabelledBy=@ariaLabelledBy
+            ariaLabel=@ariaLabel
+            listboxId=@listboxId
+            tabindex=@tabindex
+            buildSelection=@buildSelection
+            placeholder=@placeholder
+            placeholderComponent=@placeholderComponent
+            searchField=@searchField
+            onFocus=@onFocus
+            onBlur=@onBlur
+            onKeydown=@onKeydown
+            onInput=@onInput
+            onCreateOption=@onCreateOption
+          )
+          as |InputComponent|
+        }}
+          {{component
+            (ensure-safe-component @placeholderComponent)
+            select=@select
+            placeholder=@placeholder
+            isMutlipleWithSearch=true
+            inputComponent=InputComponent
+            displayPlaceholder=(and
+              (not @select.searchText) (not @select.selected)
+            )
+          }}
+        {{/let}}
       {{else}}
         {{! template-lint-disable }}
         <div

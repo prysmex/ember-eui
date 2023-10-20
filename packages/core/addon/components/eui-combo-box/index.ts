@@ -3,6 +3,7 @@ import { action } from '@ember/object';
 import { tracked, cached } from '@glimmer/tracking';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { isEqual } from '@ember/utils';
+import { isArray } from '@ember/array';
 
 interface PromiseProxy<T> extends Promise<T> {
   content: any;
@@ -27,7 +28,7 @@ interface Sliceable<T> {
 }
 
 const isSliceable = <T>(coll: any): coll is Sliceable<T> => {
-  return typeof coll.slice === 'function' && typeof coll.sort === 'function';
+  return isArray(coll);
 };
 
 export const toPlainArray = <T>(collection: T[] | Sliceable<T>): T[] => {
@@ -52,7 +53,6 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   //This is to allow scrolling between virtualized groups
   @cached
   get opts() {
-    //@ts-ignore
     return this.results.reduce((acc, curr) => {
       if (emberPowerSelectIsGroup([curr])) {
         acc.push(curr, ...curr.options);

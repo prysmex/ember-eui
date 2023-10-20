@@ -1,6 +1,7 @@
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import config from 'ember-get-config';
+import { toPlainArray } from '..';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   _optionsCache = [];
@@ -22,7 +23,7 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
 
   _optionFromIndex(index) {
     let parts = index.split('.');
-    let option = this.flattedOptions[parseInt(parts[0], 10)];
+    let option = toPlainArray(this.flattedOptions).at?.(parseInt(parts[0], 10));
     for (let i = 1; i < parts.length; i++) {
       option = option.options[parseInt(parts[i], 10)];
     }

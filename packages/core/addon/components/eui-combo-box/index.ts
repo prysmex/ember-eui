@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked, cached } from '@glimmer/tracking';
-//@ts-ignore
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { isEqual } from '@ember/utils';
 
@@ -23,16 +22,17 @@ interface Select {
   };
 }
 
-interface Arrayable<T> {
-  toArray(): T[];
+interface Sliceable<T> {
+  slice(): T[];
 }
-const isArrayable = <T>(coll: any): coll is Arrayable<T> => {
-  return typeof coll.toArray === 'function';
+
+const isSliceable = <T>(coll: any): coll is Sliceable<T> => {
+  return typeof coll.slice === 'function' && typeof coll.sort === 'function';
 };
 
-const toPlainArray = <T>(collection: T[] | Arrayable<T>): T[] => {
-  if (isArrayable<T>(collection)) {
-    return collection.toArray();
+export const toPlainArray = <T>(collection: T[] | Sliceable<T>): T[] => {
+  if (isSliceable<T>(collection)) {
+    return collection.slice();
   } else {
     return collection;
   }

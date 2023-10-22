@@ -54,7 +54,7 @@
   "dependencies": {
     "@elastic/datemath": "^5.0.3",
     "@ember/render-modifiers": "^2.0.4",
-    "@html-next/vertical-collection": "4.0.0",
+    "@html-next/vertical-collection": "^4.0.0",
     "@types/chroma-js": "^2.4.0",
     "@types/lodash-es": "^4.17.4",
     "@types/refractor": "^3.0.0",
@@ -69,7 +69,7 @@
     "ember-element-helper": "^0.8.5",
     "ember-event-helpers": "^0.1.1",
     "ember-in-element-polyfill": "^1.0.0",
-    "ember-keyboard": "^7.0.1",
+    "ember-keyboard": "^8.2.1",
     "ember-math-helpers": "^2.15.0",
     "ember-modifier": "^4.1.0",
     "ember-named-blocks-polyfill": "^0.2.3",

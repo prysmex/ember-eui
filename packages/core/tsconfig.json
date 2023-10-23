@@ -1,29 +1,22 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "skipLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "./src",
+    "declarationDir": "./dist",
+    "declaration": true,
+    "declarationMap": true,
     "paths": {
-      "dummy/tests/*": ["tests/*"],
       "@glimmer/tracking": [
         "../../node_modules/ember-cached-decorator-polyfill",
         "../../node_modules/@glimmer/tracking/dist/types"
       ],
-      "dummy/*": ["tests/dummy/app/*", "app/*"],
-      "core": ["addon"],
-      "core/*": ["addon/*"],
-      "core/test-support": ["addon-test-support"],
-      "core/test-support/*": ["addon-test-support/*"],
-      "@ember/destroyable": ["../../node_modules/ember-destroyable-polyfill"],
-      "*": ["types/*"]
+      "@ember/destroyable": ["../../../node_modules/ember-destroyable-polyfill"],
+      ".": ["./index.ts"],
+      "./*": ["./*"],
     }
   },
   "include": [
-    "app/**/*",
-    "addon/**/*",
-    "tests/**/*",
-    "types/**/*",
-    "test-support/**/*",
-    "addon-test-support/**/*"
+    "src/**/*",
+    "types/**/*"
   ]
 }

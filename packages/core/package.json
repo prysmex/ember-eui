@@ -27,6 +27,8 @@
       "default": "./dist/*.js"
     },
     "./addon-main.js": "./addon-main.cjs",
+    "./themes/dark.css": "./vendor/eui_theme_amsterdam_dark.min.css",
+    "./themes/light.css": "./vendor/eui_theme_amsterdam_light.min.css",
     "./components/eui-accordion": "./dist/components/eui-accordion/index.js",
     "./components/eui-auto-sizer": "./dist/components/eui-auto-sizer/index.js",
     "./components/eui-avatar": "./dist/components/eui-avatar/index.js",

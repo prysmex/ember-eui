@@ -1,10 +1,12 @@
 import { changeTheme } from '../utils/change-theme';
 
-const DEFAULT_THEME = 'amsterdam_light';
+const DEFAULT_THEME = 'light';
 
 export function initialize(): void {
   if (window?.localStorage) {
-    const currentTheme = window.localStorage.getItem('theme');
+    const params = new URL(document.location.href).searchParams;
+    const theme = params.get('theme');
+    const currentTheme = theme || window.localStorage.getItem('theme');
     changeTheme(currentTheme ? currentTheme : DEFAULT_THEME);
   }
 }

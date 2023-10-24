@@ -69,13 +69,6 @@ module.exports = function (defaults) {
     plugins.push(new BundleAnalyzerPlugin());
   }
 
-  const themesFunnel = new Funnel('../node_modules/@ember-eui/core/vendor', {
-    files: [
-      'eui_theme_amsterdam_light.min.css',
-      'eui_theme_amsterdam_dark.min.css'
-    ],
-    destDir: '@ember-eui/themes'
-  });
 
   return require('@embroider/compat').compatBuild(app, Webpack, {
     // staticAddonTestSupportTrees: true,
@@ -84,7 +77,6 @@ module.exports = function (defaults) {
     // staticModifiers: true,
     // staticComponents: true,
     splitAtRoutes: ['*'],
-    extraPublicTrees: [themesFunnel],
     packagerOptions: {
       webpackConfig: {
         plugins: plugins,

@@ -1,10 +1,9 @@
 import DocfyDemoSnippet from '@docfy/ember/components/docfy-demo/snippet';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
-import ThemeManager from 'site/services/theme-manager';
 
 export default class extends DocfyDemoSnippet {
-  @service declare themeManager: ThemeManager;
+  @service themeManager;
 
   @tracked isSingleSelected = false;
   get language() {

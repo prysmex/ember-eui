@@ -1,4 +1,4 @@
-import DocfyDemoSnippet from 'prysmex-docfy-ember/components/docfy-demo/snippet';
+import DocfyDemoSnippet from '@docfy/ember/components/docfy-demo/snippet';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
 import ThemeManager from 'site/services/theme-manager';

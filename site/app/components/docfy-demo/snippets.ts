@@ -1,6 +1,6 @@
 import DocfyDemoSnippets, {
   SnippetRegisterArgs
-} from 'prysmex-docfy-ember/components/docfy-demo/snippets';
+} from '@docfy/ember/components/docfy-demo/snippets';
 import { schedule } from '@ember/runloop';
 import { action } from '@ember/object';
 

@@ -34,14 +34,14 @@ import {
   Settings
 } from 'unified';
 import remark2Rehype from 'remark-rehype';
-//@ts-expect-error
-import all from 'mdast-util-to-hast/lib/all';
+
+import { toHast } from 'mdast-util-to-hast';
 import { Options as Remark2RehypeOptions, Handler } from 'mdast-util-to-hast';
 import * as MarkdownAddComponents from '../markdown-add-components';
 
 const unknownHandler: Handler = (h, node) => {
   //@ts-expect-error
-  return h(node, node.type, node, all(h, node));
+  return h(node, node.type, node, toHast(h, node));
 };
 
 export interface Rehype2ReactOptions {

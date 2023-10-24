@@ -1,6 +1,6 @@
 'use strict';
 
-process.env.EMBROIDER_REBUILD_ADDONS = 'prysmex-docfy-ember';
+process.env.EMBROIDER_REBUILD_ADDONS = '@docfy/ember';
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const path = require('path');

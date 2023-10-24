@@ -6,7 +6,6 @@ order: 1
 <EuiMarkdownEditor
   @value={{this.value}}
   @onChange={{set this 'value'}}
-  @processingPluginList={{this.processingPlugins}}
 />
 ```
 
@@ -14,30 +13,33 @@ order: 1
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { visit } from '@ember-eui/core/utils/markdown/plugins/markdown-add-components';
-import { defaultProcessingPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins';
+// import { visit } from '@ember-eui/core/utils/markdown/plugins/markdown-add-components/index';
+import EuiAccordion from '@ember-eui/core/components/eui-accordion';
+// import { defaultProcessingPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins';
+
+console.log(EuiAccordion);
 
 /*
  Quick example how you can extend plugins, this plugin adds _blank to `a` elements
 */
-function TargetBlankProcessingPlugin() {
-  return (tree) => {
-    visit(tree, (node) => {
-      if (node.type === 'element' && node.tagName === 'a') {
-        node.properties.target = '_blank';
-      }
-      return node;
-    });
-  };
-}
+// function TargetBlankProcessingPlugin() {
+//   return (tree) => {
+//     visit(tree, (node) => {
+//       if (node.type === 'element' && node.tagName === 'a') {
+//         node.properties.target = '_blank';
+//       }
+//       return node;
+//     });
+//   };
+// }
 
-const processingPlugins = [
-  ...defaultProcessingPlugins,
-  [TargetBlankProcessingPlugin, {}]
-];
+// const processingPlugins = [
+//   ...defaultProcessingPlugins,
+//   // [TargetBlankProcessingPlugin, {}]
+// ];
 
 export default class EuiMarkdownEditor1 extends Component {
-  processingPlugins = processingPlugins;
+  // processingPlugins = processingPlugins;
   @tracked value = `## 👋 Hello there!
 
 I'm a **EuiMarkdownEditor** with:

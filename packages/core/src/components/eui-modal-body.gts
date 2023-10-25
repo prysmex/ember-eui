@@ -1,0 +1,7 @@
+<template>
+  <div class="euiModalBody" ...attributes>
+    <div class="euiModalBody__overflow">
+      {{yield}}
+    </div>
+  </div>
+</template>

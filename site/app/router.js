@@ -1,6 +1,6 @@
 import EmberRouter from '@embroider/router';
 import config from 'site/config/environment';
-import { addDocfyRoutes } from '@docfy/ember';
+// import { addDocfyRoutes } from '@docfy/ember';
 
 export default class Router extends EmberRouter {
   location = config.locationType;
@@ -8,5 +8,5 @@ export default class Router extends EmberRouter {
 }
 
 Router.map(function () {
-  addDocfyRoutes(this);
+  // addDocfyRoutes(this);
 });

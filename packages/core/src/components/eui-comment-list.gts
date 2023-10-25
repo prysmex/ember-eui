@@ -1,0 +1,8 @@
+<template>
+  {{!
+    Comment List is basically a wrapper for various comments
+  }}
+  <div class="euiCommentList" ...attributes>
+    {{yield}}
+  </div>
+</template>

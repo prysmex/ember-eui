@@ -1,4 +1,4 @@
-import typescript from 'rollup-plugin-ts';
+import ts from 'rollup-plugin-ts';
 import { Addon } from '@embroider/addon-dev/rollup';
 
 const addon = new Addon({
@@ -33,22 +33,24 @@ export default {
       'utils/**/*.js'
     ]),
 
+    // Follow the V2 Addon rules about dependencies. Your code can import from
+    // `dependencies` and `peerDependencies` as well as standard Ember-provided
+    // package names.
+    addon.dependencies(),
+
+    addon.gjs(),
     // This babel config should *not* apply presets or compile away ES modules.
     // It exists only to provide development niceties for you, like automatic
     // template colocation.
     //
     // By default, this will load the actual babel config from the file
     // babel.config.json.
-    typescript({
+    ts({
       transpiler: 'babel',
-      browserslist: false,
-      transpileOnly: false
+      browserslist: ['last 2 firefox versions', 'last 2 chrome versions'],
+      transpileOnly: true,
+      onlyRemoveTypeImports: true
     }),
-
-    // Follow the V2 Addon rules about dependencies. Your code can import from
-    // `dependencies` and `peerDependencies` as well as standard Ember-provided
-    // package names.
-    addon.dependencies(),
 
     // Ensure that standalone .hbs files are properly integrated as Javascript.
     addon.hbs(),

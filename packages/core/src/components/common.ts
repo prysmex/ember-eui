@@ -25,7 +25,6 @@ export function keysOf<T extends Record<string, unknown>, K extends keyof T>(
   return Object.keys(obj) as K[];
 }
 
-
 /**
  * Returns member keys in U not present in T set to never
  * T = { 'one', 'two', 'three' }

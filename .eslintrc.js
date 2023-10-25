@@ -1,13 +1,12 @@
-const { join } = require('path');
-
 module.exports = {
   root: true,
-  parserOptions: {
-    project: join(__dirname, './tsconfig.eslint.json')
-  },
-  plugins: [],
-  extends: ['@underline/eslint-config-ember-typescript'],
+  extends: [
+    '@underline/eslint-config-ember-typescript',
+
+    'plugin:ember/recommended'
+  ],
   rules: {
+    // 'prettier/prettier': ['error', {}, { usePrettierrc: false }],
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     'ember/no-empty-glimmer-component-classes': 'off',
@@ -19,13 +18,9 @@ module.exports = {
     '@typescript-eslint/restrict-plus-operands': 'off',
     'no-prototype-builtins': 'off'
   },
-  globals: {
-    require: true,
-    module: true
-  },
   overrides: [
     {
-      files: ['packages/**/tests/**/*.ts'],
+      files: ['packages/**/tests/**/*.ts', '**/*.gts'],
       rules: {
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off'

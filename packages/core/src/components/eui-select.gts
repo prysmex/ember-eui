@@ -3,7 +3,7 @@ import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
 import { and, eq, or, not } from 'ember-truth-helpers';
 import EuiFormControlLayout from '@ember-eui/core/components/eui-form-control-layout';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { optional } from 'ember-composable-helpers/helpers/optional';
+import optional from 'ember-composable-helpers/helpers/optional';
 import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 
 <template>

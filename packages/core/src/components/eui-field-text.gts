@@ -4,7 +4,7 @@ import classNames from '@ember-eui/core/helpers/class-names';
 import { guidFor } from '@ember/object/internals';
 import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { optional } from 'ember-composable-helpers/helpers/optional';
+import optional from 'ember-composable-helpers/helpers/optional';
 import EuiFormControlLayout from '@ember-eui/core/components/eui-form-control-layout';
 
 <template>

@@ -8,7 +8,7 @@ import { guidFor } from '@ember/object/internals';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import { eq } from 'ember-truth-helpers';
-import { findBy } from 'ember-composable-helpers/helpers/find-by';
+import findBy from 'ember-composable-helpers/helpers/find-by';
 
 export interface EuiTabbedContentTab {
   id: string;

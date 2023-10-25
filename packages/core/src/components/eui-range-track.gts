@@ -7,7 +7,6 @@ import { range } from 'lodash-es';
 import { action } from '@ember/object';
 import { htmlSafe } from '@ember/template';
 
-
 import classNames from '@ember-eui/core/helpers/class-names';
 
 import { and, or, gt } from 'ember-truth-helpers';

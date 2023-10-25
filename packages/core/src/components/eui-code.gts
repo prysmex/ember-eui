@@ -13,7 +13,7 @@ import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
 import classNames from '@ember-eui/core/helpers/class-names';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { set } from 'ember-set-helper/helpers/set';
+import set from 'ember-set-helper/helpers/set';
 
 type EuiCodeArgs = EuiCodeSharedProps & {
   //comments

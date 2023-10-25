@@ -1,6 +1,6 @@
 import classNames from '@ember-eui/core/helpers/class-names';
 import EuiBadge from '@ember-eui/core/components/eui-badge';
-import { optional } from 'ember-composable-helpers/helpers/optional';
+import optional from 'ember-composable-helpers/helpers/optional';
 import { fn } from '@ember/helper';
 import { hash } from '@ember/helper';
 

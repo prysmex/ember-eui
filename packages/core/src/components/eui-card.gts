@@ -14,9 +14,9 @@ import EuiCardSelect from '@ember-eui/core/components/eui-card-select';
 import { guidFor } from '@ember/object/internals';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { set } from 'ember-set-helper/helpers/set';
+import set from 'ember-set-helper/helpers/set';
 import { element } from 'ember-element-helper';
-import { optional } from 'ember-composable-helpers/helpers/optional';
+import optional from 'ember-composable-helpers/helpers/optional';
 
 type EuiCardComponentArgs = {
   selectable?: EuiCardSelectProps;

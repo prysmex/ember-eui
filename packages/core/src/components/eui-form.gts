@@ -1,5 +1,5 @@
 import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import { isArray } from 'ember-composable-helpers/helpers/is-array';
+import isArray from 'ember-truth-helpers/helpers/is-array';
 import { array } from '@ember/helper';
 import { eq, and, gt } from 'ember-truth-helpers';
 import EuiCallOut from '@ember-eui/core/components/eui-call-out';

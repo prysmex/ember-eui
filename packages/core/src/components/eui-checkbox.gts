@@ -3,7 +3,7 @@ import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
 import classNames from '@ember-eui/core/helpers/class-names';
 import { and, or, not } from 'ember-truth-helpers';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { optional } from 'ember-composable-helpers/helpers/optional';
+import optional from 'ember-composable-helpers/helpers/optional';
 
 const indeterminateModifier = modifier(function invalidateIndeterminate(
   element: HTMLInputElement,

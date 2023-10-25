@@ -8,7 +8,7 @@ import { fn } from '@ember/helper';
 import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
 import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
 import { optional } from 'ember-composable-helpers/components/optional';
-import { useState } from '@ember-eui/core/helpers/use-state';
+import useState from '@ember-eui/core/helpers/use-state';
 
 <template>
   {{#let

@@ -6,7 +6,7 @@ import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
 import { hash } from '@ember/helper';
 import EuiIcon from '@ember-eui/core/components/eui-icon';
 import { on } from '@ember/modifier';
-import { optional } from 'ember-composable-helpers/helpers/optional';
+import optional from 'ember-composable-helpers/helpers/optional';
 
 <template>
   {{#if (and (or @onClick @href) (not @iconType))}}

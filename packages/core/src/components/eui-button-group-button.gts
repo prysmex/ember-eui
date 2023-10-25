@@ -6,7 +6,7 @@ import { guidFor } from '@ember/object/internals';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { fn } from '@ember/helper';
-import { noop } from 'ember-composable-helpers/helpers/noop';
+import noop from 'ember-composable-helpers/helpers/noop';
 
 <template>
   {{#let

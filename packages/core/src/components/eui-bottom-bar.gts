@@ -1,6 +1,6 @@
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { set } from 'ember-set-helper/helpers/set';
+import set from 'ember-set-helper/helpers/set';
 import { modifier } from 'ember-modifier';
 
 import argOrDefault from '@ember-eui/core/helpers/arg-or-default';

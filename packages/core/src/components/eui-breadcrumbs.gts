@@ -9,7 +9,7 @@ import EuiIcon from '@ember-eui/core/components/eui-icon';
 import EuiLink from '@ember-eui/core/components/eui-linnk';
 import EuiInnerText from '@ember-eui/core/components/eui-inner-text';
 import EuiPopover from '@ember-eui/core/components/eui-popover';
-import { useState } from '@ember-eui/core/helpers/use-state';
+import useState from '@ember-eui/core/helpers/use-state';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { eq, and, not } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';

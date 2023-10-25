@@ -1,3 +1,5 @@
+import EuiBreadcrumbs from '@ember-eui/core/components/eui-breadcrumbs';
+
 <template>
   <EuiBreadcrumbs
     @max={{4}}

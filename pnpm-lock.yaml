@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  ember-pikaday-prysmex@4.3.0:
+    hash: 36bovp4on4kmghuyg4bkxax4ya
+    path: patches/ember-pikaday-prysmex@4.3.0.patch
+
 importers:
 
   .:
@@ -176,6 +181,7 @@ importers:
       '@ember/string': ^3.1.1
       '@embroider/addon-dev': ^4.1.1
       '@embroider/addon-shim': ^1.8.4
+      '@embroider/util': ^1.12.0
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       '@glint/core': ^1.2.0
@@ -222,7 +228,7 @@ importers:
       ember-set-helper: ^2.0.1
       ember-source: ~4.1.0
       ember-style-modifier: ^3.0.1
-      ember-svg-jar: ^2.3.4
+      ember-svg-jar: ^2.4.7
       ember-template-lint: ^5.11.2
       ember-truth-helpers: ^4.0.3
       ember-unique-id-helper-polyfill: ^1.2.2
@@ -270,7 +276,7 @@ importers:
       ember-set-body-class: 1.0.2
       ember-set-helper: 2.0.1
       ember-style-modifier: 3.0.1_h7dm5e6acklgqowzhbnfzbilim
-      ember-svg-jar: 2.4.6_@glint+template@1.2.1
+      ember-svg-jar: 2.4.7_@glint+template@1.2.1
       ember-truth-helpers: 4.0.3_ember-source@4.1.0
       ember-unique-id-helper-polyfill: 1.2.2
       lodash-es: 4.17.21
@@ -295,6 +301,7 @@ importers:
       '@babel/plugin-transform-typescript': 7.22.15_@babel+core@7.22.10
       '@babel/preset-typescript': 7.23.2_@babel+core@7.22.10
       '@embroider/addon-dev': 4.1.1_snmr5churebqktgzisg2o2d4hq
+      '@embroider/util': 1.12.0_orolpkbarjrfdrnssca2xb2npu
       '@glimmer/component': 1.1.2_@babel+core@7.22.10
       '@glimmer/tracking': 1.1.2
       '@glint/core': 1.2.1_typescript@5.0.4
@@ -595,7 +602,7 @@ importers:
       '@ember/optional-features': ^2.0.0
       '@ember/test-helpers': ^3.2.0
       '@embroider/test-setup': ^3.0.2
-      '@embroider/util': ^1.5.0
+      '@embroider/util': ^1.12.0
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       '@types/ember-resolver': ^5.0.11
@@ -2825,7 +2832,6 @@ packages:
       ember-source: 4.1.0_fm3otypniipedvfenyhwi5t3be
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /@embroider/webpack/3.2.0_ustxxvsykyuat4zu672qizpjky:
     resolution: {integrity: sha512-+H2NjbExiZBY1m3bj2WRmd+1WxndcMiITwa7CuUnq84iOSzQ7T7DWuSB3FLkFfkKeO/4x40pHV0QilzD9ldlZQ==}
@@ -11297,8 +11303,8 @@ packages:
       - '@glint/template'
       - supports-color
 
-  /ember-svg-jar/2.4.6_@glint+template@1.2.1:
-    resolution: {integrity: sha512-W+t6sRAiPhRl4imGKEMWsQDiCV8Nl2GRwzUpqZ1a+CZoW+2aCkF+kcngeDlHn5XzT16bQXg/QYXUvwtKJlSLfg==}
+  /ember-svg-jar/2.4.7_@glint+template@1.2.1:
+    resolution: {integrity: sha512-W1PWqiQOAcNvUIomkZP5oi4JdV2eQPEuGLa1ic0LPhpx/OHKwtW35M1TTDQ+YWwCnKJf0uh/Bl8ZumVw38YXBQ==}
     engines: {node: 12.* || 14.* || >= 16}
     dependencies:
       '@embroider/macros': 1.13.2_@glint+template@1.2.1

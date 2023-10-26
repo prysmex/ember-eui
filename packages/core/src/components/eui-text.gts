@@ -1,10 +1,34 @@
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
 import { and, not } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import EuiTextAlign from './eui-text-align';
 import EuiTextColor from './eui-text-color';
 
-<template>
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiTextSignature {
+  Element: HTMLDivElement;
+  Args: {
+    grow?: boolean;
+    size?: 'xs' | 's' | 'm' | 'l' | 'xl';
+    textAlign?: 'left' | 'center' | 'right';
+    color?:
+      | 'default'
+      | 'subdued'
+      | 'secondary'
+      | 'accent'
+      | 'danger'
+      | 'warning'
+      | 'ghost';
+  };
+  Blocks: {
+    default: [];
+    hola: [number, {name: string}];
+  };
+}
+
+const EuiTextComponent: TemplateOnlyComponent<EuiTextSignature> = <template>
   <div
     class={{classNames
       (unless (argOrDefault @grow true) "euiText--constrainedWidth")
@@ -39,4 +63,12 @@ import EuiTextColor from './eui-text-color';
       {{yield}}
     {{/if}}
   </div>
-</template>
+</template>;
+
+export default EuiTextComponent;
+
+declare module '@glint/environment-ember-loose/registry' {
+  export default interface Registry {
+    EuiText: typeof EuiTextComponent;
+  }
+}

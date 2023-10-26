@@ -1,14 +1,17 @@
-import argOrDefault from '../helpers/arg-or-default';
-import { and, or, eq } from 'ember-truth-helpers';
-import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon';
-import EuiLoadingSpinner from './eui-loading-spinner';
-import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button';
 import { on } from '@ember/modifier';
 
-import { IconType } from './eui-icon';
-import { DistributiveOmit } from './common';
-import { EuiFormControlLayoutCustomIconArgs } from './eui-form-control-layout-custom-icon';
-import { EuiFormControlLayoutClearButtonArgs } from './eui-form-control-layout-clear-button';
+import { and, eq, or } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button';
+import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon';
+import EuiLoadingSpinner from './eui-loading-spinner';
+
+import type { DistributiveOmit } from './common';
+import type { EuiFormControlLayoutClearButtonArgs } from './eui-form-control-layout-clear-button';
+import type { EuiFormControlLayoutCustomIconArgs } from './eui-form-control-layout-custom-icon';
+import type { IconType } from './eui-icon';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export const ICON_SIDES: ['left', 'right'] = ['left', 'right'];
 
@@ -23,41 +26,50 @@ type IconShape = DistributiveOmit<
 
 export interface EuiFormControlLayoutIconsArgs {
   icon?: IconType | IconShape;
+  iconSide?: (typeof ICON_SIDES)[number];
   clear?: EuiFormControlLayoutClearButtonArgs;
   isLoading?: boolean;
   compressed?: boolean;
 }
 
-<template>
-  {{#let (argOrDefault @iconSide "left") as |iconSide|}}
-    {{#if (and @icon (eq iconSide "left"))}}
-      <div class="euiFormControlLayoutIcons">
-        <EuiFormControlLayoutCustomIcon
-          @size={{if @compressed "s" "m"}}
-          @type={{@icon}}
-          ...attributes
-        />
-      </div>
-    {{/if}}
-    {{#if (or @clear @isLoading (and @icon (eq iconSide "right")))}}
-      <div class="euiFormControlLayoutIcons euiFormControlLayoutIcons--right">
-        {{#if @clear}}
-          <EuiFormControlLayoutClearButton
-            @size={{if @compressed "s" "m"}}
-            {{on "click" @clear}}
-          />
-        {{/if}}
-        {{#if @isLoading}}
-          <EuiLoadingSpinner @size="m" />
-        {{/if}}
-        {{#if (and @icon (eq iconSide "right"))}}
+export interface EuiFormControlLayoutIconsSignature {
+  Element: typeof EuiFormControlLayoutCustomIcon,
+  Args: EuiFormControlLayoutIconsArgs;
+}
+
+const EuiFormControlLayoutIcons: TemplateOnlyComponent<EuiFormControlLayoutIconsSignature> =
+  <template>
+    {{#let (argOrDefault @iconSide "left") as |iconSide|}}
+      {{#if (and @icon (eq iconSide "left"))}}
+        <div class="euiFormControlLayoutIcons">
           <EuiFormControlLayoutCustomIcon
             @size={{if @compressed "s" "m"}}
             @type={{@icon}}
             ...attributes
           />
-        {{/if}}
-      </div>
-    {{/if}}
-  {{/let}}
-</template>
+        </div>
+      {{/if}}
+      {{#if (or @clear @isLoading (and @icon (eq iconSide "right")))}}
+        <div class="euiFormControlLayoutIcons euiFormControlLayoutIcons--right">
+          {{#if @clear}}
+            <EuiFormControlLayoutClearButton
+              @size={{if @compressed "s" "m"}}
+              {{on "click" @clear}}
+            />
+          {{/if}}
+          {{#if @isLoading}}
+            <EuiLoadingSpinner @size="m" />
+          {{/if}}
+          {{#if (and @icon (eq iconSide "right"))}}
+            <EuiFormControlLayoutCustomIcon
+              @size={{if @compressed "s" "m"}}
+              @type={{@icon}}
+              ...attributes
+            />
+          {{/if}}
+        </div>
+      {{/if}}
+    {{/let}}
+  </template>;
+
+export default EuiFormControlLayoutIcons;

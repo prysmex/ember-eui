@@ -1,15 +1,23 @@
 import Component from '@glimmer/component';
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import { keysOf, CommonArgs } from './common';
+import { guidFor } from '@ember/object/internals';
+import { htmlSafe } from '@ember/template';
 import {
-  sizeToClassNameMap,
   colorToClassMap,
   typeToPathMap
 } from '@ember-eui/core/utils/css-mappings/eui-icon';
-import { guidFor } from '@ember/object/internals';
-import { htmlSafe } from '@ember/template';
+import { ensureSafeComponent } from '@embroider/util';
+
+// @ts-expect-error
+import svgJar from 'ember-svg-jar/helpers/svg-jar';
 import { and, not } from 'ember-truth-helpers';
+
+import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import { keysOf } from './common';
+
+import type { CommonArgs } from './common';
+import type { sizeToClassNameMap } from '@ember-eui/core/utils/css-mappings/eui-icon';
+import type { ComponentLike } from '@glint/template';
 
 let config = {};
 
@@ -73,7 +81,22 @@ export type EuiIconArgs = CommonArgs & {
    * Callback when the icon has been loaded & rendered
    */
   onIconLoad?: () => void;
+
+  /**
+   * When you want to render a component instead of an SVG
+   */
+  useComponent?: boolean;
+
+  /**
+   * Classes to pass to the icon
+   */
+  iconClasses?: string;
 };
+
+export interface EuiIconSignature {
+  Element: HTMLImageElement | Element;
+  Args: EuiIconArgs;
+}
 
 function isEuiIconType(x: EuiIconArgs['type']): x is EuiIconType {
   return (
@@ -82,11 +105,12 @@ function isEuiIconType(x: EuiIconArgs['type']): x is EuiIconType {
   );
 }
 
-export default class EuiIcon extends Component<EuiIconArgs> {
+export default class EuiIcon extends Component<EuiIconSignature> {
   @argOrDefaultDecorator('m') size!: IconSize;
 
   get useImage(): boolean {
     const { type } = this.args;
+
     return typeof type === 'string' && !isEuiIconType(type) && !this.useSvg;
   }
 
@@ -99,7 +123,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     );
   }
 
-  get icon(): IconType | void {
+  get icon(): IconType | ComponentLike | undefined {
     const { type } = this.args;
 
     if (type === null) {
@@ -111,7 +135,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
       return this.getEuiIconSvgPath(type);
     }
 
-    return type;
+    return ensureSafeComponent(type, this);
   }
 
   get emptyIcon(): string {
@@ -124,6 +148,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
   get isAppIcon(): string | boolean {
     const { type } = this.args;
+
     return (
       type &&
       typeof type === 'string' &&
@@ -137,21 +162,25 @@ export default class EuiIcon extends Component<EuiIconArgs> {
 
   get focusable(): string {
     const { tabIndex } = this.args;
+
     return tabIndex == null || tabIndex === -1 ? 'false' : 'true';
   }
 
   get optionalCustomStyles(): ReturnType<typeof htmlSafe> | string {
     const { color } = this.args;
+
     if (color) {
       if (!isNamedColor(color)) {
         return htmlSafe(`fill: ${color}`);
       }
     }
+
     return '';
   }
 
   get optionalColorClass(): NamedColor | string {
     const { color } = this.args;
+
     if (color) {
       if (isNamedColor(color)) {
         return colorToClassMap[color];
@@ -159,6 +188,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
         return 'euiIcon--customColor';
       }
     }
+
     return '';
   }
 
@@ -182,13 +212,14 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     if (!this.args['aria-label'] && !this.args['aria-labelledby'] && title) {
       titleId = guidFor({});
     }
+
     return titleId;
   }
 
   <template>
-    {{#if @useComponent}}
-      {{! has the shape of a curried component }}
-      {{#let (component (ensure-safe-component this.icon)) as |IconComponent|}}
+    {{#if (and @useComponent this.icon)}}
+      {{! @glint-expect-error }}
+      {{#let (component this.icon) as |IconComponent|}}
         {{!template-lint-disable}}
         <IconComponent
           class={{classNames
@@ -202,7 +233,8 @@ export default class EuiIcon extends Component<EuiIconArgs> {
           aria-hidden={{if this.isAriaHidden "true"}}
           aria-label={{if @aria-label @aria-label this.titleId}}
           aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
-          tabindex={{this.tabIndex}}
+          {{! @glint-expect-error }}
+          tabindex={{@tabIndex}}
           style={{this.optionalCustomStyles}}
           color={{@color}}
           ...attributes
@@ -211,6 +243,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
     {{else}}
       {{#if this.useImage}}
         <img
+          {{! @glint-expect-error }}
           src={{this.icon}}
           class={{classNames
             @iconClasses
@@ -221,11 +254,11 @@ export default class EuiIcon extends Component<EuiIconArgs> {
           }}
           color={{@color}}
           alt={{if @title @title}}
-          tabIndex={{@tabIndex}}
+          @tabIndex={{@tabIndex}}
           ...attributes
         />
       {{else}}
-        {{svg-jar
+        {{svgJar
           this.icon
           class=(classNames
             @iconClasses
@@ -239,7 +272,7 @@ export default class EuiIcon extends Component<EuiIconArgs> {
           aria-hidden=(if this.isAriaHidden "true")
           aria-label=(if @aria-label @aria-label this.titleId)
           aria-labelledby=(if @aria-labelledby @aria-labelledby this.titleId)
-          tabindex=this.tabIndex
+          tabindex=@tabIndex
           style=this.optionalCustomStyles
         }}
       {{/if}}

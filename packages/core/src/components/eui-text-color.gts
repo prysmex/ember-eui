@@ -1,8 +1,22 @@
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
 
-<template>
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+interface Signature {
+  Element: HTMLDivElement | HTMLSpanElement;
+  Args: {
+    color?: string;
+    tagName?: string;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiTextColor: TemplateOnlyComponent<Signature> = <template>
   {{#if (eq @tagName "div")}}
     <div
       class={{classNames
@@ -24,4 +38,12 @@ import { eq } from 'ember-truth-helpers';
       {{yield}}
     </span>
   {{/if}}
-</template>
+</template>;
+
+export default EuiTextColor;
+
+declare module '@glint/environment-ember-loose/registry' {
+  export default interface Registry {
+    EuiTextColor: typeof EuiTextColor;
+  }
+}

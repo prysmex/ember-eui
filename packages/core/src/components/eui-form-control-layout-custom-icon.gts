@@ -1,11 +1,14 @@
-import EuiIcon from './eui-icon';
 import { on } from '@ember/modifier';
 
-import { EuiIconArgs, IconType } from './eui-icon';
-import { CommonArgs, ExclusiveUnion } from './common';
+import EuiIcon from './eui-icon';
+
+import type { CommonArgs, ExclusiveUnion } from './common';
+import type { EuiIconArgs, IconType } from './eui-icon';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFormControlLayoutCustomIconArgs = CommonArgs &
   ExclusiveUnion<Omit<HTMLButtonElement, 'type'>, HTMLSpanElement> & {
+    onClick?: (event: MouseEvent) => void;
     type: IconType;
     size?: EuiIconArgs['size'];
     iconRef?:
@@ -13,29 +16,37 @@ export type EuiFormControlLayoutCustomIconArgs = CommonArgs &
       | ((el: HTMLButtonElement | HTMLSpanElement | null) => void);
   };
 
-<template>
-  {{#if @onClick}}
-    <button
-      type="button"
-      class="euiFormControlLayoutCustomIcon euiFormControlLayoutCustomIcon--clickable"
-      ...attributes
-      {{on "click" @onClick}}
-    >
-      <EuiIcon
-        @iconClasses="euiFormControlLayoutCustomIcon__icon"
-        @type={{@type}}
-        @size={{@size}}
-        aria-hidden="true"
-      />
-    </button>
-  {{else}}
-    <span class="euiFormControlLayoutCustomIcon" ...attributes>
-      <EuiIcon
-        @iconClasses="euiFormControlLayoutCustomIcon__icon"
-        @type={{@type}}
-        @size={{@size}}
-        aria-hidden="true"
-      />
-    </span>
-  {{/if}}
-</template>
+interface EuiFormControlLayoutCustomIconSignature {
+  Element: HTMLButtonElement | HTMLSpanElement;
+  Args: EuiFormControlLayoutCustomIconArgs;
+}
+
+const EuiFormControlLayoutCustomIcon: TemplateOnlyComponent<EuiFormControlLayoutCustomIconSignature> =
+  <template>
+    {{#if @onClick}}
+      <button
+        type="button"
+        class="euiFormControlLayoutCustomIcon euiFormControlLayoutCustomIcon--clickable"
+        ...attributes
+        {{on "click" @onClick}}
+      >
+        <EuiIcon
+          @iconClasses="euiFormControlLayoutCustomIcon__icon"
+          @type={{@type}}
+          @size={{@size}}
+          aria-hidden="true"
+        />
+      </button>
+    {{else}}
+      <span class="euiFormControlLayoutCustomIcon" ...attributes>
+        <EuiIcon
+          @iconClasses="euiFormControlLayoutCustomIcon__icon"
+          @type={{@type}}
+          @size={{@size}}
+          aria-hidden="true"
+        />
+      </span>
+    {{/if}}
+  </template>;
+
+export default EuiFormControlLayoutCustomIcon;

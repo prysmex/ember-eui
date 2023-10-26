@@ -1,6 +1,5 @@
 import { helper } from '@ember/component/helper';
 import { assert } from '@ember/debug';
-
 import { get } from '@ember/object';
 
 let config = {};
@@ -12,15 +11,18 @@ let config = {};
  * @property {unknown} 0 - value to be returned if it's defined
  * @property {unknown} 1 - default value to be returned if value is undefined
  */
-export function argOrDefault(
-  [value, defaultValue]: [unknown, unknown],
+export function argOrDefault<V, DV>(
+  [value, defaultValue]: [V, DV],
   { configKey }: { configKey?: string }
-): unknown {
+): V | DV {
   assert('`defaultValue` must be provided', defaultValue !== undefined);
-  let configValue;
+
+  let configValue: DV | undefined;
+
   if (configKey) {
-    configValue = get(config, configKey);
+    configValue = get(config, configKey) as DV;
   }
+
   return value !== undefined ? value : configValue || defaultValue;
 }
 

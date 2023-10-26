@@ -16,6 +16,7 @@ export interface CommonArgs {
   'aria-label'?: string;
   'data-test-subj'?: string;
 }
+
 /**
  * Wraps Object.keys with proper typescript definition of the resulting array
  */

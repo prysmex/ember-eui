@@ -1,10 +1,13 @@
+import { and, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import type Component from '@glimmer/component';
-import { and, or } from 'ember-truth-helpers';
-import type { EuiFormControlLayoutIconsArgs } from './eui-form-control-layout-icons';
 import EuiFormControlLayoutIcons from './eui-form-control-layout-icons';
+
 import type { CommonArgs } from '../components/common';
+import type { EuiFormControlLayoutIconsArgs } from './eui-form-control-layout-icons';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type Component from '@glimmer/component';
 
 type StringOrComponent = string | Component;
 type PrependAppendType = StringOrComponent | StringOrComponent[];
@@ -36,43 +39,68 @@ export type EuiFormControlLayoutArgs = CommonArgs &
     inputId?: string;
   };
 
-<template>
-  <div
-    class={{classNames
-      (if @fullWidth "euiFormControlLayout--fullWidth")
-      (if @compressed "euiFormControlLayout--compressed")
-      (if @readOnly "euiFormControlLayout--readOnly")
-      (if
-        (and
-          (argOrDefault @useGroup true)
-          (or (has-block "append") (has-block "prepend"))
+interface EuiFormControlLayoutSignature {
+  Element: HTMLDivElement;
+  Args: {
+    fullWidth?: boolean;
+    compressed?: boolean;
+    readOnly?: boolean;
+    useGroup?: boolean;
+    disabled?: boolean;
+    icon?: EuiFormControlLayoutIconsArgs['icon'];
+    iconSide?: EuiFormControlLayoutIconsArgs['iconSide'];
+    clear?: EuiFormControlLayoutIconsArgs['clear'];
+    isLoading?: boolean;
+    inputId?: string;
+  };
+  Blocks: {
+    prepend: [shoutedMessage: string];
+    field: [];
+    default: [];
+    append: [shoutedMessage: string];
+  };
+}
+
+const EuiFormControlLayout: TemplateOnlyComponent<EuiFormControlLayoutSignature> =
+  <template>
+    <div
+      class={{classNames
+        (if @fullWidth "euiFormControlLayout--fullWidth")
+        (if @compressed "euiFormControlLayout--compressed")
+        (if @readOnly "euiFormControlLayout--readOnly")
+        (if
+          (and
+            (argOrDefault @useGroup true)
+            (or (has-block "append") (has-block "prepend"))
+          )
+          "euiFormControlLayout--group"
         )
-        "euiFormControlLayout--group"
-      )
-      (if @disabled "euiFormControlLayout--isDisabled")
-      "euiFormControlLayout"
-    }}
-    ...attributes
-  >
-    {{#if (has-block "prepend")}}
-      {{yield "euiFormControlLayout__prepend" to="prepend"}}
-    {{/if}}
-    <div class="euiFormControlLayout__childrenWrapper">
-      {{#if (has-block "field")}}
-        {{yield to="field"}}
-      {{else}}
-        {{yield}}
+        (if @disabled "euiFormControlLayout--isDisabled")
+        "euiFormControlLayout"
+      }}
+      ...attributes
+    >
+      {{#if (has-block "prepend")}}
+        {{yield "euiFormControlLayout__prepend" to="prepend"}}
       {{/if}}
-      <EuiFormControlLayoutIcons
-        @icon={{@icon}}
-        @iconSide={{@iconSide}}
-        @clear={{@clear}}
-        @compressed={{@compressed}}
-        @isLoading={{@isLoading}}
-      />
+      <div class="euiFormControlLayout__childrenWrapper">
+        {{#if (has-block "field")}}
+          {{yield to="field"}}
+        {{else}}
+          {{yield}}
+        {{/if}}
+        <EuiFormControlLayoutIcons
+          @icon={{@icon}}
+          @iconSide={{@iconSide}}
+          @clear={{@clear}}
+          @compressed={{@compressed}}
+          @isLoading={{@isLoading}}
+        />
+      </div>
+      {{#if (has-block "append")}}
+        {{yield "euiFormControlLayout__append" to="append"}}
+      {{/if}}
     </div>
-    {{#if (has-block "append")}}
-      {{yield "euiFormControlLayout__append" to="append"}}
-    {{/if}}
-  </div>
-</template>
+  </template>;
+
+export default EuiFormControlLayout;

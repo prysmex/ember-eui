@@ -1,15 +1,17 @@
-import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
-import EuiComboBoxTriggerInput from 'ember-power-select/components/power-select-multiple/trigger/input';
-import EuiFormControlLayout from '@ember-eui/components/eui-form-control-layout';
-import EuiComboBoxPill from '@ember-eui/components/eui-combo-box/eui-combo-box-pill';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../../helpers/class-names';
-import { or, and, not } from 'ember-truth-helpers';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { optional } from 'ember-composable-helpers';
 import { fn } from '@ember/helper';
 import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
+
+import { optional } from 'ember-composable-helpers';
+import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
+import EuiComboBoxTriggerInput from 'ember-power-select/components/power-select-multiple/trigger/input';
+import { and, not,or } from 'ember-truth-helpers';
+
+import argOrDefault from '../../helpers/arg-or-default';
+import classNames from '../../helpers/class-names';
+import EuiComboBoxPill from '../eui-combo-box-pill';
+import EuiFormControlLayout from '../eui-form-control-layout';
 
 export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipleTrigger {
   <template>

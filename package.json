@@ -6,28 +6,28 @@
     "site"
   ],
   "devDependencies": {
-    "@underline/eslint-config-ember-typescript": "^0.15.1",
-    "@underline/eslint-config-node": "^0.15.0",
-    "lerna": "^4.0.0",
     "@embroider/addon-shim": "^1.8.6",
-    "prettier-plugin-ember-template-tag": "^1.1.0",
+    "@nullvoxpopuli/eslint-configs": "^3.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "@underline/eslint-config-node": "^0.15.0",
+    "eslint": "^8.31.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "lerna": "^4.0.0",
     "prettier": "^3.0.3",
-    "eslint": "^8.31.0"
+    "prettier-plugin-ember-template-tag": "^1.1.0",
+    "typescript": "~5.0.3"
   },
   "scripts": {
     "lint:js": "eslint . --ext .js,.ts,.hbs"
   },
-  "resolutions": {
-    "@embroider/macros": "^1.13.2",
-    "**/@embroider/macros": "^1.13.2",
-    "@embroider/shared-internals": "^2.5.0",
-    "@embroider/util": "^1.12.0",
-    "@embroider/test-setup": "^3.0.2",
-    "**/prismjs": "1.27.0"
-  },
   "volta": {
     "node": "18.0.0",
     "yarn": "1.22.17"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "ember-pikaday-prysmex@4.3.0": "patches/ember-pikaday-prysmex@4.3.0.patch"
+    }
   }
 }

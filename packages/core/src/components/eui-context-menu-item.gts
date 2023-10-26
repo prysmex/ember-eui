@@ -1,12 +1,12 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 import { and, not } from 'ember-truth-helpers';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiLoadingSpinner from '@ember-eui/core/components/eui-loading-spinner';
+import EuiIcon from './eui-icon';
+import EuiLoadingSpinner from './eui-loading-spinner';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 export default class EuiContextMenuItemComponent extends Component {

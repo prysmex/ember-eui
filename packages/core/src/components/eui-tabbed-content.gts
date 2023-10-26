@@ -1,14 +1,14 @@
 import Component from '@glimmer/component';
 import { scheduleOnce } from '@ember/runloop';
 import { tracked } from '@glimmer/tracking';
-import { CommonArgs } from '@ember-eui/core/components/common';
-import EuiTabs from '@ember-eui/core/components/eui-tabs';
-import EuiTab from '@ember-eui/core/components/eui-tab';
+import { CommonArgs } from './common';
+import EuiTabs from './eui-tabs';
+import EuiTab from './eui-tab';
 import { guidFor } from '@ember/object/internals';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import { eq } from 'ember-truth-helpers';
-import findBy from 'ember-composable-helpers/helpers/find-by';
+import { findBy } from 'ember-composable-helpers';
 
 export interface EuiTabbedContentTab {
   id: string;

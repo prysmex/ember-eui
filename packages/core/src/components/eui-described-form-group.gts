@@ -1,9 +1,9 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiFlexGroup from '@ember-eui/core/components/eui-flex-group';
-import EuiFlexItem from '@ember-eui/core/components/eui-flex-item';
-import EuiText from '@ember-eui/core/components/eui-text';
-import EuiTitle from '@ember-eui/core/components/eui-title';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiFlexGroup from './eui-flex-group';
+import EuiFlexItem from './eui-flex-item';
+import EuiText from './eui-text';
+import EuiTitle from './eui-title';
 
 <template>
   <div

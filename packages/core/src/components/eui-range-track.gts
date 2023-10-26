@@ -7,11 +7,11 @@ import { range } from 'lodash-es';
 import { action } from '@ember/object';
 import { htmlSafe } from '@ember/template';
 
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 
 import { and, or, gt } from 'ember-truth-helpers';
-import EuiRangeTicks from '@ember-eui/core/components/eui-range-ticks';
-import EuiRangeLevels from '@ember-eui/core/components/eui-range-levels';
+import EuiRangeTicks from './eui-range-ticks';
+import EuiRangeLevels from './eui-range-levels';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { fn } from '@ember/helper';

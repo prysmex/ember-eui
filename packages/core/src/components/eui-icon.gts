@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
-import { argOrDefaultDecorator } from '@ember-eui/core/helpers/arg-or-default';
-import { keysOf, CommonArgs } from '@ember-eui/core/components/common';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default';
+import { keysOf, CommonArgs } from './common';
 import {
   sizeToClassNameMap,
   colorToClassMap,
@@ -9,7 +9,7 @@ import {
 import { guidFor } from '@ember/object/internals';
 import { htmlSafe } from '@ember/template';
 import { and, not } from 'ember-truth-helpers';
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 
 let config = {};
 

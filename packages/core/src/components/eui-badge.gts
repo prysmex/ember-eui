@@ -1,12 +1,12 @@
 import inlineStyles from '@ember-eui/core/helpers/inline-styles';
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import simpleStyle from '@ember-eui/core/modifiers/simple-style';
 import { and, not, or } from 'ember-truth-helpers';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { hash } from '@ember/helper';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
+import EuiIcon from './eui-icon';
 import { on } from '@ember/modifier';
-import optional from 'ember-composable-helpers/helpers/optional';
+import { optional } from 'ember-composable-helpers';
 
 <template>
   {{#if (and (or @onClick @href) (not @iconType))}}

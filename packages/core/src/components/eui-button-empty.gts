@@ -1,7 +1,7 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { and, not, or, eq } from 'ember-truth-helpers';
-import EuiButtonContent from '@ember-eui/core/components/eui-button-content';
+import EuiButtonContent from './eui-button-content';
 
 <template>
   {{#let

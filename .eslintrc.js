@@ -2,7 +2,6 @@ module.exports = {
   root: true,
   extends: [
     '@underline/eslint-config-ember-typescript',
-
     'plugin:ember/recommended'
   ],
   rules: {

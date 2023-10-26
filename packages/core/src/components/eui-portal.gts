@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { guidFor } from '@ember/object/internals';
-import { keysOf } from '@ember-eui/core/components/common';
+import { keysOf } from './common';
 
 interface InsertPositionsMap {
   [key: string]: string;

@@ -1,9 +1,9 @@
-import classNames from '@ember-eui/core/helpers/class-names';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
 
 import { eq } from 'ember-truth-helpers';
-import EuiStepNumber from '@ember-eui/core/components/eui-step-number';
-import EuiTitle from '@ember-eui/core/components/eui-title';
+import EuiStepNumber from './eui-step-number';
+import EuiTitle from './eui-title';
 
 <template>
   <div

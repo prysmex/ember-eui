@@ -1,11 +1,11 @@
 import { modifier } from 'ember-modifier';
 
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 
-import EuiHeaderSection from '@ember-eui/core/components/eui-header-section';
-import EuiHeaderSectionItem from '@ember-eui/core/components/eui-header-section-item';
-import EuiHeaderBreadcrumbs from '@ember-eui/core/components/eui-header-breadcrumbs';
+import EuiHeaderSection from './eui-header-section';
+import EuiHeaderSectionItem from './eui-header-section-item';
+import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs';
 
 let euiHeaderFixedCounter = 0;
 

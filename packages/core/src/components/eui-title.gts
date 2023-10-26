@@ -1,6 +1,6 @@
-import TextBlock from '@ember-eui/core/components/text-block';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import TextBlock from './text-block';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 
 <template>
   <TextBlock

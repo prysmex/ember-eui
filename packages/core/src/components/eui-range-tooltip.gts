@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 
 export interface EuiRangeTick {

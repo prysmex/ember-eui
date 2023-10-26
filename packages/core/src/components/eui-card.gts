@@ -2,21 +2,21 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { EuiCardSelectProps, euiCardSelectableColor } from '../eui-card-select';
 
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { and, eq, or, not, notEq } from 'ember-truth-helpers';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiPanel from '@ember-eui/core/components/eui-panel';
-import EuiTitle from '@ember-eui/core/components/eui-title';
-import EuiText from '@ember-eui/core/components/eui-text';
-import EuiBetaBadge from '@ember-eui/core/components/eui-beta-badge';
-import EuiCardSelect from '@ember-eui/core/components/eui-card-select';
+import EuiIcon from './eui-icon';
+import EuiPanel from './eui-panel';
+import EuiTitle from './eui-title';
+import EuiText from './eui-text';
+import EuiBetaBadge from './eui-beta-badge';
+import EuiCardSelect from './eui-card-select';
 import { guidFor } from '@ember/object/internals';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import set from 'ember-set-helper/helpers/set';
 import { element } from 'ember-element-helper';
-import optional from 'ember-composable-helpers/helpers/optional';
+import { optional } from 'ember-composable-helpers';
 
 type EuiCardComponentArgs = {
   selectable?: EuiCardSelectProps;

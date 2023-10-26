@@ -1,8 +1,8 @@
-import EuiIcon from '@ember-eui/core/components/eui-icon';
+import EuiIcon from './eui-icon';
 import { on } from '@ember/modifier';
 
-import { EuiIconArgs, IconType } from '@ember-eui/core/components/eui-icon';
-import { CommonArgs, ExclusiveUnion } from '@ember-eui/core/components/common';
+import { EuiIconArgs, IconType } from './eui-icon';
+import { CommonArgs, ExclusiveUnion } from './common';
 
 export type EuiFormControlLayoutCustomIconArgs = CommonArgs &
   ExclusiveUnion<Omit<HTMLButtonElement, 'type'>, HTMLSpanElement> & {

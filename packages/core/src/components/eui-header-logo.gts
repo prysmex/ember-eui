@@ -1,5 +1,5 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
+import argOrDefault from '../helpers/arg-or-default';
+import EuiIcon from './eui-icon';
 
 <template>
   <a class="euiHeaderLogo" href={{@href}} target={{@target}} ...attributes>

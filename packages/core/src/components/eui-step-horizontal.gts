@@ -1,9 +1,9 @@
-import classNames from '@ember-eui/core/helpers/class-names';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
-import EuiStepNumber from '@ember-eui/core/components/eui-step-number';
+import EuiStepNumber from './eui-step-number';
 import { on } from '@ember/modifier';
-import optional from 'ember-composable-helpers/helpers/optional';
+import { optional } from 'ember-composable-helpers';
 
 <template>
   {{#let

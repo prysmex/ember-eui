@@ -1,10 +1,10 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { or, and, eq, not } from 'ember-truth-helpers';
 import classify from 'ember-cli-string-helpers/helpers/classify';
 import { concat } from '@ember/helper';
 import { element } from 'ember-element-helper';
-import EuiButtonContent from '@ember-eui/core/components/eui-button-content';
-import classNames from '@ember-eui/core/helpers/class-names';
+import EuiButtonContent from './eui-button-content';
+import classNames from '../helpers/class-names';
 
 <template>
   {{#let

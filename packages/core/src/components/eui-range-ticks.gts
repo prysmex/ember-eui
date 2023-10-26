@@ -1,10 +1,10 @@
 import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
-import optional from 'ember-composable-helpers/helpers/optional';
+import { optional } from 'ember-composable-helpers';
 import getRangeTick from '@ember-eui/core/helpers/get-range-tick';
 
 export interface EuiRangeTick {

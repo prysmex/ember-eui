@@ -6,14 +6,14 @@ import { findPopoverPosition } from '../../utils/popover';
 import { keys } from '../../utils/keys';
 import { later, cancel, scheduleOnce, next } from '@ember/runloop';
 import { guidFor } from '@ember/object/internals';
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { and, not, or, eq } from 'ember-truth-helpers';
-import argOrDefault,{ argOrDefaultDecorator } from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault,{ argOrDefaultDecorator } from '../helpers/arg-or-default';
 import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-insert';
-import EuiPortal from '@ember-eui/core/components/eui-portal';
-import EuiToolTipPopover from '@ember-eui/core/components/eui-tool-tip-popover';
+import EuiPortal from './eui-portal';
+import EuiToolTipPopover from './eui-tool-tip-popover';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
 

@@ -1,6 +1,6 @@
 import { guidFor } from '@ember/object/internals';
-import EuiFlexGroup from '@ember-eui/core/components/eui-flex-group';
-import EuiFlexItem from '@ember-eui/core/components/eui-flex-item';
+import EuiFlexGroup from './eui-flex-group';
+import EuiFlexItem from './eui-flex-item';
 
 <template>
   {{#let (guidFor) as |ariaId|}}

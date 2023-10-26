@@ -1,11 +1,11 @@
 import { and, not, or } from 'ember-truth-helpers';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { guidFor } from '@ember/object/internals';
 import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import optional from 'ember-composable-helpers/helpers/optional';
-import EuiFormControlLayout from '@ember-eui/core/components/eui-form-control-layout';
+import { optional } from 'ember-composable-helpers';
+import EuiFormControlLayout from './eui-form-control-layout';
 
 <template>
   {{#let

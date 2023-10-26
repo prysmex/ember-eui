@@ -1,8 +1,8 @@
-import classNames from '@ember-eui/core/helpers/class-names';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
 import { and, not } from 'ember-truth-helpers';
-import EuiTextAlign from '@ember-eui/core/components/eui-text-align';
-import EuiTextColor from '@ember-eui/core/components/eui-text-color';
+import EuiTextAlign from './eui-text-align';
+import EuiTextColor from './eui-text-color';
 
 <template>
   <div

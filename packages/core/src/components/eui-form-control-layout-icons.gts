@@ -1,14 +1,14 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { and, or, eq } from 'ember-truth-helpers';
-import EuiFormControlLayoutCustomIcon from '@ember-eui/core/components/eui-form-control-layout-custom-icon';
-import EuiLoadingSpinner from '@ember-eui/core/components/eui-loading-spinner';
-import EuiFormControlLayoutClearButton from '@ember-eui/core/components/eui-form-control-layout-clear-button';
+import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon';
+import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button';
 import { on } from '@ember/modifier';
 
-import { IconType } from '@ember-eui/core/components/eui-icon';
-import { DistributiveOmit } from '@ember-eui/core/components/common';
-import { EuiFormControlLayoutCustomIconArgs } from '@ember-eui/core/components/eui-form-control-layout-custom-icon/types';
-import { EuiFormControlLayoutClearButtonArgs } from '@ember-eui/core/components/eui-form-control-layout-clear-button/types';
+import { IconType } from './eui-icon';
+import { DistributiveOmit } from './common';
+import { EuiFormControlLayoutCustomIconArgs } from './eui-form-control-layout-custom-icon';
+import { EuiFormControlLayoutClearButtonArgs } from './eui-form-control-layout-clear-button';
 
 export const ICON_SIDES: ['left', 'right'] = ['left', 'right'];
 

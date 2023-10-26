@@ -1,5 +1,5 @@
 import { or } from 'ember-truth-helpers';
-import EuiFormLegend from '@ember-eui/core/components/eui-form-legend';
+import EuiFormLegend from './eui-form-legend';
 
 <template>
   <fieldset ...attributes>

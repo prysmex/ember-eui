@@ -3,7 +3,7 @@ import { action, set } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import argOrDefault, {
   argOrDefaultDecorator
-} from '@ember-eui/core/helpers/arg-or-default';
+} from '../helpers/arg-or-default';
 import { paddingMapping } from '@ember-eui/core/utils/css-mappings/eui-accordion';
 import { htmlSafe } from '@ember/template';
 import { CommonArgs } from '@ember-eui/core/common';
@@ -11,10 +11,10 @@ import { CommonArgs } from '@ember-eui/core/common';
 import { element } from 'ember-element-helper';
 import { eq, and, not } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiLoadingSpinner from '@ember-eui/core/components/eui-loading-spinner';
-import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
-import queue from 'ember-composable-helpers/helpers/queue';
+import classNames from '../helpers/class-names';
+import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiButtonIcon from './eui-button-icon';
+import { queue } from 'ember-composable-helpers';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import resizeObserver from '@ember-eui/core/modifiers/resize-observer';

@@ -1,5 +1,5 @@
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiButtonEmpty from '@ember-eui/core/components/eui-button-empty';
+import classNames from '../helpers/class-names';
+import EuiButtonEmpty from './eui-button-empty';
 
 <template>
   <EuiButtonEmpty

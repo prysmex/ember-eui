@@ -1,7 +1,7 @@
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
+import classNames from '../helpers/class-names';
+import EuiIcon from './eui-icon';
 
-import { CommonArgs, keysOf } from '@ember-eui/core/components/common';
+import { CommonArgs, keysOf } from './common';
 
 const sizeToClassNameMap = {
   s: 'euiFormControlLayoutClearButton--small',

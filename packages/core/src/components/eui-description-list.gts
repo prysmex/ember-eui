@@ -1,7 +1,7 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiDescriptionListTitle from '@ember-eui/core/components/eui-description-list-title';
-import EuiDescriptionListDescription from '@ember-eui/core/components/eui-description-list-description';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiDescriptionListTitle from './eui-description-list-title';
+import EuiDescriptionListDescription from './eui-description-list-description';
 
 <template>
   <dl

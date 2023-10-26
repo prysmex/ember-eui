@@ -1,18 +1,18 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { and } from 'ember-truth-helpers';
 import { concat } from '@ember/helper';
 import { guidFor } from '@ember/object/internals';
-import EuiPopover from '@ember-eui/core/components/eui-popover';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
-import EuiBadge from '@ember-eui/core/components/eui-badge';
-import optional from 'ember-composable-helpers/helpers/optional';
+import EuiPopover from './eui-popover';
+import EuiIcon from './eui-icon';
+import EuiButtonIcon from './eui-button-icon';
+import EuiBadge from './eui-badge';
+import { optional } from 'ember-composable-helpers';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 
 import useState from '@ember-eui/core/helpers/use-state';
-import queue from 'ember-composable-helpers/helpers/queue';
+import { queue } from 'ember-composable-helpers';
 
 <template>
   {{#let

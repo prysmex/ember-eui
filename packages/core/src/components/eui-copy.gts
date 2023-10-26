@@ -3,7 +3,7 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { copyToClipboard } from '@ember-eui/core/utils/copy-to-clipboard';
 
-import EuiToolTip from '@ember-eui/core/components/eui-tool-tip';
+import EuiToolTip from './eui-tool-tip';
 
 type EuiCopyArgs = {
   /**

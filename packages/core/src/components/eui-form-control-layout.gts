@@ -1,11 +1,10 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
-import { and, or } from 'ember-truth-helpers';
-import EuiFormControlLayoutIcons from '@ember-eui/core/components/eui-form-control-layout-icons';
-
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import type Component from '@glimmer/component';
-import type { CommonArgs } from '@ember-eui/core/components/common';
-import type { EuiFormControlLayoutIconsArgs } from '@ember-eui/core/components/eui-form-control-layout-icons/types';
+import { and, or } from 'ember-truth-helpers';
+import type { EuiFormControlLayoutIconsArgs } from './eui-form-control-layout-icons';
+import EuiFormControlLayoutIcons from './eui-form-control-layout-icons';
+import type { CommonArgs } from '../components/common';
 
 type StringOrComponent = string | Component;
 type PrependAppendType = StringOrComponent | StringOrComponent[];

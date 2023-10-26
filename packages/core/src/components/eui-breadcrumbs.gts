@@ -4,11 +4,11 @@ import { modifier } from 'ember-modifier';
 import { EuiBreakpointSize, getBreakpoint } from '../../utils/breakpoint';
 import { cached, tracked } from '@glimmer/tracking';
 
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiLink from '@ember-eui/core/components/eui-linnk';
-import EuiInnerText from '@ember-eui/core/components/eui-inner-text';
-import EuiPopover from '@ember-eui/core/components/eui-popover';
+import classNames from '../helpers/class-names';
+import EuiIcon from './eui-icon';
+import EuiLink from './eui-linnk';
+import EuiInnerText from './eui-inner-text';
+import EuiPopover from './eui-popover';
 import useState from '@ember-eui/core/helpers/use-state';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { eq, and, not } from 'ember-truth-helpers';

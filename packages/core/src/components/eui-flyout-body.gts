@@ -1,4 +1,4 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { or } from 'ember-truth-helpers';
 
 <template>

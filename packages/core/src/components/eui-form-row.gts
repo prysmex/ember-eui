@@ -1,9 +1,9 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { and, or, eq, not, gt } from 'ember-truth-helpers';
-import EuiFormLabel from '@ember-eui/core/components/eui-form-label';
-import EuiFormErrorText from '@ember-eui/core/components/eui-form-error-text';
-import EuiFormHelpText from '@ember-eui/core/components/eui-form-help-text';
+import EuiFormLabel from './eui-form-label';
+import EuiFormErrorText from './eui-form-error-text';
+import EuiFormHelpText from './eui-form-help-text';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import isArray from 'ember-truth-helpers/helpers/is-array';

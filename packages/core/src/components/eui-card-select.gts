@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiButtonEmpty from '@ember-eui/core/components/eui-button-empty';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiButtonEmpty from './eui-button-empty';
 
 export type EuiCardSelectProps = {
   /**

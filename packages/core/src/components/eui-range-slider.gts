@@ -1,6 +1,6 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 
-import { CommonArgs } from '@ember-eui/core/components/common';
+import { CommonArgs } from './common';
 
 export type EuiRangeSliderArgs = HTMLInputElement &
   CommonArgs & {

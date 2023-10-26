@@ -1,15 +1,15 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { gte, eq } from 'ember-truth-helpers';
-import EuiPanel from '@ember-eui/core/components/eui-panel';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiTitle from '@ember-eui/core/components/eui-title';
-import EuiTextColor from '@ember-eui/core/components/eui-text-color';
-import EuiSpacer from '@ember-eui/core/components/eui-spacer';
-import EuiText from '@ember-eui/core/components/eui-text';
-import EuiFlexGroup from '@ember-eui/core/components/eui-flex-group';
-import EuiFlexItem from '@ember-eui/core/components/eui-flex-item';
+import EuiPanel from './eui-panel';
+import EuiIcon from './eui-icon';
+import EuiTitle from './eui-title';
+import EuiTextColor from './eui-text-color';
+import EuiSpacer from './eui-spacer';
+import EuiText from './eui-text';
+import EuiFlexGroup from './eui-flex-group';
+import EuiFlexItem from './eui-flex-item';
 import { concat } from '@ember/helper';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 
 <template>
   {{#let (argOrDefault @layout "vertical") as |layout|}}

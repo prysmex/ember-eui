@@ -1,11 +1,11 @@
 import Component from '@glimmer/component';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiShowFor from '@ember-eui/core/components/eui-show-for';
-import EuiHideFor from '@ember-eui/core/components/eui-hide-for';
-import EuiPopover from '@ember-eui/core/components/eui-popover';
-import EuiButtonEmpty from '@ember-eui/core/components/eui-button-empty';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiShowFor from './eui-show-for';
+import EuiHideFor from './eui-hide-for';
+import EuiPopover from './eui-popover';
+import EuiButtonEmpty from './eui-button-empty';
+import EuiIcon from './eui-icon';
 import { on } from '@ember/modifier';
 import set from 'ember-set-helper/helpers/set';
 

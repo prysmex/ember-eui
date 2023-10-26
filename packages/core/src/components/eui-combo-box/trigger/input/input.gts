@@ -1,21 +1,22 @@
-import EmberPowerSelectPowerSelectMultipleTriggerInputComponent from 'ember-power-select/components/power-select-multiple/input';
+import EmberPowerSelectPowerSelectMultipleInputComponent from 'ember-power-select/components/power-select-multiple/input';
 import { action } from '@ember/object';
 import { isBlank } from '@ember/utils';
-
 import { htmlSafe } from '@ember/template';
-
 import { scheduleOnce } from '@ember/runloop';
 
-export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPowerSelectMultipleTriggerInputComponent {
+import { and, not } from 'ember-truth-helpers';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+import { on } from '@ember/modifier';
+
+export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPowerSelectMultipleInputComponent {
   get triggerMultipleInputStyle() {
     scheduleOnce('actions', null, this.args.select.actions.reposition);
 
     let textWidth = 0;
-    // @ts-expect-error
     if (this.inputFont) {
       textWidth = this.textMeasurer.width(
         this.args.select.searchText,
-        // @ts-expect-error
         this.inputFont
       );
     }
@@ -60,4 +61,45 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
       e.stopPropagation();
     }
   }
+
+  <template>
+    {{!template-lint-disable}}
+    {{#if (and this.maybePlaceholder (not @select.searchText))}}
+      <p class="euiComboBoxPlaceholder">
+        {{this.maybePlaceholder}}
+      </p>
+    {{/if}}
+    <div
+      class="euiComboBox__input"
+      style="font-size: 14px; display: inline-block; position: relative;"
+    >
+      <input
+        tabindex="-1"
+        style="opacity: 0px; width:0px; height:0px; position: absolute; top: 40%; border:solid 1px transparent !important; margin:0px !important;"
+        class="fake-input-for-html-form-validity"
+        {{validatableControl @isInvalid}}
+      />
+      <input
+        class="ember-power-select-trigger-multiple-input euiComboBox__input"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        autofocus={{@autoFocus}}
+        spellcheck={{false}}
+        id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
+        value={{@select.searchText}}
+        aria-controls={{@listboxId}}
+        style={{this.triggerMultipleInputStyle}}
+        disabled={{@select.disabled}}
+        tabindex={{@tabindex}}
+        form="power-select-fake-form"
+        {{on "focus" @onFocus}}
+        {{on "blur" @onBlur}}
+        {{on "input" this.handleInput}}
+        {{on "keydown" this.handleKeydown}}
+        {{didInsert this.storeInputStyles}}
+      />
+    </div>
+    {{!template-lint-enable}}
+  </template>
 }

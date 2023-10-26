@@ -1,10 +1,19 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-//@ts-expect-error
 import { tracked, cached } from '@glimmer/tracking';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { isEqual } from '@ember/utils';
 import { isArray } from '@ember/array';
+import PowerSelectMultiple from 'ember-power-select/components/power-select-multiple';
+import EuiComboBoxCreateOption from '@ember-eui/components/eui-combo-box/create-option';
+import EuiComboBoxGroup from '@ember-eui/components/eui-combo-box/group';
+import EuiComboBoxNoMatchesMessage from '@ember-eui/components/eui-combo-box/no-matches-message';
+import EuiComboBoxOptions from '@ember-eui/components/eui-combo-box/options';
+import EuiComboBoxTrigger from '@ember-eui/components/eui-combo-box/trigger';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import { and, not } from 'ember-truth-helpers';
+import { pipe, optional, queue } from 'ember-composable-helpers';
 
 interface PromiseProxy<T> extends Promise<T> {
   content: any;
@@ -28,11 +37,11 @@ interface Sliceable<T> {
   slice(): T[];
 }
 
-const isSliceable = <T>(coll: any): coll is Sliceable<T> => {
+const isSliceable = <T,>(coll: any): coll is Sliceable<T> => {
   return isArray(coll);
 };
 
-export const toPlainArray = <T>(collection: T[] | Sliceable<T>): T[] => {
+export const toPlainArray = <T,>(collection: T[] | Sliceable<T>): T[] => {
   if (isSliceable<T>(collection)) {
     return collection.slice();
   } else {
@@ -50,6 +59,99 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
     options: any[];
     searchText: string;
   } = { results: [], options: [], searchText: this.searchText };
+
+  <template>
+    <PowerSelectMultiple
+      ...attributes
+      @onChange={{pipe this.onChange @onChange}}
+      @onFocus={{@onFocus}}
+      @onBlur={{@onBlur}}
+      @onOpen={{@onOpen}}
+      @onClose={{@onClose}}
+      @placeholderComponent={{@placeholderComponent}}
+      @searchMessage={{@searchMessage}}
+      @noMatchesMessage={{@noMatchesMessage}}
+      @matchTriggerWidth={{@matchTriggerWidth}}
+      @options={{this.options}}
+      @selected={{@selectedOptions}}
+      @closeOnSelect={{@closeOnSelect}}
+      @defaultHighlighted={{@defaultHighlighted}}
+      @searchField={{@searchField}}
+      @searchEnabled={{argOrDefault @searchEnabled true}}
+      @tabindex={{@tabindex}}
+      @initiallyOpened={{and (not @isDisabled) @autoFocus}}
+      @triggerComponent={{component
+        EuiComboBoxTrigger
+        fullWidth=@fullWidth
+        compressed=@compressed
+        isInvalid=@isInvalid
+        singleSelection=@singleSelection
+        onClose=@removeTag
+        onCreateOption=(if @onCreateOption this.onCreateOption)
+        isLoading=@isLoading
+        autoFocus=(and (not @isDisabled) @autoFocus)
+        icon=@triggerIcon
+      }}
+      @matcher={{@matcher}}
+      @initiallyOpen={{@initiallyOpen}}
+      @typeAheadOptionMatcher={{@typeAheadOptionMatcher}}
+      @buildSelection={{this.buildSelection}}
+      @search={{@search}}
+      @onInput={{@onInput}}
+      @onKeydown={{@onKeydown}}
+      @scrollTo={{this.scrollTo}}
+      @registerAPI={{queue this.registerAPI (optional @registerApi)}}
+      @horizontalPosition={{@horizontalPosition}}
+      @destination={{@destination}}
+      @preventScroll={{@preventScroll}}
+      @renderInPlace={{@renderInPlace}}
+      @verticalPosition={{@verticalPosition}}
+      @disabled={{@isDisabled}}
+      @calculatePosition={{@calculatePosition}}
+      @eventType={{@eventType}}
+      @ariaLabel={{@ariaLabel}}
+      @ariaLabelledBy={{@ariaLabelledBy}}
+      @required={{@required}}
+      @triggerRole={{@triggerRole}}
+      @title={{@title}}
+      @triggerId={{@triggerId}}
+      @allowClear={{and (argOrDefault @isClearable true) (not @isDisabled)}}
+      @loadingMessage={{@loadingMessage}}
+      @selectedItemComponent={{@selectedItemComponent}}
+      @beforeOptionsComponent={{@beforeOptionsComponent}}
+      @placeholder={{@placeholder}}
+      @searchPlaceholder={{@searchPlaceholder}}
+      @optionsComponent={{component
+        EuiComboBoxOptions
+        rowHeight=@rowHeight
+        class=@optionsClass
+      }}
+      @extra={{@extra}}
+      @groupComponent={{component EuiComboBoxGroup}}
+      @triggerClass={{classNames
+        "euiComboBox"
+        (if @compressed "euiComboBox--compressed")
+        (if @fullWidth "euiComboBox--fullWidth")
+        (if @isDisabled "euiComboBox-isDisabled")
+        (if @isInvalid "euiComboBox-isInvalid")
+        (if this.select.isOpen "euiComboBox-isOpen")
+      }}
+      @noMatchesMessageComponent={{if
+        @onCreateOption
+        (component
+          EuiComboBoxCreateOption
+          customOptionText=@customOptionText
+          onCreateOption=this.onCreateOption
+          select=this.select
+        )
+        (component EuiComboBoxNoMatchesMessage)
+      }}
+      @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen euiComboBoxOptionsList__rowWrap {{@dropdownClass}}"
+      as |option i|
+    >
+      {{yield option i}}
+    </PowerSelectMultiple>
+  </template>
 
   //This is to allow scrolling between virtualized groups
   @cached

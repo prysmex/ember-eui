@@ -6,9 +6,9 @@ import { throttle } from '@ember/runloop';
 import { action } from '@ember/object';
 import { modifier } from 'ember-modifier';
 
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { and, or, not } from 'ember-truth-helpers';
-import EuiFlyout from '@ember-eui/core/components/eui-flyout';
+import EuiFlyout from './eui-flyout';
 import { guidFor } from '@ember/object/internals';
 
 export type EuiCollapsibleNavArgs = {

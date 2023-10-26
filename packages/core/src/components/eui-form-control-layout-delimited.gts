@@ -1,7 +1,7 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { and, or } from 'ember-truth-helpers';
-import EuiFormControlLayout from '@ember-eui/core/components/eui-form-control-layout';
-import EuiText from '@ember-eui/core/components/eui-text';
+import EuiFormControlLayout from './eui-form-control-layout';
+import EuiText from './eui-text';
 
 <template>
   {{#let

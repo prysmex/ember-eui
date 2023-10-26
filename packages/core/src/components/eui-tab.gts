@@ -1,6 +1,6 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { guidFor } from '@ember/object/internals';
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { and, not } from 'ember-truth-helpers';
 
 <template>

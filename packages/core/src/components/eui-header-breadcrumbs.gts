@@ -1,4 +1,4 @@
-import EuiBreadcrumbs from '@ember-eui/core/components/eui-breadcrumbs';
+import EuiBreadcrumbs from './eui-breadcrumbs';
 
 <template>
   <EuiBreadcrumbs

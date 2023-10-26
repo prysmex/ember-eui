@@ -1,5 +1,5 @@
-import EuiButtonIcon from '@ember-eui/core/components/eui-button-icon';
-import classNames from '@ember-eui/core/helpers/class-names';
+import EuiButtonIcon from './eui-button-icon';
+import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 
 <template>

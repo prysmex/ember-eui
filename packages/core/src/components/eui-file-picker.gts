@@ -5,14 +5,14 @@ import { displayMapping } from '@ember-eui/core/utils/css-mappings/eui-file-pick
 
 import argOrDefault, {
   argOrDefaultDecorator
-} from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+} from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 import { guidFor } from '@ember/object/internals';
-import EuiLoadingSpinner from '@ember-eui/core/components/eui-loading-spinner';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiButtonEmpty from '@ember-eui/core/components/eui-button-empty';
-import EuiProgress from '@ember-eui/core/components/eui-progress';
+import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiIcon from './eui-icon';
+import EuiButtonEmpty from './eui-button-empty';
+import EuiProgress from './eui-progress';
 import { on } from '@ember/modifier';
 import { and, or, eq, not, notEq } from 'ember-truth-helpers';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';

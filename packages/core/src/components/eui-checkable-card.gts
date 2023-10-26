@@ -1,9 +1,9 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 import { eq } from 'ember-truth-helpers';
-import EuiCheckbox from '@ember-eui/core/components/eui-checkbox';
-import EuiRadio from '@ember-eui/core/components/eui-radio';
+import EuiCheckbox from './eui-checkbox';
+import EuiRadio from './eui-radio';
 
 <template>
   {{#let (argOrDefault @id (unique-id)) as |id|}}

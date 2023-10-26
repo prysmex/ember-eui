@@ -1,10 +1,10 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
 import { on } from '@ember/modifier';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiText from '@ember-eui/core/components/eui-text';
-import EuiMarkdownFormat from '@ember-eui/core/components/eui-markdown-format';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import EuiIcon from './eui-icon';
+import EuiText from './eui-text';
+import EuiMarkdownFormat from './eui-markdown-format';
+import argOrDefault from '../helpers/arg-or-default';
 
 <template>
   <div

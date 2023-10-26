@@ -1,9 +1,9 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { and, eq } from 'ember-truth-helpers';
-import EuiButtonGroupButton from '@ember-eui/core/components/eui-button-group-button';
+import EuiButtonGroupButton from './eui-button-group-button';
 import { guidFor } from '@ember/object/internals';
-import { get } from '@ember/object';
+import { get } from '@ember/helper';
 
 <template>
   {{#let

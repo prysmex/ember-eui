@@ -1,12 +1,12 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 import { and, notEq } from 'ember-truth-helpers';
-import EuiAccordion from '@ember-eui/core/components/eui-accordion';
-import EuiFlexGroup from '@ember-eui/core/components/eui-flex-group';
-import EuiFlexItem from '@ember-eui/core/components/eui-flex-item';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiTitle from '@ember-eui/core/components/eui-title';
+import EuiAccordion from './eui-accordion';
+import EuiFlexGroup from './eui-flex-group';
+import EuiFlexItem from './eui-flex-item';
+import EuiIcon from './eui-icon';
+import EuiTitle from './eui-title';
 import { guidFor } from '@ember/object/internals';
 import { element } from 'ember-element-helper';
 

@@ -1,6 +1,6 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { hash } from '@ember/helper';
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 
 const BadgeGroupItem = <template>
   <span class="euiBadgeGroup__item">

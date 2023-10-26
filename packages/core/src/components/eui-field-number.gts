@@ -1,14 +1,14 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { and, or } from 'ember-truth-helpers';
 import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import EuiFormControlLayout from '@ember-eui/core/components/eui-form-control-layout';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import { optional } from 'ember-composable-helpers/components/optional';
+import EuiFormControlLayout from './eui-form-control-layout';
+import argOrDefault from '../helpers/arg-or-default';
+import { optional } from 'ember-composable-helpers';
 import { guidFor } from '@ember/object/internals';
-import { CommonArgs } from '@ember-eui/core/components/common';
-import { EuiFormControlLayoutArgs } from '@ember-eui/core/components/eui-form-control-layout/types';
-import { IconType } from '@ember-eui/core/components/eui-icon';
+import { CommonArgs } from './common';
+import { EuiFormControlLayoutArgs } from './eui-form-control-layout/types';
+import { IconType } from './eui-icon';
 
 export type EuiFieldNumberArgs = Omit<
   HTMLInputElement,

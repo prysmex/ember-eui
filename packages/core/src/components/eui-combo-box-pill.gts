@@ -1,8 +1,8 @@
+import EuiBadge from '@ember-eui/components/eui-combo-box/eui-badge';
 import classNames from '../helpers/class-names';
-import EuiBadge from './eui-badge';
 import { optional } from 'ember-composable-helpers';
-import { fn } from '@ember/helper';
 import { hash } from '@ember/helper';
+import { fn } from '@ember/helper';
 
 <template>
   {{#let

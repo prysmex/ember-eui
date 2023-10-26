@@ -1,4 +1,4 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 
 <template>
   <span

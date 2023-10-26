@@ -1,9 +1,9 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { and, not } from 'ember-truth-helpers';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
+import argOrDefault from '../helpers/arg-or-default';
+import EuiIcon from './eui-icon';
 import { on } from '@ember/modifier';
 import { guidFor } from '@ember/object/internals';
 

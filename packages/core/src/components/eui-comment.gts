@@ -1,7 +1,7 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import { and, eq, not } from 'ember-truth-helpers';
-import EuiCommentTimeline from '@ember-eui/core/components/eui-comment-timeline';
+import EuiCommentTimeline from './eui-comment-timeline';
 
 <template>
   <div

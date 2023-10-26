@@ -3,9 +3,9 @@ import { tracked } from '@glimmer/tracking';
 import set from 'ember-set-helper/helpers/set';
 import { modifier } from 'ember-modifier';
 
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import classNames from '@ember-eui/core/helpers/class-names';
-import EuiPortal from '@ember-eui/core/components/eui-portal';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiPortal from './eui-portal';
 import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
 import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
 

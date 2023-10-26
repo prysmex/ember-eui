@@ -1,8 +1,8 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { eq, or } from 'ember-truth-helpers';
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiToolTip from '@ember-eui/core/components/eui-tool-tip';
+import argOrDefault from '../helpers/arg-or-default';
+import EuiIcon from './eui-icon';
+import EuiToolTip from './eui-tool-tip';
 import { on } from '@ember/modifier';
 
 <template>

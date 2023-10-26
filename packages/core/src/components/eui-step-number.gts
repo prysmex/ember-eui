@@ -1,7 +1,7 @@
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
-import EuiIcon from '@ember-eui/core/components/eui-icon';
-import EuiLoadingSpinner from '@ember-eui/core/components/eui-loading-spinner';
+import EuiIcon from './eui-icon';
+import EuiLoadingSpinner from './eui-loading-spinner';
 import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
 
 <template>

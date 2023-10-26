@@ -1,12 +1,12 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { and, eq } from 'ember-truth-helpers';
-import EuiFieldNumber from '@ember-eui/core/components/eui-field-number';
+import EuiFieldNumber from './eui-field-number';
 import { hash } from '@ember/helper';
 import simpleStyle from '@ember-eui/core/modifiers/simple-style';
 import inlineStyles from '@ember-eui/core/helpers/inline-styles';
 import castTo from '@ember-eui/core/helpers/cast-to';
 
-import { EuiFieldNumberArgs } from '@ember-eui/core/components/eui-field-number';
+import { EuiFieldNumberArgs } from './eui-field-number';
 
 export interface EuiRangeInputArgs
   extends Omit<EuiFieldNumberArgs, 'max' | 'min' | 'value'> {

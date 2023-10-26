@@ -1,6 +1,6 @@
-import argOrDefault from '@ember-eui/core/helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
-import classNames from '@ember-eui/core/helpers/class-names';
+import classNames from '../helpers/class-names';
 
 <template>
   {{#if (eq @tagName "span")}}

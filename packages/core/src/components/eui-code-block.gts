@@ -11,6 +11,20 @@ import { tracked } from '@glimmer/tracking';
 import { scheduleOnce } from '@ember/runloop';
 import { modifier } from 'ember-modifier';
 import { helper } from '@ember/component/helper';
+import EuiInnerText from '@ember-eui/components/eui-inner-text';
+import VirtualizedCodeBlock from '@ember-eui/components/eui-code-block/virtualized';
+import FullScreenDisplay from '@ember-eui/components/eui-code-block/full-screen-display';
+import Controls from '@ember-eui/components/eui-code-block/controls';
+import classNames from '../helpers/class-names';
+import { or, and, eq, not } from 'ember-truth-helpers';
+import onKey from 'ember-keyboard/modifiers/on-key';
+import style from 'ember-style-modifier/modifiers/style';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
+import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
+import mutationObserver from '@ember-eui/core/modifiers/mutation-observer';
+import set from 'ember-set-helper/helpers/set';
+import { hash } from '@ember/helper';
 
 interface LineNumbersConfig {
   start?: number;
@@ -18,8 +32,8 @@ interface LineNumbersConfig {
   show?: boolean;
 }
 
-type PaddingSize = 'none' | 's' | 'm' | 'l';
-type FontSize = 's' | 'm' | 'l';
+export type PaddingSize = 'none' | 's' | 'm' | 'l';
+export type FontSize = 's' | 'm' | 'l';
 
 const fontSizeToRowHeightMap = {
   s: 18,
@@ -73,7 +87,7 @@ interface LineNumbersFinal {
   highlight?: string;
 }
 
-const highlightModifier = modifier(
+const highlightTargetModifier = modifier(
   (
     _e,
     _pos: unknown[],
@@ -157,11 +171,6 @@ const textToCopyHelper = helper(function (
 });
 
 export default class EuiCodeBlockComponent extends Component<EuiCodeBlockArgs> {
-  highlightTargetModifier = highlightModifier;
-  cleanTextHelper = cleanTextHelper;
-  textToCopyHelper = textToCopyHelper;
-  fontSizeToRowHeightMap = fontSizeToRowHeightMap;
-
   //fake element where yield writes to, so we can observe and clone a highlighted version to code and codeFullSceen
   @tracked codeTarget: undefined | HTMLElement;
   //<code> Element for non fullscreen
@@ -287,4 +296,151 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockArgs> {
     };
     scheduleOnce('afterRender', this, render);
   }
+
+  <template>
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
+    {{#in-element this.codeTarget}}
+      {{yield}}
+    {{/in-element}}
+    <EuiInnerText as |setInnerTextRef innerText|>
+      {{#let
+        (classNames
+          "euiCodeBlock"
+          (if
+            (or this.showCopyButton this.showFullScreenButton)
+            "euiCodeBlock--hasControl"
+          )
+          (if
+            (and this.showCopyButton this.showFullScreenButton)
+            "euiCodeBlock--hasBothControls"
+          )
+          (if this.lineNumbersConfig.show "euiCodeBlock--hasLineNumbers")
+        )
+        (classNames
+          "euiCodeBlock__pre"
+          (if
+            (or (eq this.whiteSpace "pre") this.isVirtualized)
+            "euiCodeBlock__pre--whiteSpacePre"
+          )
+          (if
+            (and (eq this.whiteSpace "pre-wrap") (not this.isVirtualized))
+            "euiCodeBlock__pre--whiteSpacePreWrap"
+          )
+          (if this.isVirtualized "euiCodeBlock__pre--isVirtualized")
+        )
+        as |wrapperClasses preClasses|
+      }}
+        <div
+          class={{classNames
+            wrapperClasses
+            (if
+              this.transparentBackground "euiCodeBlock--transparentBackground"
+            )
+            componentName="EuiCodeBlock"
+            fontSize=this.fontSize
+            paddingSize=this.paddingSize
+          }}
+          {{style this.optionalStyles}}
+          {{highlightTargetModifier
+            element=this.codeTarget
+            language=this.language
+            lineNumbersConfig=this.lineNumbersConfig
+            onChange=this.updateCode
+            codeElement=this.code
+            codeFullScreenElement=this.codeFullScreen
+          }}
+        >
+          {{#if this.isVirtualized}}
+            {{!virtualized}}
+            <VirtualizedCodeBlock
+              class={{preClasses}}
+              tabindex="0"
+              {{onKey "Escape" this.closeFullScreen}}
+              @language={{this.language}}
+              @data={{this.data.data}}
+              @rowHeight={{this.rowHeight}}
+              @overflowHeight={{@overflowHeight}}
+            />
+          {{else}}
+            {{!template-lint-disable}}
+            <pre
+              class={{preClasses}}
+              {{style this.optionalStyles}}
+              tabindex={{this.tabIndex}}
+              {{didInsert (set this "wrapperRef")}}
+              {{resizeObserver onResize=this.doesOverflow}}
+              {{mutationObserver
+                onMutation=this.doesOverflow
+                observerOptions=(hash subtree=true childList=true)
+              }}
+              {{didInsert setInnerTextRef}}
+            ><code
+                class="euiCodeBlock__code"
+                data-code-language={{this.language}}
+                {{didInsert (set this "code")}}
+                ...attributes
+              ></code></pre>
+
+          {{/if}}
+
+          <Controls
+            @isFullScreen={{this.isFullScreen}}
+            @showFullScreenButton={{this.showFullScreenButton}}
+            @toggleFullScreen={{this.toggleFullScreen}}
+            @showCopyButton={{this.showCopyButton}}
+            @textToCopy={{textToCopyHelper
+              isVirtualized=this.isVirtualized
+              innerText=(cleanTextHelper innerText)
+              element=this.data.element
+            }}
+          />
+
+          {{#if this.isFullScreen}}
+            <FullScreenDisplay class={{wrapperClasses}}>
+              {{#if this.isVirtualized}}
+                <VirtualizedCodeBlock
+                  class={{preClasses}}
+                  tabindex="0"
+                  {{onKey "Escape" this.closeFullScreen}}
+                  @language={{this.language}}
+                  @data={{this.data.data}}
+                  @rowHeight={{fontSizeToRowHeightMap.l}}
+                  @overflowHeight={{@overflowHeight}}
+                />
+              {{else}}
+                <pre
+                  class={{preClasses}}
+                  tabindex="0"
+                  {{onKey "Escape" this.closeFullScreen}}
+                ><code
+                    class="euiCodeBlock__code"
+                    data-code-language={{this.language}}
+                    {{didInsert (set this "codeFullScreen")}}
+                  ></code></pre>
+              {{/if}}
+              <Controls
+                @isFullScreen={{this.isFullScreen}}
+                @showFullScreenButton={{this.showFullScreenButton}}
+                @showCopyButton={{this.showCopyButton}}
+                @toggleFullScreen={{this.toggleFullScreen}}
+                @textToCopy={{textToCopyHelper
+                  isVirtualized=this.isVirtualized
+                  innerText=(cleanTextHelper innerText)
+                  element=this.data.element
+                }}
+              />
+            </FullScreenDisplay>
+          {{/if}}
+        </div>
+      {{/let}}
+    </EuiInnerText>
+  </template>
 }

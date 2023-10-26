@@ -6,27 +6,27 @@ import { isWithinRange } from '../../utils/number';
 
 import { EuiRangeInputArgs } from '../eui-range-input/types';
 import { EuiRangeSliderArgs } from '../eui-range-slider/types';
-import { EuiFormControlLayoutArgs } from '@ember-eui/core/components/eui-form-control-layout';
-import { EuiRangeArgs } from '@ember-eui/core/components/eui-range';
-import { EuiRangeLevel } from '@ember-eui/core/components/eui-range-levels';
-import { EuiRangeTick } from '@ember-eui/core/components/eui-range-ticks';
+import { EuiFormControlLayoutArgs } from './eui-form-control-layout';
+import { EuiRangeArgs } from './eui-range';
+import { EuiRangeLevel } from './eui-range-levels';
+import { EuiRangeTick } from './eui-range-ticks';
 import argOrDefault, {
   argOrDefaultDecorator
-} from '@ember-eui/core/helpers/arg-or-default';
+} from '../helpers/arg-or-default';
 import { later } from '@ember/runloop';
 import { keys } from '@ember-eui/core/utils/keys';
 import { EUI_THUMB_SIZE } from '@ember-eui/core/utils/range';
 
-import EuiInputPopover from '@ember-eui/core/components/eui-input-popover';
-import EuiRangeWrapper from '@ember-eui/core/components/eui-range-wrapper';
-import EuiRangeInput from '@ember-eui/core/components/eui-range-input';
-import EuiRangeLabel from '@ember-eui/core/components/eui-range-label';
-import EuiRangeTrack from '@ember-eui/core/components/eui-range-track';
-import EuiRangeHighlight from '@ember-eui/core/components/eui-range-highlight';
-import EuiFormControlLayoutDelimited from '@ember-eui/core/components/eui-form-control-layout-delimited';
-import EuiRangeSlider from '@ember-eui/core/components/eui-range-slider';
-import EuiRangeThumb from '@ember-eui/core/components/eui-range-thumb';
-import optional from 'ember-composable-helpers/helpers/optional';
+import EuiInputPopover from './eui-input-popover';
+import EuiRangeWrapper from './eui-range-wrapper';
+import EuiRangeInput from './eui-range-input';
+import EuiRangeLabel from './eui-range-label';
+import EuiRangeTrack from './eui-range-track';
+import EuiRangeHighlight from './eui-range-highlight';
+import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited';
+import EuiRangeSlider from './eui-range-slider';
+import EuiRangeThumb from './eui-range-thumb';
+import { optional } from 'ember-composable-helpers';
 import { on } from '@ember/modifier';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { fn } from '@ember/helper';

@@ -1,39 +1,38 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
-import { isWithinRange } from '../../utils/number';
-
-import { EuiRangeInputArgs } from '../eui-range-input/types';
-import { EuiRangeSliderArgs } from '../eui-range-slider/types';
-import { EuiFormControlLayoutArgs } from './eui-form-control-layout';
-import { EuiRangeArgs } from './eui-range';
-import { EuiRangeLevel } from './eui-range-levels';
-import { EuiRangeTick } from './eui-range-ticks';
-import argOrDefault, {
-  argOrDefaultDecorator
-} from '../helpers/arg-or-default';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { later } from '@ember/runloop';
-import { keys } from '@ember-eui/core/utils/keys';
-import { EUI_THUMB_SIZE } from '@ember-eui/core/utils/range';
 
+import optional from 'ember-composable-helpers/helpers/optional';
+import onKey from 'ember-keyboard/modifiers/on-key';
+import { and, eq, not, or } from 'ember-truth-helpers';
+
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
+import castTo from '../helpers/cast-to';
+import simpleStyle from '../modifiers/simple-style';
+import { keys } from '../utils/keys';
+import { isWithinRange } from '../utils/number';
+import { EUI_THUMB_SIZE } from '../utils/range';
+import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited';
 import EuiInputPopover from './eui-input-popover';
-import EuiRangeWrapper from './eui-range-wrapper';
+import EuiRangeHighlight from './eui-range-highlight';
 import EuiRangeInput from './eui-range-input';
 import EuiRangeLabel from './eui-range-label';
-import EuiRangeTrack from './eui-range-track';
-import EuiRangeHighlight from './eui-range-highlight';
-import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited';
 import EuiRangeSlider from './eui-range-slider';
 import EuiRangeThumb from './eui-range-thumb';
-import { optional } from 'ember-composable-helpers';
-import { on } from '@ember/modifier';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import { fn } from '@ember/helper';
-import { and, or, eq, not } from 'ember-truth-helpers';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import simpleStyle from '@ember-eui/core/modifiers/simple-style';
-import castTo from '@ember-eui/core/helpers/cast-to';
+import EuiRangeTrack from './eui-range-track';
+import EuiRangeWrapper from './eui-range-wrapper';
+
+import type { EuiRangeInputArgs } from '../eui-range-input/types';
+import type { EuiRangeSliderArgs } from '../eui-range-slider/types';
+import type { EuiFormControlLayoutArgs } from './eui-form-control-layout';
+import type { EuiRangeArgs } from './eui-range';
+import type { EuiRangeLevel } from './eui-range-levels';
+import type { EuiRangeTick } from './eui-range-ticks';
 
 type ValueMember = number | string;
 

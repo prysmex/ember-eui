@@ -1,12 +1,14 @@
-import { helper } from '@ember/component/helper';
-import { RefractorNode } from 'refractor';
 import Component from '@glimmer/component';
+import { helper } from '@ember/component/helper';
+import { concat } from '@ember/helper';
+
+import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection';
+import style from 'ember-style-modifier/modifiers/style';
+import { RefractorNode } from 'refractor';
+
 import { getHtmlContent } from '../../utils/code/utils';
 import EuiAutoSizer from '../eui-auto-sizer';
-import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection';
-import { guidFor } from '@ember/object/internals';
-import style from 'ember-style-modifier/modifiers/style';
-import { concat } from '@ember/helper';
+import uniqueId from '../helpers/unique-id';
 
 export interface VirtualizedCodeBlockSignature<T> {
   // We have a `<table>` as our root element
@@ -48,7 +50,7 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
-    {{#let (guidFor) as |theID|}}
+    {{#let (uniqueId) as |theID|}}
       <EuiAutoSizer as |styles|>
         <pre
           {{style styles}}

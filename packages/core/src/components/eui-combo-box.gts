@@ -1,22 +1,23 @@
 import Component from '@glimmer/component';
-//@ts-expect-error
 import { cached, tracked } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 import { action } from '@ember/object';
 import { isEqual } from '@ember/utils';
-import EuiComboBoxCreateOption from './eui-combo-box/create-option';
-import EuiComboBoxGroup from './eui-combo-box/group';
-import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message';
-import EuiComboBoxOptions from './eui-combo-box/options';
-import EuiComboBoxTrigger from './eui-combo-box/trigger';
 
-import { optional, pipe, queue } from 'ember-composable-helpers';
+import optional from 'ember-composable-helpers/helpers/optional';
+import  pipe from 'ember-composable-helpers/helpers/pipe';
+import queue from 'ember-composable-helpers/helpers/queue';
 import PowerSelectMultiple from 'ember-power-select/components/power-select-multiple';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, not } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import EuiComboBoxCreateOption from './eui-combo-box/create-option';
+import EuiComboBoxGroup from './eui-combo-box/group';
+import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message';
+import EuiComboBoxOptions from './eui-combo-box/options';
+import EuiComboBoxTrigger from './eui-combo-box/trigger';
 
 interface PromiseProxy<T> extends Promise<T> {
   content: any;

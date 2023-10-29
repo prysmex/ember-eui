@@ -1,14 +1,17 @@
-import classNames from '../helpers/class-names';
-import { and, or } from 'ember-truth-helpers';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import EuiFormControlLayout from './eui-form-control-layout';
+import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+import { and, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
-import { optional } from 'ember-composable-helpers';
-import { guidFor } from '@ember/object/internals';
-import { CommonArgs } from './common';
-import { EuiFormControlLayoutArgs } from './eui-form-control-layout/types';
-import { IconType } from './eui-icon';
+import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
+import EuiFormControlLayout from './eui-form-control-layout';
+
+import type { CommonArgs } from './common';
+import type { EuiFormControlLayoutArgs } from './eui-form-control-layout/types';
+import type { IconType } from './eui-icon';
 
 export type EuiFieldNumberArgs = Omit<
   HTMLInputElement,
@@ -58,7 +61,7 @@ export type EuiFieldNumberArgs = Omit<
   {{#let
     (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
     (and (argOrDefault @isAppendProvided true) (has-block "append"))
-    (argOrDefault @id (guidFor))
+    (argOrDefault @id (uniqueId))
     as |hasPrepend hasAppend inputId|
   }}
     {{#let

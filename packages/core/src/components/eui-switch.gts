@@ -1,11 +1,13 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import classNames from '../helpers/class-names';
-import { and, not } from 'ember-truth-helpers';
-import argOrDefault from '../helpers/arg-or-default';
-import EuiIcon from './eui-icon';
 import { on } from '@ember/modifier';
-import { guidFor } from '@ember/object/internals';
+import { action } from '@ember/object';
+
+import { and, not } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
+import EuiIcon from './eui-icon';
 
 type SwitchArgs = {
   /**
@@ -39,8 +41,8 @@ export default class EuiSwitch extends Component<SwitchArgs> {
     {{#let
       (argOrDefault @type "button")
       (argOrDefault @showLabel true)
-      (argOrDefault @id (guidFor))
-      (guidFor)
+      (argOrDefault @id (uniqueId))
+      (uniqueId)
       (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
       as |type showLabel switchId labelId hasLabelBlock|
     }}

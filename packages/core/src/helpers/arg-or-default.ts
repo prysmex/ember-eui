@@ -8,11 +8,11 @@ let config = {};
  * Helper that returns a default value if the passed argument is undefined
  *
  * @param {array} param
- * @property {unknown} 0 - value to be returned if it's defined
- * @property {unknown} 1 - default value to be returned if value is undefined
+ * @property {V} 0 - value to be returned if it's defined
+ * @property {DV} 1 - default value to be returned if value is undefined
  */
 export function argOrDefault<V, DV>(
-  [value, defaultValue]: [V, DV],
+  [value, defaultValue]: [V | undefined, DV],
   { configKey }: { configKey?: string }
 ): V | DV {
   assert('`defaultValue` must be provided', defaultValue !== undefined);
@@ -20,10 +20,18 @@ export function argOrDefault<V, DV>(
   let configValue: DV | undefined;
 
   if (configKey) {
-    configValue = get(config, configKey) as DV;
+    configValue = get(config, configKey) as unknown as DV;
   }
 
-  return value !== undefined ? value : configValue || defaultValue;
+  if (value !== undefined) {
+    return value;
+  }
+
+  if (configValue !== undefined) {
+    return configValue;
+  }
+
+  return defaultValue!;
 }
 
 //eslint-disable-next-line

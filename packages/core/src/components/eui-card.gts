@@ -1,22 +1,25 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { EuiCardSelectProps, euiCardSelectableColor } from '../eui-card-select';
-
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import { and, eq, or, not, notEq } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon';
-import EuiPanel from './eui-panel';
-import EuiTitle from './eui-title';
-import EuiText from './eui-text';
-import EuiBetaBadge from './eui-beta-badge';
-import EuiCardSelect from './eui-card-select';
-import { guidFor } from '@ember/object/internals';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import set from 'ember-set-helper/helpers/set';
+
+import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
-import { optional } from 'ember-composable-helpers';
+import set from 'ember-set-helper/helpers/set';
+import { and, eq, not, notEq, or } from 'ember-truth-helpers';
+
+import { euiCardSelectableColor } from '../eui-card-select';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
+import EuiBetaBadge from './eui-beta-badge';
+import EuiCardSelect from './eui-card-select';
+import EuiIcon from './eui-icon';
+import EuiPanel from './eui-panel';
+import EuiText from './eui-text';
+import EuiTitle from './eui-title';
+
+import type { EuiCardSelectProps } from '../eui-card-select';
 
 type EuiCardComponentArgs = {
   selectable?: EuiCardSelectProps;
@@ -47,6 +50,7 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
 
   get selectableColorClass() {
     const selectable = this.args.selectable;
+
     return selectable
       ? `euiCard--isSelectable--${euiCardSelectableColor(
           selectable.color,
@@ -69,7 +73,7 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
 
   <template>
     {{#let
-      (if @selectable (guidFor))
+      (if @selectable (uniqueId))
       (and
         (not @isDisabled)
         (or @onClick @href (and @selectable (not @selectable.isDisabled)))

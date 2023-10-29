@@ -7,19 +7,19 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
 import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
 
-import { queue } from 'ember-composable-helpers';
+import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
 import { and, eq, not } from 'ember-truth-helpers';
 
-import argOrDefault, {
-  argOrDefaultDecorator
-} from '../helpers/arg-or-default';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
 import EuiButtonIcon from './eui-button-icon';
 import EuiLoadingSpinner from './eui-loading-spinner';
 
 import type { CommonArgs } from './common';
 import type { paddingMapping } from '@ember-eui/core/utils/css-mappings/eui-accordion';
+import type { ComponentLike } from '@glint/template';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 
@@ -42,7 +42,9 @@ type AccordionArgs = {
   /**
    * Extra props to pass to the EuiButtonIcon containing the arrow.
    */
-  arrowProps?: 'iconType' | 'onClick' | 'aria-labelledby';
+  arrowProps?: {
+    className?: string;
+  };
   /**
    * Class that will apply to the trigger content for the accordion.
    */
@@ -85,9 +87,26 @@ type AccordionArgs = {
   isLoadingMessage?: boolean | Component;
 
   isOpen?: boolean;
+
+  childClassName?: string;
+  triggerClassName?: string;
+  childContentClassName?: string;
 };
 
-export default class EuiAccordionAccordionComponent extends Component<AccordionArgs> {
+interface Signature {
+  Element: ComponentLike<{
+    Element: Element;
+    Blocks: { default: [] };
+  }>;
+  Args: AccordionArgs;
+  Blocks: {
+    buttonContent: [boolean];
+    content: [];
+    extraAction: [boolean];
+  };
+}
+
+export default class EuiAccordionAccordionComponent extends Component<Signature> {
   // Defaults
   @argOrDefaultDecorator(false) isLoading!: boolean;
   @argOrDefaultDecorator(false) isLoadingMessage!: boolean;
@@ -152,11 +171,13 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
 
   setChildContentHeight = () => {
     const { forceState } = this.args;
+
     requestAnimationFrame(() => {
       const height =
         this.childContent && (forceState ? forceState === 'open' : this._opened)
           ? this.childContent.clientHeight
           : 0;
+
       this.childWrapper &&
         this.childWrapper.setAttribute('style', `height: ${height}px`);
     });
@@ -168,136 +189,150 @@ export default class EuiAccordionAccordionComponent extends Component<AccordionA
       this.args.onToggle?.(this.args.forceState === 'open' ? false : true);
     } else {
       this._opened = !this._opened;
+
       if (this._opened && this.childWrapper) {
         this.childWrapper.focus();
       }
+
       this.args.onToggle?.(this._opened);
     }
   }
 
   <template>
-    {{#let
-      (element (argOrDefault @element "div")) (element this.buttonElement)
-      as |Element ButtonElement|
-    }}
-      <Element
-        class={{classNames
-          (if this.isOpen "euiAccordion-isOpen")
-          componentName="EuiAccordion"
+    {{#let (argOrDefault @element "div") as |tagName|}}
+      {{#if tagName}}
+        {{#let
+          (element tagName) (element this.buttonElement)
+          as |Accordion ButtonElement|
         }}
-        ...attributes
-      >
-        <div
-          class={{classNames "euiAccordion__triggerWrapper" @triggerClassName}}
-        >
-          {{#if (eq this._arrowDisplay "left")}}
-            <EuiButtonIcon
-              @color="text"
-              @iconClasses={{classNames
-                "euiAccordion__iconButton"
-                (if this.isOpen "euiAccordion__iconButton-isOpen")
-                (if
-                  (eq this._arrowDisplay "right")
-                  "euiAccordion__iconButton--right"
-                )
-                (if @arrowProps.className @arrowProps.className)
-              }}
-              @iconType="arrowRight"
-              {{on "click" this.onToggle}}
-              aria-controls={{@id}}
-              aria-expanded={{this.isOpen}}
-              aria-labelledby={{this.buttonId}}
-              tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
-            />
-          {{/if}}
-          <ButtonElement
-            type="button"
-            id={{argOrDefault this.buttonProps.id (unique-id)}}
-            class={{this.buttonClasses}}
-            aria-controls={{@id}}
-            aria-expanded={{this.isOpen}}
-            aria-labelledby={{argOrDefault this.buttonProps.id (unique-id)}}
-            {{on "click" this.onToggle}}
-          >
-            <span class={{this.buttonContentClasses}}>
-              {{yield this.isOpen to="buttonContent"}}
-            </span>
-          </ButtonElement>
-          {{#if
-            (and @extraAction (has-block "extraAction") (not this.isLoading))
-          }}
-            <div class="euiAccordion__optionalAction">
-              {{yield this.isOpen to="extraAction"}}
-            </div>
-          {{else if this.isLoading}}
-            <div class="euiAccordion__optionalAction">
-              <EuiLoadingSpinner />
-            </div>
-          {{/if}}
-          {{#if (eq this._arrowDisplay "right")}}
-            <EuiButtonIcon
-              @color="text"
+          {{#if (and Accordion ButtonElement)}}
+            <Accordion
               class={{classNames
-                "euiAccordion__iconButton"
-                (if this.isOpen "euiAccordion__iconButton-isOpen")
-                (if
-                  (eq this._arrowDisplay "right")
-                  "euiAccordion__iconButton--right"
-                )
-                (if @arrowProps.className @arrowProps.className)
+                (if this.isOpen "euiAccordion-isOpen")
+                componentName="EuiAccordion"
               }}
-              @iconType="arrowRight"
-              {{on "click" this.onToggle}}
-              aria-controls={{@id}}
-              aria-expanded={{this.isOpen}}
-              aria-labelledby={{this.buttonId}}
-              tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
-            />
-          {{/if}}
-        </div>
-        <div
-          class="euiAccordion__childWrapper"
-          style={{this.childContentStyle}}
-          id={{@id}}
-          {{didInsert (set this "childWrapper")}}
-          tabindex="-1"
-          role="region"
-          aria-labelledby={{this.buttonId}}
-        >
-          <div
-            class={{classNames
-              (if this.isLoading "euiAccordion__children-isLoading")
-              @childClassName
-            }}
-            {{didInsert
-              (queue (set this "childContent") this.setChildContentHeight)
-            }}
-            {{resizeObserver onResize=this.setChildContentHeight}}
-            {{didUpdate this.setChildContentHeight @forceState}}
-          >
-            {{#if (and this.isLoading this.isLoadingMessage)}}
-              <EuiLoadingSpinner class="euiAccordion__spinner" />
-              <span>
-                {{#if this.hasLoadingMessage}}
-                  {{this.isLoadingMessage}}
-                {{else}}
-                  {{! <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> }}
-                  Loading...
-                {{/if}}
-              </span>
-            {{else}}
+              {{!@glint-expect-error}}
+              ...attributes
+            >
               <div
                 class={{classNames
-                  componentName="EuiAccordion"
-                  paddingSize=this.paddingSize
+                  "euiAccordion__triggerWrapper"
+                  @triggerClassName
                 }}
               >
-                {{yield to="content"}}
+                {{#if (eq this._arrowDisplay "left")}}
+                  <EuiButtonIcon
+                    @color="text"
+                    @iconClasses={{classNames
+                      "euiAccordion__iconButton"
+                      (if this.isOpen "euiAccordion__iconButton-isOpen")
+                      (if
+                        (eq this._arrowDisplay "right")
+                        "euiAccordion__iconButton--right"
+                      )
+                      (if @arrowProps.className @arrowProps.className)
+                    }}
+                    @iconType="arrowRight"
+                    {{on "click" this.onToggle}}
+                    aria-controls={{@id}}
+                    aria-expanded={{this.isOpen}}
+                    aria-labelledby={{this.buttonId}}
+                    tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
+                  />
+                {{/if}}
+                <ButtonElement
+                  type="button"
+                  id={{argOrDefault this.buttonProps.id (uniqueId)}}
+                  class={{this.buttonClasses}}
+                  aria-controls={{@id}}
+                  aria-expanded={{this.isOpen}}
+                  aria-labelledby={{argOrDefault this.buttonProps.id (uniqueId)}}
+                  {{on "click" this.onToggle}}
+                >
+                  <span class={{this.buttonContentClasses}}>
+                    {{yield this.isOpen to="buttonContent"}}
+                  </span>
+                </ButtonElement>
+                {{#if
+                  (and
+                    @extraAction (has-block "extraAction") (not this.isLoading)
+                  )
+                }}
+                  <div class="euiAccordion__optionalAction">
+                    {{yield this.isOpen to="extraAction"}}
+                  </div>
+                {{else if this.isLoading}}
+                  <div class="euiAccordion__optionalAction">
+                    <EuiLoadingSpinner />
+                  </div>
+                {{/if}}
+                {{#if (eq this._arrowDisplay "right")}}
+                  <EuiButtonIcon
+                    @color="text"
+                    class={{classNames
+                      "euiAccordion__iconButton"
+                      (if this.isOpen "euiAccordion__iconButton-isOpen")
+                      (if
+                        (eq this._arrowDisplay "right")
+                        "euiAccordion__iconButton--right"
+                      )
+                      (if @arrowProps.className @arrowProps.className)
+                    }}
+                    @iconType="arrowRight"
+                    {{on "click" this.onToggle}}
+                    aria-controls={{@id}}
+                    aria-expanded={{this.isOpen}}
+                    aria-labelledby={{this.buttonId}}
+                    tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
+                  />
+                {{/if}}
               </div>
-            {{/if}}
-          </div>
-        </div>
-      </Element>
+              <div
+                class="euiAccordion__childWrapper"
+                style={{this.childContentStyle}}
+                id={{@id}}
+                {{didInsert (set this "childWrapper")}}
+                tabindex="-1"
+                role="region"
+                aria-labelledby={{this.buttonId}}
+              >
+                <div
+                  class={{classNames
+                    (if this.isLoading "euiAccordion__children-isLoading")
+                    @childClassName
+                  }}
+                  {{didInsert
+                    (queue (set this "childContent") this.setChildContentHeight)
+                  }}
+                  {{resizeObserver onResize=this.setChildContentHeight}}
+                  {{didUpdate this.setChildContentHeight @forceState}}
+                >
+                  {{#if (and this.isLoading this.isLoadingMessage)}}
+                    <EuiLoadingSpinner class="euiAccordion__spinner" />
+                    <span>
+                      {{#if this.hasLoadingMessage}}
+                        {{this.isLoadingMessage}}
+                      {{else}}
+                        {{! <EuiI18n @token="euiAccordion.isLoading" @default="Loading" /> }}
+                        Loading...
+                      {{/if}}
+                    </span>
+                  {{else}}
+                    <div
+                      class={{classNames
+                        componentName="EuiAccordion"
+                        paddingSize=this.paddingSize
+                      }}
+                    >
+                      {{yield to="content"}}
+                    </div>
+                  {{/if}}
+                </div>
+              </div>
+            </Accordion>
+          {{/if}}
+        {{/let}}
+      {{/if}}
     {{/let}}
   </template>
 }

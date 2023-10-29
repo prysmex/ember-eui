@@ -1,18 +1,20 @@
+import { concat } from '@ember/helper';
+
+import { element } from 'ember-element-helper';
+import { and, notEq } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { concat } from '@ember/helper';
-import { and, notEq } from 'ember-truth-helpers';
+import uniqueId from '../helpers/unique-id';
 import EuiAccordion from './eui-accordion';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
 import EuiIcon from './eui-icon';
 import EuiTitle from './eui-title';
-import { guidFor } from '@ember/object/internals';
-import { element } from 'ember-element-helper';
 
 <template>
   {{#let
-    (argOrDefault @id (guidFor)) (argOrDefault @titleElement "h3")
+    (argOrDefault @id (uniqueId)) (argOrDefault @titleElement "h3")
     as |groupID titleElement|
   }}
     {{#let (concat groupID "__title") as |titleID|}}

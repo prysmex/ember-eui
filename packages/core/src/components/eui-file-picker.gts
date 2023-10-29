@@ -1,22 +1,23 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { concat } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 import { displayMapping } from '@ember-eui/core/utils/css-mappings/eui-file-picker';
+
+import { and, eq, not, notEq,or } from 'ember-truth-helpers';
 
 import argOrDefault, {
   argOrDefaultDecorator
 } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { concat } from '@ember/helper';
-import { guidFor } from '@ember/object/internals';
-import EuiLoadingSpinner from './eui-loading-spinner';
-import EuiIcon from './eui-icon';
+import uniqueId from '../helpers/unique-id';
 import EuiButtonEmpty from './eui-button-empty';
+import EuiIcon from './eui-icon';
+import EuiLoadingSpinner from './eui-loading-spinner';
 import EuiProgress from './eui-progress';
-import { on } from '@ember/modifier';
-import { and, or, eq, not, notEq } from 'ember-truth-helpers';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 
 export type EuiFilePickerDisplay = keyof typeof displayMapping;
 
@@ -135,11 +136,11 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
         display=this.display
         componentName="EuiFilePicker"
       )
-      (argOrDefault @id (guidFor))
+      (argOrDefault @id (uniqueId))
       as |classes inputId|
     }}
       {{#let
-        (if inputId (concat inputId "-filePicker__prompt") (guidFor))
+        (if inputId (concat inputId "-filePicker__prompt") (uniqueId))
         (notEq this.promptText null)
         (eq this.display "default")
         as |promptId isOverridingInitialPrompt normalFormControl|

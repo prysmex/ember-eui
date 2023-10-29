@@ -1,10 +1,11 @@
-import argOrDefault from '../helpers/arg-or-default';
-import { guidFor } from '@ember/object/internals';
-import classNames from '../helpers/class-names';
 import { and, not } from 'ember-truth-helpers';
 
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
+
 <template>
-  {{#let (argOrDefault @id (guidFor)) as |id|}}
+  {{#let (argOrDefault @id (uniqueId)) as |id|}}
     {{#if (and @href (not @disabled))}}
       <a
         id={{id}}

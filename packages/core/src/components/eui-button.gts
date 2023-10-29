@@ -1,12 +1,46 @@
-import argOrDefault from '../helpers/arg-or-default';
-import { or, and, eq, not } from 'ember-truth-helpers';
-import classify from 'ember-cli-string-helpers/helpers/classify';
 import { concat } from '@ember/helper';
-import { element } from 'ember-element-helper';
-import EuiButtonContent from './eui-button-content';
-import classNames from '../helpers/class-names';
 
-<template>
+import classify from 'ember-cli-string-helpers/helpers/classify';
+import { element } from 'ember-element-helper';
+import { and, eq, not, or } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiButtonContent from './eui-button-content';
+
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface Signature {
+  Element: Element;
+  Args: {
+    baseClassName?: string;
+    color?: string;
+    contentClasses?: string;
+    disabled?: boolean;
+    fill?: boolean;
+    fullWidth?: boolean;
+    href?: string;
+    iconClasses?: string;
+    iconSide?: string;
+    iconSize?: string;
+    iconType?: string;
+    isLoading?: boolean;
+    isSelected?: boolean;
+    size?: string;
+    target?: string;
+    textClasses?: string;
+    type?: string;
+    useComponent?: boolean;
+    useSvg?: boolean;
+    element?: string;
+    isDisabled?: boolean;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiButton: TemplateOnlyComponent<Signature> = <template>
   {{#let
     (argOrDefault @baseClassName "euiButton")
     (if
@@ -52,4 +86,4 @@ import classNames from '../helpers/class-names';
       </Element>
     {{/let}}
   {{/let}}
-</template>
+</template>;

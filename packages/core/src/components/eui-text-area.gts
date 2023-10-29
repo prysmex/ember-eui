@@ -1,8 +1,10 @@
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { optional } from 'ember-composable-helpers';
+import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 
 <template>
   {{#let

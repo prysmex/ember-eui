@@ -1,8 +1,9 @@
 
-import Modifier from 'ember-modifier';
-import { guidFor } from '@ember/object/internals';
-import { action } from '@ember/object';
 import { registerDestructor } from '@ember/destroyable';
+import { action } from '@ember/object';
+import { guidFor } from '@ember/object/internals';
+
+import Modifier from 'ember-modifier';
 
 interface OutsideClickDetectorModifierArgs {
   positional: [];

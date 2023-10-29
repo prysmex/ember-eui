@@ -1,9 +1,11 @@
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+
+import optional from 'ember-composable-helpers/helpers/optional';
 import { modifier } from 'ember-modifier';
+import { and, not, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { and, or, not } from 'ember-truth-helpers';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { optional } from 'ember-composable-helpers';
 
 const indeterminateModifier = modifier(function invalidateIndeterminate(
   element: HTMLInputElement,

@@ -1,15 +1,16 @@
 import Component from '@glimmer/component';
-import { EuiBreakpointSize } from '../../utils/breakpoint';
 import { tracked } from '@glimmer/tracking';
-import { isWithinMinBreakpoint } from '../../utils/breakpoint';
-import { throttle } from '@ember/runloop';
 import { action } from '@ember/object';
-import { modifier } from 'ember-modifier';
+import { throttle } from '@ember/runloop';
 
+import { modifier } from 'ember-modifier';
+import { and, not, or } from 'ember-truth-helpers';
+
+import { EuiBreakpointSize } from '../../utils/breakpoint';
+import { isWithinMinBreakpoint } from '../../utils/breakpoint';
 import argOrDefault from '../helpers/arg-or-default';
-import { and, or, not } from 'ember-truth-helpers';
+import uniqueId from '../helpers/unique-id';
 import EuiFlyout from './eui-flyout';
-import { guidFor } from '@ember/object/internals';
 
 export type EuiCollapsibleNavArgs = {
   /**
@@ -171,7 +172,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
         functionToCallOnWindowResize=this.functionToCallOnWindowResize
       }}
     ></span>
-    {{#let (argOrDefault @id (guidFor)) as |flyoutID|}}
+    {{#let (argOrDefault @id (uniqueId)) as |flyoutID|}}
 
       {{#if (not (and this.navIsDocked (not this.showButtonIfDocked)))}}
         {{yield

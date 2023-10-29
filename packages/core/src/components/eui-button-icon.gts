@@ -1,9 +1,36 @@
+import { and, not, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { and, not, or } from 'ember-truth-helpers';
 import EuiIcon from './eui-icon';
 
-<template>
+import type { IconSize } from './eui-icon';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface Signature {
+  Element: HTMLButtonElement | HTMLAnchorElement;
+  Args: {
+    iconType?: string;
+    iconSize?: IconSize;
+    iconClasses?: string;
+    href?: string;
+    target?: string;
+    isDisabled?: boolean;
+    isSelected?: boolean;
+    display?: 'fill' | 'empty';
+    color?: 'primary' | 'danger' | 'text' | 'ghost' | 'icon';
+    size?: 'xs' | 's' | 'm' | 'l';
+    type?: 'button' | 'submit' | 'reset';
+    useSvg?: boolean;
+    useComponent?: boolean;
+    disabled?: boolean;
+  };
+  Blocks: {
+    default?: [];
+  };
+}
+
+const EuiButtonIcon: TemplateOnlyComponent<Signature> = <template>
   {{#if (and @href (not @isDisabled))}}
     <a
       class={{classNames
@@ -60,4 +87,6 @@ import EuiIcon from './eui-icon';
       {{/if}}
     </button>
   {{/if}}
-</template>
+</template>;
+
+export default EuiButtonIcon;

@@ -1,17 +1,19 @@
-import classNames from '../helpers/class-names';
-import { and, eq, notEq } from 'ember-truth-helpers';
-import EuiInnerText from './eui-inner-text';
-import EuiButton from './eui-button';
-import { guidFor } from '@ember/object/internals';
+import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { fn } from '@ember/helper';
-import { noop } from 'ember-composable-helpers';
+
+import noop from 'ember-composable-helpers/helpers/noop';
+import { and, eq, notEq } from 'ember-truth-helpers';
+
+import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
+import EuiButton from './eui-button';
+import EuiInnerText from './eui-inner-text';
 
 <template>
   {{#let
     (if @isDisabled "button" @element)
-    (guidFor)
+    (uniqueId)
     (classNames
       (if @isSelected "euiButtonGroupButton-isSelected")
       (if @isIconOnly "euiButtonGroupButton-isIconOnly")

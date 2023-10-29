@@ -43,6 +43,9 @@ interface EuiFormControlLayoutSignature {
   Element: HTMLDivElement;
   Args: {
     fullWidth?: boolean;
+    /**
+     * Creates an input group with element(s) coming before children.
+     * */
     compressed?: boolean;
     readOnly?: boolean;
     useGroup?: boolean;
@@ -54,10 +57,10 @@ interface EuiFormControlLayoutSignature {
     inputId?: string;
   };
   Blocks: {
-    prepend: [shoutedMessage: string];
+    prepend: [classes: 'euiFormControlLayout__prepend'];
     field: [];
     default: [];
-    append: [shoutedMessage: string];
+    append: [classes: 'euiFormControlLayout__append'];
   };
 }
 

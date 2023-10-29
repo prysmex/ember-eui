@@ -19,7 +19,6 @@ declare module '@glint/environment-ember-loose/registry' {
   }
 }
 
-
 declare module '@glimmer/tracking' {
   /**
    * @decorator

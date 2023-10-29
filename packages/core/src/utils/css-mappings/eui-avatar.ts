@@ -1,8 +1,9 @@
-import { isColorDark } from '../../helpers/is-color-dark';
-import { hexToRgb } from '../../helpers/hex-to-rgb';
-import { euiPaletteColorBlindBehindText } from '../../utils/color/eui_palettes';
-import { isValidHex } from '../../helpers/is-valid-hex';
 import { assert, warn } from '@ember/debug';
+
+import { hexToRgb } from '../../helpers/hex-to-rgb';
+import { isColorDark } from '../../helpers/is-color-dark';
+import { isValidHex } from '../../helpers/is-valid-hex';
+import { euiPaletteColorBlindBehindText } from '../../utils/color/eui_palettes';
 
 export const baseClass = 'euiAvatar';
 export const VIS_COLORS = euiPaletteColorBlindBehindText();
@@ -53,8 +54,8 @@ export function inlineStyles({
     checkValidColor(color);
 
     name = name ? name : '';
-    assignedColor =
-      color || VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)];
+    assignedColor = (color ||
+      VIS_COLORS[Math.floor(name.length % VIS_COLORS.length)]) as string;
 
     const textColor = isColorDark(...hexToRgb(assignedColor || 'base'))
       ? '#FFFFFF'
@@ -62,6 +63,7 @@ export function inlineStyles({
 
     avatarStyle.backgroundColor = assignedColor;
     avatarStyle.color = textColor;
+
     return avatarStyle;
   }
 
@@ -70,6 +72,7 @@ export function inlineStyles({
 
 export const checkValidColor = (color: string | 'plain' | null) => {
   const validHex = (color && isValidHex(color)) || color === 'plain';
+
   if (color && !validHex) {
     assert(
       'EuiAvatar needs to pass a valid color. This can either be a three or six character hex value',

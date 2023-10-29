@@ -1,8 +1,10 @@
-import classNames from '../helpers/class-names';
-import EuiBadge from './eui-badge';
-import { optional } from 'ember-composable-helpers';
 import { fn } from '@ember/helper';
 import { hash } from '@ember/helper';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+
+import classNames from '../helpers/class-names';
+import EuiBadge from './eui-badge';
 
 <template>
   {{#let

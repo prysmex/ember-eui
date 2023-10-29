@@ -1,9 +1,11 @@
+import { get } from '@ember/helper';
+
+import { and, eq } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { and, eq } from 'ember-truth-helpers';
+import uniqueId from '../helpers/unique-id';
 import EuiButtonGroupButton from './eui-button-group-button';
-import { guidFor } from '@ember/object/internals';
-import { get } from '@ember/helper';
 
 <template>
   {{#let
@@ -35,7 +37,7 @@ import { get } from '@ember/helper';
       >
         <legend {{screen-reader-only}}>{{@legend}}</legend>
         <div class="euiButtonGroup__buttons">
-          {{#let (argOrDefault @name (guidFor)) as |name|}}
+          {{#let (argOrDefault @name (uniqueId)) as |name|}}
             {{#each @options as |option|}}
               <EuiButtonGroupButton
                 @name={{name}}

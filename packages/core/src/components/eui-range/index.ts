@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { guidFor } from '@ember/object/internals';
+import uniqueId from '../helpers/unique-id';
 import { isWithinRange } from '../../utils/number';
 import { EuiRangeInputArgs } from '../eui-range-input/types';
 import { EuiRangeLevel } from '../eui-range-levels';

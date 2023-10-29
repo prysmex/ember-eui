@@ -1,7 +1,14 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 //@ts-expect-error
 import { cached, tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { guidFor } from '@ember/object/internals';
+import { scheduleOnce } from '@ember/runloop';
+
+import { modifier } from 'ember-modifier';
+import unified from 'unified';
+import { Processor } from 'unified';
+
 import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
 import MarkdownActions from '../../utils/markdown/markdown-actions';
 import {
@@ -9,20 +16,15 @@ import {
   MODE_VIEWING
 } from '../../utils/markdown/markdown-modes';
 import {
+  EuiMarkdownAstNode,
+  EuiMarkdownAstNodePosition,
+  EuiMarkdownEditorUiPlugin
+} from '../../utils/markdown/markdown-types';
+import {
   defaultParsingPlugins,
   defaultProcessingPlugins
 } from '../../utils/markdown/plugins/markdown-default-plugins';
-import { guidFor } from '@ember/object/internals';
-import unified from 'unified';
 import * as MarkdownTooltipPlugin from '../../utils/markdown/plugins/markdown-tooltip';
-import {
-  EuiMarkdownEditorUiPlugin,
-  EuiMarkdownAstNodePosition,
-  EuiMarkdownAstNode
-} from '../../utils/markdown/markdown-types';
-import { Processor } from 'unified';
-import { scheduleOnce } from '@ember/runloop';
-import { modifier } from 'ember-modifier';
 
 export interface EuiMarkdownEditorArgs {
   initialViewMode?: string;

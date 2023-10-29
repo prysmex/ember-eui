@@ -1,17 +1,19 @@
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+
+import optional from 'ember-composable-helpers/helpers/optional';
 import { and, not, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { guidFor } from '@ember/object/internals';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { optional } from 'ember-composable-helpers';
+import uniqueId from '../helpers/unique-id';
 import EuiFormControlLayout from './eui-form-control-layout';
 
 <template>
   {{#let
     (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
     (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
-    (argOrDefault @id (guidFor))
+    (argOrDefault @id (uniqueId))
     as |hasPrepend hasAppend inputId|
   }}
     {{#let

@@ -1,9 +1,9 @@
-import { guidFor } from '@ember/object/internals';
+import uniqueId from '../helpers/unique-id';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
 
 <template>
-  {{#let (guidFor) as |ariaId|}}
+  {{#let (uniqueId) as |ariaId|}}
     <article
       aria-labelledby="{{ariaId}}-title"
       class="euiHeaderAlert"

@@ -8,6 +8,9 @@ export default modifier(function simpleStyle(
   [properties]: [CssProperties]
 ): void | (() => unknown) {
   for (let ele in properties) {
-    properties[ele] && (element.style[ele as any] = properties[ele]);
+    if (properties[ele]) {
+      //@ts-expect-error
+      element.style[ele as string] = properties[ele] as any;
+    }
   }
 });

@@ -1,7 +1,7 @@
-import Service from '@ember/service';
+import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
-import { tracked } from '@glimmer/tracking';
+import Service from '@ember/service';
 
 type ToastColor = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -23,6 +23,7 @@ export default class EuiToasterService extends Service {
     if (!props.id) {
       props.id = guidFor(props);
     }
+
     this.toasts = [...this.toasts, props];
   }
 

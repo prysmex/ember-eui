@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint';
 import { tracked } from '@glimmer/tracking';
 import { isWithinMinBreakpoint } from '../utils/breakpoint';
 import { throttle } from '@ember/runloop';
@@ -15,6 +15,7 @@ import EuiButtonIcon from './eui-button-icon';
 import EuiPortal from './eui-portal';
 import EuiOverlayMask from './eui-overlay-mask';
 import { on } from '@ember/modifier';
+//@ts-expect-error
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, or, eq, not } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';
@@ -210,7 +211,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
     }
 
     if (!isEuiFlyoutSizeNamed(this.size) && newStyle) {
-      newStyle.width = this.size;
+      newStyle['width'] = this.size;
     } else {
       newStyle = { width: this.size };
     }

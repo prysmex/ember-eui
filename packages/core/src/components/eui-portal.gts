@@ -18,12 +18,19 @@ export const INSERT_POSITIONS: EuiPortalInsertPosition[] =
 
 type EuiPortalInsertPosition = keyof typeof insertPositions;
 
-type EuiPortalArgs = {
+
+interface EuiPortalArgs {
   insert?: { sibling: HTMLElement; position: EuiPortalInsertPosition };
   portalRef?: (ref: HTMLDivElement | null) => void;
 };
 
-export default class EuiPortal extends Component<EuiPortalArgs> {
+interface EuiPortalSignature {
+  Args: EuiPortalArgs;
+  Element: HTMLDivElement;
+  Blocks: { default: [] };
+}
+
+export default class EuiPortal extends Component<EuiPortalSignature> {
   @tracked portalNode!: HTMLElement;
 
   constructor(owner: unknown, args: EuiPortalArgs) {
@@ -57,7 +64,6 @@ export default class EuiPortal extends Component<EuiPortalArgs> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#if this.portalNode}}
       {{#in-element this.portalNode}}
         {{yield}}

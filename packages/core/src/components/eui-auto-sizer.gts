@@ -116,7 +116,6 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerCompone
         nonce,
         this._window
       );
-      //@ts-expect-error element is HTMLElement
       this._detectElementResize.addResizeListener(
         this._parentNode,
         this._onResize

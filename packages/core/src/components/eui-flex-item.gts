@@ -3,8 +3,22 @@ import { eq } from 'ember-truth-helpers';
 import classNames from '../helpers/class-names';
 import { element } from 'ember-element-helper';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+import { growMapping } from '../utils/css-mappings/eui-flex-item';
+
+export interface EuiFlexItemSignature {
+  Element: Element;
+  Args: {
+    grow: keyof typeof growMapping | boolean;
+    tagName?: string;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiFlexItem: TemplateOnlyComponent<EuiFlexItemSignature> = <template>
   {{#let (argOrDefault @tagName "div") as |tagName|}}
     {{#if (eq tagName "div")}}
       <div
@@ -21,14 +35,16 @@ import { element } from 'ember-element-helper';
         {{yield}}
       </span>
     {{else}}
-      {{#let (element tagName) as |Element|}}
-        <Element
+      {{#let (element tagName) as |TagElement|}}
+        <TagElement
           class={{classNames componentName="EuiFlexItem" grow=@grow}}
           ...attributes
         >
           {{yield}}
-        </Element>
+        </TagElement>
       {{/let}}
     {{/if}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiFlexItem;

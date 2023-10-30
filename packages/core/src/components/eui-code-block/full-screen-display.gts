@@ -1,5 +1,5 @@
-import EuiOverlayMask from './eui-overlay-mask';
-import focusTrapModifier from 'ember-focus-trap';
+import EuiOverlayMask from '../eui-overlay-mask';
+import focusTrap from 'ember-focus-trap/modifiers/focus-trap';
 import { hash } from '@ember/helper';
 
 <template>
@@ -7,7 +7,7 @@ import { hash } from '@ember/helper';
   <EuiOverlayMask>
     <div
       class="euiCodeBlock--fontLarge euiCodeBlock--paddingLarge euiCodeBlock-isFullScreen"
-      {{focusTrapModifier
+      {{focusTrap
         isActive=true
         focusTrapOptions=(hash clickOutsideDeactivates=true)
       }}

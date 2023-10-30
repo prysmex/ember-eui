@@ -212,7 +212,6 @@ export default class EuiAccordionAccordionComponent extends Component<Signature>
                 (if this.isOpen "euiAccordion-isOpen")
                 componentName="EuiAccordion"
               }}
-              {{!@glint-expect-error}}
               ...attributes
             >
               <div

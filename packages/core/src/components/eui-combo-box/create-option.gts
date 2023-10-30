@@ -33,4 +33,26 @@ export default class EuiAccordionAccordionComponent extends Component<EuiComboBo
       })
     );
   }
+
+  <template>
+    {{! @glint-nocheck: not typesafe yet }}
+    <div
+      role="button"
+      class="euiComboBoxOptionsList__rowWrap"
+      {{on "click" @onCreateOption}}
+    >
+      <EuiText class="euiComboBoxOptionsList__empty" @size="xs">
+        <div class="euiComboBoxOption__contentWrapper">
+          <p class="euiComboBoxOption__emptyStateText">
+            {{this.formattedString}}
+          </p>
+          <EuiBadge
+            @iconType="returnKey"
+            class="euiComboBoxOption__enterBadge"
+            @color="hollow"
+          />
+        </div>
+      </EuiText>
+    </div>
+  </template>
 }

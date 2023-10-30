@@ -7,20 +7,17 @@ import EuiTextColor from './eui-text-color';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+import { sizeMapping } from '../utils/css-mappings/eui-text';
+import { alignMapping } from '../utils/css-mappings/eui-text-align';
+import { colorMapping } from '../utils/css-mappings/eui-text-color';
+
 export interface EuiTextSignature {
   Element: HTMLDivElement;
   Args: {
     grow?: boolean;
-    size?: 'xs' | 's' | 'm' | 'l' | 'xl';
-    textAlign?: 'left' | 'center' | 'right';
-    color?:
-      | 'default'
-      | 'subdued'
-      | 'secondary'
-      | 'accent'
-      | 'danger'
-      | 'warning'
-      | 'ghost';
+    size?: keyof typeof sizeMapping;
+    textAlign?: keyof typeof alignMapping;
+    color?: keyof typeof colorMapping;
   };
   Blocks: {
     default: [];

@@ -5,7 +5,7 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
-import EuiComboBoxTriggerInput from 'ember-power-select/components/power-select-multiple/trigger/input';
+import EuiComboBoxTriggerInput from 'ember-power-select/components/power-select-multiple/input';
 import { and, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../../helpers/arg-or-default';

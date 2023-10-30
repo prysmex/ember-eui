@@ -20,12 +20,14 @@ const mutationObserverOptions = {
   subtree: true // Account for deep child nodes
 };
 
-interface ResizeObserverArgs {
-  element: Element;
-  positional: ['width' | 'height'];
-  named: {
-    onResize: (dimensions: { height: number; width: number }) => void;
-  };
+interface ResizeObserverSignature {
+  Element: Element;
+  Args: {
+    Positional: [('width' | 'height')] | [];
+    Named: {
+      onResize: (dimensions: { height: number; width: number }) => void;
+    };
+  }
 }
 
 const makeCompatibleObserver = (node: Element, callback: () => void) => {
@@ -56,14 +58,14 @@ const makeResizeObserver = (node: Element, callback: () => void) => {
   return observer;
 };
 
-export default class ResizeObserver extends Modifier<ResizeObserverArgs> {
+export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
   height: number = 0;
   width: number = 0;
   observer: Observer | null = null;
 
   element!: Element;
-  named!: ResizeObserverArgs['named'];
-  positional!: ResizeObserverArgs['positional'];
+  named!: ResizeObserverSignature['Args']['Named'];
+  positional!: ResizeObserverSignature['Args']['Positional'];
 
   @action
   setSize({ width, height }: { width: number; height: number }) {
@@ -80,11 +82,11 @@ export default class ResizeObserver extends Modifier<ResizeObserverArgs> {
     }
   }
 
-  //@ts-expect-error dont know how to type this
+
   modify(
     element: Element,
-    positional: ['width' | 'height'],
-    named: { onResize: (dimensions: { height: number; width: number }) => void }
+    positional: ResizeObserverSignature['Args']['Positional'] = [],
+    named: ResizeObserverSignature['Args']['Named']
   ) {
     this.element = element;
     this.named = named;

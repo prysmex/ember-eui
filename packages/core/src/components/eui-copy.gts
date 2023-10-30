@@ -1,9 +1,10 @@
-import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
-import { copyToClipboard } from '@ember-eui/core/utils/copy-to-clipboard';
+import Component from "@glimmer/component";
+import { action } from "@ember/object";
+import { tracked } from "@glimmer/tracking";
+import { copyToClipboard } from "@ember-eui/core/utils/copy-to-clipboard";
 
-import EuiToolTip from './eui-tool-tip';
+import EuiToolTip from "./eui-tool-tip";
+import type { EuiToolTipSignature } from "./eui-tool-tip";
 
 type EuiCopyArgs = {
   /**
@@ -19,13 +20,27 @@ type EuiCopyArgs = {
    * 'textToCopy' has been copied to the clipboard.
    */
   afterMessage?: string;
+
+  /**
+   * The element that will be used as the anchor for the tooltip.
+   * Defaults to the child element of EuiCopy.
+   */
+  anchor?: HTMLElement;
 };
 
-export default class EuiCopyComponent extends Component<EuiCopyArgs> {
+export interface EuiCopySignature {
+  Element: EuiToolTipSignature["Element"];
+  Args: EuiCopyArgs;
+  Blocks: {
+    default: [() => void];
+  };
+}
+
+export default class EuiCopyComponent extends Component<EuiCopySignature> {
   @tracked tooltipText = this.args.beforeMessage;
 
   @action
-  copy(): void {
+  copy() {
     const isCopied = copyToClipboard(this.args.textToCopy);
     if (isCopied) {
       this.tooltipText = this.args.afterMessage;
@@ -38,7 +53,6 @@ export default class EuiCopyComponent extends Component<EuiCopyArgs> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <EuiToolTip
       @content={{this.tooltipText}}
       @onMouseOut={{this.resetTooltipText}}

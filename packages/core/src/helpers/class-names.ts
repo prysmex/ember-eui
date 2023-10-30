@@ -23,7 +23,7 @@ interface Options {
   direction?: string;
   justifyContent?: string;
   columns?: number;
-  grow?: number | string;
+  grow?: number | string | boolean;
   iconSide?: string;
   flush?: string;
   borderSide?: string;

@@ -1,19 +1,29 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { CommonArgs } from '../common';
+import type { CommonArgs } from './common';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { fn } from '@ember/helper';
 
-type EuiTooltipPopoverArgs = CommonArgs &
-  Omit<HTMLDivElement, 'title'> & {
+type EuiTooltipPopoverArgs = CommonArgs & {
     positionToolTip: () => void;
     title?: Component;
-    popoverRef?: (ref: HTMLDivElement) => void;
+    popoverRef?: (ref: HTMLDivElement | null) => void;
+    hasTitle?: boolean;
   };
 
-export default class EuiTooltipPopover extends Component<EuiTooltipPopoverArgs> {
-  popover: HTMLDivElement | undefined;
+export interface EuiTooltipPopoverSignature {
+  Element: HTMLDivElement;
+  Args: EuiTooltipPopoverArgs;
+  Blocks: {
+    default: [];
+    title: [];
+    content: [];
+  };
+}
+
+export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignature> {
+  popover: HTMLDivElement | null = null;
 
   constructor(owner: unknown, args: EuiTooltipPopoverArgs) {
     super(owner, args);
@@ -30,7 +40,7 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverArgs> 
   }
 
   @action
-  setPopoverRef(popover: HTMLDivElement): void {
+  setPopoverRef(popover: HTMLDivElement | null): void {
     this.popover = popover;
     if (this.args.popoverRef) {
       this.args.popoverRef(popover);
@@ -48,12 +58,11 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverArgs> 
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div
       class="euiToolTipPopover"
-      ...attributes
       {{didInsert this.setPopoverRef}}
       {{willDestroy (fn this.setPopoverRef null)}}
+      ...attributes
     >
       {{#if @hasTitle}}
         <div class="euiToolTip__title">

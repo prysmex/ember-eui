@@ -88,3 +88,5 @@ const EuiButton: TemplateOnlyComponent<Signature> = <template>
     {{/let}}
   {{/let}}
 </template>;
+
+export default EuiButton;

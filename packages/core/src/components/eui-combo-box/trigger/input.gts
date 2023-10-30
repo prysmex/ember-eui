@@ -6,7 +6,7 @@ import { scheduleOnce } from '@ember/runloop';
 
 import { and, not } from 'ember-truth-helpers';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+import validatableControl from '../../../modifiers/validatable-control';
 import { on } from '@ember/modifier';
 
 export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPowerSelectMultipleInputComponent {
@@ -14,9 +14,11 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
     scheduleOnce('actions', null, this.args.select.actions.reposition);
 
     let textWidth = 0;
+    // @ts-expect-error
     if (this.inputFont) {
       textWidth = this.textMeasurer.width(
         this.args.select.searchText,
+        // @ts-expect-error
         this.inputFont
       );
     }

@@ -2,7 +2,31 @@ import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
 import classNames from '../helpers/class-names';
 
-<template>
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+import {
+  gutterSizeMapping,
+  alignItemsMapping,
+  justifyContentMapping,
+  directionMapping
+} from '../utils/css-mappings/eui-flex-group';
+
+interface EuiFlexGroupSignature {
+  Element: HTMLDivElement | HTMLSpanElement;
+  Args: {
+    gutterSize?: keyof typeof gutterSizeMapping;
+    alignItems?: keyof typeof alignItemsMapping;
+    justifyContent?: keyof typeof justifyContentMapping;
+    direction?: keyof typeof directionMapping;
+    wrap?: boolean;
+    responsive?: boolean;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiFlexGroup: TemplateOnlyComponent<EuiFlexGroupSignature> = <template>
   {{! @glint-nocheck: not typesafe yet }}
   {{#if (eq @tagName "span")}}
     <span
@@ -35,4 +59,6 @@ import classNames from '../helpers/class-names';
       {{yield}}
     </div>
   {{/if}}
-</template>
+</template>;
+
+export default EuiFlexGroup;

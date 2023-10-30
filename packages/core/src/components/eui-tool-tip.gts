@@ -1,56 +1,59 @@
-import Component from '@glimmer/component';
-import { cached, tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-import { guidFor } from '@ember/object/internals';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-insert';
-import { cancel, later, next, scheduleOnce } from '@ember/runloop';
-import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
+import Component from "@glimmer/component";
+import { cached, tracked } from "@glimmer/tracking";
+import { action } from "@ember/object";
+import { guidFor } from "@ember/object/internals";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-insert";
+import { cancel, later, next, scheduleOnce } from "@ember/runloop";
+import resizeObserver from "../modifiers/resize-observer";
 
-import { and, eq, or } from 'ember-truth-helpers';
+import { and, eq, or } from "ember-truth-helpers";
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import { keys } from '../utils/keys';
-import { findPopoverPosition } from '../utils/popover';
-import EuiPortal from './eui-portal';
-import EuiToolTipPopover from './eui-tool-tip-popover';
+import argOrDefault, { argOrDefaultDecorator } from "../helpers/arg-or-default";
+import classNames from "../helpers/class-names";
+import { keys } from "../utils/keys";
+import { findPopoverPosition } from "../utils/popover";
+import EuiPortal from "./eui-portal";
+import EuiToolTipPopover from "./eui-tool-tip-popover";
+import type { EuiTooltipPopoverSignature } from "./eui-tool-tip-popover";
+import { on } from "@ember/modifier";
+import style from "ember-style-modifier/modifiers/style";
 
-export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
+export type ToolTipPositions = "top" | "right" | "bottom" | "left";
 
-export type ToolTipDelay = 'regular' | 'long';
+export type ToolTipDelay = "regular" | "long";
 
 const delayToMsMap: { [key in ToolTipDelay]: number } = {
   regular: 250,
-  long: 250 * 5
+  long: 250 * 5,
 };
 
 interface ToolTipStyles {
   top: string;
-  left: string | 'auto';
-  right?: string | 'auto';
+  left: string | "auto";
+  right?: string | "auto";
   opacity?: string;
-  visibility?: 'hidden';
-  display?: 'inlineBlock';
+  visibility?: "hidden";
+  display?: "inlineBlock";
 }
 
 const displayToClassNameMap = {
   inlineBlock: undefined,
-  block: 'euiToolTipAnchor--displayBlock'
+  block: "euiToolTipAnchor--displayBlock",
 };
 
 const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // position the tooltip content near the top-left
   // corner of the window so it can't create scrollbars
   // 50,50 because who knows what negative margins, padding, etc
-  top: '50px',
-  left: '50px',
+  top: "50px",
+  left: "50px",
   // just in case, avoid any potential flicker by hiding
   // the tooltip before it is positioned
-  opacity: '0',
+  opacity: "0",
   // prevent accidental mouse interaction while positioning
-  visibility: 'hidden',
-  display: 'inlineBlock'
+  visibility: "hidden",
+  display: "inlineBlock",
 };
 
 type EuiTooltipArgs = {
@@ -65,7 +68,7 @@ type EuiTooltipArgs = {
   /**
    * The main content of your tooltip.
    */
-  content?: Component;
+  content?: string;
   /**
    * Common display alternatives for the anchor wrapper
    */
@@ -73,11 +76,11 @@ type EuiTooltipArgs = {
   /**
    * Delay before showing tooltip. Good for repeatable items.
    */
-  delay: ToolTipDelay;
+  delay?: ToolTipDelay;
   /**
    * An optional title for your tooltip.
    */
-  title?: Component;
+  title?: string;
   /**
    * Unless you provide one, this will be randomly generated.
    */
@@ -85,11 +88,11 @@ type EuiTooltipArgs = {
   /**
    * Suggested position. If there is not enough room for it this will be changed.
    */
-  position: ToolTipPositions;
+  position?: ToolTipPositions;
 
-  attachTo: undefined | HTMLElement | string | null;
+  attachTo?: undefined | HTMLElement | string | null;
 
-  isShown: boolean | undefined;
+  isShown?: boolean | undefined;
 
   /**
    * If supplied, called when mouse movement causes the tool tip to be
@@ -98,25 +101,34 @@ type EuiTooltipArgs = {
   onMouseOut?: (event: MouseEvent) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+
+  hasTitle?: boolean;
 };
 
-interface EuiToolTipSignature {
+export interface EuiToolTipSignature {
+  Element: EuiTooltipPopoverSignature["Element"];
   Args: EuiTooltipArgs;
+  Blocks: {
+    default?: [id: string];
+    title?: [];
+    content?: [];
+    anchor?: [id: string];
+  };
 }
 
 export default class EuiToolTip extends Component<EuiToolTipSignature> {
   anchor: null | HTMLElement = null;
   popover: null | HTMLElement = null;
 
-  @argOrDefaultDecorator('top') position!: ToolTipPositions;
-  @argOrDefaultDecorator('regular') delay!: ToolTipDelay;
+  @argOrDefaultDecorator("top") position!: ToolTipPositions;
+  @argOrDefaultDecorator("regular") delay!: ToolTipDelay;
 
   //STATE
   @tracked visible = false;
   @tracked hasFocus = false;
   @tracked calculatedPosition: ToolTipPositions = this.position;
   @tracked toolTipStyles: ToolTipStyles = DEFAULT_TOOLTIP_STYLES;
-  @tracked arrowStyles: undefined | { left: string; top: string };
+  @tracked arrowStyles: { left?: string; top?: string } = {};
   @tracked id: string = this.args.id || guidFor({});
   @tracked _attachTo: undefined | HTMLElement | string | null = null;
 
@@ -141,26 +153,24 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
 
   @action
   setupAttachToHandlers(): void {
-    if (this._attachTo &&  this.attachTo) {
-      this.attachTo.addEventListener('mousemove', this.showToolTip);
-      this.attachTo.addEventListener('focusin', this.onFocus);
+    if (this._attachTo && this.attachTo) {
+      this.attachTo.addEventListener("mousemove", this.showToolTip);
+      this.attachTo.addEventListener("focusin", this.onFocus);
       //@ts-expect-error
-      this.attachTo.addEventListener('mouseout', this.onMouseOut);
-      this.attachTo.addEventListener('focusout', this.onBlur);
+      this.attachTo.addEventListener("mouseout", this.onMouseOut);
+      this.attachTo.addEventListener("focusout", this.onBlur);
       this.positionToolTip();
     }
-
-    
   }
 
   @action
   removeAttachToHandlers(): void {
     if (this._attachTo && this.attachTo) {
-      this.attachTo.removeEventListener('mousemove', this.showToolTip);
-      this.attachTo.removeEventListener('focusin', this.onFocus);
+      this.attachTo.removeEventListener("mousemove", this.showToolTip);
+      this.attachTo.removeEventListener("focusin", this.onFocus);
       //@ts-expect-error
-      this.attachTo.removeEventListener('mouseout', this.onMouseOut);
-      this.attachTo.removeEventListener('focusout', this.onBlur);
+      this.attachTo.removeEventListener("mouseout", this.onMouseOut);
+      this.attachTo.removeEventListener("focusout", this.onBlur);
     }
   }
 
@@ -207,14 +217,14 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   }
 
   @action
-  setPopoverRef(ref: HTMLElement): void {
+  setPopoverRef(ref: HTMLElement | null): void {
     this.popover = ref;
 
     // if the popover has been unmounted, clear
     // any previous knowledge about its size
-    if (ref == null) {
+    if (ref === null) {
       this.toolTipStyles = DEFAULT_TOOLTIP_STYLES;
-      this.arrowStyles = undefined;
+      this.arrowStyles = {};
     } else {
       this.positionToolTip();
     }
@@ -229,16 +239,16 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       this.timeoutId = later(
         this,
         () => {
-          scheduleOnce('afterRender', this, fn);
+          scheduleOnce("afterRender", this, fn);
         },
-        delayToMsMap[this.delay]
+        delayToMsMap[this.delay],
       );
     }
   }
 
   @cached
   get attachTo(): Element | null | undefined {
-    if (typeof this._attachTo === 'string') {
+    if (typeof this._attachTo === "string") {
       return document.querySelector(this._attachTo);
     } else {
       return this._attachTo;
@@ -263,8 +273,8 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       offset: 16, // offset popover 16px from the anchor
       arrowConfig: {
         arrowWidth: 12,
-        arrowBuffer: 4
-      }
+        arrowBuffer: 4,
+      },
     });
 
     const windowWidth =
@@ -273,10 +283,10 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
 
     const toolTipStyles: ToolTipStyles = {
       top: `${top}px`,
-      left: useRightValue ? 'auto' : `${left}px`,
+      left: useRightValue ? "auto" : `${left}px`,
       right: useRightValue
         ? `${windowWidth - left - this.popover.offsetWidth}px`
-        : 'auto'
+        : "auto",
     };
 
     this.visible = true;
@@ -285,7 +295,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     if (arrow) {
       this.arrowStyles = {
         left: `${arrow.left}px`,
-        top: `${arrow?.top}px`
+        top: `${arrow?.top}px`,
       };
     }
   }
@@ -301,19 +311,19 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         this.visible = false;
       }
     };
-    scheduleOnce('afterRender', this, fn);
+    scheduleOnce("afterRender", this, fn);
   }
 
   @action
   hasFocusMouseMoveListener(): void {
     this.hideToolTip();
-    window.removeEventListener('mousemove', this.hasFocusMouseMoveListener);
+    window.removeEventListener("mousemove", this.hasFocusMouseMoveListener);
   }
 
   @action
   onKeyUp(event: KeyboardEvent): void {
     if (event.key === keys.TAB) {
-      window.addEventListener('mousemove', this.hasFocusMouseMoveListener);
+      window.addEventListener("mousemove", this.hasFocusMouseMoveListener);
     }
   }
 
@@ -349,7 +359,6 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (has-block "content") (has-block "title") (has-block "anchor")
       as |hasContentBlock hasTitleBlock hasAnchorBlock|
@@ -402,10 +411,10 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
             }}
             @positionToolTip={{this.positionToolTip}}
             @popoverRef={{this.setPopoverRef}}
-            @id={{this.id}}
-            @hasTitle={{and
-              (argOrDefault @hasTitle true)
-              (or hasTitleBlock @title)
+            id={{this.id}}
+            @hasTitle={{if
+              (and (argOrDefault @hasTitle true) (or hasTitleBlock @title))
+              true
             }}
             role="tooltip"
             ...attributes

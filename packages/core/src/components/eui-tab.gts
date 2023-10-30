@@ -5,6 +5,7 @@ import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let (argOrDefault @id (uniqueId)) as |id|}}
     {{#if (and @href (not @disabled))}}
       <a

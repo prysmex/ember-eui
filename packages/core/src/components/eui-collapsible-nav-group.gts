@@ -13,6 +13,7 @@ import EuiIcon from './eui-icon';
 import EuiTitle from './eui-title';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @id (uniqueId)) (argOrDefault @titleElement "h3")
     as |groupID titleElement|

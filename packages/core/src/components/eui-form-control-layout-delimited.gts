@@ -4,6 +4,7 @@ import EuiFormControlLayout from './eui-form-control-layout';
 import EuiText from './eui-text';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (has-block "prepend")
     (has-block "append")

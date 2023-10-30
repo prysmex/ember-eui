@@ -41,6 +41,7 @@ export interface Signature {
 }
 
 const EuiButton: TemplateOnlyComponent<Signature> = <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @baseClassName "euiButton")
     (if

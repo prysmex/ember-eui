@@ -3,6 +3,7 @@ import { eq } from 'ember-truth-helpers';
 import classNames from '../helpers/class-names';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#if (eq @tagName "span")}}
     <span
       class={{classNames

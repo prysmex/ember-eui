@@ -2,6 +2,7 @@ import classNames from '../helpers/class-names';
 import { or } from 'ember-truth-helpers';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div class="euiFlyoutBody" ...attributes>
     <div
       tabindex={{0}}

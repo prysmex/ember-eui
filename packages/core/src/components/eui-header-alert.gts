@@ -3,6 +3,7 @@ import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let (uniqueId) as |ariaId|}}
     <article
       aria-labelledby="{{ariaId}}-title"

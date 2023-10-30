@@ -22,6 +22,7 @@ export default class EuiHeaderLinksComponent extends Component<EuiHeaderLinksArg
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <nav class="euiHeaderLinks">
       <EuiHideFor @sizes={{this.popoverBreakpoints}}>
         <div

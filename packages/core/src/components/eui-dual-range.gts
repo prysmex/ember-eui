@@ -454,6 +454,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
       (and (argOrDefault @isAppendProvided true) (has-block "append"))

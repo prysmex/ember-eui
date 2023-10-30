@@ -63,6 +63,7 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{!template-lint-disable}}
     {{#if (and this.maybePlaceholder (not @select.searchText))}}
       <p class="euiComboBoxPlaceholder">

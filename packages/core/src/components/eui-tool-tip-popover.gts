@@ -48,6 +48,7 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverArgs> 
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <div
       class="euiToolTipPopover"
       ...attributes

@@ -10,6 +10,7 @@ import EuiModalFooter from './eui-modal-footer';
 import { on } from '@ember/modifier';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <EuiModal class="euiModal--confirmation" @onClose={{@onCancel}} ...attributes>
 
     {{#if (or @title (has-block "title"))}}

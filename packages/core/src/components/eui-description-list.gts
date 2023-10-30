@@ -4,6 +4,7 @@ import EuiDescriptionListTitle from './eui-description-list-title';
 import EuiDescriptionListDescription from './eui-description-list-description';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <dl
     class={{classNames
       (if (argOrDefault @compressed false) "euiDescriptionList--compressed")

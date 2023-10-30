@@ -56,6 +56,7 @@ export default class EuiRangeToolipComponent extends Component<EuiRangeTooltopAr
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <div
       class="euiRangeTooltip {{if @compressed 'euiRangeTooltip--compressed'}}"
     >

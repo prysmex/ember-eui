@@ -41,6 +41,7 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
   });
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}

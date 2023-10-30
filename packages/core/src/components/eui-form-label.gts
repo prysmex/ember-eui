@@ -2,6 +2,7 @@ import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (classNames
       (if @isFocused "euiFormLabel-isFocused")

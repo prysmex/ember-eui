@@ -78,6 +78,7 @@ export default class EuiCodeComponent extends Component<EuiCodeArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#in-element this.codeTarget}}
       {{yield}}
     {{/in-element}}

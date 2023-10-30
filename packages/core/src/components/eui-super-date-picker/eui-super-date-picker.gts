@@ -222,6 +222,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   // }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <EuiFlexGroup
       @gutterSize="s"
       @responsive={{false}}

@@ -5,6 +5,7 @@ import EuiLoadingSpinner from './eui-loading-spinner';
 import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let (if (eq @titleSize "xs") "s" "m") as |iconSize|}}
     <span
       class={{classNames

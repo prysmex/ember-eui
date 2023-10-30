@@ -3,6 +3,7 @@ import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let (argOrDefault @display "visible") as |display|}}
     <legend
       class={{classNames

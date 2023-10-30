@@ -5,6 +5,7 @@ import { concat } from '@ember/helper';
 import EuiIcon from './eui-icon';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{! ToDo: title and aria-label translations }}
   <div
     class={{classNames

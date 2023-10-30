@@ -41,6 +41,7 @@ export default class EuiRangeTicksComponent extends Component<EuiRangeTicksArgs>
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <div
       class="euiRangeTicks {{if @compressed 'euiRangeTicks--compressed'}}"
       style={{this.ticksStyle}}

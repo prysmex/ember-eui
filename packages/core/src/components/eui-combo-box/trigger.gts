@@ -15,6 +15,7 @@ import EuiFormControlLayout from '../eui-form-control-layout';
 
 export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipleTrigger {
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <EuiFormControlLayout
       @icon={{argOrDefault @icon "arrowDown"}}
       @iconSide="right"

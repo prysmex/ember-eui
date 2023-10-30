@@ -166,6 +166,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <span
       {{onWindowResizeModifier
         isDocked=this.isDocked

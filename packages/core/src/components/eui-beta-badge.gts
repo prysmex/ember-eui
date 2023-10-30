@@ -6,6 +6,7 @@ import EuiToolTip from './eui-tool-tip';
 import { on } from '@ember/modifier';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @size "m")
     (eq @label.length 1)

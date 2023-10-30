@@ -17,6 +17,7 @@ const indeterminateModifier = modifier(function invalidateIndeterminate(
 });
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
     (argOrDefault @id (unique-id))

@@ -2,6 +2,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import EuiIcon from './eui-icon';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <a class="euiHeaderLogo" href={{@href}} target={{@target}} ...attributes>
     <EuiIcon
       aria-label={{@iconTitle}}

@@ -39,6 +39,7 @@ export interface EuiFormControlLayoutIconsSignature {
 
 const EuiFormControlLayoutIcons: TemplateOnlyComponent<EuiFormControlLayoutIconsSignature> =
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let (argOrDefault @iconSide "left") as |iconSide|}}
       {{#if (and @icon (eq iconSide "left"))}}
         <div class="euiFormControlLayoutIcons">

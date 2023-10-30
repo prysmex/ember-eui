@@ -6,6 +6,7 @@ import EuiCheckbox from './eui-checkbox';
 import EuiRadio from './eui-radio';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let (argOrDefault @id (unique-id)) as |id|}}
     <div
       class={{classNames

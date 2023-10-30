@@ -2,6 +2,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <span
     class={{classNames
       componentName="EuiNotificationBadge"

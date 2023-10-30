@@ -100,7 +100,11 @@ type EuiTooltipArgs = {
   onBlur?: () => void;
 };
 
-export default class EuiToolTip extends Component<EuiTooltipArgs> {
+interface EuiToolTipSignature {
+  Args: EuiTooltipArgs;
+}
+
+export default class EuiToolTip extends Component<EuiToolTipSignature> {
   anchor: null | HTMLElement = null;
   popover: null | HTMLElement = null;
 
@@ -137,22 +141,26 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
 
   @action
   setupAttachToHandlers(): void {
-    if (this._attachTo) {
-      this.attachTo?.addEventListener('mousemove', this.showToolTip);
-      this.attachTo?.addEventListener('focusin', this.onFocus);
-      this.attachTo?.addEventListener('mouseout', this.onMouseOut);
-      this.attachTo?.addEventListener('focusout', this.onBlur);
+    if (this._attachTo &&  this.attachTo) {
+      this.attachTo.addEventListener('mousemove', this.showToolTip);
+      this.attachTo.addEventListener('focusin', this.onFocus);
+      //@ts-expect-error
+      this.attachTo.addEventListener('mouseout', this.onMouseOut);
+      this.attachTo.addEventListener('focusout', this.onBlur);
       this.positionToolTip();
     }
+
+    
   }
 
   @action
   removeAttachToHandlers(): void {
-    if (this._attachTo) {
-      this.attachTo?.removeEventListener('mousemove', this.showToolTip);
-      this.attachTo?.removeEventListener('focusin', this.onFocus);
-      this.attachTo?.removeEventListener('mouseout', this.onMouseOut);
-      this.attachTo?.removeEventListener('focusout', this.onBlur);
+    if (this._attachTo && this.attachTo) {
+      this.attachTo.removeEventListener('mousemove', this.showToolTip);
+      this.attachTo.removeEventListener('focusin', this.onFocus);
+      //@ts-expect-error
+      this.attachTo.removeEventListener('mouseout', this.onMouseOut);
+      this.attachTo.removeEventListener('focusout', this.onBlur);
     }
   }
 
@@ -341,6 +349,7 @@ export default class EuiToolTip extends Component<EuiTooltipArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (has-block "content") (has-block "title") (has-block "anchor")
       as |hasContentBlock hasTitleBlock hasAnchorBlock|

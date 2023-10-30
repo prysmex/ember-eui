@@ -4,6 +4,7 @@ import classNames from '../helpers/class-names';
 import { element } from 'ember-element-helper';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let (argOrDefault @tagName "div") as |tagName|}}
     {{#if (eq tagName "div")}}
       <div

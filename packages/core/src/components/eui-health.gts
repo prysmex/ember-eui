@@ -3,6 +3,7 @@ import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
       componentName="EuiHealth"

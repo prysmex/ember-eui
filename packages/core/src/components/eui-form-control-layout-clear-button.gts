@@ -16,6 +16,7 @@ export type EuiFormControlLayoutClearButtonArgs = CommonArgs &
   };
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <button
     class={{classNames "euiFormControlLayoutClearButton" size=@size}}
     type="button"

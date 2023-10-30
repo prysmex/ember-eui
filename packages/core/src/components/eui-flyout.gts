@@ -246,6 +246,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (classNames
         (if (eq this.maxWidth true) "euiFlyout--maxWidth-default")

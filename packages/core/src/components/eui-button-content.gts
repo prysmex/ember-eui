@@ -5,6 +5,7 @@ import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <span
     class={{classNames
       "euiButtonContent"

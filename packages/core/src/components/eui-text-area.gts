@@ -7,6 +7,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (classNames
       (if @fullWidth "euiTextArea--fullWidth")

@@ -298,6 +298,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}

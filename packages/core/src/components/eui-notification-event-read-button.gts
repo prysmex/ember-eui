@@ -3,6 +3,7 @@ import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{! ToDo: title and aria-label translations }}
   <EuiButtonIcon
     @iconType="dot"

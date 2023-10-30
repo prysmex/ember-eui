@@ -65,6 +65,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   } = { results: [], options: [], searchText: this.searchText };
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <PowerSelectMultiple
       ...attributes
       @onChange={{pipe this.onChange @onChange}}

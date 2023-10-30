@@ -9,6 +9,7 @@ import { get } from '@ember/helper';
 import { fn } from '@ember/helper';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @valueKey "id") (argOrDefault @labelKey "label")
     as |valueKey labelKey|

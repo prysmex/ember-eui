@@ -4,6 +4,7 @@ import { and, not, or, eq } from 'ember-truth-helpers';
 import EuiButtonContent from './eui-button-content';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @size "m") (argOrDefault @iconSize "m")
     as |size iconSize|

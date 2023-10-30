@@ -1,6 +1,7 @@
 import { eq } from 'ember-truth-helpers';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#if (eq @tagName "h1")}}
     <h1 ...attributes>
       {{yield}}

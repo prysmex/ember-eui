@@ -4,6 +4,7 @@ import { and, eq, not } from 'ember-truth-helpers';
 import EuiCommentTimeline from './eui-comment-timeline';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
       "euiComment"

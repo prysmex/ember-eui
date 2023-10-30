@@ -16,6 +16,7 @@ import EuiIcon from './eui-icon';
 import EuiPopover from './eui-popover';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (and (argOrDefault @hasDefaultBlock true) (has-block))
     as |hasDefaultBlock|

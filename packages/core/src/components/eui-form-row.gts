@@ -11,6 +11,7 @@ import useState from '@ember-eui/core/helpers/use-state';
 import { array } from '@ember/helper';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (classNames
       "euiFormRow"

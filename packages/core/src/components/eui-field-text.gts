@@ -10,6 +10,7 @@ import uniqueId from '../helpers/unique-id';
 import EuiFormControlLayout from './eui-form-control-layout';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
     (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))

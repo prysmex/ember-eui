@@ -5,6 +5,7 @@ import { eq, and, gt } from 'ember-truth-helpers';
 import EuiCallOut from './eui-call-out';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @invalidCallout "above")
     (if (isArray @error) @error (if @array (array @error)))

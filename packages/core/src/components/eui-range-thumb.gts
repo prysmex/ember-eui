@@ -2,6 +2,7 @@ import classNames from '../helpers/class-names';
 import castTo from '@ember-eui/core/helpers/cast-to';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{! template-lint-disable }}
   <button
     type="button"

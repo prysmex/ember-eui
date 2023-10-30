@@ -1,4 +1,5 @@
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{!
     Comment List is basically a wrapper for various comments
   }}

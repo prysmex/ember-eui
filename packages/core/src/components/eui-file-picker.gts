@@ -127,6 +127,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (classNames
         (if @compressed "euiFilePicker--compressed")

@@ -10,6 +10,7 @@ import uniqueId from '../helpers/unique-id';
 import EuiIcon from './eui-icon';
 
 type SwitchArgs = {
+  id?: string;
   /**
    * Whether to render the render the text label
    */
@@ -17,22 +18,34 @@ type SwitchArgs = {
   /**
    * Must be a string if `showLabel` prop is false
    */
-  label: unknown | string;
+  label: string;
   checked: boolean;
-  onChange: (event: { target: HTMLInputElement }) => void;
+  onChange: (event: MouseEvent) => void;
   disabled?: boolean;
   compressed?: boolean;
   type?: 'submit' | 'reset' | 'button';
+
+  containerClass?: string;
+  isFakeLabelBlock?: boolean;
 };
 
-export default class EuiSwitch extends Component<SwitchArgs> {
+interface EuiSwitchSignature {
+  Element: HTMLButtonElement;
+  Args: SwitchArgs;
+  Blocks: {
+    default: [];
+    label: [];
+  };
+}
+
+export default class EuiSwitch extends Component<EuiSwitchSignature> {
   @action
-  onClick(e: { target: HTMLInputElement }): void {
+  onClick(e: MouseEvent): void {
     if (this.args.disabled) {
       return;
     }
 
-    e.target.checked = !this.args.checked;
+    (e.target as HTMLInputElement).checked = !this.args.checked;
 
     this.args.onChange?.(e);
   }
@@ -59,7 +72,7 @@ export default class EuiSwitch extends Component<SwitchArgs> {
             aria-checked={{if @checked "true" "false"}}
             class="euiSwitch__button"
             role="switch"
-            aria-label={{if showLabel undefined @label}}
+            aria-label={{if (not showLabel) @label}}
             aria-labelledby={{if showLabel labelId undefined}}
             disabled={{@disabled}}
             ...attributes

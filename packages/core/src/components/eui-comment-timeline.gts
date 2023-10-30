@@ -4,6 +4,7 @@ import { eq, or, not } from 'ember-truth-helpers';
 import EuiIcon from './eui-icon';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div class="euiCommentTimeline" ...attributes>
     <div class="euiCommentTimeline__content">
       <div

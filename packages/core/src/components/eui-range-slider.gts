@@ -19,6 +19,7 @@ export type EuiRangeSliderArgs = HTMLInputElement &
   };
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <input
     type="range"
     id={{@id}}

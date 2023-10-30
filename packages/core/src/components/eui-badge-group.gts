@@ -3,12 +3,14 @@ import { hash } from '@ember/helper';
 import classNames from '../helpers/class-names';
 
 const BadgeGroupItem = <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <span class="euiBadgeGroup__item">
     {{yield}}
   </span>
 </template>;
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
       componentName="EuiBadgeGroup"

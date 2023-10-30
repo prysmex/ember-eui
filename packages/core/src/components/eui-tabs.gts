@@ -3,6 +3,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (if (eq @display "condensed") false (argOrDefault @bottomBorder true))
     as |bottomBorder|

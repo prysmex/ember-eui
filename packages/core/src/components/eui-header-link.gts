@@ -2,6 +2,7 @@ import classNames from '../helpers/class-names';
 import EuiButtonEmpty from './eui-button-empty';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <EuiButtonEmpty
     class={{classNames "euiHeaderLink" (if @isActive "euiHeaderLink-isActive")}}
     @color={{if @isActive "primary" "text"}}

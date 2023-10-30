@@ -6,6 +6,7 @@ import EuiText from './eui-text';
 import EuiIcon from './eui-icon';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
       componentName="EuiCallOut"

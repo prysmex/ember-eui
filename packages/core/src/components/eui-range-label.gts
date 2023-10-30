@@ -3,6 +3,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import { concat } from '@ember/helper';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <label
     class={{classNames
       "euiRangeLabel"

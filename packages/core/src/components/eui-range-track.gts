@@ -157,6 +157,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <div
       class={{classNames
         "euiRangeTrack"

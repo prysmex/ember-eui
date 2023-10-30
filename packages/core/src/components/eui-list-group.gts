@@ -5,6 +5,7 @@ import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (if
       (and @maxWidth (not-eq @maxWidth true))

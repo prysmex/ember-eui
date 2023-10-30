@@ -38,6 +38,7 @@ export default class EuiCopyComponent extends Component<EuiCopyArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <EuiToolTip
       @content={{this.tooltipText}}
       @onMouseOut={{this.resetTooltipText}}

@@ -7,6 +7,7 @@ import EuiMarkdownFormat from './eui-markdown-format';
 import argOrDefault from '../helpers/arg-or-default';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
       componentName="EuiToast"

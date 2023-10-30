@@ -37,6 +37,7 @@ export default class EuiCardSelectComponent extends Component<EuiCardSelectProps
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <EuiButtonEmpty
       class={{classNames this.selectColorClass componentName="EuiCardSelect"}}
       id={{@buttonId}}

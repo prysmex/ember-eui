@@ -199,6 +199,7 @@ export default class EuiAccordionAccordionComponent extends Component<Signature>
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let (argOrDefault @element "div") as |tagName|}}
       {{#if tagName}}
         {{#let

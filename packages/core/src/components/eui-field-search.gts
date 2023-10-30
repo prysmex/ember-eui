@@ -130,6 +130,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
       (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))

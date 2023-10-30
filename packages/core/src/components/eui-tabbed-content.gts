@@ -143,6 +143,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
   };
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let (uniqueId) as |rootId|}}
       <div class={{@className}} ...attributes>
         <EuiTabs

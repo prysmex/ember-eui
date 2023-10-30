@@ -8,6 +8,7 @@ import { hash } from '@ember/helper';
 import EuiIcon from './eui-icon';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (inlineStyles
       componentName="EuiAvatar"

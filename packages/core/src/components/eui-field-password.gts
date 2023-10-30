@@ -13,6 +13,7 @@ import EuiButtonIcon from './eui-button-icon';
 import EuiFormControlLayout from './eui-form-control-layout';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @type "dual")
     (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))

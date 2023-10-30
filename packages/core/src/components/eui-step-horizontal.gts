@@ -8,6 +8,7 @@ import classNames from '../helpers/class-names';
 import EuiStepNumber from './eui-step-number';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (if
       @disabled

@@ -7,6 +7,7 @@ import classNames from '../helpers/class-names';
 import EuiBadge from './eui-combo-box/eui-badge';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (classNames
       "euiComboBoxPill" (if @asPlainText "euiComboBoxPill--plainText")

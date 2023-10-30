@@ -2,8 +2,20 @@ import EuiButtonIcon from '../eui-button-icon';
 import EuiCopy from '../eui-copy';
 import { or } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-<template>
+
+interface EuiCodeBlockControlsSignature {
+  Args: {
+    showCopyButton: boolean;
+    showFullScreenButton: boolean;
+    isFullScreen: boolean;
+    toggleFullScreen: () => void;
+    textToCopy: string;
+  }
+}
+const EuiCodeBlockControls: TemplateOnlyComponent<EuiCodeBlockControlsSignature>  = <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#if (or @showCopyButton @showFullScreenButton)}}
     <div class="euiCodeBlock__controls">
       {{#if @showFullScreenButton}}
@@ -31,3 +43,5 @@ import { on } from '@ember/modifier';
     </div>
   {{/if}}
 </template>
+
+export default EuiCodeBlockControls;

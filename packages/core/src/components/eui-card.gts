@@ -72,6 +72,7 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (if @selectable (uniqueId))
       (and

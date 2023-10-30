@@ -29,6 +29,7 @@ const fixedHeaderModifier = modifier(function fixedHeader(
 });
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     {{fixedHeaderModifier @position}}
     class={{classNames

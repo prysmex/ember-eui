@@ -6,6 +6,7 @@ import EuiStepNumber from './eui-step-number';
 import EuiTitle from './eui-title';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
       "euiStep"

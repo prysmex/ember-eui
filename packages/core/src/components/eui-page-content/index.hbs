@@ -1,3 +1,4 @@
+{{! @glint-nocheck: not typesafe yet }}
 {{#let (arg-or-default @role "main") as |role|}}
   <EuiPanel
     role={{if (eq role null) undefined role}}

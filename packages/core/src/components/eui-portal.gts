@@ -57,6 +57,7 @@ export default class EuiPortal extends Component<EuiPortalArgs> {
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{#if this.portalNode}}
       {{#in-element this.portalNode}}
         {{yield}}

@@ -175,6 +175,7 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerCompone
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <div
       {{didInsert this.setRef}}
       {{style this.style.outerStyle}}

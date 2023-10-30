@@ -11,6 +11,7 @@ import EuiButton from './eui-button';
 import EuiInnerText from './eui-inner-text';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (if @isDisabled "button" @element)
     (uniqueId)

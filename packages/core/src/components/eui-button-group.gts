@@ -8,6 +8,7 @@ import uniqueId from '../helpers/unique-id';
 import EuiButtonGroupButton from './eui-button-group-button';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   {{#let
     (argOrDefault @buttonSize "s")
     (argOrDefault @color "text")

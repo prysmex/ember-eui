@@ -53,6 +53,7 @@ export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsArg
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <div
       class={{classNames
         "euiRangeLevels"

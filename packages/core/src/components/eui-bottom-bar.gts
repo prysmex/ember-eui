@@ -98,6 +98,7 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     {{! TODO: Add landmarkSupport after having an <EuiI18n> component support }}
     {{#if this.usePortal}}
       <EuiPortal>

@@ -204,6 +204,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsComponentArg
   }
 
   <template>
+    {{! @glint-nocheck: not typesafe yet }}
     <nav
       {{onWindowResizeModifier
         functionToCallOnWindowResize=this.functionToCallOnWindowResize

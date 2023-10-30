@@ -6,6 +6,7 @@ import EuiText from './eui-text';
 import EuiTitle from './eui-title';
 
 <template>
+  {{! @glint-nocheck: not typesafe yet }}
   <div
     role="group"
     class={{classNames

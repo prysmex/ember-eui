@@ -1,4 +1,5 @@
 import { helper } from '@ember/component/helper';
+
 export type _EuiPageRestrictWidth = {
   /**
    * Sets the max-width of the page,

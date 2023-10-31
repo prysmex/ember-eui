@@ -6,21 +6,46 @@ import { and, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
+
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 const indeterminateModifier = modifier(function invalidateIndeterminate(
   element: HTMLInputElement,
-  [indeterminate]: [boolean]
+  [indeterminate]: [boolean?]
 ) {
   if (element) {
-    element.indeterminate = indeterminate;
+    element.indeterminate = indeterminate!!;
   }
 });
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+export interface EuiCheckboxSignature {
+  Element: HTMLInputElement;
+  Args: {
+    checked?: boolean;
+    disabled?: boolean;
+    indeterminate?: boolean;
+    icon?: boolean;
+    compressed?: boolean;
+    label?: string;
+    labelProps?: {
+      className?: string;
+    };
+    containerClass?: string;
+    className?: string;
+    inputRef?: (element: HTMLInputElement) => void;
+    isFakeLabelBlock?: boolean;
+    id?: string;
+  };
+  Blocks: {
+    label?: [];
+  };
+}
+
+const EuiCheckbox: TemplateOnlyComponent<EuiCheckboxSignature> = <template>
   {{#let
     (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
-    (argOrDefault @id (unique-id))
+    (argOrDefault @id (uniqueId))
     as |hasLabelBlock id|
   }}
     {{#let
@@ -42,7 +67,7 @@ const indeterminateModifier = modifier(function invalidateIndeterminate(
           checked={{@checked}}
           disabled={{@disabled}}
           ...attributes
-          {{indeterminateModifier @indeterminate @checked}}
+          {{indeterminateModifier @indeterminate}}
           {{didInsert (optional @inputRef)}}
         />
         <div class="euiCheckbox__square"></div>
@@ -61,4 +86,6 @@ const indeterminateModifier = modifier(function invalidateIndeterminate(
       </div>
     {{/let}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiCheckbox;

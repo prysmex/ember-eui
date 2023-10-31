@@ -6,8 +6,9 @@
  * Side Public License, v 1.
  */
 
-import { listLanguages, highlight, AST, RefractorNode } from 'refractor';
-import { CommonArgs } from '../../components/common';
+import { listLanguages, highlight } from 'refractor';
+import type { AST, RefractorNode } from 'refractor';
+import type { CommonArgs } from '../../components/common';
 
 /**
  * Utils shared between EuiCode and EuiCodeBlock
@@ -168,7 +169,7 @@ export const parseLineRanges = (ranges: string) => {
     .forEach((line: string) => {
       if (line.includes('-')) {
         const range = line.split('-').map(Number);
-        for (let i = range[0]; i <= range[1]; i++) {
+        for (let i = range[0]!; i <= range[1]!; i++) {
           highlights.push(i);
         }
       } else {
@@ -208,8 +209,8 @@ const addLineData = (
       const children = addLineData(node.children, data);
       const first = children[0];
       const last = children[children.length - 1];
-      const start = first.lineStart ?? lineStart;
-      const end = last.lineEnd ?? lineStart;
+      const start = first?.lineStart ?? lineStart;
+      const end = last?.lineEnd ?? lineStart;
       if (start !== end) {
         children.forEach((node) => {
           result.push(node);
@@ -239,7 +240,7 @@ function wrapLines(
   nodes.forEach((node) => {
     const lineStart = node.lineStart! - 1;
     if (grouped[lineStart]) {
-      grouped[lineStart].push(node);
+      grouped[lineStart]?.push(node);
     } else {
       grouped[lineStart] = [node];
     }

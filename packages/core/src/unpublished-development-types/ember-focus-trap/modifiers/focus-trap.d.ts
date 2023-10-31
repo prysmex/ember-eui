@@ -6,12 +6,12 @@ declare module 'ember-focus-trap/modifiers/focus-trap' {
     Args: {
       Positional: [];
       Named: {
-        isActive: boolean;
-        isPaused: boolean;
-        shouldSelfFocus: boolean;
-        focusTrapOptions: any;
-        additionalElements: HTMLElement[];
-        _createFocusTrap: () => void;
+        isActive?: boolean;
+        isPaused?: boolean;
+        shouldSelfFocus?: boolean;
+        focusTrapOptions?: any;
+        additionalElements?: HTMLElement[];
+        _createFocusTrap?: () => void;
       };
     };
   }> {}

@@ -7,12 +7,12 @@ export const paddingSizeMapping = {
   l: `${baseClass}--paddingLarge`
 };
 
-const borderRadiusMapping = {
+export const borderRadiusMapping = {
   none: `${baseClass}--borderRadiusNone`,
   m: `${baseClass}--borderRadiusMedium`
 };
 
-const colorMapping = {
+export const colorMapping = {
   transparent: `${baseClass}--transparent`,
   plain: `${baseClass}--plain`,
   subdued: `${baseClass}--subdued`,

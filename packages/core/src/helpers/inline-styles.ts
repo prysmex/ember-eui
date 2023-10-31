@@ -7,6 +7,7 @@ interface InlineStylesParams {
   componentArgs?: Record<string, unknown>;
   [property: string]: unknown;
 }
+
 interface FinalProperties {
   [name: string]: string | undefined;
 }
@@ -22,10 +23,10 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
     );
     assert(
       `Could not find inlineStyles in ${componentName}'s cssMapping.`,
-      cssMappings[componentName].inlineStyles
+      cssMappings[componentName]?.inlineStyles
     );
     componentStyles =
-      cssMappings[componentName].inlineStyles?.(componentArgs) || {};
+      cssMappings[componentName]?.inlineStyles?.(componentArgs) || {};
   }
 
   let finalProperties: FinalProperties = {

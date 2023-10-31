@@ -3,10 +3,75 @@ import { eq, or } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
 import EuiIcon from './eui-icon';
 import EuiToolTip from './eui-tool-tip';
+import type { EuiToolTipSignature } from './eui-tool-tip';
 import { on } from '@ember/modifier';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+import {
+  colorMapping,
+  sizeMapping
+} from '../utils/css-mappings/eui-beta-badge';
+
+export interface EuiBetaBadgeSignature {
+  Element: HTMLSpanElement;
+  Args: {
+    /**
+     * The label to use for the beta badge. Usually a single letter.
+     */
+    label?: string;
+    /**
+     * The title to use for the beta badge. Usually a full word.
+     */
+    title?: string;
+    /**
+     * The icon to use for the beta badge.
+     */
+    iconType?: string;
+    /**
+     * The color of the beta badge.
+     */
+    color?: keyof typeof colorMapping;
+
+    /**
+     * The size of the beta badge.
+     */
+    size?: keyof typeof sizeMapping;
+    /**
+     * The position of the tooltip for the beta badge.
+     */
+    tooltipPosition?: EuiToolTipSignature['Args']['position'];
+    /**
+     * The content of the tooltip for the beta badge.
+     */
+    tooltipContent?: string;
+    /**
+     * The aria-label for the beta badge.
+     */
+    onClickAriaLabel?: string;
+    /**
+     * The href for the beta badge.
+     */
+    href?: string;
+    /**
+     * The target for the beta badge.
+     */
+    target?: string;
+    /**
+     * The rel for the beta badge.
+     */
+    rel?: string;
+    /**
+     * The action to call when the beta badge is clicked.
+     */
+    onClick?: (event: MouseEvent) => void;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiBetaBadge: TemplateOnlyComponent<EuiBetaBadgeSignature> = <template>
   {{#let
     (argOrDefault @size "m")
     (eq @label.length 1)
@@ -20,7 +85,7 @@ import { on } from '@ember/modifier';
         (if singleLetter "euiBetaBadge--singleLetter")
         (if (or @onClick @href) "euiBetaBadge-isClickable")
         componentName="EuiBetaBadge"
-        color=(arg-or-default @color "hollow")
+        color=(argOrDefault @color "hollow")
         size=size
       )
       as |classes|
@@ -51,7 +116,7 @@ import { on } from '@ember/modifier';
               {{@label}}
             {{/if}}
           </a>
-        {{else}}
+        {{else if @onClick}}
           <button
             type="button"
             aria-label={{@onClickAriaLabel}}
@@ -106,7 +171,7 @@ import { on } from '@ember/modifier';
                   {{@label}}
                 {{/if}}
               </a>
-            {{else}}
+            {{else if @onClick}}
               <button
                 type="button"
                 aria-label={{@onClickAriaLabel}}
@@ -178,4 +243,6 @@ import { on } from '@ember/modifier';
     {{/let}}
 
   {{/let}}
-</template>
+</template>;
+
+export default EuiBetaBadge;

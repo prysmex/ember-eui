@@ -15,7 +15,6 @@ import EuiButtonIcon from './eui-button-icon';
 import EuiPortal from './eui-portal';
 import EuiOverlayMask from './eui-overlay-mask';
 import { on } from '@ember/modifier';
-//@ts-expect-error
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, or, eq, not } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';

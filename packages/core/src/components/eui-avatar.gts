@@ -1,11 +1,11 @@
-import inlineStyles from '@ember-eui/core/helpers/inline-styles';
+import inlineStyles from '../helpers/inline-styles';
 import classNames from '../helpers/class-names';
-import simpleStyle from '@ember-eui/core/modifiers/simple-style';
-import { toInitials } from '@ember-eui/core/helpers/to-initials';
-import { and, not, or, eq } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
-import { hash } from '@ember/helper';
+import simpleStyle from '../modifiers/simple-style';
+import { toInitials } from '../helpers/to-initials';
+import { and, not, or, eq } from 'ember-truth-helpers';
 import EuiIcon from './eui-icon';
+import { hash } from '@ember/helper';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

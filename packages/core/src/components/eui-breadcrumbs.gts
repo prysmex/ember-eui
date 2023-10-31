@@ -1,20 +1,21 @@
 import { throttle } from '@ember/runloop';
 import Component from '@glimmer/component';
 import { modifier } from 'ember-modifier';
-import { EuiBreakpointSize, getBreakpoint } from '../../utils/breakpoint';
+import { getBreakpoint } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint';
 import { cached, tracked } from '@glimmer/tracking';
 
 import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon';
-import EuiLink from './eui-linnk';
+import EuiLink from './eui-link';
 import EuiInnerText from './eui-inner-text';
 import EuiPopover from './eui-popover';
-import useState from '@ember-eui/core/helpers/use-state';
+import useState from '../helpers/use-state';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { eq, and, not } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
-import { sub } from 'ember-math-helpers/helpers/sub';
+import sub from 'ember-math-helpers/helpers/sub';
 
 export type EuiBreadcrumbResponsiveMaxCount = {
   /**
@@ -71,8 +72,11 @@ const limitedBreadcrumbs = (max: number, breadcrumbs: EuiBreadcrumb[]) => {
     start + breadcrumbs.length - limit
   );
 
-  if (overflowBreadcrumbs.length) {
-    overflowBreadcrumbs[overflowBreadcrumbs.length - 1]['aria-current'] =
+  if (
+    overflowBreadcrumbs.length &&
+    overflowBreadcrumbs[overflowBreadcrumbs.length - 1]
+  ) {
+    overflowBreadcrumbs[overflowBreadcrumbs.length - 1]!['aria-current'] =
       'false';
   }
 

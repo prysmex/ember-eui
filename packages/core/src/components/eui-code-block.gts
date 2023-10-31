@@ -1,28 +1,27 @@
 import Component from '@glimmer/component';
 import {
-  EuiCodeSharedProps,
   getHtmlContent,
   checkSupportedLanguage,
   highlightByLine
-} from '../../utils/code/utils';
+} from '../utils/code/utils';
+import type { EuiCodeSharedProps } from '../utils/code/utils';
 import { action } from '@ember/object';
-import { RefractorNode } from 'refractor';
+import type { RefractorNode } from 'refractor';
 import { tracked } from '@glimmer/tracking';
 import { scheduleOnce } from '@ember/runloop';
 import { modifier } from 'ember-modifier';
 import { helper } from '@ember/component/helper';
-import EuiInnerText from '@ember-eui/components/eui-inner-text';
-import VirtualizedCodeBlock from '@ember-eui/components/eui-code-block/virtualized';
-import FullScreenDisplay from '@ember-eui/components/eui-code-block/full-screen-display';
-import Controls from '@ember-eui/components/eui-code-block/controls';
+import EuiInnerText from '../components/eui-inner-text';
+import VirtualizedCodeBlock from '../components/eui-code-block/virtualized';
+import FullScreenDisplay from '../components/eui-code-block/full-screen-display';
+import Controls from '../components/eui-code-block/controls';
 import classNames from '../helpers/class-names';
 import { or, and, eq, not } from 'ember-truth-helpers';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import style from 'ember-style-modifier/modifiers/style';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
-import mutationObserver from '@ember-eui/core/modifiers/mutation-observer';
+import resizeObserver from '../modifiers/resize-observer';
+import mutationObserver from '../modifiers/mutation-observer';
 import set from 'ember-set-helper/helpers/set';
 import { hash } from '@ember/helper';
 

@@ -6,8 +6,8 @@ import { modifier } from 'ember-modifier';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiPortal from './eui-portal';
-import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
-import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
+import resizeObserver from '../modifiers/resize-observer';
+import screenReaderOnly from '../modifiers/screen-reader-only';
 
 export interface EuiButtomBarArgs {
   affordForDisplacement: boolean;

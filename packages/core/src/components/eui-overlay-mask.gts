@@ -8,7 +8,7 @@ import { on } from '@ember/modifier';
 import classNames from '../helpers/class-names';
 
 interface EuiOverlayMaskArgs {
-  onClick(): void;
+  onClick(e: Event): void;
   headerZindexLocation: 'above' | 'below';
 }
 
@@ -28,7 +28,7 @@ export default class EuiOverlayMaskComponent extends Component<EuiOverlayMaskSig
   @action
   onClick(e: MouseEvent) {
     if (e.target === this.overlayMaskNode) {
-      this.args.onClick?.();
+      this.args.onClick?.(e);
     }
   }
 

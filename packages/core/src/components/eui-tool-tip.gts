@@ -56,7 +56,7 @@ const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   display: "inlineBlock",
 };
 
-type EuiTooltipArgs = {
+export type EuiTooltipArgs = {
   /**
    * Passes onto the the trigger.
    */

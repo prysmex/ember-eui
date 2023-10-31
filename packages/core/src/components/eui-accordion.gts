@@ -5,7 +5,7 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
-import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
+import resizeObserver from '../modifiers/resize-observer';
 
 import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
@@ -19,7 +19,7 @@ import EuiButtonIcon from './eui-button-icon';
 import EuiLoadingSpinner from './eui-loading-spinner';
 
 import type { CommonArgs } from './common';
-import type { paddingMapping } from '@ember-eui/core/utils/css-mappings/eui-accordion';
+import type { paddingMapping } from '../utils/css-mappings/eui-accordion';
 import type { ComponentLike } from '@glint/template';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
@@ -247,7 +247,10 @@ export default class EuiAccordionAccordionComponent extends Component<Signature>
                   class={{this.buttonClasses}}
                   aria-controls={{@id}}
                   aria-expanded={{this.isOpen}}
-                  aria-labelledby={{argOrDefault this.buttonProps.id (uniqueId)}}
+                  aria-labelledby={{argOrDefault
+                    this.buttonProps.id
+                    (uniqueId)
+                  }}
                   {{on "click" this.onToggle}}
                 >
                   <span class={{this.buttonContentClasses}}>

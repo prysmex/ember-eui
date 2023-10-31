@@ -1,8 +1,23 @@
 import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiFormLabelSignature {
+  Element: HTMLLabelElement | HTMLLegendElement;
+  Args: {
+    isFocused?: boolean;
+    isInvalid?: boolean;
+    type?: 'legend' | 'label';
+    for?: string;
+    label?: string;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiFormLabel: TemplateOnlyComponent<EuiFormLabelSignature> = <template>
   {{#let
     (classNames
       (if @isFocused "euiFormLabel-isFocused")
@@ -23,4 +38,6 @@ import { eq } from 'ember-truth-helpers';
       </label>
     {{/if}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiFormLabel;

@@ -9,6 +9,7 @@ export interface EuiToastProps {
   id: string;
   title: string;
   color?: ToastColor;
+  body?: string;
   iconType?: string;
   toastLifeTimeMs?: number;
   useMarkdownFormat?: boolean;

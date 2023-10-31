@@ -6,7 +6,39 @@ import EuiText from './eui-text';
 import EuiMarkdownFormat from './eui-markdown-format';
 import argOrDefault from '../helpers/arg-or-default';
 
-<template>
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiToastSignature {
+  Element: HTMLDivElement;
+  Args: {
+    /**
+     * The title of the toast
+     */
+    title?: string;
+    /**
+     * The body of the toast
+     */
+    body?: string;
+    /**
+     * The color of the toast
+     */
+    color?: 'primary' | 'success' | 'warning' | 'danger' | 'none';
+    /**
+     * The icon type of the toast
+     */
+    iconType?: string;
+    /**
+     * The callback function when the toast is closed
+     */
+    onClose?: () => void;
+    /**
+     * Whether to use markdown format for the body
+     */
+    useMarkdownFormat?: boolean;
+  };
+}
+
+const EuiToast: TemplateOnlyComponent<EuiToastSignature> = <template>
   {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
@@ -64,4 +96,6 @@ import argOrDefault from '../helpers/arg-or-default';
       {{/if}}
     {{/if}}
   </div>
-</template>
+</template>;
+
+export default EuiToast;

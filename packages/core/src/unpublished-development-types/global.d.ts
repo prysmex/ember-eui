@@ -1,5 +1,5 @@
 interface PropertyMapping {
-  [size: string]: string;
+  [size: string]: string | null;
 }
 
 interface ComponentProperty {

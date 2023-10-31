@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
-import { action, set } from '@ember/object';
+import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
@@ -9,6 +9,7 @@ import resizeObserver from '@ember-eui/core/modifiers/resize-observer';
 
 import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
+import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';

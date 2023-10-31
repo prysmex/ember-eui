@@ -6,6 +6,7 @@ import EuiIcon from './eui-icon';
 
 import type { IconSize } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { colorMapping, displayMapping, sizeMapping } from '../utils/css-mappings/eui-button-icon';
 
 export interface Signature {
   Element: HTMLButtonElement | HTMLAnchorElement;
@@ -17,9 +18,9 @@ export interface Signature {
     target?: string;
     isDisabled?: boolean;
     isSelected?: boolean;
-    display?: 'fill' | 'empty';
-    color?: 'primary' | 'danger' | 'text' | 'ghost' | 'icon';
-    size?: 'xs' | 's' | 'm' | 'l';
+    display?: keyof typeof displayMapping;
+    color?: keyof typeof colorMapping;
+    size?: keyof typeof sizeMapping;
     type?: 'button' | 'submit' | 'reset';
     useSvg?: boolean;
     useComponent?: boolean;

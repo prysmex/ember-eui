@@ -1,13 +1,25 @@
-import GlimmerComponent from '@glimmer/component';
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-import { sideMapping } from '../../utils/css-mappings/eui-global-toast-list';
-import Timer from '../../utils/timer';
-import EuiToasterService, { EuiToastProps } from '../../services/eui-toaster';
+import { sideMapping } from '../utils/css-mappings/eui-global-toast-list';
+import Timer from '../utils/timer';
+import EuiToasterService from '../services/eui-toaster';
+import type { EuiToastProps } from '../services/eui-toaster';
+import { get } from '@ember/helper';
+
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+
+import queue from 'ember-composable-helpers/helpers/queue';
+import optional from 'ember-composable-helpers/helpers/optional';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiToast from './eui-toast';
 
 type EuiToastSide = keyof typeof sideMapping;
-type ToastSide = EuiToastSide | string;
 
 type GlobalToastListArgs = {
   toasts: EuiToastProps[];
@@ -18,12 +30,17 @@ type GlobalToastListArgs = {
     Determines which side of the browser window the toasts should appear
     Default: 'right'
   */
-  side?: ToastSide;
+  side?: EuiToastSide;
 };
 
 const TOAST_FADE_OUT_MS = 250;
 
-export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastListArgs> {
+export interface EuiGlobalToastListItemSignature {
+  Element: HTMLDivElement;
+  Args: GlobalToastListArgs;
+}
+
+export default class EuiGlobalToastList extends Component<EuiGlobalToastListItemSignature> {
   @service declare euiToaster: EuiToasterService;
 
   dismissTimeoutIds: number[] = [];
@@ -100,7 +117,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
         const timer = this.toastIdToTimerMap[toastId];
-        timer.pause();
+        timer?.pause();
       }
     }
   }
@@ -111,7 +128,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
         const timer = this.toastIdToTimerMap[toastId];
-        timer.resume();
+        timer?.resume();
       }
     }
   }
@@ -157,7 +174,7 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
           if (this.args.dismissToast) {
             this.args.dismissToast.apply(this, [toast]);
           }
-          this.toastIdToTimerMap[toast.id].clear();
+          this.toastIdToTimerMap[toast.id]!.clear();
           delete this.toastIdToTimerMap[toast.id];
 
           delete this.toastIdToDismissedMap[toast.id];
@@ -198,8 +215,49 @@ export default class EuiGlobalToastList extends GlimmerComponent<GlobalToastList
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
         const timer = this.toastIdToTimerMap[toastId];
-        timer.clear();
+        timer?.clear();
       }
     }
   }
+
+  <template>
+    <div
+      aria-live="polite"
+      role="region"
+      class={{classNames
+        componentName="EuiGlobalToastList"
+        side=(argOrDefault @side "right")
+      }}
+      style={{unless this.euiToaster.toasts.length "padding:0px;"}}
+      {{didInsert this.didInsert}}
+      {{on "scroll" this.onScroll}}
+      {{on "mouseenter" this.onMouseEnter}}
+      {{on "mouseleave" this.onMouseLeave}}
+      ...attributes
+    >
+      {{#each this.euiToaster.toasts as |toast|}}
+        <EuiToast
+          class={{classNames
+            "euiGlobalToastListItem"
+            (if
+              (get this.toastIdToDismissedMap toast.id)
+              "euiGlobalToastListItem-isDismissed"
+            )
+          }}
+          @title={{toast.title}}
+          @useMarkdownFormat={{toast.useMarkdownFormat}}
+          @body={{toast.body}}
+          @color={{toast.color}}
+          @iconType={{toast.iconType}}
+          @onClose={{queue
+            (fn this.dismissToast toast)
+            (optional toast.onClose)
+          }}
+          {{didInsert (fn this.didInsertToast toast)}}
+          {{on "focus" this.onMouseEnter}}
+          {{on "blur" this.onMouseLeave}}
+        />
+      {{/each}}
+    </div>
+  </template>
 }

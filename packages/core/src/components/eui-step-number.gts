@@ -1,12 +1,51 @@
 import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
 import EuiIcon from './eui-icon';
+import type { EuiIconSignature } from './eui-icon';
 import EuiLoadingSpinner from './eui-loading-spinner';
-import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
+import screenReaderOnly from '../modifiers/screen-reader-only';
+import { helper } from '@ember/component/helper';
+import type { EuiStepSignature } from './eui-step';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  {{#let (if (eq @titleSize "xs") "s" "m") as |iconSize|}}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+import type { statusToClassMap } from '../utils/css-mappings/eui-step-number';
+
+export interface EuiStepNumberSignature {
+  Element: HTMLSpanElement;
+  Args: {
+    /**
+     * The number of the step
+     */
+    number?: number | string;
+    /**
+     * The status of the step
+     */
+    status?: keyof typeof statusToClassMap;
+    /**
+     * The size of the step
+     */
+    titleSize?: EuiStepSignature['Args']['titleSize'];
+    /**
+     * Whether the step is hollow
+     */
+    isHollow?: boolean;
+    /**
+     * The aria-label for the step
+     */
+    stepAriaLabel?: string;
+  };
+}
+
+const getIconSize = helper(
+  ([titleSize]: [EuiStepNumberSignature['Args']['titleSize']]): Exclude<
+    EuiIconSignature['Args']['size'],
+    'l' | 'xl' | 'xxl'
+  > => (titleSize === 'xs' ? 's' : 'm')
+);
+
+const EuiStepNumber: TemplateOnlyComponent<EuiStepNumberSignature> = <template>
+  {{#let (getIconSize @titleSize) as |iconSize|}}
     <span
       class={{classNames
         (if @isHollow "euiStepNumber-isHollow")
@@ -47,4 +86,6 @@ import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
       {{/if}}
     </span>
   {{/let}}
-</template>
+</template>;
+
+export default EuiStepNumber;

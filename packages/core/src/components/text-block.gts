@@ -1,7 +1,18 @@
 import { eq } from 'ember-truth-helpers';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface TextBlockSignature {
+  Element: HTMLHeadingElement | HTMLParagraphElement | HTMLLegendElement;
+  Args: {
+    tagName: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'legend';
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const TextBlock: TemplateOnlyComponent<TextBlockSignature> = <template>
   {{#if (eq @tagName "h1")}}
     <h1 ...attributes>
       {{yield}}
@@ -35,4 +46,6 @@ import { eq } from 'ember-truth-helpers';
       {{yield}}
     </legend>
   {{/if}}
-</template>
+</template>;
+
+export default TextBlock;

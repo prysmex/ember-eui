@@ -4,7 +4,7 @@ import { htmlSafe } from '@ember/template';
 import {
   colorToClassMap,
   typeToPathMap
-} from '@ember-eui/core/utils/css-mappings/eui-icon';
+} from '../utils/css-mappings/eui-icon';
 import { ensureSafeComponent } from '@embroider/util';
 
 // @ts-expect-error
@@ -16,7 +16,7 @@ import classNames from '../helpers/class-names';
 import { keysOf } from './common';
 
 import type { CommonArgs } from './common';
-import type { sizeToClassNameMap } from '@ember-eui/core/utils/css-mappings/eui-icon';
+import type { sizeToClassNameMap } from '../utils/css-mappings/eui-icon';
 import type { ComponentLike } from '@glint/template';
 
 let config = {};

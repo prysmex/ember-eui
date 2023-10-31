@@ -1,6 +1,7 @@
 export const baseClass = 'euiNotificationBadge';
 
 export const colorMapping = {
+  accent: null,
   subdued: `${baseClass}--subdued`
 };
 

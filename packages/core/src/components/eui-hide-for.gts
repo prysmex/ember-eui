@@ -1,18 +1,14 @@
 import Component from '@glimmer/component';
-import { EuiBreakpointSize } from '../../utils/breakpoint';
-import { CurrentBreakPointHelper } from '../eui-show-for';
-//@ts-ignore
+import type { EuiBreakpointSize } from '../utils/breakpoint';
+import { CurrentBreakPointHelper } from './eui-show-for';
+//@ts-expect-error
 import { invokeHelper } from '@ember/helper';
-//@ts-ignore
+//@ts-expect-error
 import { getValue } from '@glimmer/tracking/primitives/cache';
 
 export type EuiHideForBreakpoints = EuiBreakpointSize;
 
 export interface EuiHideForArgs {
-  /**
-   * Required otherwise nothing ever gets returned
-   */
-  children: Component;
   /**
    * List of all the responsive sizes to hide the children for.
    * Array of #EuiBreakpointSize
@@ -20,7 +16,12 @@ export interface EuiHideForArgs {
   sizes: EuiHideForBreakpoints[] | 'all' | 'none';
 }
 
-export default class EuiHideForComponent extends Component<EuiHideForArgs> {
+export interface EuiHideForSignature {
+  Args: EuiHideForArgs;
+  Blocks: { default: [] };
+}
+
+export default class EuiHideForComponent extends Component<EuiHideForSignature> {
   currentBreakpointHelper = invokeHelper(this, CurrentBreakPointHelper, () => {
     return {
       positional: [this.args.sizes]

@@ -25,7 +25,7 @@ interface Options {
   columns?: number;
   grow?: number | string | boolean;
   iconSide?: string;
-  flush?: string;
+  flush?: string | boolean;
   borderSide?: string;
   position?: string;
   theme?: string;

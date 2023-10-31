@@ -1,6 +1,6 @@
 const baseClass = 'euiStepNumber';
 
-const statusToClassMap = {
+export const statusToClassMap = {
   incomplete: `${baseClass}--incomplete`,
   disabled: `${baseClass}--disabled`,
   loading: `${baseClass}--loading`,
@@ -9,7 +9,7 @@ const statusToClassMap = {
   complete: `${baseClass}--complete`
 };
 
-const mapping: ComponentMapping = {
+export const mapping: ComponentMapping = {
   base: baseClass,
   properties: {
     type: statusToClassMap

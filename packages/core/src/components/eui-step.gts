@@ -4,9 +4,25 @@ import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
 import EuiStepNumber from './eui-step-number';
 import EuiTitle from './eui-title';
+import type { EuiTitleSignature } from './eui-title';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiStepSignature {
+  Element: HTMLDivElement;
+  Args: {
+    step: number;
+    title: string;
+    status: 'incomplete' | 'complete' | 'disabled';
+    titleSize: Exclude<EuiTitleSignature['Args']['size'], 'xxxs' | 'xxs' | 'l'>;
+    headingElement: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiStep: TemplateOnlyComponent<EuiStepSignature> = <template>
   <div
     class={{classNames
       "euiStep"
@@ -38,4 +54,6 @@ import EuiTitle from './eui-title';
       {{yield}}
     </div>
   </div>
-</template>
+</template>;
+
+export default EuiStep;

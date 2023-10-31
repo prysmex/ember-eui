@@ -1,6 +1,6 @@
 export const baseClass = 'euiButtonIcon';
 
-const colorMapping = {
+export const colorMapping = {
   primary: `${baseClass}--primary`,
   accent: `${baseClass}--accent`,
   success: `${baseClass}--success`,
@@ -10,13 +10,13 @@ const colorMapping = {
   text: `${baseClass}--text`
 };
 
-const displayMapping = {
+export const displayMapping = {
   base: '',
   empty: `${baseClass}--empty`,
   fill: `${baseClass}--fill`
 };
 
-const sizeMapping = {
+export const sizeMapping = {
   xs: `${baseClass}--xSmall`,
   s: `${baseClass}--small`,
   m: `${baseClass}--medium`

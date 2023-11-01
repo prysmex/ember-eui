@@ -3,7 +3,7 @@ import {
   defaultParsingPlugins,
   defaultProcessingPlugins
 } from '../../utils/markdown/plugins/markdown-default-plugins';
-//@ts-expect-error
+
 import { cached } from '@glimmer/tracking';
 import unified, { Processor } from 'unified';
 import { toDOM } from '../../utils/markdown/plugins/to-dom';

@@ -1,10 +1,7 @@
 import Component from '@glimmer/component';
 import { guidFor } from '@ember/object/internals';
 import { htmlSafe } from '@ember/template';
-import {
-  colorToClassMap,
-  typeToPathMap
-} from '../utils/css-mappings/eui-icon';
+import { colorToClassMap, typeToPathMap } from '../utils/css-mappings/eui-icon';
 import { ensureSafeComponent } from '@embroider/util';
 
 // @ts-expect-error
@@ -25,7 +22,7 @@ export const TYPES = keysOf(typeToPathMap);
 
 export type EuiIconType = keyof typeof typeToPathMap;
 
-export type IconType = EuiIconType | string;
+export type IconType = EuiIconType | string | ComponentLike;
 
 export const COLORS: NamedColor[] = keysOf(colorToClassMap);
 
@@ -169,7 +166,7 @@ export default class EuiIcon extends Component<EuiIconSignature> {
   get optionalCustomStyles(): ReturnType<typeof htmlSafe> | string {
     const { color } = this.args;
 
-    if (color) {
+    if (color && typeof color === 'string') {
       if (!isNamedColor(color)) {
         return htmlSafe(`fill: ${color}`);
       }
@@ -181,7 +178,7 @@ export default class EuiIcon extends Component<EuiIconSignature> {
   get optionalColorClass(): NamedColor | string {
     const { color } = this.args;
 
-    if (color) {
+    if (color && typeof color === 'string') {
       if (isNamedColor(color)) {
         return colorToClassMap[color];
       } else {
@@ -218,7 +215,7 @@ export default class EuiIcon extends Component<EuiIconSignature> {
 
   <template>
     {{#if (and @useComponent this.icon)}}
-      {{! @glint-expect-error }}
+      {{!@glint-expect-error}}
       {{#let (component this.icon) as |IconComponent|}}
         {{!template-lint-disable}}
         <IconComponent

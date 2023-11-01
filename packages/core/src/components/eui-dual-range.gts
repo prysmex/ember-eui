@@ -27,8 +27,8 @@ import EuiRangeThumb from './eui-range-thumb';
 import EuiRangeTrack from './eui-range-track';
 import EuiRangeWrapper from './eui-range-wrapper';
 
-import type { EuiRangeInputArgs } from '../eui-range-input/types';
-import type { EuiRangeSliderArgs } from '../eui-range-slider/types';
+import type { EuiRangeInputArgs } from './eui-range-input';
+import type { EuiRangeSliderArgs } from './eui-range-slider';
 import type { EuiFormControlLayoutArgs } from './eui-form-control-layout';
 import type { EuiRangeArgs } from './eui-range';
 import type { EuiRangeLevel } from './eui-range-levels';
@@ -313,7 +313,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
         }
         lower = this._handleKeyDown(lower, event);
     }
-    if (lower >= this.upperValue || lower < this.min) return;
+    if (lower >= (this.upperValue as number) || lower < this.min) return;
     this._handleOnChange(lower, this.upperValue, event);
   }
 
@@ -332,7 +332,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
         }
         upper = this._handleKeyDown(upper, event);
     }
-    if (upper <= this.lowerValue || upper > this.max) return;
+    if (upper <= (this.lowerValue as number) || upper > this.max) return;
     this._handleOnChange(this.lowerValue, upper, event);
   }
 

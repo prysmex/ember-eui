@@ -1,6 +1,6 @@
 import { helper } from '@ember/component/helper';
 
-export function isItemOpen(item: any, selectedItem: string): boolean {
+export function isItemOpen(item: any, selectedItem?: string): boolean {
   // The developer can force the item to be open.
   if (item.forceOpen) {
     return true;
@@ -23,7 +23,7 @@ export function isItemOpen(item: any, selectedItem: string): boolean {
  *
  * @param { any } ref
  */
-export function isItemOpenHelper([item, selectedItem]: [any, string]): boolean {
+export function isItemOpenHelper([item, selectedItem]: [any, string?]): boolean {
   return isItemOpen(item, selectedItem);
 }
 

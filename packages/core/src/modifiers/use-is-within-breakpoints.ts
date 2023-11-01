@@ -2,6 +2,12 @@ import { isWithinBreakpoints } from "../utils/breakpoint";
 import type { EuiBreakpointSize } from "../utils/breakpoint";
 import { modifier } from "ember-modifier";
 
+export interface Named {
+  sizes: EuiBreakpointSize[];
+  isActive: boolean;
+  setIsWithinBreakpointsValue: (value: boolean) => void;
+}
+
 export default modifier(function (
   _element: Element,
   _pos: unknown[],
@@ -9,11 +15,7 @@ export default modifier(function (
     sizes,
     isActive = true,
     setIsWithinBreakpointsValue,
-  }: {
-    sizes: EuiBreakpointSize[];
-    isActive: boolean;
-    setIsWithinBreakpointsValue: (value: boolean) => void;
-  },
+  }: Named,
 ) {
   function handleResize() {
     setIsWithinBreakpointsValue(isWithinBreakpoints(window.innerWidth, sizes));

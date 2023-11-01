@@ -4,7 +4,7 @@ import { or } from 'ember-truth-helpers';
 import EuiFormFieldset from './eui-form-fieldset';
 import EuiCheckbox from './eui-checkbox';
 import { on } from '@ember/modifier';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+import validatableControl from '../modifiers/validatable-control';
 import { get } from '@ember/helper';
 import { fn } from '@ember/helper';
 

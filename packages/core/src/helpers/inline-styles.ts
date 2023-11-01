@@ -8,10 +8,6 @@ interface InlineStylesParams {
   [property: string]: unknown;
 }
 
-interface FinalProperties {
-  [name: string]: string | undefined;
-}
-
 export function inlineStyles(_: unknown, params: InlineStylesParams) {
   const { componentName, componentArgs = {}, ...properties } = params;
   let componentStyles = {};
@@ -29,7 +25,9 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
       cssMappings[componentName]?.inlineStyles?.(componentArgs) || {};
   }
 
-  let finalProperties: FinalProperties = {
+  let finalProperties: {
+    [name: string]: string | undefined;
+  } = {
     ...properties,
     ...componentStyles
   };

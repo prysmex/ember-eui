@@ -1,15 +1,10 @@
 import { helper } from '@ember/component/helper';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { htmlSafe } from '@ember/template';
-import resizeObserver from '../modifiers/resize-observer';
-
-import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
-import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
 import uniqueId from '../helpers/unique-id';
 import classNames from '../helpers/class-names';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 import argOrDefault from '../helpers/arg-or-default';
 import EuiRadio from './eui-radio';
@@ -18,7 +13,7 @@ import EuiBetaBadge from './eui-beta-badge';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-const charAt = helper(function ([str, num]: [string, number]) {
+const charAt = helper(function ([str, num]: [string | undefined, number]) {
   return str?.charAt?.(num);
 });
 
@@ -32,7 +27,7 @@ export interface EuiKeyPadMenuItemSignature {
     label?: string;
     name?: string;
     value?: string;
-    onChange?: (id: string, value?: string) => void;
+    onChange: (id: string, value?: string | Event) => void;
     betaBadgeLabel?: string;
     betaBadgeIconType?: string;
     betaBadgeTooltipContent?: string;
@@ -100,7 +95,7 @@ const EuiKeyPadMenuItem: TemplateOnlyComponent<EuiKeyPadMenuItemSignature> =
                 @size="s"
                 @color="subdued"
                 class="euiKeyPadMenuItem__betaBadge"
-                @label={{this.charAt @betaBadgeLabel 0}}
+                @label={{charAt @betaBadgeLabel 0}}
                 @title={{@betaBadgeLabel}}
                 @iconType={{@betaBadgeIconType}}
                 @tooltipContent={{@betaBadgeTooltipContent}}

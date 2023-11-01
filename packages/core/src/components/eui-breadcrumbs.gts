@@ -142,7 +142,13 @@ interface EuiBreadcrumbsComponentArgs {
   breadcrumbs: EuiBreadcrumb[];
 }
 
-export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsComponentArgs> {
+export interface EuiBreadcrumbsSignature {
+  Element: HTMLElement;
+  Args: EuiBreadcrumbsComponentArgs;
+  Blocks: { default: [] };
+}
+
+export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
   @tracked currentBreakpoint;
 
   constructor(owner: unknown, args: EuiBreadcrumbsComponentArgs) {

@@ -11,7 +11,7 @@ import {
   directionMapping
 } from '../utils/css-mappings/eui-flex-group';
 
-interface EuiFlexGroupSignature {
+export interface EuiFlexGroupSignature {
   Element: HTMLDivElement | HTMLSpanElement;
   Args: {
     gutterSize?: keyof typeof gutterSizeMapping;

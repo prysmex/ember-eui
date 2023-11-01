@@ -2,11 +2,12 @@ import argOrDefault from '../helpers/arg-or-default';
 import { and, eq } from 'ember-truth-helpers';
 import EuiFieldNumber from './eui-field-number';
 import { hash } from '@ember/helper';
-import simpleStyle from '@ember-eui/core/modifiers/simple-style';
-import inlineStyles from '@ember-eui/core/helpers/inline-styles';
+import simpleStyle from '../modifiers/simple-style';
+import inlineStyles from '../helpers/inline-styles';
 import castTo from '@ember-eui/core/helpers/cast-to';
 
-import { EuiFieldNumberArgs } from './eui-field-number';
+import type { EuiFieldNumberArgs } from './eui-field-number';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiRangeInputArgs
   extends Omit<EuiFieldNumberArgs, 'max' | 'min' | 'value'> {
@@ -16,10 +17,19 @@ export interface EuiRangeInputArgs
   min: number;
   side?: 'min' | 'max';
   value: string | number;
+  isPrependProvided?: boolean;
+  isAppendProvided?: boolean;
 }
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+export interface EuiRangeInputSignature {
+  Args: EuiRangeInputArgs;
+  Blocks: {
+    prepend: [string];
+    append: [string];
+  };
+}
+
+const EuiRangeInput: TemplateOnlyComponent<EuiRangeInputSignature> = <template>
   {{#let
     (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
     (and (argOrDefault @isAppendProvided true) (has-block "append"))
@@ -59,4 +69,6 @@ export interface EuiRangeInputArgs
       </:append>
     </EuiFieldNumber>
   {{/let}}
-</template>
+</template>;
+
+export default EuiRangeInput;

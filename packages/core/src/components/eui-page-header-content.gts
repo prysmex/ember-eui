@@ -3,20 +3,26 @@ import type { EuiButtomBarArgs } from './eui-bottom-bar';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import EuiTabs from './eui-tabs';
 import EuiTab from './eui-tab';
+import type { IEuiTab } from './eui-tab';
 import EuiFlexItem from './eui-flex-item';
 import EuiFlexGroup from './eui-flex-group';
+import type { EuiFlexGroupSignature } from './eui-flex-group';
 import EuiBreadcrumbs from './eui-breadcrumbs';
+import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs';
 import EuiSpacer from './eui-spacer';
 import EuiTitle from './eui-title';
 import EuiIcon from './eui-icon';
 import EuiText from './eui-text';
-import { and, or, not } from 'ember-truth-helpers';
+import { and, or, not, eq } from 'ember-truth-helpers';
 import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints';
 import useState from '../helpers/use-state';
+import inlineStyles from '../helpers/inline-styles';
+import { array } from '@ember/helper';
+import { on } from '@ember/modifier';
+import optional from 'ember-composable-helpers/helpers/optional';
+import type { WithBoundArgs } from '@glint/template';
 
 import classNames from '../helpers/class-names';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
-import { concat } from '@ember/helper';
 import { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
 import style from 'ember-style-modifier/modifiers/style';
 
@@ -27,30 +33,113 @@ export const TEMPLATES = [
   'empty'
 ] as const;
 
+type Tab = IEuiTab & {
+  label?: string;
+  onClick?: () => void;
+};
+
 export type EuiPageTemplateProps = {
   template?: (typeof TEMPLATES)[number];
   /**
-  //  * Gets passed along to the #EuiBottomBar component if `bottomBar` has contents
-
-
-
-
-
-  //  */
+   * Gets passed along to the #EuiBottomBar component if `bottomBar` has contents
+   */
   bottomBarProps?: EuiButtomBarArgs;
-  //  * Stretches or restricts the height to 100% of the parent;
-  //  * `true`: scrolls the EuiPageContentBody;
-  //  * `noscroll`: removes all scroll ability;
-  //  * Only works when `template = 'default | empty'` and breakpoint is `m` and above
-  //  */
+  /* Stretches or restricts the height to 100% of the parent;
+   * `true`: scrolls the EuiPageContentBody;
+   * `noscroll`: removes all scroll ability;
+   * Only works when `template = 'default | empty'` and breakpoint is `m` and above
+   */
   fullHeight?: boolean;
   /**
    * Minimum height in which to enforce scrolling
    */
   minHeight?: number;
+
+  /**
+   * Restrict the width of the page content body
+   */
+  restrictWidth?: boolean | string;
+
+  /**
+   * Adds a bottom border to the page header
+   */
+  bottomBorder?: boolean;
+
+  /**
+   * Adds a bottom border to the page content body
+   */
+  bodyBottomBorder?: boolean;
+
+  /**
+   * Adds a bottom border to the page content body
+   */
+  bodyProps?: {
+    /**
+     * Adds padding to the page content body
+     */
+    paddingSize?: keyof typeof paddingSizeMapping;
+  };
+  /**
+   * Adds a bottom border to the page content body
+   */
+  contentProps?: {
+    /**
+     * Adds padding to the page content body
+     */
+    paddingSize?: keyof typeof paddingSizeMapping;
+  };
+
+  alignItems?: 'top' | 'bottom' | 'center' | 'stretch';
+
+  responsive?: boolean | 'reverse';
+
+  hasDescriptionBlock?: boolean;
+
+  hasRightSideItemsBlock?: boolean;
+
+  hasPageTitleBlock?: boolean;
+
+  hasDefaultBlock?: boolean;
+
+  pageTitle?: string;
+
+  breadcrumbs?: EuiBreadcrumbsSignature['Args']['breadcrumbs'];
+
+  breadcrumbProps?: {
+    className?: string;
+  };
+
+  rightSideGroupProps?: {
+    className?: string;
+  };
+
+  pageTitleProps?: {
+    className?: string;
+  };
+
+  iconType?: string;
+
+  description?: string;
+
+  iconProps?: {
+    className?: string;
+  };
+
+  tabs?: Tab[];
 };
 
-export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
+export interface EuiPageHeaderContentSignature {
+  Element: HTMLDivElement;
+  Args: EuiPageTemplateProps;
+  Blocks: {
+    default: [];
+    pageTitle: [];
+    description: [];
+    rightSideItems: [WithBoundArgs<typeof EuiFlexItem, 'grow'>?];
+  };
+}
+
+export default class EuiPageTemplate extends Component<EuiPageHeaderContentSignature> {
   // Defaults
   @argOrDefaultDecorator(460) minHeight!: number;
   @argOrDefaultDecorator(false) fullHeight!: boolean;
@@ -125,7 +214,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
                     }}
                   >
                     {{yield
-                      (component "eui-flex-item" grow=false)
+                      (component EuiFlexItem grow=false)
                       to="rightSideItems"
                     }}
                   </EuiFlexGroup>
@@ -159,7 +248,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
                       <EuiIcon
                         @size="xl"
                         @type={{@iconType}}
-                        @iconClasses={{class-names
+                        @iconClasses={{classNames
                           "euiPageHeaderContent__titleIcon"
                           @iconProps.className
                         }}
@@ -210,7 +299,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
                       <EuiIcon
                         @size="xl"
                         @type={{@iconType}}
-                        @iconClasses={{class-names
+                        @iconClasses={{classNames
                           "euiPageHeaderContent__titleIcon"
                           @iconProps.className
                         }}
@@ -237,13 +326,13 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
                   <EuiFlexGroup
                     @wrap={{true}}
                     @responsive={{false}}
-                    class={{class-names
+                    class={{classNames
                       "euiPageHeaderContent__rightSideItems"
                       @rightSideGroupProps.className
                     }}
                   >
                     {{yield
-                      (component "eui-flex-item" grow=false)
+                      (component EuiFlexItem grow=false)
                       to="rightSideItems"
                     }}
                   </EuiFlexGroup>
@@ -273,6 +362,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
           <EuiFlexGroup
             class="euiPageHeaderContent__top"
             @responsive={{not (not responsive)}}
+            {{!@glint-expect-error}}
             @alignItems={{if (eq alignItems "bottom") "flexEnd" alignItems}}
             @gutterSize="l"
           >
@@ -304,7 +394,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
                     <EuiIcon
                       @size="xl"
                       @type={{@iconType}}
-                      @iconClasses={{class-names
+                      @iconClasses={{classNames
                         "euiPageHeaderContent__titleIcon"
                         @iconProps.className
                       }}
@@ -353,13 +443,13 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateProps> {
                 <EuiFlexGroup
                   @wrap={{true}}
                   @responsive={{false}}
-                  class={{class-names
+                  class={{classNames
                     "euiPageHeaderContent__rightSideItems"
                     @rightSideGroupProps.className
                   }}
                 >
                   {{yield
-                    (component "eui-flex-item" grow=false)
+                    (component EuiFlexItem grow=false)
                     to="rightSideItems"
                   }}
                 </EuiFlexGroup>

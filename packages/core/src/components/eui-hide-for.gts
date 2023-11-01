@@ -33,7 +33,6 @@ export default class EuiHideForComponent extends Component<EuiHideForSignature> 
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#if this.shouldShow}}
       {{yield}}
     {{/if}}

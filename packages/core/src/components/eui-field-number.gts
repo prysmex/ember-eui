@@ -1,5 +1,5 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+import validatableControl from '../modifiers/validatable-control';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, or } from 'ember-truth-helpers';
@@ -8,10 +8,13 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
 import EuiFormControlLayout from './eui-form-control-layout';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 
 import type { CommonArgs } from './common';
-import type { EuiFormControlLayoutArgs } from './eui-form-control-layout/types';
+import type { EuiFormControlLayoutArgs } from './eui-form-control-layout';
 import type { IconType } from './eui-icon';
+
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFieldNumberArgs = Omit<
   HTMLInputElement,
@@ -31,7 +34,7 @@ export type EuiFieldNumberArgs = Omit<
      * Defaults to `1`
      */
     step?: number | 'any';
-    inputRef?: HTMLInputElement;
+    inputRef?: (ele: Element) => void;
 
     /**
      * Creates an input group with element(s) coming before input.
@@ -55,74 +58,91 @@ export type EuiFieldNumberArgs = Omit<
      * when `true` creates a shorter height input
      */
     compressed?: boolean;
+
+    isPrependProvided?: boolean;
+    isAppendProvided?: boolean;
+
+    clear?: EuiFormControlLayoutSignature['Args']['clear'];
   };
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  {{#let
-    (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
-    (and (argOrDefault @isAppendProvided true) (has-block "append"))
-    (argOrDefault @id (uniqueId))
-    as |hasPrepend hasAppend inputId|
-  }}
+export interface EuiFieldNumberSignature {
+  Element: HTMLInputElement;
+  Args: EuiFieldNumberArgs;
+  Blocks: {
+    default: [string];
+    prepend: [string];
+    append: [string];
+  };
+}
+
+const EuiFieldNumber: TemplateOnlyComponent<EuiFieldNumberSignature> =
+  <template>
     {{#let
-      (classNames
-        (if @icon "euiFieldNumber--withIcon")
-        (if @fullWidth "euiFieldNumber--fullWidth")
-        (if @compressed "euiFieldNumber--compressed")
-        (if (or hasPrepend hasAppend) "euiFieldNumber--inGroup")
-        (if @isLoading "euiFieldNumber--isLoading")
-        "euiFieldNumber"
-      )
-      as |classes|
+      (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
+      (and (argOrDefault @isAppendProvided true) (has-block "append"))
+      (argOrDefault @id (uniqueId))
+      as |hasPrepend hasAppend inputId|
     }}
-      {{#if @controlOnly}}
-        <input
-          id={{@id}}
-          class={{classes}}
-          value={{@value}}
-          min={{@min}}
-          max={{@max}}
-          disabled={{@disabled}}
-          step={{@step}}
-          type="number"
-          ...attributes
-          {{validatableControl @isInvalid}}
-          {{didInsert (optional @inputRef)}}
-        />
-      {{else}}
-        <EuiFormControlLayout
-          @icon={{@icon}}
-          @clear={{@clear}}
-          @fullWidth={{@fullWidth}}
-          @isLoading={{@isLoading}}
-          @compressed={{@compressed}}
-          @readOnly={{@readOnly}}
-          @disabled={{@disabled}}
-          @useGroup={{or hasPrepend hasAppend}}
-        >
-          <:prepend as |prependClasses|>
-            {{yield prependClasses to="prepend"}}
-          </:prepend>
-          <:field>
-            <input
-              id={{inputId}}
-              class={{classes}}
-              value={{@value}}
-              min={{@min}}
-              max={{@max}}
-              disabled={{@disabled}}
-              step={{@step}}
-              type="number"
-              ...attributes
-              {{validatableControl @isInvalid}}
-            />
-          </:field>
-          <:append as |appendClasses|>
-            {{yield appendClasses to="append"}}
-          </:append>
-        </EuiFormControlLayout>
-      {{/if}}
+      {{#let
+        (classNames
+          (if @icon "euiFieldNumber--withIcon")
+          (if @fullWidth "euiFieldNumber--fullWidth")
+          (if @compressed "euiFieldNumber--compressed")
+          (if (or hasPrepend hasAppend) "euiFieldNumber--inGroup")
+          (if @isLoading "euiFieldNumber--isLoading")
+          "euiFieldNumber"
+        )
+        as |classes|
+      }}
+        {{#if @controlOnly}}
+          <input
+            id={{@id}}
+            class={{classes}}
+            value={{@value}}
+            min={{@min}}
+            max={{@max}}
+            disabled={{@disabled}}
+            step={{@step}}
+            type="number"
+            {{validatableControl @isInvalid}}
+            {{didInsert (optional @inputRef)}}
+            ...attributes
+          />
+        {{else}}
+          <EuiFormControlLayout
+            @icon={{@icon}}
+            @clear={{@clear}}
+            @fullWidth={{@fullWidth}}
+            @isLoading={{@isLoading}}
+            @compressed={{@compressed}}
+            @readOnly={{@readOnly}}
+            @disabled={{@disabled}}
+            @useGroup={{or hasPrepend hasAppend}}
+          >
+            <:prepend as |prependClasses|>
+              {{yield prependClasses to="prepend"}}
+            </:prepend>
+            <:field>
+              <input
+                id={{inputId}}
+                class={{classes}}
+                value={{@value}}
+                min={{@min}}
+                max={{@max}}
+                disabled={{@disabled}}
+                step={{@step}}
+                type="number"
+                {{validatableControl @isInvalid}}
+                ...attributes
+              />
+            </:field>
+            <:append as |appendClasses|>
+              {{yield appendClasses to="append"}}
+            </:append>
+          </EuiFormControlLayout>
+        {{/if}}
+      {{/let}}
     {{/let}}
-  {{/let}}
-</template>
+  </template>;
+
+export default EuiFieldNumber;

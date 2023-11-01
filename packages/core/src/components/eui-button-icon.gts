@@ -6,9 +6,13 @@ import EuiIcon from './eui-icon';
 
 import type { IconSize } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import type { colorMapping, displayMapping, sizeMapping } from '../utils/css-mappings/eui-button-icon';
+import type {
+  colorMapping,
+  displayMapping,
+  sizeMapping
+} from '../utils/css-mappings/eui-button-icon';
 
-export interface Signature {
+export interface EuiButtonIconSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
   Args: {
     iconType?: string;
@@ -31,7 +35,7 @@ export interface Signature {
   };
 }
 
-const EuiButtonIcon: TemplateOnlyComponent<Signature> = <template>
+const EuiButtonIcon: TemplateOnlyComponent<EuiButtonIconSignature> = <template>
   {{#if (and @href (not @isDisabled))}}
     <a
       class={{classNames

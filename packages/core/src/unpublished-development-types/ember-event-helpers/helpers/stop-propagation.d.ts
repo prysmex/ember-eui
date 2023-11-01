@@ -3,7 +3,7 @@ declare module 'ember-event-helpers/helpers/stop-propagation' {
 
   export default class StopPropagationHelper extends Helper<{
     Args: {
-      Positional: [event: Event, callback: Function];
+      Positional: [callback: Function];
     };
 
     Return: (event: Event) => any;

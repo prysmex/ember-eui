@@ -6,8 +6,8 @@ import classNames from '../helpers/class-names';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { hash } from '@ember/helper';
-import simpleStyle from '@ember-eui/core/modifiers/simple-style';
-import inlineStyles from '@ember-eui/core/helpers/inline-styles';
+import simpleStyle from '../modifiers/simple-style';
+import inlineStyles from '../helpers/inline-styles';
 
 export type EuiRangeLevelColor = 'primary' | 'success' | 'warning' | 'danger';
 

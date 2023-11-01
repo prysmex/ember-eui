@@ -36,6 +36,7 @@ export interface EuiCheckboxSignature {
     inputRef?: (element: HTMLInputElement) => void;
     isFakeLabelBlock?: boolean;
     id?: string;
+    name?: string;
   };
   Blocks: {
     label?: [];
@@ -66,6 +67,7 @@ const EuiCheckbox: TemplateOnlyComponent<EuiCheckboxSignature> = <template>
           id={{id}}
           checked={{@checked}}
           disabled={{@disabled}}
+          name={{@name}}
           ...attributes
           {{indeterminateModifier @indeterminate}}
           {{didInsert (optional @inputRef)}}

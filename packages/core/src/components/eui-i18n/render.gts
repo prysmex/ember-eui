@@ -2,10 +2,10 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiI18nRenderSignature {
   Args: {
-    token: string | string[];
+    token: string;
   };
   Blocks: {
-    default: [string | string[]];
+    default: [string];
   };
 }
 

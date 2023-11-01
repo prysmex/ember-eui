@@ -25,7 +25,7 @@ import type { ComponentLike } from '@glint/template';
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 
 type AccordionArgs = {
-  id: string;
+  id?: string;
 
   element?: 'div' | 'fieldset';
   /**
@@ -46,6 +46,7 @@ type AccordionArgs = {
   arrowProps?: {
     className?: string;
   };
+
   /**
    * Class that will apply to the trigger content for the accordion.
    */
@@ -61,7 +62,7 @@ type AccordionArgs = {
   /**
    * The accordion will start in the open state.
    */
-  initialIsOpen: boolean;
+  initialIsOpen?: boolean;
   /**
    * Optional callback method called on open and close with a single `isOpen` parameter
    */
@@ -94,11 +95,8 @@ type AccordionArgs = {
   childContentClassName?: string;
 };
 
-interface Signature {
-  Element: ComponentLike<{
-    Element: Element;
-    Blocks: { default: [] };
-  }>;
+export interface EuiAccordionAccordionSignature {
+  Element: any;
   Args: AccordionArgs;
   Blocks: {
     buttonContent: [boolean];
@@ -107,7 +105,7 @@ interface Signature {
   };
 }
 
-export default class EuiAccordionAccordionComponent extends Component<Signature> {
+export default class EuiAccordionAccordionComponent extends Component<EuiAccordionAccordionSignature> {
   // Defaults
   @argOrDefaultDecorator(false) isLoading!: boolean;
   @argOrDefaultDecorator(false) isLoadingMessage!: boolean;
@@ -141,7 +139,7 @@ export default class EuiAccordionAccordionComponent extends Component<Signature>
       : this.arrowDisplay;
   }
 
-  get isOpen(): boolean {
+  get isOpen(): boolean | undefined {
     return this.args.forceState
       ? this.args.forceState === 'open'
       : this._opened;

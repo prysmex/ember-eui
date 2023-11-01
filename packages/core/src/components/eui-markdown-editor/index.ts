@@ -1,5 +1,4 @@
 import Component from '@glimmer/component';
-//@ts-expect-error
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';

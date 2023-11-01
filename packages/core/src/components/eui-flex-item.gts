@@ -10,7 +10,7 @@ import { growMapping } from '../utils/css-mappings/eui-flex-item';
 export interface EuiFlexItemSignature {
   Element: Element;
   Args: {
-    grow: keyof typeof growMapping | boolean;
+    grow?: keyof typeof growMapping | boolean;
     tagName?: string;
   };
   Blocks: {

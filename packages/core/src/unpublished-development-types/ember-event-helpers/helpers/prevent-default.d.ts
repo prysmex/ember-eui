@@ -3,7 +3,7 @@ declare module 'ember-event-helpers/helpers/prevent-default' {
 
   export default class PreventDefaultHelper extends Helper<{
     Args: {
-      Positional: [event: Event, callback: Function];
+      Positional: [callback: Function];
     };
 
     Return: (event: Event) => any;

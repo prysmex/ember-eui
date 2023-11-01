@@ -4,8 +4,28 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export type IEuiTab = {
+  id?: string;
+  href?: string;
+  isSelected?: boolean;
+  disabled?: boolean;
+};
+
+export interface EuiTabSignature {
+  Element: HTMLButtonElement | HTMLAnchorElement;
+  Args: {
+    [K in keyof IEuiTab]: IEuiTab[K];
+  };
+  Blocks: {
+    prepend: [];
+    default: [];
+    append: [];
+  };
+}
+
+const EuiTab: TemplateOnlyComponent<EuiTabSignature> = <template>
   {{#let (argOrDefault @id (uniqueId)) as |id|}}
     {{#if (and @href (not @disabled))}}
       <a
@@ -69,4 +89,6 @@ import uniqueId from '../helpers/unique-id';
       </button>
     {{/if}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiTab;

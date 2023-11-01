@@ -1,13 +1,13 @@
 const baseClass = 'euiProgress';
 
-const sizeToClassMapping = {
+export const sizeToClassMapping = {
   xs: `${baseClass}--xs`,
   s: `${baseClass}--s`,
   m: `${baseClass}--m`,
   l: `${baseClass}--l`
 };
 
-const colorToClassMap = {
+export const colorToClassMap = {
   primary: `${baseClass}--primary`,
   success: `${baseClass}--success`,
   warning: `${baseClass}--warning`,
@@ -26,7 +26,7 @@ const colorToClassMap = {
   vis9: `${baseClass}--vis9`
 };
 
-const dataColorToClassMap = {
+export const dataColorToClassMap = {
   primary: `${baseClass}__data--primary`,
   success: `${baseClass}__data--success`,
   warning: `${baseClass}__data--warning`,
@@ -45,7 +45,7 @@ const dataColorToClassMap = {
   vis9: `${baseClass}__data--vis9`
 };
 
-const positionsToClassMap = {
+export const positionsToClassMap = {
   fixed: `${baseClass}--fixed`,
   absolute: `${baseClass}--absolute`,
   static: ''

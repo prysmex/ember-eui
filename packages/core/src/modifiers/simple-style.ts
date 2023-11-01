@@ -1,10 +1,10 @@
 import { modifier } from 'ember-modifier';
 type CssProperties = {
-  [key: string]: string;
+  [key: string]: string | number | undefined;
 };
 
 export default modifier(function simpleStyle(
-  element: HTMLDivElement,
+  element: HTMLElement,
   [properties]: [CssProperties]
 ): void | (() => unknown) {
   for (let ele in properties) {

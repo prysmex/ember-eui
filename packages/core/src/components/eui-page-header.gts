@@ -6,6 +6,7 @@ import { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body'
 import style from 'ember-style-modifier/modifiers/style';
 import { eq, not, or, and } from 'ember-truth-helpers';
 import EuiPageHeaderContent from './eui-page-header-content';
+import type { EuiPageHeaderContentSignature } from './eui-page-header-content';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
@@ -27,7 +28,7 @@ export interface EuiPageHeaderSignature {
     /**
      * Sets the alignment of the content within the header
      */
-    alignItems?: 'left' | 'center' | 'right';
+    alignItems?: EuiPageHeaderContentSignature['Args']['alignItems'];
     /**
      * Sets the header to be responsive and collapse to a single line
      */
@@ -82,10 +83,10 @@ export interface EuiPageHeaderSignature {
     };
   };
   Blocks: {
-    default?: [];
-    description?: [];
-    pageTitle?: [];
-    rightSideItems?: [];
+    default: [];
+    description: [];
+    pageTitle: [];
+    rightSideItems: EuiPageHeaderContentSignature['Blocks']['rightSideItems'];
   };
 }
 

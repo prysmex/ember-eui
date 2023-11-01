@@ -3,28 +3,43 @@ import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 
 import EuiIcon from './eui-icon';
+import type { EuiIconSignature } from './eui-icon';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  {{! ToDo: title and aria-label translations }}
-  <div
-    class={{classNames
-      "euiNotificationEventReadIcon"
-      (if @isRead "euiNotificationEventReadIcon--isRead")
-    }}
-    ...attributes
-  >
-    <EuiIcon
-      @type="dot"
-      aria-label={{if
-        @isRead
-        (concat @eventName " is read")
-        (concat @eventName " is unread")
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiNotificationEventReadIconSignature {
+  Element: HTMLDivElement;
+  Args: {
+    id?: string;
+    eventName?: string;
+    isRead?: boolean;
+    readIconColor?: EuiIconSignature['Args']['color'];
+  };
+}
+
+const EuiNotificationEventReadIcon: TemplateOnlyComponent<EuiNotificationEventReadIconSignature> =
+  <template>
+    {{! ToDo: title and aria-label translations }}
+    <div
+      class={{classNames
+        "euiNotificationEventReadIcon"
+        (if @isRead "euiNotificationEventReadIcon--isRead")
       }}
-      title={{if @isRead "Read" "Unread"}}
-      @color={{argOrDefault @readIconColor "primary"}}
-      data-test-subj={{concat @id "-notificationEventReadIcon"}}
-      id={{@id}}
-    />
-  </div>
-</template>
+      ...attributes
+    >
+      <EuiIcon
+        @type="dot"
+        aria-label={{if
+          @isRead
+          (concat @eventName " is read")
+          (concat @eventName " is unread")
+        }}
+        title={{if @isRead "Read" "Unread"}}
+        @color={{argOrDefault @readIconColor "primary"}}
+        data-test-subj={{concat @id "-notificationEventReadIcon"}}
+        id={{@id}}
+      />
+    </div>
+  </template>;
+
+export default EuiNotificationEventReadIcon;

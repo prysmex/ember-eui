@@ -1,4 +1,4 @@
-import inlineStyles from '@ember-eui/core/helpers/inline-styles';
+import inlineStyles from '../helpers/inline-styles';
 import { and } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';
 import classNames from '../helpers/class-names';

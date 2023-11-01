@@ -1,9 +1,22 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
+import screenReaderOnly from '../modifiers/screen-reader-only';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiFormLegendSignature {
+  Element: HTMLLegendElement;
+  Args: {
+    display?: 'hidden' | 'visible';
+    compressed?: boolean;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiFormLegend: TemplateOnlyComponent<EuiFormLegendSignature> = <template>
   {{#let (argOrDefault @display "visible") as |display|}}
     <legend
       class={{classNames
@@ -14,7 +27,7 @@ import { eq } from 'ember-truth-helpers';
       ...attributes
     >
       {{#if (eq display "hidden")}}
-        <span {{screen-reader-only}}>
+        <span {{screenReaderOnly}}>
           {{yield}}
         </span>
       {{else}}
@@ -22,4 +35,6 @@ import { eq } from 'ember-truth-helpers';
       {{/if}}
     </legend>
   {{/let}}
-</template>
+</template>;
+
+export default EuiFormLegend;

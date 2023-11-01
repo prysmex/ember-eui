@@ -8,8 +8,8 @@ import { on } from '@ember/modifier';
 import classNames from '../helpers/class-names';
 
 interface EuiOverlayMaskArgs {
-  onClick(e: Event): void;
-  headerZindexLocation: 'above' | 'below';
+  onClick: (e: Event) => void;
+  headerZindexLocation?: 'above' | 'below';
 }
 
 export interface EuiOverlayMaskSignature {

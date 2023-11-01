@@ -39,7 +39,7 @@ export type EuiFormControlLayoutArgs = CommonArgs &
     inputId?: string;
   };
 
-interface EuiFormControlLayoutSignature {
+export interface EuiFormControlLayoutSignature {
   Element: HTMLDivElement;
   Args: {
     fullWidth?: boolean;

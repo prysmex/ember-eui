@@ -20,7 +20,6 @@ import EuiLoadingSpinner from './eui-loading-spinner';
 
 import type { CommonArgs } from './common';
 import type { paddingMapping } from '../utils/css-mappings/eui-accordion';
-import type { ComponentLike } from '@glint/template';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 

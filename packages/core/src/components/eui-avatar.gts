@@ -5,10 +5,30 @@ import simpleStyle from '../modifiers/simple-style';
 import { toInitials } from '../helpers/to-initials';
 import { and, not, or, eq } from 'ember-truth-helpers';
 import EuiIcon from './eui-icon';
-import { hash } from '@ember/helper';
+import type { EuiIconSignature } from './eui-icon';
+import { hash, get } from '@ember/helper';
+import { sizeMapping, typeMapping } from '../utils/css-mappings/eui-avatar';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiAvatarSignature {
+  Element: HTMLDivElement;
+  Args: {
+    name?: string;
+    color?: EuiIconSignature['Args']['color'];
+    iconColor?: string;
+    iconSize?: EuiIconSignature['Args']['size'];
+    iconType?: EuiIconSignature['Args']['type'];
+    imageUrl?: string;
+    initials?: string;
+    isDisabled?: boolean;
+    size?: keyof typeof sizeMapping;
+    type?: keyof typeof typeMapping;
+    initialLength?: 1 | 2;
+  };
+}
+
+const EuiAvatar: TemplateOnlyComponent<EuiAvatarSignature> = <template>
   {{#let
     (inlineStyles
       componentName="EuiAvatar"
@@ -40,7 +60,9 @@ import { hash } from '@ember/helper';
     >
       {{#if (and (not @imageUrl) (not @iconType))}}
         <span aria-hidden="true">
-          {{toInitials @name @initialLength @initials}}
+          {{#if @name}}
+            {{toInitials @name @initialLength @initials}}
+          {{/if}}
         </span>
       {{else if @iconType}}
         <EuiIcon
@@ -51,10 +73,10 @@ import { hash } from '@ember/helper';
           role={{if @isDisabled "presentation" "img"}}
           @color={{or
             @iconColor
-            (if (eq @iconColor null) @iconColor inlineStyles.color)
+            (if (eq @iconColor null) @iconColor (get inlineStyles "color"))
           }}
         />
       {{/if}}
     </div>
   {{/let}}
-</template>
+</template>;

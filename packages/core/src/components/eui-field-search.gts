@@ -5,9 +5,9 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
-import { Browser } from '@ember-eui/core/utils/browser';
-import { keys } from '@ember-eui/core/utils/keys';
+import validatableControl from '../modifiers/validatable-control';
+import { Browser } from '../utils/browser';
+import { keys } from '../utils/keys';
 
 import { and, not, or } from 'ember-truth-helpers';
 

@@ -18,7 +18,7 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFieldNumberArgs = Omit<
   HTMLInputElement,
-  'min' | 'max' | 'readOnly' | 'step'
+  'min' | 'max' | 'readOnly' | 'step' | 'type' | 'value' | 'disabled'
 > &
   CommonArgs & {
     icon?: IconType;
@@ -28,6 +28,9 @@ export type EuiFieldNumberArgs = Omit<
     readOnly?: boolean;
     min?: number;
     max?: number;
+    value?: number | string;
+    disabled?: boolean;
+
     /**
      * Specifies the granularity that the value must adhere to.
      * Accepts a `number` or the string `'any'` for no stepping to allow for any value.

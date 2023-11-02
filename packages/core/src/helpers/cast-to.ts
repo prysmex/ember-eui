@@ -5,7 +5,7 @@ const BOOLEAN = 'boolean';
 const STRING = 'string';
 
 export function castTo(
-  [that]: [string, unknown],
+  [that]: [any],
   { to = NUMBER }: { to: string }
 ): number | boolean | string {
   let toLower = to?.toLowerCase();

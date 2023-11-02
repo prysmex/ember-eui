@@ -1,5 +1,5 @@
 import classNames from '../helpers/class-names';
-import castTo from '@ember-eui/core/helpers/cast-to';
+import castTo from '../helpers/cast-to';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

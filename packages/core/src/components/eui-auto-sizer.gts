@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import createDetectElementResize from '@ember-eui/core/utils/detect-element-resize';
+import createDetectElementResize from '../utils/detect-element-resize';
 import style from 'ember-style-modifier/modifiers/style';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 

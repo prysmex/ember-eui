@@ -7,7 +7,7 @@ import EuiFormHelpText from './eui-form-help-text';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import isArray from 'ember-truth-helpers/helpers/is-array';
-import useState from '@ember-eui/core/helpers/use-state';
+import useState from '../helpers/use-state';
 import { array } from '@ember/helper';
 
 <template>

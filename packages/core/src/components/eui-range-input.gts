@@ -1,10 +1,11 @@
 import argOrDefault from '../helpers/arg-or-default';
 import { and, eq } from 'ember-truth-helpers';
-import EuiFieldNumber from './eui-field-number';
 import { hash } from '@ember/helper';
+import EuiFieldNumber from './eui-field-number';
+import type { EuiFieldNumberSignature } from './eui-field-number';
 import simpleStyle from '../modifiers/simple-style';
 import inlineStyles from '../helpers/inline-styles';
-import castTo from '@ember-eui/core/helpers/cast-to';
+import castTo from '../helpers/cast-to';
 
 import type { EuiFieldNumberArgs } from './eui-field-number';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
@@ -16,12 +17,13 @@ export interface EuiRangeInputArgs
   max: number;
   min: number;
   side?: 'min' | 'max';
-  value: string | number;
+  value?: string | number;
   isPrependProvided?: boolean;
   isAppendProvided?: boolean;
 }
 
 export interface EuiRangeInputSignature {
+  Element: EuiFieldNumberSignature['Element'];
   Args: EuiRangeInputArgs;
   Blocks: {
     prepend: [string];
@@ -41,6 +43,7 @@ const EuiRangeInput: TemplateOnlyComponent<EuiRangeInputSignature> = <template>
       min={{castTo @min to="number"}}
       max={{castTo @max to="number"}}
       @step={{@step}}
+      {{!@glint-expect-error}}
       @value={{if (eq @value "") "" (castTo @value to="number")}}
       @disabled={{@disabled}}
       @compressed={{@compressed}}
@@ -49,7 +52,6 @@ const EuiRangeInput: TemplateOnlyComponent<EuiRangeInputSignature> = <template>
       @isPrependProvided={{hasAppend}}
       @isAppendProvided={{hasPrepend}}
       @isInvalid={{@isInvalid}}
-      @disable={{@disable}}
       ...attributes
       {{simpleStyle
         (inlineStyles

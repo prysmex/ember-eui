@@ -2,7 +2,7 @@ import { concat } from '@ember/helper';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import uniqueId from '../helpers/unique-id';
-import useState from '@ember-eui/core/helpers/use-state';
+import useState from '../helpers/use-state';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';

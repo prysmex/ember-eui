@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
-import { copyToClipboard } from "@ember-eui/core/utils/copy-to-clipboard";
+import { copyToClipboard } from "../utils/copy-to-clipboard";
 
 import EuiToolTip from "./eui-tool-tip";
 import type { EuiToolTipSignature } from "./eui-tool-tip";

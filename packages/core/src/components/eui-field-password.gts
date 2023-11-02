@@ -1,8 +1,8 @@
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import useState from '@ember-eui/core/helpers/use-state';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
+import useState from '../helpers/use-state';
+import validatableControl from '../modifiers/validatable-control';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq,not, or } from 'ember-truth-helpers';

@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { htmlSafe } from '@ember/template';
-import getRangeTick from '@ember-eui/core/helpers/get-range-tick';
+import getRangeTick from '../helpers/get-range-tick';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';

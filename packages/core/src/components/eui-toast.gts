@@ -1,5 +1,5 @@
 import classNames from '../helpers/class-names';
-import screenReaderOnly from '@ember-eui/core/modifiers/screen-reader-only';
+import screenReaderOnly from '../modifiers/screen-reader-only';
 import { on } from '@ember/modifier';
 import EuiIcon from './eui-icon';
 import EuiText from './eui-text';

@@ -4,8 +4,8 @@ import { concat } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '@ember-eui/core/modifiers/validatable-control';
-import { displayMapping } from '@ember-eui/core/utils/css-mappings/eui-file-picker';
+import validatableControl from '../modifiers/validatable-control';
+import { displayMapping } from '../utils/css-mappings/eui-file-picker';
 
 import { and, eq, not, notEq,or } from 'ember-truth-helpers';
 

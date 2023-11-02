@@ -4,7 +4,7 @@ import { fn } from '@ember/helper';
 import optional from 'ember-composable-helpers/helpers/optional';
 
 import classNames from '../helpers/class-names';
-import EuiBadge from './eui-combo-box/eui-badge';
+import EuiBadge from './eui-badge';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

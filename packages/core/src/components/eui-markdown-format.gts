@@ -2,19 +2,30 @@ import Component from '@glimmer/component';
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins
-} from '../../utils/markdown/plugins/markdown-default-plugins';
+} from '../utils/markdown/plugins/markdown-default-plugins';
 
 import { cached } from '@glimmer/tracking';
-import unified, { Processor } from 'unified';
-import { toDOM } from '../../utils/markdown/plugins/to-dom';
-import type { RehypeNode } from '../../utils/markdown/markdown-types';
-import type EuiMarkdownEditorComponent from '../eui-markdown-editor';
+import unified from 'unified';
+import type { Processor } from 'unified';
+import { toDOM } from '../utils/markdown/plugins/to-dom';
+import type {
+  RehypeNode,
+  EuiMarkdownAstNodePosition
+} from '../utils/markdown/markdown-types';
+
 import { isArray } from '@ember/array';
+import { EnsureSafeComponentHelper } from '@embroider/util';
+import optional from 'ember-composable-helpers/helpers/optional';
+
+export type Replacer = (
+  position: EuiMarkdownAstNodePosition,
+  str: string
+) => void;
 
 export interface EuiMarkdownEditorToolbarArgs {
   parsingPluginList?: typeof defaultParsingPlugins;
   processingPluginList?: typeof defaultProcessingPlugins;
-  replaceNode?: EuiMarkdownEditorComponent['replaceNode'];
+  replaceNode?: Replacer;
   value: string;
   //you can pass in a string or an array of strings to be added to the root element
   rootClasses?: string | string[];
@@ -61,12 +72,34 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   get result() {
     try {
       const processed = this.processor.processSync(this.args.value);
-      return toDOM(processed.result as RehypeNode, {
+      return toDOM(processed['result'] as RehypeNode, {
         rootClasses: this.rootClasses
       });
       //eslint-disable-next-line
     } catch (e) {
-      return this.args.value;
+      console.warn(e);
     }
   }
+
+  <template>
+    {{! This hbs was inspired by https://github.com/ampatspell/ember-cli-remark-static/blob/v3.0.5/addon/components/remark.hbs }}
+    {{#if this.result}}
+      {{this.result.element}}
+      {{#each this.result.components as |CompNode|}}
+        {{#in-element CompNode.element}}
+          {{#if CompNode.componentName}}
+            {{#let
+              (component (EnsureSafeComponentHelper CompNode.componentName))
+              as |DynamicComponent|
+            }}
+              <DynamicComponent
+                @replaceNode={{optional @replaceNode}}
+                @node={{CompNode}}
+              />
+            {{/let}}
+          {{/if}}
+        {{/in-element}}
+      {{/each}}
+    {{/if}}
+  </template>
 }

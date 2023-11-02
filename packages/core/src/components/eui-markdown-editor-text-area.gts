@@ -25,3 +25,5 @@ const EuiMarkdownEditorTextArea: TemplateOnlyComponent<EuiMarkdownEditorTextArea
       {{yield}}
     </textarea>
   </template>;
+
+export default EuiMarkdownEditorTextArea;

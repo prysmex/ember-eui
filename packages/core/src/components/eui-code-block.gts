@@ -40,7 +40,7 @@ const fontSizeToRowHeightMap = {
   l: 24
 };
 
-type EuiCodeBlockArgs = EuiCodeSharedProps & {
+export type EuiCodeBlockArgs = EuiCodeSharedProps & {
   paddingSize?: PaddingSize;
   fontSize?: FontSize;
 
@@ -79,6 +79,13 @@ type EuiCodeBlockArgs = EuiCodeSharedProps & {
    */
   isVirtualized?: boolean;
 };
+
+export interface EuiCodeBlockSignature {
+  Args: EuiCodeBlockArgs;
+  Blocks: {
+    default: [];
+  };
+}
 
 interface LineNumbersFinal {
   start: number;
@@ -169,7 +176,7 @@ const textToCopyHelper = helper(function (
   return isVirtualized ? element.textContent : innerText;
 });
 
-export default class EuiCodeBlockComponent extends Component<EuiCodeBlockArgs> {
+export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignature> {
   //fake element where yield writes to, so we can observe and clone a highlighted version to code and codeFullSceen
   @tracked codeTarget: undefined | HTMLElement;
   //<code> Element for non fullscreen

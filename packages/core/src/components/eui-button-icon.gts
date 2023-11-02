@@ -4,8 +4,6 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon';
 import type { EuiIconSignature } from './eui-icon';
-
-import type { IconSize } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type {
   colorMapping,

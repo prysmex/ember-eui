@@ -10,9 +10,9 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiPageContentBodySignature {
   Element: HTMLDivElement;
   Args: {
-    restrictWidth: boolean;
-    paddingSize: keyof typeof paddingSizeMapping;
-    style: {
+    restrictWidth?: boolean;
+    paddingSize?: keyof typeof paddingSizeMapping;
+    style?: {
       [key: string]: string;
     };
   };

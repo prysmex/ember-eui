@@ -6,6 +6,6 @@ declare module 'ember-composable-helpers/helpers/object-at' {
       Positional: [idx: number, obj: T[]];
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Return: T;
+    Return: T
   }> {}
 }

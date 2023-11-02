@@ -1,12 +1,14 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import EuiCodeBlock from '../eui-code-block';
+import type { EuiCodeBlockSignature } from '../eui-code-block';
 
 export interface MarkdownCodeBlockSignature {
   Args: {
     node: {
-      paddingSize: string;
-      fontSize: string;
-      language: string;
+      paddingSize: EuiCodeBlockSignature['Args']['paddingSize'];
+      fontSize: EuiCodeBlockSignature['Args']['fontSize'];
+      language: EuiCodeBlockSignature['Args']['language'];
+      content: string;
     };
   };
 }

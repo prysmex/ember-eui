@@ -10,16 +10,16 @@ import resizeObserver from '../modifiers/resize-observer';
 import screenReaderOnly from '../modifiers/screen-reader-only';
 
 export interface EuiButtomBarArgs {
-  affordForDisplacement: boolean;
-  bodyClassName: string;
+  affordForDisplacement?: boolean;
+  bodyClassName?: string;
   position?: 'fixed' | 'static' | 'sticky';
-  usePortal: boolean;
+  usePortal?: boolean;
   paddingSize?: 'none' | 's' | 'm' | 'l';
   landmarkHeading?: string;
-  top: number;
-  right: number;
-  left: number;
-  bottom: number;
+  top?: number;
+  right?: number;
+  left?: number;
+  bottom?: number;
 }
 
 const updateDisplacementModifier = modifier(function (
@@ -33,11 +33,11 @@ const updateDisplacementModifier = modifier(function (
   }: {
     affordForDisplacement: boolean;
     usePortal: boolean;
-    bodyClassName: string;
-    dimensions: { height: number };
+    bodyClassName?: string;
+    dimensions?: { height: number };
   }
 ) {
-  if (affordForDisplacement && usePortal) {
+  if (affordForDisplacement && usePortal && dimensions) {
     document.body.style.paddingBottom = `${dimensions.height}px`;
   }
 
@@ -56,7 +56,13 @@ const updateDisplacementModifier = modifier(function (
   };
 });
 
-export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBarArgs> {
+export interface EuiBottomBarSignature {
+  Element: HTMLElement;
+  Args: EuiButtomBarArgs;
+  Blocks: { default: [] };
+}
+
+export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBarSignature> {
   @tracked dimensions: { height: number; width: number } | undefined;
 
   get affordForDisplacement(): boolean {
@@ -98,8 +104,6 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
-    {{! TODO: Add landmarkSupport after having an <EuiI18n> component support }}
     {{#if this.usePortal}}
       <EuiPortal>
         <section
@@ -135,7 +139,7 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiButtomBar
           @landmarkHeading
           "Page level controls"
         }}
-        {{this.updateDisplacementModifier
+        {{updateDisplacementModifier
           affordForDisplacement=this.affordForDisplacement
           usePortal=this.usePortal
           dimensions=this.dimensions

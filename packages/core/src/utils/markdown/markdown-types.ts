@@ -16,12 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { VFile } from 'vfile';
+import type { VFile } from 'vfile';
+//@ts-expect-error
 import { Node as UnistNode, Position as UnistPosition } from 'unist';
 import { Parser } from 'remark-parse';
-import { VFileMessage } from 'vfile-message';
-import { IconType } from '../../components/eui-icon';
+import type { VFileMessage } from 'vfile-message';
+import type { IconType } from '../../components/eui-icon';
 import Component from '@glimmer/component';
+import type { ComponentLike } from '@glint/template';
 
 export interface RemarkParser {
   Parser: typeof Parser;
@@ -111,6 +113,7 @@ export interface EuiMarkdownAstNode {
   position: EuiMarkdownAstNodePosition;
   properties: {
     [index: string]: unknown;
+    componentName?: ComponentLike
   };
 }
 export interface EuiMarkdownAstNodePosition {

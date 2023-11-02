@@ -3,7 +3,9 @@ This util was extracted from https://github.com/ampatspell/ember-cli-remark-stat
 */
 
 import { assert } from '@ember/debug';
-import { RehypeNode } from '../markdown-types';
+import type { RehypeNode } from '../markdown-types';
+import type { ComponentLike } from '@glint/template';
+import type { Replacer } from '../../../components/eui-markdown-format';
 
 const attributes = ['src', 'alt', 'href', 'target', 'title'];
 
@@ -11,7 +13,16 @@ const createDocument = () => {
   return document;
 };
 
-export interface DynamicComponent {}
+export interface DynamicComponent {
+  element: HTMLElement;
+  content: Node;
+  componentName?: ComponentLike<{
+    Args: {
+      node: DynamicComponent;
+      replaceNode?: Replacer;
+    };
+  }>;
+}
 
 export const toDOM = (
   tree: RehypeNode,
@@ -41,8 +52,8 @@ export const toDOM = (
     let properties = node.properties;
     let finalClassNames = [];
     if (properties) {
-      if (properties.className) {
-        finalClassNames.push(...(properties.className as string[]));
+      if (properties['className']) {
+        finalClassNames.push(...(properties['className'] as string[]));
       }
       for (let key in properties) {
         if (attributes.includes(key)) {

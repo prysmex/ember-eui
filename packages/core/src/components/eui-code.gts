@@ -1,11 +1,9 @@
 import Component from '@glimmer/component';
-import {
-  EuiCodeSharedProps,
-  getHtmlContent,
-  checkSupportedLanguage
-} from '../../utils/code/utils';
+import { getHtmlContent, checkSupportedLanguage } from '../utils/code/utils';
+import type { EuiCodeSharedProps } from '../utils/code/utils';
 import { action } from '@ember/object';
-import { highlight, RefractorNode } from 'refractor';
+import { highlight } from 'refractor';
+import type { RefractorNode } from 'refractor';
 import { tracked } from '@glimmer/tracking';
 import { scheduleOnce } from '@ember/runloop';
 
@@ -15,12 +13,20 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import set from 'ember-set-helper/helpers/set';
 
-type EuiCodeArgs = EuiCodeSharedProps & {
+export type EuiCodeArgs = EuiCodeSharedProps & {
   //comments
 };
 
-export default class EuiCodeComponent extends Component<EuiCodeArgs> {
-  @tracked codeTarget: undefined | HTMLElement;
+export interface EuiCodeSignature {
+  Args: EuiCodeArgs;
+  Blocks: {
+    default: [];
+  };
+  Element: HTMLElement;
+}
+
+export default class EuiCodeComponent extends Component<EuiCodeSignature> {
+  @tracked codeTarget: HTMLElement;
   @tracked code: undefined | HTMLElement;
   observer: MutationObserver | null = null;
 
@@ -78,7 +84,6 @@ export default class EuiCodeComponent extends Component<EuiCodeArgs> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#in-element this.codeTarget}}
       {{yield}}
     {{/in-element}}

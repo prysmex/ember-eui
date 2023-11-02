@@ -10,7 +10,7 @@ export interface Named {
 
 export default modifier(function (
   _element: Element,
-  _pos: unknown[],
+  _pos: any[],
   {
     sizes,
     isActive = true,

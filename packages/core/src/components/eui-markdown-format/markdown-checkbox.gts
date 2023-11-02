@@ -3,16 +3,13 @@ import type { EuiCheckboxSignature } from '../eui-checkbox';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-interface Position {
-  start: Record<string, unknown>;
-  end: Record<string, unknown>;
-}
+import type { EuiMarkdownAstNodePosition } from '../../utils/markdown/markdown-types';
+import type { Replacer } from '../eui-markdown-format';
 
 export interface EuiMarkdownFormatMarkdownCheckboxArgs {
-  replaceNode: (position: Position, str: string) => void;
+  replaceNode: Replacer;
   node: {
-    position: Position;
+    position: EuiMarkdownAstNodePosition;
     lead: string;
     isChecked: boolean;
     label: string;

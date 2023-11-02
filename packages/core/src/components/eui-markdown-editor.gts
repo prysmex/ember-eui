@@ -6,24 +6,42 @@ import { scheduleOnce } from '@ember/runloop';
 
 import { modifier } from 'ember-modifier';
 import unified from 'unified';
-import { Processor } from 'unified';
+import type { Processor } from 'unified';
 
-import { argOrDefaultDecorator as argOrDefault } from '../../helpers/arg-or-default';
-import MarkdownActions from '../../utils/markdown/markdown-actions';
-import {
-  MODE_EDITING,
-  MODE_VIEWING
-} from '../../utils/markdown/markdown-modes';
-import {
+import { argOrDefaultDecorator } from '../helpers/arg-or-default';
+import MarkdownActions from '../utils/markdown/markdown-actions';
+import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes';
+
+import classNames from '../helpers/class-names';
+import validatableControl from '../modifiers/validatable-control';
+import { eq, not } from 'ember-truth-helpers';
+import { on } from '@ember/modifier';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
+import pick from 'ember-composable-helpers/helpers/pick';
+import resizeObserver from '../modifiers/resize-observer';
+import style from 'ember-style-modifier/modifiers/style';
+import { hash } from '@ember/helper';
+import set from 'ember-set-helper/helpers/set';
+
+import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar';
+import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar';
+import EuiMarkdownFormat from './eui-markdown-format';
+import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area';
+import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area';
+import EuiMarkdownEditorDropZone from './eui-markdown-editor-drop-zone';
+
+import type {
   EuiMarkdownAstNode,
   EuiMarkdownAstNodePosition,
   EuiMarkdownEditorUiPlugin
-} from '../../utils/markdown/markdown-types';
+} from '../utils/markdown/markdown-types';
+
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins
-} from '../../utils/markdown/plugins/markdown-default-plugins';
-import * as MarkdownTooltipPlugin from '../../utils/markdown/plugins/markdown-tooltip';
+} from '../utils/markdown/plugins/markdown-default-plugins';
+import * as MarkdownTooltipPlugin from '../utils/markdown/plugins/markdown-tooltip';
 
 export interface EuiMarkdownEditorArgs {
   initialViewMode?: string;
@@ -31,31 +49,27 @@ export interface EuiMarkdownEditorArgs {
   uiPlugins: EuiMarkdownEditorUiPlugin[];
   value: string;
   onChange: (str: string) => void;
-  onParse: (
-    parseError: string | null,
-    parsed: { messages: string[]; ast: EuiMarkdownAstNode }
+  onParse?: (
+    parseError: unknown | null,
+    parsed: { messages: any[]; ast: any }
   ) => void;
+  height?: number | string;
+  maxHeight?: number | string;
+  autoExpandPreview?: boolean;
+  disabled?: boolean;
+  isInvalid?: boolean;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+  ariaDescribedBy?: string;
 }
 
-// function isNewLine(char: string | undefined): boolean {
-//   if (char == null) return true;
-//   return !!char.match(/[\r\n]/);
-// }
-// function padWithNewlinesIfNeeded(textarea: HTMLTextAreaElement, text: string) {
-//   const selectionStart = textarea.selectionStart;
-//   const selectionEnd = textarea.selectionEnd;
-
-//   // block parsing requires two leading new lines and none trailing, but we add an extra trailing line for readability
-//   const isPrevNewLine = isNewLine(textarea.value[selectionStart - 1]);
-//   const isPrevPrevNewLine = isNewLine(textarea.value[selectionStart - 2]);
-//   const isNextNewLine = isNewLine(textarea.value[selectionEnd]);
-
-//   // pad text with newlines as needed
-//   text = `${isPrevNewLine ? '' : '\n'}${isPrevPrevNewLine ? '' : '\n'}${text}${
-//     isNextNewLine ? '' : '\n'
-//   }`;
-//   return text;
-// }
+export interface EuiMarkdownEditorSignature {
+  Element: EuiMarkdownEditorTextAreaSignature['Element'];
+  Args: EuiMarkdownEditorArgs;
+  Blocks: {
+    default: [];
+  };
+}
 
 export const getCursorNode = (
   textareaRef: HTMLInputElement,
@@ -71,6 +85,7 @@ export const getCursorNode = (
       for (let i = 0; i < node.children.length; i++) {
         const child = node.children[i];
         if (
+          child &&
           child.position.start.offset < (selectionStart as number) &&
           (selectionStart as number) < child.position.end.offset
         ) {
@@ -96,8 +111,8 @@ function wrapper(
 }
 
 export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
-  textarea: HTMLInputElement,
-  [parsed, onSelectedNode]: [boolean, () => void]
+  textarea: EuiMarkdownEditorTextAreaSignature['Element'],
+  [parsed, onSelectedNode]: [boolean, (node: Node) => void]
 ) {
   const fn = wrapper.bind(null, textarea, parsed, onSelectedNode);
   textarea.addEventListener('keyup', fn);
@@ -109,17 +124,17 @@ export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
   };
 });
 
-export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEditorArgs> {
+export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEditorSignature> {
   getCursorNodeModifier = getCursorNodeModifier;
   // Defaults
-  @argOrDefault(defaultParsingPlugins)
+  @argOrDefaultDecorator(defaultParsingPlugins)
   declare parsingPluginList: typeof defaultParsingPlugins;
 
-  @argOrDefault(250) declare height: number | string;
-  @argOrDefault(500) declare maxHeight: number | string;
-  @argOrDefault(true) declare autoExpandPreview: boolean;
+  @argOrDefaultDecorator(250) declare height: number | string;
+  @argOrDefaultDecorator(500) declare maxHeight: number | string;
+  @argOrDefaultDecorator(true) declare autoExpandPreview: boolean;
 
-  @argOrDefault(defaultProcessingPlugins)
+  @argOrDefaultDecorator(defaultProcessingPlugins)
   declare processingPluginList: typeof defaultProcessingPlugins;
 
   @tracked selectedNode: Node | null = null;
@@ -132,7 +147,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   @tracked editorFooterHeight: number = 0;
   @tracked editorToolbarHeight: number = 0;
 
-  markdownActions: MarkdownActions | null = null;
+  markdownActions: MarkdownActions;
 
   get toolbarPlugins() {
     return [MarkdownTooltipPlugin.plugin, ...(this.args.uiPlugins || [])];
@@ -224,7 +239,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   }
 
   @action
-  setEditorToolbarRef(ref: HTMLDivElement) {
+  setEditorToolbarRef(ref: EuiMarkdownEditorToolbarSignature['Element']) {
     this.editorToolbarRef = ref;
     this.editorToolbarHeight = ref.offsetHeight;
   }
@@ -264,7 +279,10 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   }
 
   @cached
-  get parsed() {
+  get parsed(): [
+    ReturnType<typeof this.parser.processSync> | null,
+    null | unknown
+  ] {
     try {
       const parsed = this.parser.processSync(this.args.value);
       return [parsed, null];
@@ -273,13 +291,17 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     }
   }
 
+  get vFile() {
+    return this.parsed[0];
+  }
+
   @action
   onParse() {
     if (this.args.onParse) {
       const [parsed, parseError] = this.parsed;
       const onParse = this.args.onParse;
       const messages = parsed ? parsed.messages : [];
-      const ast = parsed ? parsed.result ?? parsed.contents : null;
+      const ast = parsed ? parsed['result'] ?? parsed.contents : null;
       onParse(parseError, { messages, ast });
     }
   }
@@ -288,4 +310,74 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   setSelectedNode(node: Node) {
     this.selectedNode = node;
   }
+
+  <template>
+    <div
+      class={{classNames
+        "euiMarkdownEditor"
+        (if (eq this.height "full") "euiMarkdownEditor--fullHeight")
+        (if this.isPreviewing "euiMarkdownEditor--isPreviewing")
+      }}
+      {{didUpdate
+        this.updateCurrentHeight
+        this.currentHeight
+        this.isPreviewing
+        this.height
+        this.autoExpandPreview
+      }}
+    >
+      <EuiMarkdownEditorToolbar
+        @selectedNode={{this.selectedNode}}
+        @markdownActions={{this.markdownActions}}
+        @onClickPreview={{this.setViewMode}}
+        @viewMode={{this.viewMode}}
+        @uiPlugins={{this.toolbarPlugins}}
+        {{didInsert this.setEditorToolbarRef}}
+      />
+      {{#if this.isPreviewing}}
+        <div
+          class="euiMarkdownEditorPreview"
+          {{didInsert (set this "previewRef")}}
+          {{style (hash height=this.previewHeight)}}
+        >
+          <EuiMarkdownFormat
+            @parsingPluginList={{this.parsingPluginList}}
+            @processingPluginList={{this.processingPluginList}}
+            @value={{@value}}
+            @replaceNode={{this.replaceNode}}
+          />
+        </div>
+      {{/if}}
+
+      <div
+        class="euiMarkdownEditor__toggleContainer"
+        {{style height=this.editorToggleContainerHeight}}
+      >
+        <EuiMarkdownEditorDropZone
+          @uiPlugins={{this.toolbarPlugins}}
+          {{resizeObserver onResize=this.onResize}}
+        >
+          <EuiMarkdownEditorTextArea
+            {{this.getCursorNodeModifier
+              (not (not this.vFile))
+              this.setSelectedNode
+            }}
+            {{didUpdate this.onParse this.parsed}}
+            {{didInsert this.setTextAreaRef}}
+            disabled={{@disabled}}
+            id={{this.editorId}}
+            @height={{this.textAreaHeight}}
+            @maxHeight={{this.textAreaMaxHeight}}
+            value={{@value}}
+            aria-label={{@ariaLabel}}
+            aria-labelledby={{@ariaLabelledBy}}
+            aria-describedby={{@ariaDescribedBy}}
+            {{on "input" (pick "target.value" @onChange)}}
+            {{validatableControl @isInvalid}}
+            ...attributes
+          />
+        </EuiMarkdownEditorDropZone>
+      </div>
+    </div>
+  </template>
 }

@@ -1,8 +1,8 @@
 import { helper } from '@ember/component/helper';
-import { typeOf as EmberTypeOf } from '@ember/utils';
+import { typeOf as emberTypeOf } from '@ember/utils';
 
-export function typeOf([subject]: [unknown], { useNative = false }): string {
-  return useNative ? typeof subject : EmberTypeOf(subject);
+export function typeOf<T>([subject]: [T]) {
+  return emberTypeOf<T>(subject);
 }
 
 export default helper(typeOf);

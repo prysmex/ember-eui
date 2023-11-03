@@ -1,4 +1,4 @@
-import EuiBreadcrumbs from './eui-breadcrumbs';
+import EuiBreadcrumbs from './eui-breadcrumbs.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

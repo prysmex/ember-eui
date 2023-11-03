@@ -2,7 +2,7 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon';
+import EuiIcon from './eui-icon.gts';
 
 export interface EuiLoadingLogoSignature {
   Args: {

@@ -17,7 +17,7 @@ import optional from 'ember-composable-helpers/helpers/optional';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiToast from './eui-toast';
+import EuiToast from './eui-toast.gts';
 
 type EuiToastSide = keyof typeof sideMapping;
 

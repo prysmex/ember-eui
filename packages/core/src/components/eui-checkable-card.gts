@@ -2,8 +2,8 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 import { eq } from 'ember-truth-helpers';
-import EuiCheckbox from './eui-checkbox';
-import EuiRadio from './eui-radio';
+import EuiCheckbox from './eui-checkbox.gts';
+import EuiRadio from './eui-radio.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

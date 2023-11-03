@@ -1,9 +1,9 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { eq, or } from 'ember-truth-helpers';
-import TextBlock from './text-block';
-import EuiText from './eui-text';
-import EuiIcon from './eui-icon';
+import TextBlock from './text-block.gts';
+import EuiText from './eui-text.gts';
+import EuiIcon from './eui-icon.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

@@ -5,8 +5,8 @@ import { concat } from '@ember/helper';
 import { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
 import style from 'ember-style-modifier/modifiers/style';
 import { eq, not, or, and } from 'ember-truth-helpers';
-import EuiPageHeaderContent from './eui-page-header-content';
-import type { EuiPageHeaderContentSignature } from './eui-page-header-content';
+import EuiPageHeaderContent from './eui-page-header-content.gts';
+import type { EuiPageHeaderContentSignature } from './eui-page-header-content.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

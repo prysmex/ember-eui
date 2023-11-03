@@ -3,14 +3,14 @@ import { action } from '@ember/object';
 import type MarkdownActions from '../utils/markdown/markdown-actions';
 import { MODE_VIEWING } from '../utils/markdown/markdown-modes';
 import { cached } from '@glimmer/tracking';
-import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark';
+import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark.gts';
 import { on } from '@ember/modifier';
 import style from 'ember-style-modifier/modifiers/style';
 import { hash } from '@ember/helper';
 
-import EuiToolTip from './eui-tool-tip';
-import EuiButtonIcon from './eui-button-icon';
-import EuiButtonEmpty from './eui-button-empty';
+import EuiToolTip from './eui-tool-tip.gts';
+import EuiButtonIcon from './eui-button-icon.gts';
+import EuiButtonEmpty from './eui-button-empty.gts';
 
 import { fn } from '@ember/helper';
 

@@ -5,33 +5,33 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 import { and, not } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon';
-import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-export default class EuiContextMenuItemComponent extends Component {
-  @tracked link: HTMLAnchorElement | HTMLButtonElement | null = null;
+import { layoutAlignMapping, sizeMapping } from '../utils/css-mappings/eui-context-menu-item';
 
-  @action
-  registerLink(e: HTMLAnchorElement | HTMLButtonElement) {
-    this.link = e;
-  }
+export interface EuiContextMenuItemSignature {
+  Element: HTMLAnchorElement | HTMLButtonElement;
+  Args: {
+    layoutAlign?: keyof typeof layoutAlignMapping;
+    disabled?: boolean;
+    size?: keyof typeof sizeMapping;
+    href?: string;
+    target?: string;
+    isLoading?: boolean;
+    icon: EuiIconSignature['Args']['type'];
+    iconClasses?: string;
+    hasPanel?: boolean;
+  };
 
-  <template>
-    {{! @glint-nocheck: not typesafe yet }}
-    {{! @glint-nocheck: not typesafe yet }}
-import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import { concat } from '@ember/helper';
-import { and, not } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon';
-import EuiLoadingSpinner from './eui-loading-spinner';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+  Blocks: {
+    default: [];
+  };
+}
 
-export default class EuiContextMenuItemComponent extends Component {
+export default class EuiContextMenuItemComponent extends Component<EuiContextMenuItemSignature> {
   @tracked link: HTMLAnchorElement | HTMLButtonElement | null = null;
 
   @action
@@ -77,7 +77,7 @@ export default class EuiContextMenuItemComponent extends Component {
           class={{classNames
             "euiContextMenu__itemLayout"
             componentName="EuiContextMenuItem"
-            layoutAlign=(arg-or-default @layoutAlign "center")
+            layoutAlign=(argOrDefault @layoutAlign "center")
           }}
         >
           {{#if @isLoading}}

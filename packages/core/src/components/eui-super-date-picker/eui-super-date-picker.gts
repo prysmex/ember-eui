@@ -1,12 +1,11 @@
 import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import {
-  argOrDefaultDecorator,
-  argOrDefault
+import argOrDefault, {
+  argOrDefaultDecorator
 } from '../../helpers/arg-or-default';
-import { LocaleSpecifier } from 'moment';
-import {
+import type { LocaleSpecifier } from 'moment';
+import type {
   ApplyRefreshInterval,
   DurationRange,
   Milliseconds,

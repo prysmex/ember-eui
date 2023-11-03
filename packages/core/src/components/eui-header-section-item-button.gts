@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import EuiButtonEmpty from './eui-button-empty';
-import EuiIcon from './eui-icon';
+import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiIcon from './eui-icon.gts';
 
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
@@ -12,10 +12,10 @@ import optional from 'ember-composable-helpers/helpers/optional';
 
 import argOrDefault from '../helpers/arg-or-default';
 
-import EuiHideFor from './eui-hide-for';
-import EuiShowFor from './eui-show-for';
-import EuiNotificationBadge from './eui-notification-badge';
-import type { EuiHideForBreakpoints } from './eui-hide-for';
+import EuiHideFor from './eui-hide-for.gts';
+import EuiShowFor from './eui-show-for.gts';
+import EuiNotificationBadge from './eui-notification-badge.gts';
+import type { EuiHideForBreakpoints } from './eui-hide-for.gts';
 
 import type {
   colorMapping,

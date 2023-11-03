@@ -1,8 +1,8 @@
 import argOrDefault from '../helpers/arg-or-default';
 import { concat } from '@ember/helper';
 import { or } from 'ember-truth-helpers';
-import EuiFormFieldset from './eui-form-fieldset';
-import EuiCheckbox from './eui-checkbox';
+import EuiFormFieldset from './eui-form-fieldset.gts';
+import EuiCheckbox from './eui-checkbox.gts';
 import { on } from '@ember/modifier';
 import validatableControl from '../modifiers/validatable-control';
 import { get } from '@ember/helper';

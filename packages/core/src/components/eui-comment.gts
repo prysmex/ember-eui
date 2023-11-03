@@ -1,7 +1,7 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { and, eq, not } from 'ember-truth-helpers';
-import EuiCommentTimeline from './eui-comment-timeline';
+import EuiCommentTimeline from './eui-comment-timeline.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

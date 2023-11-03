@@ -1,4 +1,4 @@
-import EuiFormLabel from './eui-form-label';
+import EuiFormLabel from './eui-form-label.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

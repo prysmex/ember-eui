@@ -1,9 +1,9 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiFlexGroup from './eui-flex-group';
-import EuiFlexItem from './eui-flex-item';
-import EuiText from './eui-text';
-import EuiTitle from './eui-title';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
+import EuiText from './eui-text.gts';
+import EuiTitle from './eui-title.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

@@ -2,7 +2,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import isArray from 'ember-truth-helpers/helpers/is-array';
 import { array } from '@ember/helper';
 import { eq, and, gt } from 'ember-truth-helpers';
-import EuiCallOut from './eui-call-out';
+import EuiCallOut from './eui-call-out.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

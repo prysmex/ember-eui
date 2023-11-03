@@ -5,8 +5,8 @@ import { cascadingMenuKeys } from '../utils/accesibility';
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import uniqueId from '../helpers/unique-id';
 import { tabbable } from 'tabbable';
-import EuiPopover from './eui-popover';
-import type { EuiPopoverArgs } from './eui-popover';
+import EuiPopover from './eui-popover.gts';
+import type { EuiPopoverArgs } from './eui-popover.gts';
 import focusTrapModifier from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import resizeObserver from '../modifiers/resize-observer';
@@ -20,7 +20,7 @@ export interface EuiInputPopoverArgs
   extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
   disableFocusTrap?: boolean;
   fullWidth?: boolean;
-  input: EuiPopoverArgs['button'];
+  input?: EuiPopoverArgs['button'];
   inputRef?: EuiPopoverArgs['buttonRef'];
   onPanelResize?: (width?: number) => void;
 }

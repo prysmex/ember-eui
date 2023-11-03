@@ -2,10 +2,10 @@ import { and, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiFormControlLayoutIcons from './eui-form-control-layout-icons';
+import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
 
 import type { CommonArgs } from '../components/common';
-import type { EuiFormControlLayoutIconsArgs } from './eui-form-control-layout-icons';
+import type { EuiFormControlLayoutIconsArgs } from './eui-form-control-layout-icons.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type Component from '@glimmer/component';
 

@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import type { EuiBreakpointSize } from '../utils/breakpoint';
-import { CurrentBreakPointHelper } from './eui-show-for';
+import { CurrentBreakPointHelper } from './eui-show-for.gts';
 //@ts-expect-error
 import { invokeHelper } from '@ember/helper';
 //@ts-expect-error

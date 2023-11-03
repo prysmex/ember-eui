@@ -7,9 +7,9 @@ import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 
 import argOrDefault from '../helpers/arg-or-default';
-import EuiRadio from './eui-radio';
-import EuiCheckbox from './eui-checkbox';
-import EuiBetaBadge from './eui-beta-badge';
+import EuiRadio from './eui-radio.gts';
+import EuiCheckbox from './eui-checkbox.gts';
+import EuiBetaBadge from './eui-beta-badge.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

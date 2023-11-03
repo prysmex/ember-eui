@@ -1,16 +1,16 @@
 export const baseClass = '';
 
-const disabledMapping = {
+export const disabledMapping = {
   true: 'euiContextMenuItem-isDisabled'
 };
 
-const layoutAlignMapping = {
+export const layoutAlignMapping = {
   primary: `${baseClass}--primary`,
   accent: `${baseClass}--accent`,
   text: `${baseClass}--text`
 };
 
-const sizeMapping = {
+export const sizeMapping = {
   s: 'euiContextMenuItem--small'
 };
 

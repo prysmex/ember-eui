@@ -1,8 +1,8 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { and, not, or, eq } from 'ember-truth-helpers';
-import EuiButtonContent from './eui-button-content';
-import type { EuiButtonnContentSignature } from './eui-button-content';
+import EuiButtonContent from './eui-button-content.gts';
+import type { EuiButtonnContentSignature } from './eui-button-content.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

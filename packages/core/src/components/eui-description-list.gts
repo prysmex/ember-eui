@@ -1,7 +1,7 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiDescriptionListTitle from './eui-description-list-title';
-import EuiDescriptionListDescription from './eui-description-list-description';
+import EuiDescriptionListTitle from './eui-description-list-title.gts';
+import EuiDescriptionListDescription from './eui-description-list-description.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

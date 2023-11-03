@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import type EuiI18n from '../services/eui-i18n';
-import Render from './eui-i18n/render';
+import Render from './eui-i18n/render.gts';
 
 import { ensureSafeComponent } from '@embroider/util';
 import type { WithBoundArgs } from '@glint/template';

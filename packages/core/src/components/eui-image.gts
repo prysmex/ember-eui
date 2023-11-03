@@ -9,8 +9,8 @@ import { eq, notEq, or } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
 import focusTrapModifier from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
-import EuiOverlayMask from './eui-overlay-mask';
-import EuiIcon from './eui-icon';
+import EuiOverlayMask from './eui-overlay-mask.gts';
+import EuiIcon from './eui-icon.gts';
 import { hash } from '@ember/helper';
 
 type EuiImageSize = keyof typeof sizeMapping;

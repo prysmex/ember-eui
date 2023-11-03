@@ -3,14 +3,14 @@ import { on } from '@ember/modifier';
 import { and, eq, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
-import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button';
-import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon';
-import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button.gts';
+import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
 import type { DistributiveOmit } from './common';
-import type { EuiFormControlLayoutClearButtonArgs } from './eui-form-control-layout-clear-button';
-import type { EuiFormControlLayoutCustomIconArgs } from './eui-form-control-layout-custom-icon';
-import type { IconType } from './eui-icon';
+import type { EuiFormControlLayoutClearButtonArgs } from './eui-form-control-layout-clear-button.gts';
+import type { EuiFormControlLayoutCustomIconArgs } from './eui-form-control-layout-custom-icon.gts';
+import type { IconType } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export const ICON_SIDES: ['left', 'right'] = ['left', 'right'];

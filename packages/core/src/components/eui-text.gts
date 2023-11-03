@@ -2,8 +2,8 @@ import { and, not } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiTextAlign from './eui-text-align';
-import EuiTextColor from './eui-text-color';
+import EuiTextAlign from './eui-text-align.gts';
+import EuiTextColor from './eui-text-color.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

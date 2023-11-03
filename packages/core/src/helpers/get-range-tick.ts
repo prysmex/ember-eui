@@ -1,10 +1,6 @@
 import { helper } from '@ember/component/helper';
 import { EUI_THUMB_SIZE } from '../utils/range';
-
-export interface EuiRangeTick {
-  value: number;
-  label: string;
-}
+import type { EuiRangeTick } from '../components/eui-range-ticks.gts';
 
 export function calculateOffset(
   position: number,

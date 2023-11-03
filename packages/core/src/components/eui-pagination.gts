@@ -1,13 +1,13 @@
 import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
 
-import NextButton from './eui-pagination/next-button';
-import PreviousButton from './eui-pagination/previous-button';
-import ButtonWrapper from './eui-pagination/button-wrapper';
-import EuiHideFor from './eui-hide-for';
-import EuiText from './eui-text';
-import EuiI18n from './eui-i18n';
-import type { EuiHideForBreakpoints } from './eui-hide-for';
+import NextButton from './eui-pagination/next-button.gts';
+import PreviousButton from './eui-pagination/previous-button.gts';
+import ButtonWrapper from './eui-pagination/button-wrapper.gts';
+import EuiHideFor from './eui-hide-for.gts';
+import EuiText from './eui-text.gts';
+import EuiI18n from './eui-i18n.gts';
+import type { EuiHideForBreakpoints } from './eui-hide-for.gts';
 import sub from 'ember-math-helpers/helpers/sub';
 import add from 'ember-math-helpers/helpers/add';
 

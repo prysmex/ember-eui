@@ -15,10 +15,10 @@ import { and, eq, not } from 'ember-truth-helpers';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiButtonIcon from './eui-button-icon';
-import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiButtonIcon from './eui-button-icon.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
-import type { CommonArgs } from './common';
+import type { CommonArgs } from './common.ts';
 import type { paddingMapping } from '../utils/css-mappings/eui-accordion';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;

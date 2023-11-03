@@ -5,7 +5,7 @@ import { and, eq } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiButtonGroupButton from './eui-button-group-button';
+import EuiButtonGroupButton from './eui-button-group-button.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

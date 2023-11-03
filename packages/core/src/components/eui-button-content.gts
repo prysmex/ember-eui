@@ -1,6 +1,6 @@
 import { eq } from 'ember-truth-helpers';
-import EuiLoadingSpinner from './eui-loading-spinner';
-import EuiIcon from './eui-icon';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
+import EuiIcon from './eui-icon.gts';
 import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 

@@ -1,5 +1,5 @@
 import classNames from '../helpers/class-names';
-import EuiButtonEmpty from './eui-button-empty';
+import EuiButtonEmpty from './eui-button-empty.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

@@ -1,41 +1,50 @@
 import classNames from '../helpers/class-names';
 
-import { CommonArgs } from './common';
+import type { CommonArgs } from './common';
 
-export type EuiRangeSliderArgs = HTMLInputElement &
-  CommonArgs & {
-    id?: string;
-    name?: string;
-    min: number;
-    max: number;
-    step?: number;
-    compressed?: boolean;
-    hasFocus?: boolean;
-    showRange?: boolean;
-    showTicks?: boolean;
-    disabled?: boolean;
-    tabIndex?: number;
-    onChange?: InputEvent;
-  };
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  <input
-    type="range"
-    id={{@id}}
-    name={{@name}}
-    class={{classNames
-      "euiRangeSlider"
-      (if @showTicks "euiRangeSlider--hasTicks")
-      (if @hasFocus "euiRangeSlider--hasFocus")
-      (if @showRange "euiRangeSlider--hasRange")
-      (if @compressed "euiRangeSlider--compressed")
-    }}
-    min={{@min}}
-    max={{@max}}
-    step={{@step}}
-    value={{@value}}
-    disabled={{@disabled}}
-    ...attributes
-  />
-</template>
+export type EuiRangeSliderArgs = CommonArgs & {
+  id?: string;
+  name?: string;
+  min: number;
+  max: number;
+  step?: number;
+  value?: number;
+  compressed?: boolean;
+  hasFocus?: boolean;
+  showRange?: boolean;
+  showTicks?: boolean;
+  disabled?: boolean;
+  tabIndex?: number;
+  onChange?: InputEvent;
+};
+
+export interface EuiRangeSliderSignature {
+  Element: HTMLInputElement;
+  Args: EuiRangeSliderArgs;
+}
+
+const EuiRangeSlider: TemplateOnlyComponent<EuiRangeSliderSignature> =
+  <template>
+    <input
+      type="range"
+      id={{@id}}
+      name={{@name}}
+      class={{classNames
+        "euiRangeSlider"
+        (if @showTicks "euiRangeSlider--hasTicks")
+        (if @hasFocus "euiRangeSlider--hasFocus")
+        (if @showRange "euiRangeSlider--hasRange")
+        (if @compressed "euiRangeSlider--compressed")
+      }}
+      min={{@min}}
+      max={{@max}}
+      step={{@step}}
+      value={{@value}}
+      disabled={{@disabled}}
+      ...attributes
+    />
+  </template>;
+
+export default EuiRangeSlider;

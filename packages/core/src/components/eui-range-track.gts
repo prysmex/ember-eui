@@ -1,8 +1,9 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { EuiRangeLevel, LEVEL_COLORS } from '../eui-range-levels';
+import { LEVEL_COLORS } from './eui-range-levels.gts';
+import type { EuiRangeLevel } from './eui-range-levels.gts';
 import { assert } from '@ember/debug';
-import { isEvenlyDivisibleBy } from '../../utils/number';
+import { isEvenlyDivisibleBy } from '../utils/number';
 import { range } from 'lodash-es';
 import { action } from '@ember/object';
 import { htmlSafe } from '@ember/template';
@@ -10,8 +11,8 @@ import { htmlSafe } from '@ember/template';
 import classNames from '../helpers/class-names';
 
 import { and, or, gt } from 'ember-truth-helpers';
-import EuiRangeTicks from './eui-range-ticks';
-import EuiRangeLevels from './eui-range-levels';
+import EuiRangeTicks from './eui-range-ticks.gts';
+import EuiRangeLevels from './eui-range-levels.gts';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { fn } from '@ember/helper';
@@ -34,8 +35,8 @@ export type EuiRangeTrackArgs = {
   disabled?: boolean;
   showTicks?: boolean;
   tickInterval?: number;
-  ticks?: EuiRangeTick[];
-  onChange?: MouseEvent;
+  ticks: EuiRangeTick[];
+  onChange?: (e: MouseEvent) => void;
   levels?: EuiRangeLevel[];
 };
 
@@ -44,9 +45,17 @@ type Styling = {
   styles: ReturnType<typeof htmlSafe>;
 };
 
-export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs> {
+export interface EuiRangeTrackSignature {
+  Element: HTMLElement;
+  Args: EuiRangeTrackArgs;
+  Blocks: {
+    default: [];
+  };
+}
+
+export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSignature> {
   @tracked
-  trackEl: HTMLElement | undefined;
+  declare trackEl: HTMLElement;
 
   @action
   registerTrack(el: HTMLElement) {
@@ -157,7 +166,6 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackArgs>
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div
       class={{classNames
         "euiRangeTrack"

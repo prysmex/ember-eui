@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiButtonEmpty from './eui-button-empty';
+import EuiButtonEmpty from './eui-button-empty.gts';
 
 export type EuiCardSelectProps = {
   /**

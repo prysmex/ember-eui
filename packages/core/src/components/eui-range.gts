@@ -1,26 +1,26 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import uniqueId from '../helpers/unique-id';
 import { isWithinRange } from '../utils/number';
-import type { EuiRangeInputArgs } from './eui-range-input';
-import type { EuiRangeLevel } from './eui-range-levels';
-import type { EuiRangeTick } from './eui-range-ticks';
+import type { EuiRangeLevel } from './eui-range-levels.gts';
+import type { EuiRangeTick } from './eui-range-ticks.gts';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import { later } from '@ember/runloop';
 import { guidFor } from '@ember/object/internals';
 import { and, eq, not } from 'ember-truth-helpers';
 import classNames from '../helpers/class-names';
-import EuiInputPopover from './eui-input-popover';
-import EuiRangeInput from './eui-range-input';
-import EuiRangeLabel from './eui-range-label';
-import EuiRangeTrack from './eui-range-track';
-import EuiRangeHighlight from './eui-range-highlight';
-import EuiRangeTooltip from './eui-range-tooltip';
-import EuiRangeSlider from './eui-range-slider';
-import EuiRangeWrapper from './eui-range-wrapper';
+import EuiInputPopover from './eui-input-popover.gts';
+import castTo from '../helpers/cast-to';
+import EuiRangeInput from './eui-range-input.gts';
+import EuiRangeLabel from './eui-range-label.gts';
+import EuiRangeTrack from './eui-range-track.gts';
+import EuiRangeHighlight from './eui-range-highlight.gts';
+import EuiRangeTooltip from './eui-range-tooltip.gts';
+import EuiRangeSlider from './eui-range-slider.gts';
+import EuiRangeWrapper from './eui-range-wrapper.gts';
 import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
+import { fn } from '@ember/helper';
 
 export interface EuiRangeArgs {
   compressed?: boolean;
@@ -56,7 +56,7 @@ export interface EuiRangeArgs {
   /**
    * Specified ticks at specified values
    */
-  ticks?: EuiRangeTick[];
+  ticks: EuiRangeTick[];
   /**
    * Modifies the number of tick marks and at what interval
    */
@@ -64,17 +64,17 @@ export interface EuiRangeArgs {
   /**
    * Appends to the tooltip
    */
-  valueAppend?: Component;
+  valueAppend?: any;
   /**
    * Prepends to the tooltip
    */
-  valuePrepend?: Component;
+  valuePrepend?: any;
 
   onChange?: (event: Event, isValid: boolean) => void;
   onBlur?: (event: Event) => void;
   onFocus?: (event: Event) => void;
 
-  value?: string;
+  value?: number;
 
   disabled?: boolean;
 
@@ -87,19 +87,20 @@ export interface EuiRangeArgs {
   isFakeValuePrependBlock?: boolean;
   isInvalid?: boolean;
   name?: string;
+  isLoading?: boolean;
 }
 
 export interface EuiRangeSignature {
   Element: HTMLInputElement;
   Args: EuiRangeArgs;
   Blocks: {
-    min: [];
-    max: [];
+    min: [min: number];
+    max: [max: number];
     value: [];
     valueAppend: [];
     valuePrepend: [];
-    prepend: [];
-    append: [];
+    prepend: [classes: string];
+    append: [classes: string];
     input: [];
     content: [];
   };
@@ -128,8 +129,12 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
   ///
 
   @action
-  handleOnChange(e: Event & { currentTarget: HTMLInputElement }): void {
-    const isValid = isWithinRange(this.min, this.max, e.currentTarget.value);
+  handleOnChange(e: Event): void {
+    const isValid = isWithinRange(
+      this.min,
+      this.max,
+      (e.currentTarget as HTMLInputElement).value
+    );
     if (this.args.onChange) {
       this.args.onChange(e, isValid);
     }
@@ -241,10 +246,9 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
               @value={{@value}}
               @disabled={{@disabled}}
               @compressed={{@compressed}}
-              @onChange={{this.handleOnChange}}
               @name={{@name}}
-              @fullWidth={{and @showInputOnly this.fullWidth}}
-              @isLoading={{and @showInputOnly @isLoading}}
+              @fullWidth={{and this.showInputOnly this.fullWidth}}
+              @isLoading={{and this.showInputOnly @isLoading}}
               @isInvalid={{@isInvalid}}
               @autoSize={{not this.showInputOnly}}
               @isPrependProvided={{hasPrepend}}
@@ -304,10 +308,14 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                   <EuiRangeHighlight
                     @compressed={{@compressed}}
                     @showTicks={{this.showTicks}}
-                    @min={{cast-to this.min to="number"}}
-                    @max={{cast-to this.max to="number"}}
-                    @lowerValue={{cast-to this.min to="number"}}
-                    @upperValue={{cast-to @value to="number"}}
+                    {{!@glint-expect-error}}
+                    @min={{castTo this.min to="number"}}
+                    {{!@glint-expect-error}}
+                    @max={{castTo this.max to="number"}}
+                    {{!@glint-expect-error}}
+                    @lowerValue={{castTo this.min to="number"}}
+                    {{!@glint-expect-error}}
+                    @upperValue={{castTo @value to="number"}}
                   />
                 {{/if}}
                 <EuiRangeSlider
@@ -348,7 +356,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                     @value={{@value}}
                     @max={{this.max}}
                     @min={{this.min}}
-                    @name={{this.name}}
+                    @name={{@name}}
                     @showTicks={{this.showTicks}}
                   >
                     <:valuePrepend>
@@ -397,10 +405,9 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                     @value={{@value}}
                     @disabled={{@disabled}}
                     @compressed={{@compressed}}
-                    @onChange={{this.handleOnChange}}
                     @name={{@name}}
-                    @fullWidth={{and @showInputOnly this.fullWidth}}
-                    @isLoading={{and @showInputOnly @isLoading}}
+                    @fullWidth={{and this.showInputOnly this.fullWidth}}
+                    @isLoading={{and this.showInputOnly @isLoading}}
                     @isInvalid={{@isInvalid}}
                     @autoSize={{not this.showInputOnly}}
                     @isPrependProvided={{hasPrepend}}
@@ -470,10 +477,14 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
               <EuiRangeHighlight
                 @compressed={{@compressed}}
                 @showTicks={{this.showTicks}}
-                @min={{cast-to this.min to="number"}}
-                @max={{cast-to this.max to="number"}}
-                @lowerValue={{cast-to this.min to="number"}}
-                @upperValue={{cast-to @value to="number"}}
+                {{!@glint-expect-error}}
+                @min={{castTo this.min to="number"}}
+                {{!@glint-expect-error}}
+                @max={{castTo this.max to="number"}}
+                {{!@glint-expect-error}}
+                @lowerValue={{castTo this.min to="number"}}
+                {{!@glint-expect-error}}
+                @upperValue={{castTo @value to="number"}}
               />
             {{/if}}
             <EuiRangeSlider
@@ -512,7 +523,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                 @value={{@value}}
                 @max={{this.max}}
                 @min={{this.min}}
-                @name={{this.name}}
+                @name={{@name}}
                 @showTicks={{this.showTicks}}
               >
                 <:valuePrepend>
@@ -561,10 +572,9 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                 @value={{@value}}
                 @disabled={{@disabled}}
                 @compressed={{@compressed}}
-                @onChange={{this.handleOnChange}}
                 @name={{@name}}
-                @fullWidth={{and @showInputOnly this.fullWidth}}
-                @isLoading={{and @showInputOnly @isLoading}}
+                @fullWidth={{and this.showInputOnly this.fullWidth}}
+                @isLoading={{and this.showInputOnly @isLoading}}
                 @isInvalid={{@isInvalid}}
                 @autoSize={{not this.showInputOnly}}
                 @isPrependProvided={{hasPrepend}}

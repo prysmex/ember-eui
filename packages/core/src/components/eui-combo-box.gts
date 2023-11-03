@@ -13,11 +13,11 @@ import { and, not } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiComboBoxCreateOption from './eui-combo-box/create-option';
-import EuiComboBoxGroup from './eui-combo-box/group';
-import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message';
-import EuiComboBoxOptions from './eui-combo-box/options';
-import EuiComboBoxTrigger from './eui-combo-box/trigger';
+import EuiComboBoxCreateOption from './eui-combo-box/create-option.gts';
+import EuiComboBoxGroup from './eui-combo-box/group.gts';
+import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message.gts';
+import EuiComboBoxOptions from './eui-combo-box/options.gts';
+import EuiComboBoxTrigger from './eui-combo-box/trigger.gts';
 
 interface PromiseProxy<T> extends Promise<T> {
   content: any;

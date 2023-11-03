@@ -1,5 +1,5 @@
-import TextBlock from './text-block';
-import type { TextBlockSignature } from './text-block';
+import TextBlock from './text-block.gts';
+import type { TextBlockSignature } from './text-block.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 

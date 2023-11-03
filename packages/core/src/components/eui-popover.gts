@@ -36,8 +36,8 @@ import merge from '../helpers/merge';
 import outsideClickDetector from '../modifiers/outside-click-detector';
 import { concat } from '@ember/helper';
 import focusTrapModifier from 'ember-focus-trap';
-import EuiPortal from './eui-portal';
-import EuiPanel from './eui-panel';
+import EuiPortal from './eui-portal.gts';
+import EuiPanel from './eui-panel.gts';
 import mutationObserver from '../modifiers/mutation-observer';
 
 type PanelPaddingSize = keyof typeof paddingSizeMapping;

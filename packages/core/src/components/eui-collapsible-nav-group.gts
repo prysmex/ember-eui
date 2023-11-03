@@ -6,11 +6,11 @@ import { and, notEq } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiAccordion from './eui-accordion';
-import EuiFlexGroup from './eui-flex-group';
-import EuiFlexItem from './eui-flex-item';
-import EuiIcon from './eui-icon';
-import EuiTitle from './eui-title';
+import EuiAccordion from './eui-accordion.gts';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
+import EuiIcon from './eui-icon.gts';
+import EuiTitle from './eui-title.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

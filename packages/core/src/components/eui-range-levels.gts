@@ -30,9 +30,16 @@ export type EuiRangeLevelsArgs = {
   min: number;
   showTicks?: boolean;
   compressed?: boolean;
+  trackWidth?: number;
 };
 
-export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsArgs> {
+export interface EuiRangeLevelsSignature {
+  Element: HTMLDivElement;
+  Args: EuiRangeLevelsArgs;
+  Blocks: { default: [] };
+}
+
+export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsSignature> {
   @action
   validateLevels(): void {
     const { min, max } = this.args;
@@ -53,7 +60,6 @@ export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsArg
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div
       class={{classNames
         "euiRangeLevels"

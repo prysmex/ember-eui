@@ -7,66 +7,63 @@ import { and, or } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiFormControlLayout from './eui-form-control-layout';
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
+import EuiFormControlLayout from './eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
 import type { CommonArgs } from './common';
-import type { EuiFormControlLayoutArgs } from './eui-form-control-layout';
-import type { IconType } from './eui-icon';
+import type { EuiFormControlLayoutArgs } from './eui-form-control-layout.gts';
+import type { IconType } from './eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-export type EuiFieldNumberArgs = Omit<
-  HTMLInputElement,
-  'min' | 'max' | 'readOnly' | 'step' | 'type' | 'value' | 'disabled'
-> &
-  CommonArgs & {
-    icon?: IconType;
-    isInvalid?: boolean;
-    fullWidth?: boolean;
-    isLoading?: boolean;
-    readOnly?: boolean;
-    min?: number;
-    max?: number;
-    value?: number | string;
-    disabled?: boolean;
+export type EuiFieldNumberArgs = CommonArgs & {
+  id?: string;
+  icon?: IconType;
+  isInvalid?: boolean;
+  fullWidth?: boolean;
+  isLoading?: boolean;
+  readOnly?: boolean;
+  min?: number;
+  max?: number;
+  value?: number | string;
+  disabled?: boolean;
 
-    /**
-     * Specifies the granularity that the value must adhere to.
-     * Accepts a `number` or the string `'any'` for no stepping to allow for any value.
-     * Defaults to `1`
-     */
-    step?: number | 'any';
-    inputRef?: (ele: Element) => void;
+  /**
+   * Specifies the granularity that the value must adhere to.
+   * Accepts a `number` or the string `'any'` for no stepping to allow for any value.
+   * Defaults to `1`
+   */
+  step?: number | 'any';
+  inputRef?: (ele: Element) => void;
 
-    /**
-     * Creates an input group with element(s) coming before input.
-     * `string` | `Component` or an array of these
-     */
-    prepend?: EuiFormControlLayoutArgs['prepend'];
+  /**
+   * Creates an input group with element(s) coming before input.
+   * `string` | `Component` or an array of these
+   */
+  prepend?: EuiFormControlLayoutArgs['prepend'];
 
-    /**
-     * Creates an input group with element(s) coming after input.
-     * `string` | `Component` or an array of these
-     */
-    append?: EuiFormControlLayoutArgs['append'];
+  /**
+   * Creates an input group with element(s) coming after input.
+   * `string` | `Component` or an array of these
+   */
+  append?: EuiFormControlLayoutArgs['append'];
 
-    /**
-     * Completely removes form control layout wrapper and ignores
-     * icon, prepend, and append. Best used inside EuiFormControlLayoutDelimited.
-     */
-    controlOnly?: boolean;
+  /**
+   * Completely removes form control layout wrapper and ignores
+   * icon, prepend, and append. Best used inside EuiFormControlLayoutDelimited.
+   */
+  controlOnly?: boolean;
 
-    /**
-     * when `true` creates a shorter height input
-     */
-    compressed?: boolean;
+  /**
+   * when `true` creates a shorter height input
+   */
+  compressed?: boolean;
 
-    isPrependProvided?: boolean;
-    isAppendProvided?: boolean;
+  isPrependProvided?: boolean;
+  isAppendProvided?: boolean;
 
-    clear?: EuiFormControlLayoutSignature['Args']['clear'];
-  };
+  clear?: EuiFormControlLayoutSignature['Args']['clear'];
+};
 
 export interface EuiFieldNumberSignature {
   Element: HTMLInputElement;

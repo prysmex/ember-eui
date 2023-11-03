@@ -1,6 +1,6 @@
 import uniqueId from '../helpers/unique-id';
-import EuiFlexGroup from './eui-flex-group';
-import EuiFlexItem from './eui-flex-item';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

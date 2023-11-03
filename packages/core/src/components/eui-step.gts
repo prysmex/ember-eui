@@ -2,9 +2,9 @@ import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 
 import { eq } from 'ember-truth-helpers';
-import EuiStepNumber from './eui-step-number';
-import EuiTitle from './eui-title';
-import type { EuiTitleSignature } from './eui-title';
+import EuiStepNumber from './eui-step-number.gts';
+import EuiTitle from './eui-title.gts';
+import type { EuiTitleSignature } from './eui-title.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

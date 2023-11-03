@@ -17,22 +17,22 @@ import simpleStyle from '../modifiers/simple-style';
 import { keys } from '../utils/keys';
 import { isWithinRange } from '../utils/number';
 import { EUI_THUMB_SIZE } from '../utils/range';
-import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited';
-import EuiInputPopover from './eui-input-popover';
-import EuiRangeHighlight from './eui-range-highlight';
-import EuiRangeInput from './eui-range-input';
-import EuiRangeLabel from './eui-range-label';
-import EuiRangeSlider from './eui-range-slider';
-import EuiRangeThumb from './eui-range-thumb';
-import EuiRangeTrack from './eui-range-track';
-import EuiRangeWrapper from './eui-range-wrapper';
+import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited.gts';
+import EuiInputPopover from './eui-input-popover.gts';
+import EuiRangeHighlight from './eui-range-highlight.gts';
+import EuiRangeInput from './eui-range-input.gts';
+import EuiRangeLabel from './eui-range-label.gts';
+import EuiRangeSlider from './eui-range-slider.gts';
+import EuiRangeThumb from './eui-range-thumb.gts';
+import EuiRangeTrack from './eui-range-track.gts';
+import EuiRangeWrapper from './eui-range-wrapper.gts';
 
-import type { EuiRangeInputArgs } from './eui-range-input';
-import type { EuiRangeSliderArgs } from './eui-range-slider';
-import type { EuiFormControlLayoutArgs } from './eui-form-control-layout';
-import type { EuiRangeArgs } from './eui-range';
-import type { EuiRangeLevel } from './eui-range-levels';
-import type { EuiRangeTick } from './eui-range-ticks';
+import type { EuiRangeInputArgs } from './eui-range-input.gts';
+import type { EuiRangeSliderArgs } from './eui-range-slider.gts';
+import type { EuiFormControlLayoutArgs } from './eui-form-control-layout.gts';
+import type { EuiRangeArgs } from './eui-range.gts';
+import type { EuiRangeLevel } from './eui-range-levels.gts';
+import type { EuiRangeTick } from './eui-range-ticks.gts';
 
 type ValueMember = number | string;
 

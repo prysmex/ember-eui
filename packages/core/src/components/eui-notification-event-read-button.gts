@@ -1,5 +1,5 @@
-import EuiButtonIcon from './eui-button-icon';
-import type { EuiButtonIconSignature } from './eui-button-icon';
+import EuiButtonIcon from './eui-button-icon.gts';
+import type { EuiButtonIconSignature } from './eui-button-icon.gts';
 import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 

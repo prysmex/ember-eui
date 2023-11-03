@@ -8,8 +8,8 @@ import findBy from 'ember-composable-helpers/helpers/find-by';
 import { eq } from 'ember-truth-helpers';
 
 import uniqueId from '../helpers/unique-id';
-import EuiTab from './eui-tab';
-import EuiTabs from './eui-tabs';
+import EuiTab from './eui-tab.gts';
+import EuiTabs from './eui-tabs.gts';
 
 import type { CommonArgs } from './common';
 

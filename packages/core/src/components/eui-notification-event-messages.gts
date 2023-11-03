@@ -1,5 +1,5 @@
-import EuiText from './eui-text';
-import EuiAccordion from './eui-accordion';
+import EuiText from './eui-text.gts';
+import EuiAccordion from './eui-accordion.gts';
 import without from 'ember-composable-helpers/helpers/without';
 import objectAt from 'ember-composable-helpers/helpers/object-at';
 import { concat } from '@ember/helper';

@@ -16,7 +16,7 @@ export interface EuiRangeTick {
 type Value = string | number;
 
 export type EuiRangeTicksArgs = {
-  ticks?: EuiRangeTick[];
+  ticks: EuiRangeTick[];
   tickSequence: number[];
   value?: Value | Value[];
   min: number;
@@ -24,9 +24,16 @@ export type EuiRangeTicksArgs = {
   compressed?: boolean;
   interval?: number;
   disabled?: boolean;
+  onChange?: (e: MouseEvent) => void;
+  trackWidth: number;
 };
 
-export default class EuiRangeTicksComponent extends Component<EuiRangeTicksArgs> {
+export interface EuiRangeTicksSignature {
+  Element: HTMLDivElement;
+  Args: EuiRangeTicksArgs;
+}
+
+export default class EuiRangeTicksComponent extends Component<EuiRangeTicksSignature> {
   get percentageWidth(): number {
     const { max, min, interval = 1 } = this.args;
 
@@ -41,7 +48,6 @@ export default class EuiRangeTicksComponent extends Component<EuiRangeTicksArgs>
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div
       class="euiRangeTicks {{if @compressed 'euiRangeTicks--compressed'}}"
       style={{this.ticksStyle}}
@@ -67,6 +73,7 @@ export default class EuiRangeTicksComponent extends Component<EuiRangeTicksArgs>
             tabindex="-1"
             {{on "click" (optional @onChange)}}
           >
+            {{!@glint-expect-error}}
             {{derivedState.label}}
           </button>
         {{/let}}

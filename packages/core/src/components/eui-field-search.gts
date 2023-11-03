@@ -14,7 +14,7 @@ import { and, not, or } from 'ember-truth-helpers';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiFormControlLayout from './eui-form-control-layout';
+import EuiFormControlLayout from './eui-form-control-layout.gts';
 
 let isSearchSupported = false;
 

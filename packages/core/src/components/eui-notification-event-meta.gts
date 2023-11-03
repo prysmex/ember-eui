@@ -10,13 +10,13 @@ import { and } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiBadge from './eui-badge';
-import type { EuiBadgeSignature } from './eui-badge';
-import EuiButtonIcon from './eui-button-icon';
-import EuiIcon from './eui-icon';
-import EuiPopover from './eui-popover';
+import EuiBadge from './eui-badge.gts';
+import type { EuiBadgeSignature } from './eui-badge.gts';
+import EuiButtonIcon from './eui-button-icon.gts';
+import EuiIcon from './eui-icon.gts';
+import EuiPopover from './eui-popover.gts';
 
-import type { EuiIconSignature } from './eui-icon';
+import type { EuiIconSignature } from './eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

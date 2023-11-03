@@ -1,11 +1,11 @@
 import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon';
-import type { EuiIconSignature } from './eui-icon';
-import EuiLoadingSpinner from './eui-loading-spinner';
+import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import screenReaderOnly from '../modifiers/screen-reader-only';
 import { helper } from '@ember/component/helper';
-import type { EuiStepSignature } from './eui-step';
+import type { EuiStepSignature } from './eui-step.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

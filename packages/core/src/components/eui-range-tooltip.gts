@@ -9,7 +9,7 @@ export interface EuiRangeTick {
   label: Component;
 }
 
-export type EuiRangeTooltopArgs = {
+export type EuiRangeTooltipArgs = {
   value?: number | string;
   valueAppend?: Component;
   valuePrepend?: Component;
@@ -25,7 +25,16 @@ type Styling = {
   style: ReturnType<typeof htmlSafe>;
 };
 
-export default class EuiRangeToolipComponent extends Component<EuiRangeTooltopArgs> {
+export interface EuiRangeTooltipSignature {
+  Args: EuiRangeTooltipArgs;
+  Blocks: {
+    valuePrepend: [];
+    value: [];
+    valueAppend: [];
+  };
+}
+
+export default class EuiRangeToolipComponent extends Component<EuiRangeTooltipSignature> {
   get styling(): Styling {
     const { value, max, min } = this.args;
     let val = 0;

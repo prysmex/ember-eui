@@ -1,12 +1,12 @@
 import { or } from 'ember-truth-helpers';
-import EuiButtonEmpty from './eui-button-empty';
-import EuiButton from './eui-buttonn';
-import EuiText from './eui-text';
-import EuiModal from './eui-modal';
-import EuiModalHeader from './eui-modal-header';
-import EuiModalHeaderTitle from './eui-modal-header-title';
-import EuiModalBody from './eui-modal-body';
-import EuiModalFooter from './eui-modal-footer';
+import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiButton from './eui-button.gts';
+import EuiText from './eui-text.gts';
+import EuiModal from './eui-modal.gts';
+import EuiModalHeader from './eui-modal-header.gts';
+import EuiModalHeaderTitle from './eui-modal-header-title.gts';
+import EuiModalBody from './eui-modal-body.gts';
+import EuiModalFooter from './eui-modal-footer.gts';
 import { on } from '@ember/modifier';
 
 <template>

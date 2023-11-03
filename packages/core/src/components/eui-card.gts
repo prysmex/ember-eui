@@ -8,18 +8,18 @@ import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, notEq, or } from 'ember-truth-helpers';
 
-import { euiCardSelectableColor } from '../eui-card-select';
+import { euiCardSelectableColor } from './eui-card-select.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiBetaBadge from './eui-beta-badge';
-import EuiCardSelect from './eui-card-select';
-import EuiIcon from './eui-icon';
-import EuiPanel from './eui-panel';
-import EuiText from './eui-text';
-import EuiTitle from './eui-title';
+import EuiBetaBadge from './eui-beta-badge.gts';
+import EuiCardSelect from './eui-card-select.gts';
+import EuiIcon from './eui-icon.gts';
+import EuiPanel from './eui-panel.gts';
+import EuiText from './eui-text.gts';
+import EuiTitle from './eui-title.gts';
 
-import type { EuiCardSelectProps } from '../eui-card-select';
+import type { EuiCardSelectProps } from './eui-card-select.gts';
 
 type EuiCardComponentArgs = {
   selectable?: EuiCardSelectProps;

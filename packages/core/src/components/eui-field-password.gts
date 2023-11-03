@@ -9,8 +9,8 @@ import { and, eq,not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiButtonIcon from './eui-button-icon';
-import EuiFormControlLayout from './eui-form-control-layout';
+import EuiButtonIcon from './eui-button-icon.gts';
+import EuiFormControlLayout from './eui-form-control-layout.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

@@ -5,7 +5,7 @@ import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, or } from 'ember-truth-helpers';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { on } from '@ember/modifier';
-import EuiIcon from './eui-icon';
+import EuiIcon from './eui-icon.gts';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import argOrDefault from '../helpers/arg-or-default';

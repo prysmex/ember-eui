@@ -1,7 +1,8 @@
 import classNames from '../helpers/class-names';
-import EuiIcon from './eui-icon';
+import EuiIcon from './eui-icon.gts';
 
-import { CommonArgs, keysOf } from './common';
+import { keysOf } from './common';
+import type { CommonArgs } from './common';
 
 const sizeToClassNameMap = {
   s: 'euiFormControlLayoutClearButton--small',

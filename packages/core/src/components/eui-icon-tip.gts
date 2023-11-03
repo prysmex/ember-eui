@@ -1,9 +1,9 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import EuiToolTip from './eui-tool-tip';
-import EuiIcon from './eui-icon';
-import type { EuiIconSignature } from './eui-icon';
+import EuiToolTip from './eui-tool-tip.gts';
+import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
 import argOrDefault from '../helpers/arg-or-default';
-import type { EuiToolTipSignature } from './eui-tool-tip';
+import type { EuiToolTipSignature } from './eui-tool-tip.gts';
 import { or } from 'ember-truth-helpers';
 
 export interface EuiIconTipSignature {

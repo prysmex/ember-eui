@@ -2,8 +2,8 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 
-import EuiIcon from './eui-icon';
-import type { EuiIconSignature } from './eui-icon';
+import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

@@ -1,7 +1,7 @@
 import { eq } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
-import EuiPanel from './eui-panel';
-import type { EuiPanelSignature } from './eui-panel';
+import EuiPanel from './eui-panel.gts';
+import type { EuiPanelSignature } from './eui-panel.gts';
 import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
 import classNames from '../helpers/class-names';
 import style from 'ember-style-modifier/modifiers/style';

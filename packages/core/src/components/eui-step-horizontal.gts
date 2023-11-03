@@ -5,7 +5,7 @@ import { eq } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiStepNumber from './eui-step-number';
+import EuiStepNumber from './eui-step-number.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

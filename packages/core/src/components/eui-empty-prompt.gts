@@ -1,13 +1,13 @@
 import classNames from '../helpers/class-names';
 import { gte, eq } from 'ember-truth-helpers';
-import EuiPanel from './eui-panel';
-import EuiIcon from './eui-icon';
-import EuiTitle from './eui-title';
-import EuiTextColor from './eui-text-color';
-import EuiSpacer from './eui-spacer';
-import EuiText from './eui-text';
-import EuiFlexGroup from './eui-flex-group';
-import EuiFlexItem from './eui-flex-item';
+import EuiPanel from './eui-panel.gts';
+import EuiIcon from './eui-icon.gts';
+import EuiTitle from './eui-title.gts';
+import EuiTextColor from './eui-text-color.gts';
+import EuiSpacer from './eui-spacer.gts';
+import EuiText from './eui-text.gts';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
 import { concat } from '@ember/helper';
 import argOrDefault from '../helpers/arg-or-default';
 

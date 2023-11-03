@@ -24,12 +24,12 @@ import style from 'ember-style-modifier/modifiers/style';
 import { hash } from '@ember/helper';
 import set from 'ember-set-helper/helpers/set';
 
-import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar';
-import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar';
-import EuiMarkdownFormat from './eui-markdown-format';
-import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area';
-import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area';
-import EuiMarkdownEditorDropZone from './eui-markdown-editor-drop-zone';
+import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar.gts';
+import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar.gts';
+import EuiMarkdownFormat from './eui-markdown-format.gts';
+import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area.gts';
+import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area.gts';
+import EuiMarkdownEditorDropZone from './eui-markdown-editor-drop-zone.gts';
 
 import type {
   EuiMarkdownAstNode,

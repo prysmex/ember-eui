@@ -7,8 +7,8 @@ import { and, eq, notEq } from 'ember-truth-helpers';
 
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiButton from './eui-button';
-import EuiInnerText from './eui-inner-text';
+import EuiButton from './eui-button.gts';
+import EuiInnerText from './eui-inner-text.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

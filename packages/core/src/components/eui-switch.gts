@@ -7,7 +7,7 @@ import { and, not } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiIcon from './eui-icon';
+import EuiIcon from './eui-icon.gts';
 
 type SwitchArgs = {
   id?: string;

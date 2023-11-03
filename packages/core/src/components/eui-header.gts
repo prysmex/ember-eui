@@ -3,9 +3,9 @@ import { modifier } from 'ember-modifier';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 
-import EuiHeaderSection from './eui-header-section';
-import EuiHeaderSectionItem from './eui-header-section-item';
-import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs';
+import EuiHeaderSection from './eui-header-section.gts';
+import EuiHeaderSectionItem from './eui-header-section-item.gts';
+import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs.gts';
 
 let euiHeaderFixedCounter = 0;
 

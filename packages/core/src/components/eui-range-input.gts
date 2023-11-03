@@ -1,19 +1,20 @@
 import argOrDefault from '../helpers/arg-or-default';
 import { and, eq } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';
-import EuiFieldNumber from './eui-field-number';
-import type { EuiFieldNumberSignature } from './eui-field-number';
+import EuiFieldNumber from './eui-field-number.gts';
+import type { EuiFieldNumberSignature } from './eui-field-number.gts';
 import simpleStyle from '../modifiers/simple-style';
 import inlineStyles from '../helpers/inline-styles';
 import castTo from '../helpers/cast-to';
 
-import type { EuiFieldNumberArgs } from './eui-field-number';
+import type { EuiFieldNumberArgs } from './eui-field-number.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiRangeInputArgs
   extends Omit<EuiFieldNumberArgs, 'max' | 'min' | 'value'> {
   autoSize?: boolean;
   digitTolerance: number;
+  name?: string;
   max: number;
   min: number;
   side?: 'min' | 'max';

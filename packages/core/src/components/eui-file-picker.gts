@@ -14,10 +14,10 @@ import argOrDefault, {
 } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
-import EuiButtonEmpty from './eui-button-empty';
-import EuiIcon from './eui-icon';
-import EuiLoadingSpinner from './eui-loading-spinner';
-import EuiProgress from './eui-progress';
+import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiIcon from './eui-icon.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
+import EuiProgress from './eui-progress.gts';
 
 export type EuiFilePickerDisplay = keyof typeof displayMapping;
 

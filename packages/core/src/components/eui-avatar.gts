@@ -4,8 +4,8 @@ import argOrDefault from '../helpers/arg-or-default';
 import simpleStyle from '../modifiers/simple-style';
 import { toInitials } from '../helpers/to-initials';
 import { and, not, or, eq } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon';
-import type { EuiIconSignature } from './eui-icon';
+import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
 import { hash, get } from '@ember/helper';
 import { sizeMapping, typeMapping } from '../utils/css-mappings/eui-avatar';
 

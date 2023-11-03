@@ -1,6 +1,6 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiIcon from './eui-icon';
+import EuiIcon from './eui-icon.gts';
 
 <template>
   {{! @glint-nocheck: not typesafe yet }}

@@ -6,10 +6,10 @@ import type { EuiBreakpointSize } from '../utils/breakpoint';
 import { cached, tracked } from '@glimmer/tracking';
 
 import classNames from '../helpers/class-names';
-import EuiIcon from './eui-icon';
-import EuiLink from './eui-link';
-import EuiInnerText from './eui-inner-text';
-import EuiPopover from './eui-popover';
+import EuiIcon from './eui-icon.gts';
+import EuiLink from './eui-link.gts';
+import EuiInnerText from './eui-inner-text.gts';
+import EuiPopover from './eui-popover.gts';
 import useState from '../helpers/use-state';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { eq, and, not } from 'ember-truth-helpers';

@@ -1,20 +1,20 @@
 import classNames from '../helpers/class-names';
 import { eq, or, and } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
-import EuiLink from './eui-link';
-import TextBlock from './text-block';
-import type { TextBlockSignature } from './text-block';
-import EuiNotificationEventReadButton from './eui-notification-event-read-button';
-import EuiNotificationEventReadIcon from './eui-notification-event-read-icon';
-import EuiNotificationEventMeta from './eui-notification-event-meta';
-import EuiNotificationEventMessages from './eui-notification-event-messages';
-import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages';
+import EuiLink from './eui-link.gts';
+import TextBlock from './text-block.gts';
+import type { TextBlockSignature } from './text-block.gts';
+import EuiNotificationEventReadButton from './eui-notification-event-read-button.gts';
+import EuiNotificationEventReadIcon from './eui-notification-event-read-icon.gts';
+import EuiNotificationEventMeta from './eui-notification-event-meta.gts';
+import EuiNotificationEventMessages from './eui-notification-event-messages.gts';
+import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages.gts';
 import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
 import uniqueId from '../helpers/unique-id';
 import typeOf from '../helpers/type-of';
-import type { EuiBadgeSignature } from './eui-badge';
+import type { EuiBadgeSignature } from './eui-badge.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

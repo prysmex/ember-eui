@@ -2,8 +2,19 @@ import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 import { concat } from '@ember/helper';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiRangeLabelSignature {
+  Args: {
+    side?: 'min' | 'max';
+    disabled?: boolean;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiRangeLabel: TemplateOnlyComponent<EuiRangeLabelSignature> = <template>
   <label
     class={{classNames
       "euiRangeLabel"
@@ -13,4 +24,6 @@ import { concat } from '@ember/helper';
   >
     {{yield}}
   </label>
-</template>
+</template>;
+
+export default EuiRangeLabel;

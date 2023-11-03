@@ -6,11 +6,11 @@ import { throttle } from '@ember/runloop';
 import { modifier } from 'ember-modifier';
 import { and, not, or } from 'ember-truth-helpers';
 
-import { EuiBreakpointSize } from '../../utils/breakpoint';
-import { isWithinMinBreakpoint } from '../../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint';
+import { isWithinMinBreakpoint } from '../utils/breakpoint';
 import argOrDefault from '../helpers/arg-or-default';
 import uniqueId from '../helpers/unique-id';
-import EuiFlyout from './eui-flyout';
+import EuiFlyout from './eui-flyout.gts';
 
 export type EuiCollapsibleNavArgs = {
   /**

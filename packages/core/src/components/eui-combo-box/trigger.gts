@@ -10,8 +10,8 @@ import { and, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../../helpers/arg-or-default';
 import classNames from '../../helpers/class-names';
-import EuiComboBoxPill from '../eui-combo-box-pill';
-import EuiFormControlLayout from '../eui-form-control-layout';
+import EuiComboBoxPill from '../eui-combo-box-pill.gts';
+import EuiFormControlLayout from '../eui-form-control-layout.gts';
 
 export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipleTrigger {
   <template>

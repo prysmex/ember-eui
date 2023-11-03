@@ -1,11 +1,24 @@
 import Component from '@glimmer/component';
 import dateMath from '@elastic/datemath';
 import { INVALID_DATE, toRelativeStringFromParts } from '../utils';
-import { LocaleSpecifier } from 'moment';
+import type { LocaleSpecifier } from 'moment';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { parseRelativeParts } from '../utils';
-import { TimeOptions } from '../utils/time-options';
+import type { TimeOptions } from '../utils/time-options';
+import EuiForm from '../../eui-form';
+import EuiFlexGroup from '../../eui-flex-group';
+import EuiFlexItem from '../../eui-flex-item';
+import EuiFormRow from '../../eui-form-row';
+import EuiSelect from '../../eui-select';
+import EuiFieldText from '../../eui-field-text';
+import EuiFormLabel from '../../eui-form-label';
+import EuiFieldNumber from '../../eui-field-number';
+import EuiSpacer from '../../eui-spacer';
+import EuiPopoverFooter from '../../eui-popover-footer';
+import EuiSwitch from '../../eui-switch';
+import pick from 'ember-composable-helpers/helpers/pick';
+import { on } from '@ember/modifier';
 
 interface RelativeTabArgs {
   dateFormat: string;
@@ -18,7 +31,11 @@ interface RelativeTabArgs {
   timeOptions: TimeOptions;
 }
 
-export default class RelativeTab extends Component<RelativeTabArgs> {
+export interface EuiSuperDatePickerDatePopoverRelativeTabSignature {
+  Args: RelativeTabArgs;
+}
+
+export default class RelativeTab extends Component<EuiSuperDatePickerDatePopoverRelativeTabSignature> {
   @tracked count?: number;
   @tracked unit: any = 'm';
   @tracked round = false;
@@ -56,7 +73,7 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
     return this.args.timeOptions.relativeRoundingLabels[this.unit[0]];
   }
 
-  @action onCountChange(e: InputEvent) {
+  @action onCountChange(e: Event) {
     const sanitizedValue = parseInt((e.target as HTMLInputElement).value, 10);
     this.count = isNaN(sanitizedValue) ? undefined : sanitizedValue;
     this.handleChange();
@@ -84,4 +101,46 @@ export default class RelativeTab extends Component<RelativeTabArgs> {
     });
     this.args.onChange(date);
   }
+
+  <template>
+    <EuiForm class="euiDatePopoverContent__padded">
+      <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
+        <EuiFlexItem>
+          <EuiFormRow>
+            <EuiFieldNumber
+              @compressed={{true}}
+              @value={{this.count}}
+              @min="0"
+              {{on "input" this.onCountChange}}
+            />
+          </EuiFormRow>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiSelect
+            @compressed={{true}}
+            @value={{this.unit}}
+            @options={{@timeOptions.relativeOptions}}
+            {{on "change" (pick "target.value" this.onUnitChange)}}
+          />
+        </EuiFlexItem>
+      </EuiFlexGroup>
+      <EuiSpacer @size="s" />
+      <EuiFieldText
+        @compressed={{true}}
+        @value={{this.formattedValue}}
+        @readOnly={{true}}
+      >
+        <:prepend>
+          <EuiFormLabel>{{@labelPrefix}}</EuiFormLabel>
+        </:prepend>
+      </EuiFieldText>
+    </EuiForm>
+    <EuiPopoverFooter @paddingSize="s">
+      <EuiSwitch
+        @label={{this.roundingLabel}}
+        @checked={{this.round}}
+        @onChange={{pick "target.checked" this.onRoundChange}}
+      />
+    </EuiPopoverFooter>
+  </template>
 }

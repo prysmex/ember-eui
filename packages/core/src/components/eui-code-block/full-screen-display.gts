@@ -1,4 +1,4 @@
-import EuiOverlayMask from '../eui-overlay-mask';
+import EuiOverlayMask from '../eui-overlay-mask.gts';
 import focusTrap from 'ember-focus-trap/modifiers/focus-trap';
 import { hash } from '@ember/helper';
 

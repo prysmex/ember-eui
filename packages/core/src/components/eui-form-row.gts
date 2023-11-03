@@ -9,9 +9,50 @@ import { fn } from '@ember/helper';
 import isArray from 'ember-truth-helpers/helpers/is-array';
 import useState from '../helpers/use-state';
 import { array } from '@ember/helper';
+import { helper } from '@ember/component/helper';
+import uniqueId from '../helpers/unique-id';
+import { displayMappingToClassMapping } from '../utils/css-mappings/eui-form-row';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiFormRowSignature {
+  Element: HTMLDivElement | HTMLFieldSetElement;
+  Args: {
+    label?: string;
+    labelAppend?: string;
+    labelType?: 'label' | 'legend';
+    legendType?: 'legend' | 'fieldset';
+    fullWidth?: boolean;
+    isInvalid?: boolean;
+    isDisabled?: boolean;
+    hasEmptyLabelSpace?: boolean;
+    hasChildLabel?: boolean;
+    isFakeLabelBlock?: boolean;
+    helpText?: string;
+    error?: string;
+    errorClasses?: string;
+    helpTextClasses?: string;
+    id?: string;
+    display?: keyof typeof displayMappingToClassMapping;
+  };
+  Blocks: {
+    default: [];
+    label: [string?];
+    field: [];
+    errors: [string?];
+    helpText: [];
+  };
+}
+
+export function startsWith(
+  [needle, word]: [string, string | undefined] /*, hash*/
+): boolean {
+  return word?.startsWith(needle) || false;
+}
+
+const startWith = helper(startsWith);
+
+const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
   {{#let
     (classNames
       "euiFormRow"
@@ -22,12 +63,12 @@ import { array } from '@ember/helper';
     )
     (classNames
       "euiFormRow__fieldWrapper"
-      (if (starts-with "center" @display) "euiFormRow__fieldWrapperDisplayOnly")
+      (if (startWith "center" @display) "euiFormRow__fieldWrapperDisplayOnly")
     )
     (if (isArray @error) @error (array @error))
     (and @label (eq @labelType "legend"))
     (useState false)
-    (argOrDefault @id (unique-id))
+    (argOrDefault @id (uniqueId))
     (argOrDefault @hasChildLabel true)
     (and (not (argOrDefault @isFakeLabelBlock false)) (has-block "label"))
     as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel hasLabelBlock|
@@ -260,4 +301,6 @@ import { array } from '@ember/helper';
       </div>
     {{/if}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiFormRow;

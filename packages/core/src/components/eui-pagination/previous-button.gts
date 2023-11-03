@@ -3,10 +3,10 @@ import { on } from '@ember/modifier';
 import { fn, hash } from '@ember/helper';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import EuiButtonIcon from '../eui-button-icon';
-import type { EuiButtonIconSignature } from '../eui-button-icon';
-import EuiI18n from '../eui-i18n';
-import type { SafeClickHandler } from '../eui-pagination';
+import EuiButtonIcon from '../eui-button-icon.gts';
+import type { EuiButtonIconSignature } from '../eui-button-icon.gts';
+import EuiI18n from '../eui-i18n.gts';
+import type { SafeClickHandler } from '../eui-pagination.gts';
 import sub from 'ember-math-helpers/helpers/sub';
 
 export interface EuiPaginationPreviousButtonSignature {

@@ -4,8 +4,26 @@ import { array } from '@ember/helper';
 import { eq, and, gt } from 'ember-truth-helpers';
 import EuiCallOut from './eui-call-out.gts';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiFormSignature {
+  Element: HTMLDivElement | HTMLFormElement;
+  Args: {
+    errorTitle?: string;
+    invalidCallout?: 'above' | 'none';
+    error?: string | string[];
+    isInvalid?: boolean;
+    array?: boolean;
+    tagName?: 'form' | 'div';
+  };
+  Blocks: {
+    default?: [];
+    content?: [];
+    error?: [string];
+  };
+}
+
+const EuiForm: TemplateOnlyComponent<EuiFormSignature> = <template>
   {{#let
     (argOrDefault @invalidCallout "above")
     (if (isArray @error) @error (if @array (array @error)))
@@ -27,8 +45,10 @@ import EuiCallOut from './eui-call-out.gts';
               {{#each errors as |error|}}
                 <li class="euiForm__error">
                   {{#if (has-block "error")}}
+                    {{!@glint-expect-error}}
                     {{yield error to="error"}}
                   {{else}}
+                    {{!@glint-expect-error}}
                     {{error}}
                   {{/if}}
                 </li>
@@ -58,8 +78,10 @@ import EuiCallOut from './eui-call-out.gts';
               {{#each errors as |error|}}
                 <li class="euiForm__error">
                   {{#if (has-block "error")}}
+                    {{!@glint-expect-error}}
                     {{yield error to="error"}}
                   {{else}}
+                    {{!@glint-expect-error}}
                     {{error}}
                   {{/if}}
                 </li>
@@ -75,4 +97,6 @@ import EuiCallOut from './eui-call-out.gts';
       </div>
     {{/if}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiForm;

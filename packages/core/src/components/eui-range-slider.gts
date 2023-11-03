@@ -18,6 +18,7 @@ export type EuiRangeSliderArgs = CommonArgs & {
   disabled?: boolean;
   tabIndex?: number;
   onChange?: InputEvent;
+  readonly?: boolean;
 };
 
 export interface EuiRangeSliderSignature {

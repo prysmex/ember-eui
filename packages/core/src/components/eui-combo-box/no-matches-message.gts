@@ -1,6 +1,6 @@
 import EuiText from '../eui-text';
 
-import type { EuiTextSignature } from '../eui-text';
+import type { EuiTextSignature } from '../eui-text.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 interface Signature {

@@ -2,7 +2,7 @@ import { modifier } from 'ember-modifier';
 import { typeOf } from '@ember/utils';
 
 function validatableControl(
-  element: HTMLInputElement | HTMLTextAreaElement,
+  element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
   [isInvalid, errorMessage]: [boolean | undefined, (string | undefined)?]
 ) {
   if (typeOf(element.setCustomValidity) !== 'function') {

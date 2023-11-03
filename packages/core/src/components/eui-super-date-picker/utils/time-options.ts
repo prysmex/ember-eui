@@ -7,7 +7,11 @@
  */
 import type EuiI18n from '../../../services/eui-i18n';
 
-import { TimeUnitId, RelativeOption, DurationRange } from '../types/global';
+import type {
+  TimeUnitId,
+  RelativeOption,
+  DurationRange
+} from '../types/global';
 
 export const LAST = 'last';
 export const NEXT = 'next';

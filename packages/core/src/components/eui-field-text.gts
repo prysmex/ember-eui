@@ -8,9 +8,36 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiFieldTextSignature {
+  Element: HTMLInputElement;
+  Args: {
+    id?: string;
+    value?: string;
+    placeholder?: string;
+    icon?: EuiFormControlLayoutSignature['Args']['icon'];
+    fullWidth?: boolean;
+    isLoading?: boolean;
+    compressed?: boolean;
+    readOnly?: boolean;
+    disabled?: boolean;
+    clear?: () => void;
+    controlOnly?: boolean;
+    isInvalid?: boolean;
+    inputRef?: (element: HTMLInputElement | null) => void;
+    isFakePrependBlock?: boolean;
+    isFakeAppendBlock?: boolean;
+  };
+  Blocks: {
+    prepend: [...EuiFormControlLayoutSignature['Blocks']['prepend'], string];
+    append: [...EuiFormControlLayoutSignature['Blocks']['append'], string];
+  };
+}
+
+const EuiFieldText: TemplateOnlyComponent<EuiFieldTextSignature> = <template>
   {{#let
     (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
     (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
@@ -74,4 +101,6 @@ import EuiFormControlLayout from './eui-form-control-layout.gts';
       {{/if}}
     {{/let}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiFieldText;

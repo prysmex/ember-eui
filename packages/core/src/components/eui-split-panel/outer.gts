@@ -1,8 +1,8 @@
 import classNames from '../../helpers/class-names';
 import { eq, not } from 'ember-truth-helpers';
 import argOrDefault from '../../helpers/arg-or-default';
-import EuiPanel from '../eui-panel';
-import type { EuiPanelSignature } from '../eui-panel';
+import EuiPanel from '../eui-panel.gts';
+import type { EuiPanelSignature } from '../eui-panel.gts';
 import useIsWithinBreakpoints from '../../modifiers/use-is-within-breakpoints';
 import type { Named } from '../../modifiers/use-is-within-breakpoints';
 import useState from '../../helpers/use-state';

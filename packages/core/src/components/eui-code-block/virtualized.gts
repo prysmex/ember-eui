@@ -2,13 +2,14 @@ import Component from '@glimmer/component';
 import { helper } from '@ember/component/helper';
 import { concat } from '@ember/helper';
 
+//@ts-expect-error
 import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection';
 import style from 'ember-style-modifier/modifiers/style';
-import { RefractorNode } from 'refractor';
+import type { RefractorNode } from 'refractor';
 
 import { getHtmlContent } from '../../utils/code/utils';
-import EuiAutoSizer from '../eui-auto-sizer';
-import uniqueId from '../helpers/unique-id';
+import EuiAutoSizer from '../eui-auto-sizer.gts';
+import uniqueId from '../../helpers/unique-id';
 
 export interface VirtualizedCodeBlockSignature<T> {
   // We have a `<table>` as our root element

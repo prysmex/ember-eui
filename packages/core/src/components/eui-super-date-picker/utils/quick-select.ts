@@ -10,7 +10,7 @@ import moment from 'moment';
 import dateMath from '@elastic/datemath';
 import { LAST, NEXT } from './time-options';
 import { DATE_MODES, relativeUnitsFromLargestToSmallest } from '.';
-import { QuickSelect, TimeUnitId } from '../types/global';
+import type { QuickSelect, TimeUnitId } from '../types/global';
 
 const isNow = (value: string) => value === DATE_MODES.NOW;
 

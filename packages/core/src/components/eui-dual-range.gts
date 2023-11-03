@@ -29,7 +29,7 @@ import EuiRangeWrapper from './eui-range-wrapper.gts';
 
 import type { EuiRangeInputArgs } from './eui-range-input.gts';
 import type { EuiRangeSliderArgs } from './eui-range-slider.gts';
-import type { EuiFormControlLayoutArgs } from './eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import type { EuiRangeArgs } from './eui-range.gts';
 import type { EuiRangeLevel } from './eui-range-levels.gts';
 import type { EuiRangeTick } from './eui-range-ticks.gts';
@@ -76,12 +76,12 @@ export interface EuiDualRangeArgs
    * Creates an input group with element(s) coming before input.  Will only show if `showInput = inputWithPopover`.
    * `string` | `Component` or an array of these
    */
-  prepend?: EuiFormControlLayoutArgs['prepend'];
+  prepend?: EuiFormControlLayoutSignature['Blocks']['prepend'];
   /**
    * Creates an input group with element(s) coming after input. Will only show if `showInput = inputWithPopover`.
    * `string` | `Component` or an array of these
    */
-  append?: EuiFormControlLayoutArgs['append'];
+  append?: EuiFormControlLayoutSignature['Blocks']['append'];
   /**
    *  Intended to be uses with aria attributes. Some attributes may be overwritten.
    */
@@ -91,6 +91,9 @@ export interface EuiDualRangeArgs
    *  Intended to be uses with aria attributes. Some attributes may be overwritten.
    */
   maxInputProps?: Partial<EuiRangeInputArgs>;
+
+  
+  readOnly?: boolean;
 }
 
 export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {

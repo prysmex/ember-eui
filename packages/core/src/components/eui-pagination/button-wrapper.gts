@@ -1,5 +1,5 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import EuiPaginationButton from '../eui-pagination-button';
+import EuiPaginationButton from '../eui-pagination-button.gts';
 
 import argOrDefault from '../../helpers/arg-or-default';
 

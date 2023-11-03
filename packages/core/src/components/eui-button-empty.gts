@@ -2,7 +2,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { and, not, or, eq } from 'ember-truth-helpers';
 import EuiButtonContent from './eui-button-content.gts';
-import type { EuiButtonnContentSignature } from './eui-button-content.gts';
+import type { EuiButtonContentSignature } from './eui-button-content.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
@@ -17,10 +17,10 @@ export interface EuiButtonEmptySignature {
   Args: {
     isLoading?: boolean;
     size?: keyof typeof sizeMapping;
-    iconSize?: EuiButtonnContentSignature['Args']['iconSize'];
+    iconSize?: EuiButtonContentSignature['Args']['iconSize'];
     color?: keyof typeof colorMapping;
     iconType?: string;
-    iconSide?: EuiButtonnContentSignature['Args']['iconSide'];
+    iconSide?: EuiButtonContentSignature['Args']['iconSide'];
     iconClasses?: string;
     textClasses?: string;
     contentClasses?: string;

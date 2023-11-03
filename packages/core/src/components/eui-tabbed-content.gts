@@ -69,7 +69,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
     // Only track selection state if it's not controlled externally.
     if (!selectedTab) {
       this.selectedTabId =
-        (initialSelectedTab && initialSelectedTab.id) || tabs[0].id;
+        (initialSelectedTab && initialSelectedTab.id) || tabs[0]?.id;
     }
   }
 
@@ -84,13 +84,15 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
   setTabsRef = (element: Element) => {
     this.tabsRef = element;
     // Current short-term solution for event listener (see https://github.com/elastic/eui/pull/2717)
-    this.tabsRef.addEventListener('focusout' as 'blur', this.removeFocus);
+    //@ts-expect-error
+    this.tabsRef.addEventListener('focusout', this.removeFocus);
   };
 
   willDestroy(): void {
     super.willDestroy();
     if (this.tabsRef) {
-      this.tabsRef.removeEventListener('focusout' as 'blur', this.removeFocus);
+      //@ts-expect-error
+      this.tabsRef.removeEventListener('focusout', this.removeFocus);
     }
   }
 

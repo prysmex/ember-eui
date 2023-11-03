@@ -29,7 +29,7 @@ type SwitchArgs = {
   isFakeLabelBlock?: boolean;
 };
 
-interface EuiSwitchSignature {
+export interface EuiSwitchSignature {
   Element: HTMLButtonElement;
   Args: SwitchArgs;
   Blocks: {

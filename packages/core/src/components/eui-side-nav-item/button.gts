@@ -1,7 +1,7 @@
 import classNames from '../../helpers/class-names';
 import argOrDefault from '../../helpers/arg-or-default';
-import EuiInnerText from '../eui-inner-text';
-import EuiIcon from '../eui-icon';
+import EuiInnerText from '../eui-inner-text.gts';
+import EuiIcon from '../eui-icon.gts';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

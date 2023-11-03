@@ -11,7 +11,6 @@ import EuiFormControlLayout from './eui-form-control-layout.gts';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
 import type { CommonArgs } from './common';
-import type { EuiFormControlLayoutArgs } from './eui-form-control-layout.gts';
 import type { IconType } from './eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
@@ -23,8 +22,8 @@ export type EuiFieldNumberArgs = CommonArgs & {
   fullWidth?: boolean;
   isLoading?: boolean;
   readOnly?: boolean;
-  min?: number;
-  max?: number;
+  min?: number | string;
+  max?: number | string;
   value?: number | string;
   disabled?: boolean;
 
@@ -40,13 +39,13 @@ export type EuiFieldNumberArgs = CommonArgs & {
    * Creates an input group with element(s) coming before input.
    * `string` | `Component` or an array of these
    */
-  prepend?: EuiFormControlLayoutArgs['prepend'];
+  prepend?: EuiFormControlLayoutSignature['Blocks']['prepend'];
 
   /**
    * Creates an input group with element(s) coming after input.
    * `string` | `Component` or an array of these
    */
-  append?: EuiFormControlLayoutArgs['append'];
+  append?: EuiFormControlLayoutSignature['Blocks']['append'];
 
   /**
    * Completely removes form control layout wrapper and ignores

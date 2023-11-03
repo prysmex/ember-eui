@@ -16,7 +16,7 @@ export type EuiFormControlLayoutCustomIconArgs = CommonArgs &
       | ((el: HTMLButtonElement | HTMLSpanElement | null) => void);
   };
 
-interface EuiFormControlLayoutCustomIconSignature {
+export interface EuiFormControlLayoutCustomIconSignature {
   Element: HTMLButtonElement | HTMLSpanElement;
   Args: EuiFormControlLayoutCustomIconArgs;
 }

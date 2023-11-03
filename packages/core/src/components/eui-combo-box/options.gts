@@ -3,10 +3,10 @@ import emberPowerSelectIsGroupHelper, {
   emberPowerSelectIsGroup
 } from 'ember-power-select/helpers/ember-power-select-is-group';
 import emberPowerSelectIsSelectedHelper from 'ember-power-select/helpers/ember-power-select-is-selected';
-import EuiText from '../../components/eui-text';
-import EuiFlexGroup from '../../components/eui-flex-group';
-import EuiFlexItem from '../../components/eui-flex-item';
-import EuiLoadingSpinner from '../../components/eui-loading-spinner';
+import EuiText from '../eui-text.gts';
+import EuiFlexGroup from '../eui-flex-group.gts';
+import EuiFlexItem from '../eui-flex-item.gts';
+import EuiLoadingSpinner from '../eui-loading-spinner.gts';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';

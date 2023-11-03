@@ -1,21 +1,25 @@
 import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import argOrDefault, {
-  argOrDefaultDecorator
-} from '../../helpers/arg-or-default';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import type { LocaleSpecifier } from 'moment';
 import type {
   ApplyRefreshInterval,
   DurationRange,
   Milliseconds,
   ShortDate
-} from './types/global';
-import { isRangeInvalid } from './utils';
-import { useI18nTimeOptions } from './utils/time-options';
-import type EuiI18n from '../../services/eui-i18n';
+} from './eui-super-date-picker/types/global';
+import { isRangeInvalid } from './eui-super-date-picker/utils';
+import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options';
+import type EuiI18n from '../services/eui-i18n';
 import { inject as service } from '@ember/service';
 import { or, eq } from 'ember-truth-helpers';
+import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
+import EuiFormControlLayout from './eui-form-control-layout.gts';
+
+import classNames from '../helpers/class-names';
 
 interface EuiSuperDatePickerArgs {
   commonlyUsedRanges?: DurationRange[];
@@ -113,13 +117,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
 
     this.start = this.args.start ?? 'now-15m';
     this.end = this.args.end ?? 'now';
-
-    // if (this.args.start === undefined || this.args.end === undefined) {
-    //   this.setTime({
-    //     start: this.args.start ?? 'now-15m',
-    //     end: this.args.end ?? 'now'
-    //   });
-    // }
   }
 
   get timeOptions() {
@@ -150,22 +147,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
       isInvalid: false
     });
   }
-
-  // stopInterval() {
-  //   if (this.asyncInterval) {
-  //     this.asyncInterval.stop();
-  //   }
-  // }
-
-  // startInterval(refreshInterval: number) {
-  //   if (this.args.onRefresh) {
-  //     const handler = () => {
-  //       const { start, end } = this.props;
-  //       this.args.onRefresh({ start, end, refreshInterval });
-  //     };
-  //     this.asyncInterval = new AsyncInterval(handler, refreshInterval);
-  //   }
-  // }
 
   @action applyQuickTime({ start, end }: DurationRange) {
     // this.setState({
@@ -210,22 +191,11 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
     this.hasChanged = false;
   }
 
-  // @action onRefreshChange({ refreshInterval, isPaused }) {
-  //   this.stopInterval();
-  //   if (!isPaused) {
-  //     this.startInterval(refreshInterval);
-  //   }
-  //   if (this.props.onRefreshChange) {
-  //     this.props.onRefreshChange({ refreshInterval, isPaused });
-  //   }
-  // }
-
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <EuiFlexGroup
       @gutterSize="s"
       @responsive={{false}}
-      class={{class-names
+      class={{classNames
         "euiSuperDatePicker__flexWrapper"
         (unless
           this.showUpdateButton
@@ -274,7 +244,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
           </:prepend>
 
           <:field>
-            <EuiSuperDatePicker::EuiDatePickerRange
+            <EuiDatePickerRange
               @className="euiDatePickerRange--inGroup"
               @iconType={{false}}
               @isInvalid={{this.isInvalid}}
@@ -328,7 +298,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
               }}
                 />
               </:endDateControl>
-            </EuiSuperDatePicker::EuiDatePickerRange>
+            </EuiDatePickerRange>
           </:field>
         </EuiFormControlLayout>
       </EuiFlexItem>

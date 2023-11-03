@@ -3,8 +3,43 @@ import { eq } from 'ember-truth-helpers';
 import classNames from '../helpers/class-names';
 import { element } from 'ember-element-helper';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+import {
+  gutterSizeMapping,
+  directionMapping
+} from '../utils/css-mappings/eui-flex-grid';
+
+export interface EuiFlexGridSignature {
+  Element: HTMLDivElement | any;
+  Args: {
+    /**
+     * Passes the HTML tag to the wrapping element
+     */
+    tagName?: string;
+    /**
+     * Sets the direction of the flex grid
+     */
+    direction?: keyof typeof directionMapping;
+    /**
+     * Sets the number of columns in the flex grid
+     */
+    columns?: number;
+    /**
+     * Sets the gutter size between flex items
+     */
+    gutterSize?: keyof typeof gutterSizeMapping;
+    /**
+     * Sets the responsive behavior of the flex grid
+     */
+    responsive?: boolean;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiFlexGrid: TemplateOnlyComponent<EuiFlexGridSignature> = <template>
   {{#let (argOrDefault @tagName "div") as |tagName|}}
     {{#if (eq tagName "div")}}
       <div
@@ -36,4 +71,6 @@ import { element } from 'ember-element-helper';
       {{/let}}
     {{/if}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiFlexGrid;

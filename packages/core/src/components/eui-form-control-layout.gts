@@ -12,33 +12,6 @@ import type Component from '@glimmer/component';
 type StringOrComponent = string | Component;
 type PrependAppendType = StringOrComponent | StringOrComponent[];
 
-export type EuiFormControlLayoutArgs = CommonArgs &
-  HTMLDivElement & {
-    /**
-     * Creates an input group with element(s) coming before children.
-     * `string` | `Component` or an array of these
-     */
-    prepend?: PrependAppendType;
-    /**
-     * Creates an input group with element(s) coming after children.
-     * `string` | `Component` or an array of these
-     */
-    append?: PrependAppendType;
-    children?: Component;
-    icon?: EuiFormControlLayoutIconsArgs['icon'];
-    clear?: EuiFormControlLayoutIconsArgs['clear'];
-    fullWidth?: boolean;
-    isLoading?: boolean;
-    isDisabled?: boolean;
-    className?: string;
-    compressed?: boolean;
-    readOnly?: boolean;
-    /**
-     * Connects the prepend and append labels to the input
-     */
-    inputId?: string;
-  };
-
 export interface EuiFormControlLayoutSignature {
   Element: HTMLDivElement;
   Args: {
@@ -50,6 +23,7 @@ export interface EuiFormControlLayoutSignature {
     readOnly?: boolean;
     useGroup?: boolean;
     disabled?: boolean;
+    isDisabled?: boolean;
     icon?: EuiFormControlLayoutIconsArgs['icon'];
     iconSide?: EuiFormControlLayoutIconsArgs['iconSide'];
     clear?: EuiFormControlLayoutIconsArgs['clear'];
@@ -78,7 +52,7 @@ const EuiFormControlLayout: TemplateOnlyComponent<EuiFormControlLayoutSignature>
           )
           "euiFormControlLayout--group"
         )
-        (if @disabled "euiFormControlLayout--isDisabled")
+        (if (or @disabled @isDisabled) "euiFormControlLayout--isDisabled")
         "euiFormControlLayout"
       }}
       ...attributes

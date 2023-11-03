@@ -1,18 +1,19 @@
 import { eq } from 'ember-truth-helpers';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
 import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-export interface EuiButtonnContentSignature {
+export interface EuiButtonContentSignature {
   Element: HTMLSpanElement;
   Args: {
     iconSide?: 'right';
     isLoading?: boolean;
-    iconType?: string;
-    iconSize?: EuiIcon['size'];
+    iconType?: EuiIconSignature['Args']['type'];
+    iconSize?: EuiIconSignature['Args']['size'];
     iconClasses?: string;
     useSvg?: boolean;
     useComponent?: boolean;
@@ -23,7 +24,7 @@ export interface EuiButtonnContentSignature {
   };
 }
 
-const EuiButtonContent: TemplateOnlyComponent<EuiButtonnContentSignature> =
+const EuiButtonContent: TemplateOnlyComponent<EuiButtonContentSignature> =
   <template>
     <span
       class={{classNames

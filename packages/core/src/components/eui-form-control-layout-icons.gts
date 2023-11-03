@@ -5,6 +5,7 @@ import { and, eq, or } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
 import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button.gts';
 import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon.gts';
+import type { EuiFormControlLayoutCustomIconSignature } from './eui-form-control-layout-custom-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
 import type { DistributiveOmit } from './common';
@@ -27,13 +28,13 @@ type IconShape = DistributiveOmit<
 export interface EuiFormControlLayoutIconsArgs {
   icon?: IconType | IconShape;
   iconSide?: (typeof ICON_SIDES)[number];
-  clear?: EuiFormControlLayoutClearButtonArgs;
+  clear?: (v: any) => void;
   isLoading?: boolean;
   compressed?: boolean;
 }
 
 export interface EuiFormControlLayoutIconsSignature {
-  Element: typeof EuiFormControlLayoutCustomIcon,
+  Element: EuiFormControlLayoutCustomIconSignature['Element'];
   Args: EuiFormControlLayoutIconsArgs;
 }
 

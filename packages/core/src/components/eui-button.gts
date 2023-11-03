@@ -7,10 +7,11 @@ import { and, eq, not, or } from 'ember-truth-helpers';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiButtonContent from './eui-button-content.gts';
+import type { EuiButtonContentSignature } from './eui-button-content.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-export interface Signature {
+export interface EuiButtonSignature {
   Element: Element;
   Args: {
     baseClassName?: string;
@@ -21,9 +22,9 @@ export interface Signature {
     fullWidth?: boolean;
     href?: string;
     iconClasses?: string;
-    iconSide?: string;
-    iconSize?: string;
-    iconType?: string;
+    iconSide?: EuiButtonContentSignature['Args']['iconSide'];
+    iconSize?: EuiButtonContentSignature['Args']['iconSize'];
+    iconType?: EuiButtonContentSignature['Args']['iconType'];
     isLoading?: boolean;
     isSelected?: boolean;
     size?: string;
@@ -40,8 +41,7 @@ export interface Signature {
   };
 }
 
-const EuiButton: TemplateOnlyComponent<Signature> = <template>
-  {{! @glint-nocheck: not typesafe yet }}
+const EuiButton: TemplateOnlyComponent<EuiButtonSignature> = <template>
   {{#let
     (argOrDefault @baseClassName "euiButton")
     (if

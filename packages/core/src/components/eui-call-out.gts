@@ -2,11 +2,29 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { eq, or } from 'ember-truth-helpers';
 import TextBlock from './text-block.gts';
+import type { TextBlockSignature } from './text-block.gts';
 import EuiText from './eui-text.gts';
 import EuiIcon from './eui-icon.gts';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import { sizeMapping, colorMapping } from '../utils/css-mappings/eui-call-out';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiCallOutSignature {
+  Element: HTMLDivElement;
+  Args: {
+    title?: string;
+    heading?: TextBlockSignature['Args']['tagName'];
+    iconType?: string;
+    size?: keyof typeof sizeMapping;
+    color?: keyof typeof colorMapping;
+  };
+  Blocks: {
+    title?: [];
+    body?: [];
+  };
+}
+
+const EuiCallOut: TemplateOnlyComponent<EuiCallOutSignature> = <template>
   <div
     class={{classNames
       componentName="EuiCallOut"
@@ -51,4 +69,6 @@ import EuiIcon from './eui-icon.gts';
       </EuiText>
     {{/if}}
   </div>
-</template>
+</template>;
+
+export default EuiCallOut;

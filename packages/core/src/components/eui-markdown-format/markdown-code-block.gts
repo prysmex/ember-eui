@@ -1,6 +1,6 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import EuiCodeBlock from '../eui-code-block';
-import type { EuiCodeBlockSignature } from '../eui-code-block';
+import EuiCodeBlock from '../eui-code-block.gts';
+import type { EuiCodeBlockSignature } from '../eui-code-block.gts';
 
 export interface MarkdownCodeBlockSignature {
   Args: {

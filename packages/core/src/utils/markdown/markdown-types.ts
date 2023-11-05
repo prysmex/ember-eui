@@ -113,7 +113,9 @@ export interface EuiMarkdownAstNode {
   position: EuiMarkdownAstNodePosition;
   properties: {
     [index: string]: unknown;
-    componentName?: ComponentLike
+    componentName?: ComponentLike;
+    className?: string[];
+    
   };
 }
 export interface EuiMarkdownAstNodePosition {

@@ -1,4 +1,4 @@
-import EuiText from '../eui-text';
+import EuiText from '../eui-text.gts';
 
 import type { EuiTextSignature } from '../eui-text.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

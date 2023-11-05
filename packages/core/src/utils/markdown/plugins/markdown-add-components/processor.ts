@@ -1,7 +1,8 @@
-import { RehypeNode } from '../../markdown-types';
-import EuiMarkdownFormatMarkdownCode from '../../../../components/eui-markdown-format/markdown-code';
-import EuiMarkdownFormatMarkdownCodeBlock from '../../../../components/eui-markdown-format/markdown-code-block';
+import type { RehypeNode } from '../../markdown-types';
+import EuiMarkdownFormatMarkdownCode from '../../../../components/eui-markdown-format/markdown-code.gts';
+import EuiMarkdownFormatMarkdownCodeBlock from '../../../../components/eui-markdown-format/markdown-code-block.gts';
 import { FENCED_CLASS } from '../../remark/remark-prismjs';
+import EuiHoritzontalRule from '../../../../components/eui-horizontal-rule.gts';
 
 type Visitor = (node: RehypeNode) => RehypeNode;
 
@@ -45,7 +46,7 @@ export const processor = function MarkdownAddComponents(): (
       }
       if (node.type === 'element' && node.tagName === 'hr') {
         node.type = 'component';
-        node.properties.componentName = 'eui-horizontal-rule';
+        node.properties.componentName = EuiHoritzontalRule;
       }
       if (node.type === 'element' && node.tagName === 'code') {
         node.type = 'component';
@@ -57,12 +58,14 @@ export const processor = function MarkdownAddComponents(): (
                 -1)
         );
         if (hasBreaks) {
+          //@ts-expect-error
           node.properties.componentName = EuiMarkdownFormatMarkdownCodeBlock;
-          node.properties.fontSize = 'm';
-          node.properties.paddingSize = 's';
+          node.properties['fontSize'] = 'm';
+          node.properties['paddingSize'] = 's';
         } else {
+          //@ts-expect-error
           node.properties.componentName = EuiMarkdownFormatMarkdownCode;
-          node.properties.inline = true;
+          node.properties['inline'] = true;
         }
       }
       return node;

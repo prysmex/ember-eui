@@ -275,6 +275,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
                   @roundUp={{true}}
                   @needsUpdating={{this.hasChanged}}
                   @locale={{@locale}}
+                  
                 />
               </:endDateControl>
             </EuiDatePickerRange>

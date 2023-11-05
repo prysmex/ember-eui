@@ -6,8 +6,6 @@ import Render from './eui-i18n/render.gts';
 import { ensureSafeComponent } from '@embroider/util';
 import type { WithBoundArgs } from '@glint/template';
 
-import { array } from '@ember/helper';
-
 interface Args {
   tokens?: string[];
   defaults?: string[];

@@ -12,7 +12,7 @@ import EuiText from './eui-text.gts';
 import EuiHorizontalRule from './eui-horizontal-rule.gts';
 import EuiSpacer from './eui-spacer.gts';
 import EuiMarkdownFormat from './eui-markdown-format.gts';
-import MarkdownLogo from '../components/eui-markdown-editor-footer/icons/markdown-logo';
+import MarkdownLogo from '../components/eui-markdown-editor-footer/icons/markdown-logo.gts';
 import set from 'ember-set-helper/helpers/set';
 
 import { on } from '@ember/modifier';

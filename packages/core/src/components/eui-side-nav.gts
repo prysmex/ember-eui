@@ -7,12 +7,12 @@ import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import isItemOpen from '../helpers/is-item-open';
 import { element } from 'ember-element-helper';
-import EuiShowFor from '../components/eui-show-for';
-import EuiButtonEmpty from '../components/eui-button-empty';
-import EuiSideNavItem from '../components/eui-side-nav-item';
-import EuiHideFor from '../components/eui-hide-for';
-import EuiTitle from '../components/eui-title';
-import type { EuiHideForSignature } from '../components/eui-hide-for';
+import EuiShowFor from '../components/eui-show-for.gts';
+import EuiButtonEmpty from '../components/eui-button-empty.gts';
+import EuiSideNavItem from '../components/eui-side-nav-item.gts';
+import EuiHideFor from '../components/eui-hide-for.gts';
+import EuiTitle from '../components/eui-title.gts';
+import type { EuiHideForSignature } from '../components/eui-hide-for.gts';
 import { fn } from '@ember/helper';
 import screenReaderOnly from '../modifiers/screen-reader-only';
 

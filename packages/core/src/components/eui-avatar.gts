@@ -80,3 +80,5 @@ const EuiAvatar: TemplateOnlyComponent<EuiAvatarSignature> = <template>
     </div>
   {{/let}}
 </template>;
+
+export default EuiAvatar;

@@ -3,8 +3,8 @@ import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
 import { copyToClipboard } from "../utils/copy-to-clipboard";
 
-import EuiToolTip from "./eui-tool-tip";
-import type { EuiToolTipSignature } from "./eui-tool-tip";
+import EuiToolTip from "./eui-tool-tip.gts";
+import type { EuiToolTipSignature } from "./eui-tool-tip.gts";
 
 type EuiCopyArgs = {
   /**

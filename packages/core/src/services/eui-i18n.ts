@@ -45,7 +45,7 @@ export default class EuiI18n extends Service {
     token: string,
     valueDefault: string | ((values: Record<string, unknown>) => string),
     values?: Record<string, any>
-  ): string | string[] {
+  ): string {
     return this._lookupToken({
       token,
       valueDefault,

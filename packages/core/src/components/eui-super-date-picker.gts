@@ -223,7 +223,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
           {{!-- @readOnly={{@readOnly}} --}}
         >
           <:prepend>
-            <EuiSuperDatePicker::EuiQuickSelectPopover
+            <EuiQuickSelectPopover
               @start={{this.start}}
               @end={{this.end}}
               @applyTime={{this.applyQuickTime}}
@@ -234,12 +234,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
                 @commonlyUsedRanges
                 this.timeOptions.commonDurationRanges
               }}
-              {{!-- @applyRefreshInterval={{if @onRefreshChange this.onRefreshChange}} --}}
-              {{! commonlyUsedRanges={commonlyUsedRanges}
-          customQuickSelectPanels={customQuickSelectPanels}
-          isPaused={isPaused}
-          recentlyUsedRanges={recentlyUsedRanges}
-          refreshInterval={refreshInterval} }}
             />
           </:prepend>
 
@@ -252,7 +246,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
               @isCustom={{true}}
             >
               <:startDateControl>
-                <EuiSuperDatePicker::DatePopover::EuiDatePopoverButton
+                <EuiDatePopoverButton
                   @className="euiSuperDatePicker__startPopoverButton"
                   @value={{this.start}}
                   @compressed={{@compressed}}
@@ -264,19 +258,11 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
                   @timeOptions={{this.timeOptions}}
                   @needsUpdating={{this.hasChanged}}
                   @locale={{@locale}}
-                  {{!
-              isInvalid={isInvalid}
-              utcOffset={utcOffset}
-              timeFormat={timeFormat}
-              isOpen={this.state.isStartDatePopoverOpen}
-              onPopoverToggle={this.onStartDatePopoverToggle}
-              onPopoverClose={this.onStartDatePopoverClose}
-              }}
                 />
               </:startDateControl>
 
               <:endDateControl>
-                <EuiSuperDatePicker::DatePopover::EuiDatePopoverButton
+                <EuiDatePopoverButton
                   @className="euiSuperDatePicker__startPopoverButton"
                   @value={{this.end}}
                   @compressed={{@compressed}}
@@ -289,13 +275,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
                   @roundUp={{true}}
                   @needsUpdating={{this.hasChanged}}
                   @locale={{@locale}}
-                  {{!
-              utcOffset={utcOffset}
-              timeFormat={timeFormat}
-              isOpen={this.state.isStartDatePopoverOpen}
-              onPopoverToggle={this.onStartDatePopoverToggle}
-              onPopoverClose={this.onStartDatePopoverClose}
-              }}
                 />
               </:endDateControl>
             </EuiDatePickerRange>
@@ -305,7 +284,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
 
       {{#if this.showUpdateButton}}
         <EuiFlexItem @grow={{false}}>
-          <EuiSuperDatePicker::EuiSuperUpdateButton
+          <EuiSuperUpdateButton
             @size={{if @compressed "s" "m"}}
             @onClick={{this.handleClickUpdateButton}}
             @isLoading={{@isLoading}}
@@ -313,13 +292,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
             @needsUpdate={{this.hasChanged}}
             @fill={{true}}
             @iconOnly={{eq this.showUpdateButton "iconOnly"}}
-            {{!
-        showTooltip={
-          !this.state.isStartDatePopoverOpen &&
-          !this.state.isEndDatePopoverOpen
-        }
-        responsive
-        }}
           />
         </EuiFlexItem>
       {{/if}}

@@ -5,6 +5,8 @@ import EuiI18n from '../../eui-i18n.gts';
 import EuiFlexGrid from '../../eui-flex-grid.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
 import EuiLink from '../../eui-link.gts';
+import { hash, fn } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export interface EuiCommonlyUsedTimeRangesSignature {
   Args: {
@@ -19,7 +21,6 @@ export interface EuiCommonlyUsedTimeRangesSignature {
 
 const EuiCommonlyUsedTimeRanges: TemplateOnlyComponent<EuiCommonlyUsedTimeRangesSignature> =
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let (uniqueId) as |legendId|}}
       <fieldset>
         <EuiTitle id={{legendId}} @tagName="legend" @size="xxxs">
@@ -37,7 +38,7 @@ const EuiCommonlyUsedTimeRanges: TemplateOnlyComponent<EuiCommonlyUsedTimeRanges
           <EuiFlexGrid
             aria-labelledby={{legendId}}
             @gutterSize="s"
-            @columns="2"
+            @columns={{2}}
             @direction="column"
             @responsive={{false}}
             @tagName="ul"
@@ -62,3 +63,5 @@ const EuiCommonlyUsedTimeRanges: TemplateOnlyComponent<EuiCommonlyUsedTimeRanges
       </fieldset>
     {{/let}}
   </template>;
+
+export default EuiCommonlyUsedTimeRanges;

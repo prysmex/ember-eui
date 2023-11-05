@@ -4,19 +4,24 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { scheduleOnce } from '@ember/runloop';
 
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+
 import findBy from 'ember-composable-helpers/helpers/find-by';
+import uniqueId from '../helpers/unique-id';
 import { eq } from 'ember-truth-helpers';
 
-import uniqueId from '../helpers/unique-id';
 import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
+import type { EuiTabsSignature } from './eui-tabs.gts';
+import type { ComponentLike } from '@glint/template';
 
 import type { CommonArgs } from './common';
 
 export interface EuiTabbedContentTab {
   id: string;
   name: string;
-  content: Component;
+  content?: ComponentLike;
+  disabled?: boolean;
 }
 
 export type EuiTabbedContentArgs = CommonArgs & {
@@ -29,7 +34,7 @@ export type EuiTabbedContentArgs = CommonArgs & {
   /**
    * Choose `default` or alternative `condensed` display styles
    */
-  display?: string;
+  display?: EuiTabsSignature['Args']['display'];
   /**
    * Evenly stretches each tab to fill the horizontal space
    */
@@ -44,7 +49,7 @@ export type EuiTabbedContentArgs = CommonArgs & {
    * Use this prop if you want to control selection state within the owner component
    */
   selectedTab?: EuiTabbedContentTab;
-  size?: string;
+  size?: EuiTabsSignature['Args']['size'];
   /**
    * Each tab needs id and content properties, so we can associate it with its panel for accessibility.
    * The name property (a node) is also required to display to the user.
@@ -52,7 +57,16 @@ export type EuiTabbedContentArgs = CommonArgs & {
   tabs: EuiTabbedContentTab[];
 };
 
-export default class EuiTabbedContentComponent extends Component<EuiTabbedContentArgs> {
+export interface EuiTabbedContentSignature {
+  Element: HTMLDivElement;
+  Args: EuiTabbedContentArgs;
+  Blocks: {
+    default: [EuiTabbedContentTab];
+    selectedTabContent: [EuiTabbedContentTab];
+  };
+}
+
+export default class EuiTabbedContentComponent extends Component<EuiTabbedContentSignature> {
   @tracked selectedTabId;
   @tracked inFocus: boolean = false;
   tabsRef?: Element;
@@ -145,7 +159,6 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
   };
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let (uniqueId) as |rootId|}}
       <div class={{@className}} ...attributes>
         <EuiTabs
@@ -153,7 +166,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
           @display={{@display}}
           @size={{@size}}
           {{on "focus" this.initializeFocus}}
-          {{did-insert this.setTabsRef}}
+          {{didInsert this.setTabsRef}}
         >
           {{#each @tabs as |tab|}}
             <EuiTab

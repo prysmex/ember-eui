@@ -38,7 +38,7 @@ interface EuiQuickSelectArgs {
   timeOptions: TimeOptions;
 }
 
-interface EuiQuickSelectSignature {
+export interface EuiQuickSelectSignature {
   Args: EuiQuickSelectArgs;
   Blocks: { default: [] };
 }

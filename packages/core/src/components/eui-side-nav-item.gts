@@ -1,8 +1,7 @@
 import classNames from '../helpers/class-names';
 import { eq, not, gt, or, and } from 'ember-truth-helpers';
-import type { EuiPanelSignature } from './eui-panel.gts';
 import { on } from '@ember/modifier';
-import Button from '../components/eui-side-nav-item/button';
+import Button from '../components/eui-side-nav-item/button.gts';
 import optional from 'ember-composable-helpers/helpers/optional';
 import isItemOpen from '../helpers/is-item-open';
 import add from 'ember-math-helpers/helpers/add';

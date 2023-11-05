@@ -7,17 +7,24 @@ import EuiButtonEmpty from '../eui-button-empty.gts';
 import EuiHorizontalRule from '../eui-horizontal-rule.gts';
 import EuiIcon from '../eui-icon.gts';
 import EuiRecentlyUsed from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used.gts';
+import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used.gts';
+import EuiQuickSelect from './eui-quick-select-popover/eui-quick-select.gts';
+import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select.gts';
+import EuiCommonlyUsedTimeRanges from './eui-quick-select-popover/eui-commonly-used-time-ranges.gts';
+import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges.gts';
 import type { ApplyTime } from './types/global';
 import { on } from '@ember/modifier';
 import { gt, not } from 'ember-truth-helpers';
-import type { DurationRange } from './types/global';
 
 export interface EuiQuickSelectPopoverSignature {
   Args: {
     applyTime: ApplyTime;
     isDisabled?: boolean;
-    commonlyUsedRanges?: DurationRange[];
-    recentlyUsedRanges?: DurationRange[];
+    commonlyUsedRanges: EuiCommonlyUsedTimeRangesSignature['Args']['commonlyUsedRanges'];
+    recentlyUsedRanges?: EuiRecentlyUsedSignature['Args']['recentlyUsedRanges'];
+    start: string;
+    end: string;
+    timeOptions: EuiQuickSelectSignature['Args']['timeOptions'];
   };
 }
 
@@ -68,7 +75,7 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
 
       <:content>
         <div class="euiQuickSelectPopover__content">
-          <EuiSuperDatePicker::EuiQuickSelectPopover::EuiQuickSelect
+          <EuiQuickSelect
             @applyTime={{this.applyTime}}
             @start={{@start}}
             @end={{@end}}
@@ -77,7 +84,7 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
 
           {{#if (gt @commonlyUsedRanges.length 0)}}
             <EuiHorizontalRule @margin="s" />
-            <EuiSuperDatePicker::EuiQuickSelectPopover::EuiCommonlyUsedTimeRanges
+            <EuiCommonlyUsedTimeRanges
               @applyTime={{this.applyTime}}
               @commonlyUsedRanges={{@commonlyUsedRanges}}
             />

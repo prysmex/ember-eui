@@ -55,7 +55,16 @@ type DynamicStyle = {
     width?: number | string;
   };
 };
-export default class EuiAutoSizerComponent extends Component<EuiAutoSizerComponentArgs> {
+
+export interface EuiAutoSizerSignature {
+  Args: EuiAutoSizerComponentArgs;
+  Element: HTMLDivElement;
+  Blocks: {
+    default: [DynamicStyle['childStyle']];
+  };
+}
+
+export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignature> {
   _autoSizer?: HTMLElement;
   _parentNode?: HTMLElement;
   _window?: any; // uses any instead of Window because Flow doesn't have window type
@@ -174,7 +183,6 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerCompone
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div
       {{didInsert this.setRef}}
       {{style this.style.outerStyle}}

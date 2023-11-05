@@ -6,17 +6,17 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { parseRelativeParts } from '../utils';
 import type { TimeOptions } from '../utils/time-options';
-import EuiForm from '../../eui-form';
-import EuiFlexGroup from '../../eui-flex-group';
-import EuiFlexItem from '../../eui-flex-item';
-import EuiFormRow from '../../eui-form-row';
-import EuiSelect from '../../eui-select';
-import EuiFieldText from '../../eui-field-text';
-import EuiFormLabel from '../../eui-form-label';
-import EuiFieldNumber from '../../eui-field-number';
-import EuiSpacer from '../../eui-spacer';
-import EuiPopoverFooter from '../../eui-popover-footer';
-import EuiSwitch from '../../eui-switch';
+import EuiForm from '../../eui-form.gts';
+import EuiFlexGroup from '../../eui-flex-group.gts';
+import EuiFlexItem from '../../eui-flex-item.gts';
+import EuiFormRow from '../../eui-form-row.gts';
+import EuiSelect from '../../eui-select.gts';
+import EuiFieldText from '../../eui-field-text.gts';
+import EuiFormLabel from '../../eui-form-label.gts';
+import EuiFieldNumber from '../../eui-field-number.gts';
+import EuiSpacer from '../../eui-spacer.gts';
+import EuiPopoverFooter from '../../eui-popover-footer.gts';
+import EuiSwitch from '../../eui-switch.gts';
 import pick from 'ember-composable-helpers/helpers/pick';
 import { on } from '@ember/modifier';
 
@@ -24,18 +24,18 @@ interface RelativeTabArgs {
   dateFormat: string;
   locale?: LocaleSpecifier;
   value: string;
-  onChange: any;
+  onChange: (value: string, event?: Event) => void;
   roundUp?: boolean;
   position: 'start' | 'end';
   labelPrefix: string;
   timeOptions: TimeOptions;
 }
 
-export interface EuiSuperDatePickerDatePopoverRelativeTabSignature {
+export interface RelativeTabSignature {
   Args: RelativeTabArgs;
 }
 
-export default class RelativeTab extends Component<EuiSuperDatePickerDatePopoverRelativeTabSignature> {
+export default class RelativeTab extends Component<RelativeTabSignature> {
   @tracked count?: number;
   @tracked unit: any = 'm';
   @tracked round = false;
@@ -89,7 +89,7 @@ export default class RelativeTab extends Component<EuiSuperDatePickerDatePopover
     this.handleChange();
   }
 
-  handleChange() {
+  handleChange(e?: Event) {
     if (this.count === undefined || this.count < 0) {
       return;
     }
@@ -99,7 +99,7 @@ export default class RelativeTab extends Component<EuiSuperDatePickerDatePopover
       roundUnit: this.roundUnit as any,
       unit: this.unit
     });
-    this.args.onChange(date);
+    this.args.onChange(date, e);
   }
 
   <template>

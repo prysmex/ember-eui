@@ -1,16 +1,35 @@
 import argOrDefault from '../helpers/arg-or-default';
 import { hash } from '@ember/helper';
 import classNames from '../helpers/class-names';
+import { gutterSize } from '../utils/css-mappings/eui-badge-group';
 
-const BadgeGroupItem = <template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+const BadgeGroupItem: TemplateOnlyComponent<{
+  Blocks: {
+    default: [];
+  };
+}> = <template>
   <span class="euiBadgeGroup__item">
     {{yield}}
   </span>
 </template>;
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+export interface EuiBadgeGroupSignature {
+  Element: HTMLDivElement;
+  Args: {
+    gutterSize: keyof typeof gutterSize;
+  };
+  Blocks: {
+    default: [
+      {
+        item: typeof BadgeGroupItem;
+      }
+    ];
+  };
+}
+
+const EuiBadgeGroup: TemplateOnlyComponent<EuiBadgeGroupSignature> = <template>
   <div
     class={{classNames
       componentName="EuiBadgeGroup"
@@ -20,4 +39,6 @@ const BadgeGroupItem = <template>
   >
     {{yield (hash item=BadgeGroupItem)}}
   </div>
-</template>
+</template>;
+
+export default EuiBadgeGroup;

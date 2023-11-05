@@ -3,8 +3,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import EuiFormControlLayout from '../components/eui-form-control-layout';
-import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout';
+import EuiFormControlLayout from '../components/eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
@@ -16,12 +16,12 @@ export interface EuiSelectSignature {
   Element: HTMLSelectElement;
   Args: {
     id?: string;
-    options: Array<{
-      value: string;
-      text: string;
+    options: {
+      value: string | number;
+      text: string | number;
       disabled?: boolean;
-    }>;
-    value?: string;
+    }[];
+    value?: string | number;
     fullWidth?: boolean;
     compressed?: boolean;
     isLoading?: boolean;

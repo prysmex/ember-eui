@@ -12,10 +12,13 @@
     "prettier": "^3.0.3",
     "prettier-plugin-ember-template-tag": "^1.1.0",
     "typescript": "~5.0.3",
-    "@underline/eslint-config": "^0.15.1"
+    "@underline/eslint-config": "^0.15.1",
+    "concurrently": "^8.2.2"
   },
   "scripts": {
-    "lint:js": "eslint . --ext .js,.ts,.hbs"
+    "lint:js": "eslint . --ext .js,.ts,.hbs",
+    "_start:package": "pnpm --filter '@ember-eui/core' start --no-watch.clearScreen",
+    "start": "concurrently 'npm:_start:*' --prefix ' ' --restart-after 5000 --restart-tries -1"
   },
   "volta": {
     "node": "18.0.0",

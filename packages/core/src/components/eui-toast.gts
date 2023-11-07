@@ -39,7 +39,6 @@ export interface EuiToastSignature {
 }
 
 const EuiToast: TemplateOnlyComponent<EuiToastSignature> = <template>
-  {{! @glint-nocheck: not typesafe yet }}
   <div
     class={{classNames
       componentName="EuiToast"

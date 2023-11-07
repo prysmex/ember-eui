@@ -15,6 +15,7 @@ import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
 let isSearchSupported = false;
 
@@ -34,10 +35,33 @@ type EuiFieldSearchArgs = {
    * Optional callback method called on open and close with a single `isOpen` parameter
    */
   onKeyUp?: (e: KeyboardEvent) => void;
-  onSearch?: (value: string) => void;
+  onSearch: (value: string) => void;
+
+  isFakePrependBlock?: boolean;
+  isFakeAppendBlock?: boolean;
+  fullWidth?: boolean;
+  compressed?: boolean;
+  isLoading?: boolean;
+  isClearable?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
+  placeholder?: string;
+  id?: string;
+  isInvalid?: boolean;
+  isDisabled?: boolean;
 };
 
-export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
+export interface EuiFieldSearchSignature {
+  Element: HTMLInputElement;
+  Args: EuiFieldSearchArgs;
+  Blocks: {
+    prepend: [...EuiFormControlLayoutSignature['Blocks']['prepend'], string];
+    field: [];
+    append: [...EuiFormControlLayoutSignature['Blocks']['append'], string];
+  };
+}
+
+export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
   @tracked inputElement: HTMLInputElement | null = null;
   @tracked value: string | undefined =
     this.args.value ||
@@ -46,7 +70,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   @argOrDefaultDecorator(false) incremental = false;
 
   @action
-  setValue(e: InputEvent): void {
+  setValue(e: Event): void {
     const value = (e.target as HTMLInputElement).value;
     if (this.value !== value) {
       this.value = value;
@@ -130,7 +154,6 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchArgs> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
       (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))

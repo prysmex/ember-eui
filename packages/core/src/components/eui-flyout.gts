@@ -20,11 +20,12 @@ import { and, or, eq, not } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';
 import outsideClickDetectorModifier from '../modifiers/outside-click-detector';
 import resizeObserverModifier from '../modifiers/resize-observer';
-import focusTrapModifier from 'ember-focus-trap';
+import { focusTrap } from 'ember-focus-trap';
 import styleModifier from 'ember-style-modifier/modifiers/style';
 import { element } from 'ember-element-helper';
 
-export type EuiCollapsibleNavArgs = {
+export type EuiFlyoutArgs = {
+  closeAriaLabel?: string;
   /**
    * Shows the navigation flyout
    */
@@ -42,9 +43,11 @@ export type EuiCollapsibleNavArgs = {
    */
   showButtonIfDocked?: boolean;
 
+  isFocusTrapActive?: boolean;
+
   as: string;
 
-  size?: number;
+  size?: number | string;
 
   side?: 'left' | 'right';
 
@@ -61,8 +64,9 @@ export type EuiCollapsibleNavArgs = {
   hideCloseButton?: boolean;
 
   closeButtonProps?: {
-    className: string;
-    onClick: (e: MouseEvent) => void;
+    className?: string;
+    onClick?: (e: MouseEvent) => void;
+    classes?: string;
   };
 
   closeButtonAriaLabel?: string;
@@ -76,11 +80,18 @@ export type EuiCollapsibleNavArgs = {
   type?: string;
 
   pushMinBreakpoint?: number | EuiBreakpointSize;
+
+  shouldSelfFocus?: boolean;
+
+  focusTrapOptions?: {
+    allowOutsideClick?: boolean;
+    clickOutsideDeactivates?: boolean;
+  };
 };
 
 const classesModifier = modifier(
   (
-    _element: HTMLElement,
+    _element: Element,
     _pos,
     {
       type,
@@ -92,7 +103,7 @@ const classesModifier = modifier(
       type: string;
       isPushed: boolean;
       side: string;
-      dimensions: { width?: string };
+      dimensions?: { width?: number };
       functionToCallOnWindowResize: () => void;
     }
   ) => {
@@ -106,7 +117,7 @@ const classesModifier = modifier(
       // Only add the event listener if we'll need to accommodate with padding
       window.addEventListener('resize', functionToCallOnWindowResize);
 
-      if (isPushed) {
+      if (isPushed && dimensions.width) {
         if (side === 'right') {
           document.body.style.paddingRight = `${dimensions.width}px`;
         } else if (side === 'left') {
@@ -138,13 +149,21 @@ function isEuiFlyoutSizeNamed(value: any): value is EuiFlyoutSize {
   return SIZES.includes(value);
 }
 
-export default class EuiCollapsibleNavComponent extends Component<EuiCollapsibleNavArgs> {
+export interface EuiFlyoutSignature {
+  Element: any;
+  Args: EuiFlyoutArgs;
+  Blocks: {
+    default: [];
+  };
+}
+
+export default class EuiCollapsibleNavComponent extends Component<EuiFlyoutSignature> {
   @tracked windowIsLargeEnoughToPush = isWithinMinBreakpoint(
     typeof window === 'undefined' ? -Infinity : window.innerWidth,
     this.pushMinBreakpoint
   );
 
-  @tracked dimensions: undefined | { width: number; height: number };
+  @tracked dimensions?: { width?: number; height?: number };
 
   get as() {
     return this.args.as ?? 'div';
@@ -246,7 +265,6 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (classNames
         (if (eq this.maxWidth true) "euiFlyout--maxWidth-default")
@@ -262,7 +280,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
         (or @closeButtonProps.className @closeButtonProps.classes)
       )
       (modifier
-        focusTrapModifier
+        focusTrap
         isActive=(argOrDefault @isFocusTrapActive true)
         shouldSelfFocus=(argOrDefault @shouldSelfFocus true)
         isPaused=this.isPushed
@@ -290,17 +308,19 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
       )
       (modifier resizeObserverModifier onResize=this.onResize)
       (element this.as)
-      as |classes closeButtonClasses focusTrap outsideClickDetector currentStyles onEscape classesModifier resizeObserver Element|
+      as |classes closeButtonClasses focusTrapModifier outsideClickDetector currentStyles onEscape classesModifier resizeObserver TheElement|
     }}
 
       {{#if (and this.ownFocus (not this.isPushed))}}
         <EuiOverlayMask @headerZindexLocation="below" @onClick={{this.onClose}}>
-          <Element
+          <TheElement
             role={{this.role}}
             class={{classes}}
             tabindex={{-1}}
+            {{!@glint-expect-error}}
             {{currentStyles}}
-            {{focusTrap}}
+            {{!@glint-expect-error}}
+            {{focusTrapModifier}}
             {{outsideClickDetector}}
             {{classesModifier}}
             {{resizeObserver}}
@@ -322,16 +342,17 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
               />
             {{/if}}
             {{yield}}
-          </Element>
+          </TheElement>
         </EuiOverlayMask>
       {{else if (not this.isPushed)}}
         <EuiPortal>
-          <Element
+          <TheElement
             role={{this.role}}
             class={{classes}}
             tabindex={{-1}}
             {{currentStyles}}
-            {{focusTrap}}
+            {{!@glint-expect-error}}
+            {{focusTrapModifier}}
             {{outsideClickDetector}}
             {{classesModifier}}
             {{resizeObserver}}
@@ -353,15 +374,16 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
               />
             {{/if}}
             {{yield}}
-          </Element>
+          </TheElement>
         </EuiPortal>
       {{else}}
-        <Element
+        <TheElement
           role={{this.role}}
           class={{classes}}
           tabindex={{-1}}
           {{currentStyles}}
-          {{focusTrap}}
+          {{!@glint-expect-error}}
+          {{focusTrapModifier}}
           {{outsideClickDetector}}
           {{onEscape}}
           {{classesModifier}}
@@ -384,7 +406,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
             />
           {{/if}}
           {{yield}}
-        </Element>
+        </TheElement>
       {{/if}}
     {{/let}}
   </template>

@@ -1,6 +1,7 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
+// import EuiSideNavItemButton from '@ember-eui/core/components/eui-side-nav-item/button';
 
 import {
   DocfyNode,
@@ -28,6 +29,7 @@ const coreSectionsOrder = [
 ];
 
 export default class ApplicationController extends Controller {
+  // EuiSideNavItemButton = EuiSideNavItemButton;
   @service declare router: RouterService;
   @service docfy: any;
   @service declare themeManager: ThemeManager;
@@ -99,6 +101,7 @@ export default class ApplicationController extends Controller {
             // set disabled to page item
             item.disabled = !!page.frontmatter.disabled;
 
+            console.log(page.url);
             // create fake items
             headings?.forEach((heading: any) => {
               item?.items.push({
@@ -106,7 +109,7 @@ export default class ApplicationController extends Controller {
                 items: [],
                 name: heading.title,
                 onClick: () => null,
-                href: `${window.location.origin}${page.url}#${heading.id}`,
+                href: `${page.url}#${heading.id}`,
                 disabled:
                   item.disabled ||
                   !!page.frontmatter.disabled_demos?.includes(heading.title)

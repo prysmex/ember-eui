@@ -1,12 +1,26 @@
 import EuiBreadcrumbs from './eui-breadcrumbs.gts';
+import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  <EuiBreadcrumbs
-    @max={{4}}
-    @truncate={{true}}
-    @breadcrumbs={{@breadcrumbs}}
-    class="euiHeaderBreadcrumbs"
-    ...attributes
-  />
-</template>
+export interface EuiHeaderBreadcrumbsSignature {
+  Element: EuiBreadcrumbsSignature['Element'];
+  Args: {
+    breadcrumbs: EuiBreadcrumbsSignature['Args']['breadcrumbs'];
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiHeaderBreadcrumbs: TemplateOnlyComponent<EuiHeaderBreadcrumbsSignature> =
+  <template>
+    <EuiBreadcrumbs
+      @max={{4}}
+      @truncate={{true}}
+      @breadcrumbs={{@breadcrumbs}}
+      class="euiHeaderBreadcrumbs"
+      ...attributes
+    />
+  </template>;
+
+export default EuiHeaderBreadcrumbs;

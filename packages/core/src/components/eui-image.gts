@@ -7,7 +7,7 @@ import classNames from '../helpers/class-names';
 import { sizeMapping } from '../utils/css-mappings/eui-image';
 import { eq, notEq, or } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
-import focusTrapModifier from 'ember-focus-trap';
+import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import EuiOverlayMask from './eui-overlay-mask.gts';
 import EuiIcon from './eui-icon.gts';
@@ -191,9 +191,7 @@ export default class EuiImage extends Component<ImageArgs> {
       >
         <figure
           class="euiImage euiImage-isFullScreen"
-          {{focusTrapModifier
-            focusTrapOptions=(hash clickOutsideDeactivates=true)
-          }}
+          {{focusTrap focusTrapOptions=(hash clickOutsideDeactivates=true)}}
         >
           <button
             class="euiImage__button"

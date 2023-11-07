@@ -1,8 +1,23 @@
 import argOrDefault from '../helpers/arg-or-default';
 import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiHeaderLogoSignature {
+  Element: HTMLAnchorElement;
+  Args: {
+    href?: string;
+    target?: string;
+    iconTitle?: string;
+    iconType?: EuiIconSignature['Args']['type'];
+  }
+  Blocks: {
+    default: []
+  }
+}
+
+const EuiHeaderLogo: TemplateOnlyComponent<EuiHeaderLogoSignature> = <template>
   <a class="euiHeaderLogo" href={{@href}} target={{@target}} ...attributes>
     <EuiIcon
       aria-label={{@iconTitle}}
@@ -16,4 +31,6 @@ import EuiIcon from './eui-icon.gts';
       </span>
     {{/if}}
   </a>
-</template>
+</template>;
+
+export default EuiHeaderLogo;

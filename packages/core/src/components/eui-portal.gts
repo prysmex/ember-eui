@@ -57,7 +57,6 @@ export default class EuiPortal extends Component<EuiPortalSignature> {
 
   willDestroy(): void {
     super.willDestroy();
-
     if (this.portalNode.parentNode) {
       this.portalNode.parentNode.removeChild(this.portalNode);
     }

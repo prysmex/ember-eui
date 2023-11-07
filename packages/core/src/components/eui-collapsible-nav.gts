@@ -11,8 +11,11 @@ import { isWithinMinBreakpoint } from '../utils/breakpoint';
 import argOrDefault from '../helpers/arg-or-default';
 import uniqueId from '../helpers/unique-id';
 import EuiFlyout from './eui-flyout.gts';
+import type { EuiFlyoutSignature } from './eui-flyout.gts';
+import type { ModifierLike } from '@glint/template';
 
 export type EuiCollapsibleNavArgs = {
+  id?: string;
   /**
    * ReactNode to render as this component's content
    */
@@ -36,7 +39,7 @@ export type EuiCollapsibleNavArgs = {
 
   as: string;
 
-  size?: number;
+  size?: EuiFlyoutSignature['Args']['size'];
 
   side?: 'left' | 'right';
 
@@ -49,11 +52,13 @@ export type EuiCollapsibleNavArgs = {
   closeButtonPosition?: 'outside' | 'inside';
 
   paddingSize?: string;
+
+  onClose: EuiFlyoutSignature['Args']['onClose'];
 };
 
 const triggerHandlersModifier = modifier(
   (
-    element: HTMLElement,
+    element: Element,
     _pos,
     { flyoutID, isOpen }: { flyoutID: string; isOpen: boolean }
   ) => {
@@ -81,7 +86,7 @@ const onWindowResizeModifier = modifier(
     {
       isDocked = false,
       functionToCallOnWindowResize
-    }: { isDocked: boolean; functionToCallOnWindowResize: () => void }
+    }: { isDocked?: boolean; functionToCallOnWindowResize: () => void }
   ) => {
     if (isDocked) {
       window.addEventListener('resize', functionToCallOnWindowResize);
@@ -95,9 +100,20 @@ const onWindowResizeModifier = modifier(
   }
 );
 
-export default class EuiCollapsibleNavComponent extends Component<EuiCollapsibleNavArgs> {
-  triggerHandlers = triggerHandlersModifier;
-  onWindowResize = onWindowResizeModifier;
+export interface EuiCollapsibleNavSignature {
+  Element: EuiFlyoutSignature['Element'];
+  Args: EuiCollapsibleNavArgs;
+  Blocks: {
+    default: [];
+    button: [
+      ModifierLike<{
+        Element: Element;
+      }>
+    ];
+    content: [];
+  };
+}
+export default class EuiCollapsibleNavComponent extends Component<EuiCollapsibleNavSignature> {
   @tracked windowIsLargeEnoughToPush = isWithinMinBreakpoint(
     typeof window === 'undefined' ? -Infinity : window.innerWidth,
     this.dockedBreakpoint
@@ -166,7 +182,6 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <span
       {{onWindowResizeModifier
         isDocked=this.isDocked
@@ -177,7 +192,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
 
       {{#if (not (and this.navIsDocked (not this.showButtonIfDocked)))}}
         {{yield
-          (modifier this.triggerHandlers isOpen=@isOpen flyoutID=flyoutID)
+          (modifier triggerHandlersModifier isOpen=@isOpen flyoutID=flyoutID)
           to="button"
         }}
       {{/if}}
@@ -198,7 +213,6 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
           @hideCloseButton={{this.navIsDocked}}
           @pushMinBreakpoint={{this.dockedBreakpoint}}
           @onClose={{@onClose}}
-          {{this.windowResize}}
           ...attributes
         >
           {{yield to="content"}}

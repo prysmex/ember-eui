@@ -8,7 +8,6 @@ export interface EuiModalHeaderSignature {
 }
 const EuiModalHeader: TemplateOnlyComponent<EuiModalHeaderSignature> =
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div class="euiModalHeader" ...attributes>
       {{yield}}
     </div>

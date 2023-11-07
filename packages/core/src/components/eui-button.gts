@@ -12,7 +12,7 @@ import type { EuiButtonContentSignature } from './eui-button-content.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonSignature {
-  Element: Element;
+  Element: HTMLElement;
   Args: {
     baseClassName?: string;
     color?: string;
@@ -69,6 +69,7 @@ const EuiButton: TemplateOnlyComponent<EuiButtonSignature> = <template>
         target={{@target}}
         aria-pressed={{if @isSelected "true" null}}
         type={{if (eq theElement "button") (argOrDefault @type "button") null}}
+        {{!@glint-expect-error}}
         ...attributes
       >
         <EuiButtonContent

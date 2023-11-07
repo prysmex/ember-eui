@@ -6,7 +6,7 @@ import cssMappings from '../utils/css-mappings';
 
 interface Options {
   [key: string]: unknown;
-  size?: string;
+  size?: string | number;
   side?: string;
   paddingSize?: string;
   textAlign?: string;

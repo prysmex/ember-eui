@@ -14,14 +14,19 @@ import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
 import EuiBetaBadge from './eui-beta-badge.gts';
 import EuiCardSelect from './eui-card-select.gts';
+import type { EuiCardSelectSignature } from './eui-card-select.gts';
 import EuiIcon from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
 import EuiPanel from './eui-panel.gts';
+import type { EuiPanelSignature } from './eui-panel.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
+import type { EuiTitleSignature } from './eui-title.gts';
 
 import type { EuiCardSelectProps } from './eui-card-select.gts';
 
 type EuiCardComponentArgs = {
+  footer?: string;
   selectable?: EuiCardSelectProps;
   /**
    * Class that will apply to the card top section.
@@ -37,9 +42,59 @@ type EuiCardComponentArgs = {
    * Class that will apply to the card footer section.
    */
   footerClassName?: string;
+
+  target?: string;
+
+  betaBadgeProps?: {
+    label: string;
+    title?: string;
+    tooltipContent?: string;
+  };
+
+  description?: string;
+
+  /**
+   * The title of the card.
+   */
+  title?: string;
+  titleSize?: EuiTitleSignature['Args']['size'];
+
+  /**
+   * The title element. Will wrap the title in a heading tag.
+   */
+  titleElement?: string;
+
+  href?: string;
+
+  onClick?: (e: MouseEvent) => void;
+
+  isDisabled?: boolean;
+
+  textAlign?: 'left' | 'center' | 'right';
+
+  image?: string;
+  icon?: string;
+  layout?: 'horizontal' | 'vertical';
+
+  display?: EuiPanelSignature['Args']['color'];
+  paddingSize?: EuiPanelSignature['Args']['paddingSize'];
+
+  iconSize?: EuiIconSignature['Args']['size'];
 };
 
-export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
+export interface EuiCardSignature {
+  Element: EuiPanelSignature['Element'];
+  Args: EuiCardComponentArgs;
+  Blocks: {
+    icon: ['euiCard__icon'];
+    title: [() => void];
+    description: [];
+    body: [];
+    footer: [];
+  };
+}
+
+export default class EuiCardComponent extends Component<EuiCardSignature> {
   @tracked link: HTMLAnchorElement | HTMLButtonElement | null = null;
 
   outerOnClick = (e: MouseEvent) => {
@@ -72,7 +127,6 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (if @selectable (uniqueId))
       (and
@@ -100,8 +154,8 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
         }}
         @color={{if @isDisabled "subdued" @display}}
         @onClick={{if isClickable this.outerOnClick}}
-        @hasShadow={{or @isDisabled @display}}
-        @hasBorder={{if @display @display undefined}}
+        @hasShadow={{if (or @isDisabled @display) true}}
+        @hasBorder={{if @display true undefined}}
         @paddingSize={{@paddingSize}}
         ...attributes
       >
@@ -112,7 +166,7 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
               {{yield "euiCard__icon" to="icon"}}
             {{else}}
               {{#if (or @image @icon)}}
-                {{#if (and @image (not-eq layout "horizontal"))}}
+                {{#if (and @image (notEq layout "horizontal"))}}
                   <div class="euiCard__image">
                     <img src={{@image}} alt="card-top" />
                   </div>
@@ -216,13 +270,12 @@ export default class EuiCardComponent extends Component<EuiCardComponentArgs> {
             @isSelected={{@selectable.isSelected}}
             @isDisabled={{@selectable.isDisabled}}
             @color={{@selectable.color}}
-            @iconType={{@selectable.iconType}}
             @isLoading={{@selectable.isLoading}}
             @href={{@selectable.href}}
             @iconSide={{@selectable.iconSide}}
             @flush={{@selectable.flush}}
             {{didInsert (set this "link")}}
-            {{on "click" (optional @selectable.onClick)}}
+            @onClick={{optional @selectable.onClick}}
           />
         {{/if}}
       </EuiPanel>

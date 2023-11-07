@@ -7,11 +7,9 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import validatableControl from '../modifiers/validatable-control';
 import { displayMapping } from '../utils/css-mappings/eui-file-picker';
 
-import { and, eq, not, notEq,or } from 'ember-truth-helpers';
+import { and, eq, not, notEq, or } from 'ember-truth-helpers';
 
-import argOrDefault, {
-  argOrDefaultDecorator
-} from '../helpers/arg-or-default';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import uniqueId from '../helpers/unique-id';
 import EuiButtonEmpty from './eui-button-empty.gts';
@@ -50,6 +48,7 @@ type EuiFilePicker = {
   isInvalid?: boolean;
   isLoading?: boolean;
   disabled?: boolean;
+  multiple?: boolean;
 
   /**
    * Optionally pass a fn to get the instance of the component to access it programatically
@@ -57,7 +56,15 @@ type EuiFilePicker = {
   ref?: (c: typeof EuiFilePickerComponent) => void;
 };
 
-export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
+export interface EuiFilePickerSignature {
+  Element: HTMLInputElement;
+  Args: EuiFilePicker;
+  Blocks: {
+    default: [];
+  };
+}
+
+export default class EuiFilePickerComponent extends Component<EuiFilePickerSignature> {
   @tracked fileInput: HTMLInputElement | null = null;
   @tracked promptText: string | null | undefined = null;
   @tracked isHoveringDrop = false;
@@ -127,7 +134,6 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (classNames
         (if @compressed "euiFilePicker--compressed")
@@ -176,7 +182,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePicker> {
                 aria-hidden="true"
               />
               <div class="euiFilePicker__promptText">
-                {{or this.promptText this.initialPromptText}}
+                {{if this.promptText this.promptText this.initialPromptText}}
               </div>
               {{#if (and @isLoading normalFormControl)}}
                 <EuiLoadingSpinner class="euiFilePicker__loadingSpinner" />

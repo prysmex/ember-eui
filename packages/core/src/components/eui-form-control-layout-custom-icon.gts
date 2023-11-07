@@ -2,19 +2,16 @@ import { on } from '@ember/modifier';
 
 import EuiIcon from './eui-icon.gts';
 
-import type { CommonArgs, ExclusiveUnion } from './common';
+import type { CommonArgs } from './common';
 import type { EuiIconArgs, IconType } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-export type EuiFormControlLayoutCustomIconArgs = CommonArgs &
-  ExclusiveUnion<Omit<HTMLButtonElement, 'type'>, HTMLSpanElement> & {
-    onClick?: (event: MouseEvent) => void;
-    type: IconType;
-    size?: EuiIconArgs['size'];
-    iconRef?:
-      | string
-      | ((el: HTMLButtonElement | HTMLSpanElement | null) => void);
-  };
+export type EuiFormControlLayoutCustomIconArgs = CommonArgs & {
+  onClick?: (event: MouseEvent) => void;
+  type: IconType;
+  size?: EuiIconArgs['size'];
+  iconRef?: string | ((el: HTMLButtonElement | HTMLSpanElement | null) => void);
+};
 
 export interface EuiFormControlLayoutCustomIconSignature {
   Element: HTMLButtonElement | HTMLSpanElement;

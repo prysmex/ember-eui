@@ -43,7 +43,7 @@ export interface EuiPanelSignature {
     /**
      * Adds a click handler to the panel
      */
-    onClick?: () => void;
+    onClick?: (e: MouseEvent) => void;
     /**
      * Adds a click handler to the panel
      */

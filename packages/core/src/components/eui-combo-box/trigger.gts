@@ -13,6 +13,8 @@ import classNames from '../../helpers/class-names';
 import EuiComboBoxPill from '../eui-combo-box-pill.gts';
 import EuiFormControlLayout from '../eui-form-control-layout.gts';
 
+import { EnsureSafeComponentHelper } from '@embroider/util';
+
 export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipleTrigger {
   <template>
     {{! @glint-nocheck: not typesafe yet }}
@@ -55,12 +57,17 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
           }}
             {{#each @select.selected as |opt idx|}}
               {{#if @selectedItemComponent}}
-                {{component
-                  (ensure-safe-component @selectedItemComponent)
-                  extra=@extra
-                  option=opt
-                  select=@select
+                {{#let
+                  (component
+                    (EnsureSafeComponentHelper @selectedItemComponent)
+                    extra=@extra
+                    option=opt
+                    select=@select
+                  )
+                  as |SelectedItemComponent|
                 }}
+                  <SelectedItemComponent />
+                {{/let}}
               {{else}}
                 <EuiComboBoxPill
                   class="ember-power-select-multiple-option
@@ -115,16 +122,21 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
               )
               as |InputComponent|
             }}
-              {{component
-                (ensure-safe-component @placeholderComponent)
-                select=@select
-                placeholder=@placeholder
-                isMutlipleWithSearch=true
-                inputComponent=InputComponent
-                displayPlaceholder=(and
-                  (not @select.searchText) (not @select.selected)
+              {{#let
+                (component
+                  (EnsureSafeComponentHelper @placeholderComponent)
+                  select=@select
+                  placeholder=@placeholder
+                  isMutlipleWithSearch=true
+                  inputComponent=InputComponent
+                  displayPlaceholder=(and
+                    (not @select.searchText) (not @select.selected)
+                  )
                 )
+                as |PlaceholderComponent|
               }}
+                <PlaceholderComponent />
+              {{/let}}
             {{/let}}
           {{else}}
             {{! template-lint-disable }}

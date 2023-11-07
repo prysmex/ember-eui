@@ -1,6 +1,6 @@
-import { RemarkTokenizer } from '../../markdown-types';
-import { Plugin } from 'unified';
-import EuiMarkdownFormatMarkdownTooltip from '../../../../components/eui-markdown-format/markdown-tooltip';
+import type { RemarkTokenizer } from '../../markdown-types';
+import type { Plugin } from 'unified';
+import EuiMarkdownFormatMarkdownTooltip from '../../../../components/eui-markdown-format/markdown-tooltip.gts';
 
 interface TooltipNodeDetails {
   type: 'component';

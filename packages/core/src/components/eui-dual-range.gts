@@ -27,7 +27,10 @@ import EuiRangeThumb from './eui-range-thumb.gts';
 import EuiRangeTrack from './eui-range-track.gts';
 import EuiRangeWrapper from './eui-range-wrapper.gts';
 
-import type { EuiRangeInputArgs } from './eui-range-input.gts';
+import type {
+  EuiRangeInputArgs,
+  EuiRangeInputSignature
+} from './eui-range-input.gts';
 import type { EuiRangeSliderArgs } from './eui-range-slider.gts';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import type { EuiRangeArgs } from './eui-range.gts';
@@ -36,14 +39,10 @@ import type { EuiRangeTick } from './eui-range-ticks.gts';
 
 type ValueMember = number | string;
 
-export interface EuiDualRangeArgs
-  extends Omit<
-    EuiRangeSliderArgs,
-    'onChange' | 'onBlur' | 'onFocus' | 'value' | 'append' | 'prepend'
-  > {
+export interface EuiDualRangeArgs {
   value: [ValueMember, ValueMember];
-  onBlur?: (event: HTMLInputElement | HTMLDivElement) => void;
-  onFocus?: (event: HTMLInputElement | HTMLDivElement) => void;
+  onBlur?: (event: FocusEvent) => void;
+  onFocus?: (event: FocusEvent) => void;
   onChange: (
     values: [ValueMember, ValueMember],
     isValid: boolean,
@@ -92,11 +91,53 @@ export interface EuiDualRangeArgs
    */
   maxInputProps?: Partial<EuiRangeInputArgs>;
 
-  
   readOnly?: boolean;
+
+  disabled?: boolean;
+
+  isPrependProvided?: boolean;
+
+  isAppendProvided?: boolean;
+
+  isFakeMaxBlock?: boolean;
+
+  isFakeMinBlock?: boolean;
+
+  disable?: boolean;
+
+  ariaDescribedby?: string;
+
+  ariaLabel?: string;
+
+  name?: string;
+
+  id?: string;
+
+  compressed?: boolean;
+
+  showRange?: boolean;
+
+  showTicks?: boolean;
+
+  step?: number;
+
+  min?: number;
+
+  max?: number;
 }
 
-export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
+export interface EuiDualRangeSignature {
+  Element: EuiRangeInputSignature['Element'];
+  Args: EuiDualRangeArgs;
+  Blocks: {
+    prepend: EuiRangeInputSignature['Blocks']['prepend'];
+    append: EuiRangeInputSignature['Blocks']['append'];
+    min: unknown;
+    max: unknown;
+  };
+}
+
+export default class EuiDualRangeComponent extends Component<EuiDualRangeSignature> {
   // Defaults
   @argOrDefaultDecorator(0) min!: number;
   @argOrDefaultDecorator(100) max!: number;
@@ -227,8 +268,11 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   @action
-  handleSliderChange(e: Event & { currentTarget: HTMLInputElement }): void {
-    this._determineThumbMovement(Number(e.currentTarget.value), e);
+  handleSliderChange(e: Event): void {
+    this._determineThumbMovement(
+      Number((e.currentTarget as HTMLInputElement).value),
+      e
+    );
   }
 
   @action
@@ -264,13 +308,21 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   @action
-  handleLowerInputChange(e: Event & { target: HTMLInputElement }): void {
-    this._handleOnChange(e.target.value, this.upperValue, e);
+  handleLowerInputChange(e: Event): void {
+    this._handleOnChange(
+      (e.target as HTMLInputElement).value,
+      this.upperValue,
+      e
+    );
   }
 
   @action
-  handleUpperInputChange(e: Event & { target: HTMLInputElement }): void {
-    this._handleOnChange(this.lowerValue, e.target.value, e);
+  handleUpperInputChange(e: Event): void {
+    this._handleOnChange(
+      this.lowerValue,
+      (e.target as HTMLInputElement).value,
+      e
+    );
   }
 
   @action
@@ -387,7 +439,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   @action
-  onThumbFocus(e: HTMLDivElement): void {
+  onThumbFocus(e: FocusEvent): void {
     if (this.args.onFocus) {
       this.args.onFocus(e);
     }
@@ -395,7 +447,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   @action
-  onThumbBlur(e: HTMLDivElement): void {
+  onThumbBlur(e: FocusEvent): void {
     if (this.args.onBlur) {
       this.args.onBlur(e);
     }
@@ -403,7 +455,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   @action
-  onInputFocus(e: HTMLInputElement): void {
+  onInputFocus(e: FocusEvent): void {
     if (this.args.onFocus) {
       this.args.onFocus(e);
     }
@@ -412,7 +464,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   @action
-  onInputBlur(e: HTMLInputElement): void {
+  onInputBlur(e: FocusEvent): void {
     later(
       this,
       () => {
@@ -457,7 +509,6 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let
       (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
       (and (argOrDefault @isAppendProvided true) (has-block "append"))
@@ -487,11 +538,11 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
               </:prepend>
               <:startControl as |classes|>
                 <EuiRangeInput
-                  aria-label={{@minInputProps.ariaLabel}}
                   class={{classes}}
                   @digitTolerance={{this.digitTolerance}}
                   @side="min"
                   @min={{this.min}}
+                  {{!@glint-expect-error}}
                   @max={{castTo this.upperValue to="number"}}
                   @step={{this.step}}
                   @value={{this.lowerValue}}
@@ -535,9 +586,9 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
               <:endControl as |classes|>
                 <EuiRangeInput
                   class={{classes}}
-                  aria-label={{@maxInputProps.ariaLabel}}
                   @digitTolerance={{this.digitTolerance}}
                   @side="max"
+                  {{!@glint-expect-error}}
                   @min={{castTo this.lowerValue to="number"}}
                   @max={{this.max}}
                   @step={{this.step}}
@@ -588,7 +639,6 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
               class="euiDualRange"
               @fullWidth={{this.fullWidth}}
               @compressed={{this.compressed}}
-              @showInput={{this.showInput}}
             >
               {{#if this.showLabels}}
                 <EuiRangeLabel @side="min" @disabled={{@disabled}}>
@@ -618,9 +668,13 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
                     @compressed={{this.compressed}}
                     @hasFocus={{this.hasFocus}}
                     @showTicks={{this.showTicks}}
+                    {{!@glint-expect-error}}
                     @min={{castTo this.min to="number"}}
+                    {{!@glint-expect-error}}
                     @max={{castTo this.max to="number"}}
+                    {{!@glint-expect-error}}
                     @lowerValue={{castTo this.lowerValue to="number"}}
+                    {{!@glint-expect-error}}
                     @upperValue={{castTo this.upperValue to="number"}}
                   />
                 {{/if}}
@@ -649,7 +703,9 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
                 {{#if this.rangeSliderRefAvailable}}
                   <EuiRangeThumb
                     @min={{this.min}}
+                    {{!@glint-expect-error}}
                     @max={{castTo this.upperValue to="number"}}
+                    {{!@glint-expect-error}}
                     @value={{this.lowerValue}}
                     @disabled={{@disabled}}
                     @showTicks={{this.showTicks}}
@@ -662,8 +718,10 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
                     {{onKey "_all" this.handleLowerKeyDown}}
                   />
                   <EuiRangeThumb
-                    @min={{cast-to this.lowerValue to="number"}}
+                    {{!@glint-expect-error}}
+                    @min={{castTo this.lowerValue to="number"}}
                     @max={{this.max}}
+                    {{!@glint-expect-error}}
                     @value={{this.upperValue}}
                     @disabled={{@disabled}}
                     @showTicks={{this.showTicks}}
@@ -698,9 +756,9 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
           {{#if this.showInput}}
             <EuiRangeInput
               @digitTolerance={{this.digitTolerance}}
-              aria-label={{@minInputProps.ariaLabel}}
               @side="min"
               @min={{this.min}}
+              {{!@glint-expect-error}}
               @max={{castTo this.upperValue to="number"}}
               @step={{this.step}}
               @value={{this.lowerValue}}
@@ -751,9 +809,13 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
                 @compressed={{this.compressed}}
                 @hasFocus={{this.hasFocus}}
                 @showTicks={{this.showTicks}}
+                {{!@glint-expect-error}}
                 @min={{castTo this.min to="number"}}
+                {{!@glint-expect-error}}
                 @max={{castTo this.max to="number"}}
+                {{!@glint-expect-error}}
                 @lowerValue={{castTo this.lowerValue to="number"}}
+                {{!@glint-expect-error}}
                 @upperValue={{castTo this.upperValue to="number"}}
               />
             {{/if}}
@@ -782,7 +844,9 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
             {{#if this.rangeSliderRefAvailable}}
               <EuiRangeThumb
                 @min={{this.min}}
+                {{!@glint-expect-error}}
                 @max={{castTo this.upperValue to="number"}}
+                {{!@glint-expect-error}}
                 @value={{this.lowerValue}}
                 @disabled={{@disabled}}
                 @showTicks={{this.showTicks}}
@@ -792,11 +856,14 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
                 {{simpleStyle this.calculateLowerValueThumbPositionStyle}}
                 {{on "focus" this.onThumbFocus}}
                 {{on "blur" this.onThumbBlur}}
+                {{!@glint-expect-error}}
                 {{on "click" this.handleLowerKeyDown}}
               />
               <EuiRangeThumb
+                {{!@glint-expect-error}}
                 @min={{castTo this.lowerValue to="number"}}
                 @max={{this.max}}
+                {{!@glint-expect-error}}
                 @value={{this.upperValue}}
                 @disabled={{@disabled}}
                 @showTicks={{this.showTicks}}
@@ -823,9 +890,9 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeArgs> {
             <div class="euiRange__horizontalSpacer"></div>
             {{! maxinput }}
             <EuiRangeInput
-              aria-label={{@maxInputProps.ariaLabel}}
               @digitTolerance={{this.digitTolerance}}
               @side="max"
+              {{!@glint-expect-error}}
               @min={{castTo this.lowerValue to="number"}}
               @max={{this.max}}
               @step={{this.step}}

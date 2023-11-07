@@ -2,6 +2,9 @@ import Component from '@glimmer/component';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiButtonEmpty from './eui-button-empty.gts';
+import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
+import { on } from '@ember/modifier';
+import optional from 'ember-composable-helpers/helpers/optional';
 
 export type EuiCardSelectProps = {
   /**
@@ -9,7 +12,14 @@ export type EuiCardSelectProps = {
    */
   isSelected?: boolean;
   isDisabled?: boolean;
-  color?: string;
+  buttonId?: string;
+  color?: EuiButtonEmptySignature['Args']['color'];
+  isLoading?: EuiButtonEmptySignature['Args']['isLoading'];
+  href?: EuiButtonEmptySignature['Args']['href'];
+  iconSide?: EuiButtonEmptySignature['Args']['iconSide'];
+  flush?: EuiButtonEmptySignature['Args']['flush'];
+  type?: EuiButtonEmptySignature['Args']['type'];
+  onClick?: (e: MouseEvent) => void;
 };
 
 export function euiCardSelectableColor(
@@ -28,7 +38,15 @@ export function euiCardSelectableColor(
   return calculatedColor;
 }
 
-export default class EuiCardSelectComponent extends Component<EuiCardSelectProps> {
+export interface EuiCardSelectSignature {
+  Element: EuiButtonEmptySignature['Element'];
+  Args: EuiCardSelectProps;
+  Blocks: {
+    default: [];
+  };
+}
+
+export default class EuiCardSelectComponent extends Component<EuiCardSelectSignature> {
   get selectColorClass() {
     return `euiCardSelect--${euiCardSelectableColor(
       this.args.color,
@@ -37,7 +55,6 @@ export default class EuiCardSelectComponent extends Component<EuiCardSelectProps
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <EuiButtonEmpty
       class={{classNames this.selectColorClass componentName="EuiCardSelect"}}
       id={{@buttonId}}
@@ -52,6 +69,7 @@ export default class EuiCardSelectComponent extends Component<EuiCardSelectProps
       @type={{@type}}
       role="switch"
       aria-checked={{@isSelected}}
+      {{on "click" (optional @onClick)}}
       ...attributes
     >
       {{#if (has-block)}}

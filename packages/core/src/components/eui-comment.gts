@@ -2,9 +2,27 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { and, eq, not } from 'ember-truth-helpers';
 import EuiCommentTimeline from './eui-comment-timeline.gts';
+import type { EuiCommentTimelineSignature } from './eui-comment-timeline.gts';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiCommentSignature {
+  Element: HTMLDivElement;
+  Args: {
+    type: EuiCommentTimelineSignature['Args']['type'];
+    timelineIcon: EuiCommentTimelineSignature['Args']['timelineIcon'];
+  };
+  Blocks: {
+    timelineIcon: [];
+    username: [];
+    event: [];
+    timestamp: [];
+    actions: [];
+    body: [];
+  };
+}
+
+const EuiComment: TemplateOnlyComponent<EuiCommentSignature> = <template>
   <div
     class={{classNames
       "euiComment"
@@ -25,7 +43,7 @@ import EuiCommentTimeline from './eui-comment-timeline.gts';
     {{! Basically the same, just to avoid using dynamic tag we use figure and figcaption instead of divs when it doesn't have body}}
     {{#if (and (eq @type "update") (not (has-block "body")))}}
       <figure
-        class={{class-names
+        class={{classNames
           componentName="EuiCommentEvent"
           type=(argOrDefault @type "regular")
         }}
@@ -87,4 +105,6 @@ import EuiCommentTimeline from './eui-comment-timeline.gts';
       </div>
     {{/if}}
   </div>
-</template>
+</template>;
+
+export default EuiComment;

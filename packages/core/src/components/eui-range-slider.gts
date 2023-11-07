@@ -17,7 +17,7 @@ export type EuiRangeSliderArgs = CommonArgs & {
   showTicks?: boolean;
   disabled?: boolean;
   tabIndex?: number;
-  onChange?: InputEvent;
+  onChange?: (e: InputEvent) => void;
   readonly?: boolean;
 };
 

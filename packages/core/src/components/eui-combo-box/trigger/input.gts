@@ -65,7 +65,6 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{!template-lint-disable}}
     {{#if (and this.maybePlaceholder (not @select.searchText))}}
       <p class="euiComboBoxPlaceholder">
@@ -80,6 +79,7 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         tabindex="-1"
         style="opacity: 0px; width:0px; height:0px; position: absolute; top: 40%; border:solid 1px transparent !important; margin:0px !important;"
         class="fake-input-for-html-form-validity"
+        {{!@glint-expect-error}}
         {{validatableControl @isInvalid}}
       />
       <input
@@ -87,17 +87,23 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
+        {{!@glint-expect-error}}
         autofocus={{@autoFocus}}
         spellcheck={{false}}
         id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
         value={{@select.searchText}}
+        {{!@glint-expect-error}}
         aria-controls={{@listboxId}}
         style={{this.triggerMultipleInputStyle}}
         disabled={{@select.disabled}}
+        {{!@glint-expect-error}}
         tabindex={{@tabindex}}
         form="power-select-fake-form"
+        {{!@glint-expect-error}}
         {{on "focus" @onFocus}}
+        {{!@glint-expect-error}}
         {{on "blur" @onBlur}}
+        {{!@glint-expect-error}}
         {{on "input" this.handleInput}}
         {{on "keydown" this.handleKeydown}}
         {{didInsert this.storeInputStyles}}

@@ -5,9 +5,31 @@ import optional from 'ember-composable-helpers/helpers/optional';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import uniqueId from '../helpers/unique-id';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+import { resizeMapping } from '../utils/css-mappings/eui-text-area';
+
+export interface EuiTextAreaSignature {
+  Element: HTMLTextAreaElement;
+  Args: {
+    id?: string;
+    value?: string;
+    fullWidth?: boolean;
+    compressed?: boolean;
+    disabled?: boolean;
+    isInvalid?: boolean;
+    inputRef?: (element: HTMLTextAreaElement | null) => void;
+    rows?: number;
+    resize?: keyof typeof resizeMapping;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiTextArea: TemplateOnlyComponent<EuiTextAreaSignature> = <template>
   {{#let
     (classNames
       (if @fullWidth "euiTextArea--fullWidth")
@@ -16,7 +38,7 @@ import classNames from '../helpers/class-names';
       resize=(argOrDefault @resize "vertical")
     )
     (if @rows @rows (if @compressed 3 6))
-    (argOrDefault @id (unique-id))
+    (argOrDefault @id (uniqueId))
     as |classes definedRows id|
   }}
     <textarea
@@ -32,4 +54,6 @@ import classNames from '../helpers/class-names';
       {{yield}}
     </textarea>
   {{/let}}
-</template>
+</template>;
+
+export default EuiTextArea;

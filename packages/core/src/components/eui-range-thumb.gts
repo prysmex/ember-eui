@@ -1,8 +1,21 @@
 import classNames from '../helpers/class-names';
 import castTo from '../helpers/cast-to';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiRangeThumbSignature {
+  Element: HTMLButtonElement;
+  Args: {
+    min?: number;
+    max?: number;
+    value?: number;
+    disabled?: boolean;
+    tabIndex?: number;
+    showTicks?: boolean;
+  };
+}
+
+const EuiRangeThumb: TemplateOnlyComponent<EuiRangeThumbSignature> = <template>
   {{! template-lint-disable }}
   <button
     type="button"
@@ -27,4 +40,6 @@ import castTo from '../helpers/cast-to';
     ></div>
   </button>
   {{! template-lint-enable }}
-</template>
+</template>;
+
+export default EuiRangeThumb;

@@ -1,6 +1,16 @@
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiSubStepsSignature {
+  Element: HTMLDivElement;
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiSubSteps: TemplateOnlyComponent<EuiSubStepsSignature> = <template>
   <div class="euiSubSteps" ...attributes>
     {{yield}}
   </div>
-</template>
+</template>;
+
+export default EuiSubSteps;

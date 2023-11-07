@@ -16,6 +16,7 @@ import { eq, and, not } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import sub from 'ember-math-helpers/helpers/sub';
+import optional from 'ember-composable-helpers/helpers/optional';
 
 export type EuiBreadcrumbResponsiveMaxCount = {
   /**
@@ -38,10 +39,16 @@ export type EuiBreadcrumb = {
   text: string;
   href?: string;
   onClick?: (e: MouseEvent) => void;
+
+  className?: string;
   /**
    * Force a max-width on the breadcrumb text
    */
   truncate?: boolean;
+
+  ellipsis?: boolean;
+
+  color?: string;
 
   'aria-current': string;
 };
@@ -52,7 +59,7 @@ const onWindowResizeModifier = modifier(
     _pos,
     {
       functionToCallOnWindowResize
-    }: { isDocked: boolean; functionToCallOnWindowResize: () => void }
+    }: { functionToCallOnWindowResize: () => void }
   ) => {
     window.addEventListener('resize', functionToCallOnWindowResize);
 
@@ -94,15 +101,15 @@ const limitedBreadcrumbs = (max: number, breadcrumbs: EuiBreadcrumb[]) => {
       : normalizedIndex;
     const breadcrumb = breadcrumbs[indexOfBreadcrumb];
 
-    if (isEven) {
+    if (isEven && breadcrumb) {
       breadcrumbsAtEnd.unshift(breadcrumb);
-    } else {
+    } else if (breadcrumb) {
       breadcrumbsAtStart.push(breadcrumb);
     }
   }
 
   if (max < breadcrumbs.length) {
-    breadcrumbsAtStart.push({ ellipsis: true });
+    breadcrumbsAtStart.push({ ellipsis: true } as EuiBreadcrumb);
   }
 
   return {
@@ -210,11 +217,13 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
     const calculatedMax = this.calculatedMax;
     return calculatedMax
       ? limitedBreadcrumbs(calculatedMax, this.args.breadcrumbs)
-      : { breadcrumbs: this.args.breadcrumbs };
+      : {
+          breadcrumbs: this.args.breadcrumbs,
+          overflowBreadcrumbs: [] as EuiBreadcrumb[]
+        };
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <nav
       {{onWindowResizeModifier
         functionToCallOnWindowResize=this.functionToCallOnWindowResize
@@ -240,7 +249,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
                     <EuiLink
                       class="euiBreadcrumb__content"
                       @color="subdued"
-                      @aria-label="See collapsed breadcrumbs"
+                      aria-label="See collapsed breadcrumbs"
                       title="See collapsed breadcrumbs"
                       {{on "click" (fn popOverState.setState true)}}
                     >
@@ -289,19 +298,19 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
                     </span>
                   {{else}}
                     <EuiLink
-                      {{did-insert setInnerTextRef}}
+                      {{didInsert setInnerTextRef}}
                       @color={{if
                         breadcrumb.color
                         breadcrumb.color
                         (if isLastBreadcrumb "text" "subdued")
                       }}
-                      @onClick={{breadcrumb.onClick}}
                       @href={{breadcrumb.href}}
                       title={{title}}
                       class={{classNames
                         "euiBreadcrumb__content"
                         breadcrumb.className
                       }}
+                      {{on "click" (optional breadcrumb.onClick)}}
                       aria-current={{if isLastBreadcrumb "page" undefined}}
                     >
                       {{breadcrumb.text}}

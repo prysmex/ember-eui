@@ -17,9 +17,9 @@
  * under the License.
  */
 
-import { RemarkTokenizer } from '../../markdown-types';
-import { Plugin } from 'unified';
-import EuiMarkdownFormatMarkdownCheckbox from '../../../../components/eui-markdown-format/markdown-checkbox';
+import type { RemarkTokenizer } from '../../markdown-types';
+import type { Plugin } from 'unified';
+import EuiMarkdownFormatMarkdownCheckbox from '../../../../components/eui-markdown-format/markdown-checkbox.gts';
 
 interface CheckboxNodeDetails {
   type: 'component';
@@ -53,10 +53,10 @@ export const CheckboxParser: Plugin = function CheckboxParser() {
     }
 
     const [match, lead = '', checkboxStatus, text] = checkboxMatch;
-    const isChecked = checkboxStatus.indexOf('x') !== -1;
+    const isChecked = checkboxStatus?.indexOf('x') !== -1;
 
     const now = eat.now();
-    const offset = match.length - text.length;
+    const offset = match.length - (text?.length ?? 0);
     now.column += offset;
     now.offset += offset;
     const children = this.tokenizeInline(text, now);

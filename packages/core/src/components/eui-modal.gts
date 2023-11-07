@@ -6,7 +6,7 @@ import EuiOverlayMask from './eui-overlay-mask.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import { hash } from '@ember/helper';
 import inlineStyles from '../helpers/inline-styles';
-import focusTrapModifier from 'ember-focus-trap';
+import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import optional from 'ember-composable-helpers/helpers/optional';
 import style from 'ember-style-modifier/modifiers/style';
@@ -18,7 +18,7 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiModalSignature {
   Element: HTMLDivElement;
   Args: {
-    onClose?: () => void;
+    onClose?: (e: Event) => void;
     maxWidth?: boolean | string;
     clickOutsideToClose?: boolean;
     isFocusTrapActive?: boolean;
@@ -61,7 +61,7 @@ const EuiModal: TemplateOnlyComponent<EuiModalSignature> = <template>
         tabindex="0"
         ...attributes
         {{style inlineStyles}}
-        {{focusTrapModifier
+        {{focusTrap
           isActive=(argOrDefault @isFocusTrapActive true)
           shouldSelfFocus=(argOrDefault @shouldSelfFocus true)
           isPaused=(argOrDefault @isFocusTrapPaused false)

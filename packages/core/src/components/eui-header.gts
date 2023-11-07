@@ -2,16 +2,23 @@ import { modifier } from 'ember-modifier';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+console.log(classNames);
+console.log(argOrDefault);
 
 import EuiHeaderSection from './eui-header-section.gts';
 import EuiHeaderSectionItem from './eui-header-section-item.gts';
+import type { EuiHeaderSectionItemSignature } from './eui-header-section-item.gts';
 import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs.gts';
+import type { EuiHeaderBreadcrumbsSignature } from './eui-header-breadcrumbs.gts';
 
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+console.log(EuiHeaderSection);
 let euiHeaderFixedCounter = 0;
 
 const fixedHeaderModifier = modifier(function fixedHeader(
   _,
-  [position]: [string]
+  [position]: [string | undefined]
 ): void | (() => unknown) {
   if (position === 'fixed') {
     // Increment fixed header counter for each fixed header
@@ -28,8 +35,27 @@ const fixedHeaderModifier = modifier(function fixedHeader(
   }
 });
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+console.log(fixedHeaderModifier);
+
+export interface EuiHeaderSignature {
+  Element: HTMLDivElement;
+  Args: {
+    theme?: string;
+    position?: string;
+    sections?: {
+      items: {
+        text: string;
+      }[];
+      breadcrumbs: EuiHeaderBreadcrumbsSignature['Args']['breadcrumbs'];
+      border: EuiHeaderSectionItemSignature['Args']['border'];
+    }[];
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiHeader: TemplateOnlyComponent<EuiHeaderSignature> = <template>
   <div
     {{fixedHeaderModifier @position}}
     class={{classNames
@@ -41,19 +67,19 @@ const fixedHeaderModifier = modifier(function fixedHeader(
   >
     {{#if @sections}}
       {{#each @sections as |section|}}
-        {{#each @section.items as |itemSection|}}
+        {{#each section.items as |itemSection|}}
           <EuiHeaderSection>
-            <EuiHeaderSectionItem @border={{section.borders}}>
+            <EuiHeaderSectionItem @border={{section.border}}>
               {{itemSection.text}}
             </EuiHeaderSectionItem>
           </EuiHeaderSection>
         {{/each}}
-        {{#each @section.breadcrumbs as |breadcrumbs|}}
-          <EuiHeaderBreadcrumbs @breadcrumbs={{breadcrumbs}} />
-        {{/each}}
+        <EuiHeaderBreadcrumbs @breadcrumbs={{section.breadcrumbs}} />
       {{/each}}
     {{else}}
       {{yield}}
     {{/if}}
   </div>
-</template>
+</template>;
+
+export default EuiHeader;

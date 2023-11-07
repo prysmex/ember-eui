@@ -1,4 +1,4 @@
-const commentTimelineTypeMapping = {
+export const commentTimelineTypeMapping = {
   regular: 'euiCommentTimeline__icon--regular',
   update: 'euiCommentTimeline__icon--update'
 };

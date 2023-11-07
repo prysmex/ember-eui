@@ -35,7 +35,7 @@ import uniqueId from '../helpers/unique-id';
 import merge from '../helpers/merge';
 import outsideClickDetector from '../modifiers/outside-click-detector';
 import { concat } from '@ember/helper';
-import focusTrapModifier from 'ember-focus-trap';
+import { focusTrap } from 'ember-focus-trap';
 import EuiPortal from './eui-portal.gts';
 import EuiPanel from './eui-panel.gts';
 import mutationObserver from '../modifiers/mutation-observer';
@@ -715,7 +715,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
                 {{didInsert this.registerPanel}}
                 {{outsideClickDetector onOutsideClick=this.onClickOutside}}
                 {{onKey "Escape" this.onEscapeKey}}
-                {{focusTrapModifier
+                {{focusTrap
                   isActive=(not
                     (or
                       (not this.ownFocus) (not this.isOpenStable) this.isClosing

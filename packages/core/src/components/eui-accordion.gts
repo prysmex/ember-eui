@@ -14,12 +14,14 @@ import { and, eq, not } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from '../helpers/unique-id';
+
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
 import type { CommonArgs } from './common.ts';
 import type { paddingMapping } from '../utils/css-mappings/eui-accordion';
+
+import uniqueId from '../helpers/unique-id';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 
@@ -94,17 +96,17 @@ type AccordionArgs = {
   childContentClassName?: string;
 };
 
-export interface EuiAccordionAccordionSignature {
+export interface EuiAccordionSignature {
   Element: any;
   Args: AccordionArgs;
   Blocks: {
-    buttonContent: [boolean];
+    buttonContent: [boolean | undefined];
     content: [];
-    extraAction: [boolean];
+    extraAction: [boolean | undefined];
   };
 }
 
-export default class EuiAccordionAccordionComponent extends Component<EuiAccordionAccordionSignature> {
+export default class EuiAccordionAccordionComponent extends Component<EuiAccordionSignature> {
   // Defaults
   @argOrDefaultDecorator(false) isLoading!: boolean;
   @argOrDefaultDecorator(false) isLoadingMessage!: boolean;
@@ -197,7 +199,6 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let (argOrDefault @element "div") as |tagName|}}
       {{#if tagName}}
         {{#let
@@ -234,20 +235,16 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                     {{on "click" this.onToggle}}
                     aria-controls={{@id}}
                     aria-expanded={{this.isOpen}}
-                    aria-labelledby={{this.buttonId}}
                     tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
                   />
                 {{/if}}
                 <ButtonElement
                   type="button"
-                  id={{argOrDefault this.buttonProps.id (uniqueId)}}
+                  id={{argOrDefault @buttonProps.id (uniqueId)}}
                   class={{this.buttonClasses}}
                   aria-controls={{@id}}
                   aria-expanded={{this.isOpen}}
-                  aria-labelledby={{argOrDefault
-                    this.buttonProps.id
-                    (uniqueId)
-                  }}
+                  aria-labelledby={{argOrDefault @buttonProps.id (uniqueId)}}
                   {{on "click" this.onToggle}}
                 >
                   <span class={{this.buttonContentClasses}}>
@@ -283,7 +280,6 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                     {{on "click" this.onToggle}}
                     aria-controls={{@id}}
                     aria-expanded={{this.isOpen}}
-                    aria-labelledby={{this.buttonId}}
                     tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
                   />
                 {{/if}}
@@ -295,7 +291,6 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                 {{didInsert (set this "childWrapper")}}
                 tabindex="-1"
                 role="region"
-                aria-labelledby={{this.buttonId}}
               >
                 <div
                   class={{classNames

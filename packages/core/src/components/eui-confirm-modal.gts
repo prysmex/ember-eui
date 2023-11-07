@@ -3,48 +3,76 @@ import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButton from './eui-button.gts';
 import EuiText from './eui-text.gts';
 import EuiModal from './eui-modal.gts';
+import type { EuiModalSignature } from './eui-modal.gts';
 import EuiModalHeader from './eui-modal-header.gts';
 import EuiModalHeaderTitle from './eui-modal-header-title.gts';
 import EuiModalBody from './eui-modal-body.gts';
 import EuiModalFooter from './eui-modal-footer.gts';
 import { on } from '@ember/modifier';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  <EuiModal class="euiModal--confirmation" @onClose={{@onCancel}} ...attributes>
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-    {{#if (or @title (has-block "title"))}}
-      <EuiModalHeader>
-        <EuiModalHeaderTitle>
-          {{@title}}
-          {{yield to="title"}}
-        </EuiModalHeaderTitle>
-      </EuiModalHeader>
-    {{/if}}
+export interface EuiConfirmModalSignature {
+  Element: EuiModalSignature['Element'];
+  Args: {
+    title?: string;
+    message?: string;
+    cancelButtonText?: string;
+    confirmButtonText?: string;
+    buttonColor?: string;
+    confirmButtonDisabled?: boolean;
+    isLoading?: boolean;
+    onCancel: () => void;
+    onConfirm: () => void;
+  };
+  Blocks: {
+    title: [];
+    default: [];
+  };
+}
 
-    {{#if (or @message (has-block))}}
-      <EuiModalBody>
-        <EuiText>
-          {{@message}}
-          {{yield}}
-        </EuiText>
-      </EuiModalBody>
-    {{/if}}
+const EuiConfirmModal: TemplateOnlyComponent<EuiConfirmModalSignature> =
+  <template>
+    <EuiModal
+      class="euiModal--confirmation"
+      @onClose={{@onCancel}}
+      ...attributes
+    >
 
-    <EuiModalFooter>
-      <EuiButtonEmpty {{on "click" @onCancel}}>
-        {{@cancelButtonText}}
-      </EuiButtonEmpty>
-      <EuiButton
-        @fill={{true}}
-        @color={{@buttonColor}}
-        @isDisabled={{@confirmButtonDisabled}}
-        @isLoading={{@isLoading}}
-        {{on "click" @onConfirm}}
-      >
-        {{@confirmButtonText}}
-      </EuiButton>
-    </EuiModalFooter>
+      {{#if (or @title (has-block "title"))}}
+        <EuiModalHeader>
+          <EuiModalHeaderTitle>
+            {{@title}}
+            {{yield to="title"}}
+          </EuiModalHeaderTitle>
+        </EuiModalHeader>
+      {{/if}}
 
-  </EuiModal>
-</template>
+      {{#if (or @message (has-block))}}
+        <EuiModalBody>
+          <EuiText>
+            {{@message}}
+            {{yield}}
+          </EuiText>
+        </EuiModalBody>
+      {{/if}}
+
+      <EuiModalFooter>
+        <EuiButtonEmpty {{on "click" @onCancel}}>
+          {{@cancelButtonText}}
+        </EuiButtonEmpty>
+        <EuiButton
+          @fill={{true}}
+          @color={{@buttonColor}}
+          @isDisabled={{@confirmButtonDisabled}}
+          @isLoading={{@isLoading}}
+          {{on "click" @onConfirm}}
+        >
+          {{@confirmButtonText}}
+        </EuiButton>
+      </EuiModalFooter>
+
+    </EuiModal>
+  </template>;
+
+export default EuiConfirmModal;

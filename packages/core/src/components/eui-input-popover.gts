@@ -7,7 +7,7 @@ import uniqueId from '../helpers/unique-id';
 import { tabbable } from 'tabbable';
 import EuiPopover from './eui-popover.gts';
 import type { EuiPopoverArgs } from './eui-popover.gts';
-import focusTrapModifier from 'ember-focus-trap';
+import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import resizeObserver from '../modifiers/resize-observer';
 
@@ -141,7 +141,7 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
           <div
             id={{id}}
             {{onKey "_all" this.onKeyDown}}
-            {{focusTrapModifier
+            {{focusTrap
               isActive=(not this.disableFocusTrap)
               focusTrapOptions=(hash
                 clickOutsideDeactivates=true

@@ -132,8 +132,13 @@ export default class EuiIcon extends Component<EuiIconSignature> {
       return this.getEuiIconSvgPath(type);
     }
 
+    if(typeof type === 'string' && type.includes('svg')) {
+      return type;
+    }
+
     return ensureSafeComponent(type, this);
   }
+
 
   get emptyIcon(): string {
     return this.getEuiIconSvgPath('empty');
@@ -251,7 +256,8 @@ export default class EuiIcon extends Component<EuiIconSignature> {
           }}
           color={{@color}}
           alt={{if @title @title}}
-          @tabIndex={{@tabIndex}}
+          {{! @glint-expect-error }}
+          tabIndex={{@tabIndex}}
           ...attributes
         />
       {{else}}

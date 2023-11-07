@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+//@ts-expect-error
 import createDetectElementResize from '../utils/detect-element-resize';
 import style from 'ember-style-modifier/modifiers/style';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
@@ -22,16 +23,16 @@ interface EuiAutoSizerComponentArgs {
   defaultWidth?: number;
 
   /** Disable dynamic :height property */
-  disableHeight: boolean;
+  disableHeight?: boolean;
 
   /** Disable dynamic :width property */
-  disableWidth: boolean;
+  disableWidth?: boolean;
 
   /** Nonce of the inlined stylesheet for Content Security Policy */
   nonce?: string;
 
   /** Callback to be invoked on-resize */
-  onResize: (size: Size) => void;
+  onResize?: (size: Size) => void;
 
   /** Optional inline style */
   style?: Record<string, string>;
@@ -125,7 +126,7 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignatu
         nonce,
         this._window
       );
-      this._detectElementResize.addResizeListener(
+      this._detectElementResize?.addResizeListener(
         this._parentNode,
         this._onResize
       );

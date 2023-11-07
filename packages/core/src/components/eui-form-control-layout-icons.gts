@@ -9,7 +9,6 @@ import type { EuiFormControlLayoutCustomIconSignature } from './eui-form-control
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
 import type { DistributiveOmit } from './common';
-import type { EuiFormControlLayoutClearButtonArgs } from './eui-form-control-layout-clear-button.gts';
 import type { EuiFormControlLayoutCustomIconArgs } from './eui-form-control-layout-custom-icon.gts';
 import type { IconType } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
@@ -26,7 +25,7 @@ type IconShape = DistributiveOmit<
 };
 
 export interface EuiFormControlLayoutIconsArgs {
-  icon?: IconType | IconShape;
+  icon: EuiFormControlLayoutCustomIconSignature['Args']['type'];
   iconSide?: (typeof ICON_SIDES)[number];
   clear?: (v: any) => void;
   isLoading?: boolean;
@@ -40,7 +39,6 @@ export interface EuiFormControlLayoutIconsSignature {
 
 const EuiFormControlLayoutIcons: TemplateOnlyComponent<EuiFormControlLayoutIconsSignature> =
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{#let (argOrDefault @iconSide "left") as |iconSide|}}
       {{#if (and @icon (eq iconSide "left"))}}
         <div class="euiFormControlLayoutIcons">

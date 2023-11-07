@@ -1,11 +1,9 @@
 import Component from '@glimmer/component';
 import { isHTMLSafe, htmlSafe } from '@ember/template';
 import { get } from '@ember/object';
-
-type EuiComboBoxCreateOptionArgs = {
-  customOptionText?: string;
-  select: { searchText: string };
-};
+import { on } from '@ember/modifier';
+import EuiText from '../eui-text.gts';
+import EuiBadge from '../eui-badge.gts';
 
 function unwrap(input: string) {
   if (isHTMLSafe(input)) {
@@ -15,7 +13,15 @@ function unwrap(input: string) {
   return input;
 }
 
-export default class EuiAccordionAccordionComponent extends Component<EuiComboBoxCreateOptionArgs> {
+export interface EuiComboBoxCreateOptionSignature {
+  Args: {
+    customOptionText?: string;
+    select: { searchText: string };
+    onCreateOption: () => void;
+  };
+}
+
+export default class EuiAccordionAccordionComponent extends Component<EuiComboBoxCreateOptionSignature> {
   _regex = /\{\s*(.*?)\s*\}/g;
 
   get formattedString(): ReturnType<typeof htmlSafe> {
@@ -35,7 +41,6 @@ export default class EuiAccordionAccordionComponent extends Component<EuiComboBo
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div
       role="button"
       class="euiComboBoxOptionsList__rowWrap"

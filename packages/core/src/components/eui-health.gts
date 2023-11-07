@@ -1,9 +1,22 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon.gts';
+import { sizeToClassNameMap } from '../utils/css-mappings/eui-health';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiHealthSignature {
+  Element: HTMLDivElement;
+  Args: {
+    color?: string;
+    textSize?: keyof typeof sizeToClassNameMap;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiHealth: TemplateOnlyComponent<EuiHealthSignature> = <template>
   <div
     class={{classNames
       componentName="EuiHealth"
@@ -22,4 +35,6 @@ import EuiIcon from './eui-icon.gts';
       </div>
     </div>
   </div>
-</template>
+</template>;
+
+export default EuiHealth;

@@ -28,3 +28,5 @@ const MarkdownTooltip: TemplateOnlyComponent<MarkdownTooltipSignature> =
       </EuiToolTip>
     </span>
   </template>;
+
+export default MarkdownTooltip;

@@ -1,6 +1,17 @@
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  <div class="euiModalFooter" ...attributes>
-    {{yield}}
-  </div>
-</template>
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiModalFooterSignature {
+  Element: HTMLDivElement;
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiModalFooter: TemplateOnlyComponent<EuiModalFooterSignature> =
+  <template>
+    <div class="euiModalFooter" ...attributes>
+      {{yield}}
+    </div>
+  </template>;
+
+export default EuiModalFooter;

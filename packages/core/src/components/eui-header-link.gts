@@ -1,8 +1,20 @@
 import classNames from '../helpers/class-names';
 import EuiButtonEmpty from './eui-button-empty.gts';
+import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiHeaderLinkSignature {
+  Element: EuiButtonEmptySignature['Element'];
+  Args: EuiButtonEmptySignature['Args'] & {
+    isActive?: boolean;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiHeaderLink: TemplateOnlyComponent<EuiHeaderLinkSignature> = <template>
   <EuiButtonEmpty
     class={{classNames "euiHeaderLink" (if @isActive "euiHeaderLink-isActive")}}
     @color={{if @isActive "primary" "text"}}
@@ -18,4 +30,6 @@ import EuiButtonEmpty from './eui-button-empty.gts';
   >
     {{yield}}
   </EuiButtonEmpty>
-</template>
+</template>;
+
+export default EuiHeaderLink;

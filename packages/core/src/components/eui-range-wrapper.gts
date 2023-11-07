@@ -15,7 +15,6 @@ export interface EuiRangeWrapperSignature {
 
 const EuiRangeWrapper: TemplateOnlyComponent<EuiRangeWrapperSignature> =
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     <div
       class={{classNames
         "euiRangeWrapper"

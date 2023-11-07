@@ -22,6 +22,9 @@ module.exports = function (defaults) {
   ];
 
   let app = new EmberApp(defaults, {
+    autoImport: {
+      watchDependencies: ['@ember-eui/core']
+    },
     postcssOptions: {
       compile: {
         enabled: true,
@@ -54,8 +57,8 @@ module.exports = function (defaults) {
 
     svgJar: {
       sourceDirs: [
-        'public/assets',
-        '../node_modules/@ember-eui/core/vendor/icon'
+        './public/assets',
+        './node_modules/@ember-eui/core/vendor/icon'
       ]
     }
   });
@@ -71,12 +74,12 @@ module.exports = function (defaults) {
 
 
   return require('@embroider/compat').compatBuild(app, Webpack, {
-    staticAddonTestSupportTrees: true,
-    staticAddonTrees: true,
-    staticHelpers: true,
-    staticModifiers: true,
-    staticComponents: true,
-    splitAtRoutes: ['*'],
+    // staticAddonTestSupportTrees: true,
+    // staticAddonTrees: true,
+    // staticHelpers: true,
+    // staticModifiers: true,
+    // staticComponents: true,
+    // splitAtRoutes: ['*'],
     packagerOptions: {
       webpackConfig: {
         plugins: plugins,

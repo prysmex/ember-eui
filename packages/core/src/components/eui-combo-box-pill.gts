@@ -5,9 +5,34 @@ import optional from 'ember-composable-helpers/helpers/optional';
 
 import classNames from '../helpers/class-names';
 import EuiBadge from './eui-badge.gts';
+import type { EuiBadgeSignature } from './eui-badge.gts';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiComboBoxPill {
+  Element: EuiBadgeSignature['Element'];
+  Args: {
+    /**
+     * The color of the pill
+     */
+    asPlainText?: boolean;
+
+    onClose?: (option: unknown) => void;
+
+    color?: EuiBadgeSignature['Args']['color'];
+
+    dataSelectedIconIndex?: number;
+
+    iconOnClickAriaLabel?: string;
+
+    option?: unknown;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiComboBoxPill: TemplateOnlyComponent<EuiComboBoxPill> = <template>
   {{#let
     (classNames
       "euiComboBoxPill" (if @asPlainText "euiComboBoxPill--plainText")
@@ -46,4 +71,6 @@ import EuiBadge from './eui-badge.gts';
       </EuiBadge>
     {{/if}}
   {{/let}}
-</template>
+</template>;
+
+export default EuiComboBoxPill;

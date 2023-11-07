@@ -81,6 +81,7 @@ export type EuiCodeBlockArgs = EuiCodeSharedProps & {
 };
 
 export interface EuiCodeBlockSignature {
+  Element: HTMLElement;
   Args: EuiCodeBlockArgs;
   Blocks: {
     default: [];
@@ -171,22 +172,33 @@ const textToCopyHelper = helper(function (
     isVirtualized,
     element,
     innerText
-  }: { isVirtualized: boolean; element: HTMLElement; innerText: string }
+  }: {
+    isVirtualized: boolean;
+    element: HTMLElement | undefined;
+    innerText: string;
+  }
 ) {
-  return isVirtualized ? element.textContent : innerText;
+  if (element) {
+    return isVirtualized
+      ? element.textContent
+        ? element.textContent
+        : ''
+      : innerText;
+  }
+  return '';
 });
 
 export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignature> {
   //fake element where yield writes to, so we can observe and clone a highlighted version to code and codeFullSceen
-  @tracked codeTarget: undefined | HTMLElement;
+  @tracked codeTarget?: HTMLElement;
   //<code> Element for non fullscreen
-  @tracked code: undefined | HTMLElement;
+  @tracked code?: HTMLElement;
   //<code> Element for fullscreen modal
-  @tracked codeFullScreen: undefined | HTMLElement;
-  @tracked wrapperRef: undefined | HTMLElement;
+  @tracked codeFullScreen?: HTMLElement;
+  @tracked wrapperRef?: HTMLElement;
   @tracked tabIndex = 1;
   @tracked isFullScreen = false;
-  @tracked data: undefined | { data: RefractorNode[]; element: HTMLElement };
+  @tracked data?: { data: RefractorNode[]; element: HTMLElement };
 
   get language() {
     return checkSupportedLanguage(this.args.language || '');
@@ -304,7 +316,6 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
   }
 
   <template>
-    {{! @glint-nocheck: not typesafe yet }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
@@ -314,9 +325,11 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
-    {{#in-element this.codeTarget}}
-      {{yield}}
-    {{/in-element}}
+    {{#if this.codeTarget}}
+      {{#in-element this.codeTarget}}
+        {{yield}}
+      {{/in-element}}
+    {{/if}}
     <EuiInnerText as |setInnerTextRef innerText|>
       {{#let
         (classNames
@@ -361,8 +374,6 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
             language=this.language
             lineNumbersConfig=this.lineNumbersConfig
             onChange=this.updateCode
-            codeElement=this.code
-            codeFullScreenElement=this.codeFullScreen
           }}
         >
           {{#if this.isVirtualized}}
@@ -374,7 +385,6 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
               @language={{this.language}}
               @data={{this.data.data}}
               @rowHeight={{this.rowHeight}}
-              @overflowHeight={{@overflowHeight}}
             />
           {{else}}
             {{!template-lint-disable}}
@@ -420,7 +430,6 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
                   @language={{this.language}}
                   @data={{this.data.data}}
                   @rowHeight={{fontSizeToRowHeightMap.l}}
-                  @overflowHeight={{@overflowHeight}}
                 />
               {{else}}
                 <pre

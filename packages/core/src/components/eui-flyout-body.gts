@@ -1,8 +1,18 @@
 import classNames from '../helpers/class-names';
 import { or } from 'ember-truth-helpers';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiFlyoutBodySignature {
+  Element: HTMLDivElement;
+  Blocks: {
+    banner?: [];
+    content?: [];
+    default?: [];
+  };
+}
+
+const EuiFlyoutBody: TemplateOnlyComponent<EuiFlyoutBodySignature> = <template>
   <div class="euiFlyoutBody" ...attributes>
     <div
       tabindex={{0}}
@@ -32,4 +42,6 @@ import { or } from 'ember-truth-helpers';
       {{/if}}
     </div>
   </div>
-</template>
+</template>;
+
+export default EuiFlyoutBody;

@@ -3,12 +3,28 @@ import { and } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';
 import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
+import { notEq, eq } from 'ember-truth-helpers';
+import style from 'ember-style-modifier/modifiers/style';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiListGroupSignature {
+  Element: HTMLUListElement;
+  Args: {
+    maxWidth?: boolean | string;
+    bordered?: boolean;
+    flush?: boolean;
+    gutterSize?: string;
+  };
+  Blocks: {
+    default: [];
+  };
+}
+
+const EuiListGroup: TemplateOnlyComponent<EuiListGroupSignature> = <template>
   {{#let
     (if
-      (and @maxWidth (not-eq @maxWidth true))
+      (and @maxWidth (notEq @maxWidth true))
       (inlineStyles
         componentName="EuiListGroup" componentArgs=(hash maxWidth=@maxWidth)
       )
@@ -30,4 +46,6 @@ import argOrDefault from '../helpers/arg-or-default';
       {{yield}}
     </ul>
   {{/let}}
-</template>
+</template>;
+
+export default EuiListGroup;

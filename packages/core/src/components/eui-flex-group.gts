@@ -20,6 +20,7 @@ export interface EuiFlexGroupSignature {
     direction?: keyof typeof directionMapping;
     wrap?: boolean;
     responsive?: boolean;
+    tagName?: 'div' | 'span';
   };
   Blocks: {
     default: [];
@@ -27,7 +28,6 @@ export interface EuiFlexGroupSignature {
 }
 
 const EuiFlexGroup: TemplateOnlyComponent<EuiFlexGroupSignature> = <template>
-  {{! @glint-nocheck: not typesafe yet }}
   {{#if (eq @tagName "span")}}
     <span
       class={{classNames

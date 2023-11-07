@@ -3,69 +3,90 @@ import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 import { eq } from 'ember-truth-helpers';
 import EuiCheckbox from './eui-checkbox.gts';
+import type { EuiCheckboxSignature } from './eui-checkbox.gts';
 import EuiRadio from './eui-radio.gts';
+import type { EuiRadioSignature } from './eui-radio.gts';
+import uniqueId from '../helpers/unique-id';
 
-<template>
-  {{! @glint-nocheck: not typesafe yet }}
-  {{#let (argOrDefault @id (unique-id)) as |id|}}
-    <div
-      class={{classNames
-        "euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow euiPanel--hasBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row euiCheckableCard"
-        (if @checked "euiCheckableCard-isChecked")
-        (if @disabled "euiCheckableCard__label-isDisabled")
-      }}
-    >
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export interface EuiCheckableCardSignature {
+  Element: EuiCheckboxSignature['Element'] | EuiRadioSignature['Element'];
+  Args: {
+    id?: string;
+    label?: string;
+    checked?: boolean;
+    disabled?: boolean;
+    checkableType?: 'checkbox' | 'radio';
+  };
+  Blocks: {
+    default: [];
+    label: [];
+    content: [];
+  };
+}
+
+const EuiCheckableCard: TemplateOnlyComponent<EuiCheckableCardSignature> =
+  <template>
+    {{#let (argOrDefault @id (uniqueId)) as |id|}}
       <div
         class={{classNames
-          "euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--subdued euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero euiPanel--isClickable euiSplitPanel__inner"
-          (if @checked "euiPanel--primary")
+          "euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow euiPanel--hasBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row euiCheckableCard"
+          (if @checked "euiCheckableCard-isChecked")
+          (if @disabled "euiCheckableCard__label-isDisabled")
         }}
       >
-        {{#if (eq @checkableType "checkbox")}}
-          <EuiCheckbox
-            @id={{id}}
-            @checked={{@checked}}
-            disabled={{@disabled}}
-            ...attributes
-          />
-        {{else}}
-          <EuiRadio
-            @id={{id}}
-            @checked={{@checked}}
-            disabled={{@disabled}}
-            ...attributes
-          />
-        {{/if}}
-      </div>
-      <div
-        class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiSplitPanel__inner"
-      >
-        <label
+        <div
           class={{classNames
-            "euiCheckableCard__label"
-            (if @disabled "euiCheckableCard__label-isDisabled")
+            "euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--subdued euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero euiPanel--isClickable euiSplitPanel__inner"
+            (if @checked "euiPanel--primary")
           }}
-          for={{id}}
-          aria-describedby={{if (has-block "content") (concat id "-details")}}
         >
-          {{#if (has-block "label")}}
-            {{yield to="label"}}
+          {{#if (eq @checkableType "checkbox")}}
+            <EuiCheckbox
+              @id={{id}}
+              @checked={{@checked}}
+              disabled={{@disabled}}
+              ...attributes
+            />
           {{else}}
-            {{@label}}
+            <EuiRadio
+              @id={{id}}
+              @checked={{@checked}}
+              disabled={{@disabled}}
+              ...attributes
+            />
           {{/if}}
-        </label>
+        </div>
+        <div
+          class="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiSplitPanel__inner"
+        >
+          <label
+            class={{classNames
+              "euiCheckableCard__label"
+              (if @disabled "euiCheckableCard__label-isDisabled")
+            }}
+            for={{id}}
+            aria-describedby={{if (has-block "content") (concat id "-details")}}
+          >
+            {{#if (has-block "label")}}
+              {{yield to="label"}}
+            {{else}}
+              {{@label}}
+            {{/if}}
+          </label>
 
-        {{#if (has-block "content")}}
+          {{#if (has-block "content")}}
 
-          {{! Empty div for left side background color only }}
+            {{! Empty div for left side background color only }}
 
-          <div id={{concat id "-details"}} class="euiCheckableCard__children">
-            {{yield to="content"}}
-          </div>
+            <div id={{concat id "-details"}} class="euiCheckableCard__children">
+              {{yield to="content"}}
+            </div>
 
-        {{/if}}
+          {{/if}}
 
+        </div>
       </div>
-    </div>
-  {{/let}}
-</template>
+    {{/let}}
+  </template>;

@@ -1,5 +1,3 @@
-declare module "ember-focus-trap" {
-  import focusTrapModifier from 'ember-focus-trap/modifiers/focus-trap';
-
-  export default focusTrapModifier;
+declare module 'ember-focus-trap' {
+  export { default as focusTrap } from 'ember-focus-trap/modifiers/focus-trap';
 }

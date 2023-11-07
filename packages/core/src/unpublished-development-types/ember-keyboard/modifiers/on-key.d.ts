@@ -7,7 +7,7 @@ declare module 'ember-keyboard/modifiers/on-key' {
   }
 
   export default class OnKeyModifier extends Modifier<{
-    Element: HTMLElement;
+    Element: Element;
     Args: {
       Positional: [
         string,

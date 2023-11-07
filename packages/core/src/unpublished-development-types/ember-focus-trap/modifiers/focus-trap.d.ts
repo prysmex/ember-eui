@@ -2,7 +2,7 @@ declare module 'ember-focus-trap/modifiers/focus-trap' {
   import Modifier from 'ember-modifier';
 
   export default class FocusTrapModifier extends Modifier<{
-    Element: HTMLElement;
+    Element: Element;
     Args: {
       Positional: [];
       Named: {

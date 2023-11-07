@@ -6,7 +6,7 @@
   },
   "compilerOptions": {
     "skipLibCheck": true,
-    "declarationDir": "dist-types",
+    "declarationDir": "declarations",
     "emitDeclarationOnly": true,
     "noEmit": false,
     /**

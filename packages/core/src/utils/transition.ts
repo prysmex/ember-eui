@@ -36,13 +36,13 @@ export const getTransitionTimings = (
   );
   const durationMatchArray = computedDuration.match(GROUP_NUMERIC);
   const durationMatch = durationMatchArray
-    ? getMilliseconds(durationMatchArray[1], durationMatchArray[2])
+    ? getMilliseconds(durationMatchArray[1]!, durationMatchArray[2]!)
     : 0;
 
   const computedDelay = computedStyle.getPropertyValue('transition-delay');
   const delayMatchArray = computedDelay.match(GROUP_NUMERIC);
   const delayMatch = delayMatchArray
-    ? getMilliseconds(delayMatchArray[1], delayMatchArray[2])
+    ? getMilliseconds(delayMatchArray[1]!, delayMatchArray[2]!)
     : 0;
 
   return { durationMatch, delayMatch };

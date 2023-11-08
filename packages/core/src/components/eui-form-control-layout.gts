@@ -5,7 +5,7 @@ import classNames from '../helpers/class-names';
 import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
 
 import type { CommonArgs } from '../components/common';
-import type { EuiFormControlLayoutIconsArgs } from './eui-form-control-layout-icons.gts';
+import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type Component from '@glimmer/component';
 
@@ -24,9 +24,9 @@ export interface EuiFormControlLayoutSignature {
     useGroup?: boolean;
     disabled?: boolean;
     isDisabled?: boolean;
-    icon?: EuiFormControlLayoutIconsArgs['icon'];
-    iconSide?: EuiFormControlLayoutIconsArgs['iconSide'];
-    clear?: EuiFormControlLayoutIconsArgs['clear'];
+    icon?: EuiFormControlLayoutIconsSignature['Args']['icon'];
+    iconSide?: EuiFormControlLayoutIconsSignature['Args']['iconSide'];
+    clear?: EuiFormControlLayoutIconsSignature['Args']['clear'];
     isLoading?: boolean;
     inputId?: string;
   };

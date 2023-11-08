@@ -89,3 +89,5 @@ const EuiStepHorizontal: TemplateOnlyComponent<EuiStepHorizontalSignature> =
       </li>
     {{/let}}
   </template>;
+
+export default EuiStepHorizontal;

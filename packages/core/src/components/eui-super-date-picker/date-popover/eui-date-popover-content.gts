@@ -25,7 +25,7 @@ interface EuiDatePopoverContentArgs {
     | AbsoluteTabSignature['Args']['onChange'];
   roundUp?: boolean;
   dateFormat: string;
-  timeFormat: string;
+  timeFormat?: string;
   locale?: LocaleSpecifier;
   position: 'start' | 'end';
   utcOffset?: number;

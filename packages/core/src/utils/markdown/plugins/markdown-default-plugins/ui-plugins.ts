@@ -7,7 +7,7 @@
  */
 
 import * as MarkdownTooltip from '../markdown-tooltip';
-import { EuiMarkdownEditorUiPlugin } from '../../markdown-types';
+import type { EuiMarkdownEditorUiPlugin } from '../../markdown-types';
 
 export type DefaultEuiMarkdownUiPlugins = EuiMarkdownEditorUiPlugin[];
 

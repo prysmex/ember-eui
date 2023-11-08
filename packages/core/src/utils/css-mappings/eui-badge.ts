@@ -31,7 +31,7 @@ export function inlineStyles({
   let colorHex = 'default';
 
   if (COLORS.indexOf(badgeColor as EuiBadgeColorType) > -1) {
-    colorHex = colorToHexMap[badgeColor as EuiBadgeColorType];
+    colorHex = colorToHexMap[badgeColor as EuiBadgeColorType]!;
     textColor = isColorDark(...hexToRgb(colorHex)) ? '#fff' : '#000';
   } else if (badgeColor !== 'hollow') {
     textColor = isColorDark(...hexToRgb(badgeColor)) ? '#fff' : '#000';

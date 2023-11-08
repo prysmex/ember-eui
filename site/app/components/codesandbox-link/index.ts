@@ -92,25 +92,25 @@ export default class CodesandboxLink extends Component<Args> {
 					import Resolver from 'ember-resolver';
 					import loadInitializers from 'ember-load-initializers';
 					import config from 'site/config/environment';
-					
+
 					export default class App extends Application {
 						modulePrefix = config.modulePrefix;
 						podModulePrefix = config.podModulePrefix;
 						Resolver = Resolver;
 					}
-					
+
 					loadInitializers(App, config.modulePrefix);
 					`
         },
         [`${appNameSpace}/router.js`]: {
           content: `import EmberRouter from '@ember/routing/router';
 					import config from 'site/config/environment';
-					
+
 					export default class Router extends EmberRouter {
 						location = config.locationType;
 						rootURL = config.rootURL;
 					}
-					
+
 					Router.map(function () {});
 					`
         },
@@ -123,19 +123,19 @@ export default class CodesandboxLink extends Component<Args> {
 							<title>Ember Eui</title>
 							<meta name="description" content="" />
 							<meta name="viewport" content="width=device-width, initial-scale=1" />
-					
+
 							{{content-for "head"}}
-					
+
 							<link integrity="" rel="stylesheet" href="{{rootURL}}assets/vendor.css" />
 							<link integrity="" rel="stylesheet" href="{{rootURL}}assets/site.css" />
 							{{content-for "head-footer"}}
 						</head>
 						<body>
 							{{content-for "body"}}
-					
+
 							<script src="{{rootURL}}assets/vendor.js"></script>
 							<script src="{{rootURL}}assets/site.js"></script>
-					
+
 							{{content-for "body-footer"}}
 						</body>
 					</html>
@@ -148,11 +148,11 @@ export default class CodesandboxLink extends Component<Args> {
 					import { setApplication } from '@ember/test-helpers';
 					import { setup } from 'qunit-dom';
 					import { start } from 'ember-qunit';
-					
+
 					setApplication(Application.create(config.APP));
-					
+
 					setup(QUnit.assert);
-					
+
 					start();`
         },
         [`${testsNameSpace}/index.html`]: {
@@ -164,38 +164,38 @@ export default class CodesandboxLink extends Component<Args> {
 							<title>Site Tests</title>
 							<meta name="description" content="">
 							<meta name="viewport" content="width=device-width, initial-scale=1">
-					
+
 							{{content-for "head"}}
 							{{content-for "test-head"}}
-					
+
 							<link rel="stylesheet" href="{{rootURL}}assets/vendor.css">
 							<link rel="stylesheet" href="{{rootURL}}assets/site.css">
 							<link rel="stylesheet" href="{{rootURL}}assets/test-support.css">
-					
+
 							{{content-for "head-footer"}}
 							{{content-for "test-head-footer"}}
 						</head>
 						<body>
 							{{content-for "body"}}
 							{{content-for "test-body"}}
-					
+
 							<div id="qunit"></div>
 							<div id="qunit-fixture">
 								<div id="ember-testing-container">
 									<div id="ember-testing"></div>
 								</div>
 							</div>
-					
+
 							<script src="/testem.js" integrity="" data-embroider-ignore></script>
 							<script src="{{rootURL}}assets/vendor.js"></script>
 							<script src="{{rootURL}}assets/test-support.js"></script>
 							<script src="{{rootURL}}assets/site.js"></script>
 							<script src="{{rootURL}}assets/tests.js"></script>
-					
+
 							{{content-for "body-footer"}}
 							{{content-for "test-body-footer"}}
 						</body>
-					</html>					
+					</html>
 					`
         },
         [`${configNameSpace}/environment.js`]: {
@@ -216,13 +216,13 @@ export default class CodesandboxLink extends Component<Args> {
 									Date: false,
 								},
 							},
-					
+
 							APP: {
 								// Here you can pass flags/options to your application instance
 								// when it is created
 							},
 						};
-					
+
 						if (environment === 'development') {
 							// ENV.APP.LOG_RESOLVER = true;
 							// ENV.APP.LOG_ACTIVE_GENERATION = true;
@@ -230,23 +230,23 @@ export default class CodesandboxLink extends Component<Args> {
 							// ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
 							// ENV.APP.LOG_VIEW_LOOKUPS = true;
 						}
-					
+
 						if (environment === 'test') {
 							// Testem prefers this...
 							ENV.locationType = 'none';
-					
+
 							// keep test console output quieter
 							ENV.APP.LOG_ACTIVE_GENERATION = false;
 							ENV.APP.LOG_VIEW_LOOKUPS = false;
-					
+
 							ENV.APP.rootElement = '#ember-testing';
 							ENV.APP.autoboot = false;
 						}
-					
+
 						if (environment === 'production') {
 							// here you can enable a production-specific feature
 						}
-					
+
 						return ENV;
 					};
 					`
@@ -259,10 +259,10 @@ export default class CodesandboxLink extends Component<Args> {
 						'last 1 Firefox versions',
 						'last 1 Safari versions',
 					];
-					
+
 					module.exports = {
 						browsers,
-					};					
+					};
 					`
         },
         [`${configNameSpace}/optional-features.json`]: {
@@ -276,18 +276,18 @@ export default class CodesandboxLink extends Component<Args> {
         },
         'ember-cli-build.js': {
           content: `'use strict';
-					
+
 					const EmberApp = require('ember-cli/lib/broccoli/ember-app');
-					
+
 					module.exports = function (defaults) {
-					
+
 						let app = new EmberApp(defaults, {
-					
+
 							// Add options here
 							'@ember-eui/core': {
 								theme: "${theme}"
 							},
-					
+
 							svgJar: {
 								sourceDirs: [
 									'public/assets',
@@ -295,7 +295,7 @@ export default class CodesandboxLink extends Component<Args> {
 								]
 							}
 						});
-					
+
 						const { Webpack } = require('@embroider/webpack');
 
 						return require('@embroider/compat').compatBuild(app, Webpack, {

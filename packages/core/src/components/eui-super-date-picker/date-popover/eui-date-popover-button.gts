@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { useFormatTimeString } from '../utils';
-import type { LocaleSpecifier } from 'moment';
 import { inject as service } from '@ember/service';
 import type EuiI18n from '../../../services/eui-i18n';
 import EuiDatePopoverContent from './eui-date-popover-content.gts';
@@ -18,12 +17,12 @@ interface EuiDatePopoverButtonArgs {
   dateFormat: string;
   isDisabled?: boolean;
   isInvalid?: boolean;
-  isOpen: boolean;
+  isOpen?: boolean;
   needsUpdating?: boolean;
   locale?: EuiDatePopoverContentSignature['Args']['locale'];
   position: 'start' | 'end';
   roundUp?: boolean;
-  timeFormat: string;
+  timeFormat?: string;
   value: string;
   utcOffset?: number;
   compressed?: boolean;

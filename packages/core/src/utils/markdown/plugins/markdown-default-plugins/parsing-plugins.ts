@@ -21,18 +21,7 @@
 // are exported for two versions of TypeScript (3.4, 4.0) and implicit
 // imports during eui.d.ts generation default to the incorrect version (3.4).
 // Explicit imports here resolve the version mismatch.
-import {
-  PluggableList,
-  // @ts-ignore See above comment
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Attacher,
-  // @ts-ignore See above comment
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Pluggable,
-  // @ts-ignore See above comment
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Settings
-} from 'unified';
+import type { PluggableList } from 'unified';
 import markdown from 'remark-parse';
 import emoji from 'remark-emoji';
 import breaks from 'remark-breaks';

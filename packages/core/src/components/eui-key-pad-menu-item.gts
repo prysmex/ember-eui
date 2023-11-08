@@ -109,3 +109,5 @@ const EuiKeyPadMenuItem: TemplateOnlyComponent<EuiKeyPadMenuItemSignature> =
       {{/let}}
     {{/let}}
   </template>;
+
+export default EuiKeyPadMenuItem;

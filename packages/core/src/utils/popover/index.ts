@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { EuiPopoverPosition } from './types';
+import type { EuiPopoverPosition } from './types';
 
 type Dimension = 'height' | 'width';
 
@@ -221,7 +221,7 @@ export function findPopoverPosition({
 
     // See if we can find a position with a better fit than we've found so far.
     const screenCoordinates = getPopoverScreenCoordinates({
-      position: iterationPosition,
+      position: iterationPosition!,
       align: iterationAlignments[idx],
       anchorBoundingBox,
       popoverBoundingBox,
@@ -236,7 +236,7 @@ export function findPopoverPosition({
       bestFit = screenCoordinates.fit;
       bestPosition = {
         fit: screenCoordinates.fit,
-        position: iterationPosition,
+        position: iterationPosition!,
         top: screenCoordinates.top + window.pageYOffset,
         left: screenCoordinates.left + window.pageXOffset,
         arrow: screenCoordinates.arrow
@@ -403,10 +403,10 @@ export function getPopoverScreenCoordinates({
 
   const fit = getVisibleFit(
     {
-      top: popoverPlacement.top,
-      right: popoverPlacement.left + popoverBoundingBox.width,
-      bottom: popoverPlacement.top + popoverBoundingBox.height,
-      left: popoverPlacement.left,
+      top: popoverPlacement['top']!,
+      right: popoverPlacement['left']! + popoverBoundingBox.width,
+      bottom: popoverPlacement['top']! + popoverBoundingBox.height,
+      left: popoverPlacement['left']!,
       width: popoverBoundingBox.width,
       height: popoverBoundingBox.height
     },
@@ -416,16 +416,16 @@ export function getPopoverScreenCoordinates({
   const arrow = arrowConfig
     ? {
         [crossAxisFirstSide]:
-          crossAxisArrowPosition! - popoverPlacement[crossAxisFirstSide],
+          crossAxisArrowPosition! - popoverPlacement[crossAxisFirstSide]!,
         [primaryAxisPositionName]: primaryAxisArrowPosition
       }
     : undefined;
 
   return {
     fit,
-    top: popoverPlacement.top,
-    left: popoverPlacement.left,
-    arrow: arrow ? { left: arrow.left!, top: arrow.top! } : undefined
+    top: popoverPlacement['top']!,
+    left: popoverPlacement['left']!,
+    arrow: arrow ? { left: arrow['left']!, top: arrow['top']! } : undefined
   };
 }
 
@@ -600,9 +600,9 @@ function getPrimaryAxisPosition({
 
   // find the popover position on the primary axis
   const anchorSizeOnPrimaryAxis = anchorBoundingBox[primaryAxisDimension];
-  const primaryAxisOffset = isOffsetDecreasing
-    ? popoverSizeOnPrimaryAxis
-    : anchorSizeOnPrimaryAxis;
+  const primaryAxisOffset =
+    (isOffsetDecreasing ? popoverSizeOnPrimaryAxis : anchorSizeOnPrimaryAxis) ||
+    0;
   const contentOffset =
     (offset + primaryAxisOffset) * (isOffsetDecreasing ? -1 : 1);
   const primaryAxisPosition = anchorEdgeOrigin + contentOffset;

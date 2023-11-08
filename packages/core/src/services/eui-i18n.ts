@@ -43,7 +43,7 @@ export default class EuiI18n extends Service {
   @action
   lookupToken(
     token: string,
-    valueDefault: string | ((values: Record<string, unknown>) => string),
+    valueDefault: string | ((values: { [key: string]: unknown }) => string),
     values?: Record<string, any>
   ): string {
     return this._lookupToken({

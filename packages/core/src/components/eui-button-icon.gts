@@ -10,6 +10,7 @@ import type {
   displayMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-button-icon';
+import getEuiConfig from '../helpers/get-eui-config';
 
 export interface EuiButtonIconSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
@@ -35,62 +36,60 @@ export interface EuiButtonIconSignature {
 }
 
 const EuiButtonIcon: TemplateOnlyComponent<EuiButtonIconSignature> = <template>
-  {{#if (and @href (not @isDisabled))}}
-    <a
-      class={{classNames
-        (if @isDisabled "euiButtonIcon-isDisabled")
-        componentName="EuiButtonIcon"
-        display=(argOrDefault @display "empty")
-        color=(argOrDefault @color "primary")
-        size=(argOrDefault
-          @size "xs" configKey="@ember-eui/core.euiButtonIcon.size"
-        )
-      }}
-      href={{@href}}
-      target={{@target}}
-      ...attributes
-    >
-      {{#if @iconType}}
-        <EuiIcon
-          @iconClasses="euiButtonIcon__icon {{@iconClasses}}"
-          @type={{@iconType}}
-          @size={{argOrDefault @iconSize "m"}}
-          @useSvg={{@useSvg}}
-          @useComponent={{@useComponent}}
-          @color="inherit"
-          aria-hidden="true"
-        />
-      {{/if}}
-    </a>
-  {{else}}
-    <button
-      class={{classNames
-        (if @isDisabled "euiButtonIcon-isDisabled")
-        componentName="EuiButtonIcon"
-        display=(argOrDefault @display "empty")
-        color=(argOrDefault @color "primary")
-        size=(argOrDefault
-          @size "xs" configKey="@ember-eui/core.euiButtonIcon.size"
-        )
-      }}
-      disabled={{or @isDisabled @disabled}}
-      aria-pressed={{if @isSelected "true" "false"}}
-      type={{if @type @type "button"}}
-      ...attributes
-    >
-      {{#if @iconType}}
-        <EuiIcon
-          @iconClasses="euiButtonIcon__icon {{@iconClasses}}"
-          @type={{@iconType}}
-          @size={{argOrDefault @iconSize "m"}}
-          @useSvg={{@useSvg}}
-          @color="inherit"
-          @useComponent={{@useComponent}}
-          aria-hidden="true"
-        />
-      {{/if}}
-    </button>
-  {{/if}}
+  {{#let (getEuiConfig "euiButtonIcon.size") as |buttonSizeConfig|}}
+    {{#if (and @href (not @isDisabled))}}
+      <a
+        class={{classNames
+          (if @isDisabled "euiButtonIcon-isDisabled")
+          componentName="EuiButtonIcon"
+          display=(argOrDefault @display "empty")
+          color=(argOrDefault @color "primary")
+          size=(argOrDefault @size (if buttonSizeConfig buttonSizeConfig "xs"))
+        }}
+        href={{@href}}
+        target={{@target}}
+        ...attributes
+      >
+        {{#if @iconType}}
+          <EuiIcon
+            @iconClasses="euiButtonIcon__icon {{@iconClasses}}"
+            @type={{@iconType}}
+            @size={{argOrDefault @iconSize "m"}}
+            @useSvg={{@useSvg}}
+            @useComponent={{@useComponent}}
+            @color="inherit"
+            aria-hidden="true"
+          />
+        {{/if}}
+      </a>
+    {{else}}
+      <button
+        class={{classNames
+          (if @isDisabled "euiButtonIcon-isDisabled")
+          componentName="EuiButtonIcon"
+          display=(argOrDefault @display "empty")
+          color=(argOrDefault @color "primary")
+          size=(argOrDefault @size (if buttonSizeConfig buttonSizeConfig "xs"))
+        }}
+        disabled={{or @isDisabled @disabled}}
+        aria-pressed={{if @isSelected "true" "false"}}
+        type={{if @type @type "button"}}
+        ...attributes
+      >
+        {{#if @iconType}}
+          <EuiIcon
+            @iconClasses="euiButtonIcon__icon {{@iconClasses}}"
+            @type={{@iconType}}
+            @size={{argOrDefault @iconSize "m"}}
+            @useSvg={{@useSvg}}
+            @color="inherit"
+            @useComponent={{@useComponent}}
+            aria-hidden="true"
+          />
+        {{/if}}
+      </button>
+    {{/if}}
+  {{/let}}
 </template>;
 
 export default EuiButtonIcon;

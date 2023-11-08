@@ -91,7 +91,7 @@ export function processStringToChildren(
       if (nextChar === '{' || nextChar === '}') {
         // escaping a brace
         i += 1; // advance passed the brace
-        charToAdd = input[i];
+        charToAdd = input[i]!;
       }
       appendCharToChild(charToAdd);
     } else if (char === '{') {
@@ -111,7 +111,7 @@ export function processStringToChildren(
       appendValueToChildren(propValue);
       child = undefined;
     } else {
-      appendCharToChild(char);
+      appendCharToChild(char!);
     }
   }
 

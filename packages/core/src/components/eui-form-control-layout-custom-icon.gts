@@ -3,13 +3,13 @@ import { on } from '@ember/modifier';
 import EuiIcon from './eui-icon.gts';
 
 import type { CommonArgs } from './common';
-import type { EuiIconArgs, IconType } from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFormControlLayoutCustomIconArgs = CommonArgs & {
   onClick?: (event: MouseEvent) => void;
-  type: IconType;
-  size?: EuiIconArgs['size'];
+  type: EuiIconSignature['Args']['type'];
+  size?: EuiIconSignature['Args']['size'];
   iconRef?: string | ((el: HTMLButtonElement | HTMLSpanElement | null) => void);
 };
 

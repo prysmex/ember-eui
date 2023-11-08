@@ -12,10 +12,11 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { htmlSafe } from '@ember/template';
 import { eq } from 'ember-truth-helpers';
-
-let config = {};
+import { inject as service } from '@ember/service';
+import EuiConfigService from '../../services/eui-config';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
+  @service declare euiConfig: EuiConfigService;
   _optionsCache: any[] = [];
 
   get flattedOptions() {
@@ -43,8 +44,9 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
   }
 
   get configRowHeight() {
-    //@ts-expect-error
-    return config?.['@ember-eui/core']?.euiComboBoxOptionsHeight || 29;
+    return (
+      (this.euiConfig.getConfig('euiComboBoxOptionsHeight') as number) || 29
+    );
   }
 
   get rowHeight() {

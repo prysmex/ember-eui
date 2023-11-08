@@ -15,3 +15,5 @@ const EuiContextMenuPanel: TemplateOnlyComponent<EuiContextMenuPanelSignature> =
       {{yield}}
     </div>
   </template>;
+
+export default EuiContextMenuPanel;

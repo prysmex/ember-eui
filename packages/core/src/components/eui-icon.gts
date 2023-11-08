@@ -3,6 +3,8 @@ import { guidFor } from '@ember/object/internals';
 import { htmlSafe } from '@ember/template';
 import { colorToClassMap, typeToPathMap } from '../utils/css-mappings/eui-icon';
 import { ensureSafeComponent } from '@embroider/util';
+import type EuiConfigService from '../services/eui-config';
+import { inject as service } from '@ember/service';
 
 // @ts-expect-error
 import svgJar from 'ember-svg-jar/helpers/svg-jar';
@@ -15,8 +17,6 @@ import { keysOf } from './common';
 import type { CommonArgs } from './common';
 import type { sizeToClassNameMap } from '../utils/css-mappings/eui-icon';
 import type { ComponentLike } from '@glint/template';
-
-let config = {};
 
 export const TYPES = keysOf(typeToPathMap);
 
@@ -103,6 +103,8 @@ function isEuiIconType(x: EuiIconArgs['type']): x is EuiIconType {
 }
 
 export default class EuiIcon extends Component<EuiIconSignature> {
+  @service declare euiConfig: EuiConfigService;
+
   @argOrDefaultDecorator('m') size!: IconSize;
 
   get useImage(): boolean {
@@ -114,8 +116,7 @@ export default class EuiIcon extends Component<EuiIconSignature> {
   get useSvg(): boolean {
     return (
       this.args.useSvg ??
-      //@ts-expect-error config is not typed
-      config?.['@ember-eui/core']?.['euiIcon']?.useSvg ??
+      (this.euiConfig.getConfig('euiIcon.useSvg') as boolean) ??
       false
     );
   }
@@ -132,13 +133,12 @@ export default class EuiIcon extends Component<EuiIconSignature> {
       return this.getEuiIconSvgPath(type);
     }
 
-    if(typeof type === 'string' && type.includes('svg')) {
+    if (typeof type === 'string' && type.includes('svg')) {
       return type;
     }
 
     return ensureSafeComponent(type, this);
   }
-
 
   get emptyIcon(): string {
     return this.getEuiIconSvgPath('empty');

@@ -15,9 +15,12 @@ import type EuiI18n from '../services/eui-i18n';
 import { inject as service } from '@ember/service';
 import { or, eq } from 'ember-truth-helpers';
 import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
+import EuiDatePopoverButton from './eui-super-date-picker/date-popover/eui-date-popover-button.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
+import EuiSuperUpdateButton from './eui-super-date-picker/eui-super-update-button.gts';
+import EuiQuickSelectPopover from './eui-super-date-picker/eui-quick-select-popover.gts';
 
 import classNames from '../helpers/class-names';
 
@@ -149,15 +152,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   }
 
   @action applyQuickTime({ start, end }: DurationRange) {
-    // this.setState({
-    //   showPrettyDuration: showPrettyDuration(
-    //     start,
-    //     end,
-    //     this.props.commonlyUsedRanges
-    //   )
-    // });
-
-    // Update the internal state
     this.start = start;
     this.end = end;
 
@@ -219,8 +213,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
           @compressed={{@compressed}}
           @isDisabled={{@isDisabled}}
           @useGroup={{true}}
-          {{!-- @fullWidth={{this.fullWidth}} --}}
-          {{!-- @readOnly={{@readOnly}} --}}
         >
           <:prepend>
             <EuiQuickSelectPopover
@@ -229,7 +221,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
               @applyTime={{this.applyQuickTime}}
               @timeOptions={{this.timeOptions}}
               @isDisabled={{@isDisabled}}
-              @dateFormat={{this.dateFormat}}
               @commonlyUsedRanges={{argOrDefault
                 @commonlyUsedRanges
                 this.timeOptions.commonDurationRanges
@@ -240,10 +231,8 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
           <:field>
             <EuiDatePickerRange
               @className="euiDatePickerRange--inGroup"
-              @iconType={{false}}
               @isInvalid={{this.isInvalid}}
               @disabled={{@isDisabled}}
-              @isCustom={{true}}
             >
               <:startDateControl>
                 <EuiDatePopoverButton
@@ -275,7 +264,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
                   @roundUp={{true}}
                   @needsUpdating={{this.hasChanged}}
                   @locale={{@locale}}
-                  
                 />
               </:endDateControl>
             </EuiDatePickerRange>

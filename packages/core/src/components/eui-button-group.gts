@@ -29,7 +29,7 @@ export interface EuiButtonGroupSignature {
     idSelected?: EuiButtonGroupButtonSignature['Args']['isSelected'];
     idToSelectedMap?: {
       [key: string]: EuiButtonGroupButtonSignature['Args']['isSelected'];
-    }
+    };
     options?: Array<{
       isDisabled?: boolean;
       iconType?: EuiButtonGroupButtonSignature['Args']['iconType'];
@@ -120,3 +120,5 @@ export const EuiButtonGroup: TemplateOnlyComponent<EuiButtonGroupSignature> =
       {{/let}}
     {{/let}}
   </template>;
+
+export default EuiButtonGroup;

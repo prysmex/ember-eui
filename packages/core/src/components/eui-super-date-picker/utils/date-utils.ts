@@ -1,4 +1,4 @@
-import { Moment } from 'moment';
+import type { Moment } from 'moment';
 
 export function isSameDay(moment1: Moment, moment2: Moment) {
   if (moment1 && moment2) {

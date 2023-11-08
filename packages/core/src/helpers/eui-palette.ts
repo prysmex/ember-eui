@@ -1,6 +1,5 @@
 import { helper } from '@ember/component/helper';
 import {
-  EuiPalette,
   euiPaletteForLightBackground,
   euiPaletteForDarkBackground,
   euiPaletteColorBlind,
@@ -14,6 +13,7 @@ import {
   euiPaletteWarm,
   euiPaletteGray
 } from '../utils/color/eui_palettes';
+import type { EuiPalette } from '../utils/color/eui_palettes';
 
 export const PALETTES = {
   euiPaletteForLightBackground,

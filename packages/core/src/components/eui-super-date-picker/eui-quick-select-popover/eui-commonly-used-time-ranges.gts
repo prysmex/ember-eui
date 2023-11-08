@@ -8,14 +8,14 @@ import EuiLink from '../../eui-link.gts';
 import { hash, fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
+import type {
+  DurationRange
+} from '../types/global';
+
 export interface EuiCommonlyUsedTimeRangesSignature {
   Args: {
     applyTime: (args: { start: string; end: string }) => void;
-    commonlyUsedRanges: Array<{
-      start: string;
-      end: string;
-      label: string;
-    }>;
+    commonlyUsedRanges: DurationRange[];
   };
 }
 

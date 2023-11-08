@@ -61,7 +61,7 @@ export function colorPalette(
   if (diverging) {
     // If there's no midpoint, create one
     if (hexStart.length < 3) {
-      hexStart[2] = hexStart[1];
+      hexStart[2] = hexStart[1]!;
       hexStart[1] = MID_COLOR_STOP;
     }
 

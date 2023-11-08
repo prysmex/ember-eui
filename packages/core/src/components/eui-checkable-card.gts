@@ -90,3 +90,5 @@ const EuiCheckableCard: TemplateOnlyComponent<EuiCheckableCardSignature> =
       </div>
     {{/let}}
   </template>;
+
+export default EuiCheckableCard;

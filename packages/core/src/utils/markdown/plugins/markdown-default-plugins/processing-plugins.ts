@@ -21,22 +21,14 @@
 // are exported for two versions of TypeScript (3.4, 4.0) and implicit
 // imports during eui.d.ts generation default to the incorrect version (3.4).
 // Explicit imports here resolve the version mismatch.
-import {
-  PluggableList,
-  // @ts-ignore See above comment
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Attacher,
-  // @ts-ignore See above comment
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Pluggable,
-  // @ts-ignore See above comment
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Settings
-} from 'unified';
+import type { PluggableList } from 'unified';
 import remark2Rehype from 'remark-rehype';
 
 import { toHast } from 'mdast-util-to-hast';
-import { Options as Remark2RehypeOptions, Handler } from 'mdast-util-to-hast';
+import type {
+  Options as Remark2RehypeOptions,
+  Handler
+} from 'mdast-util-to-hast';
 import * as MarkdownAddComponents from '../markdown-add-components';
 
 const unknownHandler: Handler = (h, node) => {

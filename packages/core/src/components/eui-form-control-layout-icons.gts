@@ -25,7 +25,7 @@ type IconShape = DistributiveOmit<
 };
 
 export interface EuiFormControlLayoutIconsArgs {
-  icon: EuiFormControlLayoutCustomIconSignature['Args']['type'];
+  icon?: EuiFormControlLayoutCustomIconSignature['Args']['type'];
   iconSide?: (typeof ICON_SIDES)[number];
   clear?: (v: any) => void;
   isLoading?: boolean;
@@ -42,11 +42,13 @@ const EuiFormControlLayoutIcons: TemplateOnlyComponent<EuiFormControlLayoutIcons
     {{#let (argOrDefault @iconSide "left") as |iconSide|}}
       {{#if (and @icon (eq iconSide "left"))}}
         <div class="euiFormControlLayoutIcons">
-          <EuiFormControlLayoutCustomIcon
-            @size={{if @compressed "s" "m"}}
-            @type={{@icon}}
-            ...attributes
-          />
+          {{#if @icon}}
+            <EuiFormControlLayoutCustomIcon
+              @size={{if @compressed "s" "m"}}
+              @type={{@icon}}
+              ...attributes
+            />
+          {{/if}}
         </div>
       {{/if}}
       {{#if (or @clear @isLoading (and @icon (eq iconSide "right")))}}
@@ -60,12 +62,14 @@ const EuiFormControlLayoutIcons: TemplateOnlyComponent<EuiFormControlLayoutIcons
           {{#if @isLoading}}
             <EuiLoadingSpinner @size="m" />
           {{/if}}
-          {{#if (and @icon (eq iconSide "right"))}}
-            <EuiFormControlLayoutCustomIcon
-              @size={{if @compressed "s" "m"}}
-              @type={{@icon}}
-              ...attributes
-            />
+          {{#if (eq iconSide "right")}}
+            {{#if @icon}}
+              <EuiFormControlLayoutCustomIcon
+                @size={{if @compressed "s" "m"}}
+                @type={{@icon}}
+                ...attributes
+              />
+            {{/if}}
           {{/if}}
         </div>
       {{/if}}

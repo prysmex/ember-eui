@@ -39,11 +39,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-import {
+import type {
   EuiMarkdownEditorUiPlugin,
-  EuiMarkdownFormatting,
-  isPluginWithImmediateFormatting
+  EuiMarkdownFormatting
 } from './markdown-types';
+import { isPluginWithImmediateFormatting } from './markdown-types';
 
 /**
  * Class for applying styles to a text editor. Accepts the HTML ID for the textarea
@@ -156,7 +156,7 @@ class MarkdownActions {
    */
   do(pluginName: string) {
     const plugin = this.styles[pluginName];
-    if (isPluginWithImmediateFormatting(plugin)) {
+    if (isPluginWithImmediateFormatting(plugin!)) {
       this.applyStyle(plugin.formatting);
       return true;
     } else {
@@ -246,7 +246,7 @@ function wordSelectionStart(text: string, i: number): number {
   while (
     text[index] &&
     text[index - 1] != null &&
-    !text[index - 1].match(/\s/)
+    !text[index - 1]!.match(/\s/)
   ) {
     index--;
   }
@@ -256,7 +256,7 @@ function wordSelectionStart(text: string, i: number): number {
 function wordSelectionEnd(text: string, i: number, multiline: boolean): number {
   let index = i;
   const breakpoint = multiline ? /\n/ : /\s/;
-  while (text[index] && !text[index].match(breakpoint)) {
+  while (text[index] && !text[index]!.match(breakpoint)) {
     index++;
   }
   return index;
@@ -571,7 +571,7 @@ function orderedList(textarea: HTMLTextAreaElement): SelectionRange {
       .slice(0, textarea.selectionStart)
       .split(/\n/);
     startOfLine =
-      textarea.selectionStart - linesBefore[linesBefore.length - 1].length;
+      textarea.selectionStart - linesBefore[linesBefore.length - 1]!.length;
     endOfLine = wordSelectionEnd(textarea.value, textarea.selectionStart, true);
     textToUnstyle = textarea.value.slice(startOfLine, endOfLine);
   }
@@ -584,7 +584,7 @@ function orderedList(textarea: HTMLTextAreaElement): SelectionRange {
     lines = linesToUnstyle.map((line) => line.replace(orderedListRegex, ''));
     text = lines.join('\n');
     if (noInitialSelection && startOfLine && endOfLine) {
-      const lengthDiff = linesToUnstyle[0].length - lines[0].length;
+      const lengthDiff = linesToUnstyle[0]!.length - lines[0]!.length;
       selectionStart = selectionEnd = textarea.selectionStart - lengthDiff;
       textarea.selectionStart = startOfLine;
       textarea.selectionEnd = endOfLine;

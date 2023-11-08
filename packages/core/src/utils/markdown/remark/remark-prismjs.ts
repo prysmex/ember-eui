@@ -8,7 +8,7 @@
 
 import refractor from 'refractor';
 import visit from 'unist-util-visit';
-import { Plugin } from 'unified';
+import type { Plugin } from 'unified';
 import { checkSupportedLanguage } from '../../code/utils';
 
 export const FENCED_CLASS = 'remark-prismjs--fenced';

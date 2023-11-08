@@ -152,6 +152,7 @@ import type classNames from './helpers/class-names';
 import type inlineStyles from './helpers/inline-styles';
 import type isColorDark from './helpers/is-color-dark';
 import type useState from './helpers/use-state';
+import type getEuiConfig from './helpers/get-eui-config';
 import type mutationObserver from './modifiers/mutation-observer';
 import type outsideClickDetector from './modifiers/outside-click-detector';
 import type resizeObserver from './modifiers/resize-observer';
@@ -462,6 +463,7 @@ export default interface EmberEuiRegistry {
   'inline-styles': typeof inlineStyles;
   'is-color-dark': typeof isColorDark;
   'use-state': typeof useState;
+  'get-eui-config': typeof getEuiConfig;
   'mutation-observer': typeof mutationObserver;
   'outside-click-detector': typeof outsideClickDetector;
   'resize-observer': typeof resizeObserver;

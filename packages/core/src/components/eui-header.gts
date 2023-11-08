@@ -2,8 +2,6 @@ import { modifier } from 'ember-modifier';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-console.log(classNames);
-console.log(argOrDefault);
 
 import EuiHeaderSection from './eui-header-section.gts';
 import EuiHeaderSectionItem from './eui-header-section-item.gts';
@@ -13,7 +11,6 @@ import type { EuiHeaderBreadcrumbsSignature } from './eui-header-breadcrumbs.gts
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-console.log(EuiHeaderSection);
 let euiHeaderFixedCounter = 0;
 
 const fixedHeaderModifier = modifier(function fixedHeader(
@@ -34,8 +31,6 @@ const fixedHeaderModifier = modifier(function fixedHeader(
     };
   }
 });
-
-console.log(fixedHeaderModifier);
 
 export interface EuiHeaderSignature {
   Element: HTMLDivElement;

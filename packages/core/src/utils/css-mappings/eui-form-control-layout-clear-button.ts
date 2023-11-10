@@ -1,7 +1,7 @@
-export const baseClass = 'euiFormRow';
+export const baseClass = 'euiFormControlLayoutClearButton';
 
 export const sizeMapping = {
-  s: 'euiFormControlLayoutClearButton--small',
+  s: `${baseClass}--small`,
   m: ''
 };
 

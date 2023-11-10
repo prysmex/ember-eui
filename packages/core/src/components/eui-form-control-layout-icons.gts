@@ -8,21 +8,9 @@ import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-ico
 import type { EuiFormControlLayoutCustomIconSignature } from './eui-form-control-layout-custom-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
-import type { DistributiveOmit } from './common';
-import type { EuiFormControlLayoutCustomIconArgs } from './eui-form-control-layout-custom-icon.gts';
-import type { IconType } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export const ICON_SIDES: ['left', 'right'] = ['left', 'right'];
-
-type IconShape = DistributiveOmit<
-  EuiFormControlLayoutCustomIconArgs,
-  'type' | 'iconRef'
-> & {
-  type: IconType;
-  side?: (typeof ICON_SIDES)[number];
-  ref?: EuiFormControlLayoutCustomIconArgs['iconRef'];
-};
 
 export interface EuiFormControlLayoutIconsArgs {
   icon?: EuiFormControlLayoutCustomIconSignature['Args']['type'];
@@ -40,7 +28,7 @@ export interface EuiFormControlLayoutIconsSignature {
 const EuiFormControlLayoutIcons: TemplateOnlyComponent<EuiFormControlLayoutIconsSignature> =
   <template>
     {{#let (argOrDefault @iconSide "left") as |iconSide|}}
-      {{#if (and @icon (eq iconSide "left"))}}
+      {{#if (eq iconSide "left")}}
         <div class="euiFormControlLayoutIcons">
           {{#if @icon}}
             <EuiFormControlLayoutCustomIcon
@@ -57,6 +45,7 @@ const EuiFormControlLayoutIcons: TemplateOnlyComponent<EuiFormControlLayoutIcons
             <EuiFormControlLayoutClearButton
               @size={{if @compressed "s" "m"}}
               {{on "click" @clear}}
+              ...attributes
             />
           {{/if}}
           {{#if @isLoading}}

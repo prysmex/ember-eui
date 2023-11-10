@@ -1,4 +1,5 @@
 import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default';
 import EuiIcon from './eui-icon.gts';
 
 import type { CommonArgs } from './common';
@@ -19,9 +20,8 @@ const EuiFormControlLayoutClearButton: TemplateOnlyComponent<EuiFormControlLayou
   <template>
     <button
       class={{classNames
-        "euiFormControlLayoutClearButton"
         componentName="EuiFormControlLayoutClearButton"
-        size=@size
+        size=(argOrDefault @size "m")
       }}
       type="button"
       aria-label={{@label}}

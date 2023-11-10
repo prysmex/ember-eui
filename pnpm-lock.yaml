@@ -1326,6 +1326,9 @@ importers:
       ember-template-lint:
         specifier: ^5.11.2
         version: 5.11.2
+      ember-url-hash-polyfill:
+        specifier: ^1.0.11
+        version: 1.0.11(@babel/core@7.23.2)
       eslint:
         specifier: ^8.31.0
         version: 8.52.0
@@ -1681,6 +1684,31 @@ packages:
       '@babel/helper-replace-supers': 7.22.20(@babel/core@7.23.2)
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/plugin-syntax-decorators': 7.22.10(@babel/core@7.23.2)
+
+  /@babel/plugin-proposal-nullish-coalescing-operator@7.18.6(@babel/core@7.23.2):
+    resolution: {integrity: sha512-wQxQzxYeJqHcfppzBDnm1yAY0jSRkUXR2z8RePZYrKwMKgMlE8+Z6LUno+bd6LvbGh8Gltvy74+9pIYkr+XkKA==}
+    engines: {node: '>=6.9.0'}
+    deprecated: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-nullish-coalescing-operator instead.
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': 7.23.2(supports-color@8.1.1)
+      '@babel/helper-plugin-utils': 7.22.5
+      '@babel/plugin-syntax-nullish-coalescing-operator': 7.8.3(@babel/core@7.23.2)
+    dev: true
+
+  /@babel/plugin-proposal-optional-chaining@7.21.0(@babel/core@7.23.2):
+    resolution: {integrity: sha512-p4zeefM72gpmEe2fkUr/OnOXpWEf8nAgk7ZYVqqfFiyIG7oFfVZcCrU64hWn5xp4tQ9LkV4bTIa5rD0KANpKNA==}
+    engines: {node: '>=6.9.0'}
+    deprecated: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': 7.23.2(supports-color@8.1.1)
+      '@babel/helper-plugin-utils': 7.22.5
+      '@babel/helper-skip-transparent-expression-wrappers': 7.22.5
+      '@babel/plugin-syntax-optional-chaining': 7.8.3(@babel/core@7.23.2)
+    dev: true
 
   /@babel/plugin-proposal-private-methods@7.18.6(@babel/core@7.23.2):
     resolution: {integrity: sha512-nutsvktDItsNn4rpGItSNV2sz1XwS+nfU0Rg8aCx3W3NOKVzdMjJRu0O5OkgDp3ZGICSTbgRpxZoWsxoKRvbeA==}
@@ -2385,6 +2413,17 @@ packages:
       '@babel/helper-create-class-features-plugin': 7.22.15(@babel/core@7.23.2)
       '@babel/helper-plugin-utils': 7.22.5
       '@babel/plugin-syntax-typescript': 7.22.5(@babel/core@7.23.2)
+
+  /@babel/plugin-transform-typescript@7.8.7(@babel/core@7.23.2):
+    resolution: {integrity: sha512-7O0UsPQVNKqpHeHLpfvOG4uXmlw+MOxYvUv6Otc9uH5SYMIxvF6eBdjkWvC3f9G+VXe0RsNExyAQBeTRug/wqQ==}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': 7.23.2(supports-color@8.1.1)
+      '@babel/helper-create-class-features-plugin': 7.22.15(@babel/core@7.23.2)
+      '@babel/helper-plugin-utils': 7.22.5
+      '@babel/plugin-syntax-typescript': 7.22.5(@babel/core@7.23.2)
+    dev: true
 
   /@babel/plugin-transform-unicode-escapes@7.22.10(@babel/core@7.23.2):
     resolution: {integrity: sha512-lRfaRKGZCBqDlRU3UIFovdp9c9mEvlylmpod0/OatICsSfuQ9YFthRo1tpTkGsklEefZdqlEFdY4A2dwTb6ohg==}
@@ -10871,6 +10910,29 @@ packages:
       - '@babel/core'
       - supports-color
 
+  /ember-cli-typescript@3.1.4(@babel/core@7.23.2):
+    resolution: {integrity: sha512-HJ73kL45OGRmIkPhBNFt31I1SGUvdZND+LCH21+qpq3pPlFpJG8GORyXpP+2ze8PbnITNLzwe5AwUrpyuRswdQ==}
+    engines: {node: 8.* || >= 10.*}
+    dependencies:
+      '@babel/plugin-proposal-nullish-coalescing-operator': 7.18.6(@babel/core@7.23.2)
+      '@babel/plugin-proposal-optional-chaining': 7.21.0(@babel/core@7.23.2)
+      '@babel/plugin-transform-typescript': 7.8.7(@babel/core@7.23.2)
+      ansi-to-html: 0.6.15
+      broccoli-stew: 3.0.0
+      debug: 4.3.4(supports-color@8.1.1)
+      ember-cli-babel-plugin-helpers: 1.1.1
+      execa: 3.4.0
+      fs-extra: 8.1.0
+      resolve: 1.22.8
+      rsvp: 4.8.5
+      semver: 6.3.1
+      stagehand: 1.0.1
+      walk-sync: 2.2.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - supports-color
+    dev: true
+
   /ember-cli-typescript@4.2.1:
     resolution: {integrity: sha512-0iKTZ+/wH6UB/VTWKvGuXlmwiE8HSIGcxHamwNhEC5x1mN3z8RfvsFZdQWYUzIWFN2Tek0gmepGRPTwWdBYl/A==}
     engines: {node: 10.* || >= 12.*}
@@ -11728,6 +11790,19 @@ packages:
       - supports-color
     dev: true
 
+  /ember-test-waiters@2.1.3(@babel/core@7.23.2):
+    resolution: {integrity: sha512-xDjvq8/1C3b9z3NGpez7aslbq5gsLrxsdjD3apyziHkImh/PTeXZr2bxo/YAUgOwGOtpZ1So0fIsppiSN0u1Ng==}
+    engines: {node: 10.* || >= 12.*}
+    dependencies:
+      ember-cli-babel: 7.26.11
+      ember-cli-typescript: 3.1.4(@babel/core@7.23.2)
+      ember-cli-version-checker: 5.1.2
+      semver: 7.5.4
+    transitivePeerDependencies:
+      - '@babel/core'
+      - supports-color
+    dev: true
+
   /ember-text-measurer@0.6.0:
     resolution: {integrity: sha512-/aZs2x2i6kT4a5tAW+zenH2wg8AbRK9jKxLkbVsKl/1ublNl27idVRdov1gJ+zgWu3DNK7whcfVycXtlaybYQw==}
     engines: {node: 10.* || >= 12}
@@ -11801,6 +11876,24 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
+
+  /ember-url-hash-polyfill@1.0.11(@babel/core@7.23.2):
+    resolution: {integrity: sha512-p1/qhNWljChZLQXfGtRNFPu5iLdAhg7QRjfZZNLrhet25oQII35Y9GcdbyHffHc+2swZzRUbT8+RgZmG4vmySA==}
+    engines: {node: 16.* || >= 18}
+    dependencies:
+      ember-cli-babel: 7.26.11
+      ember-cli-htmlbars: 6.3.0
+      ember-cli-typescript: 5.2.1
+      ember-test-waiters: 2.1.3(@babel/core@7.23.2)
+      webpack: 5.89.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@swc/core'
+      - esbuild
+      - supports-color
+      - uglify-js
+      - webpack-cli
+    dev: true
 
   /ember-validators@4.0.1:
     resolution: {integrity: sha512-QVHzzYQn17Ikz8EZVxEtjKRyr6fmwSUbjYpxjcuoZKN5Ub1jjU2LzPOXT6FJQet691UlBs35e6EjPkBOb+xOuA==}
@@ -12585,6 +12678,22 @@ packages:
       p-finally: 2.0.1
       signal-exit: 3.0.7
       strip-final-newline: 2.0.0
+
+  /execa@3.4.0:
+    resolution: {integrity: sha512-r9vdGQk4bmCuK1yKQu1KTwcT2zwfWdbdaXfCtAh+5nU/4fSX+JAb7vZGvI5naJrQlvONrEB20jeruESI69530g==}
+    engines: {node: ^8.12.0 || >=9.7.0}
+    dependencies:
+      cross-spawn: 7.0.3
+      get-stream: 5.2.0
+      human-signals: 1.1.1
+      is-stream: 2.0.1
+      merge-stream: 2.0.0
+      npm-run-path: 4.0.1
+      onetime: 5.1.2
+      p-finally: 2.0.1
+      signal-exit: 3.0.7
+      strip-final-newline: 2.0.0
+    dev: true
 
   /execa@4.1.0:
     resolution: {integrity: sha512-j5W0//W7f8UxAn8hXVnwG8tLwdiUy4FJLcSupCg6maBYZDpyBvTApK7KyuI4bKj8KOh1r2YH+6ucuYtJv1bTZA==}

@@ -87,7 +87,6 @@ function getItems(
 function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
   return {
     id: `${page.url}`,
-    href: page.url,
     name: humanize([page.title]),
     onClick: clickHandler.bind(clickHandler, page.url),
     items: []

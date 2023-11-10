@@ -68,6 +68,7 @@ import EuiTextColor from './eui-text-color';
 import EuiTitle from './eui-title';
 import EuiToast from './eui-toast';
 import EuiToolTip from './eui-tool-tip';
+import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button';
 
 const mapping: Mapping = {
   EuiAccordion,
@@ -139,7 +140,8 @@ const mapping: Mapping = {
   EuiTextColor,
   EuiTitle,
   EuiToast,
-  EuiToolTip
+  EuiToolTip,
+  EuiFormControlLayoutClearButton
 };
 
 export default mapping;

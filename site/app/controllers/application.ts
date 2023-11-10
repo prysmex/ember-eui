@@ -1,6 +1,7 @@
 import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { inject as service } from '@ember/service';
+import { scrollToHash } from 'ember-url-hash-polyfill';
 // import EuiSideNavItemButton from '@ember-eui/core/components/eui-side-nav-item/button';
 
 import {
@@ -87,6 +88,8 @@ export default class ApplicationController extends Controller {
           node,
           (id: NodeId) => {
             this.selectedItem = id;
+            this.router.transitionTo(id);
+            scrollToHash(id);
           }
         ]);
 
@@ -100,16 +103,16 @@ export default class ApplicationController extends Controller {
           if (item) {
             // set disabled to page item
             item.disabled = !!page.frontmatter.disabled;
-
-            console.log(page.url);
             // create fake items
             headings?.forEach((heading: any) => {
               item?.items.push({
                 id: `fake-${heading.id}`,
                 items: [],
                 name: heading.title,
-                onClick: () => null,
-                href: `${page.url}#${heading.id}`,
+                onClick: () => {
+                  this.router.transitionTo(page.url);
+                  scrollToHash(heading.id);
+                },
                 disabled:
                   item.disabled ||
                   !!page.frontmatter.disabled_demos?.includes(heading.title)

@@ -36,7 +36,6 @@ export default {
     addon.clean(),
     copy({
       targets: [
-        { src: '../vendor', dest: '.' },
         { src: '../README.md', dest: '.' },
         { src: '../LICENSE.md', dest: '.' }
       ]

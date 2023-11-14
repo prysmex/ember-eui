@@ -38,7 +38,8 @@
   "files": [
     "addon-main.js",
     "declarations",
-    "dist"
+    "dist",
+    "vendor/**/*4
   ],
   "scripts": {
     "build": "concurrently 'npm:build:*'",

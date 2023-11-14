@@ -14,7 +14,7 @@ const extensions = ['.js', '.ts', '.gts', '.gjs', '.hbs', '.json'];
 export default {
   output: addon.output(),
   plugins: [
-    addon.publicEntrypoints(['**/*.js', 'index.js', 'template-registry.js']),
+    addon.publicEntrypoints(['**/*.js', 'index.js', 'template-registry.js', '**/*.cjs']),
     addon.appReexports([
       'components/**/*.js',
       'helpers/**/*.js',

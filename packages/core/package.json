@@ -39,7 +39,7 @@
     "addon-main.js",
     "declarations",
     "dist",
-    "vendor/**/*4
+    "vendor/**/*"
   ],
   "scripts": {
     "build": "concurrently 'npm:build:*'",

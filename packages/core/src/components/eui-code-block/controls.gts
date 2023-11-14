@@ -3,7 +3,6 @@ import EuiCopy from '../eui-copy.gts';
 import { or } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import { fn } from '@ember/helper';
 
 interface EuiCodeBlockControlsSignature {
   Args: {

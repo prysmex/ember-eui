@@ -6,7 +6,7 @@ import { glimmerTemplateTag } from 'rollup-plugin-glimmer-template-tag';
 
 const addon = new Addon({
   srcDir: 'src',
-  destDir: 'dist',
+  destDir: 'dist'
 });
 
 const extensions = ['.js', '.ts', '.gts', '.gjs', '.hbs', '.json'];
@@ -14,7 +14,7 @@ const extensions = ['.js', '.ts', '.gts', '.gjs', '.hbs', '.json'];
 export default {
   output: addon.output(),
   plugins: [
-    addon.publicEntrypoints(['**/*.js']),
+    addon.publicEntrypoints(['**/*.js', 'index.js', 'template-registry.js']),
     addon.appReexports([
       'components/**/*.js',
       'helpers/**/*.js',
@@ -25,7 +25,7 @@ export default {
     addon.dependencies(),
     glimmerTemplateTag(),
     nodeResolve({ extensions }),
-    babel({ extensions, babelHelpers: 'inline' }),
+    babel({ extensions, babelHelpers: 'bundled' }),
     addon.hbs(),
     // addon.gjs(),
     addon.keepAssets(['**/*.css']),
@@ -33,8 +33,8 @@ export default {
     copy({
       targets: [
         { src: '../README.md', dest: '.' },
-        { src: '../LICENSE.md', dest: '.' },
-      ],
-    }),
-  ],
+        { src: '../LICENSE.md', dest: '.' }
+      ]
+    })
+  ]
 };

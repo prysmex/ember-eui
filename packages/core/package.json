@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "7.1.5",
+  "version": "8.0.0-beta.0",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -41,12 +41,14 @@
     "dist"
   ],
   "scripts": {
-    "build": "rollup --config",
+    "build": "concurrently 'npm:build:*'",
+    "build:js": "rollup --config",
+    "build:types": "glint --declaration",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
-    "prepublishOnly": "rollup --config",
+    "prepublishOnly": "pnpm run build",
     "start": "concurrently 'npm:start:*'",
     "start:js": "rollup --config --watch",
     "start:types": "glint --build --watch"

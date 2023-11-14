@@ -8,7 +8,14 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiHealthSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * The color of the health indicator.
+     */
     color?: string;
+
+    /**
+     * The size of the health indicator.
+     */
     textSize?: keyof typeof sizeToClassNameMap;
   };
   Blocks: {

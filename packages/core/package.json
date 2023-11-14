@@ -30,10 +30,7 @@
       "types": "./declarations/*.d.ts",
       "default": "./dist/*.js"
     },
-    "./addon-main.js": "./addon-main.js",
-    "./icon/*": "./vendor/icon/svg/*.svg",
-    "./themes/dark.css": "./vendor/eui_theme_dark.min.css",
-    "./themes/light.css": "./vendor/eui_theme_light.min.css"
+    "./addon-main.js": "./addon-main.js"
   },
   "files": [
     "addon-main.js",

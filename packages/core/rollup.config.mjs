@@ -14,7 +14,12 @@ const extensions = ['.js', '.ts', '.gts', '.gjs', '.hbs', '.json'];
 export default {
   output: addon.output(),
   plugins: [
-    addon.publicEntrypoints(['**/*.js', 'index.js', 'template-registry.js', '**/*.cjs']),
+    addon.publicEntrypoints([
+      '**/*.js',
+      'index.js',
+      'template-registry.js',
+      '**/*.cjs'
+    ]),
     addon.appReexports([
       'components/**/*.js',
       'helpers/**/*.js',
@@ -27,7 +32,6 @@ export default {
     nodeResolve({ extensions }),
     babel({ extensions, babelHelpers: 'bundled' }),
     addon.hbs(),
-    // addon.gjs(),
     addon.keepAssets(['**/*.css']),
     addon.clean(),
     copy({

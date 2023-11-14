@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "8.0.0-beta.4",
+  "version": "8.0.0-beta.5",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -543,6 +543,10 @@
       "./utils/range/index.js": "./dist/_app_/utils/range/index.js",
       "./utils/timer.js": "./dist/_app_/utils/timer.js",
       "./utils/transition.js": "./dist/_app_/utils/transition.js"
+    },
+    "public-assets": {
+      "./vendor/eui_theme_dark.min.css": "/@ember-eui/core/themes/eui_theme_dark.min.css",
+      "./vendor/eui_theme_light.min.css": "/@ember-eui/core/themes/eui_theme_light.min.css"
     }
   },
   "volta": {

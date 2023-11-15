@@ -6,12 +6,15 @@ import emberPowerSelectIsSelectedHelper from 'ember-power-select/helpers/ember-p
 import EuiText from '../eui-text.gts';
 import EuiFlexGroup from '../eui-flex-group.gts';
 import EuiFlexItem from '../eui-flex-item.gts';
+import EuiBadge from '../eui-badge.gts';
+//@ts-expect-error
+import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
 import EuiLoadingSpinner from '../eui-loading-spinner.gts';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { htmlSafe } from '@ember/template';
-import { eq } from 'ember-truth-helpers';
+import { eq, and, not } from 'ember-truth-helpers';
 import { inject as service } from '@ember/service';
 import EuiConfigService from '../../services/eui-config';
 

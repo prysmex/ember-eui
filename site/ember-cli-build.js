@@ -25,6 +25,11 @@ module.exports = function (defaults) {
     autoImport: {
       watchDependencies: ['@ember-eui/core']
     },
+
+    'ember-power-select': {
+      theme: false
+    },
+
     postcssOptions: {
       compile: {
         enabled: true,
@@ -42,6 +47,7 @@ module.exports = function (defaults) {
     '@ember-eui/core': {
       theme: false
     },
+
     'ember-cli-netlify': {
       redirects: ['/* /index.html 200']
     },
@@ -71,7 +77,6 @@ module.exports = function (defaults) {
   if (!IS_PRODUCTION && process.env.ANALYZER) {
     plugins.push(new BundleAnalyzerPlugin());
   }
-
 
   return require('@embroider/compat').compatBuild(app, Webpack, {
     // staticAddonTestSupportTrees: true,

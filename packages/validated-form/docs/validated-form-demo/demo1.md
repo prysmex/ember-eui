@@ -47,6 +47,7 @@ ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode
     @selectedOptions={{this.data.fieldComboBoxSingleSelection}}
     @validations={{hash presence=(hash presence=true)}}
     @required={{true}}
+    @searchField='text'
     @options={{array
       (hash value='mx' text='Mexico')
       (hash value='pt' text='Portugal')
@@ -62,6 +63,7 @@ ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode
     @selectedOptions={{this.data.fieldComboBoxMultiple}}
     @validations={{hash presence=(hash presence=true) length=(hash min=2)}}
     @hasNoInitialSelection={{true}}
+    @searchField='text'
     @options={{array
       (hash value='mx' text='Mexico')
       (hash value='pt' text='Portugal')
@@ -122,7 +124,7 @@ ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode
   >
     <:label>
       Field password
-    </:label>    
+    </:label>
   </Form.FieldPassword>
   <Form.FieldTextArea
     @value={{this.data.fieldTextArea}}

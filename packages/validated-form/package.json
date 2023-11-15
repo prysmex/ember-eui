@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/validated-form",
-  "version": "7.1.5",
+  "version": "8.0.0-beta.10",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon"
@@ -29,20 +29,19 @@
   },
   "dependencies": {
     "@ember-eui/core": "^7.1.5",
+    "ember-auto-import": "^2.6.3",
     "ember-cli-babel": "^7.26.11",
     "ember-cli-htmlbars": "^6.0.1",
     "ember-composable-helpers": "^5.0.0",
     "ember-svg-jar": "^2.3.4",
     "ember-unique-id-helper-polyfill": "^1.2.2",
-    "ember-validators": "^4.1.2",
-    "ember-auto-import": "^2.6.3"
+    "ember-validators": "^4.1.2"
   },
   "peerDependencies": {
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2"
   },
   "devDependencies": {
-    "eslint": "^8.31.0",
     "@babel/core": "^7.23.2",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^3.2.0",
@@ -86,6 +85,7 @@
     "ember-source-channel-url": "^3.0.0",
     "ember-template-lint": "^5.11.2",
     "ember-try": "^2.0.0",
+    "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-ember": "^11.6.0",
     "eslint-plugin-node": "^11.1.0",

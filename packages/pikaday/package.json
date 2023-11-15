@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/pikaday",
-  "version": "7.1.5",
+  "version": "8.0.0-beta.10",
   "description": "ember-pikaday integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -44,7 +44,6 @@
     "@glimmer/tracking": "^1.1.2"
   },
   "devDependencies": {
-    "eslint": "^8.31.0",
     "@babel/core": "^7.23.2",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^3.2.0",
@@ -87,6 +86,7 @@
     "ember-source-channel-url": "^3.0.0",
     "ember-template-lint": "^5.11.2",
     "ember-try": "^2.0.0",
+    "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-ember": "^11.6.0",
     "eslint-plugin-node": "^11.1.0",

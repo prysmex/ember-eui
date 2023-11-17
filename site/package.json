@@ -86,7 +86,7 @@
     "ember-fetch": "^8.1.1",
     "ember-flatpickr": "^4.0.0",
     "ember-focus-trap": "^1.1.0",
-    "ember-intl": "^6.1.1",
+    "ember-intl": "^6.2.0",
     "ember-load-initializers": "^2.1.2",
     "ember-page-title": "^7.0.0",
     "ember-qunit": "^8.0.1",

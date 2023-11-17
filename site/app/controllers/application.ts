@@ -66,20 +66,18 @@ export default class ApplicationController extends Controller {
     // uppermost node
     const docsNode = this.docfy.nested.children.firstObject;
 
-    // -- Documentation section
-    // TODO: remove the onClick that just sets selectedItem, it shouldn't be needed with the new docs structure
-    const docsNodeRoutes = getSidenavRoutes([
-      { ...docsNode, children: [] },
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
-
     const handlerFn = (id: NodeId) => {
       this.selectedItem = id;
       this.router.transitionTo(id);
       scrollToHash(id);
     };
+
+    // -- Documentation section
+    // TODO: remove the onClick that just sets selectedItem, it shouldn't be needed with the new docs structure
+    const docsNodeRoutes = getSidenavRoutes([
+      { ...docsNode, children: [] },
+      handlerFn
+    ]);
 
     // -- Display, Forms, Layout, Utilities, Editors & Syntax, Navigation sections
     let coreNode = docsNode.children.find(

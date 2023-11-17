@@ -75,6 +75,12 @@ export default class ApplicationController extends Controller {
       }
     ]);
 
+    const handlerFn = (id: NodeId) => {
+      this.selectedItem = id;
+      this.router.transitionTo(id);
+      scrollToHash(id);
+    };
+
     // -- Display, Forms, Layout, Utilities, Editors & Syntax, Navigation sections
     let coreNode = docsNode.children.find(
       (child: DocfyNode) => child.name === 'core'
@@ -84,14 +90,7 @@ export default class ApplicationController extends Controller {
       let node = coreNodes?.find((child: DocfyNode) => child.name == curr);
       if (node) {
         // build routes for node
-        let nodeRoutes = getSidenavRoutes([
-          node,
-          (id: NodeId) => {
-            this.selectedItem = id;
-            this.router.transitionTo(id);
-            scrollToHash(id);
-          }
-        ]);
+        let nodeRoutes = getSidenavRoutes([node, handlerFn]);
 
         // add fake items based on page headings to simulate 'on this page' feature inside sidebar
         node.pages.forEach((page: Page) => {
@@ -129,9 +128,7 @@ export default class ApplicationController extends Controller {
     // -- Addons section
     let fakeNode = {
       id: 'addons',
-      onClick: () => (id: NodeId) => {
-        this.selectedItem = id;
-      },
+      onClick: handlerFn,
       name: 'Addons',
       label: 'Addons',
       children: [],
@@ -147,12 +144,7 @@ export default class ApplicationController extends Controller {
       fakeNode.pages.push(...(innerDocsNode?.pages || []));
     });
 
-    const addonsRoutes = getSidenavRoutes([
-      fakeNode,
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
+    const addonsRoutes = getSidenavRoutes([fakeNode, handlerFn]);
 
     // -- Package section
 
@@ -160,12 +152,7 @@ export default class ApplicationController extends Controller {
       (child: Item) => child.name === 'package'
     );
 
-    const packageRoutes = getSidenavRoutes([
-      packageNode,
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
+    const packageRoutes = getSidenavRoutes([packageNode, handlerFn]);
 
     // set state
     this.sideNavRoutes = [

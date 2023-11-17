@@ -43,12 +43,15 @@ function compareFunction(a: Item, b: Item) {
   if (a.name < b.name) {
     return -1;
   }
+
   if (b.name < a.name) {
     return 1;
   }
+
   // a debe ser igual b
   return 0;
 }
+
 export function getSidenavRoutes([docfyNode, clickHandler]: [
   DocfyNode,
   (id: NodeId) => void

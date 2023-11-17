@@ -1,20 +1,18 @@
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
-import inlineStyles from '../helpers/inline-styles';
-import simpleStyle from '../modifiers/simple-style';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import inlineStyles from '../helpers/inline-styles';
+import simpleStyle from '../modifiers/simple-style';
 import EuiIcon from './eui-icon.gts';
 
+import type { colorMapping } from '../utils/css-mappings/eui-badge';
 import type { EuiIconSignature } from './eui-icon.gts';
-
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-import { colorMapping } from '../utils/css-mappings/eui-badge';
 
 export interface EuiBadgeSignature {
   Element: HTMLButtonElement | HTMLAnchorElement | HTMLSpanElement;
@@ -24,6 +22,7 @@ export interface EuiBadgeSignature {
     iconSide?: 'left' | 'right';
     iconOnClick?: () => void;
     iconOnClickAriaLabel?: string;
+    iconUseSvg?: boolean;
     isDisabled?: boolean;
     onClick?: () => void;
     onClickAriaLabel?: string;
@@ -155,6 +154,7 @@ const EuiBadge: TemplateOnlyComponent<EuiBadgeSignature> = <template>
                 @closeButtonProps.iconClasses
               }}
               @type={{@iconType}}
+              @useSvg={{@iconUseSvg}}
               @size={{if (has-block) "s" "m"}}
             />
           </button>
@@ -163,6 +163,7 @@ const EuiBadge: TemplateOnlyComponent<EuiBadgeSignature> = <template>
           <EuiIcon
             @color="inherit"
             @type={{@iconType}}
+            @useSvg={{@iconUseSvg}}
             @size={{if (has-block) "s" "m"}}
             @iconClasses="euiBadge__icon"
           />

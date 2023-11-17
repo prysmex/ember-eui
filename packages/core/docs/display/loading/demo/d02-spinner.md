@@ -1,3 +1,5 @@
+# Spinner
+
 ```hbs template
 <EuiLoadingSpinner @size='s' />
 <EuiLoadingSpinner @size='m' />

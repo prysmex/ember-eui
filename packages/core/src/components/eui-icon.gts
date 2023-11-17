@@ -1,10 +1,9 @@
 import Component from '@glimmer/component';
+import { assert } from '@ember/debug';
 import { guidFor } from '@ember/object/internals';
-import { htmlSafe } from '@ember/template';
-import { colorToClassMap, typeToPathMap } from '../utils/css-mappings/eui-icon';
-import { ensureSafeComponent } from '@embroider/util';
-import type EuiConfigService from '../services/eui-config';
 import { inject as service } from '@ember/service';
+import { htmlSafe } from '@ember/template';
+import { ensureSafeComponent } from '@embroider/util';
 
 // @ts-expect-error
 import svgJar from 'ember-svg-jar/helpers/svg-jar';
@@ -12,10 +11,12 @@ import { and, not } from 'ember-truth-helpers';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import { colorToClassMap, typeToPathMap } from '../utils/css-mappings/eui-icon';
 import { keysOf } from './common';
 
-import type { CommonArgs } from './common';
+import type EuiConfigService from '../services/eui-config';
 import type { sizeToClassNameMap } from '../utils/css-mappings/eui-icon';
+import type { CommonArgs } from './common';
 import type { ComponentLike } from '@glint/template';
 
 export const TYPES = keysOf(typeToPathMap);
@@ -133,11 +134,11 @@ export default class EuiIcon extends Component<EuiIconSignature> {
       return this.getEuiIconSvgPath(type);
     }
 
-    if (typeof type === 'string' && type.includes('svg')) {
+    if (typeof type === 'string') {
       return type;
     }
 
-    return ensureSafeComponent(type, this);
+    return undefined;
   }
 
   get emptyIcon(): string {

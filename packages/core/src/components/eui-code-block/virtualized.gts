@@ -9,7 +9,7 @@ import type { RefractorNode } from 'refractor';
 
 import { getHtmlContent } from '../../utils/code/utils';
 import EuiAutoSizer from '../eui-auto-sizer.gts';
-import uniqueId from '../../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 export interface VirtualizedCodeBlockSignature<T> {
   Element: HTMLPreElement;

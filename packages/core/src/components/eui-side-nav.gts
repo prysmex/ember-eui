@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
 import { eq, not, or, and } from 'ember-truth-helpers';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import isItemOpen from '../helpers/is-item-open';

@@ -9,7 +9,7 @@ import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
@@ -33,6 +33,7 @@ export interface EuiFieldPasswordSignature {
     inputRef?: (element: HTMLInputElement) => void;
     isFakePrependBlock?: boolean;
     isFakeAppendBlock?: boolean;
+    placeholder?: string;
   };
   Blocks: {
     prepend: [unknown, string];
@@ -88,6 +89,7 @@ const EuiFieldPassword: TemplateOnlyComponent<EuiFieldPasswordSignature> =
                   type={{inputTypeState.value}}
                   value={{@value}}
                   disabled={{@disabled}}
+                  placeholder={{@placeholder}}
                   {{validatableControl @isInvalid}}
                   {{didInsert (optional @inputRef)}}
                   ...attributes

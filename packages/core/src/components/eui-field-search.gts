@@ -13,7 +13,7 @@ import { and, not, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 

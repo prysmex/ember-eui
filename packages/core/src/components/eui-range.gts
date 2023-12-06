@@ -49,6 +49,9 @@ export interface EuiRangeArgs {
    * Shows clickable tick marks and labels at the given interval (`step`/`tickInterval`)
    */
   showTicks?: boolean;
+
+  min?: number;
+  max?: number;
   /**
    * Shows a tooltip styled value
    */

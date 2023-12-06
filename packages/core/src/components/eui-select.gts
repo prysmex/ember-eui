@@ -8,7 +8,7 @@ import type { EuiFormControlLayoutSignature } from '../components/eui-form-contr
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

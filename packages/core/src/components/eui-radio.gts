@@ -1,6 +1,6 @@
 import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { not, and, or } from 'ember-truth-helpers';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import optional from 'ember-composable-helpers/helpers/optional';

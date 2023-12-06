@@ -47,6 +47,8 @@ export interface EuiMarkdownEditorArgs {
   initialViewMode?: string;
   editorId?: string;
   uiPlugins: EuiMarkdownEditorUiPlugin[];
+  parsingPluginList?: typeof defaultParsingPlugins;
+  processingPluginList?: typeof defaultProcessingPlugins;
   value: string;
   onChange: (str: string) => void;
   onParse?: (

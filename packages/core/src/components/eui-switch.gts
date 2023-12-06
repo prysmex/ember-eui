@@ -6,32 +6,30 @@ import { and, not } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiIcon from './eui-icon.gts';
-
-type SwitchArgs = {
-  id?: string;
-  /**
-   * Whether to render the render the text label
-   */
-  showLabel?: boolean;
-  /**
-   * Must be a string if `showLabel` prop is false
-   */
-  label: string;
-  checked: boolean;
-  onChange: (event: MouseEvent) => void;
-  disabled?: boolean;
-  compressed?: boolean;
-  type?: 'submit' | 'reset' | 'button';
-
-  containerClass?: string;
-  isFakeLabelBlock?: boolean;
-};
 
 export interface EuiSwitchSignature {
   Element: HTMLButtonElement;
-  Args: SwitchArgs;
+  Args: {
+    id?: string;
+    /**
+     * Whether to render the render the text label
+     */
+    showLabel?: boolean;
+    /**
+     * Must be a string if `showLabel` prop is true
+     */
+    label?: string;
+    checked: boolean;
+    onChange: (event: MouseEvent) => void;
+    disabled?: boolean;
+    compressed?: boolean;
+    type?: 'submit' | 'reset' | 'button';
+
+    containerClass?: string;
+    isFakeLabelBlock?: boolean;
+  };
   Blocks: {
     default: [];
     label: [];

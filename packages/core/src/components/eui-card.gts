@@ -11,7 +11,7 @@ import { and, eq, not, notEq, or } from 'ember-truth-helpers';
 import { euiCardSelectableColor } from './eui-card-select.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiBetaBadge from './eui-beta-badge.gts';
 import EuiCardSelect from './eui-card-select.gts';
 import type { EuiCardSelectSignature } from './eui-card-select.gts';

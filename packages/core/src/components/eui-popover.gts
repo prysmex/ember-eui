@@ -31,7 +31,7 @@ import screenReaderOnly from '../modifiers/screen-reader-only';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import merge from '../helpers/merge';
 import outsideClickDetector from '../modifiers/outside-click-detector';
 import { concat } from '@ember/helper';

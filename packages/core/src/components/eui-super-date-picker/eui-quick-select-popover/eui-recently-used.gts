@@ -1,6 +1,6 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-import uniqueId from '../../../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiTitle from '../../eui-title.gts';
 import EuiI18n from '../../eui-i18n.gts';
 import EuiFlexGrid from '../../eui-flex-grid.gts';

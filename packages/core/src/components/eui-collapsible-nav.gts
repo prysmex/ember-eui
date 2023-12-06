@@ -9,7 +9,7 @@ import { and, not, or } from 'ember-truth-helpers';
 import type { EuiBreakpointSize } from '../utils/breakpoint';
 import { isWithinMinBreakpoint } from '../utils/breakpoint';
 import argOrDefault from '../helpers/arg-or-default';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiFlyout from './eui-flyout.gts';
 import type { EuiFlyoutSignature } from './eui-flyout.gts';
 import type { ModifierLike } from '@glint/template';

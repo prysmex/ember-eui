@@ -22,7 +22,7 @@ import { lte } from 'ember-truth-helpers';
 
 import { on } from '@ember/modifier';
 
-import uniqueId from '../../../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 interface EuiQuickSelectState {
   timeTense: string;

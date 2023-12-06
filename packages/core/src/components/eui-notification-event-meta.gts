@@ -1,7 +1,7 @@
 import { concat } from '@ember/helper';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import useState from '../helpers/use-state';
 
 import optional from 'ember-composable-helpers/helpers/optional';

@@ -7,7 +7,7 @@ import { scheduleOnce } from '@ember/runloop';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import findBy from 'ember-composable-helpers/helpers/find-by';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { eq } from 'ember-truth-helpers';
 
 import EuiTab from './eui-tab.gts';

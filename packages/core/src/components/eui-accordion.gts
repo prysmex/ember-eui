@@ -21,7 +21,7 @@ import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import type { CommonArgs } from './common.ts';
 import type { paddingMapping } from '../utils/css-mappings/eui-accordion';
 
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 

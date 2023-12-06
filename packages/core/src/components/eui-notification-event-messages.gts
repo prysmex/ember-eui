@@ -3,7 +3,7 @@ import EuiAccordion from './eui-accordion.gts';
 import without from 'ember-composable-helpers/helpers/without';
 import objectAt from 'ember-composable-helpers/helpers/object-at';
 import { concat } from '@ember/helper';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

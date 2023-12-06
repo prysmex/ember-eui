@@ -5,7 +5,7 @@ import { action } from '@ember/object';
 import { isEqual } from '@ember/utils';
 
 import optional from 'ember-composable-helpers/helpers/optional';
-import  pipe from 'ember-composable-helpers/helpers/pipe';
+import pipe from 'ember-composable-helpers/helpers/pipe';
 import queue from 'ember-composable-helpers/helpers/queue';
 import PowerSelectMultiple from 'ember-power-select/components/power-select-multiple';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
@@ -23,17 +23,44 @@ interface PromiseProxy<T> extends Promise<T> {
   content: any;
 }
 
-interface EuiComboBoxArgs {
-  singleSelection: boolean;
-  onCreateOption?: (search: string) => boolean | undefined;
-  options: any[];
-  search?: (term: string, select: Select) => any[] | PromiseProxy<any[]>;
-}
-
 interface Select {
   selected: any;
   actions: {
     search: (str: string) => void;
+  };
+}
+
+export interface EuiComboBoxSignature {
+  Element: HTMLDivElement;
+  Args: {
+    singleSelection: boolean;
+    onCreateOption?: (search: string) => boolean | undefined;
+    options: any[];
+    search?: (term: string, select: Select) => any[] | PromiseProxy<any[]>;
+    searchField?: string;
+    isInvalid?: boolean;
+    fullWidth?: boolean;
+    searchMessage?: string;
+    searchEnabled?: boolean;
+    isClearable?: boolean;
+    isLoading?: boolean;
+    isDisabled?: boolean;
+    readOnly?: boolean;
+    compressed?: boolean;
+    onFocus?: (e: FocusEvent) => void;
+    onBlur?: (e: FocusEvent) => void;
+    onClose?: (e: Event) => void;
+    onOpen?: (e: Event) => void;
+    renderInPlace?: boolean;
+    customOptionText?: string;
+    dropdownClass?: string;
+    selectedOptions?: any[];
+    onChange: (selected: any[]) => void;
+    placeholder?: string;
+    extra?: any;
+  };
+  Blocks: {
+    default: [any, number, Select];
   };
 }
 
@@ -53,7 +80,7 @@ export const toPlainArray = <T,>(collection: T[] | Sliceable<T>): T[] => {
   }
 };
 
-export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
+export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature> {
   @tracked select: any = null;
   @tracked private _resolvedOptions?: any[];
   @tracked searchText = '';
@@ -249,7 +276,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxArgs> {
   }
 
   @action
-  onChange(selected: any) {
+  onChange(selected: any[]) {
     if (this.args.singleSelection) {
       return selected.length > 0 ? [selected[selected.length - 1]] : [];
     }

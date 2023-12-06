@@ -5,7 +5,7 @@ import optional from 'ember-composable-helpers/helpers/optional';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

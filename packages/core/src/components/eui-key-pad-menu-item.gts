@@ -1,7 +1,7 @@
 import { helper } from '@ember/component/helper';
 import { element } from 'ember-element-helper';
 import { and, eq, not } from 'ember-truth-helpers';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import classNames from '../helpers/class-names';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';

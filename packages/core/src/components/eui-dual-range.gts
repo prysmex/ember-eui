@@ -31,13 +31,12 @@ import type {
   EuiRangeInputArgs,
   EuiRangeInputSignature
 } from './eui-range-input.gts';
-import type { EuiRangeSliderArgs } from './eui-range-slider.gts';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import type { EuiRangeArgs } from './eui-range.gts';
 import type { EuiRangeLevel } from './eui-range-levels.gts';
 import type { EuiRangeTick } from './eui-range-ticks.gts';
 
-type ValueMember = number | string;
+export type ValueMember = number | string;
 
 export interface EuiDualRangeArgs {
   value: [ValueMember, ValueMember];
@@ -132,8 +131,8 @@ export interface EuiDualRangeSignature {
   Blocks: {
     prepend: EuiRangeInputSignature['Blocks']['prepend'];
     append: EuiRangeInputSignature['Blocks']['append'];
-    min: unknown;
-    max: unknown;
+    min: [number?];
+    max: [number?];
   };
 }
 

@@ -10,7 +10,7 @@ import isArray from 'ember-truth-helpers/helpers/is-array';
 import useState from '../helpers/use-state';
 import { array } from '@ember/helper';
 import { helper } from '@ember/component/helper';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { displayMappingToClassMapping } from '../utils/css-mappings/eui-form-row';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
@@ -29,11 +29,12 @@ export interface EuiFormRowSignature {
     hasChildLabel?: boolean;
     isFakeLabelBlock?: boolean;
     helpText?: string;
-    error?: string;
+    error?: string | string[] | null;
     errorClasses?: string;
     helpTextClasses?: string;
     id?: string;
     display?: keyof typeof displayMappingToClassMapping;
+    extra?: unknown;
   };
   Blocks: {
     default: [];
@@ -154,6 +155,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                   class="euiFormRow__text {{@errorClasses}}"
                   id="{{rowId}}-error-{{i}}"
                 >
+                  {{!@glint-ignore}}
                   {{yield error to="errors"}}
                 </EuiFormErrorText>
               {{/each}}
@@ -163,6 +165,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                   class="euiFormRow__text {{@errorClasses}}"
                   id="{{rowId}}-error-{{i}}"
                 >
+                  {{!@glint-ignore}}
                   {{error}}
                 </EuiFormErrorText>
               {{/each}}
@@ -262,6 +265,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                   class="euiFormRow__text {{@errorClasses}}"
                   id="{{rowId}}-error-{{i}}"
                 >
+                  {{!@glint-ignore}}
                   {{yield error to="errors"}}
                 </EuiFormErrorText>
               {{/each}}
@@ -271,6 +275,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                   class="euiFormRow__text {{@errorClasses}}"
                   id="{{rowId}}-error-{{i}}"
                 >
+                  {{!@glint-ignore}}
                   {{error}}
                 </EuiFormErrorText>
               {{/each}}

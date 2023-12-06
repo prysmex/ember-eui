@@ -12,7 +12,7 @@ import type { EuiNotificationEventMessagesSignature } from './eui-notification-e
 import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import typeOf from '../helpers/type-of';
 import type { EuiBadgeSignature } from './eui-badge.gts';
 

@@ -6,7 +6,7 @@ import EuiCheckbox from './eui-checkbox.gts';
 import type { EuiCheckboxSignature } from './eui-checkbox.gts';
 import EuiRadio from './eui-radio.gts';
 import type { EuiRadioSignature } from './eui-radio.gts';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

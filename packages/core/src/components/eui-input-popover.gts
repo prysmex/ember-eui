@@ -3,7 +3,7 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import { cascadingMenuKeys } from '../utils/accesibility';
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import uniqueId from '../helpers/unique-id';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { tabbable } from 'tabbable';
 import EuiPopover from './eui-popover.gts';
 import type { EuiPopoverArgs } from './eui-popover.gts';

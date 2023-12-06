@@ -114,7 +114,7 @@ function wrapper(
 
 export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
   textarea: EuiMarkdownEditorTextAreaSignature['Element'],
-  [parsed, onSelectedNode]: [boolean, (node: Node) => void]
+  [parsed, onSelectedNode]: [any, (node: Node) => void]
 ) {
   const fn = wrapper.bind(null, textarea, parsed, onSelectedNode);
   textarea.addEventListener('keyup', fn);
@@ -127,7 +127,6 @@ export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
 });
 
 export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEditorSignature> {
-  getCursorNodeModifier = getCursorNodeModifier;
   // Defaults
   @argOrDefaultDecorator(defaultParsingPlugins)
   declare parsingPluginList: typeof defaultParsingPlugins;
@@ -360,10 +359,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
           {{resizeObserver onResize=this.onResize}}
         >
           <EuiMarkdownEditorTextArea
-            {{this.getCursorNodeModifier
-              (not (not this.vFile))
-              this.setSelectedNode
-            }}
+            {{getCursorNodeModifier this.vFile this.setSelectedNode}}
             {{didUpdate this.onParse this.parsed}}
             {{didInsert this.setTextAreaRef}}
             disabled={{@disabled}}

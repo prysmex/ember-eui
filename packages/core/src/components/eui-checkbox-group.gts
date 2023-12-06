@@ -29,7 +29,7 @@ export interface EuiCheckboxGroupSignature {
     formId?: string;
     label?: EuiCheckboxSignature['Args']['label'];
     disabled?: EuiCheckboxSignature['Args']['disabled'];
-    onChange: (value: unknown) => void;
+    onChange: (value: any) => void;
     idToSelectedMap: Record<string, boolean>;
   };
 }

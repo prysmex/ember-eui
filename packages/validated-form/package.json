@@ -49,7 +49,8 @@
     "ember-validators": "^4.1.2",
     "@ember/render-modifiers": "^2.1.0",
     "ember-modifier": "^4.1.0",
-    "ember-truth-helpers": "^4.0.3"
+    "ember-truth-helpers": "^4.0.3",
+    "@embroider/util": "^1.12.0"
   },
   "peerDependencies": {
     "@glimmer/component": "^1.1.2",
@@ -77,7 +78,6 @@
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^3.2.0",
     "@embroider/test-setup": "^3.0.2",
-    "@embroider/util": "^1.12.0",
     "@types/ember-resolver": "^5.0.11",
     "@types/ember": "^4.0.4",
     "@types/ember__application": "^4.0.6",
@@ -127,26 +127,29 @@
     "access": "public"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config",
+    "version": 2,
+    "type": "addon",
+    "main": "addon-main.js",
     "app-js": {
-      "./components/validated-form/field-base/index.js": "./dist/_app_/components/validated-form/field-base/index.js",
-      "./components/validated-form/field-checkbox-group/index.js": "./dist/_app_/components/validated-form/field-checkbox-group/index.js",
-      "./components/validated-form/field-combo-box/index.js": "./dist/_app_/components/validated-form/field-combo-box/index.js",
-      "./components/validated-form/field-dual-range-slider/index.js": "./dist/_app_/components/validated-form/field-dual-range-slider/index.js",
-      "./components/validated-form/field-markdown-editor/index.js": "./dist/_app_/components/validated-form/field-markdown-editor/index.js",
-      "./components/validated-form/field-number/index.js": "./dist/_app_/components/validated-form/field-number/index.js",
-      "./components/validated-form/field-password/index.js": "./dist/_app_/components/validated-form/field-password/index.js",
-      "./components/validated-form/field-radio-group/index.js": "./dist/_app_/components/validated-form/field-radio-group/index.js",
-      "./components/validated-form/field-range-slider/index.js": "./dist/_app_/components/validated-form/field-range-slider/index.js",
-      "./components/validated-form/field-select/index.js": "./dist/_app_/components/validated-form/field-select/index.js",
-      "./components/validated-form/field-switch/index.js": "./dist/_app_/components/validated-form/field-switch/index.js",
-      "./components/validated-form/field-text-area/index.js": "./dist/_app_/components/validated-form/field-text-area/index.js",
-      "./components/validated-form/field-text/index.js": "./dist/_app_/components/validated-form/field-text/index.js",
-      "./components/validated-form/index.js": "./dist/_app_/components/validated-form/index.js",
+      "./components/validated-form.js": "./dist/_app_/components/validated-form.js",
+      "./components/validated-form/field-base.js": "./dist/_app_/components/validated-form/field-base.js",
+      "./components/validated-form/field-checkbox-group.js": "./dist/_app_/components/validated-form/field-checkbox-group.js",
+      "./components/validated-form/field-combo-box.js": "./dist/_app_/components/validated-form/field-combo-box.js",
+      "./components/validated-form/field-dual-range-slider.js": "./dist/_app_/components/validated-form/field-dual-range-slider.js",
+      "./components/validated-form/field-markdown-editor.js": "./dist/_app_/components/validated-form/field-markdown-editor.js",
+      "./components/validated-form/field-number.js": "./dist/_app_/components/validated-form/field-number.js",
+      "./components/validated-form/field-password.js": "./dist/_app_/components/validated-form/field-password.js",
+      "./components/validated-form/field-radio-group.js": "./dist/_app_/components/validated-form/field-radio-group.js",
+      "./components/validated-form/field-range-slider.js": "./dist/_app_/components/validated-form/field-range-slider.js",
+      "./components/validated-form/field-select.js": "./dist/_app_/components/validated-form/field-select.js",
+      "./components/validated-form/field-switch.js": "./dist/_app_/components/validated-form/field-switch.js",
+      "./components/validated-form/field-text-area.js": "./dist/_app_/components/validated-form/field-text-area.js",
+      "./components/validated-form/field-text.js": "./dist/_app_/components/validated-form/field-text.js",
       "./utils/build-validation-messages.js": "./dist/_app_/utils/build-validation-messages.js",
       "./utils/get-messages.js": "./dist/_app_/utils/get-messages.js",
       "./utils/validation-errors.js": "./dist/_app_/utils/validation-errors.js",
-      "./utils/with-defaults.js": "./dist/_app_/utils/with-defaults.js"
+      "./utils/with-defaults.js": "./dist/_app_/utils/with-defaults.js",
+      "./validators/messages.js": "./dist/_app_/validators/messages.js"
     }
   },
   "volta": {

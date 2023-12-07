@@ -570,6 +570,9 @@ importers:
       ember-svg-jar:
         specifier: ^2.3.4
         version: 2.4.6(@glint/template@1.2.1)
+      ember-truth-helpers:
+        specifier: ^4.0.3
+        version: 4.0.3(ember-source@4.2.0)
       ember-unique-id-helper-polyfill:
         specifier: ^1.2.2
         version: 1.2.2
@@ -751,18 +754,27 @@ importers:
 
   packages/pikaday:
     dependencies:
+      '@ember/render-modifiers':
+        specifier: ^2.1.0
+        version: 2.1.0(@babel/core@7.23.2)(@glint/template@1.2.1)(ember-source@4.2.0)
       ember-auto-import:
         specifier: ^2.6.3
         version: 2.6.3(@glint/template@1.2.1)(webpack@5.89.0)
       ember-composable-helpers:
         specifier: ^5.0.0
         version: 5.0.0
+      ember-modifier:
+        specifier: ^4.1.0
+        version: 4.1.0(ember-source@4.2.0)
       ember-pikaday-prysmex:
         specifier: 4.3.0
         version: 4.3.0(patch_hash=36bovp4on4kmghuyg4bkxax4ya)(@babel/core@7.23.2)(@ember/test-helpers@3.2.0)
       ember-svg-jar:
         specifier: ^2.3.4
         version: 2.4.6(@glint/template@1.2.1)
+      ember-truth-helpers:
+        specifier: ^4.0.3
+        version: 4.0.3(ember-source@4.2.0)
       ember-unique-id-helper-polyfill:
         specifier: ^1.2.2
         version: 1.2.2

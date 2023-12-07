@@ -49,6 +49,7 @@
     "ember-unique-id-helper-polyfill": "^1.2.2",
     "ember-svg-jar": "^2.3.4",
     "ember-flatpickr": "^4.0.0",
+    "ember-truth-helpers": "^4.0.3",
     "@embroider/util": "^1.12.0",
     "@ember/render-modifiers": "^2.1.0"
   },

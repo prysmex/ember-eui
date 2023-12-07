@@ -1,0 +1,270 @@
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { BufferedChangeset } from 'ember-changeset/types';
+import { assert } from '@ember/debug';
+import { later } from '@ember/runloop';
+import { tracked } from '@glimmer/tracking';
+import { EuiForm } from '@ember-eui/core/components';
+import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
+import { EnsureSafeComponentHelper } from '@embroider/util';
+import { hash } from '@ember/helper';
+
+import { argOrDefault } from '@ember-eui/core/helpers';
+import { on } from '@ember/modifier';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import type { EuiFieldNumberSignature } from '@ember-eui/core/components/eui-field-number';
+import { fn } from '@ember/helper';
+import Context from './context.gts';
+import type { ContextSignature } from './context.gts';
+import type { ComponentLike } from '@glint/template';
+import FieldNumberComponent from './fields/field-number.gts';
+import FieldTextComponent from './fields/field-text.gts';
+import FieldPasswordComponent from './fields/field-password.gts';
+import FieldTextAreaComponent from './fields/field-text-area.gts';
+import FieldSelectComponent from './fields/field-select.gts';
+import FieldComboBoxComponent from './fields/field-combo-box.gts';
+import FieldCheckboxGroupComponent from './fields/field-checkbox-group.gts';
+import FieldRadioGroupComponent from './fields/field-radio-group.gts';
+import FieldRangeSliderComponent from './fields/field-range-slider.gts';
+import FieldDualRangeSliderComponent from './fields/field-dual-range-slider.gts';
+import FieldSwitchComponent from './fields/field-switch.gts';
+import FieldBaseComponent from './fields/field-base.gts';
+
+export interface IEuiChangesetFormTheme {
+  FieldBase: ComponentLike<any>;
+  FieldText: ComponentLike<any>;
+  FieldTextArea: ComponentLike<any>;
+  FieldPassword: ComponentLike<any>;
+  FieldRadio: ComponentLike<any>;
+  FieldCheckbox: ComponentLike<any>;
+  FieldSwitch: ComponentLike<any>;
+  FieldRadioGroup: ComponentLike<any>;
+  FieldCheckboxGroup: ComponentLike<any>;
+  FieldDualRangeSlider: ComponentLike<any>;
+  FieldRangeSlider: ComponentLike<any>;
+  FieldNumber: ComponentLike<any>;
+  FieldSelect: ComponentLike<any>;
+  FieldComboBox: ComponentLike<any>;
+}
+
+export const DefaultTheme: IEuiChangesetFormTheme = {
+  FieldBase: FieldBaseComponent,
+  FieldText: FieldTextComponent,
+  FieldTextArea: FieldTextAreaComponent,
+  FieldPassword: FieldPasswordComponent,
+  FieldRadio: FieldTextComponent,
+  FieldCheckbox: FieldTextComponent,
+  FieldSwitch: FieldSwitchComponent,
+  FieldRadioGroup: FieldRadioGroupComponent,
+  FieldCheckboxGroup: FieldCheckboxGroupComponent,
+  FieldDualRangeSlider: FieldDualRangeSliderComponent,
+  FieldRangeSlider: FieldRangeSliderComponent,
+  FieldNumber: FieldNumberComponent,
+  FieldSelect: FieldSelectComponent,
+  FieldComboBox: FieldComboBoxComponent
+};
+
+export interface EuiChangesetFormSignature {
+  Element: EuiFormSignature['Element'];
+  Args: EuiFormSignature['Args'] &
+    EuiFieldNumberSignature['Args'] & {
+      changeset: BufferedChangeset;
+      beforeSubmit?: (changeset: BufferedChangeset, e: Event) => void;
+      onSubmit?: (data: {}, e: Event) => void;
+      onReset?: (data: {}, e: Event) => void;
+      runExecuteInsteadOfSave?: boolean;
+      fullWidth?: boolean;
+      initialValidation?: boolean;
+      theme?: IEuiChangesetFormTheme;
+      isDisabled?: boolean;
+    };
+  Blocks: {
+    default: [
+      ...ContextSignature['Blocks']['default'],
+      BufferedChangeset,
+      boolean,
+      string
+    ];
+  };
+}
+
+export default class EuiChangesetFormComponent extends Component<EuiChangesetFormSignature> {
+  form: HTMLFormElement | null = null;
+
+  @tracked hasSubmitted: boolean = false;
+
+  constructor(owner: unknown, args: EuiChangesetFormSignature['Args']) {
+    super(owner, args);
+    assert('Must provide a changeset', this.args.changeset);
+  }
+
+  get theme() {
+    return this.args.theme || DefaultTheme;
+  }
+
+  @action
+  async validate(initialValidation?: boolean) {
+    if (initialValidation) {
+      later(
+        this,
+        () => {
+          this.args.changeset.validate();
+        },
+        1
+      );
+    }
+  }
+
+  @action
+  async handleSubmit(changeset: BufferedChangeset, event: Event) {
+    event.preventDefault();
+
+    if (typeof this.args.beforeSubmit === 'function') {
+      this.args.beforeSubmit(changeset, event);
+    }
+    await changeset.validate();
+
+    this.hasSubmitted = true;
+
+    if (changeset.isInvalid) {
+      return;
+    }
+
+    let result;
+    if (this.args.runExecuteInsteadOfSave) {
+      result = changeset.execute();
+    } else {
+      result = await changeset.save({});
+    }
+
+    if (typeof this.args.onSubmit === 'function') {
+      this.args.onSubmit(result.data, event);
+    }
+  }
+
+  @action
+  handleReset(changeset: BufferedChangeset, event: Event) {
+    event.preventDefault();
+    this.hasSubmitted = false;
+
+    const { data } = changeset.rollback();
+    if (typeof this.args.onReset === 'function') {
+      this.args.onReset(data, event);
+    }
+  }
+
+  <template>
+    {{#let (argOrDefault @id (uniqueId)) as |formId|}}
+      <EuiForm
+        @tagName="form"
+        id={{formId}}
+        ...attributes
+        {{on "submit" (fn this.handleSubmit @changeset)}}
+        {{on "reset" (fn this.handleReset @changeset)}}
+        {{didInsert (fn this.validate @initialValidation)}}
+      >
+        <:content>
+          <Context
+            @formId={{formId}}
+            @changeset={{@changeset}}
+            @theme={{this.theme}}
+            as |Context|
+          >
+            {{yield
+              (hash
+                FieldBase=(component
+                  (EnsureSafeComponentHelper Context.FieldBase)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldText=(component
+                  (EnsureSafeComponentHelper Context.FieldText)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldTextArea=(component
+                  (EnsureSafeComponentHelper Context.FieldTextArea)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldPassword=(component
+                  (EnsureSafeComponentHelper Context.FieldPassword)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldRadio=(component
+                  (EnsureSafeComponentHelper Context.FieldRadio)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldCheckbox=(component
+                  (EnsureSafeComponentHelper Context.FieldCheckbox)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldSwitch=(component
+                  (EnsureSafeComponentHelper Context.FieldSwitch)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldRadioGroup=(component
+                  (EnsureSafeComponentHelper Context.FieldRadioGroup)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldCheckboxGroup=(component
+                  (EnsureSafeComponentHelper Context.FieldCheckboxGroup)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldDualRangeSlider=(component
+                  (EnsureSafeComponentHelper Context.FieldDualRangeSlider)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldRangeSlider=(component
+                  (EnsureSafeComponentHelper Context.FieldRangeSlider)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldNumber=(component
+                  (EnsureSafeComponentHelper Context.FieldNumber)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldSelect=(component
+                  (EnsureSafeComponentHelper Context.FieldSelect)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  disabled=@isDisabled
+                )
+                FieldComboBox=(component
+                  (EnsureSafeComponentHelper Context.FieldComboBox)
+                  fullWidth=@fullWidth
+                  hasSubmitted=this.hasSubmitted
+                  isDisabled=@isDisabled
+                )
+              )
+              @changeset
+              this.hasSubmitted
+              formId
+            }}
+          </Context>
+        </:content>
+      </EuiForm>
+    {{/let}}
+  </template>
+}

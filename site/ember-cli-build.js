@@ -22,7 +22,12 @@ module.exports = function (defaults) {
 
   let app = new EmberApp(defaults, {
     autoImport: {
-      watchDependencies: ['@ember-eui/core', '@ember-eui/validated-form']
+      watchDependencies: [
+        '@ember-eui/core',
+        '@ember-eui/validated-form',
+        '@ember-eui/flatpickr',
+        '@ember-eui/pikaday'
+      ]
     },
 
     'ember-power-select': {

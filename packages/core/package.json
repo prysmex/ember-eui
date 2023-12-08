@@ -133,7 +133,7 @@
     "@html-next/vertical-collection": "4.0.0",
     "chroma-js": "^2.1.0",
     "ember-auto-import": "^2.6.3",
-    "ember-cached-decorator-polyfill": "^0.1.4",
+    "ember-cached-decorator-polyfill": "^1.0.2",
     "ember-cli-string-helpers": "^6.1.0",
     "ember-composable-helpers": "^5.0.0",
     "ember-element-helper": "^0.8.5",

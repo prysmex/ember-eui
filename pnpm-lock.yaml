@@ -99,7 +99,7 @@ importers:
         specifier: ^7.18.6
         version: 7.23.2(@babel/core@7.23.2)
       '@ember-eui/core':
-        specifier: ^8.0.0-beta.11
+        specifier: ^8.0.0-beta.12
         version: link:../core
       '@ember/optional-features':
         specifier: ^2.0.0
@@ -596,7 +596,7 @@ importers:
         specifier: ^7.18.6
         version: 7.23.2(@babel/core@7.23.2)
       '@ember-eui/core':
-        specifier: ^8.0.0-beta.11
+        specifier: ^8.0.0-beta.12
         version: link:../core
       '@ember/optional-features':
         specifier: ^2.0.0
@@ -798,7 +798,7 @@ importers:
         specifier: ^7.18.6
         version: 7.23.2(@babel/core@7.23.2)
       '@ember-eui/core':
-        specifier: ^8.0.0-beta.11
+        specifier: ^8.0.0-beta.12
         version: link:../core
       '@ember/optional-features':
         specifier: ^2.0.0
@@ -1003,7 +1003,7 @@ importers:
         specifier: ^7.18.6
         version: 7.23.2(@babel/core@7.23.2)
       '@ember-eui/core':
-        specifier: ^8.0.0-beta.11
+        specifier: ^8.0.0-beta.12
         version: link:../core
       '@ember/optional-features':
         specifier: ^2.0.0
@@ -8447,8 +8447,9 @@ packages:
       randombytes: 2.1.0
     dev: false
 
-  /browserify-sign@4.2.1:
-    resolution: {integrity: sha512-/vrA5fguVAKKAVTNJjgSm1tRQDHUU6DbwO9IROu/0WAzC8PKhucDSh18J0RMvVeHAn5puMd+QHC2erPRNf8lmg==}
+  /browserify-sign@4.2.2:
+    resolution: {integrity: sha512-1rudGyeYY42Dk6texmv7c4VcQ0EsvVbLwZkA+AQB7SxvXxmcD93jcHie8bzecJ+ChDlmAm2Qyu0+Ccg5uhZXCg==}
+    engines: {node: '>= 4'}
     dependencies:
       bn.js: 5.2.1
       browserify-rsa: 4.1.0
@@ -9848,7 +9849,7 @@ packages:
     resolution: {integrity: sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg==}
     dependencies:
       browserify-cipher: 1.0.1
-      browserify-sign: 4.2.1
+      browserify-sign: 4.2.2
       create-ecdh: 4.0.4
       create-hash: 1.2.0
       create-hmac: 1.1.7

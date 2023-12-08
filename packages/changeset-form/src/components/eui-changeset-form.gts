@@ -15,21 +15,21 @@ import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import type { EuiFieldNumberSignature } from '@ember-eui/core/components/eui-field-number';
 import { fn } from '@ember/helper';
-import Context from './context.gts';
-import type { ContextSignature } from './context.gts';
+import FormContext from './eui-changeset-form/context.gts';
+import type { ContextSignature } from './eui-changeset-form/context.gts';
 import type { ComponentLike } from '@glint/template';
-import FieldNumberComponent from './fields/field-number.gts';
-import FieldTextComponent from './fields/field-text.gts';
-import FieldPasswordComponent from './fields/field-password.gts';
-import FieldTextAreaComponent from './fields/field-text-area.gts';
-import FieldSelectComponent from './fields/field-select.gts';
-import FieldComboBoxComponent from './fields/field-combo-box.gts';
-import FieldCheckboxGroupComponent from './fields/field-checkbox-group.gts';
-import FieldRadioGroupComponent from './fields/field-radio-group.gts';
-import FieldRangeSliderComponent from './fields/field-range-slider.gts';
-import FieldDualRangeSliderComponent from './fields/field-dual-range-slider.gts';
-import FieldSwitchComponent from './fields/field-switch.gts';
-import FieldBaseComponent from './fields/field-base.gts';
+import FieldNumberComponent from './eui-changeset-form/fields/field-number.gts';
+import FieldTextComponent from './eui-changeset-form/fields/field-text.gts';
+import FieldPasswordComponent from './eui-changeset-form/fields/field-password.gts';
+import FieldTextAreaComponent from './eui-changeset-form/fields/field-text-area.gts';
+import FieldSelectComponent from './eui-changeset-form/fields/field-select.gts';
+import FieldComboBoxComponent from './eui-changeset-form/fields/field-combo-box.gts';
+import FieldCheckboxGroupComponent from './eui-changeset-form/fields/field-checkbox-group.gts';
+import FieldRadioGroupComponent from './eui-changeset-form/fields/field-radio-group.gts';
+import FieldRangeSliderComponent from './eui-changeset-form/fields/field-range-slider.gts';
+import FieldDualRangeSliderComponent from './eui-changeset-form/fields/field-dual-range-slider.gts';
+import FieldSwitchComponent from './eui-changeset-form/fields/field-switch.gts';
+import FieldBaseComponent from './eui-changeset-form/fields/field-base.gts';
 
 export interface IEuiChangesetFormTheme {
   FieldBase: ComponentLike<any>;
@@ -165,7 +165,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
         {{didInsert (fn this.validate @initialValidation)}}
       >
         <:content>
-          <Context
+          <FormContext
             @formId={{formId}}
             @changeset={{@changeset}}
             @theme={{this.theme}}
@@ -262,7 +262,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
               this.hasSubmitted
               formId
             }}
-          </Context>
+          </FormContext>
         </:content>
       </EuiForm>
     {{/let}}

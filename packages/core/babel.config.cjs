@@ -15,9 +15,10 @@ module.exports = {
     'ember-template-imports/src/babel-plugin',
     '@embroider/addon-dev/template-colocation-plugin',
     ['@babel/plugin-proposal-decorators', { legacy: true }],
+    "ember-cached-decorator-polyfill/babel-plugin",
     '@babel/plugin-proposal-class-properties',
     // "@babel/plugin-transform-class-static-block",
-    '@babel/plugin-transform-private-methods'
+    '@babel/plugin-transform-private-methods',
   ]
 };
 

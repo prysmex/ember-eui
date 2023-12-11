@@ -145,6 +145,7 @@ import type EuiToast from './components/eui-toast';
 import type EuiTitle from './components/eui-title';
 import type EuiToolTipPopover from './components/eui-tool-tip-popover';
 import type EuiToolTip from './components/eui-tool-tip';
+import type EuiGlobalToastList from './components/eui-global-toast-list';
 import type TextBlock from './components/text-block';
 import type argOrDefault from './helpers/arg-or-default';
 import type castTo from './helpers/cast-to';
@@ -455,6 +456,8 @@ export default interface EmberEuiRegistry {
   'eui-tool-tip-popover': typeof EuiToolTipPopover;
   EuiToolTip: typeof EuiToolTip;
   'eui-tool-tip': typeof EuiToolTip;
+  EuiGlobalToastList: typeof EuiGlobalToastList;
+  'eui-global-toast-list': typeof EuiGlobalToastList;
   TextBlock: typeof TextBlock;
   'text-block': typeof TextBlock;
   'arg-or-default': typeof argOrDefault;

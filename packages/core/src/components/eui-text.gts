@@ -63,9 +63,3 @@ const EuiTextComponent: TemplateOnlyComponent<EuiTextSignature> = <template>
 </template>;
 
 export default EuiTextComponent;
-
-declare module '@glint/environment-ember-loose/registry' {
-  export default interface Registry {
-    EuiText: typeof EuiTextComponent;
-  }
-}

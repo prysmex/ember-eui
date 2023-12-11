@@ -41,9 +41,3 @@ const EuiTextColor: TemplateOnlyComponent<Signature> = <template>
 </template>;
 
 export default EuiTextColor;
-
-declare module '@glint/environment-ember-loose/registry' {
-  export default interface Registry {
-    EuiTextColor: typeof EuiTextColor;
-  }
-}

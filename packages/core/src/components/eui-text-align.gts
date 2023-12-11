@@ -26,9 +26,3 @@ const EuiTextAlignComponent: TemplateOnlyComponent<Signature> = <template>
 </template>;
 
 export default EuiTextAlignComponent;
-
-declare module '@glint/environment-ember-loose/registry' {
-  export default interface Registry {
-    EuiTextAlign: typeof EuiTextAlignComponent;
-  }
-}

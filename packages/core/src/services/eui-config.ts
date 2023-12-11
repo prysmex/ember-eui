@@ -7,7 +7,6 @@ export interface EuiConfig {
   'euiIcon.useSvg'?: boolean;
   euiIconUseSvg?: boolean;
   'euiButtonIcon.size'?: EuiButtonIconSignature['Args']['iconSize'];
-  euiButtonIconSize?: EuiButtonIconSignature['Args']['iconSize'];
   euiComboBoxOptionsHeight?: number;
 }
 

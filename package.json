@@ -13,7 +13,8 @@
     "prettier-plugin-ember-template-tag": "^1.1.0",
     "typescript": "~5.0.3",
     "@underline/eslint-config": "^0.15.1",
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "@glint/core": "^1.2.0"
   },
   "scripts": {
     "lint:js": "eslint . --ext .js,.ts,.hbs",

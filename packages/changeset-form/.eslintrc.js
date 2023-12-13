@@ -45,28 +45,7 @@ module.exports = {
     },
     // node files
     {
-      files: [
-        '.eslintrc.js',
-        '.prettierrc.js',
-        '.template-lintrc.js',
-        'testem.js',
-        'config/**/*.js',
-        'packages/*/.ember-cli.js',
-        'packages/*/ember-cli-build.js',
-        'packages/*/index.js',
-        'packages/*/adddon-main.js',
-        'packages/*/testem.js',
-        'packages/*/blueprints/*/index.js',
-        'packages/*/config/**/*.js',
-        'packages/*/tests/dummy/config/**/*.js',
-        'site/ember-cli-build.js',
-        'site/testem.js',
-        'site/config/**/*.js',
-        'site/tests/dummy/config/**/*.js',
-        'site/**/tailwind.config.js',
-        'site/.docfy-config.js'
-      ],
-      extends: ['@underline/eslint-config-node'],
+      files: ['.eslintrc.js', 'addon-main.js'],
       rules: {}
     }
   ]

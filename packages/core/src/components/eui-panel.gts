@@ -1,16 +1,14 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-
-import {
-  colorMapping,
-  paddingSizeMapping,
-  borderRadiusMapping
-} from '../utils/css-mappings/eui-panel';
+import { on } from '@ember/modifier';
 
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import { on } from '@ember/modifier';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 
+import type {
+  borderRadiusMapping,
+  colorMapping,
+  paddingSizeMapping} from '../utils/css-mappings/eui-panel';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPanelSignature {

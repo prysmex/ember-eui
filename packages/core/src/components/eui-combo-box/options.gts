@@ -1,22 +1,25 @@
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
+import { inject as service } from '@ember/service';
+import { htmlSafe } from '@ember/template';
+import { EnsureSafeComponentHelper } from '@embroider/util';
+
+//@ts-expect-error
+import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import emberPowerSelectIsGroupHelper, {
   emberPowerSelectIsGroup
 } from 'ember-power-select/helpers/ember-power-select-is-group';
 import emberPowerSelectIsSelectedHelper from 'ember-power-select/helpers/ember-power-select-is-selected';
-import EuiText from '../eui-text.gts';
+import { and, eq, not } from 'ember-truth-helpers';
+
+import EuiBadge from '../eui-badge.gts';
 import EuiFlexGroup from '../eui-flex-group.gts';
 import EuiFlexItem from '../eui-flex-item.gts';
-import EuiBadge from '../eui-badge.gts';
-//@ts-expect-error
-import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
 import EuiLoadingSpinner from '../eui-loading-spinner.gts';
-import { EnsureSafeComponentHelper } from '@embroider/util';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
-import { htmlSafe } from '@ember/template';
-import { eq, and, not } from 'ember-truth-helpers';
-import { inject as service } from '@ember/service';
-import EuiConfigService from '../../services/eui-config';
+import EuiText from '../eui-text.gts';
+
+import type EuiConfigService from '../../services/eui-config';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @service declare euiConfig: EuiConfigService;
@@ -25,24 +28,29 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
   get flattedOptions() {
     if (this._optionsCache !== this.args.options) {
       this._optionsCache = this.args.options;
+
       return this.args.options?.reduce((acc, curr) => {
         if (emberPowerSelectIsGroup([curr])) {
           acc.push(curr, ...curr.options);
         } else {
           acc.push(curr);
         }
+
         return acc;
       }, []);
     }
+
     return this._optionsCache;
   }
 
   _optionFromIndex(index: string) {
     let parts = index.split('.');
     let option = this.flattedOptions.at?.(parseInt(parts[0]!, 10));
+
     for (let i = 1; i < parts.length; i++) {
       option = option.options[parseInt(parts[i]!, 10)];
     }
+
     return option;
   }
 

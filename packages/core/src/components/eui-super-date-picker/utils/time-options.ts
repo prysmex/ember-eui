@@ -6,12 +6,10 @@
  * Side Public License, v 1.
  */
 import type EuiI18n from '../../../services/eui-i18n';
-
 import type {
-  TimeUnitId,
+  DurationRange,
   RelativeOption,
-  DurationRange
-} from '../types/global';
+  TimeUnitId} from '../types/global';
 
 export const LAST = 'last';
 export const NEXT = 'next';

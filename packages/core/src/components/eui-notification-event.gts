@@ -1,21 +1,23 @@
-import classNames from '../helpers/class-names';
-import { eq, or, and } from 'ember-truth-helpers';
-import argOrDefault from '../helpers/arg-or-default';
-import EuiLink from './eui-link.gts';
-import TextBlock from './text-block.gts';
-import type { TextBlockSignature } from './text-block.gts';
-import EuiNotificationEventReadButton from './eui-notification-event-read-button.gts';
-import EuiNotificationEventReadIcon from './eui-notification-event-read-icon.gts';
-import EuiNotificationEventMeta from './eui-notification-event-meta.gts';
-import EuiNotificationEventMessages from './eui-notification-event-messages.gts';
-import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages.gts';
 import { on } from '@ember/modifier';
+
 import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
+import { and,eq, or } from 'ember-truth-helpers';
 import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import typeOf from '../helpers/type-of';
-import type { EuiBadgeSignature } from './eui-badge.gts';
 
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import typeOf from '../helpers/type-of';
+import EuiLink from './eui-link.gts';
+import EuiNotificationEventMessages from './eui-notification-event-messages.gts';
+import EuiNotificationEventMeta from './eui-notification-event-meta.gts';
+import EuiNotificationEventReadButton from './eui-notification-event-read-button.gts';
+import EuiNotificationEventReadIcon from './eui-notification-event-read-icon.gts';
+import TextBlock from './text-block.gts';
+
+import type { EuiBadgeSignature } from './eui-badge.gts';
+import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages.gts';
+import type { TextBlockSignature } from './text-block.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiNotificationEventSignature {

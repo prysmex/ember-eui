@@ -22,7 +22,7 @@ type EuiPortalInsertPosition = keyof typeof insertPositions;
 interface EuiPortalArgs {
   insert?: { sibling: HTMLElement; position: EuiPortalInsertPosition };
   portalRef?: (ref: HTMLDivElement | null) => void;
-};
+}
 
 interface EuiPortalSignature {
   Args: EuiPortalArgs;
@@ -57,6 +57,7 @@ export default class EuiPortal extends Component<EuiPortalSignature> {
 
   willDestroy(): void {
     super.willDestroy();
+
     if (this.portalNode.parentNode) {
       this.portalNode.parentNode.removeChild(this.portalNode);
     }

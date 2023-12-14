@@ -1,13 +1,15 @@
+import { concat } from '@ember/helper';
+
+import style from 'ember-style-modifier/modifiers/style';
+import { and,eq, not, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
-import { concat } from '@ember/helper';
-import { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
-import style from 'ember-style-modifier/modifiers/style';
-import { eq, not, or, and } from 'ember-truth-helpers';
 import EuiPageHeaderContent from './eui-page-header-content.gts';
-import type { EuiPageHeaderContentSignature } from './eui-page-header-content.gts';
 
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
+import type { EuiPageHeaderContentSignature } from './eui-page-header-content.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageHeaderSignature {

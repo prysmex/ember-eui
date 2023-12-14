@@ -1,8 +1,9 @@
 import Component from '@glimmer/component';
-import { BufferedChangeset } from 'ember-changeset/types';
 import { assert } from '@ember/debug';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
+
+import type { BufferedChangeset } from 'ember-changeset/types';
 
 export interface BaseSignature {
   Args: {

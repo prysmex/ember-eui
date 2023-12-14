@@ -27,11 +27,13 @@ export const isWithinRange = (
   }
 
   const val = Number(value);
+
   return Number(min) <= val && val <= Number(max);
 };
 
 // 1e-6 covers up to 10,000,000,000 factored by a decimal
 const EPSILON = 1e-6;
+
 export function isEvenlyDivisibleBy(num: number, factor: number): boolean {
   const remainder = num % factor;
 

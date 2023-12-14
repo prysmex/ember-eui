@@ -1,7 +1,6 @@
 import classNames from '../helpers/class-names';
 
 import type { CommonArgs } from './common';
-
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiRangeSliderArgs = CommonArgs & {

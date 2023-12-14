@@ -1,8 +1,9 @@
-import { eq, notEq, or, and } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon.gts';
-import classNames from '../helpers/class-names';
+import { and,eq, notEq, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import screenReaderOnly from '../modifiers/screen-reader-only';
+import EuiIcon from './eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

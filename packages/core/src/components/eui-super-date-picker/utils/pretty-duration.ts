@@ -1,5 +1,6 @@
-import type EuiI18n from '../../../services/eui-i18n';
 import { DATE_MODES, getDateMode } from '.';
+
+import type EuiI18n from '../../../services/eui-i18n';
 import type { DurationRange, ShortDate } from '../types/global';
 
 /**
@@ -131,6 +132,7 @@ const isRelativeToNow = (timeFrom: ShortDate, timeTo: ShortDate): boolean => {
     fromDateMode === DATE_MODES.RELATIVE && toDateMode === DATE_MODES.NOW;
   const isNext =
     fromDateMode === DATE_MODES.NOW && toDateMode === DATE_MODES.RELATIVE;
+
   return isLast || isNext;
 };
 
@@ -142,5 +144,6 @@ export const showPrettyDuration = (
   if (hasRangeMatch(timeFrom, timeTo, quickRanges)) {
     return true;
   }
+
   return isRelativeToNow(timeFrom, timeTo);
 };

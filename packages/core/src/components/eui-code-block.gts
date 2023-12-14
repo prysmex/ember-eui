@@ -1,29 +1,32 @@
 import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { helper } from '@ember/component/helper';
+import { hash } from '@ember/helper';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { scheduleOnce } from '@ember/runloop';
+
+import onKey from 'ember-keyboard/modifiers/on-key';
+import { modifier } from 'ember-modifier';
+import set from 'ember-set-helper/helpers/set';
+import style from 'ember-style-modifier/modifiers/style';
+import { and, eq, not,or } from 'ember-truth-helpers';
+
+import Controls from '../components/eui-code-block/controls.gts';
+import FullScreenDisplay from '../components/eui-code-block/full-screen-display.gts';
+import VirtualizedCodeBlock from '../components/eui-code-block/virtualized.gts';
+import EuiInnerText from '../components/eui-inner-text.gts';
+import classNames from '../helpers/class-names';
+import mutationObserver from '../modifiers/mutation-observer';
+import resizeObserver from '../modifiers/resize-observer';
 import {
-  getHtmlContent,
   checkSupportedLanguage,
+  getHtmlContent,
   highlightByLine
 } from '../utils/code/utils';
+
 import type { EuiCodeSharedProps } from '../utils/code/utils';
-import { action } from '@ember/object';
 import type { RefractorNode } from 'refractor';
-import { tracked } from '@glimmer/tracking';
-import { scheduleOnce } from '@ember/runloop';
-import { modifier } from 'ember-modifier';
-import { helper } from '@ember/component/helper';
-import EuiInnerText from '../components/eui-inner-text.gts';
-import VirtualizedCodeBlock from '../components/eui-code-block/virtualized.gts';
-import FullScreenDisplay from '../components/eui-code-block/full-screen-display.gts';
-import Controls from '../components/eui-code-block/controls.gts';
-import classNames from '../helpers/class-names';
-import { or, and, eq, not } from 'ember-truth-helpers';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import style from 'ember-style-modifier/modifiers/style';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import resizeObserver from '../modifiers/resize-observer';
-import mutationObserver from '../modifiers/mutation-observer';
-import set from 'ember-set-helper/helpers/set';
-import { hash } from '@ember/helper';
 
 interface LineNumbersConfig {
   start?: number;
@@ -122,6 +125,7 @@ const highlightTargetModifier = modifier(
       const html = (targetEle?.textContent ? targetEle.textContent : '').trim();
 
       let data: RefractorNode[];
+
       if (typeof html !== 'string') {
         data = [];
       } else {
@@ -140,6 +144,7 @@ const highlightTargetModifier = modifier(
           onChange(getHighlighedHtml());
         }
       });
+
       if (targetEle) {
         onChange(getHighlighedHtml());
         newObserver.observe(targetEle, {
@@ -185,6 +190,7 @@ const textToCopyHelper = helper(function (
         : ''
       : innerText;
   }
+
   return '';
 });
 
@@ -235,6 +241,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
   get lineNumbersConfig() {
     const { lineNumbers } = this;
     const config = typeof lineNumbers === 'object' ? lineNumbers : {};
+
     return lineNumbers
       ? { start: 1, show: true, ...config }
       : { start: 1, show: false };
@@ -242,6 +249,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
 
   get optionalStyles() {
     const overflowHeight = this.args.overflowHeight;
+
     if (overflowHeight) {
       const property =
         typeof overflowHeight === 'string' ? 'height' : 'maxHeight';
@@ -253,6 +261,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
             : `${overflowHeight}px`
       };
     }
+
     return {};
   }
 
@@ -288,6 +297,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
   @action
   doesOverflow() {
     if (!this.wrapperRef) return;
+
     const { clientWidth, clientHeight, scrollWidth, scrollHeight } =
       this.wrapperRef;
     const doesOverflow =
@@ -312,6 +322,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
         codeFullScreen.innerHTML = resp.element.innerHTML;
       }
     };
+
     scheduleOnce('afterRender', this, render);
   }
 

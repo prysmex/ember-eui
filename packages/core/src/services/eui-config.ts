@@ -1,6 +1,8 @@
-import Service from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import Service from '@ember/service';
+
 import { merge } from 'lodash-es';
+
 import type { EuiButtonIconSignature } from '../components/eui-button-icon';
 
 export interface EuiConfig {

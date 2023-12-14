@@ -1,6 +1,7 @@
 import { isPresent } from '@ember/utils';
-import Messages from 'ember-validators/messages';
 import { isNone } from '@ember/utils';
+
+import Messages from 'ember-validators/messages';
 
 let cachedRef = null;
 
@@ -25,5 +26,6 @@ export default function getMessages(owner, useCache = true) {
   }
 
   cachedRef = messagesModule;
+
   return messagesModule;
 }

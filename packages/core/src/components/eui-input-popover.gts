@@ -1,20 +1,21 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { cascadingMenuKeys } from '../utils/accesibility';
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { tabbable } from 'tabbable';
-import EuiPopover from './eui-popover.gts';
-import type { EuiPopoverArgs } from './eui-popover.gts';
-import { focusTrap } from 'ember-focus-trap';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import resizeObserver from '../modifiers/resize-observer';
-
 import { concat } from '@ember/helper';
 import { hash } from '@ember/helper';
+import { action } from '@ember/object';
 
+import { focusTrap } from 'ember-focus-trap';
+import onKey from 'ember-keyboard/modifiers/on-key';
 import { not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import { tabbable } from 'tabbable';
+
+import { argOrDefaultDecorator } from '../helpers/arg-or-default';
+import resizeObserver from '../modifiers/resize-observer';
+import { cascadingMenuKeys } from '../utils/accesibility';
+import EuiPopover from './eui-popover.gts';
+
+import type { EuiPopoverArgs } from './eui-popover.gts';
 
 export interface EuiInputPopoverArgs
   extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
@@ -46,12 +47,10 @@ export interface EuiInputPopoverSignature {
 
 export default class EuiInputPopoverComponent extends Component<EuiInputPopoverSignature> {
   // Defaults
-  @argOrDefaultDecorator('downLeft')
-  anchorPosition!: EuiPopoverArgs['anchorPosition'];
+  @argOrDefaultDecorator('downLeft') anchorPosition!: EuiPopoverArgs['anchorPosition'];
   @argOrDefaultDecorator(true) attachToAnchor!: boolean;
   @argOrDefaultDecorator('block') display!: EuiPopoverArgs['display'];
-  @argOrDefaultDecorator('s')
-  panelPaddingSize!: EuiPopoverArgs['panelPaddingSize'];
+  @argOrDefaultDecorator('s') panelPaddingSize!: EuiPopoverArgs['panelPaddingSize'];
   @argOrDefaultDecorator(false) fullWidth!: boolean;
   @argOrDefaultDecorator(false) disableFocusTrap!: boolean;
 
@@ -77,6 +76,7 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
   setPanelWidth(width?: number): void {
     const { panel, inputWidth } = this;
     const newWidth = width || inputWidth;
+
     if (panel && !!newWidth) {
       panel.style.width = `${newWidth}px`;
       this.args.onPanelResize?.(newWidth);
@@ -86,8 +86,10 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
   @action
   onResize(): void {
     const { input } = this;
+
     if (input) {
       const width = input.getBoundingClientRect().width;
+
       this.inputWidth = width;
       this.setPanelWidth(width);
     }
@@ -96,6 +98,7 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
   @action
   onKeyDown(event: KeyboardEvent): void {
     const { panel } = this;
+
     if (panel && event.key === cascadingMenuKeys.TAB) {
       const tabbableItems = tabbable(panel).filter(
         (el: HTMLElement | SVGElement) => {
@@ -106,6 +109,7 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
           );
         }
       );
+
       if (
         this.args.disableFocusTrap ||
         (tabbableItems.length &&

@@ -1,12 +1,14 @@
-import argOrDefault from '../helpers/arg-or-default';
-import { and, eq } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';
-import EuiFieldNumber from './eui-field-number.gts';
-import type { EuiFieldNumberSignature } from './eui-field-number.gts';
-import simpleStyle from '../modifiers/simple-style';
-import inlineStyles from '../helpers/inline-styles';
-import castTo from '../helpers/cast-to';
 
+import { and, eq } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import castTo from '../helpers/cast-to';
+import inlineStyles from '../helpers/inline-styles';
+import simpleStyle from '../modifiers/simple-style';
+import EuiFieldNumber from './eui-field-number.gts';
+
+import type { EuiFieldNumberSignature } from './eui-field-number.gts';
 import type { EuiFieldNumberArgs } from './eui-field-number.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

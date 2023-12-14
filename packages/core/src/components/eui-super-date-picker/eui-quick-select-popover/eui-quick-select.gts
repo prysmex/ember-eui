@@ -1,28 +1,29 @@
-import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import type { ApplyTime, TimeUnitId } from '../types/global';
-import { parseTimeParts } from '../utils/quick-select';
-import { NEXT } from '../utils/time-options';
-import type { TimeOptions } from '../utils/time-options';
-import moment from 'moment';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+
 import dateMath from '@elastic/datemath';
-import EuiFlexGroup from '../../eui-flex-group.gts';
-import EuiFlexItem from '../../eui-flex-item.gts';
-import EuiI18n from '../../eui-i18n.gts';
-import EuiToolTip from '../../eui-tool-tip.gts';
-import EuiButtonIcon from '../../eui-button-icon.gts';
-import EuiFieldNumber from '../../eui-field-number.gts';
-import EuiSpacer from '../../eui-spacer.gts';
-import EuiSelect from '../../eui-select.gts';
-import EuiButton from '../../eui-button.gts';
 import pick from 'ember-composable-helpers/helpers/pick';
 import set from 'ember-set-helper/helpers/set';
 import { lte } from 'ember-truth-helpers';
-
-import { on } from '@ember/modifier';
-
 import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import moment from 'moment';
+
+import EuiButton from '../../eui-button.gts';
+import EuiButtonIcon from '../../eui-button-icon.gts';
+import EuiFieldNumber from '../../eui-field-number.gts';
+import EuiFlexGroup from '../../eui-flex-group.gts';
+import EuiFlexItem from '../../eui-flex-item.gts';
+import EuiI18n from '../../eui-i18n.gts';
+import EuiSelect from '../../eui-select.gts';
+import EuiSpacer from '../../eui-spacer.gts';
+import EuiToolTip from '../../eui-tool-tip.gts';
+import { parseTimeParts } from '../utils/quick-select';
+import { NEXT } from '../utils/time-options';
+
+import type { ApplyTime, TimeUnitId } from '../types/global';
+import type { TimeOptions } from '../utils/time-options';
 
 interface EuiQuickSelectState {
   timeTense: string;
@@ -74,6 +75,7 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
   getBounds() {
     const startMoment = dateMath.parse(this.args.start);
     const endMoment = dateMath.parse(this.args.end, { roundUp: true });
+
     return {
       min:
         startMoment && startMoment.isValid()
@@ -83,7 +85,8 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
     };
   }
 
-  @action applyQuickSelect() {
+  @action
+  applyQuickSelect() {
     if (this.timeTense === NEXT) {
       this.args.applyTime({
         start: 'now',
@@ -99,9 +102,11 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
     }
   }
 
-  @action stepForward() {
+  @action
+  stepForward() {
     const { min, max } = this.getBounds();
     const diff = max.diff(min);
+
     this.args.applyTime({
       start: moment(max).add(1, 'ms').toISOString(),
       end: moment(max)
@@ -111,9 +116,11 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
     });
   }
 
-  @action stepBackward() {
+  @action
+  stepBackward() {
     const { min, max } = this.getBounds();
     const diff = max.diff(min);
+
     this.args.applyTime({
       start: moment(min)
         .subtract(diff + 1, 'ms')

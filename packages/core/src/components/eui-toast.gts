@@ -1,10 +1,11 @@
+import { on } from '@ember/modifier';
+
+import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import screenReaderOnly from '../modifiers/screen-reader-only';
-import { on } from '@ember/modifier';
 import EuiIcon from './eui-icon.gts';
-import EuiText from './eui-text.gts';
 import EuiMarkdownFormat from './eui-markdown-format.gts';
-import argOrDefault from '../helpers/arg-or-default';
+import EuiText from './eui-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

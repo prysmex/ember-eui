@@ -1,21 +1,22 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { LEVEL_COLORS } from './eui-range-levels.gts';
-import type { EuiRangeLevel } from './eui-range-levels.gts';
 import { assert } from '@ember/debug';
-import { isEvenlyDivisibleBy } from '../utils/number';
-import { range } from 'lodash-es';
+import { fn } from '@ember/helper';
 import { action } from '@ember/object';
-import { htmlSafe } from '@ember/template';
-
-import classNames from '../helpers/class-names';
-
-import { and, or, gt } from 'ember-truth-helpers';
-import EuiRangeTicks from './eui-range-ticks.gts';
-import EuiRangeLevels from './eui-range-levels.gts';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { fn } from '@ember/helper';
+import { htmlSafe } from '@ember/template';
+
+import { and, gt,or } from 'ember-truth-helpers';
+import { range } from 'lodash-es';
+
+import classNames from '../helpers/class-names';
+import { isEvenlyDivisibleBy } from '../utils/number';
+import { LEVEL_COLORS } from './eui-range-levels.gts';
+import EuiRangeLevels from './eui-range-levels.gts';
+import EuiRangeTicks from './eui-range-ticks.gts';
+
+import type { EuiRangeLevel } from './eui-range-levels.gts';
 
 export { LEVEL_COLORS };
 
@@ -54,8 +55,7 @@ export interface EuiRangeTrackSignature {
 }
 
 export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSignature> {
-  @tracked
-  declare trackEl: HTMLElement;
+  @tracked declare trackEl: HTMLElement;
 
   @action
   registerTrack(el: HTMLElement) {
@@ -65,18 +65,21 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSigna
   @action
   validateValueIsInStep(value: number): number {
     const { min, max, step } = this.args;
+
     if (value < min) {
       assert(
         `The value of ${value} is lower than the min value of ${min}.`,
         false
       );
     }
+
     if (value > max) {
       assert(
         `The value of ${value} is higher than the max value of ${max}.`,
         false
       );
     }
+
     // Error out if the value doesn't line up with the sequence of steps
     if (!isEvenlyDivisibleBy(value - min, step !== undefined ? step : 1)) {
       assert(
@@ -84,6 +87,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSigna
         false
       );
     }
+
     // Return the value if nothing fails
     return value;
   }
@@ -96,6 +100,7 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSigna
     // Loop from min to max, creating adding values at each interval
     // (adds a very small number to the max since `range` is not inclusive of the max value)
     const toBeInclusive = 0.000000001;
+
     return range(min, max + toBeInclusive, interval);
   }
 
@@ -151,9 +156,11 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSigna
         tickSequence[tickSequence.length - 1]
       ).length;
       const isLastTickTheMax = tickSequence[tickSequence.length - 1] === max;
+
       if (lengthOfMinLabel > 2) {
         styles = `margin-left: ${lengthOfMinLabel / 5}em`;
       }
+
       if (isLastTickTheMax && lenghtOfMaxLabel > 2) {
         styles = `margin-right: ${lenghtOfMaxLabel / 5}em`;
       }

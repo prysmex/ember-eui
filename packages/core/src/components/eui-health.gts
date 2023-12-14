@@ -1,8 +1,8 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon.gts';
-import { sizeToClassNameMap } from '../utils/css-mappings/eui-health';
 
+import type { sizeToClassNameMap } from '../utils/css-mappings/eui-health';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiHealthSignature {

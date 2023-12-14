@@ -1,5 +1,6 @@
 import { helper } from '@ember/component/helper';
 import { assert } from '@ember/debug';
+
 import cssMappings from '../utils/css-mappings';
 
 interface InlineStylesParams {

@@ -2,13 +2,12 @@ import { modifier } from 'ember-modifier';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-
+import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs.gts';
 import EuiHeaderSection from './eui-header-section.gts';
 import EuiHeaderSectionItem from './eui-header-section-item.gts';
-import type { EuiHeaderSectionItemSignature } from './eui-header-section-item.gts';
-import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs.gts';
-import type { EuiHeaderBreadcrumbsSignature } from './eui-header-breadcrumbs.gts';
 
+import type { EuiHeaderBreadcrumbsSignature } from './eui-header-breadcrumbs.gts';
+import type { EuiHeaderSectionItemSignature } from './eui-header-section-item.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 let euiHeaderFixedCounter = 0;

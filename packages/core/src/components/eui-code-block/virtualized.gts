@@ -5,11 +5,12 @@ import { concat } from '@ember/helper';
 //@ts-expect-error
 import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
 import style from 'ember-style-modifier/modifiers/style';
-import type { RefractorNode } from 'refractor';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import { getHtmlContent } from '../../utils/code/utils';
 import EuiAutoSizer from '../eui-auto-sizer.gts';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import type { RefractorNode } from 'refractor';
 
 export interface VirtualizedCodeBlockSignature<T> {
   Element: HTMLPreElement;
@@ -31,12 +32,14 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
   ]) {
     const content = getHtmlContent([node]);
     const span = content.element.firstChild as HTMLElement;
+
     if (span) {
       span.style.position = 'absolute';
       span.style.height = `${rowHeight}px`;
       span.style.left = '0';
       span.style.top = `${index * rowHeight}px`;
     }
+
     return span;
   });
 

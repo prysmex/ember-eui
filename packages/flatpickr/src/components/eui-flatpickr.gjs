@@ -1,12 +1,13 @@
-import EmberFlatpickr from 'ember-flatpickr/components/ember-flatpickr';
 import { action } from '@ember/object';
-import { EuiFormControlLayout, EuiFieldText } from '@ember-eui/core/components';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { not, and, or } from 'ember-truth-helpers';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
+import { EuiFieldText,EuiFormControlLayout } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import EmberFlatpickr from 'ember-flatpickr/components/ember-flatpickr';
+import { and, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 export default class EuiFlatpickrComponent extends EmberFlatpickr {
   @action

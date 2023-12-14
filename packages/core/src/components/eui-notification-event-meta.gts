@@ -1,23 +1,22 @@
 import { concat } from '@ember/helper';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import useState from '../helpers/use-state';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
 import { and } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import useState from '../helpers/use-state';
 import EuiBadge from './eui-badge.gts';
-import type { EuiBadgeSignature } from './eui-badge.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiPopover from './eui-popover.gts';
 
+import type { EuiBadgeSignature } from './eui-badge.gts';
 import type { EuiIconSignature } from './eui-icon.gts';
-
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiNotificationEventSignature {

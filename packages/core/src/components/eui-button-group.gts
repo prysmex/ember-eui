@@ -1,16 +1,15 @@
 import { get } from '@ember/helper';
 
 import { and, eq } from 'ember-truth-helpers';
+import { notEq } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import EuiButtonGroupButton from './eui-button-group-button.gts';
-import type { EuiButtonGroupButtonSignature } from './eui-button-group-button.gts';
-import { notEq } from 'ember-truth-helpers';
-
 import screenReaderOnly from '../modifiers/screen-reader-only';
+import EuiButtonGroupButton from './eui-button-group-button.gts';
 
+import type { EuiButtonGroupButtonSignature } from './eui-button-group-button.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonGroupSignature {

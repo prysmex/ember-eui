@@ -7,23 +7,23 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, notEq, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
-import { euiCardSelectableColor } from './eui-card-select.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiBetaBadge from './eui-beta-badge.gts';
+import { euiCardSelectableColor } from './eui-card-select.gts';
 import EuiCardSelect from './eui-card-select.gts';
-import type { EuiCardSelectSignature } from './eui-card-select.gts';
 import EuiIcon from './eui-icon.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
 import EuiPanel from './eui-panel.gts';
-import type { EuiPanelSignature } from './eui-panel.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
 
+import type { EuiCardSelectSignature } from './eui-card-select.gts';
 import type { EuiCardSelectProps } from './eui-card-select.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiPanelSignature } from './eui-panel.gts';
+import type { EuiTitleSignature } from './eui-title.gts';
 
 type EuiCardComponentArgs = {
   footer?: string;

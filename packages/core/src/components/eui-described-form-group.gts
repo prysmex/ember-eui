@@ -1,13 +1,13 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiFlexGroup from './eui-flex-group.gts';
-import type { EuiFlexGroupSignature } from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
-import type { EuiFlexItemSignature } from './eui-flex-item.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
 
+import type { EuiFlexGroupSignature } from './eui-flex-group.gts';
+import type { EuiFlexItemSignature } from './eui-flex-item.gts';
+import type { EuiTitleSignature } from './eui-title.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiDescribedFormGroupSignature {

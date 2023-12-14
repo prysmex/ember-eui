@@ -7,7 +7,7 @@
  */
 
 declare module 'remark-highlight.js' {
-  import { Plugin } from 'unified';
+  import type { Plugin } from 'unified';
   const RemarkHighlight: Plugin;
   export = RemarkHighlight;
 }

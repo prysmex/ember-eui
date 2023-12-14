@@ -2,19 +2,19 @@ import { concat } from '@ember/helper';
 
 import { element } from 'ember-element-helper';
 import { and, notEq } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiAccordion from './eui-accordion.gts';
-import type { EuiAccordionSignature } from './eui-accordion.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiIcon from './eui-icon.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
 import EuiTitle from './eui-title.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
 
+import type { EuiAccordionSignature } from './eui-accordion.gts';
+import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiTitleSignature } from './eui-title.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCollapsibleNavGroupSignature {

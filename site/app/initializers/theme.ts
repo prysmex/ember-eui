@@ -7,6 +7,7 @@ export function initialize(): void {
     const params = new URL(document.location.href).searchParams;
     const theme = params.get('theme');
     const currentTheme = theme || window.localStorage.getItem('theme');
+
     changeTheme(currentTheme ? currentTheme : DEFAULT_THEME);
   }
 }

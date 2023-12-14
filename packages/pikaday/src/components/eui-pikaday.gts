@@ -1,15 +1,17 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import { EuiFieldText } from '@ember-eui/core/components';
-import type { EuiFieldTextSignature } from '@ember-eui/core/components/eui-field-text';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { not, and } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
-import pikaday from 'ember-pikaday-prysmex/modifiers/pikaday';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import optional from 'ember-composable-helpers/helpers/optional';
 import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { EuiFieldText } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+import pikaday from 'ember-pikaday-prysmex/modifiers/pikaday';
+import { and,not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import type { EuiFieldTextSignature } from '@ember-eui/core/components/eui-field-text';
 
 export interface EuiPikadaySignature {
   Element: EuiFieldTextSignature['Element'];
@@ -56,14 +58,18 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
 
   get yearRange() {
     const yearRange = this.args.yearRange;
+
     if (!yearRange) {
       return 10;
     }
+
     if (yearRange.indexOf(',') > -1) {
       const yearArray: (string | number)[] = yearRange.split(',');
+
       if (yearArray[1] === 'currentYear') {
         yearArray[1] = new Date().getFullYear();
       }
+
       return yearArray;
     } else {
       return yearRange;
@@ -72,12 +78,15 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
 
   get i18n() {
     let i18n = this.args.i18n;
+
     if (!i18n) {
       return undefined;
     }
+
     if (!i18n.t) {
       return i18n;
     }
+
     return {
       previousMonth: i18n.t('previousMonth').toString(),
       nextMonth: i18n.t('nextMonth').toString(),
@@ -107,9 +116,11 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
     if (this.isDestroying) {
       return;
     }
+
     if (!this.#heardValue) {
       this.onSelect(null);
     }
+
     this.args.onClose?.();
   }
 
@@ -118,6 +129,7 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
     if (this.isDestroying) {
       return;
     }
+
     this.args.onOpen?.();
   }
 

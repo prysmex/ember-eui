@@ -2,18 +2,17 @@ import { fn } from '@ember/helper';
 import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
+import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
-import EuiComboBoxTriggerInput from './trigger/input';
 import { and, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../../helpers/arg-or-default';
 import classNames from '../../helpers/class-names';
 import EuiComboBoxPill from '../eui-combo-box-pill.gts';
 import EuiFormControlLayout from '../eui-form-control-layout.gts';
-
-import { EnsureSafeComponentHelper } from '@embroider/util';
+import EuiComboBoxTriggerInput from './trigger/input';
 
 export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipleTrigger {
   <template>

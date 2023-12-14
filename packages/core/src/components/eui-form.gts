@@ -1,7 +1,9 @@
-import argOrDefault from '../helpers/arg-or-default';
-import isArray from 'ember-truth-helpers/helpers/is-array';
 import { array } from '@ember/helper';
-import { eq, and, gt } from 'ember-truth-helpers';
+
+import { and, eq, gt } from 'ember-truth-helpers';
+import isArray from 'ember-truth-helpers/helpers/is-array';
+
+import argOrDefault from '../helpers/arg-or-default';
 import EuiCallOut from './eui-call-out.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

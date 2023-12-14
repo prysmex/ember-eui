@@ -1,6 +1,7 @@
+import EuiMarkdownFormatMarkdownTooltip from '../../../../components/eui-markdown-format/markdown-tooltip.gts';
+
 import type { RemarkTokenizer } from '../../markdown-types';
 import type { Plugin } from 'unified';
-import EuiMarkdownFormatMarkdownTooltip from '../../../../components/eui-markdown-format/markdown-tooltip.gts';
 
 interface TooltipNodeDetails {
   type: 'component';
@@ -24,6 +25,7 @@ export const TooltipParser: Plugin = function TooltipParser() {
     if (nextChar !== '[') return false; // this isn't actually a tooltip
 
     let index = 9;
+
     function readArg(open: string, close: string) {
       if (value[index] !== open) throw 'Expected left bracket';
       index++;
@@ -36,6 +38,7 @@ export const TooltipParser: Plugin = function TooltipParser() {
 
         if (char === close && openBrackets === 0) {
           index++;
+
           return body;
         } else if (char === close) {
           openBrackets--;
@@ -48,6 +51,7 @@ export const TooltipParser: Plugin = function TooltipParser() {
 
       return '';
     }
+
     const tooltipAnchor = readArg('[', ']');
     const tooltipText = readArg('(', ')');
 
@@ -59,6 +63,7 @@ export const TooltipParser: Plugin = function TooltipParser() {
         column: now.column + 10
       });
     }
+
     if (!tooltipText) {
       this.file.info('No tooltip text found', {
         line: now.line,
@@ -74,6 +79,7 @@ export const TooltipParser: Plugin = function TooltipParser() {
 
     now.column += 10;
     now.offset += 10;
+
     const children = this.tokenizeInline(tooltipAnchor, now);
 
     return eat(`!{tooltip[${tooltipAnchor}](${tooltipText})}`)({
@@ -83,6 +89,7 @@ export const TooltipParser: Plugin = function TooltipParser() {
       children
     } as TooltipNodeDetails);
   };
+
   tokenizeTooltip.notInLink = true;
 
   tokenizeTooltip.locator = (value, fromIndex) => {

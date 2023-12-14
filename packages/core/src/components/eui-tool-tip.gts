@@ -1,23 +1,24 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-insert';
 import { cancel, later, next, scheduleOnce } from '@ember/runloop';
-import resizeObserver from '../modifiers/resize-observer';
 
+import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import resizeObserver from '../modifiers/resize-observer';
 import { keys } from '../utils/keys';
 import { findPopoverPosition } from '../utils/popover';
 import EuiPortal from './eui-portal.gts';
 import EuiToolTipPopover from './eui-tool-tip-popover.gts';
+
 import type { EuiTooltipPopoverSignature } from './eui-tool-tip-popover.gts';
-import { on } from '@ember/modifier';
-import style from 'ember-style-modifier/modifiers/style';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
 
@@ -139,6 +140,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     if (!this.args.attachTo && this._attachTo) {
       this.removeAttachToHandlers();
       this._attachTo = null;
+
       return;
     }
 
@@ -236,6 +238,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       const fn = (): void => {
         this.visible = true;
       };
+
       this.timeoutId = later(
         this,
         () => {
@@ -266,6 +269,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     if (!this._anchor || !this.popover) {
       return;
     }
+
     const { position, left, top, arrow } = findPopoverPosition({
       anchor: this._anchor as HTMLElement,
       popover: this.popover,
@@ -292,6 +296,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     this.visible = true;
     this.calculatedPosition = position;
     this.toolTipStyles = toolTipStyles;
+
     if (arrow) {
       this.arrowStyles = {
         left: `${arrow.left}px`,
@@ -305,12 +310,15 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     if (this.args.isShown === true) {
       return;
     }
+
     this.clearAnimationTimeout();
+
     const fn = (): void => {
       if (!this.isDestroying || !this.isDestroyed) {
         this.visible = false;
       }
     };
+
     scheduleOnce('afterRender', this, fn);
   }
 

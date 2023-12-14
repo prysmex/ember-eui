@@ -1,10 +1,10 @@
-import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon.gts';
 
+import type { sizeMapping } from '../utils/css-mappings/eui-form-control-layout-clear-button';
 import type { CommonArgs } from './common';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import { sizeMapping } from '../utils/css-mappings/eui-form-control-layout-clear-button';
 
 export type EuiFormControlLayoutClearButtonArgs = CommonArgs & {
   size?: keyof typeof sizeMapping;

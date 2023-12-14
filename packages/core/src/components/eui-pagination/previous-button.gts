@@ -1,13 +1,15 @@
-import { eq } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
 import { fn, hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import EuiButtonIcon from '../eui-button-icon.gts';
-import type { EuiButtonIconSignature } from '../eui-button-icon.gts';
-import EuiI18n from '../eui-i18n.gts';
-import type { SafeClickHandler } from '../eui-pagination.gts';
 import sub from 'ember-math-helpers/helpers/sub';
+import { eq } from 'ember-truth-helpers';
+
+import EuiButtonIcon from '../eui-button-icon.gts';
+import EuiI18n from '../eui-i18n.gts';
+
+import type { EuiButtonIconSignature } from '../eui-button-icon.gts';
+import type { SafeClickHandler } from '../eui-pagination.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPaginationPreviousButtonSignature {
   Element: EuiButtonIconSignature['Element'];

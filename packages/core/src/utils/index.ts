@@ -21,18 +21,16 @@
 
 export {
   colorPalette,
-  euiPaletteForLightBackground,
-  euiPaletteForDarkBackground,
   euiPaletteColorBlind,
   euiPaletteColorBlindBehindText,
+  euiPaletteComplimentary,
+  euiPaletteCool,
+  euiPaletteForDarkBackground,
+  euiPaletteForLightBackground,
   euiPaletteForStatus,
   euiPaletteForTemperature,
-  euiPaletteComplimentary,
+  euiPaletteGray,
   euiPaletteNegative,
   euiPalettePositive,
-  euiPaletteCool,
-  euiPaletteWarm,
-  euiPaletteGray
-} from './color';
-
+  euiPaletteWarm} from './color';
 export { default } from './css-mappings';

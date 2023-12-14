@@ -1,10 +1,13 @@
 import Component from '@glimmer/component';
+import { on } from '@ember/modifier';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiButtonEmpty from './eui-button-empty.gts';
+
 import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
-import { on } from '@ember/modifier';
-import optional from 'ember-composable-helpers/helpers/optional';
 
 export type EuiCardSelectProps = {
   /**
@@ -27,6 +30,7 @@ export function euiCardSelectableColor(
   isSelected: boolean | undefined
 ): string {
   let calculatedColor;
+
   if (color) {
     calculatedColor = color;
   } else if (isSelected) {

@@ -39,11 +39,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+import { isPluginWithImmediateFormatting } from './markdown-types';
+
 import type {
   EuiMarkdownEditorUiPlugin,
   EuiMarkdownFormatting
 } from './markdown-types';
-import { isPluginWithImmediateFormatting } from './markdown-types';
 
 /**
  * Class for applying styles to a text editor. Accepts the HTML ID for the textarea
@@ -66,6 +67,7 @@ class MarkdownActions {
       ...uiPlugins.reduce<MarkdownActions['styles']>(
         (mappedPlugins, plugin) => {
           mappedPlugins[plugin.name] = plugin;
+
           return mappedPlugins;
         },
         {}
@@ -156,8 +158,10 @@ class MarkdownActions {
    */
   do(pluginName: string) {
     const plugin = this.styles[pluginName];
+
     if (isPluginWithImmediateFormatting(plugin!)) {
       this.applyStyle(plugin.formatting);
+
       return true;
     } else {
       return plugin;
@@ -243,6 +247,7 @@ function repeat(string: string, n: number): string {
 
 function wordSelectionStart(text: string, i: number): number {
   let index = i;
+
   while (
     text[index] &&
     text[index - 1] != null &&
@@ -250,20 +255,24 @@ function wordSelectionStart(text: string, i: number): number {
   ) {
     index--;
   }
+
   return index;
 }
 
 function wordSelectionEnd(text: string, i: number, multiline: boolean): number {
   let index = i;
   const breakpoint = multiline ? /\n/ : /\s/;
+
   while (text[index] && !text[index]!.match(breakpoint)) {
     index++;
   }
+
   return index;
 }
 
 const MAX_TRIES = 10;
 const TRY_TIMEOUT = 10; /*ms*/
+
 // modified from https://github.com/github/markdown-toolbar-element/blob/main/src/index.ts
 export function insertText(
   textarea: HTMLTextAreaElement,
@@ -293,6 +302,7 @@ export function insertText(
         window.HTMLTextAreaElement.prototype,
         'value'
       )!.set;
+
       nativeInputValueSetter!.call(textarea, before + text + after);
       textarea.dispatchEvent(inputEvent);
     }
@@ -306,6 +316,7 @@ export function insertText(
 
   const focusTextarea = () => {
     textarea.focus();
+
     if (document.activeElement === textarea) {
       insertText();
     } else if (++tries === MAX_TRIES) {
@@ -329,6 +340,7 @@ function styleSelectedText(
   );
 
   let result;
+
   if (styleArgs.orderedList) {
     result = orderedList(textarea);
   } else if (styleArgs.multiline && isMultipleLines(text)) {
@@ -365,11 +377,13 @@ function expandSelectedText(
     const endsWithSuffix =
       textarea.value.slice(textarea.selectionEnd, expandedSelectionEnd) ===
       suffixToUse;
+
     if (beginsWithPrefix && endsWithSuffix) {
       textarea.selectionStart = expandedSelectionStart;
       textarea.selectionEnd = expandedSelectionEnd;
     }
   }
+
   return textarea.value.slice(textarea.selectionStart, textarea.selectionEnd);
 }
 
@@ -441,6 +455,7 @@ function blockStyle(
 
   if (prefixSpace) {
     const beforeSelection = textarea.value[textarea.selectionStart - 1];
+
     if (
       textarea.selectionStart !== 0 &&
       beforeSelection != null &&
@@ -449,20 +464,24 @@ function blockStyle(
       prefixToUse = ` ${prefixToUse}`;
     }
   }
+
   selectedText = expandSelectedText(
     textarea,
     prefixToUse,
     suffixToUse,
     arg.multiline
   );
+
   let selectionStart = textarea.selectionStart;
   let selectionEnd = textarea.selectionEnd;
   const hasReplaceNext =
     replaceNext.length > 0 &&
     suffixToUse.indexOf(replaceNext) > -1 &&
     selectedText.length > 0;
+
   if (surroundWithNewlines) {
     const ref = newlinesToSurroundSelectedText(textarea);
+
     newlinesToAppend = ref.newlinesToAppend;
     newlinesToPrepend = ref.newlinesToPrepend;
     prefixToUse = newlinesToAppend + prefix;
@@ -477,23 +496,30 @@ function blockStyle(
       prefixToUse.length,
       selectedText.length - suffixToUse.length
     );
+
     if (originalSelectionStart === originalSelectionEnd) {
       let position = originalSelectionStart - prefixToUse.length;
+
       position = Math.max(position, selectionStart);
       position = Math.min(position, selectionStart + replacementText.length);
       selectionStart = selectionEnd = position;
     } else {
       selectionEnd = selectionStart + replacementText.length;
     }
+
     return { text: replacementText, selectionStart, selectionEnd };
   } else if (!hasReplaceNext) {
     let replacementText = prefixToUse + selectedText + suffixToUse;
+
     selectionStart = originalSelectionStart + prefixToUse.length;
     selectionEnd = originalSelectionEnd + prefixToUse.length;
+
     const whitespaceEdges = selectedText.match(/^\s*|\s*$/g);
+
     if (arg.trimFirst && whitespaceEdges) {
       const leadingWhitespace = whitespaceEdges[0] || '';
       const trailingWhitespace = whitespaceEdges[1] || '';
+
       replacementText =
         leadingWhitespace +
         prefixToUse +
@@ -503,20 +529,26 @@ function blockStyle(
       selectionStart += leadingWhitespace.length;
       selectionEnd -= trailingWhitespace.length;
     }
+
     return { text: replacementText, selectionStart, selectionEnd };
   } else if (scanFor.length > 0 && selectedText.match(scanFor)) {
     suffixToUse = suffixToUse.replace(replaceNext, selectedText);
+
     const replacementText = prefixToUse + suffixToUse;
+
     selectionStart = selectionEnd = selectionStart + prefixToUse.length;
+
     return { text: replacementText, selectionStart, selectionEnd };
   } else {
     const replacementText = prefixToUse + selectedText + suffixToUse;
+
     selectionStart =
       selectionStart +
       prefixToUse.length +
       selectedText.length +
       suffixToUse.indexOf(replaceNext);
     selectionEnd = selectionStart + replaceNext.length;
+
     return { text: replacementText, selectionStart, selectionEnd };
   }
 }
@@ -541,9 +573,11 @@ function multilineStyle(textarea: HTMLTextAreaElement, arg: StyleArgs) {
     selectionEnd = selectionStart + text.length;
   } else {
     text = lines.map((line) => prefix + line + suffix).join('\n');
+
     if (surroundWithNewlines) {
       const { newlinesToAppend, newlinesToPrepend } =
         newlinesToSurroundSelectedText(textarea);
+
       selectionStart += newlinesToAppend.length;
       selectionEnd = selectionStart + text.length;
       text = newlinesToAppend + text + newlinesToPrepend;
@@ -566,15 +600,18 @@ function orderedList(textarea: HTMLTextAreaElement): SelectionRange {
   let lines = text.split('\n');
   let startOfLine;
   let endOfLine;
+
   if (noInitialSelection) {
     const linesBefore = textarea.value
       .slice(0, textarea.selectionStart)
       .split(/\n/);
+
     startOfLine =
       textarea.selectionStart - linesBefore[linesBefore.length - 1]!.length;
     endOfLine = wordSelectionEnd(textarea.value, textarea.selectionStart, true);
     textToUnstyle = textarea.value.slice(startOfLine, endOfLine);
   }
+
   const linesToUnstyle = textToUnstyle.split('\n');
   const undoStyling = linesToUnstyle.every((line) =>
     orderedListRegex.test(line)
@@ -583,8 +620,10 @@ function orderedList(textarea: HTMLTextAreaElement): SelectionRange {
   if (undoStyling) {
     lines = linesToUnstyle.map((line) => line.replace(orderedListRegex, ''));
     text = lines.join('\n');
+
     if (noInitialSelection && startOfLine && endOfLine) {
       const lengthDiff = linesToUnstyle[0]!.length - lines[0]!.length;
+
       selectionStart = selectionEnd = textarea.selectionStart - lengthDiff;
       textarea.selectionStart = startOfLine;
       textarea.selectionEnd = endOfLine;
@@ -595,15 +634,20 @@ function orderedList(textarea: HTMLTextAreaElement): SelectionRange {
       let len;
       let index;
       const results = [];
+
       for (index = i = 0, len = lines.length; i < len; index = ++i) {
         const line = lines[index];
+
         results.push(`${index + 1}. ${line}`);
       }
+
       return results;
     })();
     text = lines.join('\n');
+
     const { newlinesToAppend, newlinesToPrepend } =
       newlinesToSurroundSelectedText(textarea);
+
     selectionStart = textarea.selectionStart + newlinesToAppend.length;
     selectionEnd = selectionStart + text.length;
     if (noInitialSelection) selectionStart = selectionEnd;

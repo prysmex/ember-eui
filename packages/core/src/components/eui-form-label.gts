@@ -1,5 +1,6 @@
-import classNames from '../helpers/class-names';
 import { eq } from 'ember-truth-helpers';
+
+import classNames from '../helpers/class-names';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

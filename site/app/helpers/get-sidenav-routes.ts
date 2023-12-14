@@ -1,6 +1,7 @@
 import Helper from '@ember/component/helper';
-import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
 import { inject as service } from '@ember/service';
+
+import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
 
 export type Heading = {
   headings: Heading[];
@@ -65,18 +66,22 @@ function getItems(
   parent: string
 ): Item {
   let items: Item[] = [];
+
   if (docfyNode.children.length > 0) {
     let children = docfyNode.children;
+
     items = children.map((child) => {
       return getItems(child, clickHandler, `${parent}-${docfyNode.name}`);
     });
   }
+
   items = [
     ...items,
     ...docfyNode.pages.map((page) => {
       return getItemFromPage(page, clickHandler);
     })
   ].sort(compareFunction);
+
   return {
     name: humanize([docfyNode.label]),
     id: `${parent}-${docfyNode.label}`,

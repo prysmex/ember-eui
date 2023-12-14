@@ -32,5 +32,6 @@ export async function changeTheme(theme: string) {
   if (window?.localStorage) {
     window.localStorage.setItem('theme', theme);
   }
+
   hasLoaded = true;
 }

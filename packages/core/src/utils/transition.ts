@@ -22,8 +22,10 @@ const GROUP_NUMERIC = /^([\d.]+)(s|ms)/;
 function getMilliseconds(value: string, unit: string): number {
   // Given the regex match and capture groups, we can assume `unit` to be either 's' or 'ms'
   const multiplier = unit === 's' ? 1000 : 1;
+
   return parseFloat(value) * multiplier;
 }
+
 // Find CSS `transition-duration` and `transition-delay` intervals
 // and return the value of each computed property in 'ms'
 export const getTransitionTimings = (
@@ -51,6 +53,7 @@ export const getTransitionTimings = (
 function isElementNode(element: Node): element is Element {
   return element.nodeType === document.ELEMENT_NODE;
 }
+
 // Uses `getTransitionTimings` to find the total transition time for
 // all elements targeted by a MutationObserver callback
 export const getWaitDuration = (records: MutationRecord[]): number => {
@@ -58,6 +61,7 @@ export const getWaitDuration = (records: MutationRecord[]): number => {
     // only check for CSS transition values for ELEMENT nodes
     if (isElementNode(record.target)) {
       const { durationMatch, delayMatch } = getTransitionTimings(record.target);
+
       waitDuration = Math.max(waitDuration, durationMatch + delayMatch);
     }
 

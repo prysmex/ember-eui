@@ -14,6 +14,7 @@
 export default function createDetectElementResize(nonce, hostWindow) {
   // Check `document` and `window` in case of server-side rendering
   var _window;
+
   if (typeof hostWindow !== 'undefined') {
     _window = hostWindow;
   } else if (typeof window !== 'undefined') {
@@ -37,6 +38,7 @@ export default function createDetectElementResize(nonce, hostWindow) {
         function (fn) {
           return _window.setTimeout(fn, 20);
         };
+
       return function (fn) {
         return raf(fn);
       };
@@ -48,6 +50,7 @@ export default function createDetectElementResize(nonce, hostWindow) {
         _window.mozCancelAnimationFrame ||
         _window.webkitCancelAnimationFrame ||
         _window.clearTimeout;
+
       return function (id) {
         return cancel(id);
       };
@@ -86,9 +89,11 @@ export default function createDetectElementResize(nonce, hostWindow) {
 
       var element = this;
       resetTriggers(this);
+
       if (this.__resizeRAF__) {
         cancelFrame(this.__resizeRAF__);
       }
+
       this.__resizeRAF__ = requestFrame(function () {
         if (checkTriggers(element)) {
           element.__resizeLast__.width = element.offsetWidth;
@@ -110,8 +115,10 @@ export default function createDetectElementResize(nonce, hostWindow) {
           ' '
         ),
       pfx = '';
+
     {
       var elm = _window.document.createElement('fakeelement');
+
       if (elm.style.animationName !== undefined) {
         animation = true;
       }
@@ -123,6 +130,7 @@ export default function createDetectElementResize(nonce, hostWindow) {
             keyframeprefix = '-' + pfx.toLowerCase() + '-';
             animationstartevent = startEvents[i];
             animation = true;
+
             break;
           }
         }
@@ -176,9 +184,11 @@ export default function createDetectElementResize(nonce, hostWindow) {
       if (!element.__resizeTriggers__) {
         var doc = element.ownerDocument;
         var elementStyle = _window.getComputedStyle(element);
+
         if (elementStyle && elementStyle.position == 'static') {
           element.style.position = 'relative';
         }
+
         createStyles(doc);
         element.__resizeLast__ = {};
         element.__resizeListeners__ = [];
@@ -203,12 +213,14 @@ export default function createDetectElementResize(nonce, hostWindow) {
                 resetTriggers(element);
               }
             };
+
           element.__resizeTriggers__.addEventListener(
             animationstartevent,
             element.__resizeTriggers__.__animationListener__
           );
         }
       }
+
       element.__resizeListeners__.push(fn);
     }
   };
@@ -221,8 +233,10 @@ export default function createDetectElementResize(nonce, hostWindow) {
         element.__resizeListeners__.indexOf(fn),
         1
       );
+
       if (!element.__resizeListeners__.length) {
         element.removeEventListener('scroll', scrollListener, true);
+
         if (element.__resizeTriggers__.__animationListener__) {
           element.__resizeTriggers__.removeEventListener(
             animationstartevent,
@@ -230,6 +244,7 @@ export default function createDetectElementResize(nonce, hostWindow) {
           );
           element.__resizeTriggers__.__animationListener__ = null;
         }
+
         try {
           element.__resizeTriggers__ = !element.removeChild(
             element.__resizeTriggers__

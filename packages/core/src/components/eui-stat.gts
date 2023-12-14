@@ -1,13 +1,16 @@
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
-import { textAlignMapping, colorMapping } from '../utils/css-mappings/eui-stat';
-import EuiStatTitle from './eui-stat/title.gts';
-import type { EuiStatTitleSignature } from './eui-stat/title.gts';
-import EuiStatDescription from './eui-stat/description.gts';
-import type { EuiStatDescriptionSignature } from './eui-stat/description.gts';
 import { helper } from '@ember/component/helper';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import screenReaderOnly from '../modifiers/screen-reader-only';
+import { colorMapping } from '../utils/css-mappings/eui-stat';
+import EuiStatDescription from './eui-stat/description.gts';
+import EuiStatTitle from './eui-stat/title.gts';
+
+import type {textAlignMapping } from '../utils/css-mappings/eui-stat';
+import type { EuiStatDescriptionSignature } from './eui-stat/description.gts';
+import type { EuiStatTitleSignature } from './eui-stat/title.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStatSignature {
   Element: HTMLDivElement;
@@ -32,6 +35,7 @@ export interface EuiStatSignature {
 
 const isColorClass = helper(([input]: [string | undefined]) => {
   if (!input) return false;
+
   return colorMapping.hasOwnProperty(input);
 });
 

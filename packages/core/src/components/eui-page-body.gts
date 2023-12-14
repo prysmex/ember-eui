@@ -1,13 +1,15 @@
-import { eq } from 'ember-truth-helpers';
-import argOrDefault from '../helpers/arg-or-default';
-import EuiPanel from './eui-panel.gts';
-import type { EuiPanelSignature } from './eui-panel.gts';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
-import classNames from '../helpers/class-names';
-import style from 'ember-style-modifier/modifiers/style';
-import { element } from 'ember-element-helper';
 import { concat } from '@ember/helper';
 
+import { element } from 'ember-element-helper';
+import style from 'ember-style-modifier/modifiers/style';
+import { eq } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
+import EuiPanel from './eui-panel.gts';
+
+import type { EuiPanelSignature } from './eui-panel.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageBodySignature {

@@ -1,8 +1,9 @@
 import Component from '@glimmer/component';
+import { getOwner } from '@ember/application';
+
 import { getParameters } from 'codesandbox/lib/api/define';
 //@ts-expect-error
 import docfySnippets from 'site/docfy-snippets.json';
-import { getOwner } from '@ember/application';
 
 interface Args {
   theme?: string;
@@ -44,6 +45,7 @@ export default class CodesandboxLink extends Component<Args> {
       getOwner(this).resolveRegistration('config:environment').packageJson;
 
     const removedDeps = removeDeps(packageJson.devDependencies);
+
     delete packageJson.dependencies;
     delete packageJson.volta;
 

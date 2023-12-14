@@ -1,20 +1,23 @@
 import Component from '@glimmer/component';
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
-import { eq, not, or, and } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { on } from '@ember/modifier';
-import optional from 'ember-composable-helpers/helpers/optional';
-import isItemOpen from '../helpers/is-item-open';
-import { element } from 'ember-element-helper';
-import EuiShowFor from '../components/eui-show-for.gts';
-import EuiButtonEmpty from '../components/eui-button-empty.gts';
-import EuiSideNavItem from '../components/eui-side-nav-item.gts';
-import EuiHideFor from '../components/eui-hide-for.gts';
-import EuiTitle from '../components/eui-title.gts';
-import type { EuiHideForSignature } from '../components/eui-hide-for.gts';
 import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+import { element } from 'ember-element-helper';
+import { and,eq, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import EuiButtonEmpty from '../components/eui-button-empty.gts';
+import EuiHideFor from '../components/eui-hide-for.gts';
+import EuiShowFor from '../components/eui-show-for.gts';
+import EuiSideNavItem from '../components/eui-side-nav-item.gts';
+import EuiTitle from '../components/eui-title.gts';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import isItemOpen from '../helpers/is-item-open';
 import screenReaderOnly from '../modifiers/screen-reader-only';
+
+import type { EuiHideForSignature } from '../components/eui-hide-for.gts';
 
 export interface Item {
   id: string;

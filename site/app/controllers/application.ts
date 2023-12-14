@@ -1,19 +1,23 @@
-import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
+import { getOwner } from '@ember/application';
+import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
+
 import { scrollToHash } from 'ember-url-hash-polyfill';
-// import EuiSideNavItemButton from '@ember-eui/core/components/eui-side-nav-item/button';
 
 import {
+  getSidenavRoutes
+} from '../helpers/get-sidenav-routes';
+
+// import EuiSideNavItemButton from '@ember-eui/core/components/eui-side-nav-item/button';
+import type {
   DocfyNode,
-  getSidenavRoutes,
   Item,
   NodeId,
   Page
 } from '../helpers/get-sidenav-routes';
-import RouterService from '@ember/routing/router-service';
+import type RouterService from '@ember/routing/router-service';
 import type ThemeManager from 'site/services/theme-manager';
-import { getOwner } from '@ember/application';
 
 interface Props {}
 
@@ -86,6 +90,7 @@ export default class ApplicationController extends Controller {
     let coreNodes = this._getDocsNode(coreNode)?.children;
     let coreNodeRoutes = coreSectionsOrder?.reduce<Item[]>((acum, curr) => {
       let node = coreNodes?.find((child: DocfyNode) => child.name == curr);
+
       if (node) {
         // build routes for node
         let nodeRoutes = getSidenavRoutes([node, handlerFn]);
@@ -120,6 +125,7 @@ export default class ApplicationController extends Controller {
 
         acum.push(...nodeRoutes);
       }
+
       return acum;
     }, []);
 
@@ -137,7 +143,9 @@ export default class ApplicationController extends Controller {
       if (child.name == 'core' || child.name == 'package') {
         return;
       }
+
       let innerDocsNode = this._getDocsNode(child);
+
       fakeNode.children.push(...(innerDocsNode?.children || []));
       fakeNode.pages.push(...(innerDocsNode?.pages || []));
     });
@@ -171,9 +179,11 @@ export default class ApplicationController extends Controller {
     return nodes.reduce<Item[]>((acum, curr) => {
       if (depth === 0) {
         const foundItems = this.filterSideNav(str, curr.items, depth + 1);
+
         if (foundItems.length > 0) {
           acum.push({ ...curr, forceOpen: true, items: foundItems });
         }
+
         return acum;
       }
 
@@ -210,6 +220,7 @@ export default class ApplicationController extends Controller {
 
   onSearch = (str: string) => {
     this.searchValue = str;
+
     if (!str) {
       this.currentSideNavRoutes = this.sideNavRoutes;
     } else {
@@ -224,6 +235,7 @@ export default class ApplicationController extends Controller {
   get currentVersion() {
     //@ts-ignore
     const config = getOwner(this).resolveRegistration('config:environment');
+
     if (config.environment === 'development') return 'Local';
     else return `v${config.version}`;
   }

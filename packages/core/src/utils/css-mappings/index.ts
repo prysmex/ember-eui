@@ -25,6 +25,7 @@ import EuiFlexGrid from './eui-flex-grid';
 import EuiFlexGroup from './eui-flex-group';
 import EuiFlexItem from './eui-flex-item';
 import EuiFlyout from './eui-flyout';
+import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button';
 import EuiFormRow from './eui-form-row';
 import EuiGlobalToastList from './eui-global-toast-list';
 import EuiHeader from './eui-header';
@@ -68,7 +69,6 @@ import EuiTextColor from './eui-text-color';
 import EuiTitle from './eui-title';
 import EuiToast from './eui-toast';
 import EuiToolTip from './eui-tool-tip';
-import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button';
 
 const mapping: Mapping = {
   EuiAccordion,

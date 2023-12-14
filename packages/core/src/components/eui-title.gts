@@ -1,11 +1,10 @@
-import TextBlock from './text-block.gts';
-import type { TextBlockSignature } from './text-block.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import TextBlock from './text-block.gts';
 
+import type { sizeMapping, transformMapping } from '../utils/css-mappings/eui-title';
+import type { TextBlockSignature } from './text-block.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-import { sizeMapping, transformMapping } from '../utils/css-mappings/eui-title';
 
 export interface EuiTitleSignature {
   Element: HTMLHeadingElement;

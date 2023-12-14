@@ -1,6 +1,7 @@
-import DocfyDemoSnippet from '@docfy/ember/components/docfy-demo/snippet';
 import { tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
+
+import DocfyDemoSnippet from '@docfy/ember/components/docfy-demo/snippet';
 
 export default class extends DocfyDemoSnippet {
   @service themeManager;

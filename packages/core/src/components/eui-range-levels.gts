@@ -1,13 +1,13 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { assert } from '@ember/debug';
-
-import classNames from '../helpers/class-names';
+import { hash } from '@ember/helper';
+import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { hash } from '@ember/helper';
-import simpleStyle from '../modifiers/simple-style';
+
+import classNames from '../helpers/class-names';
 import inlineStyles from '../helpers/inline-styles';
+import simpleStyle from '../modifiers/simple-style';
 
 export type EuiRangeLevelColor = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -43,6 +43,7 @@ export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsSig
   @action
   validateLevels(): void {
     const { min, max } = this.args;
+
     this.args.levels?.forEach?.((level) => {
       if (level.min < min) {
         assert(
@@ -50,6 +51,7 @@ export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsSig
           true
         );
       }
+
       if (level.max > max) {
         assert(
           `The level max of ${level.max} is higher than the max value of ${max}.`,

@@ -27,12 +27,12 @@ import EuiRangeThumb from './eui-range-thumb.gts';
 import EuiRangeTrack from './eui-range-track.gts';
 import EuiRangeWrapper from './eui-range-wrapper.gts';
 
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
+import type { EuiRangeArgs } from './eui-range.gts';
 import type {
   EuiRangeInputArgs,
   EuiRangeInputSignature
 } from './eui-range-input.gts';
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
-import type { EuiRangeArgs } from './eui-range.gts';
 import type { EuiRangeLevel } from './eui-range-levels.gts';
 import type { EuiRangeTick } from './eui-range-ticks.gts';
 
@@ -205,6 +205,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     // while the other handle gets moved to the opposite bound (if invalid)
     const lowerHalf = Math.abs(this.max - this.min) / 2 + this.min;
     const newValIsLow = isWithinRange(this.min, lowerHalf, newVal);
+
     if (newValIsLow) {
       lower = newVal;
       upper = !this.upperValueIsValid ? this.max : upper;
@@ -212,6 +213,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
       lower = !this.lowerValueIsValid ? this.min : lower;
       upper = newVal;
     }
+
     this._handleOnChange(lower, upper, e);
   }
 
@@ -233,6 +235,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     else {
       upper = newVal;
     }
+
     this._handleOnChange(lower, upper, e);
   }
 
@@ -263,6 +266,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     const isValid =
       isWithinRange(this.min, upper, lower) &&
       isWithinRange(lower, this.max, upper);
+
     this.args.onChange([lower, upper], isValid, e);
   }
 
@@ -329,32 +333,39 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     let newVal = Number(value);
     let stepRemainder = 0;
     const step = this.args.step || 1;
+
     switch (event.key) {
       case keys.ARROW_UP:
       case keys.ARROW_RIGHT:
         event.preventDefault();
         newVal += step;
         stepRemainder = (newVal - this.min) % step;
+
         if (step !== 1 && stepRemainder > 0) {
           newVal = newVal - stepRemainder;
         }
+
         break;
       case keys.ARROW_DOWN:
       case keys.ARROW_LEFT:
         event.preventDefault();
         newVal -= step;
         stepRemainder = (newVal - this.min) % step;
+
         if (step !== 1 && stepRemainder > 0) {
           newVal = newVal + (step - stepRemainder);
         }
+
         break;
     }
+
     return newVal;
   }
 
   @action
   handleLowerKeyDown(event: KeyboardEvent): void {
     let lower = this.lowerValue;
+
     switch (event.key) {
       case keys.TAB:
         return;
@@ -363,10 +374,13 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
           // Relevant only when initial value is `''` and `showInput` is not set
           event.preventDefault();
           this._resetToRangeEnds(event);
+
           return;
         }
+
         lower = this._handleKeyDown(lower, event);
     }
+
     if (lower >= (this.upperValue as number) || lower < this.min) return;
     this._handleOnChange(lower, this.upperValue, event);
   }
@@ -374,6 +388,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
   @action
   handleUpperKeyDown(event: KeyboardEvent): void {
     let upper = this.upperValue;
+
     switch (event.key) {
       case keys.TAB:
         return;
@@ -382,10 +397,13 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
           // Relevant only when initial value is `''` and `showInput` is not set
           event.preventDefault();
           this._resetToRangeEnds(event);
+
           return;
         }
+
         upper = this._handleKeyDown(upper, event);
     }
+
     if (upper <= (this.lowerValue as number) || upper > this.max) return;
     this._handleOnChange(this.lowerValue, upper, event);
   }
@@ -396,6 +414,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     const decimal = (value - this.min) / (this.max - this.min);
     // Must be between 0-100%
     let valuePosition = decimal <= 1 ? decimal : 1;
+
     valuePosition = valuePosition >= 0 ? valuePosition : 0;
 
     const trackWidth =
@@ -404,12 +423,15 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
         : this.rangeSliderRef?.clientWidth;
 
     let thumbToTrackRatio = 0;
+
     if (trackWidth) {
       thumbToTrackRatio = EUI_THUMB_SIZE / trackWidth;
     } else {
       thumbToTrackRatio = EUI_THUMB_SIZE / 1;
     }
+
     const trackPositionScale = (1 - thumbToTrackRatio) * 100;
+
     return { left: `${valuePosition * trackPositionScale}%` };
   }
 
@@ -442,6 +464,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     if (this.args.onFocus) {
       this.args.onFocus(e);
     }
+
     this.hasFocus = true;
   }
 
@@ -450,6 +473,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     if (this.args.onBlur) {
       this.args.onBlur(e);
     }
+
     this.hasFocus = false;
   }
 
@@ -458,6 +482,7 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     if (this.args.onFocus) {
       this.args.onFocus(e);
     }
+
     this.preventPopoverClose = true;
     this.isPopoverOpen = true;
   }
@@ -473,11 +498,14 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
         // Mousedown is viable because in the popover case, it is inaccessible via keyboard (intentionally)
         if (this.preventPopoverClose) {
           this.preventPopoverClose = false;
+
           return;
         }
+
         if (this.args.onBlur) {
           this.args.onBlur(e);
         }
+
         this.closePopover();
       },
       200

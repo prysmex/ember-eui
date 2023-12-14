@@ -1,25 +1,22 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import EuiButtonEmpty from './eui-button-empty.gts';
-import EuiIcon from './eui-icon.gts';
-
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
+import optional from 'ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
-import optional from 'ember-composable-helpers/helpers/optional';
-
 import argOrDefault from '../helpers/arg-or-default';
-
+import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiHideFor from './eui-hide-for.gts';
-import EuiShowFor from './eui-show-for.gts';
+import EuiIcon from './eui-icon.gts';
 import EuiNotificationBadge from './eui-notification-badge.gts';
-import type { EuiHideForBreakpoints } from './eui-hide-for.gts';
+import EuiShowFor from './eui-show-for.gts';
 
 import type {
   colorMapping,
 } from '../utils/css-mappings/eui-notification-badge';
+import type { EuiHideForBreakpoints } from './eui-hide-for.gts';
 
 const keyframes: Keyframe[] = [
   { transform: 'rotate(0)', offset: 0, easing: 'ease-in-out' },

@@ -1,17 +1,19 @@
-import classNames from '../helpers/class-names';
-import { eq, and, notEq } from 'ember-truth-helpers';
-import argOrDefault from '../helpers/arg-or-default';
-import { on } from '@ember/modifier';
-import EuiOverlayMask from './eui-overlay-mask.gts';
-import EuiButtonIcon from './eui-button-icon.gts';
 import { hash } from '@ember/helper';
-import inlineStyles from '../helpers/inline-styles';
-import { focusTrap } from 'ember-focus-trap';
-import onKey from 'ember-keyboard/modifiers/on-key';
+import { on } from '@ember/modifier';
+
 import optional from 'ember-composable-helpers/helpers/optional';
-import style from 'ember-style-modifier/modifiers/style';
 import preventDefault from 'ember-event-helpers/helpers/prevent-default';
 import stopPropagation from 'ember-event-helpers/helpers/stop-propagation';
+import { focusTrap } from 'ember-focus-trap';
+import onKey from 'ember-keyboard/modifiers/on-key';
+import style from 'ember-style-modifier/modifiers/style';
+import { and, eq, notEq } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import inlineStyles from '../helpers/inline-styles';
+import EuiButtonIcon from './eui-button-icon.gts';
+import EuiOverlayMask from './eui-overlay-mask.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

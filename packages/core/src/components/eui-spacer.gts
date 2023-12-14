@@ -1,7 +1,8 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import classNames from '../helpers/class-names';
 import argOrDefault from '../helpers/arg-or-default';
-import { sizeMapping } from '../utils/css-mappings/eui-spacer';
+import classNames from '../helpers/class-names';
+
+import type { sizeMapping } from '../utils/css-mappings/eui-spacer';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSpacerSignature {
   Element: HTMLDivElement;

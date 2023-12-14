@@ -1,4 +1,5 @@
 import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 

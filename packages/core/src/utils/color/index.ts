@@ -16,21 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export { colorPalette } from './color_palette';
+export { hexToRgb } from '../../helpers/hex-to-rgb';
 export { isColorDark } from '../../helpers/is-color-dark';
 export { isValidHex } from '../../helpers/is-valid-hex';
-export { hexToRgb } from '../../helpers/hex-to-rgb';
+export { colorPalette } from './color_palette';
 export {
-  euiPaletteForLightBackground,
-  euiPaletteForDarkBackground,
   euiPaletteColorBlind,
   euiPaletteColorBlindBehindText,
+  euiPaletteComplimentary,
+  euiPaletteCool,
+  euiPaletteForDarkBackground,
+  euiPaletteForLightBackground,
   euiPaletteForStatus,
   euiPaletteForTemperature,
-  euiPaletteComplimentary,
+  euiPaletteGray,
   euiPaletteNegative,
   euiPalettePositive,
-  euiPaletteCool,
-  euiPaletteWarm,
-  euiPaletteGray
-} from './eui_palettes';
+  euiPaletteWarm} from './eui_palettes';

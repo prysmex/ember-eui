@@ -1,12 +1,15 @@
-import Base from './base';
-import type { BaseSignature } from './base';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 import { EuiFormRow, EuiTextArea } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiTextAreaSignature } from '@ember-eui/core/components/eui-text-area';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { action } from '@ember/object';
-import { on } from '@ember/modifier';
 
 export interface EuiChangesetFormFieldTextAreaSignature {
   Element: EuiTextAreaSignature['Element'];
@@ -25,6 +28,7 @@ export default class EuiChangesetFormFieldTextArea extends Base<EuiChangesetForm
   @action
   handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;
+
     this.args.changeset.set(this.args.fieldName, value);
 
     this.args.onInput?.(value, e);

@@ -21,15 +21,16 @@
 // are exported for two versions of TypeScript (3.4, 4.0) and implicit
 // imports during eui.d.ts generation default to the incorrect version (3.4).
 // Explicit imports here resolve the version mismatch.
-import type { PluggableList } from 'unified';
+// @ts-expect-error
+import all from 'mdast-util-to-hast/lib/all';
 import remark2Rehype from 'remark-rehype';
 
-import all from 'mdast-util-to-hast/lib/all';
-// @ts-expect-error
-import { Options as Remark2RehypeOptions } from 'mdast-util-to-hast';
+import * as MarkdownAddComponents from '../markdown-add-components';
+
+import type { Options as Remark2RehypeOptions } from 'mdast-util-to-hast';
 //@ts-ignore
 import type { Handler } from 'mdast-util-to-hast';
-import * as MarkdownAddComponents from '../markdown-add-components';
+import type { PluggableList } from 'unified';
 
 
 const unknownHandler: Handler = (h: any, node: any) => {
@@ -50,10 +51,12 @@ export const getDefaultEuiMarkdownProcessingPlugins: any = ({
   exclude
 }: { exclude?: 'tooltip'[] } = {}) => {
   exclude;
+
   const plugins: DefaultEuiMarkdownProcessingPlugins = [
     [remark2Rehype, { allowDangerousHtml: true, unknownHandler }],
     [MarkdownAddComponents.processor, {}]
   ];
+
   return plugins;
 };
 

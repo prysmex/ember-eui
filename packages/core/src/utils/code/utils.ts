@@ -6,9 +6,10 @@
  * Side Public License, v 1.
  */
 
-import { listLanguages, highlight } from 'refractor';
-import type { AST, RefractorNode } from 'refractor';
+import { highlight,listLanguages } from 'refractor';
+
 import type { CommonArgs } from '../../components/common';
+import type { AST, RefractorNode } from 'refractor';
 
 /**
  * Utils shared between EuiCode and EuiCodeBlock
@@ -44,6 +45,7 @@ const attributes = [
   'aria-hidden',
   'style'
 ];
+
 export interface DynamicComponent {}
 
 export const getHtmlContent = (nodes: RefractorNode[]) => {
@@ -53,10 +55,12 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
   const toElements = (parent: HTMLElement, nodes: RefractorNode[] = []) => {
     nodes?.forEach((node) => {
       let el = toElement(node);
+
       if (el) {
         parent.appendChild(el);
       }
     });
+
     return parent;
   };
 
@@ -66,16 +70,20 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
     className?: string
   ) => {
     let element = document.createElement(name);
+
     if (isAstElement(node)) {
       let properties = node.properties;
       let classNames = [];
+
       if (properties) {
         if (properties.className) {
           classNames.push(...properties.className);
         }
+
         for (let key in properties) {
           if (attributes.includes(key)) {
             let value = properties[key];
+
             if (key === 'style') {
               Object.keys(value).forEach((k: string) => {
                 //@ts-ignore
@@ -92,21 +100,26 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
           }
         }
       }
+
       if (className) {
         classNames.push(className);
       }
+
       if (classNames.length) {
         element.setAttribute('class', classNames.join(' '));
       }
     }
+
     return element;
   };
 
   const toElement = (node: RefractorNode) => {
     if (isAstElement(node)) {
       let { type } = node;
+
       if (type === 'element') {
         let element = createElement(node.tagName, node);
+
         return toElements(element, node.children);
       } else if (type === 'text') {
         //@ts-ignore
@@ -116,14 +129,17 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
         let element = createElement(inline ? 'span' : 'div', node, 'component');
         let { _children, ...properties } = node.properties;
         let content = toElements(document.createElement('span'), node.children);
+
         components.push({
           element,
           content,
           ...properties
         });
+
         return element;
       }
     }
+
     return;
   };
 
@@ -163,12 +179,14 @@ const $euiSizeS = 8;
 // (e.g., "1, 3-10, 15")
 export const parseLineRanges = (ranges: string) => {
   const highlights: number[] = [];
+
   ranges
     .replace(/\s/g, '')
     .split(',')
     .forEach((line: string) => {
       if (line.includes('-')) {
         const range = line.split('-').map(Number);
+
         for (let i = range[0]!; i <= range[1]!; i++) {
           highlights.push(i);
         }
@@ -176,6 +194,7 @@ export const parseLineRanges = (ranges: string) => {
         highlights.push(Number(line));
       }
     });
+
   return highlights;
 };
 
@@ -185,6 +204,7 @@ const addLineData = (
 ): ExtendedRefractorNode[] => {
   return nodes.reduce<ExtendedRefractorNode[]>((result, node) => {
     const lineStart = data.lineNumber;
+
     if (node.type === 'text') {
       if (!node.value.match(/\r\n?|\n/)) {
         node.lineStart = lineStart;
@@ -192,8 +212,10 @@ const addLineData = (
         result.push(node);
       } else {
         const lines = node.value.split(/\r\n?|\n/);
+
         lines.forEach((line, i) => {
           const num = i === 0 ? data.lineNumber : ++data.lineNumber;
+
           result.push({
             type: 'text',
             value: i === lines.length - 1 ? line : `${line}\n`,
@@ -202,6 +224,7 @@ const addLineData = (
           });
         });
       }
+
       return result;
     }
 
@@ -211,6 +234,7 @@ const addLineData = (
       const last = children[children.length - 1];
       const start = first?.lineStart ?? lineStart;
       const end = last?.lineEnd ?? lineStart;
+
       if (start !== end) {
         children.forEach((node) => {
           result.push(node);
@@ -221,10 +245,12 @@ const addLineData = (
         node.children = children;
         result.push(node);
       }
+
       return result;
     }
 
     result.push(node);
+
     return result;
   }, []);
 };
@@ -237,23 +263,29 @@ function wrapLines(
     ? parseLineRanges(options.highlight)
     : [];
   const grouped: ExtendedRefractorNode[][] = [];
+
   nodes.forEach((node) => {
     const lineStart = node.lineStart! - 1;
+
     if (grouped[lineStart]) {
       grouped[lineStart]?.push(node);
     } else {
       grouped[lineStart] = [node];
     }
   });
+
   const wrapped: RefractorNode[] = [];
   const digits = grouped.length.toString().length;
   const width = digits * CHAR_SIZE;
+
   grouped.forEach((node, i) => {
     const lineNumber = i + 1;
     const classes = ['euiCodeBlock__line'];
+
     if (highlights.includes(lineNumber)) {
       classes.push('euiCodeBlock__line--isHighlighted');
     }
+
     const children: RefractorNode[] = options.showLineNumbers
       ? [
           {
@@ -281,6 +313,7 @@ function wrapLines(
           }
         ]
       : node;
+
     wrapped.push({
       type: 'element',
       tagName: 'span',
@@ -290,6 +323,7 @@ function wrapLines(
       children
     });
   });
+
   return wrapped;
 }
 

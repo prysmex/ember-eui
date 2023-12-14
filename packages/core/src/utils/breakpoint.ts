@@ -63,6 +63,7 @@ export function isWithinMaxBreakpoint(
     return width <= max;
   } else {
     const currentBreakpoint = getBreakpoint(width, breakpoints);
+
     return currentBreakpoint
       ? breakpoints[currentBreakpoint] <= breakpoints[max]
       : false;
@@ -88,6 +89,7 @@ export function isWithinMinBreakpoint(
     return width >= min;
   } else {
     const currentBreakpoint = getBreakpoint(width, breakpoints);
+
     return currentBreakpoint
       ? breakpoints[currentBreakpoint] >= breakpoints[min]
       : false;
@@ -110,5 +112,6 @@ export function isWithinBreakpoints(
   breakpoints: EuiBreakpoints = BREAKPOINTS
 ): boolean {
   const currentBreakpoint = getBreakpoint(width, breakpoints);
+
   return currentBreakpoint ? sizes.includes(currentBreakpoint) : false;
 }

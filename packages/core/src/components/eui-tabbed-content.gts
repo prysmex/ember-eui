@@ -2,20 +2,19 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { scheduleOnce } from '@ember/runloop';
 
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-
 import findBy from 'ember-composable-helpers/helpers/find-by';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { eq } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
-import type { EuiTabsSignature } from './eui-tabs.gts';
-import type { ComponentLike } from '@glint/template';
 
 import type { CommonArgs } from './common';
+import type { EuiTabsSignature } from './eui-tabs.gts';
+import type { ComponentLike } from '@glint/template';
 
 export interface EuiTabbedContentTab {
   id: string;
@@ -89,6 +88,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
 
   get selectedTab() {
     const { selectedTab: externalSelectedTab, tabs } = this.args;
+
     return (
       externalSelectedTab ||
       tabs.find((tab: EuiTabbedContentTab) => tab.id === this.selectedTabId)
@@ -104,6 +104,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
 
   willDestroy(): void {
     super.willDestroy();
+
     if (this.tabsRef) {
       //@ts-expect-error
       this.tabsRef.removeEventListener('focusout', this.removeFocus);
@@ -114,6 +115,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
     // only set inFocus to false if the wrapping div doesn't contain the now-focusing element
     const currentTarget = blurEvent.currentTarget! as HTMLElement;
     const relatedTarget = blurEvent.relatedTarget! as HTMLElement;
+
     if (currentTarget.contains(relatedTarget) === false) {
       this.inFocus = true;
     }
@@ -129,9 +131,11 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
     // Only track selection state if it's not controlled externally.
     if (!externalSelectedTab) {
       this.selectedTabId = selectedTab.id;
+
       const focusTab = () => {
         this.focusTab();
       };
+
       scheduleOnce('afterRender', this, focusTab);
     }
   };
@@ -141,6 +145,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
       const targetTab: HTMLDivElement | null = this.tabsRef.querySelector(
         `#${this.selectedTabId}`
       );
+
       targetTab!.focus();
     }
   };
@@ -154,6 +159,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
       const focusTab = () => {
         this.focusTab();
       };
+
       scheduleOnce('afterRender', this, focusTab);
     }
   };

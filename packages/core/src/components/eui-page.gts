@@ -1,9 +1,11 @@
-import argOrDefault from '../helpers/arg-or-default';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
-import classNames from '../helpers/class-names';
-import style from 'ember-style-modifier/modifiers/style';
-import inlineStyles from '../helpers/inline-styles';
 import { concat } from '@ember/helper';
+
+import style from 'ember-style-modifier/modifiers/style';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
+import inlineStyles from '../helpers/inline-styles';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

@@ -23,6 +23,7 @@
  */
 
 import chroma from 'chroma-js';
+
 import { colorPalette } from './color_palette';
 
 export type EuiPalette = string[];
@@ -39,7 +40,9 @@ const euiPalette = function (
   // This function also trims the first color so white/black is never a color
   if (!diverge && steps > 1) {
     const palette = colorPalette(colors, steps + 1);
+
     palette.shift();
+
     return palette;
   }
 
@@ -106,6 +109,7 @@ export const euiPaletteColorBlind = ({
     const palettes = base.map((color) => {
       // Create the darkest and lightest versions of each color using black and white
       const palette = colorPalette(['black', color, 'white'], 5, false, true);
+
       // Then removing the extremes
       palette.pop();
       palette.shift();
@@ -135,6 +139,7 @@ export const euiPaletteColorBlind = ({
     } else {
       for (let i = 0; i < rotations; i++) {
         const rotation = palettes.map((palette) => palette[i]) as string[];
+
         colors.push(...rotation);
       }
     }
@@ -152,6 +157,7 @@ export const euiPaletteColorBlindBehindText = (
   const newPalette = originalPalette.map((color) =>
     chroma(color).brighten(0.5).hex()
   );
+
   return newPalette;
 };
 
@@ -173,6 +179,7 @@ export const euiPaletteForStatus = function (steps: number): EuiPalette {
   if (steps === 1) {
     return [euiPaletteColorBlind()[0]!];
   }
+
   if (steps <= 3) {
     return euiPalette(
       [
@@ -184,6 +191,7 @@ export const euiPaletteForStatus = function (steps: number): EuiPalette {
       true
     );
   }
+
   return euiPalette(
     [
       positiveColor,

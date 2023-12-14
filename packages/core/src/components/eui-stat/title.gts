@@ -1,9 +1,11 @@
 import { hash } from '@ember/helper';
+
 import { element } from 'ember-element-helper';
-import EuiTitle from '../eui-title.gts';
-import type { EuiTitleSignature } from '../eui-title.gts';
 import style from 'ember-style-modifier/modifiers/style';
 
+import EuiTitle from '../eui-title.gts';
+
+import type { EuiTitleSignature } from '../eui-title.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStatTitleSignature {

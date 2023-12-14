@@ -6,13 +6,13 @@
  * Side Public License, v 1.
  */
 
-import _isFunction from 'lodash-es/isFunction';
 import _isArray from 'lodash-es/isArray';
-import _isString from 'lodash-es/isString';
 import _isBoolean from 'lodash-es/isBoolean';
-import _isNumber from 'lodash-es/isNumber';
+import _isFunction from 'lodash-es/isFunction';
 import _isNaN from 'lodash-es/isNaN';
+import _isNumber from 'lodash-es/isNumber';
 import _isObject from 'lodash-es/isObject';
+import _isString from 'lodash-es/isString';
 
 // wrap the lodash functions to avoid having lodash's TS type definition from being
 // exported, which can conflict with the lodash namespace if other versions are used

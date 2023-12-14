@@ -1,13 +1,14 @@
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import set from 'ember-set-helper/helpers/set';
+
 import { modifier } from 'ember-modifier';
+import set from 'ember-set-helper/helpers/set';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiPortal from './eui-portal.gts';
 import resizeObserver from '../modifiers/resize-observer';
 import screenReaderOnly from '../modifiers/screen-reader-only';
+import EuiPortal from './eui-portal.gts';
 
 export interface EuiButtomBarArgs {
   affordForDisplacement?: boolean;

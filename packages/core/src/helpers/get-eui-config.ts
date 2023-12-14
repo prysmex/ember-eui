@@ -1,5 +1,6 @@
 import Helper from '@ember/component/helper';
 import { inject as service } from '@ember/service';
+
 import type EuiConfigService from '../services/eui-config';
 import type { EuiConfig } from '../services/eui-config';
 

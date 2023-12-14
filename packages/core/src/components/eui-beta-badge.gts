@@ -1,17 +1,18 @@
-import classNames from '../helpers/class-names';
-import { eq, or } from 'ember-truth-helpers';
-import argOrDefault from '../helpers/arg-or-default';
-import EuiIcon from './eui-icon.gts';
-import EuiToolTip from './eui-tool-tip.gts';
-import type { EuiToolTipSignature } from './eui-tool-tip.gts';
 import { on } from '@ember/modifier';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { eq, or } from 'ember-truth-helpers';
 
-import {
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiIcon from './eui-icon.gts';
+import EuiToolTip from './eui-tool-tip.gts';
+
+import type {
   colorMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-beta-badge';
+import type { EuiToolTipSignature } from './eui-tool-tip.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiBetaBadgeSignature {
   Element: HTMLSpanElement;

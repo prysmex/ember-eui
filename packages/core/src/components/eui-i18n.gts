@@ -1,9 +1,10 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import type EuiI18n from '../services/eui-i18n';
+import { ensureSafeComponent } from '@embroider/util';
+
 import Render from './eui-i18n/render.gts';
 
-import { ensureSafeComponent } from '@embroider/util';
+import type EuiI18n from '../services/eui-i18n';
 import type { WithBoundArgs } from '@glint/template';
 
 interface Args {
@@ -38,6 +39,7 @@ export default class EuiI18nComponent extends Component<EuiI18nSignature> {
 
   get customComponent(): typeof Render | undefined {
     if (!this.args.i18n?.renderComponent) return undefined;
+
     return ensureSafeComponent(this.args.i18n?.renderComponent, this);
   }
 

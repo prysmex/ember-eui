@@ -1,8 +1,10 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import createDetectElementResize from '../utils/detect-element-resize';
-import style from 'ember-style-modifier/modifiers/style';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+
+import style from 'ember-style-modifier/modifiers/style';
+
+import createDetectElementResize from '../utils/detect-element-resize';
 
 type Size = {
   height: number;
@@ -86,8 +88,10 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignatu
       outerStyle: { overflow: 'visible' },
       childStyle: {}
     };
+
     if (!this.disableHeight) {
       style.outerStyle.height = `0px`;
+
       if (style.childStyle) {
         style.childStyle.height = `${this.height}px`;
       }
@@ -95,6 +99,7 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignatu
 
     if (!this.disableWidth) {
       style.outerStyle.width = `0px`;
+
       if (style.childStyle) {
         style.childStyle.width = `${this.width}px`;
       }
@@ -105,6 +110,7 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignatu
 
   setup() {
     const { nonce } = this.args;
+
     if (
       this._autoSizer &&
       this._autoSizer.parentNode &&
@@ -174,6 +180,7 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignatu
 
   willDestroy(): void {
     super.willDestroy();
+
     if (this._detectElementResize && this._parentNode) {
       this._detectElementResize.removeResizeListener(
         this._parentNode,

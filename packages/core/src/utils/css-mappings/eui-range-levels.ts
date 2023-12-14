@@ -1,7 +1,6 @@
 import {
-  calculateThumbPosition,
-  calculateOffset
-} from '../../helpers/get-range-tick';
+  calculateOffset,
+  calculateThumbPosition} from '../../helpers/get-range-tick';
 
 export const baseClass = 'euiRangeLevels';
 
@@ -26,6 +25,7 @@ export function inlineStyles({
       : calculateThumbPosition(level.max, min, max, trackWidth);
   const leftOffset = calculateOffset(left, level.min, min);
   const rightOffset = calculateOffset(right, level.max, max);
+
   return {
     left: `calc(${left}% + ${leftOffset}px)`,
     right: `calc(${100 - right}% - ${rightOffset}px)`

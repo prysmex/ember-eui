@@ -1,20 +1,23 @@
-import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+
 import set from 'ember-set-helper/helpers/set';
-import EuiPopover from '../eui-popover.gts';
+import { gt, not } from 'ember-truth-helpers';
+
 import EuiButtonEmpty from '../eui-button-empty.gts';
 import EuiHorizontalRule from '../eui-horizontal-rule.gts';
 import EuiIcon from '../eui-icon.gts';
+import EuiPopover from '../eui-popover.gts';
 import EuiRecentlyUsed from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used.gts';
-import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used.gts';
-import EuiQuickSelect from './eui-quick-select-popover/eui-quick-select.gts';
-import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select.gts';
 import EuiCommonlyUsedTimeRanges from './eui-quick-select-popover/eui-commonly-used-time-ranges.gts';
+import EuiQuickSelect from './eui-quick-select-popover/eui-quick-select.gts';
+
+import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used.gts';
 import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges.gts';
+import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select.gts';
 import type { ApplyTime } from './types/global';
-import { on } from '@ember/modifier';
-import { gt, not } from 'ember-truth-helpers';
 
 export interface EuiQuickSelectPopoverSignature {
   Args: {

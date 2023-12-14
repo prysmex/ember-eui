@@ -1,5 +1,7 @@
 import { helper } from '@ember/component/helper';
+
 import { EUI_THUMB_SIZE } from '../utils/range';
+
 import type { EuiRangeTick } from '../components/eui-range-ticks.gts';
 
 export function calculateOffset(
@@ -9,6 +11,7 @@ export function calculateOffset(
 ) {
   const threshold = 30;
   let offset = value === bound ? 0 : EUI_THUMB_SIZE / 2;
+
   if (offset !== 0) {
     // Estimating offset by eye. Trying to account for range scaling at both ends.
     offset =
@@ -18,6 +21,7 @@ export function calculateOffset(
         ? offset - (1 / (100 - position)) * threshold
         : offset;
   }
+
   return offset;
 }
 
@@ -32,6 +36,7 @@ export function calculateThumbPosition(
   const decimal = (value - min) / (max - min);
   // Must be between 0-100%
   let valuePosition = decimal <= 1 ? decimal : 1;
+
   valuePosition = valuePosition >= 0 ? valuePosition : 0;
 
   const trackWidth = width ?? 0;

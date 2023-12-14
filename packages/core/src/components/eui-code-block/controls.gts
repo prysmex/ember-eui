@@ -1,7 +1,10 @@
+import { on } from '@ember/modifier';
+
+import { or } from 'ember-truth-helpers';
+
 import EuiButtonIcon from '../eui-button-icon.gts';
 import EuiCopy from '../eui-copy.gts';
-import { or } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
+
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 interface EuiCodeBlockControlsSignature {

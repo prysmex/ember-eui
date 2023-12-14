@@ -1,9 +1,10 @@
 import Component from '@glimmer/component';
-import { isHTMLSafe, htmlSafe } from '@ember/template';
-import { get } from '@ember/object';
 import { on } from '@ember/modifier';
-import EuiText from '../eui-text.gts';
+import { get } from '@ember/object';
+import { htmlSafe,isHTMLSafe } from '@ember/template';
+
 import EuiBadge from '../eui-badge.gts';
+import EuiText from '../eui-text.gts';
 
 function unwrap(input: string) {
   if (isHTMLSafe(input)) {

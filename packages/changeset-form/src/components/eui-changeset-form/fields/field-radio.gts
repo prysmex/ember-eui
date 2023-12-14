@@ -1,13 +1,16 @@
-import Base from './base';
-import type { BaseSignature } from './base';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 import { EuiFormRow, EuiRadio } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import { not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiRadioSignature } from '@ember-eui/core/components/eui-radio';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { action } from '@ember/object';
-import { not } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
 
 export interface EuiChangesetFormFieldRadioSignature {
   Element: EuiRadioSignature['Element'];
@@ -33,7 +36,9 @@ export default class EuiChangesetFormFieldRadio extends Base<EuiChangesetFormFie
   @action
   handleChange(e: Event) {
     e.preventDefault();
+
     const checked = (e.target as HTMLInputElement).checked;
+
     this.args.changeset.set(this.args.fieldName, checked);
     this.validate();
     this.args.onChange?.(checked, e);

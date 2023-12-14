@@ -1,35 +1,37 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import { BufferedChangeset } from 'ember-changeset/types';
-import { assert } from '@ember/debug';
-import { later } from '@ember/runloop';
 import { tracked } from '@glimmer/tracking';
-import { EuiForm } from '@ember-eui/core/components';
-import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
-import { EnsureSafeComponentHelper } from '@embroider/util';
+import { assert } from '@ember/debug';
 import { hash } from '@ember/helper';
-
-import { argOrDefault } from '@ember-eui/core/helpers';
-import { on } from '@ember/modifier';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import type { EuiFieldNumberSignature } from '@ember-eui/core/components/eui-field-number';
 import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { later } from '@ember/runloop';
+import { EuiForm } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+import { EnsureSafeComponentHelper } from '@embroider/util';
+
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
 import FormContext from './eui-changeset-form/context.gts';
-import type { ContextSignature } from './eui-changeset-form/context.gts';
-import type { ComponentLike } from '@glint/template';
-import FieldNumberComponent from './eui-changeset-form/fields/field-number.gts';
-import FieldTextComponent from './eui-changeset-form/fields/field-text.gts';
-import FieldPasswordComponent from './eui-changeset-form/fields/field-password.gts';
-import FieldTextAreaComponent from './eui-changeset-form/fields/field-text-area.gts';
-import FieldSelectComponent from './eui-changeset-form/fields/field-select.gts';
-import FieldComboBoxComponent from './eui-changeset-form/fields/field-combo-box.gts';
+import FieldBaseComponent from './eui-changeset-form/fields/field-base.gts';
 import FieldCheckboxGroupComponent from './eui-changeset-form/fields/field-checkbox-group.gts';
+import FieldComboBoxComponent from './eui-changeset-form/fields/field-combo-box.gts';
+import FieldDualRangeSliderComponent from './eui-changeset-form/fields/field-dual-range-slider.gts';
+import FieldNumberComponent from './eui-changeset-form/fields/field-number.gts';
+import FieldPasswordComponent from './eui-changeset-form/fields/field-password.gts';
 import FieldRadioGroupComponent from './eui-changeset-form/fields/field-radio-group.gts';
 import FieldRangeSliderComponent from './eui-changeset-form/fields/field-range-slider.gts';
-import FieldDualRangeSliderComponent from './eui-changeset-form/fields/field-dual-range-slider.gts';
+import FieldSelectComponent from './eui-changeset-form/fields/field-select.gts';
 import FieldSwitchComponent from './eui-changeset-form/fields/field-switch.gts';
-import FieldBaseComponent from './eui-changeset-form/fields/field-base.gts';
+import FieldTextComponent from './eui-changeset-form/fields/field-text.gts';
+import FieldTextAreaComponent from './eui-changeset-form/fields/field-text-area.gts';
+
+import type { ContextSignature } from './eui-changeset-form/context.gts';
+import type { EuiFieldNumberSignature } from '@ember-eui/core/components/eui-field-number';
+import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
+import type { ComponentLike } from '@glint/template';
+import type { BufferedChangeset } from 'ember-changeset/types';
 
 export interface IEuiChangesetFormTheme {
   FieldBase: ComponentLike<any>;
@@ -123,6 +125,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
     if (typeof this.args.beforeSubmit === 'function') {
       this.args.beforeSubmit(changeset, event);
     }
+
     await changeset.validate();
 
     this.hasSubmitted = true;
@@ -132,6 +135,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
     }
 
     let result;
+
     if (this.args.runExecuteInsteadOfSave) {
       result = changeset.execute();
     } else {
@@ -149,6 +153,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
     this.hasSubmitted = false;
 
     const { data } = changeset.rollback();
+
     if (typeof this.args.onReset === 'function') {
       this.args.onReset(data, event);
     }

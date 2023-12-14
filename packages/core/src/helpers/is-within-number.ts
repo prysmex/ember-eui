@@ -1,4 +1,5 @@
 import { helper } from '@ember/component/helper';
+
 import { isWithinRange as isWithin } from '../utils/number';
 
 type Comparator = {

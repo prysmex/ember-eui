@@ -1,6 +1,8 @@
-import { isWithinBreakpoints } from "../utils/breakpoint";
-import type { EuiBreakpointSize } from "../utils/breakpoint";
 import { modifier } from "ember-modifier";
+
+import { isWithinBreakpoints } from "../utils/breakpoint";
+
+import type { EuiBreakpointSize } from "../utils/breakpoint";
 
 export interface Named {
   sizes: EuiBreakpointSize[];

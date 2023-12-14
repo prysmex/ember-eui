@@ -1,10 +1,12 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import setBodyClass from 'ember-set-body-class/helpers/set-body-class';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { eq } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+
+import setBodyClass from 'ember-set-body-class/helpers/set-body-class';
+import { eq } from 'ember-truth-helpers';
+
 import classNames from '../helpers/class-names';
 
 interface EuiOverlayMaskArgs {

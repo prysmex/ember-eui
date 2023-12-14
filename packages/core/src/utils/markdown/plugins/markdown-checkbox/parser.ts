@@ -17,9 +17,10 @@
  * under the License.
  */
 
+import EuiMarkdownFormatMarkdownCheckbox from '../../../../components/eui-markdown-format/markdown-checkbox.gts';
+
 import type { RemarkTokenizer } from '../../markdown-types';
 import type { Plugin } from 'unified';
-import EuiMarkdownFormatMarkdownCheckbox from '../../../../components/eui-markdown-format/markdown-checkbox.gts';
 
 interface CheckboxNodeDetails {
   type: 'component';
@@ -46,6 +47,7 @@ export const CheckboxParser: Plugin = function CheckboxParser() {
      * remainder of the line is consumed as the textbox label
      */
     const checkboxMatch = value.match(/^(\s*[-*]\s*)?\[([\sx]*)\](.+)/);
+
     if (checkboxMatch == null) return false;
 
     if (silent) {
@@ -57,8 +59,10 @@ export const CheckboxParser: Plugin = function CheckboxParser() {
 
     const now = eat.now();
     const offset = match.length - (text?.length ?? 0);
+
     now.column += offset;
     now.offset += offset;
+
     const children = this.tokenizeInline(text, now);
 
     const add = eat(match);

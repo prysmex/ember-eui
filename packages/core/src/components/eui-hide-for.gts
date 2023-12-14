@@ -1,10 +1,12 @@
 import Component from '@glimmer/component';
-import type { EuiBreakpointSize } from '../utils/breakpoint';
-import { CurrentBreakPointHelper } from './eui-show-for.gts';
-//@ts-expect-error
-import { invokeHelper } from '@ember/helper';
 //@ts-expect-error
 import { getValue } from '@glimmer/tracking/primitives/cache';
+//@ts-expect-error
+import { invokeHelper } from '@ember/helper';
+
+import { CurrentBreakPointHelper } from './eui-show-for.gts';
+
+import type { EuiBreakpointSize } from '../utils/breakpoint';
 
 export type EuiHideForBreakpoints = EuiBreakpointSize;
 

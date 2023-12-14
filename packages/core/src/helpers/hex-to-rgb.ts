@@ -25,6 +25,7 @@ import { helper } from '@ember/component/helper';
 export function hexToRgb(hex: string): rgbDef {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+
   hex = hex.replace(
     shorthandRegex,
     (_m, r1, g1, b1) => r1 + r1 + g1 + g1 + b1 + b1
@@ -34,6 +35,7 @@ export function hexToRgb(hex: string): rgbDef {
 
   if (result) {
     const [, r, g, b] = result;
+
     return [parseInt(r!, 16), parseInt(g!, 16), parseInt(b!, 16)];
   }
 

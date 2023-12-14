@@ -71,6 +71,7 @@ export function colorPalette(
       if (index < numColorsHalf) {
         return true; // keep it
       }
+
       return false;
     });
     const colorsRight = hexStart
@@ -79,6 +80,7 @@ export function colorPalette(
         if (index < numColorsHalf) {
           return true; // keep it
         }
+
         return false;
       })
       .reverse();

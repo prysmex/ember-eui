@@ -1,7 +1,8 @@
 import { or } from 'ember-truth-helpers';
-import EuiFormLegend from './eui-form-legend.gts';
-import type { EuiFormLegendSignature } from './eui-form-legend.gts';
 
+import EuiFormLegend from './eui-form-legend.gts';
+
+import type { EuiFormLegendSignature } from './eui-form-legend.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFormFieldsetSignature {

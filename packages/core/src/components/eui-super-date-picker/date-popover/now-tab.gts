@@ -1,10 +1,13 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import EuiText from '../../eui-text.gts';
-import EuiI18n from '../../eui-i18n.gts';
-import EuiButton from '../../eui-button.gts';
-import { on } from '@ember/modifier';
-import { eq } from 'ember-truth-helpers';
 import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+
+import { eq } from 'ember-truth-helpers';
+
+import EuiButton from '../../eui-button.gts';
+import EuiI18n from '../../eui-i18n.gts';
+import EuiText from '../../eui-text.gts';
+
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface NowTabSignature {
   Args: {

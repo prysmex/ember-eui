@@ -1,6 +1,18 @@
 import Component from '@glimmer/component';
-import type { EuiButtomBarArgs } from './eui-bottom-bar.gts';
 import { tracked } from '@glimmer/tracking';
+
+import style from 'ember-style-modifier/modifiers/style';
+// import { tabbable } from 'tabbable';
+// import {
+//   anchorPositionMapping,
+//   displayMapping
+// } from '../../utils/css-mappings/eui-popover';
+// import { paddingSizeMapping } from '../../utils/css-mappings/eui-panel';
+// import { scheduleOnce, later, cancel } from '@ember/runloop';
+// import { assert } from '@ember/debug';
+// import { htmlSafe } from '@ember/template';
+import { and, eq,or } from 'ember-truth-helpers';
+
 // import { action } from '@ember/object';
 // import { tracked } from '@glimmer/tracking';
 // import {
@@ -12,35 +24,26 @@ import { tracked } from '@glimmer/tracking';
 // import { EuiPopoverPosition } from '../../utils/popover/types';
 // import { cascadingMenuKeys } from '../../utils/accesibility';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-// import { tabbable } from 'tabbable';
-// import {
-//   anchorPositionMapping,
-//   displayMapping
-// } from '../../utils/css-mappings/eui-popover';
-// import { paddingSizeMapping } from '../../utils/css-mappings/eui-panel';
-// import { scheduleOnce, later, cancel } from '@ember/runloop';
-// import { assert } from '@ember/debug';
-// import { htmlSafe } from '@ember/template';
-import { and, or, eq } from 'ember-truth-helpers';
 import classNames from '../helpers/class-names';
-import style from 'ember-style-modifier/modifiers/style';
 import inlineStyles from '../helpers/inline-styles';
 import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints';
-import EuiPage from './eui-page.gts';
-import EuiPageSideBar from './eui-page-side-bar.gts';
-import type { EuiPageSideBarSignature } from './eui-page-side-bar.gts';
-import EuiPageBody from './eui-page-body.gts';
-import type { EuiPageBodySignature } from './eui-page-body.gts';
-import EuiPageHeader from './eui-page-header.gts';
-import type { EuiPageHeaderSignature } from './eui-page-header.gts';
-import EuiPageContent from './eui-page-content.gts';
-import type { EuiPageContentSignature } from './eui-page-content.gts';
-import EuiPageContentBody from './eui-page-content-body.gts';
-import type { EuiPageContentBodySignature } from './eui-page-content-body.gts';
+import EuiBottomBar from './eui-bottom-bar.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
-import EuiBottomBar from './eui-bottom-bar.gts';
+import EuiPage from './eui-page.gts';
+import EuiPageBody from './eui-page-body.gts';
+import EuiPageContent from './eui-page-content.gts';
+import EuiPageContentBody from './eui-page-content-body.gts';
+import EuiPageHeader from './eui-page-header.gts';
+import EuiPageSideBar from './eui-page-side-bar.gts';
+
 import type { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiButtomBarArgs } from './eui-bottom-bar.gts';
+import type { EuiPageBodySignature } from './eui-page-body.gts';
+import type { EuiPageContentSignature } from './eui-page-content.gts';
+import type { EuiPageContentBodySignature } from './eui-page-content-body.gts';
+import type { EuiPageHeaderSignature } from './eui-page-header.gts';
+import type { EuiPageSideBarSignature } from './eui-page-side-bar.gts';
 
 export const TEMPLATES = [
   'default',
@@ -132,17 +135,21 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
 
   get minHeight() {
     const minHeight = this.args.minHeight ?? 460;
+
     if (typeof this.args.minHeight === 'number') {
       return `${minHeight}px`;
     }
+
     return minHeight;
   }
 
   get restrictWidth() {
     const width = this.args.restrictWidth ?? true;
+
     if (typeof this.args.restrictWidth === 'number') {
       return `${width}px`;
     }
+
     return width;
   }
 

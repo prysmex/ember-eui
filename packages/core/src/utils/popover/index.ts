@@ -103,8 +103,10 @@ const getBufferValues = (
 ): [number, number, number, number] => {
   if (Array.isArray(buffer)) {
     const [topBuffer, rightBuffer, bottomBuffer, leftBuffer] = buffer;
+
     return [topBuffer, rightBuffer, bottomBuffer, leftBuffer];
   }
+
   return [buffer, buffer, buffer, buffer];
 };
 
@@ -185,6 +187,7 @@ export function findPopoverPosition({
 
   // Try the user-desired position first.
   const iterationPositions = [position];
+
   // keep user-defined alignment in the original positions.
   type valuekey = undefined | EuiPopoverPosition;
 
@@ -505,6 +508,7 @@ function getCrossAxisPosition({
     const alignedOverflowAmount = contentOverflowSize + alignAmount;
     const needsShift =
       alignedOverflowAmount > availableSpace[positionComplements[align]];
+
     amountOfShiftNeeded = needsShift
       ? alignedOverflowAmount - availableSpace[positionComplements[align]]
       : 0;
@@ -516,6 +520,7 @@ function getCrossAxisPosition({
 
     const isShiftTowardFirstSide =
       spaceAvailableOnFirstSide > spaceAvailableOnSecondSide;
+
     shiftDirection = isShiftTowardFirstSide ? -1 : 1;
 
     // determine which direction has more room and the popover should shift to
@@ -525,6 +530,7 @@ function getCrossAxisPosition({
     );
 
     const needsShift = contentOverflowSize > leastAvailableSpace;
+
     amountOfShiftNeeded = needsShift
       ? contentOverflowSize - leastAvailableSpace
       : 0;
@@ -537,8 +543,10 @@ function getCrossAxisPosition({
 
   // if an `arrowConfig` is specified, find where to position the arrow
   let crossAxisArrowPosition;
+
   if (arrowConfig) {
     const { arrowWidth } = arrowConfig;
+
     crossAxisArrowPosition =
       anchorBoundingBox[crossAxisFirstSide] + anchorHalfSize - arrowWidth / 2;
 
@@ -549,6 +557,7 @@ function getCrossAxisPosition({
       // arrow is too close to the minimum side
       const difference =
         crossAxisPosition + minimumSpace - crossAxisArrowPosition;
+
       crossAxisPosition -= difference;
     } else if (
       crossAxisArrowPosition + minimumSpace + arrowWidth >
@@ -558,6 +567,7 @@ function getCrossAxisPosition({
       const edge = crossAxisPosition + popoverSizeOnCrossAxis;
       const difference =
         crossAxisArrowPosition - (edge - minimumSpace - arrowWidth);
+
       crossAxisPosition += difference;
     }
   }
@@ -630,6 +640,7 @@ function getPrimaryAxisPosition({
  */
 export function getElementBoundingBox(element: HTMLElement): EuiClientRect {
   const rect = element.getBoundingClientRect();
+
   return {
     top: rect.top,
     right: rect.right,
@@ -660,6 +671,7 @@ export function getAvailableSpace(
 ): BoundingBox {
   const [topBuffer, rightBuffer, bottomBuffer, leftBuffer] =
     getBufferValues(buffer);
+
   return {
     top:
       anchorBoundingBox.top -
@@ -808,6 +820,7 @@ export function getElementZIndex(
 
     // if the z-index is not a number (e.g. "auto") return null, else the value
     const parsedZIndex = parseInt(zIndex, 10);
+
     if (!isNaN(parsedZIndex)) {
       return parsedZIndex;
     }

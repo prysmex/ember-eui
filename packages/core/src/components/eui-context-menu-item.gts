@@ -1,16 +1,18 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
-import { and, not } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
-import EuiLoadingSpinner from './eui-loading-spinner.gts';
+import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import { layoutAlignMapping, sizeMapping } from '../utils/css-mappings/eui-context-menu-item';
+import { and, not } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiIcon from './eui-icon.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
+
+import type { layoutAlignMapping, sizeMapping } from '../utils/css-mappings/eui-context-menu-item';
+import type { EuiIconSignature } from './eui-icon.gts';
 
 export interface EuiContextMenuItemSignature {
   Element: HTMLAnchorElement | HTMLButtonElement;

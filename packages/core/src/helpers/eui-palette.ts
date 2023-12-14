@@ -1,18 +1,19 @@
 import { helper } from '@ember/component/helper';
+
 import {
-  euiPaletteForLightBackground,
-  euiPaletteForDarkBackground,
   euiPaletteColorBlind,
   euiPaletteColorBlindBehindText,
+  euiPaletteComplimentary,
+  euiPaletteCool,
+  euiPaletteForDarkBackground,
+  euiPaletteForLightBackground,
   euiPaletteForStatus,
   euiPaletteForTemperature,
-  euiPaletteComplimentary,
+  euiPaletteGray,
   euiPaletteNegative,
   euiPalettePositive,
-  euiPaletteCool,
-  euiPaletteWarm,
-  euiPaletteGray
-} from '../utils/color/eui_palettes';
+  euiPaletteWarm} from '../utils/color/eui_palettes';
+
 import type { EuiPalette } from '../utils/color/eui_palettes';
 
 export const PALETTES = {

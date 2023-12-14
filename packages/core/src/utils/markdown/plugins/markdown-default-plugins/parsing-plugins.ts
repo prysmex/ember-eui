@@ -21,13 +21,15 @@
 // are exported for two versions of TypeScript (3.4, 4.0) and implicit
 // imports during eui.d.ts generation default to the incorrect version (3.4).
 // Explicit imports here resolve the version mismatch.
-import type { PluggableList } from 'unified';
-import markdown from 'remark-parse';
-import emoji from 'remark-emoji';
 import breaks from 'remark-breaks';
+import emoji from 'remark-emoji';
+import markdown from 'remark-parse';
+
 import highlight from '../../remark/remark-prismjs';
 import * as MarkdownCheckbox from '../markdown-checkbox';
 import * as MarkdownTooltip from '../markdown-tooltip';
+
+import type { PluggableList } from 'unified';
 
 export type DefaultEuiMarkdownParsingPlugins = PluggableList;
 

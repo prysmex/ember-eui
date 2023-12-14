@@ -1,15 +1,18 @@
 import { action } from '@ember/object';
-import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
-import ValidatedFormFieldBase from './field-base';
-import type { FieldBaseSignature } from './field-base';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { EuiFormRow, EuiCheckboxGroup } from '@ember-eui/core/components';
-import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
-import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';
+import { EuiCheckboxGroup,EuiFormRow } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
+
 import { not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import ValidatedFormFieldBase from './field-base';
+
+import type { FieldBaseSignature } from './field-base';
+import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';
+import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
 export interface FieldCheckboxGroupSignature {
   Element: EuiCheckboxGroupSignature['Element'];
@@ -32,11 +35,13 @@ export interface FieldCheckboxGroupSignature {
 export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldBase<FieldCheckboxGroupSignature> {
   get value(): string[] {
     let value = maybeUnwrapProxy(this.args.value);
+
     return value?.toArray?.() || value;
   }
 
   get arrayToMap() {
     const currArr = this.value || [];
+
     return this.transformToMap(currArr);
   }
 
@@ -44,10 +49,12 @@ export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldB
     let valuesMap = value.reduce(
       (acc, val) => {
         acc[val] = true;
+
         return acc;
       },
       {} as { [key: string]: boolean }
     );
+
     return valuesMap;
   }
 

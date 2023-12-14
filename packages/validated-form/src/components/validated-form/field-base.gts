@@ -1,11 +1,13 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { later } from '@ember/runloop';
+
 import {
   buildValidationMessages,
   notifyValidityChange
 } from '../../utils/build-validation-messages';
-import { action } from '@ember/object';
-import { later } from '@ember/runloop';
+
 import type { ComponentLike } from '@glint/template';
 
 export interface FieldBaseSignature<T = ComponentLike> {
@@ -90,6 +92,7 @@ export default class ValidatedFormFieldBase<
 
   get validationErrorMessages() {
     let error = [];
+
     if (this.error.length > 0) {
       error.push(...this.error);
     }
@@ -155,11 +158,13 @@ export default class ValidatedFormFieldBase<
   @action
   handleChange(e: Event) {
     const value = (e.target as HTMLInputElement).value;
+
     this.args.onChange(value);
     this.notifyValidityChange();
   }
 
   willDestroy() {
+super.willDestroy(...arguments);
     this.args.unregister?.(this as unknown as ComponentLike);
   }
 }

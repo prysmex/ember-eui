@@ -1,26 +1,29 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { isWithinRange } from '../utils/number';
-import type { EuiRangeLevel } from './eui-range-levels.gts';
-import type { EuiRangeTick } from './eui-range-ticks.gts';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import { later } from '@ember/runloop';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
+import { later } from '@ember/runloop';
+
+import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not } from 'ember-truth-helpers';
-import classNames from '../helpers/class-names';
-import EuiInputPopover from './eui-input-popover.gts';
+
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import castTo from '../helpers/cast-to';
+import classNames from '../helpers/class-names';
+import { isWithinRange } from '../utils/number';
+import EuiInputPopover from './eui-input-popover.gts';
+import EuiRangeHighlight from './eui-range-highlight.gts';
 import EuiRangeInput from './eui-range-input.gts';
 import EuiRangeLabel from './eui-range-label.gts';
-import EuiRangeTrack from './eui-range-track.gts';
-import EuiRangeHighlight from './eui-range-highlight.gts';
-import EuiRangeTooltip from './eui-range-tooltip.gts';
 import EuiRangeSlider from './eui-range-slider.gts';
+import EuiRangeTooltip from './eui-range-tooltip.gts';
+import EuiRangeTrack from './eui-range-track.gts';
 import EuiRangeWrapper from './eui-range-wrapper.gts';
-import { on } from '@ember/modifier';
-import optional from 'ember-composable-helpers/helpers/optional';
-import { fn } from '@ember/helper';
+
+import type { EuiRangeLevel } from './eui-range-levels.gts';
+import type { EuiRangeTick } from './eui-range-ticks.gts';
 
 export interface EuiRangeArgs {
   compressed?: boolean;
@@ -138,6 +141,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
       this.max,
       (e.currentTarget as HTMLInputElement).value
     );
+
     if (this.args.onChange) {
       this.args.onChange(e, isValid);
     }
@@ -172,6 +176,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
     if (this.args.onFocus) {
       this.args.onFocus(e);
     }
+
     this.isPopoverOpen = true;
   }
 
@@ -186,11 +191,14 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
         // Mousedown is viable because in the popover case, it is inaccessible via keyboard (intentionally)
         if (this.preventPopoverClose) {
           this.preventPopoverClose = false;
+
           return;
         }
+
         if (this.args.onBlur) {
           this.args.onBlur(e);
         }
+
         this.closePopover();
       },
       200

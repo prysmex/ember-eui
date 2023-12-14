@@ -1,10 +1,10 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
 import { concat } from '@ember/helper';
 
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
 
+import type { EuiIconSignature } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiNotificationEventReadIconSignature {

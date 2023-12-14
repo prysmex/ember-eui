@@ -1,16 +1,16 @@
+import { and, eq,not, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { and, not, or, eq } from 'ember-truth-helpers';
 import EuiButtonContent from './eui-button-content.gts';
-import type { EuiButtonContentSignature } from './eui-button-content.gts';
-
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 import type {
   colorMapping,
   flushMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-button-empty';
+import type { EuiButtonContentSignature } from './eui-button-content.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonEmptySignature {
   Element: HTMLAnchorElement | HTMLButtonElement;

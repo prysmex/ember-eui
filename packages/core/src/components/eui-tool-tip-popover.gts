@@ -1,9 +1,10 @@
 import Component from '@glimmer/component';
+import { fn } from '@ember/helper';
 import { action } from '@ember/object';
-import type { CommonArgs } from './common';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
-import { fn } from '@ember/helper';
+
+import type { CommonArgs } from './common';
 
 type EuiTooltipPopoverArgs = CommonArgs & {
     positionToolTip: () => void;
@@ -42,6 +43,7 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignat
   @action
   setPopoverRef(popover: HTMLDivElement | null): void {
     this.popover = popover;
+
     if (this.args.popoverRef) {
       this.args.popoverRef(popover);
     }

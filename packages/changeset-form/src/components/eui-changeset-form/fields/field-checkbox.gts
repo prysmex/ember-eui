@@ -1,12 +1,15 @@
-import Base from './base';
-import type { BaseSignature } from './base';
-import { EuiCheckbox } from '@ember-eui/core/components';
-import type { EuiCheckboxSignature } from '@ember-eui/core/components/eui-checkbox';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { action } from '@ember/object';
-import { not, or } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+import { EuiCheckbox } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import { not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
+import type { EuiCheckboxSignature } from '@ember-eui/core/components/eui-checkbox';
 
 export interface EuiChangesetFormFieldCheckboxSignature {
   Element: EuiCheckboxSignature['Element'];
@@ -29,7 +32,9 @@ export default class EuiChangesetFormFieldCheckbox extends Base<EuiChangesetForm
   @action
   handleChange(e: Event) {
     e.preventDefault();
+
     const checked = (e.target as HTMLInputElement).checked;
+
     this.args.changeset.set(this.args.fieldName, checked);
     this.validate();
     this.args.onChange?.(checked, e);

@@ -6,11 +6,12 @@
  * Side Public License, v 1.
  */
 
-import moment from 'moment';
-import type { LocaleSpecifier } from 'moment';
 import dateMath from '@elastic/datemath';
-import type { RelativeParts, ShortDate } from '../types/global';
+import moment from 'moment';
+
 import type EuiI18n from '../../../services/eui-i18n';
+import type { RelativeParts, ShortDate } from '../types/global';
+import type { LocaleSpecifier } from 'moment';
 
 /**
  * Reusable format time string util
@@ -58,6 +59,7 @@ export const useFormatTimeString = (
   );
 
   const timeAsMoment = moment(timeString, ISO_FORMAT, true);
+
   if (timeAsMoment.isValid()) {
     return timeAsMoment.locale(locale).format(dateFormat);
   }
@@ -67,6 +69,7 @@ export const useFormatTimeString = (
   }
 
   const tryParse = dateMath.parse(timeString, { roundUp: roundUp });
+
   if (!moment(tryParse).isValid()) {
     return invalidDateDisplay as string;
   }
@@ -80,12 +83,15 @@ export const useFormatTimeString = (
 
 export function toAbsoluteString(value: string, roundUp: boolean = false) {
   const valueAsMoment = dateMath.parse(value, { roundUp });
+
   if (!valueAsMoment) {
     return value;
   }
+
   if (!moment(valueAsMoment).isValid()) {
     return INVALID_DATE;
   }
+
   return valueAsMoment.toISOString();
 }
 
@@ -108,6 +114,7 @@ export function parseRelativeParts(value: string): {
     const isRounded = roundBy ? true : false;
     const roundUnit =
       isRounded && roundBy ? roundBy.replace(ROUND_DELIMETER, '') : undefined;
+
     return {
       count: parseInt(count, 10),
       unit: operator === '+' ? `${unit}+` : unit,
@@ -119,17 +126,22 @@ export function parseRelativeParts(value: string): {
   const results = { count: 0, unit: 's', round: false };
   const duration = moment.duration(moment().diff(dateMath.parse(value)));
   let unitOp = '';
+
   for (let i = 0; i < relativeUnitsFromLargestToSmallest.length; i++) {
     // @ts-expect-error this is a string with the accepted time units
     const asRelative = duration.as(relativeUnitsFromLargestToSmallest[i]);
+
     if (asRelative < 0) unitOp = '+';
+
     if (Math.abs(asRelative) > 1) {
       results.count = Math.round(Math.abs(asRelative));
       results.unit = relativeUnitsFromLargestToSmallest[i] + unitOp;
       results.round = false;
+
       break;
     }
   }
+
   return results;
 }
 

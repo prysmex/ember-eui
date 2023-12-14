@@ -1,23 +1,23 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
-import { sideMapping } from '../utils/css-mappings/eui-global-toast-list';
-import Timer from '../utils/timer';
-import EuiToasterService from '../services/eui-toaster';
-import type { EuiToastProps } from '../services/eui-toaster';
 import { get } from '@ember/helper';
-
-import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { inject as service } from '@ember/service';
 
-import queue from 'ember-composable-helpers/helpers/queue';
 import optional from 'ember-composable-helpers/helpers/optional';
+import queue from 'ember-composable-helpers/helpers/queue';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import Timer from '../utils/timer';
 import EuiToast from './eui-toast.gts';
+
+import type EuiToasterService from '../services/eui-toaster';
+import type { EuiToastProps } from '../services/eui-toaster';
+import type { sideMapping } from '../utils/css-mappings/eui-global-toast-list';
 
 type EuiToastSide = keyof typeof sideMapping;
 
@@ -79,6 +79,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
         this.listElement.scrollTop = destination;
         this.isScrollingToBottom = false;
         this.isScrolledToBottom = true;
+
         return;
       }
 
@@ -97,6 +98,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   @action
   didInsertToast(toast: EuiToastProps): void {
     this.scheduleToastForDismissal(toast);
+
     if (!this.isUserInteracting) {
       // If the user has scrolled up the toast list then we don't want to annoy them by scrolling
       // all the way back to the bottom.
@@ -117,6 +119,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
         const timer = this.toastIdToTimerMap[toastId];
+
         timer?.pause();
       }
     }
@@ -125,9 +128,11 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   @action
   onMouseLeave(): void {
     this.isUserInteracting = false;
+
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
         const timer = this.toastIdToTimerMap[toastId];
+
         timer?.resume();
       }
     }
@@ -174,6 +179,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
           if (this.args.dismissToast) {
             this.args.dismissToast.apply(this, [toast]);
           }
+
           this.toastIdToTimerMap[toast.id]!.clear();
           delete this.toastIdToTimerMap[toast.id];
 
@@ -204,17 +210,21 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
 
   willDestroy(): void {
     super.willDestroy();
+
     if (this.isScrollingAnimationFrame !== 0) {
       window.cancelAnimationFrame(this.isScrollingAnimationFrame);
     }
+
     if (this.startScrollingAnimationFrame !== 0) {
       window.cancelAnimationFrame(this.startScrollingAnimationFrame);
     }
 
     this.dismissTimeoutIds.forEach(clearTimeout);
+
     for (const toastId in this.toastIdToTimerMap) {
       if (this.toastIdToTimerMap.hasOwnProperty(toastId)) {
         const timer = this.toastIdToTimerMap[toastId];
+
         timer?.clear();
       }
     }

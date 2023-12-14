@@ -1,16 +1,19 @@
-import { action } from '@ember/object';
 import Component from '@glimmer/component';
-import moment from 'moment';
-import type { LocaleSpecifier, Moment } from 'moment';
-import dateMath from '@elastic/datemath';
 import { tracked } from '@glimmer/tracking';
-import DatetimePicker from './datetime-picker.gts';
-import EuiI18n from '../../eui-i18n.gts';
-import EuiFormRow from '../../eui-form-row.gts';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+
+import dateMath from '@elastic/datemath';
+import moment from 'moment';
+
 import EuiFieldText from '../../eui-field-text.gts';
 import EuiFormLabel from '../../eui-form-label.gts';
-import { on } from '@ember/modifier';
-import { hash } from '@ember/helper';
+import EuiFormRow from '../../eui-form-row.gts';
+import EuiI18n from '../../eui-i18n.gts';
+import DatetimePicker from './datetime-picker.gts';
+
+import type { LocaleSpecifier, Moment } from 'moment';
 
 interface AbsoluteTabArgs {
   dateFormat?: string;
@@ -51,7 +54,8 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
     this.valueAsMoment = valueAsMoment;
   }
 
-  @action handleChange(date: any, e: Event) {
+  @action
+  handleChange(date: any, e: Event) {
     if (date === null) {
       return;
     }
@@ -59,18 +63,21 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
     this.args.onChange(date.toISOString(), e);
 
     const valueAsMoment = moment(date);
+
     this.valueAsMoment = valueAsMoment;
     this.textInputValue = valueAsMoment.format(this.args.dateFormat);
     this.isTextInvalid = false;
   }
 
-  @action handleTextChange(e: Event) {
+  @action
+  handleTextChange(e: Event) {
     const valueAsMoment = moment(
       (e.target as HTMLInputElement).value,
       this.args.dateFormat,
       true
     );
     const dateIsValid = valueAsMoment.isValid();
+
     if (dateIsValid) {
       this.args.onChange(valueAsMoment.toISOString(), e);
     }
@@ -84,7 +91,8 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
   // blur the input and focus again to trigger the change event
   // and call `handleTextChange` with the updated value
   // and keep the field focused
-  @action triggerChange(e: Event) {
+  @action
+  triggerChange(e: Event) {
     (e.target as HTMLInputElement).blur();
     (e.target as HTMLInputElement).focus();
   }

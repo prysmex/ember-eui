@@ -1,15 +1,16 @@
-import classNames from '../helpers/class-names';
-import { eq } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
-import EuiLoadingSpinner from './eui-loading-spinner.gts';
-import screenReaderOnly from '../modifiers/screen-reader-only';
 import { helper } from '@ember/component/helper';
-import type { EuiStepSignature } from './eui-step.gts';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { eq } from 'ember-truth-helpers';
+
+import classNames from '../helpers/class-names';
+import screenReaderOnly from '../modifiers/screen-reader-only';
+import EuiIcon from './eui-icon.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
 import type { statusToClassMap } from '../utils/css-mappings/eui-step-number';
+import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiStepSignature } from './eui-step.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStepNumberSignature {
   Element: HTMLSpanElement;

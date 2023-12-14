@@ -19,6 +19,7 @@
 
 function createHiddenTextElement(text: string): HTMLSpanElement {
   const textElement = document.createElement('span');
+
   textElement.textContent = text;
   // @ts-ignore .all is a real property - https://drafts.csswg.org/css-cascade/#all-shorthand
   textElement.style.all = 'unset';
@@ -35,6 +36,7 @@ function createHiddenTextElement(text: string): HTMLSpanElement {
   // @ts-ignore this one doesn't appear in the TS definitions for some reason
   textElement.style.msUserSelect = 'text';
   textElement.style.userSelect = 'text';
+
   return textElement;
 }
 
@@ -46,6 +48,7 @@ export function copyToClipboard(text: string): boolean {
 
   document.body.appendChild(elementToBeCopied);
   range.selectNode(elementToBeCopied);
+
   if (selection) {
     selection.removeAllRanges();
     selection.addRange(range);

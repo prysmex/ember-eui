@@ -4,18 +4,19 @@ import { concat } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '../modifiers/validatable-control';
-import { displayMapping } from '../utils/css-mappings/eui-file-picker';
 
 import { and, eq, not, notEq, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import validatableControl from '../modifiers/validatable-control';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiProgress from './eui-progress.gts';
+
+import type { displayMapping } from '../utils/css-mappings/eui-file-picker';
 
 export type EuiFilePickerDisplay = keyof typeof displayMapping;
 

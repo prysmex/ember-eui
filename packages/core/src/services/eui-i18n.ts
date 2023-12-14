@@ -1,5 +1,6 @@
-import Service from '@ember/service';
 import { action } from '@ember/object';
+import Service from '@ember/service';
+
 import { processStringToChildren } from '../i18n/util';
 
 interface LookupTokenOptions {
@@ -23,12 +24,14 @@ function flatten(
       acc[path + key] = obj[key];
     }
   }
+
   return acc;
 }
 
 export default class EuiI18n extends Service {
   translations = {};
-  @action addTranslations(translations: Record<string, unknown>) {
+  @action
+  addTranslations(translations: Record<string, unknown>) {
     // TODO: deep merge?
     this.translations = {
       ...this.translations,

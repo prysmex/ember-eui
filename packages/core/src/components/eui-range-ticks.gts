@@ -1,12 +1,12 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { htmlSafe } from '@ember/template';
-import getRangeTick from '../helpers/get-range-tick';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
 import classNames from '../helpers/class-names';
+import getRangeTick from '../helpers/get-range-tick';
 
 export interface EuiRangeTick {
   value: number;
@@ -42,6 +42,7 @@ export default class EuiRangeTicksComponent extends Component<EuiRangeTicksSigna
 
   get ticksStyle(): ReturnType<typeof htmlSafe> | undefined {
     const { ticks } = this.args;
+
     return !ticks
       ? undefined
       : htmlSafe(`margin: 0 ${this.percentageWidth / -2}%; left: 0; right: 0;`);

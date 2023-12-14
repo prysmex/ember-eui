@@ -1,16 +1,19 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { useFormatTimeString } from '../utils';
-import { inject as service } from '@ember/service';
-import type EuiI18n from '../../../services/eui-i18n';
-import EuiDatePopoverContent from './eui-date-popover-content.gts';
-import type { EuiDatePopoverContentSignature } from './eui-date-popover-content.gts';
-import EuiPopover from '../../eui-popover.gts';
-import classNames from '../../../helpers/class-names';
 import { concat } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { inject as service } from '@ember/service';
+
 import set from 'ember-set-helper/helpers/set';
 import { not } from 'ember-truth-helpers';
+
+import classNames from '../../../helpers/class-names';
+import EuiPopover from '../../eui-popover.gts';
+import { useFormatTimeString } from '../utils';
+import EuiDatePopoverContent from './eui-date-popover-content.gts';
+
+import type EuiI18n from '../../../services/eui-i18n';
+import type { EuiDatePopoverContentSignature } from './eui-date-popover-content.gts';
 
 interface EuiDatePopoverButtonArgs {
   className?: string;

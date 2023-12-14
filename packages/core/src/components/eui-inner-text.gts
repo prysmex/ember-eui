@@ -27,6 +27,7 @@ export default class EuiImage extends Component<EuiInnerTextSignature> {
     this.observer = new MutationObserver((mutationsList) => {
       if (mutationsList.length) this.updateInnerText(this.ref);
     });
+
     if (this.ref) {
       this.updateInnerText(this.ref);
       this.observer.observe(this.ref, {

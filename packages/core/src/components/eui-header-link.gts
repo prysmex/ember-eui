@@ -1,7 +1,7 @@
 import classNames from '../helpers/class-names';
 import EuiButtonEmpty from './eui-button-empty.gts';
-import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
 
+import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiHeaderLinkSignature {

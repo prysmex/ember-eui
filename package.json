@@ -17,7 +17,7 @@
     "@glint/core": "^1.2.0"
   },
   "scripts": {
-    "lint:js": "eslint . --ext .js,.ts,.hbs",
+    "lint:js": "eslint . --fix --ext .js,.ts,.hbs,.gts,.gjs",
     "_start:package": "pnpm --filter '@ember-eui/core' start --no-watch.clearScreen",
     "start": "concurrently 'npm:_start:*' --prefix ' ' --restart-after 5000 --restart-tries -1"
   },

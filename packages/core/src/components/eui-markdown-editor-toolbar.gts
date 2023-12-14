@@ -1,20 +1,20 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import type MarkdownActions from '../utils/markdown/markdown-actions';
-import { MODE_VIEWING } from '../utils/markdown/markdown-modes';
 import { cached } from '@glimmer/tracking';
-import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark.gts';
-import { on } from '@ember/modifier';
-import style from 'ember-style-modifier/modifiers/style';
 import { hash } from '@ember/helper';
-
-import EuiToolTip from './eui-tool-tip.gts';
-import EuiButtonIcon from './eui-button-icon.gts';
-import EuiButtonEmpty from './eui-button-empty.gts';
-
 import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
+import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, gte, or } from 'ember-truth-helpers';
+
+import { MODE_VIEWING } from '../utils/markdown/markdown-modes';
+import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiButtonIcon from './eui-button-icon.gts';
+import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark.gts';
+import EuiToolTip from './eui-tool-tip.gts';
+
+import type MarkdownActions from '../utils/markdown/markdown-actions';
 
 export interface EuiMarkdownEditorToolbarArgs {
   viewMode?: string;
@@ -108,6 +108,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   @action
   handleMdButtonClick(mdButtonId: string) {
     const actionResult = this.args.markdownActions.do(mdButtonId);
+
     if (actionResult !== true) this.args.openPluginEditor?.(actionResult);
   }
 

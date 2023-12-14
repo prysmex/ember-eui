@@ -1,15 +1,16 @@
 import { helper } from '@ember/component/helper';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+
 import { element } from 'ember-element-helper';
 import { and, eq, not } from 'ember-truth-helpers';
 import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import classNames from '../helpers/class-names';
-import { on } from '@ember/modifier';
-import { fn } from '@ember/helper';
 
 import argOrDefault from '../helpers/arg-or-default';
-import EuiRadio from './eui-radio.gts';
-import EuiCheckbox from './eui-checkbox.gts';
+import classNames from '../helpers/class-names';
 import EuiBetaBadge from './eui-beta-badge.gts';
+import EuiCheckbox from './eui-checkbox.gts';
+import EuiRadio from './eui-radio.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

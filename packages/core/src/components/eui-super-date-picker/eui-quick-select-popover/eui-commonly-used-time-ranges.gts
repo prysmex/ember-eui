@@ -1,16 +1,18 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { fn,hash } from '@ember/helper';
+import { on } from '@ember/modifier';
+
 import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import EuiTitle from '../../eui-title.gts';
-import EuiI18n from '../../eui-i18n.gts';
+
 import EuiFlexGrid from '../../eui-flex-grid.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
+import EuiI18n from '../../eui-i18n.gts';
 import EuiLink from '../../eui-link.gts';
-import { hash, fn } from '@ember/helper';
-import { on } from '@ember/modifier';
+import EuiTitle from '../../eui-title.gts';
 
 import type {
   DurationRange
 } from '../types/global';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCommonlyUsedTimeRangesSignature {
   Args: {

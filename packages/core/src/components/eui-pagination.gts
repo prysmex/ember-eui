@@ -1,15 +1,17 @@
 import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
 
+import add from 'ember-math-helpers/helpers/add';
+import sub from 'ember-math-helpers/helpers/sub';
+
+import EuiHideFor from './eui-hide-for.gts';
+import EuiI18n from './eui-i18n.gts';
+import ButtonWrapper from './eui-pagination/button-wrapper.gts';
 import NextButton from './eui-pagination/next-button.gts';
 import PreviousButton from './eui-pagination/previous-button.gts';
-import ButtonWrapper from './eui-pagination/button-wrapper.gts';
-import EuiHideFor from './eui-hide-for.gts';
 import EuiText from './eui-text.gts';
-import EuiI18n from './eui-i18n.gts';
+
 import type { EuiHideForBreakpoints } from './eui-hide-for.gts';
-import sub from 'ember-math-helpers/helpers/sub';
-import add from 'ember-math-helpers/helpers/add';
 
 const BREAKPOINTS: EuiHideForBreakpoints[] = ['xs', 's'];
 
@@ -70,6 +72,7 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
   get pages() {
     let pages = [];
     const { firstPageInRange, lastPageInRange } = this;
+
     for (
       let i = firstPageInRange, index = 0;
       i < lastPageInRange;
@@ -85,6 +88,7 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
 
   get firstPageButtons() {
     let firstPageButtons = [];
+
     if (this.firstPageInRange > 0) {
       firstPageButtons.push({
         pageIndex: 0
@@ -125,6 +129,7 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
           }
         });
       }
+
       lastPageButtons.push({ pageIndex: pageCount - 1 });
     }
 
@@ -142,6 +147,7 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
 
   get prevPageButtonProps() {
     let prevPageButtonProps = {};
+
     if (this.hasControl && this.activePage !== 0) {
       prevPageButtonProps = {
         'aria-controls': this.ariaControls,
@@ -150,11 +156,13 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
     } else {
       prevPageButtonProps = { disabled: this.activePage === 0 };
     }
+
     return prevPageButtonProps;
   }
 
   get nextPageButtonProps() {
     let nextPageButtonProps = {};
+
     if (this.hasControl && this.activePage !== this.pageCount - 1) {
       nextPageButtonProps = {
         'aria-controls': this.ariaControls,
@@ -165,6 +173,7 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
         disabled: this.activePage === this.pageCount - 1
       };
     }
+
     return nextPageButtonProps;
   }
 

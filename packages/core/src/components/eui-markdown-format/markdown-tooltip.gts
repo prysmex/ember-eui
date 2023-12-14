@@ -1,6 +1,7 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import EuiToolTip from '../eui-tool-tip.gts';
 import EuiIcon from '../eui-icon.gts';
+import EuiToolTip from '../eui-tool-tip.gts';
+
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface MarkdownTooltipSignature {
   Args: {

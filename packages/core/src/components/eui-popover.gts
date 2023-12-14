@@ -1,44 +1,45 @@
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { assert } from '@ember/debug';
+import { hash } from '@ember/helper';
+import { concat } from '@ember/helper';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
+import { cancel,later, scheduleOnce } from '@ember/runloop';
+import { htmlSafe } from '@ember/template';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+import { focusTrap } from 'ember-focus-trap';
+import onKey from 'ember-keyboard/modifiers/on-key';
+import { and, not,or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import { tabbable } from 'tabbable';
+
+import { argOrDefaultDecorator } from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import merge from '../helpers/merge';
+import mutationObserver from '../modifiers/mutation-observer';
+import outsideClickDetector from '../modifiers/outside-click-detector';
+import screenReaderOnly from '../modifiers/screen-reader-only';
+import simpleStyle from '../modifiers/simple-style';
+import { cascadingMenuKeys } from '../utils/accesibility';
+import {
+  anchorPositionMapping,
+  displayMapping
+} from '../utils/css-mappings/eui-popover';
+import { findPopoverPosition, getElementZIndex } from '../utils/popover';
 import {
   getTransitionTimings,
   getWaitDuration,
   performOnFrame
 } from '../utils/transition';
-import { findPopoverPosition, getElementZIndex } from '../utils/popover';
-import type { EuiPopoverPosition } from '../utils/popover/types';
-import { cascadingMenuKeys } from '../utils/accesibility';
-import { tabbable } from 'tabbable';
-import {
-  anchorPositionMapping,
-  displayMapping
-} from '../utils/css-mappings/eui-popover';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { paddingSizeMapping } from '../utils/css-mappings/eui-panel';
-import { scheduleOnce, later, cancel } from '@ember/runloop';
-import { assert } from '@ember/debug';
-import { htmlSafe } from '@ember/template';
-import optional from 'ember-composable-helpers/helpers/optional';
-
-import { and, or, not } from 'ember-truth-helpers';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import type { EmberKeyboardEvent } from 'ember-keyboard/modifiers/on-key';
-import { hash } from '@ember/helper';
-import simpleStyle from '../modifiers/simple-style';
-import screenReaderOnly from '../modifiers/screen-reader-only';
-
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import merge from '../helpers/merge';
-import outsideClickDetector from '../modifiers/outside-click-detector';
-import { concat } from '@ember/helper';
-import { focusTrap } from 'ember-focus-trap';
-import EuiPortal from './eui-portal.gts';
 import EuiPanel from './eui-panel.gts';
-import mutationObserver from '../modifiers/mutation-observer';
+import EuiPortal from './eui-portal.gts';
+
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-panel';
+import type { EuiPopoverPosition } from '../utils/popover/types';
+import type { EmberKeyboardEvent } from 'ember-keyboard/modifiers/on-key';
 
 type PanelPaddingSize = keyof typeof paddingSizeMapping;
 
@@ -205,9 +206,11 @@ export function getPopoverPositionFromAnchorPosition(
   // captures all of the characters (" (.*?) ") until the
   // first capital letter (" [A-Z] ") is encountered
   const match = anchorPosition.match(/^(.*?)[A-Z]/);
+
   if (match?.length && match.length > 1) {
     return anchorPositionToPopoverPositionMap[match[1] as AnchorPosition];
   }
+
   return anchorPositionToPopoverPositionMap['up'];
 }
 
@@ -221,6 +224,7 @@ export function getPopoverAlignFromAnchorPosition(
   // starts a capture group at the first capital letter
   // and includes everything after it
   const match = anchorPosition.match(/([A-Z].*)/);
+
   // this performs two tasks:
   // 1. normalizes the align position by lowercasing it
   // 2. `center` doesn't exist in the lookup map which converts it to `undefined` meaning no align
@@ -229,6 +233,7 @@ export function getPopoverAlignFromAnchorPosition(
       match[1]?.toLowerCase() as AnchorPosition
     ];
   }
+
   return anchorPositionToPopoverPositionMap['left'];
 }
 
@@ -373,6 +378,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
         focusTarget = getElementFromInitialFocus(this.args.initialFocus);
       } else {
         const tabbableItems = tabbable(this.panel);
+
         if (tabbableItems.length) {
           focusTarget = tabbableItems[0];
         }
@@ -386,6 +392,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
         // #1 is the whole panel hidden? If so, schedule another check
         // #2 panel is visible but no tabbables exist, move focus to the panel
         const panelVisibility = window.getComputedStyle(this.panel).opacity;
+
         if (panelVisibility === '0') {
           // #1
           this.updateFocus();
@@ -396,6 +403,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       } else {
         // found an element to focus, but is it visible?
         const visibility = window.getComputedStyle(focusTarget).visibility;
+
         if (visibility === 'hidden') {
           // not visible, check again next render frame
           this.updateFocus();
@@ -446,10 +454,12 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       this,
       () => {
         this.isOpenStable = true;
+
         const fn = (): void => {
           this.positionPopoverFixed();
           this.updateFocus();
         };
+
         scheduleOnce('afterRender', this, fn);
       },
       durationMatch + delayMatch
@@ -463,7 +473,9 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       // stop suppressing and start opening
       this.suppressingPopover = false;
       this.isOpening = true;
+
       const fn = (): void => this.onOpenPopover();
+
       scheduleOnce('afterRender', this, fn);
     }
 
@@ -486,6 +498,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   @action
   didUpdateIsOpen(): void {
     this.isCurrentlyOpen = this.isOpen;
+
     if (!this.prevIsOpen && this.args.isOpen) {
       this.onOpenPopover();
     }
@@ -503,6 +516,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
         250
       );
     }
+
     this.prevIsOpen = this.args.isOpen;
   }
 
@@ -518,6 +532,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   @action
   onMutation(records: MutationRecord[]): void {
     const waitDuration = getWaitDuration(records);
+
     this.positionPopoverFixed();
 
     performOnFrame(waitDuration, this.positionPopoverFixed);
@@ -529,6 +544,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
 
     let position = getPopoverPositionFromAnchorPosition(this.anchorPosition);
     let forcePosition = undefined;
+
     if (
       allowEnforcePosition &&
       this.isOpenStable &&
@@ -593,6 +609,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
 
   get _arrowStyles(): ReturnType<typeof htmlSafe> | undefined {
     const { arrowStyles } = this;
+
     return arrowStyles
       ? htmlSafe(`top: ${arrowStyles?.top}px; left: ${arrowStyles?.left}px;`)
       : undefined;
@@ -601,6 +618,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   get _popoverStyles(): { [i: string]: string } {
     const { panelStyle } = this.args;
     const { popoverStyles } = this;
+
     return {
       ...panelStyle,
       top: `${popoverStyles.top}px`,
@@ -613,6 +631,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     if (this.ownFocus) {
       return this.args.tabindex ?? '0';
     }
+
     return '-1';
   }
 
@@ -636,6 +655,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   registerPanel(panel: HTMLElement): void {
     this.panel = panel;
     this.args.panelRef?.(panel);
+
     if (panel === null) {
       // panel has unmounted, restore the state defaults
       this.popoverStyles = DEFAULT_POPOVER_STYLES;

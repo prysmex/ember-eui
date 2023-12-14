@@ -1,4 +1,5 @@
 import EuiBreadcrumbs from './eui-breadcrumbs.gts';
+
 import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

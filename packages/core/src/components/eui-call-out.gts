@@ -1,12 +1,13 @@
+import { eq, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { eq, or } from 'ember-truth-helpers';
-import TextBlock from './text-block.gts';
-import type { TextBlockSignature } from './text-block.gts';
-import EuiText from './eui-text.gts';
 import EuiIcon from './eui-icon.gts';
+import EuiText from './eui-text.gts';
+import TextBlock from './text-block.gts';
 
-import { sizeMapping, colorMapping } from '../utils/css-mappings/eui-call-out';
+import type { colorMapping,sizeMapping } from '../utils/css-mappings/eui-call-out';
+import type { TextBlockSignature } from './text-block.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCallOutSignature {

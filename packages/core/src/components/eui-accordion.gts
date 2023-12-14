@@ -5,23 +5,21 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
-import resizeObserver from '../modifiers/resize-observer';
 
 import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-
+import resizeObserver from '../modifiers/resize-observer';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
-import type { CommonArgs } from './common.ts';
 import type { paddingMapping } from '../utils/css-mappings/eui-accordion';
-
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import type { CommonArgs } from './common.ts';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 

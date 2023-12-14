@@ -41,6 +41,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
 
     if (isDisabled) {
       this.capturedDownIds = [];
+
       return;
     }
 
@@ -51,10 +52,12 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
       this.capturedDownIds.includes(this.id)
     ) {
       this.capturedDownIds = [];
+
       return;
     }
 
     this.capturedDownIds = [];
+
     return onOutsideClick(event);
   }
 
@@ -110,6 +113,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     } else {
       (event as unknown as EuiEvent).euiGeneratedBy = [this.id];
     }
+
     if (cb) cb(event);
   }
 
@@ -117,6 +121,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   onChildMouseDown(event: MouseEvent | TouchEvent): any {
     this.onChildClick(event, (e) => {
       const nativeEvent = e as unknown as EuiEvent;
+
       this.capturedDownIds = nativeEvent.euiGeneratedBy;
       this.named?.onMouseDown?.(e);
       this.named?.onTouchStart?.(e);

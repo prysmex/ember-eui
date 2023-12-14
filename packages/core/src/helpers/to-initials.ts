@@ -23,6 +23,7 @@ export function toInitials(
   }
 
   let calculatedInitials;
+
   // A. Set to initials prop if exists (but truncate to 2 characters max unless length is supplied)
   if (initials) {
     calculatedInitials = initials.substring(0, calculatedInitialsLength);
@@ -50,5 +51,6 @@ export default helper(function ([name, initialsLength, initials]: [
   if (name === undefined && initials === undefined) {
     return '';
   }
+
   return toInitials(name, initialsLength, initials);
 });

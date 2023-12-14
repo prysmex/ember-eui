@@ -6,10 +6,12 @@
  * Side Public License, v 1.
  */
 
-import moment from 'moment';
 import dateMath from '@elastic/datemath';
-import { LAST, NEXT } from './time-options';
+import moment from 'moment';
+
 import { DATE_MODES, relativeUnitsFromLargestToSmallest } from '.';
+import { LAST, NEXT } from './time-options';
+
 import type { QuickSelect, TimeUnitId } from '../types/global';
 
 const isNow = (value: string) => value === DATE_MODES.NOW;
@@ -56,12 +58,15 @@ export const parseTimeParts = (start: string, end: string): QuickSelect => {
 
   const duration = moment.duration(moment().diff(dateMath.parse(value)));
   let unitOp = '';
+
   for (let i = 0; i < relativeUnitsFromLargestToSmallest.length; i++) {
     // @ts-expect-error this is a string with the accepted time units
     const as = duration.as(relativeUnitsFromLargestToSmallest[i]);
+
     if (as < 0) {
       unitOp = '+';
     }
+
     if (Math.abs(as) > 1) {
       return {
         timeValue: Math.round(Math.abs(as)),

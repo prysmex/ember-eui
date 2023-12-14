@@ -7,6 +7,7 @@
  */
 
 import * as MarkdownTooltip from '../markdown-tooltip';
+
 import type { EuiMarkdownEditorUiPlugin } from '../../markdown-types';
 
 export type DefaultEuiMarkdownUiPlugins = EuiMarkdownEditorUiPlugin[];
@@ -21,6 +22,7 @@ export const getDefaultEuiMarkdownUiPlugins = ({
 
   // @ts-ignore __originatedFromEui is a custom property
   uiPlugins.__originatedFromEui = true;
+
   // @ts-ignore __originatedFromEui is a custom property
   return uiPlugins;
 };

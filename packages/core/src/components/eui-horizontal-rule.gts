@@ -1,7 +1,7 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { marginMapping, sizeMapping } from '../utils/css-mappings/eui-horizontal-rule';
 
+import type { marginMapping, sizeMapping } from '../utils/css-mappings/eui-horizontal-rule';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiHorizontalRuleSignature {

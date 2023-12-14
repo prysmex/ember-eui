@@ -8,8 +8,10 @@
 
 import refractor from 'refractor';
 import visit from 'unist-util-visit';
-import type { Plugin } from 'unified';
+
 import { checkSupportedLanguage } from '../../code/utils';
+
+import type { Plugin } from 'unified';
 
 export const FENCED_CLASS = 'remark-prismjs--fenced';
 
@@ -22,7 +24,9 @@ const attacher: Plugin = () => {
     if (!language) {
       return;
     }
+
     const actualLanguage = checkSupportedLanguage(language);
+
     node.data = data;
     data.hChildren = refractor.highlight(node.value, actualLanguage);
     data.hProperties = {

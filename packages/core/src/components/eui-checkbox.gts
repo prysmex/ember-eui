@@ -3,10 +3,10 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { modifier } from 'ember-modifier';
 import { and, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
@@ -15,7 +15,7 @@ const indeterminateModifier = modifier(function invalidateIndeterminate(
   [indeterminate]: [boolean?]
 ) {
   if (element) {
-    element.indeterminate = indeterminate!!;
+    element.indeterminate = indeterminate!;
   }
 });
 

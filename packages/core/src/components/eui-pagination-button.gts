@@ -1,13 +1,15 @@
-import classNames from '../helpers/class-names';
-
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import { paddingMapping } from '../utils/css-mappings/eui-popover-footer';
-import EuiI18n from './eui-i18n.gts';
-import EuiButtonEmpty from './eui-button-empty.gts';
-import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
 import { hash } from '@ember/helper';
-import { or } from 'ember-truth-helpers';
+
 import add from 'ember-math-helpers/helpers/add';
+import { or } from 'ember-truth-helpers';
+
+import classNames from '../helpers/class-names';
+import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiI18n from './eui-i18n.gts';
+
+import type { paddingMapping } from '../utils/css-mappings/eui-popover-footer';
+import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPaginationButtonSignature {
   Element: EuiButtonEmptySignature['Element'];

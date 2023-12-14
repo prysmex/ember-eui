@@ -1,12 +1,14 @@
-import { or } from 'ember-truth-helpers';
-import classNames from '../../helpers/class-names';
 import { on } from '@ember/modifier';
-import style from 'ember-style-modifier/modifiers/style';
-import EuiButtonIcon from '../eui-button-icon.gts';
-import EuiButton from '../eui-button.gts';
-import type { EuiButtonIconSignature } from '../eui-button-icon.gts';
-import type { EuiButtonSignature } from '../eui-button.gts';
 
+import style from 'ember-style-modifier/modifiers/style';
+import { or } from 'ember-truth-helpers';
+
+import classNames from '../../helpers/class-names';
+import EuiButton from '../eui-button.gts';
+import EuiButtonIcon from '../eui-button-icon.gts';
+
+import type { EuiButtonSignature } from '../eui-button.gts';
+import type { EuiButtonIconSignature } from '../eui-button-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSuperUpdateButtonSignature {

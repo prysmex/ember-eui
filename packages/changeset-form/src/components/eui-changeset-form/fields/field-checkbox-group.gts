@@ -1,11 +1,14 @@
-import Base from './base';
-import type { BaseSignature } from './base';
-import { EuiFormRow, EuiCheckboxGroup } from '@ember-eui/core/components';
-import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
-import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { action } from '@ember/object';
+import { EuiCheckboxGroup,EuiFormRow } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
+import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';
+import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
 export interface EuiChangesetFormFieldCheckboxGroupSignature {
   Element: EuiCheckboxGroupSignature['Element'];
@@ -33,6 +36,7 @@ export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangese
 
   get arrayToMap() {
     const currArr = this.value || [];
+
     return this.transformToMap(currArr);
   }
 
@@ -40,10 +44,12 @@ export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangese
     let valuesMap = value.reduce(
       (acc, val: string) => {
         acc[val] = true;
+
         return acc;
       },
       {} as { [key: string]: boolean }
     );
+
     return valuesMap;
   }
 
@@ -59,6 +65,7 @@ export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangese
     } else {
       newArr = [...value, optionId];
     }
+
     this.args.changeset.set(this.args.fieldName, newArr);
     this.validate();
     this.args.onChange?.(newArr);

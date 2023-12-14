@@ -1,6 +1,7 @@
-import Modifier from 'ember-modifier';
-import { action } from '@ember/object';
 import { registerDestructor } from '@ember/destroyable';
+import { action } from '@ember/object';
+
+import Modifier from 'ember-modifier';
 
 // IE11 and Safari don't support the `ResizeObserver` API at the time of writing
 const hasResizeObserver =
@@ -38,6 +39,7 @@ const makeCompatibleObserver = (node: Element, callback: () => void) => {
   window.addEventListener('resize', callback);
 
   const _disconnect = observer.disconnect.bind(observer);
+
   observer.disconnect = () => {
     _disconnect();
     window.removeEventListener('resize', callback);
@@ -48,6 +50,7 @@ const makeCompatibleObserver = (node: Element, callback: () => void) => {
 
 const makeResizeObserver = (node: Element, callback: () => void) => {
   let observer: Observer | undefined;
+
   if (hasResizeObserver) {
     observer = new (window as any).ResizeObserver(callback);
     observer!.observe(node);
@@ -55,6 +58,7 @@ const makeResizeObserver = (node: Element, callback: () => void) => {
     observer = makeCompatibleObserver(node, callback);
     requestAnimationFrame(callback); // Mimic ResizeObserver behavior of triggering a resize event on init
   }
+
   return observer;
 };
 
@@ -72,6 +76,7 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
     let [dimension] = this.positional;
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
+
     if (
       (doesWidthMatter && width !== this.width) ||
       (doesHeightMatter && height !== this.height)
@@ -97,10 +102,12 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
 
   _setup() {
     let { setSize, element } = this;
+
     if (element != null) {
       // ResizeObserver's first call to the observation callback is scheduled in the future
       // so find the element's initial dimensions now
       const boundingRect = element.getBoundingClientRect();
+
       setSize({
         width: boundingRect.width,
         height: boundingRect.height
@@ -108,6 +115,7 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
 
       this.observer = makeResizeObserver(element, () => {
         const boundingRect = element.getBoundingClientRect();
+
         setSize({
           width: boundingRect.width,
           height: boundingRect.height

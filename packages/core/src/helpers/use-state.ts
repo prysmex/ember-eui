@@ -1,6 +1,6 @@
+import { tracked } from '@glimmer/tracking';
 import { helper } from '@ember/component/helper';
 import { action } from '@ember/object';
-import { tracked } from '@glimmer/tracking';
 import { scheduleOnce } from '@ember/runloop';
 
 /**
@@ -21,7 +21,9 @@ class SingleUseState<T> {
     const updater = () => {
       this.value = value;
     };
+
     scheduleOnce('afterRender', this, updater);
+
     return value;
   }
 }

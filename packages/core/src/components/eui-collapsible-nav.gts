@@ -5,12 +5,13 @@ import { throttle } from '@ember/runloop';
 
 import { modifier } from 'ember-modifier';
 import { and, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import argOrDefault from '../helpers/arg-or-default';
+import { isWithinMinBreakpoint } from '../utils/breakpoint';
+import EuiFlyout from './eui-flyout.gts';
 
 import type { EuiBreakpointSize } from '../utils/breakpoint';
-import { isWithinMinBreakpoint } from '../utils/breakpoint';
-import argOrDefault from '../helpers/arg-or-default';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import EuiFlyout from './eui-flyout.gts';
 import type { EuiFlyoutSignature } from './eui-flyout.gts';
 import type { ModifierLike } from '@glint/template';
 
@@ -72,6 +73,7 @@ const triggerHandlersModifier = modifier(
 
     element.addEventListener('touchend', fn);
     element.addEventListener('mouseup', fn, true);
+
     return () => {
       element.removeEventListener('touchend', fn);
       element.removeEventListener('mouseup', fn, true);
@@ -143,6 +145,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
     if (this.args.size && typeof this.args.size !== 'string') {
       return `${this.args.size}px`;
     }
+
     return this.args.size ?? '320px';
   }
 

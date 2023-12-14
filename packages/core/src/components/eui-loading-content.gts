@@ -1,7 +1,9 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import classNames from '../helpers/class-names';
-import { gt, lt } from 'ember-truth-helpers';
 import repeat from 'ember-composable-helpers/helpers/repeat';
+import { gt, lt } from 'ember-truth-helpers';
+
+import classNames from '../helpers/class-names';
+
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiLoadingContentSignature {
   Element: HTMLSpanElement;

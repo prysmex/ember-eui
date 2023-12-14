@@ -1,21 +1,23 @@
+import { concat } from '@ember/helper';
+
+import { eq,gte } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { gte, eq } from 'ember-truth-helpers';
-import EuiPanel from './eui-panel.gts';
-import type { EuiPanelSignature } from './eui-panel.gts';
-import EuiIcon from './eui-icon.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
-import EuiTitle from './eui-title.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
-import EuiTextColor from './eui-text-color.gts';
-import EuiSpacer from './eui-spacer.gts';
-import EuiText from './eui-text.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
-import { concat } from '@ember/helper';
-import argOrDefault from '../helpers/arg-or-default';
-import type { ComponentLike } from '@glint/template';
+import EuiIcon from './eui-icon.gts';
+import EuiPanel from './eui-panel.gts';
+import EuiSpacer from './eui-spacer.gts';
+import EuiText from './eui-text.gts';
+import EuiTextColor from './eui-text-color.gts';
+import EuiTitle from './eui-title.gts';
 
+import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiPanelSignature } from './eui-panel.gts';
+import type { EuiTitleSignature } from './eui-title.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { ComponentLike } from '@glint/template';
 
 export interface EuiEmptyPromptSignature {
   Element: EuiPanelSignature['Element'];

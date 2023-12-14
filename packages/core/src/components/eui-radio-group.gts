@@ -1,9 +1,11 @@
+import { concat, fn,get } from '@ember/helper';
+import { on } from '@ember/modifier';
+
 import { eq, or } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import EuiFormFieldset from './eui-form-fieldset.gts';
 import EuiRadio from './eui-radio.gts';
-import { concat, get, fn } from '@ember/helper';
-import { on } from '@ember/modifier';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

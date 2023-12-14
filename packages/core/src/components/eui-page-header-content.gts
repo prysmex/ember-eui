@@ -1,29 +1,31 @@
 import Component from '@glimmer/component';
-import type { EuiButtomBarArgs } from './eui-bottom-bar.gts';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import EuiTabs from './eui-tabs.gts';
-import EuiTab from './eui-tab.gts';
-import type { IEuiTab } from './eui-tab.gts';
-import EuiFlexItem from './eui-flex-item.gts';
-import EuiFlexGroup from './eui-flex-group.gts';
-import EuiBreadcrumbs from './eui-breadcrumbs.gts';
-import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs.gts';
-import EuiSpacer from './eui-spacer.gts';
-import EuiTitle from './eui-title.gts';
-import EuiIcon from './eui-icon.gts';
-import EuiText from './eui-text.gts';
-import { and, or, not, eq } from 'ember-truth-helpers';
-import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints';
-import useState from '../helpers/use-state';
-import inlineStyles from '../helpers/inline-styles';
 import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
-import optional from 'ember-composable-helpers/helpers/optional';
-import type { WithBoundArgs } from '@glint/template';
 
-import classNames from '../helpers/class-names';
-import { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
+import optional from 'ember-composable-helpers/helpers/optional';
 import style from 'ember-style-modifier/modifiers/style';
+import { and, eq,not, or } from 'ember-truth-helpers';
+
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import inlineStyles from '../helpers/inline-styles';
+import useState from '../helpers/use-state';
+import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints';
+import EuiBreadcrumbs from './eui-breadcrumbs.gts';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
+import EuiIcon from './eui-icon.gts';
+import EuiSpacer from './eui-spacer.gts';
+import EuiTab from './eui-tab.gts';
+import EuiTabs from './eui-tabs.gts';
+import EuiText from './eui-text.gts';
+import EuiTitle from './eui-title.gts';
+
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
+import type { EuiButtomBarArgs } from './eui-bottom-bar.gts';
+import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs.gts';
+import type { IEuiTab } from './eui-tab.gts';
+import type { WithBoundArgs } from '@glint/template';
 
 export const TEMPLATES = [
   'default',

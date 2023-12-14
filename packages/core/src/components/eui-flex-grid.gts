@@ -1,14 +1,13 @@
-import argOrDefault from '../helpers/arg-or-default';
-import { eq } from 'ember-truth-helpers';
-import classNames from '../helpers/class-names';
 import { element } from 'ember-element-helper';
+import { eq } from 'ember-truth-helpers';
 
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+
+import type {
+  directionMapping,
+  gutterSizeMapping} from '../utils/css-mappings/eui-flex-grid';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-import {
-  gutterSizeMapping,
-  directionMapping
-} from '../utils/css-mappings/eui-flex-grid';
 
 export interface EuiFlexGridSignature {
   Element: HTMLDivElement | any;

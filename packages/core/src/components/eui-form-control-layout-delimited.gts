@@ -1,9 +1,10 @@
-import argOrDefault from '../helpers/arg-or-default';
 import { and, or } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import EuiText from './eui-text.gts';
 
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFormControlLayoutDelimitedSignature {

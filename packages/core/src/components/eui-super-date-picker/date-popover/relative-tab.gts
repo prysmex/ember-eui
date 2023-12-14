@@ -1,24 +1,27 @@
 import Component from '@glimmer/component';
-import dateMath from '@elastic/datemath';
-import { INVALID_DATE, toRelativeStringFromParts } from '../utils';
-import type { LocaleSpecifier } from 'moment';
 import { tracked } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { parseRelativeParts } from '../utils';
-import type { TimeOptions } from '../utils/time-options';
-import EuiForm from '../../eui-form.gts';
+
+import dateMath from '@elastic/datemath';
+import pick from 'ember-composable-helpers/helpers/pick';
+
+import EuiFieldNumber from '../../eui-field-number.gts';
+import EuiFieldText from '../../eui-field-text.gts';
 import EuiFlexGroup from '../../eui-flex-group.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
-import EuiFormRow from '../../eui-form-row.gts';
-import EuiSelect from '../../eui-select.gts';
-import EuiFieldText from '../../eui-field-text.gts';
+import EuiForm from '../../eui-form.gts';
 import EuiFormLabel from '../../eui-form-label.gts';
-import EuiFieldNumber from '../../eui-field-number.gts';
-import EuiSpacer from '../../eui-spacer.gts';
+import EuiFormRow from '../../eui-form-row.gts';
 import EuiPopoverFooter from '../../eui-popover-footer.gts';
+import EuiSelect from '../../eui-select.gts';
+import EuiSpacer from '../../eui-spacer.gts';
 import EuiSwitch from '../../eui-switch.gts';
-import pick from 'ember-composable-helpers/helpers/pick';
-import { on } from '@ember/modifier';
+import { INVALID_DATE, toRelativeStringFromParts } from '../utils';
+import { parseRelativeParts } from '../utils';
+
+import type { TimeOptions } from '../utils/time-options';
+import type { LocaleSpecifier } from 'moment';
 
 interface RelativeTabArgs {
   dateFormat: string;
@@ -44,7 +47,9 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
 
   constructor(owner: unknown, args: RelativeTabArgs) {
     super(owner, args);
+
     const parsed = parseRelativeParts(this.args.value);
+
     if (parsed) {
       this.count = parsed.count;
       this.unit = parsed.unit as any;
@@ -61,6 +66,7 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
       roundUp: this.args.roundUp
     });
     const invalid = isInvalid || !parsedValue || !parsedValue.isValid();
+
     return invalid
       ? ''
       : parsedValue
@@ -73,18 +79,22 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
     return this.args.timeOptions.relativeRoundingLabels[this.unit[0]];
   }
 
-  @action onCountChange(e: Event) {
+  @action
+  onCountChange(e: Event) {
     const sanitizedValue = parseInt((e.target as HTMLInputElement).value, 10);
+
     this.count = isNaN(sanitizedValue) ? undefined : sanitizedValue;
     this.handleChange();
   }
 
-  @action onUnitChange(unit: string) {
+  @action
+  onUnitChange(unit: string) {
     this.unit = unit as any;
     this.handleChange();
   }
 
-  @action onRoundChange(checked: boolean) {
+  @action
+  onRoundChange(checked: boolean) {
     this.round = checked;
     this.handleChange();
   }
@@ -93,12 +103,14 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
     if (this.count === undefined || this.count < 0) {
       return;
     }
+
     const date = toRelativeStringFromParts({
       count: this.count,
       round: this.round,
       roundUnit: this.roundUnit as any,
       unit: this.unit
     });
+
     this.args.onChange(date, e);
   }
 

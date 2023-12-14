@@ -5,11 +5,10 @@ import classNames from '../helpers/class-names';
 import EuiTextAlign from './eui-text-align.gts';
 import EuiTextColor from './eui-text-color.gts';
 
+import type { sizeMapping } from '../utils/css-mappings/eui-text';
+import type { alignMapping } from '../utils/css-mappings/eui-text-align';
+import type { colorMapping } from '../utils/css-mappings/eui-text-color';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-import { sizeMapping } from '../utils/css-mappings/eui-text';
-import { alignMapping } from '../utils/css-mappings/eui-text-align';
-import { colorMapping } from '../utils/css-mappings/eui-text-color';
 
 export interface EuiTextSignature {
   Element: HTMLDivElement;

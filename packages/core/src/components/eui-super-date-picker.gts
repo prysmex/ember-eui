@@ -1,28 +1,30 @@
-import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
+
+import { eq,or } from 'ember-truth-helpers';
+
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import type { LocaleSpecifier } from 'moment';
+import classNames from '../helpers/class-names';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
+import EuiFormControlLayout from './eui-form-control-layout.gts';
+import EuiDatePopoverButton from './eui-super-date-picker/date-popover/eui-date-popover-button.gts';
+import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
+import EuiQuickSelectPopover from './eui-super-date-picker/eui-quick-select-popover.gts';
+import EuiSuperUpdateButton from './eui-super-date-picker/eui-super-update-button.gts';
+import { isRangeInvalid } from './eui-super-date-picker/utils';
+import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options';
+
+import type EuiI18n from '../services/eui-i18n';
 import type {
   ApplyRefreshInterval,
   DurationRange,
   Milliseconds,
   ShortDate
 } from './eui-super-date-picker/types/global';
-import { isRangeInvalid } from './eui-super-date-picker/utils';
-import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options';
-import type EuiI18n from '../services/eui-i18n';
-import { inject as service } from '@ember/service';
-import { or, eq } from 'ember-truth-helpers';
-import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
-import EuiDatePopoverButton from './eui-super-date-picker/date-popover/eui-date-popover-button.gts';
-import EuiFlexGroup from './eui-flex-group.gts';
-import EuiFlexItem from './eui-flex-item.gts';
-import EuiFormControlLayout from './eui-form-control-layout.gts';
-import EuiSuperUpdateButton from './eui-super-date-picker/eui-super-update-button.gts';
-import EuiQuickSelectPopover from './eui-super-date-picker/eui-quick-select-popover.gts';
-
-import classNames from '../helpers/class-names';
+import type { LocaleSpecifier } from 'moment';
 
 interface EuiSuperDatePickerArgs {
   commonlyUsedRanges?: DurationRange[];
@@ -151,7 +153,8 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
     });
   }
 
-  @action applyQuickTime({ start, end }: DurationRange) {
+  @action
+  applyQuickTime({ start, end }: DurationRange) {
     this.start = start;
     this.end = end;
 
@@ -163,15 +166,18 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
     });
   }
 
-  @action setStart(start: ShortDate) {
+  @action
+  setStart(start: ShortDate) {
     this.setTime({ start, end: this.end });
   }
 
-  @action setEnd(end: ShortDate) {
+  @action
+  setEnd(end: ShortDate) {
     this.setTime({ start: this.start, end });
   }
 
-  @action handleClickUpdateButton() {
+  @action
+  handleClickUpdateButton() {
     if (!this.hasChanged && this.args.onRefresh) {
       // const { start, end, refreshInterval } = this.args;
       this.args.onRefresh({
@@ -182,6 +188,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
     } else {
       this.applyTime();
     }
+
     this.hasChanged = false;
   }
 

@@ -6,6 +6,7 @@ export interface EuiModalHeaderSignature {
     default: [];
   };
 }
+
 const EuiModalHeader: TemplateOnlyComponent<EuiModalHeaderSignature> =
   <template>
     <div class="euiModalHeader" ...attributes>

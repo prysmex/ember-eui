@@ -5,16 +5,17 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import validatableControl from '../modifiers/validatable-control';
-import { Browser } from '../utils/browser';
-import { keys } from '../utils/keys';
 
 import { and, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import validatableControl from '../modifiers/validatable-control';
+import { Browser } from '../utils/browser';
+import { keys } from '../utils/keys';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
+
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
 let isSearchSupported = false;
@@ -72,9 +73,11 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
   @action
   setValue(e: Event): void {
     const value = (e.target as HTMLInputElement).value;
+
     if (this.value !== value) {
       this.value = value;
     }
+
     this.args.onSearch?.(this.value);
   }
 
@@ -85,8 +88,10 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     e: KeyboardEvent
   ): void {
     this.value = (e.target as HTMLInputElement).value;
+
     if (this.args.onKeyUp) {
       this.args.onKeyUp(e);
+
       if (e.defaultPrevented) {
         return;
       }
@@ -115,12 +120,14 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     const nativeInputValueSetter = nativeInputValue
       ? nativeInputValue.set
       : undefined;
+
     if (nativeInputValueSetter) {
       nativeInputValueSetter.call(this.inputElement, '');
     }
 
     // dispatch input event, with IE11 support/fallback
     let event;
+
     if ('Event' in window && typeof Event === 'function') {
       event = new Event('input', {
         bubbles: true,
@@ -136,10 +143,12 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
       if (event) {
         this.inputElement.dispatchEvent(event);
       }
+
       // set focus on the search field
       this.inputElement.focus();
       this.inputElement.dispatchEvent(new Event('change'));
     }
+
     this.value = '';
 
     if (this.args.onSearch && this.incremental) {

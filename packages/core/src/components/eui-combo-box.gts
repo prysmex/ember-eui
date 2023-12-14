@@ -194,6 +194,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       } else {
         acc.push(curr);
       }
+
       return acc;
     }, []);
   }
@@ -201,6 +202,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   @cached
   get options(): any[] {
     if (this._resolvedOptions) return toPlainArray(this._resolvedOptions);
+
     if (this.args.options) {
       return toPlainArray(this.args.options);
     } else {
@@ -222,6 +224,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
           // if there are many options, if neither the options nor the searchtext have changed
           return this._filterResultsCache.results;
         }
+
         //@ts-ignore
         let results = this._filter(this.options, this.searchText);
         //eslint-disable-next-line
@@ -230,6 +233,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
           options: this.options,
           searchText: this.searchText
         };
+
         return results;
       }
     } else {
@@ -242,6 +246,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     let optionsList = document.querySelector(
       `[aria-controls="ember-power-select-trigger-${select.uniqueId}"]`
     ) as HTMLElement;
+
     if (!optionsList) {
       return;
     }
@@ -280,25 +285,31 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     if (this.args.singleSelection) {
       return selected.length > 0 ? [selected[selected.length - 1]] : [];
     }
+
     return selected;
   }
 
   @action
   onCreateOption() {
     let option;
+
     if (
       this.args.onCreateOption &&
       typeof this.args.onCreateOption === 'function'
     ) {
       // The `onCreateOption` function can be used to sanitize the input or explicitly return `false` to reject the input
       option = this.args.onCreateOption(this.select.searchText);
+
       if (option === false) {
         return;
       }
     }
+
     let search = option || this.select.searchText;
+
     this.select.actions.search('');
     this.select.actions.close();
+
     return search;
   }
 
@@ -306,12 +317,15 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   buildSelection(option: any, select: Select) {
     let newSelection = (select.selected || []).slice(0);
     let idx = -1;
+
     for (let i = 0; i < newSelection.length; i++) {
       if (isEqual(newSelection[i], option)) {
         idx = i;
+
         break;
       }
     }
+
     if (idx > -1) {
       newSelection.splice(idx, 1);
     } else {
@@ -321,9 +335,11 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     if (this.args.singleSelection && newSelection.length === 0) {
       select.actions.search('');
     }
+
     if (select?.selected?.length < newSelection.length) {
       select.actions.search('');
     }
+
     return newSelection;
   }
 }

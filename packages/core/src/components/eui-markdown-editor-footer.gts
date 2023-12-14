@@ -1,23 +1,23 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import EuiButtonIcon from './eui-button-icon.gts';
-import EuiLoadingSpinner from './eui-loading-spinner.gts';
-import EuiPopover from './eui-popover.gts';
-import EuiButtonEmpty from './eui-button-empty.gts';
-import EuiModal from './eui-modal.gts';
-import EuiModalHeader from './eui-modal-header.gts';
-import EuiModalBody from './eui-modal-body.gts';
-import EuiTitle from './eui-title.gts';
-import EuiText from './eui-text.gts';
-import EuiHorizontalRule from './eui-horizontal-rule.gts';
-import EuiSpacer from './eui-spacer.gts';
-import EuiMarkdownFormat from './eui-markdown-format.gts';
-import MarkdownLogo from '../components/eui-markdown-editor-footer/icons/markdown-logo.gts';
-import set from 'ember-set-helper/helpers/set';
-
 import { on } from '@ember/modifier';
 
+import set from 'ember-set-helper/helpers/set';
 import { and, not } from 'ember-truth-helpers';
+
+import MarkdownLogo from '../components/eui-markdown-editor-footer/icons/markdown-logo.gts';
+import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiButtonIcon from './eui-button-icon.gts';
+import EuiHorizontalRule from './eui-horizontal-rule.gts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
+import EuiMarkdownFormat from './eui-markdown-format.gts';
+import EuiModal from './eui-modal.gts';
+import EuiModalBody from './eui-modal-body.gts';
+import EuiModalHeader from './eui-modal-header.gts';
+import EuiPopover from './eui-popover.gts';
+import EuiSpacer from './eui-spacer.gts';
+import EuiText from './eui-text.gts';
+import EuiTitle from './eui-title.gts';
 
 export interface EuiMarkdownEditorFooterSignature {
   Args: {

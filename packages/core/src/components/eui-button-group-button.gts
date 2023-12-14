@@ -4,13 +4,13 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import noop from 'ember-composable-helpers/helpers/noop';
 import { and, eq, notEq } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiButton from './eui-button.gts';
-import type { EuiButtonSignature } from './eui-button.gts';
 import EuiInnerText from './eui-inner-text.gts';
 
+import type { EuiButtonSignature } from './eui-button.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonGroupButtonSignature {

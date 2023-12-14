@@ -1,5 +1,6 @@
-import { modifier } from 'ember-modifier';
 import { typeOf } from '@ember/utils';
+
+import { modifier } from 'ember-modifier';
 
 function validatableControl(
   element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,

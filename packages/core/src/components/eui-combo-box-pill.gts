@@ -5,8 +5,8 @@ import optional from 'ember-composable-helpers/helpers/optional';
 
 import classNames from '../helpers/class-names';
 import EuiBadge from './eui-badge.gts';
-import type { EuiBadgeSignature } from './eui-badge.gts';
 
+import type { EuiBadgeSignature } from './eui-badge.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiComboBoxPill {

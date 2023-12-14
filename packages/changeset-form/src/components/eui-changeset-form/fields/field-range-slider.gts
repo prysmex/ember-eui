@@ -1,12 +1,15 @@
-import Base from './base';
-import type { BaseSignature } from './base';
+import { action } from '@ember/object';
 import { EuiFormRow, EuiRange } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import { not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiRangeSignature } from '@ember-eui/core/components/eui-range';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { action } from '@ember/object';
-import { not } from 'ember-truth-helpers';
 
 export interface EuiChangesetFormFieldRangeSliderSignature {
   Element: EuiRangeSignature['Element'];
@@ -38,6 +41,7 @@ export default class EuiChangesetFormFieldRangeSlider extends Base<EuiChangesetF
   @action
   handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;
+
     this.args.changeset.set(this.args.fieldName, value);
 
     this.args.onChange?.(value, e);

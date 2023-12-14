@@ -1,20 +1,19 @@
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import useState from '../helpers/use-state';
-import validatableControl from '../modifiers/validatable-control';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-
+import useState from '../helpers/use-state';
+import validatableControl from '../modifiers/validatable-control';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFieldPasswordSignature {

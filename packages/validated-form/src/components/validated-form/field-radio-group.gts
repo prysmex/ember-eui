@@ -1,15 +1,18 @@
-import ValidatedFormFieldBase from './field-base';
 import { action } from '@ember/object';
-import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
-import type { FieldBaseSignature } from './field-base';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { EuiFormRow, EuiRadioGroup } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
+
+import { not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import ValidatedFormFieldBase from './field-base';
+
+import type { FieldBaseSignature } from './field-base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiRadioGroupSignature } from '@ember-eui/core/components/eui-radio-group';
-import { not } from 'ember-truth-helpers';
 
 export interface FieldRadioGroupSignature {
   Element: EuiRadioGroupSignature['Element'];
@@ -31,11 +34,13 @@ export interface FieldRadioGroupSignature {
 export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase<FieldRadioGroupSignature> {
   get value() {
     let value = maybeUnwrapProxy(this.args.value);
+
     return value?.toArray?.() || value;
   }
 
   get arrayToMap() {
     const currArr = this.args.value || [];
+
     return this.transformToMap(currArr);
   }
 
@@ -43,10 +48,12 @@ export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase
     let valuesMap = value.reduce(
       (acc, val: string) => {
         acc[val] = true;
+
         return acc;
       },
       {} as { [key: string]: boolean }
     );
+
     return valuesMap;
   }
 

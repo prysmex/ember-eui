@@ -1,17 +1,19 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { htmlSafe } from '@ember/template';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import { htmlSafe } from '@ember/template';
+
+import { focusTrap } from 'ember-focus-trap';
+import onKey from 'ember-keyboard/modifiers/on-key';
+import { eq, notEq, or } from 'ember-truth-helpers';
+
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import { sizeMapping } from '../utils/css-mappings/eui-image';
-import { eq, notEq, or } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
-import { focusTrap } from 'ember-focus-trap';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import EuiOverlayMask from './eui-overlay-mask.gts';
 import EuiIcon from './eui-icon.gts';
-import { hash } from '@ember/helper';
+import EuiOverlayMask from './eui-overlay-mask.gts';
 
 type EuiImageSize = keyof typeof sizeMapping;
 
@@ -89,6 +91,7 @@ export default class EuiImage extends Component<ImageArgs> {
 
   get sizeStyle(): ReturnType<typeof htmlSafe> | string {
     const size = this.args.size;
+
     if (
       (typeof size === 'string' || typeof size === 'number') &&
       !this.sizeClass
@@ -97,6 +100,7 @@ export default class EuiImage extends Component<ImageArgs> {
         `max-height:${this.args.size}px; max-width:${this.args.size}px; width:auto;`
       );
     }
+
     return '';
   }
 

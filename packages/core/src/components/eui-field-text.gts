@@ -1,15 +1,15 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '../modifiers/validatable-control';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import validatableControl from '../modifiers/validatable-control';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFieldTextSignature {

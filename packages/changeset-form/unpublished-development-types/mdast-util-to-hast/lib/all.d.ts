@@ -1,6 +1,6 @@
 declare module 'mdast-util-to-hast/lib/all' {
-  import { Node } from 'unist';
   import { H } from 'mdast-util-to-hast';
+  import { Node } from 'unist';
 
   const all: (h: H, node: Node) => Node[];
   export = all;

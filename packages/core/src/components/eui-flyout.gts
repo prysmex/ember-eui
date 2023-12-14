@@ -1,28 +1,30 @@
 import Component from '@glimmer/component';
-import type { EuiBreakpointSize } from '../utils/breakpoint';
 import { tracked } from '@glimmer/tracking';
-import { isWithinMinBreakpoint } from '../utils/breakpoint';
-import { throttle } from '@ember/runloop';
+import { concat } from '@ember/helper';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import { throttle } from '@ember/runloop';
+
+import { element } from 'ember-element-helper';
+import { focusTrap } from 'ember-focus-trap';
+import onKey from 'ember-keyboard/modifiers/on-key';
 import { modifier } from 'ember-modifier';
-import { keysOf } from './common';
-import { sizeMapping } from '../utils/css-mappings/eui-flyout';
+import styleModifier from 'ember-style-modifier/modifiers/style';
+import { and, eq, not,or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { concat } from '@ember/helper';
-import EuiButtonIcon from './eui-button-icon.gts';
-import EuiPortal from './eui-portal.gts';
-import EuiOverlayMask from './eui-overlay-mask.gts';
-import { on } from '@ember/modifier';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import { and, or, eq, not } from 'ember-truth-helpers';
-import { hash } from '@ember/helper';
 import outsideClickDetectorModifier from '../modifiers/outside-click-detector';
 import resizeObserverModifier from '../modifiers/resize-observer';
-import { focusTrap } from 'ember-focus-trap';
-import styleModifier from 'ember-style-modifier/modifiers/style';
-import { element } from 'ember-element-helper';
+import { isWithinMinBreakpoint } from '../utils/breakpoint';
+import { sizeMapping } from '../utils/css-mappings/eui-flyout';
+import { keysOf } from './common';
+import EuiButtonIcon from './eui-button-icon.gts';
+import EuiOverlayMask from './eui-overlay-mask.gts';
+import EuiPortal from './eui-portal.gts';
+
+import type { EuiBreakpointSize } from '../utils/breakpoint';
 
 export type EuiFlyoutArgs = {
   closeAriaLabel?: string;
@@ -225,6 +227,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiFlyoutSigna
         typeof this.maxWidth === 'number'
           ? `${this.maxWidth}px`
           : this.maxWidth;
+
       newStyle = { maxWidth: value };
     }
 

@@ -1,9 +1,10 @@
 import { eq } from 'ember-truth-helpers';
-import argOrDefault from '../helpers/arg-or-default';
-import EuiPanel from './eui-panel.gts';
-import type { EuiPanelSignature } from './eui-panel.gts';
-import classNames from '../helpers/class-names';
 
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import EuiPanel from './eui-panel.gts';
+
+import type { EuiPanelSignature } from './eui-panel.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageContentSignature {

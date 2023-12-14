@@ -1,15 +1,14 @@
-import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-import {
-  gutterSizeMapping,
+import type {
   alignItemsMapping,
-  justifyContentMapping,
-  directionMapping
-} from '../utils/css-mappings/eui-flex-group';
+  directionMapping,
+  gutterSizeMapping,
+  justifyContentMapping} from '../utils/css-mappings/eui-flex-group';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFlexGroupSignature {
   Element: HTMLDivElement | HTMLSpanElement;

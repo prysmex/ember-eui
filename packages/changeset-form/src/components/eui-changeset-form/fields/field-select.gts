@@ -1,13 +1,16 @@
-import Base from './base';
-import type { BaseSignature } from './base';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 import { EuiFormRow, EuiSelect } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import { not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiSelectSignature } from '@ember-eui/core/components/eui-select';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { action } from '@ember/object';
-import { not } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
 
 export interface EuiChangesetFormFieldSelectSignature {
   Element: EuiSelectSignature['Element'];
@@ -33,6 +36,7 @@ export default class EuiChangesetFormFieldSelect extends Base<EuiChangesetFormFi
   @action
   handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;
+
     this.args.changeset.set(this.args.fieldName, value);
 
     this.args.onChange?.(value, e);

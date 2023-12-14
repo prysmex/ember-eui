@@ -1,17 +1,19 @@
 import Component from '@glimmer/component';
-import { getHtmlContent, checkSupportedLanguage } from '../utils/code/utils';
-import type { EuiCodeSharedProps } from '../utils/code/utils';
-import { action } from '@ember/object';
-import { highlight } from 'refractor';
-import type { RefractorNode } from 'refractor';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { scheduleOnce } from '@ember/runloop';
+
+import set from 'ember-set-helper/helpers/set';
+import { highlight } from 'refractor';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import set from 'ember-set-helper/helpers/set';
+import { checkSupportedLanguage,getHtmlContent } from '../utils/code/utils';
+
+import type { EuiCodeSharedProps } from '../utils/code/utils';
+import type { RefractorNode } from 'refractor';
 
 export type EuiCodeArgs = EuiCodeSharedProps & {
   //comments
@@ -45,6 +47,7 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
     this.observer = new MutationObserver((mutationsList) => {
       if (mutationsList.length) this.update();
     });
+
     if (this.codeTarget) {
       this.update();
       this.observer.observe(this.codeTarget, {
@@ -63,6 +66,7 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
       ).trim();
 
       let data: RefractorNode[];
+
       if (typeof html !== 'string') {
         data = [];
       } else {
@@ -75,6 +79,7 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
         code.innerHTML = getHtmlContent(data).element.innerHTML;
       }
     };
+
     scheduleOnce('afterRender', this, render);
   }
 

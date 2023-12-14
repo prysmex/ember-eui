@@ -1,20 +1,21 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { on } from '@ember/modifier';
+import { EnsureSafeComponentHelper } from '@embroider/util';
+
+import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, or } from 'ember-truth-helpers';
-import optional from 'ember-composable-helpers/helpers/optional';
-import { on } from '@ember/modifier';
-import EuiIcon from './eui-icon.gts';
-import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
+import EuiIcon from './eui-icon.gts';
+
+import type {
+  colorMapping,
+  sizeMapping} from '../utils/css-mappings/eui-list-group-item';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { ComponentLike } from '@glint/template';
-import {
-  sizeMapping,
-  colorMapping
-} from '../utils/css-mappings/eui-list-group-item';
 
 export interface EuiListGroupItemSignature {
   Element:

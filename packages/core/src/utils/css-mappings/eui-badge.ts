@@ -1,7 +1,7 @@
-import { euiPaletteColorBlindBehindText } from '../color';
 import { keysOf } from '../../components/common';
-import { isColorDark } from '../../helpers/is-color-dark';
 import { hexToRgb } from '../../helpers/hex-to-rgb';
+import { isColorDark } from '../../helpers/is-color-dark';
+import { euiPaletteColorBlindBehindText } from '../color';
 
 export const VIS_COLORS = euiPaletteColorBlindBehindText();
 

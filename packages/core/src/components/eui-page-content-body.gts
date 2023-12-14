@@ -1,10 +1,12 @@
+import { concat } from '@ember/helper';
+
+import style from 'ember-style-modifier/modifiers/style';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
-import { concat } from '@ember/helper';
-import { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
-import style from 'ember-style-modifier/modifiers/style';
 
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageContentBodySignature {

@@ -26,7 +26,7 @@
  * ESC: Deselect the current selection and hide the list.
  */
 
-import { ARROW_DOWN, ENTER, ESCAPE, TAB, ARROW_UP } from '../keys';
+import { ARROW_DOWN, ARROW_UP,ENTER, ESCAPE, TAB } from '../keys';
 
 export const comboBoxKeys = {
   ARROW_DOWN,

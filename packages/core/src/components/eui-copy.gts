@@ -1,9 +1,10 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
-import { copyToClipboard } from "../utils/copy-to-clipboard";
+import { action } from "@ember/object";
 
+import { copyToClipboard } from "../utils/copy-to-clipboard";
 import EuiToolTip from "./eui-tool-tip.gts";
+
 import type { EuiToolTipSignature } from "./eui-tool-tip.gts";
 
 type EuiCopyArgs = {
@@ -42,6 +43,7 @@ export default class EuiCopyComponent extends Component<EuiCopySignature> {
   @action
   copy() {
     const isCopied = copyToClipboard(this.args.textToCopy);
+
     if (isCopied) {
       this.tooltipText = this.args.afterMessage;
     }

@@ -1,10 +1,12 @@
-import inlineStyles from '../helpers/inline-styles';
-import { and } from 'ember-truth-helpers';
 import { hash } from '@ember/helper';
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
-import { notEq, eq } from 'ember-truth-helpers';
+
 import style from 'ember-style-modifier/modifiers/style';
+import { and } from 'ember-truth-helpers';
+import { eq,notEq } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import inlineStyles from '../helpers/inline-styles';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

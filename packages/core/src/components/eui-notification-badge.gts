@@ -1,11 +1,11 @@
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type {
   colorMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-notification-badge';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 interface EuiNotificationBadgeSignature {
   Element: HTMLSpanElement;

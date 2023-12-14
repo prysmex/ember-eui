@@ -6,14 +6,15 @@
  * Side Public License, v 1.
  */
 
-import { getDefaultEuiMarkdownUiPlugins } from './ui-plugins';
-import type { DefaultEuiMarkdownUiPlugins } from './ui-plugins';
 import { getDefaultEuiMarkdownParsingPlugins } from './parsing-plugins';
-import type { DefaultEuiMarkdownParsingPlugins } from './parsing-plugins';
 import {
   getDefaultEuiMarkdownProcessingPlugins
 } from './processing-plugins';
+import { getDefaultEuiMarkdownUiPlugins } from './ui-plugins';
+
+import type { DefaultEuiMarkdownParsingPlugins } from './parsing-plugins';
 import type { DefaultEuiMarkdownProcessingPlugins } from './processing-plugins';
+import type { DefaultEuiMarkdownUiPlugins } from './ui-plugins';
 
 export const getDefaultEuiMarkdownPlugins = (
   config: undefined | { exclude?: 'tooltip'[] }

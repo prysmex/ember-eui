@@ -2,14 +2,14 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import EuiFormControlLayout from '../components/eui-form-control-layout.gts';
-import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSelectSignature {

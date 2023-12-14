@@ -23,6 +23,7 @@ const makeMutationObserver = (
   const needsAttributes =
     hasOwnProperty(observerOptions, 'attributeOldValue') ||
     hasOwnProperty(observerOptions, 'attributeFilter');
+
   if (needsAttributes && !hasOwnProperty(observerOptions, 'attributes')) {
     observerOptions.attributes = true;
   }

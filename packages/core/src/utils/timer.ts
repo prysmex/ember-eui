@@ -1,4 +1,4 @@
-import { later, cancel } from '@ember/runloop';
+import { cancel,later } from '@ember/runloop';
 export default class Timer {
   // In a browser this is a number, but in node it's a NodeJS.Time (a
   // class). We don't care about this difference.
@@ -38,6 +38,7 @@ export default class Timer {
     if (this.callback) {
       this.callback();
     }
+
     this.clear();
   };
 }

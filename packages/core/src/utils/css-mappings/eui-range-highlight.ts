@@ -15,6 +15,7 @@ export function inlineStyles({
 }): Record<string, unknown> {
   const leftPosition = (lowerValue - min) / (max - min);
   const rangeWidth = (upperValue - lowerValue) / (max - min);
+
   return {
     background: background,
     'margin-left': `${leftPosition * 100}%`,

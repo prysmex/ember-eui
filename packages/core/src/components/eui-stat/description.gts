@@ -1,5 +1,7 @@
 import { hash } from '@ember/helper';
+
 import { element } from 'ember-element-helper';
+
 import EuiText from '../eui-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

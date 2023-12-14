@@ -1,7 +1,7 @@
 import classNames from '../helpers/class-names';
 import EuiMarkdownEditorFooter from './eui-markdown-editor-footer.gts';
-import type { EuiMarkdownEditorFooterSignature } from './eui-markdown-editor-footer.gts';
 
+import type { EuiMarkdownEditorFooterSignature } from './eui-markdown-editor-footer.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiMarkdownEditorDropZoneSignature {

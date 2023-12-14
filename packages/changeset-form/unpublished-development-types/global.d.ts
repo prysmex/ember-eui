@@ -8,10 +8,9 @@ declare module 'ember-changeset-validations/*' {
   const validateFormat: Validator;
   const validateNumber: Validator;
   export {
-    validatePresence,
-    validateLength,
     validateConfirmation,
     validateFormat,
-    validateNumber
-  };
+    validateLength,
+    validateNumber,
+    validatePresence  };
 }

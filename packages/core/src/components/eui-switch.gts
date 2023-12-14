@@ -3,10 +3,10 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
 import { and, not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import EuiIcon from './eui-icon.gts';
 
 export interface EuiSwitchSignature {

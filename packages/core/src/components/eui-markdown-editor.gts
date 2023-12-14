@@ -1,47 +1,44 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
-import { scheduleOnce } from '@ember/runloop';
-
-import { modifier } from 'ember-modifier';
-import unified from 'unified';
-import type { Processor } from 'unified';
-
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import MarkdownActions from '../utils/markdown/markdown-actions';
-import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes';
-
-import classNames from '../helpers/class-names';
-import validatableControl from '../modifiers/validatable-control';
-import { eq, not } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import pick from 'ember-composable-helpers/helpers/pick';
-import resizeObserver from '../modifiers/resize-observer';
-import style from 'ember-style-modifier/modifiers/style';
-import { hash } from '@ember/helper';
-import set from 'ember-set-helper/helpers/set';
+import { scheduleOnce } from '@ember/runloop';
 
-import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar.gts';
-import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar.gts';
-import EuiMarkdownFormat from './eui-markdown-format.gts';
-import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area.gts';
-import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area.gts';
+import pick from 'ember-composable-helpers/helpers/pick';
+import { modifier } from 'ember-modifier';
+import set from 'ember-set-helper/helpers/set';
+import style from 'ember-style-modifier/modifiers/style';
+import { eq, not } from 'ember-truth-helpers';
+import unified from 'unified';
+
+import { argOrDefaultDecorator } from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import resizeObserver from '../modifiers/resize-observer';
+import validatableControl from '../modifiers/validatable-control';
+import MarkdownActions from '../utils/markdown/markdown-actions';
+import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes';
+import {
+  defaultParsingPlugins,
+  defaultProcessingPlugins
+} from '../utils/markdown/plugins/markdown-default-plugins';
+import * as MarkdownTooltipPlugin from '../utils/markdown/plugins/markdown-tooltip';
 import EuiMarkdownEditorDropZone from './eui-markdown-editor-drop-zone.gts';
+import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area.gts';
+import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar.gts';
+import EuiMarkdownFormat from './eui-markdown-format.gts';
 
 import type {
   EuiMarkdownAstNode,
   EuiMarkdownAstNodePosition,
   EuiMarkdownEditorUiPlugin
 } from '../utils/markdown/markdown-types';
-
-import {
-  defaultParsingPlugins,
-  defaultProcessingPlugins
-} from '../utils/markdown/plugins/markdown-default-plugins';
-import * as MarkdownTooltipPlugin from '../utils/markdown/plugins/markdown-tooltip';
+import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area.gts';
+import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar.gts';
+import type { Processor } from 'unified';
 
 export interface EuiMarkdownEditorArgs {
   initialViewMode?: string;
@@ -86,6 +83,7 @@ export const getCursorNode = (
     if (node.children) {
       for (let i = 0; i < node.children.length; i++) {
         const child = node.children[i];
+
         if (
           child &&
           child.position.start.offset < (selectionStart as number) &&
@@ -97,6 +95,7 @@ export const getCursorNode = (
         }
       }
     }
+
     break;
   }
 
@@ -109,6 +108,7 @@ function wrapper(
   callback: (node: EuiMarkdownAstNode) => void
 ) {
   const node = getCursorNode(textarea, parsed);
+
   callback(node);
 }
 
@@ -117,6 +117,7 @@ export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
   [parsed, onSelectedNode]: [any, (node: Node) => void]
 ) {
   const fn = wrapper.bind(null, textarea, parsed, onSelectedNode);
+
   textarea.addEventListener('keyup', fn);
   textarea.addEventListener('mouseup', fn);
 
@@ -128,15 +129,13 @@ export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
 
 export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEditorSignature> {
   // Defaults
-  @argOrDefaultDecorator(defaultParsingPlugins)
-  declare parsingPluginList: typeof defaultParsingPlugins;
+  @argOrDefaultDecorator(defaultParsingPlugins) declare parsingPluginList: typeof defaultParsingPlugins;
 
   @argOrDefaultDecorator(250) declare height: number | string;
   @argOrDefaultDecorator(500) declare maxHeight: number | string;
   @argOrDefaultDecorator(true) declare autoExpandPreview: boolean;
 
-  @argOrDefaultDecorator(defaultProcessingPlugins)
-  declare processingPluginList: typeof defaultProcessingPlugins;
+  @argOrDefaultDecorator(defaultProcessingPlugins) declare processingPluginList: typeof defaultProcessingPlugins;
 
   @tracked selectedNode: Node | null = null;
   @tracked editorId = this.args.editorId ?? guidFor({});
@@ -168,6 +167,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     if (this.height === 'full') {
       return `calc(100% - ${this.editorFooterHeight}px)`;
     }
+
     return `${this.currentHeight}px`;
   }
 
@@ -205,6 +205,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   updateCurrentHeight() {
     let { isPreviewing, autoExpandPreview, height, previewRef, currentHeight } =
       this;
+
     if (isPreviewing && autoExpandPreview && height !== 'full' && previewRef) {
       //@ts-ignore
       if (previewRef.scrollHeight > currentHeight) {
@@ -250,6 +251,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     let value = this.args.value;
     const leading = value.substr(0, position.start.offset);
     const trailing = value.substr(position.end.offset);
+
     this.args.onChange?.(`${leading}${next}${trailing}`);
   }
 
@@ -276,6 +278,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
       //eslint-disable-next-line
       this.Compiler = Compiler;
     }
+
     return unified().use(this.parsingPluginList).use(identityCompiler);
   }
 
@@ -286,6 +289,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   ] {
     try {
       const parsed = this.parser.processSync(this.args.value);
+
       return [parsed, null];
     } catch (e) {
       return [null, e];
@@ -303,6 +307,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
       const onParse = this.args.onParse;
       const messages = parsed ? parsed.messages : [];
       const ast = parsed ? parsed['result'] ?? parsed.contents : null;
+
       onParse(parseError, { messages, ast });
     }
   }

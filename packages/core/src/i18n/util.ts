@@ -6,9 +6,10 @@
  * Side Public License, v 1.
  */
 
-import { isBoolean, isString, isNumber, isUndefined } from '../utils/predicate';
-import { get } from '@ember/object';
 import { assert } from '@ember/debug';
+import { get } from '@ember/object';
+
+import { isBoolean, isNumber, isString, isUndefined } from '../utils/predicate';
 
 function isPrimitive(value: any) {
   return (
@@ -73,6 +74,7 @@ export function processStringToChildren(
       if (i18nMappingFunc !== undefined && typeof value === 'string') {
         value = i18nMappingFunc(value);
       }
+
       children.push(value);
     }
   }
@@ -80,6 +82,7 @@ export function processStringToChildren(
   // if we don't encounter a non-primitive
   // then `children` can be concatenated together at the end
   let encounteredNonPrimitive = false;
+
   for (let i = 0; i < input.length; i++) {
     const char = input[i];
 
@@ -93,19 +96,23 @@ export function processStringToChildren(
         i += 1; // advance passed the brace
         charToAdd = input[i]!;
       }
+
       appendCharToChild(charToAdd);
     } else if (char === '{') {
       appendValueToChildren(child);
       child = { propName: '' };
     } else if (char === '}') {
       const propName = (child as { propName: string }).propName as string;
+
       if (get(values, propName) === undefined) {
         assert(
           `Key "${propName}" not found in ${JSON.stringify(values, null, 2)}`,
           true
         );
       }
+
       const propValue = values[propName];
+
       encounteredNonPrimitive =
         encounteredNonPrimitive || !isPrimitive(propValue);
       appendValueToChildren(propValue);

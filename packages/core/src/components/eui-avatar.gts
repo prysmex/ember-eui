@@ -1,14 +1,16 @@
-import inlineStyles from '../helpers/inline-styles';
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
-import simpleStyle from '../modifiers/simple-style';
-import { toInitials } from '../helpers/to-initials';
-import { and, not, or, eq } from 'ember-truth-helpers';
-import EuiIcon from './eui-icon.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
-import { hash, get } from '@ember/helper';
-import { sizeMapping, typeMapping } from '../utils/css-mappings/eui-avatar';
+import { get,hash } from '@ember/helper';
 
+import { and, eq,not, or } from 'ember-truth-helpers';
+
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
+import inlineStyles from '../helpers/inline-styles';
+import { toInitials } from '../helpers/to-initials';
+import simpleStyle from '../modifiers/simple-style';
+import EuiIcon from './eui-icon.gts';
+
+import type { sizeMapping, typeMapping } from '../utils/css-mappings/eui-avatar';
+import type { EuiIconSignature } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiAvatarSignature {

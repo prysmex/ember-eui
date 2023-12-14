@@ -1,6 +1,7 @@
 import { hash } from '@ember/helper';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
 import type { IEuiChangesetFormTheme } from '../eui-changeset-form.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface ContextSignature {
   Args: {

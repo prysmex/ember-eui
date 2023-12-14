@@ -1,15 +1,17 @@
-import { or } from 'ember-truth-helpers';
-import EuiButtonEmpty from './eui-button-empty.gts';
-import EuiButton from './eui-button.gts';
-import EuiText from './eui-text.gts';
-import EuiModal from './eui-modal.gts';
-import type { EuiModalSignature } from './eui-modal.gts';
-import EuiModalHeader from './eui-modal-header.gts';
-import EuiModalHeaderTitle from './eui-modal-header-title.gts';
-import EuiModalBody from './eui-modal-body.gts';
-import EuiModalFooter from './eui-modal-footer.gts';
 import { on } from '@ember/modifier';
 
+import { or } from 'ember-truth-helpers';
+
+import EuiButton from './eui-button.gts';
+import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiModal from './eui-modal.gts';
+import EuiModalBody from './eui-modal-body.gts';
+import EuiModalFooter from './eui-modal-footer.gts';
+import EuiModalHeader from './eui-modal-header.gts';
+import EuiModalHeaderTitle from './eui-modal-header-title.gts';
+import EuiText from './eui-text.gts';
+
+import type { EuiModalSignature } from './eui-modal.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiConfirmModalSignature {

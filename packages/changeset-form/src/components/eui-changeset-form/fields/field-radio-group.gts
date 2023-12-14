@@ -1,11 +1,14 @@
-import Base from './base';
-import type { BaseSignature } from './base';
+import { action } from '@ember/object';
 import { EuiFormRow, EuiRadioGroup } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiRadioGroupSignature } from '@ember-eui/core/components/eui-radio-group';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { action } from '@ember/object';
 
 export interface EuiChangesetFormFieldRadioGroupSignature {
   Element: EuiRadioGroupSignature['Element'];

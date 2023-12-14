@@ -1,22 +1,24 @@
-import { throttle } from '@ember/runloop';
 import Component from '@glimmer/component';
-import { modifier } from 'ember-modifier';
-import { getBreakpoint } from '../utils/breakpoint';
-import type { EuiBreakpointSize } from '../utils/breakpoint';
 import { cached, tracked } from '@glimmer/tracking';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { throttle } from '@ember/runloop';
+
+import optional from 'ember-composable-helpers/helpers/optional';
+import sub from 'ember-math-helpers/helpers/sub';
+import { modifier } from 'ember-modifier';
+import { and, eq, not } from 'ember-truth-helpers';
 
 import classNames from '../helpers/class-names';
-import EuiIcon from './eui-icon.gts';
-import EuiLink from './eui-link.gts';
-import EuiInnerText from './eui-inner-text.gts';
-import EuiPopover from './eui-popover.gts';
 import useState from '../helpers/use-state';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { eq, and, not } from 'ember-truth-helpers';
-import { on } from '@ember/modifier';
-import { fn } from '@ember/helper';
-import sub from 'ember-math-helpers/helpers/sub';
-import optional from 'ember-composable-helpers/helpers/optional';
+import { getBreakpoint } from '../utils/breakpoint';
+import EuiIcon from './eui-icon.gts';
+import EuiInnerText from './eui-inner-text.gts';
+import EuiLink from './eui-link.gts';
+import EuiPopover from './eui-popover.gts';
+
+import type { EuiBreakpointSize } from '../utils/breakpoint';
 
 export type EuiBreadcrumbResponsiveMaxCount = {
   /**
@@ -168,6 +170,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
   functionToCallOnWindowResize = () => {
     throttle(() => {
       const newBreakpoint = getBreakpoint(window.innerWidth);
+
       if (newBreakpoint !== this.currentBreakpoint) {
         this.currentBreakpoint = newBreakpoint;
       }
@@ -184,6 +187,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
     if (this.args.max === null) {
       return null;
     }
+
     return this.args.max ?? 5;
   }
 
@@ -196,6 +200,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
     // This is the same behavior we want for responsiveness.
     // So calculate the max value based on the combination of `max` and `responsive`
     let calculatedMax: EuiBreadcrumbsComponentArgs['max'] = this.max;
+
     // Set the calculated max to the number associated with the currentBreakpoint key if it exists
     if (
       this.args.responsive &&
@@ -204,6 +209,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
       calculatedMax =
         this.responsiveObject[this.currentBreakpoint as EuiBreakpointSize];
     }
+
     // Final check is to make sure max is used over a larger breakpoint value
     if (this.max && calculatedMax) {
       calculatedMax = this.max < calculatedMax ? this.max : calculatedMax;
@@ -215,6 +221,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
   @cached
   get limitedBreadcrumbs() {
     const calculatedMax = this.calculatedMax;
+
     return calculatedMax
       ? limitedBreadcrumbs(calculatedMax, this.args.breadcrumbs)
       : {

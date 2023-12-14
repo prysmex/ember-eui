@@ -1,10 +1,10 @@
-import classNames from '../helpers/class-names';
-import argOrDefault from '../helpers/arg-or-default';
 import { eq } from 'ember-truth-helpers';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import argOrDefault from '../helpers/arg-or-default';
+import classNames from '../helpers/class-names';
 
-import { sizeMapping, displayMapping } from '../utils/css-mappings/eui-tabs';
+import type { displayMapping,sizeMapping } from '../utils/css-mappings/eui-tabs';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiTabsSignature {
   Element: HTMLDivElement;

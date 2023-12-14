@@ -1,18 +1,20 @@
+import { helper } from '@ember/component/helper';
+import { fn } from '@ember/helper';
+import { array } from '@ember/helper';
+import { on } from '@ember/modifier';
+
+import { and, eq, gt,not, or } from 'ember-truth-helpers';
+import isArray from 'ember-truth-helpers/helpers/is-array';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { and, or, eq, not, gt } from 'ember-truth-helpers';
-import EuiFormLabel from './eui-form-label.gts';
+import useState from '../helpers/use-state';
 import EuiFormErrorText from './eui-form-error-text.gts';
 import EuiFormHelpText from './eui-form-help-text.gts';
-import { on } from '@ember/modifier';
-import { fn } from '@ember/helper';
-import isArray from 'ember-truth-helpers/helpers/is-array';
-import useState from '../helpers/use-state';
-import { array } from '@ember/helper';
-import { helper } from '@ember/component/helper';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { displayMappingToClassMapping } from '../utils/css-mappings/eui-form-row';
+import EuiFormLabel from './eui-form-label.gts';
 
+import type { displayMappingToClassMapping } from '../utils/css-mappings/eui-form-row';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFormRowSignature {

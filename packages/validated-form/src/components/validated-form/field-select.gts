@@ -1,15 +1,18 @@
-import ValidatedFormFieldBase from './field-base';
-import type { FieldBaseSignature } from './field-base';
-import { argOrDefault } from '@ember-eui/core/helpers';
+import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { EuiFormRow, EuiSelect } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
+import { not } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import ValidatedFormFieldBase from './field-base';
+
+import type { FieldBaseSignature } from './field-base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiSelectSignature } from '@ember-eui/core/components/eui-select';
-import { fn } from '@ember/helper';
-import { not } from 'ember-truth-helpers';
 
 export interface FieldSelectSignature {
   Element: EuiSelectSignature['Element'];

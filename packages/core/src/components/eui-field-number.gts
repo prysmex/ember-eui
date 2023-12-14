@@ -1,18 +1,17 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '../modifiers/validatable-control';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, or } from 'ember-truth-helpers';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import validatableControl from '../modifiers/validatable-control';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 
 import type { CommonArgs } from './common';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
 import type { IconType } from './eui-icon.gts';
-
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFieldNumberArgs = CommonArgs & {

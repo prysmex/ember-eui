@@ -1,4 +1,5 @@
 import classNames from '../helpers/class-names';
+
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFlyoutHeaderSignature {

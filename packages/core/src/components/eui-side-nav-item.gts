@@ -1,12 +1,14 @@
-import classNames from '../helpers/class-names';
-import { eq, not, gt, or, and } from 'ember-truth-helpers';
 import { on } from '@ember/modifier';
-import Button from '../components/eui-side-nav-item/button.gts';
-import optional from 'ember-composable-helpers/helpers/optional';
-import isItemOpen from '../helpers/is-item-open';
-import add from 'ember-math-helpers/helpers/add';
-import type { Item } from './eui-side-nav.gts';
 
+import optional from 'ember-composable-helpers/helpers/optional';
+import add from 'ember-math-helpers/helpers/add';
+import { and,eq, gt, not, or } from 'ember-truth-helpers';
+
+import Button from '../components/eui-side-nav-item/button.gts';
+import classNames from '../helpers/class-names';
+import isItemOpen from '../helpers/is-item-open';
+
+import type { Item } from './eui-side-nav.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSideNavItemSignature {

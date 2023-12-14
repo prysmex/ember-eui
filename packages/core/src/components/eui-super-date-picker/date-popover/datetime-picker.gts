@@ -1,16 +1,18 @@
-import { action } from '@ember/object';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { helper } from '@ember/component/helper';
+import { concat, fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+
+import pick from 'ember-composable-helpers/helpers/pick';
+import { and, eq, not } from 'ember-truth-helpers';
 import moment from 'moment';
+
+import EuiFlexItem from '../../eui-flex-item.gts';
 import EuiFormControlLayout from '../../eui-form-control-layout.gts';
 import EuiIcon from '../../eui-icon.gts';
-import EuiFlexItem from '../../eui-flex-item.gts';
 import EuiSelect from '../../eui-select.gts';
-import { on } from '@ember/modifier';
-import { eq, and, not } from 'ember-truth-helpers';
-import { concat, fn } from '@ember/helper';
-import pick from 'ember-composable-helpers/helpers/pick';
 
 const isSameDayHelper = helper(function ([year, month, day, selectedDate]: [
   number,
@@ -21,6 +23,7 @@ const isSameDayHelper = helper(function ([year, month, day, selectedDate]: [
   if (!selectedDate) {
     return false;
   }
+
   return (
     selectedDate.year() === year &&
     selectedDate.month() === month &&
@@ -88,10 +91,12 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
 
     this.month = this.momentConfig.month;
     this.year = this.momentConfig.year;
+
     let hour = this.momentConfig.hour;
     let minute = this.momentConfig.minute;
     let hourStr = hour < 10 ? `0${hour}` : hour;
     let minuteStr = minute < 10 ? `0${minute}` : minute;
+
     this.selectedTime = `${hourStr}:${minuteStr}`;
 
     this.offset = this.monthMoment.clone().startOf('month').day();
@@ -112,6 +117,7 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     return Array.from(Array(15).keys()).map((_, i) => {
       // Create a list of years +/- 7 from the current year
       let year = this.year - 7 + i;
+
       return {
         text: year,
         value: year
@@ -121,11 +127,14 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
 
   get times() {
     const timesArray = [];
+
     // Create entries every 30 minutes
     for (let i = 0; i < 24; i++) {
       let hour = i < 10 ? `0${i}` : i;
+
       timesArray.push(`${hour}:00`, `${hour}:30`);
     }
+
     return timesArray;
   }
 
@@ -139,6 +148,7 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     let daysInPrevMonth = prevMonth.daysInMonth();
 
     const daysArray = [];
+
     for (let i = 0; i < daysInMonth; i++) {
       daysArray[i] = {
         day: i + 1
@@ -154,6 +164,7 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
         isOutside: true
       });
     }
+
     // All months fit within 6 weeks (42 days)
     for (let d = 1, i = daysInMonth + offset; i < 42; d++, i++) {
       daysArray.push({
@@ -168,6 +179,7 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     // but depending on the starting day, one week may not be needed
     const daysMatrix = [];
     const weeks = daysInMonth + offset > 35 ? 6 : 5;
+
     for (let i = 0; i < weeks; i++) {
       daysMatrix[i] = daysArray.slice(i * 7, i * 7 + 7);
     }
@@ -181,9 +193,12 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     this.offset = this.monthMoment.clone().startOf('month').day();
   }
 
-  @action selectTime(time: string, e: Event) {
+  @action
+  selectTime(time: string, e: Event) {
     this.selectedTime = time;
+
     const [hour, minute] = time.split(':');
+
     this.momentConfig.hour = parseInt(hour!);
     this.momentConfig.minute = parseInt(minute!);
     this.momentConfig.second = 0;
@@ -192,7 +207,8 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     this.args.onChange(this.selectedDate, e);
   }
 
-  @action selectDate(day: Day, e: Event) {
+  @action
+  selectDate(day: Day, e: Event) {
     // Only outside days will have year/month
     this.momentConfig.year = day.year || this.year;
     this.momentConfig.month = day.month || this.month;
@@ -208,21 +224,25 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     }
   }
 
-  @action setYear(year: string) {
+  @action
+  setYear(year: string) {
     this.year = parseInt(year);
   }
 
-  @action setMonth(month: string) {
+  @action
+  setMonth(month: string) {
     this.monthMoment.month(parseInt(month));
     this.updateDate();
   }
 
-  @action increaseMonth() {
+  @action
+  increaseMonth() {
     this.monthMoment.add(1, 'month');
     this.updateDate();
   }
 
-  @action decreaseMonth() {
+  @action
+  decreaseMonth() {
     this.monthMoment.subtract(1, 'month');
     this.updateDate();
   }

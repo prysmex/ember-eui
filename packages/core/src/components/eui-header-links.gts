@@ -1,17 +1,20 @@
 import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
+
+import set from 'ember-set-helper/helpers/set';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import EuiShowFor from './eui-show-for.gts';
-import EuiHideFor from './eui-hide-for.gts';
-import type { EuiHideForSignature } from './eui-hide-for.gts';
-import EuiPopover from './eui-popover.gts';
-import type { EuiPopoverSignature } from './eui-popover.gts';
 import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiHideFor from './eui-hide-for.gts';
 import EuiIcon from './eui-icon.gts';
-import { on } from '@ember/modifier';
-import set from 'ember-set-helper/helpers/set';
-import { gutterSizeMapping } from '../utils/css-mappings/eui-header-links';
-import { tracked } from '@glimmer/tracking';
+import EuiPopover from './eui-popover.gts';
+import EuiShowFor from './eui-show-for.gts';
+
+import type { gutterSizeMapping } from '../utils/css-mappings/eui-header-links';
+import type { EuiHideForSignature } from './eui-hide-for.gts';
+import type { EuiPopoverSignature } from './eui-popover.gts';
 
 export interface EuiHeaderLinkSignature {
   Args: {

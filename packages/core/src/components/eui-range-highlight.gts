@@ -1,7 +1,8 @@
-import classNames from '../helpers/class-names';
-import simpleStyle from '../modifiers/simple-style';
-import inlineStyles from '../helpers/inline-styles';
 import { hash } from '@ember/helper';
+
+import classNames from '../helpers/class-names';
+import inlineStyles from '../helpers/inline-styles';
+import simpleStyle from '../modifiers/simple-style';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

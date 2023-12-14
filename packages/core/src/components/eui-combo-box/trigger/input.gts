@@ -1,19 +1,21 @@
-import EmberPowerSelectPowerSelectMultipleInputComponent from 'ember-power-select/components/power-select-multiple/input';
-import { action } from '@ember/object';
-import { isBlank } from '@ember/utils';
-import { htmlSafe } from '@ember/template';
-import { scheduleOnce } from '@ember/runloop';
-
-import { and, not } from 'ember-truth-helpers';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import validatableControl from '../../../modifiers/validatable-control';
 import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { scheduleOnce } from '@ember/runloop';
+import { htmlSafe } from '@ember/template';
+import { isBlank } from '@ember/utils';
+
+import EmberPowerSelectPowerSelectMultipleInputComponent from 'ember-power-select/components/power-select-multiple/input';
+import { and, not } from 'ember-truth-helpers';
+
+import validatableControl from '../../../modifiers/validatable-control';
 
 export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPowerSelectMultipleInputComponent {
   get triggerMultipleInputStyle() {
     scheduleOnce('actions', null, this.args.select.actions.reposition);
 
     let textWidth = 0;
+
     // @ts-expect-error
     if (this.inputFont) {
       textWidth = this.textMeasurer.width(
@@ -22,12 +24,14 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         this.inputFont
       );
     }
+
     return htmlSafe(`box-sizing: content-box; width: ${textWidth + 2}px`);
   }
 
   @action
   handleKeydown(e: KeyboardEvent): false | void {
     if (e.target === null) return;
+
     if (this.args.onKeydown && this.args.onKeydown(e) === false) {
       if (
         // @ts-expect-error
@@ -39,16 +43,22 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
       ) {
         // @ts-expect-error
         this.args.onCreateOption();
+
         return false;
       }
+
       e.stopPropagation();
+
       return false;
     }
+
     if (e.keyCode === 8) {
       e.stopPropagation();
+
       if (isBlank((e.target as HTMLInputElement).value)) {
         let lastSelection =
           this.args.select.selected[this.args.select.selected.length - 1];
+
         if (lastSelection) {
           this.args.select.actions.select(
             this.args.buildSelection(lastSelection, this.args.select),

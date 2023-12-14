@@ -1,13 +1,15 @@
 import Component from '@glimmer/component';
-import { throttle } from '@ember/runloop';
 import { tracked } from '@glimmer/tracking';
-import { getBreakpoint } from '../utils/breakpoint';
-import type { EuiBreakpointSize } from '../utils/breakpoint';
-//@ts-ignore
-import { invokeHelper } from '@ember/helper';
 //@ts-ignore
 import { getValue } from '@glimmer/tracking/primitives/cache';
 import Helper from '@ember/component/helper';
+//@ts-ignore
+import { invokeHelper } from '@ember/helper';
+import { throttle } from '@ember/runloop';
+
+import { getBreakpoint } from '../utils/breakpoint';
+
+import type { EuiBreakpointSize } from '../utils/breakpoint';
 
 export class CurrentBreakPointHelper extends Helper {
   @tracked currentBreakpoint: string | undefined;
@@ -35,10 +37,12 @@ export class CurrentBreakPointHelper extends Helper {
     this.functionToCallOnWindowResize = () => {
       const fn = () => {
         const newBreakpoint = getBreakpoint(window.innerWidth);
+
         if (newBreakpoint !== this.currentBreakpoint) {
           this.currentBreakpoint = newBreakpoint;
         }
       };
+
       throttle(this, fn, 50);
     };
 

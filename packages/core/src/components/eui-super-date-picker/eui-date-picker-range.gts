@@ -1,5 +1,5 @@
-import EuiIcon from '../eui-icon.gts';
 import classNames from '../../helpers/class-names';
+import EuiIcon from '../eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

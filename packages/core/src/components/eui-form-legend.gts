@@ -1,6 +1,7 @@
+import { eq } from 'ember-truth-helpers';
+
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
-import { eq } from 'ember-truth-helpers';
 import screenReaderOnly from '../modifiers/screen-reader-only';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

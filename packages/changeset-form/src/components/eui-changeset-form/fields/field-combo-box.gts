@@ -1,15 +1,18 @@
 import { assert } from '@ember/debug';
-import Base from './base';
-import type { BaseSignature } from './base';
-import { EuiFormRow, EuiComboBox } from '@ember-eui/core/components';
-import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
-import type { EuiComboBoxSignature } from '@ember-eui/core/components/eui-combo-box';
-import { argOrDefault } from '@ember-eui/core/helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import queue from 'ember-composable-helpers/helpers/queue';
+import { action } from '@ember/object';
+import { EuiComboBox,EuiFormRow } from '@ember-eui/core/components';
+import { argOrDefault } from '@ember-eui/core/helpers';
+
 import optional from 'ember-composable-helpers/helpers/optional';
+import queue from 'ember-composable-helpers/helpers/queue';
+import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import Base from './base';
+
+import type { BaseSignature } from './base';
+import type { EuiComboBoxSignature } from '@ember-eui/core/components/eui-combo-box';
+import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
 export interface EuiChangesetFormFieldComboBoxSignature {
   Element: EuiComboBoxSignature['Element'];

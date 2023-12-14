@@ -21,7 +21,6 @@
 // are exported for two versions of TypeScript (3.4, 4.0) and implicit
 // imports during eui.d.ts generation default to the incorrect version (3.4).
 // Explicit imports here resolve the version mismatch.
-// @ts-expect-error
 import all from 'mdast-util-to-hast/lib/all';
 import remark2Rehype from 'remark-rehype';
 

@@ -164,7 +164,7 @@ export default class ValidatedFormFieldBase<
   }
 
   willDestroy() {
-super.willDestroy(...arguments);
+super.willDestroy();
     this.args.unregister?.(this as unknown as ComponentLike);
   }
 }

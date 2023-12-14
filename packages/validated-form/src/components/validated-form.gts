@@ -131,7 +131,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   }
 
   willDestroy() {
-super.willDestroy(...arguments);
+super.willDestroy();
     this.args.unregister?.(this);
   }
 

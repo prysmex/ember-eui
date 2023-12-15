@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/flatpickr",
-  "version": "8.0.0-beta.24",
+  "version": "8.0.0-beta.25",
   "description": "ember-flatpickr integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -66,7 +66,7 @@
     "@babel/plugin-transform-class-static-block": "^7.20.0",
     "@babel/plugin-transform-typescript": "^7.12.13",
     "@babel/preset-typescript": "^7.18.6",
-    "@ember-eui/core": "^8.0.0-beta.24",
+    "@ember-eui/core": "^8.0.0-beta.25",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^3.2.0",
     "@embroider/addon-dev": "^4.1.1",
@@ -138,5 +138,5 @@
   "volta": {
     "extends": "../../package.json"
   },
-  "gitHead": "495c2ae0eb6d2852339365c6e58237d3f5b133cb"
+  "gitHead": "2e4aaf4cf519520be36d696cb88394e166476045"
 }

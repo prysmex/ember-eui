@@ -17,7 +17,7 @@
   "scripts": {
     "build": "concurrently 'npm:build:*'",
     "build:js": "rollup --config",
-    "build:types": "glint --declaration",
+    "build:types": "glint --build",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix",
     "lint:js": "eslint . --cache",

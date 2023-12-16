@@ -43,7 +43,7 @@ export interface IValidatedFormTheme {
   FieldMarkdownEditor: ComponentLike<any>;
 }
 
-const DefaultTheme: IValidatedFormTheme = {
+export const ValidatedFormDefaultTheme: IValidatedFormTheme = {
   FieldNumber: FieldNumberComponent,
   FieldText: FieldTextComponent,
   FieldPassword: FieldPasswordComponent,
@@ -74,7 +74,7 @@ export interface ValidatedFormSignature {
       isTouched: boolean,
       isInvalidAndTouched: boolean
     ) => void;
-    theme?: IValidatedFormTheme;
+    theme?: Partial<IValidatedFormTheme>;
     isDisabled?: boolean;
     fullWidth?: boolean;
     tagName?: EuiFormSignature['Args']['tagName'];
@@ -242,7 +242,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   get theme() {
     const theme: Partial<IValidatedFormTheme> = this.args.theme || {};
 
-    return { ...DefaultTheme, ...theme };
+    return { ...ValidatedFormDefaultTheme, ...theme };
   }
 
   <template>

@@ -50,7 +50,7 @@ export interface IEuiChangesetFormTheme {
   FieldComboBox: ComponentLike<any>;
 }
 
-export const DefaultTheme: IEuiChangesetFormTheme = {
+export const EuiChangesetFormDefaultTheme: IEuiChangesetFormTheme = {
   FieldBase: FieldBaseComponent,
   FieldText: FieldTextComponent,
   FieldTextArea: FieldTextAreaComponent,
@@ -78,7 +78,7 @@ export interface EuiChangesetFormSignature {
       runExecuteInsteadOfSave?: boolean;
       fullWidth?: boolean;
       initialValidation?: boolean;
-      theme?: IEuiChangesetFormTheme;
+      theme?: Partial<IEuiChangesetFormTheme>;
       isDisabled?: boolean;
     };
   Blocks: {
@@ -104,7 +104,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
   get theme() {
     const theme: Partial<IEuiChangesetFormTheme> = this.args.theme || {};
 
-    return { ...DefaultTheme, ...theme };
+    return { ...EuiChangesetFormDefaultTheme, ...theme };
   }
 
   @action

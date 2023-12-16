@@ -12,9 +12,9 @@ import EuiFlexItem from './eui-flex-item.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiTitle from './eui-title.gts';
 
-import type { EuiAccordionSignature } from './eui-accordion.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
+import type { EuiAccordionSignature } from './eui-accordion';
+import type { EuiIconSignature } from './eui-icon';
+import type { EuiTitleSignature } from './eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCollapsibleNavGroupSignature {

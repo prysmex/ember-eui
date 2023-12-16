@@ -8,7 +8,7 @@ import Button from '../components/eui-side-nav-item/button.gts';
 import classNames from '../helpers/class-names';
 import isItemOpen from '../helpers/is-item-open';
 
-import type { Item } from './eui-side-nav.gts';
+import type { Item } from './eui-side-nav';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSideNavItemSignature {

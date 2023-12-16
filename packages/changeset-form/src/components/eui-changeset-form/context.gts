@@ -1,6 +1,6 @@
 import { hash } from '@ember/helper';
 
-import type { IEuiChangesetFormTheme } from '../eui-changeset-form.gts';
+import type { IEuiChangesetFormTheme } from '../eui-changeset-form';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface ContextSignature {

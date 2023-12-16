@@ -22,9 +22,9 @@ import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
 
 import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
-import type { EuiButtomBarArgs } from './eui-bottom-bar.gts';
-import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs.gts';
-import type { IEuiTab } from './eui-tab.gts';
+import type { EuiButtomBarArgs } from './eui-bottom-bar';
+import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs';
+import type { IEuiTab } from './eui-tab';
 import type { WithBoundArgs } from '@glint/template';
 
 export const TEMPLATES = [

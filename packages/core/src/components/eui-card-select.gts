@@ -7,7 +7,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiButtonEmpty from './eui-button-empty.gts';
 
-import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
+import type { EuiButtonEmptySignature } from './eui-button-empty';
 
 export type EuiCardSelectProps = {
   /**

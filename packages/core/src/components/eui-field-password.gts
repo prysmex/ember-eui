@@ -13,7 +13,7 @@ import validatableControl from '../modifiers/validatable-control';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFieldPasswordSignature {

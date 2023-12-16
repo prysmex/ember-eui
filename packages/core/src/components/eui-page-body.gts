@@ -9,7 +9,7 @@ import classNames from '../helpers/class-names';
 import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
 import EuiPanel from './eui-panel.gts';
 
-import type { EuiPanelSignature } from './eui-panel.gts';
+import type { EuiPanelSignature } from './eui-panel';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageBodySignature {

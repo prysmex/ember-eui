@@ -10,8 +10,8 @@ import validatableControl from '../modifiers/validatable-control';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
 import type { CommonArgs } from './common';
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
-import type { IconType } from './eui-icon.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
+import type { IconType } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFieldNumberArgs = CommonArgs & {

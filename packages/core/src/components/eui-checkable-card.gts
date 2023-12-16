@@ -8,8 +8,8 @@ import classNames from '../helpers/class-names';
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiRadio from './eui-radio.gts';
 
-import type { EuiCheckboxSignature } from './eui-checkbox.gts';
-import type { EuiRadioSignature } from './eui-radio.gts';
+import type { EuiCheckboxSignature } from './eui-checkbox';
+import type { EuiRadioSignature } from './eui-radio';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCheckableCardSignature {

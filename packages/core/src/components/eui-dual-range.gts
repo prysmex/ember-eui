@@ -27,14 +27,14 @@ import EuiRangeThumb from './eui-range-thumb.gts';
 import EuiRangeTrack from './eui-range-track.gts';
 import EuiRangeWrapper from './eui-range-wrapper.gts';
 
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
-import type { EuiRangeArgs } from './eui-range.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
+import type { EuiRangeArgs } from './eui-range';
 import type {
   EuiRangeInputArgs,
   EuiRangeInputSignature
-} from './eui-range-input.gts';
-import type { EuiRangeLevel } from './eui-range-levels.gts';
-import type { EuiRangeTick } from './eui-range-ticks.gts';
+} from './eui-range-input';
+import type { EuiRangeLevel } from './eui-range-levels';
+import type { EuiRangeTick } from './eui-range-ticks';
 
 export type ValueMember = number | string;
 

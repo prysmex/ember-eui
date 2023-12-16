@@ -16,7 +16,7 @@ import { LEVEL_COLORS } from './eui-range-levels.gts';
 import EuiRangeLevels from './eui-range-levels.gts';
 import EuiRangeTicks from './eui-range-ticks.gts';
 
-import type { EuiRangeLevel } from './eui-range-levels.gts';
+import type { EuiRangeLevel } from './eui-range-levels';
 
 export { LEVEL_COLORS };
 

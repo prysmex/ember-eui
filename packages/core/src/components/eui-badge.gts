@@ -11,7 +11,7 @@ import simpleStyle from '../modifiers/simple-style';
 import EuiIcon from './eui-icon.gts';
 
 import type { colorMapping } from '../utils/css-mappings/eui-badge';
-import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiBadgeSignature {

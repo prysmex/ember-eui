@@ -11,7 +11,7 @@ import NextButton from './eui-pagination/next-button.gts';
 import PreviousButton from './eui-pagination/previous-button.gts';
 import EuiText from './eui-text.gts';
 
-import type { EuiHideForBreakpoints } from './eui-hide-for.gts';
+import type { EuiHideForBreakpoints } from './eui-hide-for';
 
 const BREAKPOINTS: EuiHideForBreakpoints[] = ['xs', 's'];
 

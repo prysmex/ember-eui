@@ -11,7 +11,7 @@ import EuiModalHeader from './eui-modal-header.gts';
 import EuiModalHeaderTitle from './eui-modal-header-title.gts';
 import EuiText from './eui-text.gts';
 
-import type { EuiModalSignature } from './eui-modal.gts';
+import type { EuiModalSignature } from './eui-modal';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiConfirmModalSignature {

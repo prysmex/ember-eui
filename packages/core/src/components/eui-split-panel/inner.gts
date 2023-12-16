@@ -1,7 +1,7 @@
 import argOrDefault from '../../helpers/arg-or-default';
 import EuiPanel from '../eui-panel.gts';
 
-import type { EuiPanelSignature } from '../eui-panel.gts';
+import type { EuiPanelSignature } from '../eui-panel';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSplitPanelInnerSignature {

@@ -11,7 +11,7 @@ import type {
   colorMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-beta-badge';
-import type { EuiToolTipSignature } from './eui-tool-tip.gts';
+import type { EuiToolTipSignature } from './eui-tool-tip';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiBetaBadgeSignature {

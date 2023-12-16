@@ -9,7 +9,7 @@ import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
 import EuiPageHeaderContent from './eui-page-header-content.gts';
 
 import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
-import type { EuiPageHeaderContentSignature } from './eui-page-header-content.gts';
+import type { EuiPageHeaderContentSignature } from './eui-page-header-content';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageHeaderSignature {

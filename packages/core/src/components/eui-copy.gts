@@ -5,7 +5,7 @@ import { action } from "@ember/object";
 import { copyToClipboard } from "../utils/copy-to-clipboard";
 import EuiToolTip from "./eui-tool-tip.gts";
 
-import type { EuiToolTipSignature } from "./eui-tool-tip.gts";
+import type { EuiToolTipSignature } from "./eui-tool-tip";
 
 type EuiCopyArgs = {
   /**

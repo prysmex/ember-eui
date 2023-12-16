@@ -5,7 +5,7 @@ import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
-import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonContentSignature {

@@ -19,11 +19,10 @@ import EuiPanel from './eui-panel.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
 
-import type { EuiCardSelectSignature } from './eui-card-select.gts';
-import type { EuiCardSelectProps } from './eui-card-select.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
-import type { EuiPanelSignature } from './eui-panel.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
+import type { EuiCardSelectProps } from './eui-card-select';
+import type { EuiIconSignature } from './eui-icon';
+import type { EuiPanelSignature } from './eui-panel';
+import type { EuiTitleSignature } from './eui-title';
 
 type EuiCardComponentArgs = {
   footer?: string;

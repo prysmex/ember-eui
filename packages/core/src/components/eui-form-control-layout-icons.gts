@@ -7,7 +7,7 @@ import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-but
 import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
-import type { EuiFormControlLayoutCustomIconSignature } from './eui-form-control-layout-custom-icon.gts';
+import type { EuiFormControlLayoutCustomIconSignature } from './eui-form-control-layout-custom-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export const ICON_SIDES: ['left', 'right'] = ['left', 'right'];

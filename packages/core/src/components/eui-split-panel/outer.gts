@@ -7,7 +7,7 @@ import useIsWithinBreakpoints from '../../modifiers/use-is-within-breakpoints';
 import EuiPanel from '../eui-panel.gts';
 
 import type { Named } from '../../modifiers/use-is-within-breakpoints';
-import type { EuiPanelSignature } from '../eui-panel.gts';
+import type { EuiPanelSignature } from '../eui-panel';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSplitPanelOuterSignature {

@@ -8,8 +8,8 @@ import inlineStyles from '../helpers/inline-styles';
 import simpleStyle from '../modifiers/simple-style';
 import EuiFieldNumber from './eui-field-number.gts';
 
-import type { EuiFieldNumberSignature } from './eui-field-number.gts';
-import type { EuiFieldNumberArgs } from './eui-field-number.gts';
+import type { EuiFieldNumberSignature } from './eui-field-number';
+import type { EuiFieldNumberArgs } from './eui-field-number';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiRangeInputArgs

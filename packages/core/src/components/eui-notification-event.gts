@@ -15,9 +15,9 @@ import EuiNotificationEventReadButton from './eui-notification-event-read-button
 import EuiNotificationEventReadIcon from './eui-notification-event-read-icon.gts';
 import TextBlock from './text-block.gts';
 
-import type { EuiBadgeSignature } from './eui-badge.gts';
-import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages.gts';
-import type { TextBlockSignature } from './text-block.gts';
+import type { EuiBadgeSignature } from './eui-badge';
+import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages';
+import type { TextBlockSignature } from './text-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiNotificationEventSignature {

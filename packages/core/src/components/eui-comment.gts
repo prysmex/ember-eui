@@ -4,7 +4,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiCommentTimeline from './eui-comment-timeline.gts';
 
-import type { EuiCommentTimelineSignature } from './eui-comment-timeline.gts';
+import type { EuiCommentTimelineSignature } from './eui-comment-timeline';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCommentSignature {

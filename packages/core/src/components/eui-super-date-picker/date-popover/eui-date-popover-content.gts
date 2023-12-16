@@ -12,11 +12,11 @@ import NowTab from './now-tab.gts';
 import RelativeTab from './relative-tab.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
-import type { EuiTabbedContentTab } from '../../eui-tabbed-content.gts';
+import type { EuiTabbedContentTab } from '../../eui-tabbed-content';
 import type { TimeOptions } from '../utils/time-options';
-import type { AbsoluteTabSignature } from './absolute-tab.gts';
-import type { NowTabSignature } from './now-tab.gts';
-import type { RelativeTabSignature } from './relative-tab.gts';
+import type { AbsoluteTabSignature } from './absolute-tab';
+import type { NowTabSignature } from './now-tab';
+import type { RelativeTabSignature } from './relative-tab';
 import type { LocaleSpecifier } from 'moment';
 
 interface EuiDatePopoverContentArgs {

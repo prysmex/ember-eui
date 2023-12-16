@@ -4,8 +4,8 @@ import argOrDefault from '../helpers/arg-or-default';
 import EuiIcon from './eui-icon.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
-import type { EuiIconSignature } from './eui-icon.gts';
-import type { EuiToolTipSignature } from './eui-tool-tip.gts';
+import type { EuiIconSignature } from './eui-icon';
+import type { EuiToolTipSignature } from './eui-tool-tip';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiIconTipSignature {

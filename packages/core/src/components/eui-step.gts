@@ -5,7 +5,7 @@ import classNames from '../helpers/class-names';
 import EuiStepNumber from './eui-step-number.gts';
 import EuiTitle from './eui-title.gts';
 
-import type { EuiTitleSignature } from './eui-title.gts';
+import type { EuiTitleSignature } from './eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStepSignature {

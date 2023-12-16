@@ -13,9 +13,9 @@ import EuiText from './eui-text.gts';
 import EuiTextColor from './eui-text-color.gts';
 import EuiTitle from './eui-title.gts';
 
-import type { EuiIconSignature } from './eui-icon.gts';
-import type { EuiPanelSignature } from './eui-panel.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
+import type { EuiIconSignature } from './eui-icon';
+import type { EuiPanelSignature } from './eui-panel';
+import type { EuiTitleSignature } from './eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { ComponentLike } from '@glint/template';
 

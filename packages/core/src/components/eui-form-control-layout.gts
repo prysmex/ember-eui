@@ -4,8 +4,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
 
-import type { CommonArgs } from '../components/common';
-import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons.gts';
+import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type Component from '@glimmer/component';
 

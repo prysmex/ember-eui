@@ -16,7 +16,7 @@ import { Browser } from '../utils/browser';
 import { keys } from '../utils/keys';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
-import type { EuiFormControlLayoutSignature } from './eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 
 let isSearchSupported = false;
 

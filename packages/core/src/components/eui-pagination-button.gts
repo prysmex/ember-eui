@@ -8,7 +8,7 @@ import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiI18n from './eui-i18n.gts';
 
 import type { paddingMapping } from '../utils/css-mappings/eui-popover-footer';
-import type { EuiButtonEmptySignature } from './eui-button-empty.gts';
+import type { EuiButtonEmptySignature } from './eui-button-empty';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPaginationButtonSignature {

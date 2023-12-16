@@ -13,7 +13,7 @@ import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
 
 import type { CommonArgs } from './common';
-import type { EuiTabsSignature } from './eui-tabs.gts';
+import type { EuiTabsSignature } from './eui-tabs';
 import type { ComponentLike } from '@glint/template';
 
 export interface EuiTabbedContentTab {

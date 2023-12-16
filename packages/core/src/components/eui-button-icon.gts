@@ -10,7 +10,7 @@ import type {
   displayMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-button-icon';
-import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonIconSignature {

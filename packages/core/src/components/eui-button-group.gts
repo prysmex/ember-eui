@@ -9,7 +9,7 @@ import classNames from '../helpers/class-names';
 import screenReaderOnly from '../modifiers/screen-reader-only';
 import EuiButtonGroupButton from './eui-button-group-button.gts';
 
-import type { EuiButtonGroupButtonSignature } from './eui-button-group-button.gts';
+import type { EuiButtonGroupButtonSignature } from './eui-button-group-button';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonGroupSignature {

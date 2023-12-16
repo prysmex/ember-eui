@@ -4,8 +4,8 @@ import { on } from '@ember/modifier';
 import EuiCheckbox from '../eui-checkbox.gts';
 
 import type { EuiMarkdownAstNodePosition } from '../../utils/markdown/markdown-types';
-import type { EuiCheckboxSignature } from '../eui-checkbox.gts';
-import type { Replacer } from '../eui-markdown-format.gts';
+import type { EuiCheckboxSignature } from '../eui-checkbox';
+import type { Replacer } from '../eui-markdown-format';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiMarkdownFormatMarkdownCheckboxArgs {

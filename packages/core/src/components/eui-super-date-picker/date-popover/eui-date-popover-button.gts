@@ -13,7 +13,7 @@ import { useFormatTimeString } from '../utils';
 import EuiDatePopoverContent from './eui-date-popover-content.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
-import type { EuiDatePopoverContentSignature } from './eui-date-popover-content.gts';
+import type { EuiDatePopoverContentSignature } from './eui-date-popover-content';
 
 interface EuiDatePopoverButtonArgs {
   className?: string;

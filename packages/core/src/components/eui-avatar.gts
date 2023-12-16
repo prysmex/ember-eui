@@ -10,7 +10,7 @@ import simpleStyle from '../modifiers/simple-style';
 import EuiIcon from './eui-icon.gts';
 
 import type { sizeMapping, typeMapping } from '../utils/css-mappings/eui-avatar';
-import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiAvatarSignature {

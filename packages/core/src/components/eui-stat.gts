@@ -8,8 +8,8 @@ import EuiStatDescription from './eui-stat/description.gts';
 import EuiStatTitle from './eui-stat/title.gts';
 
 import type {textAlignMapping } from '../utils/css-mappings/eui-stat';
-import type { EuiStatDescriptionSignature } from './eui-stat/description.gts';
-import type { EuiStatTitleSignature } from './eui-stat/title.gts';
+import type { EuiStatDescriptionSignature } from './eui-stat/description';
+import type { EuiStatTitleSignature } from './eui-stat/title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStatSignature {

@@ -9,7 +9,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
 
-import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout.gts';
+import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSelectSignature {

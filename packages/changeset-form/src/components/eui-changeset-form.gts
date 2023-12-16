@@ -27,7 +27,7 @@ import FieldSwitchComponent from './eui-changeset-form/fields/field-switch.gts';
 import FieldTextComponent from './eui-changeset-form/fields/field-text.gts';
 import FieldTextAreaComponent from './eui-changeset-form/fields/field-text-area.gts';
 
-import type { ContextSignature } from './eui-changeset-form/context.gts';
+import type { ContextSignature } from './eui-changeset-form/context';
 import type { EuiFieldNumberSignature } from '@ember-eui/core/components/eui-field-number';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 import type { ComponentLike } from '@glint/template';

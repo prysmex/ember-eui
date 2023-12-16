@@ -8,8 +8,8 @@ import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
 import type { statusToClassMap } from '../utils/css-mappings/eui-step-number';
-import type { EuiIconSignature } from './eui-icon.gts';
-import type { EuiStepSignature } from './eui-step.gts';
+import type { EuiIconSignature } from './eui-icon';
+import type { EuiStepSignature } from './eui-step';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStepNumberSignature {

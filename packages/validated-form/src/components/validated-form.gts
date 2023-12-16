@@ -24,7 +24,7 @@ import FieldSwitchComponent from './validated-form/field-switch.gts';
 import FieldTextComponent from './validated-form/field-text.gts';
 import FieldTextAreaComponent from './validated-form/field-text-area.gts';
 
-import type FieldBase from './validated-form/field-base.gts';
+import type FieldBase from './validated-form/field-base';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 import type { ComponentLike } from '@glint/template';
 

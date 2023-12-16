@@ -10,7 +10,7 @@ import classNames from '../helpers/class-names';
 import EuiButton from './eui-button.gts';
 import EuiInnerText from './eui-inner-text.gts';
 
-import type { EuiButtonSignature } from './eui-button.gts';
+import type { EuiButtonSignature } from './eui-button';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonGroupButtonSignature {

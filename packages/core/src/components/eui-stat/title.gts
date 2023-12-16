@@ -5,7 +5,7 @@ import style from 'ember-style-modifier/modifiers/style';
 
 import EuiTitle from '../eui-title.gts';
 
-import type { EuiTitleSignature } from '../eui-title.gts';
+import type { EuiTitleSignature } from '../eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStatTitleSignature {

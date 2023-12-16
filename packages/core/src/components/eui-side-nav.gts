@@ -17,7 +17,7 @@ import classNames from '../helpers/class-names';
 import isItemOpen from '../helpers/is-item-open';
 import screenReaderOnly from '../modifiers/screen-reader-only';
 
-import type { EuiHideForSignature } from '../components/eui-hide-for.gts';
+import type { EuiHideForSignature } from '../components/eui-hide-for';
 
 export interface Item {
   id: string;

@@ -4,7 +4,7 @@ import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiPanel from './eui-panel.gts';
 
-import type { EuiPanelSignature } from './eui-panel.gts';
+import type { EuiPanelSignature } from './eui-panel';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageContentSignature {

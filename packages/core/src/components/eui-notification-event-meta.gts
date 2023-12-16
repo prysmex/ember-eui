@@ -15,8 +15,8 @@ import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiPopover from './eui-popover.gts';
 
-import type { EuiBadgeSignature } from './eui-badge.gts';
-import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiBadgeSignature } from './eui-badge';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiNotificationEventSignature {

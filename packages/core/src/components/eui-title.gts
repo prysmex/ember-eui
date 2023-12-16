@@ -3,7 +3,7 @@ import classNames from '../helpers/class-names';
 import TextBlock from './text-block.gts';
 
 import type { sizeMapping, transformMapping } from '../utils/css-mappings/eui-title';
-import type { TextBlockSignature } from './text-block.gts';
+import type { TextBlockSignature } from './text-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiTitleSignature {

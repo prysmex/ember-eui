@@ -22,8 +22,8 @@ import EuiRangeTooltip from './eui-range-tooltip.gts';
 import EuiRangeTrack from './eui-range-track.gts';
 import EuiRangeWrapper from './eui-range-wrapper.gts';
 
-import type { EuiRangeLevel } from './eui-range-levels.gts';
-import type { EuiRangeTick } from './eui-range-ticks.gts';
+import type { EuiRangeLevel } from './eui-range-levels';
+import type { EuiRangeTick } from './eui-range-ticks';
 
 export interface EuiRangeArgs {
   compressed?: boolean;

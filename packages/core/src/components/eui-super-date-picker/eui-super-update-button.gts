@@ -7,8 +7,8 @@ import classNames from '../../helpers/class-names';
 import EuiButton from '../eui-button.gts';
 import EuiButtonIcon from '../eui-button-icon.gts';
 
-import type { EuiButtonSignature } from '../eui-button.gts';
-import type { EuiButtonIconSignature } from '../eui-button-icon.gts';
+import type { EuiButtonSignature } from '../eui-button';
+import type { EuiButtonIconSignature } from '../eui-button-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSuperUpdateButtonSignature {

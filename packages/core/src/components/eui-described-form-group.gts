@@ -5,9 +5,9 @@ import EuiFlexItem from './eui-flex-item.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
 
-import type { EuiFlexGroupSignature } from './eui-flex-group.gts';
-import type { EuiFlexItemSignature } from './eui-flex-item.gts';
-import type { EuiTitleSignature } from './eui-title.gts';
+import type { EuiFlexGroupSignature } from './eui-flex-group';
+import type { EuiFlexItemSignature } from './eui-flex-item';
+import type { EuiTitleSignature } from './eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiDescribedFormGroupSignature {

@@ -12,7 +12,7 @@ import { isWithinMinBreakpoint } from '../utils/breakpoint';
 import EuiFlyout from './eui-flyout.gts';
 
 import type { EuiBreakpointSize } from '../utils/breakpoint';
-import type { EuiFlyoutSignature } from './eui-flyout.gts';
+import type { EuiFlyoutSignature } from './eui-flyout';
 import type { ModifierLike } from '@glint/template';
 
 export type EuiCollapsibleNavArgs = {

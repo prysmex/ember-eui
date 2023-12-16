@@ -16,7 +16,7 @@ import EuiShowFor from './eui-show-for.gts';
 import type {
   colorMapping,
 } from '../utils/css-mappings/eui-notification-badge';
-import type { EuiHideForBreakpoints } from './eui-hide-for.gts';
+import type { EuiHideForBreakpoints } from './eui-hide-for';
 
 const keyframes: Keyframe[] = [
   { transform: 'rotate(0)', offset: 0, easing: 'ease-in-out' },

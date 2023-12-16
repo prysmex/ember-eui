@@ -13,8 +13,8 @@ import EuiPopover from './eui-popover.gts';
 import EuiShowFor from './eui-show-for.gts';
 
 import type { gutterSizeMapping } from '../utils/css-mappings/eui-header-links';
-import type { EuiHideForSignature } from './eui-hide-for.gts';
-import type { EuiPopoverSignature } from './eui-popover.gts';
+import type { EuiHideForSignature } from './eui-hide-for';
+import type { EuiPopoverSignature } from './eui-popover';
 
 export interface EuiHeaderLinkSignature {
   Args: {

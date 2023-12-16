@@ -2,7 +2,7 @@ import { helper } from '@ember/component/helper';
 
 import { EUI_THUMB_SIZE } from '../utils/range';
 
-import type { EuiRangeTick } from '../components/eui-range-ticks.gts';
+import type { EuiRangeTick } from '../components/eui-range-ticks';
 
 export function calculateOffset(
   position: number,

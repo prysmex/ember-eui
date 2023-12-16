@@ -7,8 +7,8 @@ import { eq } from 'ember-truth-helpers';
 import EuiButtonIcon from '../eui-button-icon.gts';
 import EuiI18n from '../eui-i18n.gts';
 
-import type { EuiButtonIconSignature } from '../eui-button-icon.gts';
-import type { SafeClickHandler } from '../eui-pagination.gts';
+import type { EuiButtonIconSignature } from '../eui-button-icon';
+import type { SafeClickHandler } from '../eui-pagination';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPaginationPreviousButtonSignature {

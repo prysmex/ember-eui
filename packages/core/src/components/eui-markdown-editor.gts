@@ -36,8 +36,8 @@ import type {
   EuiMarkdownAstNodePosition,
   EuiMarkdownEditorUiPlugin
 } from '../utils/markdown/markdown-types';
-import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area.gts';
-import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar.gts';
+import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area';
+import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar';
 import type { Processor } from 'unified';
 
 export interface EuiMarkdownEditorArgs {

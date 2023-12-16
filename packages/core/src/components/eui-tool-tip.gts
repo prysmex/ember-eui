@@ -18,7 +18,7 @@ import { findPopoverPosition } from '../utils/popover';
 import EuiPortal from './eui-portal.gts';
 import EuiToolTipPopover from './eui-tool-tip-popover.gts';
 
-import type { EuiTooltipPopoverSignature } from './eui-tool-tip-popover.gts';
+import type { EuiTooltipPopoverSignature } from './eui-tool-tip-popover';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
 

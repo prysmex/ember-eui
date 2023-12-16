@@ -12,7 +12,7 @@ import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
 import type { layoutAlignMapping, sizeMapping } from '../utils/css-mappings/eui-context-menu-item';
-import type { EuiIconSignature } from './eui-icon.gts';
+import type { EuiIconSignature } from './eui-icon';
 
 export interface EuiContextMenuItemSignature {
   Element: HTMLAnchorElement | HTMLButtonElement;

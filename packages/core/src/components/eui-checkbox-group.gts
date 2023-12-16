@@ -10,8 +10,8 @@ import validatableControl from '../modifiers/validatable-control';
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiFormFieldset from './eui-form-fieldset.gts';
 
-import type { EuiCheckboxSignature } from './eui-checkbox.gts';
-import type { EuiFormFieldsetSignature } from './eui-form-fieldset.gts';
+import type { EuiCheckboxSignature } from './eui-checkbox';
+import type { EuiFormFieldsetSignature } from './eui-form-fieldset';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCheckboxGroupSignature {

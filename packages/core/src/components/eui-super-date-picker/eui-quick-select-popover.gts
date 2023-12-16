@@ -14,9 +14,9 @@ import EuiRecentlyUsed from '../eui-super-date-picker/eui-quick-select-popover/e
 import EuiCommonlyUsedTimeRanges from './eui-quick-select-popover/eui-commonly-used-time-ranges.gts';
 import EuiQuickSelect from './eui-quick-select-popover/eui-quick-select.gts';
 
-import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used.gts';
-import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges.gts';
-import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select.gts';
+import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used';
+import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges';
+import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select';
 import type { ApplyTime } from './types/global';
 
 export interface EuiQuickSelectPopoverSignature {

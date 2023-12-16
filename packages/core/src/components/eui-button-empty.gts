@@ -9,7 +9,7 @@ import type {
   flushMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-button-empty';
-import type { EuiButtonContentSignature } from './eui-button-content.gts';
+import type { EuiButtonContentSignature } from './eui-button-content';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonEmptySignature {

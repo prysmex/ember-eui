@@ -38,12 +38,12 @@ import EuiPageHeader from './eui-page-header.gts';
 import EuiPageSideBar from './eui-page-side-bar.gts';
 
 import type { EuiBreakpointSize } from '../utils/breakpoint';
-import type { EuiButtomBarArgs } from './eui-bottom-bar.gts';
-import type { EuiPageBodySignature } from './eui-page-body.gts';
-import type { EuiPageContentSignature } from './eui-page-content.gts';
-import type { EuiPageContentBodySignature } from './eui-page-content-body.gts';
-import type { EuiPageHeaderSignature } from './eui-page-header.gts';
-import type { EuiPageSideBarSignature } from './eui-page-side-bar.gts';
+import type { EuiButtomBarArgs } from './eui-bottom-bar';
+import type { EuiPageBodySignature } from './eui-page-body';
+import type { EuiPageContentSignature } from './eui-page-content';
+import type { EuiPageContentBodySignature } from './eui-page-content-body';
+import type { EuiPageHeaderSignature } from './eui-page-header';
+import type { EuiPageSideBarSignature } from './eui-page-side-bar';
 
 export const TEMPLATES = [
   'default',

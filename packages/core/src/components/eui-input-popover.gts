@@ -15,7 +15,7 @@ import resizeObserver from '../modifiers/resize-observer';
 import { cascadingMenuKeys } from '../utils/accesibility';
 import EuiPopover from './eui-popover.gts';
 
-import type { EuiPopoverArgs } from './eui-popover.gts';
+import type { EuiPopoverArgs } from './eui-popover';
 
 export interface EuiInputPopoverArgs
   extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {

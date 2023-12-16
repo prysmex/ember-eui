@@ -28,7 +28,7 @@ export default class EuiChangesetFormFieldCheckbox extends Base<EuiChangesetForm
   <template>
     {{#let (argOrDefault @id (uniqueId)) as |theId|}}
       <EuiFormRow
-        class={{@rowClasses}}
+        class={{this.rowClasses}}
         @labelType={{@labelType}}
         @display={{@display}}
         @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}

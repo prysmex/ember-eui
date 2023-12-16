@@ -5,7 +5,7 @@ import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { next,schedule } from '@ember/runloop';
+import { next, schedule } from '@ember/runloop';
 import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
@@ -27,7 +27,6 @@ import FieldTextAreaComponent from './validated-form/field-text-area.gts';
 import type FieldBase from './validated-form/field-base.gts';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 import type { ComponentLike } from '@glint/template';
-
 
 export interface IValidatedFormTheme {
   FieldNumber: ComponentLike<any>;
@@ -131,7 +130,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   }
 
   willDestroy() {
-super.willDestroy();
+    super.willDestroy();
     this.args.unregister?.(this);
   }
 
@@ -241,7 +240,9 @@ super.willDestroy();
   }
 
   get theme() {
-    return this.args.theme || DefaultTheme;
+    const theme: Partial<IValidatedFormTheme> = this.args.theme || {};
+
+    return { ...DefaultTheme, ...theme };
   }
 
   <template>

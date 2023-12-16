@@ -102,7 +102,9 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
   }
 
   get theme() {
-    return this.args.theme || DefaultTheme;
+    const theme: Partial<IEuiChangesetFormTheme> = this.args.theme || {};
+
+    return { ...DefaultTheme, ...theme };
   }
 
   @action

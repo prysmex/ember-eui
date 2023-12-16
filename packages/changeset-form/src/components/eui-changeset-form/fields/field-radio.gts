@@ -47,8 +47,7 @@ export default class EuiChangesetFormFieldRadio extends Base<EuiChangesetFormFie
   <template>
     {{#let (argOrDefault @id (uniqueId)) as |theId|}}
       <EuiFormRow
-        class={{@rowClasses}}
-        @extra={{this.rowExtra}}
+        class={{this.rowClasses}}
         @labelType={{@labelType}}
         @display={{@display}}
         @hasEmptyLabelSpace={{@hasEmptyLabelSpace}}

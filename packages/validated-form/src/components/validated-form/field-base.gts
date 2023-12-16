@@ -21,6 +21,7 @@ export interface FieldBaseSignature<T = ComponentLike> {
     customValidations?: {
       validation(value: any, options?: Record<string, unknown>): boolean;
     }[];
+    rowClasses?: string;
     rowExtra?: Record<string, unknown>;
     onChange: (value: any) => void;
     onValidityChange: (isValid: boolean) => void;
@@ -72,6 +73,10 @@ export default class ValidatedFormFieldBase<
 
   get customValidations() {
     return this.args.customValidations || [];
+  }
+
+  get rowClasses() {
+    return this.args.rowClasses || '';
   }
 
   get rowExtra() {
@@ -164,7 +169,7 @@ export default class ValidatedFormFieldBase<
   }
 
   willDestroy() {
-super.willDestroy();
+    super.willDestroy();
     this.args.unregister?.(this as unknown as ComponentLike);
   }
 }

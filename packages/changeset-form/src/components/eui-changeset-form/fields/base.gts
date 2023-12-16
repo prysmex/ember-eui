@@ -10,7 +10,6 @@ export interface BaseSignature {
     changeset: BufferedChangeset;
     fieldName: string;
     errors?: string[];
-    rowExtra: unknown;
     rowClasses?: string;
     formId?: string;
     disabled?: boolean;
@@ -40,8 +39,8 @@ export default class ChangesetFormFieldsBase<
     );
   }
 
-  get rowExtra() {
-    return this.args.rowExtra || {};
+  get rowClasses() {
+    return this.args.rowClasses || '';
   }
 
   get value(): any {

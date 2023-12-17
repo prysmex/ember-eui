@@ -1,17 +1,23 @@
-import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
+import { getOwner } from '@ember/application';
+import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 
+import { scrollToHash } from 'ember-url-hash-polyfill';
+
 import {
+  getSidenavRoutes
+} from '../helpers/get-sidenav-routes';
+
+// import EuiSideNavItemButton from '@ember-eui/core/components/eui-side-nav-item/button';
+import type {
   DocfyNode,
-  getSidenavRoutes,
   Item,
   NodeId,
   Page
 } from '../helpers/get-sidenav-routes';
-import RouterService from '@ember/routing/router-service';
+import type RouterService from '@ember/routing/router-service';
 import type ThemeManager from 'site/services/theme-manager';
-import { getOwner } from '@ember/application';
 
 interface Props {}
 
@@ -28,6 +34,7 @@ const coreSectionsOrder = [
 ];
 
 export default class ApplicationController extends Controller {
+  // EuiSideNavItemButton = EuiSideNavItemButton;
   @service declare router: RouterService;
   @service docfy: any;
   @service declare themeManager: ThemeManager;
@@ -63,13 +70,17 @@ export default class ApplicationController extends Controller {
     // uppermost node
     const docsNode = this.docfy.nested.children.firstObject;
 
+    const handlerFn = (id: NodeId) => {
+      this.selectedItem = id;
+      this.router.transitionTo(id);
+      scrollToHash(id);
+    };
+
     // -- Documentation section
     // TODO: remove the onClick that just sets selectedItem, it shouldn't be needed with the new docs structure
     const docsNodeRoutes = getSidenavRoutes([
       { ...docsNode, children: [] },
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
+      handlerFn
     ]);
 
     // -- Display, Forms, Layout, Utilities, Editors & Syntax, Navigation sections
@@ -79,14 +90,10 @@ export default class ApplicationController extends Controller {
     let coreNodes = this._getDocsNode(coreNode)?.children;
     let coreNodeRoutes = coreSectionsOrder?.reduce<Item[]>((acum, curr) => {
       let node = coreNodes?.find((child: DocfyNode) => child.name == curr);
+
       if (node) {
         // build routes for node
-        let nodeRoutes = getSidenavRoutes([
-          node,
-          (id: NodeId) => {
-            this.selectedItem = id;
-          }
-        ]);
+        let nodeRoutes = getSidenavRoutes([node, handlerFn]);
 
         // add fake items based on page headings to simulate 'on this page' feature inside sidebar
         node.pages.forEach((page: Page) => {
@@ -98,15 +105,16 @@ export default class ApplicationController extends Controller {
           if (item) {
             // set disabled to page item
             item.disabled = !!page.frontmatter.disabled;
-
             // create fake items
             headings?.forEach((heading: any) => {
               item?.items.push({
                 id: `fake-${heading.id}`,
                 items: [],
                 name: heading.title,
-                onClick: () => null,
-                href: `${window.location.origin}${page.url}#${heading.id}`,
+                onClick: () => {
+                  this.router.transitionTo(page.url);
+                  scrollToHash(heading.id);
+                },
                 disabled:
                   item.disabled ||
                   !!page.frontmatter.disabled_demos?.includes(heading.title)
@@ -117,15 +125,14 @@ export default class ApplicationController extends Controller {
 
         acum.push(...nodeRoutes);
       }
+
       return acum;
     }, []);
 
     // -- Addons section
     let fakeNode = {
       id: 'addons',
-      onClick: () => (id: NodeId) => {
-        this.selectedItem = id;
-      },
+      onClick: handlerFn,
       name: 'Addons',
       label: 'Addons',
       children: [],
@@ -136,17 +143,14 @@ export default class ApplicationController extends Controller {
       if (child.name == 'core' || child.name == 'package') {
         return;
       }
+
       let innerDocsNode = this._getDocsNode(child);
+
       fakeNode.children.push(...(innerDocsNode?.children || []));
       fakeNode.pages.push(...(innerDocsNode?.pages || []));
     });
 
-    const addonsRoutes = getSidenavRoutes([
-      fakeNode,
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
+    const addonsRoutes = getSidenavRoutes([fakeNode, handlerFn]);
 
     // -- Package section
 
@@ -154,12 +158,7 @@ export default class ApplicationController extends Controller {
       (child: Item) => child.name === 'package'
     );
 
-    const packageRoutes = getSidenavRoutes([
-      packageNode,
-      (id: NodeId) => {
-        this.selectedItem = id;
-      }
-    ]);
+    const packageRoutes = getSidenavRoutes([packageNode, handlerFn]);
 
     // set state
     this.sideNavRoutes = [
@@ -180,9 +179,11 @@ export default class ApplicationController extends Controller {
     return nodes.reduce<Item[]>((acum, curr) => {
       if (depth === 0) {
         const foundItems = this.filterSideNav(str, curr.items, depth + 1);
+
         if (foundItems.length > 0) {
           acum.push({ ...curr, forceOpen: true, items: foundItems });
         }
+
         return acum;
       }
 
@@ -219,6 +220,7 @@ export default class ApplicationController extends Controller {
 
   onSearch = (str: string) => {
     this.searchValue = str;
+
     if (!str) {
       this.currentSideNavRoutes = this.sideNavRoutes;
     } else {
@@ -233,6 +235,7 @@ export default class ApplicationController extends Controller {
   get currentVersion() {
     //@ts-ignore
     const config = getOwner(this).resolveRegistration('config:environment');
+
     if (config.environment === 'development') return 'Local';
     else return `v${config.version}`;
   }

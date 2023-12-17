@@ -1,11 +1,10 @@
 'use strict';
 
-process.env.EMBROIDER_REBUILD_ADDONS = 'prysmex-docfy-ember';
+process.env.EMBROIDER_REBUILD_ADDONS = '@docfy/ember';
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const path = require('path');
 const env = EmberApp.env();
-const Funnel = require('broccoli-funnel');
 
 const IS_PRODUCTION = env === 'production';
 
@@ -22,6 +21,19 @@ module.exports = function (defaults) {
   ];
 
   let app = new EmberApp(defaults, {
+    autoImport: {
+      watchDependencies: [
+        '@ember-eui/core',
+        '@ember-eui/validated-form',
+        '@ember-eui/flatpickr',
+        '@ember-eui/pikaday'
+      ]
+    },
+
+    'ember-power-select': {
+      theme: false
+    },
+
     postcssOptions: {
       compile: {
         enabled: true,
@@ -39,6 +51,7 @@ module.exports = function (defaults) {
     '@ember-eui/core': {
       theme: false
     },
+
     'ember-cli-netlify': {
       redirects: ['/* /index.html 200']
     },
@@ -54,8 +67,8 @@ module.exports = function (defaults) {
 
     svgJar: {
       sourceDirs: [
-        'public/assets',
-        '../node_modules/@ember-eui/core/vendor/icon'
+        './public/assets',
+        './node_modules/@ember-eui/core/vendor/icon'
       ]
     }
   });
@@ -69,22 +82,13 @@ module.exports = function (defaults) {
     plugins.push(new BundleAnalyzerPlugin());
   }
 
-  const themesFunnel = new Funnel('../node_modules/@ember-eui/core/vendor', {
-    files: [
-      'eui_theme_amsterdam_light.min.css',
-      'eui_theme_amsterdam_dark.min.css'
-    ],
-    destDir: '@ember-eui/themes'
-  });
-
   return require('@embroider/compat').compatBuild(app, Webpack, {
-    staticAddonTestSupportTrees: true,
-    staticAddonTrees: true,
-    staticHelpers: true,
-    staticModifiers: true,
-    staticComponents: true,
-    splitAtRoutes: ['*'],
-    extraPublicTrees: [themesFunnel],
+    // staticAddonTestSupportTrees: true,
+    // staticAddonTrees: true,
+    // staticHelpers: true,
+    // staticModifiers: true,
+    // staticComponents: true,
+    // splitAtRoutes: ['*'],
     packagerOptions: {
       webpackConfig: {
         plugins: plugins,

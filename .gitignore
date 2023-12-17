@@ -17,6 +17,8 @@
 /.env*
 /.pnp*
 /packages/**/.sass-cache
+/packages/**/dist-types
+/packages/**/declarations
 /packages/**/connect.lock
 /packages/**/coverage/
 /packages/**/libpeerconnection.log

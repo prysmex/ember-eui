@@ -1,23 +1,24 @@
 {
-	"compilerOptions": {
-		"target": "es2020",
-		"allowJs": true,
-		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true,
-		"noImplicitAny": true,
-		"noImplicitThis": true,
-		"alwaysStrict": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noImplicitReturns": true,
-		"noEmitOnError": false,
-		"noEmit": true,
-		"inlineSourceMap": true,
-		"inlineSources": true,
-		"module": "es6",
-		"experimentalDecorators": true
-	}
+  "compilerOptions": {
+    "target": "ESNext",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noEmitOnError": false,
+    "noEmit": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "module": "ESNext",
+    "experimentalDecorators": true,
+    "emitDeclarationOnly": false
+  }
 }

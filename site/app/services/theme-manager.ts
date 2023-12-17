@@ -1,6 +1,7 @@
-import Service from '@ember/service';
-import { changeTheme } from '../utils/change-theme';
 import { tracked } from '@glimmer/tracking';
+import Service from '@ember/service';
+
+import { changeTheme } from '../utils/change-theme';
 
 type ThemeShape = {
   name: string;
@@ -13,25 +14,29 @@ export default class ThemeManager extends Service {
   themes: ThemeShape[] = [
     {
       name: 'Light',
-      key: 'amsterdam_light'
+      key: 'light'
     },
     {
       name: 'Dark',
-      key: 'amsterdam_dark'
+      key: 'dark'
     }
   ];
 
   constructor(properties: Record<string, unknown>) {
     super(properties);
+
+    const params = new URL(document.location.href).searchParams;
+    const theme = params.get('theme');
+    const currentTheme = theme || window?.localStorage?.getItem('theme');
+
     this.currentTheme =
-      this.themes.findBy('key', window?.localStorage?.getItem('theme')) ||
-      this.themes[0];
+      this.themes.findBy('key', currentTheme) || this.themes[0];
   }
 
   changeTheme = (theme: ThemeShape) => {
     if (theme.key !== this.currentTheme?.key) {
-      changeTheme(theme.key);
       this.currentTheme = theme;
+      changeTheme(theme.key);
     }
   };
 }

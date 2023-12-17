@@ -1,7 +1,11 @@
 <div class="docfy-demo__description" ...attributes>
 
   <div class="docfy-demo__description__header">
-    <EuiFlexGroup @justifyContent='spaceBetween' @gutterSize='none' @alignItems="center">
+    <EuiFlexGroup
+      @justifyContent="spaceBetween"
+      @gutterSize="none"
+      @alignItems="center"
+    >
       {{#if @title}}
         <a href="#{{@id}}" id={{@id}}>
           <EuiTitle class="docfy-demo__description__header__title">
@@ -17,6 +21,7 @@
           target="_blank"
           rel="noopener noreferrer"
           class="docfy-demo__description__header__edit-url"
+          {{!template-lint-disable}}
           style="margin: 0px;"
         >
           Edit
@@ -26,7 +31,7 @@
   </div>
 
   {{#if @title}}
-    <EuiSpacer/>
+    <EuiSpacer />
   {{/if}}
 
   <div class="docfy-demo__description__content">

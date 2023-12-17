@@ -1,6 +1,7 @@
 import Helper from '@ember/component/helper';
-import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
 import { inject as service } from '@ember/service';
+
+import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
 
 export type Heading = {
   headings: Heading[];
@@ -43,12 +44,15 @@ function compareFunction(a: Item, b: Item) {
   if (a.name < b.name) {
     return -1;
   }
+
   if (b.name < a.name) {
     return 1;
   }
+
   // a debe ser igual b
   return 0;
 }
+
 export function getSidenavRoutes([docfyNode, clickHandler]: [
   DocfyNode,
   (id: NodeId) => void
@@ -62,18 +66,22 @@ function getItems(
   parent: string
 ): Item {
   let items: Item[] = [];
+
   if (docfyNode.children.length > 0) {
     let children = docfyNode.children;
+
     items = children.map((child) => {
       return getItems(child, clickHandler, `${parent}-${docfyNode.name}`);
     });
   }
+
   items = [
     ...items,
     ...docfyNode.pages.map((page) => {
       return getItemFromPage(page, clickHandler);
     })
   ].sort(compareFunction);
+
   return {
     name: humanize([docfyNode.label]),
     id: `${parent}-${docfyNode.label}`,
@@ -87,7 +95,6 @@ function getItems(
 function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
   return {
     id: `${page.url}`,
-    href: page.url,
     name: humanize([page.title]),
     onClick: clickHandler.bind(clickHandler, page.url),
     items: []

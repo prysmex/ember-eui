@@ -82,7 +82,6 @@ order: 2
 
 ```js component
 import Component from '@glimmer/component';
-// import { uniqueId } from '@ember-eui/core/helpers/unique-id';
 import { tracked } from '@glimmer/tracking';
 
 export default class DemoSideNavComponent extends Component {

@@ -1,53 +1,52 @@
-'use strict';
+const { configs } = require('@nullvoxpopuli/eslint-configs');
+
+const config = configs.ember();
 
 module.exports = {
-  root: true,
-  parser: 'babel-eslint',
-  parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
-    ecmaFeatures: {
-      legacyDecorators: true
-    }
-  },
-  plugins: ['ember'],
-  extends: [
-    'eslint:recommended',
-    'plugin:ember/recommended',
-    'plugin:prettier/recommended'
-  ],
-  env: {
-    browser: true
-  },
-  rules: {},
+  ...config,
   overrides: [
+    ...config.overrides,
+    {
+      files: ['**/*.ts', '**/*.gts'],
+      rules: {
+        /**
+         * This one is incorrectly parsed for now, because
+         * the rule doesn't understand decorators
+         */
+        '@typescript-eslint/no-unused-vars': 'off',
+        /**
+         * any can be useful
+         */
+        '@typescript-eslint/no-explicit-any': 'off',
+        /**
+         * there is heavy use of `object` in this library
+         */
+        '@typescript-eslint/ban-types': 'off',
+        /**
+         * The following types do are not defined by the definitely typed packages
+         * - @glimmer/tracking/primitives/cache
+         *   - getValue
+         * - @ember/helper
+         *   - invokeHelper
+         *   - capabilities
+         *   - setHelperManager
+         */
+        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/no-empty-interface': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        'ember/no-empty-glimmer-component-classes': 'off',
+        'prefer-const': 'off',
+        '@typescript-eslint/no-inferrable-types': 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/restrict-plus-operands': 'off',
+        'no-prototype-builtins': 'off'
+      }
+    },
     // node files
     {
-      files: [
-        './.eslintrc.js',
-        './.prettierrc.js',
-        './.template-lintrc.js',
-        './ember-cli-build.js',
-        './index.js',
-        './testem.js',
-        './blueprints/*/index.js',
-        './config/**/*.js',
-        './tests/dummy/config/**/*.js'
-      ],
-      parserOptions: {
-        sourceType: 'script'
-      },
-      env: {
-        browser: false,
-        node: true
-      },
-      plugins: ['node'],
-      extends: ['plugin:node/recommended']
-    },
-    {
-      // test files
-      files: ['tests/**/*-test.{js,ts}'],
-      extends: ['plugin:qunit/recommended']
+      files: ['.eslintrc.js', 'addon-main.js'],
+      rules: {}
     }
   ]
 };

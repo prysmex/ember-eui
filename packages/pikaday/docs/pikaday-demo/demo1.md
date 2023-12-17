@@ -13,7 +13,7 @@
 
 <EuiTitle @tagName="h3">Styles</EuiTitle>
 
-<p>In order to give apps control over styling, the default CSS does not load unless you tell it to. The recommended way to load the CSS is to create this file</p>
+<p>In order to give apps control over styling, the default CSS does not load unless you tell it to. The recommended way to load the CSS is just import the pikaday css anywhere in your app, literally it could be in application controller or something like that</p>
 
 <EuiCodeBlock @language="js" @isCopyable={{true}}>
 {{t "pikaday.styles_instructions"}}
@@ -33,6 +33,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import 'ember-pikaday-prysmex/pikaday.css';
 
 export default class extends Component {
   @tracked date = new Date();

@@ -69,4 +69,12 @@ For icons to work you will need to:
 </EuiCodeBlock>
 
 
+Notes:
+Add a div id="ember-basic-dropdown-wormhole" below body-footer meanwhile ember-power-select and ember-basic-dropdown get modernized, also, add  in ember-cli-build, inside app config
+
+ember-power-select: {
+      theme: false
+},
+
+
 </EuiText>

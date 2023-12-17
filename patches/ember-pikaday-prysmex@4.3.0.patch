@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index 13f3c65641387d2e8e147b6df621665b1ad002df..bd9e91728e93c5bcf9914e0de1f04fca593ca900 100644
+--- a/package.json
++++ b/package.json
+@@ -108,7 +108,7 @@
+     "webpack": "^5.65.0"
+   },
+   "peerDependencies": {
+-    "@ember/test-helpers": "^2",
++    "@ember/test-helpers": "^3",
+     "moment": "^2",
+     "moment-timezone": "^0.5.34"
+   },

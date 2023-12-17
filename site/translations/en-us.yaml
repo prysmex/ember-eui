@@ -1,5 +1,5 @@
 pikaday:
-  styles_instructions: "//app/modifiers/pikaday.js\n//Opt-in to using pikaday's default CSS\nimport 'ember-pikaday-prysmex/pikaday.css';\nexport '{' default '}' from 'ember-pikaday-prysmex/modifiers/pikaday';"
+  styles_instructions: "//app/controllers/application.js\n//Opt-in to using pikaday's default CSS\nimport 'ember-pikaday-prysmex/pikaday.css';"
 changeset_form:
   note: <EuiChangesetForm::Fields::ComboBox>
 validated_form:
@@ -11,7 +11,7 @@ getting_started:
       "@embroider/shared-internals": "^1.5.0",
       "@embroider/util": "^1.5.0"
     '}
-  icons_configuration: |- 
+  icons_configuration: |-
       //ember-cli-build.js
       var app = new EmberApp(defaults, '{
         //...
@@ -22,7 +22,7 @@ getting_started:
           ]
         '}
       '});
-  build_configuration: |- 
+  build_configuration: |-
     //ember-cli-build.js
     var app = new EmberApp(defaults, '{
       //...
@@ -31,7 +31,7 @@ getting_started:
       '}
       //...
     '});
-  runtime_configuration: |- 
+  runtime_configuration: |-
     //config/environment.js
     Env = '{
       '//...
@@ -46,8 +46,7 @@ getting_started:
         '}
       '};
     '};
-  
 
 
 
-  
+

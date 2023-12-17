@@ -1,19 +1,37 @@
-export function changeTheme(theme: string) {
-  const currentStylesheet = document.getElementById('current-ember-eui-theme');
-  if (currentStylesheet) {
-    currentStylesheet.parentNode?.removeChild(currentStylesheet);
-  }
-  const head = document.head;
-  const link = document.createElement('link');
+let hasLoaded = false;
 
-  link.type = 'text/css';
-  link.rel = 'stylesheet';
-  link.href = `/@ember-eui/themes/eui_theme_${theme}.min.css`;
-  link.id = 'current-ember-eui-theme';
-  link.dataset.theme = theme;
+export async function changeTheme(theme: string) {
+  if (hasLoaded) {
+    window.location.href = `?theme=${theme}`;
+  }
+
+  const currentStylesheet = document.getElementById(
+    'current-ember-eui-theme'
+  ) as HTMLStyleElement;
+
+  if (currentStylesheet?.dataset?.theme === theme) {
+    return;
+  }
+
+  if (theme === 'dark') {
+    //@ts-expect-error
+    await import('@ember-eui/core/themes/dark.css');
+  } else {
+    //@ts-expect-error
+    await import('@ember-eui/core/themes/light.css');
+  }
+
+  const styleSheet = document.querySelector(
+    'style:last-of-type'
+  ) as HTMLStyleElement;
+
+  styleSheet.id = 'current-ember-eui-theme';
+  styleSheet.dataset.theme = theme;
+  styleSheet.disabled = false;
 
   if (window?.localStorage) {
     window.localStorage.setItem('theme', theme);
   }
-  head.appendChild(link);
+
+  hasLoaded = true;
 }

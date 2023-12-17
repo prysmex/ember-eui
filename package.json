@@ -1,23 +1,32 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "site"
-  ],
   "devDependencies": {
-    "@underline/eslint-config-ember-typescript": "^0.12.0",
-    "@underline/eslint-config-node": "^0.12.0",
-    "lerna": "^4.0.0"
+    "@embroider/addon-shim": "^1.8.6",
+    "@nullvoxpopuli/eslint-configs": "^3.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "eslint": "^8.31.0",
+    "lerna": "^4.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.3",
+    "prettier-plugin-ember-template-tag": "^1.1.0",
+    "typescript": "~5.0.3",
+    "@underline/eslint-config": "^0.15.1",
+    "concurrently": "^8.2.2",
+    "@glint/core": "^1.2.0"
   },
-  "resolutions": {
-    "@embroider/macros": "^1.5.0",
-    "@embroider/shared-internals": "^1.5.0",
-    "@embroider/util": "^1.5.0",
-    "**/prismjs": "1.27.0"
+  "scripts": {
+    "lint:js": "eslint . --fix --ext .js,.ts,.hbs,.gts,.gjs",
+    "_start:package": "pnpm --filter '@ember-eui/core' start --no-watch.clearScreen",
+    "start": "concurrently 'npm:_start:*' --prefix ' ' --restart-after 5000 --restart-tries -1"
   },
   "volta": {
-    "node": "16.14.0",
-    "yarn": "1.22.17"
+    "node": "18.0.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "ember-pikaday-prysmex@4.3.0": "patches/ember-pikaday-prysmex@4.3.0.patch"
+    }
   }
 }

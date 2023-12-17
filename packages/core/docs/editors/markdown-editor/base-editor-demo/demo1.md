@@ -14,8 +14,9 @@ order: 1
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { visit } from '@ember-eui/core/utils/markdown/plugins/markdown-add-components';
-import { defaultProcessingPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins';
+import { visit } from '@ember-eui/core/utils/markdown/plugins/markdown-add-components/processor';
+import EuiAccordion from '@ember-eui/core/components/eui-accordion';
+import { defaultProcessingPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins/processing-plugins';
 
 /*
  Quick example how you can extend plugins, this plugin adds _blank to `a` elements

@@ -28,9 +28,6 @@ export interface FieldBaseSignature<T = ComponentLike> {
     register: (field: T) => void;
     unregister: (field: T) => void;
   };
-  Blocks: {
-    default: [];
-  }
 }
 
 export default class ValidatedFormFieldBase<

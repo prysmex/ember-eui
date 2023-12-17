@@ -11,6 +11,7 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 
 import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import FieldBase from './validated-form/field-base.gts';
 import FieldCheckboxGroupComponent from './validated-form/field-checkbox-group.gts';
 import FieldComboBoxComponent from './validated-form/field-combo-box.gts';
 import FieldDualRangeSliderComponent from './validated-form/field-dual-range-slider.gts';
@@ -24,11 +25,11 @@ import FieldSwitchComponent from './validated-form/field-switch.gts';
 import FieldTextComponent from './validated-form/field-text.gts';
 import FieldTextAreaComponent from './validated-form/field-text-area.gts';
 
-import type FieldBase from './validated-form/field-base';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 import type { ComponentLike } from '@glint/template';
 
 export interface IValidatedFormTheme {
+  FieldBase: ComponentLike<any>;
   FieldNumber: ComponentLike<any>;
   FieldText: ComponentLike<any>;
   FieldPassword: ComponentLike<any>;
@@ -44,6 +45,7 @@ export interface IValidatedFormTheme {
 }
 
 export const ValidatedFormDefaultTheme: IValidatedFormTheme = {
+  FieldBase: FieldBase,
   FieldNumber: FieldNumberComponent,
   FieldText: FieldTextComponent,
   FieldPassword: FieldPasswordComponent,
@@ -98,6 +100,7 @@ export interface ValidatedFormSignature {
         isTouched: boolean;
         isInvalidAndTouched: boolean;
         formId: string;
+        FieldBase: IValidatedFormTheme['FieldBase'];
         FieldNumber: IValidatedFormTheme['FieldNumber'];
         FieldText: IValidatedFormTheme['FieldText'];
         FieldPassword: IValidatedFormTheme['FieldPassword'];
@@ -269,6 +272,14 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
             isTouched=this.isTouched
             isInvalidAndTouched=this.isInvalidAndTouched
             formId=formId
+            FieldBase=(component
+              this.theme.FieldBase
+              register=this.register
+              unregister=this.unregister
+              onValidityChange=this.onChildValidityChange
+              formId=formId
+              disabled=@isDisabled
+            )
             FieldNumber=(component
               this.theme.FieldNumber
               register=this.register

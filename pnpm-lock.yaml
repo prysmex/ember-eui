@@ -1171,19 +1171,19 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       '@ember-eui/changeset-form':
-        specifier: workspace:*
+        specifier: 8.0.0-beta.31
         version: link:../packages/changeset-form
       '@ember-eui/core':
-        specifier: workspace:*
+        specifier: 8.0.0-beta.31
         version: link:../packages/core
       '@ember-eui/flatpickr':
-        specifier: workspace:*
+        specifier: 8.0.0-beta.31
         version: link:../packages/flatpickr
       '@ember-eui/pikaday':
-        specifier: workspace:*
+        specifier: 8.0.0-beta.31
         version: link:../packages/pikaday
       '@ember-eui/validated-form':
-        specifier: workspace:*
+        specifier: 8.0.0-beta.31
         version: link:../packages/validated-form
       '@ember/optional-features':
         specifier: ^2.0.0

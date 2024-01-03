@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  ember-source: ~4.2.0
+
 patchedDependencies:
   ember-pikaday-prysmex@4.3.0:
     hash: 36bovp4on4kmghuyg4bkxax4ya

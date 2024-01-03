@@ -32,6 +32,9 @@
       "allowAny": [
         "ember-source"
       ]
+    },
+    "overrides": {
+      "ember-source": "~4.2.0"
     }
   }
 }

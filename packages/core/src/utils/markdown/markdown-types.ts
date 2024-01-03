@@ -20,6 +20,7 @@ import type { IconType } from '../../components/eui-icon';
 import type Component from '@glimmer/component';
 import type { ComponentLike } from '@glint/template';
 import type { Parser } from 'remark-parse';
+//@ts-expect-error
 import type { Node as UnistNode, Position as UnistPosition } from 'unist';
 import type { VFile } from 'vfile';
 import type { VFileMessage } from 'vfile-message';

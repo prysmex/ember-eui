@@ -110,7 +110,12 @@
     "webpack": "^5.89.0",
     "webpack-bundle-analyzer": "^4.5.0",
     "ember-url-hash-polyfill": "^1.0.11",
-    "@ember/string": "^3.1.1"
+    "@ember/string": "^3.1.1",
+    "@ember-eui/changeset-form": "workspace:*",
+    "@ember-eui/core": "workspace:*",
+    "@ember-eui/flatpickr": "workspace:*",
+    "@ember-eui/pikaday": "workspace:*",
+    "@ember-eui/validated-form": "workspace:*"
   },
   "engines": {
     "node": "12.* || 14.* || >= 16"
@@ -121,11 +126,20 @@
   "volta": {
     "extends": "../package.json"
   },
-  "dependencies": {
-    "@ember-eui/core": "workspace:*"
-  },
   "dependenciesMeta": {
+    "@ember-eui/validated-form": {
+      "injected": true
+    },
+    "@ember-eui/changeset-form": {
+      "injected": true
+    },
     "@ember-eui/core": {
+      "injected": true
+    },
+    "@ember-eui/flatpickr": {
+      "injected": true
+    },
+    "@ember-eui/pikaday": {
       "injected": true
     }
   }

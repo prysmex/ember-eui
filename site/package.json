@@ -10,16 +10,17 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "ember build --environment=production",
     "lint": "npm-run-all --aggregate-output --continue-on-error --parallel \"lint:!(fix)\"",
     "lint:fix": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*:fix",
     "lint:hbs": "ember-template-lint .",
     "lint:hbs:fix": "ember-template-lint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
-    "start": "ember serve",
     "test": "npm-run-all lint test:*",
-    "test:ember": "ember test"
+    "test:ember": "ember test",
+    "build": "ember build --environment=production",
+    "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'",
+    "_syncPnpm": "pnpm sync-dependencies-meta-injected"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
@@ -111,6 +112,7 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "ember-url-hash-polyfill": "^1.0.11",
     "@ember/string": "^3.1.1",
+    "pnpm-sync-dependencies-meta-injected": "^0.0.10",
     "@ember-eui/changeset-form": "workspace:*",
     "@ember-eui/core": "workspace:*",
     "@ember-eui/flatpickr": "workspace:*",
@@ -127,13 +129,13 @@
     "extends": "../package.json"
   },
   "dependenciesMeta": {
+    "@ember-eui/core": {
+      "injected": true
+    },
     "@ember-eui/validated-form": {
       "injected": true
     },
     "@ember-eui/changeset-form": {
-      "injected": true
-    },
-    "@ember-eui/core": {
       "injected": true
     },
     "@ember-eui/flatpickr": {

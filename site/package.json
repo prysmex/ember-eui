@@ -19,8 +19,8 @@
     "test": "npm-run-all lint test:*",
     "test:ember": "ember test",
     "build": "ember build --environment=production",
+    "_syncPnpm": "pnpm sync-dependencies-meta-injected",
     "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'",
-    "_syncPnpm": "pnpm sync-dependencies-meta-injected"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",

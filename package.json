@@ -27,6 +27,11 @@
   "pnpm": {
     "patchedDependencies": {
       "ember-pikaday-prysmex@4.3.0": "patches/ember-pikaday-prysmex@4.3.0.patch"
+    },
+    "peerDependencyRules": {
+      "allowAny": [
+        "ember-source"
+      ]
     }
   }
 }

@@ -24,11 +24,6 @@
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@docfy/ember": "^0.7.0",
-    "@ember-eui/changeset-form": "workspace:*",
-    "@ember-eui/core": "workspace:*",
-    "@ember-eui/flatpickr": "workspace:*",
-    "@ember-eui/pikaday": "workspace:*",
-    "@ember-eui/validated-form": "workspace:*",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "3.2.0",
     "@embroider/compat": "^3.2.3",
@@ -125,7 +120,17 @@
   "volta": {
     "extends": "../package.json"
   },
+  "dependencies": {
+    "@ember-eui/changeset-form": "workspace:*",
+    "@ember-eui/core": "workspace:*",
+    "@ember-eui/flatpickr": "workspace:*",
+    "@ember-eui/pikaday": "workspace:*",
+    "@ember-eui/validated-form": "workspace:*"
+  },
   "dependenciesMeta": {
+    "@ember-eui/validated-form": {
+      "injected": true
+    },
     "@ember-eui/changeset-form": {
       "injected": true
     },
@@ -136,9 +141,6 @@
       "injected": true
     },
     "@ember-eui/pikaday": {
-      "injected": true
-    },
-    "@ember-eui/validated-form": {
       "injected": true
     }
   }

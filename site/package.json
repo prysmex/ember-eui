@@ -20,7 +20,7 @@
     "test:ember": "ember test",
     "build": "ember build --environment=production",
     "_syncPnpm": "pnpm sync-dependencies-meta-injected",
-    "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'",
+    "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",

@@ -21,18 +21,6 @@ import type ThemeManager from 'site/services/theme-manager';
 
 interface Props {}
 
-const coreSectionsOrder = [
-  'templates',
-  'layout',
-  'navigation',
-  'display',
-  'forms',
-  'tabular',
-  'editors',
-  'charts',
-  'utilities'
-];
-
 export default class ApplicationController extends Controller {
   // EuiSideNavItemButton = EuiSideNavItemButton;
   @service declare router: RouterService;
@@ -88,7 +76,17 @@ export default class ApplicationController extends Controller {
       (child: DocfyNode) => child.name === 'core'
     );
     let coreNodes = this._getDocsNode(coreNode)?.children;
-    let coreNodeRoutes = coreSectionsOrder?.reduce<Item[]>((acum, curr) => {
+    let coreNodeRoutes = [
+      'templates',
+      'layout',
+      'navigation',
+      'display',
+      'forms',
+      'tabular',
+      'editors',
+      'charts',
+      'utilities'
+    ].reduce<Item[]>((acum, curr) => {
       let node = coreNodes?.find((child: DocfyNode) => child.name == curr);
 
       if (node) {

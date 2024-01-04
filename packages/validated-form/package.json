@@ -21,6 +21,7 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
     "prepack": "pnpm run build",
+    "_syncPnpm": "pnpm sync-dependencies-meta-injected",
     "start": "concurrently 'npm:start:*'",
     "start:js": "rollup --config --watch",
     "start:types": "glint --build --watch"
@@ -64,6 +65,7 @@
     }
   },
   "devDependencies": {
+    "pnpm-sync-dependencies-meta-injected": "^0.0.10",
     "@babel/core": "^7.23.2",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-proposal-class-properties": "^7.18.6",

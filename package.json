@@ -15,7 +15,7 @@
     "concurrently": "^8.2.2",
     "eslint": "^8.31.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "lerna": "^4.0.0",
+    "@changesets/cli": "^2.26.0",
     "prettier": "^3.0.3",
     "prettier-plugin-ember-template-tag": "^1.1.0",
     "turbo": "^1.11.2",
@@ -27,7 +27,8 @@
     "lint:js": "eslint . --fix --ext .js,.ts,.hbs,.gts,.gjs",
     "start": "concurrently 'npm:_start:*' --names '_start:'",
     "_start:site": "pnpm --filter site start",
-    "_start:packages": "pnpm --stream -parallel --filter './packages/*' start --no-watch.clearScreen"
+    "_start:packages": "pnpm --stream -parallel --filter './packages/*' start --no-watch.clearScreen",
+    "publish-packages": "pnpm build --filter './packages/*' && changeset version && changeset publish"
   },
   "volta": {
     "node": "18.0.0"

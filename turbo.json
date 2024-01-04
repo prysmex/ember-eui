@@ -1,0 +1,27 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+		"_syncPnpm": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+		"build": {
+      "outputs": ["dist/**", "dist-types/**"],
+      "dependsOn": ["_syncPnpm"]
+    },
+    "build:dev": {
+      "outputs": ["dist/**"],
+      "dependsOn": ["_syncPnpm"]
+    },
+    "dev": {
+      "dependsOn": ["^dev"],
+      "cache": false
+    },
+		"start": {
+      "dependsOn": ["_syncPnpm"],
+      "outputs": [],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

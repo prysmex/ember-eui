@@ -10,25 +10,21 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "ember build --environment=production",
     "lint": "npm-run-all --aggregate-output --continue-on-error --parallel \"lint:!(fix)\"",
     "lint:fix": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*:fix",
     "lint:hbs": "ember-template-lint .",
     "lint:hbs:fix": "ember-template-lint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
-    "start": "ember serve",
     "test": "npm-run-all lint test:*",
-    "test:ember": "ember test"
+    "test:ember": "ember test",
+    "build": "ember build --environment=production",
+    "_syncPnpm": "pnpm sync-dependencies-meta-injected",
+    "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@docfy/ember": "^0.7.0",
-    "@ember-eui/changeset-form": "workspace:*",
-    "@ember-eui/core": "workspace:*",
-    "@ember-eui/flatpickr": "workspace:*",
-    "@ember-eui/pikaday": "workspace:*",
-    "@ember-eui/validated-form": "workspace:*",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "3.2.0",
     "@embroider/compat": "^3.2.3",
@@ -114,7 +110,14 @@
     "typescript": "~5.2.2",
     "webpack": "^5.89.0",
     "webpack-bundle-analyzer": "^4.5.0",
-    "ember-url-hash-polyfill": "^1.0.11"
+    "ember-url-hash-polyfill": "^1.0.11",
+    "@ember/string": "^3.1.1",
+    "pnpm-sync-dependencies-meta-injected": "^0.0.10",
+    "@ember-eui/changeset-form": "workspace:*",
+    "@ember-eui/core": "workspace:*",
+    "@ember-eui/flatpickr": "workspace:*",
+    "@ember-eui/pikaday": "workspace:*",
+    "@ember-eui/validated-form": "workspace:*"
   },
   "engines": {
     "node": "12.* || 14.* || >= 16"
@@ -124,5 +127,22 @@
   },
   "volta": {
     "extends": "../package.json"
+  },
+  "dependenciesMeta": {
+    "@ember-eui/core": {
+      "injected": true
+    },
+    "@ember-eui/validated-form": {
+      "injected": true
+    },
+    "@ember-eui/changeset-form": {
+      "injected": true
+    },
+    "@ember-eui/flatpickr": {
+      "injected": true
+    },
+    "@ember-eui/pikaday": {
+      "injected": true
+    }
   }
 }

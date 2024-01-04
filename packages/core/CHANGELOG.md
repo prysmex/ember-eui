@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.1-beta.0
+
+### Patch Changes
+
+- bea54d8: updated build tooling with turbo
+
 ## 8.0.0
 
 ### Patch Changes

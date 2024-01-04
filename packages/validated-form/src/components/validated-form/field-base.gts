@@ -6,7 +6,7 @@ import { later } from '@ember/runloop';
 import {
   buildValidationMessages,
   notifyValidityChange
-} from '../../utils/build-validation-messages';
+} from '../../utils/build-validation-messages.js';
 
 import type { ComponentLike } from '@glint/template';
 

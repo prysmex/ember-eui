@@ -12,7 +12,7 @@ const addon = new Addon({
 const extensions = ['.js', '.ts', '.gts', '.gjs', '.hbs', '.json'];
 
 export default {
-  output: addon.output(),
+  output: { ...addon.output(), hoistTransitiveImports: false },
   plugins: [
     addon.publicEntrypoints([
       '**/*.js',

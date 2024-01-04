@@ -10,7 +10,7 @@ import { EnsureSafeComponentHelper } from '@embroider/util';
 import { not } from 'ember-truth-helpers';
 import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
-import ValidatedFormFieldBase from './field-base';
+import ValidatedFormFieldBase from './field-base.gts';
 
 import type { FieldBaseSignature } from './field-base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';

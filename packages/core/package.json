@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "8.0.0-beta.31",
+  "version": "8.0.0",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",

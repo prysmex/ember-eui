@@ -1,0 +1,7 @@
+# @ember-eui/core
+
+## 8.0.0
+
+### Patch Changes
+
+- e2a3437: lots of configuration for managing the repo

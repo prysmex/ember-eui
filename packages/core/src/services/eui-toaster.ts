@@ -6,7 +6,7 @@ import Service from '@ember/service';
 type ToastColor = 'primary' | 'success' | 'warning' | 'danger';
 
 export interface EuiToastProps {
-  id: string;
+  id?: string;
   title: string;
   color?: ToastColor;
   body?: string;

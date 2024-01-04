@@ -22,7 +22,7 @@
     "lint:fix": "eslint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
-    "prepublishOnly": "pnpm run build",
+    "prepack": "pnpm run build",
     "start": "concurrently 'npm:start:*'",
     "start:js": "rollup --config --watch",
     "start:types": "glint --build --watch"

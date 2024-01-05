@@ -1,6 +1,6 @@
 {
   "name": "site",
-  "version": "7.1.5",
+  "version": "7.1.6-beta.0",
   "private": true,
   "description": "Small description for site goes here",
   "repository": "https://github.com/prysmex/ember-eui",
@@ -67,7 +67,7 @@
     "ember-auto-import": "^2.6.3",
     "ember-cli": "~4.1.1",
     "ember-cli-app-version": "^5.0.0",
-    "ember-cli-babel": "^7.26.11",
+    "ember-cli-babel": "^8.2.0",
     "ember-cli-dependency-checker": "^3.2.0",
     "ember-cli-favicon": "^3.0.0",
     "ember-cli-htmlbars": "^6.0.1",

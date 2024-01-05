@@ -10,7 +10,7 @@ import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
 import ValidatedFormFieldBase from './field-base.gts';
 
-import type { FieldBaseSignature } from './field-base';
+import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 

@@ -1,6 +1,6 @@
 {
   "name": "site",
-  "version": "7.1.6-beta.0",
+  "version": "7.1.6",
   "private": true,
   "description": "Small description for site goes here",
   "repository": "https://github.com/prysmex/ember-eui",

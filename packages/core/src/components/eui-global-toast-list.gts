@@ -16,12 +16,13 @@ import Timer from '../utils/timer';
 import EuiToast from './eui-toast.gts';
 
 import type EuiToasterService from '../services/eui-toaster';
-import type { EuiToastProps } from '../services/eui-toaster';
+import type {
+  EuiToastProps,
+  EuiToastPropsWithId
+} from '../services/eui-toaster';
 import type { sideMapping } from '../utils/css-mappings/eui-global-toast-list';
 
 type EuiToastSide = keyof typeof sideMapping;
-
-type EuiToastPropsWithId = EuiToastProps & { id: string };
 
 type GlobalToastListArgs = {
   toasts: EuiToastPropsWithId[];
@@ -31,6 +32,7 @@ type GlobalToastListArgs = {
   /*
     Determines which side of the browser window the toasts should appear
     Default: 'right'
+
   */
   side?: EuiToastSide;
 };

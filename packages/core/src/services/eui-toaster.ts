@@ -5,13 +5,18 @@ import Service from '@ember/service';
 
 import type { IEuiToast } from '../components/eui-toast';
 
+
 export interface EuiToastProps extends IEuiToast {
   id?: string;
   toastLifeTimeMs?: number;
 }
 
+export interface EuiToastPropsWithId extends EuiToastProps {
+  id: string;
+}
+
 export default class EuiToasterService extends Service {
-  @tracked toasts: (EuiToastProps & { id: string })[] = [];
+  @tracked toasts: EuiToastPropsWithId[] = [];
 
   @action
   show(props: EuiToastProps): void {
@@ -19,7 +24,7 @@ export default class EuiToasterService extends Service {
       props.id = guidFor(props);
     }
 
-    this.toasts = [...this.toasts, props as EuiToastProps & { id: string }];
+    this.toasts = [...this.toasts, props as EuiToastPropsWithId];
   }
 
   @action

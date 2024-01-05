@@ -3,7 +3,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { EuiDualRange,EuiFormRow } from '@ember-eui/core/components';
+import { EuiDualRange, EuiFormRow } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';
@@ -12,7 +12,10 @@ import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import ValidatedFormFieldBase from './field-base.gts';
 
 import type { FieldBaseSignature } from './field-base.gts';
-import type { EuiDualRangeSignature, ValueMember } from '@ember-eui/core/components/eui-dual-range';
+import type {
+  EuiDualRangeSignature,
+  ValueMember
+} from '@ember-eui/core/components/eui-dual-range';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
 export interface FieldDualRangeSliderSignature {
@@ -46,7 +49,11 @@ export interface FieldDualRangeSliderSignature {
 export default class ValidatedFormFieldRangeSlider extends ValidatedFormFieldBase<FieldDualRangeSliderSignature> {
   @action
   //@ts-expect-error
-  handleChange(e: [ValueMember, ValueMember], _isValid: boolean, _event: Event) {
+  handleChange(
+    e: [ValueMember, ValueMember],
+    _isValid: boolean,
+    _event: Event
+  ) {
     // The received event for the dual range is an array with [min, max] as strings
     const value = [Number(e[0]), Number(e[1])];
 

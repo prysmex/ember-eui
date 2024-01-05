@@ -21,9 +21,11 @@ import type { sideMapping } from '../utils/css-mappings/eui-global-toast-list';
 
 type EuiToastSide = keyof typeof sideMapping;
 
+type EuiToastPropsWithId = EuiToastProps & { id: string };
+
 type GlobalToastListArgs = {
-  toasts: EuiToastProps[];
-  dismissToast: (this: EuiGlobalToastList, toast: EuiToastProps) => void;
+  toasts: EuiToastPropsWithId[];
+  dismissToast?: (this: EuiGlobalToastList, toast: EuiToastProps) => void;
   toastLifeTimeMs: number;
 
   /*
@@ -96,7 +98,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   }
 
   @action
-  didInsertToast(toast: EuiToastProps): void {
+  didInsertToast(toast: EuiToastPropsWithId): void {
     this.scheduleToastForDismissal(toast);
 
     if (!this.isUserInteracting) {
@@ -156,7 +158,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   }
 
   @action
-  scheduleToastForDismissal(toast: EuiToastProps): void {
+  scheduleToastForDismissal(toast: EuiToastPropsWithId): void {
     // Start fading the toast out once its lifetime elapses.
     this.toastIdToTimerMap[toast.id] = new Timer(
       this.dismissToast.bind(this, toast),
@@ -167,7 +169,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   }
 
   @action
-  dismissToast(toast: EuiToastProps): void {
+  dismissToast(toast: EuiToastPropsWithId): void {
     // Remove the toast after it's done fading out.
     this.dismissTimeoutIds.push(
       window.setTimeout(() => {

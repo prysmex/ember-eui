@@ -3,21 +3,15 @@ import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import Service from '@ember/service';
 
-type ToastColor = 'primary' | 'success' | 'warning' | 'danger';
+import type { IEuiToast } from '../components/eui-toast';
 
-export interface EuiToastProps {
+export interface EuiToastProps extends IEuiToast {
   id?: string;
-  title: string;
-  color?: ToastColor;
-  body?: string;
-  iconType?: string;
   toastLifeTimeMs?: number;
-  useMarkdownFormat?: boolean;
-  onClose?: () => void;
 }
 
 export default class EuiToasterService extends Service {
-  @tracked toasts: EuiToastProps[] = [];
+  @tracked toasts: (EuiToastProps & { id: string })[] = [];
 
   @action
   show(props: EuiToastProps): void {
@@ -25,7 +19,7 @@ export default class EuiToasterService extends Service {
       props.id = guidFor(props);
     }
 
-    this.toasts = [...this.toasts, props];
+    this.toasts = [...this.toasts, props as EuiToastProps & { id: string }];
   }
 
   @action

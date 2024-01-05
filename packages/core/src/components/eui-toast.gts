@@ -9,34 +9,36 @@ import EuiText from './eui-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+export interface IEuiToast {
+  /**
+   * The title of the toast
+   */
+  title?: string;
+  /**
+   * The body of the toast
+   */
+  body?: string;
+  /**
+   * The color of the toast
+   */
+  color?: 'primary' | 'success' | 'warning' | 'danger' | 'none';
+  /**
+   * The icon type of the toast
+   */
+  iconType?: string;
+  /**
+   * The callback function when the toast is closed
+   */
+  onClose?: () => void;
+  /**
+   * Whether to use markdown format for the body
+   */
+  useMarkdownFormat?: boolean;
+}
+
 export interface EuiToastSignature {
   Element: HTMLDivElement;
-  Args: {
-    /**
-     * The title of the toast
-     */
-    title?: string;
-    /**
-     * The body of the toast
-     */
-    body?: string;
-    /**
-     * The color of the toast
-     */
-    color?: 'primary' | 'success' | 'warning' | 'danger' | 'none';
-    /**
-     * The icon type of the toast
-     */
-    iconType?: string;
-    /**
-     * The callback function when the toast is closed
-     */
-    onClose?: () => void;
-    /**
-     * Whether to use markdown format for the body
-     */
-    useMarkdownFormat?: boolean;
-  };
+  Args: IEuiToast;
 }
 
 const EuiToast: TemplateOnlyComponent<EuiToastSignature> = <template>

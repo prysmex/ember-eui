@@ -47,8 +47,6 @@ export type EuiFlyoutArgs = {
 
   isFocusTrapActive?: boolean;
 
-  as: string;
-
   size?: number | string;
 
   side?: 'left' | 'right';

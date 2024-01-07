@@ -47,6 +47,8 @@ export type EuiFlyoutArgs = {
 
   isFocusTrapActive?: boolean;
 
+  as?: string;
+
   size?: number | string;
 
   side?: 'left' | 'right';
@@ -157,7 +159,7 @@ export interface EuiFlyoutSignature {
   };
 }
 
-export default class EuiCollapsibleNavComponent extends Component<EuiFlyoutSignature> {
+export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
   @tracked windowIsLargeEnoughToPush = isWithinMinBreakpoint(
     typeof window === 'undefined' ? -Infinity : window.innerWidth,
     this.pushMinBreakpoint

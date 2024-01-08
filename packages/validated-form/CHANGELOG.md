@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 8.0.2
+
+### Patch Changes
+
+- a9a4fdc: Fix typings in EuiFlyout
+- Updated dependencies [a9a4fdc]
+  - @ember-eui/core@8.0.2
+
 ## 8.0.1
 
 ### Patch Changes

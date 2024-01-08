@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.2
+
+### Patch Changes
+
+- a9a4fdc: Fix typings in EuiFlyout
+
 ## 8.0.1
 
 ### Patch Changes

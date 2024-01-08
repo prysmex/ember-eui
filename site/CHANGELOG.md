@@ -1,5 +1,11 @@
 # site
 
+## 7.1.7
+
+### Patch Changes
+
+- a9a4fdc: Fix typings in EuiFlyout
+
 ## 7.1.6
 
 ### Patch Changes

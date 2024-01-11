@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.3
+
+### Patch Changes
+
+- d68a28d: Allow consumers to import from @ember-eui/core/components, helpers, and modifiers
+- Updated dependencies [d68a28d]
+  - @ember-eui/core@8.0.3
+
 ## 8.0.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # site
 
+## 7.1.8
+
+### Patch Changes
+
+- d68a28d: Allow consumers to import from @ember-eui/core/components, helpers, and modifiers
+
 ## 7.1.7
 
 ### Patch Changes

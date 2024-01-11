@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.3
+
+### Patch Changes
+
+- d68a28d: Allow consumers to import from @ember-eui/core/components, helpers, and modifiers
+
 ## 8.0.2
 
 ### Patch Changes

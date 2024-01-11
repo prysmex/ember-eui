@@ -16,6 +16,10 @@ export default {
   plugins: [
     addon.publicEntrypoints([
       '**/*.js',
+      'components.js',
+      'helpers.js',
+      'utils.js',
+      'modifiers.js',
       'index.js',
       'template-registry.js',
       '**/*.cjs'

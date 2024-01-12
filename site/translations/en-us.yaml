@@ -22,30 +22,70 @@ getting_started:
           ]
         '}
       '});
-  build_configuration: |-
-    //ember-cli-build.js
-    var app = new EmberApp(defaults, '{
-      //...
-      "@ember-eui/core"': '{
-        theme: "amsterdam_light" //light, dark, amsterdam_dark, amsterdam_light , defaults to amsterdam_light
-      '}
-      //...
-    '});
-  runtime_configuration: |-
-    //config/environment.js
-    Env = '{
-      '//...
-        "@ember-eui/core"': '{
-          euiButtonIcon': '{
-            size': 'xs'
-          '}',
-          euiComboBoxOptionsHeight': 33',
-          euiIcon': '{
-            useSvg: false
-          '}
-        '}
-      '};
+  styles_ts: |-
+    //routes/application.js (or any file)
+    import darkTheme from "'@ember-eui/core/themes/dark.css'";
+    import euiExtensions from "'@ember-eui/core/styles/ember-eui.css'"
+    //or
+    import lightTheme from "'@ember-eui/core/themes/light.css'"
+    import euiExtensions from "'@ember-eui/core/styles/ember-eui.css'"
+  styles_hbs: |-
+    '{{#if this.isDark}}
+      '<link rel="stylesheet" href="@ember-eui/core/themes/dark.css" />
+      '<link rel="stylesheet" href="@ember-eui/core/styles/ember-eui.css" '/>
+    '{{else}}
+      '<link rel="stylesheet" href="@ember-eui/core/themes/light.css" />
+      '<link rel="stylesheet" href="@ember-eui/core/styles/ember-eui.css" '/>
+    '{{/if}}
+  styles_dynamic: |-
+    if (theme === 'dark') '{
+      await import("'@ember-eui/core/themes/dark.css'");
+      await import ("'@ember-eui/core/styles/ember-eui.css'")
+    '} else {
+      await import("'@ember-eui/core/themes/light.css'");
+      await import ("'@ember-eui/core/styles/ember-eui.css'")
+    '}
+  styles_old_import: |-
+   //emebr-cli-build.js
+    app.import("node_modules/@ember-eui/core/vendor/eui_theme_light.min.css");
+    app.import("node_modules/@ember-eui/core/dist/styles/ember-eui.css");
+  eui_config_initializer: |-
+    //initializers/eui-config.ts
+    import type EuiConfigService from '@ember-eui/core/services/eui-config';
+
+    export function initialize(appInstance: any) '{
+      const euiConfig = appInstance.lookup(
+        'service:eui-config'
+      ) as EuiConfigService;
+
+      euiConfig.setConfig('{
+        'euiButtonIcon.size': 's',
+        'euiIcon.useSvg': true,
+        euiComboBoxOptionsHeight: 33,
+      '});
+    '}
+
+    export default '{
+      initialize,
     '};
+  eui_service_injection: |-
+    //routes/application.ts
+
+    beforeModel()'{
+      'this.euiConfig.setConfig('{
+        "'euiButtonIcon.size'": "s",
+        "euiIcon.useSvg": true,
+        "euiComboBoxOptionsHeight": 33,
+      '});
+    '}
+  ember_power_select: |-
+    //ember-cli-build.js
+    let app = new EmberApp(defaults, '{
+      'ember-power-select': '{
+        theme: false,
+      '}
+    '});
+
 
 
 

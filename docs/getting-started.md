@@ -20,9 +20,6 @@ Once you've installed it, you can now install the addon itself:
 
 <EuiSpacer />
 
-You _might_ get babel errors for a dependency mistmatch between embroider packages, here's a [link](https://github.com/embroider-build/embroider/issues/1077) for more info,
-if so, you can force that all packages use the same dependency with npm `overrides` or yarn `resolutions`, here's a the sample for yarn that you could add to your package.json
-
 <EuiCodeBlock @language="json" @isCopyable={{true}}>
 {{t "getting_started.package_configuration"}}
 </EuiCodeBlock>
@@ -51,30 +48,60 @@ For icons to work you will need to:
 <EuiCode>theme</EuiCode>: You can specify the theme you want
 <EuiSpacer />
 
+Themes:
+There is light and dark theme, you can import them in a few ways to your app.
+There's also some extensions made to the @elastic/eui css, they are available via `@ember-eui/core/styles/ember-eui.css`
+
+1. You have a few ways to get the styles importing it statically on any js, so it will be bundled intially.
 <EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.build_configuration"}}
+{{t "getting_started.styles_ts"}}
+</EuiCodeBlock>
+2. Using handlebars you can create an easy swapper
+<EuiCodeBlock @language="hbs" @isCopyable={{true}}>
+{{t "getting_started.styles_hbs"}}
+</EuiCodeBlock>
+3. You can dynamically import it, you can have a look at this demo sourcecode change-theme util
+<EuiCodeBlock @language="ts" @isCopyable={{true}}>
+{{t "getting_started.styles_dynamic"}}
+</EuiCodeBlock>
+4. You can import them via the old way of importing assets to ember apps
+<EuiCodeBlock @language="ts" @isCopyable={{true}}>
+{{t "getting_started.styles_old_import"}}
 </EuiCodeBlock>
 
 <EuiTitle>
   <h3>
-    Runtime configuration, you can override utils/eui-config and export an object with your desired configs
+    Runtime configuration
   </h3>
 </EuiTitle>
 
-<EuiCode>euiComboBoxOptionsHeight</EuiCode>: Set default height for <EuiCode>{{"<EuiComboBox />"}}</EuiCode> options
 <EuiSpacer />
+ v2 addons new need way to allow apps to customize other than using the typical ENV or ember-cli-build configs. There's two recommended ways.
 
+1. Create an initializer and configure ember-eui eui-config service
 <EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.runtime_configuration"}}
+{{t "getting_started.eui_config_initializer"}}
+</EuiCodeBlock>
+2. In any place you want, inject eui-config service and configure
+<EuiCodeBlock @language="ts" @isCopyable={{true}}>
+{{t "getting_started.eui_service_injection"}}
 </EuiCodeBlock>
 
+<EuiTitle>
+  <h3>
+    Last steps...
+  </h3>
+</EuiTitle>
 
-Notes:
-Add a div id="ember-basic-dropdown-wormhole" below body-footer meanwhile ember-power-select and ember-basic-dropdown get modernized, also, add  in ember-cli-build, inside app config
+The whole ember ecosystem is working towards v2 spec, so by now we need to do some extra steps for EuiComboBox to work because its an ember-power-select wrapper.
 
-ember-power-select: {
-      theme: false
-},
+Inside your index.html file, do the following:
+Add a div id="ember-basic-dropdown-wormhole" below body-footer meanwhile ember-power-select and ember-basic-dropdown get modernized, also, add in ember-cli-build, inside the app config
 
+<EuiCodeBlock @language="ts" @isCopyable={{true}}>
+{{t "getting_started.ember_power_select"}}
+</EuiCodeBlock>
+
+<EuiSpacer />
 
 </EuiText>

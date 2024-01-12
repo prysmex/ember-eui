@@ -14,10 +14,8 @@ export async function changeTheme(theme: string) {
   }
 
   if (theme === 'dark') {
-    //@ts-expect-error
     await import('@ember-eui/core/themes/dark.css');
   } else {
-    //@ts-expect-error
     await import('@ember-eui/core/themes/light.css');
   }
 

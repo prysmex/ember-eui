@@ -68,7 +68,7 @@ importers:
         specifier: ^1.12.0
         version: 1.12.1(@glint/environment-ember-loose@1.2.1)(@glint/template@1.2.1)(ember-source@4.2.0)
       ember-auto-import:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-changeset:
         specifier: ^4.1.2
@@ -294,7 +294,7 @@ importers:
         specifier: ^2.1.0
         version: 2.4.2
       ember-auto-import:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-cached-decorator-polyfill:
         specifier: ^1.0.2
@@ -577,7 +577,7 @@ importers:
         specifier: ^1.12.0
         version: 1.12.1(@glint/environment-ember-loose@1.2.1)(@glint/template@1.2.1)(ember-source@4.2.0)
       ember-auto-import:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-composable-helpers:
         specifier: ^5.0.0
@@ -782,7 +782,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(@babel/core@7.23.7)(@glint/template@1.2.1)(ember-source@4.2.0)
       ember-auto-import:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-composable-helpers:
         specifier: ^5.0.0
@@ -996,7 +996,7 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(@babel/core@7.23.7)
       ember-auto-import:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-composable-helpers:
         specifier: ^5.0.0
@@ -1336,7 +1336,7 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       ember-auto-import:
-        specifier: ^2.6.3
+        specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-cli:
         specifier: ~4.1.1
@@ -20360,7 +20360,7 @@ packages:
       '@ember/string': ^3.1.1
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
-      ember-auto-import: ^2.6.3
+      ember-auto-import: ^2.7.2
       ember-focus-trap: ^1.1.0
       ember-source: '*'
       moment: ^2.29.3

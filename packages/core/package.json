@@ -132,7 +132,7 @@
     "@embroider/util": "^1.12.0",
     "@html-next/vertical-collection": "4.0.0",
     "chroma-js": "^2.1.0",
-    "ember-auto-import": "^2.6.3",
+    "ember-auto-import": "^2.7.2",
     "ember-cached-decorator-polyfill": "^1.0.2",
     "ember-cli-string-helpers": "^6.1.0",
     "ember-composable-helpers": "^5.0.0",
@@ -168,7 +168,7 @@
   "peerDependencies": {
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
-    "ember-auto-import": "^2.6.3",
+    "ember-auto-import": "^2.7.2",
     "ember-focus-trap": "^1.1.0",
     "ember-source": "^3.28.0 || >=4.0.0",
     "moment": "^2.29.3",

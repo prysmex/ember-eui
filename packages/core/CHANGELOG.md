@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.4
+
+### Patch Changes
+
+- 63dc3c8: Docs and bump ember-auto-improt
+
 ## 8.0.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # site
 
+## 7.1.9
+
+### Patch Changes
+
+- 63dc3c8: Docs and bump ember-auto-improt
+
 ## 7.1.8
 
 ### Patch Changes

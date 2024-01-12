@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.4
+
+### Patch Changes
+
+- 63dc3c8: Docs and bump ember-auto-improt
+- Updated dependencies [63dc3c8]
+  - @ember-eui/core@8.0.4
+
 ## 8.0.3
 
 ### Patch Changes

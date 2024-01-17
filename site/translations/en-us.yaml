@@ -24,11 +24,11 @@ getting_started:
       '});
   styles_ts: |-
     //routes/application.js (or any file)
-    import darkTheme from "'@ember-eui/core/themes/dark.css'";
-    import euiExtensions from "'@ember-eui/core/styles/ember-eui.css'"
+    import darkTheme from "@ember-eui/core/themes/dark.css";
+    import euiExtensions from "@ember-eui/core/styles/ember-eui.css"
     //or
-    import lightTheme from "'@ember-eui/core/themes/light.css'"
-    import euiExtensions from "'@ember-eui/core/styles/ember-eui.css'"
+    import lightTheme from "@ember-eui/core/themes/light.css"
+    import euiExtensions from "@ember-eui/core/styles/ember-eui.css"
   styles_hbs: |-
     '{{#if this.isDark}}
       '<link rel="stylesheet" href="@ember-eui/core/themes/dark.css" />

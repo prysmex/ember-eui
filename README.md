@@ -16,7 +16,7 @@ Once you've installed it, you can now install the addon itself:
 
 ## Demo
 
-### [Live demo and documentation](https://ember-eui.netlify.app)
+### [Live demo and documentation](https://ember-eui.vercel.app)
 
 ## Packages
 - [@ember-eui/core](./packages/core/README.md)

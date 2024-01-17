@@ -20,10 +20,6 @@ Once you've installed it, you can now install the addon itself:
 
 <EuiSpacer />
 
-<EuiCodeBlock @language="json" @isCopyable={{true}}>
-{{t "getting_started.package_configuration"}}
-</EuiCodeBlock>
-
 <EuiTitle>
   <h3>
     Icons
@@ -45,7 +41,6 @@ For icons to work you will need to:
   </h3>
 </EuiTitle>
 
-<EuiCode>theme</EuiCode>: You can specify the theme you want
 <EuiSpacer />
 
 Themes:

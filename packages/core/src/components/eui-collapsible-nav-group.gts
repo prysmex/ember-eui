@@ -2,8 +2,8 @@ import { concat } from '@ember/helper';
 
 import { element } from 'ember-element-helper';
 import { and, notEq } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiAccordion from './eui-accordion.gts';
@@ -40,7 +40,7 @@ export interface EuiCollapsibleNavGroupSignature {
 const EuiCollapsibleNavGroup: TemplateOnlyComponent<EuiCollapsibleNavGroupSignature> =
   <template>
     {{#let
-      (argOrDefault @id (uniqueId)) (argOrDefault @titleElement "h3")
+      (argOrDefault @id (randomId)) (argOrDefault @titleElement "h3")
       as |groupID titleElement|
     }}
       {{#let (concat groupID "__title") as |titleID|}}

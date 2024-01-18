@@ -5,8 +5,8 @@ import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
 import { and,eq, not, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import EuiButtonEmpty from '../components/eui-button-empty.gts';
 import EuiHideFor from '../components/eui-hide-for.gts';
 import EuiShowFor from '../components/eui-show-for.gts';
@@ -86,8 +86,8 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
     {{#let
       (classNames "euiSideNav" (if @isOpenMobile "euiSideNav-isOpenMobile"))
       (element (argOrDefault @headingProps.element "h2"))
-      (argOrDefault @headingProps.id (uniqueId))
-      (uniqueId)
+      (argOrDefault @headingProps.id (randomId))
+      (randomId)
       (or (has-block "heading") (not (not @heading)))
       as |classes HeadingElement headingId sideNavContentId hasHeader|
     }}

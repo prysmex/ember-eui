@@ -10,8 +10,8 @@ import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import resizeObserver from '../modifiers/resize-observer';
@@ -238,11 +238,11 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                 {{/if}}
                 <ButtonElement
                   type="button"
-                  id={{argOrDefault @buttonProps.id (uniqueId)}}
+                  id={{argOrDefault @buttonProps.id (randomId)}}
                   class={{this.buttonClasses}}
                   aria-controls={{@id}}
                   aria-expanded={{this.isOpen}}
-                  aria-labelledby={{argOrDefault @buttonProps.id (uniqueId)}}
+                  aria-labelledby={{argOrDefault @buttonProps.id (randomId)}}
                   {{on "click" this.onToggle}}
                 >
                   <span class={{this.buttonContentClasses}}>

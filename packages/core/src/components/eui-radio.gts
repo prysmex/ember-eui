@@ -2,8 +2,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, not, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 
@@ -33,7 +33,7 @@ export interface EuiRadioSignature {
 const EuiRadio: TemplateOnlyComponent<EuiRadioSignature> = <template>
   {{#let
     (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
-    (argOrDefault @id (uniqueId))
+    (argOrDefault @id (randomId))
     as |hasLabelBlock id|
   }}
     {{#let

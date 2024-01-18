@@ -3,8 +3,8 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
 import { and, not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiIcon from './eui-icon.gts';
@@ -52,8 +52,8 @@ export default class EuiSwitch extends Component<EuiSwitchSignature> {
     {{#let
       (argOrDefault @type "button")
       (argOrDefault @showLabel true)
-      (argOrDefault @id (uniqueId))
-      (uniqueId)
+      (argOrDefault @id (randomId))
+      (randomId)
       (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
       as |type showLabel switchId labelId hasLabelBlock|
     }}

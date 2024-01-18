@@ -6,8 +6,8 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import { and, eq, not, notEq, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
@@ -144,11 +144,11 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
         display=this.display
         componentName="EuiFilePicker"
       )
-      (argOrDefault @id (uniqueId))
+      (argOrDefault @id (randomId))
       as |classes inputId|
     }}
       {{#let
-        (if inputId (concat inputId "-filePicker__prompt") (uniqueId))
+        (if inputId (concat inputId "-filePicker__prompt") (randomId))
         (notEq this.promptText null)
         (eq this.display "default")
         as |promptId isOverridingInitialPrompt normalFormControl|

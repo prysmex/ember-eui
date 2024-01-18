@@ -2,8 +2,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
@@ -78,7 +78,7 @@ const EuiFieldNumber: TemplateOnlyComponent<EuiFieldNumberSignature> =
     {{#let
       (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
       (and (argOrDefault @isAppendProvided true) (has-block "append"))
-      (argOrDefault @id (uniqueId))
+      (argOrDefault @id (randomId))
       as |hasPrepend hasAppend inputId|
     }}
       {{#let

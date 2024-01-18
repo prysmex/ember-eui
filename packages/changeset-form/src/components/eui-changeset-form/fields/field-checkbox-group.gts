@@ -2,8 +2,7 @@ import { action } from '@ember/object';
 import { EuiCheckboxGroup,EuiFormRow } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-
+import randomId from '../../../-private/random-id';
 import Base from './base';
 
 import type { BaseSignature } from './base';
@@ -72,7 +71,7 @@ export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangese
   }
 
   <template>
-    {{#let (argOrDefault @id (uniqueId)) as |theId|}}
+    {{#let (argOrDefault @id (randomId)) as |theId|}}
       <EuiFormRow
         class={{this.rowClasses}}
         @labelType={{@labelType}}

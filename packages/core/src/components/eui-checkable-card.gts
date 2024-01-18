@@ -1,8 +1,8 @@
 import { concat } from '@ember/helper';
 
 import { eq } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiCheckbox from './eui-checkbox.gts';
@@ -30,7 +30,7 @@ export interface EuiCheckableCardSignature {
 
 const EuiCheckableCard: TemplateOnlyComponent<EuiCheckableCardSignature> =
   <template>
-    {{#let (argOrDefault @id (uniqueId)) as |id|}}
+    {{#let (argOrDefault @id (randomId)) as |id|}}
       <div
         class={{classNames
           "euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow euiPanel--hasBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row euiCheckableCard"

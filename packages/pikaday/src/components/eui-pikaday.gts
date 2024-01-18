@@ -9,7 +9,8 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 import optional from 'ember-composable-helpers/helpers/optional';
 import pikaday from 'ember-pikaday-prysmex/modifiers/pikaday';
 import { and,not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+
+import randomId from '../-private/random-id';
 
 import type { EuiFieldTextSignature } from '@ember-eui/core/components/eui-field-text';
 
@@ -157,7 +158,7 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
     {{#let
       (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
       (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
-      (argOrDefault @id (uniqueId))
+      (argOrDefault @id (randomId))
       as |hasPrepend hasAppend inputId|
     }}
       <EuiFieldText

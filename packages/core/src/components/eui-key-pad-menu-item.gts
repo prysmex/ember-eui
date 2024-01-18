@@ -4,8 +4,8 @@ import { on } from '@ember/modifier';
 
 import { element } from 'ember-element-helper';
 import { and, eq, not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiBetaBadge from './eui-beta-badge.gts';
@@ -44,7 +44,7 @@ const EuiKeyPadMenuItem: TemplateOnlyComponent<EuiKeyPadMenuItemSignature> =
   <template>
     {{#let
       (if @checkable "label" (if (and @href (not @isDisabled)) "a" "button"))
-      (argOrDefault @id (uniqueId))
+      (argOrDefault @id (randomId))
       (and @href (not @isDisabled))
       as |ElementTag itemId useHref|
     }}

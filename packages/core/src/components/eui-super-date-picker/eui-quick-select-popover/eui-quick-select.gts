@@ -7,9 +7,9 @@ import dateMath from '@elastic/datemath';
 import pick from 'ember-composable-helpers/helpers/pick';
 import set from 'ember-set-helper/helpers/set';
 import { lte } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import moment from 'moment';
 
+import randomId from '../../../-private/random-id';
 import EuiButton from '../../eui-button.gts';
 import EuiButtonIcon from '../../eui-button-icon.gts';
 import EuiFieldNumber from '../../eui-field-number.gts';
@@ -131,7 +131,7 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
   }
 
   <template>
-    {{#let (uniqueId) as |legendId|}}
+    {{#let (randomId) as |legendId|}}
       <fieldset>
         <EuiFlexGroup
           @responsive={{false}}

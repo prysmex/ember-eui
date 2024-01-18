@@ -5,8 +5,8 @@ import { throttle } from '@ember/runloop';
 
 import { modifier } from 'ember-modifier';
 import { and, not, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import { isWithinMinBreakpoint } from '../utils/breakpoint';
 import EuiFlyout from './eui-flyout.gts';
@@ -191,7 +191,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
         functionToCallOnWindowResize=this.functionToCallOnWindowResize
       }}
     ></span>
-    {{#let (argOrDefault @id (uniqueId)) as |flyoutID|}}
+    {{#let (argOrDefault @id (randomId)) as |flyoutID|}}
 
       {{#if (not (and this.navIsDocked (not this.showButtonIfDocked)))}}
         {{yield

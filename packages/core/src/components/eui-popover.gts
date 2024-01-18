@@ -13,9 +13,9 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, not,or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { tabbable } from 'tabbable';
 
+import randomId from '../-private/random-id';
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import merge from '../helpers/merge';
@@ -673,7 +673,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
 
   <template>
     {{#let
-      (uniqueId)
+      (randomId)
       (classNames
         (if this.isOpening "euiPopover-isOpen")
         position=this.anchorPosition
@@ -718,7 +718,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
           )
         }}
           <EuiPortal @insert={{@insert}}>
-            {{#let (uniqueId) as |panelId|}}
+            {{#let (randomId) as |panelId|}}
               <EuiPanel
                 id={{panelId}}
                 class={{panelClasses}}

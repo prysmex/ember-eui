@@ -4,8 +4,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import noop from 'ember-composable-helpers/helpers/noop';
 import { and, eq, notEq } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import classNames from '../helpers/class-names';
 import EuiButton from './eui-button.gts';
 import EuiInnerText from './eui-inner-text.gts';
@@ -42,7 +42,7 @@ const EuiButtonGroupButton: TemplateOnlyComponent<EuiButtonGroupButtonSignature>
   <template>
     {{#let
       (if @isDisabled "button" @element)
-      (uniqueId)
+      (randomId)
       (classNames
         (if @isSelected "euiButtonGroupButton-isSelected")
         (if @isIconOnly "euiButtonGroupButton-isIconOnly")

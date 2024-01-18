@@ -5,8 +5,8 @@ import { on } from '@ember/modifier';
 
 import { and, eq, gt,not, or } from 'ember-truth-helpers';
 import isArray from 'ember-truth-helpers/helpers/is-array';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import useState from '../helpers/use-state';
@@ -71,7 +71,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
     (if (isArray @error) @error (array @error))
     (and @label (eq @labelType "legend"))
     (useState false)
-    (argOrDefault @id (uniqueId))
+    (argOrDefault @id (randomId))
     (argOrDefault @hasChildLabel true)
     (and (not (argOrDefault @isFakeLabelBlock false)) (has-block "label"))
     as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel hasLabelBlock|

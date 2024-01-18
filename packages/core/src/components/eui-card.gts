@@ -7,8 +7,8 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, notEq, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import EuiBetaBadge from './eui-beta-badge.gts';
@@ -127,7 +127,7 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
 
   <template>
     {{#let
-      (if @selectable (uniqueId))
+      (if @selectable (randomId))
       (and
         (not @isDisabled)
         (or @onClick @href (and @selectable (not @selectable.isDisabled)))

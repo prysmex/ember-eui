@@ -85,9 +85,6 @@ importers:
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill:
-        specifier: ^1.2.2
-        version: 1.2.2
     devDependencies:
       '@babel/core':
         specifier: ^7.23.2
@@ -341,9 +338,6 @@ importers:
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill:
-        specifier: ^1.2.2
-        version: 1.2.2
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -591,9 +585,6 @@ importers:
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill:
-        specifier: ^1.2.2
-        version: 1.2.2
     devDependencies:
       '@babel/core':
         specifier: ^7.23.2
@@ -799,9 +790,6 @@ importers:
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill:
-        specifier: ^1.2.2
-        version: 1.2.2
     devDependencies:
       '@babel/core':
         specifier: ^7.23.2
@@ -1010,9 +998,6 @@ importers:
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill:
-        specifier: ^1.2.2
-        version: 1.2.2
       ember-validators:
         specifier: ^4.1.2
         version: 4.1.2(@glint/template@1.2.1)
@@ -1199,19 +1184,19 @@ importers:
         version: 0.7.0
       '@ember-eui/changeset-form':
         specifier: workspace:*
-        version: file:packages/changeset-form(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0)
+        version: file:packages/changeset-form(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0)
       '@ember-eui/core':
         specifier: workspace:*
         version: file:packages/core(@babel/core@7.23.7)(@ember/string@3.1.1)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(@glint/environment-ember-loose@1.2.1)(@glint/template@1.2.1)(ember-auto-import@2.7.2)(ember-focus-trap@1.1.0)(ember-source@4.2.0)(moment@2.30.1)(webpack@5.89.0)
       '@ember-eui/flatpickr':
         specifier: workspace:*
-        version: file:packages/flatpickr(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0)
+        version: file:packages/flatpickr(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0)
       '@ember-eui/pikaday':
         specifier: workspace:*
-        version: file:packages/pikaday(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@ember/test-helpers@3.2.0)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(moment@2.30.1)(webpack@5.89.0)
+        version: file:packages/pikaday(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@ember/test-helpers@3.2.0)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(moment@2.30.1)(webpack@5.89.0)
       '@ember-eui/validated-form':
         specifier: workspace:*
-        version: file:packages/validated-form(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0)
+        version: file:packages/validated-form(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0)
       '@ember/optional-features':
         specifier: ^2.0.0
         version: 2.0.0
@@ -1419,6 +1404,9 @@ importers:
       ember-template-lint:
         specifier: ^5.11.2
         version: 5.13.0
+      ember-unique-id-helper-polyfill:
+        specifier: ^1.2.2
+        version: 1.2.2
       ember-url-hash-polyfill:
         specifier: ^1.0.11
         version: 1.0.11(@babel/core@7.23.7)
@@ -10924,6 +10912,7 @@ packages:
       ember-cli-version-checker: 5.1.2
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /ember-url-hash-polyfill@1.0.11(@babel/core@7.23.7):
     resolution: {integrity: sha512-p1/qhNWljChZLQXfGtRNFPu5iLdAhg7QRjfZZNLrhet25oQII35Y9GcdbyHffHc+2swZzRUbT8+RgZmG4vmySA==}
@@ -20318,13 +20307,13 @@ packages:
   /zwitch@1.0.5:
     resolution: {integrity: sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==}
 
-  file:packages/changeset-form(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0):
+  file:packages/changeset-form(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0):
     resolution: {directory: packages/changeset-form, type: directory}
     id: file:packages/changeset-form
     name: '@ember-eui/changeset-form'
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^8.0.3
+      '@ember-eui/core': ^8.0.4
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: '*'
@@ -20341,7 +20330,6 @@ packages:
       ember-source: 4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0)
       ember-svg-jar: 2.4.7(@glint/template@1.2.1)
       ember-truth-helpers: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill: 1.2.2
     transitivePeerDependencies:
       - '@babel/core'
       - '@glint/environment-ember-loose'
@@ -20418,13 +20406,13 @@ packages:
       - webpack
     dev: true
 
-  file:packages/flatpickr(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0):
+  file:packages/flatpickr(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0):
     resolution: {directory: packages/flatpickr, type: directory}
     id: file:packages/flatpickr
     name: '@ember-eui/flatpickr'
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^8.0.3
+      '@ember-eui/core': ^8.0.4
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: '*'
@@ -20440,7 +20428,6 @@ packages:
       ember-source: 4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0)
       ember-svg-jar: 2.4.7(@glint/template@1.2.1)
       ember-truth-helpers: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill: 1.2.2
     transitivePeerDependencies:
       - '@babel/core'
       - '@glint/environment-ember-loose'
@@ -20449,13 +20436,13 @@ packages:
       - webpack
     dev: true
 
-  file:packages/pikaday(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@ember/test-helpers@3.2.0)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(moment@2.30.1)(webpack@5.89.0):
+  file:packages/pikaday(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@ember/test-helpers@3.2.0)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(moment@2.30.1)(webpack@5.89.0):
     resolution: {directory: packages/pikaday, type: directory}
     id: file:packages/pikaday
     name: '@ember-eui/pikaday'
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^8.0.3
+      '@ember-eui/core': ^8.0.4
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: '*'
@@ -20471,7 +20458,6 @@ packages:
       ember-source: 4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0)
       ember-svg-jar: 2.4.7(@glint/template@1.2.1)
       ember-truth-helpers: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill: 1.2.2
     transitivePeerDependencies:
       - '@babel/core'
       - '@ember/test-helpers'
@@ -20482,13 +20468,13 @@ packages:
       - webpack
     dev: true
 
-  file:packages/validated-form(@babel/core@7.23.7)(@ember-eui/core@8.0.3)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0):
+  file:packages/validated-form(@babel/core@7.23.7)(@ember-eui/core@8.0.4)(@glimmer/component@1.1.2)(@glimmer/tracking@1.1.2)(ember-source@4.2.0)(webpack@5.89.0):
     resolution: {directory: packages/validated-form, type: directory}
     id: file:packages/validated-form
     name: '@ember-eui/validated-form'
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^8.0.3
+      '@ember-eui/core': ^8.0.4
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: '*'
@@ -20505,7 +20491,6 @@ packages:
       ember-source: 4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0)
       ember-svg-jar: 2.4.7(@glint/template@1.2.1)
       ember-truth-helpers: 4.0.3(ember-source@4.2.0)
-      ember-unique-id-helper-polyfill: 1.2.2
       ember-validators: 4.1.2(@glint/template@1.2.1)
     transitivePeerDependencies:
       - '@babel/core'

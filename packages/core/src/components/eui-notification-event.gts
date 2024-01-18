@@ -3,8 +3,8 @@ import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
 import { and,eq, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import typeOf from '../helpers/type-of';
@@ -56,7 +56,7 @@ export interface EuiNotificationEventSignature {
 const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature> =
   <template>
     {{#let
-      (uniqueId)
+      (randomId)
       (element (argOrDefault @tagName "article"))
       (and (argOrDefault @hasContextMenuBlock true) (has-block "contextMenu"))
       (and

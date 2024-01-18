@@ -5,8 +5,8 @@ import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
 import { and } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import useState from '../helpers/use-state';
@@ -86,7 +86,7 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
 
         {{#if hasDefaultBlock}}
           {{#let
-            (uniqueId) (useState false)
+            (randomId) (useState false)
             as |randomPopoverId isPopoverOpen|
           }}
             <div class="euiNotificationEventMeta__contextMenuWrapper">

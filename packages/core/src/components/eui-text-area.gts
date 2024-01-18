@@ -1,8 +1,8 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from 'ember-composable-helpers/helpers/optional';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
@@ -37,7 +37,7 @@ const EuiTextArea: TemplateOnlyComponent<EuiTextAreaSignature> = <template>
       resize=(argOrDefault @resize "vertical")
     )
     (if @rows @rows (if @compressed 3 6))
-    (argOrDefault @id (uniqueId))
+    (argOrDefault @id (randomId))
     as |classes definedRows id|
   }}
     <textarea

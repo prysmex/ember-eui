@@ -118,7 +118,8 @@
     "@ember-eui/core": "workspace:*",
     "@ember-eui/flatpickr": "workspace:*",
     "@ember-eui/pikaday": "workspace:*",
-    "@ember-eui/validated-form": "workspace:*"
+    "@ember-eui/validated-form": "workspace:*",
+    "ember-unique-id-helper-polyfill": "^1.2.2"
   },
   "engines": {
     "node": "12.* || 14.* || >= 16"

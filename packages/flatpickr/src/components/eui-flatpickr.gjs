@@ -7,7 +7,7 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 
 import EmberFlatpickr from 'ember-flatpickr/components/ember-flatpickr';
 import { and, not, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
+import randomId from '../-private/random-id';
 
 export default class EuiFlatpickrComponent extends EmberFlatpickr {
   @action
@@ -19,7 +19,7 @@ export default class EuiFlatpickrComponent extends EmberFlatpickr {
     {{#let
       (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
       (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
-      (argOrDefault @id (uniqueId))
+      (argOrDefault @id (randomId))
       as |hasPrepend hasAppend inputId|
     }}
       <EuiFormControlLayout

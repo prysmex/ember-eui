@@ -1,6 +1,6 @@
 import { and, not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 
@@ -26,7 +26,7 @@ export interface EuiTabSignature {
 }
 
 const EuiTab: TemplateOnlyComponent<EuiTabSignature> = <template>
-  {{#let (argOrDefault @id (uniqueId)) as |id|}}
+  {{#let (argOrDefault @id (randomId)) as |id|}}
     {{#if (and @href (not @disabled))}}
       <a
         id={{id}}

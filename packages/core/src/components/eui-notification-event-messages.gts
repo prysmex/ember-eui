@@ -2,8 +2,8 @@ import { concat } from '@ember/helper';
 
 import objectAt from 'ember-composable-helpers/helpers/object-at';
 import without from 'ember-composable-helpers/helpers/without';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import EuiAccordion from './eui-accordion.gts';
 import EuiText from './eui-text.gts';
 
@@ -36,7 +36,7 @@ const EuiNotificationEventMessages: TemplateOnlyComponent<EuiNotificationEventMe
         {{#if rest}}
 
           <EuiAccordion
-            id={{concat "euiNotificationEventMessagesAccordion" (uniqueId)}}
+            id={{concat "euiNotificationEventMessagesAccordion" (randomId)}}
             class="euiNotificationEventMessages__accordion"
             @buttonClassName="euiNotificationEventMessages__accordionButton"
             @arrowDisplay="none"

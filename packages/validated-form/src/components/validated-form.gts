@@ -9,8 +9,7 @@ import { next, schedule } from '@ember/runloop';
 import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-
+import randomId from '../-private/random-id';
 import FieldBase from './validated-form/field-base.gts';
 import FieldCheckboxGroupComponent from './validated-form/field-checkbox-group.gts';
 import FieldComboBoxComponent from './validated-form/field-combo-box.gts';
@@ -249,7 +248,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   }
 
   <template>
-    {{#let (argOrDefault @id (uniqueId)) as |formId|}}
+    {{#let (argOrDefault @id (randomId)) as |formId|}}
       <EuiForm
         @tagName={{argOrDefault @tagName "form"}}
         id={{formId}}

@@ -51,8 +51,7 @@
     "ember-modifier": "^4.1.0",
     "ember-pikaday-prysmex": "4.3.0",
     "ember-svg-jar": "^2.3.4",
-    "ember-truth-helpers": "^4.0.3",
-    "ember-unique-id-helper-polyfill": "^1.2.2"
+    "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {
     "@ember-eui/core": "^8.0.4",

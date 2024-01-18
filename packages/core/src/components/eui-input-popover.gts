@@ -7,9 +7,9 @@ import { action } from '@ember/object';
 import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 import { tabbable } from 'tabbable';
 
+import randomId from '../-private/random-id';
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import resizeObserver from '../modifiers/resize-observer';
 import { cascadingMenuKeys } from '../utils/accesibility';
@@ -121,7 +121,7 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
   }
 
   <template>
-    {{#let (uniqueId) as |id|}}
+    {{#let (randomId) as |id|}}
       <EuiPopover
         class="euiInputPopover
           {{if this.fullWidth 'euiInputPopover--fullWidth'}}"

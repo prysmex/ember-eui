@@ -7,8 +7,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import { and, not, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
@@ -166,7 +166,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     {{#let
       (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
       (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
-      (argOrDefault @id (uniqueId))
+      (argOrDefault @id (randomId))
       as |hasPrepend hasAppend inputId|
     }}
       {{#let

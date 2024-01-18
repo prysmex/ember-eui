@@ -2,8 +2,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not, or } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import EuiFormControlLayout from '../components/eui-form-control-layout.gts';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
@@ -43,7 +43,7 @@ const EuiSelect: TemplateOnlyComponent<EuiSelectSignature> = <template>
   {{#let
     (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
     (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
-    (argOrDefault @id (uniqueId))
+    (argOrDefault @id (randomId))
     as |hasPrepend hasAppend inputId|
   }}
     {{#let

@@ -5,8 +5,8 @@ import { concat } from '@ember/helper';
 //@ts-expect-error
 import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
 import style from 'ember-style-modifier/modifiers/style';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../../-private/random-id';
 import { getHtmlContent } from '../../utils/code/utils';
 import EuiAutoSizer from '../eui-auto-sizer.gts';
 
@@ -53,7 +53,7 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
-    {{#let (uniqueId) as |theID|}}
+    {{#let (randomId) as |theID|}}
       <EuiAutoSizer as |styles|>
         <pre
           {{style styles}}

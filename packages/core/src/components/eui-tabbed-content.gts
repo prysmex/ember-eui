@@ -7,8 +7,8 @@ import { scheduleOnce } from '@ember/runloop';
 
 import findBy from 'ember-composable-helpers/helpers/find-by';
 import { eq } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
 
@@ -165,7 +165,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
   };
 
   <template>
-    {{#let (uniqueId) as |rootId|}}
+    {{#let (randomId) as |rootId|}}
       <div class={{@className}} ...attributes>
         <EuiTabs
           @expand={{@expand}}

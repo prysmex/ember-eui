@@ -6,8 +6,8 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
 
 import { not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../../-private/random-id';
 import ValidatedFormFieldBase from './field-base.gts';
 
 import type { FieldBaseSignature } from './field-base.gts';
@@ -76,7 +76,7 @@ export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase
   }
 
   <template>
-    {{#let (argOrDefault @id (uniqueId)) as |theId|}}
+    {{#let (argOrDefault @id (randomId)) as |theId|}}
       <EuiFormRow
         class={{this.rowClasses}}
         @labelType={{@labelType}}

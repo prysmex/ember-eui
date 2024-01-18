@@ -1,5 +1,4 @@
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-
+import randomId from '../-private/random-id';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 
@@ -18,7 +17,7 @@ export interface EuiHeaderAlertSignature {
 
 const EuiHeaderAlert: TemplateOnlyComponent<EuiHeaderAlertSignature> =
   <template>
-    {{#let (uniqueId) as |ariaId|}}
+    {{#let (randomId) as |ariaId|}}
       <article
         aria-labelledby="{{ariaId}}-title"
         class="euiHeaderAlert"

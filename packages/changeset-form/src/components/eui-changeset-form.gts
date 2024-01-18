@@ -11,8 +11,7 @@ import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-
+import randomId from '../-private/random-id';
 import FormContext from './eui-changeset-form/context.gts';
 import FieldBaseComponent from './eui-changeset-form/fields/field-base.gts';
 import FieldCheckboxGroupComponent from './eui-changeset-form/fields/field-checkbox-group.gts';
@@ -162,7 +161,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
   }
 
   <template>
-    {{#let (argOrDefault @id (uniqueId)) as |formId|}}
+    {{#let (argOrDefault @id (randomId)) as |formId|}}
       <EuiForm
         @tagName="form"
         id={{formId}}

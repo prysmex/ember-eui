@@ -2,8 +2,8 @@ import { get } from '@ember/helper';
 
 import { and, eq } from 'ember-truth-helpers';
 import { notEq } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../-private/random-id';
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import screenReaderOnly from '../modifiers/screen-reader-only';
@@ -79,7 +79,7 @@ export const EuiButtonGroup: TemplateOnlyComponent<EuiButtonGroupSignature> =
         >
           <legend {{screenReaderOnly}}>{{@legend}}</legend>
           <div class="euiButtonGroup__buttons">
-            {{#let (argOrDefault @name (uniqueId)) as |name|}}
+            {{#let (argOrDefault @name (randomId)) as |name|}}
               {{#each @options as |option|}}
                 <EuiButtonGroupButton
                   @name={{name}}

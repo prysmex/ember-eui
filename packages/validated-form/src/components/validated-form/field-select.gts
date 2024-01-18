@@ -6,8 +6,8 @@ import { EuiFormRow, EuiSelect } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
 
+import randomId from '../../-private/random-id';
 import ValidatedFormFieldBase from './field-base.gts';
 
 import type { FieldBaseSignature } from './field-base.gts';
@@ -35,7 +35,7 @@ export interface FieldSelectSignature {
 
 export default class ValidatedFormFieldSelect extends ValidatedFormFieldBase<FieldSelectSignature> {
   <template>
-    {{#let (argOrDefault @id (uniqueId)) as |theId|}}
+    {{#let (argOrDefault @id (randomId)) as |theId|}}
       <EuiFormRow
         class={{this.rowClasses}}
         @labelType={{@labelType}}

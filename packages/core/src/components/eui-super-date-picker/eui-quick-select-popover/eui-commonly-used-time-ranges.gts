@@ -1,8 +1,7 @@
 import { fn,hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import uniqueId from 'ember-unique-id-helper-polyfill/helpers/unique-id';
-
+import randomId from '../../../-private/random-id';
 import EuiFlexGrid from '../../eui-flex-grid.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
 import EuiI18n from '../../eui-i18n.gts';
@@ -23,7 +22,7 @@ export interface EuiCommonlyUsedTimeRangesSignature {
 
 const EuiCommonlyUsedTimeRanges: TemplateOnlyComponent<EuiCommonlyUsedTimeRangesSignature> =
   <template>
-    {{#let (uniqueId) as |legendId|}}
+    {{#let (randomId) as |legendId|}}
       <fieldset>
         <EuiTitle id={{legendId}} @tagName="legend" @size="xxxs">
           <EuiI18n

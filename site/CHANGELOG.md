@@ -1,5 +1,11 @@
 # site
 
+## 7.1.10
+
+### Patch Changes
+
+- 3647895: Replaces usage of ember-unique-id-helper-polyfill for a private helper for it to work in 4.4 onwards
+
 ## 7.1.9
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.5
+
+### Patch Changes
+
+- 3647895: Replaces usage of ember-unique-id-helper-polyfill for a private helper for it to work in 4.4 onwards
+
 ## 8.0.4
 
 ### Patch Changes

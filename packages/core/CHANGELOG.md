@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.6
+
+### Patch Changes
+
+- Bump ember-power-select
+
 ## 8.0.5
 
 ### Patch Changes

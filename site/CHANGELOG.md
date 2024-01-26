@@ -1,5 +1,11 @@
 # site
 
+## 7.1.11
+
+### Patch Changes
+
+- Bump ember-power-select
+
 ## 7.1.10
 
 ### Patch Changes

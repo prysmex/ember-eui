@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.6
+
+### Patch Changes
+
+- Bump ember-power-select
+- Updated dependencies
+  - @ember-eui/core@8.0.6
+
 ## 8.0.5
 
 ### Patch Changes

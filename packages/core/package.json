@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/core",
-  "version": "8.0.5",
+  "version": "8.0.6",
   "description": "Ember Components for Elastic UI",
   "keywords": [
     "ember-addon",
@@ -142,7 +142,7 @@
     "ember-keyboard": "^7.0.1",
     "ember-math-helpers": "^2.15.0",
     "ember-modifier": "^4.1.0",
-    "ember-power-select": "7.1.2",
+    "ember-power-select": "7.2.0",
     "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^2.0.1",
     "ember-style-modifier": "^3.0.1",

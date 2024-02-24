@@ -11,6 +11,7 @@ import type {
   colorMapping,
   sizeMapping
 } from '../utils/css-mappings/eui-beta-badge';
+import type { EuiIconSignature } from './eui-icon';
 import type { EuiToolTipSignature } from './eui-tool-tip';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
@@ -28,7 +29,7 @@ export interface EuiBetaBadgeSignature {
     /**
      * The icon to use for the beta badge.
      */
-    iconType?: string;
+    iconType?: EuiIconSignature['Args']['type'];
     /**
      * The color of the beta badge.
      */

@@ -12,6 +12,7 @@ import EuiBetaBadge from './eui-beta-badge.gts';
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiRadio from './eui-radio.gts';
 
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 const charAt = helper(function ([str, num]: [string | undefined, number]) {
@@ -30,7 +31,7 @@ export interface EuiKeyPadMenuItemSignature {
     value?: string;
     onChange: (id: string, value?: string | Event) => void;
     betaBadgeLabel?: string;
-    betaBadgeIconType?: string;
+    betaBadgeIconType?: EuiIconSignature['Args']['type'];
     betaBadgeTooltipContent?: string;
     id?: string;
     target?: string;

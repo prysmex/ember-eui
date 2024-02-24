@@ -14,6 +14,7 @@ import EuiIcon from './eui-icon.gts';
 import type {
   colorMapping,
   sizeMapping} from '../utils/css-mappings/eui-list-group-item';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { ComponentLike } from '@glint/template';
 
@@ -28,7 +29,7 @@ export interface EuiListGroupItemSignature {
     target?: string;
     onClick?: (event: MouseEvent) => void;
     label?: string;
-    iconType?: string;
+    iconType?: EuiIconSignature['Args']['type'];
     isActive?: boolean;
     isDisabled?: boolean;
     wrapText?: boolean;

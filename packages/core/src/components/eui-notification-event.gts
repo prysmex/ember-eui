@@ -16,6 +16,7 @@ import EuiNotificationEventReadIcon from './eui-notification-event-read-icon.gts
 import TextBlock from './text-block.gts';
 
 import type { EuiBadgeSignature } from './eui-badge';
+import type { EuiIconSignature } from './eui-icon';
 import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages';
 import type { TextBlockSignature } from './text-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
@@ -36,7 +37,7 @@ export interface EuiNotificationEventSignature {
     type?: string;
     severity?: string;
     badgeColor?: EuiBadgeSignature['Args']['color'];
-    iconType?: string;
+    iconType?: EuiIconSignature['Args']['type'];
     iconAriaLabel?: string;
     time?: string;
     iconColor?: string;

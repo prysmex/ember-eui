@@ -24,6 +24,7 @@ import EuiTitle from './eui-title.gts';
 import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
 import type { EuiButtomBarArgs } from './eui-bottom-bar';
 import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs';
+import type { EuiIconSignature } from './eui-icon';
 import type { IEuiTab } from './eui-tab';
 import type { WithBoundArgs } from '@glint/template';
 
@@ -118,7 +119,7 @@ export type EuiPageTemplateProps = {
     className?: string;
   };
 
-  iconType?: string;
+  iconType?: EuiIconSignature['Args']['type'];
 
   description?: string;
 

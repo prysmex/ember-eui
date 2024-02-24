@@ -1,9 +1,7 @@
 import Component from '@glimmer/component';
-import { assert } from '@ember/debug';
 import { guidFor } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
-import { ensureSafeComponent } from '@embroider/util';
 
 // @ts-expect-error
 import svgJar from 'ember-svg-jar/helpers/svg-jar';

@@ -10,6 +10,7 @@ import type {
   sizeMapping
 } from '../utils/css-mappings/eui-button-empty';
 import type { EuiButtonContentSignature } from './eui-button-content';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonEmptySignature {
@@ -19,7 +20,7 @@ export interface EuiButtonEmptySignature {
     size?: keyof typeof sizeMapping;
     iconSize?: EuiButtonContentSignature['Args']['iconSize'];
     color?: keyof typeof colorMapping;
-    iconType?: string;
+    iconType?: EuiIconSignature['Args']['type'];
     iconSide?: EuiButtonContentSignature['Args']['iconSide'];
     iconClasses?: string;
     textClasses?: string;

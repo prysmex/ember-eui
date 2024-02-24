@@ -7,6 +7,7 @@ import EuiIcon from './eui-icon.gts';
 import EuiMarkdownFormat from './eui-markdown-format.gts';
 import EuiText from './eui-text.gts';
 
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface IEuiToast {
@@ -25,7 +26,7 @@ export interface IEuiToast {
   /**
    * The icon type of the toast
    */
-  iconType?: string;
+  iconType?: EuiIconSignature['Args']['type'];
   /**
    * The callback function when the toast is closed
    */

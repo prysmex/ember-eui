@@ -74,7 +74,7 @@ type ImageArgs = {
 };
 
 export interface EuiImageSignature {
-  Element: any;
+  Element: HTMLElement;
   Args: ImageArgs;
   Blocks: {
     default: [];

@@ -7,6 +7,7 @@ import EuiText from './eui-text.gts';
 import TextBlock from './text-block.gts';
 
 import type { colorMapping,sizeMapping } from '../utils/css-mappings/eui-call-out';
+import type { EuiIconSignature } from './eui-icon';
 import type { TextBlockSignature } from './text-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
@@ -15,7 +16,7 @@ export interface EuiCallOutSignature {
   Args: {
     title?: string;
     heading?: TextBlockSignature['Args']['tagName'];
-    iconType?: string;
+    iconType?: EuiIconSignature['Args']['type'];
     size?: keyof typeof sizeMapping;
     color?: keyof typeof colorMapping;
   };

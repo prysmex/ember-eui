@@ -1,5 +1,6 @@
 import EuiFormLabel from './eui-form-label.gts';
 
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 const KeyComponent: TemplateOnlyComponent<{
@@ -15,7 +16,7 @@ export interface EuiKeyPadMenuSignature {
       legend?: string;
       ariaLegend?: string;
     };
-    iconType?: string;
+    iconType?: EuiIconSignature['Args']['type'];
   };
   Blocks: {
     default: [typeof KeyComponent?];

@@ -9,6 +9,7 @@ import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
 import EuiPageHeaderContent from './eui-page-header-content.gts';
 
 import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
+import type { EuiIconSignature } from './eui-icon';
 import type { EuiPageHeaderContentSignature } from './eui-page-header-content';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
@@ -38,7 +39,7 @@ export interface EuiPageHeaderSignature {
     /**
      * Sets the icon type for the header
      */
-    iconType?: string;
+    iconType?: EuiIconSignature['Args']['type'];
     /**
      * Sets the breadcrumbs for the header
      */

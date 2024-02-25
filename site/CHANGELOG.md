@@ -1,5 +1,11 @@
 # site
 
+## 7.1.12
+
+### Patch Changes
+
+- 7c5f2d3: typescript typings
+
 ## 7.1.11
 
 ### Patch Changes

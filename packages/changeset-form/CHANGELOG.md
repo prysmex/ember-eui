@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.7
+
+### Patch Changes
+
+- 7c5f2d3: typescript typings
+- Updated dependencies [7c5f2d3]
+  - @ember-eui/core@8.0.7
+
 ## 8.0.6
 
 ### Patch Changes

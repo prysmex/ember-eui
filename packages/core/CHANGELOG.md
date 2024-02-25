@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.7
+
+### Patch Changes
+
+- 7c5f2d3: typescript typings
+
 ## 8.0.6
 
 ### Patch Changes

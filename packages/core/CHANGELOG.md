@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.9
+
+### Patch Changes
+
+- TS
+
 ## 8.0.8
 
 ### Patch Changes

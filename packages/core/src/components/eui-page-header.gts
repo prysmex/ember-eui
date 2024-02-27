@@ -56,6 +56,12 @@ export interface EuiPageHeaderSignature {
      * Sets the title for the header
      */
     pageTitle?: string;
+
+    /**
+     * Sets the props for the title
+     */
+    pageTitleProps?: EuiPageHeaderContentSignature['Args']['pageTitleProps'];
+
     /**
      * Sets the right side items for the header
      */
@@ -162,6 +168,7 @@ const EuiPageHeader: TemplateOnlyComponent<EuiPageHeaderSignature> = <template>
             @alignItems={{@alignItems}}
             @responsive={{responsive}}
             @pageTitle={{@pageTitle}}
+            @pageTitleProps={{@pageTitleProps}}
             @iconType={{@iconType}}
             @breadcrumbs={{@breadcrumbs}}
             @tabs={{@tabs}}

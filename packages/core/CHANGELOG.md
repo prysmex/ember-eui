@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.8
+
+### Patch Changes
+
+- Pass in pageTitleProps
+
 ## 8.0.7
 
 ### Patch Changes

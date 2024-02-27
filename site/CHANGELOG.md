@@ -1,5 +1,11 @@
 # site
 
+## 7.1.13
+
+### Patch Changes
+
+- Pass in pageTitleProps
+
 ## 7.1.12
 
 ### Patch Changes

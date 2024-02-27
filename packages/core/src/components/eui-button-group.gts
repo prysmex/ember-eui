@@ -12,6 +12,23 @@ import EuiButtonGroupButton from './eui-button-group-button.gts';
 import type { EuiButtonGroupButtonSignature } from './eui-button-group-button';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+export interface Option {
+  isDisabled?: boolean;
+  iconType?: EuiButtonGroupButtonSignature['Args']['iconType'];
+  value?: EuiButtonGroupButtonSignature['Args']['value'];
+  label?: EuiButtonGroupButtonSignature['Args']['label'];
+  id: EuiButtonGroupButtonSignature['Args']['id'];
+  isLoading?: EuiButtonGroupButtonSignature['Args']['isLoading'];
+  iconSide?: EuiButtonGroupButtonSignature['Args']['iconSide'];
+  iconSize?: EuiButtonGroupButtonSignature['Args']['iconSize'];
+  textClasses?: EuiButtonGroupButtonSignature['Args']['textClasses'];
+  contentClasses?: EuiButtonGroupButtonSignature['Args']['contentClasses'];
+  iconClasses?: EuiButtonGroupButtonSignature['Args']['iconClasses'];
+  type?: EuiButtonGroupButtonSignature['Args']['type'];
+  className?: string;
+  'aria-label'?: string;
+}
+
 export interface EuiButtonGroupSignature {
   Element: HTMLFieldSetElement;
   Args: {
@@ -25,26 +42,11 @@ export interface EuiButtonGroupSignature {
     className?: string;
     isIconOnly?: EuiButtonGroupButtonSignature['Args']['isIconOnly'];
     onChange: EuiButtonGroupButtonSignature['Args']['onChange'];
-    idSelected?: EuiButtonGroupButtonSignature['Args']['isSelected'];
+    idSelected?: Option['id'];
     idToSelectedMap?: {
       [key: string]: EuiButtonGroupButtonSignature['Args']['isSelected'];
     };
-    options?: Array<{
-      isDisabled?: boolean;
-      iconType?: EuiButtonGroupButtonSignature['Args']['iconType'];
-      value?: EuiButtonGroupButtonSignature['Args']['value'];
-      label?: EuiButtonGroupButtonSignature['Args']['label'];
-      id: EuiButtonGroupButtonSignature['Args']['id'];
-      isLoading?: EuiButtonGroupButtonSignature['Args']['isLoading'];
-      iconSide?: EuiButtonGroupButtonSignature['Args']['iconSide'];
-      iconSize?: EuiButtonGroupButtonSignature['Args']['iconSize'];
-      textClasses?: EuiButtonGroupButtonSignature['Args']['textClasses'];
-      contentClasses?: EuiButtonGroupButtonSignature['Args']['contentClasses'];
-      iconClasses?: EuiButtonGroupButtonSignature['Args']['iconClasses'];
-      type?: EuiButtonGroupButtonSignature['Args']['type'];
-      className?: string;
-      'aria-label'?: string;
-    }>;
+    options?: Array<Option>;
   };
 }
 

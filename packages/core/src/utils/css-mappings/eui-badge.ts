@@ -50,7 +50,12 @@ export const iconSideMapping = {
 };
 
 export const colorMapping = {
-  hollow: `${baseClass}--hollow`
+  hollow: `${baseClass}--hollow`,
+  primary: '',
+  success: '',
+  accent: '',
+  warning: '',
+  danger: ''
 };
 
 const mapping: ComponentMapping = {

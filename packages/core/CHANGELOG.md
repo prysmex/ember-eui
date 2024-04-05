@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.10
+
+### Patch Changes
+
+- 72bac0d: Fixes EuiI18n
+
 ## 8.0.9
 
 ### Patch Changes

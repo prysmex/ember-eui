@@ -1,5 +1,11 @@
 # site
 
+## 7.1.15
+
+### Patch Changes
+
+- 72bac0d: Fixes EuiI18n
+
 ## 7.1.14
 
 ### Patch Changes

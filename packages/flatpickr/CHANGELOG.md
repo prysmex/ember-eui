@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.10
+
+### Patch Changes
+
+- 72bac0d: Fixes EuiI18n
+- Updated dependencies [72bac0d]
+  - @ember-eui/core@8.0.10
+
 ## 8.0.9
 
 ### Patch Changes

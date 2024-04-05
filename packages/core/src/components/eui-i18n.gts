@@ -1,7 +1,11 @@
 import Component from '@glimmer/component';
+import { array } from '@ember/helper';
 import { inject as service } from '@ember/service';
 import { ensureSafeComponent } from '@embroider/util';
 
+import { notEq } from 'ember-truth-helpers';
+
+import typeOf from '../helpers/type-of';
 import Render from './eui-i18n/render.gts';
 
 import type EuiI18n from '../services/eui-i18n';
@@ -46,9 +50,19 @@ export default class EuiI18nComponent extends Component<EuiI18nSignature> {
   <template>
     {{#let this.lookupToken as |result|}}
       {{#if this.customComponent}}
-        {{yield (component this.customComponent token=result)}}
+        {{#each
+          (if (notEq (typeOf result) "array") (array result) result)
+          as |token|
+        }}
+          {{yield (component this.customComponent token=token)}}
+        {{/each}}
       {{else}}
-        {{yield (component Render token=result)}}
+        {{#each
+          (if (notEq (typeOf result) "array") (array result) result)
+          as |token|
+        }}
+          {{yield (component Render token=token)}}
+        {{/each}}
       {{/if}}
     {{/let}}
   </template>

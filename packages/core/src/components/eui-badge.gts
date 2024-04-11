@@ -10,14 +10,14 @@ import inlineStyles from '../helpers/inline-styles';
 import simpleStyle from '../modifiers/simple-style';
 import EuiIcon from './eui-icon.gts';
 
-import type { colorMapping } from '../utils/css-mappings/eui-badge';
+import type { colorMapping, EuiBadgeColorType } from '../utils/css-mappings/eui-badge';
 import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiBadgeSignature {
   Element: HTMLButtonElement | HTMLAnchorElement | HTMLSpanElement;
   Args: {
-    color?: keyof typeof colorMapping;
+    color?: keyof typeof colorMapping | EuiBadgeColorType | string;
     iconType?: EuiIconSignature['Args']['type'];
     iconSide?: 'left' | 'right';
     iconOnClick?: () => void;

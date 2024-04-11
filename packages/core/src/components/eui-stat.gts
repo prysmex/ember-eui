@@ -19,11 +19,11 @@ export interface EuiStatSignature {
     title: string;
     description: string;
     titleColor?: keyof typeof colorMapping;
-    titleSize: EuiStatTitleSignature['Args']['titleSize'];
-    isLoading: boolean;
-    reverse: boolean;
-    screenReader: boolean;
-    titleElement: string;
+    titleSize?: EuiStatTitleSignature['Args']['titleSize'];
+    isLoading?: boolean;
+    reverse?: boolean;
+    screenReader?: boolean;
+    titleElement?: string;
     descriptionElement?: EuiStatDescriptionSignature['Args']['descriptionElement'];
   };
   Blocks: {

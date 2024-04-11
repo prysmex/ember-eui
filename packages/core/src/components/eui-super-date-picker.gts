@@ -26,7 +26,9 @@ import type {
 } from './eui-super-date-picker/types/global';
 import type { LocaleSpecifier } from 'moment';
 
-interface EuiSuperDatePickerArgs {
+export type { ApplyRefreshInterval, DurationRange, Milliseconds, ShortDate };
+
+export interface EuiSuperDatePickerArgs {
   commonlyUsedRanges?: DurationRange[];
   // customQuickSelectPanels?: QuickSelectPanel[];
   /**

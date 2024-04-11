@@ -114,6 +114,7 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
                 placeholderComponent=@placeholderComponent
                 searchField=@searchField
                 onFocus=@onFocus
+                isInvalid=@isInvalid
                 onBlur=@onBlur
                 onKeydown=@onKeydown
                 onInput=@onInput

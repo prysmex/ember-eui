@@ -414,6 +414,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
           <EuiToolTipPopover
             class={{classNames
               "euiToolTip"
+              @className
               componentName="EuiToolTip"
               position=this.calculatedPosition
             }}

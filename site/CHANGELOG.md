@@ -1,5 +1,11 @@
 # site
 
+## 7.1.17
+
+### Patch Changes
+
+- Pass isInvalid to trigger input component
+
 ## 7.1.16
 
 ### Patch Changes

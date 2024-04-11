@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.12
+
+### Patch Changes
+
+- Pass isInvalid to trigger input component
+- Updated dependencies
+  - @ember-eui/core@8.0.12
+
 ## 8.0.11
 
 ### Patch Changes

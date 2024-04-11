@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.11
+
+### Patch Changes
+
+- Export types and typescript bugs, fix using className in eui-toolip
+
 ## 8.0.10
 
 ### Patch Changes

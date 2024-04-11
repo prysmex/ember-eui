@@ -1,5 +1,11 @@
 # site
 
+## 7.1.16
+
+### Patch Changes
+
+- Export types and typescript bugs, fix using className in eui-toolip
+
 ## 7.1.15
 
 ### Patch Changes

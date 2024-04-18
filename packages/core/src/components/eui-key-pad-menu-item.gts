@@ -22,7 +22,7 @@ const charAt = helper(function ([str, num]: [string | undefined, number]) {
 export interface EuiKeyPadMenuItemSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
   Args: {
-    checkable?: 'label';
+    checkable?: 'label' | 'single';
     href?: string;
     isDisabled?: boolean;
     isSelected?: boolean;

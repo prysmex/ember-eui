@@ -2,11 +2,12 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
-import { EuiFieldText,EuiFormControlLayout } from '@ember-eui/core/components';
+import { EuiFieldText } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import EmberFlatpickr from 'ember-flatpickr/components/ember-flatpickr';
-import { and, not, or } from 'ember-truth-helpers';
+import { and, not } from 'ember-truth-helpers';
+
 import randomId from '../-private/random-id';
 
 export default class EuiFlatpickrComponent extends EmberFlatpickr {
@@ -22,49 +23,42 @@ export default class EuiFlatpickrComponent extends EmberFlatpickr {
       (argOrDefault @id (randomId))
       as |hasPrepend hasAppend inputId|
     }}
-      <EuiFormControlLayout
+      <EuiFieldText
+        aria-label={{@ariaLabel}}
+        @icon={{if @icon @icon "calendar"}}
         @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @readOnly={{@readOnly}}
+        @inputRef={{@inputRef}}
+        @controlOnly={{@controlOnly}}
+        @compressed={{@compressed}}
+        @id={{inputId}}
+        @isFakePrependBlock={{not hasPrepend}}
+        @isFakeAppendBlock={{not hasAppend}}
         @disabled={{@disabled}}
+        @isInvalid={{@isInvalid}}
         @clear={{if
-          (and @clear @date (and (not @isDisabled) (not @disabled)))
+          (and @clear @date (not @isDisabled) (not @disabled))
           this.onClear
         }}
-        @compressed={{@compressed}}
-        @useGroup={{or hasPrepend hasAppend}}
+        {{didInsert this.onInsert}}
+        {{willDestroy this.onWillDestroy}}
+        {{didUpdate this.onAltFormatUpdated @altFormat}}
+        {{didUpdate this.onAltInputClassUpdated @altInputClass}}
+        {{didUpdate this.onDateUpdated @date}}
+        {{didUpdate this.onDisabledUpdated @disabled}}
+        {{didUpdate this.onLocaleUpdated @locale}}
+        {{didUpdate this.onMaxDateUpdated @maxDate}}
+        {{didUpdate this.onMinDateUpdated @minDate}}
+        ...attributes
       >
-        <EuiFieldText
-          aria-label={{@ariaLabel}}
-          @icon={{if @icon @icon "calendar"}}
-          @fullWidth={{@fullWidth}}
-          @isLoading={{@isLoading}}
-          @readOnly={{@readOnly}}
-          @inputRef={{@inputRef}}
-          @controlOnly={{@controlOnly}}
-          @compressed={{@compressed}}
-          @id={{inputId}}
-          @isFakePrependBlock={{hasPrepend}}
-          @isFakeAppendBlock={{hasAppend}}
-          @disabled={{@disabled}}
-          @isInvalid={{@isInvalid}}
-          {{didInsert this.onInsert}}
-          {{willDestroy this.onWillDestroy}}
-          {{didUpdate this.onAltFormatUpdated @altFormat}}
-          {{didUpdate this.onAltInputClassUpdated @altInputClass}}
-          {{didUpdate this.onDateUpdated @date}}
-          {{didUpdate this.onDisabledUpdated @disabled}}
-          {{didUpdate this.onLocaleUpdated @locale}}
-          {{didUpdate this.onMaxDateUpdated @maxDate}}
-          {{didUpdate this.onMinDateUpdated @minDate}}
-          ...attributes
-        >
-          <:prepend as |classes finalId|>
-            {{yield classes finalId to="prepend"}}
-          </:prepend>
-          <:append as |classes finalId|>
-            {{yield classes finalId to="append"}}
-          </:append>
-        </EuiFieldText>
-      </EuiFormControlLayout>
+        <:prepend as |classes finalId|>
+          {{yield classes finalId to="prepend"}}
+        </:prepend>
+        <:append as |classes finalId|>
+          {{yield classes finalId to="append"}}
+        </:append>
+      </EuiFieldText>
     {{/let}}
   </template>
 }

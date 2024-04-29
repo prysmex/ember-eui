@@ -6,13 +6,13 @@ import { concat } from '@ember/helper';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { cancel,later, scheduleOnce } from '@ember/runloop';
+import { cancel, later, scheduleOnce } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
-import { and, not,or } from 'ember-truth-helpers';
+import { and, not, or } from 'ember-truth-helpers';
 import { tabbable } from 'tabbable';
 
 import randomId from '../-private/random-id';
@@ -172,6 +172,10 @@ export type EuiPopoverArgs = {
 
   tabindex?: string | number;
 
+  shouldSelfFocus?: boolean;
+
+  isFocusTrapPaused?: boolean;
+
   focusTrapOptions?: {
     onClickOutside?: (e: Event) => void;
   };
@@ -288,6 +292,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   @argOrDefaultDecorator('m') panelPaddingSize!: PanelPaddingSize;
   @argOrDefaultDecorator(true) hasArrow!: boolean;
   @argOrDefaultDecorator('inlineBlock') display!: string;
+  @argOrDefaultDecorator(true) shouldSelfFocus!: boolean;
+  @argOrDefaultDecorator(false) isFocusTrapPaused!: boolean;
 
   //State
   @tracked prevIsOpen: boolean | undefined;
@@ -741,9 +747,10 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
                       (not this.ownFocus) (not this.isOpenStable) this.isClosing
                     )
                   )
+                  shouldSelfFocus=this.shouldSelfFocus
+                  isPaused=this.isFocusTrapPaused
                   focusTrapOptions=(merge
                     (hash
-                      shouldSelfFocus=true
                       returnFocusOnDeactivate=this.isOpenStable
                       initialFocus=(or @initialFocus this.panel)
                       onDeactivate=(optional @onTrapDeactivation)

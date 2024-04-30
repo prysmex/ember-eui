@@ -75,7 +75,6 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
   }
 
   <template>
-    {{!template-lint-disable}}
     {{#if (and this.maybePlaceholder (not @select.searchText))}}
       <p class="euiComboBoxPlaceholder">
         {{this.maybePlaceholder}}
@@ -119,6 +118,5 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         {{didInsert this.storeInputStyles}}
       />
     </div>
-    {{!template-lint-enable}}
   </template>
 }

@@ -17,6 +17,7 @@ import EuiComboBoxCreateOption from './eui-combo-box/create-option.gts';
 import EuiComboBoxGroup from './eui-combo-box/group.gts';
 import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message.gts';
 import EuiComboBoxOptions from './eui-combo-box/options.gts';
+import EuiComboBoxSearchMessage from './eui-combo-box/search-message.gts';
 import EuiComboBoxTrigger from './eui-combo-box/trigger.gts';
 
 interface PromiseProxy<T> extends Promise<T> {
@@ -46,6 +47,7 @@ export interface EuiComboBoxSignature {
     isLoading?: boolean;
     isDisabled?: boolean;
     readOnly?: boolean;
+    searchMessageComponent?: any;
     compressed?: boolean;
     onFocus?: (e: FocusEvent) => void;
     onBlur?: (e: FocusEvent) => void;
@@ -102,6 +104,11 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @onClose={{@onClose}}
       @placeholderComponent={{@placeholderComponent}}
       @searchMessage={{@searchMessage}}
+      @searchMessageComponent={{if
+        @searchMessageComponent
+        @searchMessageComponent
+        EuiComboBoxSearchMessage
+      }}
       @noMatchesMessage={{@noMatchesMessage}}
       @matchTriggerWidth={{@matchTriggerWidth}}
       @options={{this.options}}

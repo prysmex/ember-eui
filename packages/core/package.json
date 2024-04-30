@@ -226,6 +226,7 @@
       "./components/eui-combo-box/group.js": "./dist/_app_/components/eui-combo-box/group.js",
       "./components/eui-combo-box/no-matches-message.js": "./dist/_app_/components/eui-combo-box/no-matches-message.js",
       "./components/eui-combo-box/options.js": "./dist/_app_/components/eui-combo-box/options.js",
+      "./components/eui-combo-box/search-message.js": "./dist/_app_/components/eui-combo-box/search-message.js",
       "./components/eui-combo-box/trigger.js": "./dist/_app_/components/eui-combo-box/trigger.js",
       "./components/eui-combo-box/trigger/input.js": "./dist/_app_/components/eui-combo-box/trigger/input.js",
       "./components/eui-comment-list.js": "./dist/_app_/components/eui-comment-list.js",

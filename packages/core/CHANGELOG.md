@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.15
+
+### Patch Changes
+
+- Fix searchMessage styling
+
 ## 8.0.14
 
 ### Patch Changes

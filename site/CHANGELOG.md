@@ -1,5 +1,11 @@
 # site
 
+## 7.1.20
+
+### Patch Changes
+
+- Fix searchMessage styling
+
 ## 7.1.19
 
 ### Patch Changes

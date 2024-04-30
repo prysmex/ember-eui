@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.15
+
+### Patch Changes
+
+- Fix searchMessage styling
+- Updated dependencies
+  - @ember-eui/core@8.0.15
+
 ## 8.0.14
 
 ### Patch Changes

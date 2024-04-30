@@ -1,5 +1,11 @@
 # site
 
+## 7.1.19
+
+### Patch Changes
+
+- Removes duplicate EuiFormControlLayout
+
 ## 7.1.18
 
 ### Patch Changes

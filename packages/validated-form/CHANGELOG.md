@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 8.0.14
+
+### Patch Changes
+
+- Removes duplicate EuiFormControlLayout
+- Updated dependencies
+  - @ember-eui/core@8.0.14
+
 ## 8.0.13
 
 ### Patch Changes

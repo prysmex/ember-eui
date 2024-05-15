@@ -60,6 +60,7 @@ export interface EuiComboBoxSignature {
     onChange: (selected: any[]) => void;
     placeholder?: string;
     extra?: any;
+    closeOnSelect?: boolean;
   };
   Blocks: {
     default: [any, number, Select];

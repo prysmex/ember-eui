@@ -31,9 +31,6 @@ export interface EuiButtonIconSignature {
     useComponent?: boolean;
     disabled?: boolean;
   };
-  Blocks: {
-    default?: [];
-  };
 }
 
 const EuiButtonIcon: TemplateOnlyComponent<EuiButtonIconSignature> = <template>

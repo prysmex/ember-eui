@@ -5,8 +5,8 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';
 
-import randomId from '../../../-private/random-id';
-import Base from './base';
+import randomId from '../../../-private/random-id.ts';
+import Base from './base.gts';
 
 import type { BaseSignature } from './base';
 import type { EuiFieldTextSignature } from '@ember-eui/core/components/eui-field-text';

@@ -24,7 +24,7 @@
     "allowImportingTsExtensions": true,
     "paths": {
       "@ember-eui/core": ["../core/src/"],
-      "@ember-eui/core/*": ["../core/src/*"],
+      "@ember-eui/core/*": ["../core/src/*"]
     }
   }
 }

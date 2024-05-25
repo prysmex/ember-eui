@@ -12,7 +12,7 @@ const addon = new Addon({
 const extensions = ['.js', '.ts', '.gts', '.gjs', '.hbs', '.json'];
 
 export default {
-  output: addon.output(),
+  output: { ...addon.output(), hoistTransitiveImports: false },
   plugins: [
     addon.publicEntrypoints([
       '**/*.js',
@@ -28,10 +28,12 @@ export default {
       'services/**/*.js'
     ]),
     addon.dependencies(),
-    glimmerTemplateTag(),
-    nodeResolve({ extensions }),
-    babel({ extensions, babelHelpers: 'bundled' }),
+    babel({
+      extensions: ['.js', '.gjs', '.ts', '.gts'],
+      babelHelpers: 'bundled'
+    }),
     addon.hbs(),
+    addon.gjs(),
     addon.keepAssets(['**/*.css']),
     addon.clean(),
     copy({

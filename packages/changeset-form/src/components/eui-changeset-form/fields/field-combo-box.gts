@@ -7,8 +7,8 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
 
-import randomId from '../../../-private/random-id';
-import Base from './base';
+import randomId from '../../../-private/random-id.ts';
+import Base from './base.gts';
 
 import type { BaseSignature } from './base';
 import type { EuiComboBoxSignature } from '@ember-eui/core/components/eui-combo-box';

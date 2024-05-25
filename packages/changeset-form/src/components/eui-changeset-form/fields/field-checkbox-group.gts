@@ -2,8 +2,8 @@ import { action } from '@ember/object';
 import { EuiCheckboxGroup,EuiFormRow } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import randomId from '../../../-private/random-id';
-import Base from './base';
+import randomId from '../../../-private/random-id.ts';
+import Base from './base.gts';
 
 import type { BaseSignature } from './base';
 import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';

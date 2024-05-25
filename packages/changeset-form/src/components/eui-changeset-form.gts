@@ -11,7 +11,7 @@ import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import FormContext from './eui-changeset-form/context.gts';
 import FieldBaseComponent from './eui-changeset-form/fields/field-base.gts';
 import FieldCheckboxGroupComponent from './eui-changeset-form/fields/field-checkbox-group.gts';

@@ -1,5 +1,11 @@
 # site
 
+## 8.0.1
+
+### Patch Changes
+
+- 3166c2e: releasing types
+
 ## 8.0.0
 
 ### Major Changes

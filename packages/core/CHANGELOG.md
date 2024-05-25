@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 9.0.1
+
+### Patch Changes
+
+- 3166c2e: releasing types
+
 ## 9.0.0
 
 ### Major Changes

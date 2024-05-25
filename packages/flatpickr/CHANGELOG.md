@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 9.0.1
+
+### Patch Changes
+
+- 3166c2e: releasing types
+- Updated dependencies [3166c2e]
+  - @ember-eui/core@9.0.1
+
 ## 9.0.0
 
 ### Major Changes

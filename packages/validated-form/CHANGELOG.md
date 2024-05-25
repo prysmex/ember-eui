@@ -1,5 +1,21 @@
 # @ember-eui/validated-form
 
+## 9.0.0
+
+### Major Changes
+
+- 52128dc: BREAKING, changeset form is now built with other v2 addon bleupints, just like ValidatedForm
+
+### Minor Changes
+
+- 882f3aa: Allow passing compressed to ValidatedForm
+
+### Patch Changes
+
+- Updated dependencies [882f3aa]
+- Updated dependencies [52128dc]
+  - @ember-eui/core@9.0.0
+
 ## 8.0.15
 
 ### Patch Changes

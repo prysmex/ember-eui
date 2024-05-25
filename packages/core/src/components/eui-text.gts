@@ -20,7 +20,6 @@ export interface EuiTextSignature {
   };
   Blocks: {
     default: [];
-    hola: [number, {name: string}];
   };
 }
 

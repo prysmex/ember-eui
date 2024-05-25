@@ -78,6 +78,7 @@ export interface ValidatedFormSignature {
     theme?: Partial<IValidatedFormTheme>;
     isDisabled?: boolean;
     fullWidth?: boolean;
+    compressed?: boolean;
     tagName?: EuiFormSignature['Args']['tagName'];
     isInvalid?: EuiFormSignature['Args']['isInvalid'];
     invalidCallout?: EuiFormSignature['Args']['invalidCallout'];
@@ -285,6 +286,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -294,6 +296,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -303,6 +306,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -312,6 +316,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -321,6 +326,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -330,6 +336,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               isDisabled=@isDisabled
             )
@@ -339,6 +346,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -348,6 +356,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -357,6 +366,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -366,6 +376,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -375,6 +386,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )
@@ -384,6 +396,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
+              compressed=@compressed
               formId=formId
               disabled=@isDisabled
             )

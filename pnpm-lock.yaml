@@ -67,6 +67,9 @@ importers:
       '@embroider/util':
         specifier: ^1.12.0
         version: 1.12.1(@glint/environment-ember-loose@1.2.1(@glimmer/component@1.1.2(@babel/core@7.23.7))(@glint/template@1.2.1)(@types/ember__array@4.0.9(@babel/core@7.23.7))(@types/ember__component@4.0.21(@babel/core@7.23.7))(@types/ember__controller@4.0.11(@babel/core@7.23.7))(@types/ember__object@4.0.11(@babel/core@7.23.7))(@types/ember__routing@4.0.19(@babel/core@7.23.7))(ember-cli-htmlbars@6.3.0))(@glint/template@1.2.1)(ember-source@4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0))
+      decorator-transforms:
+        specifier: ^1.2.1
+        version: 1.2.1(@babel/core@7.23.7)
       ember-auto-import:
         specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
@@ -984,8 +987,8 @@ importers:
         specifier: ^1.12.0
         version: 1.12.1(@glint/environment-ember-loose@1.2.1(@glimmer/component@1.1.2(@babel/core@7.23.7))(@glint/template@1.2.1)(@types/ember__array@4.0.9(@babel/core@7.23.7))(@types/ember__component@4.0.21(@babel/core@7.23.7))(@types/ember__controller@4.0.11(@babel/core@7.23.7))(@types/ember__object@4.0.11(@babel/core@7.23.7))(@types/ember__routing@4.0.19(@babel/core@7.23.7))(ember-cli-htmlbars@6.3.0))(@glint/template@1.2.1)(ember-source@4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0))
       decorator-transforms:
-        specifier: ^1.0.3
-        version: 1.0.3(@babel/core@7.23.7)
+        specifier: ^1.2.1
+        version: 1.2.1(@babel/core@7.23.7)
       ember-auto-import:
         specifier: ^2.7.2
         version: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
@@ -5095,8 +5098,8 @@ packages:
     resolution: {integrity: sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==}
     engines: {node: '>=0.10'}
 
-  decorator-transforms@1.0.3:
-    resolution: {integrity: sha512-kY+IuCYwp1WvWWDrT+NmqckV4ZZ4wBDIvbbvhQBNUZYLxztLpN/P+hBhmVXN/1G95U61yYWewJEdJ+o4Sm8Tng==}
+  decorator-transforms@1.2.1:
+    resolution: {integrity: sha512-UUtmyfdlHvYoX3VSG1w5rbvBQ2r5TX1JsE4hmKU9snleFymadA3VACjl6SRfi9YgBCSjBbfQvR1bs9PRW9yBKw==}
 
   deep-extend@0.6.0:
     resolution: {integrity: sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==}
@@ -11504,6 +11507,7 @@ snapshots:
       '@embroider/util': 1.12.1(@glint/environment-ember-loose@1.2.1(@glimmer/component@1.1.2(@babel/core@7.23.7))(@glint/template@1.2.1)(@types/ember__array@4.0.9(@babel/core@7.23.7))(@types/ember__component@4.0.21(@babel/core@7.23.7))(@types/ember__controller@4.0.11(@babel/core@7.23.7))(@types/ember__object@4.0.11(@babel/core@7.23.7))(@types/ember__routing@4.0.19(@babel/core@7.23.7))(ember-cli-htmlbars@6.3.0))(@glint/template@1.2.1)(ember-source@4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0))
       '@glimmer/component': 1.1.2(@babel/core@7.23.7)
       '@glimmer/tracking': 1.1.2
+      decorator-transforms: 1.2.1(@babel/core@7.23.7)
       ember-auto-import: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-changeset: 4.1.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-changeset-validations: 4.1.1(@glint/template@1.2.1)(webpack@5.89.0)
@@ -11625,7 +11629,7 @@ snapshots:
       '@embroider/util': 1.12.1(@glint/environment-ember-loose@1.2.1(@glimmer/component@1.1.2(@babel/core@7.23.7))(@glint/template@1.2.1)(@types/ember__array@4.0.9(@babel/core@7.23.7))(@types/ember__component@4.0.21(@babel/core@7.23.7))(@types/ember__controller@4.0.11(@babel/core@7.23.7))(@types/ember__object@4.0.11(@babel/core@7.23.7))(@types/ember__routing@4.0.19(@babel/core@7.23.7))(ember-cli-htmlbars@6.3.0))(@glint/template@1.2.1)(ember-source@4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0))
       '@glimmer/component': 1.1.2(@babel/core@7.23.7)
       '@glimmer/tracking': 1.1.2
-      decorator-transforms: 1.0.3(@babel/core@7.23.7)
+      decorator-transforms: 1.2.1(@babel/core@7.23.7)
       ember-auto-import: 2.7.2(@glint/template@1.2.1)(webpack@5.89.0)
       ember-composable-helpers: 5.0.0
       ember-modifier: 4.1.0(ember-source@4.2.0(@babel/core@7.23.7)(@glint/template@1.2.1)(webpack@5.89.0))
@@ -15583,7 +15587,7 @@ snapshots:
 
   decode-uri-component@0.2.2: {}
 
-  decorator-transforms@1.0.3(@babel/core@7.23.7):
+  decorator-transforms@1.2.1(@babel/core@7.23.7):
     dependencies:
       '@babel/plugin-syntax-decorators': 7.23.3(@babel/core@7.23.7)
       babel-import-util: 2.0.1

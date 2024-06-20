@@ -1,5 +1,11 @@
 # site
 
+## 7.2.0
+
+### Minor Changes
+
+- 157b860: Fixes issues
+
 ## 7.1.19
 
 ### Patch Changes

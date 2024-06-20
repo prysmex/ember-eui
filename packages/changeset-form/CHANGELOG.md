@@ -1,5 +1,16 @@
 # @ember-eui/changeset-form
 
+## 9.0.0
+
+### Minor Changes
+
+- 157b860: Fixes issues
+
+### Patch Changes
+
+- Updated dependencies [157b860]
+  - @ember-eui/core@8.1.0
+
 ## 8.0.14
 
 ### Patch Changes

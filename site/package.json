@@ -1,10 +1,6 @@
 {
   "name": "site",
-<<<<<<< HEAD
   "version": "8.0.1",
-=======
-  "version": "7.2.0",
->>>>>>> master-v8
   "private": true,
   "description": "Small description for site goes here",
   "repository": "https://github.com/prysmex/ember-eui",

@@ -1,5 +1,6 @@
 # site
 
+<<<<<<< HEAD
 ## 8.0.1
 
 ### Patch Changes
@@ -21,6 +22,13 @@
 ### Patch Changes
 
 - Fix searchMessage styling
+=======
+## 7.2.0
+
+### Minor Changes
+
+- 157b860: Fixes issues
+>>>>>>> master-v8
 
 ## 7.1.19
 

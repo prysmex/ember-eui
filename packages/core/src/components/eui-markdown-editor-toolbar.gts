@@ -112,6 +112,20 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     if (actionResult !== true) this.args.openPluginEditor?.(actionResult);
   }
 
+  iconType = (item: {
+    iconType:
+      | {
+          component: any;
+        }
+      | string;
+  }) => {
+    if (typeof item.iconType === 'string') {
+      return item.iconType;
+    }
+
+    return item.iconType.component;
+  };
+
   <template>
     <div class="euiMarkdownEditorToolbar" ...attributes>
       <div class="euiMarkdownEditorToolbar__buttons">
@@ -133,10 +147,9 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
             <EuiButtonIcon
               @color="text"
               {{on "click" (fn this.handleMdButtonClick item.id)}}
+              @iconType={{this.iconType item}}
               {{!@glint-expect-error}}
-              @iconType={{or item.iconType.component item.iconType}}
-              {{!@glint-expect-error}}
-              @useComponent={{item.iconType.component}}
+              @useComponent={{if item.iconType.component true}}
               aria-label={{item.label}}
               @useSvg={{item.useSvg}}
               @isDisabled={{this.isPreviewing}}

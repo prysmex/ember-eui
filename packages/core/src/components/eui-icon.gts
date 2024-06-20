@@ -218,9 +218,9 @@ export default class EuiIcon extends Component<EuiIconSignature> {
   }
 
   <template>
-    {{#if (and @useComponent this.icon)}}
+    {{#if (and @useComponent @type)}}
       {{!@glint-expect-error}}
-      {{#let (component this.icon) as |IconComponent|}}
+      {{#let (component @type) as |IconComponent|}}
         {{!template-lint-disable}}
         <IconComponent
           class={{classNames

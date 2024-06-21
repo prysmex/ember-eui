@@ -3,7 +3,7 @@ import { on } from '@ember/modifier';
 import style from 'ember-style-modifier/modifiers/style';
 import { or } from 'ember-truth-helpers';
 
-import classNames from '../../helpers/class-names';
+import classNames from '../../helpers/class-names.ts';
 import EuiButton from '../eui-button.gts';
 import EuiButtonIcon from '../eui-button-icon.gts';
 

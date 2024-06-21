@@ -3,13 +3,13 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import validatableControl from '../modifiers/validatable-control';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
-import type { CommonArgs } from './common';
+import type { CommonArgs } from './common.ts';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 import type { IconType } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

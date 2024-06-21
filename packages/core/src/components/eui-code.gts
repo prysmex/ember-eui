@@ -8,11 +8,11 @@ import { scheduleOnce } from '@ember/runloop';
 import set from 'ember-set-helper/helpers/set';
 import { highlight } from 'refractor';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import { checkSupportedLanguage,getHtmlContent } from '../utils/code/utils';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import { checkSupportedLanguage,getHtmlContent } from '../utils/code/utils.ts';
 
-import type { EuiCodeSharedProps } from '../utils/code/utils';
+import type { EuiCodeSharedProps } from '../utils/code/utils.ts';
 import type { RefractorNode } from 'refractor';
 
 export type EuiCodeArgs = EuiCodeSharedProps & {

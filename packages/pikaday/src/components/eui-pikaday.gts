@@ -10,7 +10,7 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import pikaday from 'ember-pikaday-prysmex/modifiers/pikaday';
 import { and,not } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 
 import type { EuiFieldTextSignature } from '@ember-eui/core/components/eui-field-text';
 

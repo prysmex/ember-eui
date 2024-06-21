@@ -6,15 +6,15 @@ import { on } from '@ember/modifier';
 import { and, eq, gt,not, or } from 'ember-truth-helpers';
 import isArray from 'ember-truth-helpers/helpers/is-array';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import useState from '../helpers/use-state';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import useState from '../helpers/use-state.ts';
 import EuiFormErrorText from './eui-form-error-text.gts';
 import EuiFormHelpText from './eui-form-help-text.gts';
 import EuiFormLabel from './eui-form-label.gts';
 
-import type { displayMappingToClassMapping } from '../utils/css-mappings/eui-form-row';
+import type { displayMappingToClassMapping } from '../utils/css-mappings/eui-form-row.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFormRowSignature {

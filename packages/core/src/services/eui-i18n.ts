@@ -1,7 +1,7 @@
 import { action } from '@ember/object';
 import Service from '@ember/service';
 
-import { processStringToChildren } from '../i18n/util';
+import { processStringToChildren } from '../i18n/util.ts';
 
 interface LookupTokenOptions {
   token: string;

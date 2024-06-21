@@ -17,6 +17,6 @@
  * under the License.
  */
 
-export { accessibleClickKeys } from './accessible-click-keys';
-export { cascadingMenuKeys } from './cascading-menu-keys';
-export { comboBoxKeys } from './combo-box-keys';
+export { accessibleClickKeys } from './accessible-click-keys.ts';
+export { cascadingMenuKeys } from './cascading-menu-keys.ts';
+export { comboBoxKeys } from './combo-box-keys.ts';

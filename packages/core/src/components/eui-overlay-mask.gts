@@ -7,7 +7,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import setBodyClass from 'ember-set-body-class/helpers/set-body-class';
 import { eq } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 
 interface EuiOverlayMaskArgs {
   onClick?: (e: Event) => void;

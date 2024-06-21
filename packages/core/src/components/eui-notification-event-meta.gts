@@ -6,10 +6,10 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
 import { and } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import useState from '../helpers/use-state';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import useState from '../helpers/use-state.ts';
 import EuiBadge from './eui-badge.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';

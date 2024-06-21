@@ -6,7 +6,7 @@ import { invokeHelper } from '@ember/helper';
 
 import { CurrentBreakPointHelper } from './eui-show-for.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 
 export type EuiHideForBreakpoints = EuiBreakpointSize;
 

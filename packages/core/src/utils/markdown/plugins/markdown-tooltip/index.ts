@@ -1,2 +1,2 @@
-export { TooltipParser as parser } from './parser';
-export { tooltipPlugin as plugin } from './plugin';
+export { TooltipParser as parser } from './parser.ts';
+export { tooltipPlugin as plugin } from './plugin.ts';

@@ -9,9 +9,9 @@ import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { eq, notEq, or } from 'ember-truth-helpers';
 
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import { sizeMapping } from '../utils/css-mappings/eui-image';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import { sizeMapping } from '../utils/css-mappings/eui-image.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiOverlayMask from './eui-overlay-mask.gts';
 

@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 
-import { copyToClipboard } from "../utils/copy-to-clipboard";
+import { copyToClipboard } from "../utils/copy-to-clipboard.ts";
 import EuiToolTip from "./eui-tool-tip.gts";
 
 import type { EuiToolTipSignature } from "./eui-tool-tip";

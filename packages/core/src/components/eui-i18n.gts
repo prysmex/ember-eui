@@ -5,7 +5,7 @@ import { ensureSafeComponent } from '@embroider/util';
 
 import { notEq } from 'ember-truth-helpers';
 
-import typeOf from '../helpers/type-of';
+import typeOf from '../helpers/type-of.ts';
 import Render from './eui-i18n/render.gts';
 
 import type EuiI18n from '../services/eui-i18n';

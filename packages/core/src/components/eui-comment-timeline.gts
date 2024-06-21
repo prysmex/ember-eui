@@ -1,10 +1,10 @@
 import { eq, not,or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { commentTimelineTypeMapping } from '../utils/css-mappings/eui-comment-timeline-icon';
+import type { commentTimelineTypeMapping } from '../utils/css-mappings/eui-comment-timeline-icon.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCommentTimelineSignature {

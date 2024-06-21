@@ -1,7 +1,7 @@
 import { fn, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import randomId from '../../../-private/random-id';
+import randomId from '../../../-private/random-id.ts';
 import EuiFlexGrid from '../../eui-flex-grid.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
 import EuiI18n from '../../eui-i18n.gts';

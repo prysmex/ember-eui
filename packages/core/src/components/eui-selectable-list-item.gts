@@ -1,7 +1,7 @@
 import { and,eq, not } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names';
-import typeOf from '../helpers/type-of';
+import classNames from '../helpers/class-names.ts';
+import typeOf from '../helpers/type-of.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

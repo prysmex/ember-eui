@@ -5,8 +5,8 @@ import { on } from '@ember/modifier';
 
 import { or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import validatableControl from '../modifiers/validatable-control';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiFormFieldset from './eui-form-fieldset.gts';
 

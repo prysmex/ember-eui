@@ -4,9 +4,9 @@ import style from 'ember-style-modifier/modifiers/style';
 import { and } from 'ember-truth-helpers';
 import { eq,notEq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

@@ -3,7 +3,7 @@ import { concat } from '@ember/helper';
 import objectAt from 'ember-composable-helpers/helpers/object-at';
 import without from 'ember-composable-helpers/helpers/without';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import EuiAccordion from './eui-accordion.gts';
 import EuiText from './eui-text.gts';
 

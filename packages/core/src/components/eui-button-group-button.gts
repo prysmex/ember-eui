@@ -5,8 +5,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import noop from 'ember-composable-helpers/helpers/noop';
 import { and, eq, notEq } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import classNames from '../helpers/class-names';
+import randomId from '../-private/random-id.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiButton from './eui-button.gts';
 import EuiInnerText from './eui-inner-text.gts';
 

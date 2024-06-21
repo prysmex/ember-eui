@@ -15,29 +15,29 @@ import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, not, or } from 'ember-truth-helpers';
 import { tabbable } from 'tabbable';
 
-import randomId from '../-private/random-id';
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import merge from '../helpers/merge';
-import mutationObserver from '../modifiers/mutation-observer';
-import outsideClickDetector from '../modifiers/outside-click-detector';
-import screenReaderOnly from '../modifiers/screen-reader-only';
-import simpleStyle from '../modifiers/simple-style';
-import { cascadingMenuKeys } from '../utils/accesibility';
+import randomId from '../-private/random-id.ts';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import merge from '../helpers/merge.ts';
+import mutationObserver from '../modifiers/mutation-observer.ts';
+import outsideClickDetector from '../modifiers/outside-click-detector.ts';
+import screenReaderOnly from '../modifiers/screen-reader-only.ts';
+import simpleStyle from '../modifiers/simple-style.ts';
+import { cascadingMenuKeys } from '../utils/accesibility/index.ts';
 import {
   anchorPositionMapping,
   displayMapping
-} from '../utils/css-mappings/eui-popover';
-import { findPopoverPosition, getElementZIndex } from '../utils/popover';
+} from '../utils/css-mappings/eui-popover.ts';
+import { findPopoverPosition, getElementZIndex } from '../utils/popover/index.ts';
 import {
   getTransitionTimings,
   getWaitDuration,
   performOnFrame
-} from '../utils/transition';
+} from '../utils/transition.ts';
 import EuiPanel from './eui-panel.gts';
 import EuiPortal from './eui-portal.gts';
 
-import type { paddingSizeMapping } from '../utils/css-mappings/eui-panel';
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-panel.ts';
 import type { EuiPopoverPosition } from '../utils/popover/types';
 import type { EmberKeyboardEvent } from 'ember-keyboard/modifiers/on-key';
 

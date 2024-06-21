@@ -16,16 +16,16 @@ import Controls from '../components/eui-code-block/controls.gts';
 import FullScreenDisplay from '../components/eui-code-block/full-screen-display.gts';
 import VirtualizedCodeBlock from '../components/eui-code-block/virtualized.gts';
 import EuiInnerText from '../components/eui-inner-text.gts';
-import classNames from '../helpers/class-names';
-import mutationObserver from '../modifiers/mutation-observer';
-import resizeObserver from '../modifiers/resize-observer';
+import classNames from '../helpers/class-names.ts';
+import mutationObserver from '../modifiers/mutation-observer.ts';
+import resizeObserver from '../modifiers/resize-observer.ts';
 import {
   checkSupportedLanguage,
   getHtmlContent,
   highlightByLine
-} from '../utils/code/utils';
+} from '../utils/code/utils.ts';
 
-import type { EuiCodeSharedProps } from '../utils/code/utils';
+import type { EuiCodeSharedProps } from '../utils/code/utils.ts';
 import type { RefractorNode } from 'refractor';
 
 interface LineNumbersConfig {

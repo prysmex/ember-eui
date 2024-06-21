@@ -1,7 +1,7 @@
 import { and, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
 
 import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons';

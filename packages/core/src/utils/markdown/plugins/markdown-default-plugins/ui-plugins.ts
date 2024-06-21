@@ -6,9 +6,9 @@
  * Side Public License, v 1.
  */
 
-import * as MarkdownTooltip from '../markdown-tooltip';
+import * as MarkdownTooltip from '../markdown-tooltip/index.ts';
 
-import type { EuiMarkdownEditorUiPlugin } from '../../markdown-types';
+import type { EuiMarkdownEditorUiPlugin } from '../../markdown-types.ts';
 
 export type DefaultEuiMarkdownUiPlugins = EuiMarkdownEditorUiPlugin[];
 

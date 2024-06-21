@@ -4,8 +4,8 @@ import classify from 'ember-cli-string-helpers/helpers/classify';
 import { element } from 'ember-element-helper';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiButtonContent from './eui-button-content.gts';
 
 import type { EuiButtonContentSignature } from './eui-button-content';

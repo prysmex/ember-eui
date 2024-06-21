@@ -4,9 +4,9 @@ import { element } from 'ember-element-helper';
 import style from 'ember-style-modifier/modifiers/style';
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import euiPageRestrictWidth from '../helpers/eui-page-restrict-width.ts';
 import EuiPanel from './eui-panel.gts';
 
 import type { EuiPanelSignature } from './eui-panel';

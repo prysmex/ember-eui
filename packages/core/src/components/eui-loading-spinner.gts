@@ -1,7 +1,7 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
-import type { sizeMapping } from '../utils/css-mappings/eui-loading-spinner';
+import type { sizeMapping } from '../utils/css-mappings/eui-loading-spinner.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiLoadingSpinnerSignature {

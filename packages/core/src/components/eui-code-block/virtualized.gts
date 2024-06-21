@@ -6,8 +6,8 @@ import { concat } from '@ember/helper';
 import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
 import style from 'ember-style-modifier/modifiers/style';
 
-import randomId from '../../-private/random-id';
-import { getHtmlContent } from '../../utils/code/utils';
+import randomId from '../../-private/random-id.ts';
+import { getHtmlContent } from '../../utils/code/utils.ts';
 import EuiAutoSizer from '../eui-auto-sizer.gts';
 
 import type { RefractorNode } from 'refractor';

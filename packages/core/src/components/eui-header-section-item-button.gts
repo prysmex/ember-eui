@@ -6,7 +6,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiHideFor from './eui-hide-for.gts';
 import EuiIcon from './eui-icon.gts';
@@ -15,7 +15,7 @@ import EuiShowFor from './eui-show-for.gts';
 
 import type {
   colorMapping,
-} from '../utils/css-mappings/eui-notification-badge';
+} from '../utils/css-mappings/eui-notification-badge.ts';
 import type { EuiHideForBreakpoints } from './eui-hide-for';
 
 const keyframes: Keyframe[] = [

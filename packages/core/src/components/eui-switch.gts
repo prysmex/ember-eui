@@ -4,9 +4,9 @@ import { action } from '@ember/object';
 
 import { and, not } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiIcon from './eui-icon.gts';
 
 export interface EuiSwitchSignature {

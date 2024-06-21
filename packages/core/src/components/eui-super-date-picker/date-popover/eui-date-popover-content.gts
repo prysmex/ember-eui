@@ -6,14 +6,14 @@ import { inject as service } from '@ember/service';
 import { eq } from 'ember-truth-helpers';
 
 import EuiTabbedContent from '../../eui-tabbed-content.gts';
-import { getDateMode,toAbsoluteString } from '../utils';
+import { getDateMode,toAbsoluteString } from '../utils/index.ts';
 import AbsoluteTab from './absolute-tab.gts';
 import NowTab from './now-tab.gts';
 import RelativeTab from './relative-tab.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
 import type { EuiTabbedContentTab } from '../../eui-tabbed-content';
-import type { TimeOptions } from '../utils/time-options';
+import type { TimeOptions } from '../utils/time-options.ts';
 import type { AbsoluteTabSignature } from './absolute-tab';
 import type { NowTabSignature } from './now-tab';
 import type { RelativeTabSignature } from './relative-tab';

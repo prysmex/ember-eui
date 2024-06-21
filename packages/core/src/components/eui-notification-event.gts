@@ -4,10 +4,10 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
 import { and,eq, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import typeOf from '../helpers/type-of';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import typeOf from '../helpers/type-of.ts';
 import EuiLink from './eui-link.gts';
 import EuiNotificationEventMessages from './eui-notification-event-messages.gts';
 import EuiNotificationEventMeta from './eui-notification-event-meta.gts';

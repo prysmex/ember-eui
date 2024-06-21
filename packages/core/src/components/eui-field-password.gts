@@ -5,11 +5,11 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import useState from '../helpers/use-state';
-import validatableControl from '../modifiers/validatable-control';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import useState from '../helpers/use-state.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 

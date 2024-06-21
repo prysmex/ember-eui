@@ -17,4 +17,4 @@
  * under the License.
  */
 
-export { Browser } from './browser';
+export { Browser } from './browser.ts';

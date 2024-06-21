@@ -1,12 +1,12 @@
 import { and,eq, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
 import type {
   colorToClassMap,
   positionsToClassMap,
-  sizeToClassMapping} from '../utils/css-mappings/eui-progress';
+  sizeToClassMapping} from '../utils/css-mappings/eui-progress.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiProgressSignature {

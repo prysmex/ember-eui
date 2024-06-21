@@ -1,13 +1,13 @@
 import { and, not } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiTextAlign from './eui-text-align.gts';
 import EuiTextColor from './eui-text-color.gts';
 
-import type { sizeMapping } from '../utils/css-mappings/eui-text';
-import type { alignMapping } from '../utils/css-mappings/eui-text-align';
-import type { colorMapping } from '../utils/css-mappings/eui-text-color';
+import type { sizeMapping } from '../utils/css-mappings/eui-text.ts';
+import type { alignMapping } from '../utils/css-mappings/eui-text-align.ts';
+import type { colorMapping } from '../utils/css-mappings/eui-text-color.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiTextSignature {

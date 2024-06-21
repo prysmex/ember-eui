@@ -1,9 +1,9 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { sizeMapping } from '../utils/css-mappings/eui-form-control-layout-clear-button';
-import type { CommonArgs } from './common';
+import type { sizeMapping } from '../utils/css-mappings/eui-form-control-layout-clear-button.ts';
+import type { CommonArgs } from './common.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFormControlLayoutClearButtonArgs = CommonArgs & {

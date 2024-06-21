@@ -17,10 +17,10 @@ import EuiPopoverFooter from '../../eui-popover-footer.gts';
 import EuiSelect from '../../eui-select.gts';
 import EuiSpacer from '../../eui-spacer.gts';
 import EuiSwitch from '../../eui-switch.gts';
-import { INVALID_DATE, toRelativeStringFromParts } from '../utils';
-import { parseRelativeParts } from '../utils';
+import { INVALID_DATE, toRelativeStringFromParts } from '../utils/index.ts';
+import { parseRelativeParts } from '../utils/index.ts';
 
-import type { TimeOptions } from '../utils/time-options';
+import type { TimeOptions } from '../utils/time-options.ts';
 import type { LocaleSpecifier } from 'moment';
 
 interface RelativeTabArgs {

@@ -1,7 +1,7 @@
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiStepNumber from './eui-step-number.gts';
 import EuiTitle from './eui-title.gts';
 

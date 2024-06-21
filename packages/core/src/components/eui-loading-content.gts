@@ -1,7 +1,7 @@
 import repeat from 'ember-composable-helpers/helpers/repeat';
 import { gt, lt } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

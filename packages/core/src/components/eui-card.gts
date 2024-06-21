@@ -8,9 +8,9 @@ import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, notEq, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiBetaBadge from './eui-beta-badge.gts';
 import { euiCardSelectableColor } from './eui-card-select.gts';
 import EuiCardSelect from './eui-card-select.gts';

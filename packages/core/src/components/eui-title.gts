@@ -1,8 +1,8 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import TextBlock from './text-block.gts';
 
-import type { sizeMapping, transformMapping } from '../utils/css-mappings/eui-title';
+import type { sizeMapping, transformMapping } from '../utils/css-mappings/eui-title.ts';
 import type { TextBlockSignature } from './text-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

@@ -6,7 +6,7 @@
  * Side Public License, v 1.
  */
 
-export * from './parsing-plugins';
-export * from './plugins';
-export * from './processing-plugins';
-export * from './ui-plugins';
+export * from './parsing-plugins.ts';
+export * from './plugins.ts';
+export * from './processing-plugins.ts';
+export * from './ui-plugins.ts';

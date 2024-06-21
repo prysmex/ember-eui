@@ -3,7 +3,7 @@ import { array } from '@ember/helper';
 import { and, eq, gt } from 'ember-truth-helpers';
 import isArray from 'ember-truth-helpers/helpers/is-array';
 
-import argOrDefault from '../helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default.ts';
 import EuiCallOut from './eui-call-out.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

@@ -1,6 +1,6 @@
 import { concat } from '@ember/helper';
 
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 
 import type { EuiButtonIconSignature } from './eui-button-icon';

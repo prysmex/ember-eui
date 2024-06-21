@@ -5,8 +5,8 @@ import { htmlSafe } from '@ember/template';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names';
-import getRangeTick from '../helpers/get-range-tick';
+import classNames from '../helpers/class-names.ts';
+import getRangeTick from '../helpers/get-range-tick.ts';
 
 export interface EuiRangeTick {
   value: number;

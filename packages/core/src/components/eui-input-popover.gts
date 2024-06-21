@@ -9,10 +9,10 @@ import onKey from 'ember-keyboard/modifiers/on-key';
 import { not } from 'ember-truth-helpers';
 import { tabbable } from 'tabbable';
 
-import randomId from '../-private/random-id';
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import resizeObserver from '../modifiers/resize-observer';
-import { cascadingMenuKeys } from '../utils/accesibility';
+import randomId from '../-private/random-id.ts';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import resizeObserver from '../modifiers/resize-observer.ts';
+import { cascadingMenuKeys } from '../utils/accesibility/index.ts';
 import EuiPopover from './eui-popover.gts';
 
 import type { EuiPopoverArgs } from './eui-popover';

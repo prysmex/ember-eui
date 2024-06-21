@@ -1,4 +1,4 @@
-import { DATE_MODES, getDateMode } from '.';
+import { DATE_MODES, getDateMode } from './index.ts';
 
 import type EuiI18n from '../../../services/eui-i18n';
 import type { DurationRange, ShortDate } from '../types/global';

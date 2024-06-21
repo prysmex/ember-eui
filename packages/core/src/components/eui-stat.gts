@@ -1,13 +1,13 @@
 import { helper } from '@ember/component/helper';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import screenReaderOnly from '../modifiers/screen-reader-only';
-import { colorMapping } from '../utils/css-mappings/eui-stat';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import screenReaderOnly from '../modifiers/screen-reader-only.ts';
+import { colorMapping } from '../utils/css-mappings/eui-stat.ts';
 import EuiStatDescription from './eui-stat/description.gts';
 import EuiStatTitle from './eui-stat/title.gts';
 
-import type {textAlignMapping } from '../utils/css-mappings/eui-stat';
+import type {textAlignMapping } from '../utils/css-mappings/eui-stat.ts';
 import type { EuiStatDescriptionSignature } from './eui-stat/description';
 import type { EuiStatTitleSignature } from './eui-stat/title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

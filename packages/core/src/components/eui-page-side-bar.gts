@@ -1,7 +1,7 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
-import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-side-bar';
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-side-bar.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPageSideBarSignature {

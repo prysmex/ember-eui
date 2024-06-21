@@ -2,8 +2,8 @@ import { on } from '@ember/modifier';
 
 import EuiIcon from './eui-icon.gts';
 
-import type { CommonArgs } from './common';
-import type { EuiIconSignature } from './eui-icon';
+import type { CommonArgs } from './common.ts';
+import type { EuiIconSignature } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFormControlLayoutCustomIconArgs = CommonArgs & {

@@ -9,10 +9,10 @@ import { later } from '@ember/runloop';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import castTo from '../helpers/cast-to';
-import classNames from '../helpers/class-names';
-import { isWithinRange } from '../utils/number';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import castTo from '../helpers/cast-to.ts';
+import classNames from '../helpers/class-names.ts';
+import { isWithinRange } from '../utils/number/index.ts';
 import EuiInputPopover from './eui-input-popover.gts';
 import EuiRangeHighlight from './eui-range-highlight.gts';
 import EuiRangeInput from './eui-range-input.gts';

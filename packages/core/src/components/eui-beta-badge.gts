@@ -2,15 +2,15 @@ import { on } from '@ember/modifier';
 
 import { eq, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
 import type {
   colorMapping,
   sizeMapping
-} from '../utils/css-mappings/eui-beta-badge';
+} from '../utils/css-mappings/eui-beta-badge.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiToolTipSignature } from './eui-tool-tip';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

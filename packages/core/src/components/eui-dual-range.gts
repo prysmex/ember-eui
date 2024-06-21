@@ -11,12 +11,12 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import castTo from '../helpers/cast-to';
-import simpleStyle from '../modifiers/simple-style';
-import { keys } from '../utils/keys';
-import { isWithinRange } from '../utils/number';
-import { EUI_THUMB_SIZE } from '../utils/range';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import castTo from '../helpers/cast-to.ts';
+import simpleStyle from '../modifiers/simple-style.ts';
+import { keys } from '../utils/keys.ts';
+import { isWithinRange } from '../utils/number/index.ts';
+import { EUI_THUMB_SIZE } from '../utils/range/index.ts';
 import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited.gts';
 import EuiInputPopover from './eui-input-popover.gts';
 import EuiRangeHighlight from './eui-range-highlight.gts';

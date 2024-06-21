@@ -1,9 +1,9 @@
 import EuiHoritzontalRule from '../../../../components/eui-horizontal-rule.gts';
 import EuiMarkdownFormatMarkdownCode from '../../../../components/eui-markdown-format/markdown-code.gts';
 import EuiMarkdownFormatMarkdownCodeBlock from '../../../../components/eui-markdown-format/markdown-code-block.gts';
-import { FENCED_CLASS } from '../../remark/remark-prismjs';
+import { FENCED_CLASS } from '../../remark/remark-prismjs.ts';
 
-import type { RehypeNode } from '../../markdown-types';
+import type { RehypeNode } from '../../markdown-types.ts';
 
 type Visitor = (node: RehypeNode) => RehypeNode;
 

@@ -10,15 +10,15 @@ import sub from 'ember-math-helpers/helpers/sub';
 import { modifier } from 'ember-modifier';
 import { and, eq, not } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names';
-import useState from '../helpers/use-state';
-import { getBreakpoint } from '../utils/breakpoint';
+import classNames from '../helpers/class-names.ts';
+import useState from '../helpers/use-state.ts';
+import { getBreakpoint } from '../utils/breakpoint.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiInnerText from './eui-inner-text.gts';
 import EuiLink from './eui-link.gts';
 import EuiPopover from './eui-popover.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 
 export type EuiBreadcrumbResponsiveMaxCount = {
   /**

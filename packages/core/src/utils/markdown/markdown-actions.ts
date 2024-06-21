@@ -39,12 +39,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-import { isPluginWithImmediateFormatting } from './markdown-types';
+import { isPluginWithImmediateFormatting } from './markdown-types.ts';
 
 import type {
   EuiMarkdownEditorUiPlugin,
   EuiMarkdownFormatting
-} from './markdown-types';
+} from './markdown-types.ts';
 
 /**
  * Class for applying styles to a text editor. Accepts the HTML ID for the textarea

@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { concat } from '@ember/helper';
 import { htmlSafe } from '@ember/template';
 
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 
 export interface EuiRangeTick {
   value: number;

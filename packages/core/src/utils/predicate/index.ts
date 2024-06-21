@@ -6,5 +6,5 @@
  * Side Public License, v 1.
  */
 
-export * from './common_predicates';
-export * from './lodash_predicates';
+export * from './common_predicates.ts';
+export * from './lodash_predicates.ts';

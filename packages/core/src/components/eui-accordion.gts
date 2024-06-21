@@ -11,14 +11,14 @@ import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import resizeObserver from '../modifiers/resize-observer';
+import randomId from '../-private/random-id.ts';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import resizeObserver from '../modifiers/resize-observer.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
-import type { paddingMapping } from '../utils/css-mappings/eui-accordion';
+import type { paddingMapping } from '../utils/css-mappings/eui-accordion.ts';
 import type { CommonArgs } from './common.ts';
 
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;

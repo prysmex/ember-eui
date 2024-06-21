@@ -1,6 +1,6 @@
 import {
   calculateOffset,
-  calculateThumbPosition} from '../../helpers/get-range-tick';
+  calculateThumbPosition} from '../../helpers/get-range-tick.ts';
 
 export const baseClass = 'euiRangeLevels';
 

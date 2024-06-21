@@ -12,9 +12,10 @@ import {
   euiPaletteGray,
   euiPaletteNegative,
   euiPalettePositive,
-  euiPaletteWarm} from '../utils/color/eui_palettes';
+  euiPaletteWarm
+} from '../utils/color/eui_palettes.ts';
 
-import type { EuiPalette } from '../utils/color/eui_palettes';
+import type { EuiPalette } from '../utils/color/eui_palettes.ts';
 
 export const PALETTES = {
   euiPaletteForLightBackground,

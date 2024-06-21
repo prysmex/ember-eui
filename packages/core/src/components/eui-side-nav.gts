@@ -6,16 +6,16 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
 import { and,eq, not, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import EuiButtonEmpty from '../components/eui-button-empty.gts';
 import EuiHideFor from '../components/eui-hide-for.gts';
 import EuiShowFor from '../components/eui-show-for.gts';
 import EuiSideNavItem from '../components/eui-side-nav-item.gts';
 import EuiTitle from '../components/eui-title.gts';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import isItemOpen from '../helpers/is-item-open';
-import screenReaderOnly from '../modifiers/screen-reader-only';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import isItemOpen from '../helpers/is-item-open.ts';
+import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 
 import type { EuiHideForSignature } from '../components/eui-hide-for';
 

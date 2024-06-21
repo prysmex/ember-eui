@@ -1,15 +1,15 @@
 import { and, not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import getEuiConfig from '../helpers/get-eui-config';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import getEuiConfig from '../helpers/get-eui-config.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type {
   colorMapping,
   displayMapping,
   sizeMapping
-} from '../utils/css-mappings/eui-button-icon';
+} from '../utils/css-mappings/eui-button-icon.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

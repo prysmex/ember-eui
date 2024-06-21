@@ -9,7 +9,7 @@ import { next, schedule } from '@ember/runloop';
 import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import FieldBase from './validated-form/field-base.gts';
 import FieldCheckboxGroupComponent from './validated-form/field-checkbox-group.gts';
 import FieldComboBoxComponent from './validated-form/field-combo-box.gts';

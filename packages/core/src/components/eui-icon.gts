@@ -7,14 +7,14 @@ import { htmlSafe } from '@ember/template';
 import svgJar from 'ember-svg-jar/helpers/svg-jar';
 import { and, not } from 'ember-truth-helpers';
 
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import { colorToClassMap, typeToPathMap } from '../utils/css-mappings/eui-icon';
-import { keysOf } from './common';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import { colorToClassMap, typeToPathMap } from '../utils/css-mappings/eui-icon.ts';
+import { keysOf } from './common.ts';
 
 import type EuiConfigService from '../services/eui-config';
-import type { sizeToClassNameMap } from '../utils/css-mappings/eui-icon';
-import type { CommonArgs } from './common';
+import type { sizeToClassNameMap } from '../utils/css-mappings/eui-icon.ts';
+import type { CommonArgs } from './common.ts';
 import type { ComponentLike } from '@glint/template';
 
 export const TYPES = keysOf(typeToPathMap);

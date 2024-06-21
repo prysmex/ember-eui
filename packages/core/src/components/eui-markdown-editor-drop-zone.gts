@@ -1,4 +1,4 @@
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 import EuiMarkdownEditorFooter from './eui-markdown-editor-footer.gts';
 
 import type { EuiMarkdownEditorFooterSignature } from './eui-markdown-editor-footer';

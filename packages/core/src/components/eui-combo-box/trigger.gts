@@ -8,11 +8,11 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
 import { and, not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../../helpers/arg-or-default';
-import classNames from '../../helpers/class-names';
+import argOrDefault from '../../helpers/arg-or-default.ts';
+import classNames from '../../helpers/class-names.ts';
 import EuiComboBoxPill from '../eui-combo-box-pill.gts';
 import EuiFormControlLayout from '../eui-form-control-layout.gts';
-import EuiComboBoxTriggerInput from './trigger/input';
+import EuiComboBoxTriggerInput from './trigger/input.gts';
 
 export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipleTrigger {
   <template>

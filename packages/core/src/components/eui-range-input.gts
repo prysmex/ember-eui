@@ -2,10 +2,10 @@ import { hash } from '@ember/helper';
 
 import { and, eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import castTo from '../helpers/cast-to';
-import inlineStyles from '../helpers/inline-styles';
-import simpleStyle from '../modifiers/simple-style';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import castTo from '../helpers/cast-to.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
+import simpleStyle from '../modifiers/simple-style.ts';
 import EuiFieldNumber from './eui-field-number.gts';
 
 import type { EuiFieldNumberSignature } from './eui-field-number';

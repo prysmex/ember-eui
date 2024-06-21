@@ -9,7 +9,7 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
 import { not } from 'ember-truth-helpers';
 
-import randomId from '../../-private/random-id';
+import randomId from '../../-private/random-id.ts';
 import ValidatedFormFieldBase from './field-base.gts';
 
 import type { FieldBaseSignature } from './field-base.gts';

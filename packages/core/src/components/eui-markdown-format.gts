@@ -9,8 +9,8 @@ import unified from 'unified';
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins
-} from '../utils/markdown/plugins/markdown-default-plugins';
-import { toDOM } from '../utils/markdown/plugins/to-dom';
+} from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
+import { toDOM } from '../utils/markdown/plugins/to-dom.ts';
 
 import type {
   EuiMarkdownAstNodePosition,

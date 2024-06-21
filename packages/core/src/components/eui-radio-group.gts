@@ -3,7 +3,7 @@ import { on } from '@ember/modifier';
 
 import { eq, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default.ts';
 import EuiFormFieldset from './eui-form-fieldset.gts';
 import EuiRadio from './eui-radio.gts';
 

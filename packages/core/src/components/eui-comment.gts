@@ -1,7 +1,7 @@
 import { and, eq, not } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiCommentTimeline from './eui-comment-timeline.gts';
 
 import type { EuiCommentTimelineSignature } from './eui-comment-timeline';

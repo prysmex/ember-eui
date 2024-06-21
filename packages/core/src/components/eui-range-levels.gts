@@ -5,9 +5,9 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
-import simpleStyle from '../modifiers/simple-style';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
+import simpleStyle from '../modifiers/simple-style.ts';
 
 export type EuiRangeLevelColor = 'primary' | 'success' | 'warning' | 'danger';
 

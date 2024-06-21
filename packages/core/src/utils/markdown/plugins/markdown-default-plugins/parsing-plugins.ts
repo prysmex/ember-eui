@@ -25,9 +25,9 @@ import breaks from 'remark-breaks';
 import emoji from 'remark-emoji';
 import markdown from 'remark-parse';
 
-import highlight from '../../remark/remark-prismjs';
-import * as MarkdownCheckbox from '../markdown-checkbox';
-import * as MarkdownTooltip from '../markdown-tooltip';
+import highlight from '../../remark/remark-prismjs.ts';
+import * as MarkdownCheckbox from '../markdown-checkbox/index.ts';
+import * as MarkdownTooltip from '../markdown-tooltip/index.ts';
 
 import type { PluggableList } from 'unified';
 

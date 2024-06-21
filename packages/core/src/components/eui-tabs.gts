@@ -1,9 +1,9 @@
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
-import type { displayMapping,sizeMapping } from '../utils/css-mappings/eui-tabs';
+import type { displayMapping,sizeMapping } from '../utils/css-mappings/eui-tabs.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiTabsSignature {

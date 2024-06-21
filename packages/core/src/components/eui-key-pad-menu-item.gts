@@ -5,9 +5,9 @@ import { on } from '@ember/modifier';
 import { element } from 'ember-element-helper';
 import { and, eq, not } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiBetaBadge from './eui-beta-badge.gts';
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiRadio from './eui-radio.gts';

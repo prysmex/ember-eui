@@ -24,7 +24,7 @@
 
 import chroma from 'chroma-js';
 
-import { colorPalette } from './color_palette';
+import { colorPalette } from './color_palette.ts';
 
 export type EuiPalette = string[];
 

@@ -13,18 +13,18 @@ import { modifier } from 'ember-modifier';
 import styleModifier from 'ember-style-modifier/modifiers/style';
 import { and, eq, not,or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import outsideClickDetectorModifier from '../modifiers/outside-click-detector';
-import resizeObserverModifier from '../modifiers/resize-observer';
-import { isWithinMinBreakpoint } from '../utils/breakpoint';
-import { sizeMapping } from '../utils/css-mappings/eui-flyout';
-import { keysOf } from './common';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import outsideClickDetectorModifier from '../modifiers/outside-click-detector.ts';
+import resizeObserverModifier from '../modifiers/resize-observer.ts';
+import { isWithinMinBreakpoint } from '../utils/breakpoint.ts';
+import { sizeMapping } from '../utils/css-mappings/eui-flyout.ts';
+import { keysOf } from './common.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiOverlayMask from './eui-overlay-mask.gts';
 import EuiPortal from './eui-portal.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 
 export type EuiFlyoutArgs = {
   closeAriaLabel?: string;

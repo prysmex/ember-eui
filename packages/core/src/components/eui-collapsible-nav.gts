@@ -6,12 +6,12 @@ import { throttle } from '@ember/runloop';
 import { modifier } from 'ember-modifier';
 import { and, not, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import { isWithinMinBreakpoint } from '../utils/breakpoint';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import { isWithinMinBreakpoint } from '../utils/breakpoint.ts';
 import EuiFlyout from './eui-flyout.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 import type { EuiFlyoutSignature } from './eui-flyout';
 import type { ModifierLike } from '@glint/template';
 

@@ -35,7 +35,7 @@ import {
   ARROW_UP,
   ESCAPE,
   TAB
-} from '../keys';
+} from '../keys.ts';
 
 export const cascadingMenuKeys = {
   ARROW_DOWN,

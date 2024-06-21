@@ -1,9 +1,9 @@
 import { assert, warn } from '@ember/debug';
 
-import { hexToRgb } from '../../helpers/hex-to-rgb';
-import { isColorDark } from '../../helpers/is-color-dark';
-import { isValidHex } from '../../helpers/is-valid-hex';
-import { euiPaletteColorBlindBehindText } from '../../utils/color/eui_palettes';
+import { hexToRgb } from '../../helpers/hex-to-rgb.ts';
+import { isColorDark } from '../../helpers/is-color-dark.ts';
+import { isValidHex } from '../../helpers/is-valid-hex.ts';
+import { euiPaletteColorBlindBehindText } from '../../utils/color/eui_palettes.ts';
 
 export const baseClass = 'euiAvatar';
 export const VIS_COLORS = euiPaletteColorBlindBehindText();

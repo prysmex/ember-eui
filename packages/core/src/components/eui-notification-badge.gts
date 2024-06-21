@@ -1,10 +1,10 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
 import type {
   colorMapping,
   sizeMapping
-} from '../utils/css-mappings/eui-notification-badge';
+} from '../utils/css-mappings/eui-notification-badge.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 interface EuiNotificationBadgeSignature {

@@ -1,5 +1,5 @@
-import castTo from '../helpers/cast-to';
-import classNames from '../helpers/class-names';
+import castTo from '../helpers/cast-to.ts';
+import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

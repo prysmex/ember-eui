@@ -7,9 +7,9 @@ import { inject as service } from '@ember/service';
 import set from 'ember-set-helper/helpers/set';
 import { not } from 'ember-truth-helpers';
 
-import classNames from '../../../helpers/class-names';
+import classNames from '../../../helpers/class-names.ts';
 import EuiPopover from '../../eui-popover.gts';
-import { useFormatTimeString } from '../utils';
+import { useFormatTimeString } from '../utils/index.ts';
 import EuiDatePopoverContent from './eui-date-popover-content.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';

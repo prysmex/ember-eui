@@ -7,7 +7,7 @@ import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
 
 import { not } from 'ember-truth-helpers';
 
-import randomId from '../../-private/random-id';
+import randomId from '../../-private/random-id.ts';
 import ValidatedFormFieldBase from './field-base.gts';
 
 import type { FieldBaseSignature } from './field-base.gts';

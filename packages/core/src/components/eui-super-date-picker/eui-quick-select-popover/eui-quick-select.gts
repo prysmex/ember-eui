@@ -9,7 +9,7 @@ import set from 'ember-set-helper/helpers/set';
 import { lte } from 'ember-truth-helpers';
 import moment from 'moment';
 
-import randomId from '../../../-private/random-id';
+import randomId from '../../../-private/random-id.ts';
 import EuiButton from '../../eui-button.gts';
 import EuiButtonIcon from '../../eui-button-icon.gts';
 import EuiFieldNumber from '../../eui-field-number.gts';
@@ -19,11 +19,11 @@ import EuiI18n from '../../eui-i18n.gts';
 import EuiSelect from '../../eui-select.gts';
 import EuiSpacer from '../../eui-spacer.gts';
 import EuiToolTip from '../../eui-tool-tip.gts';
-import { parseTimeParts } from '../utils/quick-select';
-import { NEXT } from '../utils/time-options';
+import { parseTimeParts } from '../utils/quick-select.ts';
+import { NEXT } from '../utils/time-options.ts';
 
 import type { ApplyTime, TimeUnitId } from '../types/global';
-import type { TimeOptions } from '../utils/time-options';
+import type { TimeOptions } from '../utils/time-options.ts';
 
 interface EuiQuickSelectState {
   timeTense: string;

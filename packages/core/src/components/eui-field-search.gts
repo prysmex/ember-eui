@@ -8,12 +8,12 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import { and, not, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import validatableControl from '../modifiers/validatable-control';
-import { Browser } from '../utils/browser';
-import { keys } from '../utils/keys';
+import randomId from '../-private/random-id.ts';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
+import { Browser } from '../utils/browser/index.ts';
+import { keys } from '../utils/keys.ts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';

@@ -2,10 +2,10 @@ import { concat } from '@ember/helper';
 
 import style from 'ember-style-modifier/modifiers/style';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
-import inlineStyles from '../helpers/inline-styles';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import euiPageRestrictWidth from '../helpers/eui-page-restrict-width.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

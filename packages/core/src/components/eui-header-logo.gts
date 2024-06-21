@@ -1,4 +1,4 @@
-import argOrDefault from '../helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type { EuiIconSignature } from './eui-icon';

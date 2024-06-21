@@ -8,13 +8,13 @@ import { action } from '@ember/object';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, gte, or } from 'ember-truth-helpers';
 
-import { MODE_VIEWING } from '../utils/markdown/markdown-modes';
+import { MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
-import type MarkdownActions from '../utils/markdown/markdown-actions';
+import type MarkdownActions from '../utils/markdown/markdown-actions.ts';
 
 export interface EuiMarkdownEditorToolbarArgs {
   viewMode?: string;

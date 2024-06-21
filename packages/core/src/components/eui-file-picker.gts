@@ -7,16 +7,16 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import { and, eq, not, notEq, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import validatableControl from '../modifiers/validatable-control';
+import randomId from '../-private/random-id.ts';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiProgress from './eui-progress.gts';
 
-import type { displayMapping } from '../utils/css-mappings/eui-file-picker';
+import type { displayMapping } from '../utils/css-mappings/eui-file-picker.ts';
 
 export type EuiFilePickerDisplay = keyof typeof displayMapping;
 

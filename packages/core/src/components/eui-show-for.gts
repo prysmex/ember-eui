@@ -7,9 +7,9 @@ import Helper from '@ember/component/helper';
 import { invokeHelper } from '@ember/helper';
 import { throttle } from '@ember/runloop';
 
-import { getBreakpoint } from '../utils/breakpoint';
+import { getBreakpoint } from '../utils/breakpoint.ts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 
 export class CurrentBreakPointHelper extends Helper {
   @tracked currentBreakpoint: string | undefined;

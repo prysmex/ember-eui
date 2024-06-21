@@ -1,6 +1,6 @@
 import { or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 

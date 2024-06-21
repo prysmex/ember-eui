@@ -2,12 +2,12 @@ import { helper } from '@ember/component/helper';
 
 import { eq } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names';
-import screenReaderOnly from '../modifiers/screen-reader-only';
+import classNames from '../helpers/class-names.ts';
+import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
-import type { statusToClassMap } from '../utils/css-mappings/eui-step-number';
+import type { statusToClassMap } from '../utils/css-mappings/eui-step-number.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiStepSignature } from './eui-step';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

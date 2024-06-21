@@ -1,5 +1,5 @@
 export const baseClass = 'euiButtonGroup';
-import { colors } from './eui-button';
+import { colors } from './eui-button.ts';
 
 const sizeMapping = {
   s: `${baseClass}--small`,

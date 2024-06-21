@@ -1,7 +1,7 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import argOrDefault from '../../helpers/arg-or-default';
-import classNames from '../../helpers/class-names';
+import argOrDefault from '../../helpers/arg-or-default.ts';
+import classNames from '../../helpers/class-names.ts';
 import EuiIcon from '../eui-icon.gts';
 import EuiInnerText from '../eui-inner-text.gts';
 

@@ -9,7 +9,7 @@
 import refractor from 'refractor';
 import visit from 'unist-util-visit';
 
-import { checkSupportedLanguage } from '../../code/utils';
+import { checkSupportedLanguage } from '../../code/utils.ts';
 
 import type { Plugin } from 'unified';
 

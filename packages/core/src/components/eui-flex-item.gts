@@ -1,10 +1,10 @@
 import { element } from 'ember-element-helper';
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
-import type { growMapping } from '../utils/css-mappings/eui-flex-item';
+import type { growMapping } from '../utils/css-mappings/eui-flex-item.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFlexItemSignature {

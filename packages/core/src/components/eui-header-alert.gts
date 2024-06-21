@@ -1,4 +1,4 @@
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 

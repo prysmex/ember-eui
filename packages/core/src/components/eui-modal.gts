@@ -9,9 +9,9 @@ import onKey from 'ember-keyboard/modifiers/on-key';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, notEq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiOverlayMask from './eui-overlay-mask.gts';
 

@@ -10,9 +10,9 @@ import { inject as service } from '@ember/service';
 import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import Timer from '../utils/timer';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import Timer from '../utils/timer.ts';
 import EuiToast from './eui-toast.gts';
 
 import type EuiToasterService from '../services/eui-toaster';
@@ -20,7 +20,7 @@ import type {
   EuiToastProps,
   EuiToastPropsWithId
 } from '../services/eui-toaster';
-import type { sideMapping } from '../utils/css-mappings/eui-global-toast-list';
+import type { sideMapping } from '../utils/css-mappings/eui-global-toast-list.ts';
 
 type EuiToastSide = keyof typeof sideMapping;
 

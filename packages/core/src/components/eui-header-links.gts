@@ -4,15 +4,15 @@ import { on } from '@ember/modifier';
 
 import set from 'ember-set-helper/helpers/set';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiHideFor from './eui-hide-for.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiPopover from './eui-popover.gts';
 import EuiShowFor from './eui-show-for.gts';
 
-import type { gutterSizeMapping } from '../utils/css-mappings/eui-header-links';
+import type { gutterSizeMapping } from '../utils/css-mappings/eui-header-links.ts';
 import type { EuiHideForSignature } from './eui-hide-for';
 import type { EuiPopoverSignature } from './eui-popover';
 

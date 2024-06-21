@@ -6,4 +6,4 @@
  * Side Public License, v 1.
  */
 
-export { CheckboxParser as parser } from './parser';
+export { CheckboxParser as parser } from './parser.ts';

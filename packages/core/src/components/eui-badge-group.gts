@@ -1,9 +1,9 @@
 import { hash } from '@ember/helper';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
-import type { gutterSize } from '../utils/css-mappings/eui-badge-group';
+import type { gutterSize } from '../utils/css-mappings/eui-badge-group.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 const BadgeGroupItem: TemplateOnlyComponent<{

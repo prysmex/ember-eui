@@ -2,13 +2,13 @@ import { on } from '@ember/modifier';
 
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
 import type {
   borderRadiusMapping,
   colorMapping,
-  paddingSizeMapping} from '../utils/css-mappings/eui-panel';
+  paddingSizeMapping} from '../utils/css-mappings/eui-panel.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPanelSignature {

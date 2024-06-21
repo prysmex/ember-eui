@@ -5,8 +5,8 @@ import { inject as service } from '@ember/service';
 
 import { eq,or } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
@@ -14,8 +14,8 @@ import EuiDatePopoverButton from './eui-super-date-picker/date-popover/eui-date-
 import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
 import EuiQuickSelectPopover from './eui-super-date-picker/eui-quick-select-popover.gts';
 import EuiSuperUpdateButton from './eui-super-date-picker/eui-super-update-button.gts';
-import { isRangeInvalid } from './eui-super-date-picker/utils';
-import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options';
+import { isRangeInvalid } from './eui-super-date-picker/utils/index.ts';
+import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type {

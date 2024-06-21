@@ -4,7 +4,7 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 
-import type { CommonArgs } from './common';
+import type { CommonArgs } from './common.ts';
 
 type EuiTooltipPopoverArgs = CommonArgs & {
     positionToolTip: () => void;

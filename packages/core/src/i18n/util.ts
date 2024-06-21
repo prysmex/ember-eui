@@ -9,7 +9,12 @@
 import { assert } from '@ember/debug';
 import { get } from '@ember/object';
 
-import { isBoolean, isNumber, isString, isUndefined } from '../utils/predicate';
+import {
+  isBoolean,
+  isNumber,
+  isString,
+  isUndefined
+} from '../utils/predicate/index.ts';
 
 function isPrimitive(value: any) {
   return (

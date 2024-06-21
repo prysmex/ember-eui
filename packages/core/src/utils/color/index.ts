@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export { hexToRgb } from '../../helpers/hex-to-rgb';
-export { isColorDark } from '../../helpers/is-color-dark';
-export { isValidHex } from '../../helpers/is-valid-hex';
-export { colorPalette } from './color_palette';
+export { hexToRgb } from '../../helpers/hex-to-rgb.ts';
+export { isColorDark } from '../../helpers/is-color-dark.ts';
+export { isValidHex } from '../../helpers/is-valid-hex.ts';
+export { colorPalette } from './color_palette.ts';
 export {
   euiPaletteColorBlind,
   euiPaletteColorBlindBehindText,
@@ -32,4 +32,5 @@ export {
   euiPaletteGray,
   euiPaletteNegative,
   euiPalettePositive,
-  euiPaletteWarm} from './eui_palettes';
+  euiPaletteWarm
+} from './eui_palettes.ts';

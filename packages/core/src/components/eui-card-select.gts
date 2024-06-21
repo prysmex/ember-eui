@@ -3,8 +3,8 @@ import { on } from '@ember/modifier';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 
 import type { EuiButtonEmptySignature } from './eui-button-empty';

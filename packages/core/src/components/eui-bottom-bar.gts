@@ -4,10 +4,10 @@ import { tracked } from '@glimmer/tracking';
 import { modifier } from 'ember-modifier';
 import set from 'ember-set-helper/helpers/set';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import resizeObserver from '../modifiers/resize-observer';
-import screenReaderOnly from '../modifiers/screen-reader-only';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import resizeObserver from '../modifiers/resize-observer.ts';
+import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import EuiPortal from './eui-portal.gts';
 
 export interface EuiButtomBarArgs {

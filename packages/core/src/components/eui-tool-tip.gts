@@ -10,11 +10,11 @@ import { cancel, later, next, scheduleOnce } from '@ember/runloop';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, or } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import resizeObserver from '../modifiers/resize-observer';
-import { keys } from '../utils/keys';
-import { findPopoverPosition } from '../utils/popover';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import resizeObserver from '../modifiers/resize-observer.ts';
+import { keys } from '../utils/keys.ts';
+import { findPopoverPosition } from '../utils/popover/index.ts';
 import EuiPortal from './eui-portal.gts';
 import EuiToolTipPopover from './eui-tool-tip-popover.gts';
 

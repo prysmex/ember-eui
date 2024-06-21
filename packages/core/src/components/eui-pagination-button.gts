@@ -3,11 +3,11 @@ import { hash } from '@ember/helper';
 import add from 'ember-math-helpers/helpers/add';
 import { or } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiI18n from './eui-i18n.gts';
 
-import type { paddingMapping } from '../utils/css-mappings/eui-popover-footer';
+import type { paddingMapping } from '../utils/css-mappings/eui-popover-footer.ts';
 import type { EuiButtonEmptySignature } from './eui-button-empty';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

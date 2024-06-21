@@ -3,10 +3,10 @@ import { get } from '@ember/helper';
 import { and, eq } from 'ember-truth-helpers';
 import { notEq } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import screenReaderOnly from '../modifiers/screen-reader-only';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import EuiButtonGroupButton from './eui-button-group-button.gts';
 
 import type { EuiButtonGroupButtonSignature } from './eui-button-group-button';

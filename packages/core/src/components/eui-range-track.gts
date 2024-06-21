@@ -10,8 +10,8 @@ import { htmlSafe } from '@ember/template';
 import { and, gt,or } from 'ember-truth-helpers';
 import { range } from 'lodash-es';
 
-import classNames from '../helpers/class-names';
-import { isEvenlyDivisibleBy } from '../utils/number';
+import classNames from '../helpers/class-names.ts';
+import { isEvenlyDivisibleBy } from '../utils/number/index.ts';
 import { LEVEL_COLORS } from './eui-range-levels.gts';
 import EuiRangeLevels from './eui-range-levels.gts';
 import EuiRangeTicks from './eui-range-ticks.gts';

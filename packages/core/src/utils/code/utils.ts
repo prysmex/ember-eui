@@ -8,7 +8,7 @@
 
 import { highlight,listLanguages } from 'refractor';
 
-import type { CommonArgs } from '../../components/common';
+import type { CommonArgs } from '../../components/common.ts';
 import type { AST, RefractorNode } from 'refractor';
 
 /**

@@ -2,14 +2,14 @@ import { get,hash } from '@ember/helper';
 
 import { and, eq,not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
-import { toInitials } from '../helpers/to-initials';
-import simpleStyle from '../modifiers/simple-style';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
+import { toInitials } from '../helpers/to-initials.ts';
+import simpleStyle from '../modifiers/simple-style.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { sizeMapping, typeMapping } from '../utils/css-mappings/eui-avatar';
+import type { sizeMapping, typeMapping } from '../utils/css-mappings/eui-avatar.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

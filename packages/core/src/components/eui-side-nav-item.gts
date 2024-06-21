@@ -5,8 +5,8 @@ import add from 'ember-math-helpers/helpers/add';
 import { and,eq, gt, not, or } from 'ember-truth-helpers';
 
 import Button from '../components/eui-side-nav-item/button.gts';
-import classNames from '../helpers/class-names';
-import isItemOpen from '../helpers/is-item-open';
+import classNames from '../helpers/class-names.ts';
+import isItemOpen from '../helpers/is-item-open.ts';
 
 import type { Item } from './eui-side-nav';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

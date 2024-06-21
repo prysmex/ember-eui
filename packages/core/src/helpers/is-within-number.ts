@@ -1,6 +1,6 @@
 import { helper } from '@ember/component/helper';
 
-import { isWithinRange as isWithin } from '../utils/number';
+import { isWithinRange as isWithin } from '../utils/number/index.ts';
 
 type Comparator = {
   min: number | string;

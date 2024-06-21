@@ -4,13 +4,13 @@ import { on } from '@ember/modifier';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
-import simpleStyle from '../modifiers/simple-style';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
+import simpleStyle from '../modifiers/simple-style.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { colorMapping, EuiBadgeColorType } from '../utils/css-mappings/eui-badge';
+import type { colorMapping, EuiBadgeColorType } from '../utils/css-mappings/eui-badge.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

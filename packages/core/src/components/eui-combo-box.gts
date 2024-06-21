@@ -11,8 +11,8 @@ import PowerSelectMultiple from 'ember-power-select/components/power-select-mult
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, not } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiComboBoxCreateOption from './eui-combo-box/create-option.gts';
 import EuiComboBoxGroup from './eui-combo-box/group.gts';
 import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message.gts';

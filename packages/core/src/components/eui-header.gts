@@ -1,7 +1,7 @@
 import { modifier } from 'ember-modifier';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs.gts';
 import EuiHeaderSection from './eui-header-section.gts';
 import EuiHeaderSectionItem from './eui-header-section-item.gts';

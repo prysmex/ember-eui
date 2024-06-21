@@ -9,8 +9,8 @@
 import dateMath from '@elastic/datemath';
 import moment from 'moment';
 
-import { DATE_MODES, relativeUnitsFromLargestToSmallest } from '.';
-import { LAST, NEXT } from './time-options';
+import { DATE_MODES, relativeUnitsFromLargestToSmallest } from './index.ts';
+import { LAST, NEXT } from './time-options.ts';
 
 import type { QuickSelect, TimeUnitId } from '../types/global';
 

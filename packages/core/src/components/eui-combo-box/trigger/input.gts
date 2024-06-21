@@ -8,7 +8,7 @@ import { isBlank } from '@ember/utils';
 import EmberPowerSelectPowerSelectMultipleInputComponent from 'ember-power-select/components/power-select-multiple/input';
 import { and, not } from 'ember-truth-helpers';
 
-import validatableControl from '../../../modifiers/validatable-control';
+import validatableControl from '../../../modifiers/validatable-control.ts';
 
 export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPowerSelectMultipleInputComponent {
   get triggerMultipleInputStyle() {

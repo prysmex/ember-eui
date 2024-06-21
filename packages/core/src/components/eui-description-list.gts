@@ -1,12 +1,12 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiDescriptionListDescription from './eui-description-list-description.gts';
 import EuiDescriptionListTitle from './eui-description-list-title.gts';
 
 import type {
   alignMapping,
   textStyleMapping,
-  typeMapping} from '../utils/css-mappings/eui-description-list';
+  typeMapping} from '../utils/css-mappings/eui-description-list.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiDescriptionListSignature {

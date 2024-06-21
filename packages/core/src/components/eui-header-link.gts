@@ -1,4 +1,4 @@
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 
 import type { EuiButtonEmptySignature } from './eui-button-empty';

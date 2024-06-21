@@ -6,8 +6,8 @@ import style from 'ember-style-modifier/modifiers/style';
 // import {
 //   anchorPositionMapping,
 //   displayMapping
-// } from '../../utils/css-mappings/eui-popover';
-// import { paddingSizeMapping } from '../../utils/css-mappings/eui-panel';
+// } from '../../utils/css-mappings/eui-popover.ts';
+// import { paddingSizeMapping } from '../../utils/css-mappings/eui-panel.ts';
 // import { scheduleOnce, later, cancel } from '@ember/runloop';
 // import { assert } from '@ember/debug';
 // import { htmlSafe } from '@ember/template';
@@ -23,10 +23,10 @@ import { and, eq,or } from 'ember-truth-helpers';
 // import { findPopoverPosition, getElementZIndex } from '../../utils/popover';
 // import { EuiPopoverPosition } from '../../utils/popover/types';
 // import { cascadingMenuKeys } from '../../utils/accesibility';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
-import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
+import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints.ts';
 import EuiBottomBar from './eui-bottom-bar.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
@@ -37,7 +37,7 @@ import EuiPageContentBody from './eui-page-content-body.gts';
 import EuiPageHeader from './eui-page-header.gts';
 import EuiPageSideBar from './eui-page-side-bar.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint';
+import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 import type { EuiButtomBarArgs } from './eui-bottom-bar';
 import type { EuiPageBodySignature } from './eui-page-body';
 import type { EuiPageContentSignature } from './eui-page-content';

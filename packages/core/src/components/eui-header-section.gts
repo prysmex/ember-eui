@@ -1,10 +1,10 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
 import type {
   alignMapping,
   growMapping
-} from '../utils/css-mappings/eui-header-section';
+} from '../utils/css-mappings/eui-header-section.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiHeaderSectionSignature {

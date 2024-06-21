@@ -1,10 +1,10 @@
-import argOrDefault from './helpers/arg-or-default';
-import castTo from './helpers/cast-to';
-import classNames from './helpers/class-names';
-import getEuiConfig from './helpers/get-eui-config';
-import inlineStyles from './helpers/inline-styles';
-import isColorDark from './helpers/is-color-dark';
-import useState from './helpers/use-state';
+import argOrDefault from './helpers/arg-or-default.ts';
+import castTo from './helpers/cast-to.ts';
+import classNames from './helpers/class-names.ts';
+import getEuiConfig from './helpers/get-eui-config.ts';
+import inlineStyles from './helpers/inline-styles.ts';
+import isColorDark from './helpers/is-color-dark.ts';
+import useState from './helpers/use-state.ts';
 
 export {
   argOrDefault,

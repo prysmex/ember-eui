@@ -3,12 +3,12 @@ import { concat } from '@ember/helper';
 import style from 'ember-style-modifier/modifiers/style';
 import { and,eq, not, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import euiPageRestrictWidth from '../helpers/eui-page-restrict-width.ts';
 import EuiPageHeaderContent from './eui-page-header-content.gts';
 
-import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiPageHeaderContentSignature } from './eui-page-header-content';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

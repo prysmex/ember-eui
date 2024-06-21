@@ -2,7 +2,7 @@ import { on } from '@ember/modifier';
 
 import { and, eq, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default';
+import argOrDefault from '../helpers/arg-or-default.ts';
 import EuiFormControlLayoutClearButton from './eui-form-control-layout-clear-button.gts';
 import EuiFormControlLayoutCustomIcon from './eui-form-control-layout-custom-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';

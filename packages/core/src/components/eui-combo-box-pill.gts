@@ -3,7 +3,7 @@ import { fn } from '@ember/helper';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 import EuiBadge from './eui-badge.gts';
 
 import type { EuiBadgeSignature } from './eui-badge';

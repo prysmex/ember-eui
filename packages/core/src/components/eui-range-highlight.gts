@@ -1,8 +1,8 @@
 import { hash } from '@ember/helper';
 
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
-import simpleStyle from '../modifiers/simple-style';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
+import simpleStyle from '../modifiers/simple-style.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 

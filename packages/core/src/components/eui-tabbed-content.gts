@@ -8,11 +8,11 @@ import { scheduleOnce } from '@ember/runloop';
 import findBy from 'ember-composable-helpers/helpers/find-by';
 import { eq } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
 
-import type { CommonArgs } from './common';
+import type { CommonArgs } from './common.ts';
 import type { EuiTabsSignature } from './eui-tabs';
 import type { ComponentLike } from '@glint/template';
 

@@ -1,4 +1,4 @@
-import argOrDefault from '../../helpers/arg-or-default';
+import argOrDefault from '../../helpers/arg-or-default.ts';
 import EuiPanel from '../eui-panel.gts';
 
 import type { EuiPanelSignature } from '../eui-panel';

@@ -3,7 +3,7 @@ import { on } from '@ember/modifier';
 
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../../helpers/arg-or-default';
+import argOrDefault from '../../helpers/arg-or-default.ts';
 import EuiPaginationButton from '../eui-pagination-button.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

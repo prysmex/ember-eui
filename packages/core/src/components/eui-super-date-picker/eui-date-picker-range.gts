@@ -1,4 +1,4 @@
-import classNames from '../../helpers/class-names';
+import classNames from '../../helpers/class-names.ts';
 import EuiIcon from '../eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

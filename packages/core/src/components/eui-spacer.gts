@@ -1,7 +1,7 @@
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 
-import type { sizeMapping } from '../utils/css-mappings/eui-spacer';
+import type { sizeMapping } from '../utils/css-mappings/eui-spacer.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiSpacerSignature {

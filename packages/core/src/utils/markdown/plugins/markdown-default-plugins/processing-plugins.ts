@@ -24,7 +24,7 @@
 import all from 'mdast-util-to-hast/lib/all';
 import remark2Rehype from 'remark-rehype';
 
-import * as MarkdownAddComponents from '../markdown-add-components';
+import * as MarkdownAddComponents from '../markdown-add-components/index.ts';
 
 import type { Options as Remark2RehypeOptions } from 'mdast-util-to-hast';
 //@ts-ignore

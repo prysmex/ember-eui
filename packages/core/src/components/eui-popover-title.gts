@@ -1,6 +1,6 @@
-import classNames from '../helpers/class-names';
+import classNames from '../helpers/class-names.ts';
 
-import type { paddingMapping } from '../utils/css-mappings/eui-popover-title';
+import type { paddingMapping } from '../utils/css-mappings/eui-popover-title.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiPopoverTitleSignature {

@@ -6,11 +6,11 @@ import optional from 'ember-composable-helpers/helpers/optional';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq,not, or } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import inlineStyles from '../helpers/inline-styles';
-import useState from '../helpers/use-state';
-import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import inlineStyles from '../helpers/inline-styles.ts';
+import useState from '../helpers/use-state.ts';
+import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints.ts';
 import EuiBreadcrumbs from './eui-breadcrumbs.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
@@ -21,7 +21,7 @@ import EuiTabs from './eui-tabs.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
 
-import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body';
+import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body.ts';
 import type { EuiButtomBarArgs } from './eui-bottom-bar';
 import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs';
 import type { EuiIconSignature } from './eui-icon';

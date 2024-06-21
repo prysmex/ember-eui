@@ -2,12 +2,12 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 
-import randomId from '../-private/random-id';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import validatableControl from '../modifiers/validatable-control';
+import randomId from '../-private/random-id.ts';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
 
-import type { resizeMapping } from '../utils/css-mappings/eui-text-area';
+import type { resizeMapping } from '../utils/css-mappings/eui-text-area.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiTextAreaSignature {

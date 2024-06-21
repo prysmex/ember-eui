@@ -15,17 +15,17 @@ import style from 'ember-style-modifier/modifiers/style';
 import { eq, not } from 'ember-truth-helpers';
 import unified from 'unified';
 
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import resizeObserver from '../modifiers/resize-observer';
-import validatableControl from '../modifiers/validatable-control';
-import MarkdownActions from '../utils/markdown/markdown-actions';
-import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import resizeObserver from '../modifiers/resize-observer.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
+import MarkdownActions from '../utils/markdown/markdown-actions.ts';
+import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins
-} from '../utils/markdown/plugins/markdown-default-plugins';
-import * as MarkdownTooltipPlugin from '../utils/markdown/plugins/markdown-tooltip';
+} from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
+import * as MarkdownTooltipPlugin from '../utils/markdown/plugins/markdown-tooltip/index.ts';
 import EuiMarkdownEditorDropZone from './eui-markdown-editor-drop-zone.gts';
 import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area.gts';
 import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar.gts';

@@ -3,11 +3,11 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import optional from 'ember-composable-helpers/helpers/optional';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import EuiFormControlLayout from '../components/eui-form-control-layout.gts';
-import argOrDefault from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import validatableControl from '../modifiers/validatable-control';
+import argOrDefault from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
 
 import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';

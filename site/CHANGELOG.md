@@ -1,5 +1,11 @@
 # site
 
+## 9.0.1
+
+### Patch Changes
+
+- 82b1bf1: Fix build
+
 ## 9.0.0
 
 ### Major Changes

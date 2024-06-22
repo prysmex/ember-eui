@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 10.0.1
+
+### Patch Changes
+
+- 82b1bf1: Fix build
+- Updated dependencies [82b1bf1]
+  - @ember-eui/core@10.0.1
+
 ## 10.0.0
 
 ### Major Changes

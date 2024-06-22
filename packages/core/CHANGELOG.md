@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 10.0.3
+
+### Patch Changes
+
+- fix declarations
+
 ## 10.0.2
 
 ### Patch Changes

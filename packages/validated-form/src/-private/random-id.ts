@@ -1,7 +1,5 @@
 import { helper } from '@ember/component/helper';
 
-export default helper(randomId);
-
 // Copy-pasted from the ember-source implementation:
 // https://github.com/emberjs/ember.js/blob/master/packages/@ember/-internals/glimmer/lib/helpers/unique-id.ts
 function randomId() {
@@ -10,3 +8,7 @@ function randomId() {
     ((a * 4) ^ ((Math.random() * 16) >> (a & 2))).toString(16)
   );
 }
+
+export default helper(randomId);
+
+

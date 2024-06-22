@@ -17,7 +17,6 @@
   "scripts": {
     "build": "concurrently 'npm:build:*'",
     "build:js": "rollup --config",
-    "build:types": "glint --build",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix",
     "lint:js": "eslint . --cache",
@@ -53,7 +52,8 @@
     "ember-svg-jar": "^2.3.4",
     "ember-truth-helpers": "^4.0.3",
     "ember-modifier": "^4.1.0",
-    "ember-style-modifier": "^3.0.1"
+    "ember-style-modifier": "^3.0.1",
+    "decorator-transforms": "^1.0.3"
   },
   "peerDependencies": {
     "@ember-eui/core": "^9.0.1",
@@ -124,6 +124,8 @@
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-glimmer-template-tag": "^0.4.1",
     "rollup-plugin-ts": "^3.0.2",
+    "execa": "^8.0.1",
+    "fix-bad-declaration-output": "^1.1.4",
     "typescript": "~5.0.3",
     "webpack": "^5.89.0"
   },

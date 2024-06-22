@@ -107,7 +107,7 @@
     "qunit-dom": "^2.0.0",
     "remark-autolink-headings": "^6.0.1",
     "remark-highlight.js": "^6.0.0",
-    "typescript": "~5.2.2",
+    "typescript": "^5.3.3",
     "webpack": "^5.89.0",
     "webpack-bundle-analyzer": "^4.5.0",
     "ember-url-hash-polyfill": "^1.0.11",

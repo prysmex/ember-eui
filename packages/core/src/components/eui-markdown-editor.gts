@@ -116,6 +116,7 @@ export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
   textarea: EuiMarkdownEditorTextAreaSignature['Element'],
   [parsed, onSelectedNode]: [any, (node: Node) => void]
 ) {
+  //@ts-expect-error
   const fn = wrapper.bind(null, textarea, parsed, onSelectedNode);
 
   textarea.addEventListener('keyup', fn);

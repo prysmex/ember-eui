@@ -1,6 +1,18 @@
 # @ember-eui/validated-form
 
+## 10.0.0
+
+### Major Changes
+
+- 3540301: Modernized build
+
+### Patch Changes
+
+- Updated dependencies [3540301]
+  - @ember-eui/core@10.0.0
+
 <<<<<<< HEAD
+
 ## 9.0.1
 
 ### Patch Changes
@@ -31,8 +43,8 @@
 
 - Fix searchMessage styling
 - Updated dependencies
-  - @ember-eui/core@8.0.15
-=======
+  - # @ember-eui/core@8.0.15
+
 ## 9.0.0
 
 ### Minor Changes
@@ -43,7 +55,7 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
->>>>>>> master-v8
+    > > > > > > > master-v8
 
 ## 8.0.14
 

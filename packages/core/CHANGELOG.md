@@ -1,6 +1,13 @@
 # @ember-eui/core
 
+## 10.0.0
+
+### Major Changes
+
+- 3540301: Modernized build
+
 <<<<<<< HEAD
+
 ## 9.0.1
 
 ### Patch Changes
@@ -21,14 +28,14 @@
 
 ### Patch Changes
 
-- Fix searchMessage styling
-=======
+- # Fix searchMessage styling
+
 ## 8.1.0
 
 ### Minor Changes
 
 - 157b860: Fixes issues
->>>>>>> master-v8
+  > > > > > > > master-v8
 
 ## 8.0.14
 

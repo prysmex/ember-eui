@@ -18,8 +18,8 @@ importers:
         specifier: ^1.8.9
         version: 1.8.9
       '@glint/core':
-        specifier: ^1.2.0
-        version: 1.2.1(typescript@5.0.4)
+        specifier: ^1.3.0
+        version: 1.4.0(typescript@5.0.4)
       '@nullvoxpopuli/eslint-configs':
         specifier: ^3.2.2
         version: 3.2.2(@babel/core@7.23.7)(@babel/eslint-parser@7.23.3(@babel/core@7.23.7)(eslint@8.56.0))(@typescript-eslint/eslint-plugin@6.17.0(@typescript-eslint/parser@6.17.0(eslint@8.56.0)(typescript@5.0.4))(eslint@8.56.0)(typescript@5.0.4))(@typescript-eslint/parser@6.17.0(eslint@8.56.0)(typescript@5.0.4))(eslint-config-prettier@9.1.0(eslint@8.56.0))(eslint-plugin-ember@11.12.0(eslint@8.56.0))(eslint@8.56.0)(prettier@3.1.1)(typescript@5.0.4)
@@ -2315,7 +2315,7 @@ packages:
     resolution: {directory: packages/changeset-form, type: directory}
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^10.0.0
+      '@ember-eui/core': ^10.0.2
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: ~4.2.0
@@ -2336,7 +2336,7 @@ packages:
     resolution: {directory: packages/flatpickr, type: directory}
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^10.0.0
+      '@ember-eui/core': ^10.0.2
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: ~4.2.0
@@ -2345,7 +2345,7 @@ packages:
     resolution: {directory: packages/pikaday, type: directory}
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^10.0.0
+      '@ember-eui/core': ^10.0.2
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: ~4.2.0
@@ -2354,7 +2354,7 @@ packages:
     resolution: {directory: packages/validated-form, type: directory}
     engines: {node: 12.* || 14.* || >= 16}
     peerDependencies:
-      '@ember-eui/core': ^10.0.0
+      '@ember-eui/core': ^10.0.2
       '@glimmer/component': ^1.1.2
       '@glimmer/tracking': ^1.1.2
       ember-source: ~4.2.0
@@ -2579,8 +2579,8 @@ packages:
   '@glimmer/vm-babel-plugins@0.83.1':
     resolution: {integrity: sha512-Cz0e/SrOo1gSNA0PXZRYI1WGmlQSAQCpiERBlXjjpwoLgiqx2kvsjfFiCUC/CfpsO6WN6wuPMeTFGJuhSSeL5A==}
 
-  '@glint/core@1.2.1':
-    resolution: {integrity: sha512-25Zn65aLSN1M7s0D950sTNElZYRqa6HFA0xcT03iI/vQd1F6c3luMAXbFrsTSHlktZx2dqJ38c2dUnZJQBQgMw==}
+  '@glint/core@1.4.0':
+    resolution: {integrity: sha512-nq27a/1R6kc3lsuciz8z9IZO1NQCbNkEBxf5KJI7AUrnps6RzQzmq3pmwO24zQYmFcH4sqpod8fleNIpg8YEqg==}
     hasBin: true
     peerDependencies:
       typescript: '>=4.8.0'
@@ -12664,7 +12664,7 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
 
-  '@glint/core@1.2.1(typescript@5.0.4)':
+  '@glint/core@1.4.0(typescript@5.0.4)':
     dependencies:
       '@glimmer/syntax': 0.84.3
       escape-string-regexp: 4.0.0

@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 10.0.2
+
+### Patch Changes
+
+- try fixing build
+
 ## 10.0.1
 
 ### Patch Changes

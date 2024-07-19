@@ -13,12 +13,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noEmitOnError": false,
-    "noEmit": true,
+    "noEmitOnError": true,
+    "noEmit": false,
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
     "experimentalDecorators": true,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": true
   }
 }

@@ -47,7 +47,7 @@ export default {
          * but our consumers may not be using those, or have a new enough ember-source that provides them.
          */
         console.log('Building types');
-        await execaCommand(`pnpm glint --build`, { stdio: 'inherit' });
+        await execaCommand(`pnpm glint --declaration`, { stdio: 'inherit' });
         /**
          * https://github.com/microsoft/TypeScript/issues/56571#
          * README: https://github.com/NullVoxPopuli/fix-bad-declaration-output

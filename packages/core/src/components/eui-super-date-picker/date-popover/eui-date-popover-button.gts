@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { concat } from '@ember/helper';
+import { concat, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { inject as service } from '@ember/service';
 
@@ -36,6 +36,16 @@ interface EuiDatePopoverButtonArgs {
 export interface EuiDatePopoverButtonSignature {
   Element: HTMLButtonElement;
   Args: EuiDatePopoverButtonArgs;
+  Blocks: {
+    button: [
+      {
+        classes: string;
+        formattedValue: string;
+        open: () => void;
+        close: () => void;
+      }
+    ];
+  };
 }
 
 export default class EuiDatePopoverButton extends Component<EuiDatePopoverButtonSignature> {
@@ -80,16 +90,28 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
         @display="block"
       >
         <:button>
-          <button
-            type="button"
-            class={{classes}}
-            title={{this.formattedValue}}
-            disabled={{@isDisabled}}
-            ...attributes
-            {{on "click" (set this "isOpen" (not this.isOpen))}}
-          >
-            {{this.formattedValue}}
-          </button>
+          {{#if (has-block "button")}}
+            {{yield
+              (hash
+                classes=classes
+                formattedValue=this.formattedValue
+                open=(set this "isOpen" true)
+                close=(set this "isOpen" false)
+              )
+              to="button"
+            }}
+          {{else}}
+            <button
+              type="button"
+              class={{classes}}
+              title={{this.formattedValue}}
+              disabled={{@isDisabled}}
+              ...attributes
+              {{on "click" (set this "isOpen" (not this.isOpen))}}
+            >
+              {{this.formattedValue}}
+            </button>
+          {{/if}}
         </:button>
 
         <:content>

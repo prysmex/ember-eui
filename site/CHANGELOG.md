@@ -1,5 +1,11 @@
 # site
 
+## 8.0.17
+
+### Patch Changes
+
+- default timeOptions for super-date-picker
+
 ## 7.1.20
 
 ### Patch Changes

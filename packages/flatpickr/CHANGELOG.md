@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.17
+
+### Patch Changes
+
+- default timeOptions for super-date-picker
+- Updated dependencies
+  - @ember-eui/core@8.0.17
+
 ## 8.0.16
 
 ### Patch Changes

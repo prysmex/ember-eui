@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.18
+
+### Patch Changes
+
+- Protects from undefined
+- Updated dependencies
+  - @ember-eui/core@8.0.18
+
 ## 8.0.17
 
 ### Patch Changes

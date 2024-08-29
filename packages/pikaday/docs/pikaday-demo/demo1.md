@@ -33,7 +33,7 @@
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import 'ember-pikaday-prysmex/pikaday.css';
+import 'ember-pikaday/pikaday.css';
 
 export default class extends Component {
   @tracked date = new Date();

@@ -7,7 +7,7 @@ import { EuiFieldText } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import optional from 'ember-composable-helpers/helpers/optional';
-import pikaday from 'ember-pikaday-prysmex/modifiers/pikaday';
+import pikaday from 'ember-pikaday/modifiers/pikaday';
 import { and,not } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';

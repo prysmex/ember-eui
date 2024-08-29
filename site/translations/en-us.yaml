@@ -1,5 +1,5 @@
 pikaday:
-  styles_instructions: "//app/controllers/application.js\n//Opt-in to using pikaday's default CSS\nimport 'ember-pikaday-prysmex/pikaday.css';"
+  styles_instructions: "//app/controllers/application.js\n//Opt-in to using pikaday's default CSS\nimport 'ember-pikaday/pikaday.css';"
 changeset_form:
   note: <EuiChangesetForm::Fields::ComboBox>
 validated_form:

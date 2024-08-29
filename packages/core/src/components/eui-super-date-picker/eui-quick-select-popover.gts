@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 
 import set from 'ember-set-helper/helpers/set';
 import { gt, not } from 'ember-truth-helpers';
@@ -15,6 +16,7 @@ import EuiCommonlyUsedTimeRanges from './eui-quick-select-popover/eui-commonly-u
 import EuiQuickSelect from './eui-quick-select-popover/eui-quick-select.gts';
 import { useI18nTimeOptions } from './utils/time-options.ts';
 
+import type EuiI18n from '../../services/eui-i18n';
 import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used';
 import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges';
 import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select';
@@ -33,6 +35,7 @@ export interface EuiQuickSelectPopoverSignature {
 }
 
 export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopoverSignature> {
+  @service declare euiI18n: EuiI18n
   @tracked isOpen = false;
 
   @action

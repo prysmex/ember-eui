@@ -35,7 +35,6 @@
 - Updated dependencies [3540301]
   - @ember-eui/core@10.0.0
 
-<<<<<<< HEAD
 
 ## 9.0.1
 
@@ -80,6 +79,13 @@
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
     > > > > > > > master-v8
+## 8.0.16
+
+### Patch Changes
+
+- 23ea57c: Adds the ability to customize how superdatepicker button triggets looks like
+- Updated dependencies [23ea57c]
+  - @ember-eui/core@8.0.16
 
 ## 8.0.14
 

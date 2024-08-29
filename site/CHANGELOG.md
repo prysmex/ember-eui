@@ -1,5 +1,6 @@
 # site
 
+
 ## 9.0.3
 
 ### Patch Changes
@@ -24,7 +25,6 @@
 
 - 3540301: Modernized build
 
-<<<<<<< HEAD
 
 ## 8.0.1
 
@@ -54,6 +54,7 @@
 
 - 157b860: Fixes issues
   > > > > > > > master-v8
+- 23ea57c: Adds the ability to customize how superdatepicker button triggets looks like
 
 ## 7.1.19
 

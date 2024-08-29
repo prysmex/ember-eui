@@ -41,12 +41,6 @@ module.exports = function (defaults) {
       }
     },
 
-    'ember-cli-favicon': {
-      enabled: true,
-
-      iconPath: 'assets/euivector.svg' // icon path related to `public` folder
-    },
-
     // Add options here
     '@ember-eui/core': {
       theme: false

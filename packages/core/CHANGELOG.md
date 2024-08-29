@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.16
+
+### Patch Changes
+
+- 23ea57c: Adds the ability to customize how superdatepicker button triggets looks like
+
 ## 8.0.14
 
 ### Patch Changes

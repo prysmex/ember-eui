@@ -1,5 +1,11 @@
 # site
 
+## 7.1.20
+
+### Patch Changes
+
+- 23ea57c: Adds the ability to customize how superdatepicker button triggets looks like
+
 ## 7.1.19
 
 ### Patch Changes

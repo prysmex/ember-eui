@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.16
+
+### Patch Changes
+
+- 23ea57c: Adds the ability to customize how superdatepicker button triggets looks like
+- Updated dependencies [23ea57c]
+  - @ember-eui/core@8.0.16
+
 ## 8.0.14
 
 ### Patch Changes

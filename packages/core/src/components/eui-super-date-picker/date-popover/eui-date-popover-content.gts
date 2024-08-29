@@ -6,7 +6,8 @@ import { inject as service } from '@ember/service';
 import { eq } from 'ember-truth-helpers';
 
 import EuiTabbedContent from '../../eui-tabbed-content.gts';
-import { getDateMode,toAbsoluteString } from '../utils';
+import { getDateMode, toAbsoluteString } from '../utils';
+import { useI18nTimeOptions } from '../utils/time-options.ts';
 import AbsoluteTab from './absolute-tab.gts';
 import NowTab from './now-tab.gts';
 import RelativeTab from './relative-tab.gts';
@@ -105,6 +106,10 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
     return this.args.roundUp ?? false;
   }
 
+  get timeOptions() {
+    return this.args.timeOptions || useI18nTimeOptions(this.euiI18n);
+  }
+
   <template>
     <EuiTabbedContent
       @className="euiDatePopoverContent"
@@ -124,7 +129,7 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
             @dateFormat={{@dateFormat}}
             @locale={{@locale}}
             @position={{@position}}
-            @timeOptions={{@timeOptions}}
+            @timeOptions={{this.timeOptions}}
           />
         {{else if (eq selected.id "now")}}
           <NowTab @position={{@position}} @onChange={{@onChange}} />

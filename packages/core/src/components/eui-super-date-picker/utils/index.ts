@@ -186,7 +186,7 @@ export function getDateMode(value: ShortDate) {
     return DATE_MODES.NOW;
   }
 
-  if (value.includes('now')) {
+  if (value?.includes('now')) {
     return DATE_MODES.RELATIVE;
   }
 

@@ -13,6 +13,7 @@ import EuiPopover from '../eui-popover.gts';
 import EuiRecentlyUsed from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used.gts';
 import EuiCommonlyUsedTimeRanges from './eui-quick-select-popover/eui-commonly-used-time-ranges.gts';
 import EuiQuickSelect from './eui-quick-select-popover/eui-quick-select.gts';
+import { useI18nTimeOptions } from './utils/time-options.ts';
 
 import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used';
 import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges';
@@ -55,6 +56,10 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
     }
   }
 
+  get timeOptions() {
+    return this.args.timeOptions || useI18nTimeOptions(this.euiI18n);
+  }
+
   <template>
     <EuiPopover
       @isOpen={{this.isOpen}}
@@ -82,7 +87,7 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
             @applyTime={{this.applyTime}}
             @start={{@start}}
             @end={{@end}}
-            @timeOptions={{@timeOptions}}
+            @timeOptions={{this.timeOptions}}
           />
 
           {{#if (gt @commonlyUsedRanges.length 0)}}

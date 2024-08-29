@@ -80,6 +80,22 @@
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
     > > > > > > > master-v8
+## 8.0.18
+
+### Patch Changes
+
+- Protects from undefined
+- Updated dependencies
+  - @ember-eui/core@8.0.18
+
+## 8.0.17
+
+### Patch Changes
+
+- default timeOptions for super-date-picker
+- Updated dependencies
+  - @ember-eui/core@8.0.17
+
 ## 8.0.16
 
 ### Patch Changes

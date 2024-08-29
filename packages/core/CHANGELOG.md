@@ -53,6 +53,18 @@
 
 - 157b860: Fixes issues
   > > > > > > > master-v8
+## 8.0.18
+
+### Patch Changes
+
+- Protects from undefined
+
+## 8.0.17
+
+### Patch Changes
+
+- default timeOptions for super-date-picker
+
 ## 8.0.16
 
 ### Patch Changes

@@ -10,6 +10,7 @@ import { not } from 'ember-truth-helpers';
 import classNames from '../../../helpers/class-names.ts';
 import EuiPopover from '../../eui-popover.gts';
 import { useFormatTimeString } from '../utils/index.ts';
+import { useI18nTimeOptions } from '../utils/time-options.ts';
 import EuiDatePopoverContent from './eui-date-popover-content.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
@@ -63,6 +64,10 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
       locale,
       this.euiI18n
     );
+  }
+
+  get timeOptions() {
+    return this.args.timeOptions || useI18nTimeOptions(this.euiI18n);
   }
 
   get anchorPosition() {
@@ -123,7 +128,7 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
             @timeFormat={{@timeFormat}}
             @locale={{@locale}}
             @utcOffset={{@utcOffset}}
-            @timeOptions={{@timeOptions}}
+            @timeOptions={{this.timeOptions}}
             @onChange={{@onChange}}
           />
         </:content>

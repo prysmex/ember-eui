@@ -24,13 +24,13 @@ interface EuiDatePopoverButtonArgs {
   isOpen?: boolean;
   needsUpdating?: boolean;
   locale?: EuiDatePopoverContentSignature['Args']['locale'];
-  position: 'start' | 'end';
+  position?: 'start' | 'end';
   roundUp?: boolean;
   timeFormat?: string;
   value: string;
   utcOffset?: number;
   compressed?: boolean;
-  timeOptions: EuiDatePopoverContentSignature['Args']['timeOptions'];
+  timeOptions?: EuiDatePopoverContentSignature['Args']['timeOptions'];
   onChange: EuiDatePopoverContentSignature['Args']['onChange'];
 }
 
@@ -53,13 +53,18 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
   @service declare euiI18n: EuiI18n;
   @tracked isOpen = false;
 
+  get dateFormat() {
+    //date with seconds and such
+    return this.args.dateFormat ?? 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+  }
+
   get formattedValue() {
     const roundUp = this.args.roundUp ?? false;
     const locale = this.args.locale ?? 'en';
 
     return useFormatTimeString(
       this.args.value,
-      this.args.dateFormat,
+      this.dateFormat,
       roundUp,
       locale,
       this.euiI18n
@@ -72,6 +77,10 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
 
   get anchorPosition() {
     return this.args.position === 'start' ? 'downLeft' : 'downRight';
+  }
+
+  get position() {
+    return this.args.position ?? 'start';
   }
 
   <template>
@@ -121,10 +130,10 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
 
         <:content>
           <EuiDatePopoverContent
-            @position={{@position}}
+            @position={{this.position}}
             @value={{@value}}
             @roundUp={{@roundUp}}
-            @dateFormat={{@dateFormat}}
+            @dateFormat={{this.dateFormat}}
             @timeFormat={{@timeFormat}}
             @locale={{@locale}}
             @utcOffset={{@utcOffset}}

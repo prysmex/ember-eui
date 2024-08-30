@@ -65,6 +65,7 @@
     ]
   },
   "devDependencies": {
+    "pnpm-sync-dependencies-meta-injected": "^0.0.10",
     "@babel/core": "^7.23.2",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
@@ -172,11 +173,6 @@
     "ember-source": "^3.28.0 || >=4.0.0",
     "moment": "^2.29.3",
     "@ember/string": "^3.1.1"
-  },
-  "dependenciesMeta": {
-    "@ember/string": {
-      "injected": true
-    }
   },
   "publishConfig": {
     "access": "public"

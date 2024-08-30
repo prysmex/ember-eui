@@ -19,7 +19,6 @@
     "test": "npm-run-all lint test:*",
     "test:ember": "ember test",
     "build": "ember build --environment=production",
-    "_syncPnpm": "pnpm sync-dependencies-meta-injected",
     "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'"
   },
   "devDependencies": {
@@ -112,7 +111,7 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "ember-url-hash-polyfill": "^1.0.11",
     "@ember/string": "^3.1.1",
-    "pnpm-sync-dependencies-meta-injected": "^0.0.10",
+    "pnpm-sync-dependencies-meta-injected": "^0.0.14",
     "@ember-eui/changeset-form": "workspace:*",
     "@ember-eui/core": "workspace:*",
     "@ember-eui/flatpickr": "workspace:*",
@@ -128,22 +127,5 @@
   },
   "volta": {
     "extends": "../package.json"
-  },
-  "dependenciesMeta": {
-    "@ember-eui/core": {
-      "injected": true
-    },
-    "@ember-eui/validated-form": {
-      "injected": true
-    },
-    "@ember-eui/changeset-form": {
-      "injected": true
-    },
-    "@ember-eui/flatpickr": {
-      "injected": true
-    },
-    "@ember-eui/pikaday": {
-      "injected": true
-    }
   }
 }

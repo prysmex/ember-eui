@@ -49,7 +49,7 @@
     "ember-auto-import": "^2.7.2",
     "ember-composable-helpers": "^5.0.0",
     "ember-modifier": "^4.1.0",
-    "ember-pikaday-prysmex": "4.3.0",
+    "ember-pikaday": "5.0.0",
     "ember-svg-jar": "^2.3.4",
     "ember-truth-helpers": "^4.0.3"
   },
@@ -59,13 +59,8 @@
     "@glimmer/tracking": "^1.1.2",
     "ember-source": "^3.28.0 || >=4.0.0"
   },
-  "dependenciesMeta": {
-    "@ember-eui/core": {
-      "injected": true
-    }
-  },
   "devDependencies": {
-    "pnpm-sync-dependencies-meta-injected": "^0.0.10",
+    "pnpm-sync-dependencies-meta-injected": "^0.0.14",
     "@babel/core": "^7.23.2",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-proposal-class-properties": "^7.18.6",

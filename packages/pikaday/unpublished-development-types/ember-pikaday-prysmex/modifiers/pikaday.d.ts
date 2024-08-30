@@ -1,4 +1,4 @@
-declare module 'ember-pikaday-prysmex/modifiers/pikaday' {
+declare module 'ember-pikaday/modifiers/pikaday' {
   import Modifier from 'ember-modifier';
 
   export interface EmberKeyboardEvent {

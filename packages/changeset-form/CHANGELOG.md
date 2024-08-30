@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.19
+
+### Patch Changes
+
+- Set some sensible defaults for eui-date-popover-button
+- Updated dependencies
+  - @ember-eui/core@8.0.19
+
 ## 8.0.18
 
 ### Patch Changes

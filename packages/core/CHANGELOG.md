@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.20
+
+### Patch Changes
+
+- Try republisjhing
+
 ## 8.0.19
 
 ### Patch Changes

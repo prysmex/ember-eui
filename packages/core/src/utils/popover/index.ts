@@ -78,6 +78,7 @@ const positionSubstitutes: {
 interface FindPopoverPositionArgs {
   anchor: HTMLElement;
   popover: HTMLElement;
+  host?: HTMLElement | null;
   align?: EuiPopoverPosition;
   position: EuiPopoverPosition;
   forcePosition?: boolean;
@@ -136,6 +137,7 @@ export function findPopoverPosition({
   align,
   position,
   forcePosition,
+  host,
   buffer = 16,
   offset = 0,
   allowCrossAxis = true,
@@ -167,6 +169,23 @@ export function findPopoverPosition({
   const containerBoundingBox = container
     ? getElementBoundingBox(container)
     : windowBoundingBox;
+
+  if (host) {
+    const hostBoundingBox = getElementBoundingBox(host);
+
+    const anchorBoundingRelativeToHost = {
+      top: anchorBoundingBox.top - hostBoundingBox.top,
+      left: anchorBoundingBox.left - hostBoundingBox.left,
+      right: hostBoundingBox.right - anchorBoundingBox.right,
+      bottom: hostBoundingBox.bottom - anchorBoundingBox.bottom
+    };
+
+
+    anchorBoundingBox.top = anchorBoundingRelativeToHost.top;
+    anchorBoundingBox.left = anchorBoundingRelativeToHost.left;
+    anchorBoundingBox.right = anchorBoundingRelativeToHost.right;
+    anchorBoundingBox.bottom = anchorBoundingRelativeToHost.bottom;
+  }
 
   /**
    * `position` was specified by the function caller and is a strong hint

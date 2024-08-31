@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.22
+
+### Patch Changes
+
+- Try to fix nested popovers
+- Updated dependencies
+  - @ember-eui/core@8.0.22
+
 ## 8.0.21
 
 ### Patch Changes

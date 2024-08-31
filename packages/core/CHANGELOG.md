@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.22
+
+### Patch Changes
+
+- Try to fix nested popovers
+
 ## 8.0.21
 
 ### Patch Changes

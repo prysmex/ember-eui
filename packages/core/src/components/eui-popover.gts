@@ -131,6 +131,12 @@ export type EuiPopoverArgs = {
   panelStyle?: { [i: string]: string };
   panelRef?: (e: HTMLElement | null) => unknown;
   popoverRef?: (e: HTMLElement) => unknown;
+
+  /**
+   * when not `false`, the popover will check if this popover is inside another popover and if so. will reposition itself to be inside the other popover
+   */
+  shouldAccountForOtherPopovers?: boolean;
+
   /**
    * When `true`, the popover's position is re-calculated when the user
    * scrolls, this supports having fixed-position popover anchors
@@ -306,6 +312,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   @tracked openPosition: EuiPopoverPosition | null = null;
   @tracked isOpenStable = false;
   @tracked isCurrentlyOpen: boolean | undefined;
+  @tracked popoverHost?: HTMLElement | null = null;
   ///
 
   private respositionTimeout: ReturnType<typeof later> | null = null;
@@ -322,6 +329,23 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     this.prevIsOpen = this.isOpen;
     this.suppressingPopover = this.isOpen;
     this.isCurrentlyOpen = this.isOpen;
+  }
+
+  get insert() {
+    if (this.args.insert) {
+      return this.args.insert;
+    }
+
+    if (this.shouldAccountForOtherPopovers) {
+      if (this.popoverHost) {
+        return {
+          sibling: this.popoverHost.children[0] as HTMLElement,
+          position: 'after'
+        };
+      }
+    }
+
+    return undefined;
   }
 
   @action
@@ -472,8 +496,18 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     );
   }
 
+  get shouldAccountForOtherPopovers() {
+    return this.args.shouldAccountForOtherPopovers ?? true;
+  }
+
+  checkIfPopoverIsInsideAnotherPopover(ele: HTMLElement) {
+    const otherPopover = ele.closest<HTMLDivElement>('div.euiPopover__panel');
+
+    this.popoverHost = otherPopover;
+  }
+
   @action
-  didInsertPopover(): void {
+  didInsertPopover(ele: HTMLDivElement): void {
     if (this.suppressingPopover) {
       // component was created with isOpen=true; now that it's inserted
       // stop suppressing and start opening
@@ -487,6 +521,10 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
 
     if (this.args.repositionOnScroll) {
       window.addEventListener('scroll', this.positionPopoverFixed, true);
+    }
+
+    if (this.shouldAccountForOtherPopovers) {
+      this.checkIfPopoverIsInsideAnotherPopover(ele);
     }
 
     this.updateFocus();
@@ -529,6 +567,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   willDestroy(): void {
     super.willDestroy();
     window.removeEventListener('scroll', this.positionPopoverFixed, true);
+    this.popoverHost = null;
     cancel(this.respositionTimeout as ReturnType<typeof later>);
     cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
     cancelAnimationFrame(this.closingTransitionAnimationFrame as number);
@@ -560,6 +599,24 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       forcePosition = true;
     }
 
+    // get the position of the element relative to the offsetParent, which could be the document
+    function getPos(ele: HTMLElement): [number, number] {
+      let currTop = 0;
+      let currLeft = 0;
+
+      if (ele.offsetParent) {
+        do {
+          currTop += ele.offsetTop;
+          currLeft += ele.offsetLeft;
+        } while ((ele = ele.offsetParent as HTMLElement));
+      } else {
+        currTop = ele.offsetTop;
+        currLeft = ele.offsetLeft;
+      }
+
+      return [currTop, currLeft];
+    }
+
     const {
       top,
       left,
@@ -568,6 +625,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       anchorBoundingBox
     } = findPopoverPosition({
       container: this.args.container,
+      host: this.shouldAccountForOtherPopovers ? this.popoverHost : null,
       position,
       forcePosition,
       align: getPopoverAlignFromAnchorPosition(this.anchorPosition),
@@ -723,7 +781,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
             (or this.isCurrentlyOpen this.isClosing)
           )
         }}
-          <EuiPortal @insert={{@insert}}>
+          <EuiPortal @insert={{this.insert}}>
             {{#let (randomId) as |panelId|}}
               <EuiPanel
                 id={{panelId}}

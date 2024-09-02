@@ -78,6 +78,7 @@ const positionSubstitutes: {
 interface FindPopoverPositionArgs {
   anchor: HTMLElement;
   popover: HTMLElement;
+  host?: HTMLElement | null;
   align?: EuiPopoverPosition;
   position: EuiPopoverPosition;
   forcePosition?: boolean;
@@ -117,6 +118,7 @@ const getBufferValues = (
  * @param popover {HTMLElement} Element containing the popover content
  * @param position {string} Position the user wants. One of ["top", "right", "bottom", "left"]
  * @param [forcePosition] {boolean} If true, use only the provided `position` value and don't try any other position
+ * @param host {HTMLElement} Element the popover must be positioned relative to
  * @param [align] {string} Cross-axis alignment. One of ["top", "right", "bottom", "left"]
  * @param [buffer=16] {number} Minimum distance between the popover and the bounding container
  * @param [offset=0] {number} Distance between the popover and the anchor
@@ -136,6 +138,7 @@ export function findPopoverPosition({
   align,
   position,
   forcePosition,
+  host,
   buffer = 16,
   offset = 0,
   allowCrossAxis = true,
@@ -167,6 +170,24 @@ export function findPopoverPosition({
   const containerBoundingBox = container
     ? getElementBoundingBox(container)
     : windowBoundingBox;
+
+  // the anchor is positioned relative to the host element if provided
+  if (host) {
+    const hostBoundingBox = getElementBoundingBox(host);
+
+    const anchorBoundingRelativeToHost = {
+      top: anchorBoundingBox.top - hostBoundingBox.top,
+      left: anchorBoundingBox.left - hostBoundingBox.left,
+      right: hostBoundingBox.right - anchorBoundingBox.right,
+      bottom: hostBoundingBox.bottom - anchorBoundingBox.bottom
+    };
+
+
+    anchorBoundingBox.top = anchorBoundingRelativeToHost.top;
+    anchorBoundingBox.left = anchorBoundingRelativeToHost.left;
+    anchorBoundingBox.right = anchorBoundingRelativeToHost.right;
+    anchorBoundingBox.bottom = anchorBoundingRelativeToHost.bottom;
+  }
 
   /**
    * `position` was specified by the function caller and is a strong hint

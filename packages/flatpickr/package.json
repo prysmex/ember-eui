@@ -61,13 +61,8 @@
     "@glimmer/tracking": "^1.1.2",
     "ember-source": "^3.28.0 || >=4.0.0"
   },
-  "dependenciesMeta": {
-    "@ember-eui/core": {
-      "injected": true
-    }
-  },
   "devDependencies": {
-    "pnpm-sync-dependencies-meta-injected": "^0.0.10",
+    "pnpm-sync-dependencies-meta-injected": "^0.0.14",
     "@babel/core": "^7.23.2",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-proposal-class-properties": "^7.18.6",

@@ -41,6 +41,30 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.23
+
+### Patch Changes
+
+- Docs and memory safe
+
+## 8.0.22
+
+### Patch Changes
+
+- Try to fix nested popovers
+
+## 8.0.21
+
+### Patch Changes
+
+- optional
+
+## 8.0.20
+
+### Patch Changes
+
+- Try republisjhing
+
 ## 8.0.19
 
 ### Patch Changes

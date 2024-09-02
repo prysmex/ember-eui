@@ -18,7 +18,7 @@ import type { EuiDatePopoverContentSignature } from './eui-date-popover-content'
 
 interface EuiDatePopoverButtonArgs {
   className?: string;
-  dateFormat: string;
+  dateFormat?: string;
   isDisabled?: boolean;
   isInvalid?: boolean;
   isOpen?: boolean;

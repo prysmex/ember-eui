@@ -80,6 +80,38 @@
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
     > > > > > > > master-v8
+## 8.0.23
+
+### Patch Changes
+
+- Docs and memory safe
+- Updated dependencies
+  - @ember-eui/core@8.0.23
+
+## 8.0.22
+
+### Patch Changes
+
+- Try to fix nested popovers
+- Updated dependencies
+  - @ember-eui/core@8.0.22
+
+## 8.0.21
+
+### Patch Changes
+
+- optional
+- Updated dependencies
+  - @ember-eui/core@8.0.21
+
+## 8.0.20
+
+### Patch Changes
+
+- Try republisjhing
+- Updated dependencies
+  - @ember-eui/core@8.0.20
+
 ## 8.0.19
 
 ### Patch Changes

@@ -18,13 +18,12 @@ export const INSERT_POSITIONS: EuiPortalInsertPosition[] =
 
 type EuiPortalInsertPosition = keyof typeof insertPositions;
 
-
-interface EuiPortalArgs {
+export interface EuiPortalArgs {
   insert?: { sibling: HTMLElement; position: EuiPortalInsertPosition };
   portalRef?: (ref: HTMLDivElement | null) => void;
 }
 
-interface EuiPortalSignature {
+export interface EuiPortalSignature {
   Args: EuiPortalArgs;
   Element: HTMLDivElement;
   Blocks: { default: [] };
@@ -33,26 +32,25 @@ interface EuiPortalSignature {
 export default class EuiPortal extends Component<EuiPortalSignature> {
   @tracked portalNode!: HTMLElement;
 
+  get insert() {
+    return this.args.insert ?? { sibling: document.body, position: 'after' };
+  }
+
   constructor(owner: unknown, args: EuiPortalArgs) {
     super(owner, args);
 
-    const { insert } = this.args;
+    const { insert } = this;
 
     this.portalNode = document.createElement('div');
     this.portalNode.id = `${guidFor({})}-portal`;
 
-    if (insert == null) {
-      // no insertion defined, append to body
-      document.body.appendChild(this.portalNode);
-    } else {
-      // inserting before or after an element
-      const { sibling, position } = insert;
+    // inserting before or after an element
+    const { sibling, position } = insert;
 
-      sibling.insertAdjacentElement(
-        insertPositions[position] as InsertPosition,
-        this.portalNode
-      );
-    }
+    sibling.insertAdjacentElement(
+      insertPositions[position] as InsertPosition,
+      this.portalNode
+    );
   }
 
   willDestroy(): void {

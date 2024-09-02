@@ -118,6 +118,7 @@ const getBufferValues = (
  * @param popover {HTMLElement} Element containing the popover content
  * @param position {string} Position the user wants. One of ["top", "right", "bottom", "left"]
  * @param [forcePosition] {boolean} If true, use only the provided `position` value and don't try any other position
+ * @param host {HTMLElement} Element the popover must be positioned relative to
  * @param [align] {string} Cross-axis alignment. One of ["top", "right", "bottom", "left"]
  * @param [buffer=16] {number} Minimum distance between the popover and the bounding container
  * @param [offset=0] {number} Distance between the popover and the anchor
@@ -170,6 +171,7 @@ export function findPopoverPosition({
     ? getElementBoundingBox(container)
     : windowBoundingBox;
 
+  // the anchor is positioned relative to the host element if provided
   if (host) {
     const hostBoundingBox = getElementBoundingBox(host);
 

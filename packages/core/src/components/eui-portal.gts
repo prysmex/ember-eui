@@ -38,12 +38,12 @@ export default class EuiPortal extends Component<EuiPortalSignature> {
 
     const { insert } = this.args;
 
+    this.portalNode = document.createElement('div');
+    this.portalNode.id = `${guidFor({})}-portal`;
+
     if (isBlank(this.args.insert)) {
       document.body.appendChild(this.portalNode);
     } else {
-      this.portalNode = document.createElement('div');
-      this.portalNode.id = `${guidFor({})}-portal`;
-
       // inserting before or after an element
       const { sibling, position } = insert!;
 

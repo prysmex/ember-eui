@@ -34,7 +34,11 @@ interface Select {
 export interface EuiComboBoxSignature {
   Element: HTMLDivElement;
   Args: {
-    singleSelection: boolean;
+    singleSelection?:
+      | boolean
+      | {
+          asPlainText?: boolean;
+        };
     onCreateOption?: (search: string) => boolean | undefined;
     options: any[];
     search?: (term: string, select: Select) => any[] | PromiseProxy<any[]>;

@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 8.0.24
+
+### Patch Changes
+
+- Fix combobox and popover
+- Updated dependencies
+  - @ember-eui/core@8.0.24
+
 ## 8.0.23
 
 ### Patch Changes

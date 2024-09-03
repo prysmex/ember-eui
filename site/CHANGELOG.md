@@ -41,6 +41,18 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.25
+
+### Patch Changes
+
+- ts
+
+## 8.0.24
+
+### Patch Changes
+
+- Fix combobox and popover
+
 ## 8.0.23
 
 ### Patch Changes

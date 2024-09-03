@@ -79,6 +79,22 @@
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
     > > > > > > > master-v8
+## 8.0.25
+
+### Patch Changes
+
+- ts
+- Updated dependencies
+  - @ember-eui/core@8.0.25
+
+## 8.0.24
+
+### Patch Changes
+
+- Fix combobox and popover
+- Updated dependencies
+  - @ember-eui/core@8.0.24
+
 ## 8.0.23
 
 ### Patch Changes

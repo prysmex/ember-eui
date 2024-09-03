@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { guidFor } from '@ember/object/internals';
+import { isBlank } from '@ember/utils';
 
 import { keysOf } from './common.ts';
 
@@ -32,25 +33,25 @@ export interface EuiPortalSignature {
 export default class EuiPortal extends Component<EuiPortalSignature> {
   @tracked portalNode!: HTMLElement;
 
-  get insert() {
-    return this.args.insert ?? { sibling: document.body, position: 'after' };
-  }
-
   constructor(owner: unknown, args: EuiPortalArgs) {
     super(owner, args);
 
-    const { insert } = this;
+    const { insert } = this.args;
 
     this.portalNode = document.createElement('div');
     this.portalNode.id = `${guidFor({})}-portal`;
 
-    // inserting before or after an element
-    const { sibling, position } = insert;
+    if (isBlank(this.args.insert)) {
+      document.body.appendChild(this.portalNode);
+    } else {
+      // inserting before or after an element
+      const { sibling, position } = insert!;
 
-    sibling.insertAdjacentElement(
-      insertPositions[position] as InsertPosition,
-      this.portalNode
-    );
+      sibling.insertAdjacentElement(
+        insertPositions[position] as InsertPosition,
+        this.portalNode
+      );
+    }
   }
 
   willDestroy(): void {

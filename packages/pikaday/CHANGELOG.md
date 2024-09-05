@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.27
+
+### Patch Changes
+
+- fix typings for eui-superdate-picker
+- Updated dependencies
+  - @ember-eui/core@8.0.27
+
 ## 8.0.26
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.27
+
+### Patch Changes
+
+- fix typings for eui-superdate-picker
+
 ## 8.0.26
 
 ### Patch Changes

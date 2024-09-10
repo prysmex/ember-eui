@@ -57,7 +57,7 @@ type AccordionArgs = {
   /**
    * Will appear right aligned against the button. Useful for separate actions like deletions.
    */
-  extraAction?: Component;
+  extraAction?: Component | boolean;
   /**
    * The accordion will start in the open state.
    */

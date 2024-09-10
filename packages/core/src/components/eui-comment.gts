@@ -11,7 +11,7 @@ export interface EuiCommentSignature {
   Element: HTMLDivElement;
   Args: {
     type: EuiCommentTimelineSignature['Args']['type'];
-    timelineIcon: EuiCommentTimelineSignature['Args']['timelineIcon'];
+    timelineIcon?: EuiCommentTimelineSignature['Args']['timelineIcon'];
   };
   Blocks: {
     timelineIcon: [];

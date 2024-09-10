@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.28
+
+### Patch Changes
+
+- typings for accordion
+- Updated dependencies
+  - @ember-eui/core@8.0.28
+
 ## 8.0.27
 
 ### Patch Changes

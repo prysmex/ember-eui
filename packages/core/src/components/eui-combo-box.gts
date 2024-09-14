@@ -74,6 +74,8 @@ export interface EuiComboBoxSignature {
     verticalPosition?: string;
     destination?: string;
     preventScroll?: boolean;
+    noMatchesMessage?: string;
+    noMatchesMessageComponent?: any;
   };
   Blocks: {
     default: [any, number, Select];

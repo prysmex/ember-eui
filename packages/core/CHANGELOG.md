@@ -53,6 +53,24 @@
 
 - 157b860: Fixes issues
   > > > > > > > master-v8
+## 8.0.28
+
+### Patch Changes
+
+- typings for accordion
+
+## 8.0.27
+
+### Patch Changes
+
+- fix typings for eui-superdate-picker
+
+## 8.0.26
+
+### Patch Changes
+
+- ts fixes
+
 ## 8.0.25
 
 ### Patch Changes

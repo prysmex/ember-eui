@@ -7,7 +7,7 @@ import type {
 } from '../utils/css-mappings/eui-notification-badge.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-interface EuiNotificationBadgeSignature {
+export interface EuiNotificationBadgeSignature {
   Element: HTMLSpanElement;
   Args: {
     size?: keyof typeof sizeMapping;

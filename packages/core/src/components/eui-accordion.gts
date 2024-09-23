@@ -57,7 +57,7 @@ type AccordionArgs = {
   /**
    * Will appear right aligned against the button. Useful for separate actions like deletions.
    */
-  extraAction?: Component;
+  extraAction?: Component | boolean;
   /**
    * The accordion will start in the open state.
    */
@@ -219,8 +219,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
               >
                 {{#if (eq this._arrowDisplay "left")}}
                   <EuiButtonIcon
-                    @color="text"
-                    @iconClasses={{classNames
+                    class={{classNames
                       "euiAccordion__iconButton"
                       (if this.isOpen "euiAccordion__iconButton-isOpen")
                       (if

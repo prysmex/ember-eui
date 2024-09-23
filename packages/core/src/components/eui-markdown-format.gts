@@ -22,7 +22,7 @@ export type Replacer = (
   str: string
 ) => void;
 
-export interface EuiMarkdownEditorToolbarArgs {
+export interface EuiMarkdownFormatSignature {
   parsingPluginList?: typeof defaultParsingPlugins;
   processingPluginList?: typeof defaultProcessingPlugins;
   replaceNode?: Replacer;
@@ -31,7 +31,7 @@ export interface EuiMarkdownEditorToolbarArgs {
   rootClasses?: string | string[];
 }
 
-export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarArgs> {
+export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownFormatSignature> {
   get parsingPluginList() {
     return this.args.parsingPluginList || defaultParsingPlugins;
   }
@@ -83,6 +83,8 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     } catch (e) {
       console.warn(e);
     }
+    
+    return null;
   }
 
   <template>

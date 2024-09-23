@@ -92,8 +92,10 @@ const EuiEmptyPrompt: TemplateOnlyComponent<EuiEmptyPromptSignature> =
                     </EuiText>
                   </EuiTextColor>
                 {{/if}}
-                {{#if (gte @actions.length 2)}}
+                {{#if @actions.length}}
                   <EuiSpacer size="l" />
+                {{/if}}
+                {{#if (gte @actions.length 2)}}
                   <EuiFlexGroup
                     class="euiEmptyPrompt__actions"
                     @gutterSize="m"

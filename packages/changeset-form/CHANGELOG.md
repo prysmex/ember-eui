@@ -79,6 +79,30 @@
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
     > > > > > > > master-v8
+## 8.0.28
+
+### Patch Changes
+
+- typings for accordion
+- Updated dependencies
+  - @ember-eui/core@8.0.28
+
+## 8.0.27
+
+### Patch Changes
+
+- fix typings for eui-superdate-picker
+- Updated dependencies
+  - @ember-eui/core@8.0.27
+
+## 8.0.26
+
+### Patch Changes
+
+- ts fixes
+- Updated dependencies
+  - @ember-eui/core@8.0.26
+
 ## 8.0.25
 
 ### Patch Changes

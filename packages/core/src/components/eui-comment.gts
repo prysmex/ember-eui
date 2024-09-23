@@ -10,8 +10,8 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiCommentSignature {
   Element: HTMLDivElement;
   Args: {
-    type: EuiCommentTimelineSignature['Args']['type'];
-    timelineIcon: EuiCommentTimelineSignature['Args']['timelineIcon'];
+    type?: EuiCommentTimelineSignature['Args']['type'];
+    timelineIcon?: EuiCommentTimelineSignature['Args']['timelineIcon'];
   };
   Blocks: {
     timelineIcon: [];

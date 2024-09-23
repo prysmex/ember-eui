@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 
-import { eq,or } from 'ember-truth-helpers';
+import { eq, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -63,7 +63,11 @@ export interface EuiSuperDatePickerArgs {
    * If a promise is returned, the next refresh interval will not start until the promise has resolved.
    * If the promise rejects the refresh interval will stop and the error thrown
    */
-  onRefresh?: (props: any) => void;
+  onRefresh?: (props: {
+    start: string;
+    end: string;
+    refreshInterval: number;
+  }) => void;
   /**
    * Callback for when the refresh interval changes.
    * Supply onRefreshChange to show refresh interval inputs in quick select popover
@@ -72,7 +76,12 @@ export interface EuiSuperDatePickerArgs {
   /**
    * Callback for when the time changes.
    */
-  onTimeChange: (props: any) => void;
+  onTimeChange: (props: {
+    start: string;
+    end: string;
+    isQuickSelection: boolean;
+    isInvalid: boolean;
+  }) => void;
   // recentlyUsedRanges?: DurationRange[];
   /**
    * Refresh interval in milliseconds
@@ -142,7 +151,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
         end,
         isQuickSelection: false,
         isInvalid: this.isInvalid
-      } as any);
+      });
     }
   }
 

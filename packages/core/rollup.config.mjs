@@ -28,7 +28,9 @@ export default {
       'services/**/*.js'
     ]),
     addon.dependencies(),
-    babel({ extensions, babelHelpers: 'inline' }),
+    babel({ extensions, babelHelpers: 'bundled' }),
+    // Remove leftover build artifacts when starting a new build.
+    addon.clean(),
     addon.hbs(),
     addon.gjs(),
     addon.keepAssets(['**/*.css']),

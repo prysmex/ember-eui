@@ -6,7 +6,7 @@ import { inject as service } from '@ember/service';
 import { eq } from 'ember-truth-helpers';
 
 import EuiTabbedContent from '../../eui-tabbed-content.gts';
-import { getDateMode, toAbsoluteString } from '../utils';
+import { getDateMode, toAbsoluteString } from '../utils/index.ts';
 import { useI18nTimeOptions } from '../utils/time-options.ts';
 import AbsoluteTab from './absolute-tab.gts';
 import NowTab from './now-tab.gts';

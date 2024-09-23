@@ -64,6 +64,17 @@ export interface EuiComboBoxSignature {
     onChange: (selected: any[]) => void;
     placeholder?: string;
     extra?: any;
+    autoFocus?: boolean;
+    defaultHighlighted?: any;
+    matchTriggerWidth?: boolean;
+    tabindex?: number;
+    initiallyOpen?: boolean;
+    horizontalPosition?: string;
+    verticalPosition?: string;
+    destination?: string;
+    preventScroll?: boolean;
+    noMatchesMessage?: string;
+    noMatchesMessageComponent?: any;
   };
   Blocks: {
     default: [any, number, Select];

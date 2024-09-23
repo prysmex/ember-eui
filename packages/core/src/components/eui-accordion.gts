@@ -219,8 +219,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
               >
                 {{#if (eq this._arrowDisplay "left")}}
                   <EuiButtonIcon
-                    @color="text"
-                    @iconClasses={{classNames
+                    class={{classNames
                       "euiAccordion__iconButton"
                       (if this.isOpen "euiAccordion__iconButton-isOpen")
                       (if

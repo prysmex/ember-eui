@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 10.0.4
+
+### Patch Changes
+
+- FIxbuild
+
 ## 10.0.3
 
 ### Patch Changes
@@ -23,7 +29,6 @@
 ### Major Changes
 
 - 3540301: Modernized build
-
 
 ## 9.0.1
 
@@ -53,6 +58,7 @@
 
 - 157b860: Fixes issues
   > > > > > > > master-v8
+
 ## 8.0.28
 
 ### Patch Changes

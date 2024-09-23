@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 10.0.4
+
+### Patch Changes
+
+- FIxbuild
+- Updated dependencies
+  - @ember-eui/core@10.0.4
+
 ## 10.0.3
 
 ### Patch Changes
@@ -34,7 +42,6 @@
 
 - Updated dependencies [3540301]
   - @ember-eui/core@10.0.0
-
 
 ## 9.0.1
 
@@ -79,6 +86,7 @@
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
     > > > > > > > master-v8
+
 ## 8.0.28
 
 ### Patch Changes

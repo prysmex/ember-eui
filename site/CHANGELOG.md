@@ -1,5 +1,10 @@
 # site
 
+## 9.0.4
+
+### Patch Changes
+
+- FIxbuild
 
 ## 9.0.3
 
@@ -25,7 +30,6 @@
 
 - 3540301: Modernized build
 
-
 ## 8.0.1
 
 ### Patch Changes
@@ -41,6 +45,7 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+
 ## 8.0.31
 
 ### Patch Changes

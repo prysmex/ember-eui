@@ -80,6 +80,28 @@
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
     > > > > > > > master-v8
+## 8.0.31
+
+### Patch Changes
+
+- docs
+- Updated dependencies
+  - @ember-eui/core@8.0.31
+
+## 8.0.30
+
+### Patch Changes
+
+- fix build
+- Updated dependencies
+  - @ember-eui/core@8.0.29
+
+## 8.0.29
+
+### Patch Changes
+
+- TS
+
 ## 8.0.28
 
 ### Patch Changes

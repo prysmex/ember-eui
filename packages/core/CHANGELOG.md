@@ -53,6 +53,18 @@
 
 - 157b860: Fixes issues
   > > > > > > > master-v8
+## 8.0.31
+
+### Patch Changes
+
+- docs
+
+## 8.0.29
+
+### Patch Changes
+
+- fix build
+
 ## 8.0.28
 
 ### Patch Changes

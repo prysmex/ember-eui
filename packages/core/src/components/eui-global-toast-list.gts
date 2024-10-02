@@ -25,7 +25,6 @@ import type { sideMapping } from '../utils/css-mappings/eui-global-toast-list';
 type EuiToastSide = keyof typeof sideMapping;
 
 type GlobalToastListArgs = {
-  toasts: EuiToastPropsWithId[];
   dismissToast?: (this: EuiGlobalToastList, toast: EuiToastProps) => void;
   toastLifeTimeMs: number;
 

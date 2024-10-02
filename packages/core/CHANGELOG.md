@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 10.0.5
+
+### Patch Changes
+
+- bump
+
 ## 10.0.4
 
 ### Patch Changes
@@ -57,6 +63,7 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+
 ## 8.0.32
 
 ### Patch Changes

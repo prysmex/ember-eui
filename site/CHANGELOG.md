@@ -1,5 +1,11 @@
 # site
 
+## 10.0.4
+
+### Patch Changes
+
+- bump
+
 ## 9.0.4
 
 ### Patch Changes
@@ -45,6 +51,7 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+
 ## 8.0.32
 
 ### Patch Changes

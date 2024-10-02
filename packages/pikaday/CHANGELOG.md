@@ -85,6 +85,13 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.32
+
+### Patch Changes
+
+- rm uneeded type
+- Updated dependencies
+  - @ember-eui/core@8.0.32
 
 ## 8.0.31
 

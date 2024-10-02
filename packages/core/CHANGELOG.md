@@ -57,6 +57,11 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.32
+
+### Patch Changes
+
+- rm uneeded type
 
 ## 8.0.31
 

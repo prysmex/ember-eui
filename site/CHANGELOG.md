@@ -1,5 +1,11 @@
 # site
 
+## 8.0.32
+
+### Patch Changes
+
+- rm uneeded type
+
 ## 8.0.31
 
 ### Patch Changes

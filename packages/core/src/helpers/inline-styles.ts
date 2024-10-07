@@ -38,7 +38,7 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
       property === 'background-image' &&
       finalProperties[property] !== 'none'
     ) {
-      finalProperties[property] = `url(${finalProperties[property]})`;
+      finalProperties[property] = `url('${finalProperties[property]}')`;
     } else {
       finalProperties[property] = `${finalProperties[property]}`;
     }

@@ -70,7 +70,7 @@ export function classNames(
     }
   }
 
-  return str;
+  return str.replace(/\s+/g, ' ').trim();
 }
 
 export default helper<(string | undefined)[], Options, string>(classNames);

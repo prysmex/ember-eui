@@ -173,6 +173,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @loadingMessage={{@loadingMessage}}
       @selectedItemComponent={{@selectedItemComponent}}
       @beforeOptionsComponent={{@beforeOptionsComponent}}
+      @afterOptionsComponent={{@afterOptionsComponent}}
       @placeholder={{@placeholder}}
       @searchPlaceholder={{@searchPlaceholder}}
       @optionsComponent={{component

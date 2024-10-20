@@ -1,5 +1,11 @@
 # site
 
+## 8.0.34
+
+### Patch Changes
+
+- Fix passign down all tab attrs through euipageheader down to eui tabs
+
 ## 8.0.33
 
 ### Patch Changes

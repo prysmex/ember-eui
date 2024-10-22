@@ -11,7 +11,7 @@ import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { modifier } from 'ember-modifier';
 import styleModifier from 'ember-style-modifier/modifiers/style';
-import { and, eq, not,or } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
@@ -88,6 +88,11 @@ export type EuiFlyoutArgs = {
   focusTrapOptions?: {
     allowOutsideClick?: boolean;
     clickOutsideDeactivates?: boolean;
+    initialFocus?: string | HTMLElement | (() => HTMLElement);
+    fallbackFocus?: string | HTMLElement | (() => HTMLElement);
+    escapeDeactivates?: boolean;
+    returnFocusOnDeactivate?: boolean;
+    preventScroll?: boolean;
   };
 };
 

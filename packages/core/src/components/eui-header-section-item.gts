@@ -7,7 +7,7 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiHeaderSectionItemSignature {
   Element: HTMLDivElement;
   Args: {
-    border: keyof typeof borderSizeMappping;
+    border?: keyof typeof borderSizeMappping;
   };
   Blocks: {
     default: [];

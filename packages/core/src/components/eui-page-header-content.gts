@@ -4,7 +4,7 @@ import { on } from '@ember/modifier';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import style from 'ember-style-modifier/modifiers/style';
-import { and, eq,not, or } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -40,7 +40,7 @@ type Tab = IEuiTab & {
   onClick?: () => void;
 };
 
-export type EuiPageTemplateProps = {
+export type EuiPageHeaderContentProps = {
   template?: (typeof TEMPLATES)[number];
   /**
    * Gets passed along to the #EuiBottomBar component if `bottomBar` has contents
@@ -132,7 +132,7 @@ export type EuiPageTemplateProps = {
 
 export interface EuiPageHeaderContentSignature {
   Element: HTMLDivElement;
-  Args: EuiPageTemplateProps;
+  Args: EuiPageHeaderContentProps;
   Blocks: {
     default: [];
     pageTitle: [];
@@ -141,7 +141,7 @@ export interface EuiPageHeaderContentSignature {
   };
 }
 
-export default class EuiPageTemplate extends Component<EuiPageHeaderContentSignature> {
+export default class EuiPageHeaderContent extends Component<EuiPageHeaderContentSignature> {
   // Defaults
   @argOrDefaultDecorator(460) minHeight!: number;
   @argOrDefaultDecorator(false) fullHeight!: boolean;
@@ -231,6 +231,8 @@ export default class EuiPageTemplate extends Component<EuiPageHeaderContentSigna
                   >
                     {{#each @tabs as |tab|}}
                       <EuiTab
+                        @id={{tab.id}}
+                        @disabled={{tab.disabled}}
                         @isSelected={{tab.isSelected}}
                         @href={{tab.href}}
                         {{on "click" (optional tab.onClick)}}
@@ -283,7 +285,10 @@ export default class EuiPageTemplate extends Component<EuiPageHeaderContentSigna
                   >
                     {{#each @tabs as |tab|}}
                       <EuiTab
+                        @id={{tab.id}}
+                        @disabled={{tab.disabled}}
                         @isSelected={{tab.isSelected}}
+                        @href={{tab.href}}
                         {{on "click" (optional tab.onClick)}}
                       >
                         {{tab.label}}
@@ -350,7 +355,10 @@ export default class EuiPageTemplate extends Component<EuiPageHeaderContentSigna
                 <EuiTabs @size="l" @display="condensed" @bottomBorder={{false}}>
                   {{#each @tabs as |tab|}}
                     <EuiTab
+                      @id={{tab.id}}
+                      @disabled={{tab.disabled}}
                       @isSelected={{tab.isSelected}}
+                      @href={{tab.href}}
                       {{on "click" (optional tab.onClick)}}
                     >
                       {{tab.label}}
@@ -377,6 +385,8 @@ export default class EuiPageTemplate extends Component<EuiPageHeaderContentSigna
                 >
                   {{#each @tabs as |tab|}}
                     <EuiTab
+                      @id={{tab.id}}
+                      @disabled={{tab.disabled}}
                       @isSelected={{tab.isSelected}}
                       @href={{tab.href}}
                       {{on "click" (optional tab.onClick)}}
@@ -429,7 +439,10 @@ export default class EuiPageTemplate extends Component<EuiPageHeaderContentSigna
                     >
                       {{#each @tabs as |tab|}}
                         <EuiTab
+                          @id={{tab.id}}
+                          @disabled={{tab.disabled}}
                           @isSelected={{tab.isSelected}}
+                          @href={{tab.href}}
                           {{on "click" (optional tab.onClick)}}
                         >
                           {{tab.label}}

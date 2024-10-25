@@ -93,6 +93,29 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.35
+
+### Patch Changes
+
+- Fixes
+- Updated dependencies
+  - @ember-eui/core@8.0.35
+
+## 8.0.34
+
+### Patch Changes
+
+- Fix passign down all tab attrs through euipageheader down to eui tabs
+- Updated dependencies
+  - @ember-eui/core@8.0.34
+
+## 8.0.33
+
+### Patch Changes
+
+- Release style fix
+- Updated dependencies
+  - @ember-eui/core@8.0.33
 
 ## 8.0.32
 

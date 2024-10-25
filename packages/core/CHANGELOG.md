@@ -63,6 +63,23 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.35
+
+### Patch Changes
+
+- Fixes
+
+## 8.0.34
+
+### Patch Changes
+
+- Fix passign down all tab attrs through euipageheader down to eui tabs
+
+## 8.0.33
+
+### Patch Changes
+
+- Release style fix
 
 ## 8.0.32
 

@@ -420,7 +420,6 @@
       "./helpers/type-of.js": "./dist/_app_/helpers/type-of.js",
       "./helpers/use-state.js": "./dist/_app_/helpers/use-state.js",
       "./modifiers/mutation-observer.js": "./dist/_app_/modifiers/mutation-observer.js",
-      "./modifiers/open-collapsible-nav.js": "./dist/_app_/modifiers/open-collapsible-nav.js",
       "./modifiers/outside-click-detector.js": "./dist/_app_/modifiers/outside-click-detector.js",
       "./modifiers/resize-observer.js": "./dist/_app_/modifiers/resize-observer.js",
       "./modifiers/screen-reader-only.js": "./dist/_app_/modifiers/screen-reader-only.js",

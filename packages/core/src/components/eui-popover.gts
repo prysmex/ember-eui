@@ -58,7 +58,6 @@ export type PopoverAnchorPosition =
   | 'rightDown';
 
 export type EuiPopoverArgs = {
-  panelClasses?: string;
   /**
    * Class name passed to the direct parent of the button
    */
@@ -752,7 +751,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
           (or (not this.hasArrow) @attachToAnchor) "euiPopover__panel-noArrow"
         )
         (if @attachToAnchor "euiPopover__panel-isAttached")
-        @panelClasses
+        @panelClassName
       )
       as |descriptionId classes panelClasses|
     }}

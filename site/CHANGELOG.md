@@ -1,5 +1,11 @@
 # site
 
+## 8.0.35
+
+### Patch Changes
+
+- Fixes
+
 ## 8.0.34
 
 ### Patch Changes

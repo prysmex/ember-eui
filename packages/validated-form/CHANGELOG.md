@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 10.0.6
+
+### Patch Changes
+
+- Fixes
+- Updated dependencies
+  - @ember-eui/core@10.0.6
+
 ## 10.0.5
 
 ### Patch Changes
@@ -93,6 +101,7 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+
 ## 8.0.35
 
 ### Patch Changes

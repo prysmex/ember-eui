@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/flatpickr",
-  "version": "10.0.6",
+  "version": "10.0.7",
   "description": "ember-flatpickr integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -56,7 +56,7 @@
     "decorator-transforms": "^1.0.3"
   },
   "peerDependencies": {
-    "@ember-eui/core": "^10.0.6",
+    "@ember-eui/core": "^10.0.7",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
     "ember-source": "^3.28.0 || >=4.0.0"

@@ -75,6 +75,11 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.37
+
+### Patch Changes
+
+- add eui-i18n token for eui-combo-box loadingMessage
 
 ## 8.0.36
 

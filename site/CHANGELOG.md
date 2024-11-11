@@ -63,6 +63,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.37
+
+### Patch Changes
+
+- add eui-i18n token for eui-combo-box loadingMessage
 
 ## 8.0.36
 

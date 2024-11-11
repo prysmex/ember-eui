@@ -143,6 +143,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "gitHead": "2e4aaf4cf519520be36d696cb88394e166476045"
+  }
 }

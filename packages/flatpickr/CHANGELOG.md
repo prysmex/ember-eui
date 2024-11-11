@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.36
+
+### Patch Changes
+
+- Pass more options to the wrapped eui-combo-box
+- Updated dependencies
+  - @ember-eui/core@8.0.36
+
 ## 8.0.35
 
 ### Patch Changes

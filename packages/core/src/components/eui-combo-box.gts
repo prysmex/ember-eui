@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 import { action } from '@ember/object';
+import { inject as service } from '@ember/service';
 import { isEqual } from '@ember/utils';
 
 import optional from 'ember-composable-helpers/helpers/optional';
@@ -19,6 +20,8 @@ import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message.gts'
 import EuiComboBoxOptions from './eui-combo-box/options.gts';
 import EuiComboBoxSearchMessage from './eui-combo-box/search-message.gts';
 import EuiComboBoxTrigger from './eui-combo-box/trigger.gts';
+
+import type EuiI18n from '../services/eui-i18n';
 
 interface PromiseProxy<T> extends Promise<T> {
   content: any;
@@ -104,15 +107,27 @@ export const toPlainArray = <T,>(collection: T[] | Sliceable<T>): T[] => {
 };
 
 export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature> {
+  @service declare euiI18n: EuiI18n;
+
   @tracked select: any = null;
   @tracked private _resolvedOptions?: any[];
   @tracked searchText = '';
   @tracked private _searchResult?: any[];
+
   private _filterResultsCache: {
     results: any[];
     options: any[];
     searchText: string;
   } = { results: [], options: [], searchText: this.searchText };
+
+  get loadingMessage() {
+    return;
+    this.args.loadingMessage ||
+      this.euiI18n.lookupToken(
+        'euiComboBox.loadingMessage',
+        'Loading options...'
+      );
+  }
 
   <template>
     {{! @glint-nocheck: not typesafe yet }}
@@ -176,7 +191,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @title={{@title}}
       @triggerId={{@triggerId}}
       @allowClear={{and (argOrDefault @isClearable true) (not @isDisabled)}}
-      @loadingMessage={{@loadingMessage}}
+      @loadingMessage={{this.loadingMessage}}
       @selectedItemComponent={{@selectedItemComponent}}
       @beforeOptionsComponent={{@beforeOptionsComponent}}
       @afterOptionsComponent={{@afterOptionsComponent}}

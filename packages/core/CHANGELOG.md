@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.38
+
+### Patch Changes
+
+- fix build for combobox
+
 ## 8.0.37
 
 ### Patch Changes

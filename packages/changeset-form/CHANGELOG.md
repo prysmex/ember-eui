@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.38
+
+### Patch Changes
+
+- fix build for combobox
+- Updated dependencies
+  - @ember-eui/core@8.0.38
+
 ## 8.0.37
 
 ### Patch Changes

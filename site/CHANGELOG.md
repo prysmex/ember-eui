@@ -57,6 +57,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.36
+
+### Patch Changes
+
+- Pass more options to the wrapped eui-combo-box
 
 ## 8.0.35
 

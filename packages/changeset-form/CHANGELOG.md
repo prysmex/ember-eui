@@ -101,6 +101,13 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.36
+
+### Patch Changes
+
+- Pass more options to the wrapped eui-combo-box
+- Updated dependencies
+  - @ember-eui/core@8.0.36
 
 ## 8.0.35
 

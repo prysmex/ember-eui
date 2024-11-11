@@ -1,5 +1,11 @@
 # site
 
+## 8.0.37
+
+### Patch Changes
+
+- add eui-i18n token for eui-combo-box loadingMessage
+
 ## 8.0.36
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.37
+
+### Patch Changes
+
+- add eui-i18n token for eui-combo-box loadingMessage
+- Updated dependencies
+  - @ember-eui/core@8.0.37
+
 ## 8.0.36
 
 ### Patch Changes

@@ -121,12 +121,13 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   } = { results: [], options: [], searchText: this.searchText };
 
   get loadingMessage() {
-    return;
-    this.args.loadingMessage ||
+    return (
+      this.args.loadingMessage ||
       this.euiI18n.lookupToken(
         'euiComboBox.loadingMessage',
         'Loading options...'
-      );
+      )
+    );
   }
 
   <template>

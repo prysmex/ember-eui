@@ -81,6 +81,11 @@ export default class ValidatedFormFieldComboBox extends ValidatedFormFieldBase<F
             @singleSelection={{@singleSelection}}
             @selectedOptions={{@selectedOptions}}
             @searchEnabled={{argOrDefault @searchEnabled true}}
+            @placeholderComponent={{@placeholderComponent}}
+            @searchMessageComponent={{@searchMessageComponent}}
+            @loadingMessage={{@loadingMessage}}
+            @beforeOptionsComponent={{@beforeOptionsComponent}}
+            @afterOptionsComponent={{@afterOptionsComponent}}
             @searchField={{@searchField}}
             @searchMessage={{@searchMessage}}
             @search={{@search}}

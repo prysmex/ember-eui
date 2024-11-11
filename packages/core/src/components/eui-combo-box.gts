@@ -59,6 +59,12 @@ export interface EuiComboBoxSignature {
     onOpen?: (e: Event) => void;
     renderInPlace?: boolean;
     customOptionText?: string;
+    loadingMessage?: any;
+    selectedItemComponent?: any;
+    beforeOptionsComponent?: any;
+    placeholderComponent?: any;
+    afterOptionsComponent?: any;
+    searchPlaceholder?: any;
     dropdownClass?: string;
     selectedOptions?: any[];
     onChange: (selected: any[]) => void;

@@ -117,6 +117,21 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.39
+
+### Patch Changes
+
+- add more EuiI18n tokens for EuiComboBox
+- Updated dependencies
+  - @ember-eui/core@8.0.39
+
+## 8.0.38
+
+### Patch Changes
+
+- fix build for combobox
+- Updated dependencies
+  - @ember-eui/core@8.0.38
 
 ## 8.0.37
 

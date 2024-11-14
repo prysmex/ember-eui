@@ -69,6 +69,17 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.39
+
+### Patch Changes
+
+- add more EuiI18n tokens for EuiComboBox
+
+## 8.0.38
+
+### Patch Changes
+
+- fix build for combobox
 
 ## 8.0.37
 

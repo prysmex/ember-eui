@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 10.0.9
+
+### Patch Changes
+
+- nump
+- Updated dependencies
+  - @ember-eui/core@10.0.9
+
 ## 10.0.8
 
 ### Patch Changes
@@ -117,6 +125,7 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+
 ## 8.0.39
 
 ### Patch Changes

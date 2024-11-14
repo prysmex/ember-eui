@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.39
+
+### Patch Changes
+
+- add more EuiI18n tokens for EuiComboBox
+- Updated dependencies
+  - @ember-eui/core@8.0.39
+
 ## 8.0.38
 
 ### Patch Changes

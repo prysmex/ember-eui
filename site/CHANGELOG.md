@@ -1,5 +1,11 @@
 # site
 
+## 8.0.39
+
+### Patch Changes
+
+- add more EuiI18n tokens for EuiComboBox
+
 ## 8.0.38
 
 ### Patch Changes

@@ -130,6 +130,26 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     );
   }
 
+  get noMatchesMessage() {
+    return (
+      this.args.noMatchesMessage ||
+      this.euiI18n.lookupToken(
+        'euiComboBox.noMatchesMessage',
+        'No results found'
+      )
+    );
+  }
+
+  get searchMessage() {
+    return (
+      this.args.searchMessage ||
+      this.euiI18n.lookupToken(
+        'euiComboBox.searchMessage',
+        'Type to search'
+      )
+    );
+  }
+
   <template>
     {{! @glint-nocheck: not typesafe yet }}
     <PowerSelectMultiple
@@ -140,13 +160,13 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @onOpen={{@onOpen}}
       @onClose={{@onClose}}
       @placeholderComponent={{@placeholderComponent}}
-      @searchMessage={{@searchMessage}}
+      @searchMessage={{this.searchMessage}}
       @searchMessageComponent={{if
         @searchMessageComponent
         @searchMessageComponent
         EuiComboBoxSearchMessage
       }}
-      @noMatchesMessage={{@noMatchesMessage}}
+      @noMatchesMessage={{this.noMatchesMessage}}
       @matchTriggerWidth={{@matchTriggerWidth}}
       @options={{this.options}}
       @selected={{@selectedOptions}}

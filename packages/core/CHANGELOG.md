@@ -87,6 +87,11 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.40
+
+### Patch Changes
+
+- do not use polyfill
 
 ## 8.0.39
 

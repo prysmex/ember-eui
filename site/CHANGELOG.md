@@ -75,6 +75,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.40
+
+### Patch Changes
+
+- do not use polyfill
 
 ## 8.0.39
 

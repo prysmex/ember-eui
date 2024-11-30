@@ -125,6 +125,13 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.40
+
+### Patch Changes
+
+- do not use polyfill
+- Updated dependencies
+  - @ember-eui/core@8.0.40
 
 ## 8.0.39
 

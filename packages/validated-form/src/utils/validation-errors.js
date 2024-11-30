@@ -1,5 +1,3 @@
-import { assign } from '@ember/polyfills';
-
 export default function buildMessage(messages, key, result = {}) {
   let description = messages.getDescriptionFor(key);
 
@@ -9,5 +7,5 @@ export default function buildMessage(messages, key, result = {}) {
 
   let { type, context = {} } = result;
 
-  return messages.getMessageFor(type, assign({ description }, context));
+  return messages.getMessageFor(type, Object.assign({ description }, context));
 }

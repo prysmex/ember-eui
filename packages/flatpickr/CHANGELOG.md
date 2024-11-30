@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.40
+
+### Patch Changes
+
+- do not use polyfill
+- Updated dependencies
+  - @ember-eui/core@8.0.40
+
 ## 8.0.39
 
 ### Patch Changes

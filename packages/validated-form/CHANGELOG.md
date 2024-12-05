@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 11.0.1
+
+### Patch Changes
+
+- release v8into master
+- Updated dependencies
+  - @ember-eui/core@11.0.1
+
 ## 11.0.0
 
 ### Major Changes
@@ -136,6 +144,7 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+
 ## 8.0.41
 
 ### Patch Changes

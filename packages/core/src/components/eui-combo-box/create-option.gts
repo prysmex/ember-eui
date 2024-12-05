@@ -1,10 +1,13 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { get } from '@ember/object';
+import { inject as service } from '@ember/service';
 import { htmlSafe, isHTMLSafe } from '@ember/template';
 
 import EuiBadge from '../eui-badge.gts';
 import EuiText from '../eui-text.gts';
+
+import type EuiI18n from '@ember-eui/core/services/eui-i18n';
 
 function unwrap(input: string) {
   if (isHTMLSafe(input)) {
@@ -23,6 +26,8 @@ export interface EuiComboBoxCreateOptionSignature {
 }
 
 export default class EuiAccordionAccordionComponent extends Component<EuiComboBoxCreateOptionSignature> {
+  @service declare euiI18n: EuiI18n;
+
   _regex = /\{\s*(.*?)\s*\}/g;
 
   get formattedString(): ReturnType<typeof htmlSafe> {

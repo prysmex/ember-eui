@@ -81,6 +81,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.41
+
+### Patch Changes
+
+- Adds euiComboBox.customOptionText token to euiI18n for creating options
 
 ## 8.0.40
 

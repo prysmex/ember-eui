@@ -1,10 +1,13 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { get } from '@ember/object';
-import { htmlSafe,isHTMLSafe } from '@ember/template';
+import { inject as service } from '@ember/service';
+import { htmlSafe, isHTMLSafe } from '@ember/template';
 
 import EuiBadge from '../eui-badge.gts';
 import EuiText from '../eui-text.gts';
+
+import type EuiI18n from '../../services/eui-i18n';
 
 function unwrap(input: string) {
   if (isHTMLSafe(input)) {
@@ -23,13 +26,19 @@ export interface EuiComboBoxCreateOptionSignature {
 }
 
 export default class EuiAccordionAccordionComponent extends Component<EuiComboBoxCreateOptionSignature> {
+  @service declare euiI18n: EuiI18n;
+
   _regex = /\{\s*(.*?)\s*\}/g;
 
   get formattedString(): ReturnType<typeof htmlSafe> {
     let str = unwrap(
       this.args.customOptionText ||
-        'Add&nbsp;<strong>{searchText}</strong>&nbsp;as custom option'
+        this.euiI18n.lookupToken(
+          'euiComboBox.customOptionText',
+          'Add&nbsp;<strong>{searchText}</strong>&nbsp;as custom option'
+        )
     );
+
     let context = {
       searchText: this.args.select.searchText
     };

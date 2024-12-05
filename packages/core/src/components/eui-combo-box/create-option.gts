@@ -7,7 +7,7 @@ import { htmlSafe, isHTMLSafe } from '@ember/template';
 import EuiBadge from '../eui-badge.gts';
 import EuiText from '../eui-text.gts';
 
-import type EuiI18n from '@ember-eui/core/services/eui-i18n';
+import type EuiI18n from '../../services/eui-i18n';
 
 function unwrap(input: string) {
   if (isHTMLSafe(input)) {

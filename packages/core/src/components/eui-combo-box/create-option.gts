@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { get } from '@ember/object';
-import { htmlSafe,isHTMLSafe } from '@ember/template';
+import { htmlSafe, isHTMLSafe } from '@ember/template';
 
 import EuiBadge from '../eui-badge.gts';
 import EuiText from '../eui-text.gts';
@@ -28,8 +28,12 @@ export default class EuiAccordionAccordionComponent extends Component<EuiComboBo
   get formattedString(): ReturnType<typeof htmlSafe> {
     let str = unwrap(
       this.args.customOptionText ||
-        'Add&nbsp;<strong>{searchText}</strong>&nbsp;as custom option'
+        this.euiI18n.lookupToken(
+          'euiComboBox.customOptionText',
+          'Add&nbsp;<strong>{searchText}</strong>&nbsp;as custom option'
+        )
     );
+
     let context = {
       searchText: this.args.select.searchText
     };

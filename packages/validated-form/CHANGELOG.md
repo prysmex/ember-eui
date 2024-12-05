@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 8.0.41
+
+### Patch Changes
+
+- Adds euiComboBox.customOptionText token to euiI18n for creating options
+- Updated dependencies
+  - @ember-eui/core@8.0.41
+
 ## 8.0.40
 
 ### Patch Changes

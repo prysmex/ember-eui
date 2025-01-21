@@ -87,6 +87,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.42
+
+### Patch Changes
+
+- Fix EuiIcon not rendering icons as components via useComponent argument
 
 ## 8.0.41
 

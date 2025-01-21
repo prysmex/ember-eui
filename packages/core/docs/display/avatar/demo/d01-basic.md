@@ -16,23 +16,23 @@ order: 1
 <div>
   <EuiAvatar
     @size='s'
-    @name='Cat'
-    @imageUrl='https://source.unsplash.com/64x64/?cat'
+    @name='Random'
+    @imageUrl='https://picsum.photos/64'
   />
   <EuiAvatar
     @size='m'
-    @name='Cat'
-    @imageUrl='https://source.unsplash.com/64x64/?cat'
+    @name='Random'
+    @imageUrl='https://picsum.photos/64'
   />
   <EuiAvatar
     @size='l'
-    @name='Cat'
-    @imageUrl='https://source.unsplash.com/64x64/?cat'
+    @name='Random'
+    @imageUrl='https://picsum.photos/64'
   />
   <EuiAvatar
     @size='xl'
-    @name='Cat'
-    @imageUrl='https://source.unsplash.com/64x64/?cat'
+    @name='Random'
+    @imageUrl='https://picsum.photos/64'
   />
 </div>
 ```

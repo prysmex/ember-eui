@@ -33,6 +33,18 @@ export interface EuiMarkdownEditorToolbarSignature {
   };
 }
 
+export interface EuiMarkdownEditorToolbarItem {
+  id: string;
+  label: string;
+  name: string;
+  iconType:
+    | string
+    | {
+        component: any;
+      };
+  useSvg?: boolean;
+}
+
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarSignature> {
   boldItalicsButtons = [
     {
@@ -112,19 +124,11 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     if (actionResult !== true) this.args.openPluginEditor?.(actionResult);
   }
 
-  iconType = (item: {
-    iconType:
-      | {
-          component: any;
-        }
-      | string;
-  }) => {
-    if (typeof item.iconType === 'string') {
-      return item.iconType;
-    }
+  itemComponent(item: EuiMarkdownEditorToolbarItem) {
+    if (typeof item.iconType === 'string') return item.iconType;
 
     return item.iconType.component;
-  };
+  }
 
   <template>
     <div class="euiMarkdownEditorToolbar" ...attributes>
@@ -147,7 +151,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
             <EuiButtonIcon
               @color="text"
               {{on "click" (fn this.handleMdButtonClick item.id)}}
-              @iconType={{this.iconType item}}
+              @iconType={{this.itemComponent item}}
               {{!@glint-expect-error}}
               @useComponent={{if item.iconType.component true}}
               aria-label={{item.label}}

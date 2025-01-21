@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.42
+
+### Patch Changes
+
+- Fix EuiIcon not rendering icons as components via useComponent argument
+- Updated dependencies
+  - @ember-eui/core@8.0.42
+
 ## 8.0.41
 
 ### Patch Changes

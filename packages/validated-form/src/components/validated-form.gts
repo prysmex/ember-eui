@@ -10,7 +10,7 @@ import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import randomId from '../-private/random-id';
-import { ValidatedFormDefaultTheme } from './default-theme';
+import { ValidatedFormDefaultTheme } from './default-theme.ts';
 
 import type { IValidatedFormTheme } from './default-theme';
 import type FieldBase from './validated-form/field-base.gts';

@@ -3,7 +3,8 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { EuiFormRow, EuiMarkdownEditor } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
+import EuiMarkdownEditor from '@ember-eui/core/components/eui-markdown-editor';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 

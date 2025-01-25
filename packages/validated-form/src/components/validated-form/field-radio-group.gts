@@ -1,7 +1,8 @@
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { EuiFormRow, EuiRadioGroup } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
+import EuiRadioGroup from '@ember-eui/core/components/eui-radio-group';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import { maybeUnwrapProxy } from '@ember-eui/core/utils/maybe-unwrap-proxy';
 

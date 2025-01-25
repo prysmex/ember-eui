@@ -6,7 +6,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { next, schedule } from '@ember/runloop';
-import { EuiForm } from '@ember-eui/core/components';
+import EuiForm from '@ember-eui/core/components/eui-form';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import randomId from '../-private/random-id';

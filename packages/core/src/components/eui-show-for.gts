@@ -75,7 +75,7 @@ export interface EuiShowForSignature {
 }
 
 export default class EuiShowForComponent extends Component<EuiShowForSignature> {
-  currentBreakpointHelper = invokeHelper(this, CurrentBreakPointHelper, () => {
+  currentBreakpointHelper: any = invokeHelper(this, CurrentBreakPointHelper, () => {
     return {
       positional: [this.args.sizes]
     };

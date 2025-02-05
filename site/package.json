@@ -21,7 +21,11 @@
     "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'",
     "test": "concurrently \"yarn:lint\" \"yarn:test:*\" --names \"lint,test:\" --prefixColors auto",
     "test:ember": "ember test",
-    "build": "ember build --environment=production"
+    "build": "ember build --environment=production",
+    "_syncPnpm": ""
+  },
+  "dependencies": {
+    "@ember/string": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -34,7 +38,6 @@
     "@ember-eui/pikaday": "workspace:*",
     "@ember-eui/validated-form": "workspace:*",
     "@ember/optional-features": "^2.2.0",
-    "@ember/string": "^4.0.0",
     "@ember/test-helpers": "4.0.4",
     "@embroider/compat": "^3.5.4",
     "@embroider/core": "^3.4.13",
@@ -43,7 +46,7 @@
     "@eslint/js": "^9.17.0",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
-    "@nullvoxpopuli/eslint-configs": "^3.2.2",
+    "@nullvoxpopuli/eslint-configs": "^4.3.0",
     "@tsconfig/ember": "^3.0.2",
     "@types/ember": "^4.0.8",
     "@types/ember-data": "^3.16.10",
@@ -75,7 +78,7 @@
     "broccoli-file-creator": "^2.1.1",
     "broccoli-funnel": "^3.0.8",
     "codesandbox": "^2.2.3",
-    "concurrently": "^9.1.0",
+    "concurrently": "^9.1.2",
     "ember-auto-import": "^2.10.0",
     "ember-cli": "~6.1.0",
     "ember-cli-app-version": "^7.0.0",
@@ -95,6 +98,7 @@
     "ember-focus-trap": "^1.1.0",
     "ember-intl": "^6.2.0",
     "ember-load-initializers": "^3.0.1",
+    "ember-power-select": "8.7.0",
     "ember-modifier": "^4.2.0",
     "ember-page-title": "^8.2.3",
     "ember-qunit": "^8.1.1",

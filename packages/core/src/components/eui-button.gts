@@ -1,6 +1,6 @@
 import { concat } from '@ember/helper';
+import { classify } from '@ember/string';
 
-import classify from 'ember-cli-string-helpers/helpers/classify';
 import { element } from 'ember-element-helper';
 import { and, eq, not, or } from 'ember-truth-helpers';
 

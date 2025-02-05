@@ -18,6 +18,7 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
 
     // @ts-expect-error
     if (this.inputFont) {
+      // @ts-expect-error
       textWidth = this.textMeasurer.width(
         this.args.select.searchText,
         // @ts-expect-error
@@ -101,20 +102,16 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         spellcheck={{false}}
         id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
         value={{@select.searchText}}
-        {{!@glint-expect-error}}
         aria-controls={{@listboxId}}
         style={{this.triggerMultipleInputStyle}}
         disabled={{@select.disabled}}
-        {{!@glint-expect-error}}
         tabindex={{@tabindex}}
         form="power-select-fake-form"
-        {{!@glint-expect-error}}
         {{on "focus" @onFocus}}
-        {{!@glint-expect-error}}
         {{on "blur" @onBlur}}
-        {{!@glint-expect-error}}
         {{on "input" this.handleInput}}
         {{on "keydown" this.handleKeydown}}
+        {{!@glint-expect-error}}
         {{didInsert this.storeInputStyles}}
       />
     </div>

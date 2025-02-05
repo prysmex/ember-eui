@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 //@ts-expect-error
 import { getValue } from '@glimmer/tracking/primitives/cache';
-//@ts-expect-error
 import { invokeHelper } from '@ember/helper';
 
 import { CurrentBreakPointHelper } from './eui-show-for.gts';
@@ -24,11 +23,15 @@ export interface EuiHideForSignature {
 }
 
 export default class EuiHideForComponent extends Component<EuiHideForSignature> {
-  currentBreakpointHelper = invokeHelper(this, CurrentBreakPointHelper, () => {
-    return {
-      positional: [this.args.sizes]
-    };
-  });
+  currentBreakpointHelper: any = invokeHelper(
+    this,
+    CurrentBreakPointHelper,
+    () => {
+      return {
+        positional: [this.args.sizes]
+      };
+    }
+  );
 
   get shouldShow() {
     return !getValue(this.currentBreakpointHelper);

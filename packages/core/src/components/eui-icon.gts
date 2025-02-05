@@ -3,13 +3,15 @@ import { guidFor } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
-// @ts-expect-error
 import svgJar from 'ember-svg-jar/helpers/svg-jar';
 import { and, not } from 'ember-truth-helpers';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
-import { colorToClassMap, typeToPathMap } from '../utils/css-mappings/eui-icon.ts';
+import {
+  colorToClassMap,
+  typeToPathMap
+} from '../utils/css-mappings/eui-icon.ts';
 import { keysOf } from './common.ts';
 
 import type EuiConfigService from '../services/eui-config';
@@ -217,6 +219,14 @@ export default class EuiIcon extends Component<EuiIconSignature> {
     return titleId;
   }
 
+  get iconAsString(): string | undefined {
+    if (this.icon) {
+      return this.icon as any as string;
+    }
+
+    return undefined;
+  }
+
   <template>
     {{#if @useComponent}}
       {{!@glint-expect-error}}
@@ -260,23 +270,27 @@ export default class EuiIcon extends Component<EuiIconSignature> {
           ...attributes
         />
       {{else}}
-        {{svgJar
-          this.icon
-          class=(classNames
-            @iconClasses
-            this.optionalColorClass
-            (if (and this.isAppIcon (not this.appIconHasColor)) "euiIcon--app")
-            componentName="EuiIcon"
-            size=this.size
-          )
-          color=@color
-          role="image"
-          aria-hidden=(if this.isAriaHidden "true")
-          aria-label=(if @aria-label @aria-label this.titleId)
-          aria-labelledby=(if @aria-labelledby @aria-labelledby this.titleId)
-          tabindex=@tabIndex
-          style=this.optionalCustomStyles
-        }}
+        {{#if this.iconAsString}}
+          {{svgJar
+            this.iconAsString
+            class=(classNames
+              @iconClasses
+              this.optionalColorClass
+              (if
+                (and this.isAppIcon (not this.appIconHasColor)) "euiIcon--app"
+              )
+              componentName="EuiIcon"
+              size=this.size
+            )
+            color=@color
+            role="image"
+            aria-hidden=(if this.isAriaHidden "true")
+            aria-label=(if @aria-label @aria-label this.titleId)
+            aria-labelledby=(if @aria-labelledby @aria-labelledby this.titleId)
+            tabindex=@tabIndex
+            style=this.optionalCustomStyles
+          }}
+        {{/if}}
       {{/if}}
     {{/if}}
   </template>

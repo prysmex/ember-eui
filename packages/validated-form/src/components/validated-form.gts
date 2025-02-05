@@ -9,7 +9,7 @@ import { next, schedule } from '@ember/runloop';
 import EuiForm from '@ember-eui/core/components/eui-form';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import randomId from '../-private/random-id';
+import randomId from '../-private/random-id.ts';
 import { ValidatedFormDefaultTheme } from './default-theme.ts';
 
 import type { IValidatedFormTheme } from './default-theme';

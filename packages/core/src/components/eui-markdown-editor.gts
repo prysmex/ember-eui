@@ -15,14 +15,14 @@ import style from 'ember-style-modifier/modifiers/style';
 import { eq } from 'ember-truth-helpers';
 import unified from 'unified';
 
-import { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
-import resizeObserver from '../modifiers/resize-observer';
-import validatableControl from '../modifiers/validatable-control';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
+import resizeObserver from '../modifiers/resize-observer.ts';
+import validatableControl from '../modifiers/validatable-control.ts';
 import MarkdownActions, {
   insertText
-} from '../utils/markdown/markdown-actions';
-import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes';
+} from '../utils/markdown/markdown-actions.ts';
+import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins

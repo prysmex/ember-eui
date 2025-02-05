@@ -74,7 +74,7 @@ export interface EuiMarkdownEditorSignature {
 }
 
 export const getCursorNode = (
-  textareaRef: HTMLInputElement,
+  textareaRef: HTMLTextAreaElement,
   parsed: any
 ): EuiMarkdownAstNode => {
   const { selectionStart } = textareaRef;
@@ -106,7 +106,7 @@ export const getCursorNode = (
 };
 
 function wrapper(
-  textarea: HTMLInputElement,
+  textarea: HTMLTextAreaElement,
   parsed: any,
   callback: (node: EuiMarkdownAstNode) => void
 ) {
@@ -119,6 +119,7 @@ export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
   textarea: EuiMarkdownEditorTextAreaSignature['Element'],
   [parsed, onSelectedNode]: [any, (node: Node) => void]
 ) {
+  //@ts-expect-error
   const fn = wrapper.bind(null, textarea, parsed, onSelectedNode);
 
   textarea.addEventListener('keyup', fn);

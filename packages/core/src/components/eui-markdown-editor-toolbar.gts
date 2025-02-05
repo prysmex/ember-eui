@@ -14,13 +14,14 @@ import EuiButtonIcon from './eui-button-icon.gts';
 import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
-import type MarkdownActions from '../utils/markdown/markdown-actions.ts';
+import type MarkdownActions from '../utils/markdown/markdown-actions';
+import type { EuiMarkdownEditorUiPlugin } from '../utils/markdown/markdown-types';
 
 export interface EuiMarkdownEditorToolbarArgs {
   viewMode?: string;
   markdownActions: MarkdownActions;
   uiPlugins: any[];
-  openPluginEditor?: (actionResult: ReturnType<MarkdownActions['do']>) => void;
+  openPluginEditor?: (plugin: EuiMarkdownEditorUiPlugin) => void;
   onClickPreview: () => void;
   selectedNode: any;
 }
@@ -121,7 +122,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   handleMdButtonClick(mdButtonId: string) {
     const actionResult = this.args.markdownActions.do(mdButtonId);
 
-    if (actionResult !== true) this.args.openPluginEditor?.(actionResult);
+    if (actionResult !== true) this.args.openPluginEditor?.(actionResult!);
   }
 
   itemComponent(item: EuiMarkdownEditorToolbarItem) {

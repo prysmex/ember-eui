@@ -2,7 +2,8 @@ import { fn } from '@ember/helper';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { EuiComboBox,EuiFormRow } from '@ember-eui/core/components';
+import EuiComboBox from '@ember-eui/core/components/eui-combo-box';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import optional from 'ember-composable-helpers/helpers/optional';

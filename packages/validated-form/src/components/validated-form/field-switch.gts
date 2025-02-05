@@ -3,7 +3,8 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { EuiFormRow, EuiSwitch } from '@ember-eui/core/components';
+import EuiFormRow from '@ember-eui/core/components/eui-form-row';
+import EuiSwitch from '@ember-eui/core/components/eui-switch';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';

@@ -152,6 +152,29 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.45
+
+### Patch Changes
+
+- Allow uiPlugins for eui-markdown-editor
+- Updated dependencies
+  - @ember-eui/core@8.0.45
+
+## 8.0.44
+
+### Patch Changes
+
+- fix
+- Updated dependencies
+  - @ember-eui/core@8.0.44
+
+## 8.0.43
+
+### Patch Changes
+
+- fixes
+- Updated dependencies
+  - @ember-eui/core@8.0.43
 
 ## 8.0.42
 

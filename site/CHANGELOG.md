@@ -93,6 +93,23 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.45
+
+### Patch Changes
+
+- Allow uiPlugins for eui-markdown-editor
+
+## 8.0.44
+
+### Patch Changes
+
+- fix
+
+## 8.0.43
+
+### Patch Changes
+
+- fixes
 
 ## 8.0.42
 

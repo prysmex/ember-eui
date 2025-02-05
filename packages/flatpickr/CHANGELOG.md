@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.45
+
+### Patch Changes
+
+- Allow uiPlugins for eui-markdown-editor
+- Updated dependencies
+  - @ember-eui/core@8.0.45
+
 ## 8.0.44
 
 ### Patch Changes

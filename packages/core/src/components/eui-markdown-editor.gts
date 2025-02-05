@@ -12,14 +12,16 @@ import pick from 'ember-composable-helpers/helpers/pick';
 import { modifier } from 'ember-modifier';
 import set from 'ember-set-helper/helpers/set';
 import style from 'ember-style-modifier/modifiers/style';
-import { eq, not } from 'ember-truth-helpers';
+import { eq } from 'ember-truth-helpers';
 import unified from 'unified';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import resizeObserver from '../modifiers/resize-observer';
 import validatableControl from '../modifiers/validatable-control';
-import MarkdownActions from '../utils/markdown/markdown-actions';
+import MarkdownActions, {
+  insertText
+} from '../utils/markdown/markdown-actions';
 import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes';
 import {
   defaultParsingPlugins,
@@ -30,6 +32,7 @@ import EuiMarkdownEditorDropZone from './eui-markdown-editor-drop-zone.gts';
 import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area.gts';
 import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar.gts';
 import EuiMarkdownFormat from './eui-markdown-format.gts';
+import EuiModal from './eui-modal.gts';
 
 import type {
   EuiMarkdownAstNode,
@@ -127,7 +130,32 @@ export const getCursorNodeModifier = modifier(function getCursorNodeModifier(
   };
 });
 
+function isNewLine(char: string | undefined): boolean {
+  if (char == null) return true;
+
+  return !!char.match(/[\r\n]/);
+}
+
+function padWithNewlinesIfNeeded(textarea: HTMLTextAreaElement, text: string) {
+  const selectionStart = textarea.selectionStart;
+  const selectionEnd = textarea.selectionEnd;
+
+  // block parsing requires two leading new lines and none trailing, but we add an extra trailing line for readability
+  const isPrevNewLine = isNewLine(textarea.value[selectionStart - 1]);
+  const isPrevPrevNewLine = isNewLine(textarea.value[selectionStart - 2]);
+  const isNextNewLine = isNewLine(textarea.value[selectionEnd]);
+
+  // pad text with newlines as needed
+  text = `${isPrevNewLine ? '' : '\n'}${isPrevPrevNewLine ? '' : '\n'}${text}${
+    isNextNewLine ? '' : '\n'
+  }`;
+
+  return text;
+}
+
 export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEditorSignature> {
+  @tracked pluginEditorPlugin?: EuiMarkdownEditorUiPlugin;
+
   // Defaults
   @argOrDefaultDecorator(defaultParsingPlugins) declare parsingPluginList: typeof defaultParsingPlugins;
 
@@ -157,7 +185,6 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     super(owner, args);
     this.markdownActions = new MarkdownActions(
       this.editorId,
-      // @ts-expect-error
       this.toolbarPlugins
     );
     this.currentHeight = this.height;
@@ -234,6 +261,8 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
       }
     }
   }
+
+  getCursorNode = () => {};
 
   @action
   setTextAreaRef(ref: HTMLTextAreaElement) {
@@ -317,6 +346,45 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     this.selectedNode = node;
   }
 
+  openPluginEditor = (plugin: EuiMarkdownEditorUiPlugin) => {
+    this.pluginEditorPlugin = plugin;
+  };
+
+  onEditorPluginSave = (markdown: any, config: any) => {
+    let { selectedNode, textareaRef } = this;
+
+    if (
+      this.pluginEditorPlugin &&
+      selectedNode &&
+      // @ts-expect-error
+      selectedNode.type === this.pluginEditorPlugin.name &&
+      // @ts-expect-error
+      selectedNode.position
+    ) {
+      // modifying an existing node
+      textareaRef!.setSelectionRange(
+        // @ts-expect-error
+        selectedNode.position.start.offset,
+        // @ts-expect-error
+        selectedNode.position.end.offset
+      );
+    } else {
+      // creating a new node
+      if (config.block) {
+        // inject newlines if needed
+        markdown = padWithNewlinesIfNeeded(textareaRef!, markdown);
+      }
+    }
+
+    insertText(textareaRef!, {
+      text: markdown,
+      selectionStart: undefined,
+      selectionEnd: undefined
+    });
+
+    this.pluginEditorPlugin = undefined;
+  };
+
   <template>
     <div
       class={{classNames
@@ -336,6 +404,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
         @selectedNode={{this.selectedNode}}
         @markdownActions={{this.markdownActions}}
         @onClickPreview={{this.setViewMode}}
+        @openPluginEditor={{this.openPluginEditor}}
         @viewMode={{this.viewMode}}
         @uiPlugins={{this.toolbarPlugins}}
         {{didInsert this.setEditorToolbarRef}}
@@ -380,6 +449,17 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
             ...attributes
           />
         </EuiMarkdownEditorDropZone>
+        {{#if this.pluginEditorPlugin.editor}}
+          <EuiModal @onClose={{set this "pluginEditorPlugin" undefined}}>
+            {{#let (component this.pluginEditorPlugin.editor) as |Editor|}}
+              <Editor
+                @node={{this.selectedNode}}
+                @onCancel={{set this "pluginEditorPlugin" undefined}}
+                @onSave={{this.onEditorPluginSave}}
+              />
+            {{/let}}
+          </EuiModal>
+        {{/if}}
       </div>
     </div>
   </template>

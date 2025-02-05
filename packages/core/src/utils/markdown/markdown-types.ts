@@ -90,7 +90,7 @@ export type EuiMarkdownEditorUiPlugin<NodeShape = any> = {
     label: string;
     iconType: IconType;
   };
-  helpText?: Component;
+  helpText?: Component | string;
 } & (PluginWithImmediateFormatting | PluginWithDelayedFormatting<NodeShape>);
 
 export interface EuiMarkdownFormatting {

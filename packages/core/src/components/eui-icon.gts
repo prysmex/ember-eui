@@ -3,7 +3,7 @@ import { guidFor } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
-import svgJar from 'ember-svg-jar/helpers/svg-jar';
+import svgJar from 'ember-svg-jar-updated/helpers/svg-jar';
 import { and, not } from 'ember-truth-helpers';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';

@@ -1,7 +1,9 @@
 import Helper from '@ember/component/helper';
 import { inject as service } from '@ember/service';
 
-import { humanize } from 'ember-cli-string-helpers/helpers/humanize';
+const humanize = (s) => {
+  return str;
+};
 
 export type Heading = {
   headings: Heading[];

@@ -99,6 +99,7 @@
     "@types/ember__owner": "^4.0.4",
     "@types/ember__polyfills": "^4.0.2",
     "@types/ember__routing": "^4.0.13",
+    "ember-cli": "~4.2.0",
     "@types/ember__runloop": "^4.0.3",
     "@types/ember__service": "^4.0.3",
     "@types/ember__string": "^3.16.3",

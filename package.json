@@ -39,6 +39,9 @@
       "allowAny": [
         "ember-source"
       ]
+    },
+    "overrides": {
+      "ember-source": "~5.8.0"
     }
   },
   "packageManager": "pnpm@9.9.0"

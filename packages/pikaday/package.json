@@ -61,7 +61,7 @@
     "@ember-eui/core": "^11.0.3",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
-    "ember-source": ">= 4.0.0"
+    "ember-source": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

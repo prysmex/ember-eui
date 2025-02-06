@@ -171,7 +171,7 @@
     "@glimmer/tracking": "^1.1.2",
     "ember-auto-import": "^2.7.2",
     "ember-focus-trap": "^1.1.0",
-    "ember-source": "^3.28.0 || ^4.0.0 || >=5.0.0",
+    "ember-source": "*",
     "moment": "^2.29.3",
     "ember-power-select": "^8.7.0",
     "ember-concurrency": "^4.0.2",

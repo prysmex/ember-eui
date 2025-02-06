@@ -1,4 +1,4 @@
-# ember-eui
+# @ember-eui/core
 
 This project aims to provide ember components implementing the css layer of https://elastic.github.io/eui
 ### Icons
@@ -26,13 +26,11 @@ var app = new EmberApp(defaults, {
 
 ## Compatibility
 
-* Ember.js v3.24 or above
-* Ember CLI v3.24 or above
-* Node.js v12 or above
+- Ember.js v5.8 or above
+- Ember CLI v5.8 or above
+- Node.js v18 or above
 
-
-Installation
-------------------------------------------------------------------------------
+## Installation
 
 ```
 ember install @ember-eui/core
@@ -43,3 +41,7 @@ ember install @ember-eui/core
 See the [Contributing](CONTRIBUTING.md) guide for details.
 
 ### PR's are truly welcome
+
+## License
+
+This project is licensed under the [MIT License](LICENSE.md).

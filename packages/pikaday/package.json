@@ -52,9 +52,9 @@
     "ember-auto-import": "^2.10.0",
     "ember-composable-helpers": "^5.0.0",
     "ember-modifier": "^4.1.0",
-    "ember-pikaday": "^5.1.0",
-    "ember-svg-jar": "^2.3.4",
+    "ember-pikaday": "^5.1.1",
     "ember-template-imports": "^4.2.0",
+    "ember-svg-jar-updated": "3.0.0",
     "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {

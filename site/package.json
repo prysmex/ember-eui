@@ -99,7 +99,7 @@
     "ember-resolver": "^13.1.0",
     "ember-set-helper": "^2.0.0",
     "ember-source": "~6.2.0",
-    "ember-svg-jar-updated": "3.0.0",
+    "ember-svg-jar": "^2.6.0",
     "ember-template-imports": "^4.1.1",
     "ember-template-lint": "^6.0.0",
     "ember-url-hash-polyfill": "^1.0.11",

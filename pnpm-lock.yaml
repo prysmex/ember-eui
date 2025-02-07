@@ -83,9 +83,9 @@ importers:
       ember-modifier:
         specifier: ^4.2.0
         version: 4.2.0(@babel/core@7.26.7)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
-      ember-svg-jar-updated:
-        specifier: 3.0.0
-        version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      ember-svg-jar:
+        specifier: ^2.6.0
+        version: 2.6.0(@glint/template@1.5.2)
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
@@ -339,9 +339,9 @@ importers:
       ember-style-modifier:
         specifier: ^4.4.0
         version: 4.4.0(@babel/core@7.26.7)(@ember/string@4.0.0)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
-      ember-svg-jar-updated:
-        specifier: 3.0.0
-        version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      ember-svg-jar:
+        specifier: ^2.6.0
+        version: 2.6.0(@glint/template@1.5.2)
       ember-template-imports:
         specifier: ^4.3.0
         version: 4.3.0
@@ -622,9 +622,9 @@ importers:
       ember-style-modifier:
         specifier: ^4.4.0
         version: 4.4.0(@babel/core@7.26.7)(@ember/string@4.0.0)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
-      ember-svg-jar-updated:
-        specifier: 3.0.0
-        version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      ember-svg-jar:
+        specifier: ^2.6.0
+        version: 2.6.0(@glint/template@1.5.2)
       ember-template-imports:
         specifier: ^4.3.0
         version: 4.3.0
@@ -842,9 +842,9 @@ importers:
       ember-pikaday:
         specifier: ^5.1.1
         version: 5.1.1(@babel/core@7.26.7)(@ember/test-helpers@4.0.4(@babel/core@7.26.7)(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1)))(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))(moment@2.30.1)
-      ember-svg-jar-updated:
-        specifier: 3.0.0
-        version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      ember-svg-jar:
+        specifier: ^2.6.0
+        version: 2.6.0(@glint/template@1.5.2)
       ember-template-imports:
         specifier: ^4.2.0
         version: 4.3.0
@@ -1059,9 +1059,9 @@ importers:
       ember-modifier:
         specifier: ^4.2.0
         version: 4.2.0(@babel/core@7.26.7)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
-      ember-svg-jar-updated:
-        specifier: 3.0.0
-        version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      ember-svg-jar:
+        specifier: ^2.6.0
+        version: 2.6.0(@glint/template@1.5.2)
       ember-template-imports:
         specifier: ^4.3.0
         version: 4.3.0
@@ -1477,9 +1477,9 @@ importers:
       ember-source:
         specifier: ~6.2.0
         version: 6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1)
-      ember-svg-jar-updated:
-        specifier: 3.0.0
-        version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      ember-svg-jar:
+        specifier: ^2.6.0
+        version: 2.6.0(@glint/template@1.5.2)
       ember-template-imports:
         specifier: ^4.1.1
         version: 4.3.0
@@ -5558,11 +5558,9 @@ packages:
       '@ember/string': ^4.0.0
       ember-source: ^3.28.0 || ^4.0.0 || >=5.0.0
 
-  ember-svg-jar-updated@3.0.0:
-    resolution: {integrity: sha512-CJnbLRihBF3DwpHdbGTkocsiKpvqxRyzZpOfT6voSxqDYbhO5faKTMTNJ+ljs4T+TUV6cZSnDrNpW8GOrqNpeQ==}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      ember-source: '>= 4.0.0'
+  ember-svg-jar@2.6.0:
+    resolution: {integrity: sha512-LRG+BoQJTHPQlxfCPGIrOZo/UqXtadcOLuUjrhHRyQJJYDFEeJX5sWUsz/bJe48Bgi9FyOoQtdqrRAQ+COn2Kg==}
+    engines: {node: 12.* || 14.* || >= 16}
 
   ember-template-imports@3.4.2:
     resolution: {integrity: sha512-OS8TUVG2kQYYwP3netunLVfeijPoOKIs1SvPQRTNOQX4Pu8xGGBEZmrv0U1YTnQn12Eg+p6w/0UdGbUnITjyzw==}
@@ -16694,9 +16692,8 @@ snapshots:
       - '@babel/core'
       - supports-color
 
-  ember-svg-jar-updated@3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1)):
+  ember-svg-jar@2.6.0(@glint/template@1.5.2):
     dependencies:
-      '@babel/core': 7.26.7
       '@embroider/macros': 1.16.10(@glint/template@1.5.2)
       broccoli-caching-writer: 3.0.3
       broccoli-concat: 4.2.5
@@ -16708,9 +16705,8 @@ snapshots:
       broccoli-svg-optimizer: 2.1.0
       cheerio: 1.0.0
       console-ui: 3.1.2
-      ember-cli-babel: 8.2.0(@babel/core@7.26.7)
-      ember-cli-htmlbars: 6.3.0
-      ember-source: 6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1)
+      ember-cli-babel: 7.26.11
+      ember-cli-htmlbars: 5.7.2
       lodash: 4.17.21
       safe-stable-stringify: 2.5.0
     transitivePeerDependencies:

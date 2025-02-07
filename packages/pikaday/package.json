@@ -54,7 +54,7 @@
     "ember-pikaday": "^5.1.1",
     "ember-template-imports": "^4.2.0",
     "decorator-transforms": "^2.3.0",
-    "ember-svg-jar-updated": "3.0.0",
+    "ember-svg-jar": "^2.6.0",
     "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {

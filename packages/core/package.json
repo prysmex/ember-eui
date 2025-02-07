@@ -155,7 +155,7 @@
     "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^2.0.1",
     "ember-style-modifier": "^4.4.0",
-    "ember-svg-jar-updated": "3.0.0",
+    "ember-svg-jar": "^2.6.0",
     "ember-template-imports": "^4.3.0",
     "ember-truth-helpers": "^4.0.3",
     "lodash-es": "^4.17.21",

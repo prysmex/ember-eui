@@ -3,7 +3,7 @@ import '@glint/environment-ember-template-imports';
 
 import Modifier from 'ember-modifier';
 
-import type SvgJar from 'ember-svg-jar/types';
+import type SvgJar from 'ember-svg-jar-updated/types';
 
 declare class RenderModifier<
   Args extends unknown[] = unknown[]

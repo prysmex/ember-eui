@@ -54,14 +54,14 @@
     "ember-pikaday": "^5.1.1",
     "ember-template-imports": "^4.2.0",
     "decorator-transforms": "^2.3.0",
-    "ember-svg-jar": "^2.6.0",
+    "ember-svg-jar-updated": "^3.0.0",
     "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {
     "@ember-eui/core": "^11.0.3",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
-    "ember-source": "*"
+    "ember-source": ">= 4.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -73,7 +73,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@ember-eui/core": "workspace:*",
     "@ember/optional-features": "^2.2.0",
-    "@ember/test-helpers": "4.0.4",
+    "@ember/test-helpers": "^5.1.0",
     "@embroider/addon-dev": "7.1.1",
     "@embroider/test-setup": "^4.0.0",
     "@eslint/js": "^9.17.0",

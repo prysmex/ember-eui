@@ -53,7 +53,7 @@
     "@ember/render-modifiers": "^2.1.0",
     "ember-modifier": "^4.2.0",
     "ember-composable-helpers": "^5.0.0",
-    "ember-svg-jar": "^2.6.0", 
+    "ember-svg-jar-updated": "^3.0.0", 
     "ember-truth-helpers": "^4.0.3",
     "@glint/template": "1.5.2",
     "decorator-transforms": "^2.3.0"
@@ -73,7 +73,7 @@
     "@ember-eui/core": "workspace:*",
     "@ember/optional-features": "^2.2.0",
     "ember-changeset-validations": "^4.1.1",
-    "@ember/test-helpers": "4.0.5",
+    "@ember/test-helpers": "^5.1.0",
     "@embroider/addon-dev": "7.1.1",
     "@embroider/test-setup": "^4.0.0",
     "@eslint/js": "^9.19.0",

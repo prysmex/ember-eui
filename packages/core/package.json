@@ -118,7 +118,7 @@
     "ember-focus-trap": "^1.1.0",
     "ember-power-select": "8.7.0",
     "ember-source": "~6.2.0",
-    "ember-template-imports": "^4.1.1",
+    "ember-template-imports": "^4.3.0",
     "ember-template-lint": "^6.1.0",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^9.1.0",

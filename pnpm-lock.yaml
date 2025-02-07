@@ -241,7 +241,7 @@ importers:
         specifier: ~6.2.0
         version: 6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1)
       ember-template-imports:
-        specifier: ^4.1.1
+        specifier: ^4.3.0
         version: 4.3.0
       ember-template-lint:
         specifier: ^6.1.0
@@ -861,7 +861,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
       ember-template-imports:
-        specifier: ^4.2.0
+        specifier: ^4.3.0
         version: 4.3.0
       ember-truth-helpers:
         specifier: ^4.0.3
@@ -1291,18 +1291,9 @@ importers:
       '@docfy/ember':
         specifier: ^0.8.5
         version: 0.8.5(@babel/core@7.26.7)(@glint/template@1.5.2)
-      '@ember-eui/core':
-        specifier: workspace:*
-        version: link:../packages/core
       '@ember-eui/flatpickr':
         specifier: workspace:*
         version: link:../packages/flatpickr
-      '@ember-eui/pikaday':
-        specifier: workspace:*
-        version: link:../packages/pikaday
-      '@ember-eui/validated-form':
-        specifier: workspace:*
-        version: link:../packages/validated-form
       '@ember/optional-features':
         specifier: ^2.2.0
         version: 2.2.0
@@ -1511,7 +1502,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@1.1.2(@babel/core@7.26.7))(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
       ember-template-imports:
-        specifier: ^4.1.1
+        specifier: ^4.3.0
         version: 4.3.0
       ember-template-lint:
         specifier: ^6.0.0

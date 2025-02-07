@@ -1,5 +1,4 @@
 import Component from '@glimmer/component';
-//@ts-expect-error
 import { getValue } from '@glimmer/tracking/primitives/cache';
 import { invokeHelper } from '@ember/helper';
 

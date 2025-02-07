@@ -1,14 +1,13 @@
 'use strict';
 
 module.exports = {
-  presets: ['@babel/preset-typescript'],
   plugins: [
     [
       '@babel/plugin-transform-typescript',
       {
         allExtensions: true,
+        allowDeclareFields: true,
         onlyRemoveTypeImports: true,
-        allowDeclareFields: true
       }
     ],
     '@embroider/addon-dev/template-colocation-plugin',

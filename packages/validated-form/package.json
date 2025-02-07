@@ -15,6 +15,7 @@
   "scripts": {
     "build": "concurrently 'npm:build:*'",
     "build:js": "rollup --config",
+    "build:types": "glint --declaration",
     "lint": "concurrently \"npm:lint:*(!fix)\" --names \"lint:\" --prefixColors auto",
     "lint:css": "stylelint \"**/*.css\"",
     "lint:css:fix": "concurrently \"npm:lint:css -- --fix\"",

@@ -1,7 +1,6 @@
 import copy from 'rollup-plugin-copy';
 import { babel } from '@rollup/plugin-babel';
 import { Addon } from '@embroider/addon-dev/rollup';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 const addon = new Addon({
   srcDir: 'src',
@@ -30,11 +29,9 @@ export default {
 
     addon.dependencies(),
 
-    nodeResolve({ extensions }),
-
     babel({ extensions, babelHelpers: 'bundled' }),
 
-    addon.clean(),
+    
     addon.hbs(),
     addon.gjs(),
     addon.declarations('declarations'),

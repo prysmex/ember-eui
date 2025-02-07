@@ -24,7 +24,7 @@ import type EuiConfigService from '../../services/eui-config';
 
 
 //This was extracted from ember-power-select v7.2.0, becuase it was removed in v8.0.0... or renamed to ember-power-select-
-function emberPowerSelectIsSelected([option, selected]: [any, any]/* , hash*/): boolean {
+function emberPowerSelectIsSelected([option, selected]: [any, any[]]/* , hash*/): boolean {
   if (selected === undefined || selected === null) {
     return false;
   }

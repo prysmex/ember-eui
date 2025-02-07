@@ -77,7 +77,7 @@ export interface ValidatedFormSignature {
 }
 
 export default class ValidatedFormComponent extends Component<ValidatedFormSignature> {
-  @tracked childComponents = A<FieldBase>([]);
+  @tracked childComponents: ReturnType<typeof A<FieldBase>> = A<FieldBase>([]);
   //cache to only notify if changed
   lastIsValid?: boolean;
   lastIsTouched?: boolean;

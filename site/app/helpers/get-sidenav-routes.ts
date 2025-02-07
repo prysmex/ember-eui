@@ -1,12 +1,14 @@
 import Helper from '@ember/component/helper';
 import { inject as service } from '@ember/service';
 
-function humanize(str: string) {
+function humanize(str?: string) {
   return str
-      .replace(/^[\s_]+|[\s_]+$/g, '')
-      .replace(/[_\s]+/g, ' ')
-      .replace(/[-\s]+/g, ' ')
-      .replace(/^[a-z]/, function(m) { return m.toUpperCase(); });
+    ?.replace(/^[\s_]+|[\s_]+$/g, '')
+    .replace(/[_\s]+/g, ' ')
+    .replace(/[-\s]+/g, ' ')
+    .replace(/^[a-z]/, function (m) {
+      return m.toUpperCase();
+    }) ?? '';
 }
 
 export type Heading = {
@@ -101,7 +103,7 @@ function getItems(
 function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
   return {
     id: `${page.url}`,
-    name: humanize(page.title), 
+    name: humanize(page.title),
     onClick: clickHandler.bind(clickHandler, page.url),
     items: []
   };

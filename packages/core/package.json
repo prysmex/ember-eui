@@ -186,9 +186,9 @@
     "@glimmer/tracking": "^1.1.2",
     "ember-auto-import": "^2.10.0",
     "ember-basic-dropdown": "^8.5.0",
+    "ember-power-select": "^8.7.0",
     "ember-concurrency": "^4.0.2",
     "ember-focus-trap": "^1.1.0",
-    "ember-power-select": "^8.7.0",
     "ember-source": ">= 4.0.0",
     "@ember/string": "^4.0.0",
     "moment": "^2.29.3"

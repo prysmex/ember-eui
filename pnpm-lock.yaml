@@ -1420,6 +1420,9 @@ importers:
       ember-auto-import:
         specifier: ^2.10.0
         version: 2.10.0(@glint/template@1.5.2)(webpack@5.97.1)
+      ember-basic-dropdown:
+        specifier: ^8.5.0
+        version: 8.5.0(@babel/core@7.26.7)(@ember/string@4.0.0)(@ember/test-helpers@5.1.0(@babel/core@7.26.7)(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1)))(@glimmer/component@2.0.0)(@glimmer/tracking@1.1.2)(@glint/environment-ember-loose@1.5.2(@glimmer/component@2.0.0)(@glint/template@1.5.2)(@types/ember__array@4.0.10(@babel/core@7.26.7))(@types/ember__component@4.0.22(@babel/core@7.26.7))(@types/ember__controller@4.0.12(@babel/core@7.26.7))(@types/ember__object@4.0.12(@babel/core@7.26.7))(@types/ember__routing@4.0.22(@babel/core@7.26.7))(ember-cli-htmlbars@6.3.0)(ember-modifier@4.2.0(@babel/core@7.26.7)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))))(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
       ember-cli:
         specifier: ~6.1.0
         version: 6.1.0(handlebars@4.7.8)(underscore@1.13.7)

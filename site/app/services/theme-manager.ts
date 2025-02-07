@@ -30,7 +30,7 @@ export default class ThemeManager extends Service {
     const currentTheme = theme || window?.localStorage?.getItem('theme');
 
     this.currentTheme =
-      this.themes.findBy('key', currentTheme) || this.themes[0];
+      this.themes.find((theme) => theme.key === currentTheme) || this.themes[0];
   }
 
   changeTheme = (theme: ThemeShape) => {

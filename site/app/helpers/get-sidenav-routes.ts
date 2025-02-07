@@ -1,8 +1,7 @@
 import Helper from '@ember/component/helper';
 import { inject as service } from '@ember/service';
 
-function humanize(str) {
-  console.log(str);
+function humanize(str: string) {
   return str
       .replace(/^[\s_]+|[\s_]+$/g, '')
       .replace(/[_\s]+/g, ' ')

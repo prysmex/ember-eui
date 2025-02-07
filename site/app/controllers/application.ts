@@ -9,13 +9,7 @@ import {
   getSidenavRoutes
 } from '../helpers/get-sidenav-routes';
 
-// import EuiSideNavItemButton from '@ember-eui/core/components/eui-side-nav-item/button';
-import type {
-  DocfyNode,
-  Item,
-  NodeId,
-  Page
-} from '../helpers/get-sidenav-routes';
+import type { DocfyNode, Item, Page, NodeId } from '../helpers/get-sidenav-routes';
 import type RouterService from '@ember/routing/router-service';
 import type ThemeManager from 'site/services/theme-manager';
 
@@ -60,8 +54,8 @@ export default class ApplicationController extends Controller {
 
     const handlerFn = (id: NodeId) => {
       this.selectedItem = id;
-      this.router.transitionTo(id);
-      scrollToHash(id);
+      this.router.transitionTo(id as string);
+      scrollToHash(id as string);
     };
 
     // -- Documentation section
@@ -197,8 +191,10 @@ export default class ApplicationController extends Controller {
         toAdd.items.push(...this.filterSideNav(str, [item], depth + 1));
       });
 
+      const currName = curr.name[0]?.toLowerCase();
+
       if (
-        curr.name[0]?.toLowerCase().indexOf(str?.toLowerCase()) > -1 ||
+        currName && currName.indexOf(str?.toLowerCase()) > -1 ||
         toAdd.items.length > 0
       ) {
         toAdd = {

@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "es2020",
     "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
+    "skipLibCheck": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
@@ -17,8 +18,7 @@
     "noEmit": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "module": "ESNext",
-    "experimentalDecorators": true,
-    "emitDeclarationOnly": false
+    "module": "es6",
+    "experimentalDecorators": true
   }
 }

@@ -5,6 +5,7 @@ import { hash } from '@ember/helper';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { scheduleOnce } from '@ember/runloop';
+import type Owner from '@ember/owner';
 
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { modifier } from 'ember-modifier';
@@ -277,7 +278,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
     return !!this.args.overflowHeight;
   }
 
-  constructor(owner: unknown, args: EuiCodeBlockArgs) {
+  constructor(owner: Owner, args: EuiCodeBlockArgs) {
     super(owner, args);
     this.codeTarget = document.createElement('div');
   }

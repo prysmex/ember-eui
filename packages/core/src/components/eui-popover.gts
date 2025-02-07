@@ -8,6 +8,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, scheduleOnce } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
+import type Owner from '@ember/owner';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import { focusTrap } from 'ember-focus-trap';
@@ -322,7 +323,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   @tracked button: HTMLElement | null = null;
   @tracked panel: HTMLElement | null = null;
 
-  constructor(owner: unknown, args: EuiPopoverArgs) {
+  constructor(owner: Owner, args: EuiPopoverArgs) {
     super(owner, args);
     assert(`Must provide closePopover function`, this.args.closePopover);
     this.prevIsOpen = this.isOpen;

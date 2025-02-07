@@ -5,6 +5,7 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
+import type Owner from '@ember/owner';
 
 import queue from 'ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
@@ -116,7 +117,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
   @tracked childWrapper: HTMLDivElement | null = null;
   @tracked childContent: HTMLDivElement | null = null;
 
-  constructor(owner: unknown, args: AccordionArgs) {
+  constructor(owner: Owner, args: AccordionArgs) {
     super(owner, args);
 
     this._opened = this.args.forceState

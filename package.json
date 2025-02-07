@@ -48,7 +48,8 @@
       "ember-cli-babel": "^8.2.0"
     },
     "patchedDependencies": {
-      "ember-modifier-manager-polyfill": "patches/ember-modifier-manager-polyfill.patch"
+      "ember-modifier-manager-polyfill": "patches/ember-modifier-manager-polyfill.patch",
+      "ember-cli-version-checker": "patches/ember-cli-version-checker.patch"
     }
   },
   "packageManager": "pnpm@9.9.0"

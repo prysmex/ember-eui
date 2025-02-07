@@ -4,6 +4,7 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { scheduleOnce } from '@ember/runloop';
+import type Owner from '@ember/owner';
 
 import set from 'ember-set-helper/helpers/set';
 import { highlight } from 'refractor';
@@ -32,7 +33,7 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
   @tracked code: undefined | HTMLElement;
   observer: MutationObserver | null = null;
 
-  constructor(owner: unknown, args: EuiCodeArgs) {
+  constructor(owner: Owner, args: EuiCodeArgs) {
     super(owner, args);
     this.codeTarget = document.createElement('div');
     this.setupObserver();

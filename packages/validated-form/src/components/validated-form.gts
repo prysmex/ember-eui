@@ -8,6 +8,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { next, schedule } from '@ember/runloop';
 import EuiForm from '@ember-eui/core/components/eui-form';
 import { argOrDefault } from '@ember-eui/core/helpers';
+import type Owner from '@ember/owner';
 
 import randomId from '../-private/random-id.ts';
 import { ValidatedFormDefaultTheme } from './default-theme.ts';
@@ -84,7 +85,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   @tracked isInvalid = false;
   @tracked isTouched = false;
 
-  constructor(owner: unknown, args: ValidatedFormSignature['Args']) {
+  constructor(owner: Owner, args: ValidatedFormSignature['Args']) {
     super(owner, args);
     this.args.register?.(this);
   }

@@ -4,6 +4,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { throttle } from '@ember/runloop';
+import type Owner from '@ember/owner';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import sub from 'ember-math-helpers/helpers/sub';
@@ -160,7 +161,7 @@ export interface EuiBreadcrumbsSignature {
 export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
   @tracked currentBreakpoint;
 
-  constructor(owner: unknown, args: EuiBreadcrumbsComponentArgs) {
+  constructor(owner: Owner, args: EuiBreadcrumbsComponentArgs) {
     super(owner, args);
     this.currentBreakpoint = getBreakpoint(
       typeof window === 'undefined' ? -Infinity : window.innerWidth

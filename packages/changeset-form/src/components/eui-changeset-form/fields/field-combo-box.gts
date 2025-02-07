@@ -1,8 +1,8 @@
 import { assert } from '@ember/debug';
-import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { EuiComboBox,EuiFormRow } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
+import type Owner from '@ember/owner';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
@@ -39,7 +39,7 @@ export interface EuiChangesetFormFieldComboBoxSignature {
  */
 export default class EuiChangesetFormFieldComboBox extends Base<EuiChangesetFormFieldComboBoxSignature> {
   constructor(
-    owner: unknown,
+    owner: Owner,
     args: EuiChangesetFormFieldComboBoxSignature['Args']
   ) {
     super(owner, args);

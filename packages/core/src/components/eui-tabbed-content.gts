@@ -4,6 +4,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { scheduleOnce } from '@ember/runloop';
+import type Owner from '@ember/owner';
 
 import findBy from 'ember-composable-helpers/helpers/find-by';
 import { eq } from 'ember-truth-helpers';
@@ -74,7 +75,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
     return this.args.autoFocus || 'initial';
   }
 
-  constructor(owner: unknown, args: EuiTabbedContentArgs) {
+  constructor(owner: Owner, args: EuiTabbedContentArgs) {
     super(owner, args);
 
     const { initialSelectedTab, selectedTab, tabs } = this.args;

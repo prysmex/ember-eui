@@ -4,6 +4,7 @@ import { helper } from '@ember/component/helper';
 import { concat, fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import type Owner from '@ember/owner';
 
 import pick from 'ember-composable-helpers/helpers/pick';
 import { and, eq, not } from 'ember-truth-helpers';
@@ -69,7 +70,7 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     millisecond: number;
   };
 
-  constructor(owner: unknown, args: DatetimePickerArgs) {
+  constructor(owner: Owner, args: DatetimePickerArgs) {
     super(owner, args);
 
     if (this.args.selected) {

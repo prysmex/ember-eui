@@ -10,6 +10,7 @@ import { later } from '@ember/runloop';
 import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import { EnsureSafeComponentHelper } from '@embroider/util';
+import type Owner from '@ember/owner';
 
 import randomId from '../-private/random-id.ts';
 import FormContext from './eui-changeset-form/context.gts';
@@ -95,7 +96,7 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
 
   @tracked hasSubmitted: boolean = false;
 
-  constructor(owner: unknown, args: EuiChangesetFormSignature['Args']) {
+  constructor(owner: Owner, args: EuiChangesetFormSignature['Args']) {
     super(owner, args);
     assert('Must provide a changeset', this.args.changeset);
   }

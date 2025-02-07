@@ -7,6 +7,7 @@ import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { scheduleOnce } from '@ember/runloop';
+import type Owner from '@ember/owner';
 
 import pick from 'ember-composable-helpers/helpers/pick';
 import { modifier } from 'ember-modifier';
@@ -182,7 +183,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     return [MarkdownTooltipPlugin.plugin, ...(this.args.uiPlugins || [])];
   }
 
-  constructor(owner: unknown, args: EuiMarkdownEditorArgs) {
+  constructor(owner: Owner, args: EuiMarkdownEditorArgs) {
     super(owner, args);
     this.markdownActions = new MarkdownActions(
       this.editorId,

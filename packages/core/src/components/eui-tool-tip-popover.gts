@@ -3,6 +3,7 @@ import { fn } from '@ember/helper';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
+import type Owner from '@ember/owner';
 
 import type { CommonArgs } from './common.ts';
 
@@ -26,7 +27,7 @@ export interface EuiTooltipPopoverSignature {
 export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignature> {
   popover: HTMLDivElement | null = null;
 
-  constructor(owner: unknown, args: EuiTooltipPopoverArgs) {
+  constructor(owner: Owner, args: EuiTooltipPopoverArgs) {
     super(owner, args);
     document.body.classList.add('euiBody-hasPortalContent');
     window.addEventListener('resize', this.updateDimensions);

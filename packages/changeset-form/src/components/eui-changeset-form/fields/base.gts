@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { assert } from '@ember/debug';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
+import type Owner from '@ember/owner';
 
 import type { BufferedChangeset } from 'ember-changeset/types';
 
@@ -25,7 +26,7 @@ export interface ValidationError {
 export default class ChangesetFormFieldsBase<
   T extends BaseSignature = BaseSignature
 > extends Component<T> {
-  constructor(owner: unknown, args: T['Args']) {
+  constructor(owner: Owner, args: T['Args']) {
     super(owner, args);
 
     assert(
@@ -39,7 +40,7 @@ export default class ChangesetFormFieldsBase<
     );
   }
 
-  get rowClasses() {
+  get rowClasses(): string {
     return this.args.rowClasses || '';
   }
 

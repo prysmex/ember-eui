@@ -54,14 +54,13 @@
     "ember-flatpickr": "^8.0.1",
     "ember-modifier": "^4.2.0",
     "ember-style-modifier": "^4.4.0",
-    "ember-svg-jar-updated": "^3.0.0",
-    "ember-template-imports": "^4.3.0",
+    "ember-svg-jar": "^2.6.0",
     "decorator-transforms": "^2.3.0",
     "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {
     "@ember-eui/core": "^11.0.3",
-    "@glimmer/component": "^1.1.2",
+    "@glimmer/component": "^2.0.0",
     "@glimmer/tracking": "^1.1.2",
     "ember-source": ">= 4.0.0"
   },
@@ -79,7 +78,7 @@
     "@embroider/addon-dev": "7.1.1",
     "@embroider/test-setup": "^4.0.0",
     "@eslint/js": "^9.19.0",
-    "@glimmer/component": "^1.1.2",
+    "@glimmer/component": "^2.0.0",
     "@glimmer/tracking": "^1.1.2",
     "@glint/core": "1.5.2",
     "@glint/environment-ember-loose": "1.5.2",
@@ -115,7 +114,6 @@
     "ember-cli": "~6.2.0",
     "ember-cli-clean-css": "^3.0.0",
     "ember-source": "~6.2.0",
-    "ember-template-imports": "^4.3.0",
     "ember-template-lint": "^6.1.0",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^9.1.0",

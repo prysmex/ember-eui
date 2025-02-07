@@ -6,6 +6,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { inject as service } from '@ember/service';
+import type Owner from '@ember/owner';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import queue from 'ember-composable-helpers/helpers/queue';
@@ -201,7 +202,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
     };
   }
 
-  constructor(owner: unknown, args: GlobalToastListArgs) {
+  constructor(owner: Owner, args: GlobalToastListArgs) {
     super(owner, args);
     this.scheduleAllToastsForDismissal();
   }

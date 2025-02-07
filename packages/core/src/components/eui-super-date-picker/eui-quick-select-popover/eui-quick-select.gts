@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import type Owner from '@ember/owner';
 
 import dateMath from '@elastic/datemath';
 import pick from 'ember-composable-helpers/helpers/pick';
@@ -49,7 +50,7 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
   @tracked timeValue: number;
   @tracked timeUnits: TimeUnitId;
 
-  constructor(owner: unknown, args: EuiQuickSelectArgs) {
+  constructor(owner: Owner, args: EuiQuickSelectArgs) {
     super(owner, args);
 
     const {

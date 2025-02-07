@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { later } from '@ember/runloop';
+import type Owner from '@ember/owner';
 
 import {
   buildValidationMessages,
@@ -71,11 +72,13 @@ export default class ValidatedFormFieldBase<
     this.isTouched = value;
   }
 
-  get customValidations() {
+  get customValidations(): {
+    validation(value: any, options?: Record<string, unknown>): boolean;
+  }[] {
     return this.args.customValidations || [];
   }
 
-  get rowClasses() {
+  get rowClasses(): string {
     return this.args.rowClasses || '';
   }
 
@@ -83,15 +86,15 @@ export default class ValidatedFormFieldBase<
     return this.args.rowExtra || {};
   }
 
-  get label() {
+  get label(): string {
     return this.args.label || '';
   }
 
-  get error() {
+  get error(): string[] {
     return this.args.error || [];
   }
 
-  get options() {
+  get options(): any[] {
     return this.args.options || [];
   }
 
@@ -116,7 +119,7 @@ export default class ValidatedFormFieldBase<
     return error;
   }
 
-  constructor(owner: unknown, args: T['Args']) {
+  constructor(owner: Owner, args: T['Args']) {
     super(owner, args);
     this.args.register?.(this as unknown as ComponentLike);
   }

@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import type Owner from '@ember/owner';
 
 import dateMath from '@elastic/datemath';
 import pick from 'ember-composable-helpers/helpers/pick';
@@ -45,7 +46,7 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
 
   roundUnit;
 
-  constructor(owner: unknown, args: RelativeTabArgs) {
+  constructor(owner: Owner, args: RelativeTabArgs) {
     super(owner, args);
 
     const parsed = parseRelativeParts(this.args.value);

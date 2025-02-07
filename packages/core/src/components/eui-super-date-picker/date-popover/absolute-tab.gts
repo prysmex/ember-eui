@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import type Owner from '@ember/owner';
 
 import dateMath from '@elastic/datemath';
 import moment from 'moment';
@@ -36,7 +37,7 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
   @tracked textInputValue: string;
   @tracked valueAsMoment: Moment | null;
 
-  constructor(owner: unknown, args: AbsoluteTabArgs) {
+  constructor(owner: Owner, args: AbsoluteTabArgs) {
     super(owner, args);
 
     const parsedValue = dateMath.parse(this.args.value, {

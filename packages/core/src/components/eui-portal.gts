@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { guidFor } from '@ember/object/internals';
 import { isBlank } from '@ember/utils';
+import type Owner from '@ember/owner';
 
 import { keysOf } from './common.ts';
 
@@ -33,7 +34,7 @@ export interface EuiPortalSignature {
 export default class EuiPortal extends Component<EuiPortalSignature> {
   @tracked portalNode!: HTMLElement;
 
-  constructor(owner: unknown, args: EuiPortalArgs) {
+  constructor(owner: Owner, args: EuiPortalArgs) {
     super(owner, args);
 
     const { insert } = this.args;

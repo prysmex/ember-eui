@@ -56,7 +56,7 @@ export default class ApplicationController extends Controller {
 
   initializeSidenav() {
     // uppermost node
-    const docsNode = this.docfy.nested.children.firstObject;
+    const docsNode = this.docfy.nested.children[0];
 
     const handlerFn = (id: NodeId) => {
       this.selectedItem = id;
@@ -95,8 +95,8 @@ export default class ApplicationController extends Controller {
 
         // add fake items based on page headings to simulate 'on this page' feature inside sidebar
         node.pages.forEach((page: Page) => {
-          let headings = page?.headings?.firstObject?.headings;
-          let item = nodeRoutes?.firstObject?.items?.find(
+          let headings = page?.headings?.[0]?.headings;
+          let item = nodeRoutes?.[0]?.items?.find(
             (item: Item) => item.name == page.title
           );
 
@@ -169,7 +169,7 @@ export default class ApplicationController extends Controller {
   }
 
   _getDocsNode(node: DocfyNode) {
-    return node.children?.firstObject;
+    return node.children?.[0];
   }
 
   filterSideNav(str: string, nodes: Item[], depth: number = 0): Item[] {

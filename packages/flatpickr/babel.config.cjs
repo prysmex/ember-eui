@@ -1,12 +1,17 @@
 'use strict';
 
-'use strict';
-
 module.exports = {
   presets: ['@babel/preset-typescript'],
   plugins: [
-    ['@babel/plugin-transform-typescript', { allowDeclareFields: true }],
-    'ember-cached-decorator-polyfill/babel-plugin',
+    [
+      '@babel/plugin-transform-typescript',
+      {
+        allExtensions: true,
+        onlyRemoveTypeImports: true,
+        allowDeclareFields: true
+      }
+    ],
+    '@embroider/addon-dev/template-colocation-plugin',
     [
       'babel-plugin-ember-template-compilation',
       {

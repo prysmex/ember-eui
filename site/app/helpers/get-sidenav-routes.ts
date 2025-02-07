@@ -1,8 +1,9 @@
 import Helper from '@ember/component/helper';
 import { inject as service } from '@ember/service';
+// import { humanize } from '@ember/string';
 
 const humanize = (s) => {
-  return str;
+  return s;
 };
 
 export type Heading = {
@@ -79,9 +80,9 @@ function getItems(
 
   items = [
     ...items,
-    ...docfyNode.pages.map((page) => {
+    ...(docfyNode.pages?.map((page) => {
       return getItemFromPage(page, clickHandler);
-    })
+    }) ?? [])
   ].sort(compareFunction);
 
   return {

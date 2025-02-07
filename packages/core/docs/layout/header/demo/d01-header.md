@@ -233,7 +233,7 @@ export default class DemoHeaderComponent extends Component {
       label: 'Default'
     }
   ];
-  @tracked space = this.spaces.firstObject
+  @tracked space = this.spaces[0];
 
   additionalSpaces = [
     {

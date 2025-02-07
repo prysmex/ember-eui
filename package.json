@@ -40,15 +40,7 @@
       ]
     },
     "overrides": {
-      "@ember/string": "^4.0.0",
-      "@ember/test-waiters": "^4.0.0",
-      "ember-cli-version-checker": "5.1.2",
-      "ember-cli-htmlbars": "^6.3.0",
-      "ember-cli-babel": "^8.2.0"
-    },
-    "patchedDependencies": {
-      "ember-modifier-manager-polyfill": "patches/ember-modifier-manager-polyfill.patch",
-      "ember-cli-version-checker": "patches/ember-cli-version-checker.patch"
+      "@ember/string": "^4.0.0"
     }
   },
   "packageManager": "pnpm@9.9.0"

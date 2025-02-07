@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 12.0.0
+
+### Major Changes
+
+- Update blueprints and everything basically to make it work with ember source 6.2.0
+
 ## 11.0.3
 
 ### Patch Changes

@@ -198,7 +198,7 @@ export default class ApplicationController extends Controller {
       });
 
       if (
-        curr.name.toLowerCase().indexOf(str?.toLowerCase()) > -1 ||
+        curr.name[0]?.toLowerCase().indexOf(str?.toLowerCase()) > -1 ||
         toAdd.items.length > 0
       ) {
         toAdd = {

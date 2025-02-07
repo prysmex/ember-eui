@@ -41,9 +41,7 @@
       ]
     },
     "overrides": {
-      "ember-source": "~5.8.0",
-      "@ember/string": "^4.0.0",
-      "ember-modifier": "^4.2.0"
+      "@ember/string": "^4.0.0"
     }
   },
   "packageManager": "pnpm@9.9.0"

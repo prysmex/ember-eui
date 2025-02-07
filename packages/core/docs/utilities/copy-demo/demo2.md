@@ -29,7 +29,7 @@
           aria-label='Copy text to clipboard'
           @color='text'
           @iconType='copy'
-          @onClick={{onClick}}
+          @onClick={{this.onClick}}
           {{on 'click' this.onClick}}
           {{on 'blur' (set this 'isTextCopied' false)}}
         />

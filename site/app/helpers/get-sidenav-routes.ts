@@ -1,10 +1,14 @@
 import Helper from '@ember/component/helper';
 import { inject as service } from '@ember/service';
-// import { humanize } from '@ember/string';
 
-const humanize = (s) => {
-  return s;
-};
+function humanize(str) {
+  console.log(str);
+  return str
+      .replace(/^[\s_]+|[\s_]+$/g, '')
+      .replace(/[_\s]+/g, ' ')
+      .replace(/[-\s]+/g, ' ')
+      .replace(/^[a-z]/, function(m) { return m.toUpperCase(); });
+}
 
 export type Heading = {
   headings: Heading[];
@@ -86,7 +90,7 @@ function getItems(
   ].sort(compareFunction);
 
   return {
-    name: humanize([docfyNode.label]),
+    name: humanize(docfyNode.label),
     id: `${parent}-${docfyNode.label}`,
     onClick:
       docfyNode.onClick ??
@@ -98,7 +102,7 @@ function getItems(
 function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
   return {
     id: `${page.url}`,
-    name: humanize([page.title]),
+    name: humanize(page.title), 
     onClick: clickHandler.bind(clickHandler, page.url),
     items: []
   };

@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { throttle } from '@ember/runloop';
 
-import { modifier } from 'ember-modifier';
+import { modifier as modBuilder } from 'ember-modifier';
 import { and, not, or } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
@@ -57,7 +57,7 @@ export type EuiCollapsibleNavArgs = {
   onClose: EuiFlyoutSignature['Args']['onClose'];
 };
 
-const triggerHandlersModifier = modifier(
+const triggerHandlersModifier = modBuilder(
   (
     element: Element,
     _pos,
@@ -81,7 +81,7 @@ const triggerHandlersModifier = modifier(
   }
 );
 
-const onWindowResizeModifier = modifier(
+const onWindowResizeModifier = modBuilder(
   (
     _ele: HTMLElement,
     _pos,

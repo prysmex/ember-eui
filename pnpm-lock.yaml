@@ -26,9 +26,6 @@ importers:
       '@changesets/cli':
         specifier: ^2.26.0
         version: 2.27.12
-      '@embroider/addon-shim':
-        specifier: ^1.8.9
-        version: 1.9.0
       '@glint/core':
         specifier: ^1.5.2
         version: 1.5.2(typescript@5.7.3)
@@ -304,7 +301,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(@babel/core@7.26.7)(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
       '@embroider/addon-shim':
-        specifier: ^1.8.9
+        specifier: ^1.9.0
         version: 1.9.0
       '@embroider/util':
         specifier: ^1.13.1
@@ -610,6 +607,9 @@ importers:
       '@ember/render-modifiers':
         specifier: ^2.1.0
         version: 2.1.0(@babel/core@7.26.7)(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      '@embroider/addon-shim':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@embroider/util':
         specifier: ^1.13.1
         version: 1.13.2(@babel/core@7.26.7)(@glint/environment-ember-loose@1.5.2(@glimmer/component@2.0.0)(@glint/template@1.5.2)(@types/ember__array@4.0.10(@babel/core@7.26.7))(@types/ember__component@4.0.22(@babel/core@7.26.7))(@types/ember__controller@4.0.12(@babel/core@7.26.7))(@types/ember__object@4.0.12(@babel/core@7.26.7))(@types/ember__routing@4.0.22(@babel/core@7.26.7))(ember-cli-htmlbars@6.3.0)(ember-modifier@4.2.0(@babel/core@7.26.7)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))))(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
@@ -836,6 +836,9 @@ importers:
       '@ember/render-modifiers':
         specifier: ^2.1.0
         version: 2.1.0(@babel/core@7.26.7)(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      '@embroider/addon-shim':
+        specifier: ^1.9.0
+        version: 1.9.0
       decorator-transforms:
         specifier: ^2.3.0
         version: 2.3.0(@babel/core@7.26.7)
@@ -1053,6 +1056,9 @@ importers:
       '@ember/render-modifiers':
         specifier: ^2.1.0
         version: 2.1.0(@babel/core@7.26.7)(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))
+      '@embroider/addon-shim':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@embroider/util':
         specifier: ^1.13.1
         version: 1.13.2(@babel/core@7.26.7)(@glint/environment-ember-loose@1.5.2(@glimmer/component@2.0.0)(@glint/template@1.5.2)(@types/ember__array@4.0.10(@babel/core@7.26.7))(@types/ember__component@4.0.22(@babel/core@7.26.7))(@types/ember__controller@4.0.12(@babel/core@7.26.7))(@types/ember__object@4.0.12(@babel/core@7.26.7))(@types/ember__routing@4.0.22(@babel/core@7.26.7))(ember-cli-htmlbars@6.3.0)(ember-modifier@4.2.0(@babel/core@7.26.7)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))))(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.97.1))

@@ -1,9 +1,7 @@
-import { isArray as isEmberArray } from '@ember/array';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { inject as service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
-import { isEqual } from '@ember/utils';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
 //@ts-expect-error
@@ -21,27 +19,7 @@ import EuiLoadingSpinner from '../eui-loading-spinner.gts';
 import EuiText from '../eui-text.gts';
 
 import type EuiConfigService from '../../services/eui-config';
-
-
-//This was extracted from ember-power-select v7.2.0, becuase it was removed in v8.0.0... or renamed to ember-power-select-
-function emberPowerSelectIsSelected([option, selected]: [any, any[]]/* , hash*/): boolean {
-  if (selected === undefined || selected === null) {
-    return false;
-  }
-
-  if (isEmberArray(selected)) {
-    for (let i = 0; i < selected.length; i++) {
-      if (isEqual(selected[i], option)) {
-        return true;
-      }
-    }
-
-    return false;
-  } else {
-    return isEqual(option, selected);
-  }
-}
-
+import emberPowerSelectIsEqual from 'ember-power-select/helpers/ember-power-select-is-equal';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @service declare euiConfig: EuiConfigService;
@@ -143,10 +121,7 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
                   (eq opt @select.highlighted)
                   ' euiFilterSelectItem-isFocused'
                 }}"
-              aria-selected="{{emberPowerSelectIsSelected
-                opt
-                @select.selected
-              }}"
+              aria-selected="{{emberPowerSelectIsEqual opt @select.selected}}"
               aria-disabled={{if opt.disabled "true"}}
               aria-current="{{eq opt @select.highlighted}}"
               data-option-index="{{index}}"

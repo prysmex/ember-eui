@@ -1,6 +1,5 @@
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { scheduleOnce } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
 import { isBlank } from '@ember/utils';
@@ -103,7 +102,6 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
         value={{@select.searchText}}
         aria-controls={{@listboxId}}
-        style={{this.triggerMultipleInputStyle}}
         disabled={{@select.disabled}}
         tabindex={{@tabindex}}
         form="power-select-fake-form"
@@ -111,8 +109,6 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         {{on "blur" @onBlur}}
         {{on "input" this.handleInput}}
         {{on "keydown" this.handleKeydown}}
-        {{!@glint-expect-error}}
-        {{didInsert this.storeInputStyles}}
       />
     </div>
   </template>

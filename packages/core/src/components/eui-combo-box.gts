@@ -4,6 +4,7 @@ import { isArray } from '@ember/array';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { isEqual } from '@ember/utils';
+import 'ember-basic-dropdown/styles';
 
 import optional from 'ember-composable-helpers/helpers/optional';
 import pipe from 'ember-composable-helpers/helpers/pipe';

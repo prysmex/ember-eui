@@ -99,7 +99,6 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
                 {{this.maybePlaceholder}}
               </p>
             {{/if}}
-
             {{#let
               (component
                 EuiComboBoxTriggerInput
@@ -127,7 +126,7 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
                   (EnsureSafeComponentHelper @placeholderComponent)
                   select=@select
                   placeholder=@placeholder
-                  isMutlipleWithSearch=true
+                  isMultipleWithSearch=true
                   inputComponent=InputComponent
                   displayPlaceholder=(and
                     (not @select.searchText) (not @select.selected)

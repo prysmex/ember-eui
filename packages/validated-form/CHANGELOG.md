@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 12.0.1
+
+### Patch Changes
+
+- Fix eui-combo-box
+- Updated dependencies
+  - @ember-eui/core@12.0.1
+
 ## 12.0.0
 
 ### Major Changes

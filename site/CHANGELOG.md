@@ -1,5 +1,11 @@
 # site
 
+## 12.0.1
+
+### Patch Changes
+
+- Fix eui-combo-box
+
 ## 12.0.0
 
 ### Major Changes

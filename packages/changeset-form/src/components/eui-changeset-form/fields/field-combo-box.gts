@@ -1,11 +1,11 @@
 import { assert } from '@ember/debug';
 import { action } from '@ember/object';
-import { EuiComboBox,EuiFormRow } from '@ember-eui/core/components';
+import { EuiComboBox, EuiFormRow } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 import type Owner from '@ember/owner';
 
-import optional from 'ember-composable-helpers/helpers/optional';
-import queue from 'ember-composable-helpers/helpers/queue';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 
 import randomId from '../../../-private/random-id.ts';
 import Base from './base.gts';

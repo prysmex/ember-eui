@@ -7,13 +7,15 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
 import type Owner from '@ember/owner';
 
-import queue from 'ember-composable-helpers/helpers/queue';
+import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import argOrDefault, {
+  argOrDefaultDecorator
+} from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
 import EuiButtonIcon from './eui-button-icon.gts';

@@ -22,7 +22,6 @@ export default {
     addon.appReexports([
       'components/**/*.js',
       'helpers/**/*.js',
-      'utils/**/*.js',
       'modifiers/**/*.js',
       'services/**/*.js'
     ]),
@@ -31,7 +30,6 @@ export default {
 
     babel({ extensions, babelHelpers: 'bundled' }),
 
-    
     addon.hbs(),
     addon.gjs(),
     addon.declarations('declarations'),

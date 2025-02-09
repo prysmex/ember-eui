@@ -2,9 +2,9 @@ import Component from '@glimmer/component';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { element } from 'ember-element-helper';
-import { and,eq, not, or } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
 import EuiButtonEmpty from '../components/eui-button-empty.gts';

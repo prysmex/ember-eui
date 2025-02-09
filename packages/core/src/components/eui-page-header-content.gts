@@ -2,11 +2,13 @@ import Component from '@glimmer/component';
 import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import argOrDefault, {
+  argOrDefaultDecorator
+} from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import inlineStyles from '../helpers/inline-styles.ts';
 import useState from '../helpers/use-state.ts';

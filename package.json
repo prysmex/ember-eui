@@ -1,10 +1,6 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "site"
-  ],
   "scripts": {
     "build": "pnpm turbo build",
     "build:site": "pnpm turbo build --filter site",
@@ -31,7 +27,7 @@
     "typescript": "^5.3.3"
   },
   "volta": {
-    "node": "18.0.0"
+    "node": "18.12.0"
   },
   "pnpm": {
     "peerDependencyRules": {

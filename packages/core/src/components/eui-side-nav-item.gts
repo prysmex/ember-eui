@@ -1,8 +1,8 @@
 import { on } from '@ember/modifier';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import add from 'ember-math-helpers/helpers/add';
-import { and,eq, gt, not, or } from 'ember-truth-helpers';
+import { and, eq, gt, not, or } from 'ember-truth-helpers';
 
 import Button from '../components/eui-side-nav-item/button.gts';
 import classNames from '../helpers/class-names.ts';

@@ -1,8 +1,8 @@
 import { on } from '@ember/modifier';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
-import optional from 'ember-composable-helpers/helpers/optional';
-import queue from 'ember-composable-helpers/helpers/queue';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, or } from 'ember-truth-helpers';
@@ -13,7 +13,8 @@ import EuiIcon from './eui-icon.gts';
 
 import type {
   colorMapping,
-  sizeMapping} from '../utils/css-mappings/eui-list-group-item.ts';
+  sizeMapping
+} from '../utils/css-mappings/eui-list-group-item.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { ComponentLike } from '@glint/template';

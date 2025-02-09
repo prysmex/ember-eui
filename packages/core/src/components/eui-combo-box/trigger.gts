@@ -4,7 +4,7 @@ import { on } from '@ember/modifier';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
 import { and, not, or } from 'ember-truth-helpers';
 

@@ -6,7 +6,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import type Owner from '@ember/owner';
 
-import pick from 'ember-composable-helpers/helpers/pick';
+import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
 import { and, eq, not } from 'ember-truth-helpers';
 import moment from 'moment';
 

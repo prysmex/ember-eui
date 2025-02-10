@@ -2,9 +2,6 @@ import { on } from '@ember/modifier';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
-import { element } from 'ember-element-helper';
-import set from 'ember-set-helper/helpers/set';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';

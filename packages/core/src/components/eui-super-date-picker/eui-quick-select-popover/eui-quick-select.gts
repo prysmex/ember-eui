@@ -5,7 +5,7 @@ import { action } from '@ember/object';
 import type Owner from '@ember/owner';
 
 import dateMath from '@elastic/datemath';
-import pick from 'ember-composable-helpers/helpers/pick';
+import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
 import set from 'ember-set-helper/helpers/set';
 import { lte } from 'ember-truth-helpers';
 import moment from 'moment';

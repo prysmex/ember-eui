@@ -1,6 +1,6 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { modifier } from 'ember-modifier';
 import { and, not, or } from 'ember-truth-helpers';
 

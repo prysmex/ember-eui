@@ -6,8 +6,8 @@ import EuiComboBox from '@ember-eui/core/components/eui-combo-box';
 import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import optional from 'ember-composable-helpers/helpers/optional';
-import queue from 'ember-composable-helpers/helpers/queue';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import { not } from 'ember-truth-helpers';
 
 import randomId from '../../-private/random-id.ts';

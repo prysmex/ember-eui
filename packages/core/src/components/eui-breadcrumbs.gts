@@ -6,7 +6,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { throttle } from '@ember/runloop';
 import type Owner from '@ember/owner';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import sub from 'ember-math-helpers/helpers/sub';
 import { modifier } from 'ember-modifier';
 import { and, eq, not } from 'ember-truth-helpers';

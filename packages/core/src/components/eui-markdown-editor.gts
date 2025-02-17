@@ -9,7 +9,7 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { scheduleOnce } from '@ember/runloop';
 import type Owner from '@ember/owner';
 
-import pick from 'ember-composable-helpers/helpers/pick';
+import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
 import { modifier } from 'ember-modifier';
 import set from 'ember-set-helper/helpers/set';
 import style from 'ember-style-modifier/modifiers/style';
@@ -23,7 +23,10 @@ import validatableControl from '../modifiers/validatable-control.ts';
 import MarkdownActions, {
   insertText
 } from '../utils/markdown/markdown-actions.ts';
-import { MODE_EDITING, MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
+import {
+  MODE_EDITING,
+  MODE_VIEWING
+} from '../utils/markdown/markdown-modes.ts';
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins
@@ -159,13 +162,15 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   @tracked pluginEditorPlugin?: EuiMarkdownEditorUiPlugin;
 
   // Defaults
-  @argOrDefaultDecorator(defaultParsingPlugins) declare parsingPluginList: typeof defaultParsingPlugins;
+  @argOrDefaultDecorator(defaultParsingPlugins)
+  declare parsingPluginList: typeof defaultParsingPlugins;
 
   @argOrDefaultDecorator(250) declare height: number | string;
   @argOrDefaultDecorator(500) declare maxHeight: number | string;
   @argOrDefaultDecorator(true) declare autoExpandPreview: boolean;
 
-  @argOrDefaultDecorator(defaultProcessingPlugins) declare processingPluginList: typeof defaultProcessingPlugins;
+  @argOrDefaultDecorator(defaultProcessingPlugins)
+  declare processingPluginList: typeof defaultProcessingPlugins;
 
   @tracked selectedNode: Node | null = null;
   @tracked editorId = this.args.editorId ?? guidFor({});

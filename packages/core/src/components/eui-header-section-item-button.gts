@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
@@ -13,9 +13,7 @@ import EuiIcon from './eui-icon.gts';
 import EuiNotificationBadge from './eui-notification-badge.gts';
 import EuiShowFor from './eui-show-for.gts';
 
-import type {
-  colorMapping,
-} from '../utils/css-mappings/eui-notification-badge.ts';
+import type { colorMapping } from '../utils/css-mappings/eui-notification-badge.ts';
 import type { EuiHideForBreakpoints } from './eui-hide-for';
 
 const keyframes: Keyframe[] = [

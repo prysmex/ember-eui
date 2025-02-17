@@ -5,7 +5,7 @@ import { action } from '@ember/object';
 import type Owner from '@ember/owner';
 
 import dateMath from '@elastic/datemath';
-import pick from 'ember-composable-helpers/helpers/pick';
+import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
 
 import EuiFieldNumber from '../../eui-field-number.gts';
 import EuiFieldText from '../../eui-field-text.gts';

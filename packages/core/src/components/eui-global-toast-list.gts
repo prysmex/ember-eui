@@ -8,8 +8,8 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { inject as service } from '@ember/service';
 import type Owner from '@ember/owner';
 
-import optional from 'ember-composable-helpers/helpers/optional';
-import queue from 'ember-composable-helpers/helpers/queue';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';

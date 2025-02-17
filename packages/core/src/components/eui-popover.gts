@@ -10,7 +10,7 @@ import { cancel, later, scheduleOnce } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
 import type Owner from '@ember/owner';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, not, or } from 'ember-truth-helpers';
@@ -29,7 +29,10 @@ import {
   anchorPositionMapping,
   displayMapping
 } from '../utils/css-mappings/eui-popover.ts';
-import { findPopoverPosition, getElementZIndex } from '../utils/popover/index.ts';
+import {
+  findPopoverPosition,
+  getElementZIndex
+} from '../utils/popover/index.ts';
 import {
   getTransitionTimings,
   getWaitDuration,

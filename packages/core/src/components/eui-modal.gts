@@ -1,7 +1,7 @@
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import preventDefault from 'ember-event-helpers/helpers/prevent-default';
 import stopPropagation from 'ember-event-helpers/helpers/stop-propagation';
 import { focusTrap } from 'ember-focus-trap';

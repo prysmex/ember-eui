@@ -6,9 +6,9 @@ import { inject as service } from '@ember/service';
 import { isEqual } from '@ember/utils';
 import 'ember-basic-dropdown/styles';
 
-import optional from 'ember-composable-helpers/helpers/optional';
-import pipe from 'ember-composable-helpers/helpers/pipe';
-import queue from 'ember-composable-helpers/helpers/queue';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import pipe from '@nullvoxpopuli/ember-composable-helpers/helpers/pipe';
+import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import PowerSelectMultiple from 'ember-power-select/components/power-select-multiple';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, not } from 'ember-truth-helpers';
@@ -145,10 +145,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   get searchMessage() {
     return (
       this.args.searchMessage ||
-      this.euiI18n.lookupToken(
-        'euiComboBox.searchMessage',
-        'Type to search'
-      )
+      this.euiI18n.lookupToken('euiComboBox.searchMessage', 'Type to search')
     );
   }
 

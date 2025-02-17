@@ -2,7 +2,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import noop from 'ember-composable-helpers/helpers/noop';
+import noop from '@nullvoxpopuli/ember-composable-helpers/helpers/noop';
 import { and, eq, notEq } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';

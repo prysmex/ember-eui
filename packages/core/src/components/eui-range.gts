@@ -6,10 +6,12 @@ import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import { later } from '@ember/runloop';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { and, eq, not } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import argOrDefault, {
+  argOrDefaultDecorator
+} from '../helpers/arg-or-default.ts';
 import castTo from '../helpers/cast-to.ts';
 import classNames from '../helpers/class-names.ts';
 import { isWithinRange } from '../utils/number/index.ts';

@@ -2,8 +2,8 @@ import { concat } from '@ember/helper';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import optional from 'ember-composable-helpers/helpers/optional';
-import queue from 'ember-composable-helpers/helpers/queue';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import { and } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';

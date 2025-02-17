@@ -6,7 +6,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { scheduleOnce } from '@ember/runloop';
 import type Owner from '@ember/owner';
 
-import findBy from 'ember-composable-helpers/helpers/find-by';
+import findBy from '@nullvoxpopuli/ember-composable-helpers/helpers/find-by';
 import { eq } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';

@@ -30,7 +30,6 @@ export default {
 
     babel({ extensions, babelHelpers: 'bundled' }),
 
-    
     addon.hbs(),
     addon.gjs(),
     addon.declarations('declarations'),

@@ -1,7 +1,7 @@
 import { hash } from '@ember/helper';
 import { fn } from '@ember/helper';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 
 import classNames from '../helpers/class-names.ts';
 import EuiBadge from './eui-badge.gts';

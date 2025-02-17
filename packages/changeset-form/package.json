@@ -53,7 +53,7 @@
     "@embroider/util": "^1.13.1",
     "@ember/render-modifiers": "^2.1.0",
     "ember-modifier": "^4.2.0",
-    "ember-composable-helpers": "^5.0.0",
+    "@nullvoxpopuli/ember-composable-helpers": "^5.2.8",
     "ember-svg-jar": "^2.6.0",
     "ember-truth-helpers": "^4.0.3",
     "@glint/template": "1.5.2",

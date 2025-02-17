@@ -3,7 +3,7 @@ import { cached } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import unified from 'unified';
 
 import {
@@ -14,7 +14,8 @@ import { toDOM } from '../utils/markdown/plugins/to-dom.ts';
 
 import type {
   EuiMarkdownAstNodePosition,
-  RehypeNode} from '../utils/markdown/markdown-types';
+  RehypeNode
+} from '../utils/markdown/markdown-types';
 import type { Processor } from 'unified';
 
 export type Replacer = (
@@ -83,7 +84,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     } catch (e) {
       console.warn(e);
     }
-    
+
     return null;
   }
 

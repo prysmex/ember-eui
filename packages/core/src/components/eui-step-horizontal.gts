@@ -1,6 +1,6 @@
 import { on } from '@ember/modifier';
 
-import optional from 'ember-composable-helpers/helpers/optional';
+import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';

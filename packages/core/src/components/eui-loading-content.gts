@@ -1,6 +1,3 @@
-import repeat from '@nullvoxpopuli/ember-composable-helpers/helpers/repeat';
-import { gt, lt } from 'ember-truth-helpers';
-
 import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
@@ -16,10 +13,26 @@ export interface EuiLoadingContentSignature {
   };
 }
 
+const repeat = (count: number) => Array.from({ length: count });
+
+const getLength = (lines: number | undefined) => {
+  if (lines === undefined) {
+    return 1;
+  }
+
+  if (lines > 10) {
+    return 10;
+  } else if (lines < 1) {
+    return 1;
+  } else {
+    return lines;
+  }
+};
+
 const EuiLoadingContent: TemplateOnlyComponent<EuiLoadingContentSignature> =
   <template>
     <span class="euiLoadingContent" ...attributes>
-      {{#each (repeat (if (gt @lines 10) 10 (if (lt @lines 1) 1 @lines)))}}
+      {{#each (repeat (getLength @lines))}}
         <span
           class={{classNames
             "euiLoadingContent__singleLine"

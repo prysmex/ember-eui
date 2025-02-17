@@ -188,13 +188,19 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
           {{/each}}
         </EuiTabs>
         {{#let (findBy "id" this.selectedTab.id @tabs) as |currentTab|}}
-          <div role="tabpanel" id={{rootId}} aria-labelledby={{currentTab.id}}>
-            {{#if (has-block "selectedTabContent")}}
-              {{yield currentTab to="selectedTabContent"}}
-            {{else}}
-              {{currentTab.content}}
-            {{/if}}
-          </div>
+          {{#if currentTab}}
+            <div
+              role="tabpanel"
+              id={{rootId}}
+              aria-labelledby={{currentTab.id}}
+            >
+              {{#if (has-block "selectedTabContent")}}
+                {{yield currentTab to="selectedTabContent"}}
+              {{else}}
+                {{currentTab.content}}
+              {{/if}}
+            </div>
+          {{/if}}
         {{/let}}
       </div>
     {{/let}}

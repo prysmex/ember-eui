@@ -2,7 +2,6 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import noop from '@nullvoxpopuli/ember-composable-helpers/helpers/noop';
 import { and, eq, notEq } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
@@ -37,6 +36,16 @@ export interface EuiButtonGroupButtonSignature {
     onChange: (id: string, value?: string) => void;
   };
 }
+
+const handleClick = (
+  isNotLabel: boolean,
+  onChange: (id: string, value?: string) => void,
+  id: string
+) => {
+  if (isNotLabel) {
+    onChange(id);
+  }
+};
 
 const EuiButtonGroupButton: TemplateOnlyComponent<EuiButtonGroupButtonSignature> =
   <template>
@@ -78,7 +87,7 @@ const EuiButtonGroupButton: TemplateOnlyComponent<EuiButtonGroupButtonSignature>
             for={{if (eq element "label") newId}}
             id={{if isNotLabel newId}}
             title={{innerText}}
-            {{on "click" (if isNotLabel (fn @onChange @id) (noop))}}
+            {{on "click" (fn handleClick isNotLabel @onChange @id)}}
             {{didInsert setInnerTextRef}}
             ...attributes
           >

@@ -7,7 +7,6 @@ import { isEqual } from '@ember/utils';
 import 'ember-basic-dropdown/styles';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import pipe from '@nullvoxpopuli/ember-composable-helpers/helpers/pipe';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import PowerSelectMultiple from 'ember-power-select/components/power-select-multiple';
 import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
@@ -153,7 +152,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     {{! @glint-nocheck: not typesafe yet }}
     <PowerSelectMultiple
       ...attributes
-      @onChange={{pipe this.onChange @onChange}}
+      @onChange={{this.onChange}}
       @onFocus={{@onFocus}}
       @onBlur={{@onBlur}}
       @onOpen={{@onOpen}}
@@ -350,7 +349,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       return selected.length > 0 ? [selected[selected.length - 1]] : [];
     }
 
-    return selected;
+    this.args.onChange(selected);
   }
 
   @action

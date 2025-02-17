@@ -1,13 +1,15 @@
 import { concat } from '@ember/helper';
 
-import objectAt from '@nullvoxpopuli/ember-composable-helpers/helpers/object-at';
-import without from '@nullvoxpopuli/ember-composable-helpers/helpers/without';
-
 import randomId from '../-private/random-id.ts';
 import EuiAccordion from './eui-accordion.gts';
 import EuiText from './eui-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+const objectAt = <T,>(pos: number, array: T[]) => array[pos];
+const without = <T,>(obj: T, array: T[]) => {
+  return array.filter((item) => item !== obj);
+};
 
 export interface EuiNotificationEventMessagesSignature {
   Element: HTMLDivElement;

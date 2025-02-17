@@ -78,3 +78,5 @@ export const parseTimeParts = (start: string, end: string): QuickSelect => {
 
   return results;
 };
+
+export default parseTimeParts;

@@ -57,3 +57,5 @@ export function isOutOfBounds(
     (maxDate && day.isAfter(maxDate, 'day'))
   );
 }
+
+export default isOutOfBounds;

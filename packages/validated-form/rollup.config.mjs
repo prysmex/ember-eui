@@ -18,11 +18,7 @@ export default {
       'template-registry.js',
       '**/*.cjs'
     ]),
-    addon.appReexports([
-      'components/**/*.js',
-      'utils/**/*.js',
-      'validators/**/*.js',
-    ]),
+    addon.appReexports(['components/**/*.js']),
     addon.dependencies(),
     babel({
       extensions: ['.js', '.gjs', '.ts', '.gts'],

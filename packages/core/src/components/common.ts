@@ -57,3 +57,6 @@ export type DistributivePick<T, K extends UnionKeys<T>> = T extends any
 export type DistributiveOmit<T, K extends UnionKeys<T>> = T extends any
   ? Omit<T, Extract<keyof T, K>>
   : never;
+
+
+export default keysOf;

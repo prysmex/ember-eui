@@ -19,9 +19,11 @@ export interface EuiDescribedFormGroupSignature {
     titleTagName?: EuiTitleSignature['Args']['tagName'];
     fieldFlexItemProps?: {
       grow?: EuiFlexItemSignature['Args']['grow'];
+      class?: string;
     };
     descriptionFlexItemProps?: {
       grow?: EuiFlexItemSignature['Args']['grow'];
+      class?: string;
     };
   };
   Blocks: {
@@ -42,7 +44,10 @@ const EuiDescribedFormGroup: TemplateOnlyComponent<EuiDescribedFormGroupSignatur
       ...attributes
     >
       <EuiFlexGroup @gutterSize={{argOrDefault @gutterSize "l"}}>
-        <EuiFlexItem @grow={{@descriptionFlexItemProps.grow}}>
+        <EuiFlexItem
+          @grow={{@descriptionFlexItemProps.grow}}
+          class={{@descriptionFlexItemProps.class}}
+        >
           <EuiTitle
             class="euiDescribedFormGroup__title"
             @size={{@titleSize}}
@@ -61,6 +66,7 @@ const EuiDescribedFormGroup: TemplateOnlyComponent<EuiDescribedFormGroupSignatur
         <EuiFlexItem
           class={{classNames
             "euiDescribedFormGroup__fields"
+            @fieldFlexItemProps.class
             componentName="EuiDescribedFormGroup"
             paddingSize=(argOrDefault @titleSize "xs")
           }}

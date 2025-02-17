@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 12.0.2
+
+### Patch Changes
+
+- Fix build for vite apps
+
 ## 12.0.1
 
 ### Patch Changes

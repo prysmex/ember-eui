@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 12.0.2
+
+### Patch Changes
+
+- Fix build for vite apps
+- Updated dependencies
+  - @ember-eui/core@12.0.2
+
 ## 12.0.1
 
 ### Patch Changes

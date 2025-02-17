@@ -45,3 +45,5 @@ export const ValidatedFormDefaultTheme: IValidatedFormTheme = {
   FieldSwitch: FieldSwitchComponent,
   FieldMarkdownEditor: FieldMarkdownEditorComponent
 };
+
+export default ValidatedFormDefaultTheme;

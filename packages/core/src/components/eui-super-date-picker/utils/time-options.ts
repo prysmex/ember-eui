@@ -215,3 +215,5 @@ export const useI18nTimeOptions = (euiI18nService: EuiI18n): TimeOptions => {
     commonDurationRanges
   };
 };
+
+export default useI18nTimeOptions;

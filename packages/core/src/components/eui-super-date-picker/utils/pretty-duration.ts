@@ -147,3 +147,5 @@ export const showPrettyDuration = (
 
   return isRelativeToNow(timeFrom, timeTo);
 };
+
+export default useRelativeDurationI18n;

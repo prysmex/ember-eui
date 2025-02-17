@@ -192,3 +192,5 @@ export function getDateMode(value: ShortDate) {
 
   return DATE_MODES.ABSOLUTE;
 }
+
+export default useFormatTimeString;

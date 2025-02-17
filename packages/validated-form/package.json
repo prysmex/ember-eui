@@ -155,12 +155,7 @@
       "./components/validated-form/field-select.js": "./dist/_app_/components/validated-form/field-select.js",
       "./components/validated-form/field-switch.js": "./dist/_app_/components/validated-form/field-switch.js",
       "./components/validated-form/field-text-area.js": "./dist/_app_/components/validated-form/field-text-area.js",
-      "./components/validated-form/field-text.js": "./dist/_app_/components/validated-form/field-text.js",
-      "./utils/build-validation-messages.js": "./dist/_app_/utils/build-validation-messages.js",
-      "./utils/get-messages.js": "./dist/_app_/utils/get-messages.js",
-      "./utils/validation-errors.js": "./dist/_app_/utils/validation-errors.js",
-      "./utils/with-defaults.js": "./dist/_app_/utils/with-defaults.js",
-      "./validators/messages.js": "./dist/_app_/validators/messages.js"
+      "./components/validated-form/field-text.js": "./dist/_app_/components/validated-form/field-text.js"
     }
   },
   "volta": {

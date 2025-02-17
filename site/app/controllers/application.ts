@@ -5,9 +5,7 @@ import { inject as service } from '@ember/service';
 
 import { scrollToHash } from 'ember-url-hash-polyfill';
 
-import {
-  getSidenavRoutes
-} from '../helpers/get-sidenav-routes';
+import { getSidenavRoutes } from '../helpers/get-sidenav-routes';
 
 // import EuiSideNavItemButton from '@ember-eui/core/components/eui-side-nav-item/button';
 import type {
@@ -39,10 +37,9 @@ export default class ApplicationController extends Controller {
     this.initializeSidenav();
 
     this.router.on('routeDidChange', () => {
-      //@ts-expect-error
       this.selectedItem = this.router.location.location.pathname;
     });
-    //@ts-expect-error
+
     this.selectedItem = this.router.location.location.pathname;
   }
 
@@ -173,7 +170,6 @@ export default class ApplicationController extends Controller {
   }
 
   filterSideNav(str: string, nodes: Item[], depth: number = 0): Item[] {
-    //@ts-ignore
     return nodes.reduce<Item[]>((acum, curr) => {
       if (depth === 0) {
         const foundItems = this.filterSideNav(str, curr.items, depth + 1);
@@ -231,7 +227,6 @@ export default class ApplicationController extends Controller {
   };
 
   get currentVersion() {
-    //@ts-ignore
     const config = getOwner(this).resolveRegistration('config:environment');
 
     if (config.environment === 'development') return 'Local';

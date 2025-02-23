@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 12.0.3
+
+### Patch Changes
+
+- releasing changes from v8
+- Updated dependencies
+  - @ember-eui/core@12.0.3
+
 ## 12.0.2
 
 ### Patch Changes
@@ -187,6 +195,7 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+
 ## 8.0.46
 
 ### Patch Changes

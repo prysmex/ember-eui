@@ -1,5 +1,11 @@
 # site
 
+## 8.0.46
+
+### Patch Changes
+
+- fix types
+
 ## 8.0.45
 
 ### Patch Changes

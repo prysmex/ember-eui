@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.46
+
+### Patch Changes
+
+- fix types
+- Updated dependencies
+  - @ember-eui/core@8.0.46
+
 ## 8.0.45
 
 ### Patch Changes

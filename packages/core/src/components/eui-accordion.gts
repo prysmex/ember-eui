@@ -3,7 +3,6 @@ import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
 
 import queue from 'ember-composable-helpers/helpers/queue';
@@ -168,7 +167,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
   }
 
   setChildContentHeight = () => {
-    const { forceState } = this.args;
+    let forceState = this.args.forceState;
 
     requestAnimationFrame(() => {
       const height =
@@ -289,6 +288,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                 tabindex="-1"
                 role="region"
               >
+                {{(this.setChildContentHeight)}}
                 <div
                   class={{classNames
                     (if this.isLoading "euiAccordion__children-isLoading")
@@ -298,7 +298,6 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                     (queue (set this "childContent") this.setChildContentHeight)
                   }}
                   {{resizeObserver onResize=this.setChildContentHeight}}
-                  {{didUpdate this.setChildContentHeight @forceState}}
                 >
                   {{#if (and this.isLoading this.isLoadingMessage)}}
                     <EuiLoadingSpinner class="euiAccordion__spinner" />

@@ -13,7 +13,7 @@ export interface EuiStepSignature {
   Args: {
     step: number;
     title: string;
-    status: 'incomplete' | 'complete' | 'disabled';
+    status?: 'incomplete' | 'complete' | 'disabled';
     titleSize?: Exclude<EuiTitleSignature['Args']['size'], 'xxxs' | 'xxs' | 'l'>;
     headingElement?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
   };

@@ -2,9 +2,7 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiStepsSignature {
   Element: HTMLDivElement;
-  Args: {
-    steps: [];
-  };
+  Args: {};
   Blocks: {
     default: [];
   };

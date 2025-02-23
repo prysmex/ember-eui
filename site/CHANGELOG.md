@@ -117,6 +117,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.46
+
+### Patch Changes
+
+- fix types
 
 ## 8.0.45
 

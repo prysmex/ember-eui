@@ -44,7 +44,7 @@ export interface EuiFormRowSignature {
     label: [string?];
     field: [];
     errors: [string?];
-    helpText: [];
+    helpText: [string?];
   };
 }
 
@@ -179,7 +179,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> =
           {{#if (or @helpText hasHelpTextBlock)}}
             {{#if hasHelpTextBlock}}
               <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
-                {{yield to="helpText"}}
+                {{yield @helpText to="helpText"}}
               </EuiFormHelpText>
             {{else}}
               <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>

@@ -29,6 +29,7 @@ export interface FieldRadioGroupSignature {
     };
   Blocks: {
     label: [...EuiFormRowSignature['Blocks']['label']];
+    helpText: [...EuiFormRowSignature['Blocks']['helpText']];
   };
 }
 
@@ -93,6 +94,7 @@ export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -118,6 +120,9 @@ export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase
             ...attributes
           />
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

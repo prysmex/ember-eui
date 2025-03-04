@@ -10,13 +10,17 @@ order: 2
     <EuiFormRow
       @label='Some Input'
       @id={{inputId}}
-      @helpText="here's some help text"
     >
+    <:field>
       <EuiFieldNumber
         @value={{this.num}}
         @id={{inputId}}
         {{on 'input' (pick 'target.value' (set this 'num'))}}
       />
+    </:field>
+    <:helpText>
+      <EuiMarkdownFormat @value="here's some help text rendered as markdown **Some bold text** [google!](https://google.com)" @shouldIncludeDefaultRootClasses={{false}} />
+    </:helpText>
     </EuiFormRow>
   {{/let}}
   {{#let (unique-id) as |inputId|}}

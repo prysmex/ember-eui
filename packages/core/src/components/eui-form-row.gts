@@ -3,7 +3,7 @@ import { fn } from '@ember/helper';
 import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import { and, eq, gt,not, or } from 'ember-truth-helpers';
+import { and, eq, gt, not, or } from 'ember-truth-helpers';
 import isArray from 'ember-truth-helpers/helpers/is-array';
 
 import randomId from '../-private/random-id';
@@ -30,6 +30,7 @@ export interface EuiFormRowSignature {
     hasEmptyLabelSpace?: boolean;
     hasChildLabel?: boolean;
     isFakeLabelBlock?: boolean;
+    isFakeHelpTextBlock?: boolean;
     helpText?: string;
     error?: string | string[] | null;
     errorClasses?: string;
@@ -55,7 +56,8 @@ export function startsWith(
 
 const startWith = helper(startsWith);
 
-const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
+const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> =
+  <template>
   {{#let
     (classNames
       "euiFormRow"
@@ -74,7 +76,8 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
     (argOrDefault @id (randomId))
     (argOrDefault @hasChildLabel true)
     (and (not (argOrDefault @isFakeLabelBlock false)) (has-block "label"))
-    as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel hasLabelBlock|
+    (and (not (argOrDefault @isFakeHelpTextBlock false)) (has-block "helpText"))
+    as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel hasLabelBlock hasHelpTextBlock|
   }}
     {{#if (eq @legendType "legend")}}
       <fieldset class={{classes}} id="{{rowId}}-row" ...attributes>
@@ -173,8 +176,8 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
               {{/each}}
             {{/if}}
           {{/if}}
-          {{#if (or @helpText (has-block "helpText"))}}
-            {{#if (has-block "helpText")}}
+          {{#if (or @helpText hasHelpTextBlock)}}
+            {{#if hasHelpTextBlock}}
               <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
                 {{yield to="helpText"}}
               </EuiFormHelpText>

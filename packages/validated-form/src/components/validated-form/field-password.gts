@@ -30,6 +30,7 @@ export interface FieldPasswordSignature {
     };
   Blocks: {
     label: [...EuiFormRowSignature['Blocks']['label']];
+    helpText: [...EuiFormRowSignature['Blocks']['helpText']];
     prepend: [...EuiFieldPasswordSignature['Blocks']['prepend']];
     append: [...EuiFieldPasswordSignature['Blocks']['append']];
   };
@@ -53,6 +54,7 @@ export default class ValidatedFormFieldPassword extends ValidatedFormFieldBase<F
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -90,6 +92,9 @@ export default class ValidatedFormFieldPassword extends ValidatedFormFieldBase<F
             </:append>
           </EuiFieldPassword>
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

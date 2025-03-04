@@ -62,6 +62,7 @@ export default class ValidatedFormFieldMarkdownEditor extends ValidatedFormField
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -105,6 +106,9 @@ export default class ValidatedFormFieldMarkdownEditor extends ValidatedFormField
             />
           {{/let}}
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

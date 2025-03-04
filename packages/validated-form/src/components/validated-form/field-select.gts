@@ -29,6 +29,7 @@ export interface FieldSelectSignature {
     };
   Blocks: {
     label: [];
+    helpText: [...EuiFormRowSignature['Blocks']['helpText']];
     prepend: [...EuiSelectSignature['Blocks']['prepend']];
     append: [...EuiSelectSignature['Blocks']['append']];
   };
@@ -52,6 +53,7 @@ export default class ValidatedFormFieldSelect extends ValidatedFormFieldBase<Fie
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -90,6 +92,9 @@ export default class ValidatedFormFieldSelect extends ValidatedFormFieldBase<Fie
             </:append>
           </EuiSelect>
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

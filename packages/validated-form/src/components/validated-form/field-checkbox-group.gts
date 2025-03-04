@@ -29,7 +29,8 @@ export interface FieldCheckboxGroupSignature {
       placeholder?: string;
     };
   Blocks: {
-    label: [...EuiFormRowSignature['Blocks']['label']];
+    label: EuiFormRowSignature['Blocks']['label'];
+    helpText: EuiFormRowSignature['Blocks']['helpText'];
   };
 }
 
@@ -96,6 +97,7 @@ export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldB
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -122,6 +124,9 @@ export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldB
             ...attributes
           />
         </:field>
+        <:helpText>
+          {{yield to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

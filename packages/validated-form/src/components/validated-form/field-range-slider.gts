@@ -29,6 +29,7 @@ export interface FieldRangeSliderSignature {
     };
   Blocks: {
     label: [];
+    helpText: [...EuiFormRowSignature['Blocks']['helpText']];
     prepend: [...EuiRangeSignature['Blocks']['prepend']];
     min: [...EuiRangeSignature['Blocks']['min']];
     valuePrepend: [...EuiRangeSignature['Blocks']['valuePrepend']];
@@ -57,6 +58,7 @@ export default class ValidatedFormFieldRangeSlider extends ValidatedFormFieldBas
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -126,6 +128,9 @@ export default class ValidatedFormFieldRangeSlider extends ValidatedFormFieldBas
             </:append>
           </EuiRange>
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}} 
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

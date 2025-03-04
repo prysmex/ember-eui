@@ -195,6 +195,13 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.47
+
+### Patch Changes
+
+- feat: allow helpText customization through validated form eui-form-row comoposition
+- Updated dependencies
+  - @ember-eui/core@8.0.47
 
 ## 8.0.46
 

@@ -135,6 +135,11 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.47
+
+### Patch Changes
+
+- feat: allow helpText customization through validated form eui-form-row comoposition
 
 ## 8.0.46
 

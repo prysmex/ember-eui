@@ -28,6 +28,7 @@ export interface FieldTextSignature {
     };
   Blocks: {
     label: [];
+    helpText: [...EuiFormRowSignature['Blocks']['helpText']];
     prepend: [...EuiFieldTextSignature['Blocks']['prepend']];
     append: [...EuiFieldTextSignature['Blocks']['append']];
   };
@@ -51,6 +52,7 @@ export default class ValidatedFormFieldText extends ValidatedFormFieldBase<Field
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -91,6 +93,9 @@ export default class ValidatedFormFieldText extends ValidatedFormFieldBase<Field
             </:append>
           </EuiFieldText>
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

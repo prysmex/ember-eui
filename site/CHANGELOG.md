@@ -123,6 +123,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.47
+
+### Patch Changes
+
+- feat: allow helpText customization through validated form eui-form-row comoposition
 
 ## 8.0.46
 

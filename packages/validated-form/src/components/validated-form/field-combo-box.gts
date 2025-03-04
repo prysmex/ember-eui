@@ -34,6 +34,7 @@ export interface FieldComboBoxSignature {
     };
   Blocks: {
     label: EuiFormRowSignature['Blocks']['label'];
+    helpText: EuiFormRowSignature['Blocks']['helpText'];
     default: EuiComboBoxSignature['Blocks']['default'];
   };
 }
@@ -65,6 +66,7 @@ export default class ValidatedFormFieldComboBox extends ValidatedFormFieldBase<F
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @selectedOptions}}
@@ -113,6 +115,9 @@ export default class ValidatedFormFieldComboBox extends ValidatedFormFieldBase<F
             {{yield opt index select}}
           </EuiComboBox>
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

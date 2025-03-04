@@ -31,6 +31,7 @@ export interface FieldSwitchSignature {
     };
   Blocks: {
     label: [];
+    helpText: EuiFormRowSignature['Blocks']['helpText'];
     'switch-label': [];
   };
 }
@@ -63,6 +64,7 @@ export default class ValidatedFormFieldSwitch extends ValidatedFormFieldBase<Fie
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -92,6 +94,9 @@ export default class ValidatedFormFieldSwitch extends ValidatedFormFieldBase<Fie
             </:label>
           </EuiSwitch>
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

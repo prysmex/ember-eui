@@ -36,6 +36,7 @@ export interface FieldTextAreaSignature extends FieldBaseSignature {
     };
   Blocks: {
     label: [];
+    helpText: [...EuiFormRowSignature['Blocks']['helpText']];
     default: [...EuiTextAreaSignature['Blocks']['default']];
   };
 }
@@ -58,6 +59,7 @@ export default class ValidatedFormFieldTextArea extends ValidatedFormFieldBase<F
         @helpText={{@helpText}}
         @errorClasses={{@errorClasses}}
         @isFakeLabelBlock={{not (has-block "label")}}
+        @isFakeHelpTextBlock={{not (has-block "helpText")}}
         {{didInsert this.setValidationMessages}}
         {{didUpdate this.didUpdateValue @validations}}
         {{didUpdate this.didUpdateValue @value}}
@@ -88,6 +90,9 @@ export default class ValidatedFormFieldTextArea extends ValidatedFormFieldBase<F
             {{yield}}
           </EuiTextArea>
         </:field>
+        <:helpText as |helpText|>
+          {{yield helpText to="helpText"}}
+        </:helpText>
       </EuiFormRow>
     {{/let}}
   </template>

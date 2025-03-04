@@ -30,6 +30,7 @@ export interface EuiMarkdownFormatSignature {
   value: string;
   //you can pass in a string or an array of strings to be added to the root element
   rootClasses?: string | string[];
+  shouldIncludeDefaultRootClasses?: boolean;
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownFormatSignature> {
@@ -58,8 +59,16 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
       .use(identityCompiler);
   }
 
+  get shouldIncludeDefaultRootClasses() {
+    return this.args.shouldIncludeDefaultRootClasses ?? true;
+  }
+
   get rootClasses(): string[] {
-    let baseClasses = ['euiMarkdownFormat', 'euiText', 'euiText--medium'];
+    let baseClasses = ['euiMarkdownFormat'];
+
+    if (this.shouldIncludeDefaultRootClasses) {
+      baseClasses = baseClasses.concat(['euiText', 'euiText--medium']);
+    }
 
     if (this.args.rootClasses) {
       let rootClasses = isArray(this.args.rootClasses)

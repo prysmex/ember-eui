@@ -34,6 +34,7 @@ export interface FieldMarkdownEditorSignature {
     };
   Blocks: {
     label: [...EuiFormRowSignature['Blocks']['label']];
+    helpText: [...EuiFormRowSignature['Blocks']['helpText']];
   };
 }
 

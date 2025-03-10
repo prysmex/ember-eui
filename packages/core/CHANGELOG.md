@@ -147,6 +147,11 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.49
+
+### Patch Changes
+
+- fix
 
 ## 8.0.48
 

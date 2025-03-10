@@ -12,6 +12,7 @@ export interface EuiWrappingPopoverSignature {
   Element: EuiPopoverSignature['Element'];
   Args: EuiPopoverSignature['Args'] & {
     button?: HTMLElement;
+    onWrappingDestroy: () => void;
   };
   Blocks: {
     default: [];
@@ -50,6 +51,7 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         this.portal.insertAdjacentElement('beforebegin', this.args.button);
       }
     }
+    this.args.onWrappingDestroy();
   }
 
   <template>

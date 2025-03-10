@@ -227,6 +227,7 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+  - @ember-eui/core@8.0.51
 
 ## 8.0.50
 

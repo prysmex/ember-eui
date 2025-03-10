@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 12.0.6
+
+### Patch Changes
+
+- release
+
 ## 12.0.5
 
 ### Patch Changes
@@ -147,6 +153,7 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+
 ## 8.0.49
 
 ### Patch Changes

@@ -59,6 +59,10 @@ export type PopoverAnchorPosition =
 
 export type EuiPopoverArgs = {
   /**
+   * Callback to have a reference to the portal element
+   */
+  portalRef?: (ref: HTMLElement) => void;
+  /**
    * Class name passed to the direct parent of the button
    */
   anchorClassName?: string;
@@ -780,7 +784,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
             (or this.isCurrentlyOpen this.isClosing)
           )
         }}
-          <EuiPortal @insert={{this.insert}}>
+          <EuiPortal @insert={{this.insert}} @portalRef={{@portalRef}}>
             {{#let (randomId) as |panelId|}}
               <EuiPanel
                 id={{panelId}}

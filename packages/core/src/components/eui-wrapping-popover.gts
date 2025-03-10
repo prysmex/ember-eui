@@ -14,6 +14,7 @@ export interface EuiWrappingPopoverSignature {
     button?: HTMLElement;
     onWrappingDestroy?: () => void;
     portalRef?: (ref: HTMLElement) => void;
+    popoverPortalRef?: (ref: HTMLElement) => void;
   };
   Blocks: {
     default: [];
@@ -62,6 +63,7 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         @closePopover={{@closePopover}}
         @isOpen={{@isOpen}}
         @anchorClassName={{@anchorClassName}}
+        @portalRef={{@popoverPortalRef}}
         @anchorPosition={{@anchorPosition}}
         @attachToAnchor={{@attachToAnchor}}
         @container={{@container}}

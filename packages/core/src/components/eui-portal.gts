@@ -22,7 +22,7 @@ type EuiPortalInsertPosition = keyof typeof insertPositions;
 
 export interface EuiPortalArgs {
   insert?: { sibling: HTMLElement; position: EuiPortalInsertPosition };
-  portalRef?: (ref: HTMLDivElement | null) => void;
+  portalRef?: (ref: HTMLElement) => void;
 }
 
 export interface EuiPortalSignature {
@@ -52,6 +52,10 @@ export default class EuiPortal extends Component<EuiPortalSignature> {
         insertPositions[position] as InsertPosition,
         this.portalNode
       );
+    }
+
+    if (this.args.portalRef) {
+      this.args.portalRef(this.portalNode);
     }
   }
 

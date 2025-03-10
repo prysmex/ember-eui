@@ -417,6 +417,7 @@
       "./components/eui-toast.js": "./dist/_app_/components/eui-toast.js",
       "./components/eui-tool-tip-popover.js": "./dist/_app_/components/eui-tool-tip-popover.js",
       "./components/eui-tool-tip.js": "./dist/_app_/components/eui-tool-tip.js",
+      "./components/eui-wrapping-popover.js": "./dist/_app_/components/eui-wrapping-popover.js",
       "./components/text-block.js": "./dist/_app_/components/text-block.js",
       "./helpers/arg-or-default.js": "./dist/_app_/helpers/arg-or-default.js",
       "./helpers/cast-to.js": "./dist/_app_/helpers/cast-to.js",

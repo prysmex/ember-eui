@@ -129,6 +129,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.48
+
+### Patch Changes
+
+- Adds eui-wrapping-popover component
 
 ## 8.0.47
 

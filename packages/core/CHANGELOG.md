@@ -141,6 +141,11 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.48
+
+### Patch Changes
+
+- Adds eui-wrapping-popover component
 
 ## 8.0.47
 

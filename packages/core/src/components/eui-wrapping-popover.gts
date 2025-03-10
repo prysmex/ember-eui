@@ -12,7 +12,8 @@ export interface EuiWrappingPopoverSignature {
   Element: EuiPopoverSignature['Element'];
   Args: EuiPopoverSignature['Args'] & {
     button?: HTMLElement;
-    onWrappingDestroy: () => void;
+    onWrappingDestroy?: () => void;
+    portalRef?: (ref: HTMLElement) => void;
   };
   Blocks: {
     default: [];
@@ -30,6 +31,7 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
 
   setPortalRef = (element: HTMLElement) => {
     this.portal = element;
+    this.args.portalRef?.(element);
   };
 
   get insert(): { sibling: HTMLElement; position: 'after' } | undefined {
@@ -51,7 +53,7 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         this.portal.insertAdjacentElement('beforebegin', this.args.button);
       }
     }
-    this.args.onWrappingDestroy();
+    this.args.onWrappingDestroy?.();
   }
 
   <template>

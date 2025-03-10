@@ -153,6 +153,11 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+## 8.0.50
+
+### Patch Changes
+
+- adds hooks
 
 ## 8.0.49
 

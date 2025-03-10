@@ -141,6 +141,11 @@
 ### Minor Changes
 
 - 882f3aa: Allow passing compressed to ValidatedForm
+## 8.0.50
+
+### Patch Changes
+
+- adds hooks
 
 ## 8.0.49
 

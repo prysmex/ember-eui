@@ -219,6 +219,13 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+## 8.0.50
+
+### Patch Changes
+
+- adds hooks
+- Updated dependencies
+  - @ember-eui/core@8.0.50
 
 ## 8.0.49
 

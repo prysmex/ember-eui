@@ -187,7 +187,11 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
             </EuiTab>
           {{/each}}
         </EuiTabs>
-        {{#let (findBy "id" this.selectedTab.id @tabs) as |currentTab|}}
+
+        {{#let
+          (findBy "id" (if this.selectedTabId this.selectedTabId "") @tabs)
+          as |currentTab|
+        }}
           {{#if currentTab}}
             <div
               role="tabpanel"

@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.48
+
+### Patch Changes
+
+- Adds eui-wrapping-popover component
+
 ## 8.0.47
 
 ### Patch Changes

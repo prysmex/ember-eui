@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 8.0.48
+
+### Patch Changes
+
+- Adds eui-wrapping-popover component
+- Updated dependencies
+  - @ember-eui/core@8.0.48
+
 ## 8.0.47
 
 ### Patch Changes

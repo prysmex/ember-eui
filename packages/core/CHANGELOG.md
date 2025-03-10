@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.50
+
+### Patch Changes
+
+- adds hooks
+
 ## 8.0.49
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 8.0.50
+
+### Patch Changes
+
+- adds hooks
+- Updated dependencies
+  - @ember-eui/core@8.0.50
+
 ## 8.0.49
 
 ### Patch Changes

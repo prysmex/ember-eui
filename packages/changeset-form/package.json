@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/changeset-form",
-  "version": "8.0.50",
+  "version": "8.0.51",
   "description": "Ember Eui changeset integration",
   "keywords": [
     "ember-addon",
@@ -55,7 +55,7 @@
     "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {
-    "@ember-eui/core": "^8.0.50",
+    "@ember-eui/core": "^8.0.51",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
     "ember-source": "^3.28.0 || >=4.0.0"

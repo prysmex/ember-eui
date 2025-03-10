@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 12.0.5
+
+### Patch Changes
+
+- feat adds eui-wrapping-popover
+- Updated dependencies
+  - @ember-eui/core@12.0.5
+
 ## 12.0.4
 
 ### Patch Changes
@@ -203,6 +211,7 @@
 
 - Updated dependencies [157b860]
   - @ember-eui/core@8.1.0
+
 ## 8.0.48
 
 ### Patch Changes

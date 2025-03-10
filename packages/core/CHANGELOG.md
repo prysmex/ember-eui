@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 12.0.5
+
+### Patch Changes
+
+- feat adds eui-wrapping-popover
+
 ## 12.0.4
 
 ### Patch Changes
@@ -141,6 +147,7 @@
 ### Minor Changes
 
 - 157b860: Fixes issues
+
 ## 8.0.48
 
 ### Patch Changes

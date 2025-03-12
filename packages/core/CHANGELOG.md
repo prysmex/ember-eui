@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 12.0.9
+
+### Patch Changes
+
+- release
+
 ## 12.0.8
 
 ### Patch Changes
@@ -7,6 +13,7 @@
 - release
 
 ## 12.0.7
+
 ## 8.0.52
 
 ### Patch Changes

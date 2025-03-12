@@ -81,7 +81,6 @@ export default class ValidatedFormFieldSelect extends ValidatedFormFieldBase<Fie
             @id={{theId}}
             autofocus={{@autofocus}}
             ...attributes
-            {{on "blur" (fn this.setIsTouched true)}}
             {{on "change" this.handleChange}}
           >
             <:prepend as |classes inputId|>

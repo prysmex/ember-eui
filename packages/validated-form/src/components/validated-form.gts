@@ -198,6 +198,17 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
     }
   }
 
+  @action
+  onFocusOut(e: Event) {
+    console.log(e);
+    const targetEuiFormRow = e.target.closest('.euiFormRow');
+    this.childComponents
+      .find((child) => {
+        return targetEuiFormRow === child.formRowElement;
+      })
+      ?.setIsTouched(true);
+  }
+
   get theme() {
     const theme: Partial<IValidatedFormTheme> = this.args.theme || {};
 
@@ -216,6 +227,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
         {{on "submit" this.handleSubmit}}
         {{on "reset" this.handleReset}}
         {{didInsert this.setNewValidity}}
+        {{on "focusout" this.onFocusOut}}
         ...attributes
       >
         {{yield

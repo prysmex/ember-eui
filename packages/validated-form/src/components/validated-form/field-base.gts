@@ -43,6 +43,8 @@ export default class ValidatedFormFieldBase<
 
   @tracked isTouched = false;
 
+  formRowElement: HTMLElement | null = null;
+
   get validations() {
     return this.args.validations || {};
   }
@@ -123,11 +125,15 @@ export default class ValidatedFormFieldBase<
 
   //Should be executed by the child on start
   @action
-  setValidationMessages() {
+  setValidationMessages(ele?: HTMLElement) {
     this._validationErrorMessages = buildValidationMessages.call(
       this,
       this.validationProperty
     );
+
+    if (ele) {
+      this.formRowElement = ele;
+    }
   }
 
   //Should be executed by the child on value update

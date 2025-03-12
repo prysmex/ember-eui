@@ -88,7 +88,6 @@ export default class ValidatedFormFieldNumber extends ValidatedFormFieldBase<Fie
             autofocus={{@autofocus}}
             placeholder={{@placeholder}}
             ...attributes
-            {{on "blur" (fn this.setIsTouched true)}}
             {{on "input" this.handleChange}}
           >
             <:prepend as |classes|>

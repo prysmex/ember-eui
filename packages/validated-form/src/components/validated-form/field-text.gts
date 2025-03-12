@@ -81,7 +81,6 @@ export default class ValidatedFormFieldText extends ValidatedFormFieldBase<Field
             @isFakeAppendBlock={{not (has-block "append")}}
             autofocus={{@autofocus}}
             placeholder={{@placeholder}}
-            {{on "blur" (fn this.setIsTouched true)}}
             {{on "input" this.handleChange}}
             ...attributes
           >

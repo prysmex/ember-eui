@@ -22,10 +22,10 @@ export default function getMessages(owner, useCache = true) {
   }
 
   if (!isNone(owner)) {
-    messagesModule = owner.factoryFor('validator:messages').create()
+    messagesModule = owner.factoryFor('validator:messages')?.create()
   }
 
   cachedRef = messagesModule;
 
-  return messagesModule;
+  return messagesModule || Messages;
 }

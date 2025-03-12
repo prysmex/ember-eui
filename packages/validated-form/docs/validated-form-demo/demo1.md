@@ -116,11 +116,13 @@ ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode
     @validations={{hash number=(hash lt=10 allowString=true)}}
     @label='Less than 10'
     @errors={{this.data.errors}}
+    @helpText="You can still pass in helpTexxt"
   />
   <Form.FieldPassword
     @value={{this.data.fieldPassword}}
     @onChange={{set this.data 'fieldPassword'}}
     @validations={{hash presence=(hash presence=true)}}
+    @helpText="You can still pass in helpTexxt"
   >
     <:label>
       Field password
@@ -131,6 +133,7 @@ ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode
     @onChange={{set this.data 'fieldTextArea'}}
     @validations={{hash length=(hash min=10) presence=(hash presence=true)}}
     @label='Field Text minlength 10'
+    @helpText="You can still pass in helpTexxt"
   />
   <Form.FieldSwitch
     @validations={{hash presence=(hash presence=true)}}

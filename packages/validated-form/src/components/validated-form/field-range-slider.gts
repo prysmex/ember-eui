@@ -103,7 +103,6 @@ export default class ValidatedFormFieldRangeSlider extends ValidatedFormFieldBas
             aria-label={{@ariaLabel}}
             autofocus={{@autofocus}}
             ...attributes
-            {{on "blur" (fn this.setIsTouched true)}}
           >
             <:prepend as |classes|>
               {{yield classes to="prepend"}}

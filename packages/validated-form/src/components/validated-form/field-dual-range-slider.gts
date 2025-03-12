@@ -118,7 +118,6 @@ export default class ValidatedFormFieldRangeSlider extends ValidatedFormFieldBas
             @isFakeMaxBlock={{not (has-block "max")}}
             autofocus={{@autofocus}}
             ...attributes
-            {{on "blur" (fn this.setIsTouched true)}}
           >
             <:prepend as |classes|>
               {{yield classes to="prepend"}}

@@ -86,7 +86,6 @@ export default class ValidatedFormFieldSwitch extends ValidatedFormFieldBase<Fie
             @disabled={{@disabled}}
             @compressed={{@compressed}}
             @type={{@type}}
-            {{on "blur" (fn this.setIsTouched true)}}
             ...attributes
           >
             <:label>

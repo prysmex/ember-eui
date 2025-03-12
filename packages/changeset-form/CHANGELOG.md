@@ -9,6 +9,15 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+## 8.0.52
+
+### Patch Changes
+
+- fix helpText and event delegation for validated-form
+- Updated dependencies
+  - @ember-eui/core@8.0.52
+
+## 8.0.51
 
 ### Patch Changes
 

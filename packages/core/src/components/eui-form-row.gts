@@ -56,8 +56,7 @@ export function startsWith(
 
 const startWith = helper(startsWith);
 
-const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> =
-  <template>
+const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
   {{#let
     (classNames
       "euiFormRow"
@@ -286,8 +285,9 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> =
               {{/each}}
             {{/if}}
           {{/if}}
-          {{#if (or @helpText (has-block "helpText"))}}
-            {{#if (has-block "helpText")}}
+
+          {{#if (or @helpText hasHelpTextBlock)}}
+            {{#if hasHelpTextBlock}}
               <EuiFormHelpText id="{{rowId}}-help" class={{@helpTextClasses}}>
                 {{yield to="helpText"}}
               </EuiFormHelpText>

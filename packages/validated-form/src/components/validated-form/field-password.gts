@@ -81,7 +81,6 @@ export default class ValidatedFormFieldPassword extends ValidatedFormFieldBase<F
             autofocus={{@autofocus}}
             placeholder={{@placeholder}}
             ...attributes
-            {{on "blur" (fn this.setIsTouched true)}}
             {{on "input" this.handleChange}}
           >
             <:prepend as |classes inputId|>

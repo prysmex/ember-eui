@@ -30,7 +30,7 @@ export interface FieldMarkdownEditorSignature {
       autofocus?: boolean;
       onChange?: (state: boolean, e: MouseEvent) => void;
       placeholder?: string;
-      editorComponent?: ComponentLike
+      editorComponent?: ComponentLike;
     };
   Blocks: {
     label: [...EuiFormRowSignature['Blocks']['label']];
@@ -103,7 +103,6 @@ export default class ValidatedFormFieldMarkdownEditor extends ValidatedFormField
               @autoExpandPreview={{@autoExpandPreview}}
               @initialViewMode={{@initialViewMode}}
               ...attributes
-              {{on "blur" (fn this.setIsTouched true)}}
             />
           {{/let}}
         </:field>

@@ -199,9 +199,10 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   }
 
   @action
-  onFocusOut(e: Event) {
-    console.log(e);
-    const targetEuiFormRow = e.target.closest('.euiFormRow');
+  onFocusOut(e: FocusEvent) {
+    
+    const targetEuiFormRow = (e.target as HTMLInputElement)?.closest?.('.euiFormRow');
+    
     this.childComponents
       .find((child) => {
         return targetEuiFormRow === child.formRowElement;

@@ -13,6 +13,11 @@
 - release
 
 ## 12.0.7
+## 8.0.53
+
+### Patch Changes
+
+- fix add size argument to eui-markdown-format and eui-markdown-editor
 
 ## 8.0.52
 

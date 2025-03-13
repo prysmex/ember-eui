@@ -45,6 +45,7 @@ import type {
 } from '../utils/markdown/markdown-types';
 import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area';
 import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar';
+import type { EuiMarkdownFormatSignature } from './eui-markdown-format.gts';
 import type { Processor } from 'unified';
 
 export interface EuiMarkdownEditorArgs {
@@ -67,6 +68,9 @@ export interface EuiMarkdownEditorArgs {
   ariaLabel?: string;
   ariaLabelledBy?: string;
   ariaDescribedBy?: string;
+  formatRootClasses?: EuiMarkdownFormatSignature['Args']['rootClasses'];
+  formatTextSize?: EuiMarkdownFormatSignature['Args']['textSize'];
+  formatShouldIncludeDefaultRootClasses?: EuiMarkdownFormatSignature['Args']['shouldIncludeDefaultRootClasses'];
 }
 
 export interface EuiMarkdownEditorSignature {
@@ -427,6 +431,9 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
             @processingPluginList={{this.processingPluginList}}
             @value={{@value}}
             @replaceNode={{this.replaceNode}}
+            @rootClasses={{@formatRootClasses}}
+            @textSize={{@formatTextSize}}
+            @shouldIncludeDefaultRootClasses={{@formatShouldIncludeDefaultRootClasses}}
           />
         </div>
       {{/if}}

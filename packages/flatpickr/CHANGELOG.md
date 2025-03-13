@@ -17,6 +17,13 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+## 8.0.53
+
+### Patch Changes
+
+- fix add size argument to eui-markdown-format and eui-markdown-editor
+- Updated dependencies
+  - @ember-eui/core@8.0.53
 
 ## 8.0.52
 

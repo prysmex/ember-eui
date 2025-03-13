@@ -6,6 +6,7 @@ import { EnsureSafeComponentHelper } from '@embroider/util';
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import unified from 'unified';
 
+import { sizeMapping as textSizeMapping } from '../utils/css-mappings/eui-text.ts';
 import {
   defaultParsingPlugins,
   defaultProcessingPlugins
@@ -16,6 +17,7 @@ import type {
   EuiMarkdownAstNodePosition,
   RehypeNode
 } from '../utils/markdown/markdown-types';
+import type { EuiTextSignature } from './eui-text.gts';
 import type { Processor } from 'unified';
 
 export type Replacer = (
@@ -24,13 +26,16 @@ export type Replacer = (
 ) => void;
 
 export interface EuiMarkdownFormatSignature {
-  parsingPluginList?: typeof defaultParsingPlugins;
-  processingPluginList?: typeof defaultProcessingPlugins;
-  replaceNode?: Replacer;
-  value: string;
-  //you can pass in a string or an array of strings to be added to the root element
-  rootClasses?: string | string[];
-  shouldIncludeDefaultRootClasses?: boolean;
+  Args: {
+    parsingPluginList?: typeof defaultParsingPlugins;
+    processingPluginList?: typeof defaultProcessingPlugins;
+    replaceNode?: Replacer;
+    value: string;
+    //you can pass in a string or an array of strings to be added to the root element
+    rootClasses?: string | string[];
+    textSize?: EuiTextSignature['Args']['size'];
+    shouldIncludeDefaultRootClasses?: boolean;
+  };
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownFormatSignature> {
@@ -67,7 +72,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     let baseClasses = ['euiMarkdownFormat'];
 
     if (this.shouldIncludeDefaultRootClasses) {
-      baseClasses = baseClasses.concat(['euiText', 'euiText--medium']);
+      baseClasses = baseClasses.concat(['euiText', this.textSizeClass]);
     }
 
     if (this.args.rootClasses) {
@@ -79,6 +84,14 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     }
 
     return baseClasses;
+  }
+
+  get textSize() {
+    return this.args.textSize || 'm';
+  }
+
+  get textSizeClass() {
+    return textSizeMapping[this.textSize];
   }
 
   @cached

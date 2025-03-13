@@ -26,14 +26,16 @@ export type Replacer = (
 ) => void;
 
 export interface EuiMarkdownFormatSignature {
-  parsingPluginList?: typeof defaultParsingPlugins;
-  processingPluginList?: typeof defaultProcessingPlugins;
-  replaceNode?: Replacer;
-  value: string;
-  //you can pass in a string or an array of strings to be added to the root element
-  rootClasses?: string | string[];
-  textSize?: EuiTextSignature['Args']['size'];
-  shouldIncludeDefaultRootClasses?: boolean;
+  Args: {
+    parsingPluginList?: typeof defaultParsingPlugins;
+    processingPluginList?: typeof defaultProcessingPlugins;
+    replaceNode?: Replacer;
+    value: string;
+    //you can pass in a string or an array of strings to be added to the root element
+    rootClasses?: string | string[];
+    textSize?: EuiTextSignature['Args']['size'];
+    shouldIncludeDefaultRootClasses?: boolean;
+  };
 }
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownFormatSignature> {

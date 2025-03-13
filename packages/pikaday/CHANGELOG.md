@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 12.0.10
+
+### Patch Changes
+
+- relase
+- Updated dependencies
+  - @ember-eui/core@12.0.10
+
 ## 12.0.9
 
 ### Patch Changes
@@ -17,6 +25,7 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+
 ## 8.0.53
 
 ### Patch Changes

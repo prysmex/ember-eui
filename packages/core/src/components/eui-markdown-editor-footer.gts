@@ -9,6 +9,7 @@ import MarkdownLogo from '../components/eui-markdown-editor-footer/icons/markdow
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiHorizontalRule from './eui-horizontal-rule.gts';
+import EuiI18n from './eui-i18n.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiMarkdownFormat from './eui-markdown-format.gts';
 import EuiModal from './eui-modal.gts';
@@ -26,6 +27,14 @@ export interface EuiMarkdownEditorFooterSignature {
     uiPlugins?: any[];
   };
 }
+
+const defaultMarkdownSyntaxHelp = `
+The editor uses 
+
+[Github flavored markdown](https://github.github.com/gfm/).
+
+You can also utilize these additional syntax plugins to add rich content to your text.
+`;
 
 export default class EuiMarkdownEditorFooterComponent extends Component<EuiMarkdownEditorFooterSignature> {
   @tracked isPopoverOpen = false;
@@ -81,28 +90,30 @@ export default class EuiMarkdownEditorFooterComponent extends Component<EuiMarkd
           <EuiModalHeader>
             <EuiTitle>
               <h3>
-                Syntax Help
-                {{! <EuiI18n
-                token="euiMarkdownEditorFooter.syntaxTitle"
-                default="Syntax help"
-              /> }}
+                <EuiI18n
+                  @token="euiMarkdownEditorFooter.syntaxTitle"
+                  @default="Syntax Help"
+                  as |Token|
+                >
+                  <Token as |value|>
+                    {{value}}
+                  </Token>
+                </EuiI18n>
               </h3>
             </EuiTitle>
           </EuiModalHeader>
           <EuiModalBody>
 
-            <EuiText>
-              <p>The editor uses</p>
-              <a
-                href="https://github.github.com/gfm/"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Github flavored markdown
-              </a>
-              <p>You can also utilize these additional syntax plugins to add
-                rich content to yoru text.</p>
-            </EuiText>
+            <EuiI18n
+              @token="euiMarkdownEditorFooter.syntaxHelp"
+              @default={{defaultMarkdownSyntaxHelp}}
+              as |Token|
+            >
+              <Token as |value|>
+                <EuiMarkdownFormat @value={{value}} />
+              </Token>
+            </EuiI18n>
+
             <EuiHorizontalRule />
             {{#each @uiPlugins as |uiPlugin|}}
               {{#if uiPlugin.helpText}}

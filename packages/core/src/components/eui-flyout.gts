@@ -73,7 +73,7 @@ export type EuiFlyoutArgs = {
 
   closeButtonAriaLabel?: string;
 
-  onClose: () => void;
+  onClose?: () => void;
 
   maxWidth?: boolean | number;
 

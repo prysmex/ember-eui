@@ -11,6 +11,7 @@ import { and, eq, gte, or } from 'ember-truth-helpers';
 import { MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
+import EuiI18n from './eui-i18n.gts';
 import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
@@ -208,7 +209,16 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
           @size="s"
           {{on "click" @onClickPreview}}
         >
-          Editor
+
+          <EuiI18n
+            @token="euiMarkdownEditorToolbar.editor"
+            @default="Editor"
+            as |Token|
+          >
+            <Token as |value|>
+              {{value}}
+            </Token>
+          </EuiI18n>
         </EuiButtonEmpty>
 
       {{else}}
@@ -218,7 +228,15 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
           @size="s"
           {{on "click" @onClickPreview}}
         >
-          Preview
+          <EuiI18n
+            @token="euiMarkdownEditorToolbar.preview"
+            @default="Preview"
+            as |Token|
+          >
+            <Token as |value|>
+              {{value}}
+            </Token>
+          </EuiI18n>
         </EuiButtonEmpty>
       {{/if}}
     </div>

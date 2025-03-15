@@ -31,7 +31,7 @@ export interface EuiRangeArgs {
   compressed?: boolean;
   readOnly?: boolean;
   fullWidth?: boolean;
-  id: string;
+  id?: string;
   /**
    * Create colored indicators for certain intervals
    */
@@ -64,7 +64,7 @@ export interface EuiRangeArgs {
   /**
    * Specified ticks at specified values
    */
-  ticks: EuiRangeTick[];
+  ticks?: EuiRangeTick[];
   /**
    * Modifies the number of tick marks and at what interval
    */

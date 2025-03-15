@@ -19,6 +19,11 @@
 - release
 
 ## 12.0.7
+## 8.0.54
+
+### Patch Changes
+
+- fix translations for markdown-editor
 
 ## 8.0.53
 

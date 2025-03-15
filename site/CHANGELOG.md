@@ -1,5 +1,11 @@
 # site
 
+## 8.0.54
+
+### Patch Changes
+
+- fix translations for markdown-editor
+
 ## 8.0.53
 
 ### Patch Changes

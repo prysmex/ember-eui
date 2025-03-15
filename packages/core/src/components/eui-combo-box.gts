@@ -85,7 +85,6 @@ export interface EuiComboBoxSignature {
     preventScroll?: boolean;
     noMatchesMessage?: string;
     noMatchesMessageComponent?: any;
-    closeOnSelect?: boolean;
   };
   Blocks: {
     default: [any, number, Select];

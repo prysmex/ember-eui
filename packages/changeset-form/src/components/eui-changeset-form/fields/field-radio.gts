@@ -31,8 +31,6 @@ export interface EuiChangesetFormFieldRadioSignature {
 }
 
 export default class EuiChangesetFormFieldRadio extends Base<EuiChangesetFormFieldRadioSignature> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleChange(e: Event) {
     e.preventDefault();

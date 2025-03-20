@@ -41,6 +41,12 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
     this.link = e;
   }
 
+  willDestroy() {
+    super.willDestroy();
+    
+    this.link = null;
+  }
+
   <template>
     {{#let
       (classNames

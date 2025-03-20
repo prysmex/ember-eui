@@ -571,6 +571,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     super.willDestroy();
     window.removeEventListener('scroll', this.positionPopoverFixed, true);
     this.popoverHost = null;
+    this.button = null;
+    this.panel = null;
     cancel(this.respositionTimeout as ReturnType<typeof later>);
     cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
     cancelAnimationFrame(this.closingTransitionAnimationFrame as number);

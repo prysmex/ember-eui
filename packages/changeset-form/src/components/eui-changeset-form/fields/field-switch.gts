@@ -30,8 +30,6 @@ export interface EuiChangesetFormFieldSwitchSignature {
 }
 
 export default class EuiChangesetFormFieldSwitch extends Base<EuiChangesetFormFieldSwitchSignature> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleChange(e: Event) {
     e.preventDefault();

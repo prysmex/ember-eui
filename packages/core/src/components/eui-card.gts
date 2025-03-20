@@ -125,6 +125,12 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
     return ['euiCard__footer', this.args.footerClassName].join(' ');
   }
 
+  willDestroy() {
+    super.willDestroy();
+
+    this.link = null;
+  }
+
   <template>
     {{#let
       (if @selectable (randomId))

@@ -28,8 +28,8 @@ export interface EuiCodeSignature {
 }
 
 export default class EuiCodeComponent extends Component<EuiCodeSignature> {
-  @tracked codeTarget: HTMLElement;
-  @tracked code: undefined | HTMLElement;
+  @tracked codeTarget?: HTMLElement;
+  @tracked code?: HTMLElement;
   observer: MutationObserver | null = null;
 
   constructor(owner: unknown, args: EuiCodeArgs) {
@@ -85,13 +85,18 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
 
   willDestroy(): void {
     super.willDestroy();
+
     this.observer?.disconnect();
+    this.codeTarget = undefined;
+    this.code = undefined;
   }
 
   <template>
-    {{#in-element this.codeTarget}}
-      {{yield}}
-    {{/in-element}}
+    {{#if this.codeTarget}}
+      {{#in-element this.codeTarget}}
+        {{yield}}
+      {{/in-element}}
+    {{/if}}
     <code
       class={{classNames
         "euiCode"

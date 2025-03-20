@@ -80,6 +80,7 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     document.removeEventListener('mouseup', this.onClickOutside);
     document.removeEventListener('touchend', this.onClickOutside);
     this.removeElementEvents();
+    this.element = undefined;
   }
 
   addElementEvents(): void {

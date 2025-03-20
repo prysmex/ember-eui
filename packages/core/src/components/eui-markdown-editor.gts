@@ -391,6 +391,14 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
     this.pluginEditorPlugin = undefined;
   };
 
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.textareaRef = null;
+    this.previewRef = null;
+    this.editorToolbarRef = null;
+  }
+
   <template>
     <div
       class={{classNames

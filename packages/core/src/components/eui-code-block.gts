@@ -326,6 +326,15 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
     scheduleOnce('afterRender', this, render);
   }
 
+  willDestroy() {
+    super.willDestroy();
+
+    this.codeTarget = undefined;
+    this.code = undefined;
+    this.codeFullScreen = undefined;
+    this.wrapperRef = undefined;
+  }
+
   <template>
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}

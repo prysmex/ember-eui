@@ -30,8 +30,6 @@ export interface EuiChangesetFormFieldNumberSignature {
 }
 
 export default class EuiChangesetFormFieldNumber extends Base<EuiChangesetFormFieldNumberSignature> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;

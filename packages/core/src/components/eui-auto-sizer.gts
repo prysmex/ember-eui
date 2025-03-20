@@ -187,6 +187,11 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignatu
         this._onResize
       );
     }
+
+    this._autoSizer = undefined;
+    this._parentNode = undefined;
+    this._window = undefined;
+    this._detectElementResize = undefined;
   }
 
   <template>

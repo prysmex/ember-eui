@@ -36,8 +36,6 @@ export interface EuiChangesetFormFieldRangeSliderSignature {
 }
 
 export default class EuiChangesetFormFieldRangeSlider extends Base<EuiChangesetFormFieldRangeSliderSignature> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;

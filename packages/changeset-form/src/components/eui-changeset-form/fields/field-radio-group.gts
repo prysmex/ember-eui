@@ -26,8 +26,6 @@ export interface EuiChangesetFormFieldRadioGroupSignature {
 }
 
 export default class EuiChangesetFormFieldRadioGroup extends Base<EuiChangesetFormFieldRadioGroupSignature> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleChange(idSelected: string) {
     this.args.changeset.set(this.args.fieldName, idSelected);

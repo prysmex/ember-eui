@@ -162,6 +162,12 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     isSearchSupported = Browser.isEventSupported('search', this.inputElement);
   }
 
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.inputElement = null;
+  }
+
   <template>
     {{#let
       (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))

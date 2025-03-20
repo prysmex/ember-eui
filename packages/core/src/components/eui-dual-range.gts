@@ -535,6 +535,12 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     return this.showInputOnly && !this.args.readOnly && !this.args.disabled;
   }
 
+  willDestroy() {
+    super.willDestroy();
+
+    this.rangeSliderRef = null;
+  }
+
   <template>
     {{#let
       (and (argOrDefault @isPrependProvided true) (has-block "prepend"))

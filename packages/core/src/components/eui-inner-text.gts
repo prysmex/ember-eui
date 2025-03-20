@@ -65,6 +65,7 @@ export default class EuiImage extends Component<EuiInnerTextSignature> {
   willDestroy(): void {
     super.willDestroy();
     this.observer?.disconnect();
+    this.ref = null;
   }
 
   <template>

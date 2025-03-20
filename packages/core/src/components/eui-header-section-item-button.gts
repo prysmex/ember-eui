@@ -161,6 +161,13 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
     this.buttonRef = ele;
   };
 
+  willDestroy(): void {
+    super.willDestroy();
+    
+    this.buttonRef = undefined;
+    this.animationTargetRef = undefined;
+  }
+
   <template>
     <EuiButtonEmpty
       class="euiHeaderSectionItemButton"

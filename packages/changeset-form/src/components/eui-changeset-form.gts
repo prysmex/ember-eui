@@ -91,8 +91,6 @@ export interface EuiChangesetFormSignature {
 }
 
 export default class EuiChangesetFormComponent extends Component<EuiChangesetFormSignature> {
-  form: HTMLFormElement | null = null;
-
   @tracked hasSubmitted: boolean = false;
 
   constructor(owner: unknown, args: EuiChangesetFormSignature['Args']) {

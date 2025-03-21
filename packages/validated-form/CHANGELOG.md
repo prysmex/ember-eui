@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 8.0.55
+
+### Patch Changes
+
+- fix memory
+- Updated dependencies
+  - @ember-eui/core@8.0.55
+
 ## 8.0.54
 
 ### Patch Changes

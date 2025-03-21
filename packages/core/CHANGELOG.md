@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.55
+
+### Patch Changes
+
+- fix memory
+
 ## 8.0.54
 
 ### Patch Changes

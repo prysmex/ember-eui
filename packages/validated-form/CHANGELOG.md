@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 8.0.56
+
+### Patch Changes
+
+- fix memory in accordion
+- Updated dependencies
+  - @ember-eui/core@8.0.56
+
 ## 8.0.55
 
 ### Patch Changes

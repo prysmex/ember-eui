@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.56
+
+### Patch Changes
+
+- fix memory in accordion
+
 ## 8.0.55
 
 ### Patch Changes

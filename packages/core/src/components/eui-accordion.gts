@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
 
 import queue from 'ember-composable-helpers/helpers/queue';
@@ -191,7 +192,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
 
       this.args.onToggle?.(this._opened);
     }
-  }
+  };
 
   willDestroy(): void {
     super.willDestroy();
@@ -293,7 +294,6 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                 tabindex="-1"
                 role="region"
               >
-                {{(this.setChildContentHeight)}}
                 <div
                   class={{classNames
                     (if this.isLoading "euiAccordion__children-isLoading")
@@ -303,6 +303,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     (queue (set this "childContent") this.setChildContentHeight)
                   }}
                   {{resizeObserver onResize=this.setChildContentHeight}}
+                  {{didUpdate this.setChildContentHeight @forceState}}
                 >
                   {{#if (and this.isLoading this.isLoadingMessage)}}
                     <EuiLoadingSpinner class="euiAccordion__spinner" />

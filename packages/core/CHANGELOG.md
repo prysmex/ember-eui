@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.57
+
+### Patch Changes
+
+- leaks
+
 ## 8.0.56
 
 ### Patch Changes

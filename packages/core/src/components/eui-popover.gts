@@ -570,6 +570,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   willDestroy(): void {
     super.willDestroy();
     window.removeEventListener('scroll', this.positionPopoverFixed, true);
+    window.removeEventListener('resize', this.positionPopoverFluid);
     this.popoverHost = null;
     this.button = null;
     this.panel = null;

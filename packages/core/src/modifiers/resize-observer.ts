@@ -24,11 +24,11 @@ const mutationObserverOptions = {
 interface ResizeObserverSignature {
   Element: Element;
   Args: {
-    Positional: [('width' | 'height')] | [];
+    Positional: ['width' | 'height'] | [];
     Named: {
       onResize: (dimensions: { height: number; width: number }) => void;
     };
-  }
+  };
 }
 
 const makeCompatibleObserver = (node: Element, callback: () => void) => {
@@ -87,7 +87,6 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
     }
   }
 
-
   modify(
     element: Element,
     positional: ResizeObserverSignature['Args']['Positional'] = [],
@@ -131,5 +130,9 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
 
   _teardown() {
     this.observer?.disconnect();
+    this.observer = null;
+    this.element = null;
+    this.named = null;
+    this.positional = [];
   }
 }

@@ -191,12 +191,6 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     }
   }
 
-  willDestroy(): void {
-    super.willDestroy();
-    this.clearAnimationTimeout();
-    this.removeAttachToHandlers();
-  }
-
   @action
   testAnchor(): void {
     // when the tooltip is visible, this checks if the anchor is still part of document
@@ -364,6 +358,16 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     if (this.args.onMouseOut) {
       this.args.onMouseOut(event);
     }
+  }
+
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.clearAnimationTimeout();
+    this.removeAttachToHandlers();
+    this.anchor = null;
+    this.popover = null;
+    this._attachTo = null;
   }
 
   <template>

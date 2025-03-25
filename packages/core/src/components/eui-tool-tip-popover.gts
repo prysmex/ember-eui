@@ -39,6 +39,7 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignat
     document.body.classList.remove('euiBody-hasPortalContent');
     window.removeEventListener('resize', this.updateDimensions);
     window.removeEventListener('scroll', this.updateDimensions, true);
+    this.popover = null;
   }
 
   @action

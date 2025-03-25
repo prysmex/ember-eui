@@ -24,11 +24,11 @@ const mutationObserverOptions = {
 interface ResizeObserverSignature {
   Element: Element;
   Args: {
-    Positional: [('width' | 'height')] | [];
+    Positional: ['width' | 'height'] | [];
     Named: {
       onResize: (dimensions: { height: number; width: number }) => void;
     };
-  }
+  };
 }
 
 const makeCompatibleObserver = (node: Element, callback: () => void) => {
@@ -67,13 +67,13 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
   width: number = 0;
   observer: Observer | null = null;
 
-  element!: Element;
-  named!: ResizeObserverSignature['Args']['Named'];
-  positional!: ResizeObserverSignature['Args']['Positional'];
+  element: Element | null = null;
+  named: ResizeObserverSignature['Args']['Named'] | null = null;
+  positional: ResizeObserverSignature['Args']['Positional'] | null = null;
 
   @action
   setSize({ width, height }: { width: number; height: number }) {
-    let [dimension] = this.positional;
+    let [dimension] = this.positional!;
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
 
@@ -86,7 +86,6 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
       this.named?.onResize({ width, height });
     }
   }
-
 
   modify(
     element: Element,
@@ -114,6 +113,10 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
       });
 
       this.observer = makeResizeObserver(element, () => {
+        if (!element) {
+          return;
+        }
+
         const boundingRect = element.getBoundingClientRect();
 
         setSize({
@@ -131,5 +134,9 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
 
   _teardown() {
     this.observer?.disconnect();
+    this.observer = null;
+    this.element = null;
+    this.named = null;
+    this.positional = null;
   }
 }

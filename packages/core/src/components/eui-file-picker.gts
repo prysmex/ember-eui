@@ -134,6 +134,12 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
     this.args.ref?.(this as any as typeof EuiFilePickerComponent);
   }
 
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.fileInput = null;
+  }
+
   <template>
     {{#let
       (classNames

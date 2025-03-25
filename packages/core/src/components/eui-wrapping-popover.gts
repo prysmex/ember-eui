@@ -54,7 +54,10 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         this.portal.insertAdjacentElement('beforebegin', this.args.button);
       }
     }
+
     this.args.onWrappingDestroy?.();
+    this.portal = null;
+    this.anchor = null;
   }
 
   <template>

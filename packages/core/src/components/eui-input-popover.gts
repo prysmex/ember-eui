@@ -120,6 +120,13 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
     }
   }
 
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.panel = null;
+    this.input = null;
+  }
+
   <template>
     {{#let (randomId) as |id|}}
       <EuiPopover

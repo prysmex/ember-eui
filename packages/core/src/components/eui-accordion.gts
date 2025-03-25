@@ -1,8 +1,8 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
-import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { htmlSafe } from '@ember/template';
 import type Owner from '@ember/owner';
 
@@ -106,7 +106,7 @@ export interface EuiAccordionSignature {
   };
 }
 
-export default class EuiAccordionAccordionComponent extends Component<EuiAccordionSignature> {
+export default class EuiAccordionComponent extends Component<EuiAccordionSignature> {
   // Defaults
   @argOrDefaultDecorator(false) isLoading!: boolean;
   @argOrDefaultDecorator(false) isLoadingMessage!: boolean;
@@ -183,8 +183,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
     });
   };
 
-  @action
-  onToggle(): void {
+  onToggle = (): void => {
     if (this.args.forceState) {
       this.args.onToggle?.(this.args.forceState === 'open' ? false : true);
     } else {
@@ -196,6 +195,13 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
 
       this.args.onToggle?.(this._opened);
     }
+  };
+
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.childWrapper = null;
+    this.childContent = null;
   }
 
   <template>
@@ -291,7 +297,6 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                 tabindex="-1"
                 role="region"
               >
-                {{(this.setChildContentHeight)}}
                 <div
                   class={{classNames
                     (if this.isLoading "euiAccordion__children-isLoading")
@@ -301,6 +306,7 @@ export default class EuiAccordionAccordionComponent extends Component<EuiAccordi
                     (queue (set this "childContent") this.setChildContentHeight)
                   }}
                   {{resizeObserver onResize=this.setChildContentHeight}}
+                  {{didUpdate this.setChildContentHeight @forceState}}
                 >
                   {{#if (and this.isLoading this.isLoadingMessage)}}
                     <EuiLoadingSpinner class="euiAccordion__spinner" />

@@ -25,7 +25,7 @@ export type EuiRangeTicksArgs = {
   interval?: number;
   disabled?: boolean;
   onChange?: (e: MouseEvent) => void;
-  trackWidth: number;
+  trackWidth?: number;
 };
 
 export interface EuiRangeTicksSignature {
@@ -48,6 +48,10 @@ export default class EuiRangeTicksComponent extends Component<EuiRangeTicksSigna
       : htmlSafe(`margin: 0 ${this.percentageWidth / -2}%; left: 0; right: 0;`);
   }
 
+  get trackWidth(): number {
+    return this.args.trackWidth || 0;
+  }
+
   <template>
     <div
       class="euiRangeTicks {{if @compressed 'euiRangeTicks--compressed'}}"
@@ -57,7 +61,7 @@ export default class EuiRangeTicksComponent extends Component<EuiRangeTicksSigna
       {{#each @tickSequence key="value" as |tickValue|}}
         {{#let
           (getRangeTick
-            @ticks tickValue @min @max this.percentageWidth @trackWidth
+            @ticks tickValue @min @max this.percentageWidth this.trackWidth
           )
           as |derivedState|
         }}

@@ -32,7 +32,7 @@ export interface EuiPortalSignature {
 }
 
 export default class EuiPortal extends Component<EuiPortalSignature> {
-  @tracked portalNode!: HTMLElement;
+  @tracked portalNode?: HTMLElement;
 
   constructor(owner: Owner, args: EuiPortalArgs) {
     super(owner, args);
@@ -62,9 +62,11 @@ export default class EuiPortal extends Component<EuiPortalSignature> {
   willDestroy(): void {
     super.willDestroy();
 
-    if (this.portalNode.parentNode) {
+    if (this.portalNode?.parentNode) {
       this.portalNode.parentNode.removeChild(this.portalNode);
     }
+
+    this.portalNode = undefined;
   }
 
   <template>

@@ -29,8 +29,6 @@ export interface EuiChangesetFormFieldTextSignature {
 }
 
 export default class EuiChangesetFormFieldText extends Base<EuiChangesetFormFieldTextSignature> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;

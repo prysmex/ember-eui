@@ -154,6 +154,12 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
     this.args.onSelection?.(date);
   }
 
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.field = null;
+  }
+
   <template>
     {{#let
       (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))

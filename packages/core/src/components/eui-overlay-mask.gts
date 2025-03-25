@@ -39,6 +39,12 @@ export default class EuiOverlayMaskComponent extends Component<EuiOverlayMaskSig
     this.overlayMaskNode = node;
   }
 
+  willDestroy(): void {
+    super.willDestroy();
+
+    this.overlayMaskNode = undefined;
+  }
+
   <template>
     {{(setBodyClass "euiBody-hasOverlayMask")}}
     {{#in-element this.destinationElement insertBefore=null}}

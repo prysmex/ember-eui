@@ -177,9 +177,11 @@ export default class ValidatedFormFieldBase<
     this.notifyValidityChange();
   }
 
-  willDestroy() {
+  willDestroy(): void {
     super.willDestroy();
+    
     this.args.unregister?.(this as unknown as ComponentLike);
+    this.formRowElement = null;
   }
 
   <template>

@@ -33,6 +33,29 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+## 8.0.57
+
+### Patch Changes
+
+- leaks
+- Updated dependencies
+  - @ember-eui/core@8.0.57
+
+## 8.0.56
+
+### Patch Changes
+
+- fix memory in accordion
+- Updated dependencies
+  - @ember-eui/core@8.0.56
+
+## 8.0.55
+
+### Patch Changes
+
+- fix memory
+- Updated dependencies
+  - @ember-eui/core@8.0.55
 
 ## 8.0.54
 

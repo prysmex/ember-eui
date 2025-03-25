@@ -55,7 +55,7 @@ export interface EuiRangeTrackSignature {
 }
 
 export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSignature> {
-  @tracked declare trackEl: HTMLElement;
+  @tracked trackEl?: HTMLElement;
 
   @action
   registerTrack(el: HTMLElement) {
@@ -170,6 +170,12 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSigna
       tickSequence,
       styles: htmlSafe(styles)
     };
+  }
+
+  willDestroy(): void {
+    super.willDestroy();
+    
+    this.trackEl = undefined;
   }
 
   <template>

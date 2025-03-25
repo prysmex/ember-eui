@@ -1,6 +1,6 @@
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { EuiFieldPassword,EuiFormRow } from '@ember-eui/core/components';
+import { EuiFieldPassword, EuiFormRow } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
 import { not } from 'ember-truth-helpers';
@@ -32,8 +32,6 @@ export interface EuiChangesetFormFieldPasswordSignature {
 }
 
 export default class EuiChangesetFormFieldPassword extends Base<EuiChangesetFormFieldPasswordSignature> {
-  form: HTMLFormElement | null = null;
-
   @action
   handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;

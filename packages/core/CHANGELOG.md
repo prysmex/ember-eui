@@ -25,6 +25,23 @@
 - release
 
 ## 12.0.7
+## 8.0.57
+
+### Patch Changes
+
+- leaks
+
+## 8.0.56
+
+### Patch Changes
+
+- fix memory in accordion
+
+## 8.0.55
+
+### Patch Changes
+
+- fix memory
 
 ## 8.0.54
 

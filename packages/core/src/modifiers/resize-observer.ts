@@ -113,6 +113,10 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
       });
 
       this.observer = makeResizeObserver(element, () => {
+        if (!element) {
+          return;
+        }
+
         const boundingRect = element.getBoundingClientRect();
 
         setSize({

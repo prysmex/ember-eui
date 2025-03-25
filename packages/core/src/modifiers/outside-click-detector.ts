@@ -31,9 +31,9 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
   id!: string;
   capturedDownIds: string[] = [];
 
-  element?: HTMLElement;
-  named?: Named;
-  positional?: Positional;
+  element: HTMLElement | null = null;
+  named: Named | null = null;
+  positional: Positional | null = null;
 
   @action
   onClickOutside(e: Event): void {
@@ -80,9 +80,9 @@ export default class OutsideClickDetector extends Modifier<OutsideClickDetectorM
     document.removeEventListener('mouseup', this.onClickOutside);
     document.removeEventListener('touchend', this.onClickOutside);
     this.removeElementEvents();
-    this.element = undefined;
-    this.named = undefined;
-    this.positional = undefined;
+    this.element = null;
+    this.named = null;
+    this.positional = null;
   }
 
   addElementEvents(): void {

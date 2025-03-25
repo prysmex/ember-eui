@@ -67,13 +67,13 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
   width: number = 0;
   observer: Observer | null = null;
 
-  element!: Element;
-  named!: ResizeObserverSignature['Args']['Named'];
-  positional!: ResizeObserverSignature['Args']['Positional'];
+  element: Element | null = null;
+  named: ResizeObserverSignature['Args']['Named'] | null = null;
+  positional: ResizeObserverSignature['Args']['Positional'] | null = null;
 
   @action
   setSize({ width, height }: { width: number; height: number }) {
-    let [dimension] = this.positional;
+    let [dimension] = this.positional!;
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
 
@@ -133,6 +133,6 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
     this.observer = null;
     this.element = null;
     this.named = null;
-    this.positional = [];
+    this.positional = null;
   }
 }

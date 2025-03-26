@@ -232,6 +232,8 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
         timer?.clear();
       }
     }
+
+    this.listElement = null;
   }
 
   <template>

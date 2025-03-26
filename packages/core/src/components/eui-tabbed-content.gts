@@ -110,6 +110,8 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
       //@ts-expect-error
       this.tabsRef.removeEventListener('focusout', this.removeFocus);
     }
+
+    this.tabsRef = undefined;
   }
 
   removeFocus = (blurEvent: FocusEvent) => {

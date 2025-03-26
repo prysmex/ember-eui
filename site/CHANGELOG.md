@@ -1,5 +1,11 @@
 # site
 
+## 12.0.13
+
+### Patch Changes
+
+- re-lease
+
 ## 12.0.12
 
 ### Patch Changes
@@ -31,6 +37,13 @@
 - release
 
 ## 12.0.7
+
+## 8.0.59
+
+### Patch Changes
+
+- re-release
+
 ## 8.0.58
 
 ### Patch Changes

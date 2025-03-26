@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/flatpickr",
-  "version": "12.0.12",
+  "version": "12.0.13",
   "description": "ember-flatpickr integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -61,7 +61,7 @@
     "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {
-    "@ember-eui/core": "^12.0.12",
+    "@ember-eui/core": "^12.0.13",
     "@glimmer/component": "^2.0.0",
     "@glimmer/tracking": "^1.1.2",
     "ember-source": ">= 4.0.0"

@@ -1,5 +1,13 @@
 # @ember-eui/flatpickr
 
+## 12.0.13
+
+### Patch Changes
+
+- re-lease
+- Updated dependencies
+  - @ember-eui/core@12.0.13
+
 ## 12.0.12
 
 ### Patch Changes
@@ -41,6 +49,15 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+
+## 8.0.59
+
+### Patch Changes
+
+- re-release
+- Updated dependencies
+  - @ember-eui/core@8.0.59
+
 ## 8.0.58
 
 ### Patch Changes

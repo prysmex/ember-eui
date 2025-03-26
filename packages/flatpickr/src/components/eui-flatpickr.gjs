@@ -10,11 +10,36 @@ import { and, not } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id';
 
+/**
+ * Loop through all properties of an object and nullify any properties that are instanceof HTMLElement,
+ * if we detect an array then use recursion to go inside it and apply same logic
+ * @param obj - object containing 1 or more properties with DOM Elements
+ */
+function destroyObjectDomElementProps(obj) {
+  for (const key of Object.keys(obj)) {
+    if (Array.isArray(obj[key])) {
+      destroyObjectDomElementProps(obj[key]);
+    }
+    if (obj[key] instanceof HTMLElement) {
+      obj[key] = null;
+    }
+  }
+}
+
 export default class EuiFlatpickrComponent extends EmberFlatpickr {
   @action
   onClear() {
     this.args.clear(null);
   }
+
+  // @action
+  // onWillDestroy() {
+  //   if (this.flatpickrRef.element) {
+  //     this.flatpickrRef.destroy();
+  //     // destroyObjectDomElementProps(this.flatpickrRef);
+  //   }
+  //   // this.flatpickrRef = null;
+  // }
 
   <template>
     {{#let

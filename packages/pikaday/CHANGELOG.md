@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.59
+
+### Patch Changes
+
+- re-release
+- Updated dependencies
+  - @ember-eui/core@8.0.59
+
 ## 8.0.58
 
 ### Patch Changes

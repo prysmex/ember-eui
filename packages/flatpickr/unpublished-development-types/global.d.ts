@@ -20,8 +20,6 @@ interface Mapping {
   [componentName: string]: ComponentMapping;
 }
 
-type rgbDef = [number, number, number];
-
 interface HSV {
   h: number;
   s: number;

@@ -1,5 +1,11 @@
 # site
 
+## 13.0.1
+
+### Patch Changes
+
+- bump ember-power-select
+
 ## 13.0.0
 
 ### Major Changes

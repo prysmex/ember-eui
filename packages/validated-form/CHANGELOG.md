@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 13.0.1
+
+### Patch Changes
+
+- bump ember-power-select
+- Updated dependencies
+  - @ember-eui/core@13.0.1
+
 ## 13.0.0
 
 ### Major Changes

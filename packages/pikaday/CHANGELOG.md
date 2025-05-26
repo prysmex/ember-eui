@@ -1,5 +1,16 @@
 # @ember-eui/pikaday
 
+## 13.0.0
+
+### Major Changes
+
+- Removes @glimmer/tracking from package json
+
+### Patch Changes
+
+- Updated dependencies
+  - @ember-eui/core@13.0.0
+
 ## 12.0.13
 
 ### Patch Changes

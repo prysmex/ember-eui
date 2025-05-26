@@ -1,5 +1,11 @@
 # site
 
+## 13.0.0
+
+### Major Changes
+
+- Removes @glimmer/tracking from package json
+
 ## 12.0.13
 
 ### Patch Changes

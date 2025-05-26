@@ -124,7 +124,7 @@
     "ember-cli-clean-css": "^3.0.0",
     "ember-concurrency": "^4.0.2",
     "ember-focus-trap": "^1.1.0",
-    "ember-power-select": "8.7.0",
+    "ember-power-select": "8.7.2",
     "ember-source": "~6.2.0",
     "ember-template-lint": "^6.1.0",
     "eslint": "^9.19.0",
@@ -188,7 +188,7 @@
     "ember-basic-dropdown": "^8.5.0",
     "ember-concurrency": "^4.0.2",
     "ember-focus-trap": "^1.1.0",
-    "ember-power-select": "^8.7.0",
+    "ember-power-select": "^8.7.2",
     "ember-source": ">= 4.0.0",
     "moment": "^2.29.3"
   },

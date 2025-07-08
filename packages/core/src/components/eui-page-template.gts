@@ -11,7 +11,7 @@ import style from 'ember-style-modifier/modifiers/style';
 // import { scheduleOnce, later, cancel } from '@ember/runloop';
 // import { assert } from '@ember/debug';
 // import { htmlSafe } from '@ember/template';
-import { and, eq,or } from 'ember-truth-helpers';
+import { and, eq, or } from 'ember-truth-helpers';
 
 // import { action } from '@ember/object';
 // import { tracked } from '@glimmer/tracking';
@@ -23,7 +23,9 @@ import { and, eq,or } from 'ember-truth-helpers';
 // import { findPopoverPosition, getElementZIndex } from '../../utils/popover';
 // import { EuiPopoverPosition } from '../../utils/popover/types';
 // import { cascadingMenuKeys } from '../../utils/accesibility';
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import argOrDefault, {
+  argOrDefaultDecorator
+} from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import inlineStyles from '../helpers/inline-styles.ts';
 import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints.ts';
@@ -589,7 +591,11 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               {{style (inlineStyles min-height=this.minHeight)}}
               ...attributes
             >
-              <EuiPageSideBar @sticky={{true}} @paddingSize={{paddingSize}}>
+              <EuiPageSideBar
+                class={{@pageSideBarProps.className}}
+                @sticky={{true}}
+                @paddingSize={{paddingSize}}
+              >
                 {{yield to="pageSideBar"}}
               </EuiPageSideBar>
               <EuiPageBody

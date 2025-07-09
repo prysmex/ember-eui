@@ -1,5 +1,11 @@
 # site
 
+## 13.0.2
+
+### Patch Changes
+
+- pass in classes
+
 ## 13.0.1
 
 ### Patch Changes
@@ -49,6 +55,7 @@
 - release
 
 ## 12.0.7
+
 ## 8.0.60
 
 ### Patch Changes

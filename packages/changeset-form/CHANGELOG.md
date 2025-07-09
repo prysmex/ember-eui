@@ -1,5 +1,13 @@
 # @ember-eui/changeset-form
 
+## 13.0.2
+
+### Patch Changes
+
+- pass in classes
+- Updated dependencies
+  - @ember-eui/core@13.0.2
+
 ## 13.0.1
 
 ### Patch Changes
@@ -68,6 +76,7 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+
 ## 8.0.60
 
 ### Patch Changes

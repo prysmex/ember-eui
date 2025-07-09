@@ -49,6 +49,11 @@
 - release
 
 ## 12.0.7
+## 8.0.60
+
+### Patch Changes
+
+- pass in classnames
 
 ## 8.0.59
 

@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.60
+
+### Patch Changes
+
+- pass in classnames
+
 ## 8.0.59
 
 ### Patch Changes

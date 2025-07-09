@@ -11,7 +11,7 @@ import style from 'ember-style-modifier/modifiers/style';
 // import { scheduleOnce, later, cancel } from '@ember/runloop';
 // import { assert } from '@ember/debug';
 // import { htmlSafe } from '@ember/template';
-import { and, eq,or } from 'ember-truth-helpers';
+import { and, eq, or } from 'ember-truth-helpers';
 
 // import { action } from '@ember/object';
 // import { tracked } from '@glimmer/tracking';
@@ -589,7 +589,11 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               {{style (inlineStyles min-height=this.minHeight)}}
               ...attributes
             >
-              <EuiPageSideBar @sticky={{true}} @paddingSize={{paddingSize}}>
+              <EuiPageSideBar
+                class={{@pageSideBarProps.className}}
+                @sticky={{true}}
+                @paddingSize={{paddingSize}}
+              >
                 {{yield to="pageSideBar"}}
               </EuiPageSideBar>
               <EuiPageBody

@@ -6,8 +6,12 @@ import EuiIcon from './eui-icon.gts';
 import EuiText from './eui-text.gts';
 import TextBlock from './text-block.gts';
 
-import type { colorMapping,sizeMapping } from '../utils/css-mappings/eui-call-out';
+import type {
+  colorMapping,
+  sizeMapping
+} from '../utils/css-mappings/eui-call-out';
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiTextSignature } from './eui-text';
 import type { TextBlockSignature } from './text-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
@@ -19,6 +23,8 @@ export interface EuiCallOutSignature {
     iconType?: EuiIconSignature['Args']['type'];
     size?: keyof typeof sizeMapping;
     color?: keyof typeof colorMapping;
+    textColor?: EuiTextSignature['Args']['color'];
+    iconSize?: EuiIconSignature['Args']['size'];
   };
   Blocks: {
     title?: [];
@@ -41,7 +47,7 @@ const EuiCallOut: TemplateOnlyComponent<EuiCallOutSignature> = <template>
           <EuiIcon
             @iconClasses="euiCallOutHeader__icon"
             @type={{@iconType}}
-            @size="m"
+            @size={{argOrDefault @iconSize "m"}}
             aria-hidden="true"
             @color="inherit"
           />
@@ -66,7 +72,7 @@ const EuiCallOut: TemplateOnlyComponent<EuiCallOutSignature> = <template>
       </div>
     {{/if}}
     {{#if (has-block "body")}}
-      <EuiText @size={{if (eq @size "s") "xs" "s"}}>
+      <EuiText @size={{if (eq @size "s") "xs" "s"}} @color={{@textColor}}>
         {{yield to="body"}}
       </EuiText>
     {{/if}}

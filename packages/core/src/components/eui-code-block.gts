@@ -363,6 +363,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
             "euiCodeBlock--hasBothControls"
           )
           (if this.lineNumbersConfig.show "euiCodeBlock--hasLineNumbers")
+          @className
         )
         (classNames
           "euiCodeBlock__pre"

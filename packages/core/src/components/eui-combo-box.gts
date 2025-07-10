@@ -85,6 +85,8 @@ export interface EuiComboBoxSignature {
     noMatchesMessage?: string;
     noMatchesMessageComponent?: any;
     closeOnSelect?: boolean;
+    optionsClass?: string;
+    rowHeight?: number;
   };
   Blocks: {
     default: [any, number, Select];

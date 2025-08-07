@@ -1,4 +1,3 @@
-import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
@@ -32,6 +31,7 @@ export interface FieldTextAreaSignature extends FieldBaseSignature {
       append?: ComponentLike;
       placeholder?: string;
       autofocus?: boolean;
+      readOnly?: boolean;
       inputRef?: (element: HTMLTextAreaElement) => void;
     };
   Blocks: {
@@ -83,6 +83,7 @@ export default class ValidatedFormFieldTextArea extends ValidatedFormFieldBase<F
             @rows={{@rows}}
             autofocus={{@autofocus}}
             placeholder={{@placeholder}}
+            readOnly={{@readOnly}}
             ...attributes
             {{on "input" this.handleChange}}
           >

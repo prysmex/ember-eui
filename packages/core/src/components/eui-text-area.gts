@@ -22,6 +22,7 @@ export interface EuiTextAreaSignature {
     inputRef?: (element: HTMLTextAreaElement | null) => void;
     rows?: number;
     resize?: keyof typeof resizeMapping;
+    readOnly?: boolean;
   };
   Blocks: {
     default: [];
@@ -46,6 +47,7 @@ const EuiTextArea: TemplateOnlyComponent<EuiTextAreaSignature> = <template>
       class={{classes}}
       rows={{definedRows}}
       disabled={{@disabled}}
+      readonly={{@readOnly}}
       ...attributes
       {{validatableControl @isInvalid}}
       {{didInsert (optional @inputRef)}}

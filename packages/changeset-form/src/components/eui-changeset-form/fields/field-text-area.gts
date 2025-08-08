@@ -63,6 +63,7 @@ export default class EuiChangesetFormFieldTextArea extends Base<EuiChangesetForm
           @id={{theId}}
           @rows={{@rows}}
           @disabled={{@disabled}}
+          @readOnly={{@readOnly}}
           autofocus={{@autofocus}}
           placeholder={{@placeholder}}
           ...attributes

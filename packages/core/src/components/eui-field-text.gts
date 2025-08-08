@@ -63,6 +63,7 @@ const EuiFieldText: TemplateOnlyComponent<EuiFieldTextSignature> = <template>
           disabled={{@disabled}}
           type="text"
           placeholder={{@placeholder}}
+          readonly={{@readOnly}}
           ...attributes
           {{validatableControl @isInvalid}}
           {{didInsert (optional @inputRef)}}

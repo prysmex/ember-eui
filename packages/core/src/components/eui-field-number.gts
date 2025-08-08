@@ -102,6 +102,7 @@ const EuiFieldNumber: TemplateOnlyComponent<EuiFieldNumberSignature> =
             disabled={{@disabled}}
             step={{@step}}
             type="number"
+            readonly={{@readOnly}}
             {{validatableControl @isInvalid}}
             {{didInsert (optional @inputRef)}}
             ...attributes
@@ -130,6 +131,7 @@ const EuiFieldNumber: TemplateOnlyComponent<EuiFieldNumberSignature> =
                 disabled={{@disabled}}
                 step={{@step}}
                 type="number"
+                readonly={{@readOnly}}
                 {{validatableControl @isInvalid}}
                 ...attributes
               />

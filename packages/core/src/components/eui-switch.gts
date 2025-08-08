@@ -22,7 +22,7 @@ export interface EuiSwitchSignature {
      */
     label?: string;
     checked: boolean;
-    onChange: (event: MouseEvent) => void;
+    onChange?: (event: MouseEvent) => void;
     disabled?: boolean;
     compressed?: boolean;
     type?: 'submit' | 'reset' | 'button';

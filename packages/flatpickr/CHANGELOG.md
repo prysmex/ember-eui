@@ -76,6 +76,13 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+## 8.0.61
+
+### Patch Changes
+
+- Fixes
+- Updated dependencies
+  - @ember-eui/core@8.0.61
 
 ## 8.0.60
 

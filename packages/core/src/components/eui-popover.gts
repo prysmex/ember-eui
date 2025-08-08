@@ -83,7 +83,7 @@ export type EuiPopoverArgs = {
   /**
    * Triggering element for which to align the popover to
    */
-  button?: Component;
+  button?: HTMLElement;
   buttonRef?: (e: HTMLDivElement) => unknown;
   /**
    * Callback to handle hiding of the popover
@@ -327,7 +327,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   private closingTransitionAnimationFrame: number | undefined;
   private updateFocusAnimationFrame: number | undefined;
   private hasSetInitialFocus: boolean = false;
-  @tracked button: HTMLElement | null = null;
+  @tracked _button: HTMLElement | null = null;
   @tracked panel: HTMLElement | null = null;
 
   constructor(owner: Owner, args: EuiPopoverArgs) {
@@ -336,6 +336,14 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     this.prevIsOpen = this.isOpen;
     this.suppressingPopover = this.isOpen;
     this.isCurrentlyOpen = this.isOpen;
+  }
+
+  get button() {
+    if (this.args.button) {
+      return this.args.button;
+    }
+
+    return this._button;
   }
 
   get insert() {
@@ -576,7 +584,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     window.removeEventListener('scroll', this.positionPopoverFixed, true);
     window.removeEventListener('resize', this.positionPopoverFluid);
     this.popoverHost = null;
-    this.button = null;
+    this._button = null;
     this.panel = null;
     cancel(this.respositionTimeout as ReturnType<typeof later>);
     cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
@@ -721,7 +729,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
 
   @action
   registerButton(btn: HTMLDivElement): void {
-    this.button = btn;
+    this._button = btn;
     this.args.buttonRef?.(btn);
   }
 
@@ -777,13 +785,15 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       >
 
         {{! button }}
-        <div
-          class="euiPopover__anchor {{@anchorClassName}}"
-          {{didInsert this.registerButton}}
-        >
-          {{yield to="button"}}
-        </div>
-
+        {{#if (has-block "button")}}
+          <div
+            class="euiPopover__anchor {{@anchorClassName}}"
+            {{didInsert this.registerButton}}
+          >
+            {{yield to="button"}}
+          </div>
+        {{/if}}
+        
         {{! content }}
         {{#if
           (and

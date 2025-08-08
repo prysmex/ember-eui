@@ -55,6 +55,11 @@
 - release
 
 ## 12.0.7
+## 8.0.61
+
+### Patch Changes
+
+- Fixes
 
 ## 8.0.60
 

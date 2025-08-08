@@ -50,8 +50,8 @@ export default class ValidatedFormFieldBase<
     return this.args.validations || {};
   }
 
-  get hasErrorMessages() {
-    return this._validationErrorMessages?.length || this.error?.length > 0;
+  get hasErrorMessages(): boolean {
+    return !!this._validationErrorMessages?.length || this.error?.length > 0;
   }
 
   get isValid() {

@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/validated-form",
-  "version": "13.0.2",
+  "version": "13.0.3",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
     "ember-addon"
@@ -58,7 +58,7 @@
     "ember-validators": "^4.1.2"
   },
   "peerDependencies": {
-    "@ember-eui/core": "^13.0.2",
+    "@ember-eui/core": "^13.0.3",
     "@glimmer/component": "^2.0.0",
     "ember-source": ">= 4.0.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/pikaday",
-  "version": "13.0.2",
+  "version": "13.0.3",
   "description": "ember-pikaday integration with @ember-eui/core",
   "keywords": [
     "ember-addon",
@@ -59,7 +59,7 @@
     "ember-truth-helpers": "^4.0.3"
   },
   "peerDependencies": {
-    "@ember-eui/core": "^13.0.2",
+    "@ember-eui/core": "^13.0.3",
     "@glimmer/component": "^2.0.0",
     "ember-source": ">= 4.12.0"
   },

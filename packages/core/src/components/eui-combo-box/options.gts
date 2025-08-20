@@ -12,6 +12,7 @@ import emberPowerSelectIsGroupHelper, {
 } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, eq, not } from 'ember-truth-helpers';
 
+import classNames from '../../helpers/class-names';
 import EuiBadge from '../eui-badge.gts';
 import EuiFlexGroup from '../eui-flex-group.gts';
 import EuiFlexItem from '../eui-flex-item.gts';
@@ -95,10 +96,10 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
           @estimateHeight={{this.rowHeight}}
           @staticHeight={{true}}
           @bufferSize={{3}}
-          style="max-height: 200px; overflow-y: auto;"
+          style="overflow-y: auto;"
           role="listbox"
           aria-controls="ember-power-select-trigger-{{@select.uniqueId}}"
-          class={{@class}}
+          class={{classNames "euiComboBoxOptionsList__rowWrap" @class}}
           {{didInsert this.addHandlers}}
           {{willDestroy this.removeHandlers}}
           ...attributes
@@ -114,7 +115,8 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
               data-option-index="{{index}}"
             />
           {{else}}
-            <li
+            <button
+              type="button"
               style={{this.rowHeightString}}
               class="euiFilterSelectItem
                 {{if
@@ -133,6 +135,7 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
                   {{yield opt index @select}}
                 </span>
                 {{#if (and (eq opt @select.highlighted) (not opt.disabled))}}
+                  {{!template-lint-disable require-presentational-children}}
                   <EuiBadge
                     class="euiComboBoxOption__enterBadge"
                     @color="hollow"
@@ -141,7 +144,7 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
                   />
                 {{/if}}
               </span>
-            </li>
+            </button>
           {{/if}}
         </VerticalCollection>
       {{/if}}

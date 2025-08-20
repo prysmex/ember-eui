@@ -17,6 +17,9 @@ order: 1
   @closeOnSelect={{false}}
   @searchField='label'
   @placeholder='Select options'
+  @removeTag={{this.removeOption}}
+  @onCreateOption={{this.onCreateOption}}
+  @alwaysShowCreateOption={{false}}
   as |option item|
 >
   {{option.label}}
@@ -50,11 +53,37 @@ export default class extends Component {
   }
 
   @action
-  onChange(selected) {
+  calculateRemainingOptions() {
     this.remainingOptions = this.options.filter(
-      (opt) => !selected.includes(opt)
+      (opt) => !this.selected.includes(opt)
     );
+  }
+
+  @action
+  onChange(selected) {
     this.selected = selected;
+    this.calculateRemainingOptions();
+  }
+
+  @action
+  onCreateOption(str) {
+    let newOption = {
+      value: this.options.length + 1,
+      label: str,
+      color: '#' + (((1 << 24) * Math.random()) | 0).toString(16)
+    };
+    this.options = [...this.options, newOption];
+    this.selected = [...this.selected, newOption];
+    this.calculateRemainingOptions();
+  }
+
+  @action
+  removeOption(opt) {
+    this.selected = this.selected.filter((p) => {
+      return p !== opt;
+    });
+
+    this.calculateRemainingOptions();
   }
 }
 ```

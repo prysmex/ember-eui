@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.62
+
+### Patch Changes
+
+- EuiComboBox had some issues with html output and css, also we had the need to support always showing the creationOption UI for certain scnearios, so we added a new arg, alwaysShowCreateOption to always display it when createOption arg is also passed in
+
 ## 8.0.61
 
 ### Patch Changes

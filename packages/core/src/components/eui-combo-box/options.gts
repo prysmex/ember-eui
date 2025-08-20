@@ -7,12 +7,13 @@ import { EnsureSafeComponentHelper } from '@embroider/util';
 //@ts-expect-error
 import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
+import emberPowerSelectIsEqual from 'ember-power-select/helpers/ember-power-select-is-equal';
 import emberPowerSelectIsGroupHelper, {
   emberPowerSelectIsGroup
 } from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, eq, not } from 'ember-truth-helpers';
 
-import classNames from '../../helpers/class-names';
+import classNames from '../../helpers/class-names.ts';
 import EuiBadge from '../eui-badge.gts';
 import EuiFlexGroup from '../eui-flex-group.gts';
 import EuiFlexItem from '../eui-flex-item.gts';
@@ -20,7 +21,6 @@ import EuiLoadingSpinner from '../eui-loading-spinner.gts';
 import EuiText from '../eui-text.gts';
 
 import type EuiConfigService from '../../services/eui-config';
-import emberPowerSelectIsEqual from 'ember-power-select/helpers/ember-power-select-is-equal';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @service declare euiConfig: EuiConfigService;

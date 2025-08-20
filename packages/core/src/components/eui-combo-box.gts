@@ -43,6 +43,7 @@ export interface EuiComboBoxSignature {
           asPlainText?: boolean;
         };
     onCreateOption?: (search: string) => boolean | undefined;
+    alwaysShowCreateOption?: boolean;
     options: any[];
     search?: (term: string, select: Select) => any[] | PromiseProxy<any[]>;
     searchField?: string;
@@ -146,15 +147,17 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   get searchMessage() {
     return (
       this.args.searchMessage ||
-      this.euiI18n.lookupToken(
-        'euiComboBox.searchMessage',
-        'Type to search'
-      )
+      this.euiI18n.lookupToken('euiComboBox.searchMessage', 'Type to search')
     );
+  }
+
+  get alwaysShowCreateOption() {
+    return this.args.onCreateOption && this.args.alwaysShowCreateOption;
   }
 
   <template>
     {{! @glint-nocheck: not typesafe yet }}
+
     <PowerSelectMultiple
       ...attributes
       @onChange={{pipe this.onChange @onChange}}
@@ -218,7 +221,25 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @loadingMessage={{this.loadingMessage}}
       @selectedItemComponent={{@selectedItemComponent}}
       @beforeOptionsComponent={{@beforeOptionsComponent}}
-      @afterOptionsComponent={{@afterOptionsComponent}}
+      @afterOptionsComponent={{if
+        @afterOptionsComponent
+        @afterOptionsComponent
+        (if
+          (and
+            @onCreateOption
+            (not this.select.loading)
+            this.select.searchText
+            this.alwaysShowCreateOption
+          )
+          (component
+            EuiComboBoxCreateOption
+            customOptionText=@customOptionText
+            onCreateOption=this.onCreateOption
+            select=this.select
+            alwaysShow=true
+          )
+        )
+      }}
       @placeholder={{@placeholder}}
       @searchPlaceholder={{@searchPlaceholder}}
       @optionsComponent={{component
@@ -237,16 +258,17 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         (if this.select.isOpen "euiComboBox-isOpen")
       }}
       @noMatchesMessageComponent={{if
-        @onCreateOption
+        (and @onCreateOption (not this.alwaysShowCreateOption))
         (component
           EuiComboBoxCreateOption
           customOptionText=@customOptionText
           onCreateOption=this.onCreateOption
           select=this.select
+          alwaysShow=false
         )
         (component EuiComboBoxNoMatchesMessage)
       }}
-      @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen euiComboBoxOptionsList__rowWrap {{@dropdownClass}}"
+      @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen {{@dropdownClass}}"
       as |option i|
     >
       {{yield option i}}

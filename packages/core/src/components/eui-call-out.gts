@@ -29,6 +29,7 @@ export interface EuiCallOutSignature {
   Blocks: {
     title?: [];
     body?: [];
+    default?: [];
   };
 }
 
@@ -71,9 +72,13 @@ const EuiCallOut: TemplateOnlyComponent<EuiCallOutSignature> = <template>
         {{/if}}
       </div>
     {{/if}}
-    {{#if (has-block "body")}}
+    {{#if (or (has-block "body") (has-block))}}
       <EuiText @size={{if (eq @size "s") "xs" "s"}} @color={{@textColor}}>
-        {{yield to="body"}}
+        {{#if (has-block "body")}}
+          {{yield to="body"}}
+        {{else}}
+          {{yield}}
+        {{/if}}
       </EuiText>
     {{/if}}
   </div>

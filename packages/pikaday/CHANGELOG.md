@@ -1,5 +1,13 @@
 # @ember-eui/pikaday
 
+## 8.0.63
+
+### Patch Changes
+
+- try to fix mobile clcik
+- Updated dependencies
+  - @ember-eui/core@8.0.63
+
 ## 8.0.62
 
 ### Patch Changes

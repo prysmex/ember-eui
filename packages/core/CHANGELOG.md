@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 8.0.63
+
+### Patch Changes
+
+- try to fix mobile clcik
+
 ## 8.0.62
 
 ### Patch Changes

@@ -12,6 +12,7 @@ import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
 import classNames from '../helpers/class-names';
 import validatableControl from '../modifiers/validatable-control';
 import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiI18n from './eui-i18n.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiProgress from './eui-progress.gts';
@@ -160,9 +161,11 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
         as |promptId isOverridingInitialPrompt normalFormControl|
       }}
         <div
-          class="{{classes}}
-            {{if this.isHoveringDrop 'euiFilePicker__showDrop'}}
-            {{if isOverridingInitialPrompt 'euiFilePicker--hasFiles'}}"
+          class={{classNames
+            classes
+            (if this.isHoveringDrop "euiFilePicker__showDrop")
+            (if isOverridingInitialPrompt "euiFilePicker--hasFiles")
+          }}
         >
           <div class="euiFilePicker__wrap">
             <input
@@ -213,7 +216,15 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
                     @size="xs"
                     {{on "click" this.removeFiles}}
                   >
-                    Remove
+                    <EuiI18n
+                      @token="euiFilePicker.removeFiles"
+                      @default="Remove"
+                      as |Token|
+                    >
+                      <Token as |value|>
+                        {{value}}
+                      </Token>
+                    </EuiI18n>
                   </EuiButtonEmpty>
                 {{/if}}
               {{/if}}

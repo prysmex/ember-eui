@@ -1,3 +1,4 @@
+import { isArray } from '@ember/array';
 import { registerDestructor } from '@ember/destroyable';
 import { action } from '@ember/object';
 
@@ -73,7 +74,8 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
 
   @action
   setSize({ width, height }: { width: number; height: number }) {
-    let [dimension] = this.positional!;
+    let [dimension] = this.positional || [];
+
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
 

@@ -16,8 +16,8 @@ export interface EuiStatSignature {
   Element: HTMLDivElement;
   Args: {
     textAlign?: keyof typeof textAlignMapping;
-    title: string;
-    description: string;
+    title?: string;
+    description?: string;
     titleColor?: keyof typeof colorMapping;
     titleSize?: EuiStatTitleSignature['Args']['titleSize'];
     isLoading?: boolean;

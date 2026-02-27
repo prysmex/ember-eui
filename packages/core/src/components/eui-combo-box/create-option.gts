@@ -93,7 +93,7 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
       class="euiComboBoxOptionsList__rowWrap"
       {{style this.extraStyling.container}}
       {{!template-lint-disable no-invalid-interactive}}
-      {{on "click" @onCreateOption}}
+      {{on "pointerup" @onCreateOption}}
     >
       <EuiText
         class="euiComboBoxOptionsList__empty"

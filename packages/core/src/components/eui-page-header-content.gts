@@ -460,6 +460,7 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
                 <EuiFlexGroup
                   @wrap={{true}}
                   @responsive={{false}}
+                  @gutterSize="m"
                   class={{classNames
                     "euiPageHeaderContent__rightSideItems"
                     @rightSideGroupProps.className

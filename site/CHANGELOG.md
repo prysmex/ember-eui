@@ -67,6 +67,17 @@
 - release
 
 ## 12.0.7
+## 8.0.64
+
+### Patch Changes
+
+- general typings fixes and mutation observer
+
+## 8.0.63
+
+### Patch Changes
+
+- try to fix mobile clcik
 
 ## 8.0.62
 

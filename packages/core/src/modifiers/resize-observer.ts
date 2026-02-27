@@ -73,7 +73,8 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
 
   @action
   setSize({ width, height }: { width: number; height: number }) {
-    let [dimension] = this.positional!;
+    let [dimension] = this.positional || [];
+
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
 

@@ -1,4 +1,3 @@
-import { isArray } from '@ember/array';
 import { registerDestructor } from '@ember/destroyable';
 import { action } from '@ember/object';
 

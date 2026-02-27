@@ -1,5 +1,13 @@
 # @ember-eui/validated-form
 
+## 8.0.64
+
+### Patch Changes
+
+- general typings fixes and mutation observer
+- Updated dependencies
+  - @ember-eui/core@8.0.64
+
 ## 8.0.63
 
 ### Patch Changes

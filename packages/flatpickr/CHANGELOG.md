@@ -100,6 +100,13 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+## 8.0.65
+
+### Patch Changes
+
+- pass down match trigger width
+- Updated dependencies
+  - @ember-eui/core@8.0.65
 
 ## 8.0.64
 

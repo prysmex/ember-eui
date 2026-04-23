@@ -101,6 +101,7 @@ export default class ValidatedFormFieldComboBox extends ValidatedFormFieldBase<F
             @readOnly={{@readOnly}}
             @compressed={{@compressed}}
             @onCreateOption={{@onCreateOption}}
+            @matchTriggerWidth={{@matchTriggerWidth}}
             @customOptionText={{@customOptionText}}
             @onBlur={{queue (fn this.setIsTouched true) (optional @onBlur)}}
             @onFocus={{@onFocus}}

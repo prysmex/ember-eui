@@ -73,6 +73,11 @@
 - release
 
 ## 12.0.7
+## 8.0.65
+
+### Patch Changes
+
+- pass down match trigger width
 
 ## 8.0.64
 

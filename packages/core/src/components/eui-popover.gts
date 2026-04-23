@@ -190,6 +190,7 @@ export type EuiPopoverArgs = {
   isFocusTrapPaused?: boolean;
 
   focusTrapOptions?: {
+    [key: string]: any;
     onClickOutside?: (e: Event) => void;
   };
 

@@ -11,8 +11,11 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 /** @private Renders one EuiPaginationButton (in an `<li>`). */
 export interface EuiPaginationButtonWrapperSignature {
   Args: {
+    /** Wraps the button in an `<li>`. Defaults to `true`. */
     inList?: boolean;
+    /** Zero based index of the page. */
     pageIndex: number;
+    /** EuiPagination's state: `{ pageCount, activePage, ariaControls, safeClick }`. */
     props: {
       pageCount?: number;
       activePage?: number;

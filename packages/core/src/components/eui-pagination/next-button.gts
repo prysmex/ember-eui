@@ -16,9 +16,13 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiPaginationNextButtonSignature {
   Element: EuiButtonIconSignature['Element'];
   Args: {
+    /** Zero based index of the current page. */
     activePage: number;
+    /** Goes to a page (ignores out of range pages). */
     safeClick: SafeClickHandler;
+    /** Total number of pages. */
     pageCount: number;
+    /** Extra props for the button: `{ disabled, aria-controls, href }`. */
     props: {
       disabled?: boolean;
       'aria-controls'?: string;

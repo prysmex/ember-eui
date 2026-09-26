@@ -6,7 +6,8 @@ import { htmlSafe } from '@ember/template';
 
 import { and, not } from 'ember-truth-helpers';
 
-import icons, { iconDataTypes } from '../-private/icons.ts';
+import { loadedIcon } from '../-private/icon-loader.ts';
+import { emptyIcon, iconDataTypes } from '../-private/icons.ts';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -121,6 +122,8 @@ export default class EuiIcon extends Component<EuiIconSignature> {
    * The component rendering the svg: for EUI icon names, for names
    * registered by the app through the `euiIcon.icons` config, and for
    * components passed directly as `@type` (e.g. `@iconType={{MyLogo}}`).
+   * EUI icons load the first time they render (see preloadIcons); the empty
+   * icon takes their place meanwhile.
    */
   get iconComponent(): EuiIconComponent | undefined {
     const { type } = this.args;
@@ -131,7 +134,7 @@ export default class EuiIcon extends Component<EuiIconSignature> {
 
     if (typeof type !== 'string') return undefined;
 
-    if (isEuiIconType(type)) return icons[type];
+    if (isEuiIconType(type)) return loadedIcon(type) ?? emptyIcon;
 
     return this.euiConfig.getConfig('euiIcon.icons')?.[type];
   }

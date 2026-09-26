@@ -15,7 +15,15 @@ const rootDirectory = dirname(fileURLToPath(import.meta.url));
 const babelConfig = resolve(rootDirectory, './babel.publish.config.cjs');
 
 export default {
-  output: addon.output(),
+  output: {
+    ...addon.output(),
+    // one lazily loaded chunk per EUI icon (src/-private/icons.ts), kept
+    // together instead of next to the public entrypoints
+    chunkFileNames: (chunk) =>
+      chunk.moduleIds.every((id) => /\.svg(\?|$)/.test(id))
+        ? 'icons/[name]-[hash].js'
+        : '[name]-[hash].js'
+  },
   plugins: [
     addon.publicEntrypoints([
       '**/*.js',

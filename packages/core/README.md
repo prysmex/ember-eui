@@ -10,6 +10,21 @@ configuration is needed (this used to require `ember-svg-jar`).
 <EuiIcon @type="arrowDown" />
 ```
 
+Each EUI icon is its own chunk, loaded the first time it renders, so apps
+only download the icons they use. Until it arrives an empty icon of the same
+size takes its place; `await render()` / `settled()` in tests wait for it.
+Preload icons that should show up right away:
+
+```js
+import { preloadIcons } from '@ember-eui/core/utils/preload-icons';
+
+export default class ApplicationRoute extends Route {
+  async beforeModel() {
+    await preloadIcons(['arrowDown', 'cross', 'search']);
+  }
+}
+```
+
 To use your own icons, add [`@svg-jar/plugin`](https://github.com/svg-jar/plugin)
 to your app's `vite.config.mjs` (`svgJar({ target: 'ember' })`) so svg files
 can be imported as components. Then either pass the component directly:

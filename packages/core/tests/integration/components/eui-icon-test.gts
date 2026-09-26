@@ -1,11 +1,13 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { getRootElement, render } from '@ember/test-helpers';
 
 import EuiBadge from '#src/components/eui-badge.gts';
 import EuiButton from '#src/components/eui-button.gts';
 import EuiIcon, { TYPES } from '#src/components/eui-icon.gts';
+import { clearIconCache } from '#src/-private/icon-loader.ts';
 import { iconsFromGlob } from '#src/utils/icons-from-glob.ts';
+import { preloadIcons } from '#src/utils/preload-icons.ts';
 
 import type EuiConfigService from '#src/services/eui-config.ts';
 import type { TOC } from '@ember/component/template-only';
@@ -17,6 +19,25 @@ const CustomIcon: TOC<{ Element: SVGSVGElement }> = <template>
       r="4"
     /></svg>
 </template>;
+
+/**
+ * Child element count of the first svg rendered by `callback`, captured as
+ * soon as it is in the DOM (before a lazily loaded icon can arrive).
+ */
+async function firstRenderedChildren(callback: () => Promise<void>) {
+  let children: number | undefined;
+  const observer = new MutationObserver(() => {
+    const svg = getRootElement().querySelector('svg');
+
+    if (svg && children === undefined) children = svg.childElementCount;
+  });
+
+  observer.observe(getRootElement(), { childList: true, subtree: true });
+  await callback();
+  observer.disconnect();
+
+  return children;
+}
 
 const DATA_URL =
   'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"></svg>';
@@ -271,6 +292,40 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg.my-custom-icon').exists();
       assert.dom('svg.my-custom-icon').hasClass('euiIcon');
       assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
+    });
+  });
+
+  module('lazy loading', function (hooks) {
+    hooks.beforeEach(function () {
+      clearIconCache();
+    });
+
+    test('it renders the empty icon until the icon has loaded', async function (assert) {
+      const children = await firstRenderedChildren(() =>
+        render(<template><EuiIcon @type="bell" @size="l" /></template>)
+      );
+
+      assert.strictEqual(children, 0, 'the empty icon renders first');
+      assert.dom('svg path').exists('await render() waits for the icon');
+      assert.dom('svg').hasClass('euiIcon--large');
+    });
+
+    test('preloaded icons render right away', async function (assert) {
+      await preloadIcons(['bell']);
+
+      const children = await firstRenderedChildren(() =>
+        render(<template><EuiIcon @type="bell" /></template>)
+      );
+
+      assert.true((children ?? 0) > 0, 'no empty icon first');
+    });
+
+    test('preloadIcons rejects names that are not EUI icons', async function (assert) {
+      await assert.rejects(
+        // @ts-expect-error not an icon name
+        preloadIcons(['notAnIcon']),
+        /"notAnIcon" is not an EUI icon/
+      );
     });
   });
 });

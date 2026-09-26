@@ -82,9 +82,6 @@ importers:
       ember-modifier:
         specifier: ^4.2.0
         version: 4.2.0(@babel/core@7.26.9)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))
-      ember-svg-jar:
-        specifier: ^2.6.0
-        version: 2.6.2(@babel/core@7.26.9)(@glint/template@1.5.2)
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))
@@ -651,9 +648,6 @@ importers:
       ember-style-modifier:
         specifier: ^4.4.0
         version: 4.4.0(@babel/core@7.26.9)(@ember/string@4.0.1)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))
-      ember-svg-jar:
-        specifier: ^2.6.0
-        version: 2.6.2(@babel/core@7.26.9)(@glint/template@1.5.2)
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))
@@ -871,9 +865,6 @@ importers:
       ember-pikaday:
         specifier: ^5.1.1
         version: 5.1.1(@babel/core@7.26.9)(@ember/test-helpers@5.1.0(@babel/core@7.26.9)(@glint/template@1.5.2)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0)))(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))(moment@2.30.1)
-      ember-svg-jar:
-        specifier: ^2.6.0
-        version: 2.6.2(@babel/core@7.26.9)(@glint/template@1.5.2)
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))
@@ -1088,9 +1079,6 @@ importers:
       ember-modifier:
         specifier: ^4.2.0
         version: 4.2.0(@babel/core@7.26.9)(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))
-      ember-svg-jar:
-        specifier: ^2.6.0
-        version: 2.6.2(@babel/core@7.26.9)(@glint/template@1.5.2)
       ember-truth-helpers:
         specifier: ^4.0.3
         version: 4.0.3(ember-source@6.2.0(@glimmer/component@2.0.0)(@glint/template@1.5.2)(rsvp@4.8.5)(webpack@5.98.0))

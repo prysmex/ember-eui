@@ -5,6 +5,7 @@ import { setApplication } from '@ember/test-helpers';
 import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
 import { setTesting } from '@embroider/macros';
+import { setConfig as setBasicDropdownConfig } from 'ember-basic-dropdown/config';
 
 import EuiConfigService from '#src/services/eui-config.ts';
 import EuiI18nService from '#src/services/eui-i18n.ts';
@@ -28,9 +29,19 @@ function ensureSafeComponent(value: unknown) {
   return value;
 }
 
+// ember-basic-dropdown reads `config:environment`, which every real app has
+const config = {
+  modulePrefix: 'test-app',
+  environment: 'test',
+  rootURL: '/',
+  locationType: 'none',
+  APP: {}
+};
+
 class TestApp extends EmberApp {
   modules = {
     './router': Router,
+    './config/environment': { default: config },
     './services/eui-config': EuiConfigService,
     './services/eui-i18n': EuiI18nService,
     './services/eui-toaster': EuiToasterService,
@@ -43,6 +54,7 @@ Router.map(function () {});
 
 export function start() {
   setTesting(true);
+  setBasicDropdownConfig({ rootElement: '#ember-testing' });
   setApplication(
     TestApp.create({
       autoboot: false,

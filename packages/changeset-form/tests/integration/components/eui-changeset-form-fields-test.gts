@@ -188,9 +188,7 @@ module('Integration | Component | eui-changeset-form fields', function (hooks) {
     assert.deepEqual((changeset.get('between') as unknown[]).map(String), ['3', '8']);
   });
 
-  // Bug: the default theme maps FieldCheckbox and FieldRadio to the text
-  // field component, so the yielded Form.FieldCheckbox renders a text input
-  test.todo('Form.FieldCheckbox renders a checkbox that sets a boolean', async function (assert) {
+  test('Form.FieldCheckbox renders a checkbox that sets a boolean', async function (assert) {
     const changeset = Changeset({ agree: false });
 
     await render(
@@ -207,7 +205,7 @@ module('Integration | Component | eui-changeset-form fields', function (hooks) {
     assert.dom('input[type="checkbox"]').isChecked();
   });
 
-  test.todo('Form.FieldRadio renders a radio that sets a boolean', async function (assert) {
+  test('Form.FieldRadio renders a radio that sets a boolean', async function (assert) {
     const changeset = Changeset({ yes: false });
 
     await render(

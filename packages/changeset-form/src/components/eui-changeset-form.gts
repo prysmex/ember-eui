@@ -14,11 +14,13 @@ import type Owner from '@ember/owner';
 import randomId from '../-private/random-id.ts';
 import FormContext from './eui-changeset-form/context.gts';
 import FieldBaseComponent from './eui-changeset-form/fields/field-base.gts';
+import FieldCheckboxComponent from './eui-changeset-form/fields/field-checkbox.gts';
 import FieldCheckboxGroupComponent from './eui-changeset-form/fields/field-checkbox-group.gts';
 import FieldComboBoxComponent from './eui-changeset-form/fields/field-combo-box.gts';
 import FieldDualRangeSliderComponent from './eui-changeset-form/fields/field-dual-range-slider.gts';
 import FieldNumberComponent from './eui-changeset-form/fields/field-number.gts';
 import FieldPasswordComponent from './eui-changeset-form/fields/field-password.gts';
+import FieldRadioComponent from './eui-changeset-form/fields/field-radio.gts';
 import FieldRadioGroupComponent from './eui-changeset-form/fields/field-radio-group.gts';
 import FieldRangeSliderComponent from './eui-changeset-form/fields/field-range-slider.gts';
 import FieldSelectComponent from './eui-changeset-form/fields/field-select.gts';
@@ -54,8 +56,8 @@ export const EuiChangesetFormDefaultTheme: IEuiChangesetFormTheme = {
   FieldText: FieldTextComponent,
   FieldTextArea: FieldTextAreaComponent,
   FieldPassword: FieldPasswordComponent,
-  FieldRadio: FieldTextComponent,
-  FieldCheckbox: FieldTextComponent,
+  FieldRadio: FieldRadioComponent,
+  FieldCheckbox: FieldCheckboxComponent,
   FieldSwitch: FieldSwitchComponent,
   FieldRadioGroup: FieldRadioGroupComponent,
   FieldCheckboxGroup: FieldCheckboxGroupComponent,

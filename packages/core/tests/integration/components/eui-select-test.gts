@@ -42,7 +42,7 @@ module('Integration | Component | eui-select', function (hooks) {
     );
 
     assert.dom('select').hasClass('euiSelect--fullWidth').hasClass('euiSelect--compressed').hasClass('euiSelect--isLoading').isDisabled();
-    assert.false((document.querySelector('select') as HTMLSelectElement).validity.valid, 'invalid');
+    assert.false((this.element as HTMLElement).querySelector('select')!.validity.valid, 'invalid');
   });
 
   test('prepend and append blocks put the select in a group', async function (assert) {

@@ -16,7 +16,8 @@ export interface EuiRangeTick {
 type Value = string | number;
 
 export type EuiRangeTicksArgs = {
-  ticks: EuiRangeTick[];
+  /** Custom ticks; without them, ticks are rendered for every interval step */
+  ticks?: EuiRangeTick[];
   tickSequence: number[];
   value?: Value | Value[];
   min: number;

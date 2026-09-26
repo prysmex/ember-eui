@@ -205,20 +205,18 @@ export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSigna
         />
       {{/if}}
       {{#if this.derivedState.tickSequence}}
-        {{#if @ticks}}
-          <EuiRangeTicks
-            @disabled={{@disabled}}
-            @compressed={{@compressed}}
-            @ticks={{@ticks}}
-            @tickSequence={{this.derivedState.tickSequence}}
-            @value={{@value}}
-            @min={{@min}}
-            @max={{@max}}
-            @interval={{or @tickInterval @step}}
-            @onChange={{@onChange}}
-            @trackWidth={{this.trackEl.clientWidth}}
-          />
-        {{/if}}
+        <EuiRangeTicks
+          @disabled={{@disabled}}
+          @compressed={{@compressed}}
+          @ticks={{@ticks}}
+          @tickSequence={{this.derivedState.tickSequence}}
+          @value={{@value}}
+          @min={{@min}}
+          @max={{@max}}
+          @interval={{or @tickInterval @step}}
+          @onChange={{@onChange}}
+          @trackWidth={{this.trackEl.clientWidth}}
+        />
       {{/if}}
       {{yield}}
     </div>

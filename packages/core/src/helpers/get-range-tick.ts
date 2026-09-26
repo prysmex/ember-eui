@@ -41,6 +41,13 @@ export function calculateThumbPosition(
   valuePosition = valuePosition >= 0 ? valuePosition : 0;
 
   const trackWidth = width ?? 0;
+
+  // Not measured yet (e.g. first render): don't compensate for the thumb,
+  // dividing by 0 would give an invalid `left: calc(NaN% ...)`
+  if (trackWidth <= 0) {
+    return valuePosition * 100;
+  }
+
   const thumbToTrackRatio = thumbSize / trackWidth;
   const trackPositionScale = (1 - thumbToTrackRatio) * 100;
 
@@ -54,7 +61,7 @@ export function getRangeTick([
   max,
   percentageWidth,
   trackWidth = 0
-]: [EuiRangeTick[], number, number, number, number, number]) {
+]: [EuiRangeTick[] | undefined, number, number, number, number, number]) {
   let tickStyle: string = '';
   let customTick;
 

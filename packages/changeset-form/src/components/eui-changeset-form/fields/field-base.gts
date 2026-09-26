@@ -8,9 +8,18 @@ import Base from './base.gts';
 import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * An EuiFormRow bound to `@fieldName` for your own control: it yields what
+ * the control needs and shows the field's errors.
+ */
 export interface EuiChangesetFormFieldBaseSignature {
   Args: BaseSignature['Args'] & EuiFormRowSignature['Args'];
   Blocks: {
+    /**
+     * Yields `{ id, formId, isInvalid, validate, disabled }`: give the
+     * control the `id`, set the changeset value yourself and call
+     * `validate()`.
+     */
     default: [
       {
         id: string;

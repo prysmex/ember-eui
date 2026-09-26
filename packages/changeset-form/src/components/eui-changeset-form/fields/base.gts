@@ -6,13 +6,23 @@ import type Owner from '@ember/owner';
 
 import type { BufferedChangeset } from 'ember-changeset/types';
 
+/**
+ * Args every EuiChangesetForm field takes (on top of EuiFormRow's and its
+ * control's). The form's yielded fields pass `changeset` and `formId`.
+ */
 export interface BaseSignature {
   Args: {
+    /** @private Set by EuiChangesetForm. */
     changeset: BufferedChangeset;
+    /** The changeset property the field edits, e.g. `'email'` or `'address.city'`. */
     fieldName: string;
+    /** Errors to show instead of the changeset's errors for this field. */
     errors?: string[];
+    /** Classes for the EuiFormRow. */
     rowClasses?: string;
+    /** @private Set by EuiChangesetForm. */
     formId?: string;
+    /** Disables the control. */
     disabled?: boolean;
   };
 }

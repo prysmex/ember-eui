@@ -68,21 +68,50 @@ export const EuiChangesetFormDefaultTheme: IEuiChangesetFormTheme = {
   FieldComboBox: FieldComboBoxComponent
 };
 
+/**
+ * A form bound to an ember-changeset: each field reads and writes a
+ * property of the changeset (`@fieldName`) and shows its validation
+ * errors; submitting validates, then saves the changeset.
+ */
 export interface EuiChangesetFormSignature {
   Element: EuiFormSignature['Element'];
   Args: EuiFormSignature['Args'] &
     EuiFieldNumberSignature['Args'] & {
+      /**
+       * The ember-changeset (usually with validations, e.g. from
+       * ember-changeset-validations) whose properties the fields edit.
+       */
       changeset: BufferedChangeset;
+      /** Called on submit before validating, e.g. to set derived values. */
       beforeSubmit?: (changeset: BufferedChangeset, e: Event) => void;
+      /**
+       * Called when the form is submitted and the changeset is valid, after
+       * `changeset.save()` (or `execute()`), with the saved data.
+       */
       onSubmit?: (data: {}, e: Event) => void;
+      /** Called when the form is reset, after `changeset.rollback()`, with the data. */
       onReset?: (data: {}, e: Event) => void;
+      /**
+       * Applies the changes to the underlying object with
+       * `changeset.execute()` instead of saving it. Defaults to `false`.
+       */
       runExecuteInsteadOfSave?: boolean;
+      /** Makes every field full width. */
       fullWidth?: boolean;
+      /** Validates the whole changeset on render, showing errors right away. */
       initialValidation?: boolean;
+      /** Replaces the yielded field components (see the theme docs). */
       theme?: Partial<IEuiChangesetFormTheme>;
+      /** Disables every field. */
       isDisabled?: boolean;
     };
   Blocks: {
+    /**
+     * Yields the field components (bound to the changeset), the changeset,
+     * whether the form was submitted and the form's id:
+     * `as |Form changeset hasSubmitted|` → `<Form.FieldText @fieldName="name"
+     * @label="Name" />`.
+     */
     default: [
       ...ContextSignature['Blocks']['default'],
       BufferedChangeset,

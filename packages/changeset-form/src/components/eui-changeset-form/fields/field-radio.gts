@@ -12,16 +12,26 @@ import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiRadioSignature } from '@ember-eui/core/components/eui-radio';
 
+/**
+ * A radio in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldRadioSignature {
   Element: EuiRadioSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiRadioSignature['Args'] & {
+      /** Called with the new checked state and the event, after setting it on the changeset. */
       onChange?: (value: boolean, event: Event) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Placeholder text. */
       placeholder?: string;
+      /** The radio's own label (next to it); `@label` is the row's label. */
       radioLabel?: string;
     };
 

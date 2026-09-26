@@ -12,14 +12,22 @@ import type { BaseSignature } from './base';
 import type { EuiFieldTextSignature } from '@ember-eui/core/components/eui-field-text';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A text input in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldTextSignature {
   Element: EuiFieldTextSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiFieldTextSignature['Args'] & {
+      /** Called with the input's value and the event, after setting it on the changeset. */
       onInput?: (value: string, event: Event) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
     };
   Blocks: {

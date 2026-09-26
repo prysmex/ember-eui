@@ -11,15 +11,25 @@ import Base from './base.gts';
 import type { BaseSignature } from './base';
 import type { EuiCheckboxSignature } from '@ember-eui/core/components/eui-checkbox';
 
+/**
+ * A checkbox in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldCheckboxSignature {
   Element: EuiCheckboxSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiCheckboxSignature['Args'] & {
+      /** Called with the new checked state and the event, after setting it on the changeset. */
       onChange?: (value: boolean, event: Event) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Placeholder text. */
       placeholder?: string;
+      /** The radio's own label (next to it); `@label` is the row's label. */
       radioLabel?: string;
     };
 

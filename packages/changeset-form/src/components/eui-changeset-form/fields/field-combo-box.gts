@@ -14,17 +14,28 @@ import type { BaseSignature } from './base';
 import type { EuiComboBoxSignature } from '@ember-eui/core/components/eui-combo-box';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A combo box in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldComboBoxSignature {
   Element: EuiComboBoxSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiComboBoxSignature['Args'] & {
+      /** Required: called with the selected options. Set the changeset property here (the field only validates it), e.g. to store ids instead of objects. */
       onChange: (options: any[] | string) => void;
+      /** See EuiComboBox. */
       singleSelection?: { isPlainText: boolean } | boolean;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Placeholder text. */
       placeholder?: string;
+      /** The radio's own label (next to it); `@label` is the row's label. */
       radioLabel?: string;
     };
 

@@ -11,16 +11,26 @@ import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiSwitchSignature } from '@ember-eui/core/components/eui-switch';
 
+/**
+ * A switch in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldSwitchSignature {
   Element: EuiSwitchSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiSwitchSignature['Args'] & {
+      /** Called with the new checked state and the event, after setting it on the changeset. */
       onChange?: (value: boolean, event: Event) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** The switch's own label (next to it); `@label` is the row's label. */
       switchLabel?: string;
+      /** Placeholder text. */
       placeholder?: string;
     };
 

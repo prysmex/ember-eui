@@ -12,16 +12,26 @@ import type { BaseSignature } from './base';
 import type { EuiFieldPasswordSignature } from '@ember-eui/core/components/eui-field-password';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A password input in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldPasswordSignature {
   Element: EuiFieldPasswordSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiFieldPasswordSignature['Args'] & {
+      /** Called with the input's value and the event, after setting it on the changeset. */
       onInput?: (value: string, event: Event) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Placeholder text. */
       placeholder?: string;
+      /** The radio's own label (next to it); `@label` is the row's label. */
       radioLabel?: string;
     };
 

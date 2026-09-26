@@ -14,16 +14,26 @@ import type {
 } from '@ember-eui/core/components/eui-dual-range';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A dual range slider in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldDualRangeSliderSignature {
   Element: EuiDualRangeSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiDualRangeSignature['Args'] & {
+      /** Called with `[lower, upper]`, after setting it on the changeset. */
       onInput?: (value: [ValueMember, ValueMember]) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Placeholder text. */
       placeholder?: string;
+      /** The radio's own label (next to it); `@label` is the row's label. */
       radioLabel?: string;
     };
 

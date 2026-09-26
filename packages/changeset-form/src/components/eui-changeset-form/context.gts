@@ -3,13 +3,18 @@ import { hash } from '@ember/helper';
 import type { IEuiChangesetFormTheme } from '../eui-changeset-form';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Binds the theme's fields to the form's changeset and id. */
 export interface ContextSignature {
   Args: {
+    /** Id of the form. */
     formId: string;
+    /** The form's changeset. */
     changeset: any;
+    /** The field components to bind. */
     theme: IEuiChangesetFormTheme;
   };
   Blocks: {
+    /** Yields the bound field components. */
     default: [IEuiChangesetFormTheme];
   };
 }

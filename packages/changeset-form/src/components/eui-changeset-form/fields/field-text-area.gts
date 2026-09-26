@@ -10,15 +10,24 @@ import type { BaseSignature } from './base';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiTextAreaSignature } from '@ember-eui/core/components/eui-text-area';
 
+/**
+ * A textarea in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldTextAreaSignature {
   Element: EuiTextAreaSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiTextAreaSignature['Args'] & {
+      /** Called with the textarea's value and the event, after setting it on the changeset. */
       onInput?: (value: string, event: Event) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Placeholder text. */
       placeholder?: string;
     };
 }

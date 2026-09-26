@@ -9,16 +9,26 @@ import type { BaseSignature } from './base';
 import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A checkbox group in an EuiFormRow bound to `@fieldName` of the form's changeset.
+ * Takes EuiFormRow's and the control's args.
+ */
 export interface EuiChangesetFormFieldCheckboxGroupSignature {
   Element: EuiCheckboxGroupSignature['Element'];
   Args: BaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiCheckboxGroupSignature['Args'] & {
+      /** Called with the ids of the checked options, after setting them on the changeset. */
       onChange?: (value: string[]) => void;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Placeholder text. */
       placeholder?: string;
+      /** The radio's own label (next to it); `@label` is the row's label. */
       radioLabel?: string;
     };
 

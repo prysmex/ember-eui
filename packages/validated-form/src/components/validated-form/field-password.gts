@@ -14,17 +14,28 @@ import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiFieldPasswordSignature } from '@ember-eui/core/components/eui-field-password';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A validated password input in an EuiFormRow. Takes FieldBase's, EuiFormRow's and
+ * the control's args.
+ */
 export interface FieldPasswordSignature {
   Element: EuiFieldPasswordSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiFieldPasswordSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      /** Called with the input's value. */
+      onChange?: (value: string) => void;
+      /** Placeholder text. */
       placeholder?: string;
     };
   Blocks: {

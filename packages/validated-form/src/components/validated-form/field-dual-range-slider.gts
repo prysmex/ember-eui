@@ -17,24 +17,40 @@ import type {
 } from '@ember-eui/core/components/eui-dual-range';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A validated dual range slider in an EuiFormRow. Takes FieldBase's, EuiFormRow's and
+ * the control's args.
+ */
 export interface FieldDualRangeSliderSignature {
   Element: EuiDualRangeSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiDualRangeSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Disables the control. */
       disabled?: boolean;
+      /** Compressed control. */
       compressed?: boolean;
+      /** @deprecated Has no effect. */
       hasFocus?: boolean;
+      /** Shows a spinner. */
       isLoading?: boolean;
+      /** Read-only control. */
       readOnly?: boolean;
+      /** Icon of the control. */
       icon?: string;
 
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      /** Called with `[lower, upper]`. */
+      onChange?: (value: [ValueMember, ValueMember]) => void;
     };
   Blocks: {
     label: [];

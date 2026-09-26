@@ -14,17 +14,28 @@ import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiFieldNumberSignature } from '@ember-eui/core/components/eui-field-number';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A validated number input in an EuiFormRow. Takes FieldBase's, EuiFormRow's and
+ * the control's args.
+ */
 export interface FieldNumberSignature {
   Element: EuiFieldNumberSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiFieldNumberSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      /** Called with the input's value (a string). */
+      onChange?: (value: string) => void;
+      /** Placeholder text. */
       placeholder?: string;
     };
   Blocks: {

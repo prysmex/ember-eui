@@ -14,17 +14,27 @@ import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiSelectSignature } from '@ember-eui/core/components/eui-select';
 
+/**
+ * A validated select in an EuiFormRow. Takes FieldBase's, EuiFormRow's and
+ * the control's args.
+ */
 export interface FieldSelectSignature {
   Element: EuiSelectSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiSelectSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      /** Called with the selected option's value. */
+      onChange?: (value: string) => void;
     };
   Blocks: {
     label: [];

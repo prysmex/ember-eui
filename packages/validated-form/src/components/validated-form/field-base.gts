@@ -11,13 +11,29 @@ import {
 
 import type { ComponentLike } from '@glint/template';
 
+/**
+ * Args every ValidatedForm field takes (on top of EuiFormRow's and its
+ * control's). The form's yielded fields pass `register`, `unregister`,
+ * `onValidityChange` and `formId` for you.
+ */
 export interface FieldBaseSignature<T = ComponentLike> {
   Args: {
+    /** Id of the control; the row's label points to it. Defaults to a random id. */
     id?: string;
+    /** The field's value. Update it in `@onChange`. */
     value: any;
+    /** The row's label. */
     label?: string;
+    /** Errors from outside (e.g. the server), shown with the validation errors. */
     error?: string[];
+    /** Options, for fields with options (select, radios, checkboxes, combo box). */
     options?: any[];
+    /**
+     * ember-validators validations by name, e.g.
+     * `(hash presence=(hash presence=true) length=(hash min=3))` or
+     * `format=(hash type="email")`. Errors show once the field is touched
+     * (blurred, or the form submitted).
+     */
     validations?: any;
     /**
      * Each validation returns `true` when valid; otherwise `false` (generic
@@ -31,11 +47,17 @@ export interface FieldBaseSignature<T = ComponentLike> {
       ): boolean | string | { type?: string; context?: Record<string, unknown> };
       params?: Record<string, unknown>;
     }[];
+    /** Classes for the EuiFormRow. */
     rowClasses?: string;
+    /** @deprecated Has no effect. */
     rowExtra?: Record<string, unknown>;
+    /** Called with the new value; update `@value` here. */
     onChange: (value: any) => void;
+    /** @private Set by ValidatedForm. */
     onValidityChange: (isValid: boolean) => void;
+    /** @private Set by ValidatedForm. */
     register: (field: T) => void;
+    /** @private Set by ValidatedForm. */
     unregister: (field: T) => void;
   };
 }

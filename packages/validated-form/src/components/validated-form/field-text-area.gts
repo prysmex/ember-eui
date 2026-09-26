@@ -15,23 +15,40 @@ import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-ro
 import type { EuiTextAreaSignature } from '@ember-eui/core/components/eui-text-area';
 import type { ComponentLike } from '@glint/template';
 
+/**
+ * A validated textarea in an EuiFormRow. Takes FieldBase's, EuiFormRow's and the
+ * control's args; `@onChange` receives the value.
+ */
 export interface FieldTextAreaSignature extends FieldBaseSignature {
   Element: EuiTextAreaSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiTextAreaSignature['Args'] & {
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Visible number of lines. */
       rows?: number;
+      /** Which way it can be resized: `'vertical'`, `'horizontal'`, `'both'` or `'none'`. */
       resize?: 'vertical' | 'horizontal' | 'both' | 'none';
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @deprecated Not rendered, see EuiFormRow. */
       labelAppend?: ComponentLike;
+      /** @deprecated Has no effect. */
       prepend?: ComponentLike;
+      /** @deprecated Has no effect. */
       append?: ComponentLike;
+      /** Placeholder text. */
       placeholder?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
+      /** Read-only control. */
       readOnly?: boolean;
+      /** Called with the `<textarea>` element. */
       inputRef?: (element: HTMLTextAreaElement) => void;
     };
   Blocks: {

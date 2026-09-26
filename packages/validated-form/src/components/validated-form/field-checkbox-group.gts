@@ -15,17 +15,28 @@ import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiCheckboxGroupSignature } from '@ember-eui/core/components/eui-checkbox-group';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A validated checkbox group in an EuiFormRow. Takes FieldBase's, EuiFormRow's and
+ * the control's args.
+ */
 export interface FieldCheckboxGroupSignature {
   Element: EuiCheckboxGroupSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiCheckboxGroupSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      /** Called with the ids of the checked options. */
+      onChange?: (value: string[]) => void;
+      /** Placeholder text. */
       placeholder?: string;
     };
   Blocks: {

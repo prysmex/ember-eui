@@ -14,15 +14,24 @@ import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiFieldTextSignature } from '@ember-eui/core/components/eui-field-text';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A validated text input in an EuiFormRow. Takes FieldBase's, EuiFormRow's and the
+ * control's args; `@onChange` receives the value.
+ */
 export interface FieldTextSignature {
   Element: EuiFieldTextSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiFieldTextSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
     };
   Blocks: {

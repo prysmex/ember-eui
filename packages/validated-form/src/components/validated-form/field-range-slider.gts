@@ -13,17 +13,27 @@ import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 import type { EuiRangeSignature } from '@ember-eui/core/components/eui-range';
 
+/**
+ * A validated range slider in an EuiFormRow. Takes FieldBase's, EuiFormRow's and
+ * the control's args.
+ */
 export interface FieldRangeSliderSignature {
   Element: EuiRangeSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiRangeSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      /** Called with the slider's value (a string). */
+      onChange?: (value: string) => void;
     };
   Blocks: {
     label: [];

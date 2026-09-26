@@ -17,19 +17,32 @@ import type { FieldBaseSignature } from './field-base.gts';
 import type { EuiComboBoxSignature } from '@ember-eui/core/components/eui-combo-box';
 import type { EuiFormRowSignature } from '@ember-eui/core/components/eui-form-row';
 
+/**
+ * A validated combo box in an EuiFormRow. Takes FieldBase's, EuiFormRow's and
+ * the control's args.
+ */
 export interface FieldComboBoxSignature {
   Element: EuiComboBoxSignature['Element'];
   Args: FieldBaseSignature['Args'] &
     EuiFormRowSignature['Args'] &
     EuiComboBoxSignature['Args'] & {
+      /** Classes for the EuiFormRow. */
       rowClasses?: string;
+      /** Classes for the control. */
       fieldClasses?: string;
+      /** @private Set by ValidatedForm. */
       formId?: string;
+      /** Accessible label of the control. */
       ariaLabel?: string;
+      /** Focuses the control on render. */
       autofocus?: boolean;
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      /** Called with the selected options. */
+      onChange?: (options: any[]) => void;
+      /** Placeholder text. */
       placeholder?: string;
+      /** The options, see the control. */
       options?: EuiComboBoxSignature['Args']['options'];
+      /** The selected options. */
       selectedOptions?: EuiComboBoxSignature['Args']['selectedOptions'];
     };
   Blocks: {

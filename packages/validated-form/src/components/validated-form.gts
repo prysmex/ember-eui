@@ -17,33 +17,69 @@ import type { IValidatedFormTheme } from './default-theme';
 import type FieldBase from './validated-form/field-base.gts';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 
+/**
+ * A form whose fields validate their own values with ember-validators
+ * (`@validations`) or functions (`@customValidations`). Errors show once a
+ * field is touched; submitting calls `@onSubmit` only when all fields are
+ * valid.
+ */
 export interface ValidatedFormSignature {
   Element: EuiFormSignature['Element'];
   Args: {
+    /** Id of the form; fields join it with `form=`. Defaults to a random id. */
     id?: string;
+    /** @private Nested forms register with their parent form. */
     register?: (child: ValidatedFormComponent) => void;
+    /** @private Nested forms register with their parent form. */
     unregister?: (child: ValidatedFormComponent) => void;
+    /** @private */
     addChild?: (child: FieldBase) => void;
+    /** @private */
     removeChild?: (child: FieldBase) => void;
+    /** Called on submit while a field is invalid (all fields show their errors). */
     onInvalid?: () => void;
+    /**
+     * Called on submit when every field is valid. If it returns a promise
+     * that rejects, the fields are marked touched again.
+     */
     onSubmit?: () => void | Promise<void>;
+    /** Called when the form is reset. */
     onReset?: (e: Event) => void;
+    /**
+     * Called when the form's validity or touched state changes, e.g. to
+     * disable the submit button while invalid.
+     */
     onValidityChange?: (
       isValid: boolean,
       isTouched: boolean,
       isInvalidAndTouched: boolean
     ) => void;
+    /** Replaces the yielded field components (see the theme docs). */
     theme?: Partial<IValidatedFormTheme>;
+    /** Disables every field. */
     isDisabled?: boolean;
+    /** Makes every field full width. */
     fullWidth?: boolean;
+    /** Compressed fields, for dense forms. */
     compressed?: boolean;
+    /** `'form'` (the default) or `'div'`. */
     tagName?: EuiFormSignature['Args']['tagName'];
+    /** Shows `@error` in a callout above the form, see EuiForm. */
     isInvalid?: EuiFormSignature['Args']['isInvalid'];
+    /** See EuiForm's `@invalidCallout`. */
     invalidCallout?: EuiFormSignature['Args']['invalidCallout'];
+    /** Form-level errors, see EuiForm's `@error`. */
     error?: EuiFormSignature['Args']['error'];
+    /** Title of the errors callout. */
     errorTitle?: EuiFormSignature['Args']['errorTitle'];
   };
   Blocks: {
+    /**
+     * Yields the form's state (`isValid`, `isInvalid`, `isTouched`,
+     * `isInvalidAndTouched`, `formId`) and its field components, already
+     * connected to it: `as |form|` → `<form.FieldText @label="Name"
+     * @value={{this.name}} @onChange={{…}} @validations={{…}} />`.
+     */
     default: [
       {
         onValidityChange: (

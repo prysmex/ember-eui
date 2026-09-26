@@ -5,15 +5,27 @@ import { setApplication } from '@ember/test-helpers';
 import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
 import { setTesting } from '@embroider/macros';
-import KeyboardService from 'ember-keyboard/services/keyboard';
 
 import EuiConfigService from '#src/services/eui-config.ts';
 import EuiI18nService from '#src/services/eui-i18n.ts';
 import EuiToasterService from '#src/services/eui-toaster.ts';
 
+// app-js re-exports of dependencies that are still resolved by name,
+// see tests/generate-addon-app-modules.mjs
+import addonAppModules from './addon-app-modules.ts';
+
 class Router extends EmberRouter {
   location = 'none';
   rootURL = '/';
+}
+
+/**
+ * ember-power-select 8 uses `{{ensure-safe-component}}` from the v1 addon
+ * @embroider/util. On ember-source >= 3.25 it only passes component values
+ * through (string names are deprecated), which is all we need in tests.
+ */
+function ensureSafeComponent(value: unknown) {
+  return value;
 }
 
 class TestApp extends EmberApp {
@@ -22,8 +34,8 @@ class TestApp extends EmberApp {
     './services/eui-config': EuiConfigService,
     './services/eui-i18n': EuiI18nService,
     './services/eui-toaster': EuiToasterService,
-    // services from v2 addon dependencies that the app tree would normally provide
-    './services/keyboard': KeyboardService
+    './helpers/ensure-safe-component': { default: ensureSafeComponent },
+    ...addonAppModules
   };
 }
 

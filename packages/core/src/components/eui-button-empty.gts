@@ -16,26 +16,57 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiButtonEmptySignature {
   Element: HTMLAnchorElement | HTMLButtonElement;
   Args: {
+    /** Shows a spinner instead of the icon and disables the button. */
     isLoading?: boolean;
+    /** `'xs'`, `'s'` or `'m'`. Defaults to `'m'`. */
     size?: keyof typeof sizeMapping;
+    /** Size of the icon. Defaults to `'m'` (`'s'` for `@size="xs"`). */
     iconSize?: EuiButtonContentSignature['Args']['iconSize'];
+    /**
+     * `'primary'`, `'danger'`, `'text'`, `'ghost'`, `'warning'` or
+     * `'success'`. Defaults to `'primary'`.
+     */
     color?: keyof typeof colorMapping;
+    /** Icon next to the text; anything `EuiIcon`'s `@type` accepts. */
     iconType?: EuiIconSignature['Args']['type'];
+    /** `'right'` puts the icon after the text. Defaults to the left side. */
     iconSide?: EuiButtonContentSignature['Args']['iconSide'];
+    /** Extra classes for the icon. */
     iconClasses?: string;
+    /** Classes for the element wrapping the text. */
     textClasses?: string;
+    /** Classes for the element wrapping the icon and text. */
     contentClasses?: string;
+    /**
+     * Removes the padding on `'left'`, `'right'` or `'both'` sides, to align
+     * the text with content above or below it.
+     */
     flush?: keyof typeof flushMapping;
+    /**
+     * Renders an `<a>` link instead of a `<button>` (a disabled or loading
+     * button stays a `<button>`).
+     */
     href?: string;
+    /** `target` of the `@href` link, e.g. `'_blank'`. */
     target?: string;
+    /** Disables the button and greys it out. */
     isDisabled?: boolean;
+    /** @deprecated Has no effect, see `EuiIcon`. */
     useSvg?: boolean;
+    /** @deprecated Not needed: a component passed as `@iconType` is rendered. */
     useComponent?: boolean;
+    /** `type` of the `<button>`, e.g. `'submit'`. Defaults to `'button'`. */
     type?: string;
+    /**
+     * For toggle buttons: sets `aria-pressed` to `"true"` / `"false"`. Leave
+     * it undefined for regular buttons.
+     */
     isSelected?: boolean;
+    /** Same as `@isDisabled`. */
     disabled?: boolean;
   };
   Blocks: {
+    /** The button's text. */
     default: [];
   };
 }

@@ -18,17 +18,36 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiCallOutSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Title in the callout's header. Use the `<:title>` block for markup. */
     title?: string;
+    /**
+     * Renders the title as a heading element, e.g. `'h2'`, so it appears in
+     * the page outline. Defaults to a `<span>`.
+     */
     heading?: TextBlockSignature['Args']['tagName'];
+    /**
+     * Icon before the title (only shown with a title), e.g. `'alert'`,
+     * `'check'` or `'help'`.
+     */
     iconType?: EuiIconSignature['Args']['type'];
+    /** `'s'` or `'m'`. Defaults to `'m'`. */
     size?: keyof typeof sizeMapping;
+    /**
+     * `'primary'`, `'success'`, `'warning'` or `'danger'`.
+     * Defaults to `'primary'`.
+     */
     color?: keyof typeof colorMapping;
+    /** Color of the body text, any `EuiText` color. Defaults to the text color. */
     textColor?: EuiTextSignature['Args']['color'];
+    /** Size of the title icon. Defaults to `'m'`. */
     iconSize?: EuiIconSignature['Args']['size'];
   };
   Blocks: {
+    /** The title, instead of `@title`. */
     title?: [];
+    /** The body; same as the default block. */
     body?: [];
+    /** The body, e.g. paragraphs and buttons. */
     default?: [];
   };
 }

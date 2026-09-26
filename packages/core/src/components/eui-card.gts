@@ -25,59 +25,77 @@ import type { EuiPanelSignature } from './eui-panel';
 import type { EuiTitleSignature } from './eui-title';
 
 type EuiCardComponentArgs = {
+  /** Footer text (vertical layout only). Use the `<:footer>` block for markup. */
   footer?: string;
+  /**
+   * Adds a "Select" toggle button to the bottom of the card, making the card
+   * selectable: `{ onClick, isSelected, isDisabled, color, … }` (see
+   * `EuiCardSelectProps`). Clicking anywhere on the card clicks it.
+   */
   selectable?: EuiCardSelectProps;
   /**
    * Class that will apply to the card top section.
    */
   topClassName?: string;
-
   /**
    * Class that will apply to the card content section.
    */
   contentClassName?: string;
-
   /**
    * Class that will apply to the card footer section.
    */
   footerClassName?: string;
-
+  /** `target` of the `@href` link, e.g. `'_blank'`. */
   target?: string;
-
+  /**
+   * Shows an `EuiBetaBadge` on the card's top edge:
+   * `{ label: 'Beta', title?, tooltipContent? }`.
+   */
   betaBadgeProps?: {
     label: string;
     title?: string;
     tooltipContent?: string;
   };
-
+  /** Text under the title. Use the `<:description>` block for markup. */
   description?: string;
-
   /**
    * The title of the card.
    */
   title?: string;
+  /** Size of the title, any `EuiTitle` size. Defaults to `'s'`. */
   titleSize?: EuiTitleSignature['Args']['size'];
-
   /**
-   * The title element. Will wrap the title in a heading tag.
+   * Tag wrapping the title, e.g. `'h3'` to include it in the page outline.
+   * Defaults to `'span'`.
    */
   titleElement?: string;
-
+  /** Makes the title a link; clicking anywhere on the card follows it. */
   href?: string;
-
+  /** Makes the title a button; clicking anywhere on the card calls it. */
   onClick?: (e: MouseEvent) => void;
-
+  /** Disables the card's link or button and greys it out. */
   isDisabled?: boolean;
-
+  /** `'left'`, `'center'` or `'right'`. Defaults to `'center'`. */
   textAlign?: 'left' | 'center' | 'right';
-
+  /** URL of an image across the top of the card (vertical layout only). */
   image?: string;
+  /** Icon above the title; anything `EuiIcon`'s `@type` accepts. */
   icon?: string;
+  /**
+   * `'vertical'` stacks icon, title, description and footer.
+   * `'horizontal'` puts the icon next to the text and hides the image and
+   * footer. Defaults to `'vertical'`.
+   */
   layout?: 'horizontal' | 'vertical';
-
+  /**
+   * Background of the card, any `EuiPanel` color (`'plain'`, `'subdued'`,
+   * `'transparent'`, `'primary'`, …); also adds a border. Defaults to a
+   * plain panel with a shadow.
+   */
   display?: EuiPanelSignature['Args']['color'];
+  /** Padding inside the card, any `EuiPanel` padding size. */
   paddingSize?: EuiPanelSignature['Args']['paddingSize'];
-
+  /** Size of `@icon`. */
   iconSize?: EuiIconSignature['Args']['size'];
 };
 
@@ -85,10 +103,21 @@ export interface EuiCardSignature {
   Element: EuiPanelSignature['Element'];
   Args: EuiCardComponentArgs;
   Blocks: {
+    /**
+     * Custom content above the title instead of `@icon` / `@image`; yields
+     * the class to put on it.
+     */
     icon: ['euiCard__icon'];
+    /**
+     * Custom title. Yields a function to register your link or button
+     * element (e.g. with `did-insert`) so clicks on the card trigger it.
+     */
     title: [() => void];
+    /** Custom description, instead of `@description`. */
     description: [];
+    /** Extra content after the description. */
     body: [];
+    /** Custom footer, instead of `@footer` (vertical layout only). */
     footer: [];
   };
 }

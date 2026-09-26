@@ -11,18 +11,33 @@ import EuiRadio from './eui-radio.gts';
 import type { EuiCheckboxSignature } from './eui-checkbox';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * Attributes and modifiers (`name`, `value`, `{{on "change" …}}`) go to the
+ * radio or checkbox input.
+ */
 export interface EuiCheckableCardSignature {
-  Element: EuiCheckboxSignature['Element']  ;
+  Element: EuiCheckboxSignature['Element'];
   Args: {
+    /** Id of the input, linked to the label. Defaults to a random id. */
     id?: string;
+    /** The card's label. Use the `<:label>` block for markup. */
     label?: string;
+    /** Whether the card's radio or checkbox is checked. */
     checked?: boolean;
+    /** Disables the input and greys the card out. */
     disabled?: boolean;
+    /**
+     * `'radio'` for picking one card of a group (give them the same `name`),
+     * `'checkbox'` for independent cards. Defaults to `'radio'`.
+     */
     checkableType?: 'checkbox' | 'radio';
   };
   Blocks: {
+    /** Unused, use `<:label>` and `<:content>`. */
     default: [];
+    /** The label, instead of `@label`. */
     label: [];
+    /** Details below the label, linked to the input with `aria-describedby`. */
     content: [];
   };
 }

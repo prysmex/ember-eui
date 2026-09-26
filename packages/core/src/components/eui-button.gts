@@ -14,29 +14,69 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiButtonSignature {
   Element: HTMLElement;
   Args: {
+    /**
+     * @private Class prefix, so other buttons can reuse this markup.
+     * Defaults to `'euiButton'`.
+     */
     baseClassName?: string;
+    /**
+     * `'primary'`, `'accent'`, `'success'`, `'warning'`, `'danger'`,
+     * `'ghost'` (for dark backgrounds) or `'text'`. Defaults to `'primary'`.
+     */
     color?: string;
+    /** Classes for the element wrapping the icon and text. */
     contentClasses?: string;
+    /** Same as `@isDisabled`. */
     disabled?: boolean;
+    /**
+     * Solid background, for the primary action of a page or form.
+     * Defaults to `false` (light background).
+     */
     fill?: boolean;
+    /** Stretches the button to its container's width. */
     fullWidth?: boolean;
+    /**
+     * Renders an `<a>` link instead of a `<button>` (a disabled or loading
+     * button stays a `<button>`).
+     */
     href?: string;
+    /** Extra classes for the icon. */
     iconClasses?: string;
+    /** `'right'` puts the icon after the text. Defaults to the left side. */
     iconSide?: EuiButtonContentSignature['Args']['iconSide'];
+    /** Size of the icon. Defaults to `'m'`. */
     iconSize?: EuiButtonContentSignature['Args']['iconSize'];
+    /** Icon next to the text; anything `EuiIcon`'s `@type` accepts. */
     iconType?: EuiButtonContentSignature['Args']['iconType'];
+    /** Shows a spinner instead of the icon and disables the button. */
     isLoading?: boolean;
+    /** For toggle buttons: sets `aria-pressed="true"` while selected. */
     isSelected?: boolean;
+    /** `'s'` or `'m'`. Defaults to `'m'`. */
     size?: string;
+    /** `target` of the `@href` link, e.g. `'_blank'`. */
     target?: string;
+    /** Classes for the element wrapping the text. */
     textClasses?: string;
+    /**
+     * `type` of the `<button>`, e.g. `'submit'` in a form.
+     * Defaults to `'button'`.
+     */
     type?: string;
+    /** @deprecated Not needed: a component passed as `@iconType` is rendered. */
     useComponent?: boolean;
+    /** @deprecated Has no effect, see `EuiIcon`. */
     useSvg?: boolean;
+    /**
+     * Tag to render, e.g. `'label'` for a file input trigger. Defaults to
+     * `'a'` with `@href`, `'button'` otherwise.
+     */
     element?: string;
+    /** Disables the button and greys it out. */
     isDisabled?: boolean;
   };
   Blocks: {
+    /** The button's text. */
     default: [];
   };
 }

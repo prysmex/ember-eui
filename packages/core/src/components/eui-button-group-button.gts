@@ -15,24 +15,49 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiButtonGroupButtonSignature {
   Element: EuiButtonSignature['Element'];
   Args: {
+    /** Id of the option, passed to `@onChange`. */
     id: string;
+    /** Value of the option, passed to `@onChange` for single selection. */
     value?: string;
+    /**
+     * `'label'` wraps a hidden radio input (single selection groups),
+     * `'button'` renders a toggle button (multi selection groups).
+     */
     element?: 'label' | 'button';
+    /** `name` of the radio input, shared by the group's buttons. */
     name?: string;
+    /** The button's text (visually hidden with `@isIconOnly`). */
     label?: string;
+    /** Disables the button. */
     isDisabled?: boolean;
+    /** Whether the option is selected. */
     isSelected?: boolean;
+    /** Shows only the icon; the label is kept for screen readers. */
     isIconOnly?: boolean;
+    /** `'s'`, `'m'` or `'compressed'`. */
     size?: EuiButtonSignature['Args']['size'];
+    /** Color of the selected button, see `EuiButtonGroup`. */
     color?: EuiButtonSignature['Args']['color'];
+    /** Classes for the element wrapping the icon and text. */
     contentClasses?: EuiButtonSignature['Args']['contentClasses'];
+    /** `'right'` puts the icon after the text. */
     iconSide?: EuiButtonSignature['Args']['iconSide'];
+    /** Icon of the button; anything `EuiIcon`'s `@type` accepts. */
     iconType?: EuiButtonSignature['Args']['iconType'];
+    /** Size of the icon. */
     iconSize?: EuiButtonSignature['Args']['iconSize'];
+    /** Extra classes for the icon. */
     iconClasses?: EuiButtonSignature['Args']['iconClasses'];
+    /** Shows a spinner instead of the icon. */
     isLoading?: EuiButtonSignature['Args']['isLoading'];
+    /** Classes for the element wrapping the text. */
     textClasses?: EuiButtonSignature['Args']['textClasses'];
+    /** `type` of the button (multi selection only). */
     type?: EuiButtonSignature['Args']['type'];
+    /**
+     * Called with the option's `id` (and `value` for single selection) when
+     * it is clicked.
+     */
     onChange: (id: string, value?: string) => void;
   };
 }

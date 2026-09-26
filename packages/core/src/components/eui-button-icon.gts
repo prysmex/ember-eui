@@ -16,19 +16,46 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiButtonIconSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
   Args: {
+    /**
+     * The icon; anything `EuiIcon`'s `@type` accepts. An icon-only button
+     * has no visible text, so always pass an `aria-label="…"` describing the
+     * action.
+     */
     iconType?: EuiIconSignature['Args']['type'];
+    /** Size of the icon. Defaults to `'m'`. */
     iconSize?: EuiIconSignature['Args']['size'];
+    /** Extra classes for the icon. */
     iconClasses?: string;
+    /** Renders an `<a>` link instead of a `<button>`. */
     href?: string;
+    /** `target` of the `@href` link, e.g. `'_blank'`. */
     target?: string;
+    /** Disables the button and greys it out. */
     isDisabled?: boolean;
+    /** For toggle buttons: sets `aria-pressed="true"` while selected. */
     isSelected?: boolean;
+    /**
+     * `'empty'` (just the icon), `'base'` (light background) or `'fill'`
+     * (solid background). Defaults to `'empty'`.
+     */
     display?: keyof typeof displayMapping;
+    /**
+     * `'primary'`, `'accent'`, `'success'`, `'warning'`, `'danger'`,
+     * `'ghost'` or `'text'`. Defaults to `'primary'`.
+     */
     color?: keyof typeof colorMapping;
+    /**
+     * Size of the button: `'xs'`, `'s'` or `'m'`. Defaults to the
+     * `euiButtonIcon.size` config, or `'xs'`.
+     */
     size?: keyof typeof sizeMapping;
+    /** `type` of the `<button>`. Defaults to `'button'`. */
     type?: 'button' | 'submit' | 'reset';
+    /** @deprecated Has no effect, see `EuiIcon`. */
     useSvg?: boolean;
+    /** @deprecated Not needed: a component passed as `@iconType` is rendered. */
     useComponent?: boolean;
+    /** Same as `@isDisabled`. */
     disabled?: boolean;
   };
 }

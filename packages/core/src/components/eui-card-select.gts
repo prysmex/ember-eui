@@ -11,17 +11,30 @@ import type { EuiButtonEmptySignature } from './eui-button-empty';
 
 export type EuiCardSelectProps = {
   /**
-   * Is in the selected state
+   * Is in the selected state: shows a check icon, the "Selected" text and
+   * the `success` color.
    */
   isSelected?: boolean;
+  /** Disables the button and shows "Unavailable". */
   isDisabled?: boolean;
+  /** Id of the button (EuiCard sets one). */
   buttonId?: string;
+  /**
+   * `EuiButtonEmpty` color. Defaults to `'success'` when selected, `'text'`
+   * otherwise.
+   */
   color?: EuiButtonEmptySignature['Args']['color'];
+  /** Shows a spinner in the button. */
   isLoading?: EuiButtonEmptySignature['Args']['isLoading'];
+  /** Makes the button a link. */
   href?: EuiButtonEmptySignature['Args']['href'];
+  /** Side of the check icon. */
   iconSide?: EuiButtonEmptySignature['Args']['iconSide'];
+  /** Removes the button's padding on `'left'`, `'right'` or `'both'` sides. */
   flush?: EuiButtonEmptySignature['Args']['flush'];
+  /** `type` of the button. */
   type?: EuiButtonEmptySignature['Args']['type'];
+  /** Called when the button (or the whole card, in EuiCard) is clicked; toggle `isSelected` here. */
   onClick?: (e: MouseEvent) => void;
 };
 

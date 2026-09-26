@@ -2,10 +2,13 @@ import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Wraps the parts of EuiRange / EuiDualRange. */
 export interface EuiRangeWrapperSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Stretches to the container's width. */
     fullWidth?: boolean;
+    /** Compressed (smaller) styling. */
     compressed?: boolean;
   };
   Blocks: {

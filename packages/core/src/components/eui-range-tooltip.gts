@@ -4,19 +4,30 @@ import { htmlSafe } from '@ember/template';
 
 import classNames from '../helpers/class-names.ts';
 
+/** A custom tick of EuiRange / EuiDualRange: `{ value: 20, label: '20kb' }`. */
 export interface EuiRangeTick {
+  /** Where the tick is. */
   value: number;
+  /** Its label. */
   label: Component;
 }
 
 export type EuiRangeTooltipArgs = {
+  /** The value. */
   value?: number | string;
+  /** Content after the value. */
   valueAppend?: Component;
+  /** Content before the value. */
   valuePrepend?: Component;
+  /** Highest value. */
   max: number;
+  /** Lowest value. */
   min: number;
+  /** `name` of the input. */
   name?: string;
+  /** Leaves room for ticks under the track. */
   showTicks?: boolean;
+  /** Compressed (smaller) styling. */
   compressed?: boolean;
 };
 
@@ -25,6 +36,7 @@ type Styling = {
   style: ReturnType<typeof htmlSafe>;
 };
 
+/** @private The value tooltip of EuiRange (`@showValue`). */
 export interface EuiRangeTooltipSignature {
   Args: EuiRangeTooltipArgs;
   Blocks: {

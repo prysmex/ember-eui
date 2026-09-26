@@ -9,29 +9,44 @@ import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import EuiIcon from './eui-icon.gts';
 
+/** An on/off toggle, for settings that apply immediately. */
 export interface EuiSwitchSignature {
   Element: HTMLButtonElement;
   Args: {
+    /** Id of the switch button. Defaults to a random id. */
     id?: string;
     /**
-     * Whether to render the render the text label
+     * Whether to render the text label. Without it `@label` becomes the
+     * accessible label. Defaults to `true`.
      */
     showLabel?: boolean;
     /**
      * Must be a string if `showLabel` prop is true
      */
     label?: string;
+    /** Whether it is on. */
     checked: boolean;
+    /**
+     * Called on click; `event.target.checked` is the new state. Update
+     * `@checked` here.
+     */
     onChange?: (event: MouseEvent) => void;
+    /** Disables the switch. */
     disabled?: boolean;
+    /** Smaller switch, for dense forms. */
     compressed?: boolean;
+    /** `type` of the button. Defaults to `'button'`. */
     type?: 'submit' | 'reset' | 'button';
 
+    /** Extra classes for the wrapper. */
     containerClass?: string;
+    /** @private Ignore the `<:label>` block. */
     isFakeLabelBlock?: boolean;
   };
   Blocks: {
+    /** Unused. */
     default: [];
+    /** The label, instead of `@label`. */
     label: [];
   };
 }

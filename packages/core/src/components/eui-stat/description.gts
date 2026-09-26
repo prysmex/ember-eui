@@ -5,6 +5,7 @@ import EuiText from '../eui-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The description of an EuiStat. */
 export interface EuiStatDescriptionSignature {
   Args: {
     /**
@@ -13,6 +14,7 @@ export interface EuiStatDescriptionSignature {
     descriptionElement?: keyof HTMLElementTagNameMap;
   };
   Blocks: {
+    /** The text. */
     default: [];
   };
 }

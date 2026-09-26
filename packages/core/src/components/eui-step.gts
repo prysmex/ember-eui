@@ -8,16 +8,26 @@ import EuiTitle from './eui-title.gts';
 import type { EuiTitleSignature } from './eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** One step of an EuiSteps list. */
 export interface EuiStepSignature {
   Element: HTMLDivElement;
   Args: {
+    /** The step's number, shown in its circle. */
     step: number;
+    /** The step's title. */
     title: string;
+    /**
+     * `'complete'` shows a check, `'incomplete'` a hollow circle,
+     * `'disabled'` greys it out. Defaults to the number.
+     */
     status?: 'incomplete' | 'complete' | 'disabled';
+    /** Size of the title: `'xs'`, `'s'` or `'m'`. Defaults to `'s'`. */
     titleSize?: Exclude<EuiTitleSignature['Args']['size'], 'xxxs' | 'xxs' | 'l'>;
+    /** Tag of the title, e.g. `'h3'`. Defaults to `'p'`. */
     headingElement?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
   };
   Blocks: {
+    /** The step's instructions, e.g. text, code blocks or EuiSubSteps. */
     default: [];
   };
 }

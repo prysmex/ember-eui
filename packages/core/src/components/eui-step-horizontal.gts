@@ -10,6 +10,7 @@ import EuiStepNumber from './eui-step-number.gts';
 import type { EuiStepNumberSignature } from './eui-step-number';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** One step of an EuiStepsHorizontal, a clickable button. */
 export interface EuiStepHorizontalSignature {
   Element: HTMLButtonElement;
   Args: {
@@ -34,7 +35,8 @@ export interface EuiStepHorizontalSignature {
      */
     disabled?: boolean;
     /**
-     * The status of the step
+     * `'complete'`, `'incomplete'`, `'disabled'`, `'loading'`,
+     * `'warning'` or `'danger'`. Defaults to `'incomplete'`.
      */
     status?: EuiStepNumberSignature['Args']['status'];
     /**

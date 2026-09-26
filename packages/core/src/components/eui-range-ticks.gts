@@ -8,8 +8,11 @@ import { eq } from 'ember-truth-helpers';
 import classNames from '../helpers/class-names.ts';
 import getRangeTick from '../helpers/get-range-tick.ts';
 
+/** A custom tick of EuiRange / EuiDualRange: `{ value: 20, label: '20kb' }`. */
 export interface EuiRangeTick {
+  /** Where the tick is. */
   value: number;
+  /** Its label. */
   label: Component;
 }
 
@@ -18,17 +21,27 @@ type Value = string | number;
 export type EuiRangeTicksArgs = {
   /** Custom ticks; without them, ticks are rendered for every interval step */
   ticks?: EuiRangeTick[];
+  /** Values to render ticks at. */
   tickSequence: number[];
+  /** The value. */
   value?: Value | Value[];
+  /** Lowest value. */
   min: number;
+  /** Highest value. */
   max: number;
+  /** Compressed (smaller) styling. */
   compressed?: boolean;
+  /** Interval between ticks. */
   interval?: number;
+  /** Disabled styling. */
   disabled?: boolean;
+  /** Called when the value changes (a tick or the track is clicked). */
   onChange?: (e: MouseEvent) => void;
+  /** Width of the track in px. */
   trackWidth?: number;
 };
 
+/** @private The ticks under the track of EuiRange / EuiDualRange. */
 export interface EuiRangeTicksSignature {
   Element: HTMLDivElement;
   Args: EuiRangeTicksArgs;

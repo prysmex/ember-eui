@@ -5,9 +5,12 @@ import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private A min/max label of EuiRange / EuiDualRange (`@showLabels`). */
 export interface EuiRangeLabelSignature {
   Args: {
+    /** Which end it is for: `'min'` or `'max'`. */
     side?: 'min' | 'max';
+    /** Disabled styling. */
     disabled?: boolean;
   };
   Blocks: {

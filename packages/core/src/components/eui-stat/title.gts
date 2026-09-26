@@ -8,15 +8,21 @@ import EuiTitle from '../eui-title.gts';
 import type { EuiTitleSignature } from '../eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The title of an EuiStat. */
 export interface EuiStatTitleSignature {
   Element: any;
   Args: {
+    /** Size, any `EuiTitle` size. */
     titleSize?: EuiTitleSignature['Args']['size'];
+    /** A CSS color, when it is not one of the named colors. */
     titleColor?: string;
+    /** Tag of the title. Defaults to `'p'`. */
     titleElement?: string;
+    /** Whether `@titleColor` is a named color (a class). */
     isColorClass?: boolean;
   };
   Blocks: {
+    /** The text. */
     default: [];
   };
 }

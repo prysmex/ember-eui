@@ -14,17 +14,27 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiRangeInputArgs
   extends Omit<EuiFieldNumberArgs, 'max' | 'min' | 'value'> {
+  /** Sizes the input to its digits. */
   autoSize?: boolean;
+  /** Number of digits to size the input for. */
   digitTolerance: number;
+  /** `name` of the input. */
   name?: string;
+  /** Highest value. */
   max: number;
+  /** Lowest value. */
   min: number;
+  /** Which end it is for: `'min'` or `'max'`. */
   side?: 'min' | 'max';
+  /** The value. */
   value?: string | number;
+  /** Show the `<:prepend>` block. */
   isPrependProvided?: boolean;
+  /** Show the `<:append>` block. */
   isAppendProvided?: boolean;
 }
 
+/** @private The number input of EuiRange / EuiDualRange (`@showInput`). */
 export interface EuiRangeInputSignature {
   Element: EuiFieldNumberSignature['Element'];
   Args: EuiRangeInputArgs;

@@ -12,6 +12,7 @@ import type { EuiIconSignature } from './eui-icon';
 import type { EuiStepSignature } from './eui-step';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** The circle with a step's number or status icon. */
 export interface EuiStepNumberSignature {
   Element: HTMLSpanElement;
   Args: {
@@ -20,7 +21,8 @@ export interface EuiStepNumberSignature {
      */
     number?: number | string;
     /**
-     * The status of the step
+     * `'complete'`, `'incomplete'`, `'disabled'`, `'loading'`,
+     * `'warning'` or `'danger'`; without one the number is shown.
      */
     status?: keyof typeof statusToClassMap;
     /**

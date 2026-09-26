@@ -18,21 +18,35 @@ export const LEVEL_COLORS: EuiRangeLevelColor[] = [
   'danger'
 ];
 
+/**
+ * A colored interval of EuiRange / EuiDualRange's track, e.g.
+ * `{ min: 0, max: 20, color: 'danger' }`.
+ */
 export interface EuiRangeLevel {
+  /** Start of the interval. */
   min: number;
+  /** End of the interval. */
   max: number;
+  /** `'primary'`, `'success'`, `'warning'` or `'danger'`. */
   color: EuiRangeLevelColor;
 }
 
 export type EuiRangeLevelsArgs = {
+  /** Colored intervals, see `EuiRangeLevel`. */
   levels?: EuiRangeLevel[];
+  /** Highest value. */
   max: number;
+  /** Lowest value. */
   min: number;
+  /** Leaves room for ticks under the track. */
   showTicks?: boolean;
+  /** Compressed (smaller) styling. */
   compressed?: boolean;
+  /** Width of the track in px. */
   trackWidth?: number;
 };
 
+/** @private Renders the `@levels` of EuiRange / EuiDualRange. */
 export interface EuiRangeLevelsSignature {
   Element: HTMLDivElement;
   Args: EuiRangeLevelsArgs;

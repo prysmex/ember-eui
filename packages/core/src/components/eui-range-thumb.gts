@@ -3,14 +3,21 @@ import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private A draggable thumb of EuiDualRange. */
 export interface EuiRangeThumbSignature {
   Element: HTMLButtonElement;
   Args: {
+    /** Lowest value. */
     min?: number;
+    /** Highest value. */
     max?: number;
+    /** The value. */
     value?: number;
+    /** Disabled styling. */
     disabled?: boolean;
+    /** `tabindex` of the control. */
     tabIndex?: number;
+    /** Leaves room for ticks under the track. */
     showTicks?: boolean;
   };
 }

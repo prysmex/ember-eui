@@ -20,24 +20,38 @@ import type { EuiRangeLevel } from './eui-range-levels';
 
 export { LEVEL_COLORS };
 
+/** A custom tick of EuiRange / EuiDualRange: `{ value: 20, label: '20kb' }`. */
 export interface EuiRangeTick {
+  /** Where the tick is. */
   value: number;
+  /** Its label. */
   label: Component;
 }
 
 type Value = number | string;
 
 export type EuiRangeTrackArgs = {
+  /** Lowest value. */
   min: number;
+  /** Highest value. */
   max: number;
+  /** Increment between values. */
   step?: number;
+  /** The value. */
   value?: Value | Value[];
+  /** Compressed (smaller) styling. */
   compressed?: boolean;
+  /** Disabled styling. */
   disabled?: boolean;
+  /** Leaves room for ticks under the track. */
   showTicks?: boolean;
+  /** Interval between ticks. */
   tickInterval?: number;
+  /** Custom ticks, see `EuiRangeTick`. */
   ticks?: EuiRangeTick[];
+  /** Called when the value changes (a tick or the track is clicked). */
   onChange?: (e: MouseEvent) => void;
+  /** Colored intervals, see `EuiRangeLevel`. */
   levels?: EuiRangeLevel[];
 };
 
@@ -46,6 +60,7 @@ type Styling = {
   styles: ReturnType<typeof htmlSafe>;
 };
 
+/** @private The track (levels, ticks, highlight) of EuiRange / EuiDualRange. */
 export interface EuiRangeTrackSignature {
   Element: HTMLElement;
   Args: EuiRangeTrackArgs;

@@ -12,23 +12,41 @@ import type { EuiStatDescriptionSignature } from './eui-stat/description';
 import type { EuiStatTitleSignature } from './eui-stat/title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A key number with a description, e.g. on a dashboard. */
 export interface EuiStatSignature {
   Element: HTMLDivElement;
   Args: {
+    /** `'left'`, `'center'` or `'right'`. Defaults to `'left'`. */
     textAlign?: keyof typeof textAlignMapping;
+    /** The number or value, e.g. "1,234". Use the `<:title>` block for markup. */
     title?: string;
+    /** What it measures, e.g. "Total users". Use the `<:description>` block for markup. */
     description?: string;
+    /**
+     * Color of the title: `'default'`, `'subdued'`, `'primary'`,
+     * `'success'`, `'danger'`, `'accent'`, or any CSS color.
+     * Defaults to `'default'`.
+     */
     titleColor?: keyof typeof colorMapping;
+    /** Size of the title, any `EuiTitle` size. Defaults to `'l'`. */
     titleSize?: EuiStatTitleSignature['Args']['titleSize'];
+    /** Shows "--" instead of the title, e.g. while it loads. */
     isLoading?: boolean;
+    /** Puts the title above the description. Defaults to `false`. */
     reverse?: boolean;
+    /** @deprecated Has no effect. */
     screenReader?: boolean;
+    /** Tag of the title. Defaults to `'p'`. */
     titleElement?: string;
+    /** Tag of the description. Defaults to `'p'`. */
     descriptionElement?: EuiStatDescriptionSignature['Args']['descriptionElement'];
   };
   Blocks: {
+    /** The title, instead of `@title`. */
     title: [];
+    /** The description, instead of `@description`. */
     description: [];
+    /** Extra content after the stat, e.g. a trend. */
     default: [];
   };
 }

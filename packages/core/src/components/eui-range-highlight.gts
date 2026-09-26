@@ -6,15 +6,23 @@ import simpleStyle from '../modifiers/simple-style.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The highlighted part of the track of EuiRange / EuiDualRange. */
 export interface EuiRangeHighlightSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Leaves room for ticks under the track. */
     showTicks?: boolean;
+    /** Compressed (smaller) styling. */
     compressed?: boolean;
+    /** Focus styling. */
     hasFocus?: boolean;
+    /** Start of the highlighted range. */
     lowerValue?: number;
+    /** Lowest value. */
     min?: number;
+    /** Highest value. */
     max?: number;
+    /** End of the highlighted range. */
     upperValue?: number;
   };
 }

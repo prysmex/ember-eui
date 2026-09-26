@@ -20,17 +20,59 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiBadgeSignature {
   Element: HTMLButtonElement | HTMLAnchorElement | HTMLSpanElement;
   Args: {
+    /**
+     * `'default'`, `'hollow'`, `'primary'`, `'success'`, `'accent'`,
+     * `'warning'`, `'danger'` or any hex color (`'#DA8B45'`); the text color
+     * is picked for contrast. Defaults to `'default'`.
+     */
     color?: keyof typeof colorMapping | EuiBadgeColorType | string;
+    /**
+     * Icon shown in the badge, anything `EuiIcon`'s `@type` accepts.
+     */
     iconType?: EuiIconSignature['Args']['type'];
+    /**
+     * Side of the text the icon is on. Defaults to `'left'`.
+     */
     iconSide?: 'left' | 'right';
+    /**
+     * Makes the icon a separate button calling this function, e.g. an "x" to
+     * remove the badge. Requires `@iconType` and `@iconOnClickAriaLabel`.
+     */
     iconOnClick?: () => void;
+    /**
+     * Accessible label (and hover title) of the `@iconOnClick` button.
+     */
     iconOnClickAriaLabel?: string;
+    /**
+     * @deprecated Has no effect, see `EuiIcon`.
+     */
     iconUseSvg?: boolean;
+    /**
+     * Disables the badge's buttons and links and greys it out.
+     */
     isDisabled?: boolean;
+    /**
+     * Makes the badge (or its text, when it has an `@iconType`) a button
+     * calling this function.
+     */
     onClick?: () => void;
+    /**
+     * Accessible label of the `@onClick` button, when the text alone does not
+     * describe the action.
+     */
     onClickAriaLabel?: string;
+    /**
+     * Makes the badge (or its text, when it has an `@iconType`) a link.
+     */
     href?: string;
+    /**
+     * `target` of the `@href` link, e.g. `'_blank'` (only without
+     * `@iconType`).
+     */
     target?: string;
+    /**
+     * Extra props for the `@iconOnClick` button.
+     */
     closeButtonProps?: {
       tabIndex?: number;
       dataSelectedIconIndex?: number;
@@ -38,6 +80,7 @@ export interface EuiBadgeSignature {
     };
   };
   Blocks: {
+    /** The badge's text. */
     default: [];
   };
 }

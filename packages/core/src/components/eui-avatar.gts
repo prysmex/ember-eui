@@ -16,16 +16,58 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiAvatarSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Full name of the user or space. Used as the accessible label and the
+     * hover title, for the initials and to pick a background color.
+     */
     name?: string;
+    /**
+     * Background color as a hex value (`'#DA8B45'`), or `'plain'` for the
+     * page's background color. Defaults to one of EUI's visualization colors,
+     * picked from `@name`; the text color is chosen for contrast.
+     */
     color?: EuiIconSignature['Args']['color'];
+    /**
+     * Color of the `@iconType` icon, any `EuiIcon` color. Defaults to the
+     * text color picked for the background; `null` keeps the icon's own
+     * colors (for multi-color logos).
+     */
     iconColor?: string;
+    /**
+     * Size of the `@iconType` icon. Defaults to `@size`.
+     */
     iconSize?: EuiIconSignature['Args']['size'];
+    /**
+     * Shows an icon instead of initials, e.g. `'logoElastic'` for a space.
+     * Anything `EuiIcon`'s `@type` accepts.
+     */
     iconType?: EuiIconSignature['Args']['type'];
+    /**
+     * Image shown as the avatar (as a background image), instead of initials.
+     */
     imageUrl?: string;
+    /**
+     * Custom initials (max 2 characters) instead of the ones computed from
+     * `@name`. Only shown when `@name` is set.
+     */
     initials?: string;
+    /**
+     * Greys the avatar out and hides it from assistive technology.
+     */
     isDisabled?: boolean;
+    /**
+     * `'s'`, `'m'`, `'l'` or `'xl'`. Defaults to `'m'`.
+     */
     size?: keyof typeof sizeMapping;
+    /**
+     * `'user'` renders a circle, `'space'` a rounded square.
+     * Defaults to `'user'`.
+     */
     type?: keyof typeof typeMapping;
+    /**
+     * Number of initials to compute from `@name`, `1` or `2`. Defaults to
+     * the number of words in the name, up to 2.
+     */
     initialLength?: 1 | 2;
   };
 }

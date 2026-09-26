@@ -19,56 +19,62 @@ export interface EuiBetaBadgeSignature {
   Element: HTMLSpanElement;
   Args: {
     /**
-     * The label to use for the beta badge. Usually a single letter.
+     * The badge's text, e.g. `'Beta'`, or a single letter (rendered as a
+     * circle). Also its hover title. The default block replaces it.
      */
     label?: string;
     /**
-     * The title to use for the beta badge. Usually a full word.
+     * Hover title when there is no `@label` (e.g. with `@iconType`), and the
+     * title of the `@tooltipContent` tooltip.
      */
     title?: string;
     /**
-     * The icon to use for the beta badge.
+     * Renders an icon instead of `@label` (icon-only badge). Give it a
+     * `@title` so it has a name.
      */
     iconType?: EuiIconSignature['Args']['type'];
     /**
-     * The color of the beta badge.
+     * `'hollow'`, `'accent'` or `'subdued'`. Defaults to `'hollow'`.
      */
     color?: keyof typeof colorMapping;
 
     /**
-     * The size of the beta badge.
+     * `'s'` or `'m'`. Defaults to `'m'`.
      */
     size?: keyof typeof sizeMapping;
     /**
-     * The position of the tooltip for the beta badge.
+     * Where the `@tooltipContent` tooltip appears: `'top'`, `'right'`,
+     * `'bottom'` or `'left'`. Defaults to `'top'`.
      */
     tooltipPosition?: EuiToolTipSignature['Args']['position'];
     /**
-     * The content of the tooltip for the beta badge.
+     * Shows a tooltip with this text on hover, e.g. what "Beta" means here.
      */
     tooltipContent?: string;
     /**
-     * The aria-label for the beta badge.
+     * Accessible label of the badge when it is a link or button
+     * (`@href` / `@onClick`).
      */
     onClickAriaLabel?: string;
     /**
-     * The href for the beta badge.
+     * Makes the badge a link.
      */
     href?: string;
     /**
-     * The target for the beta badge.
+     * `target` of the `@href` link, e.g. `'_blank'`.
      */
     target?: string;
     /**
-     * The rel for the beta badge.
+     * `rel` of the `@href` link, e.g. `'noopener'`.
      */
     rel?: string;
     /**
-     * The action to call when the beta badge is clicked.
+     * Makes the badge a button calling this function.
      */
     onClick?: (event: MouseEvent) => void;
   };
   Blocks: {
+    /** Custom content instead of `@label` / `@iconType`. */
     default: [];
   };
 }

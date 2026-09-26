@@ -11,10 +11,19 @@
 export type OneOf<T, K extends keyof T> = Omit<T, K> &
   { [k in K]: Pick<Required<T>, k> & { [k1 in Exclude<K, k>]?: never } }[K];
 
+/**
+ * Args some components accept on top of their own. Prefer plain HTML
+ * attributes (`id=`, `class=`, `aria-label=`) where a component passes
+ * `...attributes` to its element.
+ */
 export interface CommonArgs {
+  /** Id of the component's main element. */
   id?: string;
+  /** Extra class(es) for the component's main element. */
   className?: string;
+  /** Accessible label of the component's main element. */
   'aria-label'?: string;
+  /** `data-test-subj` attribute, the EUI convention for test selectors. */
   'data-test-subj'?: string;
 }
 

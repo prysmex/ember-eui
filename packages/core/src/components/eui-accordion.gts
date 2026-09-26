@@ -26,19 +26,32 @@ import type { CommonArgs } from './common.ts';
 type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 
 type AccordionArgs = {
+  /**
+   * Id of the collapsible content region; the trigger's `aria-controls`
+   * points to it. Give each accordion a unique id.
+   */
   id?: string;
 
+  /**
+   * Element wrapping the accordion. With `'fieldset'` the trigger renders as
+   * a `<legend>`, for accordions that group form controls.
+   * Defaults to `'div'`.
+   */
   element?: 'div' | 'fieldset';
   /**
    * Class that will apply to the trigger for the accordion.
    */
   buttonClassName?: string;
 
+  /**
+   * Extra props for the trigger: `id` (defaults to a generated id) and
+   * `className`.
+   */
   buttonProps?: CommonArgs;
 
   /**
-   * Applied to the main button receiving the `onToggle` event.
-   * Anything other than the default `button` does not support removing the arrow display (for accessibility of focus).
+   * @deprecated Has no effect: the trigger is a `<button>`, or a `<legend>`
+   * when `@element="fieldset"`.
    */
   buttonElement?: 'div' | 'legend' | 'button';
   /**
@@ -53,46 +66,67 @@ type AccordionArgs = {
    */
   buttonContentClassName?: string;
   /**
-   * The content of the clickable trigger
+   * @deprecated Has no effect, use the `<:buttonContent>` block for the
+   * trigger's content.
    */
   buttonContent?: Component;
   /**
-   * Will appear right aligned against the button. Useful for separate actions like deletions.
+   * Set to `true` to render the `<:extraAction>` block, right aligned next
+   * to the trigger (e.g. a delete button). The block is ignored without it.
    */
   extraAction?: Component | boolean;
   /**
-   * The accordion will start in the open state.
+   * The accordion will start in the open state. Defaults to `false`.
    */
   initialIsOpen?: boolean;
   /**
-   * Optional callback method called on open and close with a single `isOpen` parameter
+   * Called with the new open state (`true` = open) when the trigger or arrow
+   * is clicked. With `@forceState`, use it to update the state you control.
    */
   onToggle?: (isOpen: boolean) => void;
   /**
-   * The padding around the exposed accordion content.
+   * Padding around the content: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or
+   * `'xl'`. Defaults to `'none'`.
    */
   paddingSize?: EuiAccordionPaddingSize;
   /**
-   * Placement of the arrow indicator, or 'none' to hide it.
+   * Placement of the arrow indicator, or `'none'` to hide it (only possible
+   * when the trigger is a button). Defaults to `'left'`.
    */
   arrowDisplay?: 'left' | 'right' | 'none';
   /**
-   * Control the opening of accordion via prop
+   * Controls the open state from outside: `'open'` or `'closed'`. Clicking
+   * the trigger then only calls `@onToggle`; update `@forceState` there.
    */
   forceState?: 'closed' | 'open';
   /**
-   * Change `extraAction` and children into a loading spinner
+   * Shows a loading spinner in place of the `<:extraAction>` block.
+   * Defaults to `false`.
    */
   isLoading?: boolean;
   /**
-   * Choose whether the loading message replaces the content. Customize the message by passing a node
+   * While `@isLoading`, replace the content with a spinner and a message:
+   * `true` for "Loading...", or a string for your own message.
+   * Defaults to `false` (the content stays visible).
    */
   isLoadingMessage?: boolean | Component;
 
+  /**
+   * @deprecated Has no effect, use `@initialIsOpen` or `@forceState`.
+   */
   isOpen?: boolean;
 
+  /**
+   * Class for the element wrapping the content.
+   */
   childClassName?: string;
+  /**
+   * Class for the row holding the arrow, trigger and extra action.
+   */
   triggerClassName?: string;
+  /**
+   * @deprecated Has no effect, use `@childClassName`.
+   */
   childContentClassName?: string;
 };
 
@@ -100,8 +134,14 @@ export interface EuiAccordionSignature {
   Element: any;
   Args: AccordionArgs;
   Blocks: {
+    /** The trigger's content (usually a title); yields whether it is open. */
     buttonContent: [boolean | undefined];
+    /** The collapsible content. */
     content: [];
+    /**
+     * Rendered next to the trigger when `@extraAction={{true}}`; yields
+     * whether it is open.
+     */
     extraAction: [boolean | undefined];
   };
 }

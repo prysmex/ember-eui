@@ -19,9 +19,16 @@ const BadgeGroupItem: TemplateOnlyComponent<{
 export interface EuiBadgeGroupSignature {
   Element: HTMLDivElement;
   Args: {
-    gutterSize: keyof typeof gutterSize;
+    /**
+     * Space between the badges, `'xs'` or `'s'`. Defaults to `'xs'`.
+     */
+    gutterSize?: keyof typeof gutterSize;
   };
   Blocks: {
+    /**
+     * Wrap each badge in the yielded `item` so the group can space and wrap
+     * them: `<group.item><EuiBadge>…</EuiBadge></group.item>`.
+     */
     default: [
       {
         item: typeof BadgeGroupItem;

@@ -12,15 +12,54 @@ import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import EuiPortal from './eui-portal.gts';
 
 export interface EuiButtomBarArgs {
+  /**
+   * With `@position="fixed"`, pads the bottom of `<body>` by the bar's height
+   * so it does not cover the end of the page. Defaults to `true`.
+   */
   affordForDisplacement?: boolean;
+  /**
+   * Class added to `<body>` while the bar is rendered.
+   */
   bodyClassName?: string;
+  /**
+   * `'fixed'` renders the bar in a portal, fixed to the bottom of the
+   * window. `'sticky'` keeps it at the bottom of its scrolling container,
+   * `'static'` renders it in place. Defaults to `'fixed'`.
+   */
   position?: 'fixed' | 'static' | 'sticky';
+  /**
+   * @deprecated Has no effect: the bar uses a portal when `@position` is
+   * `'fixed'`.
+   */
   usePortal?: boolean;
+  /**
+   * Padding inside the bar: `'none'`, `'s'`, `'m'` or `'l'`.
+   * Defaults to `'m'`.
+   */
   paddingSize?: 'none' | 's' | 'm' | 'l';
+  /**
+   * Accessible name of the bar's region landmark (announced to screen
+   * readers). Defaults to "Page level controls". Currently only used when
+   * `@position` is `'sticky'` or `'static'`.
+   */
   landmarkHeading?: string;
+  /**
+   * Distance from the top in px (only for `'sticky'` / `'static'`).
+   * Defaults to `0`.
+   */
   top?: number;
+  /**
+   * Distance from the right edge in px. Defaults to `0`.
+   */
   right?: number;
+  /**
+   * Distance from the left edge in px, e.g. the width of a side nav.
+   * Defaults to `0`.
+   */
   left?: number;
+  /**
+   * Distance from the bottom in px. Defaults to `0`.
+   */
   bottom?: number;
 }
 
@@ -61,7 +100,10 @@ const updateDisplacementModifier = modifier(function (
 export interface EuiBottomBarSignature {
   Element: HTMLElement;
   Args: EuiButtomBarArgs;
-  Blocks: { default: [] };
+  Blocks: {
+    /** The bar's content, usually buttons in an EuiFlexGroup. */
+    default: [];
+  };
 }
 
 export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBarSignature> {

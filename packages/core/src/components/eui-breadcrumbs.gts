@@ -40,20 +40,39 @@ export type EuiBreadcrumb = {
    * Visible label of the breadcrumb
    */
   text: string;
+  /**
+   * Makes the breadcrumb a link.
+   */
   href?: string;
+  /**
+   * Makes the breadcrumb clickable, e.g. to transition with the router.
+   */
   onClick?: (e: MouseEvent) => void;
 
+  /**
+   * Class for the breadcrumb's text element.
+   */
   className?: string;
   /**
    * Force a max-width on the breadcrumb text
    */
   truncate?: boolean;
 
+  /**
+   * Set internally on the "…" item holding collapsed breadcrumbs.
+   */
   ellipsis?: boolean;
 
+  /**
+   * `EuiLink` color of a clickable breadcrumb. Defaults to `'subdued'`, and
+   * `'text'` for the last one.
+   */
   color?: string;
 
-  'aria-current': string;
+  /**
+   * Set internally; the last breadcrumb gets `aria-current="page"`.
+   */
+  'aria-current'?: string;
 };
 
 const onWindowResizeModifier = modifier(
@@ -123,31 +142,33 @@ const limitedBreadcrumbs = (max: number, breadcrumbs: EuiBreadcrumb[]) => {
 
 interface EuiBreadcrumbsComponentArgs {
   /**
-   * Hides extra (above the max) breadcrumbs under a collapsed item as the window gets smaller.
-   * Pass a custom #EuiBreadcrumbResponsiveMaxCount object to change the number of breadcrumbs to show at the particular breakpoints.
-   *
-   * Pass `false` to turn this behavior off.
-   *
-   * Default: `{ xs: 1, s: 2, m: 4 }`
+   * Shows fewer breadcrumbs on smaller screens, collapsing the ones in the
+   * middle into a "…" popover. `true` uses `{ xs: 1, s: 2, m: 4 }` (at most
+   * 1 breadcrumb on extra small screens, 2 on small, 4 on medium); pass an
+   * object with any of the `xs`, `s`, `m`, `l`, `xl` keys for your own
+   * limits (a missing key falls back to `@max`). Never shows more than
+   * `@max`. Defaults to off.
    */
   responsive?: boolean | EuiBreadcrumbResponsiveMaxCount;
 
   /**
    * Forces all breadcrumbs to single line and
    * truncates each breadcrumb to a particular width,
-   * except for the last item
+   * except for the last item. Defaults to `true`.
    */
   truncate?: boolean;
 
   /**
-   * Collapses the inner items past the maximum set here
-   * into a single ellipses item.
-   * Omitting or passing a `0` value will show all breadcrumbs.
+   * Collapses the breadcrumbs in the middle past this number into a single
+   * "…" item that opens a popover with them. Defaults to `5`; pass `0` or
+   * `null` to always show all breadcrumbs.
    */
   max?: number | null;
 
   /**
-   * The array of individual #EuiBreadcrumb items
+   * The breadcrumbs, from the root to the current page:
+   * `[{ text: 'Home', href: '/' }, { text: 'Users', onClick: … }, { text: 'Jane' }]`.
+   * The last one is the current page.
    */
   breadcrumbs: EuiBreadcrumb[];
 }

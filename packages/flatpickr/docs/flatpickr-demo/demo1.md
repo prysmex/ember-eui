@@ -1,11 +1,14 @@
-# Flatpickr
+---
+order: 1
+---
+
+# Date range with time
 
 <EuiText>
-  <p><EuiLink @target="_blank" @href="https://flatpickr.js.org">flatpickr</EuiLink> for <strong>@ember-eui/core</strong>. Pass <EuiCode>@date</EuiCode> and <EuiCode>@onChange</EuiCode>; any other argument is passed to flatpickr as an <EuiLink @target="_blank" @href="https://flatpickr.js.org/options/">option</EuiLink>.</p>
 
-<p><EuiCodeBlock @isCopyable={{true}}>pnpm add @ember-eui/flatpickr flatpickr</EuiCodeBlock></p>
-
-<p>Import flatpickr's stylesheet once in your app, e.g. <EuiCode>import 'flatpickr/dist/flatpickr.css';</EuiCode></p>
+A range picker with time, an alternative input format, disabled and
+enabled dates, bounds, a clear button and a Russian locale (loaded
+lazily).
 
 </EuiText>
 

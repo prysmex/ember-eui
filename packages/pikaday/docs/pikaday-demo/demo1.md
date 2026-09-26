@@ -1,23 +1,12 @@
-# Pikaday
+---
+order: 1
+---
+
+# Date picker
 
 <EuiText>
-  <p>
-  <EuiToolTip @content="We are using a fork for now">
-    <:anchor>
-    <EuiLink @target="_blank" @href="https://github.com/prysmex/ember-pikaday/tree/flexibility">ember-pikaday</EuiLink>
-    </:anchor>
-  </EuiToolTip> for <strong>@ember-eui/core</strong> integration
-  </p>
 
-  <p><EuiCodeBlock @language="bash" @isCopyable={{true}}>ember install @ember-eui/pikaday</EuiCodeBlock></p>
-
-<EuiTitle @tagName="h3">Styles</EuiTitle>
-
-<p>In order to give apps control over styling, the default CSS does not load unless you tell it to. The recommended way to load the CSS is just import the pikaday css anywhere in your app, literally it could be in application controller or something like that</p>
-
-<EuiCodeBlock @language="js" @isCopyable={{true}}>
-{{t "pikaday.styles_instructions"}}
-</EuiCodeBlock>
+Pick a date; the selected `Date` is shown below.
 
 </EuiText>
 

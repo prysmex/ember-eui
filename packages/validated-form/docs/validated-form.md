@@ -1,4 +1,55 @@
-<!-- empty on purpose -->
+<EuiSpacer/>
+<EuiPageHeader @pageTitle="Validated form"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`@ember-eui/validated-form` is a form whose fields validate their own
+values: pass `@validations` (with
+[ember-validators](https://github.com/rwjblue/ember-validators)) or
+`@customValidations` to each field. Errors show once a field has been
+touched (blurred) or the form submitted, and `@onSubmit` runs only when
+every field is valid.
+
+```bash
+pnpm add @ember-eui/validated-form
+```
+
+```hbs
+<ValidatedForm @onSubmit={{this.save}} as |Form|>
+  <Form.FieldText
+    @label="Email"
+    @value={{this.email}}
+    @onChange={{this.updateEmail}}
+    @validations={{hash presence=(hash presence=true) format=(hash type="email")}}
+  />
+  <EuiButton @type="submit" @fill={{true}}>Save</EuiButton>
+</ValidatedForm>
+```
+
+Unlike the changeset form, you keep the values: each field shows
+`@value` and calls `@onChange` with the new value. `@validations` is a
+hash of ember-validators validators and their options (`presence`,
+`length`, `format`, `number`, `inclusion`, `date`, …). For other rules,
+`@customValidations` takes functions returning `true` or an error
+message:
+
+```js
+customValidations = [
+  { validation: (value) => value !== 'admin' || 'This name is reserved' },
+];
+```
+
+The yielded fields are `FieldText`, `FieldTextArea`, `FieldNumber`,
+`FieldPassword`, `FieldSelect`, `FieldComboBox`, `FieldCheckboxGroup`,
+`FieldRadioGroup`, `FieldSwitch`, `FieldRangeSlider`,
+`FieldDualRangeSlider` and `FieldMarkdownEditor`; each also takes
+`EuiFormRow`'s args and its control's args. `@onValidityChange` on the
+form tells you when the whole form becomes valid or invalid.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

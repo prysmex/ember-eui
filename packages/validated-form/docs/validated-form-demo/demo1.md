@@ -1,14 +1,13 @@
-# Validated form
+---
+order: 1
+---
+
+# A validated form
 
 <EuiText>
-  <p>Inspired on <strong>ember-paper</strong>'s <EuiCode>{{t "validated_form.ember_paper"}}</EuiCode></p>
 
-  <p>The idea is simple, <strong>ValidatedForm</strong> yields most basic <strong>@ember-eui/core</strong> components with some wiring to keep the form state on sync.</p>
-
-  <p>It uses <EuiLink @target="_blank" @href="https://github.com/offirgolan/ember-validators">ember-validators</EuiLink> by default to describe the validations. To provide the validations ergonomically you'd just pass a hash where each key is a valid
-ember-valitador validator, <EuiCode>length</EuiCode>, <EuiCode>presence</EuiCode>, <EuiCode>number</EuiCode>, the values and the <EuiCode>config</EuiCode> expected by those.</p>
-
-<p><EuiCodeBlock @isCopyable={{true}}>ember install @ember-eui/validated-form</EuiCodeBlock></p>
+Fields with ember-validators rules, external errors (`@error`) and a
+markdown field. Blur a field or submit to see its errors.
 
 </EuiText>
 

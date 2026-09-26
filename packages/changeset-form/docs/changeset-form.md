@@ -1,4 +1,61 @@
-<!-- empty on purpose -->
+<EuiSpacer/>
+<EuiPageHeader @pageTitle="Changeset form"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`@ember-eui/changeset-form` binds EUI form fields to an
+[ember-changeset](https://github.com/adopted-ember-addons/ember-changeset):
+each field reads and writes one property of the changeset (by
+`@fieldName`) and shows that property's validation errors. Submitting the
+form validates the changeset and, when it is valid, saves it.
+
+```bash
+pnpm add @ember-eui/changeset-form ember-changeset ember-changeset-validations
+```
+
+```hbs
+<EuiChangesetForm
+  @changeset={{changeset this.user this.UserValidations}}
+  @onSubmit={{this.saved}}
+  as |Form changeset|
+>
+  <Form.FieldText @fieldName="name" @label="Name" />
+  <Form.FieldText @fieldName="email" @label="Email" />
+  <Form.FieldSelect @fieldName="role" @label="Role" @options={{this.roles}} />
+  <EuiButton @type="submit" @fill={{true}} @isDisabled={{changeset.isInvalid}}>Save</EuiButton>
+</EuiChangesetForm>
+```
+
+```js
+import { validatePresence, validateFormat } from 'ember-changeset-validations/validators';
+
+export const UserValidations = {
+  name: validatePresence(true),
+  email: validateFormat({ type: 'email' }),
+};
+```
+
+The form yields its fields already bound to the changeset: `FieldText`,
+`FieldTextArea`, `FieldNumber`, `FieldPassword`, `FieldSelect`,
+`FieldComboBox`, `FieldCheckbox`, `FieldCheckboxGroup`, `FieldRadio`,
+`FieldRadioGroup`, `FieldSwitch`, `FieldRangeSlider`,
+`FieldDualRangeSlider`, and `FieldBase` for your own controls. Each field
+takes `EuiFormRow`'s args (`@label`, `@helpText`, …) and its control's args.
+Nested properties work (`@fieldName="address.city"`).
+
+On submit the form calls `@beforeSubmit`, validates, then
+`changeset.save()` (or `changeset.execute()` with
+`@runExecuteInsteadOfSave`) and `@onSubmit` with the saved data. Errors
+show on each field as soon as it is validated; `@initialValidation`
+validates everything on render.
+
+`FieldComboBox` needs `@onChange`: set the changeset value yourself there
+(e.g. to store ids instead of objects); the field validates it.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

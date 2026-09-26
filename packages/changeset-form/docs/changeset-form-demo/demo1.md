@@ -1,20 +1,15 @@
-# Changeset form
+---
+order: 1
+---
+
+# A complete form
 
 <EuiText>
-  <p><EuiLink @target="_blank" @href="https://github.com/poteto/ember-changeset">ember-changeset</EuiLink> with <strong>@ember-eui/core</strong> integration.</p>
 
-<p><EuiCodeBlock @isCopyable={{true}}>ember install @ember-eui/changeset-form</EuiCodeBlock></p>
-
-<EuiCallOut>
-  <:body>
-    Note: <EuiCode @language="hbs">{{t "changeset_form.note"}}</EuiCode> is a little bit more manual than the others in order to give you full flexibility of which options are actually selected
-and how to set them for complex or weird use cases, but we keep setting errors for you via the <EuiCode>@fieldName</EuiCode>
-  </:body>
-</EuiCallOut>
+Every field type bound to a changeset with validations. Change the
+values to see the errors appear, and submit.
 
 </EuiText>
-
-<EuiSpacer />
 
 ```hbs template
 <EuiFormRow @label='You can disable the form entirely'>

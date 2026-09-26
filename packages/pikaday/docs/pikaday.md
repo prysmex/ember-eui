@@ -1,4 +1,37 @@
-<!-- empty on purpose -->
+<EuiSpacer/>
+<EuiPageHeader @pageTitle="Pikaday"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`@ember-eui/pikaday` is a date input with a
+[Pikaday](https://github.com/Pikaday/Pikaday) calendar (through
+ember-pikaday), styled as an EUI text field.
+
+```bash
+pnpm add @ember-eui/pikaday moment
+```
+
+Load the calendar's styles once, e.g. in `app/app.js`:
+
+```js
+import '@ember-eui/pikaday/pikaday.css';
+```
+
+```hbs
+<EuiFormRow @label="Due date">
+  <EuiPikaday @value={{this.dueDate}} @onSelection={{this.setDueDate}} @format="YYYY-MM-DD" />
+</EuiFormRow>
+```
+
+`@value` is a `Date`; `@onSelection` receives the chosen `Date` (or
+`null` when cleared). `@format` is a moment format, `@minDate` /
+`@maxDate` limit the choice, and `@i18n` translates the calendar. It also
+takes `EuiFieldText`'s args (`@clear`, `@isInvalid`, `@compressed`, …).
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

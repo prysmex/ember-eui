@@ -1,4 +1,38 @@
-<!-- empty on purpose -->
+<EuiSpacer/>
+<EuiPageHeader @pageTitle="Flatpickr"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`@ember-eui/flatpickr` is a date (and time) picker built on
+[flatpickr](https://flatpickr.js.org), styled as an EUI text field. It
+supports single dates, ranges, multiple dates and times.
+
+```bash
+pnpm add @ember-eui/flatpickr flatpickr
+```
+
+Load flatpickr's styles once, e.g. in `app/app.js`:
+
+```js
+import 'flatpickr/dist/flatpickr.css';
+```
+
+```hbs
+<EuiFormRow @label="Dates">
+  <EuiFlatpickr @date={{this.dates}} @onChange={{this.setDates}} @mode="range" />
+</EuiFormRow>
+```
+
+`@date` and `@onChange` are required; `@onChange` receives
+`(selectedDates, dateStr, instance)`. Every other argument is passed to
+flatpickr as an [option](https://flatpickr.js.org/options/) (`@mode`,
+`@enableTime`, `@minDate`, `@dateFormat`, `@locale`, …), and
+`EuiFieldText`'s args style the input.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

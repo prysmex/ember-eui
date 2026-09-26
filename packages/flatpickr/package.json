@@ -53,14 +53,14 @@
   ],
   "dependencies": {
     "@babel/core": "^7.26.7",
-    "@embroider/addon-shim": "^1.9.0",
     "@ember/render-modifiers": "^4.0.0",
+    "@ember/test-waiters": "^4.1.1",
+    "@embroider/addon-shim": "^1.10.3",
     "@nullvoxpopuli/ember-composable-helpers": "^5.3.2",
+    "decorator-transforms": "^2.3.0",
     "ember-modifier": "^4.2.0",
     "ember-style-modifier": "^4.4.0",
-    "decorator-transforms": "^2.3.0",
-    "ember-truth-helpers": "^5.0.0",
-    "@ember/test-waiters": "^4.1.1"
+    "ember-truth-helpers": "^5.0.0"
   },
   "peerDependencies": {
     "@ember-eui/core": "^13.0.5",

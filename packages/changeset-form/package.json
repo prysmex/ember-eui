@@ -52,19 +52,19 @@
     "dist"
   ],
   "dependencies": {
-    "@embroider/addon-shim": "^1.9.0",
-    "ember-changeset": "^5.0.0",
     "@ember/render-modifiers": "^4.0.0",
-    "ember-modifier": "^4.2.0",
-    "@nullvoxpopuli/ember-composable-helpers": "^5.3.2",
-    "ember-truth-helpers": "^5.0.0",
+    "@embroider/addon-shim": "^1.10.3",
     "@glint/template": "1.5.2",
-    "decorator-transforms": "^2.3.0"
+    "@nullvoxpopuli/ember-composable-helpers": "^5.3.2",
+    "decorator-transforms": "^2.3.0",
+    "ember-changeset": "^5.0.0",
+    "ember-modifier": "^4.2.0",
+    "ember-truth-helpers": "^5.0.0"
   },
   "peerDependencies": {
     "@ember-eui/core": "^13.0.5",
-    "ember-source": ">= 4.12.0",
-    "@ember/string": "^4.0.0"
+    "@ember/string": "^4.0.0",
+    "ember-source": ">= 4.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

@@ -1,31 +1,25 @@
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { scheduleOnce } from '@ember/runloop';
-import { htmlSafe } from '@ember/template';
-import { isBlank } from '@ember/utils';
 
-import EmberPowerSelectPowerSelectMultipleInputComponent from 'ember-power-select/components/power-select-multiple/input';
+import PowerSelectInput from 'ember-power-select/components/power-select/input';
 import { and, not } from 'ember-truth-helpers';
 
 import validatableControl from '../../../modifiers/validatable-control.ts';
 
-export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPowerSelectMultipleInputComponent {
-  get triggerMultipleInputStyle() {
-    scheduleOnce('actions', null, this.args.select.actions.reposition);
-
-    let textWidth = 0;
-
-    // @ts-expect-error
-    if (this.inputFont) {
-      // @ts-expect-error
-      textWidth = this.textMeasurer.width(
-        this.args.select.searchText,
-        // @ts-expect-error
-        this.inputFont
-      );
+export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
+  /**
+   * Shows @placeholder while nothing is selected (power-select 9's own
+   * `placeholder` getter uses @searchPlaceholder instead).
+   */
+  get maybePlaceholder(): string | undefined {
+    if (!this.args.isDefaultPlaceholder) {
+      return undefined;
     }
 
-    return htmlSafe(`box-sizing: content-box; width: ${textWidth + 2}px`);
+    const selected = this.args.select.selected as unknown[] | undefined;
+
+    // @ts-expect-error `placeholder` is passed by EuiComboBoxTrigger
+    return !selected || selected.length === 0 ? this.args.placeholder || '' : '';
   }
 
   @action
@@ -34,14 +28,14 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
 
     if (this.args.onKeydown && this.args.onKeydown(e) === false) {
       if (
-        // @ts-expect-error
+        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
         this.args.onCreateOption && //if user wants to create an option and
-        e.keyCode === 13 && //presses [Enter] and
+        e.key === 'Enter' && //presses [Enter] and
         (this.args.select.options.length === 0 || //If There are no options or
           this.args.select.results.length === 0) && //Last search made returned no results and
         this.args.select.searchText.length >= 1 //There's something in the searchText box
       ) {
-        // @ts-expect-error
+        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
         this.args.onCreateOption();
 
         return false;
@@ -52,14 +46,14 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
       return false;
     }
 
-    if (e.keyCode === 8) {
+    if (e.key === 'Backspace') {
       e.stopPropagation();
 
-      if (isBlank((e.target as HTMLInputElement).value)) {
-        let lastSelection =
-          this.args.select.selected[this.args.select.selected.length - 1];
+      if (!(e.target as HTMLInputElement).value.trim()) {
+        const selected = this.args.select.selected as unknown[];
+        const lastSelection = selected[selected.length - 1];
 
-        if (lastSelection) {
+        if (lastSelection && this.args.buildSelection) {
           this.args.select.actions.select(
             this.args.buildSelection(lastSelection, this.args.select),
             e
@@ -68,7 +62,7 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
           this.args.select.actions.open(e);
         }
       }
-    } else if ((e.keyCode >= 48 && e.keyCode <= 90) || e.keyCode === 32) {
+    } else if (e.key?.length === 1 && /[a-z0-9 ]/i.test(e.key)) {
       // Keys 0-9, a-z or SPACE
       e.stopPropagation();
     }
@@ -105,8 +99,8 @@ export default class EuiComboBoxTriggerInputComponent extends EmberPowerSelectPo
         disabled={{@select.disabled}}
         tabindex={{@tabindex}}
         form="power-select-fake-form"
-        {{on "focus" @onFocus}}
-        {{on "blur" @onBlur}}
+        {{on "focus" this.handleFocus}}
+        {{on "blur" this.handleBlur}}
         {{on "input" this.handleInput}}
         {{on "keydown" this.handleKeydown}}
       />

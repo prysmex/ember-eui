@@ -1,10 +1,9 @@
 import { fn } from '@ember/helper';
 import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
+import PowerSelectTrigger from 'ember-power-select/components/power-select/trigger';
 import { and, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../../helpers/arg-or-default.ts';
@@ -13,7 +12,7 @@ import EuiComboBoxPill from '../eui-combo-box-pill.gts';
 import EuiFormControlLayout from '../eui-form-control-layout.gts';
 import EuiComboBoxTriggerInput from './trigger/input.gts';
 
-export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipleTrigger {
+export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
   <template>
     {{! @glint-nocheck: not typesafe yet }}
     <EuiFormControlLayout
@@ -42,7 +41,7 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
             (if @allowClear "euiComboBox__inputWrap-isClearable")
           }}
           ...attributes
-          {{didUpdate this.openChanged @select.isOpen}}
+          {{this.openChange @select.isOpen}}
           {{on "touchstart" this.chooseOption}}
           {{on "mousedown" this.chooseOption}}
         >
@@ -93,11 +92,6 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
               {{/if}}{{/each}}
           {{/if}}
           {{#if @searchEnabled}}
-            {{#if (and this.maybePlaceholder (not @select.searchText))}}
-              <p class="euiComboBoxPlaceholder">
-                {{this.maybePlaceholder}}
-              </p>
-            {{/if}}
             {{#let
               (component
                 EuiComboBoxTriggerInput

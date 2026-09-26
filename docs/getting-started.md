@@ -92,13 +92,12 @@ There's also some extensions made to the @elastic/eui css, they are available vi
   </h3>
 </EuiTitle>
 
-The whole ember ecosystem is working towards v2 spec, so by now we need to do some extra steps for EuiComboBox to work because its an ember-power-select wrapper.
+EuiComboBox is built on ember-power-select 9 and ember-basic-dropdown 9, which (together with ember-concurrency 5) are peer dependencies of @ember-eui/core.
 
-Inside your index.html file, do the following:
-Add a div id="ember-basic-dropdown-wormhole" below body-footer meanwhile ember-power-select and ember-basic-dropdown get modernized, also, add in ember-cli-build, inside the app config
+The dropdown renders into a wormhole element, so add it to your index.html (or use `@renderInPlace` on the combo box):
 
-<EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.ember_power_select"}}
+<EuiCodeBlock @language="html" @isCopyable={{true}}>
+&lt;div id="ember-basic-dropdown-wormhole"&gt;&lt;/div&gt;
 </EuiCodeBlock>
 
 <EuiSpacer />

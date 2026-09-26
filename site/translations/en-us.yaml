@@ -80,15 +80,3 @@ getting_started:
         "euiComboBoxOptionsHeight": 33,
       '});
     '}
-  ember_power_select: |-
-    //ember-cli-build.js
-    let app = new EmberApp(defaults, '{
-      'ember-power-select': '{
-        theme: false,
-      '}
-    '});
-
-
-
-
-

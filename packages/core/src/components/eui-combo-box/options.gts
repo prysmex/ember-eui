@@ -1,5 +1,3 @@
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
@@ -7,9 +5,7 @@ import { htmlSafe } from '@ember/template';
 import { VerticalCollection } from '@html-next/vertical-collection';
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import emberPowerSelectIsEqual from 'ember-power-select/helpers/ember-power-select-is-equal';
-import emberPowerSelectIsGroupHelper, {
-  emberPowerSelectIsGroup
-} from 'ember-power-select/helpers/ember-power-select-is-group';
+import emberPowerSelectIsGroup from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, eq, not } from 'ember-truth-helpers';
 
 import classNames from '../../helpers/class-names.ts';
@@ -23,14 +19,14 @@ import type EuiConfigService from '../../services/eui-config';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @service declare euiConfig: EuiConfigService;
-  _optionsCache: any[] = [];
+  _optionsCache: readonly unknown[] = [];
 
-  get flattedOptions() {
+  get flattedOptions(): unknown[] {
     if (this._optionsCache !== this.args.options) {
       this._optionsCache = this.args.options;
 
-      return this.args.options?.reduce((acc, curr) => {
-        if (emberPowerSelectIsGroup([curr])) {
+      return this.args.options?.reduce<unknown[]>((acc, curr) => {
+        if (emberPowerSelectIsGroup(curr)) {
           acc.push(curr, ...curr.options);
         } else {
           acc.push(curr);
@@ -40,12 +36,12 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
       }, []);
     }
 
-    return this._optionsCache;
+    return this._optionsCache as unknown[];
   }
 
   _optionFromIndex(index: string) {
     let parts = index.split('.');
-    let option = this.flattedOptions.at?.(parseInt(parts[0]!, 10));
+    let option: any = this.flattedOptions[parseInt(parts[0]!, 10)];
 
     for (let i = 1; i < parts.length; i++) {
       option = option.options[parseInt(parts[i]!, 10)];
@@ -99,13 +95,12 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
           role="listbox"
           aria-controls="ember-power-select-trigger-{{@select.uniqueId}}"
           class={{classNames "euiComboBoxOptionsList__rowWrap" @class}}
-          {{didInsert this.addHandlers}}
-          {{willDestroy this.removeHandlers}}
+          {{this.setupHandlers}}
           ...attributes
           as |opt index|
         >
           {{! template-lint-enable }}
-          {{#if (emberPowerSelectIsGroupHelper opt)}}
+          {{#if (emberPowerSelectIsGroup opt)}}
             <Group
               @group={{opt}}
               @select={{@select}}

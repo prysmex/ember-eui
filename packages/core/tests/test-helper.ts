@@ -20,15 +20,6 @@ class Router extends EmberRouter {
   rootURL = '/';
 }
 
-/**
- * ember-power-select 8 uses `{{ensure-safe-component}}` from the v1 addon
- * @embroider/util. On ember-source >= 3.25 it only passes component values
- * through (string names are deprecated), which is all we need in tests.
- */
-function ensureSafeComponent(value: unknown) {
-  return value;
-}
-
 // ember-basic-dropdown reads `config:environment`, which every real app has
 const config = {
   modulePrefix: 'test-app',
@@ -45,7 +36,6 @@ class TestApp extends EmberApp {
     './services/eui-config': EuiConfigService,
     './services/eui-i18n': EuiI18nService,
     './services/eui-toaster': EuiToasterService,
-    './helpers/ensure-safe-component': { default: ensureSafeComponent },
     ...addonAppModules
   };
 }

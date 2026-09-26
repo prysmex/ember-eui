@@ -2,10 +2,9 @@
  * Generates tests/addon-app-modules.ts
  *
  * Some dependencies still look things up by name through the app resolver
- * (ember-power-select 8 uses loose-mode templates like `<PowerSelect>` and
- * `{{did-insert}}`; ember-keyboard needs `service:keyboard`). A real app gets
- * those from each v2 addon's `ember-addon.app-js` re-exports. Our test app
- * uses ember-strict-application-resolver, so we register the same modules
+ * (ember-keyboard needs `service:keyboard`). A real app gets those from each
+ * v2 addon's `ember-addon.app-js` re-exports. Our test app uses
+ * ember-strict-application-resolver, so we register the same modules
  * explicitly, importing them by package name.
  *
  * Re-run after changing these dependencies:
@@ -17,13 +16,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ADDONS = [
-  'ember-power-select',
-  'ember-basic-dropdown',
-  'ember-truth-helpers',
-  '@ember/render-modifiers',
-  'ember-keyboard',
-  // not used by core directly; ember-power-select 8 resolves {{assign}} by name
-  'ember-assign-helper'
+  // {{on-key}} looks up `service:keyboard`
+  'ember-keyboard'
 ];
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

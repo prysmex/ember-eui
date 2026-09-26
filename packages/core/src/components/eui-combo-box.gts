@@ -9,8 +9,8 @@ import { isEqual } from '@ember/utils';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
-import PowerSelectMultiple from 'ember-power-select/components/power-select-multiple';
-import { emberPowerSelectIsGroup } from 'ember-power-select/helpers/ember-power-select-is-group';
+import PowerSelect from 'ember-power-select/components/power-select';
+import emberPowerSelectIsGroup from 'ember-power-select/helpers/ember-power-select-is-group';
 import { and, not } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
@@ -159,7 +159,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   <template>
     {{! @glint-nocheck: not typesafe yet }}
 
-    <PowerSelectMultiple
+    <PowerSelect
+      @multiple={{true}}
       ...attributes
       @onChange={{this.onChange}}
       @onFocus={{@onFocus}}
@@ -273,14 +274,14 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       as |option i|
     >
       {{yield option i}}
-    </PowerSelectMultiple>
+    </PowerSelect>
   </template>
 
   //This is to allow scrolling between virtualized groups
   @cached
   get opts() {
     return this.results.reduce((acc, curr) => {
-      if (emberPowerSelectIsGroup([curr])) {
+      if (emberPowerSelectIsGroup(curr)) {
         acc.push(curr, ...curr.options);
       } else {
         acc.push(curr);

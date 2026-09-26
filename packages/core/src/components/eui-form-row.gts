@@ -6,6 +6,7 @@ import { on } from '@ember/modifier';
 import { and, eq, gt, not, or } from 'ember-truth-helpers';
 import isArray from 'ember-truth-helpers/helpers/is-array';
 
+import associateFormRowLabel from '../-private/associate-form-row-label.ts';
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -79,7 +80,12 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
     as |classes fieldWrapperClasses errors isLegend focusedState rowId hasChildLabel hasLabelBlock hasHelpTextBlock|
   }}
     {{#if (eq @legendType "legend")}}
-      <fieldset class={{classes}} id="{{rowId}}-row" ...attributes>
+      <fieldset
+        class={{classes}}
+        id="{{rowId}}-row"
+        ...attributes
+        {{associateFormRowLabel rowId}}
+      >
         {{#if (or @label @labelAppend hasLabelBlock)}}
           <div class="euiFormRow__labelWrapper">
             {{#if isLegend}}
@@ -189,7 +195,12 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
         </div>
       </fieldset>
     {{else}}
-      <div class={{classes}} id="{{rowId}}-row" ...attributes>
+      <div
+        class={{classes}}
+        id="{{rowId}}-row"
+        ...attributes
+        {{associateFormRowLabel rowId}}
+      >
         {{#if (or @label @labelAppend hasLabelBlock)}}
           <div class="euiFormRow__labelWrapper">
             {{#if isLegend}}

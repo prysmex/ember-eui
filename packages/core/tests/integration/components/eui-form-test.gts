@@ -1,7 +1,11 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { focus, render } from '@ember/test-helpers';
+import { click, focus, render, rerender } from '@ember/test-helpers';
+import { tracked } from '@glimmer/tracking';
 
+import EuiCheckbox from '#src/components/eui-checkbox.gts';
+import EuiCheckboxGroup from '#src/components/eui-checkbox-group.gts';
+import EuiComboBox from '#src/components/eui-combo-box.gts';
 import EuiDescribedFormGroup from '#src/components/eui-described-form-group.gts';
 import EuiFieldText from '#src/components/eui-field-text.gts';
 import EuiForm from '#src/components/eui-form.gts';
@@ -11,8 +15,27 @@ import EuiFormHelpText from '#src/components/eui-form-help-text.gts';
 import EuiFormLabel from '#src/components/eui-form-label.gts';
 import EuiFormLegend from '#src/components/eui-form-legend.gts';
 import EuiFormRow from '#src/components/eui-form-row.gts';
+import EuiSelect from '#src/components/eui-select.gts';
+import EuiTextArea from '#src/components/eui-text-area.gts';
 
 const ERRORS = ['Name is required', 'Email is invalid'];
+const SELECT_OPTIONS = [{ value: 'a', text: 'A' }];
+const CHECKBOX_OPTIONS = [{ id: 'apple', label: 'Apple' }, { id: 'pear', label: 'Pear' }];
+const NO_CHECKS = {};
+const COMBO_OPTIONS = ['One', 'Two'];
+const NO_SELECTION: string[] = [];
+const noop = () => {};
+
+/** label[for] must point to the control, and clicking it must focus the control */
+async function assertLabelled(assert: Assert, row: Element, control: HTMLElement) {
+  const label = row.querySelector('label.euiFormRow__label') as HTMLLabelElement;
+
+  assert.strictEqual(label.htmlFor, control.id, `label for="${label.htmlFor}" matches the control id`);
+  assert.ok(control.id, 'the control has an id');
+
+  await click(label);
+  assert.strictEqual(document.activeElement, control, 'clicking the label focuses the control');
+}
 
 module('Integration | Component | eui-form', function (hooks) {
   setupRenderingTest(hooks);
@@ -124,5 +147,131 @@ module('Integration | Component | eui-form', function (hooks) {
     assert.dom('.euiDescribedFormGroup__title h3').hasText('Settings');
     assert.dom('.euiDescribedFormGroup__description').hasText('Configure things');
     assert.dom('.euiDescribedFormGroup__fields .fields').exists();
+  });
+
+  module('label association', function () {
+    test('a field without ids is labelled by the row label', async function (assert) {
+      await render(<template><EuiFormRow @label="Name"><EuiFieldText /></EuiFormRow></template>);
+
+      await assertLabelled(assert, this.element.querySelector('.euiFormRow')!, this.element.querySelector('input')!);
+    });
+
+    test('@id on the row but not on the field', async function (assert) {
+      await render(<template><EuiFormRow @id="name-row" @label="Name"><EuiFieldText /></EuiFormRow></template>);
+
+      await assertLabelled(assert, this.element.querySelector('.euiFormRow')!, this.element.querySelector('input')!);
+      assert.dom('.euiFormRow').hasAttribute('id', 'name-row-row', 'the row id itself is unchanged');
+    });
+
+    test('the same @id on row and field keeps working unchanged', async function (assert) {
+      await render(<template><EuiFormRow @id="email" @label="Email"><EuiFieldText @id="email" /></EuiFormRow></template>);
+
+      const input = this.element.querySelector('input')!;
+
+      assert.strictEqual(input.id, 'email');
+      await assertLabelled(assert, this.element.querySelector('.euiFormRow')!, input);
+    });
+
+    test('a plain input without an id gets the row id', async function (assert) {
+      await render(<template><EuiFormRow @id="plain" @label="Plain"><input class="plain" /></EuiFormRow></template>);
+
+      // (not named `input`: that would shadow the <input> element in the template)
+      const field = this.element.querySelector('input.plain') as HTMLInputElement;
+
+      assert.strictEqual(field.id, 'plain');
+      await assertLabelled(assert, this.element.querySelector('.euiFormRow')!, field);
+    });
+
+    test('select and text area', async function (assert) {
+      await render(
+        <template>
+          <EuiFormRow @label="Pick" class="select-row"><EuiSelect @options={{SELECT_OPTIONS}} /></EuiFormRow>
+          <EuiFormRow @label="Notes" class="textarea-row"><EuiTextArea /></EuiFormRow>
+        </template>
+      );
+
+      await assertLabelled(assert, this.element.querySelector('.select-row')!, this.element.querySelector('.select-row select')!);
+      await assertLabelled(assert, this.element.querySelector('.textarea-row')!, this.element.querySelector('.textarea-row textarea')!);
+    });
+
+    test('a combo box is labelled by its search input, not the hidden validity input', async function (assert) {
+      await render(
+        <template>
+          <EuiFormRow @label="Fruits">
+            <EuiComboBox @options={{COMBO_OPTIONS}} @selectedOptions={{NO_SELECTION}} @onChange={{noop}} as |o|>{{o}}</EuiComboBox>
+          </EuiFormRow>
+        </template>
+      );
+
+      const input = this.element.querySelector('input.euiComboBox__input:not(.fake-input-for-html-form-validity)') as HTMLInputElement;
+      const label = this.element.querySelector('label.euiFormRow__label') as HTMLLabelElement;
+
+      assert.strictEqual(label.htmlFor, input.id);
+    });
+
+    test('a control rendered later is picked up', async function (assert) {
+      class State {
+        @tracked show = false;
+      }
+      const state = new State();
+
+      await render(
+        <template><EuiFormRow @label="Later">{{#if state.show}}<EuiFieldText @id="later-input" />{{/if}}</EuiFormRow></template>
+      );
+
+      state.show = true;
+      await rerender();
+
+      await assertLabelled(assert, this.element.querySelector('.euiFormRow')!, this.element.querySelector('#later-input')!);
+    });
+
+    test('@hasChildLabel={{false}} renders the label without for', async function (assert) {
+      await render(
+        <template><EuiFormRow @label="Group" @hasChildLabel={{false}}><EuiFieldText @id="x" /></EuiFormRow></template>
+      );
+
+      assert.dom('label.euiFormRow__label').doesNotHaveAttribute('for');
+      assert.dom('input#x').exists('the field id is untouched');
+    });
+    test('an existing association is never overridden', async function (assert) {
+      // the let pattern: the row id matches the second control, not the first
+      await render(
+        <template>
+          <EuiFormRow @id="second" @label="Second">
+            <div><EuiFieldText @id="first" /><EuiFieldText @id="second" /></div>
+          </EuiFormRow>
+        </template>
+      );
+
+      assert.dom('label.euiFormRow__label').hasAttribute('for', 'second');
+      assert.dom('input#first').exists();
+      assert.dom('input#second').exists();
+    });
+
+    test('checkbox groups and checkboxes are not associated with the row label', async function (assert) {
+      const changes: string[] = [];
+      const onChange = (id: string) => changes.push(id);
+
+      await render(
+        <template>
+          <EuiFormRow @label="Fruits" class="group-row">
+            <EuiCheckboxGroup @options={{CHECKBOX_OPTIONS}} @idToSelectedMap={{NO_CHECKS}} @onChange={{onChange}} />
+          </EuiFormRow>
+          <EuiFormRow @label="Terms" class="single-row">
+            <EuiCheckbox @id="terms" @label="I agree" />
+          </EuiFormRow>
+        </template>
+      );
+
+      const groupLabel = this.element.querySelector('.group-row label.euiFormRow__label') as HTMLLabelElement;
+      const checkboxIds = [...this.element.querySelectorAll('.group-row input[type="checkbox"]')].map((el) => el.id);
+
+      assert.false(checkboxIds.includes(groupLabel.htmlFor), 'the group label does not point to a checkbox');
+
+      await click(groupLabel);
+      assert.deepEqual(changes, [], 'clicking the row label does not toggle a checkbox');
+
+      assert.notStrictEqual((this.element.querySelector('.single-row label.euiFormRow__label') as HTMLLabelElement).htmlFor, 'terms');
+    });
   });
 });

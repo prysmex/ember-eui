@@ -10,15 +10,21 @@ import inlineStyles from '../helpers/inline-styles.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A list of `EuiListGroupItem`s, e.g. navigation links in a side bar. */
 export interface EuiListGroupSignature {
   Element: HTMLUListElement;
   Args: {
+    /** `true` for EUI's default max width, or any CSS width. */
     maxWidth?: boolean | string;
+    /** Adds a border around the list. */
     bordered?: boolean;
+    /** Removes the list's padding. */
     flush?: boolean;
+    /** Space between items: `'none'`, `'s'` or `'m'`. Defaults to `'s'`. */
     gutterSize?: string;
   };
   Blocks: {
+    /** The `EuiListGroupItem`s. */
     default: [];
   };
 }

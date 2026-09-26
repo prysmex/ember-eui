@@ -6,9 +6,12 @@ import EuiIcon from './eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A bouncing logo, for loading a whole page or app. */
 export interface EuiLoadingLogoSignature {
   Args: {
+    /** The logo, anything `EuiIcon`'s `@type` accepts. Defaults to `'logoKibana'`. */
     logo?: string;
+    /** `'m'`, `'l'` or `'xl'`. Defaults to `'m'`. */
     size?: 'm' | 'l' | 'xl';
   };
   Yields: {

@@ -9,16 +9,29 @@ const KeyComponent: TemplateOnlyComponent<{
   };
 }> = <template><li>{{yield}}</li></template>;
 
+/**
+ * A grid of large square buttons (`EuiKeyPadMenuItem`s), e.g. an app
+ * switcher in a header popover.
+ */
 export interface EuiKeyPadMenuSignature {
   Element: HTMLUListElement | HTMLFieldSetElement;
   Args: {
+    /**
+     * Makes the menu a group of radios or checkboxes (items with
+     * `@checkable`) under a visible `legend`, or an invisible `ariaLegend`.
+     */
     checkable?: {
       legend?: string;
       ariaLegend?: string;
     };
+    /** @deprecated Has no effect. */
     iconType?: EuiIconSignature['Args']['type'];
   };
   Blocks: {
+    /**
+     * The items. Wrap each in the yielded `<Key>` (an `<li>`), except for
+     * checkable menus: `as |Key|` → `<Key><EuiKeyPadMenuItem …/></Key>`.
+     */
     default: [typeof KeyComponent?];
   };
 }

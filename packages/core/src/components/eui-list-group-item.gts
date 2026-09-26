@@ -22,19 +22,37 @@ export interface EuiListGroupItemSignature {
     | HTMLButtonElement
     | HTMLSpanElement;
   Args: {
+    /** Makes the item a link. */
     href?: string;
+    /** `target` of the `@href` link. */
     target?: string;
+    /** Makes the item a button calling this function. */
     onClick?: (event: MouseEvent) => void;
+    /** The item's text. */
     label?: string;
+    /** Icon before the text; anything `EuiIcon`'s `@type` accepts. */
     iconType?: EuiIconSignature['Args']['type'];
+    /** Highlights the item, e.g. the current page. */
     isActive?: boolean;
+    /** Disables the item. */
     isDisabled?: boolean;
+    /** Wraps long text instead of truncating it. */
     wrapText?: boolean;
+    /**
+     * A component rendered at the end of the item, e.g. an
+     * `EuiButtonIcon` to pin it (use `(component EuiButtonIcon …)`).
+     */
     extraAction?: ComponentLike;
+    /** `'xs'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`. */
     size?: keyof typeof sizeMapping;
+    /**
+     * `'inherit'`, `'primary'`, `'text'`, `'subdued'` or `'ghost'`.
+     * Defaults to `'inherit'`.
+     */
     color?: keyof typeof colorMapping;
   };
   Blocks: {
+    /** Custom content instead of `@label`. */
     default: [];
   };
 }

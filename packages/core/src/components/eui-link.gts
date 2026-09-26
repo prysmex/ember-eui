@@ -7,17 +7,37 @@ import EuiIcon from './eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * A text link: an `<a>` with `@href`, otherwise a `<button>` styled as a
+ * link (add `{{on "click" …}}`).
+ */
 export interface EuiLinkSignature {
   Element: HTMLAnchorElement | HTMLButtonElement;
   Args: {
+    /**
+     * `'primary'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`,
+     * `'warning'`, `'ghost'` or `'text'`. Defaults to `'primary'`.
+     */
     color?: string;
+    /** Disables the link. */
     disabled?: boolean;
+    /**
+     * Shows the external link icon. Defaults to `true` for
+     * `@target="_blank"`.
+     */
     external?: boolean;
+    /** Where it links to; without it the link is a button. */
     href?: string;
+    /**
+     * `target` of the link. `'_blank'` also adds the external icon and a
+     * screen reader note that it opens a new tab.
+     */
     target?: string;
+    /** `type` of the button (without `@href`). Defaults to `'button'`. */
     type?: string;
   };
   Blocks: {
+    /** The link's text. */
     default: [];
   };
 }

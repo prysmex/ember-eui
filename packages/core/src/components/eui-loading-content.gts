@@ -2,13 +2,17 @@ import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** Animated placeholder lines shown while text content loads. */
 export interface EuiLoadingContentSignature {
   Element: HTMLSpanElement;
   Args: {
+    /** Number of lines, 1 to 10. Defaults to `1`. */
     lines?: number;
+    /** Extra classes for each line. */
     singleLineClasses?: string;
   };
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

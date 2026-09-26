@@ -22,21 +22,41 @@ const charAt = helper(function ([str, num]: [string | undefined, number]) {
 export interface EuiKeyPadMenuItemSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
   Args: {
+    /**
+     * Makes the item a checkbox (`'label'`) or a radio (`'single'`, share a
+     * `@name`) inside a checkable EuiKeyPadMenu.
+     */
     checkable?: 'label' | 'single';
+    /** Makes the item a link. */
     href?: string;
+    /** Disables the item. */
     isDisabled?: boolean;
+    /** Selected (pressed, current page, or checked) state. */
     isSelected?: boolean;
+    /** Text under the icon. */
     label?: string;
+    /** `name` of the radio or checkbox. */
     name?: string;
+    /** `value` of the radio. */
     value?: string;
+    /**
+     * Called when a checkable item changes, with its id (and value for
+     * radios). Buttons use `{{on "click" …}}`.
+     */
     onChange: (id: string, value?: string | Event) => void;
+    /** Shows a beta badge with the first letter of this label (full label on hover). */
     betaBadgeLabel?: string;
+    /** Icon in the beta badge instead of the letter. */
     betaBadgeIconType?: EuiIconSignature['Args']['type'];
+    /** Tooltip of the beta badge. */
     betaBadgeTooltipContent?: string;
+    /** Id of the checkable input. Defaults to a random id. */
     id?: string;
+    /** `target` of the `@href` link. */
     target?: string;
   };
   Blocks: {
+    /** The icon, e.g. `<EuiIcon @type="discoverApp" @size="l" />`. */
     default: [];
   };
 }

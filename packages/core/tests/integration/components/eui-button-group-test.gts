@@ -83,11 +83,11 @@ module('Integration | Component | eui-button-group', function (hooks) {
     assert.dom('.euiButtonGroupButton svg.euiIcon').exists();
   });
 
-  // Bug: a disabled group gets the full width class (see eui-button-group.gts)
-  test.todo('@isDisabled disables the group without making it full width', async function (assert) {
+  test('@isDisabled disables the group without making it full width', async function (assert) {
     await render(<template><EuiButtonGroup @legend="Off" @options={{OPTIONS}} @isDisabled={{true}} /></template>);
 
     assert.dom('fieldset').isDisabled();
     assert.dom('fieldset').doesNotHaveClass('euiButtonGroup--fullWidth');
+    assert.dom('fieldset').hasClass('euiButtonGroup--isDisabled');
   });
 });

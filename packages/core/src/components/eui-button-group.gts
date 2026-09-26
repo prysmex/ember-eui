@@ -70,7 +70,7 @@ export const EuiButtonGroup: TemplateOnlyComponent<EuiButtonGroupSignature> =
           class={{classNames
             "euiButtonGroup"
             (if isFullWidth "euiButtonGroup--fullWidth")
-            (if isDisabled "euiButtonGroup--fullWidth")
+            (if isDisabled "euiButtonGroup--isDisabled")
             @className
             componentName="EuiButtonGroup"
             size=(argOrDefault buttonSize "s")

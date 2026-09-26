@@ -21,7 +21,8 @@
     "start": "concurrently 'ember serve' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'",
     "test": "concurrently \"yarn:lint\" \"yarn:test:*\" --names \"lint,test:\" --prefixColors auto",
     "test:ember": "ember test",
-    "build": "ember build --environment=production"
+    "build": "ember build --environment=production",
+    "_syncPnpm": "pnpm sync-dependencies-meta-injected"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -137,5 +138,19 @@
   },
   "volta": {
     "extends": "../package.json"
+  },
+  "dependenciesMeta": {
+    "@ember-eui/core": {
+      "injected": true
+    },
+    "@ember-eui/flatpickr": {
+      "injected": true
+    },
+    "@ember-eui/pikaday": {
+      "injected": true
+    },
+    "@ember-eui/validated-form": {
+      "injected": true
+    }
   }
 }

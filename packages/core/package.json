@@ -178,7 +178,6 @@
     "ember-keyboard": "^9.0.1",
     "ember-math-helpers": "^5.0.0",
     "ember-modifier": "^4.2.0",
-    "ember-set-body-class": "^1.0.2",
     "ember-set-helper": "^3.1.0",
     "ember-style-modifier": "^4.4.0",
     "ember-svg-jar": "^2.6.0",

@@ -19,6 +19,7 @@
 /packages/**/.sass-cache
 /packages/**/dist-types
 /packages/**/declarations
+/packages/**/tsconfig.tsbuildinfo
 /packages/**/connect.lock
 /packages/**/coverage/
 /packages/**/libpeerconnection.log

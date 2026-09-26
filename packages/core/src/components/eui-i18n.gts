@@ -11,17 +11,31 @@ import type EuiI18n from '../services/eui-i18n';
 import type { WithBoundArgs } from '@glint/template';
 
 interface Args {
+  /** @deprecated Has no effect, use one `EuiI18n` per token. */
   tokens?: string[];
+  /** @deprecated Has no effect. */
   defaults?: string[];
+  /** Translation key, e.g. `'euiComboBox.noMatchesMessage'`. */
   token?: string;
+  /** Text used when the token has no translation; may contain `{placeholders}`. */
   default?: string;
+  /** Values for the `{placeholders}` in the text. */
   values?: { [key: string]: any };
+  /**
+   * Translations for this instance, `{ mapping: { token: 'text' } }`, and
+   * an optional component to render the text with.
+   */
   i18n?: { mapping: { [key: string]: any }; renderComponent?: typeof Render };
 }
 
+/**
+ * Looks up a translated string in the `euiI18n` service (see the i18n docs
+ * page) and yields a component rendering it.
+ */
 export interface EuiI18nSignature {
   Args: Args;
   Blocks: {
+    /** Yields a component rendering the text: `as |Text|` → `<Text />`. */
     default: [WithBoundArgs<typeof Render, 'token'>];
   };
 }

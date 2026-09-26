@@ -19,17 +19,30 @@ import type { EuiPopoverArgs } from './eui-popover';
 
 export interface EuiInputPopoverArgs
   extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
+  /**
+   * Lets focus leave the popover; Tab then closes it. Defaults to `false`
+   * (Tab cycles through the popover, closing after its last element).
+   */
   disableFocusTrap?: boolean;
+  /** Stretches the input (and popover) to its container's width. */
   fullWidth?: boolean;
+  /** @deprecated Has no effect, use the `<:input>` block. */
   input?: EuiPopoverArgs['button'];
+  /** @deprecated Has no effect. */
   inputRef?: EuiPopoverArgs['buttonRef'];
+  /** Called with the popover's new width when the input resizes. */
   onPanelResize?: (width?: number) => void;
 }
 
+/**
+ * A popover attached below an input and as wide as it, e.g. for a custom
+ * picker. Takes EuiPopover's args (`@isOpen`, `@closePopover`, …).
+ */
 export interface EuiInputPopoverSignature {
   Element: HTMLElement;
   Args: EuiInputPopoverArgs;
   Blocks: {
+    /** Unused, use `<:input>` and `<:content>`. */
     default: [
       {
         closePopover: () => void;
@@ -40,7 +53,9 @@ export interface EuiInputPopoverSignature {
         content: HTMLElement;
       }
     ];
+    /** The input the popover attaches to; open it on focus or typing. */
     input: [];
+    /** The popover's content, as wide as the input. */
     content: [];
   };
 }

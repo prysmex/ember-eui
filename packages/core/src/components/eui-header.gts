@@ -31,11 +31,26 @@ const fixedHeaderModifier = modifier(function fixedHeader(
   }
 });
 
+/**
+ * The app's top bar: logo, breadcrumbs, links and actions, arranged in
+ * `EuiHeaderSection`s of `EuiHeaderSectionItem`s.
+ */
 export interface EuiHeaderSignature {
   Element: HTMLDivElement;
   Args: {
+    /** `'default'` (light) or `'dark'`. Defaults to `'default'`. */
     theme?: string;
+    /**
+     * `'static'` scrolls with the page; `'fixed'` stays at the top and pads
+     * `<body>` for it (the body gets `euiBody--headerIsFixed`).
+     * Defaults to `'static'`.
+     */
     position?: string;
+    /**
+     * Builds the header from data instead of the block: sections of text
+     * `items` and `breadcrumbs`. Most apps compose it with
+     * `EuiHeaderSection`s instead.
+     */
     sections?: {
       items: {
         text: string;
@@ -45,6 +60,7 @@ export interface EuiHeaderSignature {
     }[];
   };
   Blocks: {
+    /** `EuiHeaderSection`s (left and right), ignored with `@sections`. */
     default: [];
   };
 }

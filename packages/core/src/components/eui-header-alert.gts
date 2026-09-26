@@ -4,13 +4,19 @@ import EuiFlexItem from './eui-flex-item.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A news or update item, usually listed in a flyout opened from the header. */
 export interface EuiHeaderAlertSignature {
   Element: HTMLElement;
   Blocks: {
+    /** When it was published. */
     date: [];
+    /** A badge next to the date, e.g. `<EuiBadge>7.0</EuiBadge>`. */
     badge: [];
+    /** The title (rendered in an `<h3>` that labels the alert). */
     title: [];
+    /** The text. */
     text: [];
+    /** A link to read more. */
     action: [];
   };
 }

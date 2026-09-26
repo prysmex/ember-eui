@@ -5,20 +5,23 @@ import EuiIcon from './eui-icon.gts';
 import type { sizeToClassNameMap } from '../utils/css-mappings/eui-health.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A status: a colored dot followed by text, e.g. "Healthy" or "Down". */
 export interface EuiHealthSignature {
   Element: HTMLDivElement;
   Args: {
     /**
-     * The color of the health indicator.
+     * Color of the dot: `'success'`, `'warning'`, `'danger'`, `'subdued'`,
+     * any `EuiIcon` color or a CSS color.
      */
     color?: string;
 
     /**
-     * The size of the health indicator.
+     * Text size: `'xs'`, `'s'`, `'m'` or `'inherit'`. Defaults to `'m'`.
      */
     textSize?: keyof typeof sizeToClassNameMap;
   };
   Blocks: {
+    /** The status text. */
     default: [];
   };
 }

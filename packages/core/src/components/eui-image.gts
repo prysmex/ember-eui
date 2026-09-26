@@ -28,10 +28,11 @@ type ImageArgs = {
    */
   alt: string;
 
-  /*
-    Determines the size of the image itself, can be a number or a string
-    Default: 'm'
-  */
+  /**
+   * `'s'` (100px), `'m'` (200px), `'l'` (360px), `'xl'` (600px),
+   * `'fullWidth'`, `'original'`, or a number for a max size in px.
+   * Defaults to `'original'`.
+   */
   size?: ImageSize | number | string;
 
   /**
@@ -40,6 +41,7 @@ type ImageArgs = {
    */
   fullScreenIconColor?: FullScreenIconColor;
 
+  /** URL of the image. */
   url: string;
 
   /**
@@ -55,28 +57,25 @@ type ImageArgs = {
    */
   allowFullScreen?: boolean;
 
-  /**
-   * When set to `true` will make the image clickable to a larger version
-   */
+  /** Floats the image `'left'` or `'right'` of the text around it. */
   float?: 'left' | 'right' | 'none';
 
-  /**
-   * When set to `true` will make the image clickable to a larger version
-   */
+  /** Space around the image: `'none'`, `'s'`, `'m'`, `'l'` or `'xl'`. */
   margin?: 'none' | 's' | 'm' | 'l' | 'xl';
 
-  /**
-   * When set to `true` will make the image clickable to a larger version
-   */
+  /** Accessible label of the full screen button (`@allowFullScreen`). */
   ariaLabel?: string;
 
+  /** Same as `@url`. */
   src?: string;
 };
 
+/** An image with an optional caption, shadow and full screen view. */
 export interface EuiImageSignature {
   Element: HTMLElement;
   Args: ImageArgs;
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

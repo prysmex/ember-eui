@@ -61,15 +61,18 @@ export type EuiHideForBreakpoints = EuiBreakpointSize;
 
 export interface EuiShowForArgs {
   /**
-   * List of all the responsive sizes to hide the children for.
-   * Array of #EuiBreakpointSize
+   * Screen sizes to show the content on: any of `'xs'`, `'s'`, `'m'`,
+   * `'l'`, `'xl'`, or `'all'`. E.g. `(array "xs" "s")` shows it only on
+   * phones.
    */
   sizes: EuiHideForBreakpoints[] | 'all' | 'none';
 }
 
+/** Renders its content only on the given screen sizes. See EuiHideFor. */
 export interface EuiShowForSignature {
   Args: EuiShowForArgs;
   Blocks: {
+    /** The content. */
     default: [];
   };
 }

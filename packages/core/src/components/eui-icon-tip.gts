@@ -8,26 +8,44 @@ import type { EuiIconSignature } from './eui-icon';
 import type { EuiToolTipSignature } from './eui-tool-tip';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * A focusable icon (a "?" by default) showing a tooltip, e.g. to explain a
+ * setting next to its label.
+ */
 export interface EuiIconTipSignature {
   Element: EuiToolTipSignature['Element'];
   Args: {
+    /** Where the tooltip appears. Defaults to `'top'`. */
     position?: 'top' | 'right' | 'bottom' | 'left';
+    /** `'regular'` or `'long'` delay before showing. Defaults to `'regular'`. */
     delay?: 'regular' | 'long';
+    /** Bold title of the tooltip. */
     title?: string;
+    /** The tooltip's text. */
     content?: string;
+    /** Props for the icon: `{ className }`. */
     iconProps?: {
       className?: string;
     };
+    /** The icon. Defaults to `'questionInCircle'`. */
     type?: string;
+    /** Color of the icon, any `EuiIcon` color. */
     color?: string;
+    /** Size of the icon. */
     size?: EuiIconSignature['Args']['size'];
+    /** Accessible name of the icon. Defaults to "Info". */
     ariaLabel?: string;
+    /** Class for the element wrapping the icon. */
     anchorClassName?: string;
+    /** Called when the pointer leaves the icon. */
     onMouseOut?: (event: MouseEvent) => void;
+    /** Display of the wrapper: `'inlineBlock'` or `'block'`. */
     display?: EuiToolTipSignature['Args']['display'];
   };
   Blocks: {
+    /** The tooltip's content, instead of `@content`. */
     content: [];
+    /** The tooltip's title, instead of `@title`. */
     title: [];
   };
 }

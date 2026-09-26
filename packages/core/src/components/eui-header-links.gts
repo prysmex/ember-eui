@@ -16,13 +16,24 @@ import type { gutterSizeMapping } from '../utils/css-mappings/eui-header-links.t
 import type { EuiHideForSignature } from './eui-hide-for';
 import type { EuiPopoverSignature } from './eui-popover';
 
+/**
+ * A row of `EuiHeaderLink`s that collapses into a popover menu on small
+ * screens.
+ */
 export interface EuiHeaderLinkSignature {
   Args: {
+    /**
+     * Screen sizes showing the links in a popover instead of a row.
+     * Defaults to `['xs', 's']`; pass `[]` to never collapse.
+     */
     popoverBreakpoints?: EuiHideForSignature['Args']['sizes'];
+    /** Space between links: `'none'`, `'xs'`, `'s'`, `'m'` or `'l'`. Defaults to `'xs'`. */
     gutterSize?: keyof typeof gutterSizeMapping;
+    /** Padding of the popover. Defaults to `'none'`. */
     panelPaddingSize?: EuiPopoverSignature['Args']['panelPaddingSize'];
   };
   Blocks: {
+    /** The `EuiHeaderLink`s. */
     default: [];
   };
 }

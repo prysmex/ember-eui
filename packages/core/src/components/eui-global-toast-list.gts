@@ -27,19 +27,30 @@ import type { sideMapping } from '../utils/css-mappings/eui-global-toast-list.ts
 type EuiToastSide = keyof typeof sideMapping;
 
 type GlobalToastListArgs = {
+  /**
+   * Called when a toast is dismissed (its close button or its time ran
+   * out), before it is removed from the `euiToaster` service.
+   */
   dismissToast?: (this: EuiGlobalToastList, toast: EuiToastProps) => void;
+  /**
+   * How long toasts stay, in ms, unless a toast sets its own
+   * `toastLifeTimeMs`. Hovering the list pauses the timers.
+   */
   toastLifeTimeMs: number;
-
-  /*
-    Determines which side of the browser window the toasts should appear
-    Default: 'right'
-
-  */
+  /**
+   * Which side of the browser window the toasts appear on: `'right'` or
+   * `'left'`. Defaults to `'right'`.
+   */
   side?: EuiToastSide;
 };
 
 const TOAST_FADE_OUT_MS = 250;
 
+/**
+ * Renders the toasts of the `euiToaster` service. Place it once in the
+ * application template, then show toasts from anywhere:
+ * `this.euiToaster.show({ title: 'Saved', color: 'success' })`.
+ */
 export interface EuiGlobalToastListItemSignature {
   Element: HTMLDivElement;
   Args: GlobalToastListArgs;

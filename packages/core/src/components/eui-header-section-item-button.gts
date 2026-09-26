@@ -127,17 +127,36 @@ const keyframes: Keyframe[] = [
   { transform: 'rotate(0)', offset: 1, easing: 'ease-in-out' }
 ];
 
+/**
+ * An icon button for the header (e.g. help, notifications, user menu),
+ * with an optional notification dot or count. Give it an `aria-label`.
+ */
 export interface EuiHeaderSectionItemButtonSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
   Args: {
+    /**
+     * Called with `{ euiAnimate }`; call `euiAnimate()` to wiggle the
+     * button, e.g. when a new notification arrives.
+     */
     ref?: (api: { euiAnimate: () => void }) => void;
+    /** Disables the button. */
     disabled?: boolean;
+    /** Renders a link instead of a button. */
     href?: string;
+    /** Called on click. */
     onClick?: (event: MouseEvent) => void;
+    /**
+     * `true` shows a dot; a number shows a count badge (a dot on small
+     * screens).
+     */
     notification?: boolean | number;
+    /** `'accent'` or `'subdued'`. Defaults to `'accent'`. */
     notificationColor?: keyof typeof colorMapping;
   };
-  Blocks: { default: [] };
+  Blocks: {
+    /** The button's content, usually an `EuiIcon` or `EuiAvatar`. */
+    default: [];
+  };
 }
 
 const sizes: EuiHideForBreakpoints[] = ['xs'];

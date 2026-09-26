@@ -4,12 +4,18 @@ import EuiButtonEmpty from './eui-button-empty.gts';
 import type { EuiButtonEmptySignature } from './eui-button-empty';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * A link in `EuiHeaderLinks`: an `EuiButtonEmpty` (all its args apply)
+ * styled for the header.
+ */
 export interface EuiHeaderLinkSignature {
   Element: EuiButtonEmptySignature['Element'];
   Args: EuiButtonEmptySignature['Args'] & {
+    /** Highlights the link, e.g. for the current page. */
     isActive?: boolean;
   };
   Blocks: {
+    /** The link's text. */
     default: [];
   };
 }

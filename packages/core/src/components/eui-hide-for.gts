@@ -10,15 +10,19 @@ export type EuiHideForBreakpoints = EuiBreakpointSize;
 
 export interface EuiHideForArgs {
   /**
-   * List of all the responsive sizes to hide the children for.
-   * Array of #EuiBreakpointSize
+   * Screen sizes to hide the content on: any of `'xs'`, `'s'`, `'m'`,
+   * `'l'`, `'xl'`, or `'all'`. E.g. `(array "xs" "s")` hides it on phones.
    */
   sizes: EuiHideForBreakpoints[] | 'all' | 'none';
 }
 
+/** Renders its content except on the given screen sizes. See EuiShowFor. */
 export interface EuiHideForSignature {
   Args: EuiHideForArgs;
-  Blocks: { default: [] };
+  Blocks: {
+    /** The content. */
+    default: [];
+  };
 }
 
 export default class EuiHideForComponent extends Component<EuiHideForSignature> {

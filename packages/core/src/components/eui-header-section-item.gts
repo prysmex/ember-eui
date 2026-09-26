@@ -4,12 +4,15 @@ import classNames from '../helpers/class-names.ts';
 import type { borderSizeMappping } from '../utils/css-mappings/eui-header-section-item.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** One item of an EuiHeaderSection, e.g. a logo, links or a button. */
 export interface EuiHeaderSectionItemSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Divider on the `'left'`, `'right'` or `'none'`. Defaults to `'left'`. */
     border?: keyof typeof borderSizeMappping;
   };
   Blocks: {
+    /** The item's content. */
     default: [];
   };
 }

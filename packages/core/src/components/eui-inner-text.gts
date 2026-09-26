@@ -3,12 +3,21 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 
+/**
+ * Tracks the text content of an element, e.g. to use a truncated label's
+ * full text as its `title`.
+ */
 export interface EuiInnerTextSignature {
   Args: {
+    /** Text used when the element's text cannot be read. Defaults to `''`. */
     fallback?: string;
   };
 
   Blocks: {
+    /**
+     * Yields a function to call with the element to track (e.g. with
+     * `did-insert`) and its current text.
+     */
     default: [(ref: HTMLElement) => void, string];
   };
 }

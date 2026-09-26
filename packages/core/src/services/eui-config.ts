@@ -4,9 +4,22 @@ import Service from '@ember/service';
 import { merge } from 'lodash-es';
 
 import type { EuiButtonIconSignature } from '../components/eui-button-icon';
+import type { ComponentLike } from '@glint/template';
 
 export interface EuiConfig {
+  /**
+   * Extra icons usable by name, e.g. `<EuiIcon @type="myLogo" />` or
+   * `<EuiButton @iconType="myLogo">`. Values are components rendering an
+   * `<svg>` with `...attributes`, for example svgs imported with
+   * @svg-jar/plugin: `import MyLogo from './my-logo.svg';`
+   */
+  'euiIcon.icons'?: Record<
+    string,
+    ComponentLike<{ Element: SVGSVGElement; Blocks: { default: [] } }>
+  >;
+  /** @deprecated no longer has any effect, see `euiIcon.icons` */
   'euiIcon.useSvg'?: boolean;
+  /** @deprecated no longer has any effect, see `euiIcon.icons` */
   euiIconUseSvg?: boolean;
   'euiButtonIcon.size'?: EuiButtonIconSignature['Args']['iconSize'];
   euiComboBoxOptionsHeight?: number;

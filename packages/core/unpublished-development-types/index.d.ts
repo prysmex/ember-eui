@@ -1,9 +1,9 @@
+/// <reference types="@svg-jar/plugin/client/ember" />
 import '@glint/environment-ember-loose';
 import '@glint/environment-ember-template-imports';
 
 import Modifier from 'ember-modifier';
 
-import type SvgJar from 'ember-svg-jar/types';
 
 declare class RenderModifier<
   Args extends unknown[] = unknown[]
@@ -16,7 +16,6 @@ declare module '@glint/environment-ember-loose/registry' {
   export default interface Registry {
     'did-insert': typeof RenderModifier;
     'will-destroy': typeof RenderModifier;
-    'svg-jar': typeof SvgJar;
   }
 }
 

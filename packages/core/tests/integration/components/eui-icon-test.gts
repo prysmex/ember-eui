@@ -4,6 +4,7 @@ import { render } from '@ember/test-helpers';
 
 import EuiIcon, { TYPES } from '#src/components/eui-icon.gts';
 
+import type EuiConfigService from '#src/services/eui-config.ts';
 import type { TOC } from '@ember/component/template-only';
 
 const CustomIcon: TOC<{ Element: SVGSVGElement }> = <template>
@@ -36,6 +37,14 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       assert.dom('svg').hasAttribute('viewBox', '0 0 32 32');
       assert.dom('svg .euiIcon__fillSecondary').exists();
+    });
+
+    test('it keeps the data-type EUI styles the Elastic logo with', async function (assert) {
+      // .euiIcon--ghost[data-type=logoElastic] ... in the EUI theme
+      await render(<template><EuiIcon @type="logoElastic" /></template>);
+
+      assert.dom('svg').hasAttribute('data-type', 'logoElastic');
+      assert.dom('svg .outline').exists();
     });
 
     test('it resolves icons that live in sub folders (tokens)', async function (assert) {
@@ -90,9 +99,7 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg').doesNotHaveClass('euiIcon--customColor');
     });
 
-    // ember-svg-jar drops the SafeString passed as `style`, so custom colors
-    // never reach the svg (renders style="").
-    test.todo('a custom color becomes an inline fill', async function (assert) {
+    test('a custom color becomes an inline fill', async function (assert) {
       await render(<template><EuiIcon @type="bell" @color="#ff0000" /></template>);
 
       assert.dom('svg').hasClass('euiIcon--customColor');
@@ -111,6 +118,14 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       assert.true(svgs[0]?.classList.contains('euiIcon--app'));
       assert.false(svgs[1]?.classList.contains('euiIcon--app'));
+    });
+
+    test('extra attributes are passed to the svg', async function (assert) {
+      await render(
+        <template><EuiIcon @type="bell" data-test-bell id="bell-icon" /></template>
+      );
+
+      assert.dom('svg[data-test-bell]').hasAttribute('id', 'bell-icon');
     });
 
     test('@iconClasses are added to the svg', async function (assert) {
@@ -155,15 +170,30 @@ module('Integration | Component | eui-icon', function (hooks) {
   module('other icon sources', function () {
     test('a string that is not a named icon renders an <img>', async function (assert) {
       await render(
-        <template>
-          <EuiIcon @type={{DATA_URL}} @title="Custom" @useSvg={{false}} />
-        </template>
+        <template><EuiIcon @type={{DATA_URL}} @title="Custom" /></template>
       );
 
       assert.dom('svg').doesNotExist();
       assert.dom('img').hasAttribute('src', DATA_URL);
       assert.dom('img').hasAttribute('alt', 'Custom');
       assert.dom('img').hasClass('euiIcon');
+    });
+
+    test('icons registered in the euiIcon.icons config render by name', async function (assert) {
+      const config = this.owner.lookup('service:eui-config') as EuiConfigService;
+
+      config.updateConfig({ 'euiIcon.icons': { myLogo: CustomIcon } });
+
+      await render(
+        <template><EuiIcon @type="myLogo" @size="l" @color="primary" /></template>
+      );
+
+      assert.dom('img').doesNotExist();
+      assert.dom('svg.my-custom-icon').exists();
+      assert.dom('svg.my-custom-icon').hasClass('euiIcon');
+      assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
+      assert.dom('svg.my-custom-icon').hasClass('euiIcon--primary');
+      assert.dom('svg.my-custom-icon').hasAttribute('aria-hidden', 'true');
     });
 
     test('@useComponent renders the given component with the icon classes', async function (assert) {

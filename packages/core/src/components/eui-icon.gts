@@ -1,10 +1,12 @@
 import Component from '@glimmer/component';
+import { warn } from '@ember/debug';
 import { guidFor } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
-import svgJar from 'ember-svg-jar/helpers/svg-jar';
 import { and, not } from 'ember-truth-helpers';
+
+import icons, { iconDataTypes } from '../-private/icons.ts';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -14,6 +16,7 @@ import {
 } from '../utils/css-mappings/eui-icon.ts';
 import { keysOf } from './common.ts';
 
+import type { EuiIconComponent } from '../-private/icons.ts';
 import type EuiConfigService from '../services/eui-config';
 import type { sizeToClassNameMap } from '../utils/css-mappings/eui-icon.ts';
 import type { CommonArgs } from './common.ts';
@@ -56,6 +59,11 @@ export type EuiIconArgs = CommonArgs & {
 
   /**
    * If the type is not a named eui icon, render as Svg, not as img.
+   */
+  /**
+   * @deprecated No longer has any effect. EUI icons are always inline svgs,
+   * icons registered through the `euiIcon.icons` config are rendered as
+   * components and any other string is treated as an image URL.
    */
   useSvg?: boolean;
 
@@ -108,18 +116,39 @@ export default class EuiIcon extends Component<EuiIconSignature> {
 
   @argOrDefaultDecorator('m') size!: IconSize;
 
+  /**
+   * The component rendering the svg, for EUI icon names and for names
+   * registered by the app through the `euiIcon.icons` config.
+   */
+  get iconComponent(): EuiIconComponent | undefined {
+    const { type } = this.args;
+
+    if (typeof type !== 'string') return undefined;
+
+    if (isEuiIconType(type)) return icons[type];
+
+    return this.euiConfig.getConfig('euiIcon.icons')?.[type];
+  }
+
+  get dataType(): string | undefined {
+    const { type } = this.args;
+
+    return isEuiIconType(type) ? iconDataTypes[type] : undefined;
+  }
+
   get useImage(): boolean {
     const { type } = this.args;
 
-    return typeof type === 'string' && !isEuiIconType(type) && !this.useSvg;
-  }
+    if (typeof type !== 'string' || this.iconComponent) return false;
 
-  get useSvg(): boolean {
-    return (
-      this.args.useSvg ??
-      (this.euiConfig.getConfig('euiIcon.useSvg') as boolean) ??
-      false
+    warn(
+      `<EuiIcon @type="${type}"> is not an EUI icon nor an icon registered in the \`euiIcon.icons\` config, so it is rendered as an <img> with that URL. ` +
+        `If this used to be an ember-svg-jar asset, register it instead, e.g. euiConfig.updateConfig({ 'euiIcon.icons': { '${type}': MyIconComponent } }).`,
+      /[/.:]/.test(type),
+      { id: 'ember-eui.eui-icon.unknown-type' }
     );
+
+    return true;
   }
 
   get icon(): IconType | ComponentLike | undefined {
@@ -219,14 +248,6 @@ export default class EuiIcon extends Component<EuiIconSignature> {
     return titleId;
   }
 
-  get iconAsString(): string | undefined {
-    if (this.icon) {
-      return this.icon as any as string;
-    }
-
-    return undefined;
-  }
-
   <template>
     {{#if @useComponent}}
       {{!@glint-expect-error}}
@@ -269,28 +290,26 @@ export default class EuiIcon extends Component<EuiIconSignature> {
           tabIndex={{@tabIndex}}
           ...attributes
         />
-      {{else}}
-        {{#if this.iconAsString}}
-          {{svgJar
-            this.iconAsString
-            class=(classNames
-              @iconClasses
-              this.optionalColorClass
-              (if
-                (and this.isAppIcon (not this.appIconHasColor)) "euiIcon--app"
-              )
-              componentName="EuiIcon"
-              size=this.size
-            )
-            color=@color
-            role="image"
-            aria-hidden=(if this.isAriaHidden "true")
-            aria-label=(if @aria-label @aria-label this.titleId)
-            aria-labelledby=(if @aria-labelledby @aria-labelledby this.titleId)
-            tabindex=@tabIndex
-            style=this.optionalCustomStyles
+      {{else if this.iconComponent}}
+        <this.iconComponent
+          class={{classNames
+            @iconClasses
+            this.optionalColorClass
+            (if (and this.isAppIcon (not this.appIconHasColor)) "euiIcon--app")
+            componentName="EuiIcon"
+            size=this.size
           }}
-        {{/if}}
+          color={{@color}}
+          data-type={{this.dataType}}
+          role="image"
+          aria-hidden={{if this.isAriaHidden "true"}}
+          aria-label={{if @aria-label @aria-label this.titleId}}
+          aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
+          {{! @glint-expect-error }}
+          tabindex={{@tabIndex}}
+          style={{this.optionalCustomStyles}}
+          ...attributes
+        />
       {{/if}}
     {{/if}}
   </template>

@@ -37,6 +37,18 @@
     },
     "overrides": {
       "@ember/string": "^4.0.0"
+    },
+    "packageExtensions": {
+      "@svg-jar/plugin": {
+        "peerDependencies": {
+          "ember-source": "*"
+        },
+        "peerDependenciesMeta": {
+          "ember-source": {
+            "optional": true
+          }
+        }
+      }
     }
   },
   "packageManager": "pnpm@9.9.0"

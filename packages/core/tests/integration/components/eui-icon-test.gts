@@ -2,6 +2,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 
+import EuiBadge from '#src/components/eui-badge.gts';
 import EuiIcon, { TYPES } from '#src/components/eui-icon.gts';
 
 import type EuiConfigService from '#src/services/eui-config.ts';
@@ -194,6 +195,28 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
       assert.dom('svg.my-custom-icon').hasClass('euiIcon--primary');
       assert.dom('svg.my-custom-icon').hasAttribute('aria-hidden', 'true');
+    });
+
+    test('a component passed as @type renders as a component', async function (assert) {
+      await render(
+        <template><EuiIcon @type={{CustomIcon}} @size="l" @color="danger" /></template>
+      );
+
+      assert.dom('img').doesNotExist();
+      assert.dom('svg.my-custom-icon').exists({ count: 1 });
+      assert.dom('svg.my-custom-icon').hasClass('euiIcon');
+      assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
+      assert.dom('svg.my-custom-icon').hasClass('euiIcon--danger');
+    });
+
+    test('components passed as @iconType work through other components', async function (assert) {
+      // EuiBadge forwards @iconType to EuiIcon, but not @useComponent
+      await render(
+        <template><EuiBadge @iconType={{CustomIcon}}>Badge</EuiBadge></template>
+      );
+
+      assert.dom('.euiBadge svg.my-custom-icon').exists();
+      assert.dom('.euiBadge svg.my-custom-icon').hasClass('euiIcon');
     });
 
     test('@useComponent renders the given component with the icon classes', async function (assert) {

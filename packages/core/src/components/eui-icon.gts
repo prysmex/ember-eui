@@ -89,7 +89,8 @@ export type EuiIconArgs = CommonArgs & {
   onIconLoad?: () => void;
 
   /**
-   * When you want to render a component instead of an SVG
+   * @deprecated Not needed anymore: a component passed as `@type` is
+   * always rendered as a component.
    */
   useComponent?: boolean;
 
@@ -117,11 +118,16 @@ export default class EuiIcon extends Component<EuiIconSignature> {
   @argOrDefaultDecorator('m') size!: IconSize;
 
   /**
-   * The component rendering the svg, for EUI icon names and for names
-   * registered by the app through the `euiIcon.icons` config.
+   * The component rendering the svg: for EUI icon names, for names
+   * registered by the app through the `euiIcon.icons` config, and for
+   * components passed directly as `@type` (e.g. `@iconType={{MyLogo}}`).
    */
   get iconComponent(): EuiIconComponent | undefined {
     const { type } = this.args;
+
+    if (type && (typeof type === 'object' || typeof type === 'function')) {
+      return type as EuiIconComponent;
+    }
 
     if (typeof type !== 'string') return undefined;
 

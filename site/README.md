@@ -6,7 +6,7 @@ by [docfy](https://github.com/josemarluedke/docfy) (`@docfy/ember-vite`).
 
 ## Development
 
-From the repository root (pnpm 10, e.g. via `corepack enable`):
+From the repository root (pnpm 12, e.g. via `corepack enable`):
 
 ```sh
 pnpm install

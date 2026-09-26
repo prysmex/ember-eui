@@ -29,8 +29,8 @@ packageExtensions:
       ember-source:
         optional: true
 
-# pnpm 10 runs dependency install scripts only when allow-listed
-onlyBuiltDependencies:
-  - esbuild # validates its platform binary
-ignoredBuiltDependencies:
-  - core-js # postinstall only prints a donation message
+# dependency install scripts run only when allowed (pnpm >= 11 errors on
+# unlisted ones)
+allowBuilds:
+  esbuild: true # validates its platform binary
+  core-js: false # postinstall only prints a donation message

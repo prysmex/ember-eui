@@ -303,9 +303,6 @@ importers:
       ember-element-helper:
         specifier: ^0.8.6
         version: 0.8.6(@babel/core@7.26.9)(@glint/environment-ember-loose@1.5.2(@glimmer/component@2.0.0)(@glint/template@1.5.2)(@types/ember__array@4.0.9(@babel/core@7.26.9))(@types/ember__component@4.0.21(@babel/core@7.26.9))(@types/ember__controller@4.0.11(@babel/core@7.26.9))(@types/ember__object@4.0.11(@babel/core@7.26.9))(@types/ember__routing@4.0.19(@babel/core@7.26.9))(ember-cli-htmlbars@6.3.0)(ember-modifier@4.2.0(@babel/core@7.26.9)(ember-source@6.12.0(@glimmer/component@2.0.0)(rsvp@4.8.5))))(@glint/template@1.5.2)(ember-source@6.12.0(@glimmer/component@2.0.0)(rsvp@4.8.5))
-      ember-event-helpers:
-        specifier: ^0.1.1
-        version: 0.1.1
       ember-keyboard:
         specifier: ^9.0.1
         version: 9.0.1(@babel/core@7.26.9)(@ember/test-helpers@5.5.0(@babel/core@7.26.9))(ember-source@6.12.0(@glimmer/component@2.0.0)(rsvp@4.8.5))
@@ -7099,10 +7096,6 @@ packages:
     peerDependenciesMeta:
       '@typescript-eslint/parser':
         optional: true
-
-  ember-event-helpers@0.1.1:
-    resolution: {integrity: sha512-fWcbWd4W4nRv8bbato8JB6oGRpATkR+oGYxMIqnfgTgPWaCS0ww7CuUVNpwg1TulojKMCuTXi8Fem2b1NSF1ZQ==}
-    engines: {node: 8.* || >= 10.*}
 
   ember-fetch@8.1.2:
     resolution: {integrity: sha512-TVx24/jrvDIuPL296DV0hBwp7BWLcSMf0I8464KGz01sPytAB+ZAePbc9ooBTJDkKZEGFgatJa4nj3yF1S9Bpw==}
@@ -20488,12 +20481,6 @@ snapshots:
       '@typescript-eslint/parser': 6.17.0(eslint@9.22.0)(typescript@5.8.2)
     transitivePeerDependencies:
       - eslint
-
-  ember-event-helpers@0.1.1:
-    dependencies:
-      ember-cli-babel: 7.26.11
-    transitivePeerDependencies:
-      - supports-color
 
   ember-fetch@8.1.2(encoding@0.1.13):
     dependencies:

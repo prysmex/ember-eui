@@ -2,13 +2,12 @@ import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import preventDefault from 'ember-event-helpers/helpers/prevent-default';
-import stopPropagation from 'ember-event-helpers/helpers/stop-propagation';
 import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, notEq } from 'ember-truth-helpers';
 
+import { preventDefault, stopPropagation } from '../-private/event-helpers.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import inlineStyles from '../helpers/inline-styles.ts';

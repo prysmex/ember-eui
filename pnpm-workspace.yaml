@@ -21,12 +21,25 @@ peerDependencyRules:
 overrides:
   '@ember/string': ^4.0.0
 
+# Packages whose types import @glint/template (or ember-source) without
+# declaring it: as optional peers they resolve each consumer's own version.
+# Otherwise they get whichever copy pnpm happens to hoist (e.g. the site's
+# @glint/template 1.9 in the packages, which use 1.5), and glint fails.
 packageExtensions:
   '@svg-jar/plugin':
     peerDependencies:
       ember-source: '*'
+      '@glint/template': '*'
     peerDependenciesMeta:
       ember-source:
+        optional: true
+      '@glint/template':
+        optional: true
+  ember-element-helper:
+    peerDependencies:
+      '@glint/template': '*'
+    peerDependenciesMeta:
+      '@glint/template':
         optional: true
 
 # dependency install scripts run only when allowed (pnpm >= 11 errors on

@@ -60,6 +60,7 @@
     "@glint/tsserver-plugin": "^2.7.7",
     "@nullvoxpopuli/ember-composable-helpers": "^5.3.2",
     "@rollup/plugin-babel": "^7.1.0",
+    "@svg-jar/plugin": "0.2.1",
     "@types/qunit": "^2.19.14",
     "@types/rsvp": "^4.0.9",
     "babel-plugin-ember-template-compilation": "^4.0.0",

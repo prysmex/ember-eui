@@ -21,8 +21,8 @@ const EuiFormLegend: TemplateOnlyComponent<EuiFormLegendSignature> = <template>
   {{#let (argOrDefault @display "visible") as |display|}}
     <legend
       class={{classNames
-        (if (eq display "hiddden") "euiFormLengend--isHidden")
-        (if @compressed "euiFormLegend--compresed")
+        (if (eq display "hidden") "euiFormLegend-isHidden")
+        (if @compressed "euiFormLegend--compressed")
         "euiFormLegend"
       }}
       ...attributes

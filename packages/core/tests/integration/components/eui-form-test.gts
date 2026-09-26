@@ -96,9 +96,7 @@ module('Integration | Component | eui-form', function (hooks) {
     assert.dom('fieldset .inside').exists();
   });
 
-  // Bug: EuiFormLegend checks display "hiddden" and uses the misspelled
-  // classes euiFormLengend--isHidden / euiFormLegend--compresed
-  test.todo('EuiFormLegend hidden and compressed classes', async function (assert) {
+  test('EuiFormLegend hidden and compressed classes', async function (assert) {
     await render(
       <template>
         <EuiFormLegend @display="hidden" class="hidden">Hidden</EuiFormLegend>

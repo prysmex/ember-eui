@@ -39,7 +39,7 @@
               </li>
             {{/each}}
           </ul>
-          <EuiSpacer size='s' />
+          <EuiSpacer @size='s' />
         </EuiPanel>
       </EuiFlexItem>
     </EuiFlexGroup>
@@ -75,7 +75,7 @@
               </li>
             {{/each}}
           </ul>
-          <EuiSpacer size='s' />
+          <EuiSpacer @size='s' />
         </EuiPanel>
       </EuiFlexItem>
     </EuiFlexGroup>

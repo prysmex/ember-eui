@@ -77,13 +77,13 @@ order: 1
             </EuiHeaderSectionItemButton>
           </:button>
           <:content>
-            <EuiPopoverTitle paddingSize="s">
+            <EuiPopoverTitle @paddingSize="s">
               TODO: search
             </EuiPopoverTitle>
             TODO: list
-            <EuiPopoverFooter paddingSize="s">
+            <EuiPopoverFooter @paddingSize="s">
               <EuiButton
-                size="s"
+                @size="s"
                 @fullWidth={{true}}
                 onClick={{this.addMoreSpaces}}
                 disabled={{this.listIsExtended}}
@@ -190,7 +190,7 @@ order: 1
             @notification='1'
             @onClick={{set this 'appsPopover' true}}
           >
-            <EuiIcon @type='apps' size='m' />
+            <EuiIcon @type='apps' @size='m' />
           </EuiHeaderSectionItemButton>
         </:button>
         <:content>

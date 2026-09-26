@@ -71,7 +71,7 @@ order: 6
         <:content>
           <EuiPopoverTitle @paddingSize='s'>What&apos;s new</EuiPopoverTitle>
           <div style='max-height:40vh; overflow-y: auto; padding: 4px'>
-            <EuiSpacer size='s' />
+            <EuiSpacer @size='s' />
             {{#each this.alerts as |alert|}}
               <EuiHeaderAlert>
                 <:title>

@@ -23,7 +23,7 @@ order: 4
           {{color}}
         </:label>
       </EuiProgress>
-      <EuiSpacer size='s' />
+      <EuiSpacer @size='s' />
     {{/each}}
   </EuiFlexItem>
   <EuiFlexItem>
@@ -39,7 +39,7 @@ order: 4
           {{color}}
         </:label>
       </EuiProgress>
-      <EuiSpacer size='s' />
+      <EuiSpacer @size='s' />
     {{/each}}
   </EuiFlexItem>
 </EuiFlexGroup>

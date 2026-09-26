@@ -229,7 +229,7 @@ order: 2
       </EuiPopover>
     </EuiFlexItem>
   </EuiFlexGroup>
-  <EuiSpacer size='l' />
+  <EuiSpacer @size='l' />
   <EuiFlexGroup>
     <EuiFlexItem @grow={{false}}>
       <EuiPopover

@@ -11,9 +11,9 @@ order: 3
 
 ```hbs template
 <div>
-  <EuiTitle size='l' @tagName="h1">Heading 1</EuiTitle>
+  <EuiTitle @size='l' @tagName="h1">Heading 1</EuiTitle>
 
-  <EuiSpacer size='xl' />
+  <EuiSpacer @size='xl' />
 
   <EuiSteps @headingElement='h2'>
     <EuiStep @step={{1}} @title='Step 1'>

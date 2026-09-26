@@ -28,7 +28,7 @@
               </li>
             {{/each}}
           </ul>
-          <EuiSpacer size='s' />
+          <EuiSpacer @size='s' />
           <EuiButtonEmpty {{on 'click' this.addItem}}>
             add item
           </EuiButtonEmpty>

@@ -35,7 +35,7 @@ order: 2
     @position='sticky'
     @bottom={{10}}
   >
-    <EuiText color='ghost' textAlign='center'>
+    <EuiText @color='ghost' @textAlign='center'>
       <p>Scroll to see!</p>
     </EuiText>
   </EuiBottomBar>

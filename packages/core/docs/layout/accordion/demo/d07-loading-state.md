@@ -64,7 +64,7 @@ order: 7
     </EuiPanel>
   </:content>
   <:extraAction>
-    <EuiButton size='s'>Extra action!</EuiButton>
+    <EuiButton @size='s'>Extra action!</EuiButton>
   </:extraAction>
 </EuiAccordion>
 ```

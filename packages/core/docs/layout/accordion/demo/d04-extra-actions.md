@@ -14,7 +14,7 @@ order: 4
     Click to open
   </:buttonContent>
   <:content>
-    <EuiText size='s'>
+    <EuiText @size='s'>
       <strong>Opened content </strong>
     </EuiText>
   </:content>

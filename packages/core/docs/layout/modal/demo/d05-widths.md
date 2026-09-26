@@ -5,11 +5,9 @@ order: 5
 # Widths
 
 <EuiText>
-  Modals start with a minimum width of 400px, just enough to display form rows.
-  They will grow to fit the contents until it reaches the specified maxWidth,
-  the default of which is set to the medium breakpoint. If the modal is not
-  growing wide enough to fit your contents, you can pass a specific style.width,
-  just remember that modals will always shrink to fit the window width.
+
+Modals are at least 400px wide and grow with their content up to a maximum. `@maxWidth={{true}}` uses EUI's default maximum, a CSS width sets your own, and a `style` width fixes it; modals always shrink to fit small windows.
+
 </EuiText>
 
 ```hbs template

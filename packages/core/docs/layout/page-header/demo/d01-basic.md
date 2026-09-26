@@ -2,6 +2,15 @@
 order: 1
 ---
 
+# Basic page header
+
+<EuiText>
+
+Title, icon, description and actions. The description never extends
+under the right side items.
+
+</EuiText>
+
 ```hbs template
 <EuiPageHeader
   @bottomBorder={{true}}

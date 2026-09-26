@@ -6,22 +6,42 @@ title: Accordion
 <EuiPageHeader @pageTitle="Accordion"/>
 <EuiSpacer @size="l" />
 
-<EuiCallOut
-@title='Take care when including flex group content within accordions'>
-<:body>
-<EuiText @size='s'>
-<strong>EuiFlexGroup's</strong>
-negative margins can sometimes create scrollbars within
-<strong>EuiAccordion</strong>
-because of the overflow tricks used to hide content. If you run into this
-issue make sure your paddingSize prop is large enough to account for the
-<EuiCode>gutterSize</EuiCode>
-of any nested flex groups.
-</EuiText>
-</:body>
+<EuiText>
+
+`EuiAccordion` shows and hides content under a clickable title. It is
+deliberately unstyled (no borders or backgrounds), so it fits anywhere:
+settings sections, advanced options in forms, FAQs.
+
+```hbs
+<EuiAccordion id="advanced-options" @paddingSize="m">
+  <:buttonContent>Advanced options</:buttonContent>
+  <:content>
+    <EuiFormRow @label="Timeout"><EuiFieldNumber @value={{30}} /></EuiFormRow>
+  </:content>
+</EuiAccordion>
+```
+
+- Give each accordion a unique `id`: its content gets it, and the trigger
+  points to it for screen readers.
+- The trigger's content goes in `<:buttonContent>` and the collapsible
+  content in `<:content>`.
+- It starts closed (`@initialIsOpen={{true}}` opens it) and manages its own
+  state; to control it, pass `@forceState` (`"open"` / `"closed"`) and
+  update it in `@onToggle`.
+- `@extraAction={{true}}` renders the `<:extraAction>` block on the right,
+  e.g. a delete button.
+
+<EuiCallOut @title="Flex groups inside accordions" @size="s">
+  <p>
+    <strong>EuiFlexGroup</strong>'s negative margins can create scrollbars
+    inside accordions. Use an <code>@paddingSize</code> at least as large as
+    the flex group's gutter.
+  </p>
 </EuiCallOut>
 
-<EuiHorizontalRule/>
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

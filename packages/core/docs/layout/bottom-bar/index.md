@@ -4,19 +4,37 @@ title: Bottom bar
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Bottom bar"/>
+<EuiSpacer @size="l" />
 
-<EuiSpacer/>
+<EuiText>
 
-<EuiCallOut>
-  <:body>
-    <EuiText @size='s'>
-      <strong>EuiBottomBar</strong>
-      offers a quick way to apply a bottom bar to your page layouts.
-    </EuiText>
-  </:body>
-</EuiCallOut>
+`EuiBottomBar` pins actions to the bottom of the window, e.g. "Save" and
+"Discard" for a form with unsaved changes. By default it is fixed to the
+bottom (rendered in a portal) and pads the page so it doesn't cover the
+content.
 
-<EuiHorizontalRule/>
+```hbs
+{{#if this.hasChanges}}
+  <EuiBottomBar>
+    <EuiFlexGroup @justifyContent="flexEnd" @gutterSize="s">
+      <EuiFlexItem @grow={{false}}>
+        <EuiButtonEmpty @color="ghost" {{on "click" this.discard}}>Discard</EuiButtonEmpty>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @color="success" @fill={{true}} {{on "click" this.save}}>Save</EuiButton>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </EuiBottomBar>
+{{/if}}
+```
+
+The bar is dark: use `@color="ghost"` for buttons on it. `@position`
+switches to `sticky` (bottom of its scrolling container) or `static`, and
+`@left` / `@right` leave room for a side navigation.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

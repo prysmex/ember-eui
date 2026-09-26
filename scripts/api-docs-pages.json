@@ -173,7 +173,7 @@
     "EuiHeaderBreadcrumbs",
     "EuiHeaderAlert"
   ],
-  "packages/core/docs/layout/horizontal-rule/horizontal-rule.md": [
+  "packages/core/docs/layout/horizontal-rule/index.md": [
     "EuiHorizontalRule"
   ],
   "packages/core/docs/layout/modal/index.md": [
@@ -188,7 +188,9 @@
     "EuiPageHeader"
   ],
   "packages/core/docs/layout/panel/index.md": [
-    "EuiPanel"
+    "EuiPanel",
+    "EuiSplitPanelOuter",
+    "EuiSplitPanelInner"
   ],
   "packages/core/docs/layout/popover/index.md": [
     "EuiPopover",

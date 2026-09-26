@@ -4,8 +4,42 @@ title: Popover
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Popover"/>
+<EuiSpacer @size="l" />
 
-<EuiHorizontalRule/>
+<EuiText>
+
+A popover is a small panel anchored to a button: menus, pickers, short
+forms or extra information. You keep whether it is open and close it in
+`@closePopover`, which EUI calls on Escape and on clicks outside.
+
+```hbs
+<EuiPopover
+  @isOpen={{this.isOpen}}
+  @closePopover={{this.close}}
+  @anchorPosition="downLeft"
+>
+  <:button>
+    <EuiButton @iconType="arrowDown" @iconSide="right" {{on "click" this.toggle}}>
+      Actions
+    </EuiButton>
+  </:button>
+  <:content>
+    <EuiContextMenuPanel>
+      <EuiContextMenuItem @icon="copy" {{on "click" this.duplicate}}>Duplicate</EuiContextMenuItem>
+      <EuiContextMenuItem @icon="trash" {{on "click" this.remove}}>Delete</EuiContextMenuItem>
+    </EuiContextMenuPanel>
+  </:content>
+</EuiPopover>
+```
+
+The popover traps focus while open (focusing its panel), repositions
+itself to stay on screen and flips when there is no room.
+`EuiPopoverTitle` and `EuiPopoverFooter` add a header and footer;
+`EuiInputPopover` attaches a popover as wide as an input.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

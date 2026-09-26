@@ -2,8 +2,13 @@
 order: 5
 ---
 
+# A back link as a breadcrumb
+
 <EuiText>
-	A common pattern is to use a single breadcrumb to return the user to a listing page from which the current page was navigated to
+
+A breadcrumb's `text` can be a component, e.g. a small "Return" button,
+for a single step back instead of a full trail.
+
 </EuiText>
 
 ```hbs template

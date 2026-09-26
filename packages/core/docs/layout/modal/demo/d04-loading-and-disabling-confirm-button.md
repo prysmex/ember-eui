@@ -2,10 +2,12 @@
 order: 4
 ---
 
-# Loading and disabling confirm button
+# Loading and disabling the confirm button
 
 <EuiText>
-  <strong>EuiConfirmModal</strong> supports being able to apply loading and disabled states to the confirm button with the <EuiCode>confirmButtonDisabled</EuiCode> and <EuiCode>isLoading</EuiCode> props respectively. This is helpful to indicate the fetching of data and/or to wait for a user's input before enabling the confirm action.
+
+`@isLoading` shows a spinner in the confirm button while the action runs; `@confirmButtonDisabled` disables it, e.g. until the user types a confirmation.
+
 </EuiText>
 
 ```hbs template

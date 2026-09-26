@@ -4,8 +4,23 @@ title: Spacer
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Spacer"/>
+<EuiSpacer @size="l" />
 
-<EuiHorizontalRule/>
+<EuiText>
+
+`EuiSpacer` adds vertical space between blocks of content, using EUI's
+spacing scale: `xs` (4px), `s` (8px), `m` (16px), `l` (24px, the
+default), `xl` (32px) and `xxl` (40px).
+
+```hbs
+<EuiTitle @size="s" @tagName="h2">Settings</EuiTitle>
+<EuiSpacer @size="m" />
+<EuiText><p>…</p></EuiText>
+```
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

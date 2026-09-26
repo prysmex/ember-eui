@@ -4,6 +4,12 @@ order: 13
 
 # Gutter sizing
 
+<EuiText>
+
+`@gutterSize` sets the space between items: `none`, `xs`, `s`, `m`, `l` (default) or `xl`.
+
+</EuiText>
+
 ```hbs template
 <div>
   <EuiFlexGroup class="flex-demo" @gutterSize="none">

@@ -4,19 +4,43 @@ title: Flex
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Flex"/>
-
 <EuiSpacer @size="l" />
 
-<EuiCallOut
-@title='Coloring and padding exist for examples only'>
-<:body>
-<EuiText @size='s'>
-Padding and background-color are added to all the <strong>EuiFlexItem</strong> components on this documentation page for illustrative purposes only. You will need to add padding through additional components or classes if you need it.
-</EuiText>
-</:body>
+<EuiText>
+
+Flex components lay out other components without writing CSS:
+
+- **`EuiFlexGroup`** puts its `EuiFlexItem`s in a row (or a column), with a
+  gutter between them. By default items share the width equally and
+  stretch to the same height.
+- **`EuiFlexItem`** is one cell. `@grow={{false}}` makes it only as wide as
+  its content; `@grow={{2}}` takes twice the share.
+- **`EuiFlexGrid`** lays out repeated items (cards, stats) in a grid of 1–4
+  `@columns`.
+
+```hbs
+<EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
+  <EuiFlexItem @grow={{false}}><EuiAvatar @name="Jane Cooper" /></EuiFlexItem>
+  <EuiFlexItem>Jane Cooper</EuiFlexItem>
+  <EuiFlexItem @grow={{false}}><EuiButtonIcon @iconType="gear" aria-label="Settings" /></EuiFlexItem>
+</EuiFlexGroup>
+```
+
+On small screens, groups and grids stack their items in one column; set
+`@responsive={{false}}` for rows that must stay on one line (like the one
+above).
+
+<EuiCallOut @title="Coloring and padding exist for examples only" @size="s">
+  <p>
+    The examples on this page add padding and a background to every
+    <strong>EuiFlexItem</strong> so you can see them. Flex items have
+    neither by default.
+  </p>
 </EuiCallOut>
 
-<EuiHorizontalRule/>
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

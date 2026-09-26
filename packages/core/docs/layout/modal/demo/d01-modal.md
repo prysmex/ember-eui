@@ -2,11 +2,13 @@
 order: 1
 ---
 
-<!-- <EuiText>
-Each <strong>EuiModal</strong> requires a specific set of nested child components. They can be omitted if necessary, but the order cannot be changed or interrupted.
+# Modal
 
-Modals come a wrapping <strong>EuiOverlayMask</strong> to obscure the content beneath, but unlike flyouts, modals cannot be dismissed by clicking on the overlay mask. This is inline with our modal usage guidelines which requires there to be a primary action button, even if that button simply closes the modal.
-</EuiText> -->
+<EuiText>
+
+Open the modal from a button and render it inside `{{#if}}`. `EuiModalHeader`, `EuiModalBody` and `EuiModalFooter` lay out its parts; the body scrolls when the content is long.
+
+</EuiText>
 
 ```hbs template
 <EuiButton

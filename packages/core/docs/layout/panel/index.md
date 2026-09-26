@@ -4,12 +4,33 @@ title: Panel
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Panel"/>
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-<strong>EuiPanel</strong> is a building block component. Use it as a layout helper for containing content. It is also commonly used as a base for other larger components like <strong>EuiPage</strong>, <strong>EuiPopover</strong> and <strong>EuiCard</strong>.
-  </p>
+
+`EuiPanel` is a box for grouping content: a white background, padding, a
+rounded border and a shadow by default. Other components (cards,
+popovers, page sections) are built on it.
+
+```hbs
+<EuiPanel @paddingSize="l" @hasBorder={{true}}>
+  <EuiTitle @size="xs" @tagName="h3">Usage</EuiTitle>
+  <EuiText><p>32 of 50 seats used.</p></EuiText>
+</EuiPanel>
+```
+
+- `@paddingSize`: `none`, `s`, `m` (default) or `l`.
+- `@hasShadow` (on by default) and `@hasBorder` for plain panels.
+- `@color` for a shaded or colored background (`subdued`, `primary`,
+  `success`, `warning`, `danger`, `accent`, `transparent`).
+- `@onClick` makes the whole panel clickable.
+
+`EuiSplitPanelOuter` and `EuiSplitPanelInner` build a panel made of
+sections with different colors, e.g. a footer.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />
@@ -41,6 +62,41 @@ A box grouping content, with background, padding, border and shadow options.
 | default block | The panel's content. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+### EuiSplitPanelOuter
+
+A panel split into sections (`EuiSplitPanelInner`) with different colors or padding.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@direction` | `'column' \| 'row'` | `'column'` | `'column'` stacks the sections, `'row'` puts them side by side. |
+| `@responsive` | `Named['sizes']` | `['xs', 's']`; pass `false` to never stack | Screen sizes on which a `'row'` split panel stacks its sections. |
+| `@grow` | `boolean` | `false` | Grows to fill a flex parent. |
+| `@paddingSize` |  | `'none'` | Padding of the outer panel. |
+| `@hasShadow` |  |  | Adds a shadow. |
+| `@color` |  |  | Background, any `EuiPanel` color. |
+| `@borderRadius` |  |  | Border radius. |
+| `@hasBorder` |  |  | Adds a border. |
+
+| Block | Description |
+| --- | --- |
+| default block | The `EuiSplitPanelInner` sections. |
+
+### EuiSplitPanelInner
+
+One section of an EuiSplitPanelOuter, e.g. a header or footer with its own color.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@hasShadow` |  | `false` | Adds a shadow. |
+| `@color` |  | `'transparent'` | Background, any `EuiPanel` color. |
+| `@borderRadius` |  | `'none'` | Border radius. |
+| `@hasBorder` |  | `false` | Adds a border. |
+| `@paddingSize` |  |  | Padding, any `EuiPanel` padding size. |
+
+| Block | Description |
+| --- | --- |
+| default block | The section's content. |
 
 </EuiText>
 <!-- api:end -->

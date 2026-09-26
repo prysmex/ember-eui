@@ -5,7 +5,17 @@ order: 4
 # Split panels
 
 <EuiText>
- <p><strong>EuiSplitPanel</strong> is a composition of an outer and multiple inner <strong>EuiPanels</strong>. It is a namespaced component that you consume using <EuiCode>EuiSplitPanel.Outer</EuiCode> and <EuiCode>EuiSplitPanel.Inner</EuiCode> respectively. You can supply the same panel props to both components with the exception of a few to ensure the visual layout is correct. It also has two directions, <EuiCode>column</EuiCode> (default) and <EuiCode>row</EuiCode>.</p><p>For custom responsiveness, you can adjust at which breakpoints a <EuiCode>row</EuiCode> layout will stack by passing a new array of breakpoint names <EuiCode>['xs', 's']</EuiCode> to the <EuiCode>responsive</EuiCode> prop, or completely turn it off with <EuiCode>false</EuiCode>.</p>
+
+A split panel is an outer panel made of inner sections, each with its own
+color and padding. In `.gjs`/`.gts` import `EuiSplitPanelOuter` and
+`EuiSplitPanelInner` from `@ember-eui/core/components`; in `.hbs`
+templates they are `<EuiSplitPanel::Outer>` and `<EuiSplitPanel::Inner>`.
+
+Sections stack (`@direction="column"`, the default) or sit side by side
+(`@direction="row"`). A row layout stacks on small screens; pass the
+screen sizes to stack on as `@responsive` (default `["xs", "s"]`) or
+`false` to never stack.
+
 </EuiText>
 
 ```hbs template

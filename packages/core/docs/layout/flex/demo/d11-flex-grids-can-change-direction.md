@@ -4,6 +4,12 @@ order: 11
 
 # Flex grids can change direction
 
+<EuiText>
+
+With `@direction="column"`, a grid fills its columns top to bottom instead of row by row.
+
+</EuiText>
+
 ```hbs template
 <div>
   <EuiFlexGrid class="flex-demo" @columns={{2}} @direction="column">

@@ -4,8 +4,37 @@ title: Flyout
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Flyout"/>
+<EuiSpacer @size="l" />
 
-<EuiHorizontalRule/>
+<EuiText>
+
+A flyout is a panel that slides in from the side of the window, for
+details, settings or forms that relate to the page the user is on. Unlike
+a modal it can hold longer content, and with `@ownFocus={{false}}` or
+`@type="push"` the page stays usable next to it.
+
+```hbs
+{{#if this.isOpen}}
+  <EuiFlyout @onClose={{this.close}} @size="m" @closeButtonAriaLabel="Close">
+    <EuiFlyoutHeader @hasBorder={{true}}>
+      <EuiTitle @size="m" @tagName="h2">Edit rule</EuiTitle>
+    </EuiFlyoutHeader>
+    <EuiFlyoutBody>…</EuiFlyoutBody>
+    <EuiFlyoutFooter>
+      <EuiButton @fill={{true}} {{on "click" this.save}}>Save</EuiButton>
+    </EuiFlyoutFooter>
+  </EuiFlyout>
+{{/if}}
+```
+
+Render the flyout only while it is open and close it in `@onClose`
+(called by the close button, Escape, and outside clicks with
+`@outsideClickCloses`). Give the close button a label with
+`@closeButtonAriaLabel`.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

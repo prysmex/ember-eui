@@ -4,6 +4,12 @@ order: 9
 
 # Change direction
 
+<EuiText>
+
+`@direction="column"` stacks the items vertically (`columnReverse` and `rowReverse` reverse the order).
+
+</EuiText>
+
 ```hbs template
 <EuiFlexGroup class="flex-demo" @direction="column">
   <EuiFlexItem @grow={{false}}>Content grid item</EuiFlexItem>

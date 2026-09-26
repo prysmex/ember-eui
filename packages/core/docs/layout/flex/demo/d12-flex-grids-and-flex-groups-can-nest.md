@@ -4,6 +4,12 @@ order: 12
 
 # Flex grids and flex groups can nest
 
+<EuiText>
+
+Groups and grids can be nested inside flex items to build more complex layouts.
+
+</EuiText>
+
 ```hbs template
 <div>
   <EuiFlexGroup class="flex-demo">

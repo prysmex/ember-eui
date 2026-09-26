@@ -4,6 +4,12 @@ order: 1
 
 # Flex group is for a single row layout
 
+<EuiText>
+
+`EuiFlexGroup` places items side by side. Items take equal widths and stretch to the tallest item's height.
+
+</EuiText>
+
 ```hbs template
   <EuiFlexGroup class="flex-demo">
     <EuiFlexItem>Content grid item</EuiFlexItem>

@@ -4,21 +4,13 @@ order: 7
 
 # Loading state
 
-<!-- <EuiText>
-  Use the
-  <EuiCode>isLoading</EuiCode>
-  prop when not all of the accordion's content is ready yet. When using
-  <EuiCode>isLoading</EuiCode>, the content of
-  <EuiCode>extraAction</EuiCode>
-  is replaced with a loading spinner.<br /><br />
-  Manage the content of the accordion using
-  <EuiCode>isLoadingMessage</EuiCode>. By default, it is set to
-  <EuiCode>false</EuiCode>
-  and the content will remain unaltered. Set it to
-  <EuiCode>true</EuiCode>
-  to show a default loading message or pass a node to show a custom loading
-  message.
-</EuiText> -->
+<EuiText>
+
+`@isLoading` replaces the `<:extraAction>` block with a spinner while the
+content isn't ready. `@isLoadingMessage` replaces the content too: `true`
+shows "Loading...", a string shows your own message.
+
+</EuiText>
 
 ```hbs template
 <TodoText @text="missing EuiButtonGroup component"/>

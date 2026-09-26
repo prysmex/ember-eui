@@ -2,7 +2,14 @@
 order: 12
 ---
 
-# Popover using an HTML Element as the anchor
+# Popover using an HTML element as the anchor
+
+<EuiText>
+
+`EuiWrappingPopover` anchors a popover to an element that already exists
+in the page (passed as `@button`), e.g. one rendered outside Ember.
+
+</EuiText>
 
 ```hbs template
 {{#each this.buttons key='id' as |ele|}}
@@ -15,7 +22,7 @@ order: 12
     @isOpen={{this.isOpen}}
     @closePopover={{this.closePopover}}
   >
-    <div>Normal JSX content populates the popover.</div>
+    <div>Any content populates the popover.</div>
   </EuiWrappingPopover>
 {{/if}}
 ```

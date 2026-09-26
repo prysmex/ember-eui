@@ -3,14 +3,41 @@ title: Modal
 ---
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Modal"/>
-
 <EuiSpacer @size="l" />
 
 <EuiText>
-  A modal works best for focusing users' attention on a <strong>short</strong> amount of content and getting them to make a decision. Use it to temporarily interrupt a user’s current task and block interactions to the content below it. If your modal content is more complex, or requires considerable time to complete, consider using an EuiFlyout instead.
+
+A modal focuses the user on a **short** task or decision: it covers the
+page with a mask and traps keyboard focus until it closes. For longer
+content or forms that benefit from keeping the page in view, use a
+flyout; for yes/no questions, `EuiConfirmModal`.
+
+```hbs
+{{#if this.isOpen}}
+  <EuiModal @onClose={{this.close}}>
+    <EuiModalHeader>
+      <EuiModalHeaderTitle>
+        <EuiTitle @size="m" @tagName="h1">Rename dashboard</EuiTitle>
+      </EuiModalHeaderTitle>
+    </EuiModalHeader>
+    <EuiModalBody>…</EuiModalBody>
+    <EuiModalFooter>
+      <EuiButtonEmpty {{on "click" this.close}}>Cancel</EuiButtonEmpty>
+      <EuiButton @fill={{true}} {{on "click" this.save}}>Save</EuiButton>
+    </EuiModalFooter>
+  </EuiModal>
+{{/if}}
+```
+
+Render the modal only while it is open (`{{#if}}`) and close it in
+`@onClose`, which the close button and the Escape key call. Clicking the
+mask closes it only with `@clickOutsideToClose={{true}}`, since modals
+usually hold an important decision. Always offer a button that closes
+the modal.
+
 </EuiText>
 
-<EuiHorizontalRule/>
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

@@ -48,8 +48,22 @@ function kebab(name) {
   return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
+/** Components whose file name doesn't follow from their name. */
+const ALIASES = {
+  EuiSplitPanelOuter: 'eui-split-panel/outer',
+  EuiSplitPanelInner: 'eui-split-panel/inner'
+};
+
 /** `EuiButton` → packages/core/src/components/eui-button.gts */
 function sourceOf(component) {
+  if (ALIASES[component]) {
+    const match = sources.find((path) =>
+      path.endsWith(`/${ALIASES[component]}.gts`)
+    );
+
+    if (match) return match;
+  }
+
   for (const extension of ['gts', 'gjs']) {
     const file = `${kebab(component)}.${extension}`;
     const matches = sources.filter((path) => path.endsWith(`/${file}`));

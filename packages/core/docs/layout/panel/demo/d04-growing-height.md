@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
   <p>
-Using <strong>EuiPanel</strong> in an <strong>EuiFlexItems</strong> will always grow its height to match. This is great for rows of panels. However, you can also turn this feature off by setting <EuiCode>grow={false}</EuiCode>.
+Using <strong>EuiPanel</strong> in an <strong>EuiFlexItems</strong> will always grow its height to match. This is great for rows of panels. However, you can also turn this feature off by setting <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
   </p>
 </EuiText>
 

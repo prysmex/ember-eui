@@ -3,12 +3,36 @@ title: Page header
 ---
 
 <EuiSpacer/>
-<EuiPageHeader @pageTitle="Page Header" @bottomBorder={{true}}>
-	<:description>
-	<EuiText>While the <strong>EuiPageHeader</strong> component can be placed anywhere within your page layout, we recommend using it within the <a href="#"><strong>EuiPageTemplate</strong></a> component by passing the configuration props as its <EuiCode>pageHeader</EuiCode>.</EuiText>
-	</:description>
-	
+<EuiPageHeader @pageTitle="Page header"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiPageHeader` is the top of a page: an optional icon and breadcrumbs,
+the page title (an `<h1>`), a description, tabs, and actions on the right.
+
+```hbs
+<EuiPageHeader
+  @pageTitle="Dashboards"
+  @iconType="dashboardApp"
+  @description="Visualize your data in one place."
+  @bottomBorder={{true}}
+>
+  <:rightSideItems as |Item|>
+    <Item><EuiButton @fill={{true}} @iconType="plusInCircle">Create dashboard</EuiButton></Item>
+    <Item><EuiButtonEmpty>Manage</EuiButtonEmpty></Item>
+  </:rightSideItems>
 </EuiPageHeader>
+```
+
+Put each action in the yielded `Item` of the `<:rightSideItems>` block
+(the first one is rightmost). `@tabs` adds tabs under the title (or makes
+the tabs the title, without `@pageTitle`). Inside `EuiPageTemplate`,
+pass the same options as its `@pageHeader`.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

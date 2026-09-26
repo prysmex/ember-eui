@@ -2,7 +2,13 @@
 order: 3
 ---
 
-# Confirm Modal
+# Confirm modal
+
+<EuiText>
+
+`EuiConfirmModal` asks one question with a cancel and a confirm button (`@cancelButtonText`, `@confirmButtonText`). Use `@buttonColor="danger"` for destructive actions and name the action on the button ("Delete dashboard", not "Yes").
+
+</EuiText>
 
 ```hbs template
 

@@ -4,8 +4,42 @@ title: Header
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Header"/>
+<EuiSpacer @size="l" />
 
-<EuiHorizontalRule/>
+<EuiText>
+
+`EuiHeader` is the app's top bar: logo, breadcrumbs, search, links and
+action buttons (help, notifications, the user menu). It is divided into
+`EuiHeaderSection`s (left and right), each holding
+`EuiHeaderSectionItem`s.
+
+```hbs
+<EuiHeader @position="fixed">
+  <EuiHeaderSection @side="left">
+    <EuiHeaderSectionItem @border="right">
+      <EuiHeaderLogo @iconType="logoElastic" @href="/">Acme</EuiHeaderLogo>
+    </EuiHeaderSectionItem>
+    <EuiHeaderSectionItem>
+      <EuiHeaderBreadcrumbs @breadcrumbs={{this.breadcrumbs}} />
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+  <EuiHeaderSection @side="right">
+    <EuiHeaderSectionItem>
+      <EuiHeaderSectionItemButton aria-label="Help">
+        <EuiIcon @type="help" />
+      </EuiHeaderSectionItemButton>
+    </EuiHeaderSectionItem>
+  </EuiHeaderSection>
+</EuiHeader>
+```
+
+`@position="fixed"` keeps it at the top while the page scrolls;
+`@theme="dark"` is for app-wide navigation. `EuiHeaderLinks` holds text
+links and collapses them into a menu on small screens.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

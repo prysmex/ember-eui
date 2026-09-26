@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Size
+
 ```hbs template
 <div class="eui-textCenter">
   <EuiCode>quarter</EuiCode>

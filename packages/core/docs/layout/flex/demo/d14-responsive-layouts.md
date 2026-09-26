@@ -4,6 +4,12 @@ order: 14
 
 # Responsive layouts
 
+<EuiText>
+
+By default groups and grids stack into one column on small screens. `@responsive={{false}}` keeps the row, e.g. for an icon next to its text.
+
+</EuiText>
+
 ```hbs template
 <div>
   <EuiFlexGroup class="flex-demo" @alignItems="center">

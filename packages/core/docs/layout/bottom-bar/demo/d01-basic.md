@@ -2,13 +2,12 @@
 order: 1
 ---
 
+# Basic bottom bar
+
 <EuiText>
-  <p>
-  <strong>EuiBottomBar</strong> is a simple wrapper component that does nothing but affix a dark bar (usually filled with buttons) to the bottom of the page. Use it when you have really long pages or complicated, multi-page forms. In the case of forms, only invoke it if a form is in a savable state.
-  </p>
-  <p>
-    Like many of our other wrapper components, <strong>EuiBottomBar</strong> accepts a <EuiCode>paddingSize</EuiCode> prop, which can be set to <EuiCode>s | m (default) | l | none</EuiCode>.
-  </p>
+
+Toggle the bar to see it fixed at the bottom of the window.
+
 </EuiText>
 
 ```hbs template

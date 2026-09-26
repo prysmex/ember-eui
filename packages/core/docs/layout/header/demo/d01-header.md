@@ -2,38 +2,17 @@
 order: 1
 ---
 
-<EuiText>
-  The header is made up of
-  <strong>many</strong>
-  individual components starting with
-  <strong>EuiHeader</strong>
-  as the container. You can manually configure your header with the following
-  related components:
-  <br />
-  <br />
+# Header
 
-  <ul>
-    <li><strong>EuiHeaderSection</strong>: Left/right containers with flex
-      properties.</li>
-    <li>
-      <strong>EuiHeaderSectionItem</strong>: Containers for individual header
-      items as flex items.</li>
-    <li><strong>EuiHeaderSectionItemButton</strong>: Specialized button that
-      extends EuiButtonEmpty but styled to fit the height of the header with
-      additional
-      <EuiCode>notification</EuiCode>
-      props.</li>
-    <li><strong>EuiHeaderLogo</strong>: A helpful component for creating a
-      linked logo that fits within the header sizing.</li>
-    <!-- <li><strong>EuiHeaderBreadcrumbs</strong>: A set of EuiBreadcrumbs
-      specifically stylized to fit inside the header.</li> -->
-  </ul>
+<EuiText>
+
+A complete header: logo, a spaces switcher (a popover), breadcrumbs and
+the user menu.
+
 </EuiText>
 
 ```hbs template
 
-<TodoText @text="missing EuiSelectableTemplateSitewide and EuiSelectable components"/>
-<EuiSpacer/>
 
 <EuiHeader>
 

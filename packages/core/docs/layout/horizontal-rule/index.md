@@ -4,8 +4,21 @@ title: Horizontal Rule
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Horizontal Rule"/>
+<EuiSpacer @size="l" />
 
-<EuiHorizontalRule/>
+<EuiText>
+
+`EuiHorizontalRule` draws a divider between sections. `@size` makes it
+`full` (default), `half` or `quarter` width and `@margin` sets the space
+above and below (`none` to `xxl`, `l` by default).
+
+```hbs
+<EuiHorizontalRule @margin="m" />
+```
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

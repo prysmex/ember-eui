@@ -4,6 +4,12 @@ order: 6
 
 # Proportional widths of items
 
+<EuiText>
+
+A number from 1 to 10 in `@grow` sets the item's share of the width.
+
+</EuiText>
+
 ```hbs template
 <div>
   <EuiFlexGroup class="flex-demo">

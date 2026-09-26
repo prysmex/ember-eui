@@ -4,6 +4,12 @@ order: 2
 
 # Forms in a modal
 
+<EuiText>
+
+Put the form in the body and its submit button in the footer. `@focusTrapOptions={{hash initialFocus="#id"}}` focuses a field when the modal opens.
+
+</EuiText>
+
 ```hbs template
 <EuiButton
   @color='primary'

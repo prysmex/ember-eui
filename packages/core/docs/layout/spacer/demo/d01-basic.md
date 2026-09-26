@@ -2,10 +2,7 @@
 order: 1
 ---
 
-<EuiText>
-  The <EuiCode>EuiSpacer</EuiCode> component is for adding vertical space between items and should be used in place of the <EuiCode><br/></EuiCode> tag. There are many different heights you can specify via the size prop which align to the EUI vertical grid sizing.
-</EuiText>
-
+# Sizes
 
 ```hbs template
 <div class="guideDemo__highlightSpacer">

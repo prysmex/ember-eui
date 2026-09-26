@@ -4,6 +4,12 @@ order: 4
 
 # Panels grow to fill flex items
 
+<EuiText>
+
+An `EuiPanel` inside a flex item grows to the item's height, so panels in a row line up.
+
+</EuiText>
+
 ```hbs template
 <EuiFlexGroup>
   <EuiFlexItem>

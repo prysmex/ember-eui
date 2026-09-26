@@ -4,6 +4,12 @@ order: 3
 
 # Spans instead of divs
 
+<EuiText>
+
+Inside elements that only accept inline content (e.g. a `<button>`), pass `@tagName="span"` to both the group and its items.
+
+</EuiText>
+
 ```hbs template
 <button>
   <EuiFlexGroup class="flex-demo" @tagName="span">

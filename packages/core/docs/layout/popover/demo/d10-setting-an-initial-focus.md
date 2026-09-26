@@ -4,6 +4,14 @@ order: 10
 
 # Setting an initial focus
 
+<EuiText>
+
+By default the popover focuses its panel when it opens. Pass
+`@initialFocus` (a selector or an element) to focus something inside it,
+e.g. the first field of a form.
+
+</EuiText>
+
 ```hbs template
 
 <div>

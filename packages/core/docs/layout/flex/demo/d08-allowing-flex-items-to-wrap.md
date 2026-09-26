@@ -4,14 +4,19 @@ order: 8
 
 # Allowing flex items to wrap
 
+<EuiText>
+
+`@wrap={{true}}` lets items move to the next line when they don't fit, e.g. items with a minimum width.
+
+</EuiText>
 
 ```hbs template
 <EuiFlexGroup class="flex-demo" @wrap={{true}}>
-  <EuiFlexItem style="min-width: 300">Min-width 300px</EuiFlexItem>
+  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
 
-  <EuiFlexItem style="min-width: 300">Min-width 300px</EuiFlexItem>
+  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
 
-  <EuiFlexItem style="min-width: 300">Min-width 300px</EuiFlexItem>
+  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
 </EuiFlexGroup>
 
 <EuiHorizontalRule/>

@@ -196,7 +196,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
           @disabled={{@disabled}}
           @clear={{if
             (and
-              @isClearable
+              (argOrDefault @isClearable true)
               @value
               (not @readOnly)
               (and (not @isDisabled) (not @disabled))

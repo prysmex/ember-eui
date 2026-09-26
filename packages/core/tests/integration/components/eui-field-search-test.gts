@@ -50,9 +50,7 @@ module('Integration | Component | eui-field-search', function (hooks) {
     assert.deepEqual(searches, ['']);
   });
 
-  // Bug: the clearable class defaults @isClearable to true, the clear
-  // button only shows with an explicit @isClearable={{true}}
-  test.todo('the clear button shows by default (isClearable defaults to true)', async function (assert) {
+  test('the clear button shows by default (isClearable defaults to true)', async function (assert) {
     const noop = () => {};
 
     await render(<template><EuiFieldSearch @value="dogs" @onSearch={{noop}} /></template>);

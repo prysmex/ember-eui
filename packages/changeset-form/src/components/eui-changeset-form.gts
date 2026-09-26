@@ -29,7 +29,6 @@ import FieldTextComponent from './eui-changeset-form/fields/field-text.gts';
 import FieldTextAreaComponent from './eui-changeset-form/fields/field-text-area.gts';
 
 import type { ContextSignature } from './eui-changeset-form/context';
-import type { EuiFieldNumberSignature } from '@ember-eui/core/components/eui-field-number';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 import type { ComponentLike } from '@glint/template';
 import type { BufferedChangeset } from 'ember-changeset/types';
@@ -75,8 +74,9 @@ export const EuiChangesetFormDefaultTheme: IEuiChangesetFormTheme = {
  */
 export interface EuiChangesetFormSignature {
   Element: EuiFormSignature['Element'];
-  Args: EuiFormSignature['Args'] &
-    EuiFieldNumberSignature['Args'] & {
+  Args: {
+      /** Id of the form; fields join it with `form=`. Defaults to a random id. */
+      id?: string;
       /**
        * The ember-changeset (usually with validations, e.g. from
        * ember-changeset-validations) whose properties the fields edit.

@@ -64,8 +64,13 @@ export default {
     copy({
       targets: [
         { src: '../README.md', dest: '.' },
-        { src: '../LICENSE.md', dest: '.' }
-      ]
+        { src: '../LICENSE.md', dest: '.' },
+        // standalone stylesheet exported as `@ember-eui/core/styles/*`; no
+        // module imports it, so keepAssets (addon-dev 8) does not emit it
+        { src: 'src/styles/*.css', dest: 'dist/styles' }
+      ],
+      // after addon.clean() has emptied dist
+      hook: 'writeBundle'
     })
   ]
 };

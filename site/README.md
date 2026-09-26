@@ -6,7 +6,7 @@ by [docfy](https://github.com/josemarluedke/docfy) (`@docfy/ember-vite`).
 
 ## Development
 
-From the repository root:
+From the repository root (pnpm 10, e.g. via `corepack enable`):
 
 ```sh
 pnpm install
@@ -14,9 +14,12 @@ pnpm build:packages   # the site consumes the packages' built dist
 pnpm --filter site start
 ```
 
-`start` runs Vite and `pnpm _syncPnpm --watch`: the site depends on the
-workspace packages as pnpm _injected_ dependencies (`dependenciesMeta`), so
-rebuilt packages have to be synced into its `node_modules`.
+`start` runs Vite and `scripts/sync-injected.mjs --watch`. The site consumes
+the workspace packages as pnpm *injected* dependencies
+(`injectWorkspacePackages` in `pnpm-workspace.yaml`): real copies, so their
+peer dependencies resolve to the site's Ember. pnpm refreshes the copies after
+a package's `build` script; the sync script also covers `rollup --watch` and
+turbo cache hits.
 
 ## How the docs are built
 

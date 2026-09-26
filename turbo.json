@@ -1,24 +1,19 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
-
     "dev": {
       "dependsOn": ["^dev"],
       "cache": false
     },
-		"start": {
+    "start": {
       "dependsOn": ["^build"],
       "outputs": [],
       "cache": false,
       "persistent": true
     },
-		"build": {
+    "build": {
       "outputs": ["dist/**", "dist-types/**", "declarations/**", "docs.json"],
-      "dependsOn": ["_syncPnpm"]
-    },
-    "_syncPnpm": {
-      "dependsOn": ["^build"],
-      "cache": false
+      "dependsOn": ["^build"]
     }
   }
 }

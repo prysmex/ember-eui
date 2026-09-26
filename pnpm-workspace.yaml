@@ -1,3 +1,36 @@
 packages:
   - packages/*
   - site
+
+# The site consumes the packages as *injected* (copied) dependencies rather
+# than symlinks, so their peer dependencies (ember-source, @glimmer/*,
+# ember-basic-dropdown, ...) resolve to the site's versions and not to each
+# package's own devDependencies (which would put two Embers in the bundle).
+injectWorkspacePackages: true
+
+# Refresh the injected copies whenever a package's `build` script finishes.
+# `pnpm start` (rollup --watch) and turbo cache hits don't finish a script, so
+# the site also runs scripts/sync-injected.mjs (see site/package.json).
+syncInjectedDepsAfterScripts:
+  - build
+
+peerDependencyRules:
+  allowAny:
+    - ember-source
+
+overrides:
+  '@ember/string': ^4.0.0
+
+packageExtensions:
+  '@svg-jar/plugin':
+    peerDependencies:
+      ember-source: '*'
+    peerDependenciesMeta:
+      ember-source:
+        optional: true
+
+# pnpm 10 runs dependency install scripts only when allow-listed
+onlyBuiltDependencies:
+  - esbuild # validates its platform binary
+ignoredBuiltDependencies:
+  - core-js # postinstall only prints a donation message

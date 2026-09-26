@@ -11,7 +11,7 @@
     "./*": "./app/*"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "node ../scripts/sync-injected.mjs && vite build",
     "format": "prettier . --cache --write",
     "lint": "concurrently \"pnpm:lint:*(!fix)\" --names \"lint:\" --prefixColors auto",
     "lint:css": "stylelint \"**/*.css\"",
@@ -23,9 +23,8 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
     "lint:types": "ember-tsc --noEmit",
-    "start": "concurrently 'vite' 'pnpm _syncPnpm --watch' --names 'site serve,site sync built package'",
-    "test": "vite build --mode development && testem ci --port 0",
-    "_syncPnpm": "pnpm sync-dependencies-meta-injected"
+    "start": "concurrently 'vite' 'node ../scripts/sync-injected.mjs --watch' --names 'site,sync'",
+    "test": "node ../scripts/sync-injected.mjs && vite build --mode development && testem ci --port 0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -94,7 +93,6 @@
     "flatpickr": "^4.6.13",
     "globals": "^16.5.0",
     "moment": "^2.29.3",
-    "pnpm-sync-dependencies-meta-injected": "^0.0.14",
     "prettier": "^3.9.6",
     "prettier-plugin-ember-template-tag": "^2.1.8",
     "qunit": "^2.26.0",
@@ -114,22 +112,5 @@
   },
   "volta": {
     "extends": "../package.json"
-  },
-  "dependenciesMeta": {
-    "@ember-eui/changeset-form": {
-      "injected": true
-    },
-    "@ember-eui/core": {
-      "injected": true
-    },
-    "@ember-eui/flatpickr": {
-      "injected": true
-    },
-    "@ember-eui/pikaday": {
-      "injected": true
-    },
-    "@ember-eui/validated-form": {
-      "injected": true
-    }
   }
 }

@@ -25,12 +25,11 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
     "prepack": "pnpm run build",
-    "_syncPnpm": "pnpm sync-dependencies-meta-injected",
     "start": "concurrently 'npm:start:*'",
     "start:js": "rollup --config --watch",
     "start:types": "glint --build --watch",
     "test:dev": "vite dev",
-    "test": "vite build --mode=development --out-dir dist-tests && testem --file testem.cjs ci --port 0"
+    "test": "node ../../scripts/sync-injected.mjs && vite build --mode=development --out-dir dist-tests && testem --file testem.cjs ci --port 0"
   },
   "imports": {
     "#src/*": "./src/*"
@@ -134,7 +133,6 @@
     "eslint-plugin-ember": "^12.3.3",
     "eslint-plugin-n": "^17.15.1",
     "globals": "^15.14.0",
-    "pnpm-sync-dependencies-meta-injected": "^0.0.14",
     "qunit": "^2.24.1",
     "qunit-dom": "^3.4.0",
     "rollup": "^4.6.0",

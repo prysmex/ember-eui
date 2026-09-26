@@ -1,11 +1,11 @@
 {
   "name": "@ember-eui/flatpickr",
   "version": "13.0.5",
-  "description": "ember-flatpickr integration with @ember-eui/core",
+  "description": "flatpickr date picker for @ember-eui/core",
   "keywords": [
     "ember-addon",
-    "ember-flatpickr",
-    "@ember-eui"
+    "@ember-eui",
+    "flatpickr"
   ],
   "repository": "https://github.com/prysmex/ember-eui",
   "license": "MIT",
@@ -56,11 +56,11 @@
     "@embroider/addon-shim": "^1.9.0",
     "@ember/render-modifiers": "^4.0.0",
     "@nullvoxpopuli/ember-composable-helpers": "^5.3.2",
-    "ember-flatpickr": "^9.0.2",
     "ember-modifier": "^4.2.0",
     "ember-style-modifier": "^4.4.0",
     "decorator-transforms": "^2.3.0",
-    "ember-truth-helpers": "^5.0.0"
+    "ember-truth-helpers": "^5.0.0",
+    "@ember/test-waiters": "^4.1.1"
   },
   "peerDependencies": {
     "@ember-eui/core": "^13.0.5",

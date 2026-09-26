@@ -1,11 +1,11 @@
 # Flatpickr
 
 <EuiText>
-  <p><EuiLink @target="_blank" @href="https://shipshapecode.github.io/ember-flatpickr/docs/usage">ember-flatpickr</EuiLink> for <strong>@ember-eui/core</strong> integration</p>
+  <p><EuiLink @target="_blank" @href="https://flatpickr.js.org">flatpickr</EuiLink> for <strong>@ember-eui/core</strong>. Pass <EuiCode>@date</EuiCode> and <EuiCode>@onChange</EuiCode>; any other argument is passed to flatpickr as an <EuiLink @target="_blank" @href="https://flatpickr.js.org/options/">option</EuiLink>.</p>
 
-<p>We use <strong>ember-flatpickr</strong>, so any <strong>ember-cli-build</strong> options from it are available.</p>
+<p><EuiCodeBlock @isCopyable={{true}}>pnpm add @ember-eui/flatpickr flatpickr</EuiCodeBlock></p>
 
-<p><EuiCodeBlock @isCopyable={{true}}>ember install @ember-eui/flatpickr</EuiCodeBlock></p>
+<p>Import flatpickr's stylesheet once in your app, e.g. <EuiCode>import 'flatpickr/dist/flatpickr.css';</EuiCode></p>
 
 </EuiText>
 

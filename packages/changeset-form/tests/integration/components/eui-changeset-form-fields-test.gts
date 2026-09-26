@@ -120,9 +120,7 @@ module('Integration | Component | eui-changeset-form fields', function (hooks) {
     assert.true(inputs()[1]!.checked);
   });
 
-  // Bug: the value getter calls `changeset.get(field)?.toArray()`, which
-  // throws for plain arrays (no Ember array prototype extensions)
-  test.todo('FieldCheckboxGroup toggles ids in an array', async function (assert) {
+  test('FieldCheckboxGroup toggles ids in an array', async function (assert) {
     const changeset = Changeset({ letters: ['a'] });
 
     await render(

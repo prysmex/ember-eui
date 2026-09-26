@@ -27,10 +27,10 @@ export interface EuiChangesetFormFieldCheckboxGroupSignature {
 
 export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangesetFormFieldCheckboxGroupSignature> {
   get value(): string[] {
-    return (
-      this.args.changeset.get(this.args.fieldName)?.toArray() ||
-      this.args.changeset.get(this.args.fieldName)
-    );
+    const value = this.args.changeset.get(this.args.fieldName);
+
+    // Ember arrays / array proxies expose toArray(); plain arrays do not
+    return value?.toArray?.() ?? value;
   }
 
   get arrayToMap() {

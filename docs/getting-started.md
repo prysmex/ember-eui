@@ -111,6 +111,11 @@ modifiers (`class`, `aria-label`, `{{on "click" …}}`) are applied to the
 component's main element. Every docs page ends with an *API reference*
 listing each argument, its default and which element gets the attributes.
 
+Working with an AI assistant? Point it at [`/llms.txt`](/llms.txt) (an
+index with the rules for using Ember EUI) or
+[`/llms-full.txt`](/llms-full.txt) (every page, example and API reference
+in one file).
+
 ### Icons
 
 EUI's icons ship with the addon and load lazily, one small chunk per icon;

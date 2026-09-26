@@ -11,7 +11,7 @@
     "./*": "./app/*"
   },
   "scripts": {
-    "build": "node ../scripts/sync-injected.mjs && vite build",
+    "build": "node ../scripts/sync-injected.mjs && node ../scripts/generate-llms-txt.mjs && vite build",
     "format": "prettier . --cache --write",
     "lint": "concurrently \"pnpm:lint:*(!fix)\" --names \"lint:\" --prefixColors auto",
     "lint:css": "stylelint \"**/*.css\"",
@@ -23,7 +23,7 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
     "lint:types": "ember-tsc --noEmit",
-    "start": "concurrently 'vite' 'node ../scripts/sync-injected.mjs --watch' --names 'site,sync'",
+    "start": "node ../scripts/generate-llms-txt.mjs && concurrently 'vite' 'node ../scripts/sync-injected.mjs --watch' --names 'site,sync'",
     "test": "node ../scripts/sync-injected.mjs && vite build --mode development && testem ci --port 0"
   },
   "devDependencies": {

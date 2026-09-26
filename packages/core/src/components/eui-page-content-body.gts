@@ -9,16 +9,24 @@ import euiPageRestrictWidth from '../helpers/eui-page-restrict-width.ts';
 import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** The content of an EuiPageContent. */
 export interface EuiPageContentBodySignature {
   Element: HTMLDivElement;
   Args: {
-    restrictWidth?: boolean;
+    /**
+     * Max width of the content: `true` for EUI's default (1000px), a
+     * number in px, or any CSS width. Defaults to `false` (no limit).
+     */
+    restrictWidth?: boolean | number | string;
+    /** Padding: `'none'`, `'s'`, `'m'` or `'l'`. */
     paddingSize?: keyof typeof paddingSizeMapping;
+    /** Inline styles, merged with the max width. */
     style?: {
       [key: string]: string;
     };
   };
   Blocks: {
+    /** The content. */
     default: [];
   };
 }

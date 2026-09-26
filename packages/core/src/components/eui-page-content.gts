@@ -7,20 +7,31 @@ import EuiPanel from './eui-panel.gts';
 import type { EuiPanelSignature } from './eui-panel';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A panel holding the page's main content, inside EuiPageBody. */
 export interface EuiPageContentSignature {
   Element: HTMLDivElement;
   Args: {
+    /** `role` of the content. Defaults to `'main'`; pass `null` for none. */
     role?: string;
+    /** Vertically centers (`'center'`) or bottom-aligns the content panel. */
     verticalPosition?: 'center' | 'bottom';
+    /** Horizontally centers the content panel (e.g. an empty prompt). */
     horizontalPosition?: 'center';
+    /** Adds a shadow. */
     hasShadow?: boolean;
+    /** Adds a border. */
     hasBorder?: boolean;
+    /** Padding, any `EuiPanel` padding size. Defaults to `'l'`. */
     paddingSize?: EuiPanelSignature['Args']['paddingSize'];
+    /** Border radius: `'none'` or `'m'`. */
     borderRadius?: EuiPanelSignature['Args']['borderRadius'];
+    /** Background, any `EuiPanel` color. */
     color?: EuiPanelSignature['Args']['color'];
+    /** Fills the remaining height. */
     grow?: boolean;
   };
   Blocks: {
+    /** `EuiPageContentHeader` and `EuiPageContentBody`, or any content. */
     default: [];
   };
 }

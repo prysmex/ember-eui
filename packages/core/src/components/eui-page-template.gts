@@ -61,65 +61,100 @@ interface NormalProps {
 }
 
 export type EuiPageTemplateProps = {
+  /**
+   * Layout: `'default'` (header and content), `'centeredBody'` (content
+   * panel centered in the page), `'centeredContent'` (content centered in
+   * the body, e.g. an empty prompt) or `'empty'` (no panels).
+   * Defaults to `'default'`.
+   */
   template?: (typeof TEMPLATES)[number];
 
+  /** Props for the `EuiPageBody`: `{ className }`. */
   pageBodyProps: NormalProps & EuiPageBodySignature['Args'];
+  /**
+   * Props for the `EuiPageContent`: `{ className, hasBorder, hasShadow,
+   * color, borderRadius, grow, role }`.
+   */
   pageContentProps: NormalProps & EuiPageContentSignature['Args'];
+  /** Props for the `EuiPageContentBody`: `{ className }`. */
   pageContentBodyProps: NormalProps & EuiPageContentBodySignature['Args'];
 
+  /**
+   * The page header, as EuiPageHeader args: `{ pageTitle, iconType,
+   * description, tabs, responsive, bottomBorder }`. Use the
+   * `<:pageHeader…>` blocks for its title, description and actions.
+   */
   pageHeader: NormalProps & EuiPageHeaderSignature['Args'];
 
+  /** Props for the `EuiPageSideBar`: `{ className }`. */
   pageSideBarProps: NormalProps & EuiPageSideBarSignature['Args'];
 
-  /**
-   * Adds a bottom bar to the page template
-   */
+  /** @deprecated Has no effect, use the `<:bottomBar>` block. */
   bottomBar?: any;
 
-  /**
-   * Adds a bottom bar to the page template
-   */
+  /** @private Render the `<:bottomBar>` block. Defaults to `true`. */
   hasBottomBarBlock?: boolean;
 
-  /**
-   * Gets passed along to the #EuiBottomBar component if `bottomBar` has contents
-   */
+  /** @deprecated Has no effect. */
   bottomBarProps?: EuiButtomBarArgs;
-  /* Stretches or restricts the height to 100% of the parent;
-   * `true`: scrolls the EuiPageContentBody;
-   * `noscroll`: removes all scroll ability;
-   * Only works when `template = 'default | empty'` and breakpoint is `m` and above
+  /**
+   * Stretches the page to the window's height and scrolls the content
+   * instead of the page (templates `'default'` and `'empty'`, on medium
+   * screens and up). Defaults to `false`.
    */
   fullHeight?: boolean;
-  /**
-   * Minimum height in which to enforce scrolling
-   */
+  /** Minimum height of the page, in px or any CSS height. Defaults to `460`. */
   minHeight?: number;
 
+  /**
+   * Max width of the header and content: `true` for EUI's default, a number
+   * in px or any CSS width. Defaults to `true`.
+   */
   restrictWidth?: boolean | number | string;
 
+  /** Fills the window's height. Defaults to `true`. */
   grow?: boolean;
+  /** Padding of the page's sections: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'l'`. */
   paddingSize?: EuiPageSideBarSignature['Args']['paddingSize'];
+  /** @private Render the `<:pageSideBar>` block. Defaults to `true`. */
   hasPageSideBarBlock?: boolean;
+  /** @private Render the `<:pageHeaderPageTitle>` block. Defaults to `true`. */
   hasPageHeaderPageTitleBlock?: boolean;
+  /** @private Render the `<:pageHeaderDefault>` block. Defaults to `true`. */
   hasPageHeaderDefaultBlock?: boolean;
+  /** @private Render the `<:pageHeaderRightSideItems>` block. Defaults to `true`. */
   hasPageHeaderRightSideItemsBlock?: boolean;
+  /** @private Render the `<:pageHeaderDescription>` block. Defaults to `true`. */
   hasPageHeaderDescriptionBlock?: boolean;
+  /** @deprecated Has no effect. */
   hasPageHeader?: boolean;
+  /** @deprecated Has no effect. */
   hasPageContent?: boolean;
+  /** @deprecated Has no effect. */
   hasPageContentBody?: boolean;
 };
 
+/**
+ * A whole page layout in one component: side bar, header, content and
+ * bottom bar, arranged by `@template`.
+ */
 export interface EuiPageTemplateSignature {
   Element: HTMLElement;
   Args: EuiPageTemplateProps;
   Blocks: {
+    /** The page's content. */
     default: [];
+    /** A side bar, e.g. an `EuiSideNav`. */
     pageSideBar: [];
+    /** The header's title, instead of `pageHeader.pageTitle`. */
     pageHeaderPageTitle: [];
+    /** Extra header content. */
     pageHeaderDefault: [];
+    /** The header's description. */
     pageHeaderDescription: [];
+    /** Header actions; yields an item to wrap each in, see EuiPageHeader. */
     pageHeaderRightSideItems: EuiPageHeaderSignature['Blocks']['rightSideItems'];
+    /** Content of a bottom bar (EuiBottomBar), e.g. save/cancel buttons. */
     bottomBar: [];
   };
 }
@@ -248,7 +283,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 @paddingSize={{paddingSize}}
               >
                 <EuiPageHeader
-                  {{!@glint-expect-error}}
                   @restrictWidth={{this.restrictWidth}}
                   @responsive={{@pageHeader.responsive}}
                   @iconType={{@pageHeader.iconType}}
@@ -282,7 +316,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 >
                   <EuiPageContentBody
                     class={{this.pageContentBodyPropsClass}}
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
@@ -322,7 +355,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             >
               <EuiPageBody
                 class={{this.pageBodyPropsClass}}
-                {{!@glint-expect-error}}
                 @restrictWidth={{this.restrictWidth}}
               >
                 {{#if hasPageHeader}}
@@ -370,7 +402,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     <EuiPageContentBody
                       class={{this.pageContentBodyPropsClass}}
                       @paddingSize="none"
-                      {{!@glint-expect-error}}
                       @restrictWidth={{this.restrictWidth}}
                     >
                       {{#if (and this.canFullHeight this.fullHeight)}}
@@ -425,7 +456,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                     @paddingSize={{@pageHeader.paddingSize}}
                     @responsive={{@pageHeader.responsive}}
@@ -461,7 +491,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   class={{this.pageContentPropsClass}}
                 >
                   <EuiPageContentBody
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                     class={{this.pageContentBodyPropsClass}}
                   >
@@ -503,7 +532,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               <EuiPageBody class={{this.pageBodyPropsClass}}>
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                     @paddingSize={{paddingSize}}
                     @responsive={{@pageHeader.responsive}}
@@ -548,7 +576,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     class={{this.pageContentPropsClass}}
                   >
                     <EuiPageContentBody
-                      {{!@glint-expect-error}}
                       @restrictWidth={{this.restrictWidth}}
                       class={{this.pageContentBodyPropsClass}}
                     >
@@ -604,7 +631,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                     @paddingSize={{@pageHeader.paddingSize}}
                     @responsive={{@pageHeader.responsive}}
@@ -640,7 +666,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   class={{this.pageContentPropsClass}}
                 >
                   <EuiPageContentBody
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                     class={{this.pageContentBodyPropsClass}}
                   >
@@ -680,7 +705,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               ...attributes
             >
               <EuiPageBody
-                {{!@glint-expect-error}}
                 @restrictWidth={{this.restrictWidth}}
                 class={{this.pageBodyPropsClass}}
               >
@@ -782,7 +806,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   {{#if hasPageHeader}}
                     <EuiPageHeader
                       @bottomBorder={{@pageHeader.bottomBorder}}
-                      {{!@glint-expect-error}}
                       @restrictWidth={{this.restrictWidth}}
                       @paddingSize={{@pageHeader.paddingSize}}
                       @responsive={{@pageHeader.responsive}}
@@ -818,7 +841,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     class={{this.pageContentPropsClass}}
                   >
                     <EuiPageContentBody
-                      {{!@glint-expect-error}}
                       @restrictWidth={{this.restrictWidth}}
                       class={{this.pageContentBodyPropsClass}}
                     >
@@ -858,7 +880,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   >
                     <EuiPageContentBody
                       @paddingSize="none"
-                      {{!@glint-expect-error}}
                       @restrictWidth={{this.restrictWidth}}
                     >
                       {{yield to="bottomBar"}}
@@ -879,7 +900,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               <EuiPageBody class={{this.pageBodyPropsClass}}>
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                     @bottomBorder={{@pageHeader.bottomBorder}}
                     @paddingSize={{paddingSize}}
@@ -916,7 +936,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   class={{this.pageContentPropsClass}}
                 >
                   <EuiPageContentBody
-                    {{!@glint-expect-error}}
                     @restrictWidth={{this.restrictWidth}}
                     @paddingSize={{paddingSize}}
                     class={{this.pageContentBodyPropsClass}}
@@ -956,7 +975,6 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   >
                     <EuiPageContentBody
                       @paddingSize="none"
-                      {{!@glint-expect-error}}
                       @restrictWidth={{this.restrictWidth}}
                     >
                       {{yield to="bottomBar"}}

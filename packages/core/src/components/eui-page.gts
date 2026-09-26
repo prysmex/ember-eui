@@ -9,16 +9,29 @@ import inlineStyles from '../helpers/inline-styles.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** The outermost layout of a page: holds an optional `EuiPageSideBar` and an `EuiPageBody`. See also EuiPageTemplate. */
 export interface EuiPageSignature {
   Element: HTMLDivElement;
   Args: {
-    restrictWidth?: boolean;
+    /**
+     * Max width of the content: `true` for EUI's default (1000px), a
+     * number in px, or any CSS width. Defaults to `false` (no limit).
+     */
+    restrictWidth?: boolean | number | string;
+    /** Padding around the page: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`. */
     paddingSize?: 'none' | 's' | 'm' | 'l';
+    /** Fills the window's height. Defaults to `true`. */
     grow?: boolean;
+    /**
+     * `'row'` puts an `EuiPageSideBar` beside the body, `'column'` stacks
+     * them. Defaults to `'row'`.
+     */
     direction?: 'row' | 'column';
+    /** Inline styles, merged with the max width. */
     style?: Record<string, string>;
   };
   Blocks: {
+    /** `EuiPageSideBar` and `EuiPageBody`. */
     default: [];
   };
 }

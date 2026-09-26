@@ -13,88 +13,82 @@ import type { EuiIconSignature } from './eui-icon';
 import type { EuiPageHeaderContentSignature } from './eui-page-header-content';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * The top of a page: breadcrumbs, title (with icon), description, tabs and
+ * actions on the right.
+ */
 export interface EuiPageHeaderSignature {
   Element: Element;
   Args: {
-    /**
-     * Sets the padding around the content
-     */
+    /** Padding around the header: `'none'`, `'s'`, `'m'` or `'l'`. */
     paddingSize?: keyof typeof paddingSizeMapping;
-    /**
-     * Adds a bottom border to the header
-     */
+    /** Adds a border below the header. */
     bottomBorder?: boolean;
     /**
-     * Sets the width of the header to `restricted` (992px) or `full` (100%)
+     * Max width of the header: `true` for EUI's default, a number in px or
+     * any CSS width. Defaults to `false` (full width).
      */
-    restrictWidth?: boolean | 'full';
+    restrictWidth?: boolean | 'full' | number | string;
     /**
-     * Sets the alignment of the content within the header
+     * Vertical alignment of the title and the right side items: `'top'`,
+     * `'bottom'`, `'center'` or `'stretch'`. Defaults to `'center'`.
      */
     alignItems?: EuiPageHeaderContentSignature['Args']['alignItems'];
     /**
-     * Sets the header to be responsive and collapse to a single line
+     * Stacks the right side items under the title on small screens;
+     * `'reverse'` puts them above it. Defaults to `true`.
      */
     responsive?: boolean | 'reverse';
-    /**
-     * Sets the icon type for the header
-     */
+    /** Icon before the title, e.g. the app's logo. */
     iconType?: EuiIconSignature['Args']['type'];
-    /**
-     * Sets the breadcrumbs for the header
-     */
+    /** Breadcrumbs above the title, see `EuiBreadcrumbs`'s `@breadcrumbs`. */
     breadcrumbs?: any[];
     /**
-     * Sets the tabs for the header
+     * Tabs under the title (or as the title, without `@pageTitle`):
+     * `[{ label: 'Overview', isSelected: true, onClick }, …]`, also taking
+     * `id`, `href` and `disabled`.
      */
     tabs?: any[];
-    /**
-     * Sets the description for the header
-     */
+    /** Text under the title. Use the `<:description>` block for markup. */
     description?: string;
-    /**
-     * Sets the title for the header
-     */
+    /** The page's title (an `<h1>`). Use the `<:pageTitle>` block for markup. */
     pageTitle?: string;
 
-    /**
-     * Sets the props for the title
-     */
+    /** Props for the title: `{ className }`. */
     pageTitleProps?: EuiPageHeaderContentSignature['Args']['pageTitleProps'];
 
     /**
-     * Sets the right side items for the header
+     * @deprecated Has no effect on its own: put the items in the
+     * `<:rightSideItems>` block.
      */
     rightSideItems?: any[];
-    /**
-     * Sets the default content for the header
-     */
+    /** @deprecated Has no effect, use the `<:default>` block. */
     default?: any[];
-    /**
-     * Sets the default content for the header
-     */
+    /** @private Render the `<:default>` block. Defaults to `true`. */
     hasDefaultBlock?: boolean;
-    /**
-     * Sets the description content for the header
-     */
+    /** @private Render the `<:description>` block. Defaults to `true`. */
     hasDescriptionBlock?: boolean;
-    /**
-     * Sets the page title content for the header
-     */
+    /** @private Render the `<:pageTitle>` block. Defaults to `true`. */
     hasPageTitleBlock?: boolean;
-    /**
-     * Sets the right side items content for the header
-     */
+    /** @private Render the `<:rightSideItems>` block. Defaults to `true`. */
     hasRightSideItemsBlock?: boolean;
 
+    /** Inline styles, merged with the max width. */
     style?: {
       [key: string]: string;
     };
   };
   Blocks: {
+    /** Extra content under the title and description. */
     default: [];
+    /** The description, instead of `@description`. */
     description: [];
+    /** The title, instead of `@pageTitle`. */
     pageTitle: [];
+    /**
+     * Actions on the right, e.g. buttons. Wrap each in the yielded item:
+     * `<:rightSideItems as |Item|><Item><EuiButton …/></Item></:rightSideItems>`.
+     */
     rightSideItems: EuiPageHeaderContentSignature['Blocks']['rightSideItems'];
   };
 }

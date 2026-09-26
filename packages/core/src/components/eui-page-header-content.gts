@@ -43,102 +43,99 @@ type Tab = IEuiTab & {
 };
 
 export type EuiPageHeaderContentProps = {
+  /** @deprecated Has no effect (EuiPageTemplate arg). */
   template?: (typeof TEMPLATES)[number];
-  /**
-   * Gets passed along to the #EuiBottomBar component if `bottomBar` has contents
-   */
+  /** @deprecated Has no effect (EuiPageTemplate arg). */
   bottomBarProps?: EuiButtomBarArgs;
-  /* Stretches or restricts the height to 100% of the parent;
-   * `true`: scrolls the EuiPageContentBody;
-   * `noscroll`: removes all scroll ability;
-   * Only works when `template = 'default | empty'` and breakpoint is `m` and above
-   */
+  /** @deprecated Has no effect (EuiPageTemplate arg). */
   fullHeight?: boolean;
-  /**
-   * Minimum height in which to enforce scrolling
-   */
+  /** @deprecated Has no effect (EuiPageTemplate arg). */
   minHeight?: number;
 
-  /**
-   * Restrict the width of the page content body
-   */
-  restrictWidth?: boolean | string;
+  /** Max width of the content, see EuiPageHeader. */
+  restrictWidth?: boolean | string | number;
 
-  /**
-   * Adds a bottom border to the page header
-   */
+  /** Adds a border below the tabs. */
   bottomBorder?: boolean;
 
-  /**
-   * Adds a bottom border to the page content body
-   */
+  /** @deprecated Has no effect (EuiPageTemplate arg). */
   bodyBottomBorder?: boolean;
 
-  /**
-   * Adds a bottom border to the page content body
-   */
+  /** @deprecated Has no effect (EuiPageTemplate arg). */
   bodyProps?: {
-    /**
-     * Adds padding to the page content body
-     */
     paddingSize?: keyof typeof paddingSizeMapping;
   };
-  /**
-   * Adds a bottom border to the page content body
-   */
+  /** @deprecated Has no effect (EuiPageTemplate arg). */
   contentProps?: {
-    /**
-     * Adds padding to the page content body
-     */
     paddingSize?: keyof typeof paddingSizeMapping;
   };
 
+  /** See EuiPageHeader's `@alignItems`. Defaults to `'top'`. */
   alignItems?: 'top' | 'bottom' | 'center' | 'stretch';
 
+  /** See EuiPageHeader's `@responsive`. Defaults to `true`. */
   responsive?: boolean | 'reverse';
 
+  /** @private Render the `<:description>` block. Defaults to `true`. */
   hasDescriptionBlock?: boolean;
 
+  /** @private Render the `<:rightSideItems>` block. Defaults to `true`. */
   hasRightSideItemsBlock?: boolean;
 
+  /** @private Render the `<:pageTitle>` block. Defaults to `true`. */
   hasPageTitleBlock?: boolean;
 
+  /** @private Render the `<:default>` block. Defaults to `true`. */
   hasDefaultBlock?: boolean;
 
+  /** The page's title. */
   pageTitle?: string;
 
+  /** Breadcrumbs above the title. */
   breadcrumbs?: EuiBreadcrumbsSignature['Args']['breadcrumbs'];
 
+  /** Props for the breadcrumbs: `{ className }`. */
   breadcrumbProps?: {
     className?: string;
   };
 
+  /** Props for the right side items group: `{ className }`. */
   rightSideGroupProps?: {
     className?: string;
   };
 
+  /** Props for the title: `{ className }`. */
   pageTitleProps?: {
     className?: string;
   };
 
+  /** Icon before the title. */
   iconType?: EuiIconSignature['Args']['type'];
 
+  /** Text under the title. */
   description?: string;
 
+  /** Props for the icon: `{ className }`. */
   iconProps?: {
     className?: string;
   };
 
+  /** Tabs, see EuiPageHeader's `@tabs`. */
   tabs?: Tab[];
 };
 
+/** @private The layout inside EuiPageHeader; use EuiPageHeader. */
 export interface EuiPageHeaderContentSignature {
   Element: HTMLDivElement;
   Args: EuiPageHeaderContentProps;
   Blocks: {
+    /** Extra content. */
     default: [];
+    /** The title. */
     pageTitle: [];
+    /** The description. */
     description: [];
+    /** Right side items; yields an `EuiFlexItem` to wrap each in. */
     rightSideItems: [WithBoundArgs<typeof EuiFlexItem, 'grow'>?];
   };
 }

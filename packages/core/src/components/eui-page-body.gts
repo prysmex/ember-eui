@@ -12,20 +12,37 @@ import EuiPanel from './eui-panel.gts';
 import type { EuiPanelSignature } from './eui-panel';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** The main column of an EuiPage: header, content and so on. */
 export interface EuiPageBodySignature {
   Element: EuiPanelSignature['Element'];
   Args: {
-    restrictWidth?: boolean;
+    /**
+     * Max width of the content: `true` for EUI's default (1000px), a
+     * number in px, or any CSS width. Defaults to `false` (no limit).
+     */
+    restrictWidth?: boolean | number | string;
+    /** Tag of the body (without `@panelled`). Defaults to `'div'`. */
     tagName?: string;
+    /** Border radius of the panel: `'none'` or `'m'`. Defaults to `'none'`. */
     borderRadius?: EuiPanelSignature['Args']['borderRadius'];
+    /**
+     * Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'l'` when
+     * `@panelled`, `'none'` otherwise.
+     */
     paddingSize?: 'none' | 's' | 'm' | 'l';
+    /** Renders the body as an `EuiPanel` (white background with padding). */
     panelled?: boolean;
+    /** Panel background: `'subdued'` or `'transparent'`. */
     color?: 'subdued' | 'transparent';
+    /** Adds a border to the panel. */
     hasBorder?: boolean;
+    /** Adds a shadow to the panel. */
     hasShadow?: boolean;
+    /** Inline styles, merged with the max width. */
     style?: Record<string, string>;
   };
   Blocks: {
+    /** Usually an `EuiPageHeader` and `EuiPageContent`. */
     default: [];
   };
 }

@@ -131,7 +131,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                     @isOpen={{isItemOpen item @selectedItem}}
                     @isSelected={{and
                       (not childrenOnly)
-                      (eq item.id item.isSelected)
+                      (eq item.id @selectedItem)
                     }}
                     @isParent={{not (not item.items)}}
                     @icon={{item.icon}}
@@ -188,7 +188,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                   </EuiTitle>
                 {{/if}}
               {{else}}
-                {{#if screenReaderOnly}}
+                {{#if shouldScreenReader}}
                   <HeadingElement {{screenReaderOnly}}>
                     {{@heading}}
                   </HeadingElement>
@@ -217,7 +217,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                   @isOpen={{isItemOpen item @selectedItem}}
                   @isSelected={{and
                     (not childrenOnly)
-                    (eq item.id item.isSelected)
+                    (eq item.id @selectedItem)
                   }}
                   @isParent={{not (not item.items)}}
                   @icon={{item.icon}}

@@ -65,9 +65,7 @@ module('Integration | Component | eui-side-nav', function (hooks) {
     assert.dom('.euiSideNav__heading').hasText('Block heading');
   });
 
-  // Bug: the @heading branch checks the imported `screenReaderOnly`
-  // modifier (always truthy) instead of @headingProps.screenReaderOnly
-  test.todo('@heading is visible unless headingProps.screenReaderOnly', async function (assert) {
+  test('@heading is visible unless headingProps.screenReaderOnly', async function (assert) {
     const items = buildItems(new State());
 
     await render(<template><EuiSideNav @heading="Plain heading" @items={{items}} /></template>);
@@ -75,8 +73,19 @@ module('Integration | Component | eui-side-nav', function (hooks) {
     assert.dom('.euiSideNav__heading').hasText('Plain heading');
   });
 
-  // Bug: root items compare item.id with item.isSelected instead of @selectedItem
-  test.todo('a clickable root item can be selected through @selectedItem', async function (assert) {
+  test('headingProps.screenReaderOnly hides the heading visually', async function (assert) {
+    const items = buildItems(new State());
+    const headingProps = { screenReaderOnly: true };
+
+    await render(
+      <template><EuiSideNav @heading="Hidden heading" @headingProps={{headingProps}} @items={{items}} /></template>
+    );
+
+    assert.dom('.euiSideNav__heading').doesNotExist();
+    assert.dom('nav.euiSideNav h2').hasText('Hidden heading').hasClass('euiScreenReaderOnly');
+  });
+
+  test('a clickable root item can be selected through @selectedItem', async function (assert) {
     const state = new State();
     const items = buildItems(state);
 

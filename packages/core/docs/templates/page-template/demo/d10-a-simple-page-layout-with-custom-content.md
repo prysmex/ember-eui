@@ -10,7 +10,7 @@ order: 10
 <EuiSpacer />
 <EuiCallOut>
   <:body>
-    This layout can be achieved in <strong>EuiPageTemplate</strong> by setting <EuiCode>template="empty"</EuiCode>.
+    This layout can be achieved in <strong>EuiPageTemplate</strong> by setting <EuiCode>@template="empty"</EuiCode>.
   </:body>
 </EuiCallOut>
 

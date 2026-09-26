@@ -4,8 +4,29 @@ title: Pagination
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Pagination"/>
+<EuiSpacer @size="l" />
 
-<EuiSpacer @size='l' />
+<EuiText>
+
+`EuiPagination` lets users move between pages of a list or table.
+`@activePage` is **zero based** (0 is the first page); `@onPageClick`
+receives the index of the page to show.
+
+```hbs
+<EuiPagination
+  @pageCount={{this.pageCount}}
+  @activePage={{this.page}}
+  @onPageClick={{this.goToPage}}
+  aria-label="Users pagination"
+/>
+```
+
+With `@compressed={{true}}` it shows only the arrows and "page of
+pages", for tight spaces.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

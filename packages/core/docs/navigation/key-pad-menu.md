@@ -1,5 +1,29 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Key pad menu"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiKeyPadMenu` is a grid of large square buttons with an icon and a
+label, e.g. an app switcher in a header popover. Wrap each
+`EuiKeyPadMenuItem` in the yielded `Key` (a list item).
+
+```hbs
+<EuiKeyPadMenu as |Key|>
+  <Key>
+    <EuiKeyPadMenuItem @label="Discover" @href="/discover">
+      <EuiIcon @type="discoverApp" @size="l" />
+    </EuiKeyPadMenuItem>
+  </Key>
+</EuiKeyPadMenu>
+```
+
+Items can also be checkable (radios or checkboxes) inside a menu with
+`@checkable`, and show a beta badge.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

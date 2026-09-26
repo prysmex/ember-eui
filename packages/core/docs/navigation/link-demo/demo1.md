@@ -2,10 +2,11 @@
 order: 1
 ---
 
+# Link
+
 <EuiText>
-	<p>
-		<strong>EuiLink</strong> is any anchor or button element that is designed to display nicely within a block of text. It also provides more anchor-specific styling onto links and makes sure they are accessible.
-  </p>
+
+A link with `@href`, and a link-styled button without it.
 
 </EuiText>
 
@@ -18,12 +19,12 @@ order: 1
   </p>
   <p>
     This is actually a
-    <EuiLink @onClick={{(noop)}}>button</EuiLink>
+    <EuiLink>button</EuiLink>
     with an onClick handler.
   </p>
   <p>
     Here is an example of a
-    <EuiLink @href='https://google.com' @onClick={{(noop)}}>
+    <EuiLink @href='https://google.com'>
       link
     </EuiLink>
     with both an

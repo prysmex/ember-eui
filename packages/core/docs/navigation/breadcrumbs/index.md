@@ -3,8 +3,30 @@ title: Breadcrumbs
 ---
 
 <EuiPageHeader @pageTitle="Breadcrumbs"/>
+<EuiSpacer @size="l" />
 
-<EuiHorizontalRule/>
+<EuiText>
+
+Breadcrumbs show where the current page sits in the app's hierarchy and
+link back up. Pass them as an array, from the root to the current page:
+
+```hbs
+<EuiBreadcrumbs @breadcrumbs={{array
+  (hash text="Home" href="/")
+  (hash text="Users" onClick=this.goToUsers)
+  (hash text="Jane Cooper")
+}} />
+```
+
+Each breadcrumb has a `text` and an `href` or `onClick` (the last one,
+the current page, usually has neither). Long trails collapse the middle
+breadcrumbs into a "…" popover past `@max` (5 by default), and
+`@responsive={{true}}` shows fewer on small screens. In `EuiHeader` use
+`EuiHeaderBreadcrumbs`.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

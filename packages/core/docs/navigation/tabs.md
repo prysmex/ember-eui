@@ -1,5 +1,32 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Tabs"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+Tabs switch between views of the same context.
+
+- **`EuiTabs`** renders a row of `EuiTab`s; you keep which one is
+  selected (`@isSelected`) and render its content yourself. Use this for
+  tabs that are routes (`@href`) or when you lay out the content.
+- **`EuiTabbedContent`** takes `@tabs` (`{ id, name, content }`) and
+  shows the selected tab's content for you.
+
+```hbs
+<EuiTabs>
+  {{#each this.tabs as |tab|}}
+    <EuiTab @isSelected={{eq tab.id this.selected}} {{on "click" (fn this.select tab.id)}}>
+      {{tab.name}}
+    </EuiTab>
+  {{/each}}
+</EuiTabs>
+```
+
+Tabs get `role="tab"`; use a short noun for each label.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

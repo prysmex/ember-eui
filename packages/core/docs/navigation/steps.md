@@ -1,5 +1,29 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Steps"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+Steps guide users through a sequence:
+
+- **`EuiSteps`** lists numbered `EuiStep`s vertically, e.g. setup
+  instructions. Each step has a `@title` and its content; `@status`
+  marks it `complete`, `incomplete` or `disabled`.
+- **`EuiStepsHorizontal`** shows the steps of a wizard as clickable
+  `EuiStepHorizontal`s, with the current one `@isSelected`.
+
+```hbs
+<EuiSteps>
+  <EuiStep @step={{1}} @title="Install the agent" @status="complete">…</EuiStep>
+  <EuiStep @step={{2}} @title="Configure it">…</EuiStep>
+</EuiSteps>
+```
+
+`EuiSubSteps` is a shaded box inside a step for nested instructions.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

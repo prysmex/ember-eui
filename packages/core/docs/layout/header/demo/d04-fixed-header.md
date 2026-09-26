@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
   <p>
-  Most consumers need a header that does not scroll away with the page contents. You can apply this display by applying the property <EuiCode @language="jsx">position="fixed"</EuiCode>. This will also add a class of <EuiCode>.euiBody--headerIsFixed</EuiCode> to the window body.
+  Most consumers need a header that does not scroll away with the page contents. You can apply this display by applying the property <EuiCode @language="jsx">@position="fixed"</EuiCode>. This will also add a class of <EuiCode>.euiBody--headerIsFixed</EuiCode> to the window body.
   </p>
   <p>
   You will then need to apply your own padding to this body class to afford for the header height. EUI supplies a helper mixin that also accounts for this height in flyouts and the collapsible nav.

@@ -6,7 +6,7 @@ order: 3
 
 <EuiText>
 	<p>
-		<strong>EuiBreadcrumbs</strong> will truncate the full set by default, forcing it to a single line and setting a max width on all items except for the last. You can turn this off by setting <EuiCode @language="jsx">truncate={false}</EuiCode>.
+		<strong>EuiBreadcrumbs</strong> will truncate the full set by default, forcing it to a single line and setting a max width on all items except for the last. You can turn this off by setting <EuiCode @language="jsx">@truncate=&#123;&#123;false&#125;&#125;</EuiCode>.
   </p>
 
 </EuiText>

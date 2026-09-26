@@ -1,3 +1,9 @@
+---
+order: 1
+---
+
+# Side nav
+
 ```hbs template
 <EuiSideNav
   @mobileTitle='Mobile Title'

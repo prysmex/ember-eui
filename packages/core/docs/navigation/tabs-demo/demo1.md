@@ -2,9 +2,13 @@
 order: 1
 ---
 
+# Tabs
 
 <EuiText>
-<p><strong>EuiTabs</strong> is a wrapping component that requires <strong>EuiTab</strong> components as direct children. You control the displayed contents and current state through props on EuiTab like <EuiCode>isSelected</EuiCode> and <EuiCode>onClick</EuiCode>.</p><p>Use the <EuiCode>prepend</EuiCode> and <EuiCode>append</EuiCode> tab props to add content before and after the tab label respectively.</p>
+
+Keep the selected tab, mark it with `@isSelected` and select another on
+click; render the selected tab's content below the tabs.
+
 </EuiText>
 
 ```hbs template

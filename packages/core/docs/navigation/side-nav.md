@@ -1,5 +1,31 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Side nav"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiSideNav` renders a navigation tree for a page's side bar from
+`@items`. Each item has an `id`, a `name`, an `href` or `onClick`, and
+optional nested `items`; the item whose id is `@selectedItem` is
+highlighted and its parents are opened.
+
+```hbs
+<EuiSideNav
+  @heading="Settings"
+  @selectedItem={{this.current}}
+  @items={{this.items}}
+  @isOpenMobile={{this.navOpen}}
+  @toggleOpenOnMobile={{this.toggleNav}}
+/>
+```
+
+On small screens the nav collapses behind a toggle button
+(`@mobileTitle`); keep `@isOpenMobile` and flip it in
+`@toggleOpenOnMobile`.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

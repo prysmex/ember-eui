@@ -2,9 +2,7 @@
 order: 1
 ---
 
-<EuiText>
-<p><strong>EuiSteps</strong> presents procedural content in a numbered outline format. It is best used when presenting instructional content that must be conducted in a particular order. It requires a <EuiCode>title</EuiCode> and <EuiCode>children</EuiCode> to be present and will automatically increment the step number based on the initial <EuiCode>firstStepNumber</EuiCode>.</p>
-</EuiText>
+# Steps
 
 ```hbs template
 <EuiSteps>

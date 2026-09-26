@@ -9,7 +9,7 @@ order: 9
   Passing interactive content like links, buttons, or form elements as the
   <EuiCode>buttonContent</EuiCode>, will cause issues with the wrapping button
   element. To fix this, you can change this wrapping element to a div using
-  <EuiCode>buttonElement="div"</EuiCode>.
+  <EuiCode>@buttonElement="div"</EuiCode>.
   </p>
   <p>
   If you don't want the interactive content to trigger the accordion expansion,

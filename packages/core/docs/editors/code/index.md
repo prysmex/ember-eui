@@ -18,7 +18,7 @@ title: Code
   The <strong>EuiCode</strong> and <strong>EuiCodeBlock</strong> components support <a href="https://prismjs.com/#supported-languages" target="_blank">all language syntaxes</a> supported by the <EuiCode>prism</EuiCode> <a href="https://prismjs.com" target="_blank">library</a>. The language prop can also be omitted to simply render formatted but unhighlighted code.
 </p>
 <p>
-  JSX code (often React) has distinct language syntaxes from the base JavaScript and TypeScript languages. For these instances, use <EuiCode @language="jsx">language="jsx"</EuiCode> or <EuiCode @language="tsx">language="tsx"</EuiCode>.
+  JSX code (often React) has distinct language syntaxes from the base JavaScript and TypeScript languages. For these instances, use <EuiCode @language="jsx">@language="jsx"</EuiCode> or <EuiCode @language="tsx">@language="tsx"</EuiCode>.
 </p>
 </EuiText>
 

@@ -23,7 +23,7 @@ order: 10
 <p>
   We also recommend creating a fieldset/legend combination for better
   accessibility and DOM structure by passing
-  <EuiCode>element="fieldset"</EuiCode>. This will set the entire accordion as a
+  <EuiCode>@element="fieldset"</EuiCode>. This will set the entire accordion as a
   <EuiCode>"fieldset"</EuiCode>
   and automatically change the buttonElement to a
   <EuiCode>"legend"</EuiCode>.

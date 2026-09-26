@@ -6,7 +6,7 @@ order: 1
 
 <EuiText>
 	<p>
-		Setting <EuiCode>target="_blank"</EuiCode> defaults to <EuiCode>external={true}</EuiCode>. This adds an icon indicator instructing users that a new window will open. You can also manually apply this icon in case you handle the target behavior by other means.
+		Setting <EuiCode>@target="_blank"</EuiCode> defaults to <EuiCode>@external=&#123;&#123;true&#125;&#125;</EuiCode>. This adds an icon indicator instructing users that a new window will open. You can also manually apply this icon in case you handle the target behavior by other means.
   </p>
 
 </EuiText>

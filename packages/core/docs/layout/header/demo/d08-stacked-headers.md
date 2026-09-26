@@ -5,7 +5,7 @@ order: 8
 # Stacked headers
 
 <EuiText>
-  Stacking multiple headers provides a great way to separate global navigation concerns. However, the <EuiCode>position="fixed"</EuiCode> option will not be aware of the number of headers. If you do need fixed <strong>and</strong> stacked headers, you will need to apply the SASS helper mixin and pass in the correct height to afford for.
+  Stacking multiple headers provides a great way to separate global navigation concerns. However, the <EuiCode>@position="fixed"</EuiCode> option will not be aware of the number of headers. If you do need fixed <strong>and</strong> stacked headers, you will need to apply the SASS helper mixin and pass in the correct height to afford for.
 </EuiText>
 
 ```hbs template

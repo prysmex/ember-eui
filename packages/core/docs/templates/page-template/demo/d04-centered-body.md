@@ -11,7 +11,7 @@ order: 4
 <EuiSpacer />
 <EuiCallOut>
   <:title>
-    This layout can be achieved in <strong>EuiPageTemplate</strong> by setting <EuiCode>template="centeredBody"</EuiCode>.
+    This layout can be achieved in <strong>EuiPageTemplate</strong> by setting <EuiCode>@template="centeredBody"</EuiCode>.
   </:title>
 </EuiCallOut>
 

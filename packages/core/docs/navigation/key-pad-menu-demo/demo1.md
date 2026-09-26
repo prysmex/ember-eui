@@ -2,17 +2,7 @@
 order: 1
 ---
 
-<EuiText>
-	<p>
-		The <strong>EuiKeyPadMenu</strong> component presents <strong>EuiKeyPadMenuItems</strong> in a tiled format, with a fixed width which will accommodate three items and then wrap.
-  </p>
-
-  <p>
-  <strong>EuiKeyPadMenu</strong> is just a wrapping element for creating the list elements but you must declare each <strong>EuiKeyPadMenu</strong> component manually and wrap them on li
-  </p>
-
-</EuiText>
-<EuiSpacer/>
+# Key pad menu
 
 ```hbs template
 <EuiCallOut @iconType='accessibility' @color='warning'>

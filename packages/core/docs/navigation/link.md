@@ -1,5 +1,25 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Link"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiLink` is a text link. With `@href` it renders an `<a>`; without it, a
+`<button>` styled as a link, for actions (add `{{on "click" …}}`).
+
+```hbs
+<EuiLink @href="/docs">Read the docs</EuiLink>
+<EuiLink {{on "click" this.showDetails}}>Show details</EuiLink>
+<EuiLink @href="https://elastic.co" @target="_blank">Elastic</EuiLink>
+```
+
+`@target="_blank"` adds an external link icon and a note for screen
+readers that it opens a new tab. `@color` changes the color (`primary`,
+`subdued`, `success`, `accent`, `danger`, `warning`, `ghost`, `text`).
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

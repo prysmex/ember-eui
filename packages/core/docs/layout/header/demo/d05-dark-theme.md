@@ -6,7 +6,7 @@ order: 5
 
 <EuiText>
   <p>
-  To make site-wide navigation more prominent, <strong>EuiHeader</strong> supports reversing the colors to dark theme with <EuiCode>theme="dark"</EuiCode>. However, it only supports a <strong>limited set of children</strong> that will also shift their theme. These components include <strong>EuiHeaderLogo</strong>, <strong>EuiHeaderLink(s)</strong>, <strong>EuiHeaderSectionItemButton</strong> and <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not render correctly without custom configurations.
+  To make site-wide navigation more prominent, <strong>EuiHeader</strong> supports reversing the colors to dark theme with <EuiCode>@theme="dark"</EuiCode>. However, it only supports a <strong>limited set of children</strong> that will also shift their theme. These components include <strong>EuiHeaderLogo</strong>, <strong>EuiHeaderLink(s)</strong>, <strong>EuiHeaderSectionItemButton</strong> and <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not render correctly without custom configurations.
   </p>
 </EuiText>
 

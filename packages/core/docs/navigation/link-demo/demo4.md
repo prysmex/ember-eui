@@ -21,7 +21,7 @@ order: 4
   <EuiHorizontalRule margin='m' />
   <p>
     This
-    <EuiLink @color='accent' @disabled={{this.disableLink}} @onClick={{(noop)}}>
+    <EuiLink @color='accent' @disabled={{this.disableLink}}>
       paragraph
     </EuiLink>
     has two
@@ -29,7 +29,6 @@ order: 4
     <EuiLink
       @color='warning'
       @disabled={{this.disableLink}}
-      @onClick={{(noop)}}
     >
       links
     </EuiLink>
@@ -41,7 +40,6 @@ order: 4
       <EuiLink
         @color='success'
         @disabled={{this.disableLink}}
-        @onClick={{(noop)}}
       >
         color
       </EuiLink>

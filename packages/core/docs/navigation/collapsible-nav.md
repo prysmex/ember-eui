@@ -1,5 +1,38 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Collapsible nav"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiCollapsibleNav` is an app's main navigation in a flyout on the side,
+opened from a button in the header. With `@isDocked={{true}}` it stays
+open beside the page on large screens (from `@dockedBreakpoint`).
+
+```hbs
+<EuiCollapsibleNav @isOpen={{this.navIsOpen}} @onClose={{this.closeNav}}>
+  <:button as |navButton|>
+    <EuiHeaderSectionItemButton aria-label="Toggle navigation" {{navButton}} {{on "click" this.toggleNav}}>
+      <EuiIcon @type="menu" @size="m" />
+    </EuiHeaderSectionItemButton>
+  </:button>
+  <:content>
+    <EuiCollapsibleNavGroup @isCollapsible={{true}} @iconType="logoKibana">
+      <:title>Analytics</:title>
+      <:content>
+        <EuiListGroup>…</EuiListGroup>
+      </:content>
+    </EuiCollapsibleNavGroup>
+  </:content>
+</EuiCollapsibleNav>
+```
+
+Apply the yielded `navButton` modifier to the toggle button: it wires the
+`aria-controls` / `aria-expanded` attributes. Group links with
+`EuiCollapsibleNavGroup`s, which can collapse.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

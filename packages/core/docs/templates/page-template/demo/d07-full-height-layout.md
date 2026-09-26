@@ -10,7 +10,7 @@ order: 7
   <ol>
     <li>Using the <EuiCode>fullHeight</EuiCode> prop adds an extra layer of <strong>EuiFlexGroup</strong> and <strong>EuiFlexItem</strong> around the template children to negate the negative margins.</li>
     <li>Using <EuiCode>fullHeight=true</EuiCode> will automatically add scrolling behavior to the <strong>EuiFlexItem</strong> that wraps the children.</li>
-    <li>Using <EuiCode>fullHeight="noscroll"</EuiCode> removes all scrolling behavior and your layouts will break if you do not manually add them.</li>
+    <li>Using <EuiCode>@fullHeight="noscroll"</EuiCode> removes all scrolling behavior and your layouts will break if you do not manually add them.</li>
     <li>When using either values for <EuiCode>fullHeight</EuiCode>, there will always be a minimum height of <EuiCode>460px</EuiCode> to the page contents.</li>
     <li>Full height layouts are restricted to <strong>medium breakpoints</strong> and above. We recommend retaining any responsive behavior and allowing normal page scroll on smaller screens.</li>
   </ol>

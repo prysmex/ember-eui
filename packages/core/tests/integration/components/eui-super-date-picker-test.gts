@@ -56,9 +56,7 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     assert.deepEqual((refreshes[0] as { start: string; end: string }).start, 'now-15m');
   });
 
-  // Bug: the range is only validated when the user edits it, not for the
-  // @start / @end the picker is rendered with
-  test.todo('an inverted range is invalid and disables the update button', async function (assert) {
+  test('an inverted range is invalid and disables the update button', async function (assert) {
     const noop = () => {};
 
     await render(<template><EuiSuperDatePicker @start="now" @end="now-15m" @onTimeChange={{noop}} /></template>);

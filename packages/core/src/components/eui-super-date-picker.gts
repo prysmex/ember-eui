@@ -133,6 +133,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
 
     this.start = this.args.start ?? 'now-15m';
     this.end = this.args.end ?? 'now';
+    this.isInvalid = isRangeInvalid(this.start, this.end);
   }
 
   get timeOptions() {

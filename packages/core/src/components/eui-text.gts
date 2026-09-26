@@ -10,15 +10,27 @@ import type { alignMapping } from '../utils/css-mappings/eui-text-align.ts';
 import type { colorMapping } from '../utils/css-mappings/eui-text-color.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** Styles plain HTML content (`<p>`, `<ul>`, `<h3>`, `<code>`…) with EUI's typography. */
 export interface EuiTextSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * `true` lets text span the container's full width; `false` caps lines
+     * at a readable width. Defaults to `true`.
+     */
     grow?: boolean;
+    /** `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). Defaults to `'m'`. */
     size?: keyof typeof sizeMapping;
+    /** `'left'`, `'center'` or `'right'`. */
     textAlign?: keyof typeof alignMapping;
+    /**
+     * `'default'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`,
+     * `'warning'`, `'ghost'` or `'primary'`.
+     */
     color?: keyof typeof colorMapping;
   };
   Blocks: {
+    /** HTML content (paragraphs, lists, headings, code…), styled by EuiText. */
     default: [];
   };
 }

@@ -8,18 +8,26 @@ import type Owner from '@ember/owner';
 import type { CommonArgs } from './common.ts';
 
 type EuiTooltipPopoverArgs = CommonArgs & {
-    positionToolTip: () => void;
-    title?: Component;
-    popoverRef?: (ref: HTMLDivElement | null) => void;
-    hasTitle?: boolean;
-  };
+  /** Repositions the tooltip (on resize and scroll). */
+  positionToolTip: () => void;
+  /** @deprecated Has no effect, use the `<:title>` block. */
+  title?: Component;
+  /** Called with the tooltip element. */
+  popoverRef?: (ref: HTMLDivElement | null) => void;
+  /** Render the title. */
+  hasTitle?: boolean;
+};
 
+/** @private The floating part of EuiToolTip. */
 export interface EuiTooltipPopoverSignature {
   Element: HTMLDivElement;
   Args: EuiTooltipPopoverArgs;
   Blocks: {
+    /** Unused. */
     default: [];
+    /** The title. */
     title: [];
+    /** The content. */
     content: [];
   };
 }

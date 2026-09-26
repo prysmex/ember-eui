@@ -5,13 +5,20 @@ import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** Colors its text content. */
 interface Signature {
   Element: HTMLDivElement | HTMLSpanElement;
   Args: {
+    /**
+     * `'default'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`,
+     * `'warning'`, `'ghost'` or `'primary'`. Defaults to `'default'`.
+     */
     color?: string;
+    /** `'span'` (inline) or `'div'`. Defaults to `'span'`. */
     tagName?: string;
   };
   Blocks: {
+    /** The content. */
     default: [];
   };
 }

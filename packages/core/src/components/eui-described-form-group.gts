@@ -42,7 +42,10 @@ export interface EuiDescribedFormGroupSignature {
   Blocks: {
     /** The fields, usually `EuiFormRow`s. */
     default: [];
-    /** Title of the group (on the left), e.g. `<h3>Security</h3>`. */
+    /**
+     * Title of the group (on the left), as text: it is rendered in an
+     * `EuiTitle` whose tag is `@titleTagName`.
+     */
     title?: [];
     /** Explanation under the title. */
     description?: [];

@@ -10,21 +10,36 @@ import validatableControl from '../modifiers/validatable-control.ts';
 import type { resizeMapping } from '../utils/css-mappings/eui-text-area.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A multi-line text input. Attributes (`placeholder`, `maxlength`…) go to the `<textarea>`. */
 export interface EuiTextAreaSignature {
   Element: HTMLTextAreaElement;
   Args: {
+    /** Id of the textarea. Defaults to a random id. */
     id?: string;
+    /** The value. Update it from `{{on "input" …}}`. */
     value?: string;
+    /** Stretches the textarea to its container's width. */
     fullWidth?: boolean;
+    /** Smaller textarea, for dense forms. */
     compressed?: boolean;
+    /** Disables the textarea. */
     disabled?: boolean;
+    /** Shows the invalid state and marks it invalid for native form validation. */
     isInvalid?: boolean;
+    /** Called with the `<textarea>` element once rendered. */
     inputRef?: (element: HTMLTextAreaElement | null) => void;
+    /** Visible number of lines. */
     rows?: number;
+    /**
+     * Which way the user can resize it: `'vertical'`, `'horizontal'`,
+     * `'both'` or `'none'`. Defaults to `'vertical'`.
+     */
     resize?: keyof typeof resizeMapping;
+    /** Makes the textarea read-only. */
     readOnly?: boolean;
   };
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

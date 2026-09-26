@@ -2,12 +2,15 @@ import { eq } from 'ember-truth-helpers';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Renders a heading, `<p>` or `<legend>` by tag name. */
 export interface TextBlockSignature {
   Element: HTMLHeadingElement | HTMLParagraphElement | HTMLLegendElement;
   Args: {
+    /** The tag to render. */
     tagName: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'legend';
   };
   Blocks: {
+    /** The content. */
     default: [];
   };
 }

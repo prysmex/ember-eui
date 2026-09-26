@@ -12,31 +12,36 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface IEuiToast {
   /**
-   * The title of the toast
+   * The title of the toast.
    */
   title?: string;
   /**
-   * The body of the toast
+   * The body text of the toast (markdown with `useMarkdownFormat`).
    */
   body?: string;
   /**
-   * The color of the toast
+   * `'primary'`, `'success'`, `'warning'`, `'danger'` or `'none'`.
+   * Defaults to `'none'`.
    */
   color?: 'primary' | 'success' | 'warning' | 'danger' | 'none';
   /**
-   * The icon type of the toast
+   * Icon before the title, e.g. `'check'` or `'alert'`.
    */
   iconType?: EuiIconSignature['Args']['type'];
   /**
-   * The callback function when the toast is closed
+   * Shows a close button calling this function.
    */
   onClose?: () => void;
   /**
-   * Whether to use markdown format for the body
+   * Renders `body` as markdown (EuiMarkdownFormat).
    */
   useMarkdownFormat?: boolean;
 }
 
+/**
+ * A notification card. Usually shown through the `euiToaster` service and
+ * EuiGlobalToastList rather than rendered directly.
+ */
 export interface EuiToastSignature {
   Element: HTMLDivElement;
   Args: IEuiToast;

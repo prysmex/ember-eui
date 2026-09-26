@@ -17,10 +17,18 @@ import type { CommonArgs } from './common.ts';
 import type { EuiTabsSignature } from './eui-tabs';
 import type { ComponentLike } from '@glint/template';
 
+/** A tab of EuiTabbedContent. */
 export interface EuiTabbedContentTab {
+  /** Unique id. */
   id: string;
+  /** The tab's label. */
   name: string;
+  /**
+   * The panel shown while the tab is selected (a component). Or render
+   * panels with the `<:selectedTabContent>` block.
+   */
   content?: ComponentLike;
+  /** Disables the tab. */
   disabled?: boolean;
 }
 
@@ -44,11 +52,13 @@ export type EuiTabbedContentArgs = CommonArgs & {
    * control selection state internally
    */
   initialSelectedTab?: EuiTabbedContentTab;
+  /** Called with the clicked tab. */
   onTabClick?: (selectedTab: EuiTabbedContentTab) => void;
   /**
    * Use this prop if you want to control selection state within the owner component
    */
   selectedTab?: EuiTabbedContentTab;
+  /** Size of the tabs: `'s'`, `'m'`, `'l'` or `'xl'`. Defaults to `'m'`. */
   size?: EuiTabsSignature['Args']['size'];
   /**
    * Each tab needs id and content properties, so we can associate it with its panel for accessibility.
@@ -57,11 +67,17 @@ export type EuiTabbedContentArgs = CommonArgs & {
   tabs: EuiTabbedContentTab[];
 };
 
+/** Tabs with their panels, managing the selected tab for you. For custom layouts use EuiTabs. */
 export interface EuiTabbedContentSignature {
   Element: HTMLDivElement;
   Args: EuiTabbedContentArgs;
   Blocks: {
+    /** Unused. */
     default: [EuiTabbedContentTab];
+    /**
+     * Renders the selected tab's panel (instead of its `content`); yields
+     * the tab: `<:selectedTabContent as |tab|>{{#if (eq tab.id "a")}}…`.
+     */
     selectedTabContent: [EuiTabbedContentTab];
   };
 }

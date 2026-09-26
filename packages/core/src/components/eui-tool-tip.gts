@@ -68,11 +68,12 @@ export type EuiTooltipArgs = {
    */
   content?: string;
   /**
-   * Common display alternatives for the anchor wrapper
+   * Display of the anchor wrapper: `'inlineBlock'` or `'block'`.
    */
   display?: EuiToolTipDisplay;
   /**
-   * Delay before showing tooltip. Good for repeatable items.
+   * Delay before showing: `'regular'` (250ms) or `'long'` (for
+   * repeated items). Defaults to `'regular'`.
    */
   delay?: ToolTipDelay;
   /**
@@ -84,12 +85,19 @@ export type EuiTooltipArgs = {
    */
   id?: string;
   /**
-   * Suggested position. If there is not enough room for it this will be changed.
+   * Suggested position: `'top'`, `'right'`, `'bottom'` or `'left'`. If
+   * there is not enough room for it this will be changed. Defaults to
+   * `'top'`.
    */
   position?: ToolTipPositions;
 
+  /**
+   * Shows the tooltip for another element (or selector) instead of the
+   * `<:anchor>` block's content.
+   */
   attachTo?: undefined | HTMLElement | string | null;
 
+  /** Shows (`true`) or hides (`false`) the tooltip from outside. */
   isShown?: boolean | undefined;
 
   /**
@@ -97,19 +105,33 @@ export type EuiTooltipArgs = {
    * hidden.
    */
   onMouseOut?: (event: MouseEvent) => void;
+  /** Called when the anchor gets focus. */
   onFocus?: () => void;
+  /** Called when the anchor loses focus. */
   onBlur?: () => void;
 
+  /** Render the title. Defaults to `true`. */
   hasTitle?: boolean;
 };
 
+/**
+ * A short hint shown on hover or focus of its anchor. Keep the content
+ * short and non-essential; it is not reachable on touch screens.
+ */
 export interface EuiToolTipSignature {
   Element: EuiTooltipPopoverSignature['Element'];
   Args: EuiTooltipArgs;
   Blocks: {
+    /** Same as `<:anchor>`. */
     default?: [id: string];
+    /** The title, instead of `@title`. */
     title?: [];
+    /** The content, instead of `@content`. */
     content?: [];
+    /**
+     * The element the tooltip is for (hover/focus shows it); yields the
+     * tooltip's id for `aria-describedby`.
+     */
     anchor?: [id: string];
   };
 }

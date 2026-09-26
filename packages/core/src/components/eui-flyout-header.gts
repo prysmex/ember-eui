@@ -10,7 +10,7 @@ export interface EuiFlyoutHeaderSignature {
     hasBorder?: boolean;
   };
   Blocks: {
-    /** The title, e.g. `<EuiTitle @size="m"><h2>Details</h2></EuiTitle>`. */
+    /** The title, e.g. `<EuiTitle @size="m" @tagName="h2">Details</EuiTitle>`. */
     default: [];
   };
 }

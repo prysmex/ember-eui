@@ -7,15 +7,25 @@ import EuiPortal from './eui-portal.gts';
 
 import type { EuiPopoverSignature } from './eui-popover.gts';
 
+/**
+ * An EuiPopover anchored to an element that already exists in the page
+ * (passed as `@button`), e.g. one rendered outside Ember. Takes
+ * EuiPopover's args.
+ */
 export interface EuiWrappingPopoverSignature {
   Element: EuiPopoverSignature['Element'];
   Args: EuiPopoverSignature['Args'] & {
+    /** The existing element to anchor the popover to. */
     button?: HTMLElement;
+    /** Called when the popover is destroyed. */
     onWrappingDestroy?: () => void;
+    /** Called with the portal element wrapping the button. */
     portalRef?: (ref: HTMLElement) => void;
+    /** Called with the popover's portal element. */
     popoverPortalRef?: (ref: HTMLElement) => void;
   };
   Blocks: {
+    /** The popover's content. */
     default: [];
   };
 }

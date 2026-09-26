@@ -10,15 +10,30 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiCommentSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * `'regular'` for a comment with a body in a panel, `'update'` for a
+     * compact one-line event (e.g. "added a tag"). Defaults to `'regular'`.
+     */
     type?: EuiCommentTimelineSignature['Args']['type'];
+    /**
+     * Icon on the timeline, e.g. an `EuiAvatar` alternative. Defaults to a
+     * user icon (`'dot'` for updates). Use the `<:timelineIcon>` block for
+     * custom content such as `<EuiAvatar>`.
+     */
     timelineIcon?: EuiCommentTimelineSignature['Args']['timelineIcon'];
   };
   Blocks: {
+    /** Custom timeline content, e.g. `<EuiAvatar @name="Jane" />`. */
     timelineIcon: [];
+    /** Who wrote it. */
     username: [];
+    /** What happened, e.g. "added a comment" or "closed the issue". */
     event: [];
+    /** When, e.g. "on Jan 1st, 2024"; wrapped in `<time>`. */
     timestamp: [];
+    /** Actions on the right of the header, e.g. an `EuiButtonIcon`. */
     actions: [];
+    /** The comment's content. */
     body: [];
   };
 }

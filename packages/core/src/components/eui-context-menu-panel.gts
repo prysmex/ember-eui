@@ -1,8 +1,13 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * A list of `EuiContextMenuItem`s, usually as a popover's content. Unlike
+ * EUI's React version it has no built-in panel navigation.
+ */
 export interface EuiContextMenuPanelSignature {
   Element: HTMLDivElement;
   Blocks: {
+    /** The `EuiContextMenuItem`s (and e.g. `EuiHorizontalRule`s). */
     default: [];
   };
 }

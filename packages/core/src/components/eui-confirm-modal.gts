@@ -17,18 +17,32 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiConfirmModalSignature {
   Element: EuiModalSignature['Element'];
   Args: {
+    /** Title of the modal. Use the `<:title>` block for markup. */
     title?: string;
+    /** The question or explanation, e.g. "This can't be undone.". */
     message?: string;
+    /** Text of the cancel button. Required: there is no default text. */
     cancelButtonText?: string;
+    /** Text of the confirm button, ideally the action ("Delete report"). Required. */
     confirmButtonText?: string;
+    /**
+     * Color of the confirm button, any `EuiButton` color; `'danger'` for
+     * destructive actions. Defaults to `'primary'`.
+     */
     buttonColor?: string;
+    /** Disables the confirm button, e.g. until a checkbox is checked. */
     confirmButtonDisabled?: boolean;
+    /** Shows a spinner in the confirm button while the action runs. */
     isLoading?: boolean;
+    /** Called by the cancel button, Escape and clicks outside. Close the modal here. */
     onCancel: () => void;
+    /** Called by the confirm button. */
     onConfirm: () => void;
   };
   Blocks: {
+    /** The title, after `@title`. */
     title: [];
+    /** The body, after `@message` (e.g. a checkbox or details). */
     default: [];
   };
 }

@@ -41,22 +41,33 @@ import type { EuiRangeTick } from './eui-range-ticks';
 export type ValueMember = number | string;
 
 export interface EuiDualRangeArgs {
+  /** The selected range, `[lower, upper]`. Update it in `@onChange`. */
   value: [ValueMember, ValueMember];
+  /** Called when a thumb or input loses focus. */
   onBlur?: (event: FocusEvent) => void;
+  /** Called when a thumb or input gets focus. */
   onFocus?: (event: FocusEvent) => void;
+  /**
+   * Called with the new `[lower, upper]` values, whether they are valid
+   * (within `@min`/`@max` and lower ≤ upper) and the event.
+   */
   onChange: (
     values: [ValueMember, ValueMember],
     isValid: boolean,
     event: Event | MouseEvent | KeyboardEvent
   ) => void;
+  /** Stretches the slider to its container's width. */
   fullWidth?: boolean;
+  /** Shows the invalid state. */
   isInvalid?: boolean;
   /**
-   * Create colored indicators for certain intervals
+   * Create colored indicators for certain intervals:
+   * `[{ min: 0, max: 20, color: 'danger' }, …]`.
    */
   levels?: EuiRangeLevel[];
   /**
-   * Shows static min/max labels on the sides of the range slider
+   * Shows static min/max labels on the sides of the range slider.
+   * Defaults to `false`.
    */
   showLabels?: boolean;
   /**
@@ -69,71 +80,74 @@ export interface EuiDualRangeArgs {
    */
   tickInterval?: number;
   /**
-   * Specified ticks at specified values
+   * Specified ticks at specified values: `[{ label: '20kb', value: 20 }]`.
    */
   ticks?: EuiRangeTick[];
   /**
-   * Creates an input group with element(s) coming before input.  Will only show if `showInput = inputWithPopover`.
-   * `string` | `Component` or an array of these
+   * @deprecated Has no effect, use the `<:prepend>` block (shown with
+   * `@showInput="inputWithPopover"`).
    */
   prepend?: EuiFormControlLayoutSignature['Blocks']['prepend'];
   /**
-   * Creates an input group with element(s) coming after input. Will only show if `showInput = inputWithPopover`.
-   * `string` | `Component` or an array of these
+   * @deprecated Has no effect, use the `<:append>` block (shown with
+   * `@showInput="inputWithPopover"`).
    */
   append?: EuiFormControlLayoutSignature['Blocks']['append'];
-  /**
-   *  Intended to be uses with aria attributes. Some attributes may be overwritten.
-   */
+  /** @deprecated Has no effect. */
   minInputProps?: Partial<EuiRangeInputArgs>;
-
-  /**
-   *  Intended to be uses with aria attributes. Some attributes may be overwritten.
-   */
+  /** @deprecated Has no effect. */
   maxInputProps?: Partial<EuiRangeInputArgs>;
-
+  /** Makes the inputs read-only. */
   readOnly?: boolean;
-
+  /** Disables the slider and inputs. */
   disabled?: boolean;
-
+  /** @private Show the `<:prepend>` block. Defaults to `true`. */
   isPrependProvided?: boolean;
-
+  /** @private Show the `<:append>` block. Defaults to `true`. */
   isAppendProvided?: boolean;
-
+  /** @private Ignore the `<:max>` block. */
   isFakeMaxBlock?: boolean;
-
+  /** @private Ignore the `<:min>` block. */
   isFakeMinBlock?: boolean;
-
+  /** Disables the number inputs. */
   disable?: boolean;
-
+  /** Id of the element(s) describing the slider thumbs. */
   ariaDescribedby?: string;
-
+  /** Accessible label of the slider thumbs. */
   ariaLabel?: string;
-
+  /** `name` of the inputs; the number inputs get `-minValue` / `-maxValue` suffixes. */
   name?: string;
-
+  /** Id of the slider. Defaults to a generated id. */
   id?: string;
-
+  /** Smaller slider, for dense forms. Defaults to `false`. */
   compressed?: boolean;
-
+  /** Highlights the selected range on the track. Defaults to `true`. */
   showRange?: boolean;
-
+  /** Shows tick marks, every `@step` (or `@tickInterval`). Defaults to `false`. */
   showTicks?: boolean;
-
+  /** Increment between values. Defaults to `1`. */
   step?: number;
-
+  /** Lowest selectable value. Defaults to `0`. */
   min?: number;
-
+  /** Highest selectable value. Defaults to `100`. */
   max?: number;
 }
 
+/**
+ * A slider with two thumbs to pick a range, e.g. a price range. For one
+ * value use EuiRange.
+ */
 export interface EuiDualRangeSignature {
   Element: EuiRangeInputSignature['Element'];
   Args: EuiDualRangeArgs;
   Blocks: {
+    /** Content before the inputs (`@showInput="inputWithPopover"`). */
     prepend: EuiRangeInputSignature['Blocks']['prepend'];
+    /** Content after the inputs (`@showInput="inputWithPopover"`). */
     append: EuiRangeInputSignature['Blocks']['append'];
+    /** Custom min label (`@showLabels`); yields `@min`. */
     min: [number?];
+    /** Custom max label (`@showLabels`); yields `@max`. */
     max: [number?];
   };
 }

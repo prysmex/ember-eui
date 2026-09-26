@@ -19,24 +19,52 @@ import type { EuiTitleSignature } from './eui-title';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { ComponentLike } from '@glint/template';
 
+/**
+ * A message filling an empty page or section: an icon, a title, some text
+ * and actions, e.g. when a list has no items yet or a page failed to load.
+ */
 export interface EuiEmptyPromptSignature {
   Element: EuiPanelSignature['Element'];
   Args: {
+    /**
+     * `'vertical'` centers everything in a column; `'horizontal'` puts the
+     * icon beside the text. Defaults to `'vertical'`.
+     */
     layout?: 'vertical' | 'horizontal';
+    /** Padding around the content, any `EuiPanel` padding size. Defaults to `'l'`. */
     paddingSize?: EuiPanelSignature['Args']['paddingSize'];
+    /**
+     * Background, any `EuiPanel` color (`'plain'`, `'subdued'`, `'danger'`,
+     * …). Defaults to `'transparent'`.
+     */
     color?: EuiPanelSignature['Args']['color'];
+    /** Adds a border around the prompt. */
     hasBorder?: EuiPanelSignature['Args']['hasBorder'];
+    /** Large icon above the title, e.g. `'search'` or `'logoKibana'`. */
     iconType?: EuiIconSignature['Args']['type'];
+    /** Color of the icon. Defaults to `@color`, or `'subdued'`. */
     iconColor?: EuiIconSignature['Args']['color'];
+    /** Title, e.g. "No dashboards yet". */
     title?: string;
+    /** Size of the title, any `EuiTitle` size. Defaults to `'m'`. */
     titleSize?: EuiTitleSignature['Args']['size'];
+    /** Text explaining the situation and what to do. */
     body?: string;
+    /**
+     * Components rendered as the prompt's actions (e.g. a primary
+     * `EuiButton` and an `EuiButtonEmpty`), laid out in a row or column.
+     * Use the `<:content>` block for full control.
+     */
     actions?: ComponentLike[];
+    /** Text in a footer, e.g. a link to the docs. Use the `<:footer>` block for markup. */
     footer?: string;
   };
   Blocks: {
+    /** Custom content instead of the `@iconType` icon, e.g. an `EuiImage`. */
     icon?: [];
+    /** Replaces the title, body and actions with your own content. */
     content?: [];
+    /** The footer, instead of `@footer`. */
     footer?: [];
   };
 }

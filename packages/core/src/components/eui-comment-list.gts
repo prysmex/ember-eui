@@ -1,8 +1,10 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** Stacks EuiComments along a shared timeline. */
 export interface EuiCommentListSignature {
   Element: HTMLDivElement;
   Blocks: {
+    /** The `EuiComment`s. */
     default: [];
   };
 }

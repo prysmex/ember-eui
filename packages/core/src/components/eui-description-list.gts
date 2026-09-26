@@ -12,22 +12,45 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiDescriptionListSignature {
   Element: HTMLElement;
   Args: {
+    /** Smaller text. */
     compressed?: boolean;
+    /**
+     * `'row'` stacks each title above its description, `'column'` puts them
+     * side by side, `'responsiveColumn'` is a column that stacks on small
+     * screens, `'inline'` flows them as compact inline text.
+     * Defaults to `'row'`.
+     */
     type?: keyof typeof typeMapping;
+    /**
+     * `'reverse'` styles the descriptions as the prominent text and the
+     * titles as the smaller labels. Defaults to `'normal'`.
+     */
     textStyle?: keyof typeof textStyleMapping;
+    /** `'left'` or `'center'`. Defaults to `'left'`. */
     align?: keyof typeof alignMapping;
+    /**
+     * The terms: `[{ title: 'Name', description: 'Jane' }]`. Without it,
+     * pass `EuiDescriptionListTitle` / `EuiDescriptionListDescription` in the
+     * block.
+     */
     listItems?: {
       title: string;
       description: string;
     }[];
+    /** Props for each title from `@listItems`: `{ className }`. */
     titleProps?: {
       className?: string;
     };
+    /** Props for each description from `@listItems`: `{ className }`. */
     descriptionProps?: {
       className?: string;
     };
   };
   Blocks: {
+    /**
+     * Pairs of `EuiDescriptionListTitle` and `EuiDescriptionListDescription`
+     * (ignored when `@listItems` is set).
+     */
     default: [];
   };
 }

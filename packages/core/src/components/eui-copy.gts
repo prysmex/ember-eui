@@ -13,26 +13,31 @@ type EuiCopyArgs = {
    */
   textToCopy: string;
   /**
-   * Tooltip message displayed before copy function is called.
+   * Tooltip message displayed before copy function is called, e.g.
+   * "Click to copy". No tooltip without it.
    */
   beforeMessage?: string;
   /**
    * Tooltip message displayed after copy function is called that lets the user know that
-   * 'textToCopy' has been copied to the clipboard.
+   * 'textToCopy' has been copied to the clipboard, e.g. "Copied".
    */
   afterMessage?: string;
 
   /**
-   * The element that will be used as the anchor for the tooltip.
-   * Defaults to the child element of EuiCopy.
+   * @deprecated Has no effect: the tooltip is anchored to the block's
+   * content.
    */
   anchor?: HTMLElement;
 };
 
 export interface EuiCopySignature {
-  Element: EuiToolTipSignature["Element"];
+  Element: EuiToolTipSignature['Element'];
   Args: EuiCopyArgs;
   Blocks: {
+    /**
+     * The element triggering the copy; call the yielded function from it:
+     * `as |copy|` → `<EuiButton {{on "click" copy}}>Copy</EuiButton>`.
+     */
     default: [() => void];
   };
 }

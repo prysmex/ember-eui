@@ -7,13 +7,17 @@ import EuiIcon from './eui-icon.gts';
 import type { commentTimelineTypeMapping } from '../utils/css-mappings/eui-comment-timeline-icon.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The icon column of an EuiComment. */
 export interface EuiCommentTimelineSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Icon on the timeline. Defaults to `'user'` (`'dot'` for updates). */
     timelineIcon?: string;
+    /** `'regular'` or `'update'`, see `EuiComment`. Defaults to `'regular'`. */
     type?: keyof typeof commentTimelineTypeMapping;
   };
   Blocks: {
+    /** Custom content instead of the icon, e.g. an `EuiAvatar`. */
     timelineIcon: [];
   };
 }

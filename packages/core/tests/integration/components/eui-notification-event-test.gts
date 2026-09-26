@@ -97,9 +97,7 @@ module('Integration | Component | eui-notification-event', function (hooks) {
     assert.dom('.euiNotificationEventMessages__accordionContent p').exists({ count: 2 });
   });
 
-  // Bug: the rest is computed with (without first messages), which drops
-  // every message equal to the first one instead of only the first
-  test.todo('repeated messages are all kept', async function (assert) {
+  test('repeated messages are all kept', async function (assert) {
     const repeated = ['Retry', 'Retry', 'Retry'];
 
     await render(<template><EuiNotificationEventMessages @messages={{repeated}} @accordionButtonText="more" /></template>);

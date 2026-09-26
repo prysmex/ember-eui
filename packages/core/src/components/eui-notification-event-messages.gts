@@ -7,9 +7,8 @@ import EuiText from './eui-text.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 const objectAt = <T,>(pos: number, array: T[]) => array[pos];
-const without = <T,>(obj: T, array: T[]) => {
-  return array.filter((item) => item !== obj);
-};
+// everything after the first message (duplicates of it included)
+const afterFirst = <T,>(array: T[]) => array.slice(1);
 
 export interface EuiNotificationEventMessagesSignature {
   Element: HTMLDivElement;
@@ -25,7 +24,7 @@ const EuiNotificationEventMessages: TemplateOnlyComponent<EuiNotificationEventMe
   <template>
     <div class="euiNotificationEventMessages" ...attributes>
       {{#let
-        (objectAt 0 @messages) (without (objectAt 0 @messages) @messages)
+        (objectAt 0 @messages) (afterFirst @messages)
         as |first rest|
       }}
 

@@ -5,7 +5,7 @@ order: 3
 # Images
 
 <EuiText>
-<p>Images can be added in place of, or in conjuction with, icons. Just pass a url into the <EuiCode @language="text">image</EuiCode> prop and it will expand to the edges of the card.</p>
+<p>Images can be added in place of, or in conjuction with, icons. Just pass a url into the <EuiCode @language="text">@image</EuiCode> argument and it will expand to the edges of the card.</p>
 </EuiText>
 
 ```hbs template

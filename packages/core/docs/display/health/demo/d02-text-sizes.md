@@ -5,7 +5,7 @@ order: 2
 # Text sizes
 
 <EuiText>
-  <p>Match the text size of <strong>EuiHealth</strong> to your context by passing <EuiCode @language="text">xs / s / m / inherit</EuiCode> to the <EuiCode @language="text">textSize</EuiCode> prop. The <EuiCode @language="text">inherit</EuiCode> style will get its font size from the parent element.</p>
+  <p>Match the text size of <strong>EuiHealth</strong> to your context by passing <EuiCode @language="text">xs / s / m / inherit</EuiCode> to the <EuiCode @language="text">@textSize</EuiCode> argument. The <EuiCode @language="text">inherit</EuiCode> style will get its font size from the parent element.</p>
 </EuiText>
 
 ```hbs template

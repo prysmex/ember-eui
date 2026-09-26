@@ -6,9 +6,9 @@ order: 7
 
 <EuiText>
   <p>
-The <strong>EuiBetaBadge</strong> was created specifically to call out modules that are not in GA. Generally the labels used are "Beta" or "Lab". They require an extra <EuiCode>tooltipContent</EuiCode> to describe the purpose of the badge. You can pass an optional title prop to populate the tooltip title or html title attribute but by default it will use the <EuiCode>label</EuiCode>.
+The <strong>EuiBetaBadge</strong> was created specifically to call out modules that are not in GA. Generally the labels used are "Beta" or "Lab". They require an extra <EuiCode>@tooltipContent</EuiCode> to describe the purpose of the badge. You can pass an optional title argument to populate the tooltip title or html title attribute but by default it will use the <EuiCode>@label</EuiCode>.
 
-If you pass in an <EuiCode>iconType</EuiCode>, only the icon will be used in the badge itself and the label will be applied as the title. Only use an icon when attaching the beta badge to small components. Beta badges can also be made clickable by passing <EuiCode>href</EuiCode> or <EuiCode>onClick</EuiCode> as needed.
+If you pass in an <EuiCode>@iconType</EuiCode>, only the icon will be used in the badge itself and the label will be applied as the title. Only use an icon when attaching the beta badge to small components. Beta badges can also be made clickable by passing <EuiCode>@href</EuiCode> or <EuiCode>@onClick</EuiCode> as needed.
 
 They can also be used in conjunction with EuiCards.
 

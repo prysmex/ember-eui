@@ -7,7 +7,7 @@ order: 5
 <EuiText>
   <p>
 
-While <strong>EuiAvatar</strong> doesn't accept any interactive behaviors itself, you can create a visually presented disabled avatar by adding <EuiCode>isDisabled</EuiCode> when placed within a disabled element.
+While <strong>EuiAvatar</strong> doesn't accept any interactive behaviors itself, you can create a visually presented disabled avatar by adding <EuiCode>@isDisabled</EuiCode> when placed within a disabled element.
 
   </p>
 </EuiText>

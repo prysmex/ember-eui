@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
   <p>
-    Use an <strong>EuiHeaderSectionItemButton</strong> to display additional information in <EuiLink @href="/docs/core/docs/layout/popover">popovers</EuiLink> or <EuiLink @href="/docs/core/docs/layout/flyout">flyouts</EuiLink>, such as a user profile or news feed. When using <EuiLink @href="/docs/core/docs/layout/flyout">EuiFlyout</EuiLink>, be sure to wrap it in a <EuiLink @href="/docs/core/docs/utilities/portal">EuiPortal</EuiLink>. When using an <EuiLink @href="">EuiPopover</EuiLink> in conjunction with a <strong>fixed</strong> header, be sure to add the <EuiCode>repositionOnScroll</EuiCode> prop to the popover.
+    Use an <strong>EuiHeaderSectionItemButton</strong> to display additional information in <EuiLink @href="/docs/core/docs/layout/popover">popovers</EuiLink> or <EuiLink @href="/docs/core/docs/layout/flyout">flyouts</EuiLink>, such as a user profile or news feed. When using <EuiLink @href="/docs/core/docs/layout/flyout">EuiFlyout</EuiLink>, be sure to wrap it in a <EuiLink @href="/docs/core/docs/utilities/portal">EuiPortal</EuiLink>. When using an <EuiLink @href="">EuiPopover</EuiLink> in conjunction with a <strong>fixed</strong> header, be sure to add the <EuiCode>repositionOnScroll</EuiCode> argument to the popover.
   </p>
 </EuiText>
 

@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
 	<p>
-	Setting the <EuiCode>textStyle</EuiCode> arg to <EuiCode>reverse</EuiCode> will reverse the text styles of the <EuiCode>title</EuiCode> and <EuiCode>description</EuiCode> elements so that the description is more prominent. This works best for key/value type content.
+	Setting the <EuiCode>@textStyle</EuiCode> arg to <EuiCode>reverse</EuiCode> will reverse the text styles of the <EuiCode>title</EuiCode> and <EuiCode>description</EuiCode> elements so that the description is more prominent. This works best for key/value type content.
   </p>
 	<p>
 		Adding this property to the <EuiCode>inline</EuiCode> type will not change anything.

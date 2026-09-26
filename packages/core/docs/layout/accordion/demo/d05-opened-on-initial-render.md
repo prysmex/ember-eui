@@ -6,8 +6,8 @@ order: 5
 
 <EuiText>
   Use the
-  <EuiCode>initialIsOpen</EuiCode>
-  prop to open the accordion when first rendered.
+  <EuiCode>@initialIsOpen</EuiCode>
+  argument to open the accordion when first rendered.
 </EuiText>
 
 ```hbs template

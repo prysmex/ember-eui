@@ -5,7 +5,7 @@ order: 3
 # Panel options
 
 <EuiText>
- The <strong>EuiEmptyPrompt</strong> is wrapped by <strong>EuiPanel</strong>. By default, the panel is set to <EuiCode>transparent</EuiCode> but you can customize other panel options like <EuiCode>color</EuiCode>, <EuiCode>hasBorder</EuiCode> and <EuiCode>paddingSize</EuiCode>. Changing the <EuiCode>color</EuiCode> prop will also attempt to adjust the <EuiCode>iconColor</EuiCode> and <EuiCode>footer</EuiCode> color.
+ The <strong>EuiEmptyPrompt</strong> is wrapped by <strong>EuiPanel</strong>. By default, the panel is set to <EuiCode>transparent</EuiCode> but you can customize other panel options like <EuiCode>@color</EuiCode>, <EuiCode>@hasBorder</EuiCode> and <EuiCode>@paddingSize</EuiCode>. Changing the <EuiCode>@color</EuiCode> argument will also attempt to adjust the <EuiCode>@iconColor</EuiCode> and <EuiCode>@footer</EuiCode> color.
 </EuiText>
 
 ```hbs template

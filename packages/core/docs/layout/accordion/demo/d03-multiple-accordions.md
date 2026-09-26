@@ -12,8 +12,8 @@ order: 3
   <strong>EuiSpacer</strong>
   between accordion items. Padding within each accordion item can be applied via
   the
-  <EuiCode>paddingSize</EuiCode>
-  prop.
+  <EuiCode>@paddingSize</EuiCode>
+  argument.
 </EuiText>
 
 ```hbs template

@@ -6,10 +6,10 @@ order: 7
 
 <EuiText>
   To alert or notify users about the additional information they are receiving,
-  use the <strong>EuiHeaderSectionItemButton</strong> <EuiCode>notification</EuiCode> prop. You can pass a node that
+  use the <strong>EuiHeaderSectionItemButton</strong> <EuiCode>@notification</EuiCode> argument. You can pass a node that
   will render inside a <strong>EuiBadgeNotification</strong> or pass <EuiCode>true</EuiCode> to render a simple dot.
   You can also animate the button by calling the <EuiCode>euiAnimate()</EuiCode> method on the
-  <strong>EuiHeaderSectionItemButton</strong> <EuiCode>ref</EuiCode>.
+  <strong>EuiHeaderSectionItemButton</strong> <EuiCode>@ref</EuiCode>.
 </EuiText>
 
 ```hbs template

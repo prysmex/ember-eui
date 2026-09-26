@@ -7,9 +7,9 @@ order: 4
 <EuiText>
   <p>
 
-Icons can also be displayed instead of initials or images. When simply passing an <EuiCode>iconType</EuiCode>, it will both size and color appropriately based on the other <strong>EuiAvatar</strong> props. To customize these specifically, pass <EuiCode>iconSize</EuiCode> and <EuiCode>iconColor</EuiCode>.
+Icons can also be displayed instead of initials or images. When simply passing an <EuiCode>@iconType</EuiCode>, it will both size and color appropriately based on the other <strong>EuiAvatar</strong> arguments. To customize these specifically, pass <EuiCode>@iconSize</EuiCode> and <EuiCode>@iconColor</EuiCode>.
 
-If your icon has multiples or custom colors like a logo, you can keep the default <EuiCode>iconColor</EuiCode> by passing <EuiCode>null</EuiCode>. Otherwise it will get the appropriate contrast acceptable variant. Just ensure that you also are providing an accesible background color to match that of the icon's color.
+If your icon has multiples or custom colors like a logo, you can keep the default <EuiCode>@iconColor</EuiCode> by passing <EuiCode>null</EuiCode>. Otherwise it will get the appropriate contrast acceptable variant. Just ensure that you also are providing an accesible background color to match that of the icon's color.
 
   </p>
 </EuiText>

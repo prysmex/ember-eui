@@ -8,10 +8,10 @@ order: 7
 
 <EuiText>
   <p>
-Another way to allow for continued interactions of the page content while a flyout is visible, is to change the <EuiCode>type</EuiCode> from <EuiCode>overlay</EuiCode> to <EuiCode>push</EuiCode>.
+Another way to allow for continued interactions of the page content while a flyout is visible, is to change the <EuiCode>@type</EuiCode> from <EuiCode>overlay</EuiCode> to <EuiCode>push</EuiCode>.
   </p>
 	<p>
-	A pushed flyout still positions itself as <EuiCode>fixed</EuiCode>, but adds padding to the document's body element to accommodate for the flyout's width. Because this squishes the page content, the flyout changes back to <EuiCode>overlay</EuiCode> at smaller window widths. You can adjust this minimum breakpoint with <EuiCode>pushMinBreakpoint</EuiCode>.
+	A pushed flyout still positions itself as <EuiCode>fixed</EuiCode>, but adds padding to the document's body element to accommodate for the flyout's width. Because this squishes the page content, the flyout changes back to <EuiCode>overlay</EuiCode> at smaller window widths. You can adjust this minimum breakpoint with <EuiCode>@pushMinBreakpoint</EuiCode>.
 	</p>
   </EuiText>
 

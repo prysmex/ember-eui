@@ -5,7 +5,7 @@ order: 5
 # Panel class name
 
 <EuiText>
-    Use the <EuiCode>panelClassName</EuiCode> prop to pass a custom class to the panel containing the popover contents.
+    Use the <EuiCode>@panelClassName</EuiCode> argument to pass a custom class to the panel containing the popover contents.
   </EuiText>
 
 ```hbs template

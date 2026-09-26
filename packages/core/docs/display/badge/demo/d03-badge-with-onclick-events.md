@@ -7,7 +7,7 @@ order: 3
 <EuiText>
   <p>
 
-Badges can have <EuiCode>onClick</EuiCode> events applied to the badge itself or the icon within the badge. The latter option is useful for when you might use badges in other components (like a tag system with autocomplete where you need close events).
+Badges can have <EuiCode>@onClick</EuiCode> events applied to the badge itself or the icon within the badge. The latter option is useful for when you might use badges in other components (like a tag system with autocomplete where you need close events).
 
   </p>
 </EuiText>

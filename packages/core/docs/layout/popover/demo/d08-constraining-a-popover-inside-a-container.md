@@ -6,8 +6,8 @@ order: 8
 <EuiText>
     <strong>EuiPopover</strong>
     can accept a DOM element as a
-    <EuiCode>container</EuiCode>
-    prop and restrict the popover from overflowing that container.
+    <EuiCode>@container</EuiCode>
+    argument and restrict the popover from overflowing that container.
   </EuiText>
 
 ```hbs template

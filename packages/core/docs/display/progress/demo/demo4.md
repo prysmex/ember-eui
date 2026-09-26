@@ -5,7 +5,7 @@ order: 4
 # Colors
 
 <EuiText>
-<p><strong>EuiProgress</strong> supports a few options for <EuiCode @language="text">color</EuiCode>. You can pass any value from our basic color set or from our visualization palette (<EuiCode @language="text">vis0</EuiCode> through <EuiCode @language="text">vis9</EuiCode>). To learn more about color usage, go to the <a href="#/guidelines/colors">Color guidelines</a> page.</p>
+<p><strong>EuiProgress</strong> supports a few options for <EuiCode @language="text">@color</EuiCode>. You can pass any value from our basic color set or from our visualization palette (<EuiCode @language="text">vis0</EuiCode> through <EuiCode @language="text">vis9</EuiCode>). To learn more about color usage, go to the <a href="#/guidelines/colors">Color guidelines</a> page.</p>
 </EuiText>
 
 ```hbs template

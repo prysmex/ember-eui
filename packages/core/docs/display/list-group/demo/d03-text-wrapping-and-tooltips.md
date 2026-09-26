@@ -2,14 +2,17 @@
 order: 3
 ---
 
-# Text wrapping and tooltips
+# Text wrapping
 
- <EuiText>
-   <p>Optional props <EuiCode>showToolTip</EuiCode> and <EuiCode>wrapLines</EuiCode> can be used to augment the display of list items. Use these when lists are inside small containers where it is likely that the content will be truncated.</p>
+<EuiText>
+
+Long item labels are truncated to one line by default. `@wrapText={{true}}`
+on an item wraps its text instead, for lists inside narrow containers.
+
 </EuiText>
 
 ```hbs template
-<EuiListGroup @showToolTips>
+<EuiListGroup>
   <EuiListGroupItem>
     First item
   </EuiListGroupItem>

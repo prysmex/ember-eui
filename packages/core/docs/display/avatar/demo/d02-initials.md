@@ -7,7 +7,7 @@ order: 2
 <EuiText>
   <p>
 
-The initials displayed in the avatar try to be smart based on the name prop. If the name contains spaces, it will display the first character of each word, <strong>always maxing out at 2 characters.</strong> You can customize this by passing a combination of <EuiCode>initialsLength</EuiCode> and/or <EuiCode>initials</EuiCode> props. However, the avatar will still always max out at 2 characters.
+The initials displayed in the avatar try to be smart based on the name argument. If the name contains spaces, it will display the first character of each word, <strong>always maxing out at 2 characters.</strong> You can customize this by passing a combination of <EuiCode>initialsLength</EuiCode> and/or <EuiCode>@initials</EuiCode> arguments. However, the avatar will still always max out at 2 characters.
 
   </p>
 </EuiText>

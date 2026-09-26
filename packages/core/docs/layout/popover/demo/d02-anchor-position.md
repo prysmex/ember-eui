@@ -6,13 +6,13 @@ order: 2
 
 <EuiText>
     The alignment and arrow on your popover can be set with the
-    <EuiCode>anchorPosition</EuiCode>
-    prop. These positions will update based upon screen real estate.<br /><br />
+    <EuiCode>@anchorPosition</EuiCode>
+    argument. These positions will update based upon screen real estate.<br /><br />
     <strong>Some tips:</strong>
     <ul>
-      <li>The first word in the <EuiCode>anchorPosition</EuiCode> denotes where the popover will
+      <li>The first word in the <EuiCode>@anchorPosition</EuiCode> denotes where the popover will
         appear relative to the button.</li>
-      <li>The second word in the <EuiCode>anchorPosition</EuiCode> denotes where the gravity / pin
+      <li>The second word in the <EuiCode>@anchorPosition</EuiCode> denotes where the gravity / pin
         position will appear relative to the popover.</li>
     </ul>
   </EuiText>

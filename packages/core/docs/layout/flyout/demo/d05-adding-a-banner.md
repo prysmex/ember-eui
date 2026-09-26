@@ -9,7 +9,7 @@ order: 5
 <EuiText>
   <p>
 
-To highlight some information at the top of a flyout, you can pass an <a href="/docs/core/docs/display/callout">EuiCallOut</a> to the <EuiCode>banner</EuiCode> prop available in <strong>EuiFlyoutBody</strong> and its layout will adjust appropriately.
+To highlight some information at the top of a flyout, you can pass an <a href="/docs/core/docs/display/callout">EuiCallOut</a> to the <EuiCode>banner</EuiCode> argument available in <strong>EuiFlyoutBody</strong> and its layout will adjust appropriately.
 
   </p>
   </EuiText>

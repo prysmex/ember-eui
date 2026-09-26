@@ -6,7 +6,7 @@ order: 5
 
 <EuiText>
  Empty prompts can also be used to emulate loading and error states, by utilizing the same patterns.
- For <strong>loading</strong> states, instead of passing a <EuiCode>iconType</EuiCode>, you can provide a custom <EuiCode>icon</EuiCode> and pass in one of our loading components.
+ For <strong>loading</strong> states, instead of passing a <EuiCode>@iconType</EuiCode>, you can provide a custom <EuiCode>icon</EuiCode> and pass in one of our loading components.
 </EuiText>
 
 ```hbs template

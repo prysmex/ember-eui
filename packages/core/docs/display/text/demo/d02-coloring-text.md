@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
   <p>
-There are two ways to color text. Either individually by applying <strong>EuiTextColor</strong> on individual text objects, or by passing the <EuiCode>color</EuiCode> prop directly on <strong>EuiText</strong> for a blanket approach across the entirety of your text.
+There are two ways to color text. Either individually by applying <strong>EuiTextColor</strong> on individual text objects, or by passing the <EuiCode>@color</EuiCode> argument directly on <strong>EuiText</strong> for a blanket approach across the entirety of your text.
 
   </p>
 </EuiText>

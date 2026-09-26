@@ -5,7 +5,7 @@ order: 2
 # Progress with values
 
 <EuiText>
-<p>Once the <EuiCode @language="text">max</EuiCode> and <EuiCode @language="text">value</EuiCode> props are set, it will act as a determinate progress bar. This is rendered using an HTML5 <EuiCode @language="text">progress</EuiCode> tag.</p>
+<p>Once the <EuiCode @language="text">@max</EuiCode> and <EuiCode @language="text">@value</EuiCode> arguments are set, it will act as a determinate progress bar. This is rendered using an HTML5 <EuiCode @language="text">progress</EuiCode> tag.</p>
 
 </EuiText>
 

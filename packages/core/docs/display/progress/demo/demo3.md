@@ -5,7 +5,7 @@ order: 3
 # Sizes
 
 <EuiText>
-<p>You can adjust the <EuiCode @language="text">size</EuiCode> of both determinate and indeterminate progress bars.</p>
+<p>You can adjust the <EuiCode @language="text">@size</EuiCode> of both determinate and indeterminate progress bars.</p>
 </EuiText>
 
 ```hbs template

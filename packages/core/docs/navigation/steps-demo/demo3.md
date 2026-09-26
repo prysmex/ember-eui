@@ -5,8 +5,8 @@ order: 5
 # Horizontal Steps
 
 <EuiText>
-<p>For use when forms/setup instructions can and should be split into multiple pages. Each step should correspond to an individual page of form elements, using the <EuiCode>status</EuiCode> key to denote the user's progress.</p>
-<p>For horizontal steps, the <EuiCode>status</EuiCode> key defaults to <EuiCode>"incomplete"</EuiCode> and the default filled styling is reserved for indicating <EuiCode>"current"</EuiCode> status.</p>
+<p>For use when forms/setup instructions can and should be split into multiple pages. Each step should correspond to an individual page of form elements, using the <EuiCode>@status</EuiCode> key to denote the user's progress.</p>
+<p>For horizontal steps, the <EuiCode>@status</EuiCode> key defaults to <EuiCode>"incomplete"</EuiCode> and the default filled styling is reserved for indicating <EuiCode>"current"</EuiCode> status.</p>
 </EuiText>
 
 ```hbs template

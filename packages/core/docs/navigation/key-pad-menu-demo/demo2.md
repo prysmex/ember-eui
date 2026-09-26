@@ -4,11 +4,11 @@ order: 2
 
 <EuiText>
 	<p>
-		The <strong>EuiKeyPadMenuItem</strong> component can act both as an anchor as well as a button by specifying <EuiCode>href</EuiCode> or <EuiCode>onClick</EuiCode> respectively. It requires a text-based <EuiCode>label</EuiCode> and using the block for declaring the icon. This is the most flexible way for handling the customization of the icon itself.
+		The <strong>EuiKeyPadMenuItem</strong> component can act both as an anchor as well as a button by specifying <EuiCode>@href</EuiCode> or <EuiCode>onClick</EuiCode> respectively. It requires a text-based <EuiCode>@label</EuiCode> and using the block for declaring the icon. This is the most flexible way for handling the customization of the icon itself.
   </p>
 
   <p>
-  When using the <EuiCode>isSelected</EuiCode> prop to create a toggle button, you must supply both the <EuiCode>true</EuiCode> and <EuiCode>false</EuiCode> states explicitly to ensure the attribute is added for both states.
+  When using the <EuiCode>@isSelected</EuiCode> argument to create a toggle button, you must supply both the <EuiCode>true</EuiCode> and <EuiCode>false</EuiCode> states explicitly to ensure the attribute is added for both states.
   </p>
 
 </EuiText>

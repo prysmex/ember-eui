@@ -5,7 +5,7 @@ order: 4
 # Tabbed content
 
 <EuiText>
-<p><strong>EuiTabbedContent</strong> makes it easier to associate tabs with content based on the selected tab. Use the <EuiCode>initialSelectedTab</EuiCode> prop to specify which tab to initially select.</p>
+<p><strong>EuiTabbedContent</strong> makes it easier to associate tabs with content based on the selected tab. Use the <EuiCode>@initialSelectedTab</EuiCode> argument to specify which tab to initially select.</p>
 </EuiText>
 
 ```hbs template

@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
 <p>
-<EuiCode>title</EuiCode> can be altered using the color property. By default, it will appear in <EuiCode>full</EuiCode> color. For proper color contrast, only a limited set of EUI colors are offered. See the Props tab above for a list of available colors.
+<EuiCode>@title</EuiCode> can be altered using the color property. By default, it will appear in <EuiCode>full</EuiCode> color. For proper color contrast, only a limited set of EUI colors are offered. See the Arguments tab above for a list of available colors.
 </p>
 </EuiText>
 

@@ -6,7 +6,7 @@ order: 3
 
 <EuiText>
   <p>
-  There is an <EuiCode>affordForDisplacement</EuiCode> prop (defaulting to <EuiCode>true</EuiCode>), which determines
+  There is an <EuiCode>@affordForDisplacement</EuiCode> argument (defaulting to <EuiCode>true</EuiCode>), which determines
   whether the component makes room for itself by adding bottom padding
   equivalent to its own height on the document <EuiCode @language="html">body</EuiCode> element. Setting this to
   <EuiCode>false</EuiCode> can be useful to minimize scrollbar visibility but will cause the bottom
@@ -15,7 +15,7 @@ order: 3
   <p>
      You can
     also apply a different set of positioning locations just by adjusting them
-    in with the <EuiCode>top | right | bottom | left</EuiCode> props.
+    in with the <EuiCode>top | right | bottom | left</EuiCode> arguments.
   </p>
 </EuiText>
 

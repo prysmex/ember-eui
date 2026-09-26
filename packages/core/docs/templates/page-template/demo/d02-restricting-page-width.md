@@ -8,8 +8,8 @@ order: 2
 <EuiText>
   Most content does not scale well to the full width of the window. You can
   restrict this to a typical width and center the page by setting the
-  <EuiCode>restrictWidth</EuiCode>
-  prop to
+  <EuiCode>@restrictWidth</EuiCode>
+  argument to
   <EuiCode>true</EuiCode>
   on
   <strong>EuiPageHeader</strong>

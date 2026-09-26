@@ -5,7 +5,7 @@ order: 4
 # Statuses
 
 <EuiText>
-<p>Steps can optionally include <EuiCode>status</EuiCode> prop that will alter the look of the number prefix. The options are <EuiCode>incomplete</EuiCode>, <EuiCode>complete</EuiCode>, <EuiCode>warning</EuiCode>, <EuiCode>danger</EuiCode>, <EuiCode>disabled</EuiCode> and <EuiCode>loading</EuiCode>. This is used mostly as a final step when you need to make some sort of final check.</p>
+<p>Steps can optionally include <EuiCode>@status</EuiCode> argument that will alter the look of the number prefix. The options are <EuiCode>incomplete</EuiCode>, <EuiCode>complete</EuiCode>, <EuiCode>warning</EuiCode>, <EuiCode>danger</EuiCode>, <EuiCode>@disabled</EuiCode> and <EuiCode>loading</EuiCode>. This is used mostly as a final step when you need to make some sort of final check.</p>
 </EuiText>
 
 ```hbs template

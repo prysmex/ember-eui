@@ -5,7 +5,7 @@ order: 3
 # Bottom border
 
 <EuiText>
-<p>The <EuiCode>bottomBorder</EuiCode> helps to separate the tab group from the content below and is on by default. However, some components like <a href="/docs/core/docs/layout/flyout">flyouts</a> already provide borders which can act as the divider. In this case you can turn the border off with <EuiCode>bottomBorder<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span></EuiCode>.</p>
+<p>The <EuiCode>@bottomBorder</EuiCode> helps to separate the tab group from the content below and is on by default. However, some components like <a href="/docs/core/docs/layout/flyout">flyouts</a> already provide borders which can act as the divider. In this case you can turn the border off with <EuiCode>bottomBorder<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span></EuiCode>.</p>
 </EuiText>
 
 ```hbs template

@@ -7,7 +7,7 @@ order: 3
 <EuiText>
   <p>
 
-The avatar <EuiCode>type</EuiCode>, which primarily defines the shape, is keyworded and can be <EuiCode>"user"</EuiCode> (default) or <EuiCode>"space"</EuiCode> (for workspaces).
+The avatar <EuiCode>@type</EuiCode>, which primarily defines the shape, is keyworded and can be <EuiCode>"user"</EuiCode> (default) or <EuiCode>"space"</EuiCode> (for workspaces).
 
   </p>
 </EuiText>

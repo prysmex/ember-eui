@@ -4,11 +4,11 @@ order: 3
 
 <EuiText>
 	<p>
-		If the item links to a module that is not GA (beta, lab, etc), you can add a <EuiCode>betaBadgeLabel</EuiCode> and <EuiCode>betaBadgeTooltipContent</EuiCode> to the card and it will properly create and position an <a href="/docs/core/docs/navigation/key-pad-menu">EuiBetaBadge</a>.
+		If the item links to a module that is not GA (beta, lab, etc), you can add a <EuiCode>@betaBadgeLabel</EuiCode> and <EuiCode>@betaBadgeTooltipContent</EuiCode> to the card and it will properly create and position an <a href="/docs/core/docs/navigation/key-pad-menu">EuiBetaBadge</a>.
   </p>
 
   <p>
-  Supplying just a label will only show the first letter in the badge but displays the full label to the tooltip. You can also pass an <EuiCode>iconType</EuiCode> to replace the letter.
+  Supplying just a label will only show the first letter in the badge but displays the full label to the tooltip. You can also pass an <EuiCode>@iconType</EuiCode> to replace the letter.
   </p>
 
 </EuiText>

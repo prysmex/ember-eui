@@ -6,7 +6,7 @@ order: 5
 
 <EuiText>
 	<p>
-		<strong>EuiBreadcrumbs</strong> are <EuiCode>responsive</EuiCode> by default and will collapse breadcrumbs on narrower screens. Setting <EuiCode @language="json">@responsive=&#123;&#123;false&#125;&#125;</EuiCode> will keep all breadcrumbs visible at all screens sizes.
+		<strong>EuiBreadcrumbs</strong> are <EuiCode>@responsive</EuiCode> by default and will collapse breadcrumbs on narrower screens. Setting <EuiCode @language="json">@responsive=&#123;&#123;false&#125;&#125;</EuiCode> will keep all breadcrumbs visible at all screens sizes.
   </p>
 
 </EuiText>

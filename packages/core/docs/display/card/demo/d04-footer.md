@@ -5,7 +5,7 @@ order: 4
 # Footer
 
 <EuiText>
-<p>Footers can contain any number of elements and will always align to the bottom of the card. However, if you supply a footer containing a <strong>EuiButton</strong> you <strong>must not</strong> also give it an <EuiCode @language="text">onClick</EuiCode>.</p>
+<p>Footers can contain any number of elements and will always align to the bottom of the card. However, if you supply a footer containing a <strong>EuiButton</strong> you <strong>must not</strong> also give it an <EuiCode @language="text">@onClick</EuiCode>.</p>
 </EuiText>
 
 ```hbs template

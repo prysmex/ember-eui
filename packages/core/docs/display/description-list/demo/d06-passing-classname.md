@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
 	<p>
-	When using the <EuiCode>listItems</EuiCode> arg to pass an array of items and you could also add a <EuiCode>className</EuiCode> (or other available arg) to the individual pieces throught the <EuiCode>titleProps</EuiCode> and <EuiCode>descriptionProps</EuiCode>
+	When using the <EuiCode>@listItems</EuiCode> arg to pass an array of items and you could also add a <EuiCode>className</EuiCode> (or other available arg) to the individual pieces throught the <EuiCode>@titleProps</EuiCode> and <EuiCode>@descriptionProps</EuiCode>
   </p>
 
 </EuiText>

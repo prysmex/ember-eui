@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
   <p>
-    The <strong>EuiDualRange</strong> accepts almost all the same props
+    The <strong>EuiDualRange</strong> accepts almost all the same arguments
     as the regular <strong>EuiRange</strong>, with the exception of
     <EuiCode>@showRange</EuiCode> which is on by default, and
     <EuiCode>@showValue</EuiCode> since tooltips don't fit properly
@@ -18,7 +18,7 @@ order: 2
         Two-value <EuiCode @language="html">input[type=range]</EuiCode> elements are not
         part of the HTML5 specification. Because of this support gap,
         <strong>EuiDualRange</strong> cannot expose a native
-        <EuiCode>value</EuiCode> property for native form to consumption.
+        <EuiCode>@value</EuiCode> property for native form to consumption.
         <strong>
           <EuiCode>@onChange</EuiCode> is the recommended
           method for retrieving the upper and lower values.

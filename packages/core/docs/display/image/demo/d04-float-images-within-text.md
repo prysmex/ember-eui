@@ -5,7 +5,7 @@ order: 4
 # Float images within text
 
 <EuiText>
-<p>When using <EuiCode @language="text">EuiImage</EuiCode> within <EuiCode @language="text">EuiText</EuiCode> it is often useful to apply floats. Almost always you'll want to pair the <EuiCode @language="text">float</EuiCode> prop usage, with a <EuiCode @language="text">margin</EuiCode> prop usage to give space around your image. Margins, when used in combo with floats, will adjust depending upon the position of the float.</p>
+<p>When using <EuiCode @language="text">EuiImage</EuiCode> within <EuiCode @language="text">EuiText</EuiCode> it is often useful to apply floats. Almost always you'll want to pair the <EuiCode @language="text">@float</EuiCode> argument usage, with a <EuiCode @language="text">@margin</EuiCode> argument usage to give space around your image. Margins, when used in combo with floats, will adjust depending upon the position of the float.</p>
 </EuiText>
 
 ```hbs template

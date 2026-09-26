@@ -7,7 +7,7 @@ order: 9
 <EuiText>
   <p>
   Passing interactive content like links, buttons, or form elements as the
-  <EuiCode>buttonContent</EuiCode>, will cause issues with the wrapping button
+  <EuiCode>@buttonContent</EuiCode>, will cause issues with the wrapping button
   element. To fix this, you can change this wrapping element to a div using
   <EuiCode>@buttonElement="div"</EuiCode>.
   </p>

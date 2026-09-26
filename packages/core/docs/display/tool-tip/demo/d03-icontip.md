@@ -8,7 +8,7 @@ order: 3
   <p>
 You can use <strong>EuiIconTip</strong> to explain options, other controls, or entire parts of the user interface. When possible, surface explanations inline within the UI, and only hide them behind a <strong>EuiIconTip</strong> as a last resort.
 
-It accepts all the same props as <strong>EuiToolTip</strong>. For convenience, you can also specify optional icon <EuiCode>size</EuiCode>, <EuiCode>type</EuiCode>, and <EuiCode>color</EuiCode> props.
+It accepts all the same arguments as <strong>EuiToolTip</strong>. For convenience, you can also specify optional icon <EuiCode>@size</EuiCode>, <EuiCode>@type</EuiCode>, and <EuiCode>@color</EuiCode> arguments.
 
   </p>
 </EuiText>

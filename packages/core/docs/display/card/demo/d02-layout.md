@@ -5,7 +5,7 @@ order: 2
 # Layout
 
 <EuiText>
-<p>At its core an <strong>EuiCard</strong> should contain a <EuiCode @language="text">title</EuiCode>,<EuiCode @language="text">description</EuiCode>, and an <EuiCode @language="text">icon</EuiCode>. You can make the whole card clickable by giving it an <EuiCode @language="text">onClick</EuiCode> handler or <EuiCode @language="text">href</EuiCode>.</p>
+<p>At its core an <strong>EuiCard</strong> should contain a <EuiCode @language="text">@title</EuiCode>,<EuiCode @language="text">@description</EuiCode>, and an <EuiCode @language="text">@icon</EuiCode>. You can make the whole card clickable by giving it an <EuiCode @language="text">@onClick</EuiCode> handler or <EuiCode @language="text">@href</EuiCode>.</p>
 </EuiText>
 
 ```hbs template

@@ -31,10 +31,10 @@ order: 1
   <strong>EuiPageTemplate</strong>, which is simply a shortcut for creating the
   different types of page layout patterns described in these docs. It is
   somewhat opinionated, but still has the ability to customize most of the inner
-  components with props like
-  <EuiCode>pageSideBarProps</EuiCode>
+  components with arguments like
+  <EuiCode>@pageSideBarProps</EuiCode>
   and
-  <EuiCode>pageContentProps</EuiCode>.
+  <EuiCode>@pageContentProps</EuiCode>.
 </EuiText>
 
 ```hbs template

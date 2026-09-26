@@ -2,7 +2,7 @@
 
 <EuiText>
 	<p>
-		These components will either render or not render their children based on the current window width. Pass an array of named breakpoints to the <EuiCode>sizes</EuiCode> arg to either show or hide their children respectively.
+		These components will either render or not render their children based on the current window width. Pass an array of named breakpoints to the <EuiCode>@sizes</EuiCode> arg to either show or hide their children respectively.
 	</p>
 	<p>
 		The sizing options correlate with the keys in the <EuiCode>EuiBreakpoints</EuiCode> type. The named breakpoint starts at the pixel value provided and ends before the next one.

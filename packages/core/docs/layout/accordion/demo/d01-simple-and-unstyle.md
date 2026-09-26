@@ -11,13 +11,13 @@ order: 1
   enforced by EUI is the caret icon, which indicates to users that the item can
   be opened.
   A
-  <EuiCode>buttonContent</EuiCode>
-  prop defines the content of the clickable area. On click it will expose the
+  <EuiCode>@buttonContent</EuiCode>
+  argument defines the content of the clickable area. On click it will expose the
   children and animate based on the height of those children.<br /><br />
   For styling needs, classes can be individually applied with
   <EuiCode>className</EuiCode>
   (for the entire accordion), and
-  <EuiCode>buttonClassName</EuiCode>
+  <EuiCode>@buttonClassName</EuiCode>
   (for the clickable area).
 </EuiText>
 

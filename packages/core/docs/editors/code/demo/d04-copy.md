@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
   <p>
-    Adding the <EuiCode>isCopyable</EuiCode> prop allows users to copy the text content of the code block.
+    Adding the <EuiCode>@isCopyable</EuiCode> argument allows users to copy the text content of the code block.
   </p>
 </EuiText>
 

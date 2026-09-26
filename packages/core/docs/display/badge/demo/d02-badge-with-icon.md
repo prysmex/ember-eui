@@ -7,7 +7,7 @@ order: 2
 <EuiText>
   <p>
     Badges can use icons on the left and right (default) sides.
-    When using a URL for the icon make sure to pass <EuiCode>iconUseSvg</EuiCode> as <EuiCode>false</EuiCode> for the image to show properly.
+    An image URL works as the icon too.
   </p>
 </EuiText>
 

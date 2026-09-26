@@ -6,7 +6,7 @@ order: 7
 
 <EuiText>
   Popover content even works on <EuiCode>position: fixed;</EuiCode>
-  elements. Add the <EuiCode>repositionOnScroll</EuiCode> boolean prop to ensure the popover
+  elements. Add the <EuiCode>@repositionOnScroll</EuiCode> boolean argument to ensure the popover
   realigns to the fixed button on scroll.
 </EuiText>
 

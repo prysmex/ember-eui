@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
 	<p>
-		Use the <EuiCode>max</EuiCode> prop to collapse breadcrumbs beyond a certain number. The center breadcrumbs will collpase into a single item allowing the user to navigate these items from within a popover.
+		Use the <EuiCode>@max</EuiCode> argument to collapse breadcrumbs beyond a certain number. The center breadcrumbs will collpase into a single item allowing the user to navigate these items from within a popover.
   </p>
 
 </EuiText>

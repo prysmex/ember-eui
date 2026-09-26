@@ -5,7 +5,7 @@ order: 2
 # List of links
 
  <EuiText>
-   <p>Display <strong>EuiListGroupItems</strong> as links by providing an <EuiCode>href</EuiCode> value and change their state with the <EuiCode>isActive</EuiCode> and <EuiCode>isDisabled</EuiCode> properties.</p><p>As is done in this example, the <strong>EuiListGroup</strong> component can also accept an array of items via the <EuiCode>listItems</EuiCode> property.</p>
+   <p>Display <strong>EuiListGroupItems</strong> as links by providing an <EuiCode>@href</EuiCode> value and change their state with the <EuiCode>@isActive</EuiCode> and <EuiCode>@isDisabled</EuiCode> properties.</p><p>As is done in this example, the <strong>EuiListGroup</strong> component can also accept an array of items via the <EuiCode>listItems</EuiCode> property.</p>
 </EuiText>
 
 ```hbs template

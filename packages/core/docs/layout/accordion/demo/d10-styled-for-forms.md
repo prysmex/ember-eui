@@ -13,11 +13,11 @@ order: 10
     <li><EuiCode>.euiAccordionForm</EuiCode>: Applied to the
       <EuiCode>className</EuiCode>, adds top and bottom borders</li>
     <li><EuiCode>.euiAccordionForm__button</EuiCode> : Applied to the
-      <EuiCode>buttonClassName</EuiCode>, adds extra padding to the button for
+      <EuiCode>@buttonClassName</EuiCode>, adds extra padding to the button for
       better spacing</li>
     <li><EuiCode>.euiAccordionForm__extraAction</EuiCode> : Applied to the button
       passed to
-      <EuiCode>extraAction</EuiCode>, will visually hide it until hover or focus</li>
+      <EuiCode>@extraAction</EuiCode>, will visually hide it until hover or focus</li>
   </ul>
 </p>
 <p>

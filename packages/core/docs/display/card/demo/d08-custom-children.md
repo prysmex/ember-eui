@@ -5,7 +5,7 @@ order: 9
 # Custom children
 
 <EuiText>
-<p>In the event that you need <strong>more than</strong> just paragraph text for the <EuiCode>description</EuiCode>, you can suppliment with anything you need as the <EuiCode>children</EuiCode> of the component. You can also completely replace the description with custom children, but <strong>EuiCard</strong> at least one of these.</p>
+<p>In the event that you need <strong>more than</strong> just paragraph text for the <EuiCode>@description</EuiCode>, you can suppliment with anything you need as the <EuiCode>children</EuiCode> of the component. You can also completely replace the description with custom children, but <strong>EuiCard</strong> at least one of these.</p>
 </EuiText>
 
 ```hbs template

@@ -5,7 +5,7 @@ order: 5
 # Controlled tabbed content
 
 <EuiText>
-<p>You can also use the <code class="euiCode" data-code-language="text">selectedTab</code> and <code class="euiCode" data-code-language="text">onTabClick</code> props to take complete control over tab selection. This can be useful if you want to change tabs based on user interaction with another part of the UI.</p>
+<p>You can also use the <code class="euiCode" data-code-language="text">selectedTab</code> and <code class="euiCode" data-code-language="text">onTabClick</code> arguments to take complete control over tab selection. This can be useful if you want to change tabs based on user interaction with another part of the UI.</p>
 </EuiText>
 
 ```hbs template

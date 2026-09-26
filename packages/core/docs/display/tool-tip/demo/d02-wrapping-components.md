@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
   <p><strong>EuiToolTip</strong> wraps its children in a <EuiCode>&lt;span&gt;</EuiCode> element that is <<EuiCode>display: inline-block</EuiCode> If you are wrapping a block-level child (e.g. a <EuiCode>&lt;div&gt;</EuiCode>), you may need to change this by passing <EuiCode>@display="block"</EuiCode> but the resulting DOM may be in violation of the HTML5 spec.</p>
-  <p>It also applies <EuiCode>onFocus</EuiCode> and <EuiCode>onBlur</EuiCode> props the the cloned <EuiCode>children</EuiCode>. If you pass in a custom component, then you’ll need to make sure these props are applied to the root element rendered by your component.</p>
+  <p>It also applies <EuiCode>@onFocus</EuiCode> and <EuiCode>@onBlur</EuiCode> arguments the the cloned <EuiCode>children</EuiCode>. If you pass in a custom component, then you’ll need to make sure these arguments are applied to the root element rendered by your component.</p>
 </EuiText>
 
 ```hbs template

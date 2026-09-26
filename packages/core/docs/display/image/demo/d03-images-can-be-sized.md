@@ -5,7 +5,7 @@ order: 3
 # Images can be sized
 
 <EuiText>
-    <p>Images can be sized by passing the <EuiCode @language="text">size</EuiCode> prop a value of <EuiCode @language="text">s / m / l / xl / original / fullWidth / number / string</EuiCode>. This size sets the <strong>maximum</strong> length of the longest edge of the image, whether that is height or width, and scales it. Only the provided sizing values will also increase the size of a smaller image.</p>
+    <p>Images can be sized by passing the <EuiCode @language="text">@size</EuiCode> argument a value of <EuiCode @language="text">s / m / l / xl / original / fullWidth / number / string</EuiCode>. This size sets the <strong>maximum</strong> length of the longest edge of the image, whether that is height or width, and scales it. Only the provided sizing values will also increase the size of a smaller image.</p>
     </EuiText>
 
 ```hbs template

@@ -11,14 +11,14 @@ order: 3
   can be tricky to use and account for any side bars.
   <strong>EuiPageTemplate</strong>
   handles this nicely by supplying a
-  <EuiCode>bottomBar</EuiCode>
-  prop for passing the contents of your bottom bar, and
-  <EuiCode>bottomBarProps</EuiCode>
+  <EuiCode>@bottomBar</EuiCode>
+  argument for passing the contents of your bottom bar, and
+  <EuiCode>@bottomBarProps</EuiCode>
   that extends
   <strong>EuiBottomBar</strong>.<br /><br />
 
   <!-- It uses the
-  <EuiCode>sticky</EuiCode>
+  <EuiCode>@sticky</EuiCode>
   position so that it sticks to the bottom of and remains within the bounds of
   <strong>EuiPageBody</strong>. This way it will never overlap the
   <strong>EuiPageSideBar</strong>, no matter the screen size. It also means not

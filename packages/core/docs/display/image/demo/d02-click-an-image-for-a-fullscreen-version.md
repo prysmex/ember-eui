@@ -5,7 +5,7 @@ order: 2
 # Click an image for a fullscreen version
 
  <EuiText>
-    <p>Apply the <EuiCode @language="text">allowFullScreen</EuiCode> prop to make the image clickable and show a fullscreen version. Note that the second image also passes <EuiCode @language="js">fullScreenIconColor<span class="token operator">=</span><span class="token string">"dark"</span></EuiCode> to change icon color to better contrast against the light background of that image.</p>
+    <p>Apply the <EuiCode @language="text">@allowFullScreen</EuiCode> argument to make the image clickable and show a fullscreen version. Note that the second image also passes <EuiCode @language="js">fullScreenIconColor<span class="token operator">=</span><span class="token string">"dark"</span></EuiCode> to change icon color to better contrast against the light background of that image.</p>
     </EuiText>
 
 ```hbs template

@@ -6,7 +6,7 @@ order: 1
 
 <EuiText>
 	<p>
-		Like any other <EuiLink @href="/docs/core/docs/navigation/button">button component</EuiLink>, links can be passed a <EuiCode>color</EuiCode>. Note that the <EuiCode>ghost</EuiCode> type should only be used on dark backgrounds (regardless of theming) as it will always create a white link.
+		Like any other <EuiLink @href="/docs/core/docs/navigation/button">button component</EuiLink>, links can be passed a <EuiCode>@color</EuiCode>. Note that the <EuiCode>ghost</EuiCode> type should only be used on dark backgrounds (regardless of theming) as it will always create a white link.
   </p>
 </EuiText>
 

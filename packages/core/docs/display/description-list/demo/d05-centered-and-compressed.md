@@ -6,7 +6,7 @@ order: 5
 
 <EuiText>
 	<p>
-	Using the <EuiCode>align</EuiCode> and <EuiCode>compressed</EuiCode> args you can further tailor the look of a description list. This works with column and inline types.
+	Using the <EuiCode>@align</EuiCode> and <EuiCode>@compressed</EuiCode> args you can further tailor the look of a description list. This works with column and inline types.
   </p>
 
 </EuiText>

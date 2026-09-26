@@ -6,7 +6,7 @@ order: 5
 
 <EuiText>
   <p>
-    To create colored indicators for certain intervals, pass an array of objects that include a <EuiCode>min</EuiCode>, <EuiCode>max</EuiCode> and <EuiCode>color</EuiCode>. Color options are <EuiCode @language="js">["primary", "success", "warning", "danger"]</EuiCode>.
+    To create colored indicators for certain intervals, pass an array of objects that include a <EuiCode>@min</EuiCode>, <EuiCode>@max</EuiCode> and <EuiCode>color</EuiCode>. Color options are <EuiCode @language="js">["primary", "success", "warning", "danger"]</EuiCode>.
   </p>
   <p>
     Be sure to then add an <strong>aria-describedby</strong> and match it to the id of a <strong>EuiFormHelpText</strong>.

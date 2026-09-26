@@ -6,10 +6,10 @@ order: 3
 
 <EuiText>
 	<p>
-	Using the arg <EuiCode>type</EuiCode> set to <EuiCode>column</EuiCode> description lists can be presented in an inline, column format.
+	Using the arg <EuiCode>@type</EuiCode> set to <EuiCode>column</EuiCode> description lists can be presented in an inline, column format.
   </p>
 	<p>
-	To return to the typical row format on smaller screens set <EuiCode>type</EuiCode> to <EuiCode>responsiveColumn</EuiCode>.
+	To return to the typical row format on smaller screens set <EuiCode>@type</EuiCode> to <EuiCode>responsiveColumn</EuiCode>.
 	</p>
 
 </EuiText>

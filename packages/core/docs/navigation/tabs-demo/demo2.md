@@ -5,7 +5,7 @@ order: 2
 # Tab sizes
 
 <EuiText>
-<p><strong>EuiTabs</strong> allow a <EuiCode>size</EuiCode> prop. In general you should always use the default (medium) size. The small size is best for when placing inside popovers or other small containers. Reserve using the large size for when using as primary page navigation, like inside of <a href="#/layout/page-header"><strong>EuiPageHeader</strong></a>.</p><p>You can also use the <EuiCode>expand</EuiCode> prop to evenly stretch each tab horizontally.</p>
+<p><strong>EuiTabs</strong> allow a <EuiCode>@size</EuiCode> argument. In general you should always use the default (medium) size. The small size is best for when placing inside popovers or other small containers. Reserve using the large size for when using as primary page navigation, like inside of <a href="#/layout/page-header"><strong>EuiPageHeader</strong></a>.</p><p>You can also use the <EuiCode>@expand</EuiCode> argument to evenly stretch each tab horizontally.</p>
 </EuiText>
 
 ```hbs template

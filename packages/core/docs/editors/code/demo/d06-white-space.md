@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
   <p>
-    By default, the <EuiCode>whiteSpace</EuiCode> property is set to <EuiCode>pre-wrap</EuiCode>. This makes the text wrap when needed. You can, however, pass <EuiCode>pre</EuiCode> to the <EuiCode>whiteSpace</EuiCode> prop and the text won't wrap unless line breaks are in the content.
+    By default, the <EuiCode>@whiteSpace</EuiCode> property is set to <EuiCode>pre-wrap</EuiCode>. This makes the text wrap when needed. You can, however, pass <EuiCode>pre</EuiCode> to the <EuiCode>@whiteSpace</EuiCode> argument and the text won't wrap unless line breaks are in the content.
   </p>
 </EuiText>
 

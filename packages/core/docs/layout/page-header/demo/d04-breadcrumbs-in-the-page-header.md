@@ -5,7 +5,7 @@ order: 4
 # Breadcrumbs in the page header
 
 <EuiText>
-	<a href="#">Breadcrumbs</a> are useful for tracking in-page flows that <strong>are not part of the entire application architecture</strong>. To make this easy <strong>EuiPageHeader</strong> provides a <EuiCode>breadcrumbs</EuiCode> prop that accepts the same configuration as <EuiCode>EuiBreadrumbs.breadcrumbs</EuiCode>.
+	<a href="#">Breadcrumbs</a> are useful for tracking in-page flows that <strong>are not part of the entire application architecture</strong>. To make this easy <strong>EuiPageHeader</strong> provides a <EuiCode>@breadcrumbs</EuiCode> argument that accepts the same configuration as <EuiCode>EuiBreadrumbs.breadcrumbs</EuiCode>.
 </EuiText>
 
 ```hbs template

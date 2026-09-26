@@ -6,7 +6,7 @@ order: 3
 
 <EuiText>
   <p>
-    To render line numbers, you can add <EuiCode>lineNumbers</EuiCode> as boolean flag.
+    To render line numbers, you can add <EuiCode>@lineNumbers</EuiCode> as boolean flag.
   </p>
 </EuiText>
 

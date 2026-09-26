@@ -6,7 +6,7 @@ order: 3
 
 <EuiText>
   <p>
-There are two ways to align text. Either individually by applying <strong>EuiTextAlign</strong> on individual text objects, or by passing the <EuiCode>textAlign</EuiCode> prop directly on <strong>EuiText</strong> for a blanket approach across the entirety of your text.
+There are two ways to align text. Either individually by applying <strong>EuiTextAlign</strong> on individual text objects, or by passing the <EuiCode>@textAlign</EuiCode> argument directly on <strong>EuiText</strong> for a blanket approach across the entirety of your text.
 
   </p>
 </EuiText>

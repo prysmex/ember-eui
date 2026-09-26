@@ -4,11 +4,11 @@ order: 4
 
 <EuiText>
 	<p>
-		<strong>EuiKeyPadMenuItems</strong> can also be rendered as checkbox or radio form controls using the <EuiCode>checkable</EuiCode> prop. Pass in <EuiCode>"multi"</EuiCode> for checkboxes or <EuiCode>"single"</EuiCode> for radios.
+		<strong>EuiKeyPadMenuItems</strong> can also be rendered as checkbox or radio form controls using the <EuiCode>@checkable</EuiCode> argument. Pass in <EuiCode>"multi"</EuiCode> for checkboxes or <EuiCode>"single"</EuiCode> for radios.
   </p>
 
   <p>
-  To ensure the <strong>EuiKeyPadMenu</strong> renders the semantically appropriate HTML elements, you will need to pass in the <EuiCode>checkable</EuiCode> prop as <EuiCode>true</EuiCode> or an object that requires a <EuiCode>legend</EuiCode>. This will wrap the input group in a <EuiCode>fieldset</EuiCode> with a <EuiCode>legend</EuiCode>.
+  To ensure the <strong>EuiKeyPadMenu</strong> renders the semantically appropriate HTML elements, you will need to pass in the <EuiCode>@checkable</EuiCode> argument as <EuiCode>true</EuiCode> or an object that requires a <EuiCode>legend</EuiCode>. This will wrap the input group in a <EuiCode>fieldset</EuiCode> with a <EuiCode>legend</EuiCode>.
   </p>
 
 </EuiText>

@@ -10,11 +10,11 @@ order: 6
   is maintained by the component's internal state. Though, you can manually
   control it.
   <ul>
-    <li><EuiCode>forceState</EuiCode>: Accepts either
+    <li><EuiCode>@forceState</EuiCode>: Accepts either
       <EuiCode>'open'</EuiCode>
       or
       <EuiCode>'closed'</EuiCode>.</li>
-    <li><EuiCode>onToggle</EuiCode>: A callback function returning
+    <li><EuiCode>@onToggle</EuiCode>: A callback function returning
       <EuiCode>true</EuiCode>
       if the accordion is open</li>
   </ul>

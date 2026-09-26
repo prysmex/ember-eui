@@ -6,7 +6,7 @@ order: 5
 
 <EuiText>
 <p>
-You can reverse the order of the <EuiCode>description</EuiCode> and <EuiCode>title</EuiCode> text by setting the <EuiCode>reverse</EuiCode> property to true. By default, the description (label) is displayed above the title (value).
+You can reverse the order of the <EuiCode>@description</EuiCode> and <EuiCode>@title</EuiCode> text by setting the <EuiCode>@reverse</EuiCode> property to true. By default, the description (label) is displayed above the title (value).
 </p>
 </EuiText>
 

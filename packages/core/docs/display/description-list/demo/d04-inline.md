@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
 	<p>
-	Using a arg <EuiCode>type</EuiCode> set to <EuiCode>inline</EuiCode> description lists can be presented in an inline, blob format. This is useful for JSON code blocks. Inline description lists are sized smaller than normal lists due to their compact nature.
+	Using a arg <EuiCode>@type</EuiCode> set to <EuiCode>inline</EuiCode> description lists can be presented in an inline, blob format. This is useful for JSON code blocks. Inline description lists are sized smaller than normal lists due to their compact nature.
   </p>
 
 </EuiText>

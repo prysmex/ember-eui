@@ -8,7 +8,7 @@ order: 6
   <p>
 Badges, like buttons, will only every be a single line of text. This means text will not wrap, but be truncated if the badge's width reaches that of its parent's.
 
-For this reason, badges also auto-apply the inner text of the badge to the <EuiCode>title</EuiCode> attribute of the element to provide default browser tooltips with the full badge text.
+For this reason, badges also auto-apply the inner text of the badge to the <EuiCode>@title</EuiCode> attribute of the element to provide default browser tooltips with the full badge text.
 
 To ensure proper wrapping, truncation and spacing of multiple badges, it is advisable to wrap them in a <strong>EuiBadgeGroup</strong>.
 

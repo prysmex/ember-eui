@@ -9,7 +9,7 @@ order: 4
 <EuiText>
   <p>
 
-All the inner flyout components inherit their padding from the wrapping <strong>EuiFlyout</strong> component. This ensures that all the horizontal edges line up no matter the <EuiCode>paddingSize</EuiCode>. When using the <EuiCode>"none"</EuiCode> size, you will need to accommodate your content with some other way of creating distance to the edges of the flyout.
+All the inner flyout components inherit their padding from the wrapping <strong>EuiFlyout</strong> component. This ensures that all the horizontal edges line up no matter the <EuiCode>@paddingSize</EuiCode>. When using the <EuiCode>"none"</EuiCode> size, you will need to accommodate your content with some other way of creating distance to the edges of the flyout.
 
   </p>
   </EuiText>

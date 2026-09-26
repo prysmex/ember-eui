@@ -4,7 +4,7 @@ order: 5
 
 <EuiText>
 	<p>
-		For single selection (radio) items, you must pass a singular <EuiCode>name</EuiCode> prop to each item to ensure they are grouped properly. Also, if you would like to hide the visible <EuiCode>legend</EuiCode> in favor of an screen-reader only solution, you can pass <EuiCode>ariaLegend</EuiCode> instead of <EuiCode>legend</EuiCode>.
+		For single selection (radio) items, you must pass a singular <EuiCode>@name</EuiCode> argument to each item to ensure they are grouped properly. Also, if you would like to hide the visible <EuiCode>legend</EuiCode> in favor of an screen-reader only solution, you can pass <EuiCode>ariaLegend</EuiCode> instead of <EuiCode>legend</EuiCode>.
   </p>
 </EuiText>
 

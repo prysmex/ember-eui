@@ -28,14 +28,19 @@ import type { EuiRangeLevel } from './eui-range-levels';
 import type { EuiRangeTick } from './eui-range-ticks';
 
 export interface EuiRangeArgs {
+  /** Smaller slider, for dense forms. Defaults to `false`. */
   compressed?: boolean;
+  /** Makes the number input read-only. */
   readOnly?: boolean;
+  /** Stretches the slider to its container's width. Defaults to `false`. */
   fullWidth?: boolean;
+  /** Id of the slider. Defaults to a generated id. */
   id?: string;
   /**
    * Create colored indicators for certain intervals
    */
   levels?: EuiRangeLevel[];
+  /** Increment between values. Defaults to `1`. */
   step?: number;
   /**
    * Pass `true` to displays an extra input control for direct manipulation.
@@ -43,22 +48,26 @@ export interface EuiRangeArgs {
    */
   showInput?: boolean | 'inputWithPopover';
   /**
-   * Shows static min/max labels on the sides of the range slider
+   * Shows static min/max labels on the sides of the range slider.
+   * Defaults to `false`.
    */
   showLabels?: boolean;
   /**
-   * Shows a thick line from min to value
+   * Shows a thick line from min to value. Defaults to `false`.
    */
   showRange?: boolean;
   /**
-   * Shows clickable tick marks and labels at the given interval (`step`/`tickInterval`)
+   * Shows clickable tick marks and labels at the given interval
+   * (`step`/`tickInterval`). Defaults to `false`.
    */
   showTicks?: boolean;
 
+  /** Lowest selectable value. Defaults to `0`. */
   min?: number;
+  /** Highest selectable value. Defaults to `100`. */
   max?: number;
   /**
-   * Shows a tooltip styled value
+   * Shows the value in a tooltip above the thumb. Defaults to `false`.
    */
   showValue?: boolean;
   /**
@@ -78,38 +87,69 @@ export interface EuiRangeArgs {
    */
   valuePrepend?: any;
 
+  /**
+   * Called with the event (read `event.target.value`, a string) and whether
+   * the value is within `@min`/`@max`. Update `@value` here.
+   */
   onChange?: (event: Event, isValid: boolean) => void;
+  /** Called when the slider or input loses focus. */
   onBlur?: (event: Event) => void;
+  /** Called when the slider or input gets focus. */
   onFocus?: (event: Event) => void;
 
+  /** The value. */
   value?: number;
 
+  /** Disables the slider and input. */
   disabled?: boolean;
 
+  /** @private Show the `<:prepend>` block. Defaults to `true`. */
   isPrependProvided?: boolean;
+  /** @private Show the `<:append>` block. Defaults to `true`. */
   isAppendProvided?: boolean;
+  /** @private Ignore the `<:max>` block. */
   isFakeMaxBlock?: boolean;
+  /** @private Ignore the `<:min>` block. */
   isFakeMinBlock?: boolean;
+  /** @private Ignore the `<:value>` block. */
   isFakeValueBlock?: boolean;
+  /** @private Ignore the `<:valueAppend>` block. */
   isFakeValueAppendBlock?: boolean;
+  /** @private Ignore the `<:valuePrepend>` block. */
   isFakeValuePrependBlock?: boolean;
+  /** Shows the invalid state. */
   isInvalid?: boolean;
+  /** `name` of the inputs, for forms. */
   name?: string;
+  /** Shows a spinner in the number input. Defaults to `false`. */
   isLoading?: boolean;
 }
 
+/**
+ * A slider to pick a number, optionally with a number input, ticks,
+ * levels and a value tooltip. For a range of two values use EuiDualRange.
+ */
 export interface EuiRangeSignature {
   Element: HTMLInputElement;
   Args: EuiRangeArgs;
   Blocks: {
+    /** Custom min label (`@showLabels`); yields `@min`. */
     min: [min: number];
+    /** Custom max label (`@showLabels`); yields `@max`. */
     max: [max: number];
+    /** Custom value tooltip content (`@showValue`). */
     value: [];
+    /** Content after the value in the tooltip, e.g. a unit. */
     valueAppend: [];
+    /** Content before the value in the tooltip, e.g. a currency sign. */
     valuePrepend: [];
+    /** Content before the number input (`@showInput`); yields its class. */
     prepend: [classes: string];
+    /** Content after the number input (`@showInput`); yields its class. */
     append: [classes: string];
+    /** Unused. */
     input: [];
+    /** Unused. */
     content: [];
   };
 }

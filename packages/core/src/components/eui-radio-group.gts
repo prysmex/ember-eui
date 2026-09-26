@@ -9,10 +9,17 @@ import EuiRadio from './eui-radio.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A group of radios to pick one option. */
 export interface EuiRadioGroupSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Id (`@valueKey` value) of the checked option. */
     idSelected: string;
+    /**
+     * The radios: `[{ id: 'a', label: 'Option A' }, …]` (keys set by
+     * `@valueKey` / `@labelKey`); `value`, `disabled` and `className` are
+     * optional.
+     */
     options: Array<{
       id: string;
       label: string;
@@ -20,13 +27,27 @@ export interface EuiRadioGroupSignature {
       disabled?: boolean;
       className?: string;
     }>;
+    /** `name` shared by the radios. */
     name?: string;
+    /**
+     * Wraps the radios in an `EuiFormFieldset` with this legend. Use it when
+     * the group is not inside an `EuiFormRow`.
+     */
     legend?: string;
+    /** Smaller radios, for dense forms. */
     compressed?: boolean;
+    /** Disables every radio. */
     disabled?: boolean;
+    /**
+     * Called with the chosen option's id and its `value`. Update
+     * `@idSelected` here.
+     */
     onChange: (id: string, value?: string) => void;
+    /** Key of each option holding its id. Defaults to `'id'`. */
     valueKey?: string;
+    /** Key of each option holding its label. Defaults to `'label'`. */
     labelKey?: string;
+    /** `form` attribute of the radios, to join a form by id. */
     formId?: string;
   };
 }

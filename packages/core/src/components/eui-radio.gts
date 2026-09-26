@@ -9,23 +9,39 @@ import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * A single radio. Attributes and modifiers (`value`, `{{on "change" …}}`)
+ * go to the `<input type="radio">`. For a list of choices use
+ * EuiRadioGroup.
+ */
 export interface EuiRadioSignature {
   Element: HTMLInputElement;
   Args: {
+    /** Whether it is checked. */
     checked?: boolean;
+    /** Disables the radio. */
     disabled?: boolean;
+    /** `name` of the radio; radios with the same name form a group. */
     name?: string;
+    /** Label next to the radio. Use the `<:label>` block for markup. */
     label?: string;
+    /** Props for the `<label>`: `{ className }`. */
     labelProps?: {
       className?: string;
     };
+    /** Smaller radio, for dense forms. */
     compressed?: boolean;
+    /** Extra classes for the wrapper around the input and label. */
     containerClass?: string;
+    /** Called with the `<input>` element once rendered. */
     inputRef?: (element: HTMLInputElement | null) => void;
+    /** @private Ignore the `<:label>` block. */
     isFakeLabelBlock?: boolean;
+    /** Id of the input, linked to the label. Defaults to a random id. */
     id?: string;
   };
   Blocks: {
+    /** The label, instead of `@label`. */
     label: [];
   };
 }

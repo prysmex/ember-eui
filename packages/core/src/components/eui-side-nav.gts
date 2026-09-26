@@ -20,43 +20,79 @@ import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import type { EuiHideForSignature } from '../components/eui-hide-for';
 
 export interface Item {
+  /** Unique id, matched against `@selectedItem`. */
   id: string;
+  /** Icon before the name; anything `EuiIcon`'s `@type` accepts. */
   icon?: string;
+  /** Makes the item a button calling this function. */
   onClick?: () => void;
+  /** Makes the item a link. */
   href?: string;
+  /** Class for the item. */
   className?: string;
+  /** `rel` of the link. */
   rel?: string;
+  /** `target` of the link. */
   target?: string;
+  /**
+   * Nested items. An item with children but no `href`/`onClick` is a
+   * section title; nested levels open while one of them is selected.
+   */
   items?: Item[];
+  /** @private Nesting level. */
   depth?: number;
+  /** The item's text. */
   name?: string;
+  /** @deprecated Has no effect. */
   renderItem?: unknown;
+  /** @deprecated Has no effect, use the side nav's `@selectedItem`. */
   isSelected?: boolean;
+  /** Disables the item. */
   disabled?: boolean;
+  /** Truncates a long name instead of wrapping. */
   truncate?: boolean;
+  /** Bolder style, e.g. for the top level. */
   emphasize?: boolean;
+  /** Class for the item's button or link. */
   buttonClassName?: string;
 }
 
+/** A hierarchical navigation tree for a page's side bar. */
 export interface EuiSideNavSignature {
   Element: HTMLDivElement | HTMLUListElement | HTMLElement;
   Args: {
+    /**
+     * Screen sizes showing the nav collapsed behind a toggle button.
+     * Defaults to `['xs', 's']`; pass `[]` to never collapse.
+     */
     mobileBreakpoints?: EuiHideForSignature['Args']['sizes'];
+    /** Whether the collapsed (mobile) nav is open. */
     isOpenMobile?: boolean;
+    /** Called by the mobile toggle button with the new open state. */
     toggleOpenOnMobile?: () => void;
+    /** Heading above the items (and the toggle text on mobile). */
     heading?: string;
+    /**
+     * Props for the heading: `{ element: 'h2', id, className,
+     * screenReaderOnly }`.
+     */
     headingProps?: {
       element?: string;
       id?: string;
       className?: string;
       screenReaderOnly?: boolean;
     };
+    /** Text of the mobile toggle button. Defaults to the heading. */
     mobileTitle?: string;
+    /** The navigation tree, see `Item`. */
     items?: Item[];
+    /** Id of the current item: it is highlighted and its parents open. */
     selectedItem?: string;
   };
   Blocks: {
+    /** Unused. */
     default: [Item];
+    /** Custom heading, instead of `@heading`. */
     heading: [];
   };
 }

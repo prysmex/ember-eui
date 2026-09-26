@@ -12,29 +12,48 @@ import validatableControl from '../modifiers/validatable-control.ts';
 import type { EuiFormControlLayoutSignature } from '../components/eui-form-control-layout';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A native `<select>` styled like EUI's inputs. For search or multiple values use EuiComboBox. */
 export interface EuiSelectSignature {
   Element: HTMLSelectElement;
   Args: {
+    /** Id of the select. Defaults to a random id. */
     id?: string;
+    /** The options: `[{ value: 'a', text: 'Option A', disabled? }]`. */
     options: {
       value: string | number;
       text: string | number;
       disabled?: boolean;
     }[];
+    /** The selected option's `value`. Update it from `{{on "change" …}}`. */
     value?: string | number;
+    /** Stretches the select to its container's width. */
     fullWidth?: boolean;
+    /** Shorter select, for dense forms. */
     compressed?: boolean;
+    /** Shows a spinner. */
     isLoading?: boolean;
+    /** Disables the select. */
     disabled?: boolean;
+    /**
+     * Adds an empty first option, selected while `@value` is empty, so no
+     * option is preselected. Defaults to `false`.
+     */
     hasNoInitialSelection?: boolean;
+    /** Shows the invalid state and marks it invalid for native form validation. */
     isInvalid?: boolean;
+    /** Shows a clear ("x") button calling this function. */
     clear?: (v: any) => void;
+    /** Called with the `<select>` element once rendered. */
     inputRef?: (element: HTMLSelectElement) => void;
+    /** @private Ignore the `<:prepend>` block. */
     isFakePrependBlock?: boolean;
+    /** @private Ignore the `<:append>` block. */
     isFakeAppendBlock?: boolean;
   };
   Blocks: {
+    /** Content before the select; yields the class to put on it and the id. */
     prepend: [...EuiFormControlLayoutSignature['Blocks']['prepend'], string];
+    /** Content after the select; yields the class to put on it and the id. */
     append: [...EuiFormControlLayoutSignature['Blocks']['append'], string];
   };
 }

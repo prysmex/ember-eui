@@ -11,30 +11,52 @@ import isItemOpen from '../helpers/is-item-open.ts';
 import type { Item } from './eui-side-nav';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private One item of an EuiSideNav (rendered from its `@items`). */
 export interface EuiSideNavItemSignature {
   Args: {
+    /** The side nav's `@selectedItem`, passed down to children. */
     selectedItem?: string;
+    /** Shows the children. */
     isOpen?: boolean;
+    /** Highlights the item. */
     isSelected?: boolean;
+    /** Has children. */
     isParent?: boolean;
+    /** Icon before the name. */
     icon?: string;
+    /** Makes the item a button calling this function. */
     onClick?: () => void;
+    /** Makes the item a link. */
     href?: string;
+    /** Class for the item. */
     className?: string;
+    /** `rel` of the link. */
     rel?: string;
+    /** `target` of the link. */
     target?: string;
+    /** Nested items. */
     items?: Item[];
+    /** Nesting level. */
     depth?: number;
+    /** @deprecated Has no effect; the name is the block content. */
     name?: string;
+    /** @deprecated Has no effect. */
     renderItem?: unknown;
+    /** Disables the item. */
     disabled?: boolean;
+    /** Truncates a long name. */
     truncate?: boolean;
+    /** Bolder style. */
     emphasize?: boolean;
+    /** Class for the item's button or link. */
     buttonClassName?: string;
+    /** Renders the item as a section title (children, no action). */
     childrenOnly?: boolean;
+    /** Extra classes for the icon. */
     buttonIconClasses?: string;
   };
   Blocks: {
+    /** The item's name. */
     default: [];
   };
 }

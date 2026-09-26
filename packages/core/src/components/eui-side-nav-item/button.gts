@@ -7,15 +7,21 @@ import EuiInnerText from '../eui-inner-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The button or link of an EuiSideNav item. */
 export interface EuiSideNavItemButtonSignature {
   Element: HTMLButtonElement;
   Args: {
+    /** Icon before the text. */
     icon?: string;
+    /** Shows an arrow, for items with children. */
     caret?: boolean;
+    /** Truncates long text. Defaults to `true`. */
     truncate?: boolean;
+    /** Extra classes for the icon. */
     buttonIconClasses?: string;
   };
   Blocks: {
+    /** The text. */
     default: [];
   };
 }

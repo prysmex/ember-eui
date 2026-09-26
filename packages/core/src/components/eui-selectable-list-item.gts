@@ -5,14 +5,22 @@ import typeOf from '../helpers/type-of.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A checkable row in a selectable list (as in EUI's EuiSelectable). */
 export interface EuiSelectableListItemSignature {
   Element: HTMLLIElement;
   Args: {
+    /** Highlights the item (keyboard focus in the list). */
     isFocused?: boolean;
+    /** Disables the item. */
     disabled?: boolean;
+    /**
+     * `'on'` (or `true`) shows a check, `'off'` a cross (excluded); leave
+     * undefined for unchecked.
+     */
     checked?: boolean | 'on' | 'off';
   };
   Blocks: {
+    /** The item's content. */
     default: [];
   };
 }

@@ -24,15 +24,31 @@ export type Replacer = (
   str: string
 ) => void;
 
+/**
+ * Renders markdown as EUI-styled content (headings, lists, code blocks,
+ * tables, checkboxes, tooltips and emoji):
+ * `<EuiMarkdownFormat @value={{this.markdown}} />`.
+ */
 export interface EuiMarkdownFormatSignature {
   Args: {
+    /** remark parsing plugins. Defaults to `getDefaultEuiMarkdownParsingPlugins()`. */
     parsingPluginList?: typeof defaultParsingPlugins;
+    /** Processing plugins. Defaults to `getDefaultEuiMarkdownProcessingPlugins()`. */
     processingPluginList?: typeof defaultProcessingPlugins;
+    /**
+     * Called when rendered content edits the markdown, e.g. clicking a
+     * task list checkbox (`- [ ] todo`), with the node's position in the
+     * source and its new text. Splice it into your value to make checkboxes
+     * interactive; EuiMarkdownEditor does this for you.
+     */
     replaceNode?: Replacer;
+    /** The markdown to render. */
     value: string;
-    //you can pass in a string or an array of strings to be added to the root element
+    /** Extra class(es) for the root element: a string or an array of strings. */
     rootClasses?: string | string[];
+    /** Text size, any `EuiText` size. Defaults to `'m'`. */
     textSize?: EuiTextSignature['Args']['size'];
+    /** Keeps the default `euiMarkdownFormat` classes. Defaults to `true`. */
     shouldIncludeDefaultRootClasses?: boolean;
   };
 }

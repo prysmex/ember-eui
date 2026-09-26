@@ -4,13 +4,17 @@ import style from 'ember-style-modifier/modifiers/style';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private EuiMarkdownEditor's textarea. */
 export interface EuiMarkdownEditorTextAreaSignature {
   Element: HTMLTextAreaElement;
   Args: {
+    /** CSS height of the textarea. */
     height?: string;
+    /** CSS max height of the textarea. */
     maxHeight?: string;
   };
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

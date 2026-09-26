@@ -19,10 +19,14 @@ import EuiPopover from './eui-popover.gts';
 import EuiSpacer from './eui-spacer.gts';
 import EuiTitle from './eui-title.gts';
 
+/** @private EuiMarkdownEditor's footer: upload status, errors and syntax help. */
 export interface EuiMarkdownEditorFooterSignature {
   Args: {
+    /** Shows the upload spinner. */
     isUploadingFiles?: boolean;
+    /** Errors shown in a popover. */
     errors?: string[];
+    /** The editor's plugins, whose help text the help popover lists. */
     uiPlugins?: any[];
   };
 }

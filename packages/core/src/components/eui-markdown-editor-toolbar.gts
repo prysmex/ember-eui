@@ -18,19 +18,28 @@ import EuiToolTip from './eui-tool-tip.gts';
 import type MarkdownActions from '../utils/markdown/markdown-actions';
 import type { EuiMarkdownEditorUiPlugin } from '../utils/markdown/markdown-types';
 
+/** @private Args of EuiMarkdownEditor's toolbar. */
 export interface EuiMarkdownEditorToolbarArgs {
+  /** `'editing'` or `'viewing'`; formatting buttons are disabled while viewing. */
   viewMode?: string;
+  /** Applies a formatting button to the textarea. */
   markdownActions: MarkdownActions;
+  /** Plugins adding toolbar buttons. */
   uiPlugins: any[];
+  /** Opens a plugin's editor (plugins with `editor`). */
   openPluginEditor?: (plugin: EuiMarkdownEditorUiPlugin) => void;
+  /** Toggles the preview. */
   onClickPreview: () => void;
+  /** The node under the cursor, to highlight its button. */
   selectedNode: any;
 }
 
+/** @private EuiMarkdownEditor's toolbar. */
 export interface EuiMarkdownEditorToolbarSignature {
   Element: HTMLDivElement;
   Args: EuiMarkdownEditorToolbarArgs;
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

@@ -8,8 +8,11 @@ import type { EuiCheckboxSignature } from '../eui-checkbox';
 import type { Replacer } from '../eui-markdown-format';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Args of a task list checkbox rendered by EuiMarkdownFormat. */
 export interface EuiMarkdownFormatMarkdownCheckboxArgs {
+  /** EuiMarkdownFormat's `@replaceNode`, called when toggled. */
   replaceNode: Replacer;
+  /** The parsed checkbox node. */
   node: {
     position: EuiMarkdownAstNodePosition;
     lead: string;

@@ -49,34 +49,77 @@ import type { EuiMarkdownFormatSignature } from './eui-markdown-format.gts';
 import type { Processor } from 'unified';
 
 export interface EuiMarkdownEditorArgs {
+  /**
+   * Starts in `'editing'` (textarea) or `'viewing'` (preview) mode.
+   * Defaults to `'editing'`.
+   */
   initialViewMode?: string;
+  /** Id of the editor. Defaults to a generated id. */
   editorId?: string;
+  /**
+   * Toolbar plugins added after the built-in ones (bold, lists, …), e.g. a
+   * button inserting a chart. See the markdown editor docs page.
+   */
   uiPlugins: EuiMarkdownEditorUiPlugin[];
+  /**
+   * remark plugins parsing the markdown. Defaults to
+   * `getDefaultEuiMarkdownParsingPlugins()`; extend that list to add syntax.
+   */
   parsingPluginList?: typeof defaultParsingPlugins;
+  /**
+   * Plugins turning the parsed markdown into the preview. Defaults to
+   * `getDefaultEuiMarkdownProcessingPlugins()`; extend it to render custom
+   * nodes with your components.
+   */
   processingPluginList?: typeof defaultProcessingPlugins;
+  /** The markdown text. Update it in `@onChange`. */
   value: string;
+  /** Called with the new markdown text on every change. */
   onChange: (str: string) => void;
+  /**
+   * Called after each parse with the error (or `null`) and
+   * `{ messages, ast }`, e.g. to show plugin validation messages.
+   */
   onParse?: (
     parseError: unknown | null,
     parsed: { messages: any[]; ast: any }
   ) => void;
+  /**
+   * Height of the editor in px, or `'full'` to fill its container.
+   * Defaults to `250`.
+   */
   height?: number | string;
+  /** Maximum height in px when the textarea grows. Defaults to `500`. */
   maxHeight?: number | string;
+  /** Grows the preview to fit its content. Defaults to `true`. */
   autoExpandPreview?: boolean;
+  /** Disables the textarea. */
   disabled?: boolean;
+  /** Marks the textarea invalid for native form validation. */
   isInvalid?: boolean;
+  /** Accessible label of the textarea. */
   ariaLabel?: string;
+  /** Id of the element labelling the textarea (e.g. a form row label). */
   ariaLabelledBy?: string;
+  /** Id of the element describing the textarea. */
   ariaDescribedBy?: string;
+  /** `@rootClasses` of the preview's EuiMarkdownFormat. */
   formatRootClasses?: EuiMarkdownFormatSignature['Args']['rootClasses'];
+  /** `@textSize` of the preview's EuiMarkdownFormat. */
   formatTextSize?: EuiMarkdownFormatSignature['Args']['textSize'];
+  /** `@shouldIncludeDefaultRootClasses` of the preview's EuiMarkdownFormat. */
   formatShouldIncludeDefaultRootClasses?: EuiMarkdownFormatSignature['Args']['shouldIncludeDefaultRootClasses'];
 }
 
+/**
+ * A markdown textarea with a formatting toolbar, a preview, file drop and
+ * extensible syntax (plugins). Attributes go to the `<textarea>`.
+ */
 export interface EuiMarkdownEditorSignature {
   Element: EuiMarkdownEditorTextAreaSignature['Element'];
   Args: EuiMarkdownEditorArgs;
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

@@ -1,9 +1,12 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The task list icon of the markdown toolbar. */
 export interface EuiMarkdownToolbarIconsMarkdownCheckmarkSignature {
   Element: SVGElement;
   Args: {
+    /** Accessible title. */
     title?: string;
+    /** Id of the title element. */
     titleId?: string;
   };
 }

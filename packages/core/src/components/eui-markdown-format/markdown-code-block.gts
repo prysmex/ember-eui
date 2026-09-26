@@ -3,8 +3,10 @@ import EuiCodeBlock from '../eui-code-block.gts';
 import type { EuiCodeBlockSignature } from '../eui-code-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private A fenced code block rendered by EuiMarkdownFormat. */
 export interface MarkdownCodeBlockSignature {
   Args: {
+    /** The parsed code node. */
     node: {
       paddingSize: EuiCodeBlockSignature['Args']['paddingSize'];
       fontSize: EuiCodeBlockSignature['Args']['fontSize'];

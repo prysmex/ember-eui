@@ -3,8 +3,10 @@ import EuiToolTip from '../eui-tool-tip.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private A `!{tooltip[text](tooltip)}` rendered by EuiMarkdownFormat. */
 export interface MarkdownTooltipSignature {
   Args: {
+    /** The parsed tooltip node. */
     node: {
       content: string;
       tooltipText: string;

@@ -1,9 +1,12 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The markdown logo in EuiMarkdownEditor's footer. */
 const MarkdownLogo: TemplateOnlyComponent<{
   Element: SVGElement;
   Args: {
+    /** Accessible title. */
     title?: string;
+    /** Id of the title element. */
     titleId?: string;
   };
 }> = <template>

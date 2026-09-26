@@ -112,4 +112,19 @@ module('Integration | Component | eui-flatpickr', function (hooks) {
     assert.dom('input.grouped').hasClass('euiFieldText--inGroup');
     assert.dom('.pre').hasText('From');
   });
+
+  test('a string @locale loads that flatpickr locale', async function (assert) {
+    const state = new State();
+
+    await render(
+      <template><EuiFlatpickr @date={{state.date}} @onChange={{state.onChange}} @dateFormat="Y-m-d" @locale="es" /></template>
+    );
+
+    await click('input.euiFieldText');
+    await waitUntil(calendar);
+
+    const weekdays = calendar()!.querySelector('.flatpickr-weekdays')!.textContent!;
+
+    assert.true(weekdays.includes('Lun'), `Spanish weekdays (${weekdays.trim().replace(/\s+/g, ' ')})`);
+  });
 });

@@ -16,6 +16,22 @@ import { and, not } from 'ember-truth-helpers';
 import randomId from '../-private/random-id.ts';
 
 /**
+ * Resolves a locale key ("es", "ru", ...) to flatpickr's locale object.
+ *
+ * A template-literal import (`flatpickr/dist/l10n/${key}.js`) can't be
+ * resolved by bundlers (Vite/Rollup keep it as a bare runtime specifier), so
+ * load flatpickr's locale index instead: a static import that bundlers split
+ * into a lazy chunk, fetched only when a non-English string locale is used.
+ * Unknown keys fall back to the key itself (flatpickr then uses English).
+ */
+async function loadLocale(key) {
+  const module = await import('flatpickr/dist/l10n/index.js');
+  const locales = module.default?.default ?? module.default ?? module;
+
+  return locales[key] ?? key;
+}
+
+/**
  * EUI text field wired to flatpickr (https://flatpickr.js.org).
  *
  * The flatpickr lifecycle below used to come from extending ember-flatpickr's
@@ -83,10 +99,8 @@ export default class EuiFlatpickrComponent extends Component {
       Object.entries(rest).filter((entry) => entry[1] !== undefined)
     );
 
-    if (typeof this.args.locale === 'string' && this.args.locale !== 'en') {
-      await waitForPromise(
-        import(`flatpickr/dist/l10n/${this.args.locale}.js`)
-      );
+    if (typeof config.locale === 'string' && config.locale !== 'en') {
+      config.locale = await waitForPromise(loadLocale(config.locale));
     }
 
     this.flatpickrRef = flatpickr(element, {

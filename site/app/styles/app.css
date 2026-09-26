@@ -198,3 +198,50 @@ button {
 .h-full {
   height: 100%;
 }
+
+/* <IconGallery /> on the icons docs page */
+.iconGallery {
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.iconGallery__section + .iconGallery__section {
+  margin-top: 24px;
+}
+
+.iconGallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.iconGallery__icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 84px;
+  padding: 12px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.iconGallery__icon:hover,
+.iconGallery__icon:focus-visible {
+  border-color: rgb(152 162 179 / 40%);
+  background-color: rgb(152 162 179 / 10%);
+}
+
+.iconGallery__name {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  text-align: center;
+}

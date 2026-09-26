@@ -17,6 +17,7 @@ import plugin from '@docfy/core/lib/plugin.js';
  */
 const SITE_COMPONENTS = {
   Changelog: 'site/components/changelog',
+  IconGallery: 'site/components/icon-gallery',
   TodoText: 'site/components/todo-text',
 };
 

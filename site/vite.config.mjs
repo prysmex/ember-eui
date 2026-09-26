@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 import { extensions, classicEmberSupport, ember } from '@embroider/vite';
 import { babel } from '@rollup/plugin-babel';
 import docfy from '@docfy/ember-vite';
+import svgJar from '@svg-jar/plugin/vite';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const GENERATED_PAGES = resolve(root, 'app/templates/docs');
@@ -33,6 +34,9 @@ export default defineConfig({
     siteDocfyComponents(),
     classicEmberSupport(),
     ember(),
+    // `import Rocket from './icons/rocket.svg'` gives a component, see the
+    // icons docs page
+    svgJar({ target: 'ember' }),
     babel({
       babelHelpers: 'runtime',
       // @embroider/vite's extensions include .json, which Babel would parse

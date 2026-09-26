@@ -50,6 +50,7 @@ module('Integration | Component | eui-header', function (hooks) {
     assert.dom('.euiHeaderSection--right').exists();
     assert.dom('.euiHeaderSectionItem--borderRight a.euiHeaderLogo').hasAttribute('href', '#home');
     assert.dom('.euiHeaderLogo svg.euiHeaderLogo__icon').hasAttribute('aria-label', 'Home');
+    assert.dom('.euiHeaderLogo svg.euiHeaderLogo__icon').doesNotHaveAttribute('aria-hidden');
     assert.dom('.euiHeaderLogo__text').hasText('Brand');
     assert.dom('.euiHeaderLinks__list').hasClass('euiHeaderLinks__list--gutterS');
     assert.dom('.active').hasClass('euiHeaderLink-isActive').hasClass('euiButtonEmpty--primary');

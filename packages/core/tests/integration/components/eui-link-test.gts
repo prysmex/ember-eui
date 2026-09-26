@@ -19,6 +19,7 @@ module('Integration | Component | eui-link', function (hooks) {
 
     assert.dom('a.euiLink').hasAttribute('target', '_blank');
     assert.dom('a.euiLink svg.euiIcon').hasAttribute('aria-label', 'External link');
+    assert.dom('a.euiLink svg.euiIcon').doesNotHaveAttribute('aria-hidden');
     assert.dom('a.euiLink').containsText('opens in a new tab or window');
   });
 

@@ -68,6 +68,7 @@ module('Integration | Component | eui-notification-event', function (hooks) {
 
     assert.dom('.with-icon .euiNotificationEventReadIcon').hasClass('euiNotificationEventReadIcon--isRead');
     assert.dom('.with-icon .euiNotificationEventReadIcon svg').hasAttribute('aria-label', 'Read icon is read');
+    assert.dom('.with-icon .euiNotificationEventReadIcon svg').doesNotHaveAttribute('aria-hidden');
     assert.dom('.with-icon .euiNotificationEvent__title').hasClass('euiNotificationEvent__title--isRead');
   });
 

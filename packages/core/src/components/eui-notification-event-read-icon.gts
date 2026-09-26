@@ -29,7 +29,7 @@ const EuiNotificationEventReadIcon: TemplateOnlyComponent<EuiNotificationEventRe
     >
       <EuiIcon
         @type="dot"
-        aria-label={{if
+        @aria-label={{if
           @isRead
           (concat @eventName " is read")
           (concat @eventName " is unread")

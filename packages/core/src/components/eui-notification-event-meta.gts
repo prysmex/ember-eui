@@ -58,9 +58,7 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
               @iconClasses="euiNotificationEventMeta__icon"
               @type={{@iconType}}
               @color={{@iconColor}}
-              {{! TODO only add one of the following html attributes }}
-              aria-label={{@iconAriaLabel}}
-              aria-hidden={{unless @iconAriaLabel "true"}}
+              @aria-label={{@iconAriaLabel}}
             />
           {{/if}}
 

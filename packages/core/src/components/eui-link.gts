@@ -46,7 +46,7 @@ const EuiLink: TemplateOnlyComponent<EuiLinkSignature> = <template>
         }}
           <EuiIcon
             @type="popout"
-            aria-label="External link"
+            @aria-label="External link"
             @size="s"
             class="euiLink__externalIcon"
           />

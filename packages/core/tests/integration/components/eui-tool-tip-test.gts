@@ -76,6 +76,7 @@ module('Integration | Component | eui-tool-tip', function (hooks) {
     await render(<template><EuiIconTip @content="Info text" @type="alert" @ariaLabel="More info" /></template>);
 
     assert.dom('.euiToolTipAnchor svg.euiIcon').hasAttribute('aria-label', 'More info');
+    assert.dom('.euiToolTipAnchor svg.euiIcon').doesNotHaveAttribute('aria-hidden');
 
     await triggerEvent('.euiToolTipAnchor', 'mouseover');
     await waitUntil(tooltip);

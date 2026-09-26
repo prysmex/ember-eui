@@ -53,7 +53,7 @@ const EuiIconTip: TemplateOnlyComponent<EuiIconTipSignature> = <template>
           @type={{argOrDefault @type "questionInCircle"}}
           @color={{@color}}
           @size={{@size}}
-          aria-label={{argOrDefault @ariaLabel "Info"}}
+          @aria-label={{argOrDefault @ariaLabel "Info"}}
         />
       </:anchor>
       <:title>

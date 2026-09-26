@@ -19,6 +19,7 @@ import EuiCheckboxGroup from './components/eui-checkbox-group.gts';
 import EuiCode from './components/eui-code.gts';
 import EuiCodeBlock from './components/eui-code-block.gts';
 import EuiCollapsibleNav from './components/eui-collapsible-nav.gts';
+import EuiCollapsibleNavGroup from './components/eui-collapsible-nav-group.gts';
 import EuiComboBox from './components/eui-combo-box.gts';
 import EuiComboBoxPill from './components/eui-combo-box-pill.gts';
 import EuiComment from './components/eui-comment.gts';
@@ -50,9 +51,12 @@ import EuiFormControlLayout from './components/eui-form-control-layout.gts';
 import EuiFormControlLayoutDelimited from './components/eui-form-control-layout-delimited.gts';
 import EuiFormControlLayoutIcons from './components/eui-form-control-layout-icons.gts';
 import EuiFormErrorText from './components/eui-form-error-text.gts';
+import EuiFormFieldset from './components/eui-form-fieldset.gts';
 import EuiFormHelpText from './components/eui-form-help-text.gts';
 import EuiFormLabel from './components/eui-form-label.gts';
+import EuiFormLegend from './components/eui-form-legend.gts';
 import EuiFormRow from './components/eui-form-row.gts';
+import EuiGlobalToastList from './components/eui-global-toast-list.gts';
 import EuiHeader from './components/eui-header.gts';
 import EuiHeaderAlert from './components/eui-header-alert.gts';
 import EuiHeaderBreadcrumbs from './components/eui-header-breadcrumbs.gts';
@@ -65,9 +69,11 @@ import EuiHeaderSectionItemButton from './components/eui-header-section-item-but
 import EuiHealth from './components/eui-health.gts';
 import EuiHideFor from './components/eui-hide-for.gts';
 import EuiHorizontalRule from './components/eui-horizontal-rule.gts';
+import EuiI18n from './components/eui-i18n.gts';
 import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
 import EuiImage from './components/eui-image.gts';
+import EuiInputPopover from './components/eui-input-popover.gts';
 import EuiKeyPadMenu from './components/eui-key-pad-menu.gts';
 import EuiKeyPadMenuItem from './components/eui-key-pad-menu-item.gts';
 import EuiLink from './components/eui-link.gts';
@@ -126,11 +132,14 @@ import EuiSelectableListItem from './components/eui-selectable-list-item.gts';
 import EuiShowFor from './components/eui-show-for.gts';
 import EuiSideNav from './components/eui-side-nav.gts';
 import EuiSpacer from './components/eui-spacer.gts';
+import EuiSplitPanelInner from './components/eui-split-panel/inner.gts';
+import EuiSplitPanelOuter from './components/eui-split-panel/outer.gts';
 import EuiStat from './components/eui-stat.gts';
 import EuiStep from './components/eui-step.gts';
 import EuiStepHorizontal from './components/eui-step-horizontal.gts';
 import EuiStepNumber from './components/eui-step-number.gts';
 import EuiSteps from './components/eui-steps.gts';
+import EuiStepsHorizontal from './components/eui-steps-horizontal.gts';
 import EuiSubSteps from './components/eui-sub-steps.gts';
 import EuiSuperDatePicker from './components/eui-super-date-picker.gts';
 import EuiSwitch from './components/eui-switch.gts';
@@ -145,6 +154,7 @@ import EuiTitle from './components/eui-title.gts';
 import EuiToast from './components/eui-toast.gts';
 import EuiToolTip from './components/eui-tool-tip.gts';
 import EuiToolTipPopover from './components/eui-tool-tip-popover.gts';
+import EuiWrappingPopover from './components/eui-wrapping-popover.gts';
 import TextBlock from './components/text-block.gts';
 
 export {
@@ -169,6 +179,7 @@ export {
   EuiCode,
   EuiCodeBlock,
   EuiCollapsibleNav,
+  EuiCollapsibleNavGroup,
   EuiComboBox,
   EuiComboBoxPill,
   EuiComment,
@@ -200,9 +211,12 @@ export {
   EuiFormControlLayoutDelimited,
   EuiFormControlLayoutIcons,
   EuiFormErrorText,
+  EuiFormFieldset,
   EuiFormHelpText,
   EuiFormLabel,
+  EuiFormLegend,
   EuiFormRow,
+  EuiGlobalToastList,
   EuiHeader,
   EuiHeaderAlert,
   EuiHeaderBreadcrumbs,
@@ -215,9 +229,11 @@ export {
   EuiHealth,
   EuiHideFor,
   EuiHorizontalRule,
+  EuiI18n,
   EuiIcon,
   EuiIconTip,
   EuiImage,
+  EuiInputPopover,
   EuiKeyPadMenu,
   EuiKeyPadMenuItem,
   EuiLink,
@@ -276,11 +292,14 @@ export {
   EuiShowFor,
   EuiSideNav,
   EuiSpacer,
+  EuiSplitPanelInner,
+  EuiSplitPanelOuter,
   EuiStat,
   EuiStep,
   EuiStepHorizontal,
   EuiStepNumber,
   EuiSteps,
+  EuiStepsHorizontal,
   EuiSubSteps,
   EuiSuperDatePicker,
   EuiSwitch,
@@ -295,5 +314,6 @@ export {
   EuiToast,
   EuiToolTip,
   EuiToolTipPopover,
+  EuiWrappingPopover,
   TextBlock
 };

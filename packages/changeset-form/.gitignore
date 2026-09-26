@@ -23,3 +23,14 @@
 
 # broccoli-debug
 /DEBUG/
+
+# tests
+dist-tests/
+
+# from scenarios (compat builds for older ember-source)
+tmp/
+config/optional-features.json
+ember-cli-build.cjs
+
+# committed on purpose: only sets NODE_ENV for the vite test build
+!.env.development

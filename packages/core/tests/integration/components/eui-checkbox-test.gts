@@ -81,9 +81,7 @@ module('Integration | Component | eui-checkbox', function (hooks) {
     assert.true(inputs()[1]!.checked);
   });
 
-  // Bug: the item class is built with (concat "euiCheckboxGroup__item" option.className),
-  // without a space, so a custom className is glued to it
-  test.todo('EuiCheckboxGroup keeps an option className as a separate class', async function (assert) {
+  test('EuiCheckboxGroup keeps an option className as a separate class', async function (assert) {
     const options = [{ id: 'x', label: 'X', className: 'custom' }];
     const noop = () => {};
 

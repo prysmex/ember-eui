@@ -56,8 +56,7 @@ module('Integration | Component | eui-radio', function (hooks) {
     assert.true(inputs()[1]!.checked);
   });
 
-  // Bug: same missing space as EuiCheckboxGroup
-  test.todo('EuiRadioGroup keeps an option className as a separate class', async function (assert) {
+  test('EuiRadioGroup keeps an option className as a separate class', async function (assert) {
     const options = [{ id: 'x', label: 'X', className: 'custom' }];
     const noop = () => {};
 

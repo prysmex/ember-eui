@@ -1,4 +1,4 @@
-import { concat, fn,get } from '@ember/helper';
+import { fn, get } from '@ember/helper';
 import { on } from '@ember/modifier';
 
 import { eq, or } from 'ember-truth-helpers';
@@ -40,7 +40,7 @@ const EuiRadioGroup: TemplateOnlyComponent<EuiRadioGroupSignature> = <template>
       <EuiFormFieldset @legend={{@legend}} @compressed={{@compressed}}>
         {{#each @options key="id" as |option|}}
           <EuiRadio
-            class={{concat "euiRadioGroup__item" option.className}}
+            class="euiRadioGroup__item {{option.className}}"
             form={{@formId}}
             @checked={{eq @idSelected (get option valueKey)}}
             @disabled={{or @disabled option.disabled}}
@@ -56,7 +56,7 @@ const EuiRadioGroup: TemplateOnlyComponent<EuiRadioGroupSignature> = <template>
       <div ...attributes>
         {{#each @options key="id" as |option|}}
           <EuiRadio
-            class={{concat "euiRadioGroup__item" option.className}}
+            class="euiRadioGroup__item {{option.className}}"
             form={{@formId}}
             @name={{@name}}
             @checked={{eq @idSelected (get option valueKey)}}

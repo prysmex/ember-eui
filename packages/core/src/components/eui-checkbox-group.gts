@@ -1,4 +1,3 @@
-import { concat } from '@ember/helper';
 import { get } from '@ember/helper';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
@@ -55,7 +54,7 @@ const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
           {{#each @options key=valueKey as |option|}}
             <EuiCheckbox
               form={{@formId}}
-              class={{concat "euiCheckboxGroup__item" option.className}}
+              class="euiCheckboxGroup__item {{option.className}}"
               {{!@glint-expect-error}}
               @checked={{get @idToSelectedMap (get option valueKey)}}
               @disabled={{or @disabled option.disabled}}
@@ -71,7 +70,7 @@ const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
           {{#each @options key=valueKey as |option|}}
             <EuiCheckbox
               form={{@formId}}
-              class={{concat "euiCheckboxGroup__item" option.className}}
+              class="euiCheckboxGroup__item {{option.className}}"
               {{!@glint-expect-error}}
               @checked={{get @idToSelectedMap (get option valueKey)}}
               @disabled={{or @disabled option.disabled}}

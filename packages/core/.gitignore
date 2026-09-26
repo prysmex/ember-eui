@@ -1,0 +1,4 @@
+dist-tests/
+
+# from the compat build
+tmp/

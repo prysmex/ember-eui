@@ -25,7 +25,7 @@ export interface FieldRadioGroupSignature {
       formId?: string;
       ariaLabel?: string;
       autofocus?: boolean;
-      onChange?: (state: boolean, e: MouseEvent) => void;
+      onChange?: (optionId: string) => void;
     };
   Blocks: {
     label: [...EuiFormRowSignature['Blocks']['label']];
@@ -35,45 +35,13 @@ export interface FieldRadioGroupSignature {
 
 export default class ValidatedFormFieldRadioGroup extends ValidatedFormFieldBase<FieldRadioGroupSignature> {
   get value() {
-    let value = maybeUnwrapProxy(this.args.value);
-
-    return value?.toArray?.() || value;
-  }
-
-  get arrayToMap() {
-    const currArr = this.args.value || [];
-
-    return this.transformToMap(currArr);
-  }
-
-  transformToMap(value = []) {
-    let valuesMap = value.reduce(
-      (acc, val: string) => {
-        acc[val] = true;
-
-        return acc;
-      },
-      {} as { [key: string]: boolean }
-    );
-
-    return valuesMap;
+    return maybeUnwrapProxy(this.args.value);
   }
 
   @action
   //@ts-expect-error
   handleChange(optionId: string) {
-    let value = this.value || [];
-
-    const found = value.find((v: string) => v === optionId);
-    let newArr = [];
-
-    if (found) {
-      newArr = value.filter((v: string) => v !== optionId);
-    } else {
-      newArr = [...value, optionId];
-    }
-
-    this.args.onChange?.(newArr);
+    this.args.onChange?.(optionId);
     this.isTouched = true;
   }
 

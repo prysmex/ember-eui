@@ -71,11 +71,7 @@ module('Integration | Component | validated-form fields', function (hooks) {
     assert.deepEqual(checks.values, [['a', 'b']]);
   });
 
-  // Bug: FieldRadioGroup toggles an array of ids (copied from the checkbox
-  // group) instead of selecting a single id; with a string @value it throws
-  // "value.find is not a function" from the change handler (an uncaught
-  // error that aborts the whole run, so this cannot be a test.todo)
-  test.skip('FieldRadioGroup selects a single id', async function (assert) {
+  test('FieldRadioGroup selects a single id', async function (assert) {
     const radios = recorder();
 
     await render(

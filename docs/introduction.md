@@ -12,14 +12,10 @@ order: 1
 <EuiPanel @color="subdued" @hasShadow={{false}} @paddingSize="l">
 <EuiFlexGroup @alignItems="center" >
 <EuiFlexItem>
-<EuiTitle @size="l">
-<h1>Ember EUI</h1>
-</EuiTitle>
+<EuiTitle @size="l" @tagName="h1">Ember EUI</EuiTitle>
 <EuiSpacer />
 <EuiSpacer />
-<EuiTitle @size="s">
-<h2>Ember JS components for Elastic design system</h2>
-</EuiTitle>
+<EuiTitle @size="s" @tagName="h2">Ember components for Elastic's EUI design system</EuiTitle>
 <EuiSpacer @size="s" />
 <EuiText @grow={{false}}>
 <p>
@@ -34,7 +30,7 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui" @
 </EuiText>
 <EuiSpacer @size="l" />
 <EuiFlexGroup @gutterSize="s" @wrap={{true}} @responsive={{false}}>
-<EuiFlexItem grow={{false}}>
+<EuiFlexItem @grow={{false}}>
 <EuiLink @href="/docs/getting-started">
 <strong>Getting started</strong>
 </EuiLink>
@@ -71,7 +67,7 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui" @
 <EuiFlexItem  >
 <EuiCard
 @hasBorder={{true}}
-@href="/docs/core/docs/display/card/basic-card"
+@href="/docs/core/docs/display/card"
 @textAlign="left"
 @image='/assets/Cards.svg'
 @title="Cards"
@@ -91,7 +87,7 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui" @
 <EuiFlexItem >
 <EuiCard
 @hasBorder={{true}}
-@href="/docs/core/docs/forms/form-layouts/described-form-groups"
+@href="/docs/core/docs/forms/form-layouts"
 @textAlign="left"
 @image='/assets/Forms.svg'
 @title="Forms"
@@ -113,7 +109,7 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui" @
 <EuiFlexItem >
 <EuiCard
 @hasBorder={{true}}
-@href="/docs/core/docs/layout/page"
+@href="/docs/core/docs/templates/page-template"
 @textAlign="left"
 @image='/assets/Pages.svg'
 @title="Pages"
@@ -192,7 +188,7 @@ style="overflow-x: auto"
             <span
               role="img"
               aria-label="love"
-              className="guideHome__footerHeart"
+              class="guideHome__footerHeart"
             >
               ❤️
             </span>

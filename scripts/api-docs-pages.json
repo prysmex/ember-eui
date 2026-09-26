@@ -1,4 +1,7 @@
 {
+  "packages/changeset-form/docs/changeset-form.md": [
+    "EuiChangesetForm"
+  ],
   "packages/core/docs/display/avatar/index.md": [
     "EuiAvatar"
   ],
@@ -121,14 +124,23 @@
   "packages/core/docs/forms/form-controls/switch/index.md": [
     "EuiSwitch"
   ],
-  "packages/core/docs/forms/form-controls/textarea/index.md": [
-    "EuiTextArea"
-  ],
   "packages/core/docs/forms/form-controls/text-field/index.md": [
     "EuiFieldText"
   ],
+  "packages/core/docs/forms/form-controls/textarea/index.md": [
+    "EuiTextArea"
+  ],
   "packages/core/docs/forms/form-layouts/described-form-groups.md": [
     "EuiDescribedFormGroup"
+  ],
+  "packages/core/docs/forms/form-layouts/index.md": [
+    "EuiForm",
+    "EuiFormRow",
+    "EuiFormFieldset",
+    "EuiFormLegend",
+    "EuiFormLabel",
+    "EuiFormHelpText",
+    "EuiFormErrorText"
   ],
   "packages/core/docs/forms/super-date-picker/index.md": [
     "EuiSuperDatePicker"
@@ -253,16 +265,13 @@
     "EuiShowFor",
     "EuiHideFor"
   ],
-  "packages/pikaday/docs/pikaday.md": [
-    "EuiPikaday"
-  ],
   "packages/flatpickr/docs/flatpickr.md": [
     "EuiFlatpickr"
   ],
+  "packages/pikaday/docs/pikaday.md": [
+    "EuiPikaday"
+  ],
   "packages/validated-form/docs/validated-form.md": [
     "ValidatedForm"
-  ],
-  "packages/changeset-form/docs/changeset-form.md": [
-    "EuiChangesetForm"
   ]
 }

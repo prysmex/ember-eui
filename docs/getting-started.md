@@ -8,101 +8,166 @@ order: 2
 
 <EuiText>
 
-This addon requires some peer dependencies. Install the correct versions of each package, which are listed by the command
+Ember EUI is Elastic's [EUI](https://eui.elastic.co) design system for
+Ember: over a hundred components (buttons, forms, layout, popovers, a
+markdown editor, a date picker, …) that share EUI's look, accessibility and
+theming. It is a set of v2 addons:
 
-<EuiCodeBlock @isCopyable={{true}}>{{"npm info @ember-eui/core peerDependencies"}}</EuiCodeBlock>
+| Package | Contents |
+| --- | --- |
+| `@ember-eui/core` | Every component, the themes and the services (config, toasts, i18n) |
+| `@ember-eui/changeset-form` | Forms bound to an [ember-changeset](https://github.com/adopted-ember-addons/ember-changeset) |
+| `@ember-eui/validated-form` | Forms validated with [ember-validators](https://github.com/rwjblue/ember-validators) |
+| `@ember-eui/flatpickr` | A date picker built on flatpickr |
+| `@ember-eui/pikaday` | A date picker built on Pikaday |
 
-<EuiSpacer />
+### Install
 
-Once you've installed it, you can now install the addon itself:
+Install the addon and its peer dependencies:
 
-<EuiCodeBlock @isCopyable={{true}}>{{"ember install @ember-eui/core"}}</EuiCodeBlock>
+```bash
+pnpm add @ember-eui/core @ember/string ember-basic-dropdown ember-concurrency ember-focus-trap ember-power-select moment
+```
 
-<EuiSpacer />
+`npm info @ember-eui/core peerDependencies` lists the supported versions.
+The app needs `ember-source` 4.12 or later.
 
-<EuiTitle>
-  <h3>
-    Icons
-  </h3>
-</EuiTitle>
+### Load a theme
 
-EUI icons are bundled with the addon, no build configuration is needed
-(this used to require `ember-svg-jar`).
+Import one of the two themes and EUI's extensions once, e.g. in
+`app/app.js`:
 
-To use your own icons, add [@svg-jar/plugin](https://github.com/svg-jar/plugin)
-to your app's `vite.config.mjs` (`svgJar({ target: 'ember' })`). Imported svg
-components can be passed directly as `@type` / `@iconType`, or registered by
-name in the `euiIcon.icons` config; `iconsFromGlob` from
-`@ember-eui/core/utils/icons-from-glob` registers a whole folder at once
-(`import.meta.glob('../icons/**/*.svg', { eager: true })`), naming icons after
-their file like ember-svg-jar did. Keep those svgs out of `public/`.
-Any other string is rendered as an `<img>` with that URL.
+```js
+// app/app.js
+import '@ember-eui/core/themes/light.css'; // or '@ember-eui/core/themes/dark.css'
+import '@ember-eui/core/styles/ember-eui.css';
+```
 
-<EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.icons_configuration"}}
-</EuiCodeBlock>
+To let users switch themes at runtime, load the theme through a single
+`<link>` whose `href` you swap (importing both CSS files would stack them).
+With Vite, `?url` gives the built file's URL; this site does exactly this:
 
-<EuiTitle>
-  <h3>
-    Build Configuration, Styles and Theming
-  </h3>
-</EuiTitle>
+```js
+// app/utils/change-theme.js
+import darkTheme from '@ember-eui/core/themes/dark.css?url';
+import lightTheme from '@ember-eui/core/themes/light.css?url';
 
-<EuiSpacer />
+export function changeTheme(name) {
+  let link = document.getElementById('eui-theme');
 
-Themes:
-There is light and dark theme, you can import them in a few ways to your app.
-There's also some extensions made to the @elastic/eui css, they are available via `@ember-eui/core/styles/ember-eui.css`
+  if (!link) {
+    link = document.createElement('link');
+    link.id = 'eui-theme';
+    link.rel = 'stylesheet';
+    // before the app's styles, so your overrides still win
+    document.head.prepend(link);
+  }
 
-1. You have a few ways to get the styles importing it statically on any js, so it will be bundled intially.
-<EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.styles_ts"}}
-</EuiCodeBlock>
-2. Using handlebars you can create an easy swapper
-<EuiCodeBlock @language="hbs" @isCopyable={{true}}>
-{{t "getting_started.styles_hbs"}}
-</EuiCodeBlock>
-3. You can dynamically import it, you can have a look at this demo sourcecode change-theme util
-<EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.styles_dynamic"}}
-</EuiCodeBlock>
-4. You can import them via the old way of importing assets to ember apps
-<EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.styles_old_import"}}
-</EuiCodeBlock>
+  link.href = name === 'dark' ? darkTheme : lightTheme;
+}
+```
 
-<EuiTitle>
-  <h3>
-    Runtime configuration
-  </h3>
-</EuiTitle>
+Keep `import '@ember-eui/core/styles/ember-eui.css'` static; it works with
+both themes.
 
-<EuiSpacer />
- v2 addons new need way to allow apps to customize other than using the typical ENV or ember-cli-build configs. There's two recommended ways.
+Classic apps that do not use Vite or Embroider can add the files with
+`app.import('node_modules/@ember-eui/core/vendor/eui_theme_light.min.css')`
+and `app.import('node_modules/@ember-eui/core/dist/styles/ember-eui.css')`
+in `ember-cli-build.js`.
 
-1. Create an initializer and configure ember-eui eui-config service
-<EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.eui_config_initializer"}}
-</EuiCodeBlock>
-2. In any place you want, inject eui-config service and configure
-<EuiCodeBlock @language="ts" @isCopyable={{true}}>
-{{t "getting_started.eui_service_injection"}}
-</EuiCodeBlock>
+### Use components
 
-<EuiTitle>
-  <h3>
-    Last steps...
-  </h3>
-</EuiTitle>
+In `.gjs` / `.gts` files, import the components you use:
 
-EuiComboBox is built on ember-power-select 9 and ember-basic-dropdown 9, which (together with ember-concurrency 5) are peer dependencies of @ember-eui/core.
+```gjs
+import { EuiButton, EuiFieldText, EuiFormRow } from '@ember-eui/core/components';
 
-The dropdown renders into a wormhole element, so add it to your index.html (or use `@renderInPlace` on the combo box):
+<template>
+  <EuiFormRow @label="Name">
+    <EuiFieldText @value={{@name}} />
+  </EuiFormRow>
+  <EuiButton @fill={{true}} @iconType="check">Save</EuiButton>
+</template>
+```
 
-<EuiCodeBlock @language="html" @isCopyable={{true}}>
-&lt;div id="ember-basic-dropdown-wormhole"&gt;&lt;/div&gt;
-</EuiCodeBlock>
+Each component can also be imported on its own, e.g.
+`import EuiButton from '@ember-eui/core/components/eui-button';`. In
+classic `.hbs` templates the components are available by name without
+imports.
 
-<EuiSpacer />
+For Glint (typed templates) in loose mode, add the registry to your types:
+
+```ts
+// types/glint.d.ts
+import type EmberEuiRegistry from '@ember-eui/core/template-registry';
+
+declare module '@glint/environment-ember-loose/registry' {
+  export default interface Registry extends EmberEuiRegistry {}
+}
+```
+
+Arguments start with `@` (`@iconType="check"`); plain HTML attributes and
+modifiers (`class`, `aria-label`, `{{on "click" …}}`) are applied to the
+component's main element. Every docs page ends with an *API reference*
+listing each argument, its default and which element gets the attributes.
+
+### Icons
+
+EUI's icons ship with the addon and load lazily, one small chunk per icon;
+nothing needs configuring. Your own svgs work too: see the
+[Icons page](/docs/core/docs/display/icons) for
+`@svg-jar/plugin`, registering icons by name and preloading.
+
+### Runtime configuration
+
+The `euiConfig` service holds settings that apply to every instance of a
+component. Set them early, e.g. in the application route:
+
+```js
+// app/routes/application.js
+import Route from '@ember/routing/route';
+import { service } from '@ember/service';
+
+export default class ApplicationRoute extends Route {
+  @service euiConfig;
+
+  beforeModel() {
+    this.euiConfig.updateConfig({
+      // default size of every EuiButtonIcon: 'xs', 's' or 'm'
+      'euiButtonIcon.size': 's',
+      // height in px of EuiComboBox options (defaults to 33)
+      euiComboBoxOptionsHeight: 33,
+      // icons usable by name, see the Icons page
+      'euiIcon.icons': {},
+    });
+  }
+}
+```
+
+`updateConfig` merges into the current settings; `setConfig` replaces
+them.
+
+### Toasts
+
+Render `EuiGlobalToastList` once, e.g. in `app/templates/application.hbs`,
+then show toasts from anywhere through the `euiToaster` service:
+
+```hbs
+<EuiGlobalToastList @toastLifeTimeMs={{6000}} />
+```
+
+```js
+this.euiToaster.show({ title: 'Saved', color: 'success', iconType: 'check' });
+```
+
+### Combo box
+
+`EuiComboBox` is built on ember-power-select and ember-basic-dropdown. Its
+options list renders into a wormhole element, so add one to
+`index.html` (or pass `@renderInPlace={{true}}` to each combo box):
+
+```html
+<div id="ember-basic-dropdown-wormhole"></div>
+```
 
 </EuiText>

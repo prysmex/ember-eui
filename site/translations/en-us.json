@@ -7,15 +7,5 @@
   },
   "validated_form": {
     "ember_paper": "<PaperForm/>"
-  },
-  "getting_started": {
-    "package_configuration": "\"resolutions\": '{\n  \"@embroider/macros\": \"^1.5.0\",\n  \"@embroider/shared-internals\": \"^1.5.0\",\n  \"@embroider/util\": \"^1.5.0\"\n'}",
-    "icons_configuration": "//app/routes/application.js\nimport Route from \"@ember/routing/route\";\nimport '{' service '}' from \"@ember/service\";\nimport MyLogo from \"../icons/my-logo.svg\";\n\nexport default class ApplicationRoute extends Route '{'\n  @service euiConfig;\n\n  beforeModel() '{'\n    this.euiConfig.updateConfig('{' \"euiIcon.icons\": '{' myLogo: MyLogo '}' '}');\n  '}'\n'}'",
-    "styles_ts": "//routes/application.js (or any file)\nimport darkTheme from \"@ember-eui/core/themes/dark.css\";\nimport euiExtensions from \"@ember-eui/core/styles/ember-eui.css\"\n//or\nimport lightTheme from \"@ember-eui/core/themes/light.css\"\nimport euiExtensions from \"@ember-eui/core/styles/ember-eui.css\"",
-    "styles_hbs": "'{{#if this.isDark}}\n  '<link rel=\"stylesheet\" href=\"@ember-eui/core/themes/dark.css\" />\n  '<link rel=\"stylesheet\" href=\"@ember-eui/core/styles/ember-eui.css\" '/>\n'{{else}}\n  '<link rel=\"stylesheet\" href=\"@ember-eui/core/themes/light.css\" />\n  '<link rel=\"stylesheet\" href=\"@ember-eui/core/styles/ember-eui.css\" '/>\n'{{/if}}",
-    "styles_dynamic": "if (theme === 'dark') '{\n  await import(\"'@ember-eui/core/themes/dark.css'\");\n  await import (\"'@ember-eui/core/styles/ember-eui.css'\")\n'} else {\n  await import(\"'@ember-eui/core/themes/light.css'\");\n  await import (\"'@ember-eui/core/styles/ember-eui.css'\")\n'}",
-    "styles_old_import": "//emebr-cli-build.js\n app.import(\"node_modules/@ember-eui/core/vendor/eui_theme_light.min.css\");\n app.import(\"node_modules/@ember-eui/core/dist/styles/ember-eui.css\");",
-    "eui_config_initializer": "//initializers/eui-config.ts\nimport type EuiConfigService from '@ember-eui/core/services/eui-config';\n\nexport function initialize(appInstance: any) '{\n  const euiConfig = appInstance.lookup(\n    'service:eui-config'\n  ) as EuiConfigService;\n\n  euiConfig.setConfig('{\n    'euiButtonIcon.size': 's',\n    'euiIcon.useSvg': true,\n    euiComboBoxOptionsHeight: 33,\n  '});\n'}\n\nexport default '{\n  initialize,\n'};",
-    "eui_service_injection": "//routes/application.ts\n\nbeforeModel()'{\n  'this.euiConfig.setConfig('{\n    \"'euiButtonIcon.size'\": \"s\",\n    \"euiIcon.useSvg\": true,\n    \"euiComboBoxOptionsHeight\": 33,\n  '});\n'}"
   }
 }

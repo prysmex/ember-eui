@@ -15,3 +15,62 @@ EuiText can ensure proper line-length for readability by setting a <EuiCode>max-
 </EuiText>
 
 <EuiHorizontalRule />
+
+<!-- api:start -->
+<EuiSpacer @size="xl" />
+
+<EuiText>
+
+## API reference
+
+Generated from the components' TypeScript signatures by
+`scripts/generate-api-docs.mjs`.
+
+### EuiText
+
+Styles plain HTML content (`<p>`, `<ul>`, `<h3>`, `<code>`…) with EUI's typography.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@grow` | `boolean` | `true` | `true` lets text span the container's full width; `false` caps lines at a readable width. |
+| `@size` |  | `'m'` | `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). |
+| `@textAlign` |  |  | `'left'`, `'center'` or `'right'`. |
+| `@color` |  |  | `'default'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`, `'warning'`, `'ghost'` or `'primary'`. |
+
+| Block | Description |
+| --- | --- |
+| default block | HTML content (paragraphs, lists, headings, code…), styled by EuiText. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+### EuiTextColor
+
+Colors its text content.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@color` | `string` | `'default'` | `'default'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`, `'warning'`, `'ghost'` or `'primary'`. |
+| `@tagName` | `string` | `'span'` | `'span'` (inline) or `'div'`. |
+
+| Block | Description |
+| --- | --- |
+| default block | The content. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<span>`.
+
+### EuiTextAlign
+
+Aligns its text content.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@textAlign` | `'left' \| 'center' \| 'right'` | `'left'` | `'left'`, `'center'` or `'right'`. |
+
+| Block | Description |
+| --- | --- |
+| default block | The content. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+</EuiText>
+<!-- api:end -->

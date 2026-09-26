@@ -12,3 +12,36 @@ title: CallOut
 </EuiText>
 
 <EuiHorizontalRule />
+
+<!-- api:start -->
+<EuiSpacer @size="xl" />
+
+<EuiText>
+
+## API reference
+
+Generated from the components' TypeScript signatures by
+`scripts/generate-api-docs.mjs`.
+
+### EuiCallOut
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@title` | `string` |  | Title in the callout's header. Use the `<:title>` block for markup. |
+| `@heading` |  | a `<span>` | Renders the title as a heading element, e.g. `'h2'`, so it appears in the page outline. |
+| `@iconType` |  |  | Icon before the title (only shown with a title), e.g. `'alert'`, `'check'` or `'help'`. |
+| `@size` |  | `'m'` | `'s'` or `'m'`. |
+| `@color` |  | `'primary'` | `'primary'`, `'success'`, `'warning'` or `'danger'`. |
+| `@textColor` |  | the text color | Color of the body text, any `EuiText` color. |
+| `@iconSize` |  | `'m'` | Size of the title icon. |
+
+| Block | Description |
+| --- | --- |
+| `<:title>` | The title, instead of `@title`. |
+| `<:body>` | The body; same as the default block. |
+| default block | The body, e.g. paragraphs and buttons. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+</EuiText>
+<!-- api:end -->

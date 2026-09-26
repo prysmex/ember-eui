@@ -51,22 +51,7 @@ export default defineConfig({
 });
 ```
 
-### Arguments
-
-| Argument         | Type                                   | Default | Description |
-| ---------------- | -------------------------------------- | ------- | ----------- |
-| `@type`          | icon name, component or URL            | —       | What to render, see above. Required. |
-| `@size`          | `'s'` `'m'` `'l'` `'xl'` `'xxl'` `'original'` | `'m'` | 12, 16, 24, 32 or 40px square; `original` keeps the svg's own size. |
-| `@color`         | EUI color name or any CSS color        | inherits text color | `primary`, `success`, `accent`, `warning`, `danger`, `text`, `subdued`, `ghost`, `default`, `inherit`, or e.g. `'#DA8B45'`. |
-| `@title`         | `string`                               | —       | Accessible name. Without `@title`, `aria-label` or `aria-labelledby` the icon is decorative (`aria-hidden="true"`). |
-| `@titleId`       | `string`                               | generated | Id of the title element, when you need to reference it. |
-| `@aria-label`    | `string`                               | —       | Accessible name, instead of `@title`. |
-| `@aria-labelledby` | `string`                             | —       | Id(s) of the element(s) labelling the icon. |
-| `@tabIndex`      | `number`                               | —       | Makes the icon focusable, e.g. inside a tooltip anchor. |
-| `@iconClasses`   | `string`                               | —       | Extra classes for the `<svg>`. Plain `class` works as well. |
-
-Other attributes (`class`, `data-test-*`, `style`, …) are passed to the
-`<svg>` (or `<img>`).
+The full list of arguments is in the *API reference* at the end of the page.
 
 ### All icons
 
@@ -80,3 +65,34 @@ Search by name or filter by category; click an icon to copy its tag.
 
 <EuiSpacer @size="l" />
 <EuiHorizontalRule/>
+
+<!-- api:start -->
+<EuiSpacer @size="xl" />
+
+<EuiText>
+
+## API reference
+
+Generated from the components' TypeScript signatures by
+`scripts/generate-api-docs.mjs`.
+
+### EuiIcon
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@type` (required) | `IconType` |  | `Enum` is any of the named icons listed in the docs, `string` is usually a URL to an SVG file, and `elementType` is any Ember Icon SVG component |
+| `@color` | `IconColor` |  | One of EUI's color palette or a valid CSS color value https://developer.mozilla.org/en-US/docs/Web/CSS/color_value. Note that coloring only works if your SVG is removed of fill attributes. |
+| `@size` | `IconSize` |  | Note that every size other than `original` assumes the provided SVG sits on a square viewbox. |
+| `@title` | `string` |  | Descriptive title for naming the icon based on its use |
+| `@titleId` | `string` |  | A unique identifier for the title element |
+| `@tabIndex` | `unknown` |  |  |
+| `@aria-labelledby` | `string` |  | Its value should be one or more element IDs |
+| `@onIconLoad` | `() => void` |  | Callback when the icon has been loaded & rendered |
+| `@iconClasses` | `string` |  | Classes to pass to the icon |
+
+Deprecated: `@useSvg` (No longer has any effect. EUI icons are always inline svgs, icons registered through the `euiIcon.icons` config are rendered as components and any other string is treated as an image URL.); `@useComponent` (Not needed anymore: a component passed as `@type` is always rendered as a component.).
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<img>`.
+
+</EuiText>
+<!-- api:end -->

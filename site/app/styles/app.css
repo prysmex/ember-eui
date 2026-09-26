@@ -245,3 +245,22 @@ button {
   overflow-wrap: anywhere;
   text-align: center;
 }
+
+/* Markdown tables in docs pages (e.g. the generated API reference) */
+.euiText table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.euiText th,
+.euiText td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgb(152 162 179 / 30%);
+  text-align: left;
+  vertical-align: top;
+}
+
+.euiText th {
+  font-weight: 600;
+}

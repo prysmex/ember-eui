@@ -1,0 +1,268 @@
+{
+  "packages/core/docs/display/avatar/index.md": [
+    "EuiAvatar"
+  ],
+  "packages/core/docs/display/badge/index.md": [
+    "EuiBadge",
+    "EuiBetaBadge",
+    "EuiBadgeGroup",
+    "EuiNotificationBadge"
+  ],
+  "packages/core/docs/display/callout/index.md": [
+    "EuiCallOut"
+  ],
+  "packages/core/docs/display/card/index.md": [
+    "EuiCard",
+    "EuiCheckableCard"
+  ],
+  "packages/core/docs/display/comment-list/index.md": [
+    "EuiCommentList",
+    "EuiComment"
+  ],
+  "packages/core/docs/display/description-list/index.md": [
+    "EuiDescriptionList",
+    "EuiDescriptionListTitle",
+    "EuiDescriptionListDescription"
+  ],
+  "packages/core/docs/display/empty-prompt/index.md": [
+    "EuiEmptyPrompt"
+  ],
+  "packages/core/docs/display/health/index.md": [
+    "EuiHealth"
+  ],
+  "packages/core/docs/display/icons/index.md": [
+    "EuiIcon"
+  ],
+  "packages/core/docs/display/image/index.md": [
+    "EuiImage"
+  ],
+  "packages/core/docs/display/list-group/index.md": [
+    "EuiListGroup",
+    "EuiListGroupItem"
+  ],
+  "packages/core/docs/display/loading/index.md": [
+    "EuiLoadingSpinner",
+    "EuiLoadingContent",
+    "EuiLoadingLogo"
+  ],
+  "packages/core/docs/display/notification-event/index.md": [
+    "EuiNotificationEvent"
+  ],
+  "packages/core/docs/display/progress/index.md": [
+    "EuiProgress"
+  ],
+  "packages/core/docs/display/stat-demo/index.md": [
+    "EuiStat"
+  ],
+  "packages/core/docs/display/text/index.md": [
+    "EuiText",
+    "EuiTextColor",
+    "EuiTextAlign"
+  ],
+  "packages/core/docs/display/title/index.md": [
+    "EuiTitle"
+  ],
+  "packages/core/docs/display/toast/index.md": [
+    "EuiGlobalToastList",
+    "EuiToast"
+  ],
+  "packages/core/docs/display/tool-tip/index.md": [
+    "EuiToolTip",
+    "EuiIconTip"
+  ],
+  "packages/core/docs/editors/code/index.md": [
+    "EuiCode",
+    "EuiCodeBlock"
+  ],
+  "packages/core/docs/editors/markdown-editor/base-editor.md": [
+    "EuiMarkdownEditor",
+    "EuiMarkdownFormat"
+  ],
+  "packages/core/docs/forms/combo-box/index.md": [
+    "EuiComboBox"
+  ],
+  "packages/core/docs/forms/form-controls/checkbox-group/index.md": [
+    "EuiCheckboxGroup"
+  ],
+  "packages/core/docs/forms/form-controls/checkbox/index.md": [
+    "EuiCheckbox"
+  ],
+  "packages/core/docs/forms/form-controls/file-picker/index.md": [
+    "EuiFilePicker"
+  ],
+  "packages/core/docs/forms/form-controls/form-control-layout-delimited/index.md": [
+    "EuiFormControlLayoutDelimited"
+  ],
+  "packages/core/docs/forms/form-controls/form-control-layout/index.md": [
+    "EuiFormControlLayout"
+  ],
+  "packages/core/docs/forms/form-controls/number-field/index.md": [
+    "EuiFieldNumber"
+  ],
+  "packages/core/docs/forms/form-controls/password-field/index.md": [
+    "EuiFieldPassword"
+  ],
+  "packages/core/docs/forms/form-controls/radio-group/index.md": [
+    "EuiRadioGroup"
+  ],
+  "packages/core/docs/forms/form-controls/radio/index.md": [
+    "EuiRadio"
+  ],
+  "packages/core/docs/forms/form-controls/range/index.md": [
+    "EuiRange",
+    "EuiDualRange"
+  ],
+  "packages/core/docs/forms/form-controls/search-field/index.md": [
+    "EuiFieldSearch"
+  ],
+  "packages/core/docs/forms/form-controls/select/index.md": [
+    "EuiSelect"
+  ],
+  "packages/core/docs/forms/form-controls/switch/index.md": [
+    "EuiSwitch"
+  ],
+  "packages/core/docs/forms/form-controls/textarea/index.md": [
+    "EuiTextArea"
+  ],
+  "packages/core/docs/forms/form-controls/text-field/index.md": [
+    "EuiFieldText"
+  ],
+  "packages/core/docs/forms/form-layouts/described-form-groups.md": [
+    "EuiDescribedFormGroup"
+  ],
+  "packages/core/docs/forms/super-date-picker/index.md": [
+    "EuiSuperDatePicker"
+  ],
+  "packages/core/docs/layout/accordion/index.md": [
+    "EuiAccordion"
+  ],
+  "packages/core/docs/layout/bottom-bar/index.md": [
+    "EuiBottomBar"
+  ],
+  "packages/core/docs/layout/flex/index.md": [
+    "EuiFlexGroup",
+    "EuiFlexItem",
+    "EuiFlexGrid"
+  ],
+  "packages/core/docs/layout/flyout/index.md": [
+    "EuiFlyout",
+    "EuiFlyoutHeader",
+    "EuiFlyoutBody",
+    "EuiFlyoutFooter"
+  ],
+  "packages/core/docs/layout/header/index.md": [
+    "EuiHeader",
+    "EuiHeaderSection",
+    "EuiHeaderSectionItem",
+    "EuiHeaderSectionItemButton",
+    "EuiHeaderLogo",
+    "EuiHeaderLinks",
+    "EuiHeaderLink",
+    "EuiHeaderBreadcrumbs",
+    "EuiHeaderAlert"
+  ],
+  "packages/core/docs/layout/horizontal-rule/horizontal-rule.md": [
+    "EuiHorizontalRule"
+  ],
+  "packages/core/docs/layout/modal/index.md": [
+    "EuiModal",
+    "EuiModalHeader",
+    "EuiModalHeaderTitle",
+    "EuiModalBody",
+    "EuiModalFooter",
+    "EuiConfirmModal"
+  ],
+  "packages/core/docs/layout/page-header/index.md": [
+    "EuiPageHeader"
+  ],
+  "packages/core/docs/layout/panel/index.md": [
+    "EuiPanel"
+  ],
+  "packages/core/docs/layout/popover/index.md": [
+    "EuiPopover",
+    "EuiPopoverTitle",
+    "EuiPopoverFooter",
+    "EuiInputPopover",
+    "EuiWrappingPopover"
+  ],
+  "packages/core/docs/layout/spacer/index.md": [
+    "EuiSpacer"
+  ],
+  "packages/core/docs/navigation/breadcrumbs/index.md": [
+    "EuiBreadcrumbs"
+  ],
+  "packages/core/docs/navigation/button/index.md": [
+    "EuiButton",
+    "EuiButtonEmpty",
+    "EuiButtonIcon",
+    "EuiButtonGroup"
+  ],
+  "packages/core/docs/navigation/collapsible-nav.md": [
+    "EuiCollapsibleNav",
+    "EuiCollapsibleNavGroup"
+  ],
+  "packages/core/docs/navigation/key-pad-menu.md": [
+    "EuiKeyPadMenu",
+    "EuiKeyPadMenuItem"
+  ],
+  "packages/core/docs/navigation/link.md": [
+    "EuiLink"
+  ],
+  "packages/core/docs/navigation/pagination/index.md": [
+    "EuiPagination"
+  ],
+  "packages/core/docs/navigation/side-nav.md": [
+    "EuiSideNav"
+  ],
+  "packages/core/docs/navigation/steps.md": [
+    "EuiSteps",
+    "EuiStep",
+    "EuiSubSteps",
+    "EuiStepsHorizontal",
+    "EuiStepHorizontal"
+  ],
+  "packages/core/docs/navigation/tabs.md": [
+    "EuiTabs",
+    "EuiTab",
+    "EuiTabbedContent"
+  ],
+  "packages/core/docs/templates/page-template/index.md": [
+    "EuiPageTemplate",
+    "EuiPage",
+    "EuiPageSideBar",
+    "EuiPageBody",
+    "EuiPageContent",
+    "EuiPageContentBody"
+  ],
+  "packages/core/docs/utilities/auto-sizer.md": [
+    "EuiAutoSizer"
+  ],
+  "packages/core/docs/utilities/copy.md": [
+    "EuiCopy"
+  ],
+  "packages/core/docs/utilities/i18n/index.md": [
+    "EuiI18n"
+  ],
+  "packages/core/docs/utilities/overlay-mask.md": [
+    "EuiOverlayMask"
+  ],
+  "packages/core/docs/utilities/portal.md": [
+    "EuiPortal"
+  ],
+  "packages/core/docs/utilities/responsive.md": [
+    "EuiShowFor",
+    "EuiHideFor"
+  ],
+  "packages/pikaday/docs/pikaday.md": [
+    "EuiPikaday"
+  ],
+  "packages/flatpickr/docs/flatpickr.md": [
+    "EuiFlatpickr"
+  ],
+  "packages/validated-form/docs/validated-form.md": [
+    "ValidatedForm"
+  ],
+  "packages/changeset-form/docs/changeset-form.md": [
+    "EuiChangesetForm"
+  ]
+}

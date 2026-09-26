@@ -4,10 +4,19 @@ order: 5
 
 # Icon buttons
 
+<EuiText>
+
+`EuiButtonIcon` shows only an icon, so it **must** have an `aria-label`
+(and ideally a `title` for the hover tooltip). `@display` gives it no
+background (`empty`, the default), a light one (`base`) or a solid one
+(`fill`); `@size` makes the button `xs`, `s` or `m`.
+
+</EuiText>
+
 ```hbs template
 <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="center">
   {{#each this.colors as |color|}}
-    <EuiFlexItem key={{color}} @grow={{false}}>
+    <EuiFlexItem @grow={{false}}>
       <EuiButtonIcon
         @color={{color}}
         @iconType="help"
@@ -17,11 +26,7 @@ order: 5
   {{/each}}
 </EuiFlexGroup>
 <EuiSpacer @size="m" />
-<EuiTitle @size="xxs">
-  <h3>
-    Display (<EuiCode>empty</EuiCode>, <EuiCode>base</EuiCode>, <EuiCode>fill</EuiCode>)
-  </h3>
-</EuiTitle>
+<EuiTitle @size="xxs" @tagName="h3">Display (<EuiCode>empty</EuiCode>, <EuiCode>base</EuiCode>, <EuiCode>fill</EuiCode>)</EuiTitle>
 <EuiSpacer @size="s" />
 <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="center">
   <EuiFlexItem @grow={{false}}>
@@ -35,9 +40,7 @@ order: 5
   </EuiFlexItem>
 </EuiFlexGroup>
 <EuiSpacer @size="m" />
-<EuiTitle @size="xxs">
-  <h3>Disabled </h3>
-</EuiTitle>
+<EuiTitle @size="xxs" @tagName="h3">Disabled</EuiTitle>
 <EuiSpacer @size="s" />
 <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="center">
   <EuiFlexItem @grow={{false}}>
@@ -61,11 +64,7 @@ order: 5
   </EuiFlexItem>
 </EuiFlexGroup>
 <EuiSpacer @size="m" />
-<EuiTitle @size="xxs">
-  <h3>
-    Size (<EuiCode>xs</EuiCode>, <EuiCode>s</EuiCode>, <EuiCode>m</EuiCode>)
-  </h3>
-</EuiTitle>
+<EuiTitle @size="xxs" @tagName="h3">Size (<EuiCode>xs</EuiCode>, <EuiCode>s</EuiCode>, <EuiCode>m</EuiCode>)</EuiTitle>
 <EuiSpacer @size="s" />
 <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="center">
   <EuiFlexItem @grow={{false}}>
@@ -90,9 +89,7 @@ order: 5
   </EuiFlexItem>
 </EuiFlexGroup>
 <EuiSpacer @size="m" />
-<EuiTitle @size="xxs">
-  <h3>All icons types inherit button color</h3>
-</EuiTitle>
+<EuiTitle @size="xxs" @tagName="h3">All icons types inherit button color</EuiTitle>
 <EuiSpacer @size="s" />
 <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="center">
   <EuiFlexItem @grow={{false}}>

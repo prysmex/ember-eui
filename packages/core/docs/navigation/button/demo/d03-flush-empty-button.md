@@ -4,6 +4,12 @@ order: 3
 
 # Flush empty button
 
+<EuiText>
+
+`@flush` removes an empty button's padding on the `left`, `right` or `both`
+sides, so its text lines up with content above or below it.
+
+</EuiText>
 
 ```hbs template
   <EuiFlexGroup

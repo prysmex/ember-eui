@@ -5,8 +5,9 @@ order: 12
 # Button groups in forms
 
 <EuiText>
-<p>When using button groups within compressed forms, match the form elements by adding <EuiCode>buttonSize="compressed"</EuiCode>. Compressed groups should always be <EuiCode>fullWidth</EuiCode> so they line up nicely in their small container <strong>unless</strong> they are icon only.
-</p>
+
+Inside forms, `@buttonSize="compressed"` matches the height of compressed
+inputs, and `@isFullWidth` stretches the options evenly.
 
 </EuiText>
 

@@ -4,6 +4,13 @@ order: 11
 
 # Icon only button groups
 
+<EuiText>
+
+With `@isIconOnly={{true}}` only the options' icons show; their labels are
+still read by screen readers, so keep them descriptive.
+
+</EuiText>
+
 ```hbs template
 <EuiButtonGroup
   @legend='Text align'

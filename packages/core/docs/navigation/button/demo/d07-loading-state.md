@@ -4,21 +4,28 @@ order: 7
 
 # Loading state
 
+<EuiText>
+
+`@isLoading={{true}}` replaces the icon with a spinner and disables the
+button until the action finishes. Change the text too ("Saving…") so the
+state is announced.
+
+</EuiText>
 
 ```hbs template
 <EuiFlexGroup @responsive={{false}} @wrap={{true}} @gutterSize="s" @alignItems="center">
   <EuiFlexItem @grow={{false}}>
-    <EuiButton @isLoading={true}>Loading&hellip;</EuiButton>
+    <EuiButton @isLoading={{true}}>Loading&hellip;</EuiButton>
   </EuiFlexItem>
 
   <EuiFlexItem @grow={{false}}>
-    <EuiButton @fill={{true}} @size="s" @isLoading={true}>
+    <EuiButton @fill={{true}} @size="s" @isLoading={{true}}>
       Loading&hellip;
     </EuiButton>
   </EuiFlexItem>
 
   <EuiFlexItem @grow={{false}}>
-    <EuiButton @fill={{true}} @isLoading={true} @iconType="check" @iconSide="right">
+    <EuiButton @fill={{true}} @isLoading={{true}} @iconType="check" @iconSide="right">
       Loading&hellip;
     </EuiButton>
   </EuiFlexItem>

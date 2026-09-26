@@ -5,7 +5,12 @@ order: 8
 # Split buttons
 
 <EuiText>
-<p>EUI split buttons specifically. Instead, we recommend using separate buttons for the main and overflow actions. You can achieve this by simply using the <EuiCode>display</EuiCode> and <EuiCode>size</EuiCode> args <strong>EuiButtonIcon</strong> to match that of the primary action button.</p>
+
+EUI has no split button component. Put the main action and an
+`EuiButtonIcon` for the other actions side by side, with the same
+`@display` and `@size` so they read as one control; the icon button
+usually opens a popover with more actions.
+
 </EuiText>
 
 ```hbs template
@@ -16,7 +21,12 @@ order: 8
     </EuiButton>
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
-    <EuiButtonIcon @iconType='boxesVertical' @display='base' @size='s' />
+    <EuiButtonIcon
+      @iconType='boxesVertical'
+      @display='base'
+      @size='s'
+      aria-label='More time ranges'
+    />
   </EuiFlexItem>
 </EuiFlexGroup>
 ```

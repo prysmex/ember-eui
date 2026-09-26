@@ -7,11 +7,31 @@ title: Button
 <EuiSpacer @size="l" />
 
 <EuiText>
-  <p> EUI provides many types, colors and configurations of buttons. The one best suited for you context depends on placement, prominence, and state. For primary and secondary actions it is best to use the basic <strong>EuiButton</strong>. For tertiary or low prominence actions, use <strong>EuiButtonempty</strong>.</p>
-  <p>Be sure to read the full button usage guidelines.</p>
+
+Buttons trigger actions. EUI has four kinds, from most to least prominent:
+
+| Component | Use it for |
+| --- | --- |
+| `EuiButton @fill={{true}}` | The primary action of a page, form or modal (one per view). |
+| `EuiButton` | Secondary actions. |
+| `EuiButtonEmpty` | Low-prominence actions: cancel, "show more", actions in dense UIs and toolbars. |
+| `EuiButtonIcon` | Icon-only actions (edit, delete, settings). Always give it an `aria-label`. |
+| `EuiButtonGroup` | A set of toggle buttons, picking one option or several. |
+
+```hbs
+<EuiButton @fill={{true}} @iconType="save" {{on "click" this.save}}>Save</EuiButton>
+<EuiButtonEmpty {{on "click" this.cancel}}>Cancel</EuiButtonEmpty>
+<EuiButtonIcon @iconType="trash" @color="danger" aria-label="Delete" {{on "click" this.remove}} />
+```
+
+Actions are attached with `{{on "click" …}}`; with `@href` the button
+renders as a link instead. `@isLoading` shows a spinner and disables the
+button, `@isDisabled` greys it out. In forms, use `@type="submit"` on the
+submit button.
+
 </EuiText>
 
-<EuiHorizontalRule/>
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

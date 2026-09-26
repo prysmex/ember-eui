@@ -4,6 +4,13 @@ order: 4
 
 # Buttons with icons
 
+<EuiText>
+
+`@iconType` adds an icon before the text, or after it with
+`@iconSide="right"` (e.g. for "Next" or dropdowns). It accepts every
+[EUI icon](/docs/core/docs/display/icons) name or your own svg component.
+
+</EuiText>
 
 ```hbs template
 <div>

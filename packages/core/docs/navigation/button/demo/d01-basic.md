@@ -2,6 +2,16 @@
 order: 1
 ---
 
+# Basic button
+
+<EuiText>
+
+`EuiButton` comes in seven colors, filled (`@fill={{true}}`) for the
+primary action or light otherwise, in two sizes (`@size="s"` or `"m"`) and
+optionally full width.
+
+</EuiText>
+
 ```hbs template
 
 {{#each this.buttons as |type|}}

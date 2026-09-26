@@ -4,6 +4,13 @@ order: 6
 
 # Buttons as links
 
+<EuiText>
+
+With `@href`, `EuiButton`, `EuiButtonEmpty` and `EuiButtonIcon` render an
+`<a>` (add `@target="_blank"` for a new tab). A disabled link renders as a
+disabled button, since links cannot be disabled.
+
+</EuiText>
 
 ```hbs template
 <EuiFlexGroup @responsive={{false}} @wrap={{true}} @gutterSize="s" @alignItems="center">

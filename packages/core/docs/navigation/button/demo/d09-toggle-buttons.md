@@ -5,11 +5,12 @@ order: 9
 # Toggle buttons
 
 <EuiText>
-<p>You can create a toggle button with any button type like the standard <strong>EuiButton</strong>, <strong>EuiButtonEmpty</strong>, or <strong>EuiButtonIcon</strong>. Use state management to handle the visual differences for on and off. Though there are two <strong>exclusive</strong> situations to consider.</p>
-<ol>
-	<li>If your button changes its readable <strong>text</strong>, via children or <EuiCode>aria-label</EuiCode>, then there is no additional accessibility concern.</li>
-	<li>If your button only changes the <strong>visual</strong> appearance, you must add <EuiCode>aria-pressed</EuiCode> passing a boolean for the on and off states. All EUI button types provide a helper prop for this called <EuiCode>isSelected</EuiCode>.</li>
-</ol>
+
+Any button can toggle something on and off; keep the state yourself and
+flip it on click. If the button's **text or label changes** with the state
+("Play" / "Pause"), nothing else is needed. If only its **look** changes
+(e.g. a filled star), pass `@isSelected` so it gets `aria-pressed` and
+screen readers announce whether it is on.
 
 </EuiText>
 

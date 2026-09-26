@@ -4,6 +4,17 @@ order: 10
 
 # Button groups
 
+<EuiText>
+
+`EuiButtonGroup` renders a row of connected toggle buttons from `@options`
+(`{ id, label, iconType? }`). With `@type="single"` (the default) one option
+is selected (`@idSelected`); with `@type="multi"` each option toggles
+(`@idToSelectedMap`, `{ [id]: true }`). `@onChange` receives the clicked
+option's id: update the selection there. Always pass a `@legend`: it names
+the group for screen readers.
+
+</EuiText>
+
 ```hbs template
 <EuiButtonGroup
   @legend='This is a basic group'

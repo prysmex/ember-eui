@@ -4,6 +4,14 @@ order: 2
 
 # Empty button
 
+<EuiText>
+
+`EuiButtonEmpty` has no background until hovered. Use it for secondary,
+low-prominence actions, like "Cancel" next to a filled button. It also comes
+in `@size="xs"`.
+
+</EuiText>
+
 ```hbs template
 
 {{#each this.buttons as |type|}}

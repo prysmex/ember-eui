@@ -28,25 +28,44 @@ import type { LocaleSpecifier } from 'moment';
 
 export type { ApplyRefreshInterval, DurationRange, Milliseconds, ShortDate };
 
+/**
+ * EuiSuperDatePicker picks a time range (absolute dates, relative like
+ * "last 15 minutes", or "now") with a quick select popover and optional
+ * auto refresh, as in Kibana. `@onTimeChange` receives date math strings.
+ */
 export interface EuiSuperDatePickerArgs {
+  /**
+   * Ranges listed as "Commonly used" in the quick select popover:
+   * `[{ start: 'now/d', end: 'now/d', label: 'Today' }, …]`. Defaults to
+   * EUI's list (Today, This week, Last 15 minutes, …).
+   */
   commonlyUsedRanges?: DurationRange[];
   // customQuickSelectPanels?: QuickSelectPanel[];
   /**
-   * Specifies the formatted used when displaying dates and/or datetimes
+   * moment format for absolute dates. Defaults to
+   * `'MMM D, YYYY @ HH:mm:ss.SSS'`.
    */
   dateFormat?: string;
   /**
-   * Set isAutoRefreshOnly to true to limit the component to only display auto refresh content.
+   * Set isAutoRefreshOnly to true to limit the component to only display
+   * auto refresh content. Defaults to `false`.
    */
   isAutoRefreshOnly?: boolean;
+  /** Disables the picker. Defaults to `false`. */
   isDisabled?: boolean;
+  /** Shows the update button's loading state, e.g. while data refreshes. */
   isLoading?: boolean;
+  /**
+   * Whether auto refresh is paused (with `@onRefreshChange`).
+   * Defaults to `true`.
+   */
   isPaused?: boolean;
   /**
    * Sets the overall width by adding sensible min and max widths.
    * - `auto`: fits width to internal content / time string.
    * - `restricted`: static width that fits the longest possible time string.
    * - `full`: expands to 100% of the container.
+   * Defaults to `'restricted'`.
    */
   width?: 'restricted' | 'full' | 'auto';
   /**
@@ -84,18 +103,26 @@ export interface EuiSuperDatePickerArgs {
   }) => void;
   // recentlyUsedRanges?: DurationRange[];
   /**
-   * Refresh interval in milliseconds
+   * Refresh interval in milliseconds. Defaults to `1000`.
    */
   refreshInterval?: Milliseconds;
+  /**
+   * Start of the range, as date math (`'now-15m'`, `'now/d'`) or an ISO
+   * date. Defaults to `'now-15m'`.
+   */
   start?: ShortDate;
+  /** End of the range, like `@start`. Defaults to `'now'`. */
   end?: ShortDate;
   /**
-   * Specifies the formatted used when displaying times
+   * moment format for times in the date picker. Defaults to `'HH:mm'`.
    */
   timeFormat?: string;
+  /** UTC offset in minutes for absolute dates, e.g. `-300`. */
   utcOffset?: number;
   /**
-   * Set showUpdateButton to false to immediately invoke onTimeChange for all start and end changes.
+   * Set showUpdateButton to false to immediately invoke onTimeChange for
+   * all start and end changes; `'iconOnly'` shows a compact button.
+   * Defaults to `true`.
    */
   showUpdateButton?: boolean | 'iconOnly';
   /**

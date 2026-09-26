@@ -9,9 +9,12 @@ import EuiText from '../../eui-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The "Now" tab of the date popover. */
 export interface NowTabSignature {
   Args: {
+    /** `'start'` or `'end'` of the range. */
     position?: 'start' | 'end';
+    /** Called with the new value. */
     onChange: (value: string, event?: Event) => void;
   };
 }

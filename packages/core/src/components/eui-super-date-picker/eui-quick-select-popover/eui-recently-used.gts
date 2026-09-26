@@ -11,9 +11,12 @@ import EuiTitle from '../../eui-title.gts';
 import type { DurationRange } from '../types/global';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The "Recently used" list of the quick select popover. */
 export interface EuiRecentlyUsedSignature {
   Args: {
+    /** Ranges listed as "Recently used". */
     recentlyUsedRanges?: DurationRange[];
+    /** Applies a new `{ start, end }` range. */
     applyTime: (args: { start: string; end: string }) => void;
   };
 }

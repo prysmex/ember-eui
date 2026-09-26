@@ -11,17 +11,27 @@ import type { EuiButtonSignature } from '../eui-button';
 import type { EuiButtonIconSignature } from '../eui-button-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private EuiSuperDatePicker's refresh / update button. */
 export interface EuiSuperUpdateButtonSignature {
   Element: EuiButtonIconSignature['Element'] | EuiButtonSignature['Element'];
   Args: {
+    /** Extra class(es). */
     className?: string;
+    /** Solid button. */
     fill?: boolean;
+    /** Shows only the icon. */
     iconOnly?: boolean;
+    /** Disables it. */
     isDisabled?: boolean;
+    /** Loading state. */
     isLoading?: boolean;
+    /** Highlights that the range changed and needs applying. */
     needsUpdate?: boolean;
+    /** Called on click. */
     onClick: (e: MouseEvent) => void;
+    /** Size of the button. */
     size?: EuiButtonIconSignature['Args']['size'];
+    /** Classes for the text. */
     textClasses?: string;
   };
 }

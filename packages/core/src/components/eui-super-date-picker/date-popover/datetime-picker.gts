@@ -33,9 +33,13 @@ const isSameDayHelper = helper(function ([year, month, day, selectedDate]: [
 });
 
 interface DatetimePickerArgs {
+  /** The selected date. */
   selected?: moment.Moment | null;
+  /** Called with the new value. */
   onChange: (value: string | Date | moment.Moment, e: Event) => void;
+  /** Classes for the icon. */
   iconClasses?: string;
+  /** moment format of absolute dates. */
   dateFormat?: string;
 }
 
@@ -46,6 +50,7 @@ interface Day {
   isOutside?: boolean;
 }
 
+/** @private The calendar and time list of the "Absolute" tab. */
 interface DatetimePickerSignature {
   Args: DatetimePickerArgs;
 }

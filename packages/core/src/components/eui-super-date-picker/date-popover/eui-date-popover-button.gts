@@ -17,23 +17,39 @@ import type EuiI18n from '../../../services/eui-i18n';
 import type { EuiDatePopoverContentSignature } from './eui-date-popover-content';
 
 interface EuiDatePopoverButtonArgs {
+  /** Extra class(es). */
   className?: string;
+  /** moment format of absolute dates. */
   dateFormat?: string;
+  /** Disables it. */
   isDisabled?: boolean;
+  /** Invalid styling. */
   isInvalid?: boolean;
+  /** Whether the popover is open. */
   isOpen?: boolean;
+  /** Highlights that it changed and needs applying. */
   needsUpdating?: boolean;
+  /** moment locale. */
   locale?: EuiDatePopoverContentSignature['Args']['locale'];
+  /** `'start'` or `'end'` of the range. */
   position?: 'start' | 'end';
+  /** Rounds relative dates up (for the end of a range). */
   roundUp?: boolean;
+  /** moment format of times. */
   timeFormat?: string;
+  /** The date (date math or ISO date). */
   value: string;
+  /** UTC offset in minutes. */
   utcOffset?: number;
+  /** Compressed styling. */
   compressed?: boolean;
+  /** Time units and tenses for the quick select. */
   timeOptions?: EuiDatePopoverContentSignature['Args']['timeOptions'];
+  /** Called with the new value. */
   onChange: EuiDatePopoverContentSignature['Args']['onChange'];
 }
 
+/** @private The start or end date button of EuiSuperDatePicker. */
 export interface EuiDatePopoverButtonSignature {
   Element: HTMLButtonElement;
   Args: EuiDatePopoverButtonArgs;

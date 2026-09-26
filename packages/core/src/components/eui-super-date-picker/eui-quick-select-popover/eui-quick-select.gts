@@ -32,13 +32,19 @@ interface EuiQuickSelectState {
 }
 
 interface EuiQuickSelectArgs {
+  /** Applies a new `{ start, end }` range. */
   applyTime: ApplyTime;
+  /** Start of the range (date math or ISO date). */
   start: string;
+  /** End of the range. */
   end: string;
+  /** The last quick select, to prefill it. */
   prevQuickSelect?: EuiQuickSelectState;
+  /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
 }
 
+/** @private The "Quick select" part of the quick select popover. */
 export interface EuiQuickSelectSignature {
   Args: EuiQuickSelectArgs;
   Blocks: { default: [] };

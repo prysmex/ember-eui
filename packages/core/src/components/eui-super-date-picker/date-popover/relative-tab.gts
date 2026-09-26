@@ -25,16 +25,25 @@ import type { TimeOptions } from '../utils/time-options.ts';
 import type { LocaleSpecifier } from 'moment';
 
 interface RelativeTabArgs {
+  /** moment format of absolute dates. */
   dateFormat: string;
+  /** moment locale. */
   locale?: LocaleSpecifier;
+  /** The date (date math or ISO date). */
   value: string;
+  /** Called with the new value. */
   onChange: (value: string, event?: Event) => void;
+  /** Rounds relative dates up (for the end of a range). */
   roundUp?: boolean;
+  /** `'start'` or `'end'` of the range. */
   position: 'start' | 'end';
+  /** Prefix of the input labels, e.g. "Start date". */
   labelPrefix: string;
+  /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
 }
 
+/** @private The "Relative" tab of the date popover. */
 export interface RelativeTabSignature {
   Args: RelativeTabArgs;
 }

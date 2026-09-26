@@ -3,13 +3,19 @@ import EuiIcon from '../eui-icon.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Two date controls with an arrow between them. */
 export interface EuiDatePickerRangeSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Stretches to the container's width. */
     fullWidth?: boolean;
+    /** Read-only styling. */
     readOnly?: boolean;
+    /** Invalid styling. */
     isInvalid?: boolean;
+    /** Disabled styling. */
     disabled?: boolean;
+    /** Extra class(es). */
     className?: string;
   };
   Blocks: {

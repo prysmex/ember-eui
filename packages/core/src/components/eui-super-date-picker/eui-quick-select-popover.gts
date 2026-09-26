@@ -22,14 +22,22 @@ import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popo
 import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select';
 import type { ApplyTime } from './types/global';
 
+/** @private EuiSuperDatePicker's quick select popover. */
 export interface EuiQuickSelectPopoverSignature {
   Args: {
+    /** Applies a new `{ start, end }` range. */
     applyTime: ApplyTime;
+    /** Disables it. */
     isDisabled?: boolean;
+    /** Ranges listed as "Commonly used". */
     commonlyUsedRanges: EuiCommonlyUsedTimeRangesSignature['Args']['commonlyUsedRanges'];
+    /** Ranges listed as "Recently used". */
     recentlyUsedRanges?: EuiRecentlyUsedSignature['Args']['recentlyUsedRanges'];
+    /** Start of the range (date math or ISO date). */
     start: string;
+    /** End of the range. */
     end: string;
+    /** Time units and tenses for the quick select. */
     timeOptions: EuiQuickSelectSignature['Args']['timeOptions'];
   };
 }

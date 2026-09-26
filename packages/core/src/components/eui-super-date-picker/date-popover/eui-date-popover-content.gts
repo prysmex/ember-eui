@@ -21,17 +21,26 @@ import type { RelativeTabSignature } from './relative-tab';
 import type { LocaleSpecifier } from 'moment';
 
 interface EuiDatePopoverContentArgs {
+  /** The date (date math or ISO date). */
   value: string;
+  /** Called with the new value. */
   onChange:
     | RelativeTabSignature['Args']['onChange']
     | NowTabSignature['Args']['onChange']
     | AbsoluteTabSignature['Args']['onChange'];
+  /** Rounds relative dates up (for the end of a range). */
   roundUp?: boolean;
+  /** moment format of absolute dates. */
   dateFormat: string;
+  /** moment format of times. */
   timeFormat?: string;
+  /** moment locale. */
   locale?: LocaleSpecifier;
+  /** `'start'` or `'end'` of the range. */
   position: 'start' | 'end';
+  /** UTC offset in minutes. */
   utcOffset?: number;
+  /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
 }
 
@@ -42,6 +51,7 @@ const toAbsoluteStringHelper = helper(function ([value, roundUp]: [
   return toAbsoluteString(value, roundUp);
 });
 
+/** @private The tabs (absolute, relative, now) of the date popover. */
 export interface EuiDatePopoverContentSignature {
   Element: HTMLDivElement;
   Args: EuiDatePopoverContentArgs;

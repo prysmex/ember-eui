@@ -13,9 +13,12 @@ import type {
 } from '../types/global';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The "Commonly used" list of the quick select popover. */
 export interface EuiCommonlyUsedTimeRangesSignature {
   Args: {
+    /** Applies a new `{ start, end }` range. */
     applyTime: (args: { start: string; end: string }) => void;
+    /** Ranges listed as "Commonly used". */
     commonlyUsedRanges: DurationRange[];
   };
 }

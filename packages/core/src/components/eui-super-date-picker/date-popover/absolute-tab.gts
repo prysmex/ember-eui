@@ -17,17 +17,27 @@ import DatetimePicker from './datetime-picker.gts';
 import type { LocaleSpecifier, Moment } from 'moment';
 
 interface AbsoluteTabArgs {
+  /** moment format of absolute dates. */
   dateFormat?: string;
+  /** moment format of times. */
   timeFormat?: string;
+  /** moment locale. */
   locale?: LocaleSpecifier;
+  /** The date (date math or ISO date). */
   value: string;
+  /** Called with the new value. */
   onChange: (value: string, event?: Event) => void;
+  /** Rounds relative dates up (for the end of a range). */
   roundUp: boolean;
+  /** `'start'` or `'end'` of the range. */
   position: 'start' | 'end';
+  /** Prefix of the input labels, e.g. "Start date". */
   labelPrefix: string;
+  /** UTC offset in minutes. */
   utcOffset?: number;
 }
 
+/** @private The "Absolute" tab of the date popover. */
 export interface AbsoluteTabSignature {
   Args: AbsoluteTabArgs;
 }

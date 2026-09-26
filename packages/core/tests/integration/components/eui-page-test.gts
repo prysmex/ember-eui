@@ -49,8 +49,7 @@ module('Integration | Component | eui-page', function (hooks) {
     assert.dom('.euiPageContentBody').hasClass('euiPage--restrictWidth-custom').hasStyle({ maxWidth: '600px' }).hasText('Body');
   });
 
-  // Bug: without restrictWidth, EuiPage / EuiPageContentBody render a stray "euiPage--" class
-  test.todo('no stray width class without restrictWidth', async function (assert) {
+  test('no stray width class without restrictWidth', async function (assert) {
     await render(
       <template>
         <EuiPage class="page"><EuiPageContentBody class="body">x</EuiPageContentBody></EuiPage>

@@ -35,7 +35,7 @@ const EuiPage: TemplateOnlyComponent<EuiPageSignature> = <template>
       <div
         class={{classNames
           (if grow "euiPage--grow")
-          (concat "euiPage--" styling.widthClassName)
+          (if styling.widthClassName (concat "euiPage--" styling.widthClassName))
           componentName="EuiPage"
           paddingSize=paddingSize
           direction=direction

@@ -31,7 +31,7 @@ const EuiPageContentBody: TemplateOnlyComponent<EuiPageContentBodySignature> =
     }}
       <div
         class={{classNames
-          (concat "euiPage--" styling.widthClassName)
+          (if styling.widthClassName (concat "euiPage--" styling.widthClassName))
           componentName="EuiPageContentBody"
           paddingSize=@paddingSize
         }}

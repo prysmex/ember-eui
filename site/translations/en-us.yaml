@@ -12,16 +12,18 @@ getting_started:
       "@embroider/util": "^1.5.0"
     '}
   icons_configuration: |-
-      //ember-cli-build.js
-      var app = new EmberApp(defaults, '{
-        //...
-        svgJar': '{
-          sourceDirs: [
-            "public/assets",
-            "node_modules/@ember-eui/core/vendor/icon"
-          ]
-        '}
-      '});
+      //app/routes/application.js
+      import Route from "@ember/routing/route";
+      import '{' service '}' from "@ember/service";
+      import MyLogo from "../icons/my-logo.svg";
+
+      export default class ApplicationRoute extends Route '{'
+        @service euiConfig;
+
+        beforeModel() '{'
+          this.euiConfig.updateConfig('{' "euiIcon.icons": '{' myLogo: MyLogo '}' '}');
+        '}'
+      '}'
   styles_ts: |-
     //routes/application.js (or any file)
     import darkTheme from "@ember-eui/core/themes/dark.css";

@@ -3,26 +3,39 @@
 This project aims to provide ember components implementing the css layer of https://elastic.github.io/eui
 ### Icons
 
-For icons to work you will need to:
+EUI icons work out of the box: they are bundled with the addon, no build
+configuration is needed (this used to require `ember-svg-jar`).
 
-- install `ember-svg-jar`
-- add the following `ember-svg-jar` options to your `ember-cli-build.js`:
-
-```javascript
-// ember-cli-build.js
-var app = new EmberApp(defaults, {
-  ...
-    svgJar: {
-      sourceDirs: [
-        'public/assets',
-        '../node_modules/@ember-eui/core/public',
-        '../node_modules/@ember-eui/core/vendor/icon',
-      ],
-    },
-  ...
-});
-
+```hbs
+<EuiIcon @type="arrowDown" />
 ```
+
+To use your own icons by name (for example in `@iconType` arguments),
+register them as components rendering an `<svg ...attributes>`. With
+[`@svg-jar/plugin`](https://github.com/svg-jar/plugin) in your app's
+`vite.config.mjs` (`svgJar({ target: 'ember' })`), svg files can be
+imported directly:
+
+```js
+// app/routes/application.js
+import Route from '@ember/routing/route';
+import { service } from '@ember/service';
+import MyLogo from '../icons/my-logo.svg';
+
+export default class ApplicationRoute extends Route {
+  @service euiConfig;
+
+  beforeModel() {
+    this.euiConfig.updateConfig({ 'euiIcon.icons': { myLogo: MyLogo } });
+  }
+}
+```
+
+```hbs
+<EuiIcon @type="myLogo" />
+```
+
+Any other string is rendered as an `<img>` with that URL.
 
 ## Compatibility
 

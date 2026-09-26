@@ -22,7 +22,7 @@ order: 6
           @iconType='iInCircle'
           @size='xs'
           @aria-label='See more details about Sketch'
-          {{on 'click' (stop-propagation this.punchIt)}}
+          {{on 'click' this.punchIt}}
         >
           More details
         </EuiButtonEmpty>
@@ -45,7 +45,7 @@ order: 6
           @iconType='iInCircle'
           @size='xs'
           @aria-label='See more details about Sketch'
-          {{on 'click' (stop-propagation this.punchIt)}}
+          {{on 'click' this.punchIt}}
         >
           More details
         </EuiButtonEmpty>
@@ -68,7 +68,7 @@ order: 6
           @size='xs'
           @iconType='iInCircle'
           @aria-label='See more details about Sketch'
-          {{on 'click' (stop-propagation this.punchIt)}}
+          {{on 'click' this.punchIt}}
         >
           More details
         </EuiButtonEmpty>
@@ -92,7 +92,9 @@ export default class DemoCardComponent extends Component {
   @tracked weaponLocked = true;
 
   @action
-  punchIt() {
+  punchIt(event) {
+    // keep the click from also toggling the card
+    event.stopPropagation();
     alert('You punched into hyperspacer!');
   }
 

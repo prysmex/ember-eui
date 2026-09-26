@@ -2,12 +2,20 @@
 order: 1
 ---
 
+# Described form groups
+
+<EuiText>
+
+Each group has a `<:title>` (rendered as a heading: set its level with
+`@titleTagName`) and a `<:description>` on the left, and its form rows in
+the default block. On small screens the columns stack.
+
+</EuiText>
+
 ```hbs template
-<EuiDescribedFormGroup>
+<EuiDescribedFormGroup @titleTagName="h3">
   <:title>
-    <h3>
-      Set heading level based on context
-    </h3>
+    Set heading level based on context
   </:title>
   <:description>
     Will be wrapped in a small, subdued EuiText block.
@@ -18,11 +26,9 @@ order: 1
     </EuiFormRow>
   </:default>
 </EuiDescribedFormGroup>
-<EuiDescribedFormGroup>
+<EuiDescribedFormGroup @titleTagName="h3">
   <:title>
-    <h3>
-      No description
-    </h3>
+    No description
   </:title>
   <:default>
     <EuiFormRow @label='Text field' @helpText={{array 'Im helping!' 'Me too!'}}>
@@ -30,11 +36,9 @@ order: 1
     </EuiFormRow>
   </:default>
 </EuiDescribedFormGroup>
-<EuiDescribedFormGroup>
+<EuiDescribedFormGroup @titleTagName="h3">
   <:title>
-    <h3>
-      Multiple fields
-    </h3>
+    Multiple fields
   </:title>
   <:description>
     Here are three form rows. The first form row does not have a title.
@@ -61,9 +65,7 @@ order: 1
 </EuiDescribedFormGroup>
 <EuiDescribedFormGroup @fullWidth={{true}}>
   <:title>
-    <h3>
-      Full width
-    </h3>
+    Full width
   </:title>
   <:description>
     By default, EuiDescribedFormGroup will be double the default width of form

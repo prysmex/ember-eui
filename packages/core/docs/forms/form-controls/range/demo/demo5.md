@@ -24,9 +24,9 @@ order: 5
   aria-describedby='levelsHelp2'
 />
 <EuiFormHelpText id='levelsHelp2'>
-  Recommended levels are {levels[1].min} and above.
+  Recommended levels are {{get this.levels '1.min'}} and above.
 </EuiFormHelpText>
-<EuiSpacer size='xl' />
+<EuiSpacer @size='xl' />
 <EuiDualRange
   @value={{this.dualValue}}
   @onChange={{set this 'dualValue'}}
@@ -38,7 +38,7 @@ order: 5
   aria-describedby='levelsHelp3'
 />
 <EuiFormHelpText id='levelsHelp3'>
-  Recommended size is {levels[1].min}kb and above.
+  Recommended size is {{get this.levels '1.min'}}kb and above.
 </EuiFormHelpText>
 ```
 

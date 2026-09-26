@@ -4,16 +4,45 @@ title: Super date picker
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Super date picker"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    <strong>EuiSuperDatePicker</strong> is a complex date picker that supports relative and absolute dates.
-    It offers a convenient <EuiIcon type="calendar" color="primary" /> <strong>Quick select menu</strong> which includes
-    <strong>Commonly used dates</strong>, <strong>Recently used date ranges</strong> and <strong>Auto refresh</strong> features.
-  </p>
+
+`EuiSuperDatePicker` picks a time range for dashboards and logs: absolute
+dates, relative ranges ("last 15 minutes", "today") or "now", with a quick
+select menu of commonly and recently used ranges and optional auto
+refresh.
+
+```hbs
+<EuiSuperDatePicker
+  @start={{this.start}}
+  @end={{this.end}}
+  @onTimeChange={{this.changeTime}}
+/>
+```
+
+```js
+@tracked start = 'now-15m';
+@tracked end = 'now';
+
+@action changeTime({ start, end, isInvalid }) {
+  if (isInvalid) return;
+  this.start = start;
+  this.end = end;
+}
+```
+
+`@start` and `@end` are **date math** strings (`now-15m`, `now/d` for the
+start of today, `now-1w/w`…) or ISO dates. Resolve them to real dates with
+`@elastic/datemath` when querying, e.g. `dateMath.parse(start)` and
+`dateMath.parse(end, { roundUp: true })`.
+
+Pass `@onRefreshChange` (with `@isPaused` and `@refreshInterval`) to add
+auto refresh, and `@onRefresh` to be called on each tick.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

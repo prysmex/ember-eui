@@ -1,13 +1,14 @@
 ---
-order: 3
+order: 6
 ---
 
-# Virtualized
+# Many options
 
 <EuiText>
-	<p>
-		<strong>EuiComboBoxList</strong> uses <a href="https://github.com/html-next/vertical-collection">vertical collection</a> to only render visible options to be super fast no matter how many options there are.
-	</p>
+
+The options list is virtualized (only visible options are rendered), so
+thousands of options stay fast.
+
 </EuiText>
 
 ```hbs template

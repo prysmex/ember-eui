@@ -4,19 +4,40 @@ title: Range
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Range"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <EuiCallOut @color="warning" @title="Understanding precision">
-    <:body>
-      <p>
-        Range sliders should only be used when <strong>the precise value is not considered important</strong>.
-        If the precise value does matter, add the <EuiCode>@showInput</EuiCode> arg or use a <strong>EuiFieldNumber</strong> instead.
-      </p>
-    </:body>
-  </EuiCallOut>
+
+`EuiRange` is a slider for picking a number between `@min` and `@max`
+(0 and 100 by default) in `@step`s; `EuiDualRange` picks a range with two
+thumbs (`@value` is `[lower, upper]`).
+
+```hbs
+<EuiRange @min={{0}} @max={{100}} @value={{this.volume}} @onChange={{this.setVolume}} @showInput={{true}} aria-label="Volume" />
+<EuiDualRange @min={{0}} @max={{500}} @value={{this.price}} @onChange={{this.setPrice}} aria-label="Price" />
+```
+
+- `EuiRange`'s `@onChange` receives the event: read `event.target.value`
+  (a **string**) and whether the value is valid.
+- `EuiDualRange`'s `@onChange` receives `[lower, upper]` directly.
+- `@showInput` adds number inputs (or `"inputWithPopover"` to show only
+  the inputs, with the slider in a popover); `@showLabels` shows min/max;
+  `@showValue` a tooltip with the value; `@showTicks` / `@ticks` tick marks;
+  `@levels` colored intervals.
+
+Give sliders an `aria-label` (or an `EuiFormRow` label).
+
+<EuiCallOut @color="warning" @title="Understanding precision">
+  <p>
+    Sliders are hard to set to an exact value. Use them when the precise
+    value doesn't matter, or add <code>@showInput</code>; otherwise use
+    <strong>EuiFieldNumber</strong>.
+  </p>
+</EuiCallOut>
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

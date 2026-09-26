@@ -3,7 +3,7 @@ order: 1
 ---
 
 ```hbs template
-<EuiText size="s">
+<EuiText @size="s">
   EuiSuperDatePicker should be resilient to invalid date values. You can try to break it with unexpected values here.
 </EuiText>
 

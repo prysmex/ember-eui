@@ -1,3 +1,17 @@
+---
+order: 1
+---
+
+# Two controls with a delimiter
+
+<EuiText>
+
+Render the controls in the `<:startControl>` and `<:endControl>` blocks,
+with the yielded class. `@delimiter` changes the text between them (an
+arrow by default); `<:prepend>` / `<:append>` add labels on the sides.
+
+</EuiText>
+
 ```hbs template
 <EuiFormControlLayoutDelimited @delimiter='+'>
   <:prepend as |classes|>

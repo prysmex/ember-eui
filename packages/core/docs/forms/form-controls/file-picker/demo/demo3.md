@@ -21,13 +21,14 @@ order: 3
 
 {{#if (gt this.files.length 0)}}
   <EuiSpacer />
-  <EuiTitle>FilesAttached:</EuiTitle>
-  <EuiSpacer @size='xs' />
-  <ul>
-    {{#each this.files as |file|}}
-      <li>{{file.name}}</li>
-    {{/each}}
-  </ul>
+  <EuiText @size="s">
+    <p><strong>Files attached:</strong></p>
+    <ul>
+      {{#each this.files as |file|}}
+        <li>{{file.name}} ({{file.size}} bytes)</li>
+      {{/each}}
+    </ul>
+  </EuiText>
 {{/if}}
 ```
 

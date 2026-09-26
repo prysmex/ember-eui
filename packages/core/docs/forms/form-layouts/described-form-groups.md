@@ -1,5 +1,29 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Described form groups"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiDescribedFormGroup` splits a long form into titled sections, each
+with an explanation on the left and its fields on the right, like a
+settings page.
+
+```hbs
+<EuiDescribedFormGroup @titleTagName="h3">
+  <:title>Notifications</:title>
+  <:description>Choose how we reach you.</:description>
+  <:default>
+    <EuiFormRow @label="Email"><EuiFieldText /></EuiFormRow>
+  </:default>
+</EuiDescribedFormGroup>
+```
+
+Put the text of the title directly in `<:title>` (it is already wrapped
+in an `EuiTitle` heading, `h2` unless `@titleTagName` says otherwise).
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

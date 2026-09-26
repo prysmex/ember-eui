@@ -1,3 +1,17 @@
+---
+order: 1
+---
+
+# Icons, loading and clear button
+
+<EuiText>
+
+Wrap your own input (with the matching EUI class, e.g. `euiFieldText`) in
+`EuiFormControlLayout` to get EUI's icon, spinner and clear button. Your
+input needs its own padding for the icons.
+
+</EuiText>
+
 ```hbs template
 <EuiFormControlLayout @icon='search'>
   <input
@@ -22,7 +36,7 @@
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
-<EuiSpacer size='m' />
+<EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}}>
   <input
     type='text'
@@ -38,7 +52,7 @@
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
-<EuiSpacer size='m' />
+<EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}} @icon='arrowDown' @iconSide='right'>
   <input
     type='text'
@@ -46,7 +60,7 @@
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
-<EuiSpacer size='m' />
+<EuiSpacer @size='m' />
 <EuiFormControlLayout @clear={{(optional)}} @icon='search'>
   <input
     type='text'
@@ -54,7 +68,7 @@
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
-<EuiSpacer size='m' />
+<EuiSpacer @size='m' />
 <EuiFormControlLayout @clear={{(optional)}} @icon='arrowDown' @iconSide='right'>
   <input
     type='text'

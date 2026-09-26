@@ -1,10 +1,16 @@
 ---
-order: 5
+order: 7
 ---
 
-# Containers
+# In form rows, modals and flyouts
 
-This example demonstrates how the combo box works within containers. Because this component uses portals, it’s important that it works within other portal-using components.
+<EuiText>
+
+The combo box works inside an `EuiFormRow` (its label points to the
+input), and inside modals and flyouts: its options list renders above
+them.
+
+</EuiText>
 
 ```hbs template
 <EuiFormRow

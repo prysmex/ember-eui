@@ -5,6 +5,44 @@ title: Combo box
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Combo box"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiComboBox` is a searchable select for picking one or many options from
+a (possibly long) list, with optional custom values. It is built on
+[ember-power-select](https://ember-power-select.com), so most of its
+features (custom matching, async search, positioning) are available too.
+
+```hbs
+<EuiComboBox
+  @options={{this.fruits}}
+  @selectedOptions={{this.selected}}
+  @searchField="label"
+  @onChange={{this.select}}
+  @placeholder="Pick fruits"
+  as |fruit|
+>
+  {{fruit.label}}
+</EuiComboBox>
+```
+
+- **Selection:** you keep `@selectedOptions` (an array) and replace it in
+  `@onChange`, which receives the new array, also for
+  `@singleSelection={{true}}` (a one-item array).
+- **Options:** strings or objects; the block renders each option
+  (`{{fruit.label}}`). `@searchField` names the key searched for objects.
+  Groups are `{ groupName, options: [...] }`.
+- **Custom values:** `@onCreateOption` lets users add what they typed.
+- **Async:** `@search` can return a promise, e.g. to query a server.
+
+The options list renders in a portal: add
+`<div id="ember-basic-dropdown-wormhole"></div>` to your `index.html` (see
+Getting started) or pass `@renderInPlace={{true}}`.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

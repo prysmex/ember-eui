@@ -2,10 +2,15 @@
 order: 1
 ---
 
+# Multiple selection and custom options
+
 <EuiText>
-  <p>
-    <strong>EuiComboBox </strong> ember's implementation uses <a href="https://ember-power-select.com">ember-power-select</a> under the hood for a rich selector, so please refer to it if needed.
-  </p>
+
+The default combo box selects several options, shown as removable pills.
+With `@onCreateOption`, typing a value that doesn't exist offers to add
+it: create the option and select it in your handler. `@closeOnSelect={{false}}`
+keeps the list open to pick several options in a row.
+
 </EuiText>
 
 ```hbs template

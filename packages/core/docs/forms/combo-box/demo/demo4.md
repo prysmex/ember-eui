@@ -4,7 +4,14 @@ order: 4
 
 # Groups
 
-You can group options together. The groups won’t match against the search value.
+<EuiText>
+
+Pass `{ groupName, options }` objects to group options under a title.
+Groups are not matched by the search, only their options.
+`@customOptionText` changes the "add" text; `{searchText}` is replaced by
+what the user typed.
+
+</EuiText>
 
 ```hbs template
 <EuiComboBox

@@ -1,13 +1,13 @@
 ---
-order: 2
+order: 5
 ---
 
 # Disabled
 
 <EuiText>
-	<p>
-		Set the prop <EuiCode> isDisabled </EuiCode> to make the combo box disabled.
-	</p>
+
+`@isDisabled={{true}}` disables the combo box and its pills.
+
 </EuiText>
 
 ```hbs template

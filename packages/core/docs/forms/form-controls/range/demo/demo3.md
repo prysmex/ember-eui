@@ -25,8 +25,6 @@ order: 3
   @value={{this.valueDual}}
   @onChange={{this.onChangeDual}}
   @showInput={{true}}
-  @minInputProps={{hash ariaLabel='Min Value'}}
-  @maxInputProps={{hash ariaLabel='Max Value'}}
   aria-label='An example of EuiDualRange with inputs'
 />
 ```

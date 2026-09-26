@@ -1,6 +1,8 @@
 import copy from 'rollup-plugin-copy';
 import { babel } from '@rollup/plugin-babel';
 import { Addon } from '@embroider/addon-dev/rollup';
+import { fileURLToPath } from 'node:url';
+import { resolve, dirname } from 'node:path';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 const addon = new Addon({
@@ -9,6 +11,9 @@ const addon = new Addon({
 });
 
 const extensions = ['.js', '.ts', '.gts', '.gjs', '.hbs', '.json'];
+
+const rootDirectory = dirname(fileURLToPath(import.meta.url));
+const babelConfig = resolve(rootDirectory, './babel.publish.config.cjs');
 
 export default {
   output: addon.output(),
@@ -24,8 +29,9 @@ export default {
     addon.dependencies(),
     nodeResolve({ extensions }),
     babel({
-      extensions: extensions,
-      babelHelpers: 'bundled'
+      extensions: ['.js', '.gjs', '.ts', '.gts'],
+      babelHelpers: 'bundled',
+      configFile: babelConfig
     }),
     addon.hbs(),
     addon.gjs(),

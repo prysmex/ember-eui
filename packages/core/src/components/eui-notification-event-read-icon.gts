@@ -7,12 +7,17 @@ import EuiIcon from './eui-icon.gts';
 import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Dot showing an EuiNotificationEvent's read state. */
 export interface EuiNotificationEventReadIconSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Id of the event. */
     id?: string;
+    /** The event's title, for the accessible label. */
     eventName?: string;
+    /** Read state. */
     isRead?: boolean;
+    /** Color of the dot. Defaults to `'primary'`. */
     readIconColor?: EuiIconSignature['Args']['color'];
   };
 }

@@ -10,12 +10,17 @@ const objectAt = <T,>(pos: number, array: T[]) => array[pos];
 // everything after the first message (duplicates of it included)
 const afterFirst = <T,>(array: T[]) => array.slice(1);
 
+/** @private The messages of an EuiNotificationEvent. */
 export interface EuiNotificationEventMessagesSignature {
   Element: HTMLDivElement;
   Args: {
+    /** The messages: the first is shown, the rest in an accordion. */
     messages: string[];
+    /** Text of the accordion button. */
     accordionButtonText?: string;
+    /** Text next to the button while closed. */
     accordionHideText?: string;
+    /** @deprecated Has no effect. */
     accordionAriaLabelButtonText?: string;
   };
 }

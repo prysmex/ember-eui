@@ -1,8 +1,10 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** The scrolling content of an EuiModal. */
 export interface EuiModalBodySignature {
   Element: HTMLDivElement;
   Blocks: {
+    /** The content. */
     default: [];
   };
 }

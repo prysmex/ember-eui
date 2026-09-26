@@ -10,14 +10,24 @@ import setBodyClass from '../-private/set-body-class.ts';
 import classNames from '../helpers/class-names.ts';
 
 interface EuiOverlayMaskArgs {
+  /** Called when the mask itself (not its content) is clicked. */
   onClick?: (e: Event) => void;
+  /**
+   * Whether the mask covers the page header (`'above'`) or leaves it
+   * visible (`'below'`). Defaults to `'above'`.
+   */
   headerZindexLocation?: 'above' | 'below';
 }
 
+/**
+ * A dark overlay covering the page, rendered in a portal, e.g. behind a
+ * modal. Prevents scrolling the page while shown.
+ */
 export interface EuiOverlayMaskSignature {
   Element: HTMLDivElement;
   Args: EuiOverlayMaskArgs;
   Blocks: {
+    /** Content shown above the mask. */
     default: [];
   };
 }

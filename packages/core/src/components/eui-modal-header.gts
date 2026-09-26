@@ -1,8 +1,10 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** The top of an EuiModal. */
 export interface EuiModalHeaderSignature {
   Element: HTMLDivElement;
   Blocks: {
+    /** An `EuiModalHeaderTitle`. */
     default: [];
   };
 }

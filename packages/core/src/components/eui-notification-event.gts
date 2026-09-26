@@ -21,35 +21,70 @@ import type { EuiNotificationEventMessagesSignature } from './eui-notification-e
 import type { TextBlockSignature } from './text-block';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * One notification in a list (e.g. a flyout from the header): title,
+ * source, time, messages, read state and actions.
+ */
 export interface EuiNotificationEventSignature {
   Element: any;
   Args: {
+    /** Id of the event, for its read button/icon. */
     id?: string;
+    /** Tag of the event. Defaults to `'article'`. */
     tagName?: string;
+    /** @private Render the `<:contextMenu>` block. Defaults to `true`. */
     hasContextMenuBlock?: boolean;
+    /** @private Render the `<:primaryAction>` block. Defaults to `true`. */
     hasPrimaryActionBlock?: boolean;
+    /**
+     * Read state. When a boolean, shows a read indicator (a button with
+     * `@onRead`, otherwise an icon); leave it undefined to show none.
+     */
     isRead?: boolean;
+    /** Makes the title a link. */
     href?: string;
+    /** Makes the title a button calling this function. */
     onClickTitle?: (event: MouseEvent) => void;
+    /** Called by the read button; toggle `@isRead` here. */
     onRead?: (event: MouseEvent) => void;
+    /** Called when the context menu button is clicked. */
     onOpenContextMenu?: (event: MouseEvent) => void;
+    /** The event's title. */
     title?: string;
+    /** Kind of event shown in a badge, e.g. "Alert" or "Report". */
     type?: string;
+    /** Severity appended to the badge, e.g. "Critical" ("Alert: Critical"). */
     severity?: string;
+    /** Color of the type badge, any `EuiBadge` color. */
     badgeColor?: EuiBadgeSignature['Args']['color'];
+    /** Icon before the badge, e.g. the app it comes from. */
     iconType?: EuiIconSignature['Args']['type'];
+    /** Accessible label of `@iconType`; without it the icon is decorative. */
     iconAriaLabel?: string;
+    /** When it happened, e.g. "2 min ago". */
     time?: string;
+    /** Color of `@iconType`. */
     iconColor?: string;
+    /** Color of the read indicator. Defaults to `'primary'`. */
     readIconColor?: string;
+    /** Heading tag of the title. Defaults to `'h2'`. */
     headingLevel?: TextBlockSignature['Args']['tagName'];
+    /**
+     * The event's messages: the first is shown, the rest behind a
+     * "show more" accordion.
+     */
     messages: EuiNotificationEventMessagesSignature['Args']['messages'];
+    /** Text of the button revealing the other messages, e.g. "+ 2 more". */
     accordionButtonText?: EuiNotificationEventMessagesSignature['Args']['accordionButtonText'];
+    /** Text shown next to it while closed, e.g. "Show". */
     accordionHideText?: EuiNotificationEventMessagesSignature['Args']['accordionHideText'];
   };
   Blocks: {
+    /** Unused. */
     default: [];
+    /** Context menu content, e.g. an `EuiContextMenuPanel` of actions. */
     contextMenu: [];
+    /** A primary action below the messages, e.g. a "View" button. */
     primaryAction: [];
   };
 }

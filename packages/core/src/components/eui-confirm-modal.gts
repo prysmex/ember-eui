@@ -34,7 +34,7 @@ export interface EuiConfirmModalSignature {
     confirmButtonDisabled?: boolean;
     /** Shows a spinner in the confirm button while the action runs. */
     isLoading?: boolean;
-    /** Called by the cancel button, Escape and clicks outside. Close the modal here. */
+    /** Called by the cancel and close buttons and Escape. Close the modal here. */
     onCancel: () => void;
     /** Called by the confirm button. */
     onConfirm: () => void;

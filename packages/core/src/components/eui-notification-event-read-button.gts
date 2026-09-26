@@ -6,11 +6,15 @@ import EuiButtonIcon from './eui-button-icon.gts';
 import type { EuiButtonIconSignature } from './eui-button-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Button toggling an EuiNotificationEvent's read state. */
 export interface EuiNotificationEventReadButtonSignature {
   Element: EuiButtonIconSignature['Element'];
   Args: {
+    /** Id of the event. */
     id?: string;
+    /** The event's title, for the accessible label. */
     eventName?: string;
+    /** Read state. */
     isRead?: boolean;
   };
 }

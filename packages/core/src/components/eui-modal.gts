@@ -16,15 +16,36 @@ import EuiOverlayMask from './eui-overlay-mask.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * A dialog over the page, with a mask behind it. Render it only while
+ * open: `{{#if this.isOpen}}<EuiModal @onClose={{…}}>…</EuiModal>{{/if}}`.
+ * For yes/no questions use EuiConfirmModal.
+ */
 export interface EuiModalSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Called by the close button, Escape and (with `@clickOutsideToClose`)
+     * clicks on the mask. Stop rendering the modal here.
+     */
     onClose?: (e: Event) => void;
+    /**
+     * `true` for EUI's default max width, or any CSS width (e.g. `'800px'`).
+     * Defaults to the content's width.
+     */
     maxWidth?: boolean | string;
+    /** Clicking the mask around the modal calls `@onClose`. */
     clickOutsideToClose?: boolean;
+    /** Traps keyboard focus inside the modal. Defaults to `true`. */
     isFocusTrapActive?: boolean;
+    /** Focuses the modal itself when it opens. Defaults to `true`. */
     shouldSelfFocus?: boolean;
+    /** Pauses the focus trap, e.g. while a nested popover has focus. */
     isFocusTrapPaused?: boolean;
+    /**
+     * Options for the focus trap (focus-trap library), e.g.
+     * `{ initialFocus: '#name' }` to focus a field when it opens.
+     */
     focusTrapOptions?: {
       allowOutsideClick?: boolean;
       clickOutsideDeactivates?: boolean;
@@ -36,6 +57,7 @@ export interface EuiModalSignature {
     };
   };
   Blocks: {
+    /** `EuiModalHeader`, `EuiModalBody` and `EuiModalFooter`. */
     default: [];
   };
 }

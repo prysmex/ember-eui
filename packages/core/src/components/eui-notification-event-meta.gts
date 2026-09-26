@@ -19,21 +19,33 @@ import type { EuiBadgeSignature } from './eui-badge';
 import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The source, time and menu row of an EuiNotificationEvent. */
 export interface EuiNotificationEventSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Id of the event. */
     id?: string;
+    /** When it happened. */
     time?: string;
+    /** Kind of event, shown in a badge. */
     type?: string;
+    /** Appended to the badge. */
     severity?: string;
+    /** Icon before the badge. */
     iconType?: EuiIconSignature['Args']['type'];
+    /** Color of the icon. */
     iconColor?: EuiIconSignature['Args']['color'];
+    /** Accessible label of the icon. */
     iconAriaLabel?: EuiIconSignature['Args']['aria-label'];
+    /** Color of the badge. */
     badgeColor?: EuiBadgeSignature['Args']['color'];
+    /** @private Render the context menu. Defaults to `true`. */
     hasDefaultBlock?: boolean;
+    /** Called when the context menu button is clicked. */
     onOpenContextMenu?: (e: MouseEvent) => void;
   };
   Blocks: {
+    /** Context menu content. */
     default: [];
   };
 }

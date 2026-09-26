@@ -19,8 +19,17 @@ export interface FieldBaseSignature<T = ComponentLike> {
     error?: string[];
     options?: any[];
     validations?: any;
+    /**
+     * Each validation returns `true` when valid; otherwise `false` (generic
+     * "is invalid" message), a message string, or an ember-validators result
+     * (`{ type, context }`).
+     */
     customValidations?: {
-      validation(value: any, options?: Record<string, unknown>): boolean;
+      validation(
+        value: any,
+        options?: Record<string, unknown>
+      ): boolean | string | { type?: string; context?: Record<string, unknown> };
+      params?: Record<string, unknown>;
     }[];
     rowClasses?: string;
     rowExtra?: Record<string, unknown>;
@@ -74,9 +83,9 @@ export default class ValidatedFormFieldBase<
     this.isTouched = value;
   }
 
-  get customValidations(): {
-    validation(value: any, options?: Record<string, unknown>): boolean;
-  }[] {
+  get customValidations(): NonNullable<
+    FieldBaseSignature['Args']['customValidations']
+  > {
     return this.args.customValidations || [];
   }
 

@@ -140,10 +140,7 @@ module('Integration | Component | validated-form', function (hooks) {
     assert.strictEqual(data.invalids, 1);
   });
 
-  // Bug: custom validations typed as returning a boolean crash when they
-  // return false (or a message string): buildMessage looks up an undefined
-  // message type ("The key provided to get must be a string or number")
-  test.todo('custom validations may return false or a message string', async function (assert) {
+  test('custom validations may return false or a message string', async function (assert) {
     const data = new Data();
     const noFoo = [
       { validation: (value: string) => (value === 'foo' ? 'foo is not allowed' : true) },

@@ -2,7 +2,6 @@ import { getOwner } from '@ember/application';
 import { isArray } from '@ember/array';
 import { assert } from '@ember/debug';
 import { get, set } from '@ember/object';
-import { typeOf } from '@ember/utils';
 
 import { validate } from 'ember-validators';
 
@@ -57,13 +56,21 @@ export function buildValidationMessages(property) {
 
   customValidators.forEach((validator) => {
     assert(
-      'validation.validate must be a function',
-      typeOf(validator?.validate === 'function')
+      'validator.validation must be a function',
+      typeof validator?.validation === 'function'
     );
 
     let isError = validator.validation(currentValue, validator.params);
 
-    if (isError !== true) {
+    if (isError === true) {
+      return;
+    }
+
+    if (typeof isError === 'string') {
+      messages.push(isError);
+    } else if (isError === false || isError == null) {
+      messages.push(buildMessage(messageBuilder, null, { type: 'invalid' }));
+    } else {
       messages.push(buildMessage(messageBuilder, null, isError));
     }
   });

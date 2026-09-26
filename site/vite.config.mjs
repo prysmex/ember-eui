@@ -35,7 +35,9 @@ export default defineConfig({
     ember(),
     babel({
       babelHelpers: 'runtime',
-      extensions,
+      // @embroider/vite's extensions include .json, which Babel would parse
+      // as JS when Vite 8's optimizer pre-bundles deps that import JSON
+      extensions: extensions.filter((ext) => ext !== '.json'),
     }),
   ],
 });

@@ -1,5 +1,6 @@
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { htmlSafe } from '@ember/template';
 
 import { modifier } from 'ember-modifier';
 import set from 'ember-set-helper/helpers/set';
@@ -96,11 +97,15 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBar
     return this.args.bottom ? this.args.bottom : 0;
   }
 
-  get bottomBarStyles(): string {
+  get bottomBarStyles(): ReturnType<typeof htmlSafe> {
     if (this.position === 'fixed') {
-      return `left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`;
+      return htmlSafe(
+        `left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`
+      );
     } else {
-      return `top:${this.top}px;left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`;
+      return htmlSafe(
+        `top:${this.top}px;left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`
+      );
     }
   }
 

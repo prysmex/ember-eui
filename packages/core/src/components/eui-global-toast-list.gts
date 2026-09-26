@@ -7,6 +7,7 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { service } from '@ember/service';
 import type Owner from '@ember/owner';
+import { htmlSafe } from '@ember/template';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
@@ -236,6 +237,10 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
     this.listElement = null;
   }
 
+  get listStyle(): ReturnType<typeof htmlSafe> | undefined {
+    return this.euiToaster.toasts.length ? undefined : htmlSafe('padding:0px;');
+  }
+
   <template>
     <div
       aria-live="polite"
@@ -244,7 +249,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
         componentName="EuiGlobalToastList"
         side=(argOrDefault @side "right")
       }}
-      style={{unless this.euiToaster.toasts.length "padding:0px;"}}
+      style={{this.listStyle}}
       {{didInsert this.didInsert}}
       {{on "scroll" this.onScroll}}
       {{on "mouseenter" this.onMouseEnter}}

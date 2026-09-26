@@ -165,8 +165,10 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
     ].join(' ');
   }
 
-  get childContentStyle(): string | ReturnType<typeof htmlSafe> {
-    return this._opened ? '' : htmlSafe(`height: 0px;`);
+  // undefined (not '') when open: a plain string bound to `style` makes
+  // Ember warn about XSS
+  get childContentStyle(): ReturnType<typeof htmlSafe> | undefined {
+    return this._opened ? undefined : htmlSafe(`height: 0px;`);
   }
 
   setChildContentHeight = () => {

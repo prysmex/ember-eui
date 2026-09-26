@@ -1,4 +1,5 @@
 import { helper } from '@ember/component/helper';
+import { htmlSafe } from '@ember/template';
 
 import { EUI_THUMB_SIZE } from '../utils/range/index.ts';
 
@@ -71,7 +72,7 @@ export function getRangeTick([
   }
 
   return {
-    style: tickStyle,
+    style: tickStyle ? htmlSafe(tickStyle) : undefined,
     customTick,
     label: customTick ? customTick.label : tickValue
   };

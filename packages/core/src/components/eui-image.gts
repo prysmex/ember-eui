@@ -89,7 +89,9 @@ export default class EuiImage extends Component<ImageArgs> {
     return sizeMapping[this.size as EuiImageSize];
   }
 
-  get sizeStyle(): ReturnType<typeof htmlSafe> | string {
+  // undefined (not '') without a size: a plain string bound to `style`
+  // makes Ember warn about XSS
+  get sizeStyle(): ReturnType<typeof htmlSafe> | undefined {
     const size = this.args.size;
 
     if (
@@ -101,7 +103,7 @@ export default class EuiImage extends Component<ImageArgs> {
       );
     }
 
-    return '';
+    return undefined;
   }
 
   @action

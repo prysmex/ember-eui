@@ -6,7 +6,6 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import EuiFormRow from '@ember-eui/core/components/eui-form-row';
 import EuiMarkdownEditor from '@ember-eui/core/components/eui-markdown-editor';
 import { argOrDefault } from '@ember-eui/core/helpers';
-import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import { not } from 'ember-truth-helpers';
 
@@ -75,7 +74,7 @@ export default class ValidatedFormFieldMarkdownEditor extends ValidatedFormField
           {{#let
             (if
               @editorComponent
-              (component (EnsureSafeComponentHelper @editorComponent))
+              (component @editorComponent)
               (component EuiMarkdownEditor)
             )
             as |MarkdownEditor|

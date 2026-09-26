@@ -330,6 +330,7 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
             {{!@glint-expect-error}}
             {{focusTrapModifier}}
             {{outsideClickDetector}}
+            {{onEscape}}
             {{classesModifier}}
             {{resizeObserver}}
             ...attributes
@@ -362,6 +363,7 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
             {{!@glint-expect-error}}
             {{focusTrapModifier}}
             {{outsideClickDetector}}
+            {{onEscape}}
             {{classesModifier}}
             {{resizeObserver}}
             ...attributes

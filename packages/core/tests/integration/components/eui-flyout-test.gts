@@ -67,12 +67,21 @@ module('Integration | Component | eui-flyout', function (hooks) {
     assert.dom('.euiFlyout__closeButton', flyout()).doesNotExist();
   });
 
-  // Bug: the Escape modifier is only applied to push flyouts
-  test.todo('Escape closes an overlay flyout', async function (assert) {
+  test('Escape closes an overlay flyout', async function (assert) {
     let closed = 0;
     const onClose = () => closed++;
 
     await render(<template><EuiFlyout @onClose={{onClose}}>x</EuiFlyout></template>);
+
+    await triggerKeyEvent(flyout(), 'keydown', 'Escape');
+    assert.strictEqual(closed, 1);
+  });
+
+  test('Escape also closes a flyout without the mask', async function (assert) {
+    let closed = 0;
+    const onClose = () => closed++;
+
+    await render(<template><EuiFlyout @onClose={{onClose}} @ownFocus={{false}}>x</EuiFlyout></template>);
 
     await triggerKeyEvent(flyout(), 'keydown', 'Escape');
     assert.strictEqual(closed, 1);

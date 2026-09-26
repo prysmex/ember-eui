@@ -4,11 +4,8 @@ import { babel } from '@rollup/plugin-babel';
 import svgJar from '@svg-jar/plugin/vite';
 import svgoConfig from './svgo.config.mjs';
 
-// ember-power-select 8 still depends on a v1 addon (@embroider/util), so
-// the test app runs through the classic compat layer (see
-// ember-cli-build.cjs). Once that is gone this can be driven by
-// ENABLE_COMPAT_BUILD like the upstream blueprint.
-const isCompat = true;
+// For scenario testing (older ember-source through @embroider/compat)
+const isCompat = Boolean(process.env.ENABLE_COMPAT_BUILD);
 
 export default defineConfig({
   plugins: [

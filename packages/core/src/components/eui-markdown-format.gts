@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
-import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import unified from 'unified';
@@ -118,7 +117,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
         {{#in-element CompNode.element}}
           {{#if CompNode.componentName}}
             {{#let
-              (component (EnsureSafeComponentHelper CompNode.componentName))
+              (component CompNode.componentName)
               as |DynamicComponent|
             }}
               <DynamicComponent

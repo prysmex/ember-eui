@@ -1,5 +1,4 @@
 import { on } from '@ember/modifier';
-import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { and, eq, not, or } from 'ember-truth-helpers';
@@ -118,7 +117,7 @@ const EuiListGroupItem: TemplateOnlyComponent<EuiListGroupItemSignature> =
       {{/if}}
       {{#if @extraAction}}
         {{#let
-          (component (EnsureSafeComponentHelper @extraAction))
+          (component @extraAction)
           as |ExtraAction|
         }}
           <ExtraAction />

@@ -2,7 +2,6 @@ import { fn } from '@ember/helper';
 import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { EnsureSafeComponentHelper } from '@embroider/util';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import EmberPowerSelectMultipleTrigger from 'ember-power-select/components/power-select-multiple/trigger';
@@ -58,7 +57,7 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
               {{#if @selectedItemComponent}}
                 {{#let
                   (component
-                    (EnsureSafeComponentHelper @selectedItemComponent)
+                    @selectedItemComponent
                     extra=@extra
                     option=opt
                     select=@select
@@ -123,7 +122,7 @@ export default class EuiComboBoxTriggerComponent extends EmberPowerSelectMultipl
             }}
               {{#let
                 (component
-                  (EnsureSafeComponentHelper @placeholderComponent)
+                  @placeholderComponent
                   select=@select
                   placeholder=@placeholder
                   isMultipleWithSearch=true

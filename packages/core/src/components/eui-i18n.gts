@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { array } from '@ember/helper';
 import { inject as service } from '@ember/service';
-import { ensureSafeComponent } from '@embroider/util';
 
 import { notEq } from 'ember-truth-helpers';
 
@@ -42,9 +41,7 @@ export default class EuiI18nComponent extends Component<EuiI18nSignature> {
   }
 
   get customComponent(): typeof Render | undefined {
-    if (!this.args.i18n?.renderComponent) return undefined;
-
-    return ensureSafeComponent(this.args.i18n?.renderComponent, this);
+    return this.args.i18n?.renderComponent;
   }
 
   <template>

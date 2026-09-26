@@ -374,7 +374,12 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   @action
   onChange(selected: any[]) {
     if (this.args.singleSelection) {
-      return selected.length > 0 ? [selected[selected.length - 1]] : [];
+      // keep only the option that was just chosen
+      this.args.onChange(
+        selected.length > 0 ? [selected[selected.length - 1]] : []
+      );
+
+      return;
     }
 
     this.args.onChange(selected);

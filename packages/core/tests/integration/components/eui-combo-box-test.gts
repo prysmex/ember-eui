@@ -280,9 +280,7 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.dom('.euiComboBoxPill').hasText('Durian');
   });
 
-  // Bug: EuiComboBox#onChange returns early for @singleSelection and never
-  // calls @onChange, so choosing an option does nothing.
-  test.todo('@singleSelection keeps only the last chosen option', async function (assert) {
+  test('@singleSelection keeps only the last chosen option', async function (assert) {
     const state = new State();
     state.selected = ['Apple'];
 
@@ -303,6 +301,7 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     await open();
     await choose('Cherry');
 
+    assert.deepEqual(state.changes, [['Cherry']]);
     assert.deepEqual(state.selected, ['Cherry']);
   });
 

@@ -39,6 +39,7 @@
       "types": "./declarations/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./pikaday.css": "./dist/pikaday.css",
     "./*": {
       "types": "./declarations/*.d.ts",
       "default": "./dist/*.js"

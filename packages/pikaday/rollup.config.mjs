@@ -2,6 +2,7 @@ import copy from 'rollup-plugin-copy';
 import { babel } from '@rollup/plugin-babel';
 import { Addon } from '@embroider/addon-dev/rollup';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 
 const addon = new Addon({
@@ -11,6 +12,26 @@ const addon = new Addon({
 
 const rootDirectory = dirname(fileURLToPath(import.meta.url));
 const babelConfig = resolve(rootDirectory, './babel.publish.config.cjs');
+
+// Ship src/pikaday.css as-is so apps can import '@ember-eui/pikaday/pikaday.css'
+function pikadayCss() {
+  const fileName = 'pikaday.css';
+  const source = resolve(rootDirectory, 'src', fileName);
+
+  return {
+    name: 'pikaday-css',
+    buildStart() {
+      this.addWatchFile(source);
+    },
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName,
+        source: readFileSync(source, 'utf8')
+      });
+    }
+  };
+}
 
 export default {
   output: addon.output(),
@@ -37,6 +58,7 @@ export default {
     addon.gjs(),
     addon.declarations('declarations'),
     addon.keepAssets(['**/*.css']),
+    pikadayCss(),
     addon.clean(),
     copy({
       targets: [

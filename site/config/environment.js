@@ -23,12 +23,12 @@ module.exports = function (environment) {
     },
     '@ember-eui/core': {
       euiButtonIcon: {
-        size: 'xs'
+        size: 'xs',
       },
       euiIcon: {
-        useSvg: true
-      }
-    }
+        useSvg: true,
+      },
+    },
   };
 
   if (environment === 'development') {

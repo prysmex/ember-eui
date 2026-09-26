@@ -13,7 +13,7 @@ import type {
   Heading,
   Item,
   NodeId,
-  Page
+  Page,
 } from '../helpers/get-sidenav-routes';
 import type DocfyService from '@docfy/ember/services/docfy';
 import type Owner from '@ember/owner';
@@ -71,12 +71,12 @@ export default class ApplicationController extends Controller {
     // TODO: remove the onClick that just sets selectedItem, it shouldn't be needed with the new docs structure
     const docsNodeRoutes = getSidenavRoutes([
       { ...docsNode, children: [] },
-      handlerFn
+      handlerFn,
     ]);
 
     // -- Display, Forms, Layout, Utilities, Editors & Syntax, Navigation sections
     const coreNode = docsNode.children.find(
-      (child: DocfyNode) => child.name === 'core'
+      (child: DocfyNode) => child.name === 'core',
     );
     const coreNodes = this._getDocsNode(coreNode)?.children;
     const coreNodeRoutes = [
@@ -88,7 +88,7 @@ export default class ApplicationController extends Controller {
       'tabular',
       'editors',
       'charts',
-      'utilities'
+      'utilities',
     ].reduce<Item[]>((acum, curr) => {
       const node = coreNodes?.find((child: DocfyNode) => child.name == curr);
 
@@ -100,7 +100,7 @@ export default class ApplicationController extends Controller {
         node.pages.forEach((page: Page) => {
           const headings = page?.headings?.[0]?.headings;
           const item = nodeRoutes?.[0]?.items?.find(
-            (item: Item) => item.name == page.title
+            (item: Item) => item.name == page.title,
           );
 
           if (item) {
@@ -118,7 +118,7 @@ export default class ApplicationController extends Controller {
                 },
                 disabled:
                   item.disabled ||
-                  !!page.frontmatter.disabled_demos?.includes(heading.title)
+                  !!page.frontmatter.disabled_demos?.includes(heading.title),
               });
             });
           }
@@ -137,7 +137,7 @@ export default class ApplicationController extends Controller {
       name: 'Addons',
       label: 'Addons',
       children: [],
-      pages: []
+      pages: [],
     } as DocfyNode;
 
     docsNode.children.forEach((child: DocfyNode) => {
@@ -156,7 +156,7 @@ export default class ApplicationController extends Controller {
     // -- Package section
 
     const packageNode = docsNode.children.find(
-      (child: DocfyNode) => child.name === 'package'
+      (child: DocfyNode) => child.name === 'package',
     );
 
     const packageRoutes = getSidenavRoutes([packageNode, handlerFn]);
@@ -166,7 +166,7 @@ export default class ApplicationController extends Controller {
       ...docsNodeRoutes,
       ...coreNodeRoutes,
       ...addonsRoutes,
-      ...packageRoutes
+      ...packageRoutes,
     ];
     this.currentSideNavRoutes = this.sideNavRoutes;
   }
@@ -192,7 +192,7 @@ export default class ApplicationController extends Controller {
         name: '',
         id: '',
         onClick: true,
-        forceOpen: true
+        forceOpen: true,
       };
 
       curr.items.forEach((item) => {
@@ -202,13 +202,13 @@ export default class ApplicationController extends Controller {
       const currName = curr.name[0]?.toLowerCase();
 
       if (
-        currName && currName.indexOf(str?.toLowerCase()) > -1 ||
+        (currName && currName.indexOf(str?.toLowerCase()) > -1) ||
         toAdd.items.length > 0
       ) {
         toAdd = {
           ...toAdd,
           ...curr,
-          items: toAdd.items
+          items: toAdd.items,
         };
       }
 
@@ -229,7 +229,7 @@ export default class ApplicationController extends Controller {
       this.currentSideNavRoutes = this.filterSideNav(
         str,
         this.sideNavRoutes,
-        0
+        0,
       );
     }
   };

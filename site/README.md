@@ -15,7 +15,7 @@ pnpm --filter site start
 ```
 
 `start` runs Vite and `pnpm _syncPnpm --watch`: the site depends on the
-workspace packages as pnpm *injected* dependencies (`dependenciesMeta`), so
+workspace packages as pnpm _injected_ dependencies (`dependenciesMeta`), so
 rebuilt packages have to be synced into its `node_modules`.
 
 ## How the docs are built

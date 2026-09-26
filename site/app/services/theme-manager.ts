@@ -16,12 +16,12 @@ export default class ThemeManager extends Service {
   themes: ThemeShape[] = [
     {
       name: 'Light',
-      key: 'light'
+      key: 'light',
     },
     {
       name: 'Dark',
-      key: 'dark'
-    }
+      key: 'dark',
+    },
   ];
 
   constructor(owner?: Owner) {

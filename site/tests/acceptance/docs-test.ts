@@ -14,7 +14,9 @@ module('Acceptance | docs', function (hooks) {
 
     assert.strictEqual(currentURL(), '/docs/introduction');
     assert.dom('.euiSideNav').exists();
-    assert.dom('.euiSideNavItem').exists({ count: 74 }, 'every docs section is listed');
+    assert
+      .dom('.euiSideNavItem')
+      .exists({ count: 74 }, 'every docs section is listed');
   });
 
   test('a component page renders its demos and code tabs', async function (assert) {
@@ -33,7 +35,9 @@ module('Acceptance | docs', function (hooks) {
   test('prose components are auto-imported into strict page templates', async function (assert) {
     await visit('/docs/validated-form/docs/validated-form');
 
-    assert.dom('.euiText .euiCode').exists('<EuiText>/<EuiCode> in the markdown prose render');
+    assert
+      .dom('.euiText .euiCode')
+      .exists('<EuiText>/<EuiCode> in the markdown prose render');
     assert.dom('.euiCodeBlock').exists('<EuiCodeBlock> in the prose renders');
   });
 
@@ -45,16 +49,19 @@ module('Acceptance | docs', function (hooks) {
     await click('.euiHeader .euiButton');
     await waitUntil(() => document.querySelector('.euiContextMenuItem'));
     const dark = [...document.querySelectorAll('.euiContextMenuItem')].find(
-      (item) => item.textContent?.trim() === 'Dark'
+      (item) => item.textContent?.trim() === 'Dark',
     ) as HTMLElement;
 
     await click(dark);
 
     assert.strictEqual(themeLink()?.dataset['theme'], 'dark');
-    assert.true(themeLink()!.href.includes('eui_theme_dark'), 'dark stylesheet');
+    assert.true(
+      themeLink()!.href.includes('eui_theme_dark'),
+      'dark stylesheet',
+    );
   });
 
-  test('the changelog renders core\'s CHANGELOG.md', async function (assert) {
+  test("the changelog renders core's CHANGELOG.md", async function (assert) {
     await visit('/docs/package/changelog');
 
     assert.dom('.euiMarkdownFormat').containsText('@ember-eui/core');

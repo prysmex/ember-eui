@@ -4,13 +4,15 @@ import { service } from '@ember/service';
 import type DocfyService from '@docfy/ember/services/docfy';
 
 function humanize(str?: string) {
-  return str
-    ?.replace(/^[\s_]+|[\s_]+$/g, '')
-    .replace(/[_\s]+/g, ' ')
-    .replace(/[-\s]+/g, ' ')
-    .replace(/^[a-z]/, function (m) {
-      return m.toUpperCase();
-    }) ?? '';
+  return (
+    str
+      ?.replace(/^[\s_]+|[\s_]+$/g, '')
+      .replace(/[_\s]+/g, ' ')
+      .replace(/[-\s]+/g, ' ')
+      .replace(/^[a-z]/, function (m) {
+        return m.toUpperCase();
+      }) ?? ''
+  );
 }
 
 export type Heading = {
@@ -67,7 +69,7 @@ function compareFunction(a: Item, b: Item) {
 
 export function getSidenavRoutes([docfyNode, clickHandler]: [
   DocfyNode | undefined,
-  (id: NodeId) => void
+  (id: NodeId) => void,
 ]): Item[] {
   return docfyNode ? [getItems(docfyNode, clickHandler, docfyNode.name)] : [];
 }
@@ -75,7 +77,7 @@ export function getSidenavRoutes([docfyNode, clickHandler]: [
 function getItems(
   docfyNode: DocfyNode,
   clickHandler: (id: NodeId) => void,
-  parent: string
+  parent: string,
 ): Item {
   let items: Item[] = [];
 
@@ -91,7 +93,7 @@ function getItems(
     ...items,
     ...(docfyNode.pages?.map((page) => {
       return getItemFromPage(page, clickHandler);
-    }) ?? [])
+    }) ?? []),
   ].sort(compareFunction);
 
   return {
@@ -100,7 +102,7 @@ function getItems(
     onClick:
       docfyNode.onClick ??
       clickHandler.bind(clickHandler, `${parent}-${docfyNode.label}`),
-    items
+    items,
   };
 }
 
@@ -109,7 +111,7 @@ function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
     id: `${page.url}`,
     name: humanize(page.title),
     onClick: clickHandler.bind(clickHandler, page.url),
-    items: []
+    items: [],
   };
 }
 
@@ -119,9 +121,8 @@ export default class GetSidenavRoutes extends Helper {
   compute([name, clickHandler]: [string, (id: NodeId) => void]) {
     return getSidenavRoutes([
       this.docfy.findNestedChildrenByName(name) as unknown as
-        | DocfyNode
-        | undefined,
-      clickHandler
+        DocfyNode | undefined,
+      clickHandler,
     ]);
   }
 }

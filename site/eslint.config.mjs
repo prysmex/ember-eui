@@ -44,7 +44,13 @@ const parserOptions = {
 
 export default defineConfig([
   // app/templates/docs is generated from markdown by @docfy/ember-vite
-  globalIgnores(['dist/', 'coverage/', 'tmp/', 'app/templates/docs/', '!**/.*']),
+  globalIgnores([
+    'dist/',
+    'coverage/',
+    'tmp/',
+    'app/templates/docs/',
+    '!**/.*',
+  ]),
   js.configs.recommended,
   ember.configs.base,
   ember.configs.gjs,

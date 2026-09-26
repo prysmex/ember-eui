@@ -14,7 +14,7 @@ export default class ApplicationRoute extends Route {
   beforeModel() {
     this.intl.addTranslations(
       'en-us',
-      enUs as unknown as Parameters<IntlService['addTranslations']>[1]
+      enUs as unknown as Parameters<IntlService['addTranslations']>[1],
     );
     this.intl.setLocale('en-us');
 

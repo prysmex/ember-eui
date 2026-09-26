@@ -64,7 +64,12 @@ export function importsFor(rendered) {
   }
 
   for (const [path, names] of named) {
-    imports.push({ name: names[0], path, isDefault: false, namedImports: names });
+    imports.push({
+      name: names[0],
+      path,
+      isDefault: false,
+      namedImports: names,
+    });
   }
 
   return imports;
@@ -95,7 +100,10 @@ export default plugin({
       const imports = importsFor(templateSource(page.ast));
 
       if (imports.length) {
-        page.pluginData.imports = [...(page.pluginData.imports ?? []), ...imports];
+        page.pluginData.imports = [
+          ...(page.pluginData.imports ?? []),
+          ...imports,
+        ];
       }
     });
   },

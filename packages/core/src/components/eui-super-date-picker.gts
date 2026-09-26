@@ -123,17 +123,54 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
 
   @service declare euiI18n: EuiI18n;
 
-  @tracked start: ShortDate;
-  @tracked end: ShortDate;
-  @tracked isInvalid = false;
-  @tracked hasChanged = false;
+  /**
+   * The range the user is editing, before it is applied with the update
+   * button. It remembers the @start/@end it was based on: when the parent
+   * passes a different range, the draft no longer applies and the picker
+   * shows the new arguments (like EUI React's getDerivedStateFromProps).
+   */
+  @tracked private draft?: {
+    start: ShortDate;
+    end: ShortDate;
+    hasChanged: boolean;
+    forStart: ShortDate | undefined;
+    forEnd: ShortDate | undefined;
+  };
 
-  constructor(owner: any, args: EuiSuperDatePickerArgs) {
-    super(owner, args);
+  private get currentDraft() {
+    const { draft } = this;
 
-    this.start = this.args.start ?? 'now-15m';
-    this.end = this.args.end ?? 'now';
-    this.isInvalid = isRangeInvalid(this.start, this.end);
+    return draft &&
+      draft.forStart === this.args.start &&
+      draft.forEnd === this.args.end
+      ? draft
+      : undefined;
+  }
+
+  get start(): ShortDate {
+    return this.currentDraft?.start ?? this.args.start ?? 'now-15m';
+  }
+
+  get end(): ShortDate {
+    return this.currentDraft?.end ?? this.args.end ?? 'now';
+  }
+
+  get isInvalid(): boolean {
+    return isRangeInvalid(this.start, this.end);
+  }
+
+  get hasChanged(): boolean {
+    return this.currentDraft?.hasChanged ?? false;
+  }
+
+  private setDraft(start: ShortDate, end: ShortDate, hasChanged: boolean) {
+    this.draft = {
+      start,
+      end,
+      hasChanged,
+      forStart: this.args.start,
+      forEnd: this.args.end
+    };
   }
 
   get timeOptions() {
@@ -141,17 +178,14 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   }
 
   setTime({ start, end }: DurationRange) {
-    this.hasChanged = !(this.start === start && this.end === end);
-    this.start = start;
-    this.end = end;
-    this.isInvalid = isRangeInvalid(start, end);
+    this.setDraft(start, end, !(this.start === start && this.end === end));
 
     if (!this.showUpdateButton) {
       this.args.onTimeChange({
         start,
         end,
         isQuickSelection: false,
-        isInvalid: this.isInvalid
+        isInvalid: isRangeInvalid(start, end)
       });
     }
   }
@@ -167,8 +201,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
 
   @action
   applyQuickTime({ start, end }: DurationRange) {
-    this.start = start;
-    this.end = end;
+    this.setDraft(start, end, false);
 
     this.args.onTimeChange({
       start,
@@ -191,7 +224,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   @action
   handleClickUpdateButton() {
     if (!this.hasChanged && this.args.onRefresh) {
-      // const { start, end, refreshInterval } = this.args;
       this.args.onRefresh({
         start: this.start,
         end: this.end,
@@ -201,7 +233,9 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
       this.applyTime();
     }
 
-    this.hasChanged = false;
+    if (this.currentDraft) {
+      this.draft = { ...this.currentDraft, hasChanged: false };
+    }
   }
 
   <template>

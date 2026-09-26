@@ -2,6 +2,17 @@
 order: 1
 ---
 
+# Editor with a processing plugin
+
+<EuiText>
+
+The editor with the default plugins plus a processing plugin that opens
+every link in a new tab: it visits the rendered tree and sets
+`target="_blank"` on `<a>` elements. Switch to the preview to see the
+result; the task list checkboxes are clickable there.
+
+</EuiText>
+
 ```hbs template
 <EuiMarkdownEditor
   @value={{this.value}}

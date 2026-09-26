@@ -2,6 +2,8 @@
 order: 2
 ---
 
+# Inserting next to an element
+
 ```hbs template
 <EuiTitle>
   Inserting portals

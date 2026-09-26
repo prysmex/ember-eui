@@ -4,37 +4,40 @@ title: Page template
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Page template"/>
-<EuiSpacer />
+<EuiSpacer @size="l" />
+
 <EuiText>
 
-  <p>
-  Page layouts are modular and fit together in a precise manner, though certain
-  parts can also be added or removed as needed. EUI provides both the indivdual
-  page components and an over-arching template for easily creating some
-  pre-defined layouts.
-  </p>
+`EuiPageTemplate` builds a whole page layout in one component: an
+optional side bar, a page header, the content, and an optional bottom
+bar. Pick the arrangement with `@template`:
+
+| `@template` | Layout |
+| --- | --- |
+| `default` | Header and content in a panel next to the side bar. |
+| `centeredBody` | The content panel centered in the page, for a single focused task. |
+| `centeredContent` | Content centered inside the body, e.g. an empty prompt. |
+| `empty` | No panels, for fully custom content. |
+
+```hbs
+<EuiPageTemplate
+  @pageHeader={{hash pageTitle="Users" iconType="users"}}
+  @restrictWidth={{true}}
+>
+  <:pageSideBar><EuiSideNav @items={{this.nav}} /></:pageSideBar>
+  <:pageHeaderRightSideItems as |Item|>
+    <Item><EuiButton @fill={{true}}>Invite user</EuiButton></Item>
+  </:pageHeaderRightSideItems>
+  <:default>…the page's content…</:default>
+</EuiPageTemplate>
+```
+
+`@pageHeader` takes `EuiPageHeader`'s options; the `<:pageHeader…>`
+blocks fill its parts. The same layouts can be built by hand from
+`EuiPage`, `EuiPageSideBar`, `EuiPageBody`, `EuiPageContent` and
+`EuiPageContentBody`, which the examples also show.
+
 </EuiText>
-
-<!-- <EuiCallOut
-  @title='The following examples showcase the both the template and custom built usages of the page components.'
-  @iconType='document'
->
-  <:body>
-    You'll find the code for each in their own tab and if you go to full screen, you can see how they would behave in a typical application layout.
-  </:body>
-</EuiCallOut>
-<EuiSpacer />
-
-<EuiCallOut
-  @color="danger"
-  @title='Do not nest multiple EuiPageTemplate components.'
-  @iconType='warning'
->
-  <:body>
-    The template is a very fragile component that will cause unexpected results if nested.
-  </:body>
-</EuiCallOut>
-<EuiSpacer /> -->
 
 <EuiHorizontalRule />
 

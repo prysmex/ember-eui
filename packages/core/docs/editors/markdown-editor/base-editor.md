@@ -1,5 +1,55 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Base editor"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiMarkdownEditor` is a markdown textarea with a formatting toolbar, a
+preview tab and interactive task lists; `EuiMarkdownFormat` renders
+markdown with EUI's styles (use it to show saved markdown).
+
+```hbs
+<EuiMarkdownEditor
+  @value={{this.markdown}}
+  @onChange={{this.updateMarkdown}}
+  @height={{300}}
+  @ariaLabel="Description"
+/>
+
+<EuiMarkdownFormat @value={{this.markdown}} />
+```
+
+`@onChange` receives the new markdown string. Both components support
+GitHub-style markdown plus emoji (`:tada:`), task lists (`- [ ] todo`,
+clickable in the preview) and tooltips (`!{tooltip[text](tooltip)}`).
+
+### Plugins
+
+The editor and the renderer share a pipeline you can extend:
+
+| Kind | Arg | Does |
+| --- | --- | --- |
+| UI plugins | `@uiPlugins` | Add toolbar buttons that insert or wrap markdown. |
+| Parsing plugins | `@parsingPluginList` | [remark](https://github.com/remarkjs/remark) plugins that understand new syntax. |
+| Processing plugins | `@processingPluginList` | Plugins that turn the parsed tree into the rendered output, e.g. adding attributes. |
+
+Start from the defaults and add yours:
+
+```js
+import {
+  getDefaultEuiMarkdownParsingPlugins,
+  getDefaultEuiMarkdownProcessingPlugins,
+} from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins/index';
+
+const parsingPlugins = [...getDefaultEuiMarkdownParsingPlugins(), [myRemarkPlugin, {}]];
+const processingPlugins = [...getDefaultEuiMarkdownProcessingPlugins(), [myProcessingPlugin, {}]];
+```
+
+Pass the same lists to `EuiMarkdownFormat` where you render the result.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

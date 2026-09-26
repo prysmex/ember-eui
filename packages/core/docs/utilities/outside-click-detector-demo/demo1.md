@@ -1,3 +1,16 @@
+---
+order: 1
+---
+
+# Outside click detector
+
+<EuiText>
+
+Click outside the button to trigger the detector; the button toggles
+`isDisabled`.
+
+</EuiText>
+
 ```hbs template
 <EuiButton
   {{on 'click' (set this 'disabled' (not this.disabled))}}

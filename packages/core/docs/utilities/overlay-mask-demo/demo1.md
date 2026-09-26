@@ -1,3 +1,9 @@
+---
+order: 1
+---
+
+# Overlay mask
+
 ```hbs template
 <EuiButtonEmpty {{on 'click' this.toggle}} @color='primary'>
   Click here to test Overlay

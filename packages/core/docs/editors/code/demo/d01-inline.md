@@ -4,6 +4,13 @@ order: 1
 
 # Inline
 
+<EuiText>
+
+`EuiCode` highlights a snippet inside text. `@transparentBackground`
+removes its background.
+
+</EuiText>
+
 ```hbs template
 <EuiText>
   <p>

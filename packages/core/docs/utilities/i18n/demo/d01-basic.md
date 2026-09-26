@@ -2,10 +2,14 @@
 order: 1
 ---
 
+# Looking up a token
+
 <EuiText>
-<p>
-	Render strings to components, you can provide a hash containing custom tokens via <EuiCode>{{"@i18n"}}</EuiCode> or override i18n/index.js in your host app to export a hash containg them
-</p>
+
+`EuiI18n` yields a component rendering the translated text for `@token`
+(or `@default`), with its `{placeholders}` filled from `@values`. Values
+can be components.
+
 </EuiText>
 
 ```hbs template

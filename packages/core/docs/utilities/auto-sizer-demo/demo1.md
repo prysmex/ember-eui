@@ -2,17 +2,13 @@
 order: 1
 ---
 
-<EuiText>
-	<p>
-	<strong>EuiAutoSizer</strong> helps components that use virtualized rendering and/or require explicit dimensions to fill all available space in the parent container. See the <EuiLink @href="https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md">react-virtualized</EuiLink> documentation as <strong>EuiAutoSizer</strong> is a port from component for <strong>AutoSizer</strong>.
-  </p>
-</EuiText>
+# Auto sizer
 
 ```hbs template
 <div style='height:200px; width: 100%;'>
   <EuiAutoSizer as |dimensions|>
     <EuiPanel
-      style='position: absolute; display: flex; align-items:center; justify-content:center; height: {{dimensions.height}}; width: {{dimensions.width}}'
+      style='position: absolute; display: flex; align-items:center; justify-content:center; height: {{dimensions.height}}px; width: {{dimensions.width}}px'
     >
       <EuiCode>height:
         {{dimensions.height}}, width:

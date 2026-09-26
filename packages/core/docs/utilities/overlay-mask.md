@@ -1,5 +1,27 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Overlay mask"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiOverlayMask` covers the page with a dark overlay, rendered in a
+portal, and stops the page from scrolling. Modals and flyouts use it;
+use it directly to build your own overlays.
+
+```hbs
+{{#if this.showOverlay}}
+  <EuiOverlayMask @onClick={{this.close}}>
+    <EuiPanel>…</EuiPanel>
+  </EuiOverlayMask>
+{{/if}}
+```
+
+`@onClick` is called for clicks on the mask itself (not its content);
+`@headerZindexLocation="below"` keeps the page header above the mask.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

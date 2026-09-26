@@ -1,3 +1,9 @@
+---
+order: 1
+---
+
+# Resize observer
+
 ```hbs template
 <div>
   <EuiText>

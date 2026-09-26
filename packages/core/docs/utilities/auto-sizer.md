@@ -1,5 +1,27 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Auto sizer"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiAutoSizer` measures the space its parent gives it and yields the
+width and height in pixels, for content that needs explicit sizes (e.g.
+virtualized lists or charts). The parent must have a size.
+
+```hbs
+<div style="height: 300px;">
+  <EuiAutoSizer as |size|>
+    <MyChart @width={{size.width}} @height={{size.height}} />
+  </EuiAutoSizer>
+</div>
+```
+
+`@disableHeight` / `@disableWidth` measure only one dimension and
+`@onResize` is called with the new size.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

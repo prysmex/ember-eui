@@ -1,5 +1,28 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Responsive"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiShowFor` and `EuiHideFor` render their content only on, or except
+on, some screen sizes. The sizes are EUI's breakpoints: `xs` (0–574px),
+`s` (575–767px), `m` (768–991px), `l` (992–1199px) and `xl` (1200px and
+up).
+
+```hbs
+<EuiHideFor @sizes={{array "xs" "s"}}>
+  <EuiButton @iconType="plusInCircle">Create dashboard</EuiButton>
+</EuiHideFor>
+<EuiShowFor @sizes={{array "xs" "s"}}>
+  <EuiButtonIcon @iconType="plusInCircle" aria-label="Create dashboard" />
+</EuiShowFor>
+```
+
+Unlike CSS media queries, the hidden content isn't rendered at all.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

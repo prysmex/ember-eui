@@ -1,3 +1,9 @@
+---
+order: 1
+---
+
+# Mutation observer
+
 ```hbs template
 <div>
   <p>
@@ -12,7 +18,7 @@
   >
     <EuiButton
       @color={{this.buttonColor}}
-      @fill='{true}'
+      @fill={{true}}
       {{on 'click' this.toggleButtonColor}}
     >
       Toggle button color

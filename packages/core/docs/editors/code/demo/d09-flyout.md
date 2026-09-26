@@ -2,7 +2,14 @@
 order: 9
 ---
 
-# Flyout
+# In a flyout
+
+<EuiText>
+
+Code blocks work inside flyouts and modals too, including the full
+screen view.
+
+</EuiText>
 
 ```hbs template
 <EuiButton {{on 'click' (set this 'showFlyout' true)}}>

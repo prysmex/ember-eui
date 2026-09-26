@@ -4,8 +4,41 @@ title: i18n
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="i18n"/>
+<EuiSpacer @size="l" />
 
-<EuiSpacer @size='l' />
+<EuiText>
+
+EUI components ship English texts ("No results found", "Loading
+options...", "Close this dialog", …). Translate them by adding your
+strings to the `euiI18n` service, e.g. in the application route; nested
+objects are flattened to keys like `euiComboBox.noMatchesMessage`:
+
+```js
+// app/routes/application.js
+import Route from '@ember/routing/route';
+import { service } from '@ember/service';
+
+export default class ApplicationRoute extends Route {
+  @service euiI18n;
+
+  beforeModel() {
+    this.euiI18n.addTranslations({
+      euiComboBox: {
+        noMatchesMessage: 'Sin resultados',
+        loadingMessage: 'Cargando opciones...',
+      },
+    });
+  }
+}
+```
+
+A translation can contain `{placeholders}` that components fill in. To
+translate your own strings the same way, use `EuiI18n` (or
+`this.euiI18n.lookupToken(token, defaultText, values)` in JavaScript).
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

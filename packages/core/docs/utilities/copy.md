@@ -1,5 +1,24 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Copy"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiCopy` copies text to the clipboard from any element and shows a
+tooltip. It yields a `copy` function to call on click:
+
+```hbs
+<EuiCopy @textToCopy={{this.apiKey}} @beforeMessage="Click to copy" @afterMessage="Copied!" as |copy|>
+  <EuiButtonIcon @iconType="copyClipboard" aria-label="Copy the API key" {{on "click" copy}} />
+</EuiCopy>
+```
+
+Without the component, call `copyToClipboard(text)` from
+`@ember-eui/core/utils/copy-to-clipboard`; it returns whether it worked.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

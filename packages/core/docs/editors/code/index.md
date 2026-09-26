@@ -4,26 +4,33 @@ title: Code
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Code"/>
-
-<EuiSpacer @size='l' />
-
-<EuiCallOut>
-  <:body>
-    <strong>EuiCode</strong> and <strong>EuiCodeBlock</strong> are intended to render static lines or blocks of code in <strong>read-only</strong> contexts. If you need capabilities to edit, or want to print long code (e.g., printing JSON from an API), we recommend installing a version of Monaco. If you are building within the Kibana platform, you can use their CodeEditor.
-  </:body>
-</EuiCallOut>
+<EuiSpacer @size="l" />
 
 <EuiText>
-<p>
-  The <strong>EuiCode</strong> and <strong>EuiCodeBlock</strong> components support <a href="https://prismjs.com/#supported-languages" target="_blank">all language syntaxes</a> supported by the <EuiCode>prism</EuiCode> <a href="https://prismjs.com" target="_blank">library</a>. The language prop can also be omitted to simply render formatted but unhighlighted code.
-</p>
-<p>
-  JSX code (often React) has distinct language syntaxes from the base JavaScript and TypeScript languages. For these instances, use <EuiCode @language="jsx">@language="jsx"</EuiCode> or <EuiCode @language="tsx">@language="tsx"</EuiCode>.
-</p>
+
+`EuiCode` shows inline code and `EuiCodeBlock` multi-line code, both
+with syntax highlighting for a `@language` (`js`, `ts`, `html`, `css`,
+`json`, `bash`, `hbs`, `sql`, …; unknown languages are shown as plain
+text).
+
+```hbs
+<p>Run <EuiCode>pnpm install</EuiCode> first.</p>
+
+<EuiCodeBlock @language="json" @isCopyable={{true}} @lineNumbers={{true}}>
+  {{this.config}}
+</EuiCodeBlock>
+```
+
+Pass the code as text (e.g. a string property); it is highlighted as the
+content changes. `EuiCodeBlock` can add a copy button (`@isCopyable`),
+line numbers (optionally highlighted), a max height with a full screen
+button (`@overflowHeight`) and virtualized rendering for very long code
+(`@isVirtualized`). These components display static code; for editing
+code, use a code editor.
+
 </EuiText>
 
 <EuiHorizontalRule />
-<EuiSpacer/>
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

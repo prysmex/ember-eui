@@ -1,5 +1,25 @@
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Portal"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiPortal` renders its content at the end of `<body>` instead of where
+it is written, so it escapes parents with `overflow: hidden` or a
+`z-index`. Modals, flyouts, popovers and toasts use it.
+
+```hbs
+<EuiPortal>
+  <div class="my-floating-toolbar">…</div>
+</EuiPortal>
+```
+
+`@insert={{hash sibling=element position="after"}}` renders it next to a
+given element instead.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

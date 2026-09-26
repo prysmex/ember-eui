@@ -27,64 +27,104 @@ import EuiPortal from './eui-portal.gts';
 import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 
 export type EuiFlyoutArgs = {
+  /** Same as `@closeButtonAriaLabel`. */
   closeAriaLabel?: string;
-  /**
-   * Shows the navigation flyout
-   */
+  /** @deprecated Has no effect: render the flyout only while it is open. */
   isOpen?: boolean;
-  /**
-   * Keeps navigation flyout visible and push `<body>` content via padding
-   */
+  /** @deprecated Has no effect, see EuiCollapsibleNav; use `@type="push"`. */
   isDocked?: boolean;
-  /**
-   * Named breakpoint or pixel value for customizing the minimum window width to enable docking
-   */
+  /** @deprecated Has no effect; use `@pushMinBreakpoint`. */
   dockedBreakpoint?: EuiBreakpointSize | number;
-  /**
-   * Keeps the display of toggle button when in docked state
-   */
+  /** @deprecated Has no effect. */
   showButtonIfDocked?: boolean;
 
+  /** Traps keyboard focus inside the flyout. Defaults to `true`. */
   isFocusTrapActive?: boolean;
 
+  /** Tag of the flyout, e.g. `'nav'` or `'aside'`. Defaults to `'div'`. */
   as?: string;
 
+  /**
+   * Width: `'s'`, `'m'` or `'l'`, a number in px or any CSS width.
+   * Defaults to `'m'`.
+   */
   size?: number | string;
 
+  /** Side of the window it slides in from. Defaults to `'right'`. */
   side?: 'left' | 'right';
 
+  /** `role` of the flyout. Defaults to `'dialog'`. */
   role?: null | string;
 
+  /**
+   * Renders a mask over the page behind the flyout, which closes it when
+   * clicked. Without it, the page stays usable. Defaults to `true`.
+   */
   ownFocus?: boolean;
 
+  /** Clicking outside the flyout calls `@onClose`. Defaults to `false`. */
   outsideClickCloses?: boolean;
 
+  /**
+   * Close button `'inside'` the flyout's corner or `'outside'` next to it.
+   * Defaults to `'inside'`.
+   */
   closeButtonPosition?: 'outside' | 'inside';
 
+  /**
+   * Padding of `EuiFlyoutHeader`, `EuiFlyoutBody` and `EuiFlyoutFooter`:
+   * `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'l'`.
+   */
   paddingSize?: string;
 
+  /** Hides the close button (e.g. when the flyout has its own). */
   hideCloseButton?: boolean;
 
+  /** Props for the close button: `{ className, onClick }`. */
   closeButtonProps?: {
     className?: string;
     onClick?: (e: MouseEvent) => void;
     classes?: string;
   };
 
+  /** Accessible label of the close button, e.g. "Close this dialog". */
   closeButtonAriaLabel?: string;
 
+  /**
+   * Called by the close button, Escape, the mask and outside clicks. Stop
+   * rendering the flyout here. Without it there is no close button.
+   */
   onClose?: () => void;
 
+  /**
+   * Caps the width: `true` for EUI's default max width, or a number in px.
+   * Defaults to `false`.
+   */
   maxWidth?: boolean | number;
 
+  /** @deprecated Has no effect. */
   maskProps?: Record<string, unknown>;
 
+  /**
+   * `'overlay'` covers the page; `'push'` pads the page so the flyout sits
+   * beside it (on windows at least `@pushMinBreakpoint` wide).
+   * Defaults to `'overlay'`.
+   */
   type?: string;
 
+  /**
+   * Minimum window width for `@type="push"`: a named breakpoint (`'xs'`
+   * to `'xl'`) or px. Smaller windows get an overlay. Defaults to `'l'`.
+   */
   pushMinBreakpoint?: number | EuiBreakpointSize;
 
+  /** Focuses the flyout itself when it opens. Defaults to `true`. */
   shouldSelfFocus?: boolean;
 
+  /**
+   * Options for the focus trap (focus-trap library), e.g.
+   * `{ initialFocus: '#name' }`. Defaults to allowing outside clicks.
+   */
   focusTrapOptions?: {
     allowOutsideClick?: boolean;
     clickOutsideDeactivates?: boolean;
@@ -156,10 +196,16 @@ function isEuiFlyoutSizeNamed(value: any): value is EuiFlyoutSize {
   return SIZES.includes(value);
 }
 
+/**
+ * A panel sliding in from the side of the window, for details or forms
+ * that keep the page context. Render it only while open:
+ * `{{#if this.isOpen}}<EuiFlyout @onClose={{…}}>…</EuiFlyout>{{/if}}`.
+ */
 export interface EuiFlyoutSignature {
   Element: any;
   Args: EuiFlyoutArgs;
   Blocks: {
+    /** Usually `EuiFlyoutHeader`, `EuiFlyoutBody` and `EuiFlyoutFooter`. */
     default: [];
   };
 }

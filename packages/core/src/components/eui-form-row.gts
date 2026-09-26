@@ -18,33 +18,81 @@ import EuiFormLabel from './eui-form-label.gts';
 import type { displayMappingToClassMapping } from '../utils/css-mappings/eui-form-row.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * A form control with its label, help text and errors:
+ * `<EuiFormRow @label="Name" @helpText="As shown to others"><EuiFieldText … /></EuiFormRow>`.
+ */
 export interface EuiFormRowSignature {
   Element: HTMLDivElement | HTMLFieldSetElement;
   Args: {
+    /**
+     * The control's label. It is linked to the first text-like control in
+     * the row automatically (no need to pass ids around).
+     */
     label?: string;
+    /** @deprecated Currently not rendered. */
     labelAppend?: string;
+    /**
+     * `'label'` renders a `<label>`; `'legend'` a `<legend>`, for rows whose
+     * control is a group (radios, checkboxes). Defaults to `'label'`.
+     */
     labelType?: 'label' | 'legend';
+    /**
+     * `'legend'` renders the row as a `<fieldset>` (use it with
+     * `@labelType="legend"` for groups). Defaults to a `<div>`.
+     */
     legendType?: 'legend' | 'fieldset';
+    /** Lets the row (and its control) take the container's full width. */
     fullWidth?: boolean;
+    /** Shows `@error` under the control and styles the label as invalid. */
     isInvalid?: boolean;
+    /** Disables the label's focus styling. */
     isDisabled?: boolean;
+    /**
+     * Adds space above the control as if it had a label, to align it with
+     * labelled rows next to it (e.g. a button in an `EuiFlexGroup` of rows).
+     */
     hasEmptyLabelSpace?: boolean;
+    /**
+     * Link the label to the control. Set `false` when the control has its
+     * own label (e.g. a single checkbox). Defaults to `true`.
+     */
     hasChildLabel?: boolean;
+    /** @private Ignore the `<:label>` block. */
     isFakeLabelBlock?: boolean;
+    /** @private Ignore the `<:helpText>` block. */
     isFakeHelpTextBlock?: boolean;
+    /** Help text under the control (a string, or an array for several lines). */
     helpText?: string;
+    /** Error message(s) shown under the control while `@isInvalid`. */
     error?: string | string[] | null;
+    /** Extra classes for each error message. */
     errorClasses?: string;
+    /** Extra classes for the help text. */
     helpTextClasses?: string;
+    /** Id of the control; the label points to it. Defaults to a random id. */
     id?: string;
+    /**
+     * Layout: `'row'` (label above), `'rowCompressed'`, `'columnCompressed'`
+     * (label beside, for dense forms), `'columnCompressedSwitch'` (for an
+     * `EuiSwitch`), or `'center'` / `'centerCompressed'` (vertically centers
+     * a control without a label, e.g. a button next to rows).
+     * Defaults to `'row'`.
+     */
     display?: keyof typeof displayMappingToClassMapping;
+    /** @deprecated Has no effect. */
     extra?: unknown;
   };
   Blocks: {
+    /** The control, e.g. `<EuiFieldText />`. */
     default: [];
+    /** Custom label content, instead of `@label`; yields `@label`. */
     label: [string?];
+    /** The control; same as the default block. */
     field: [];
+    /** Renders each error (while `@isInvalid`); yields the error. */
     errors: [string?];
+    /** Custom help text, instead of `@helpText`. */
     helpText: [string?];
   };
 }

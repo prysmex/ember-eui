@@ -7,12 +7,17 @@ import type { EuiIconSignature } from './eui-icon.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFormControlLayoutCustomIconArgs = CommonArgs & {
+  /** Makes the icon a button calling this function. */
   onClick?: (event: MouseEvent) => void;
+  /** The icon; anything `EuiIcon`'s `@type` accepts. */
   type: EuiIconSignature['Args']['type'];
+  /** Size of the icon. */
   size?: EuiIconSignature['Args']['size'];
+  /** @deprecated Has no effect. */
   iconRef?: string | ((el: HTMLButtonElement | HTMLSpanElement | null) => void);
 };
 
+/** @private An icon inside EuiFormControlLayout. */
 export interface EuiFormControlLayoutCustomIconSignature {
   Element: HTMLButtonElement | HTMLSpanElement;
   Args: EuiFormControlLayoutCustomIconArgs;

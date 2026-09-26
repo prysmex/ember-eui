@@ -30,9 +30,9 @@ export interface EuiCheckboxGroupSignature {
      */
     isInvalid?: boolean;
     /**
-     * Wraps the checkboxes in an `EuiFormFieldset` with this legend:
-     * `{ children: 'Choose toppings' }`. Use it when the group is not inside
-     * an `EuiFormRow`.
+     * Wraps the checkboxes in an `EuiFormFieldset` with this legend, e.g.
+     * "Choose toppings". Use it when the group is not inside an
+     * `EuiFormRow`.
      */
     legend?: EuiFormFieldsetSignature['Args']['legend'];
     /** Smaller checkboxes, for dense forms. */

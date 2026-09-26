@@ -5,16 +5,26 @@ import EuiFormLegend from './eui-form-legend.gts';
 import type { EuiFormLegendSignature } from './eui-form-legend';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** Groups related controls (e.g. radios) under a legend. */
 export interface EuiFormFieldsetSignature {
   Element: HTMLFieldSetElement;
   Args: {
+    /** The legend describing the group. Use the `<:legend>` block for markup. */
     legend?: string;
+    /** Smaller legend, for compressed forms. */
     compressed?: boolean;
+    /**
+     * `'hidden'` keeps the legend for screen readers only.
+     * Defaults to `'visible'`.
+     */
     display?: EuiFormLegendSignature['Args']['display'];
   };
   Blocks: {
+    /** The controls. */
     default?: [];
+    /** The legend, instead of `@legend`. */
     legend?: [];
+    /** The controls; same as the default block. */
     fieldset?: [];
   };
 }

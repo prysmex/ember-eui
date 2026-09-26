@@ -7,10 +7,13 @@ import type { CommonArgs } from './common.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFormControlLayoutClearButtonArgs = CommonArgs & {
+  /** `'s'` or `'m'`. Defaults to `'m'`. */
   size?: keyof typeof sizeMapping;
+  /** Accessible label of the button. */
   label?: string;
 };
 
+/** @private The clear ("x") button of EuiFormControlLayout; add `{{on "click" …}}`. */
 export interface EuiFormControlLayoutClearButtonSignature {
   Element: HTMLButtonElement;
   Args: EuiFormControlLayoutClearButtonArgs;

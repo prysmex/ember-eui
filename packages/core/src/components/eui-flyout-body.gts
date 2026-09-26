@@ -4,11 +4,15 @@ import classNames from '../helpers/class-names.ts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** The scrolling main content of an EuiFlyout. */
 export interface EuiFlyoutBodySignature {
   Element: HTMLDivElement;
   Blocks: {
+    /** Content pinned above the scrolling body, e.g. an `EuiCallOut`. */
     banner?: [];
+    /** The body; same as the default block. */
     content?: [];
+    /** The body. */
     default?: [];
   };
 }

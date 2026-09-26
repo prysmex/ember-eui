@@ -8,28 +8,48 @@ import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layo
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 
+/**
+ * The wrapper EUI's inputs use for icons, the clear button, the loading
+ * spinner and prepend/append content. Use it around your own controls to
+ * match them.
+ */
 export interface EuiFormControlLayoutSignature {
   Element: HTMLDivElement;
   Args: {
+    /** Stretches the control to its container's width. */
     fullWidth?: boolean;
-    /**
-     * Creates an input group with element(s) coming before children.
-     * */
+    /** Shorter control, for dense forms. */
     compressed?: boolean;
+    /** Read-only styling. */
     readOnly?: boolean;
+    /**
+     * Styles the control as a group with its `<:prepend>` / `<:append>`
+     * content. Defaults to `true`.
+     */
     useGroup?: boolean;
+    /** Disabled styling. */
     disabled?: boolean;
+    /** Same as `@disabled`. */
     isDisabled?: boolean;
+    /** Icon inside the control, anything `EuiIcon`'s `@type` accepts. */
     icon?: EuiFormControlLayoutIconsSignature['Args']['icon'];
+    /** Side of `@icon`: `'left'` or `'right'`. Defaults to `'left'`. */
     iconSide?: EuiFormControlLayoutIconsSignature['Args']['iconSide'];
+    /** Shows a clear ("x") button calling this function. */
     clear?: EuiFormControlLayoutIconsSignature['Args']['clear'];
+    /** Shows a spinner. */
     isLoading?: boolean;
+    /** @deprecated Has no effect. */
     inputId?: string;
   };
   Blocks: {
+    /** Content before the control; yields the class to put on it. */
     prepend: [classes: 'euiFormControlLayout__prepend'];
+    /** The control (e.g. an `<input>`); same as the default block. */
     field: [];
+    /** The control. */
     default: [];
+    /** Content after the control; yields the class to put on it. */
     append: [classes: 'euiFormControlLayout__append'];
   };
 }

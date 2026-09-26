@@ -21,7 +21,7 @@ export interface EuiFieldTextSignature {
     value?: string;
     /** Placeholder text. */
     placeholder?: string;
-    /** Icon inside the input, anything `EuiIcon`'s `@type` accepts (or `{ type, side }`). */
+    /** Icon inside the input (left side), anything `EuiIcon`'s `@type` accepts. */
     icon?: EuiFormControlLayoutSignature['Args']['icon'];
     /** Stretches the input to its container's width. */
     fullWidth?: boolean;

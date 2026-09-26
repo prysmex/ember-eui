@@ -13,13 +13,19 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export const ICON_SIDES: ['left', 'right'] = ['left', 'right'];
 
 export interface EuiFormControlLayoutIconsArgs {
+  /** The icon, see EuiFormControlLayout's `@icon`. */
   icon?: EuiFormControlLayoutCustomIconSignature['Args']['type'];
+  /** `'left'` or `'right'`. Defaults to `'left'`. */
   iconSide?: (typeof ICON_SIDES)[number];
+  /** Shows a clear button calling this function. */
   clear?: (v: any) => void;
+  /** Shows a spinner. */
   isLoading?: boolean;
+  /** Smaller icons, for compressed controls. */
   compressed?: boolean;
 }
 
+/** @private The icon, clear button and spinner inside EuiFormControlLayout. */
 export interface EuiFormControlLayoutIconsSignature {
   Element: EuiFormControlLayoutCustomIconSignature['Element'];
   Args: EuiFormControlLayoutIconsArgs;

@@ -7,23 +7,44 @@ import EuiText from './eui-text.gts';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * Two controls in one field with a delimiter between them, e.g. a number
+ * range ("0 → 100") or start and end dates.
+ */
 export interface EuiFormControlLayoutDelimitedSignature {
   Args: {
+    /** Icon at the start of the control, anything `EuiIcon`'s `@type` accepts. */
     icon?: string;
+    /** Shows a clear ("x") button calling this function. */
     clear?: EuiFormControlLayoutSignature['Args']['clear'];
+    /** Stretches the control to its container's width. */
     fullWidth?: EuiFormControlLayoutSignature['Args']['fullWidth'];
+    /** Shows a spinner. */
     isLoading?: EuiFormControlLayoutSignature['Args']['isLoading'];
+    /** Shorter control, for dense forms. */
     compressed?: EuiFormControlLayoutSignature['Args']['compressed'];
+    /** Read-only styling. */
     readOnly?: EuiFormControlLayoutSignature['Args']['readOnly'];
+    /** Disabled styling. */
     disabled?: EuiFormControlLayoutSignature['Args']['disabled'];
+    /** Text between the two controls. Defaults to `'→'`. */
     delimiter?: string;
+    /** Styles it as a group with `<:prepend>` / `<:append>`. Defaults to `true`. */
     useGroup?: boolean;
   };
   Blocks: {
+    /** Content before the controls; yields the class to put on it. */
     prepend: EuiFormControlLayoutSignature['Blocks']['prepend'];
+    /**
+     * The first control, e.g. an `EuiFieldNumber @controlOnly={{true}}`;
+     * yields the class to put on it.
+     */
     startControl: [classes: string];
+    /** Custom delimiter content, instead of `@delimiter`. */
     delimiter: [];
+    /** The second control; yields the class to put on it. */
     endControl: [classes: string];
+    /** Content after the controls; yields the class to put on it. */
     append: EuiFormControlLayoutSignature['Blocks']['append'];
   };
 }

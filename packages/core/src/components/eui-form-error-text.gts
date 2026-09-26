@@ -1,8 +1,10 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** An error message under a control; EuiFormRow renders these from `@error`. */
 export interface EuiFormErrorTextSignature {
   Element: HTMLDivElement;
   Blocks: {
+    /** The message. */
     default: [];
   };
 }

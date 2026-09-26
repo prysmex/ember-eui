@@ -8,19 +8,42 @@ import EuiCallOut from './eui-call-out.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/**
+ * Wraps a form's rows and shows its errors in a callout. For validation
+ * built on it see `@ember-eui/changeset-form` and
+ * `@ember-eui/validated-form`.
+ */
 export interface EuiFormSignature {
   Element: HTMLDivElement | HTMLFormElement;
   Args: {
+    /** Title of the errors callout. Defaults to "Please correct the fields". */
     errorTitle?: string;
+    /**
+     * `'above'` shows `@error` in a callout above the form while
+     * `@isInvalid`; `'none'` hides it. Defaults to `'above'`.
+     */
     invalidCallout?: 'above' | 'none';
+    /**
+     * The form's errors, listed in the callout: an array of messages, or a
+     * single message with `@array={{true}}`.
+     */
     error?: string | string[];
+    /** Shows the errors callout (with `@error`). */
     isInvalid?: boolean;
+    /** Treats a single string `@error` as a one-item list. */
     array?: boolean;
+    /**
+     * `'form'` renders a `<form>` (add `{{on "submit" …}}`); `'div'` for
+     * forms without native submission. Defaults to `'div'`.
+     */
     tagName?: 'form' | 'div';
   };
   Blocks: {
+    /** The form's content, usually `EuiFormRow`s and a submit button. */
     default?: [];
+    /** Same as the default block. */
     content?: [];
+    /** Renders each error in the callout; yields the error. */
     error?: [string];
   };
 }

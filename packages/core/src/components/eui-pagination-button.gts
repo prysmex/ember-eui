@@ -11,17 +11,25 @@ import type { paddingMapping } from '../utils/css-mappings/eui-popover-footer.ts
 import type { EuiButtonEmptySignature } from './eui-button-empty';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private A page number button of EuiPagination. */
 export interface EuiPaginationButtonSignature {
   Element: EuiButtonEmptySignature['Element'];
   Args: {
+    /** Padding of the button. */
     paddingSize?: keyof typeof paddingMapping;
+    /** Zero based index of the page it goes to (shown plus one). */
     pageIndex?: number;
+    /** Total number of pages, for the accessible label. */
     totalPages?: number;
+    /** Marks the current page (`aria-current`). */
     isActive?: boolean;
+    /** Renders the "…" placeholder between page ranges. */
     isPlaceholder?: boolean;
+    /** Hides the button on small screens. */
     hideOnMobile?: boolean;
   };
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

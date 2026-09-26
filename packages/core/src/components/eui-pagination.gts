@@ -20,16 +20,18 @@ export type SafeClickHandler = (pageIndex: number) => void;
 
 interface Args {
   /**
-   * The total number of pages.
+   * The total number of pages. Defaults to `1`.
    */
   pageCount?: number;
 
   /**
    * The current page using a zero based index.
    * So if you set the activePage to 1, it will activate the second page.
+   * Defaults to `0`.
    */
   activePage?: number;
 
+  /** Called with the clicked page's zero based index; update `@activePage` here. */
   onPageClick?: PageClickHandler;
 
   /**
@@ -39,14 +41,17 @@ interface Args {
 
   /**
    * If passed in, passes value through to each button to set aria-controls
+   * (the id of the content the pages change).
    */
   'aria-controls'?: string;
+  /** Same as `'aria-controls'`. */
   ariaControls?: string;
 }
 
 const MAX_VISIBLE_PAGES = 5;
 const NUMBER_SURROUNDING_PAGES = Math.floor(MAX_VISIBLE_PAGES * 0.5);
 
+/** Page numbers with previous/next buttons, for paged lists and tables. */
 export interface EuiPaginationSignature {
   Element: HTMLElement;
   Args: Args;

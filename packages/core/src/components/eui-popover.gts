@@ -71,7 +71,11 @@ export type EuiPopoverArgs = {
    */
   anchorClassName?: string;
   /**
-   * Alignment of the popover and arrow relative to the button
+   * Where the popover opens relative to the button: `'upCenter'`,
+   * `'upLeft'`, `'upRight'`, `'downCenter'`, `'downLeft'`, `'downRight'`,
+   * `'leftCenter'`, `'leftUp'`, `'leftDown'`, `'rightCenter'`, `'rightUp'`
+   * or `'rightDown'`. It flips when there is no room. Defaults to
+   * `'downCenter'`.
    */
   anchorPosition?: PopoverAnchorPosition;
   /**
@@ -81,12 +85,15 @@ export type EuiPopoverArgs = {
    */
   attachToAnchor?: boolean;
   /**
-   * Triggering element for which to align the popover to
+   * Element to align the popover to, instead of the `<:button>` block's
+   * content.
    */
   button?: HTMLElement;
+  /** Called with the element wrapping the `<:button>` block. */
   buttonRef?: (e: HTMLDivElement) => unknown;
   /**
-   * Callback to handle hiding of the popover
+   * Called to close the popover (Escape, clicks outside); set `@isOpen` to
+   * `false` here.
    */
   closePopover: () => void;
   /**
@@ -94,11 +101,12 @@ export type EuiPopoverArgs = {
    */
   container?: HTMLElement;
   /**
-   * CSS display type for both the popover and anchor
+   * CSS display of the anchor: `'inlineBlock'` or `'block'`.
+   * Defaults to `'inlineBlock'`.
    */
   display?: keyof typeof displayMapping;
   /**
-   * Show arrow indicating to originating button
+   * Show arrow indicating to originating button. Defaults to `true`.
    */
   hasArrow?: boolean;
   /**
@@ -117,11 +125,12 @@ export type EuiPopoverArgs = {
     position: 'before' | 'after';
   };
   /**
-   * Visibility state of the popover
+   * Whether the popover is open. Toggle it from the `<:button>` block's
+   * button. Defaults to `false`.
    */
   isOpen?: boolean;
   /**
-   * Traps tab focus within the popover contents
+   * Traps tab focus within the popover contents. Defaults to `true`.
    */
   ownFocus?: boolean;
   /**
@@ -129,18 +138,20 @@ export type EuiPopoverArgs = {
    */
   panelClassName?: string;
   /**
-   * EuiPanel padding on all sides
+   * Padding of the popover: `'none'`, `'s'`, `'m'` or `'l'`.
+   * Defaults to `'m'`.
    */
   panelPaddingSize?: PanelPaddingSize;
-  /**
-   * Standard DOM `style` attribute. Passed to the EuiPanel
-   */
+  /** @deprecated Has no effect. */
   panelStyle?: { [i: string]: string };
+  /** Called with the popover's panel element (`null` when it closes). */
   panelRef?: (e: HTMLElement | null) => unknown;
+  /** Called with the popover's root element. */
   popoverRef?: (e: HTMLElement) => unknown;
 
   /**
-   * when not `false`, the popover will check if this popover is inside another popover and if so. will reposition itself to be inside the other popover
+   * When not `false`, a popover opened from inside another popover
+   * positions itself relative to that one. Defaults to `true`.
    */
   shouldAccountForOtherPopovers?: boolean;
 
@@ -168,10 +179,7 @@ export type EuiPopoverArgs = {
    * Default is 16
    */
   buffer?: number | [number, number, number, number];
-  /**
-   * Element to pass as the child element of the arrow;
-   * Use case is typically limited to an accompanying `EuiBeacon`
-   */
+  /** @deprecated Has no effect, use the `<:arrowChildren>` block. */
   arrowChildren?: Component;
   /**
    * Provide a name to the popover panel
@@ -183,17 +191,25 @@ export type EuiPopoverArgs = {
    */
   ariaLabelledBy?: string;
 
+  /** `tabindex` of the panel. Defaults to `'0'`. */
   tabindex?: string | number;
 
+  /** Focuses the panel itself when it opens. Defaults to `true`. */
   shouldSelfFocus?: boolean;
 
+  /** Pauses the focus trap, e.g. while a nested popover has focus. */
   isFocusTrapPaused?: boolean;
 
+  /** Options for the focus trap (focus-trap library). */
   focusTrapOptions?: {
     [key: string]: any;
     onClickOutside?: (e: Event) => void;
   };
 
+  /**
+   * What content changes reposition the popover (MutationObserver
+   * options). Defaults to watching the panel's subtree.
+   */
   mutationObserverOptions?: {
     attributes?: boolean;
     childList?: boolean;
@@ -288,12 +304,22 @@ type CssProps = {
   zIndex?: number;
 };
 
+/**
+ * A floating panel anchored to a button, e.g. a menu or a small form. You
+ * control `@isOpen` and close it in `@closePopover`.
+ */
 export interface EuiPopoverSignature {
   Element: HTMLDivElement;
   Args: EuiPopoverArgs;
   Blocks: {
+    /**
+     * The element opening the popover, e.g.
+     * `<EuiButton {{on "click" (set this "isOpen" true)}}>`.
+     */
     button: [];
+    /** The popover's content. */
     content: [];
+    /** Content inside the arrow (rarely needed). */
     arrowChildren: [];
   };
 }

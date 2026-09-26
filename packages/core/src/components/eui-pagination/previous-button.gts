@@ -11,6 +11,7 @@ import type { EuiButtonIconSignature } from '../eui-button-icon';
 import type { SafeClickHandler } from '../eui-pagination';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The "previous page" button of EuiPagination. */
 export interface EuiPaginationPreviousButtonSignature {
   Element: EuiButtonIconSignature['Element'];
   Args: {

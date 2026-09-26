@@ -9,20 +9,43 @@ import type {
   sizeToClassMapping} from '../utils/css-mappings/eui-progress.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A progress bar: a value out of `@max`, or an indeterminate loading bar. */
 export interface EuiProgressSignature {
   Element: HTMLDivElement | HTMLProgressElement;
   Args: {
+    /**
+     * Maximum value. With it the bar shows `@value`; without it the bar is
+     * an indeterminate loading animation.
+     */
     max?: number;
+    /** Current value, from 0 to `@max`. */
     value?: number;
+    /** Thickness: `'xs'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`. */
     size?: keyof typeof sizeToClassMapping;
+    /**
+     * `'static'` renders in place; `'fixed'` / `'absolute'` pin it to the
+     * top of the window / its positioned parent. Defaults to `'static'`.
+     */
     position?: keyof typeof positionsToClassMap;
+    /**
+     * `'primary'`, `'success'`, `'warning'`, `'danger'`, `'subdued'`,
+     * `'accent'` or `'vis0'`–`'vis9'`. Defaults to `'success'`.
+     */
     color?: keyof typeof colorToClassMap;
+    /** Classes for the value text. */
     labelClasses?: string;
+    /**
+     * `true` shows `@value` above the bar; for other text use the
+     * `<:valueText>` block.
+     */
     valueText?: string | boolean;
+    /** @deprecated Has no effect, use the `<:label>` block. */
     label?: string;
   };
   Blocks: {
+    /** Label above the bar (with `@max`). */
     label?: [];
+    /** Value text above the bar, e.g. "70%" (with `@max`). */
     valueText?: [];
   };
 }

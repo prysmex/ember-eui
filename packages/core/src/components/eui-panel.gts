@@ -11,44 +11,48 @@ import type {
   paddingSizeMapping} from '../utils/css-mappings/eui-panel.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A box grouping content, with background, padding, border and shadow options. */
 export interface EuiPanelSignature {
   Element: HTMLDivElement;
   Args: {
     /**
-     * Adds a box shadow to the panel
+     * Adds a box shadow (plain panels only). Defaults to `true`.
      */
     hasShadow?: boolean;
     /**
-     * Adds a border around the panel
+     * Adds a border (plain and transparent panels only).
      */
     hasBorder?: boolean;
     /**
-     * Adds a padding around the panel
+     * Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`.
      */
     paddingSize?: keyof typeof paddingSizeMapping;
     /**
-     * Adds a border radius to the panel
+     * `'none'` or `'m'`. Defaults to `'m'`.
      */
     borderRadius?: keyof typeof borderRadiusMapping;
     /**
-     * Adds a background color to the panel
+     * Background: `'plain'`, `'transparent'`, `'subdued'`, `'accent'`,
+     * `'primary'`, `'success'`, `'warning'` or `'danger'`.
+     * Defaults to `'plain'`.
      */
     color?: keyof typeof colorMapping;
     /**
-     * Adds a flex-grow: 0 to the panel
+     * Grows to fill a flex parent's height. Defaults to `true`.
      */
     grow?: boolean;
     /**
-     * Adds a click handler to the panel
+     * Makes the whole panel clickable (hover styles, `role="button"`).
      */
     onClick?: (e: MouseEvent) => void;
     /**
-     * Adds a click handler to the panel
+     * Hover styles for a clickable panel. Defaults to `true`.
      */
     isClickable?: boolean;
   };
 
   Blocks: {
+    /** The panel's content. */
     default: [];
   };
 }

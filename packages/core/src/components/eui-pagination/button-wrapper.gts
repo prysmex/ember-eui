@@ -8,6 +8,7 @@ import EuiPaginationButton from '../eui-pagination-button.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Renders one EuiPaginationButton (in an `<li>`). */
 export interface EuiPaginationButtonWrapperSignature {
   Args: {
     inList?: boolean;

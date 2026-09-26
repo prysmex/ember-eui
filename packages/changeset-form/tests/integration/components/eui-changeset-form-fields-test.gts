@@ -221,9 +221,7 @@ module('Integration | Component | eui-changeset-form fields', function (hooks) {
     assert.true(changeset.get('yes'));
   });
 
-  // Bug: FieldRadio never passes @checked, so it does not reflect the
-  // changeset value
-  test.todo('FieldRadio reflects the changeset value', async function (assert) {
+  test('FieldRadio reflects the changeset value', async function (assert) {
     const changeset = Changeset({ yes: true });
 
     await render(

@@ -3,7 +3,7 @@ import { action } from '@ember/object';
 import { EuiFormRow, EuiRadio } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
 
-import { not } from 'ember-truth-helpers';
+import { not, or } from 'ember-truth-helpers';
 
 import randomId from '../../../-private/random-id.ts';
 import Base from './base.gts';
@@ -66,6 +66,7 @@ export default class EuiChangesetFormFieldRadio extends Base<EuiChangesetFormFie
           @label={{@radioLabel}}
           @isFakeLabelBlock={{not (has-block "label")}}
           @id={{theId}}
+          @checked={{or this.value false}}
           @compressed={{@compressed}}
           @name={{@name}}
           @disabled={{@disabled}}

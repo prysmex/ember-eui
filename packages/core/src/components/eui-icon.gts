@@ -241,22 +241,26 @@ export default class EuiIcon extends Component<EuiIconSignature> {
 
     return (
       icon === 'empty' ||
-      !(this.args['aria-label'], this.args['aria-labelledby'], this.args.title)
+      !(
+        this.args['aria-label'] ||
+        this.args['aria-labelledby'] ||
+        this.args.title
+      )
     );
   }
 
+  /**
+   * With a `@title` (and no `@aria-label` / `@aria-labelledby`), the svg
+   * gets a `<title>` with this id and is labelled by it.
+   */
   get titleId(): string | undefined {
     const { title } = this.args;
-    let titleId;
 
-    // If no aria-label or aria-labelledby is provided but there's a title, a titleId is generated
-    //  The svg aria-labelledby attribute gets this titleId
-    //  The svg title element gets this titleId as an id
-    if (!this.args['aria-label'] && !this.args['aria-labelledby'] && title) {
-      titleId = guidFor({});
+    if (!title || this.args['aria-label'] || this.args['aria-labelledby']) {
+      return undefined;
     }
 
-    return titleId;
+    return this.args.titleId ?? `${guidFor(this)}-title`;
   }
 
   <template>
@@ -274,14 +278,18 @@ export default class EuiIcon extends Component<EuiIconSignature> {
           }}
           role="image"
           aria-hidden={{if this.isAriaHidden "true"}}
-          aria-label={{if @aria-label @aria-label this.titleId}}
+          aria-label={{@aria-label}}
           aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
           {{! @glint-expect-error }}
           tabindex={{@tabIndex}}
           style={{this.optionalCustomStyles}}
           color={{@color}}
           ...attributes
-        />
+        >
+          {{#if this.titleId}}
+            <title id={{this.titleId}}>{{@title}}</title>
+          {{/if}}
+        </IconComponent>
       {{/let}}
     {{else}}
       {{#if this.useImage}}
@@ -314,13 +322,17 @@ export default class EuiIcon extends Component<EuiIconSignature> {
           data-type={{this.dataType}}
           role="image"
           aria-hidden={{if this.isAriaHidden "true"}}
-          aria-label={{if @aria-label @aria-label this.titleId}}
+          aria-label={{@aria-label}}
           aria-labelledby={{if @aria-labelledby @aria-labelledby this.titleId}}
           {{! @glint-expect-error }}
           tabindex={{@tabIndex}}
           style={{this.optionalCustomStyles}}
           ...attributes
-        />
+        >
+          {{#if this.titleId}}
+            <title id={{this.titleId}}>{{@title}}</title>
+          {{/if}}
+        </this.iconComponent>
       {{/if}}
     {{/if}}
   </template>

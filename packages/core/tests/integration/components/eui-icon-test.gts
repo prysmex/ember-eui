@@ -190,6 +190,35 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg').hasAttribute('role', 'image');
     });
 
+    test('@title renders a <title> that labels the svg', async function (assert) {
+      await render(<template><EuiIcon @type="bell" @title="Notifications" /></template>);
+
+      const titleId = document.querySelector('svg title')?.id;
+
+      assert.dom('svg title').hasText('Notifications');
+      assert.ok(titleId, 'the title has an id');
+      assert.dom('svg').hasAttribute('aria-labelledby', titleId as string);
+      assert.dom('svg').doesNotHaveAttribute('aria-label');
+      assert.dom('svg').doesNotHaveAttribute('aria-hidden');
+    });
+
+    test('@titleId sets the id of the <title>', async function (assert) {
+      await render(
+        <template><EuiIcon @type="bell" @title="Notifications" @titleId="bell-title" /></template>
+      );
+
+      assert.dom('svg title#bell-title').exists();
+      assert.dom('svg').hasAttribute('aria-labelledby', 'bell-title');
+    });
+
+    test('@aria-label alone makes the icon accessible', async function (assert) {
+      await render(<template><EuiIcon @type="bell" @aria-label="Notifications" /></template>);
+
+      assert.dom('svg').hasAttribute('aria-label', 'Notifications');
+      assert.dom('svg').doesNotHaveAttribute('aria-hidden');
+      assert.dom('svg title').doesNotExist();
+    });
+
     test('it passes aria-label and tabIndex through', async function (assert) {
       await render(
         <template>

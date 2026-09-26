@@ -12,9 +12,7 @@ order: 9
 {{#if this.showFlyout}}
   <EuiFlyout @onClose={{set this 'showFlyout' false}}>
     <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle size='m'>
-        <h2 id='flyoutTitle'>A flyout with just code</h2>
-      </EuiTitle>
+      <EuiTitle size='m' @tagName="h2" id='flyoutTitle'>A flyout with just code</EuiTitle>
     </EuiFlyoutHeader>
     <div style='height: 100%'>
       <EuiCodeBlock

@@ -108,9 +108,7 @@ order: 6
   <EuiPortal>
     <EuiFlyout @onClose={{set this 'flyout' false}} @size='s'>
       <EuiFlyoutHeader @hasBorder={{true}}>
-        <EuiTitle @size='s'>
-          <h2>What&apos;s new</h2>
-        </EuiTitle>
+        <EuiTitle @size='s' @tagName="h2">What&apos;s new</EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         {{#each this.alerts as |alert|}}

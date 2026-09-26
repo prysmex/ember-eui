@@ -15,9 +15,7 @@ order: 3
 {{#if this.flyoutOpen}}
   <EuiFlyout @onClose={{this.closeFlyout}}>
     <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle @size='m'>
-        <h2>Flyout header</h2>
-      </EuiTitle>
+      <EuiTitle @size='m' @tagName="h2">Flyout header</EuiTitle>
       <EuiSpacer @size='s' />
       <EuiText @color='subdued'>
         Put navigation items in the header, and cross tab actions in a footer.

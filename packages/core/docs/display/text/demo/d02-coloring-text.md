@@ -13,15 +13,11 @@ There are two ways to color text. Either individually by applying <strong>EuiTex
 
 ```hbs template
 <div>
-  <EuiTitle>
-    <h2>
-      <EuiTextColor @color='default'>You </EuiTextColor>
+  <EuiTitle @tagName="h2"><EuiTextColor @color='default'>You </EuiTextColor>
       <EuiTextColor @color='success'>use </EuiTextColor>
       <EuiTextColor @color='accent'>it </EuiTextColor>
       <EuiTextColor @color='warning'>on </EuiTextColor>
-      <EuiTextColor @color='danger'>anything!</EuiTextColor>
-    </h2>
-  </EuiTitle>
+      <EuiTextColor @color='danger'>anything!</EuiTextColor></EuiTitle>
 
   <EuiSpacer @size='l' />
 

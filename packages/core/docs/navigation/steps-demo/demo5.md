@@ -11,17 +11,13 @@ order: 3
 
 ```hbs template
 <div>
-  <EuiTitle size='l'>
-    <h1>Heading 1</h1>
-  </EuiTitle>
+  <EuiTitle size='l' @tagName="h1">Heading 1</EuiTitle>
 
   <EuiSpacer size='xl' />
 
   <EuiSteps @headingElement='h2'>
     <EuiStep @step={{1}} @title='Step 1'>
-      <EuiTitle @size='xs'>
-        <h3>Did you notice the step title is inside a Heading 2 element?</h3>
-      </EuiTitle>
+      <EuiTitle @size='xs' @tagName="h3">Did you notice the step title is inside a Heading 2 element?</EuiTitle>
     </EuiStep>
 
   </EuiSteps>

@@ -203,8 +203,8 @@ export default class IconGallery extends Component {
     <div class="iconGallery">
       {{#each this.sections as |section|}}
         <section class="iconGallery__section">
-          <EuiTitle @size="xs"><h3>{{section.title}}
-              ({{section.icons.length}})</h3></EuiTitle>
+          <EuiTitle @size="xs" @tagName="h3">{{section.title}}
+              ({{section.icons.length}})</EuiTitle>
           <EuiText @size="s" @color="subdued">
             <p>{{section.description}}</p>
           </EuiText>

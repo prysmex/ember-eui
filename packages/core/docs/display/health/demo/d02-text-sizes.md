@@ -21,11 +21,7 @@ order: 2
   Healthy
 </EuiHealth>
 <EuiSpacer />
-<EuiTitle @size='s'>
-  <h3>
-    <EuiHealth @color='warning' @textSize='inherit'>
+<EuiTitle @size='s' @tagName="h3"><EuiHealth @color='warning' @textSize='inherit'>
       Warning
-    </EuiHealth>
-  </h3>
-</EuiTitle>
+    </EuiHealth></EuiTitle>
 ```

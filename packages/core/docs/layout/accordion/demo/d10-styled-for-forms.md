@@ -51,9 +51,7 @@ order: 10
           </EuiFlexItem>
 
           <EuiFlexItem>
-            <EuiTitle @size='xs'>
-              <h3>Webhook</h3>
-            </EuiTitle>
+            <EuiTitle @size='xs' @tagName="h3">Webhook</EuiTitle>
           </EuiFlexItem>
         </EuiFlexGroup>
 

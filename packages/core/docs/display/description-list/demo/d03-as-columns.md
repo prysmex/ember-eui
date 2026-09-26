@@ -21,11 +21,7 @@ order: 3
   style='max-width:400px;'
 />
 <EuiSpacer @size='xl' />
-<EuiTitle @size='s'>
-  <h3>
-    The following list will become the typical row format on small screens
-  </h3>
-</EuiTitle>
+<EuiTitle @size='s' @tagName="h3">The following list will become the typical row format on small screens</EuiTitle>
 <EuiSpacer />
 
 <EuiDescriptionList

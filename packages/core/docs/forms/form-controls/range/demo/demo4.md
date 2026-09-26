@@ -22,11 +22,7 @@ order: 4
   aria-label='An example of EuiRange with ticks'
 />
 <EuiSpacer @size='xl' />
-<EuiTitle @size='xxs'>
-  <h3>
-    Custom tick interval
-  </h3>
-</EuiTitle>
+<EuiTitle @size='xxs' @tagName="h3">Custom tick interval</EuiTitle>
 <EuiSpacer @size='l' />
 <EuiRange
   @value={{this.value2}}
@@ -38,11 +34,7 @@ order: 4
   aria-label='An example of EuiRange with custom tickInterval'
 />
 <EuiSpacer @size='xl' />
-<EuiTitle @size='xxs'>
-  <h3>
-    Custom ticks object
-  </h3>
-</EuiTitle>
+<EuiTitle @size='xxs' @tagName="h3">Custom ticks object</EuiTitle>
 <EuiSpacer @size='l' />
 <EuiDualRange
   @value={{this.dualValue}}

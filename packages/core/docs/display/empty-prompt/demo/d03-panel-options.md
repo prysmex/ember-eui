@@ -47,9 +47,7 @@ order: 3
   @actions={{array (component 'eui-button-title' title='Add a case')}}
 >
   <:footer>
-    <EuiTitle @size='xxs'>
-      <h3>Want to learn more?</h3>
-    </EuiTitle>
+    <EuiTitle @size='xxs' @tagName="h3">Want to learn more?</EuiTitle>
     <EuiLink href='#' target='_blank'>
       Read documentation
     </EuiLink>

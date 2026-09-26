@@ -71,9 +71,7 @@ order: 7
     }}
   >
     <:footer>
-      <EuiTitle @size='xxs'>
-        <h3>Want to learn more?</h3>
-      </EuiTitle>
+      <EuiTitle @size='xxs' @tagName="h3">Want to learn more?</EuiTitle>
       <EuiLink href='#' target='_blank'>
         Read documentation
       </EuiLink>
@@ -106,9 +104,7 @@ order: 7
     <:footer>
       <EuiFlexGroup class="eui-textLeft">
         <EuiFlexItem @grow={{false}}>
-          <EuiTitle @size="xxs">
-            <h3>Want to learn more?</h3>
-          </EuiTitle>
+          <EuiTitle @size="xxs" @tagName="h3">Want to learn more?</EuiTitle>
           <span>
             <EuiButtonEmpty
               href="#"
@@ -123,9 +119,7 @@ order: 7
           </span>
         </EuiFlexItem>
         <EuiFlexItem @grow={{false}}>
-          <EuiTitle @size="xxs">
-            <h3>Pretty sure you have data?</h3>
-          </EuiTitle>
+          <EuiTitle @size="xxs" @tagName="h3">Pretty sure you have data?</EuiTitle>
           <span>
             <EuiButtonEmpty
               onClick={{this.onClick}}

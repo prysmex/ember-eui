@@ -4,7 +4,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-insert';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, next, scheduleOnce } from '@ember/runloop';
 
 import style from 'ember-style-modifier/modifiers/style';

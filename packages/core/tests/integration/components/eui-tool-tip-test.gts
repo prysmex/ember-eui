@@ -1,4 +1,5 @@
 import { module, test } from 'qunit';
+import { tracked } from '@glimmer/tracking';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, triggerEvent, waitUntil } from '@ember/test-helpers';
 
@@ -44,6 +45,31 @@ module('Integration | Component | eui-tool-tip', function (hooks) {
 
     await waitUntil(tooltip);
     assert.dom('.euiToolTip', document.body).containsText('Always');
+  });
+
+  test('changing @isShown shows and hides it', async function (assert) {
+    class State {
+      @tracked shown = false;
+    }
+    const state = new State();
+
+    await render(
+      <template>
+        <EuiToolTip @content="Toggled" @isShown={{state.shown}}>
+          <span>anchor</span>
+        </EuiToolTip>
+      </template>
+    );
+
+    assert.strictEqual(tooltip(), null, 'hidden initially');
+
+    state.shown = true;
+    await waitUntil(tooltip);
+    assert.dom('.euiToolTip', document.body).containsText('Toggled');
+
+    state.shown = false;
+    await waitUntil(() => !tooltip());
+    assert.strictEqual(tooltip(), null, 'hidden again');
   });
 
   test('EuiIconTip renders an icon anchor with a tooltip', async function (assert) {

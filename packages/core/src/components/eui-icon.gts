@@ -204,7 +204,9 @@ export default class EuiIcon extends Component<EuiIconSignature> {
     return tabIndex == null || tabIndex === -1 ? 'false' : 'true';
   }
 
-  get optionalCustomStyles(): ReturnType<typeof htmlSafe> | string {
+  // undefined (not '') when there is no custom color, so no `style`
+  // attribute is bound (a plain string triggers Ember's style binding warning)
+  get optionalCustomStyles(): ReturnType<typeof htmlSafe> | undefined {
     const { color } = this.args;
 
     if (color && typeof color === 'string') {
@@ -213,7 +215,7 @@ export default class EuiIcon extends Component<EuiIconSignature> {
       }
     }
 
-    return '';
+    return undefined;
   }
 
   get optionalColorClass(): NamedColor | string {

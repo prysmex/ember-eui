@@ -95,6 +95,17 @@ module('Integration | Component | eui-icon', function (hooks) {
       );
     });
 
+    test('no style attribute is bound without a custom color', async function (assert) {
+      await render(
+        <template>
+          <EuiIcon @type="bell" />
+          <EuiIcon @type="bell" @color="danger" />
+        </template>
+      );
+
+      assert.dom('svg[style]').doesNotExist();
+    });
+
     test('a named color becomes a class', async function (assert) {
       await render(<template><EuiIcon @type="bell" @color="danger" /></template>);
 

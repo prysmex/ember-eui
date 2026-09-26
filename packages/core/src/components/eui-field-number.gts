@@ -15,15 +15,25 @@ import type { IconType } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFieldNumberArgs = CommonArgs & {
+  /** Id of the input, e.g. to match an `EuiFormRow`'s label. Defaults to a random id. */
   id?: string;
+  /** Icon inside the input, anything `EuiIcon`'s `@type` accepts. */
   icon?: IconType;
+  /** Shows the invalid state and marks the input invalid for native form validation. */
   isInvalid?: boolean;
+  /** Stretches the input to its container's width. */
   fullWidth?: boolean;
+  /** Shows a spinner in the input. */
   isLoading?: boolean;
+  /** Makes the input read-only. */
   readOnly?: boolean;
+  /** Lowest allowed value. */
   min?: number | string;
+  /** Highest allowed value. */
   max?: number | string;
+  /** The value. Update it from `{{on "input" …}}` (the event's value is a string). */
   value?: number | string;
+  /** Disables the input. */
   disabled?: boolean;
 
   /**
@@ -32,18 +42,13 @@ export type EuiFieldNumberArgs = CommonArgs & {
    * Defaults to `1`
    */
   step?: number | 'any';
+  /** Called with the `<input>` element once rendered (only with `@controlOnly`). */
   inputRef?: (ele: Element) => void;
 
-  /**
-   * Creates an input group with element(s) coming before input.
-   * `string` | `Component` or an array of these
-   */
+  /** @deprecated Has no effect, use the `<:prepend>` block. */
   prepend?: EuiFormControlLayoutSignature['Blocks']['prepend'];
 
-  /**
-   * Creates an input group with element(s) coming after input.
-   * `string` | `Component` or an array of these
-   */
+  /** @deprecated Has no effect, use the `<:append>` block. */
   append?: EuiFormControlLayoutSignature['Blocks']['append'];
 
   /**
@@ -52,14 +57,15 @@ export type EuiFieldNumberArgs = CommonArgs & {
    */
   controlOnly?: boolean;
 
-  /**
-   * when `true` creates a shorter height input
-   */
+  /** Shorter input, for dense forms. */
   compressed?: boolean;
 
+  /** @private Show the `<:prepend>` block. Defaults to `true`. */
   isPrependProvided?: boolean;
+  /** @private Show the `<:append>` block. Defaults to `true`. */
   isAppendProvided?: boolean;
 
+  /** Shows a clear ("x") button calling this function; empty the value there. */
   clear?: EuiFormControlLayoutSignature['Args']['clear'];
 };
 
@@ -67,8 +73,11 @@ export interface EuiFieldNumberSignature {
   Element: HTMLInputElement;
   Args: EuiFieldNumberArgs;
   Blocks: {
+    /** Unused. */
     default: [string];
+    /** Content before the input, e.g. an `EuiFormLabel`; yields the class to put on it. */
     prepend: [string];
+    /** Content after the input, e.g. a unit; yields the class to put on it. */
     append: [string];
   };
 }

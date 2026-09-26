@@ -10,10 +10,17 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiFlexItemSignature {
   Element: Element;
   Args: {
+    /**
+     * How the item grows: `true` (default) takes an equal share of the
+     * space, `false` only takes its content's width, `1`–`10` take that
+     * many shares.
+     */
     grow?: keyof typeof growMapping | boolean;
+    /** Tag of the item. Defaults to `'div'`. */
     tagName?: string;
   };
   Blocks: {
+    /** The content. */
     default: [];
   };
 }

@@ -15,24 +15,44 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiFieldTextSignature {
   Element: HTMLInputElement;
   Args: {
+    /** Id of the input, e.g. to match an `EuiFormRow`'s label. Defaults to a random id. */
     id?: string;
+    /** The value. Update it from `{{on "input" …}}` on the component. */
     value?: string;
+    /** Placeholder text. */
     placeholder?: string;
+    /** Icon inside the input, anything `EuiIcon`'s `@type` accepts (or `{ type, side }`). */
     icon?: EuiFormControlLayoutSignature['Args']['icon'];
+    /** Stretches the input to its container's width. */
     fullWidth?: boolean;
+    /** Shows a spinner in the input. */
     isLoading?: boolean;
+    /** Shorter input, for dense forms. */
     compressed?: boolean;
+    /** Makes the input read-only. */
     readOnly?: boolean;
+    /** Disables the input. */
     disabled?: boolean;
+    /** Shows a clear ("x") button calling this function; empty the value there. */
     clear?: () => void;
+    /**
+     * Renders just the `<input>`, without the layout (icon, clear button,
+     * prepend/append). Best used inside EuiFormControlLayoutDelimited.
+     */
     controlOnly?: boolean;
+    /** Shows the invalid state and marks the input invalid for native form validation. */
     isInvalid?: boolean;
+    /** Called with the `<input>` element once rendered (only with `@controlOnly`). */
     inputRef?: (element: HTMLInputElement | null) => void;
+    /** @private Ignore the `<:prepend>` block. */
     isFakePrependBlock?: boolean;
+    /** @private Ignore the `<:append>` block. */
     isFakeAppendBlock?: boolean;
   };
   Blocks: {
+    /** Content before the input, e.g. an `EuiFormLabel`; yields the class to put on it and the input id. */
     prepend: [...EuiFormControlLayoutSignature['Blocks']['prepend'], string];
+    /** Content after the input; yields the class to put on it and the input id. */
     append: [...EuiFormControlLayoutSignature['Blocks']['append'], string];
   };
 }

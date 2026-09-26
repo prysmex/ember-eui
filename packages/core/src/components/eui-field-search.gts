@@ -24,7 +24,9 @@ let isSearchSupported = false;
  * You can find more typing on the template
  */
 type EuiFieldSearchArgs = {
+  /** The search text. Update it in `@onSearch`. */
   value?: string;
+  /** Initial text when `@value` is not passed. */
   defaultValue?: string;
 
   /**
@@ -33,22 +35,39 @@ type EuiFieldSearchArgs = {
    */
   incremental?: boolean;
   /**
-   * Optional callback method called on open and close with a single `isOpen` parameter
+   * Called on keyup, before `@onSearch`; call `event.preventDefault()` to
+   * skip the search.
    */
   onKeyUp?: (e: KeyboardEvent) => void;
+  /**
+   * Called with the text when the user presses Enter or clears the field,
+   * and on every keystroke with `@incremental`.
+   */
   onSearch: (value: string) => void;
 
+  /** @private Ignore the `<:prepend>` block. */
   isFakePrependBlock?: boolean;
+  /** @private Ignore the `<:append>` block. */
   isFakeAppendBlock?: boolean;
+  /** Stretches the input to its container's width. */
   fullWidth?: boolean;
+  /** Shorter input, for dense forms. */
   compressed?: boolean;
+  /** Shows a spinner in the input. */
   isLoading?: boolean;
+  /** Shows a clear button while `@value` is set. Defaults to `true`. */
   isClearable?: boolean;
+  /** Disables the input. */
   disabled?: boolean;
+  /** Hides the clear button. */
   readOnly?: boolean;
+  /** Placeholder text. */
   placeholder?: string;
+  /** Id of the input, e.g. to match an `EuiFormRow`'s label. Defaults to a random id. */
   id?: string;
+  /** Shows the invalid state and marks the input invalid for native form validation. */
   isInvalid?: boolean;
+  /** Hides the clear button; use `@disabled` to disable the input. */
   isDisabled?: boolean;
 };
 
@@ -56,8 +75,10 @@ export interface EuiFieldSearchSignature {
   Element: HTMLInputElement;
   Args: EuiFieldSearchArgs;
   Blocks: {
+    /** Content before the input, e.g. an `EuiFormLabel`; yields the class to put on it and the input id. */
     prepend: [...EuiFormControlLayoutSignature['Blocks']['prepend'], string];
     field: [];
+    /** Content after the input; yields the class to put on it and the input id. */
     append: [...EuiFormControlLayoutSignature['Blocks']['append'], string];
   };
 }

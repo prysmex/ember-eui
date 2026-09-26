@@ -13,27 +13,31 @@ export interface EuiFlexGridSignature {
   Element: HTMLDivElement | any;
   Args: {
     /**
-     * Passes the HTML tag to the wrapping element
+     * Passes the HTML tag to the wrapping element. Defaults to `'div'`.
      */
     tagName?: string;
     /**
-     * Sets the direction of the flex grid
+     * `'row'` fills the grid row by row, `'column'` column by column.
+     * Defaults to `'row'`.
      */
     direction?: keyof typeof directionMapping;
     /**
-     * Sets the number of columns in the flex grid
+     * Number of columns, `1` to `4`. `0` lets the items wrap at their own
+     * width. Defaults to `0`.
      */
     columns?: number;
     /**
-     * Sets the gutter size between flex items
+     * Space between items: `'none'`, `'s'`, `'m'`, `'l'` or `'xl'`.
+     * Defaults to `'l'`.
      */
     gutterSize?: keyof typeof gutterSizeMapping;
     /**
-     * Sets the responsive behavior of the flex grid
+     * Stacks the items in one column on small screens. Defaults to `true`.
      */
     responsive?: boolean;
   };
   Blocks: {
+    /** The `EuiFlexItem`s, laid out in a grid. */
     default: [];
   };
 }

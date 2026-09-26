@@ -25,15 +25,20 @@ export type EuiFilePickerDisplay = keyof typeof displayMapping;
  * You can find more typing on the template
  */
 type EuiFilePicker = {
+  /** Id of the file input. Defaults to a random id. */
   id?: string;
+  /** `name` of the file input, for forms. */
   name?: string;
+  /** @deprecated Has no effect, use `class=`. */
   class?: string;
   /**
-   * The content that appears in the dropzone if no file is attached
+   * The content that appears in the dropzone if no file is attached.
+   * Defaults to "Select or drag and drop a file".
    */
   initialPromptText?: Component | string | null;
   /**
-   * Use as a callback to access the HTML FileList API
+   * Called with the selected files (a `FileList`) when they change,
+   * including when they are removed (an empty list).
    */
   onChange?: (files: FileList | null) => void;
   /**
@@ -46,22 +51,33 @@ type EuiFilePicker = {
    * `large` for taller size
    */
   display?: EuiFilePickerDisplay;
+  /** Stretches the picker to its container's width. */
   fullWidth?: boolean;
+  /** Shows the invalid state and marks the input invalid for native form validation. */
   isInvalid?: boolean;
+  /** Shows a spinner. */
   isLoading?: boolean;
+  /** Disables the picker. */
   disabled?: boolean;
+  /** Allows selecting several files. */
   multiple?: boolean;
 
   /**
-   * Optionally pass a fn to get the instance of the component to access it programatically
+   * Called with the component instance, e.g. to call its `removeFiles()`
+   * action and reset the picker.
    */
   ref?: (c: typeof EuiFilePickerComponent) => void;
 };
 
+/**
+ * A file input styled as a drop zone. Attributes such as `accept` go to the
+ * `<input type="file">`.
+ */
 export interface EuiFilePickerSignature {
   Element: HTMLInputElement;
   Args: EuiFilePicker;
   Blocks: {
+    /** Unused. */
     default: [];
   };
 }

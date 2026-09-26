@@ -19,23 +19,42 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiFieldPasswordSignature {
   Element: HTMLInputElement;
   Args: {
+    /** The value. Update it from `{{on "input" …}}` on the component. */
     value?: string;
+    /** Id of the input, e.g. to match an `EuiFormRow`'s label. Defaults to a random id. */
     id?: string;
+    /**
+     * `'password'` hides the text, `'text'` shows it, `'dual'` hides it with
+     * a button to show it. Defaults to `'dual'`.
+     */
     type?: 'dual' | 'text' | 'password';
+    /** Stretches the input to its container's width. */
     fullWidth?: boolean;
+    /** Shorter input, for dense forms. */
     compressed?: boolean;
+    /** Shows a spinner in the input. */
     isLoading?: boolean;
+    /** Makes the input read-only. */
     readOnly?: boolean;
+    /** Disables the input. */
     disabled?: boolean;
+    /** Shows the invalid state and marks the input invalid for native form validation. */
     isInvalid?: boolean;
+    /** Shows a clear ("x") button calling this function; empty the value there. */
     clear?: EuiFormControlLayoutSignature['Args']['clear'];
+    /** Called with the `<input>` element once rendered. */
     inputRef?: (element: HTMLInputElement) => void;
+    /** @private Ignore the `<:prepend>` block. */
     isFakePrependBlock?: boolean;
+    /** @private Ignore the `<:append>` block. */
     isFakeAppendBlock?: boolean;
+    /** Placeholder text. */
     placeholder?: string;
   };
   Blocks: {
+    /** Content before the input, e.g. an `EuiFormLabel`; yields the class to put on it and the input id. */
     prepend: [unknown, string];
+    /** Content after the input; yields the class to put on it and the input id. */
     append: [unknown, string];
   };
 }

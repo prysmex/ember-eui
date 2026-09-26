@@ -53,11 +53,14 @@ const EuiKeyPadMenuItem: TemplateOnlyComponent<EuiKeyPadMenuItemSignature> =
         <TagElement
           href={{if useHref @href}}
           target={{if useHref @target}}
-          aria-current={{if (and useHref @isSelected) @isSelected}}
+          aria-current={{if (and useHref @isSelected) "true"}}
           for={{if @checkable itemId}}
           disabled={{if (and (not useHref) (not @checkable)) @isDisabled}}
           type={{if (and (not useHref) (not @checkable)) "button"}}
-          aria-pressed={{if (and (not useHref) (not @checkable)) @isSelected}}
+          aria-pressed={{if
+            (and (not useHref) (not @checkable))
+            (if @isSelected "true" "false")
+          }}
           class={{classNames
             "euiKeyPadMenuItem"
             (if @betaBadgeLabel "euiKeyPadMenuItem--hasBetaBadge")

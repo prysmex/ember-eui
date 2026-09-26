@@ -63,9 +63,9 @@ const EuiProgress: TemplateOnlyComponent<EuiProgressSignature> = <template>
       }}
       max={{@max}}
       value={{@value}}
-      aria-hidden={{and
-        (has-block "label")
-        (or @valueText (has-block "valueText"))
+      aria-hidden={{if
+        (and (has-block "label") (or @valueText (has-block "valueText")))
+        "true"
       }}
       ...attributes
     ></progress>

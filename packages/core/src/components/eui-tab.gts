@@ -31,7 +31,7 @@ const EuiTab: TemplateOnlyComponent<EuiTabSignature> = <template>
       <a
         id={{id}}
         role="tab"
-        aria-selected={{not (not @isSelected)}}
+        aria-selected={{if @isSelected "true" "false"}}
         class={{classNames
           "euiTab"
           (if @isSelected "euiTab-isSelected")
@@ -61,7 +61,7 @@ const EuiTab: TemplateOnlyComponent<EuiTabSignature> = <template>
       <button
         id={{id}}
         role="tab"
-        aria-selected={{not (not @isSelected)}}
+        aria-selected={{if @isSelected "true" "false"}}
         type="button"
         class={{classNames
           "euiTab"

@@ -22,12 +22,16 @@ const EuiSelectableListItem: TemplateOnlyComponent<EuiSelectableListItemSignatur
     {{! TODO: not fully implemented }}
     <li
       role="option"
-      aria-selected={{and (not @disabled) (eq (typeOf @checked) "string")}}
+      aria-selected={{if
+        (and (not @disabled) (eq (typeOf @checked) "string"))
+        "true"
+        "false"
+      }}
       class={{classNames
         componentName="EuiSelectableListItem"
         isFocused=@isFocused
       }}
-      aria-disabled={{@disabled}}
+      aria-disabled={{if @disabled "true"}}
       ...attributes
     >
       <span class="euiSelectableListItem__content">

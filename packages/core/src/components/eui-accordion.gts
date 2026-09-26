@@ -241,7 +241,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     @iconType="arrowRight"
                     {{on "click" this.onToggle}}
                     aria-controls={{@id}}
-                    aria-expanded={{this.isOpen}}
+                    aria-expanded={{if this.isOpen "true" "false"}}
                     tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
                   />
                 {{/if}}
@@ -250,7 +250,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                   id={{argOrDefault @buttonProps.id (randomId)}}
                   class={{this.buttonClasses}}
                   aria-controls={{@id}}
-                  aria-expanded={{this.isOpen}}
+                  aria-expanded={{if this.isOpen "true" "false"}}
                   aria-labelledby={{argOrDefault @buttonProps.id (randomId)}}
                   {{on "click" this.onToggle}}
                 >
@@ -286,7 +286,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     @iconType="arrowRight"
                     {{on "click" this.onToggle}}
                     aria-controls={{@id}}
-                    aria-expanded={{this.isOpen}}
+                    aria-expanded={{if this.isOpen "true" "false"}}
                     tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
                   />
                 {{/if}}

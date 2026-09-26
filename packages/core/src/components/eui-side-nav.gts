@@ -107,7 +107,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                 @iconType="apps"
                 @iconSide="right"
                 aria-controls={{sideNavContentId}}
-                aria-expanded={{@isOpenMobile}}
+                aria-expanded={{if @isOpenMobile "true" "false"}}
               >
                 {{#if @mobileTitle}}
                   {{@mobileTitle}}

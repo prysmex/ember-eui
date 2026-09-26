@@ -60,7 +60,7 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
               @color={{@iconColor}}
               {{! TODO only add one of the following html attributes }}
               aria-label={{@iconAriaLabel}}
-              aria-hidden={{if @iconAriaLabel false true}}
+              aria-hidden={{unless @iconAriaLabel "true"}}
             />
           {{/if}}
 
@@ -104,7 +104,7 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
                   <EuiButtonIcon
                     {{! aria-label={contextMenuButton} }}
                     aria-controls={{randomPopoverId}}
-                    aria-expanded={{isPopoverOpen.value}}
+                    aria-expanded={{if isPopoverOpen.value "true" "false"}}
                     aria-haspopup="true"
                     @iconType="boxesVertical"
                     @color="text"

@@ -1,4 +1,4 @@
-import { and, eq,not, or } from 'ember-truth-helpers';
+import { and, eq, not, notEq, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -84,7 +84,10 @@ const EuiButtonEmpty: TemplateOnlyComponent<EuiButtonEmptySignature> =
           }}
           disabled={{or @isLoading @isDisabled @disabled}}
           type={{if @type @type "button"}}
-          aria-pressed={{@isSelected}}
+          aria-pressed={{if
+            (notEq @isSelected undefined)
+            (if @isSelected "true" "false")
+          }}
           ...attributes
         >
           <EuiButtonContent

@@ -304,7 +304,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                 </EuiRangeLabel>
               {{/if}}
               <EuiRangeTrack
-                aria-hidden={{eq this.showInput true}}
+                aria-hidden={{if (eq this.showInput true) "true"}}
                 @disabled={{@disabled}}
                 @compressed={{@compressed}}
                 @max={{this.max}}
@@ -332,7 +332,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                   />
                 {{/if}}
                 <EuiRangeSlider
-                  aria-hidden={{if (eq this.showInput true) true false}}
+                  aria-hidden={{if (eq this.showInput true) "true"}}
                   tabindex={{if (eq this.showInput true) "-1"}}
                   @id={{if this.showInput undefined this.id}}
                   @name={{@name}}
@@ -473,7 +473,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
             </EuiRangeLabel>
           {{/if}}
           <EuiRangeTrack
-            aria-hidden={{eq this.showInput true}}
+            aria-hidden={{if (eq this.showInput true) "true"}}
             @disabled={{@disabled}}
             @compressed={{@compressed}}
             @max={{this.max}}
@@ -501,7 +501,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
               />
             {{/if}}
             <EuiRangeSlider
-              aria-hidden={{if (eq this.showInput true) true false}}
+              aria-hidden={{if (eq this.showInput true) "true"}}
               tabindex={{if (eq this.showInput true) "-1"}}
               @id={{if this.showInput undefined this.id}}
               @name={{@name}}

@@ -72,7 +72,7 @@ export default class EuiCardSelectComponent extends Component<EuiCardSelectSigna
       @flush={{@flush}}
       @type={{@type}}
       role="switch"
-      aria-checked={{@isSelected}}
+      aria-checked={{if @isSelected "true" "false"}}
       {{on "click" (optional @onClick)}}
       ...attributes
     >

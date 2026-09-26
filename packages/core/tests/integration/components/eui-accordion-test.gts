@@ -25,9 +25,11 @@ module('Integration | Component | eui-accordion', function (hooks) {
     );
 
     assert.dom('.euiAccordion').doesNotHaveClass('euiAccordion-isOpen');
+    assert.dom('.euiAccordion__button').hasAttribute('aria-expanded', 'false');
 
     await click('.euiAccordion__button');
     assert.dom('.euiAccordion').hasClass('euiAccordion-isOpen');
+    assert.dom('.euiAccordion__button').hasAttribute('aria-expanded', 'true');
 
     await click('.euiAccordion__button');
     assert.dom('.euiAccordion').doesNotHaveClass('euiAccordion-isOpen');

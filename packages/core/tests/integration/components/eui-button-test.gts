@@ -70,5 +70,18 @@ module('Integration | Component | eui-button', function (hooks) {
     assert.strictEqual(clicks, 1);
     assert.dom('a.link').hasAttribute('href', '#docs');
     assert.dom('button.disabled').isDisabled().hasClass('euiButtonEmpty-isDisabled');
+    assert.dom('button.empty').doesNotHaveAttribute('aria-pressed', 'not a toggle without @isSelected');
+  });
+
+  test('EuiButtonEmpty @isSelected sets aria-pressed to "true"/"false"', async function (assert) {
+    await render(
+      <template>
+        <EuiButtonEmpty @isSelected={{true}} class="on">On</EuiButtonEmpty>
+        <EuiButtonEmpty @isSelected={{false}} class="off">Off</EuiButtonEmpty>
+      </template>
+    );
+
+    assert.dom('.on').hasAttribute('aria-pressed', 'true');
+    assert.dom('.off').hasAttribute('aria-pressed', 'false');
   });
 });

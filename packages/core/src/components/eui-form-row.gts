@@ -87,7 +87,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                 <EuiFormLabel
                   class="euiFormRow__label"
                   for={{rowId}}
-                  aria-invalid={{@isInvalid}}
+                  aria-invalid={{if @isInvalid "true"}}
                   @isInvalid={{@isInvalid}}
                   @type={{@labelType}}
                 >
@@ -97,7 +97,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                 <EuiFormLabel
                   class="euiFormRow__label"
                   for={{rowId}}
-                  aria-invalid={{@isInvalid}}
+                  aria-invalid={{if @isInvalid "true"}}
                   @isInvalid={{@isInvalid}}
                   @type={{@labelType}}
                 >
@@ -107,7 +107,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
             {{else if hasLabelBlock}}
               <EuiFormLabel
                 class="euiFormRow__label"
-                aria-invalid={{@isInvalid}}
+                aria-invalid={{if @isInvalid "true"}}
                 for={{if hasChildLabel rowId}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}
@@ -122,7 +122,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
             {{else}}
               <EuiFormLabel
                 class="euiFormRow__label"
-                aria-invalid={{@isInvalid}}
+                aria-invalid={{if @isInvalid "true"}}
                 for={{if hasChildLabel rowId}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}
@@ -197,7 +197,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                 <EuiFormLabel
                   class="euiFormRow__label"
                   for={{rowId}}
-                  aria-invalid={{@isInvalid}}
+                  aria-invalid={{if @isInvalid "true"}}
                   @isInvalid={{@isInvalid}}
                   @type={{@labelType}}
                 >
@@ -207,7 +207,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
                 <EuiFormLabel
                   class="euiFormRow__label"
                   for={{rowId}}
-                  aria-invalid={{@isInvalid}}
+                  aria-invalid={{if @isInvalid "true"}}
                   @isInvalid={{@isInvalid}}
                   @type={{@labelType}}
                 >
@@ -217,7 +217,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
             {{else if hasLabelBlock}}
               <EuiFormLabel
                 class="euiFormRow__label"
-                aria-invalid={{@isInvalid}}
+                aria-invalid={{if @isInvalid "true"}}
                 for={{if hasChildLabel rowId}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}
@@ -232,7 +232,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
             {{else}}
               <EuiFormLabel
                 class="euiFormRow__label"
-                aria-invalid={{@isInvalid}}
+                aria-invalid={{if @isInvalid "true"}}
                 for={{if hasChildLabel rowId}}
                 @isInvalid={{@isInvalid}}
                 @type={{@labelType}}

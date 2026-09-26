@@ -54,7 +54,7 @@ const EuiPaginationButton: TemplateOnlyComponent<EuiPaginationButtonSignature> =
                 @size="s"
                 @color="text"
                 @isDisabled={{or @isPlaceholder @isActive}}
-                aria-current={{if @isActive true}}
+                aria-current={{if @isActive "true"}}
                 ...attributes
               >
                 {{pageNumber}}

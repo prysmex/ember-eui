@@ -3,15 +3,18 @@ import { changeTheme } from '../utils/change-theme';
 const DEFAULT_THEME = 'light';
 
 export function initialize(): void {
-  if (window?.localStorage) {
-    const params = new URL(document.location.href).searchParams;
-    const theme = params.get('theme');
-    const currentTheme = theme || window.localStorage.getItem('theme');
+  const params = new URL(document.location.href).searchParams;
+  let stored: string | null = null;
 
-    changeTheme(currentTheme ? currentTheme : DEFAULT_THEME);
+  try {
+    stored = window.localStorage?.getItem('theme') ?? null;
+  } catch {
+    // ignore unavailable storage
   }
+
+  changeTheme(params.get('theme') || stored || DEFAULT_THEME);
 }
 
 export default {
-  initialize
+  initialize,
 };

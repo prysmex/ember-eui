@@ -1,9 +1,19 @@
 html {
   scroll-behavior: smooth;
+  font-family: Inter, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.1429;
+  font-weight: 400;
+  text-size-adjust: 100%;
+  font-kerning: normal;
+  height: 100%;
+  background-color: rgb(248 250 253);
+  color: rgb(52 55 65);
 }
 
 body.euiBody--headerIsFixed {
   padding-top: 49px;
+
   .euiFlyout,
   .euiCollapsibleNav {
     top: 49px;
@@ -17,7 +27,7 @@ body.euiBody--headerIsFixed {
 
 .guideDemo__textLines {
   background-image: linear-gradient(
-    rgba(0, 119, 204, 0.1) 1px,
+    rgb(0 119 204 / 10%) 1px,
     transparent 1px
   );
   background-size: 100% 12px;
@@ -36,11 +46,10 @@ body.euiBody--headerIsFixed {
 
 .guideSideNav__content::-webkit-scrollbar-corner,
 .guideSideNav__content::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgb(0 0 0 / 0%);
 }
 
 .guideSideNav__search {
-  -webkit-flex-shrink: 0;
   flex-shrink: 0;
   padding: 8px 8px 16px;
 }
@@ -48,55 +57,43 @@ body.euiBody--headerIsFixed {
 .guideSideNav {
   background: linear-gradient(
       160deg,
-      rgba(211, 218, 230, 0.3) 0,
-      rgba(211, 218, 230, 0.3) 32px,
-      rgba(255, 0, 0, 0) 0
+      rgb(211 218 230 / 30%) 0,
+      rgb(211 218 230 / 30%) 32px,
+      rgb(255 0 0 / 0%) 0
     ),
     linear-gradient(
       175deg,
-      rgba(211, 218, 230, 0.3) 0,
-      rgba(211, 218, 230, 0.3) 16px,
-      rgba(255, 0, 0, 0) 0
+      rgb(211 218 230 / 30%) 0,
+      rgb(211 218 230 / 30%) 16px,
+      rgb(255 0 0 / 0%) 0
     );
+}
+
+#guide {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .euiBody--headerIsFixed #guide {
   min-height: calc(100vh - 48px);
 }
-#guide {
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  min-height: 100vh;
-}
 
-html {
-  font-family: Inter, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.14286;
-  font-weight: 400;
-  text-size-adjust: 100%;
-  font-kerning: normal;
-  height: 100%;
-  background-color: rgb(248, 250, 253);
-  color: rgb(52, 55, 65);
-}
-
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (width >= 768px) and (width <= 991px) {
   .euiBody--headerIsFixed .euiPageSideBar--sticky {
     max-height: calc(100vh - 48px);
     top: 48px;
   }
 }
 
-@media only screen and (min-width: 992px) and (max-width: 1199px) {
+@media only screen and (width >= 992px) and (width <= 1199px) {
   .euiBody--headerIsFixed .euiPageSideBar--sticky {
     max-height: calc(100vh - 48px);
     top: 48px;
   }
 }
-@media only screen and (min-width: 1200px) {
+
+@media only screen and (width >= 1200px) {
   .euiBody--headerIsFixed .euiPageSideBar--sticky {
     max-height: calc(100vh - 48px);
     top: 48px;
@@ -104,9 +101,10 @@ html {
 }
 
 .pageBodyShadow {
-  box-shadow: rgb(0 0 0 / 8%) 0px 0.9px 4px, rgb(0 0 0 / 6%) 0px 2.6px 8px,
-    rgb(0 0 0 / 5%) 0px 5.7px 12px, rgb(0 0 0 / 4%) 0px 15px 15px;
+  box-shadow: rgb(0 0 0 / 8%) 0 0.9px 4px, rgb(0 0 0 / 6%) 0 2.6px 8px,
+    rgb(0 0 0 / 5%) 0 5.7px 12px, rgb(0 0 0 / 4%) 0 15px 15px;
 }
+
 /* Elastic UI docs specific */
 
 .docfy-demo__description {
@@ -122,17 +120,19 @@ html {
 }
 
 .guideSectionTabs--open {
-  padding-bottom: 0px;
+  padding-bottom: 0;
 }
 
-@media only screen and (max-width: 574px) {
+@media only screen and (width <= 574px) {
   .guideSideNav__content {
     padding: 0;
     border-top: 1px solid #d3dae6;
   }
+
   .guideSideNav__search {
     padding: 8px;
   }
+
   .guideSideNav {
     width: 100%;
   }
@@ -147,20 +147,15 @@ html {
   padding-top: 8px;
   padding-bottom: 8px;
 }
+
 p > p:last-child {
-  margin: 0px;
+  margin: 0;
 }
 
 .docfy-demo__description__header__edit-url {
   margin-bottom: 10px;
   float: right;
   display: inline-block;
-}
-
-a span.icon-link:hover {
-}
-div.docfy-demo__description__header > h2 > a > span {
-  /* content: '#'; */
 }
 
 button {
@@ -177,16 +172,16 @@ button {
 
 .flex-demo .euiFlexItem {
   padding: 16px;
-  background: rgba(27, 169, 245, 0.1);
+  background: rgb(27 169 245 / 10%);
 }
 
 .guideDemo__highlightSpacer .euiCode {
-  -webkit-align-self: flex-start;
   align-self: flex-start;
   margin-bottom: 16px;
 }
+
 .guideDemo__highlightSpacer .euiSpacer {
-  background: rgba(27, 169, 245, 0.1);
+  background: rgb(27 169 245 / 10%);
 }
 
 .docfy-demo__description__content > * {
@@ -194,10 +189,11 @@ button {
 }
 
 .horizontal-rule-demo > div {
-  background: rgba(0, 119, 204, 0.1);
+  background: rgb(0 119 204 / 10%);
   padding: 0.1px;
   margin-bottom: 16px;
 }
+
 .h-full {
   height: 100%;
 }

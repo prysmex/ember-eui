@@ -1,22 +1,28 @@
 import { tracked } from '@glimmer/tracking';
-import { getOwner } from '@ember/application';
 import Controller from '@ember/controller';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
-import { scrollToHash } from 'ember-url-hash-polyfill';
+import config from 'site/config/environment';
+
+import { scrollToHash } from '../utils/scroll-to-hash';
 
 import { getSidenavRoutes } from '../helpers/get-sidenav-routes';
 
-import type { DocfyNode, Item, Page, NodeId } from '../helpers/get-sidenav-routes';
+import type {
+  DocfyNode,
+  Heading,
+  Item,
+  NodeId,
+  Page
+} from '../helpers/get-sidenav-routes';
+import type DocfyService from '@docfy/ember/services/docfy';
+import type Owner from '@ember/owner';
 import type RouterService from '@ember/routing/router-service';
 import type ThemeManager from 'site/services/theme-manager';
 
-interface Props {}
-
 export default class ApplicationController extends Controller {
-  // EuiSideNavItemButton = EuiSideNavItemButton;
   @service declare router: RouterService;
-  @service docfy: any;
+  @service declare docfy: DocfyService;
   @service declare themeManager: ThemeManager;
   @tracked sideNavRoutes: Item[] = [];
   @tracked currentSideNavRoutes: Item[] = [];
@@ -25,16 +31,21 @@ export default class ApplicationController extends Controller {
   @tracked searchValue?: string;
   @tracked themePopover: boolean = false;
 
-  constructor(props?: Props) {
-    super(props);
+  constructor(owner?: Owner) {
+    super(owner);
 
     this.initializeSidenav();
 
     this.router.on('routeDidChange', () => {
-      this.selectedItem = this.router.location.location.pathname;
+      this.selectedItem = this.currentPath;
     });
 
-    this.selectedItem = this.router.location.location.pathname;
+    this.selectedItem = this.currentPath;
+  }
+
+  // the side nav item ids are page paths
+  get currentPath(): string {
+    return (this.router.currentURL ?? '').split(/[?#]/)[0] ?? '';
   }
 
   get currentUrlFor() {
@@ -47,11 +58,12 @@ export default class ApplicationController extends Controller {
 
   initializeSidenav() {
     // uppermost node
-    const docsNode = this.docfy.nested.children[0];
+    // the side nav helpers model docfy's nested output as DocfyNode
+    const docsNode = this.docfy.nested.children[0] as unknown as DocfyNode;
 
     const handlerFn = (id: NodeId) => {
       this.selectedItem = id;
-      this.router.transitionTo(id as string);
+      this.router.transitionTo(id);
       scrollToHash(id as string);
     };
 
@@ -63,11 +75,11 @@ export default class ApplicationController extends Controller {
     ]);
 
     // -- Display, Forms, Layout, Utilities, Editors & Syntax, Navigation sections
-    let coreNode = docsNode.children.find(
+    const coreNode = docsNode.children.find(
       (child: DocfyNode) => child.name === 'core'
     );
-    let coreNodes = this._getDocsNode(coreNode)?.children;
-    let coreNodeRoutes = [
+    const coreNodes = this._getDocsNode(coreNode)?.children;
+    const coreNodeRoutes = [
       'templates',
       'layout',
       'navigation',
@@ -78,16 +90,16 @@ export default class ApplicationController extends Controller {
       'charts',
       'utilities'
     ].reduce<Item[]>((acum, curr) => {
-      let node = coreNodes?.find((child: DocfyNode) => child.name == curr);
+      const node = coreNodes?.find((child: DocfyNode) => child.name == curr);
 
       if (node) {
         // build routes for node
-        let nodeRoutes = getSidenavRoutes([node, handlerFn]);
+        const nodeRoutes = getSidenavRoutes([node, handlerFn]);
 
         // add fake items based on page headings to simulate 'on this page' feature inside sidebar
         node.pages.forEach((page: Page) => {
-          let headings = page?.headings?.[0]?.headings;
-          let item = nodeRoutes?.[0]?.items?.find(
+          const headings = page?.headings?.[0]?.headings;
+          const item = nodeRoutes?.[0]?.items?.find(
             (item: Item) => item.name == page.title
           );
 
@@ -95,7 +107,7 @@ export default class ApplicationController extends Controller {
             // set disabled to page item
             item.disabled = !!page.frontmatter.disabled;
             // create fake items
-            headings?.forEach((heading: any) => {
+            headings?.forEach((heading: Heading) => {
               item?.items.push({
                 id: `fake-${heading.id}`,
                 items: [],
@@ -119,7 +131,7 @@ export default class ApplicationController extends Controller {
     }, []);
 
     // -- Addons section
-    let fakeNode = {
+    const fakeNode = {
       id: 'addons',
       onClick: handlerFn,
       name: 'Addons',
@@ -133,7 +145,7 @@ export default class ApplicationController extends Controller {
         return;
       }
 
-      let innerDocsNode = this._getDocsNode(child);
+      const innerDocsNode = this._getDocsNode(child);
 
       fakeNode.children.push(...(innerDocsNode?.children || []));
       fakeNode.pages.push(...(innerDocsNode?.pages || []));
@@ -143,8 +155,8 @@ export default class ApplicationController extends Controller {
 
     // -- Package section
 
-    let packageNode = docsNode.children.find(
-      (child: Item) => child.name === 'package'
+    const packageNode = docsNode.children.find(
+      (child: DocfyNode) => child.name === 'package'
     );
 
     const packageRoutes = getSidenavRoutes([packageNode, handlerFn]);
@@ -159,8 +171,8 @@ export default class ApplicationController extends Controller {
     this.currentSideNavRoutes = this.sideNavRoutes;
   }
 
-  _getDocsNode(node: DocfyNode) {
-    return node.children?.[0];
+  _getDocsNode(node?: DocfyNode) {
+    return node?.children?.[0];
   }
 
   filterSideNav(str: string, nodes: Item[], depth: number = 0): Item[] {
@@ -223,9 +235,7 @@ export default class ApplicationController extends Controller {
   };
 
   get currentVersion() {
-    const config = getOwner(this).resolveRegistration('config:environment');
-
     if (config.environment === 'development') return 'Local';
-    else return `v${config.version}`;
+    else return `v${config['version'] as string}`;
   }
 }

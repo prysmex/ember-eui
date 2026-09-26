@@ -1,16 +1,31 @@
 {
-  "extends": "@tsconfig/ember/tsconfig.json",
+  "extends": "@ember/app-tsconfig",
+  "include": [
+    "app",
+    "tests",
+    "types"
+  ],
   "compilerOptions": {
-    "baseUrl": ".",
-    "skipLibCheck": true,
+    "allowJs": true,
     "paths": {
-      "site/tests/*": ["tests/*"],
-      "site/*": ["app/*"],
-      "*": ["types/*"]
-    }
+      "site/tests/*": [
+        "./tests/*"
+      ],
+      "site/*": [
+        "./app/*"
+      ],
+      "*": [
+        "./types/*"
+      ]
+    },
+    "types": [
+      "ember-source/types",
+      "@embroider/core/virtual",
+      "vite/client",
+      "@glint/ember-tsc/types"
+    ]
   },
-  "glint": {
-    "environment": ["ember-loose", "ember-template-imports"]
-  },
-  "include": ["app/**/*", "tests/**/*", "types/**/*"]
+  "exclude": [
+    "app/templates/docs"
+  ]
 }

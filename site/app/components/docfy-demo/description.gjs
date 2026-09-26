@@ -1,0 +1,41 @@
+import { EuiFlexGroup, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
+  <div class="docfy-demo__description" ...attributes>
+    <div class="docfy-demo__description__header">
+      <EuiFlexGroup
+        @justifyContent="spaceBetween"
+        @gutterSize="none"
+        @alignItems="center"
+      >
+        {{#if @title}}
+          <a href="#{{@id}}" id={{@id}}>
+            <EuiTitle class="docfy-demo__description__header__title">
+              {{@title}}
+            </EuiTitle>
+          </a>
+        {{else}}
+          <span></span>
+        {{/if}}
+        {{#if @editUrl}}
+          <a
+            href={{@editUrl}}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="docfy-demo__description__header__edit-url"
+          >
+            Edit
+          </a>
+        {{/if}}
+      </EuiFlexGroup>
+    </div>
+
+    {{#if @title}}
+      <EuiSpacer />
+    {{/if}}
+
+    <div class="docfy-demo__description__content">
+      {{yield}}
+    </div>
+  </div>
+</template>

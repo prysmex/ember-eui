@@ -1,5 +1,7 @@
 import Helper from '@ember/component/helper';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
+
+import type DocfyService from '@docfy/ember/services/docfy';
 
 function humanize(str?: string) {
   return str
@@ -12,6 +14,8 @@ function humanize(str?: string) {
 }
 
 export type Heading = {
+  id: string;
+  title: string;
   headings: Heading[];
 };
 
@@ -62,10 +66,10 @@ function compareFunction(a: Item, b: Item) {
 }
 
 export function getSidenavRoutes([docfyNode, clickHandler]: [
-  DocfyNode,
+  DocfyNode | undefined,
   (id: NodeId) => void
-]) {
-  return [getItems(docfyNode, clickHandler, docfyNode.name)];
+]): Item[] {
+  return docfyNode ? [getItems(docfyNode, clickHandler, docfyNode.name)] : [];
 }
 
 function getItems(
@@ -76,7 +80,7 @@ function getItems(
   let items: Item[] = [];
 
   if (docfyNode.children.length > 0) {
-    let children = docfyNode.children;
+    const children = docfyNode.children;
 
     items = children.map((child) => {
       return getItems(child, clickHandler, `${parent}-${docfyNode.name}`);
@@ -110,10 +114,13 @@ function getItemFromPage(page: Page, clickHandler: (id: NodeId) => void): Item {
 }
 
 export default class GetSidenavRoutes extends Helper {
-  @service docfy: any;
+  @service declare docfy: DocfyService;
+
   compute([name, clickHandler]: [string, (id: NodeId) => void]) {
     return getSidenavRoutes([
-      this.docfy.findNestedChildrenByName(name),
+      this.docfy.findNestedChildrenByName(name) as unknown as
+        | DocfyNode
+        | undefined,
       clickHandler
     ]);
   }

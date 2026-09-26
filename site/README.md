@@ -1,57 +1,39 @@
 # site
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+Documentation site for Ember EUI: an Ember app built with Vite
+(`@embroider/vite`) whose pages are generated from the packages' markdown docs
+by [docfy](https://github.com/josemarluedke/docfy) (`@docfy/ember-vite`).
 
-## Prerequisites
+## Development
 
-You will need the following things properly installed on your computer.
+From the repository root:
 
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/)
-- [Yarn](https://yarnpkg.com/)
-- [Ember CLI](https://cli.emberjs.com/release/)
-- [Google Chrome](https://google.com/chrome/)
+```sh
+pnpm install
+pnpm build:packages   # the site consumes the packages' built dist
+pnpm --filter site start
+```
 
-## Installation
+`start` runs Vite and `pnpm _syncPnpm --watch`: the site depends on the
+workspace packages as pnpm *injected* dependencies (`dependenciesMeta`), so
+rebuilt packages have to be synced into its `node_modules`.
 
-- `git clone <repository-url>` this repository
-- `cd site`
-- `yarn install`
+## How the docs are built
 
-## Running / Development
+- `docfy.config.mjs` lists the markdown sources: `../docs` and
+  `../packages/*/docs`.
+- `@docfy/ember-vite` writes each page to `app/templates/docs/**` as a
+  strict-mode `.gjs` template (generated and gitignored), with each demo as a
+  colocated component.
+- `lib/docfy-auto-imports.mjs` adds the imports those templates need for
+  components and helpers used in the markdown prose (`<EuiText>`, `{{t}}`, …),
+  so the markdown stays free of import boilerplate.
+- `app/components/docfy-demo/` is the EUI-styled demo frame; `vite.config.mjs`
+  points the generated pages at it instead of docfy's default.
 
-- `yarn start`
-- Visit your app at [http://localhost:4200](http://localhost:4200).
-- Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
+## Scripts
 
-### Code Generators
-
-Make use of the many generators for code, try `ember help generate` for more details
-
-### Running Tests
-
-- `yarn test`
-- `yarn test:ember --server`
-
-### Linting
-
-- `yarn lint`
-- `yarn lint:fix`
-
-### Building
-
-- `yarn ember build` (development)
-- `yarn build` (production)
-
-### Deploying
-
-Specify what it takes to deploy your app.
-
-## Further Reading / Useful Links
-
-- [ember.js](https://emberjs.com/)
-- [ember-cli](https://cli.emberjs.com/release/)
-- Development Browser Extensions
-  - [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
-  - [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
+- `pnpm start`: dev server
+- `pnpm build`: production build into `dist/`
+- `pnpm test`: builds in development mode and runs the tests with testem
+- `pnpm lint` / `pnpm lint:fix`

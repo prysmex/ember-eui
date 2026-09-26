@@ -1,6 +1,8 @@
 import { tracked } from '@glimmer/tracking';
 import Service from '@ember/service';
 
+import type Owner from '@ember/owner';
+
 import { changeTheme } from '../utils/change-theme';
 
 type ThemeShape = {
@@ -22,8 +24,8 @@ export default class ThemeManager extends Service {
     }
   ];
 
-  constructor(properties: Record<string, unknown>) {
-    super(properties);
+  constructor(owner?: Owner) {
+    super(owner);
 
     const params = new URL(document.location.href).searchParams;
     const theme = params.get('theme');

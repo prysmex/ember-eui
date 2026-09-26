@@ -1,35 +1,40 @@
-let hasLoaded = false;
+import darkTheme from '@ember-eui/core/themes/dark.css?url';
+import lightTheme from '@ember-eui/core/themes/light.css?url';
 
-export async function changeTheme(theme: string) {
-  if (hasLoaded) {
-    window.location.href = `?theme=${theme}`;
+const THEMES: Record<string, string> = {
+  dark: darkTheme,
+  light: lightTheme,
+};
+
+const LINK_ID = 'eui-theme';
+
+/**
+ * Loads the EUI theme stylesheet for `theme` ("light" or "dark") by pointing a
+ * single <link> at the theme's built CSS file, so switching themes swaps the
+ * stylesheet instead of stacking both.
+ */
+export function changeTheme(theme: string): void {
+  const key = theme in THEMES ? theme : 'light';
+  const href = THEMES[key]!;
+  let link = document.getElementById(LINK_ID) as HTMLLinkElement | null;
+
+  if (!link) {
+    link = document.createElement('link');
+    link.id = LINK_ID;
+    link.rel = 'stylesheet';
+    // before the app's own styles so site overrides keep winning
+    document.head.prepend(link);
   }
 
-  const currentStylesheet = document.getElementById(
-    'current-ember-eui-theme'
-  ) as HTMLStyleElement;
-
-  if (currentStylesheet?.dataset?.theme === theme) {
-    return;
+  if (link.getAttribute('href') !== href) {
+    link.href = href;
   }
 
-  if (theme === 'dark') {
-    await import('@ember-eui/core/themes/dark.css');
-  } else {
-    await import('@ember-eui/core/themes/light.css');
+  link.dataset['theme'] = key;
+
+  try {
+    window.localStorage?.setItem('theme', key);
+  } catch {
+    // storage can be unavailable (private mode); the theme still applies
   }
-
-  const styleSheet = document.querySelector(
-    'style:last-of-type'
-  ) as HTMLStyleElement;
-
-  styleSheet.id = 'current-ember-eui-theme';
-  styleSheet.dataset.theme = theme;
-  styleSheet.disabled = false;
-
-  if (window?.localStorage) {
-    window.localStorage.setItem('theme', theme);
-  }
-
-  hasLoaded = true;
 }

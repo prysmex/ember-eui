@@ -9,7 +9,6 @@ module.exports = function (environment) {
     rootURL: '/',
     locationType: 'history',
     version: packageJson.version,
-    packageJson: packageJson,
     EmberENV: {
       EXTEND_PROTOTYPES: false,
       FEATURES: {

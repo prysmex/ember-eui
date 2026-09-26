@@ -1,6 +1,6 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
 //@ts-expect-error

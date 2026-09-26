@@ -20,6 +20,10 @@
     </script>
 
     <script type="module">
+      import "./deprecations.ts";
+    </script>
+
+    <script type="module">
       import { start } from "./test-helper.js";
       import.meta.glob("./**/*.{js,ts,gjs,gts}", { eager: true });
       start();

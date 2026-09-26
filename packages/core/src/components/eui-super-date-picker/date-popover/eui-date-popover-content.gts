@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { helper } from '@ember/component/helper';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 import { eq } from 'ember-truth-helpers';
 

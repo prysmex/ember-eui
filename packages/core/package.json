@@ -176,7 +176,7 @@
     "chroma-js": "^2.1.0",
     "decorator-transforms": "^2.3.0",
     "ember-element-helper": "^0.8.6",
-    "ember-keyboard": "^9.0.1",
+    "ember-keyboard": "^9.0.4",
     "ember-math-helpers": "^5.0.0",
     "ember-modifier": "^4.2.0",
     "ember-set-helper": "^3.1.0",

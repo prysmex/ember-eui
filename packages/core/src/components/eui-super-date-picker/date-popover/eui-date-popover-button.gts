@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { concat, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 import set from 'ember-set-helper/helpers/set';
 import { not } from 'ember-truth-helpers';

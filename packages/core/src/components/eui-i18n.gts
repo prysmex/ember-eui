@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { array } from '@ember/helper';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
 import { notEq } from 'ember-truth-helpers';
 

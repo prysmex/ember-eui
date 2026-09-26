@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { get } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { htmlSafe, isHTMLSafe } from '@ember/template';
 
 import style from 'ember-style-modifier/modifiers/style';

@@ -4,7 +4,7 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { isEqual } from '@ember/utils';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';

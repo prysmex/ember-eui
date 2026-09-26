@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { warn } from '@ember/debug';
 import { guidFor } from '@ember/object/internals';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
 import { and, not } from 'ember-truth-helpers';

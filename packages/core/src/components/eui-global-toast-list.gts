@@ -5,7 +5,7 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import type Owner from '@ember/owner';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';

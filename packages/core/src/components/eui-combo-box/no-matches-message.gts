@@ -3,9 +3,11 @@ import EuiText from '../eui-text.gts';
 import type { EuiTextSignature } from '../eui-text';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Shown in EuiComboBox's options list. */
 interface Signature {
   Element: EuiTextSignature['Element'];
   Args: {
+    /** EuiComboBox's `@noMatchesMessage`. */
     noMatchesMessage?: string;
   };
 }

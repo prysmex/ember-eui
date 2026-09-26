@@ -6,6 +6,7 @@ import { and, not } from 'ember-truth-helpers';
 
 import validatableControl from '../../../modifiers/validatable-control.ts';
 
+/** @private The search input inside EuiComboBox's trigger. */
 export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
   /**
    * Shows @placeholder while nothing is selected (power-select 9's own

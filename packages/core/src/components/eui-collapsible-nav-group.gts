@@ -20,19 +20,37 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiCollapsibleNavGroupSignature {
   Element: EuiAccordionSignature['Element'];
   Args: {
+    /** Id of the group. Defaults to a random id. */
     id?: string;
+    /** Tag wrapping the title. Defaults to `'h3'`. */
     titleElement?: string;
+    /**
+     * Makes the group an accordion that opens and closes from its title
+     * (needs a `<:title>` block).
+     */
     isCollapsible?: boolean;
+    /** Whether a collapsible group starts open. Defaults to `true`. */
     initialIsOpen?: boolean;
+    /** Icon before the title; anything `EuiIcon`'s `@type` accepts. */
     iconType?: EuiIconSignature['Args']['type'];
+    /** Size of the icon. Defaults to `'l'`. */
     iconSize?: EuiIconSignature['Args']['size'];
+    /** Tag of the `EuiTitle` around the title. Defaults to `'h3'`. */
     titleTagName?: EuiTitleSignature['Args']['tagName'];
+    /** Size of the title, any `EuiTitle` size. Defaults to `'xxs'`. */
     titleSize?: EuiTitleSignature['Args']['size'];
+    /**
+     * Background of the group: `'none'`, `'light'` or `'dark'`.
+     * Defaults to `'none'`.
+     */
     background?: string;
   };
   Blocks: {
+    /** Unused, use `<:title>` and `<:content>`. */
     default: [];
+    /** The group's title; without it the group has no heading. */
     title: [];
+    /** The group's links, e.g. an `EuiListGroup`. */
     content: [];
   };
 }

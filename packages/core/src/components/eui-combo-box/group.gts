@@ -1,8 +1,10 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private Title row of an option group in EuiComboBox. */
 export interface EuiComboBoxGroupSignature {
   Element: HTMLDivElement;
   Args: {
+    /** The group: `{ groupName, disabled }`. */
     group: {
       groupName: string;
       disabled: boolean;

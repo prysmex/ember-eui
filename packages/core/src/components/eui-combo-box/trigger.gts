@@ -12,6 +12,10 @@ import EuiComboBoxPill from '../eui-combo-box-pill.gts';
 import EuiFormControlLayout from '../eui-form-control-layout.gts';
 import EuiComboBoxTriggerInput from './trigger/input.gts';
 
+/**
+ * @private EuiComboBox's input with the selected pills. Extends
+ * ember-power-select's multiple trigger.
+ */
 export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
   <template>
     {{! @glint-nocheck: not typesafe yet }}

@@ -17,10 +17,13 @@ import type { AST, RefractorNode } from 'refractor';
 
 export type EuiCodeSharedProps = CommonArgs & {
   /**
-   * Sets the syntax highlighting for a specific language
+   * Sets the syntax highlighting for a specific language, e.g. `'js'`,
+   * `'ts'`, `'html'`, `'css'`, `'json'`, `'bash'` or `'hbs'`. Unsupported
+   * languages fall back to `'text'` (no highlighting).
    * @see [https://prismjs.com/#supported-languages](https://prismjs.com/#supported-languages) for options
    */
   language?: string;
+  /** Removes the background color. Defaults to `false`. */
   transparentBackground?: boolean;
 };
 

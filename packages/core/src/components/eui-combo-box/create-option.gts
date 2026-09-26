@@ -19,11 +19,16 @@ function unwrap(input: string) {
   return input;
 }
 
+/** @private The "add as custom option" row of EuiComboBox. */
 export interface EuiComboBoxCreateOptionSignature {
   Args: {
+    /** EuiComboBox's `@customOptionText`. */
     customOptionText?: string;
+    /** ember-power-select's API, for the search text. */
     select: { searchText: string };
+    /** Adds the typed text as an option. */
     onCreateOption: () => void;
+    /** Rendered above matching options (`@alwaysShowCreateOption`). */
     alwaysShow?: boolean;
   };
 }

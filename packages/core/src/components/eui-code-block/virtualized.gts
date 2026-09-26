@@ -16,8 +16,11 @@ export interface VirtualizedCodeBlockSignature<T> {
   Element: HTMLPreElement;
   // We accept an array of items, one per row
   Args: {
+    /** The highlighted lines to render. */
     data?: T[];
+    /** Language of the code, for the `data-code-language` attribute. */
     language: string;
+    /** Height of one line in px, from the font size. */
     rowHeight: number;
   };
 }

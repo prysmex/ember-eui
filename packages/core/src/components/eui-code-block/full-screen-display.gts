@@ -6,6 +6,7 @@ import EuiOverlayMask from '../eui-overlay-mask.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private EuiCodeBlock's full screen view, rendered in an overlay. */
 export interface FullScreenDisplaySignature {
   Element: HTMLDivElement;
   Args: {};

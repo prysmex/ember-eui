@@ -17,6 +17,10 @@ import EuiText from '../eui-text.gts';
 
 import type EuiConfigService from '../../services/eui-config';
 
+/**
+ * @private EuiComboBox's options list: virtualized, with groups. Extends
+ * ember-power-select's options component.
+ */
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @service declare euiConfig: EuiConfigService;
   _optionsCache: readonly unknown[] = [];

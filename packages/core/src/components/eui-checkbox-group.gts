@@ -16,21 +16,50 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiCheckboxGroupSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Key of each option holding its id, used with `@idToSelectedMap` and
+     * passed to `@onChange`. Defaults to `'id'`; pass `'value'` for options
+     * shaped like `{ value, label }`.
+     */
     valueKey?: string;
+    /** Key of each option holding its label. Defaults to `'label'`. */
     labelKey?: string;
+    /**
+     * Marks the group invalid for native form validation (e.g. EuiForm's
+     * `checkValidity()`).
+     */
     isInvalid?: boolean;
+    /**
+     * Wraps the checkboxes in an `EuiFormFieldset` with this legend:
+     * `{ children: 'Choose toppings' }`. Use it when the group is not inside
+     * an `EuiFormRow`.
+     */
     legend?: EuiFormFieldsetSignature['Args']['legend'];
+    /** Smaller checkboxes, for dense forms. */
     compressed?: EuiFormFieldsetSignature['Args']['compressed'];
+    /**
+     * The checkboxes: `[{ id: 'a', label: 'Option A' }, …]` (keys set by
+     * `@valueKey` / `@labelKey`). `disabled` and `className` apply to one
+     * checkbox.
+     */
     options: {
       value: string;
       label: string;
       disabled?: boolean;
       className?: string;
     }[];
+    /** `form` attribute of the checkboxes, to join a form by id. */
     formId?: string;
+    /** @deprecated Has no effect; use `@legend` or an `EuiFormRow` label. */
     label?: EuiCheckboxSignature['Args']['label'];
+    /** Disables every checkbox. */
     disabled?: EuiCheckboxSignature['Args']['disabled'];
+    /**
+     * Called with the id (`@valueKey` value) of the checkbox that changed,
+     * then the change event. Toggle it in `@idToSelectedMap` here.
+     */
     onChange: (value: any) => void;
+    /** Checked state by option id: `{ a: true, b: false }`. */
     idToSelectedMap: Record<string, boolean>;
   };
 }

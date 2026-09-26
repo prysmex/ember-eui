@@ -16,13 +16,16 @@ import { checkSupportedLanguage,getHtmlContent } from '../utils/code/utils.ts';
 import type { EuiCodeSharedProps } from '../utils/code/utils.ts';
 import type { RefractorNode } from 'refractor';
 
-export type EuiCodeArgs = EuiCodeSharedProps & {
-  //comments
-};
+export type EuiCodeArgs = EuiCodeSharedProps;
 
+/**
+ * Inline code with syntax highlighting: `<EuiCode @language="js">const a = 1;</EuiCode>`.
+ * For multi-line code use EuiCodeBlock.
+ */
 export interface EuiCodeSignature {
   Args: EuiCodeArgs;
   Blocks: {
+    /** The code, as text. */
     default: [];
   };
   Element: HTMLElement;

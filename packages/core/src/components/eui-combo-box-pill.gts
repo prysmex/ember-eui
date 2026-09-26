@@ -9,25 +9,30 @@ import EuiBadge from './eui-badge.gts';
 import type { EuiBadgeSignature } from './eui-badge';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** A selected option in EuiComboBox's input, as a badge or plain text. */
 export interface EuiComboBoxPill {
   Element: EuiBadgeSignature['Element'];
   Args: {
-    /**
-     * The color of the pill
-     */
+    /** Renders the selection as plain text instead of a badge. */
     asPlainText?: boolean;
 
+    /** Shows an "x" button calling this with `@option`, to remove it. */
     onClose?: (option: unknown) => void;
 
+    /** Badge color, see `EuiBadge`. */
     color?: EuiBadgeSignature['Args']['color'];
 
+    /** `data-selected-index` of the remove button, for keyboard navigation. */
     dataSelectedIconIndex?: number;
 
+    /** Accessible label of the remove button, e.g. "Remove Apple from selection". */
     iconOnClickAriaLabel?: string;
 
+    /** The selected option this pill shows. */
     option?: unknown;
   };
   Blocks: {
+    /** The option's text. */
     default: [];
   };
 }

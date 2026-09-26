@@ -16,44 +16,52 @@ import type { EuiFlyoutSignature } from './eui-flyout';
 import type { ModifierLike } from '@glint/template';
 
 export type EuiCollapsibleNavArgs = {
+  /** Id of the nav flyout, which the button controls. Defaults to a random id. */
   id?: string;
   /**
-   * ReactNode to render as this component's content
+   * @deprecated Has no effect, use the `<:content>` block.
    */
   children?: Component;
   /**
-   * Shows the navigation flyout
+   * Shows the navigation flyout. Toggle it from the `<:button>` block's
+   * button and set it to `false` in `@onClose`.
    */
   isOpen?: boolean;
   /**
-   * Keeps navigation flyout visible and push `<body>` content via padding
+   * Keeps navigation flyout visible and push `<body>` content via padding,
+   * on windows at least `@dockedBreakpoint` wide. Defaults to `false`.
    */
   isDocked?: boolean;
   /**
-   * Named breakpoint or pixel value for customizing the minimum window width to enable docking
+   * Named breakpoint (`'xs'`, `'s'`, `'m'`, `'l'`, `'xl'`) or pixel value:
+   * the minimum window width for docking. Defaults to `'l'`.
    */
   dockedBreakpoint?: EuiBreakpointSize | number;
   /**
-   * Keeps the display of toggle button when in docked state
+   * Keeps the display of toggle button when in docked state.
+   * Defaults to `false`.
    */
   showButtonIfDocked?: boolean;
-
+  /** Tag of the flyout. Defaults to `'nav'`. */
   as: string;
-
+  /** Width of the nav, a number in px or any CSS width. Defaults to `320px`. */
   size?: EuiFlyoutSignature['Args']['size'];
-
+  /** Side of the window: `'left'` or `'right'`. Defaults to `'left'`. */
   side?: 'left' | 'right';
-
+  /** `role` of the flyout. Defaults to none (the `<nav>` is a landmark). */
   role?: null | string;
-
+  /** Traps focus in the open (not docked) nav. Defaults to `true`. */
   ownFocus?: boolean;
-
+  /** Clicking outside the open nav calls `@onClose`. Defaults to `true`. */
   outsideClickCloses?: boolean;
-
+  /**
+   * Close button `'outside'` or `'inside'` the flyout (hidden while docked).
+   * Defaults to `'outside'`.
+   */
   closeButtonPosition?: 'outside' | 'inside';
-
+  /** Padding inside the nav, any `EuiFlyout` padding size. Defaults to `'none'`. */
   paddingSize?: string;
-
+  /** Called to close the nav (close button, Escape, outside click). */
   onClose: EuiFlyoutSignature['Args']['onClose'];
 };
 
@@ -106,12 +114,20 @@ export interface EuiCollapsibleNavSignature {
   Element: EuiFlyoutSignature['Element'];
   Args: EuiCollapsibleNavArgs;
   Blocks: {
+    /** Unused, use `<:button>` and `<:content>`. */
     default: [];
+    /**
+     * The toggle button, usually an `EuiHeaderSectionItemButton`. Apply the
+     * yielded modifier to it for the `aria-controls` / `aria-expanded`
+     * attributes: `<:button as |navButton|><EuiButton {{navButton}} …>`.
+     * Hidden while docked unless `@showButtonIfDocked`.
+     */
     button: [
       ModifierLike<{
         Element: Element;
       }>
     ];
+    /** The navigation, e.g. `EuiCollapsibleNavGroup`s and `EuiListGroup`s. */
     content: [];
   };
 }

@@ -45,13 +45,16 @@ const fontSizeToRowHeightMap = {
 };
 
 export type EuiCodeBlockArgs = EuiCodeSharedProps & {
+  /** Padding around the code: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'l'`. */
   paddingSize?: PaddingSize;
+  /** `'s'`, `'m'` or `'l'`. Defaults to `'s'`. */
   fontSize?: FontSize;
 
   /**
    * Specify how `white-space` inside the element is handled.
    * `pre` respects line breaks/white space but doesn't force them to wrap the line
    * `pre-wrap` respects line breaks/white space but does force them to wrap the line when necessary.
+   * Defaults to `'pre-wrap'`.
    */
   whiteSpace?: 'pre' | 'pre-wrap';
 
@@ -84,10 +87,16 @@ export type EuiCodeBlockArgs = EuiCodeSharedProps & {
   isVirtualized?: boolean;
 };
 
+/**
+ * Multi-line code with syntax highlighting, optional copy button, line
+ * numbers and full screen view:
+ * `<EuiCodeBlock @language="js" @isCopyable={{true}}>{{this.code}}</EuiCodeBlock>`.
+ */
 export interface EuiCodeBlockSignature {
   Element: HTMLElement;
   Args: EuiCodeBlockArgs;
   Blocks: {
+    /** The code, as text (e.g. a string from your component). */
     default: [];
   };
 }

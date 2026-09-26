@@ -19,26 +19,47 @@ const indeterminateModifier = modifier(function invalidateIndeterminate(
   }
 });
 
+/**
+ * Attributes and modifiers (`value`, `{{on "change" …}}`) go to the
+ * `<input type="checkbox">`.
+ */
 export interface EuiCheckboxSignature {
   Element: HTMLInputElement;
   Args: {
+    /** Whether it is checked. Update it from `{{on "change" …}}`. */
     checked?: boolean;
+    /** Disables the checkbox. */
     disabled?: boolean;
+    /** Shows the "partially checked" state, e.g. for a "select all" box. */
     indeterminate?: boolean;
+    /** @private Styles the checkbox for use next to an icon. */
     icon?: boolean;
+    /** Smaller checkbox, for dense forms. */
     compressed?: boolean;
+    /** Label next to the checkbox. Use the `<:label>` block for markup. */
     label?: string;
+    /** Props for the `<label>`: `{ className }`. */
     labelProps?: {
       className?: string;
     };
+    /** Extra classes for the wrapper around the input and label. */
     containerClass?: string;
+    /** Extra classes for the wrapper around the input and label. */
     className?: string;
+    /** Called with the `<input>` element once rendered. */
     inputRef?: (element: HTMLInputElement) => void;
+    /**
+     * @private Ignore the `<:label>` block (for wrappers that always pass
+     * one).
+     */
     isFakeLabelBlock?: boolean;
+    /** Id of the input, linked to the label. Defaults to a random id. */
     id?: string;
+    /** `name` of the input, for forms. */
     name?: string;
   };
   Blocks: {
+    /** The label, instead of `@label`. */
     label?: [];
   };
 }

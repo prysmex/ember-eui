@@ -7,12 +7,18 @@ import EuiCopy from '../eui-copy.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
+/** @private The copy and full screen buttons of EuiCodeBlock. */
 interface EuiCodeBlockControlsSignature {
   Args: {
+    /** Shows the copy button (`@isCopyable`). */
     showCopyButton: boolean;
+    /** Shows the full screen button (code taller than `@overflowHeight`). */
     showFullScreenButton: boolean;
+    /** Whether the code is shown full screen (switches the button icon). */
     isFullScreen: boolean;
+    /** Toggles the full screen view. */
     toggleFullScreen: () => void;
+    /** The code to copy. */
     textToCopy: string;
   };
 }

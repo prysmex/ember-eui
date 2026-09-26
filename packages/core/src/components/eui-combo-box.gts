@@ -38,59 +38,170 @@ interface Select {
 export interface EuiComboBoxSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Allows only one selected option (still passed to `@onChange` as a
+     * one-item array). `{ asPlainText: true }` shows the selection as plain
+     * text instead of a pill. Defaults to multiple selection.
+     */
     singleSelection?:
       | boolean
       | {
           asPlainText?: boolean;
         };
+    /**
+     * Lets the user add the typed text as a new option: shows an "add"
+     * option when nothing matches (or always, with
+     * `@alwaysShowCreateOption`). Called with the search text; return
+     * `false` to reject it, or a value to use instead of the text. Add the
+     * result to `@options` / `@selectedOptions` yourself.
+     */
     onCreateOption?: (search: string) => boolean | undefined;
+    /** Shows the "add" option even when some options match. */
     alwaysShowCreateOption?: boolean;
+    /**
+     * The options: strings, or objects shown by the default block (e.g.
+     * `{{option.label}}`). Groups are `{ groupName: 'Fruits', options: [...] }`.
+     * A promise is supported (shows `@loadingMessage` while pending).
+     */
     options: any[];
+    /**
+     * Custom search, e.g. to query a server: `(term, select) => results`
+     * (or a promise). Without it the options are filtered locally, by
+     * `@searchField` for objects.
+     */
     search?: (term: string, select: Select) => any[] | PromiseProxy<any[]>;
+    /** Key of object options to match the search text against, e.g. `'label'`. */
     searchField?: string;
+    /** Shows the invalid state. */
     isInvalid?: boolean;
+    /** Stretches the combo box to its container's width. */
     fullWidth?: boolean;
+    /** Message shown before typing when `@search` is set. Defaults to "Type to search". */
     searchMessage?: string;
+    /** Allows typing to filter options. Defaults to `true`. */
     searchEnabled?: boolean;
+    /** Shows a button clearing the selection. Defaults to `true`. */
     isClearable?: boolean;
+    /** Shows a spinner in the input, e.g. while options load. */
     isLoading?: boolean;
+    /** Disables the combo box. */
     isDisabled?: boolean;
+    /** @deprecated Has no effect; use `@isDisabled`. */
     readOnly?: boolean;
+    /** Component rendered instead of `@searchMessage`. */
     searchMessageComponent?: any;
+    /** Smaller combo box, for dense forms. */
     compressed?: boolean;
+    /** Called when the input gets focus. */
     onFocus?: (e: FocusEvent) => void;
+    /** Called when the input loses focus. */
     onBlur?: (e: FocusEvent) => void;
+    /** Called when the options list closes; return `false` to keep it open. */
     onClose?: (e: Event) => void;
+    /** Called when the options list opens; return `false` to keep it closed. */
     onOpen?: (e: Event) => void;
+    /**
+     * Renders the options list next to the input instead of in a portal
+     * at the end of the page (e.g. inside modals with their own scrolling).
+     */
     renderInPlace?: boolean;
+    /**
+     * Text (HTML) of the "add" option; `{searchText}` is replaced by the
+     * typed text. Defaults to "Add **{searchText}** as custom option".
+     */
     customOptionText?: string;
+    /** Message while `@options` or `@search` load. Defaults to "Loading options...". */
     loadingMessage?: any;
+    /** Component rendering each selected option (pill). */
     selectedItemComponent?: any;
+    /** Component rendered above the options. */
     beforeOptionsComponent?: any;
+    /** Component rendered instead of `@placeholder`. */
     placeholderComponent?: any;
+    /** Component rendered below the options. */
     afterOptionsComponent?: any;
+    /** Placeholder of the search input. */
     searchPlaceholder?: any;
+    /** Extra class for the options list. */
     dropdownClass?: string;
+    /** The selected options (items of `@options`). */
     selectedOptions?: any[];
+    /**
+     * Called with the new selection (an array, also with
+     * `@singleSelection`). Update `@selectedOptions` here.
+     */
     onChange: (selected: any[]) => void;
+    /** Text shown when nothing is selected. */
     placeholder?: string;
+    /** Anything, passed to custom components as `@extra`. */
     extra?: any;
+    /** Closes the options list after selecting one. */
     closeOnSelect?: boolean;
+    /** Focuses the combo box and opens its options on render. */
     autoFocus?: boolean;
+    /** Option highlighted when the list opens. */
     defaultHighlighted?: any;
+    /** Makes the options list as wide as the input. */
     matchTriggerWidth?: boolean;
+    /** `tabindex` of the combo box. */
     tabindex?: number;
+    /** Opens the options list on render. */
     initiallyOpen?: boolean;
+    /** Horizontal alignment of the options list: `'auto'`, `'left'`, `'right'` or `'center'`. */
     horizontalPosition?: string;
+    /** Vertical position of the options list: `'auto'`, `'above'` or `'below'`. */
     verticalPosition?: string;
+    /** Id of the element the options list renders into. */
     destination?: string;
+    /** Prevents the page from scrolling while the options list is open. */
     preventScroll?: boolean;
+    /** Message when no option matches. Defaults to "No results found". */
     noMatchesMessage?: string;
+    /** @deprecated Has no effect; the "no matches" / "add" option is built in. */
     noMatchesMessageComponent?: any;
+    /** Extra class for the element wrapping the options. */
     optionsClass?: string;
+    /** Height in px of each option in the (virtualized) list. */
     rowHeight?: number;
+    /**
+     * Custom matching for local filtering: `(option, searchText) => -1` for
+     * no match, anything else for a match.
+     */
+    matcher?: (option: any, searchText: string) => number;
+    /** Matching used when typing while the list is closed. */
+    typeAheadOptionMatcher?: (option: any, searchText: string) => number;
+    /** Icon in the input, anything `EuiIcon`'s `@type` accepts. */
+    triggerIcon?: any;
+    /** Called when a selected option's pill is removed. */
+    removeTag?: (option: any) => void;
+    /** Called on every input with the text and the select API. */
+    onInput?: (text: string, select: any, event: Event) => any;
+    /** Called on keydown; return `false` to prevent the default behavior. */
+    onKeydown?: (select: any, event: KeyboardEvent) => any;
+    /** Called with ember-power-select's API (`actions.open()`, `search`, …). */
+    registerApi?: (select: any) => void;
+    /** Custom positioning of the options list, see ember-basic-dropdown. */
+    calculatePosition?: (...args: any[]) => any;
+    /** Event that opens the list: `'click'` or `'mousedown'`. */
+    eventType?: string;
+    /** Accessible label of the combo box. */
+    ariaLabel?: string;
+    /** Id of the element labelling the combo box. */
+    ariaLabelledBy?: string;
+    /** Marks the combo box as required for assistive technology. */
+    required?: boolean;
+    /** `role` of the input. */
+    triggerRole?: string;
+    /** `title` of the combo box. */
+    title?: string;
+    /** Id of the input, e.g. for an `EuiFormRow`'s label. */
+    triggerId?: string;
   };
   Blocks: {
+    /**
+     * Renders each option, with its index: `as |option|` →
+     * `{{option.label}}`. Strings can be rendered as they are.
+     */
     default: [any, number, Select];
   };
 }

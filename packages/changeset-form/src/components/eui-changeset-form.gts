@@ -9,7 +9,6 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { later } from '@ember/runloop';
 import { EuiForm } from '@ember-eui/core/components';
 import { argOrDefault } from '@ember-eui/core/helpers';
-import { EnsureSafeComponentHelper } from '@embroider/util';
 import type Owner from '@ember/owner';
 
 import randomId from '../-private/random-id.ts';
@@ -179,85 +178,85 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
             {{yield
               (hash
                 FieldBase=(component
-                  (EnsureSafeComponentHelper Context.FieldBase)
+                  Context.FieldBase
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldText=(component
-                  (EnsureSafeComponentHelper Context.FieldText)
+                  Context.FieldText
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldTextArea=(component
-                  (EnsureSafeComponentHelper Context.FieldTextArea)
+                  Context.FieldTextArea
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldPassword=(component
-                  (EnsureSafeComponentHelper Context.FieldPassword)
+                  Context.FieldPassword
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldRadio=(component
-                  (EnsureSafeComponentHelper Context.FieldRadio)
+                  Context.FieldRadio
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldCheckbox=(component
-                  (EnsureSafeComponentHelper Context.FieldCheckbox)
+                  Context.FieldCheckbox
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldSwitch=(component
-                  (EnsureSafeComponentHelper Context.FieldSwitch)
+                  Context.FieldSwitch
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldRadioGroup=(component
-                  (EnsureSafeComponentHelper Context.FieldRadioGroup)
+                  Context.FieldRadioGroup
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldCheckboxGroup=(component
-                  (EnsureSafeComponentHelper Context.FieldCheckboxGroup)
+                  Context.FieldCheckboxGroup
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldDualRangeSlider=(component
-                  (EnsureSafeComponentHelper Context.FieldDualRangeSlider)
+                  Context.FieldDualRangeSlider
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldRangeSlider=(component
-                  (EnsureSafeComponentHelper Context.FieldRangeSlider)
+                  Context.FieldRangeSlider
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldNumber=(component
-                  (EnsureSafeComponentHelper Context.FieldNumber)
+                  Context.FieldNumber
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldSelect=(component
-                  (EnsureSafeComponentHelper Context.FieldSelect)
+                  Context.FieldSelect
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   disabled=@isDisabled
                 )
                 FieldComboBox=(component
-                  (EnsureSafeComponentHelper Context.FieldComboBox)
+                  Context.FieldComboBox
                   fullWidth=@fullWidth
                   hasSubmitted=this.hasSubmitted
                   isDisabled=@isDisabled

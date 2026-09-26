@@ -5,9 +5,9 @@ export const disabledMapping = {
 };
 
 export const layoutAlignMapping = {
-  primary: `${baseClass}--primary`,
-  accent: `${baseClass}--accent`,
-  text: `${baseClass}--text`
+  center: '',
+  top: 'euiContextMenu__itemLayout--top',
+  bottom: 'euiContextMenu__itemLayout--bottom'
 };
 
 export const sizeMapping = {

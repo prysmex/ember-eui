@@ -14,21 +14,41 @@ import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import type { layoutAlignMapping, sizeMapping } from '../utils/css-mappings/eui-context-menu-item.ts';
 import type { EuiIconSignature } from './eui-icon';
 
+/**
+ * An action in a menu, usually inside an `EuiContextMenuPanel` in an
+ * `EuiPopover`. Add `{{on "click" …}}` for the action.
+ */
 export interface EuiContextMenuItemSignature {
   Element: HTMLAnchorElement | HTMLButtonElement;
   Args: {
+    /**
+     * Vertical alignment of the icon and text: `'center'`, `'top'` or
+     * `'bottom'`. Defaults to `'center'`.
+     */
     layoutAlign?: keyof typeof layoutAlignMapping;
+    /** Disables the item. */
     disabled?: boolean;
+    /** `'s'` or `'m'`. Defaults to `'m'`. */
     size?: keyof typeof sizeMapping;
+    /** Renders the item as a link. */
     href?: string;
+    /** `target` of the `@href` link, e.g. `'_blank'`. */
     target?: string;
+    /** Shows a spinner instead of the icon. */
     isLoading?: boolean;
+    /**
+     * Icon before the text; anything `EuiIcon`'s `@type` accepts. Pass
+     * `'empty'` to align items without an icon with the others.
+     */
     icon: EuiIconSignature['Args']['type'];
+    /** Extra classes for the icon. */
     iconClasses?: string;
+    /** Shows an arrow on the right, for items opening another panel. */
     hasPanel?: boolean;
   };
 
   Blocks: {
+    /** The item's text. */
     default: [];
   };
 }
@@ -53,7 +73,6 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
         "euiContextMenuItem"
         componentName="EuiContextMenuItem"
         disabled=@disabled
-        layoutAlign=(argOrDefault @layoutAlign "center")
         size=@size
       )
       as |classes|

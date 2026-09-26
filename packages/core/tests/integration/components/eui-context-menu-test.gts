@@ -42,4 +42,20 @@ module('Integration | Component | eui-context-menu', function (hooks) {
 
     assert.dom('.euiContextMenuItem .euiContextMenu__icon.euiLoadingSpinner').exists();
   });
+
+  test('@layoutAlign aligns the icon and text', async function (assert) {
+    await render(
+      <template>
+        <EuiContextMenuItem @icon="copy" class="top" @layoutAlign="top">Copy</EuiContextMenuItem>
+        <EuiContextMenuItem @icon="copy" class="center">Copy</EuiContextMenuItem>
+      </template>
+    );
+
+    assert.dom('.top .euiContextMenu__itemLayout').hasClass('euiContextMenu__itemLayout--top');
+    assert.dom('.top').doesNotHaveClass('euiContextMenu__itemLayout--top', 'only on the inner layout');
+    assert
+      .dom('.center .euiContextMenu__itemLayout')
+      .doesNotHaveClass('euiContextMenu__itemLayout--top')
+      .doesNotHaveClass('euiContextMenu__itemLayout--bottom');
+  });
 });

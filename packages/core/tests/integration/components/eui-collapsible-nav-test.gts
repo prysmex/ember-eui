@@ -45,8 +45,7 @@ module('Integration | Component | eui-collapsible-nav', function (hooks) {
     assert.dom('.euiCollapsibleNav', document.body).doesNotExist();
   });
 
-  // Bug: the trigger sets aria-expanded / aria-pressed to "" when closed
-  test.todo('the trigger reports aria-expanded="false" when closed', async function (assert) {
+  test('the trigger reports aria-expanded="false" when closed', async function (assert) {
     const state = new State();
 
     await render(

@@ -64,8 +64,8 @@ const triggerHandlersModifier = modBuilder(
     { flyoutID, isOpen }: { flyoutID: string; isOpen: boolean }
   ) => {
     element.setAttribute('aria-controls', flyoutID);
-    element.setAttribute('aria-expanded', isOpen ? 'true' : '');
-    element.setAttribute('aria-pressed', isOpen ? 'true' : '');
+    element.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    element.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
 
     const fn = (e: Event) => {
       e.stopImmediatePropagation();

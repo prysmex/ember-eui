@@ -6,3 +6,6 @@
 
 # addons
 /.node_modules.ember-try/
+
+# test build output
+/dist-tests/

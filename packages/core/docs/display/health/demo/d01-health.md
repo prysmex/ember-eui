@@ -2,6 +2,7 @@
 order: 1
 ---
 
+# Health
 
 ```hbs template
 <EuiHealth @color='subdued'>

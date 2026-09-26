@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Badge
+
 ```hbs template
 <EuiTitle @size='xs'>
   Accepted color names

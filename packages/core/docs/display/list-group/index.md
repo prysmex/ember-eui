@@ -4,8 +4,28 @@ title: List Group
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="List Group"/>
+<EuiSpacer @size="l" />
 
-  <EuiHorizontalRule />
+<EuiText>
+
+`EuiListGroup` renders a list of `EuiListGroupItem`s: navigation links,
+a list of actions, or plain rows, each with an optional icon and an extra
+action on the right.
+
+```hbs
+<EuiListGroup @flush={{true}}>
+  <EuiListGroupItem @label="Overview" @href="/overview" @iconType="home" @isActive={{true}} />
+  <EuiListGroupItem @label="Settings" @href="/settings" @iconType="gear" />
+  <EuiListGroupItem @label="Log out" @iconType="exit" @onClick={{this.logOut}} />
+</EuiListGroup>
+```
+
+An item with `@href` renders a link, with `@onClick` a button, otherwise
+plain text. `@isActive` highlights the current one.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

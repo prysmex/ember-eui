@@ -2,11 +2,16 @@
 order: 8
 ---
 
-<EuiCallOut @iconType='accessibility' @color='warning'>
-<:title>
-<span>When used as a radio group, you must provide a <EuiCode>fieldset</EuiCode> with a <EuiCode>legend</EuiCode> for accessibility.</span>
-</:title>
-</EuiCallOut>
+# Checkable cards in a fieldset
+
+<EuiText>
+
+When checkable cards act as a radio group, wrap them in an
+`EuiFormFieldset` with a `@legend`, and give them the same `name`, so
+screen readers announce the question with each option. A card's
+`<:content>` block can hold more controls, shown under its label.
+
+</EuiText>
 
 ```hbs template
 <EuiFormFieldset @legend='With legend'>

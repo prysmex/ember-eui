@@ -1,7 +1,14 @@
+---
+order: 1
+---
+
+# Title sizes
+
 <EuiText>
-  <p>
-<strong>EuiTitle</strong> styles the page, section, and content headings we use in Kibana. They can contain any markup, but usually contain a heading tag of some sort. Unlike <strong>EuiText</strong> they are margin neutral and more suitable for general layout design.
-  </p>
+
+Sizes from `l` down to `xxxs`, each with the tag that fits a typical
+page outline.
+
 </EuiText>
 
 ```hbs template

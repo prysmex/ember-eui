@@ -4,8 +4,28 @@ title: Tooltip
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Tooltip"/>
+<EuiSpacer @size="l" />
 
-<EuiSpacer @size='l' />
+<EuiText>
+
+A tooltip shows a short hint when its anchor is hovered or focused:
+what an icon button does, or the full text of a truncated label.
+
+```hbs
+<EuiToolTip @content="Refresh the data" @position="top">
+  <:anchor>
+    <EuiButtonIcon @iconType="refresh" aria-label="Refresh" />
+  </:anchor>
+</EuiToolTip>
+```
+
+Keep tooltips short and **non-essential**: they don't show on touch
+screens and can't hold interactive content (use a popover for that). The
+anchor must be focusable (a button or link) so keyboard users see it too.
+`EuiIconTip` is a ready-made "?" icon with a tooltip, e.g. next to a
+label.
+
+</EuiText>
 
 <EuiHorizontalRule />
 

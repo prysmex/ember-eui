@@ -2,10 +2,13 @@
 order: 5
 ---
 
-# Beta Badge
+# Beta badge
 
 <EuiText>
-<p>Footers can contain any number of elements and will always align to the bottom of the card. However, if you supply a footer containing a <strong>EuiButton</strong> you <strong>must not</strong> also give it an <EuiCode @language="text">onClick</EuiCode>.</p>
+
+`@betaBadgeProps` puts an `EuiBetaBadge` on the card's top edge, e.g. to
+mark a feature as beta: `{ label, title, tooltipContent }`.
+
 </EuiText>
 
 ```hbs template

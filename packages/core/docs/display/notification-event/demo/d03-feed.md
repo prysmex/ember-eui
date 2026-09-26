@@ -4,6 +4,13 @@ order: 3
 
 # Feed
 
+<EuiText>
+
+A list of events, e.g. inside a flyout, each with its own read state and
+actions.
+
+</EuiText>
+
 ```hbs template
 <div>
   {{#each this.items as |item|}}

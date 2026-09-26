@@ -4,6 +4,34 @@ title: Notification Event
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Notification Event"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiNotificationEvent` is one entry of a notifications list (usually in
+a flyout opened from the header): its source, severity, time, title,
+messages, read state and actions.
+
+```hbs
+<EuiNotificationEvent
+  @id="report-ready"
+  @type="Report"
+  @iconType="reportingApp"
+  @time="1 min ago"
+  @title="Monthly report is ready"
+  @messages={{array "Download it from the reports page."}}
+  @isRead={{this.isRead}}
+  @onRead={{this.toggleRead}}
+/>
+```
+
+Pass `@isRead` (a boolean) to show the read indicator and `@onRead` to
+let users toggle it; `@onClickTitle` or `@href` make the title
+clickable, and the `<:contextMenu>` block holds more actions.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

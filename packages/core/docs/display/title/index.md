@@ -4,6 +4,26 @@ title: Title
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Title"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiTitle` renders a heading styled with EUI's type scale. Its tag and
+its size are independent: choose the tag (`@tagName`, `h2` by default)
+for the page's outline, and the size (`@size`, `m` by default) for how
+it looks.
+
+```hbs
+<EuiTitle @size="l" @tagName="h1">Dashboards</EuiTitle>
+<EuiTitle @size="xs" @tagName="h3">Recent</EuiTitle>
+```
+
+Put the text directly inside `EuiTitle`; it already is the heading
+element, so don't wrap the text in another `<h2>`.
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

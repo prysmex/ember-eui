@@ -1,12 +1,15 @@
+---
+order: 1
+---
+
+# Comment list
+
 <EuiText>
-	<p>
-The Comment List serves merely as a wrapper for various comments.
-It does contain the comments from trying to connect each other in case you had multiple
-unrelated comment lists in the same page.
 
-The original component from the React.js framework receives a @comments object, and maps them into the EuiCommentList component. For Ember.js, just pass them as children.
-
-  </p>
+Regular comments have a body in a panel; `@type="update"` comments are a
+single line recording an event. Each comment's blocks fill its parts:
+`<:username>`, `<:event>`, `<:timestamp>`, `<:actions>`, `<:body>` and
+`<:timelineIcon>`.
 
 </EuiText>
 
@@ -28,7 +31,7 @@ The original component from the React.js framework receives a @comments object, 
       </EuiText>
     </:body>
     <:actions>
-      <EuiButtonIcon @iconType='wrench' />
+      <EuiButtonIcon @iconType='wrench' aria-label='Edit comment' />
     </:actions>
   </EuiComment>
   <EuiComment @type='update'>

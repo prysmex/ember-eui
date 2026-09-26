@@ -4,6 +4,14 @@ order: 6
 
 # Selectable
 
+<EuiText>
+
+`@selectable` adds a "Select" toggle to the bottom of the card:
+`{ onClick, isSelected, isDisabled, color }`. Clicking anywhere on the card
+toggles it; keep the selected state yourself.
+
+</EuiText>
+
 ```hbs template
 <EuiFlexGroup @gutterSize='l'>
   <EuiFlexItem>
@@ -21,7 +29,7 @@ order: 6
         <EuiButtonEmpty
           @iconType='iInCircle'
           @size='xs'
-          @aria-label='See more details about Sketch'
+          aria-label='See more details about Sketch'
           {{on 'click' this.punchIt}}
         >
           More details
@@ -44,7 +52,7 @@ order: 6
         <EuiButtonEmpty
           @iconType='iInCircle'
           @size='xs'
-          @aria-label='See more details about Sketch'
+          aria-label='See more details about Sketch'
           {{on 'click' this.punchIt}}
         >
           More details
@@ -67,7 +75,7 @@ order: 6
         <EuiButtonEmpty
           @size='xs'
           @iconType='iInCircle'
-          @aria-label='See more details about Sketch'
+          aria-label='See more details about Sketch'
           {{on 'click' this.punchIt}}
         >
           More details

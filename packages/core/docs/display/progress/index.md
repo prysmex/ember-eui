@@ -4,6 +4,27 @@ title: Progress
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Progress"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+`EuiProgress` shows progress as a bar. Without `@max` it is an
+indeterminate animation (something is loading); with `@max` and `@value`
+it shows how much is done, optionally with a label and the value.
+
+```hbs
+<EuiProgress @size="xs" @color="accent" />
+<EuiProgress @value={{70}} @max={{100}} @size="m" @valueText={{true}}>
+  <:label>Uploading</:label>
+</EuiProgress>
+```
+
+`@position="fixed"` pins a bar to the top of the window (e.g. while a
+route loads); `@position="absolute"` pins it to the top of its
+positioned parent.
+
+</EuiText>
+
 <EuiHorizontalRule />
 
 <!-- api:start -->

@@ -4,6 +4,13 @@ order: 2
 
 # Read state
 
+<EuiText>
+
+With `@isRead` and `@onRead`, a button toggles the read state; read
+events are shown dimmed.
+
+</EuiText>
+
 ```hbs template
 <EuiTabs>
   {{#each this.tabs as |tab|}}

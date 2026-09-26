@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Image
+
 ```hbs template
 <EuiFlexGroup>
   <EuiFlexItem @grow={{false}}>

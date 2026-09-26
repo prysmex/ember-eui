@@ -4,13 +4,41 @@ title: Toast
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Toast"/>
+<EuiSpacer @size="l" />
 
-<EuiSpacer @size='l' />
 <EuiText>
 
-  <p>
-Generally, tooltips should provide short, <strong>non-essential</strong>, contextual information, usually naming or describing with more detail. If you need interactive content or anything other than text, we recommend using EuiPopover instead.
-  </p>
+Toasts are short messages that appear in a corner of the window, e.g.
+"Dashboard saved" or an error from a background task, and disappear
+after a while. Render `EuiGlobalToastList` once (in the application
+template) and add toasts from anywhere with the `euiToaster` service:
+
+```hbs
+{{! app/templates/application.hbs }}
+<EuiGlobalToastList @toastLifeTimeMs={{6000}} />
+```
+
+```js
+import { service } from '@ember/service';
+
+@service euiToaster;
+
+save() {
+  // …
+  this.euiToaster.show({
+    title: 'Dashboard saved',
+    color: 'success',
+    iconType: 'check',
+  });
+}
+```
+
+A toast takes a `title`, an optional `body` (markdown with
+`useMarkdownFormat: true`), a `color` (`primary`, `success`, `warning`,
+`danger`) and an `iconType`; `toastLifeTimeMs` overrides how long it
+stays. Hovering the list pauses the timers. Keep toasts for information
+that can be missed; for errors the user must act on, use a callout.
+
 </EuiText>
 
 <EuiHorizontalRule />

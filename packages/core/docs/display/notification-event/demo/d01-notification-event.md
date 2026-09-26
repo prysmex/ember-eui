@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Notification event
+
 ```hbs template
 {{#let (slice 0 this.messagesCount this.messages) as |msgs|}}
   <EuiPanel @paddingSize='xs'>

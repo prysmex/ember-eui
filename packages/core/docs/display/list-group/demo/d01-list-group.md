@@ -2,9 +2,13 @@
 order: 1
 ---
 
- <EuiText>
-    <p>The <strong>EuiListGroup</strong> component is used to present <strong>EuiListGroupItems</strong> in a neatly formatted list. Use the <EuiCode>flush</EuiCode> and <EuiCode>bordered</EuiCode> properties for full-width and bordered presentations, respectively.
-Adjust the <EuiCode>gutterSize</EuiCode> prop to increase or decrease the spacing between items.</p>
+# List group
+
+<EuiText>
+
+Items as text, links or buttons, with `@isActive` and `@isDisabled`
+states. `@bordered` adds a border and `@flush` removes the padding.
+
 </EuiText>
 
 ```hbs template

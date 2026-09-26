@@ -2,11 +2,12 @@
 order: 1
 ---
 
+# Description list
 
 <EuiText>
-	<p>
-	<strong>EuiDescriptionList</strong> is a component for listing pairs of information together. You can use the component on its own, passing in an object for the list, or use the <strong>EuiDescriptionListTitle</strong> and <strong>EuiDescriptionListDescription</strong> components separately to build a list manually.
-  </p>
+
+Pairs from `@listItems` (or written with the title and description
+components in the block).
 
 </EuiText>
 

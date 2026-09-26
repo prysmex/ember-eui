@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Avatar
+
 ```hbs template
 <div>
   <EuiAvatar @size='s' @name='Raphael' />

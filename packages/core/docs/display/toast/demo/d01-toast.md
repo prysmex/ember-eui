@@ -1,3 +1,16 @@
+---
+order: 1
+---
+
+# Adding toasts
+
+<EuiText>
+
+Each click shows a random toast through the `euiToaster` service; they
+disappear after `@toastLifeTimeMs`.
+
+</EuiText>
+
 ```hbs template
 <EuiButton @color='primary' {{on 'click' this.showRandomToast}}>
   Add toast to global toast list

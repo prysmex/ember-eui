@@ -2,6 +2,15 @@
 order: 1
 ---
 
+# Text
+
+<EuiText>
+
+Everything inside `EuiText` (headings, paragraphs, lists, code, quotes,
+tables) gets EUI's typography and spacing. `@size` scales it all.
+
+</EuiText>
+
 ```hbs template
 <div>
   <EuiText @grow={{false}}>
@@ -111,7 +120,7 @@ order: 1
 
     <EuiHorizontalRule />
 
-    <dl className='eui-definitionListReverse'>
+    <dl class='eui-definitionListReverse'>
       <dt>Name</dt>
       <dd>The Elder Scrolls: Morrowind</dd>
       <dt>Game style</dt>

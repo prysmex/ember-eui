@@ -2,6 +2,8 @@
 order: 1
 ---
 
+# Stat
+
 ```hbs template
 <div>
   <EuiFlexGroup>

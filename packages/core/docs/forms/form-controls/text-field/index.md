@@ -3,15 +3,49 @@ title: Text field
 ---
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Text field"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component renders a basic HTML <EuiCode @language="html">{{'<input type="text">'}}</EuiCode> element.
-    Use a <strong>EuiFieldText</strong> to allow users to enter or edit text.
-  </p>
+
+`EuiFieldText` renders an `<input type="text">` styled for EUI, with
+optional icon, clear button, loading spinner and content before or after
+the input. Put it in an `EuiFormRow` to give it a label, help text and
+errors.
+
+```gjs
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { EuiFieldText, EuiFormRow } from '@ember-eui/core/components';
+
+export default class NameField extends Component {
+  @tracked name = '';
+
+  @action
+  updateName(event) {
+    this.name = event.target.value;
+  }
+
+  <template>
+    <EuiFormRow @label="Name">
+      <EuiFieldText @value={{this.name}} {{on "input" this.updateName}} />
+    </EuiFormRow>
+  </template>
+}
+```
+
+The field shows `@value`; you keep the value and update it from the
+`input` event (`event.target.value`). With the `pick` helper
+(ember-composable-helpers) and `set` (ember-set-helper) that is a one-liner:
+`{{on "input" (pick "target.value" (set this "name"))}}`.
+
+Other attributes (`placeholder`, `maxlength`, `autocomplete`, `name`,
+`required`…) go to the `<input>`.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

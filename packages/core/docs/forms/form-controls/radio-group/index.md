@@ -3,19 +3,30 @@ title: Radio group
 ---
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Radio group"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component is different yet simplier from what you'd expect in ember in a way that you don't control the rendering of each checkbox, you just pass in an array of <EuiCode>@options</EuiCode> and <EuiCode>@idSelected</EuiCode> which you are in charge to calculate on subsequent <EuiCode>@onChange</EuiCode>'s, refer to the javascript snippet.
-  </p>
 
-  <p>
-    You can optionally pass <EuiCode>@valueKey</EuiCode> and <EuiCode>@labelKey</EuiCode> for a more flexible and ergonomic API, so you don't actually have to map your options to
-    <EuiCode>{ id: '', label: '' }</EuiCode> which are the default <EuiCode>@valueKey</EuiCode> and <EuiCode>@labelKey</EuiCode>.
-  </p>
+`EuiRadioGroup` renders a group of radios from `@options` (`{ id, label }`)
+and checks the one whose id is `@idSelected`. `@onChange` receives the
+chosen id (and the option's `value`): set `@idSelected` there.
+
+```hbs
+<EuiRadioGroup
+  @options={{this.plans}}
+  @idSelected={{this.plan}}
+  @name="plan"
+  @onChange={{this.choosePlan}}
+/>
+```
+
+`@valueKey` and `@labelKey` read other keys of your options. Pass `@legend`
+when the group is not inside an `EuiFormRow`. For a compact inline choice,
+see `EuiButtonGroup`.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

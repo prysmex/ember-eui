@@ -3,15 +3,30 @@ title: Search field
 ---
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Search field"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component renders a basic HTML <EuiCode @language="html">{{'<input type="search">'}}</EuiCode> element.
-    Use a <strong>EuiFieldSearch</strong> to allow users to enter search queries.
-  </p>
+
+`EuiFieldSearch` is a text input with a search icon and a clear button.
+It calls `@onSearch` with the text when the user presses Enter or clears
+the field, or on every keystroke with `@incremental={{true}}` (useful for
+filtering lists as you type).
+
+```hbs
+<EuiFieldSearch
+  @value={{this.query}}
+  @onSearch={{this.search}}
+  @incremental={{true}}
+  placeholder="Search users"
+  aria-label="Search users"
+/>
+```
+
+Give it an accessible name (`aria-label`, or an `EuiFormRow` label).
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

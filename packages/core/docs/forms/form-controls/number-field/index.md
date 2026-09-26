@@ -4,13 +4,28 @@ title: Number field
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Number field"/>
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component renders a basic HTML <EuiCode @language="html">{{'<input type="number">'}}</EuiCode> element.
-    Use a <strong>EuiFieldNumber</strong> to allow users to enter numbers.
-  </p>
+
+`EuiFieldNumber` renders an `<input type="number">`: arrows and the
+keyboard's up/down keys change the value by `@step`, within `@min` and
+`@max`. Like every EUI control, it shows `@value` and you update it from
+the `input` event. Note that `event.target.value` is a **string** (empty
+when the field is cleared): convert it with `Number()` or
+`event.target.valueAsNumber` when you need a number.
+
+```hbs
+<EuiFormRow @label="Quantity">
+  <EuiFieldNumber @value={{this.quantity}} @min={{1}} @max={{99}} {{on "input" this.updateQuantity}} />
+</EuiFormRow>
+```
+
+For picking a number on a scale, see the range slider.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

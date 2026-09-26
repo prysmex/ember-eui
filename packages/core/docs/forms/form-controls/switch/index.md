@@ -4,14 +4,29 @@ title: Switch
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Switch"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    A switch can be substituted for a checkbox when the semantics of the label dictate a true on/off state.
-  </p>
+
+`EuiSwitch` is an on/off toggle. Use it for settings that take effect
+immediately, like "Show grid"; for choices submitted with a form, a
+checkbox reads better.
+
+```hbs
+<EuiSwitch
+  @label="Show grid"
+  @checked={{this.showGrid}}
+  @onChange={{this.toggleGrid}}
+/>
+```
+
+`@onChange` receives the click event; `event.target.checked` is the new
+state. The label describes what is turned on (not "on"/"off"). With
+`@showLabel={{false}}` the label is only read by screen readers.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

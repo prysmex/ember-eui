@@ -3,20 +3,28 @@ title: Select
 ---
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Select"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component renders a basic HTML <EuiCode @language="html">{{'<select>'}}</EuiCode> element.
-    Use <strong>EuiSelect</strong> to allow users to choose from a list of 7 to 12 options.
-    When there are less than 7 options consider using a <strong>EuiRadioGroup</strong>.
-  </p>
-  <p>
-    If you need more customization for how the options and/or selected values render, you can use an <strong>EuiSuperSelect</strong> instead.
-    For long lists of options use an <strong>EuiComboBox</strong>, which has search and multi-select capabilities, but also has restrictions on how items are rendered.
-  </p>
+
+`EuiSelect` renders a native `<select>` styled like the other fields.
+Options are `{ value, text }`; `@value` is the selected option's value and
+you update it from the `change` event.
+
+```hbs
+<EuiFormRow @label="Country">
+  <EuiSelect @options={{this.countries}} @value={{this.country}} {{on "change" this.chooseCountry}} />
+</EuiFormRow>
+```
+
+Use it for about 7 to 12 options. For fewer, radios show every choice at
+once; for long lists, searching or several values, use `EuiComboBox`.
+`@hasNoInitialSelection` adds an empty first option so nothing is picked
+until the user chooses.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

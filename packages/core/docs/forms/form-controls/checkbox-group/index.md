@@ -5,27 +5,38 @@ title: Checkbox group
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Checkbox group"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component is different yet simplier from what you'd expect in ember in a way that you don't control the rendering of each checkbox, you just pass in an array of <EuiCode>@options</EuiCode> and <EuiCode>@idToSelectedMap</EuiCode> which you are in charge to calculate on subsequent <EuiCode>@onChange</EuiCode>'s, refer to the javascript snippet.
-  </p>
-  <p>
-  You can optionally pass <EuiCode>@valueKey</EuiCode> and <EuiCode>@labelKey</EuiCode> for a more flexible and ergonomic API, so you don't actually have to map your options to
-    <EuiCode>{ id: '', label: '' }</EuiCode> which are the default <EuiCode>@valueKey</EuiCode> and <EuiCode>@labelKey</EuiCode>.
-  </p>
-  <p>
-    When the individual labels for each radio do not provide a
-    sufficient description, pass a <EuiCode>@legend</EuiCode> to the
-    group.
-  </p>
-  <p>
-    Use the <EuiCode>@compressed</EuiCode> prop to tighten up the spacing
-    between checkbox rows.
-  </p>
+
+`EuiCheckboxGroup` renders a list of checkboxes from `@options`. You keep
+which ones are checked in `@idToSelectedMap` (`{ [id]: true }`) and update
+it in `@onChange`, which receives the id of the checkbox that changed.
+
+```hbs
+<EuiCheckboxGroup
+  @options={{this.toppings}}
+  @idToSelectedMap={{this.selected}}
+  @onChange={{this.toggle}}
+/>
+```
+
+```js
+toppings = [{ id: 'cheese', label: 'Cheese' }, { id: 'olives', label: 'Olives' }];
+@tracked selected = { cheese: true };
+
+@action toggle(id) {
+  this.selected = { ...this.selected, [id]: !this.selected[id] };
+}
+```
+
+Options are `{ id, label }` by default; `@valueKey` and `@labelKey` read
+other keys, so you can pass your own objects. Pass `@legend` when the group
+is not inside an `EuiFormRow`, so it has a name.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

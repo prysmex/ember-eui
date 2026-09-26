@@ -5,26 +5,32 @@ title: Checkbox
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Checkbox"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component renders a basic HTML <EuiCode @language="html">{{'<input type="checkbox">'}}</EuiCode> element.
-    Use checkboxes to allow users to select multiple options from a list.
-  </p>
-  <p>
-    Use the <EuiCode>@checked</EuiCode> argument to handle the checked and
-    unchecked state. You can also use the <EuiCode>@indeterminate</EuiCode> argument to set an indeterminate state.
-    This state is commonly used in hierarchical checkboxes to indicate that only some of the checkbox's descendants are checked.
-  </p>
-  <p>
-    Make sure to pass a <EuiCode>@label</EuiCode> to ensure a larger
-    clickable area and ensure that screen readers will read out the
-    label when the user is focused on the input.
-    You can also use the <EuiCode>:label</EuiCode> block for a more complex label.
-  </p>
+
+`EuiCheckbox` renders an `<input type="checkbox">` with its label. Use a
+checkbox for one yes/no choice that applies when the form is submitted
+(for settings that apply immediately, prefer `EuiSwitch`); for several
+related choices, use `EuiCheckboxGroup`.
+
+```hbs
+<EuiCheckbox
+  @label="Remember me"
+  @checked={{this.remember}}
+  {{on "change" this.toggleRemember}}
+/>
+```
+
+Pass `@checked` and update it from the `change` event
+(`event.target.checked`). Always give it a `@label` (or the `<:label>`
+block): the label is clickable and read by screen readers.
+`@indeterminate` shows a "partially checked" state, e.g. for a "select all"
+checkbox when only some items are selected.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

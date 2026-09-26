@@ -4,15 +4,23 @@ title: Textarea
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Textarea"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    This component renders a basic HTML <EuiCode @language="html">{{'<textarea />'}}</EuiCode> element.
-    Use <strong>EuiTextArea</strong> to allow users to enter multi-line text.
-  </p>
+
+`EuiTextArea` renders a `<textarea>` for multi-line text. `@rows` sets its
+height in lines and `@resize` which way the user can resize it. For
+formatted text, see the markdown editor.
+
+```hbs
+<EuiFormRow @label="Description" @helpText="Markdown is not supported here.">
+  <EuiTextArea @value={{this.description}} @rows={{4}} {{on "input" this.updateDescription}} />
+</EuiFormRow>
+```
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

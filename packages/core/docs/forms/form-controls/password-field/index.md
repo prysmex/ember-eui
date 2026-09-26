@@ -4,20 +4,31 @@ title: Password field
 
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Password field"/>
-
-<EuiSpacer />
+<EuiSpacer @size="l" />
 
 <EuiText>
-  <p>
-    Use a <strong>EuiFieldPassword</strong> to allow users to enter a password.
-    By default, it renders a basic HTML <EuiCode @language="html">{{'<input type="password">'}}</EuiCode> where the content is obfuscated.
-    When users type in the field the characters are presented as asterisks.
-  </p>
-  <p>
-    You can change this default behavior by passing <EuiCode>{{'@type="dual"'}}</EuiCode> so that users can toggle between showing and obfuscating the content.
-    This option makes the experience more user-friendly and accessible.
-  </p>
+
+`EuiFieldPassword` is an input for passwords and other secrets. By default
+(`@type="dual"`) it hides the text and adds a button to show it, which
+helps users check what they typed; `@type="password"` only hides it and
+`@type="text"` shows it.
+
+```hbs
+<EuiFormRow @label="Password">
+  <EuiFieldPassword
+    @value={{this.password}}
+    autocomplete="current-password"
+    {{on "input" this.updatePassword}}
+  />
+</EuiFormRow>
+```
+
+Set `autocomplete` (`current-password` or `new-password`) so password
+managers fill it in.
+
 </EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

@@ -29,11 +29,14 @@ Once you've installed it, you can now install the addon itself:
 EUI icons are bundled with the addon, no build configuration is needed
 (this used to require `ember-svg-jar`).
 
-To use your own icons by name, e.g. `<EuiIcon @type="myLogo" />`, register
-components rendering an `<svg ...attributes>` in the `euiIcon.icons` config.
-With [@svg-jar/plugin](https://github.com/svg-jar/plugin) in your app's
-`vite.config.mjs` (`svgJar({ target: 'ember' })`) you can import svg files
-directly. Any other string is rendered as an `<img>` with that URL.
+To use your own icons, add [@svg-jar/plugin](https://github.com/svg-jar/plugin)
+to your app's `vite.config.mjs` (`svgJar({ target: 'ember' })`). Imported svg
+components can be passed directly as `@type` / `@iconType`, or registered by
+name in the `euiIcon.icons` config; `iconsFromGlob` from
+`@ember-eui/core/utils/icons-from-glob` registers a whole folder at once
+(`import.meta.glob('../icons/**/*.svg', { eager: true })`), naming icons after
+their file like ember-svg-jar did. Keep those svgs out of `public/`.
+Any other string is rendered as an `<img>` with that URL.
 
 <EuiCodeBlock @language="ts" @isCopyable={{true}}>
 {{t "getting_started.icons_configuration"}}

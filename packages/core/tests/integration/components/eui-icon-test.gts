@@ -3,7 +3,9 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 
 import EuiBadge from '#src/components/eui-badge.gts';
+import EuiButton from '#src/components/eui-button.gts';
 import EuiIcon, { TYPES } from '#src/components/eui-icon.gts';
+import { iconsFromGlob } from '#src/utils/icons-from-glob.ts';
 
 import type EuiConfigService from '#src/services/eui-config.ts';
 import type { TOC } from '@ember/component/template-only';
@@ -195,6 +197,35 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
       assert.dom('svg.my-custom-icon').hasClass('euiIcon--primary');
       assert.dom('svg.my-custom-icon').hasAttribute('aria-hidden', 'true');
+    });
+
+    test('a folder of svgs can be registered with iconsFromGlob', async function (assert) {
+      // real svg files, turned into components by @svg-jar/plugin
+      const icons = iconsFromGlob(
+        import.meta.glob('../../fixtures/icons/**/*.svg', { eager: true })
+      );
+      const config = this.owner.lookup('service:eui-config') as EuiConfigService;
+
+      assert.deepEqual(Object.keys(icons).sort(), ['app-logo', 'rocket']);
+
+      config.updateConfig({ 'euiIcon.icons': icons });
+
+      await render(
+        <template>
+          <EuiIcon @type="app-logo" @size="l" />
+          <EuiButton @iconType="rocket">Launch</EuiButton>
+        </template>
+      );
+
+      // plain `.svg` imports use @svg-jar/plugin's sprite mode in builds:
+      // the svg references a symbol in the emitted sprite sheet
+      const logo = document.querySelector('svg.euiIcon.euiIcon--large use');
+      const rocket = document.querySelector('.euiButton svg.euiIcon use');
+
+      assert.dom('img').doesNotExist();
+      assert.ok(logo?.getAttribute('href')?.includes('#'), 'logo uses a symbol');
+      assert.ok(rocket?.getAttribute('href')?.includes('#'), 'rocket uses a symbol');
+      assert.notStrictEqual(logo?.getAttribute('href'), rocket?.getAttribute('href'));
     });
 
     test('a component passed as @type renders as a component', async function (assert) {

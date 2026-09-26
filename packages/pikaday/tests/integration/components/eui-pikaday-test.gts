@@ -66,9 +66,7 @@ module('Integration | Component | eui-pikaday', function (hooks) {
     assert.false(input.validity.valid);
   });
 
-  // Bug: EuiPikaday passes @isFakePrependBlock={{hasPrepend}} (inverted), so
-  // without a prepend the field is rendered as a group, and a given prepend is hidden
-  test.todo('prepend is only rendered when given', async function (assert) {
+  test('prepend is only rendered when given', async function (assert) {
     await render(
       <template>
         <EuiPikaday class="plain" />
@@ -81,5 +79,18 @@ module('Integration | Component | eui-pikaday', function (hooks) {
     assert.dom('input.plain').doesNotHaveClass('euiFieldText--inGroup');
     assert.dom('.pre').hasText('From');
     assert.dom('input.with-prepend').hasClass('euiFieldText--inGroup');
+  });
+
+  test('append is only rendered when given', async function (assert) {
+    await render(
+      <template>
+        <EuiPikaday class="with-append">
+          <:append as |classes|><span class="post {{classes}}">UTC</span></:append>
+        </EuiPikaday>
+      </template>
+    );
+
+    assert.dom('.post').hasText('UTC');
+    assert.dom('input.with-append').hasClass('euiFieldText--inGroup');
   });
 });

@@ -177,8 +177,8 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
         @compressed={{@compressed}}
         @id={{inputId}}
         @clear={{if @clear (fn (optional @clear) null)}}
-        @isFakePrependBlock={{hasPrepend}}
-        @isFakeAppendBlock={{hasAppend}}
+        @isFakePrependBlock={{not hasPrepend}}
+        @isFakeAppendBlock={{not hasAppend}}
         @disabled={{@disabled}}
         @isInvalid={{@isInvalid}}
         ...attributes

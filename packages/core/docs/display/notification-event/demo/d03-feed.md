@@ -6,8 +6,10 @@ order: 3
 
 <EuiText>
 
-A list of events, e.g. inside a flyout, each with its own read state and
-actions.
+Several events in a feed. The first message of each shows; the others
+are behind a "+ N more" button (`@accordionButtonText`). The
+`<:primaryAction>` block adds an action under the messages. Use the
+controls to change the number of messages and show the actions.
 
 </EuiText>
 

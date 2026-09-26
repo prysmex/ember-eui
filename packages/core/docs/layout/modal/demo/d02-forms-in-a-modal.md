@@ -6,7 +6,9 @@ order: 2
 
 <EuiText>
 
-Put the form in the body and its submit button in the footer. `@focusTrapOptions={{hash initialFocus="#id"}}` focuses a field when the modal opens.
+Put the form in the body and its submit button in the footer. To focus
+the first field when the modal opens, pass
+`@focusTrapOptions={{hash initialFocus="#field-id"}}`.
 
 </EuiText>
 

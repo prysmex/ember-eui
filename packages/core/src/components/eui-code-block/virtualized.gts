@@ -3,7 +3,7 @@ import { helper } from '@ember/component/helper';
 import { concat } from '@ember/helper';
 
 //@ts-expect-error
-import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
+import { VerticalCollection } from '@html-next/vertical-collection';
 import style from 'ember-style-modifier/modifiers/style';
 
 import randomId from '../../-private/random-id.ts';

@@ -292,8 +292,8 @@ importers:
         specifier: ^1.13.1
         version: 1.13.2(@babel/core@7.26.9)(@glint/environment-ember-loose@1.5.2(@glimmer/component@2.0.0)(@glint/template@1.5.2)(@types/ember__array@4.0.9(@babel/core@7.26.9))(@types/ember__component@4.0.21(@babel/core@7.26.9))(@types/ember__controller@4.0.11(@babel/core@7.26.9))(@types/ember__object@4.0.11(@babel/core@7.26.9))(@types/ember__routing@4.0.19(@babel/core@7.26.9))(ember-cli-htmlbars@6.3.0)(ember-modifier@4.2.0(@babel/core@7.26.9)(ember-source@6.12.0(@glimmer/component@2.0.0)(rsvp@4.8.5))))(@glint/template@1.5.2)(ember-source@6.12.0(@glimmer/component@2.0.0)(rsvp@4.8.5))
       '@html-next/vertical-collection':
-        specifier: 4.0.0
-        version: 4.0.0
+        specifier: 5.0.5
+        version: 5.0.5
       '@nullvoxpopuli/ember-composable-helpers':
         specifier: ^5.2.8
         version: 5.2.10(@babel/core@7.26.9)(ember-source@6.12.0(@glimmer/component@2.0.0)(rsvp@4.8.5))
@@ -3627,9 +3627,9 @@ packages:
     resolution: {integrity: sha512-n/SZW+12rwikx/f8YcSv9JCi5p9vn1Bnts9ZtVvfErG4h0gbjHI1H1ZMhVUnaOC7yzFc6PtsCKIK8XeTnL90Gw==}
     engines: {node: ^18 || ^20 || ^22 || >=24}
 
-  '@html-next/vertical-collection@4.0.0':
-    resolution: {integrity: sha512-/c4y6ASmkMwyG+rcoXH3kx50LiK2MuPX0bsktd+j9LhOD6zkJyT4wJ73m20dCEvxjgwA/nCQ8hj3lApQlHG0CQ==}
-    engines: {node: '>= 14.*'}
+  '@html-next/vertical-collection@5.0.5':
+    resolution: {integrity: sha512-LEed/9M50OsyZKS0y/gg03KumAq5QX/KHRI8dQKS7MfVejEXlO2tPTjhzjVPRjBfepQ8K7+b8YK6cUBwgQJbaw==}
+    engines: {node: '>= 18'}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -4430,10 +4430,6 @@ packages:
 
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
-
-  '@types/broccoli-plugin@3.0.0':
-    resolution: {integrity: sha512-f+TcsARR2PovfFRKFdCX0kfH/QoM3ZVD2h1rl2mNvrKO0fq2uBNCBsTU3JanfU4COCt5cXpTfARyUsERlC8vIw==}
-    deprecated: This is a stub types definition. broccoli-plugin provides its own type definitions, so you do not need this installed.
 
   '@types/chai-as-promised@7.1.8':
     resolution: {integrity: sha512-ThlRVIJhr69FLlh6IctTXFkmhtP3NpMZ2QGq69StYLyKZFp/HOp1VdKZj7RvfNWYYcJ1xlbLGLLWj1UvP5u/Gw==}
@@ -5309,9 +5305,6 @@ packages:
   babel-remove-types@1.1.0:
     resolution: {integrity: sha512-2wszSY8Pll8uefPFrJcOb2cP67epjpDnLADtzgQ9u1WgFJmBdJAkx5MGISjFCg/56Q8YgzA/o9RBMpScjhf+dw==}
 
-  babel6-plugin-strip-class-callcheck@6.0.0:
-    resolution: {integrity: sha512-biNFJ7JAK4+9BwswDGL0dmYpvXHvswOFR/iKg3Q/f+pNxPEa5bWZkLHI1fW4spPytkHGMe7f/XtYyhzml9hiWg==}
-
   babylon@6.18.0:
     resolution: {integrity: sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==}
     hasBin: true
@@ -5567,10 +5560,6 @@ packages:
   broccoli-rollup@2.1.1:
     resolution: {integrity: sha512-aky/Ovg5DbsrsJEx2QCXxHLA6ZR+9u1TNVTf85soP4gL8CjGGKQ/JU8R3BZ2ntkWzo6/83RCKzX6O+nlNKR5MQ==}
     engines: {node: '>=4.0'}
-
-  broccoli-rollup@5.0.0:
-    resolution: {integrity: sha512-QdMuXHwsdz/LOS8zu4HP91Sfi4ofimrOXoYP/lrPdRh7lJYD87Lfq4WzzUhGHsxMfzANIEvl/7qVHKD3cFJ4tA==}
-    engines: {node: '>=12.0'}
 
   broccoli-slow-trees@3.1.0:
     resolution: {integrity: sha512-FRI7mRTk2wjIDrdNJd6znS7Kmmne4VkAkl8Ix1R/VoePFMD0g0tEl671xswzFqaRjpT9Qu+CC4hdXDLDJBuzMw==}
@@ -7219,9 +7208,8 @@ packages:
       '@ember/test-helpers': '>=3.0.3'
       qunit: ^2.13.0
 
-  ember-raf-scheduler@0.3.0:
-    resolution: {integrity: sha512-i8JWQidNCX7n5TOTIKRDR0bnsQN9aJh/GtOJKINz2Wr+I7L7sYVhli6MFqMYNGKC9j9e6iWsznfAIxddheyEow==}
-    engines: {node: 12.* || 14.* || >= 16}
+  ember-raf-scheduler@0.5.2:
+    resolution: {integrity: sha512-KG4HCo60NNUQ/H3nQBJU1CbdqkwjKN2mfJG/LDKwQjn3OEt4xUPiJ5OP3+gAWjPgA8Lp+uWNEog20jtnD3unYw==}
 
   ember-resolver@13.1.0:
     resolution: {integrity: sha512-t/PjXLCl5tM9EQXGIFoBgHiA41HkLJpfo17Nud5Cy9eyUPGcnsMjWJqQ+O5QHA0E63Sp+zTn4y/RS5Tu2v2ydg==}
@@ -11099,11 +11087,6 @@ packages:
 
   rollup@0.57.1:
     resolution: {integrity: sha512-I18GBqP0qJoJC1K1osYjreqA8VAKovxuI3I81RSk0Dmr4TgloI0tAULjZaox8OsJ+n7XRrhH6i0G2By/pj1LCA==}
-    hasBin: true
-
-  rollup@2.79.1:
-    resolution: {integrity: sha512-uKxbd0IhMZOhjAiD5oAFp7BqvkA4Dv47qpOCtaNvng4HBwdbWtdOh8f5nZNuk2rp51PMGk3bzfWu5oayNEuYnw==}
-    engines: {node: '>=10.0.0'}
     hasBin: true
 
   rollup@4.35.0:
@@ -15816,16 +15799,10 @@ snapshots:
 
   '@handlebars/parser@2.2.2': {}
 
-  '@html-next/vertical-collection@4.0.0':
+  '@html-next/vertical-collection@5.0.5':
     dependencies:
-      babel6-plugin-strip-class-callcheck: 6.0.0
-      broccoli-funnel: 3.0.8
-      broccoli-merge-trees: 4.2.0
-      broccoli-rollup: 5.0.0
-      ember-cli-babel: 7.26.11
-      ember-cli-htmlbars: 6.3.0
-      ember-cli-version-checker: 5.1.2
-      ember-raf-scheduler: 0.3.0
+      '@embroider/addon-shim': 1.10.3
+      ember-raf-scheduler: 0.5.2
     transitivePeerDependencies:
       - supports-color
 
@@ -16620,12 +16597,6 @@ snapshots:
     dependencies:
       '@types/connect': 3.4.38
       '@types/node': 20.10.6
-
-  '@types/broccoli-plugin@3.0.0':
-    dependencies:
-      broccoli-plugin: 4.0.7
-    transitivePeerDependencies:
-      - supports-color
 
   '@types/chai-as-promised@7.1.8':
     dependencies:
@@ -17827,8 +17798,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel6-plugin-strip-class-callcheck@6.0.0: {}
-
   babylon@6.18.0: {}
 
   backbone@1.5.0:
@@ -18348,20 +18317,6 @@ snapshots:
       rollup: 0.57.1
       symlink-or-copy: 1.3.1
       walk-sync: 0.3.4
-    transitivePeerDependencies:
-      - supports-color
-
-  broccoli-rollup@5.0.0:
-    dependencies:
-      '@types/broccoli-plugin': 3.0.0
-      broccoli-plugin: 4.0.7
-      fs-tree-diff: 2.0.1
-      heimdalljs: 0.2.6
-      node-modules-path: 1.0.2
-      rollup: 2.79.1
-      rollup-pluginutils: 2.8.2
-      symlink-or-copy: 1.3.1
-      walk-sync: 2.2.0
     transitivePeerDependencies:
       - supports-color
 
@@ -20799,9 +20754,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ember-raf-scheduler@0.3.0:
+  ember-raf-scheduler@0.5.2:
     dependencies:
-      ember-cli-babel: 7.26.11
+      '@ember/test-waiters': 4.1.2
+      '@embroider/addon-shim': 1.10.3
     transitivePeerDependencies:
       - supports-color
 
@@ -25549,10 +25505,6 @@ snapshots:
       rollup-pluginutils: 2.8.2
       signal-exit: 3.0.7
       sourcemap-codec: 1.4.8
-
-  rollup@2.79.1:
-    optionalDependencies:
-      fsevents: 2.3.3
 
   rollup@4.35.0:
     dependencies:

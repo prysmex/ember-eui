@@ -5,7 +5,7 @@ import { htmlSafe } from '@ember/template';
 import { EnsureSafeComponentHelper } from '@embroider/util';
 
 //@ts-expect-error
-import VerticalCollection from '@html-next/vertical-collection/components/vertical-collection/component';
+import { VerticalCollection } from '@html-next/vertical-collection';
 import EmberPowerSelectOptions from 'ember-power-select/components/power-select/options';
 import emberPowerSelectIsEqual from 'ember-power-select/helpers/ember-power-select-is-equal';
 import emberPowerSelectIsGroupHelper, {

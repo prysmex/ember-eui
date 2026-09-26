@@ -5,6 +5,7 @@ import { setApplication } from '@ember/test-helpers';
 import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
 import { setTesting } from '@embroider/macros';
+import KeyboardService from 'ember-keyboard/services/keyboard';
 
 import EuiConfigService from '#src/services/eui-config.ts';
 import EuiI18nService from '#src/services/eui-i18n.ts';
@@ -20,7 +21,9 @@ class TestApp extends EmberApp {
     './router': Router,
     './services/eui-config': EuiConfigService,
     './services/eui-i18n': EuiI18nService,
-    './services/eui-toaster': EuiToasterService
+    './services/eui-toaster': EuiToasterService,
+    // services from v2 addon dependencies that the app tree would normally provide
+    './services/keyboard': KeyboardService
   };
 }
 

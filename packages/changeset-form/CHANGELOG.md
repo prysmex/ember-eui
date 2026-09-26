@@ -1,5 +1,16 @@
 # @ember-eui/changeset-form
 
+## 14.0.0
+
+### Major Changes
+
+- VITE
+
+### Patch Changes
+
+- Updated dependencies
+  - @ember-eui/core@14.0.0
+
 ## 13.0.5
 
 ### Patch Changes
@@ -100,6 +111,7 @@
   - @ember-eui/core@12.0.8
 
 ## 12.0.7
+
 ## 8.0.65
 
 ### Patch Changes

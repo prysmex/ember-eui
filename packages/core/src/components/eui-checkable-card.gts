@@ -9,11 +9,10 @@ import EuiCheckbox from './eui-checkbox.gts';
 import EuiRadio from './eui-radio.gts';
 
 import type { EuiCheckboxSignature } from './eui-checkbox';
-import type { EuiRadioSignature } from './eui-radio';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCheckableCardSignature {
-  Element: EuiCheckboxSignature['Element'] | EuiRadioSignature['Element'];
+  Element: EuiCheckboxSignature['Element']  ;
   Args: {
     id?: string;
     label?: string;

@@ -45,8 +45,8 @@ export function classNames(
   classNames: (string | undefined)[] = [],
   options: Options
 ): string {
-  let { componentName, ...rest } = options;
-  let includeBase = options.addBase !== false;
+  const { componentName: _componentName, ...rest } = options;
+  const includeBase = options.addBase !== false;
   let str = `${classNames.join(' ')}`;
 
   if (options.componentName) {
@@ -61,7 +61,7 @@ export function classNames(
       str = `${str} ${component.base}`;
     }
 
-    for (let key in rest) {
+    for (const key in rest) {
       //@ts-expect-error
       if (component.properties[key] && component.properties[key]?.[rest[key]]) {
         //@ts-expect-error

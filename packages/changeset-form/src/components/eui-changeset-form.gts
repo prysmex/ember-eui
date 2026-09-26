@@ -107,12 +107,13 @@ export default class EuiChangesetFormComponent extends Component<EuiChangesetFor
   }
 
   @action
-  async validate(initialValidation?: boolean) {
+  validate(initialValidation?: boolean): void {
     if (initialValidation) {
       later(
         this,
         () => {
-          this.args.changeset.validate();
+          // errors land on the changeset, which the fields render
+          void this.args.changeset.validate();
         },
         1
       );

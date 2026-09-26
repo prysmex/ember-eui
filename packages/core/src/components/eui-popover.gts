@@ -618,24 +618,6 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       forcePosition = true;
     }
 
-    // get the position of the element relative to the offsetParent, which could be the document
-    function getPos(ele: HTMLElement): [number, number] {
-      let currTop = 0;
-      let currLeft = 0;
-
-      if (ele.offsetParent) {
-        do {
-          currTop += ele.offsetTop;
-          currLeft += ele.offsetLeft;
-        } while ((ele = ele.offsetParent as HTMLElement));
-      } else {
-        currTop = ele.offsetTop;
-        currLeft = ele.offsetLeft;
-      }
-
-      return [currTop, currLeft];
-    }
-
     const {
       top,
       left,

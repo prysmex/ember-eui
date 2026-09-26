@@ -8,7 +8,7 @@ declare module 'ember-math-helpers/helpers/add' {
         b: number | string | undefined
       ];
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     Return: number;
   }> {}
 }

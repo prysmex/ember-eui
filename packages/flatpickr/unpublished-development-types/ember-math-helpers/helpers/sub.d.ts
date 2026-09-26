@@ -5,7 +5,7 @@ declare module 'ember-math-helpers/helpers/sub' {
     Args: {
       Positional: [a: number, b: number];
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     Return: number;
   }> {}
 }

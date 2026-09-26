@@ -811,7 +811,7 @@ export function getElementZIndex(
 
   // build the array of the element + its offset parents
   const nodesToInspect: HTMLElement[] = [];
-  // eslint-disable-next-line
+   
   while (true) {
     nodesToInspect.push(element);
 

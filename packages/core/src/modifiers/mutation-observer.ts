@@ -30,7 +30,7 @@ const makeMutationObserver = (
 
   const observer = new MutationObserver(callback);
 
-  //eslint-disable-next-line
+   
   observer.observe(node, observerOptions);
 
   return observer;
@@ -46,7 +46,7 @@ export default modifier(function useMutationObserver(
 ): void | (() => unknown) {
   if (element != null) {
     const observer = makeMutationObserver(element, observerOptions, onMutation);
-    //eslint-disable-next-line
+     
     return () => observer.disconnect();
   }
 });

@@ -8,7 +8,7 @@ export function castTo(
   [that]: [any],
   { to = NUMBER }: { to: string }
 ): number | boolean | string {
-  let toLower = to?.toLowerCase();
+  const toLower = to?.toLowerCase();
 
   switch (toLower) {
     case NUMBER:

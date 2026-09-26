@@ -1,4 +1,3 @@
-import { hash } from '@ember/helper';
 
 import { element } from 'ember-element-helper';
 

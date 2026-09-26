@@ -49,7 +49,7 @@ export const useFormatTimeString = (
   locale: LocaleSpecifier = 'en',
   euiI18nService: EuiI18n
 ): string => {
-  let lookupToken = euiI18nService.lookupToken;
+  const lookupToken = euiI18nService.lookupToken;
 
   // i18n'd strings
   const nowDisplay = lookupToken('euiPrettyDuration.now', 'now');

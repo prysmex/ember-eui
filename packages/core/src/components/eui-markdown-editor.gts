@@ -89,7 +89,7 @@ export const getCursorNode = (
 
   let node: EuiMarkdownAstNode = parsed.result ?? parsed.contents;
 
-  //eslint-disable-next-line
+   
   outer: while (true) {
     if (node.children) {
       for (let i = 0; i < node.children.length; i++) {
@@ -241,7 +241,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
 
   @action
   updateCurrentHeight() {
-    let { isPreviewing, autoExpandPreview, height, previewRef, currentHeight } =
+    const { isPreviewing, autoExpandPreview, height, previewRef, currentHeight } =
       this;
 
     if (isPreviewing && autoExpandPreview && height !== 'full' && previewRef) {
@@ -288,7 +288,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
 
   @action
   replaceNode(position: EuiMarkdownAstNodePosition, next: string) {
-    let value = this.args.value;
+    const value = this.args.value;
     const leading = value.substr(0, position.start.offset);
     const trailing = value.substr(position.end.offset);
 
@@ -362,7 +362,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   };
 
   onEditorPluginSave = (markdown: any, config: any) => {
-    let { selectedNode, textareaRef } = this;
+    const { selectedNode, textareaRef } = this;
 
     if (
       this.pluginEditorPlugin &&

@@ -72,11 +72,12 @@ export default class ChangesetFormFieldsBase<
   }
 
   @action
-  async validate(): Promise<void> {
+  validate(): void {
     later(
       this,
       () => {
-        this.args.changeset?.validate(this.args.fieldName);
+        // errors land on the changeset, which the field renders
+        void this.args.changeset?.validate(this.args.fieldName);
       },
       1
     );

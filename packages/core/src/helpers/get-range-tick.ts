@@ -72,7 +72,7 @@ export function getRangeTick([
       tickStyle = `left: ${((customTick.value - min) / (max - min)) * 100}%;`;
     }
   } else {
-    let position = calculateThumbPosition(tickValue, min, max, trackWidth);
+    const position = calculateThumbPosition(tickValue, min, max, trackWidth);
 
     tickStyle = `left: calc(${position}% + ${EUI_THUMB_SIZE / 2}px);`;
     tickStyle += `width: ${percentageWidth}%;`;

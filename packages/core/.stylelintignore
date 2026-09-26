@@ -9,3 +9,6 @@
 
 # test build output
 /dist-tests/
+
+# vendored EUI theme builds
+/vendor/

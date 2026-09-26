@@ -33,7 +33,7 @@ interface ResizeObserverSignature {
 
 const makeCompatibleObserver = (node: Element, callback: () => void) => {
   const observer = new MutationObserver(callback);
-  //eslint-disable-next-line
+   
   observer.observe(node, mutationObserverOptions);
 
   window.addEventListener('resize', callback);
@@ -73,7 +73,7 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
 
   @action
   setSize({ width, height }: { width: number; height: number }) {
-    let [dimension] = this.positional || [];
+    const [dimension] = this.positional || [];
 
     const doesWidthMatter = dimension !== 'height';
     const doesHeightMatter = dimension !== 'width';
@@ -101,7 +101,7 @@ export default class ResizeObserver extends Modifier<ResizeObserverSignature> {
   }
 
   _setup() {
-    let { setSize, element } = this;
+    const { setSize, element } = this;
 
     if (element != null) {
       // ResizeObserver's first call to the observation callback is scheduled in the future

@@ -78,7 +78,7 @@ export default class EuiPikadayComponent extends Component<EuiPikadaySignature> 
   }
 
   get i18n() {
-    let i18n = this.args.i18n;
+    const i18n = this.args.i18n;
 
     if (!i18n) {
       return undefined;

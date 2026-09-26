@@ -42,9 +42,9 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
       this.args.customOptionText &&
       typeof this.args.customOptionText === 'string'
     ) {
-      let str = unwrap(this.args.customOptionText);
+      const str = unwrap(this.args.customOptionText);
 
-      let context = {
+      const context = {
         searchText: this.args.select.searchText
       };
 
@@ -54,7 +54,7 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
         })
       );
     } else {
-      let str = unwrap(
+      const str = unwrap(
         this.euiI18n.lookupToken(
           'euiComboBox.customOptionText',
           'Add&nbsp;<strong>{searchText}</strong>&nbsp;as custom option',

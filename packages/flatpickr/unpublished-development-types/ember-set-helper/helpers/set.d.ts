@@ -3,9 +3,9 @@ declare module 'ember-set-helper/helpers/set' {
   import { set } from '@ember/object';
 
   export default class SetHelper<
-    T extends unknown,
+    T,
     K extends keyof T,
-    V extends unknown
+    V
   > extends Helper<{
     Args: {
       Positional: [ctx: T, str: K, value?: V];

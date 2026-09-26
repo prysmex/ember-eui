@@ -318,7 +318,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         }
 
         //@ts-ignore
-        let results = this._filter(this.options, this.searchText);
+        const results = this._filter(this.options, this.searchText);
         //eslint-disable-next-line
         this._filterResultsCache = {
           results,
@@ -335,7 +335,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
 
   @action
   scrollTo(option: any, select: { results: []; uniqueId: string }): void {
-    let optionsList = document.querySelector(
+    const optionsList = document.querySelector(
       `[aria-controls="ember-power-select-trigger-${select.uniqueId}"]`
     ) as HTMLElement;
 
@@ -343,13 +343,13 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       return;
     }
 
-    let index = this.opts.indexOf(option);
+    const index = this.opts.indexOf(option);
 
     if (index === -1) {
       return;
     }
 
-    let optionElement = optionsList.querySelector(
+    const optionElement = optionsList.querySelector(
       `[data-option-index="${index}"]`
     ) as HTMLElement;
 
@@ -357,8 +357,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       return;
     }
 
-    let optionTopScroll = optionElement.offsetTop;
-    let optionBottomScroll = optionTopScroll + optionElement.offsetHeight;
+    const optionTopScroll = optionElement.offsetTop;
+    const optionBottomScroll = optionTopScroll + optionElement.offsetHeight;
 
     if (optionBottomScroll > optionsList.offsetHeight + optionsList.scrollTop) {
       optionsList.scrollTop = optionBottomScroll - optionsList.offsetHeight;
@@ -402,7 +402,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       }
     }
 
-    let search = option || this.select.searchText;
+    const search = option || this.select.searchText;
 
     this.select.actions.search('');
     this.select.actions.close();
@@ -412,7 +412,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
 
   @action
   buildSelection(option: any, select: Select) {
-    let newSelection = (select.selected || []).slice(0);
+    const newSelection = (select.selected || []).slice(0);
     let idx = -1;
 
     for (let i = 0; i < newSelection.length; i++) {

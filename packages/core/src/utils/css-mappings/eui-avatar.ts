@@ -34,7 +34,7 @@ export function inlineStyles({
 }): Styling {
   let assignedColor = color;
   // let iconCustomColor = iconColor;
-  let avatarStyle: {
+  const avatarStyle: {
     backgroundColor?: string;
     color?: string;
     backgroundImage?: string;

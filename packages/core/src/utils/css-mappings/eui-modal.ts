@@ -6,7 +6,7 @@ export function inlineStyles({
 }: {
   maxWidth: string | number;
 }): Styling {
-  let value = typeOf(maxWidth) === 'number' ? `${maxWidth}px` : `${maxWidth}`;
+  const value = typeOf(maxWidth) === 'number' ? `${maxWidth}px` : `${maxWidth}`;
 
   return {
     'max-width': value

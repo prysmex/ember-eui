@@ -31,12 +31,12 @@ export const toDOM = (
     rootClasses?: string[];
   }
 ) => {
-  let document = createDocument();
-  let components: DynamicComponent[] = [];
+  const document = createDocument();
+  const components: DynamicComponent[] = [];
 
   const toElements = (parent: Node, nodes: RehypeNode[] = []) => {
     nodes?.forEach((node) => {
-      let el = toElement(node);
+      const el = toElement(node);
 
       if (el) {
         parent.appendChild(el);
@@ -51,18 +51,18 @@ export const toDOM = (
     node: RehypeNode,
     classesToAdd?: string[] | string
   ) => {
-    let element = document.createElement(name);
-    let properties = node.properties;
-    let finalClassNames = [];
+    const element = document.createElement(name);
+    const properties = node.properties;
+    const finalClassNames = [];
 
     if (properties) {
       if (properties['className']) {
         finalClassNames.push(...(properties['className'] as string[]));
       }
 
-      for (let key in properties) {
+      for (const key in properties) {
         if (attributes.includes(key)) {
-          let value = properties[key];
+          const value = properties[key];
 
           element.setAttribute(key, value as string);
         } else {
@@ -89,10 +89,10 @@ export const toDOM = (
 
   const toElement = (node: RehypeNode) => {
     if (node) {
-      let { type } = node;
+      const { type } = node;
 
       if (type === 'root') {
-        let element = createElement(
+        const element = createElement(
           'div',
           node,
           options?.rootClasses || ['root']
@@ -100,18 +100,18 @@ export const toDOM = (
 
         return toElements(element, node.children);
       } else if (type === 'element') {
-        let element = createElement(node.tagName, node);
+        const element = createElement(node.tagName, node);
 
         return toElements(element, node.children);
       } else if (type === 'text') {
         return document.createTextNode(node.value);
       } else if (type === 'component') {
-        let { inline } = node.properties;
-        let element = createElement(inline ? 'span' : 'div', node, [
+        const { inline } = node.properties;
+        const element = createElement(inline ? 'span' : 'div', node, [
           'component'
         ]);
-        let { _children, ...properties } = node.properties;
-        let content = toElements(document.createElement('span'), node.children);
+        const { _children, ...properties } = node.properties;
+        const content = toElements(document.createElement('span'), node.children);
 
         components.push({
           element,
@@ -130,7 +130,7 @@ export const toDOM = (
     return;
   };
 
-  let element = toElement(tree);
+  const element = toElement(tree);
 
   return {
     element,

@@ -36,7 +36,7 @@ export interface FieldCheckboxGroupSignature {
 
 export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldBase<FieldCheckboxGroupSignature> {
   get value(): string[] {
-    let value = maybeUnwrapProxy(this.args.value);
+    const value = maybeUnwrapProxy(this.args.value);
 
     return value?.toArray?.() || value;
   }
@@ -48,7 +48,7 @@ export default class ValidatedFormFieldCheckboxGroup extends ValidatedFormFieldB
   }
 
   transformToMap(value: string[] = []) {
-    let valuesMap = value.reduce(
+    const valuesMap = value.reduce(
       (acc, val) => {
         acc[val] = true;
 

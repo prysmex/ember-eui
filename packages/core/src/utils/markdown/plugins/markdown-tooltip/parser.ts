@@ -27,7 +27,7 @@ export const TooltipParser: Plugin = function TooltipParser() {
     let index = 9;
 
     function readArg(open: string, close: string) {
-      if (value[index] !== open) throw 'Expected left bracket';
+      if (value[index] !== open) throw new Error('Expected left bracket');
       index++;
 
       let body = '';

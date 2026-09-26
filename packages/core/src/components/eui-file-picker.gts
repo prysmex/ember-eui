@@ -5,7 +5,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import { and, eq, not, notEq, or } from 'ember-truth-helpers';
+import { and, eq, not, notEq } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';

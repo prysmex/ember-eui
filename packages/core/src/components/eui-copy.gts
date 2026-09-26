@@ -38,20 +38,22 @@ export interface EuiCopySignature {
 }
 
 export default class EuiCopyComponent extends Component<EuiCopySignature> {
-  @tracked tooltipText = this.args.beforeMessage;
+  @tracked isCopied = false;
+
+  get tooltipText() {
+    return this.isCopied ? this.args.afterMessage : this.args.beforeMessage;
+  }
 
   @action
   copy() {
-    const isCopied = copyToClipboard(this.args.textToCopy);
-
-    if (isCopied) {
-      this.tooltipText = this.args.afterMessage;
+    if (copyToClipboard(this.args.textToCopy)) {
+      this.isCopied = true;
     }
   }
 
   @action
   resetTooltipText(): void {
-    this.tooltipText = this.args.beforeMessage;
+    this.isCopied = false;
   }
 
   <template>

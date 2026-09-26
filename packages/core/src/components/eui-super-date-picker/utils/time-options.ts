@@ -28,7 +28,7 @@ export type TimeOptions = {
  * used in EuiSuperDatePicker child sub-components
  */
 export const useI18nTimeOptions = (euiI18nService: EuiI18n): TimeOptions => {
-  let lookupToken = euiI18nService.lookupToken;
+  const lookupToken = euiI18nService.lookupToken;
 
   /**
    * Quick select panel

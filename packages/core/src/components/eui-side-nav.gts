@@ -67,7 +67,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
   }
 
   get contentClasses() {
-    let mobileBreakpoints = Array.isArray(this.mobileBreakpoints)
+    const mobileBreakpoints = Array.isArray(this.mobileBreakpoints)
       ? this.mobileBreakpoints
       : [this.mobileBreakpoints];
 

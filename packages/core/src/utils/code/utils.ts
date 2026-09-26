@@ -50,11 +50,11 @@ export interface DynamicComponent {}
 
 export const getHtmlContent = (nodes: RefractorNode[]) => {
   const document = createDocument();
-  let components: DynamicComponent[] = [];
+  const components: DynamicComponent[] = [];
 
   const toElements = (parent: HTMLElement, nodes: RefractorNode[] = []) => {
     nodes?.forEach((node) => {
-      let el = toElement(node);
+      const el = toElement(node);
 
       if (el) {
         parent.appendChild(el);
@@ -69,20 +69,20 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
     node: RefractorNode,
     className?: string
   ) => {
-    let element = document.createElement(name);
+    const element = document.createElement(name);
 
     if (isAstElement(node)) {
-      let properties = node.properties;
-      let classNames = [];
+      const properties = node.properties;
+      const classNames = [];
 
       if (properties) {
         if (properties.className) {
           classNames.push(...properties.className);
         }
 
-        for (let key in properties) {
+        for (const key in properties) {
           if (attributes.includes(key)) {
-            let value = properties[key];
+            const value = properties[key];
 
             if (key === 'style') {
               Object.keys(value).forEach((k: string) => {
@@ -115,20 +115,21 @@ export const getHtmlContent = (nodes: RefractorNode[]) => {
 
   const toElement = (node: RefractorNode) => {
     if (isAstElement(node)) {
-      let { type } = node;
+      // widened on purpose: refractor nodes also carry custom 'component' types
+      const type: string = node.type;
 
       if (type === 'element') {
-        let element = createElement(node.tagName, node);
+        const element = createElement(node.tagName, node);
 
         return toElements(element, node.children);
       } else if (type === 'text') {
         //@ts-ignore
         return document.createTextNode(node.value);
       } else if (type === 'component') {
-        let { inline } = node.properties;
-        let element = createElement(inline ? 'span' : 'div', node, 'component');
-        let { _children, ...properties } = node.properties;
-        let content = toElements(document.createElement('span'), node.children);
+        const { inline } = node.properties;
+        const element = createElement(inline ? 'span' : 'div', node, 'component');
+        const { _children, ...properties } = node.properties;
+        const content = toElements(document.createElement('span'), node.children);
 
         components.push({
           element,

@@ -21,10 +21,10 @@ export function argOrDefault<V, DV>([value, defaultValue]: [
   return defaultValue!;
 }
 
-//eslint-disable-next-line
+ 
 export function argOrDefaultDecorator<T>(
   defaultValue: T,
-  configKey?: string
+  _configKey?: string
 ): any {
   return function (_target: any, key: string) {
     return {

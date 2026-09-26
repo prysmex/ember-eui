@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { array, hash } from '@ember/helper';
-import { click, fillIn, render, settled, waitUntil } from '@ember/test-helpers';
+import { click, fillIn, render, waitUntil } from '@ember/test-helpers';
 
 import ValidatedForm from '#src/components/validated-form.gts';
 
@@ -177,7 +177,7 @@ module('Integration | Component | validated-form fields', function (hooks) {
         </ValidatedForm>
       </template>
     );
-    await settled();
+    
     await click('button[type="submit"]');
 
     assert.dom('.euiFormErrorText').hasText("This field can't be blank");

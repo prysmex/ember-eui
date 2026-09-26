@@ -3,8 +3,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { array } from '@ember/helper';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { on } from '@ember/modifier';
-import { click, render, rerender, settled, triggerEvent, waitUntil } from '@ember/test-helpers';
-import { tracked } from '@glimmer/tracking';
+import { click, render, triggerEvent, waitUntil } from '@ember/test-helpers';
 
 import EuiAutoSizer from '#src/components/eui-auto-sizer.gts';
 import EuiCode from '#src/components/eui-code.gts';
@@ -74,7 +73,7 @@ module('Integration | Component | utilities', function (hooks) {
       </template>
     );
 
-    await settled();
+    
     assert.dom('.copy-of-text').hasText('Visible text');
   });
 
@@ -120,7 +119,7 @@ module('Integration | Component | utilities', function (hooks) {
   test('EuiCode transparent background', async function (assert) {
     await render(<template><EuiCode @transparentBackground={{true}}>plain</EuiCode></template>);
 
-    await settled();
+    
     assert.dom('code.euiCode').hasClass('euiCode--transparentBackground').hasAttribute('data-code-language', 'text');
   });
 });

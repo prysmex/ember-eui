@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { blur, click, fillIn, render, settled } from '@ember/test-helpers';
+import { blur, click, fillIn, render } from '@ember/test-helpers';
 
 import { Changeset } from 'ember-changeset';
 import lookupValidator from 'ember-changeset-validations';
@@ -48,7 +48,7 @@ module('Integration | Component | eui-changeset-form', function (hooks) {
 
     await fillIn('input', '');
     await blur('input');
-    await settled();
+    
 
     assert.dom('.euiFormErrorText').hasText("Name can't be blank");
     assert.true((this.element.querySelector('input') as HTMLInputElement).validity.customError, 'the input is marked invalid');
@@ -155,7 +155,7 @@ module('Integration | Component | eui-changeset-form', function (hooks) {
         </EuiChangesetForm>
       </template>
     );
-    await settled();
+    
 
     assert.dom('.euiFormErrorText').hasText("Name can't be blank");
   });

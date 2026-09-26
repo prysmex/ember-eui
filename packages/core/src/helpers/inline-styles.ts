@@ -26,14 +26,14 @@ export function inlineStyles(_: unknown, params: InlineStylesParams) {
       cssMappings[componentName]?.inlineStyles?.(componentArgs) || {};
   }
 
-  let finalProperties: {
+  const finalProperties: {
     [name: string]: string | undefined;
   } = {
     ...properties,
     ...componentStyles
   };
 
-  for (let property in finalProperties) {
+  for (const property in finalProperties) {
     if (
       property === 'background-image' &&
       finalProperties[property] !== 'none'

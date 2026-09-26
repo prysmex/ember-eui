@@ -11,13 +11,13 @@ type Handler = ((event: Event) => unknown) | undefined | null;
  */
 export function preventDefault(handler?: Handler) {
   assert(
-    `Expected '${handler}' to be a function, if present.`,
+    `Expected '${typeof handler}' to be a function, if present.`,
     !handler || typeof handler === 'function'
   );
 
   return function (event: Event) {
     assert(
-      `Expected '${event}' to be an Event and have a 'preventDefault' method.`,
+      `Expected '${typeof event}' to be an Event and have a 'preventDefault' method.`,
       event && typeof event.preventDefault === 'function'
     );
 
@@ -29,13 +29,13 @@ export function preventDefault(handler?: Handler) {
 
 export function stopPropagation(handler?: Handler) {
   assert(
-    `Expected '${handler}' to be a function, if present.`,
+    `Expected '${typeof handler}' to be a function, if present.`,
     !handler || typeof handler === 'function'
   );
 
   return function (event: Event) {
     assert(
-      `Expected '${event}' to be an Event and have a 'stopPropagation' method.`,
+      `Expected '${typeof event}' to be an Event and have a 'stopPropagation' method.`,
       event && typeof event.stopPropagation === 'function'
     );
 

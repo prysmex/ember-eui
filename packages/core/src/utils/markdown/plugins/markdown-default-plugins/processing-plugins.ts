@@ -46,11 +46,10 @@ export type DefaultEuiMarkdownProcessingPlugins = [
   ...PluggableList // any additional are generic
 ];
 
+// `exclude` is accepted for API parity with EUI but not implemented yet
 export const getDefaultEuiMarkdownProcessingPlugins: any = ({
-  exclude
+  exclude: _exclude
 }: { exclude?: 'tooltip'[] } = {}) => {
-  exclude;
-
   const plugins: DefaultEuiMarkdownProcessingPlugins = [
     [remark2Rehype, { allowDangerousHtml: true, unknownHandler }],
     [MarkdownAddComponents.processor, {}]

@@ -11,7 +11,7 @@ export const visit = (node: RehypeNode, visitor: Visitor) => {
   node = visitor(node);
 
   if (node) {
-    let children: RehypeNode[] = [];
+    const children: RehypeNode[] = [];
 
     if (node.children) {
       node.children.forEach((child) => {

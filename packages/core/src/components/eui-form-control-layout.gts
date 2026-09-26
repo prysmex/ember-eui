@@ -6,10 +6,7 @@ import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
 
 import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import type Component from '@glimmer/component';
 
-type StringOrComponent = string | Component;
-type PrependAppendType = StringOrComponent | StringOrComponent[];
 
 export interface EuiFormControlLayoutSignature {
   Element: HTMLDivElement;

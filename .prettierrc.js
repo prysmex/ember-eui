@@ -1,10 +1,17 @@
-const defaults = require('@underline/eslint-config/.prettierrc.js');
+'use strict';
 
 module.exports = {
-  ...defaults,
+  singleQuote: true,
+  trailingComma: 'none',
   plugins: ['prettier-plugin-ember-template-tag'],
   overrides: [
-    ...defaults.overrides,
+    {
+      files: '**/*.hbs',
+      options: {
+        parser: 'glimmer',
+        singleQuote: false
+      }
+    },
     {
       files: '*.{js,ts,gjs,gts}',
       options: {

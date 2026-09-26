@@ -40,7 +40,7 @@ export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangese
   }
 
   transformToMap(value: string[] = []) {
-    let valuesMap = value.reduce(
+    const valuesMap = value.reduce(
       (acc, val: string) => {
         acc[val] = true;
 
@@ -54,7 +54,7 @@ export default class EuiChangesetFormFieldCheckboxGroup extends Base<EuiChangese
 
   @action
   handleChange(optionId: string) {
-    let value: string[] = this.value || [];
+    const value: string[] = this.value || [];
 
     const found = value.find((v) => v === optionId);
     let newArr = [];

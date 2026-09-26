@@ -26,7 +26,7 @@ export interface ValidatedFormSignature {
     addChild?: (child: FieldBase) => void;
     removeChild?: (child: FieldBase) => void;
     onInvalid?: () => void;
-    onSubmit?: () => void;
+    onSubmit?: () => void | Promise<void>;
     onReset?: (e: Event) => void;
     onValidityChange?: (
       isValid: boolean,
@@ -123,7 +123,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
 
       try {
         await this.args.onSubmit?.();
-      } catch (e) {
+      } catch {
         this.childComponents.setEach('isTouched', true);
       }
     }

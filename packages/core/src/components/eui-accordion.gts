@@ -172,7 +172,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
   }
 
   setChildContentHeight = () => {
-    let forceState = this.args.forceState;
+    const forceState = this.args.forceState;
 
     requestAnimationFrame(() => {
       const height =
@@ -180,8 +180,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
           ? this.childContent.clientHeight
           : 0;
 
-      this.childWrapper &&
-        this.childWrapper.setAttribute('style', `height: ${height}px`);
+      this.childWrapper?.setAttribute('style', `height: ${height}px`);
     });
   };
 

@@ -249,7 +249,7 @@ export default function createDetectElementResize(nonce, hostWindow) {
           element.__resizeTriggers__ = !element.removeChild(
             element.__resizeTriggers__
           );
-        } catch (e) {
+        } catch {
           // Preact compat; see developit/preact-compat/issues/228
         }
       }

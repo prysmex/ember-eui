@@ -38,10 +38,7 @@ interface ToolTipStyles {
   display?: 'inlineBlock';
 }
 
-const displayToClassNameMap = {
-  inlineBlock: undefined,
-  block: 'euiToolTipAnchor--displayBlock'
-};
+type EuiToolTipDisplay = 'inlineBlock' | 'block';
 
 const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // position the tooltip content near the top-left
@@ -73,7 +70,7 @@ export type EuiTooltipArgs = {
   /**
    * Common display alternatives for the anchor wrapper
    */
-  display?: keyof typeof displayToClassNameMap;
+  display?: EuiToolTipDisplay;
   /**
    * Delay before showing tooltip. Good for repeatable items.
    */

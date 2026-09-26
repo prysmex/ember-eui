@@ -3,9 +3,9 @@ declare module '@nullvoxpopuli/ember-composable-helpers/helpers/queue' {
 
   export default class QueueHelper extends Helper<{
     Args: {
-      Positional: [...Function[]];
+      Positional: [...((...args: any[]) => unknown)[]];
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     Return: any;
   }> {}
 }

@@ -70,7 +70,7 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
   }
 
   get pages() {
-    let pages = [];
+    const pages = [];
     const { firstPageInRange, lastPageInRange } = this;
 
     for (
@@ -87,7 +87,7 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
   }
 
   get firstPageButtons() {
-    let firstPageButtons = [];
+    const firstPageButtons = [];
 
     if (this.firstPageInRange > 0) {
       firstPageButtons.push({
@@ -112,9 +112,9 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
   }
 
   get lastPageButtons() {
-    let lastPageButtons = [];
-    let pageCount = this.pageCount;
-    let lastPageInRange = this.lastPageInRange;
+    const lastPageButtons = [];
+    const pageCount = this.pageCount;
+    const lastPageInRange = this.lastPageInRange;
 
     if (lastPageInRange < pageCount) {
       if (lastPageInRange + 1 === pageCount - 1) {

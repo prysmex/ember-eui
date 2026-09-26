@@ -93,10 +93,10 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     this.month = this.momentConfig.month;
     this.year = this.momentConfig.year;
 
-    let hour = this.momentConfig.hour;
-    let minute = this.momentConfig.minute;
-    let hourStr = hour < 10 ? `0${hour}` : hour;
-    let minuteStr = minute < 10 ? `0${minute}` : minute;
+    const hour = this.momentConfig.hour;
+    const minute = this.momentConfig.minute;
+    const hourStr = hour < 10 ? `0${hour}` : hour;
+    const minuteStr = minute < 10 ? `0${minute}` : minute;
 
     this.selectedTime = `${hourStr}:${minuteStr}`;
 
@@ -117,7 +117,7 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
   get years() {
     return Array.from(Array(15).keys()).map((_, i) => {
       // Create a list of years +/- 7 from the current year
-      let year = this.year - 7 + i;
+      const year = this.year - 7 + i;
 
       return {
         text: year,
@@ -131,7 +131,7 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
 
     // Create entries every 30 minutes
     for (let i = 0; i < 24; i++) {
-      let hour = i < 10 ? `0${i}` : i;
+      const hour = i < 10 ? `0${i}` : i;
 
       timesArray.push(`${hour}:00`, `${hour}:30`);
     }
@@ -145,8 +145,8 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     const prevMonth = this.monthMoment.clone().subtract(1, 'month');
     const nextMonth = this.monthMoment.clone().add(1, 'month');
     const offset = this.offset;
-    let daysInMonth = this.monthMoment.daysInMonth();
-    let daysInPrevMonth = prevMonth.daysInMonth();
+    const daysInMonth = this.monthMoment.daysInMonth();
+    const daysInPrevMonth = prevMonth.daysInMonth();
 
     const daysArray = [];
 

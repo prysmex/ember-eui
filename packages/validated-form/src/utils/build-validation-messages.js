@@ -5,8 +5,8 @@ import { get, set } from '@ember/object';
 
 import { validate } from 'ember-validators';
 
-import getMessages from './get-messages';
-import buildMessage from './validation-errors';
+import getMessages from './get-messages.js';
+import buildMessage from './validation-errors.js';
 
 /**
  * Based on ember-paper validation-mixin

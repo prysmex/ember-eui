@@ -17,7 +17,6 @@ import EuiModalBody from './eui-modal-body.gts';
 import EuiModalHeader from './eui-modal-header.gts';
 import EuiPopover from './eui-popover.gts';
 import EuiSpacer from './eui-spacer.gts';
-import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
 
 export interface EuiMarkdownEditorFooterSignature {

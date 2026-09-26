@@ -10,7 +10,6 @@ import set from 'ember-set-helper/helpers/set';
 import { lte } from 'ember-truth-helpers';
 import moment from 'moment';
 
-import randomId from '../../../-private/random-id.ts';
 import EuiButton from '../../eui-button.gts';
 import EuiButtonIcon from '../../eui-button-icon.gts';
 import EuiFieldNumber from '../../eui-field-number.gts';
@@ -132,142 +131,140 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
   }
 
   <template>
-    {{#let (randomId) as |legendId|}}
-      <fieldset>
-        <EuiFlexGroup
-          @responsive={{false}}
-          @alignItems="center"
-          @justifyContent="spaceBetween"
-          @gutterSize="s"
-        >
-          <EuiFlexItem @grow={{false}}>
-            <EuiI18n
-              @token="euiQuickSelect.quickSelectTitle"
-              @default="Quick select"
-              as |Token|
-            >
-              <Token as |quickSelectTitle|>
-                <div aria-hidden class="euiFormLabel">
-                  {{quickSelectTitle}}
-                </div>
-              </Token>
-            </EuiI18n>
-          </EuiFlexItem>
-          <EuiFlexItem @grow={{false}}>
-            <EuiFlexGroup
-              @alignItems="center"
-              @gutterSize="s"
-              @responsive={{false}}
-            >
-              <EuiFlexItem @grow={{false}}>
-                <EuiI18n
-                  @token="euiQuickSelect.previousLabel"
-                  @default="Previous time window"
-                  as |Token|
-                >
-                  <Token as |previousLabel|>
-                    <EuiToolTip @content={{previousLabel}}>
-                      <EuiButtonIcon
-                        aria-label={{previousLabel}}
-                        @iconType="arrowLeft"
-                        {{on "click" this.stepBackward}}
-                      />
-                    </EuiToolTip>
-                  </Token>
-                </EuiI18n>
-              </EuiFlexItem>
-              <EuiFlexItem @grow={{false}}>
-                <EuiI18n
-                  @token="euiQuickSelect.nextLabel"
-                  @default="Next time window"
-                  as |Token|
-                >
-                  <Token as |nextLabel|>
-                    <EuiToolTip @content={{nextLabel}}>
-                      <EuiButtonIcon
-                        aria-label={{nextLabel}}
-                        @iconType="arrowRight"
-                        {{on "click" this.stepForward}}
-                      />
-                    </EuiToolTip>
-                  </Token>
-                </EuiI18n>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-        <EuiSpacer @size="s" />
-        <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
-          <EuiFlexItem>
-            <EuiI18n
-              @token="euiQuickSelect.tenseLabel"
-              @default="Time tense"
-              as |Token|
-            >
-              <Token as |tenseLabel|>
-                <EuiSelect
-                  @compressed={{true}}
-                  aria-label={{tenseLabel}}
-                  @value={{this.timeTense}}
-                  @options={{@timeOptions.timeTenseOptions}}
-                  {{on "change" (pick "target.value" (set this "timeTense"))}}
-                />
-              </Token>
-            </EuiI18n>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiI18n
-              @token="euiQuickSelect.valueLabel"
-              @default="Time value"
-              as |Token|
-            >
-              <Token as |valueLabel|>
-                <EuiFieldNumber
-                  @compressed={{true}}
-                  aria-label={{valueLabel}}
-                  @value={{this.timeValue}}
-                  {{on "input" (pick "target.value" (set this "timeValue"))}}
-                />
-              </Token>
-            </EuiI18n>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiI18n
-              @token="euiQuickSelect.unitLabel"
-              @default="Time unit"
-              as |Token|
-            >
-              <Token as |unitLabel|>
-                <EuiSelect
-                  @compressed={{true}}
-                  aria-label={{unitLabel}}
-                  @value={{this.timeUnits}}
-                  @options={{@timeOptions.timeUnitsOptions}}
-                  {{on "change" (pick "target.value" (set this "timeUnits"))}}
-                />
-              </Token>
-            </EuiI18n>
-          </EuiFlexItem>
-          <EuiFlexItem @grow={{false}}>
-            <EuiButton
-              class="euiQuickSelect__applyButton"
-              @size="s"
-              @disabled={{lte this.timeValue 0}}
-              {{on "click" this.applyQuickSelect}}
-            >
+    <fieldset>
+      <EuiFlexGroup
+        @responsive={{false}}
+        @alignItems="center"
+        @justifyContent="spaceBetween"
+        @gutterSize="s"
+      >
+        <EuiFlexItem @grow={{false}}>
+          <EuiI18n
+            @token="euiQuickSelect.quickSelectTitle"
+            @default="Quick select"
+            as |Token|
+          >
+            <Token as |quickSelectTitle|>
+              <div aria-hidden class="euiFormLabel">
+                {{quickSelectTitle}}
+              </div>
+            </Token>
+          </EuiI18n>
+        </EuiFlexItem>
+        <EuiFlexItem @grow={{false}}>
+          <EuiFlexGroup
+            @alignItems="center"
+            @gutterSize="s"
+            @responsive={{false}}
+          >
+            <EuiFlexItem @grow={{false}}>
               <EuiI18n
-                @token="euiQuickSelect.applyButton"
-                @default="Apply"
+                @token="euiQuickSelect.previousLabel"
+                @default="Previous time window"
                 as |Token|
               >
-                <Token as |value|>
-                  {{value}}
+                <Token as |previousLabel|>
+                  <EuiToolTip @content={{previousLabel}}>
+                    <EuiButtonIcon
+                      aria-label={{previousLabel}}
+                      @iconType="arrowLeft"
+                      {{on "click" this.stepBackward}}
+                    />
+                  </EuiToolTip>
                 </Token>
               </EuiI18n>
-            </EuiButton>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </fieldset>
-    {{/let}}
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiI18n
+                @token="euiQuickSelect.nextLabel"
+                @default="Next time window"
+                as |Token|
+              >
+                <Token as |nextLabel|>
+                  <EuiToolTip @content={{nextLabel}}>
+                    <EuiButtonIcon
+                      aria-label={{nextLabel}}
+                      @iconType="arrowRight"
+                      {{on "click" this.stepForward}}
+                    />
+                  </EuiToolTip>
+                </Token>
+              </EuiI18n>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+      <EuiSpacer @size="s" />
+      <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
+        <EuiFlexItem>
+          <EuiI18n
+            @token="euiQuickSelect.tenseLabel"
+            @default="Time tense"
+            as |Token|
+          >
+            <Token as |tenseLabel|>
+              <EuiSelect
+                @compressed={{true}}
+                aria-label={{tenseLabel}}
+                @value={{this.timeTense}}
+                @options={{@timeOptions.timeTenseOptions}}
+                {{on "change" (pick "target.value" (set this "timeTense"))}}
+              />
+            </Token>
+          </EuiI18n>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiI18n
+            @token="euiQuickSelect.valueLabel"
+            @default="Time value"
+            as |Token|
+          >
+            <Token as |valueLabel|>
+              <EuiFieldNumber
+                @compressed={{true}}
+                aria-label={{valueLabel}}
+                @value={{this.timeValue}}
+                {{on "input" (pick "target.value" (set this "timeValue"))}}
+              />
+            </Token>
+          </EuiI18n>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiI18n
+            @token="euiQuickSelect.unitLabel"
+            @default="Time unit"
+            as |Token|
+          >
+            <Token as |unitLabel|>
+              <EuiSelect
+                @compressed={{true}}
+                aria-label={{unitLabel}}
+                @value={{this.timeUnits}}
+                @options={{@timeOptions.timeUnitsOptions}}
+                {{on "change" (pick "target.value" (set this "timeUnits"))}}
+              />
+            </Token>
+          </EuiI18n>
+        </EuiFlexItem>
+        <EuiFlexItem @grow={{false}}>
+          <EuiButton
+            class="euiQuickSelect__applyButton"
+            @size="s"
+            @disabled={{lte this.timeValue 0}}
+            {{on "click" this.applyQuickSelect}}
+          >
+            <EuiI18n
+              @token="euiQuickSelect.applyButton"
+              @default="Apply"
+              as |Token|
+            >
+              <Token as |value|>
+                {{value}}
+              </Token>
+            </EuiI18n>
+          </EuiButton>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </fieldset>
   </template>
 }

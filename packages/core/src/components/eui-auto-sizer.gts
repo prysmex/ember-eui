@@ -4,7 +4,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import style from 'ember-style-modifier/modifiers/style';
 
-import createDetectElementResize from '../utils/detect-element-resize';
+import createDetectElementResize from '../utils/detect-element-resize.js';
 
 type Size = {
   height: number;
@@ -84,7 +84,7 @@ export default class EuiAutoSizerComponent extends Component<EuiAutoSizerSignatu
   }
 
   get style() {
-    let style: DynamicStyle = {
+    const style: DynamicStyle = {
       outerStyle: { overflow: 'visible' },
       childStyle: {}
     };

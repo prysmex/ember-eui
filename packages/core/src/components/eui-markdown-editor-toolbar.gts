@@ -6,7 +6,7 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
 import style from 'ember-style-modifier/modifiers/style';
-import { and, eq, gte, or } from 'ember-truth-helpers';
+import { and, eq, gte } from 'ember-truth-helpers';
 
 import { MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';

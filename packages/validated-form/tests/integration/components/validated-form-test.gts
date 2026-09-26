@@ -135,7 +135,7 @@ module('Integration | Component | validated-form', function (hooks) {
 
     const errors = [...document.querySelectorAll('.euiFormErrorText')].map((e) => e.textContent!.trim());
 
-    assert.true(errors.includes('foo is not allowed'), `custom validation (${errors})`);
+    assert.true(errors.includes('foo is not allowed'), `custom validation (${errors.join(', ')})`);
     assert.true(errors.includes('Taken already'), 'external error');
     assert.strictEqual(data.invalids, 1);
   });
@@ -164,8 +164,8 @@ module('Integration | Component | validated-form', function (hooks) {
 
     const errors = [...document.querySelectorAll('.euiFormErrorText')].map((e) => e.textContent!.trim());
 
-    assert.true(errors.includes('foo is not allowed'), `custom validation (${errors})`);
-    assert.true(errors.includes("This field is invalid"), `false result (${errors})`);
+    assert.true(errors.includes('foo is not allowed'), `custom validation (${errors.join(', ')})`);
+    assert.true(errors.includes("This field is invalid"), `false result (${errors.join(', ')})`);
     assert.true(errors.includes('Taken already'), 'external error');
     assert.strictEqual(data.invalids, 1);
   });

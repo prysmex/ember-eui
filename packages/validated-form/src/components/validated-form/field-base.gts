@@ -110,7 +110,7 @@ export default class ValidatedFormFieldBase<
   }
 
   get validationErrorMessages() {
-    let error = [];
+    const error = [];
 
     if (this.error.length > 0) {
       error.push(...this.error);

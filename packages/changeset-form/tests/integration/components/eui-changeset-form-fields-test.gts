@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { blur, click, fillIn, focus, render, settled, triggerEvent, waitUntil } from '@ember/test-helpers';
+import { blur, click, fillIn, focus, render, triggerEvent, waitUntil } from '@ember/test-helpers';
 
 import { Changeset } from 'ember-changeset';
 import lookupValidator from 'ember-changeset-validations';
@@ -73,7 +73,7 @@ module('Integration | Component | eui-changeset-form fields', function (hooks) {
     await blur('textarea.bio');
     await focus('select.country');
     await blur('select.country');
-    await settled();
+    
 
     const errors = [...document.querySelectorAll('.euiFormErrorText')].map((e) => e.textContent!.trim());
 

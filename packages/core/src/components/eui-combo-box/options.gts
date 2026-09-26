@@ -40,7 +40,7 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
   }
 
   _optionFromIndex(index: string) {
-    let parts = index.split('.');
+    const parts = index.split('.');
     let option: any = this.flattedOptions[parseInt(parts[0]!, 10)];
 
     for (let i = 1; i < parts.length; i++) {

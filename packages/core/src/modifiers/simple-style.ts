@@ -7,10 +7,10 @@ export default modifier(function simpleStyle(
   element: HTMLElement,
   [properties]: [CssProperties]
 ): void | (() => unknown) {
-  for (let ele in properties) {
+  for (const ele in properties) {
     if (properties[ele]) {
       //@ts-expect-error
-      element.style[ele as string] = properties[ele] as any;
+      element.style[ele] = properties[ele] as any;
     }
   }
 });

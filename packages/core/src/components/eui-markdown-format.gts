@@ -75,7 +75,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
     }
 
     if (this.args.rootClasses) {
-      let rootClasses = isArray(this.args.rootClasses)
+      const rootClasses = isArray(this.args.rootClasses)
         ? this.args.rootClasses
         : (this.args.rootClasses as string)?.trim()?.split(' ') || [];
 
@@ -101,7 +101,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
       return toDOM(processed['result'] as RehypeNode, {
         rootClasses: this.rootClasses
       });
-      //eslint-disable-next-line
+       
     } catch (e) {
       console.warn(e);
     }

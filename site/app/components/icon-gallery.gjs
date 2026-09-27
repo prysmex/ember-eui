@@ -201,16 +201,16 @@ export default class IconGallery extends Component {
     <EuiSpacer @size="m" />
 
     <div class="iconGallery">
-      {{#each this.sections as |section|}}
+      {{#each this.sections as |group|}}
         <section class="iconGallery__section">
-          <EuiTitle @size="xs" @tagName="h3">{{section.title}}
-              ({{section.icons.length}})</EuiTitle>
+          <EuiTitle @size="xs" @tagName="h3">{{group.title}}
+            ({{group.icons.length}})</EuiTitle>
           <EuiText @size="s" @color="subdued">
-            <p>{{section.description}}</p>
+            <p>{{group.description}}</p>
           </EuiText>
           <EuiSpacer @size="s" />
           <ul class="iconGallery__grid">
-            {{#each section.icons as |type|}}
+            {{#each group.icons as |type|}}
               <li>
                 <button
                   type="button"
@@ -218,7 +218,7 @@ export default class IconGallery extends Component {
                   title="Copy <EuiIcon @type=&quot;{{type}}&quot; />"
                   {{on "click" (fn this.copy type)}}
                 >
-                  <EuiIcon @type={{type}} @size={{section.size}} />
+                  <EuiIcon @type={{type}} @size={{group.size}} />
                   <span class="iconGallery__name">{{type}}</span>
                 </button>
               </li>

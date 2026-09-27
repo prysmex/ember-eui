@@ -36,7 +36,7 @@ const parserOptions = {
       ecmaVersion: 'latest',
     },
     ts: {
-      projectService: true,
+      project: ['./tsconfig.json'],
       tsconfigRootDir: dirname(fileURLToPath(import.meta.url)),
     },
   },

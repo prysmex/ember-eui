@@ -15,7 +15,7 @@ pnpm --filter site start
 ```
 
 `start` runs Vite and `scripts/sync-injected.mjs --watch`. The site consumes
-the workspace packages as pnpm *injected* dependencies
+the workspace packages as pnpm _injected_ dependencies
 (`injectWorkspacePackages` in `pnpm-workspace.yaml`): real copies, so their
 peer dependencies resolve to the site's Ember. pnpm refreshes the copies after
 a package's `build` script; the sync script also covers `rollup --watch` and

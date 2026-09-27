@@ -72,4 +72,23 @@ module('Integration | Component | eui-field-search', function (hooks) {
     assert.dom('.euiFormControlLayoutClearButton').doesNotExist();
     assert.dom('input.disabled').isDisabled();
   });
+
+  test('without @value, the clear button appears once there is text', async function (assert) {
+    const noop = () => {};
+
+    await render(<template><EuiFieldSearch @onSearch={{noop}} /></template>);
+
+    assert.dom('.euiFormControlLayoutClearButton').doesNotExist();
+    await fillIn('input', 'cats');
+    assert.dom('.euiFormControlLayoutClearButton').exists();
+  });
+
+  test('@readOnly makes the input read-only and hides the clear button', async function (assert) {
+    const noop = () => {};
+
+    await render(<template><EuiFieldSearch @value="x" @readOnly={{true}} @onSearch={{noop}} /></template>);
+
+    assert.dom('input').hasAttribute('readonly');
+    assert.dom('.euiFormControlLayoutClearButton').doesNotExist();
+  });
 });

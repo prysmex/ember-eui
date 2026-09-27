@@ -4,6 +4,8 @@ import { click, render, triggerKeyEvent } from '@ember/test-helpers';
 
 import EuiModal from '#src/components/eui-modal.gts';
 
+const noop = () => {};
+
 module('Integration | Component | eui-modal', function (hooks) {
   setupRenderingTest(hooks);
 
@@ -53,5 +55,25 @@ module('Integration | Component | eui-modal', function (hooks) {
     await click(document.querySelector('.euiModal__closeIcon') as Element);
 
     assert.strictEqual(calls, 1);
+  });
+
+  test('the close button has an accessible label', async function (assert) {
+    await render(
+      <template>
+        <EuiModal @onClose={{noop}}><p>Default</p></EuiModal>
+      </template>
+    );
+
+    assert.dom('.euiModal__closeIcon').hasAttribute('aria-label', 'Close this dialog');
+  });
+
+  test('@closeButtonAriaLabel labels the close button', async function (assert) {
+    await render(
+      <template>
+        <EuiModal @onClose={{noop}} @closeButtonAriaLabel="Cerrar"><p>Hola</p></EuiModal>
+      </template>
+    );
+
+    assert.dom('.euiModal__closeIcon').hasAttribute('aria-label', 'Cerrar');
   });
 });

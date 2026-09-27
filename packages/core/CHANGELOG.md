@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 14.0.0
+
+### Major Changes
+
+- VITE
+
 ## 13.0.5
 
 ### Patch Changes
@@ -73,6 +79,7 @@
 - release
 
 ## 12.0.7
+
 ## 8.0.65
 
 ### Patch Changes

@@ -64,4 +64,32 @@ module('Integration | Component | eui-radio', function (hooks) {
 
     assert.dom('input.euiRadioGroup__item').hasClass('custom');
   });
+
+  test('EuiRadioGroup names its radios, also with a @legend', async function (assert) {
+    const options = [
+      { id: 'a', label: 'A' },
+      { id: 'b', label: 'B' }
+    ];
+    const noop = () => {};
+
+    await render(
+      <template>
+        <div class="named">
+          <EuiRadioGroup @options={{options}} @name="letters" @legend="Letters" @onChange={{noop}} />
+        </div>
+        <div class="generated">
+          <EuiRadioGroup @options={{options}} @onChange={{noop}} />
+        </div>
+      </template>
+    );
+
+    assert.dom('.named input[type="radio"][name="letters"]').exists({ count: 2 });
+
+    const names = [...document.querySelectorAll<HTMLInputElement>('.generated input[type="radio"]')].map(
+      (input) => input.name
+    );
+
+    assert.ok(names[0], 'a name is generated');
+    assert.strictEqual(names[0], names[1], 'shared by the group');
+  });
 });

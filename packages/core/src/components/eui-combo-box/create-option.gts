@@ -11,6 +11,16 @@ import EuiText from '../eui-text.gts';
 
 import type EuiI18n from '../../services/eui-i18n';
 
+/** The typed text is user input: escape it before building HTML with it. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function unwrap(input: string) {
   if (isHTMLSafe(input)) {
     return input.toString();
@@ -50,7 +60,7 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
       const str = unwrap(this.args.customOptionText);
 
       const context = {
-        searchText: this.args.select.searchText
+        searchText: escapeHtml(this.args.select.searchText ?? '')
       };
 
       return htmlSafe(
@@ -64,7 +74,7 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
           'euiComboBox.customOptionText',
           'Add&nbsp;<strong>{searchText}</strong>&nbsp;as custom option',
           {
-            searchText: this.args.select.searchText
+            searchText: escapeHtml(this.args.select.searchText ?? '')
           }
         )
       );

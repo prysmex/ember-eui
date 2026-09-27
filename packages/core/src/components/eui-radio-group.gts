@@ -3,6 +3,7 @@ import { on } from '@ember/modifier';
 
 import { eq, or } from 'ember-truth-helpers';
 
+import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import EuiFormFieldset from './eui-form-fieldset.gts';
 import EuiRadio from './eui-radio.gts';
@@ -27,7 +28,7 @@ export interface EuiRadioGroupSignature {
       disabled?: boolean;
       className?: string;
     }>;
-    /** `name` shared by the radios. */
+    /** `name` shared by the radios. Defaults to a random name. */
     name?: string;
     /**
      * Wraps the radios in an `EuiFormFieldset` with this legend. Use it when
@@ -54,8 +55,10 @@ export interface EuiRadioGroupSignature {
 
 const EuiRadioGroup: TemplateOnlyComponent<EuiRadioGroupSignature> = <template>
   {{#let
-    (argOrDefault @valueKey "id") (argOrDefault @labelKey "label")
-    as |valueKey labelKey|
+    (argOrDefault @valueKey "id")
+    (argOrDefault @labelKey "label")
+    (argOrDefault @name (randomId))
+    as |valueKey labelKey name|
   }}
     {{#if @legend}}
       <EuiFormFieldset @legend={{@legend}} @compressed={{@compressed}}>
@@ -63,6 +66,7 @@ const EuiRadioGroup: TemplateOnlyComponent<EuiRadioGroupSignature> = <template>
           <EuiRadio
             class="euiRadioGroup__item {{option.className}}"
             form={{@formId}}
+            @name={{name}}
             @checked={{eq @idSelected (get option valueKey)}}
             @disabled={{or @disabled option.disabled}}
             @compressed={{@compressed}}
@@ -79,7 +83,7 @@ const EuiRadioGroup: TemplateOnlyComponent<EuiRadioGroupSignature> = <template>
           <EuiRadio
             class="euiRadioGroup__item {{option.className}}"
             form={{@formId}}
-            @name={{@name}}
+            @name={{name}}
             @checked={{eq @idSelected (get option valueKey)}}
             @disabled={{or @disabled option.disabled}}
             @compressed={{@compressed}}

@@ -28,7 +28,7 @@ type EuiAccordionPaddingSize = keyof typeof paddingMapping;
 type AccordionArgs = {
   /**
    * Id of the collapsible content region; the trigger's `aria-controls`
-   * points to it. Give each accordion a unique id.
+   * points to it. Defaults to a random id.
    */
   id?: string;
 
@@ -246,7 +246,12 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
   }
 
   <template>
-    {{#let (argOrDefault @element "div") as |tagName|}}
+    {{#let
+      (argOrDefault @element "div")
+      (argOrDefault @id (randomId))
+      (argOrDefault @buttonProps.id (randomId))
+      as |tagName regionId buttonId|
+    }}
       {{#if tagName}}
         {{#let
           (element tagName) (element this.buttonElement)
@@ -279,18 +284,17 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     }}
                     @iconType="arrowRight"
                     {{on "click" this.onToggle}}
-                    aria-controls={{@id}}
+                    aria-controls={{regionId}}
                     aria-expanded={{if this.isOpen "true" "false"}}
                     tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
                   />
                 {{/if}}
                 <ButtonElement
                   type="button"
-                  id={{argOrDefault @buttonProps.id (randomId)}}
+                  id={{buttonId}}
                   class={{this.buttonClasses}}
-                  aria-controls={{@id}}
+                  aria-controls={{regionId}}
                   aria-expanded={{if this.isOpen "true" "false"}}
-                  aria-labelledby={{argOrDefault @buttonProps.id (randomId)}}
                   {{on "click" this.onToggle}}
                 >
                   <span class={{this.buttonContentClasses}}>
@@ -324,7 +328,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     }}
                     @iconType="arrowRight"
                     {{on "click" this.onToggle}}
-                    aria-controls={{@id}}
+                    aria-controls={{regionId}}
                     aria-expanded={{if this.isOpen "true" "false"}}
                     tabindex={{if this.buttonElementIsFocusable "-1" "0"}}
                   />
@@ -333,7 +337,8 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
               <div
                 class="euiAccordion__childWrapper"
                 style={{this.childContentStyle}}
-                id={{@id}}
+                id={{regionId}}
+                aria-labelledby={{buttonId}}
                 {{didInsert (set this "childWrapper")}}
                 tabindex="-1"
                 role="region"

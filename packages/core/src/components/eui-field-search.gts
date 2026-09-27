@@ -55,11 +55,11 @@ type EuiFieldSearchArgs = {
   compressed?: boolean;
   /** Shows a spinner in the input. */
   isLoading?: boolean;
-  /** Shows a clear button while `@value` is set. Defaults to `true`. */
+  /** Shows a clear button while the field has text. Defaults to `true`. */
   isClearable?: boolean;
   /** Disables the input. */
   disabled?: boolean;
-  /** Hides the clear button. */
+  /** Makes the input read-only (and hides the clear button). */
   readOnly?: boolean;
   /** Placeholder text. */
   placeholder?: string;
@@ -125,6 +125,12 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     ) {
       onSearch((e.target as HTMLInputElement).value);
     }
+  }
+
+  /** Keeps the text current for the clear button (e.g. after a paste). */
+  @action
+  trackValue(e: Event): void {
+    this.value = (e.target as HTMLInputElement).value;
   }
 
   @action
@@ -203,7 +209,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
           (if (or hasPrepend hasAppend) "euiFieldSearch--inGroup")
           (if @isLoading "euiFieldSearch--isLoading")
           (if
-            (and (argOrDefault @isClearable true) @value)
+            (and (argOrDefault @isClearable true) this.value)
             "euiFieldSearch--isClearable"
           )
           "euiFieldSearch"
@@ -218,13 +224,14 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
           @clear={{if
             (and
               (argOrDefault @isClearable true)
-              @value
+              this.value
               (not @readOnly)
               (and (not @isDisabled) (not @disabled))
             )
             this.onClear
           }}
           @compressed={{@compressed}}
+          @readOnly={{@readOnly}}
           @useGroup={{or hasPrepend hasAppend}}
         >
           <:prepend as |prependClasses|>
@@ -238,7 +245,9 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
               disabled={{@disabled}}
               type="text"
               placeholder={{@placeholder}}
+              readonly={{@readOnly}}
               ...attributes
+              {{on "input" this.trackValue}}
               {{on "keyup" (fn this.onKeyUp this.incremental @onSearch)}}
               {{on "search" this.setValue}}
               {{on "change" this.setValue}}

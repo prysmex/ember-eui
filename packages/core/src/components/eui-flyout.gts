@@ -87,7 +87,7 @@ export type EuiFlyoutArgs = {
     classes?: string;
   };
 
-  /** Accessible label of the close button, e.g. "Close this dialog". */
+  /** Accessible label of the close button. Defaults to "Close this dialog". */
   closeButtonAriaLabel?: string;
 
   /**
@@ -390,7 +390,7 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
                 }}
                 @iconType="cross"
                 @color="text"
-                aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
+                aria-label={{or @closeButtonAriaLabel @closeAriaLabel "Close this dialog"}}
                 data-test-subj="euiFlyoutCloseButton"
                 class={{closeButtonClasses}}
                 {{on "click" this.onButtonCloseClicked}}
@@ -423,7 +423,7 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
                 }}
                 @iconType="cross"
                 @color="text"
-                aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
+                aria-label={{or @closeButtonAriaLabel @closeAriaLabel "Close this dialog"}}
                 data-test-subj="euiFlyoutCloseButton"
                 class={{closeButtonClasses}}
                 {{on "click" this.onButtonCloseClicked}}
@@ -455,7 +455,7 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
               }}
               @iconType="cross"
               @color="text"
-              aria-label={{or @closeButtonAriaLabel @closeAriaLabel}}
+              aria-label={{or @closeButtonAriaLabel @closeAriaLabel "Close this dialog"}}
               data-test-subj="euiFlyoutCloseButton"
               class={{closeButtonClasses}}
               {{on "click" this.onButtonCloseClicked}}

@@ -1,5 +1,11 @@
 # site
 
+## 14.0.0
+
+### Major Changes
+
+- VITE
+
 ## 13.0.5
 
 ### Patch Changes

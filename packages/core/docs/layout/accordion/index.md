@@ -13,7 +13,7 @@ deliberately unstyled (no borders or backgrounds), so it fits anywhere:
 settings sections, advanced options in forms, FAQs.
 
 ```hbs
-<EuiAccordion id="advanced-options" @paddingSize="m">
+<EuiAccordion @id="advanced-options" @paddingSize="m">
   <:buttonContent>Advanced options</:buttonContent>
   <:content>
     <EuiFormRow @label="Timeout"><EuiFieldNumber @value={{30}} /></EuiFormRow>
@@ -21,8 +21,8 @@ settings sections, advanced options in forms, FAQs.
 </EuiAccordion>
 ```
 
-- Give each accordion a unique `id`: its content gets it, and the trigger
-  points to it for screen readers.
+- The trigger and the content are linked for screen readers; `@id` sets
+  the content's id if you need to reference it.
 - The trigger's content goes in `<:buttonContent>` and the collapsible
   content in `<:content>`.
 - It starts closed (`@initialIsOpen={{true}}` opens it) and manages its own

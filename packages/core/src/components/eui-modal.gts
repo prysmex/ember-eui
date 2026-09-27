@@ -5,7 +5,7 @@ import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import style from 'ember-style-modifier/modifiers/style';
-import { and, eq, notEq } from 'ember-truth-helpers';
+import { and, eq, notEq, or } from 'ember-truth-helpers';
 
 import { preventDefault, stopPropagation } from '../-private/event-helpers.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
@@ -29,6 +29,8 @@ export interface EuiModalSignature {
      * clicks on the mask. Stop rendering the modal here.
      */
     onClose?: (e: Event) => void;
+    /** Accessible label of the close button. Defaults to "Close this dialog". */
+    closeButtonAriaLabel?: string;
     /**
      * `true` for EUI's default max width, or any CSS width (e.g. `'800px'`).
      * Defaults to the content's width.
@@ -99,6 +101,7 @@ const EuiModal: TemplateOnlyComponent<EuiModalSignature> = <template>
           class="euiModal__closeIcon"
           @iconType="cross"
           @color="text"
+          aria-label={{or @closeButtonAriaLabel "Close this dialog"}}
           {{on "click" (optional @onClose)}}
         />
         <div class="euiModal__flex">

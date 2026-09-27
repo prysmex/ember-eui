@@ -42,7 +42,7 @@ export type EuiFieldNumberArgs = CommonArgs & {
    * Defaults to `1`
    */
   step?: number | 'any';
-  /** Called with the `<input>` element once rendered (only with `@controlOnly`). */
+  /** Called with the `<input>` element once rendered. */
   inputRef?: (ele: Element) => void;
 
   /** @deprecated Has no effect, use the `<:prepend>` block. */
@@ -142,6 +142,7 @@ const EuiFieldNumber: TemplateOnlyComponent<EuiFieldNumberSignature> =
                 type="number"
                 readonly={{@readOnly}}
                 {{validatableControl @isInvalid}}
+              {{didInsert (optional @inputRef)}}
                 ...attributes
               />
             </:field>

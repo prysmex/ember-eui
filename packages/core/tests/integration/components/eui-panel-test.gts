@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, render } from '@ember/test-helpers';
+import { click, render, triggerKeyEvent } from '@ember/test-helpers';
 
 import EuiPanel from '#src/components/eui-panel.gts';
 
@@ -34,5 +34,28 @@ module('Integration | Component | eui-panel', function (hooks) {
     assert.dom('.euiPanel').hasAttribute('role', 'button').hasClass('euiPanel--isClickable');
     await click('.euiPanel');
     assert.strictEqual(clicks, 1);
+  });
+
+  test('a clickable panel is focusable and activated by Enter and Space', async function (assert) {
+    let clicks = 0;
+    const onClick = () => clicks++;
+
+    await render(
+      <template>
+        <EuiPanel @onClick={{onClick}}>
+          Click <input class="inner" aria-label="inner" />
+        </EuiPanel>
+      </template>
+    );
+
+    assert.dom('.euiPanel').hasAttribute('tabindex', '0');
+
+    await triggerKeyEvent('.euiPanel', 'keydown', 'Enter');
+    await triggerKeyEvent('.euiPanel', 'keydown', ' ');
+    assert.strictEqual(clicks, 2);
+
+    await triggerKeyEvent('.euiPanel', 'keydown', 'a');
+    await triggerKeyEvent('.inner', 'keydown', 'Enter');
+    assert.strictEqual(clicks, 2, 'other keys and keys in inner controls are ignored');
   });
 });

@@ -1,3 +1,4 @@
+import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
 import { and, eq, not, or } from 'ember-truth-helpers';
@@ -42,7 +43,8 @@ export interface EuiPanelSignature {
      */
     grow?: boolean;
     /**
-     * Makes the whole panel clickable (hover styles, `role="button"`).
+     * Makes the whole panel clickable (hover styles, `role="button"`,
+     * focusable, Enter and Space activate it).
      */
     onClick?: (e: MouseEvent) => void;
     /**
@@ -55,6 +57,23 @@ export interface EuiPanelSignature {
     /** The panel's content. */
     default: [];
   };
+}
+
+/**
+ * Enter and Space activate a clickable panel, like a native button. Keys
+ * pressed in controls inside the panel are left alone.
+ */
+function activateOnKey(
+  onClick: (e: MouseEvent) => void,
+  event: KeyboardEvent
+): void {
+  if (event.target !== event.currentTarget) return;
+
+  if (event.key === 'Enter' || event.key === ' ') {
+    // Space would otherwise scroll the page
+    event.preventDefault();
+    onClick(event as unknown as MouseEvent);
+  }
 }
 
 const EuiPanel: TemplateOnlyComponent<EuiPanelSignature> = <template>
@@ -89,7 +108,9 @@ const EuiPanel: TemplateOnlyComponent<EuiPanelSignature> = <template>
             borderRadius=(argOrDefault @borderRadius "m")
             color=color
           }}
+          tabindex="0"
           {{on "click" @onClick}}
+          {{on "keydown" (fn activateOnKey @onClick)}}
           ...attributes
         >
           {{yield}}

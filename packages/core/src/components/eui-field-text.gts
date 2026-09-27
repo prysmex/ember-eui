@@ -42,7 +42,7 @@ export interface EuiFieldTextSignature {
     controlOnly?: boolean;
     /** Shows the invalid state and marks the input invalid for native form validation. */
     isInvalid?: boolean;
-    /** Called with the `<input>` element once rendered (only with `@controlOnly`). */
+    /** Called with the `<input>` element once rendered. */
     inputRef?: (element: HTMLInputElement | null) => void;
     /** @private Ignore the `<:prepend>` block. */
     isFakePrependBlock?: boolean;
@@ -113,6 +113,7 @@ const EuiFieldText: TemplateOnlyComponent<EuiFieldTextSignature> = <template>
               readonly={{@readOnly}}
               ...attributes
               {{validatableControl @isInvalid}}
+              {{didInsert (optional @inputRef)}}
             />
           </:field>
           <:append as |appendClasses|>

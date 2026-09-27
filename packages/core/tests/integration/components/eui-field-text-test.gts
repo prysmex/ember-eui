@@ -76,4 +76,25 @@ module('Integration | Component | eui-field-text / number / password', function 
     assert.dom('input').hasAttribute('type', 'password');
     assert.dom('.euiButtonIcon').doesNotExist();
   });
+
+  test('@inputRef receives the input, with or without @controlOnly', async function (assert) {
+    const refs: Element[] = [];
+    const inputRef = (element: Element | null) => {
+      if (element) refs.push(element);
+    };
+
+    await render(
+      <template>
+        <EuiFieldText class="text" @inputRef={{inputRef}} />
+        <EuiFieldText class="text-only" @controlOnly={{true}} @inputRef={{inputRef}} />
+        <EuiFieldNumber class="number" @inputRef={{inputRef}} />
+      </template>
+    );
+
+    assert.deepEqual(
+      refs.map((element) => element.className.split(' ').find((c) => ['text', 'text-only', 'number'].includes(c))),
+      ['text', 'text-only', 'number']
+    );
+    assert.true(refs.every((element) => element.tagName === 'INPUT'));
+  });
 });

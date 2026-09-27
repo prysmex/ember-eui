@@ -9,6 +9,8 @@ import EuiFlyoutHeader from '#src/components/eui-flyout-header.gts';
 
 const flyout = () => document.querySelector('.euiFlyout') as HTMLElement;
 
+const noop = () => {};
+
 module('Integration | Component | eui-flyout', function (hooks) {
   setupRenderingTest(hooks);
 
@@ -48,6 +50,14 @@ module('Integration | Component | eui-flyout', function (hooks) {
     assert.dom(button).hasAttribute('aria-label', 'Close it');
     await click(button);
     assert.strictEqual(closed, 1);
+  });
+
+  test('the close button is labelled by default', async function (assert) {
+    await render(<template><EuiFlyout @onClose={{noop}}>x</EuiFlyout></template>);
+
+    assert
+      .dom(flyout().querySelector('.euiFlyout__closeButton') as HTMLElement)
+      .hasAttribute('aria-label', 'Close this dialog');
   });
 
   test('size, side, padding, no mask and hidden close button', async function (assert) {

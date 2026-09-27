@@ -67,4 +67,32 @@ module('Integration | Component | eui-accordion', function (hooks) {
     await waitUntil(() => wrapperHeight() !== '0px', { timeout: 1000 });
     assert.notStrictEqual(wrapperHeight(), '0px', 'opened after forceState');
   });
+
+  test('the trigger controls the content region, which it labels', async function (assert) {
+    await render(
+      <template>
+        <EuiAccordion class="with-id" @id="details">
+          <:buttonContent>Details</:buttonContent>
+          <:content><p>Content</p></:content>
+        </EuiAccordion>
+        <EuiAccordion class="generated">
+          <:buttonContent>More</:buttonContent>
+          <:content><p>More content</p></:content>
+        </EuiAccordion>
+      </template>
+    );
+
+    for (const selector of ['.with-id', '.generated']) {
+      const button = document.querySelector(`${selector} .euiAccordion__button`) as HTMLElement;
+      const region = document.querySelector(`${selector} [role="region"]`) as HTMLElement;
+
+      assert.ok(region.id, `${selector}: the region has an id`);
+      assert.strictEqual(button.getAttribute('aria-controls'), region.id);
+      assert.ok(button.id, `${selector}: the trigger has an id`);
+      assert.strictEqual(region.getAttribute('aria-labelledby'), button.id);
+      assert.dom(button).doesNotHaveAttribute('aria-labelledby');
+    }
+
+    assert.dom('.with-id [role="region"]').hasAttribute('id', 'details');
+  });
 });

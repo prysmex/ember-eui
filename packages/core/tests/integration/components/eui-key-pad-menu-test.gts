@@ -66,4 +66,23 @@ module('Integration | Component | eui-key-pad-menu', function (hooks) {
     await click('#b');
     assert.deepEqual(changes, [['b', 'b']]);
   });
+
+  test('the beta badge only renders with @betaBadgeLabel', async function (assert) {
+    await render(
+      <template>
+        <EuiKeyPadMenu>
+          <EuiKeyPadMenuItem @label="Plain" class="plain">
+            <EuiIcon @type="dashboardApp" @size="l" />
+          </EuiKeyPadMenuItem>
+          <EuiKeyPadMenuItem @label="Beta" @betaBadgeLabel="Beta" class="beta">
+            <EuiIcon @type="dashboardApp" @size="l" />
+          </EuiKeyPadMenuItem>
+        </EuiKeyPadMenu>
+      </template>
+    );
+
+    assert.dom('.plain .euiKeyPadMenuItem__betaBadge').doesNotExist();
+    assert.dom('.beta .euiKeyPadMenuItem__betaBadge').exists();
+    assert.dom('.beta').hasClass('euiKeyPadMenuItem--hasBetaBadge');
+  });
 });

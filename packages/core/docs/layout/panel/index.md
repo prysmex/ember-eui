@@ -54,7 +54,7 @@ A box grouping content, with background, padding, border and shadow options.
 | `@borderRadius` |  | `'m'` | `'none'` or `'m'`. |
 | `@color` |  | `'plain'` | Background: `'plain'`, `'transparent'`, `'subdued'`, `'accent'`, `'primary'`, `'success'`, `'warning'` or `'danger'`. |
 | `@grow` | `boolean` | `true` | Grows to fill a flex parent's height. |
-| `@onClick` | `(e: MouseEvent) => void` |  | Makes the whole panel clickable (hover styles, `role="button"`). |
+| `@onClick` | `(e: MouseEvent) => void` |  | Makes the whole panel clickable (hover styles, `role="button"`, focusable, Enter and Space activate it). |
 | `@isClickable` | `boolean` | `true` | Hover styles for a clickable panel. |
 
 | Block | Description |

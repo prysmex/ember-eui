@@ -73,7 +73,7 @@ Generated from the components' TypeScript signatures by
 | `@clear` | `() => void` |  | Shows a clear ("x") button calling this function; empty the value there. |
 | `@controlOnly` | `boolean` |  | Renders just the `<input>`, without the layout (icon, clear button, prepend/append). Best used inside EuiFormControlLayoutDelimited. |
 | `@isInvalid` | `boolean` |  | Shows the invalid state and marks the input invalid for native form validation. |
-| `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the `<input>` element once rendered (only with `@controlOnly`). |
+| `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the `<input>` element once rendered. |
 
 | Block | Description |
 | --- | --- |

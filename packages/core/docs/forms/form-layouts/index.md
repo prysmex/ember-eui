@@ -83,6 +83,7 @@ A form control with its label, help text and errors:
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@label` | `string` |  | The control's label. It is linked to the first text-like control in the row automatically (no need to pass ids around). |
+| `@labelAppend` | `string` |  | Text at the end of the label line, e.g. "Optional". Use the `<:labelAppend>` block for markup such as a help link. |
 | `@labelType` | `'label' \| 'legend'` | `'label'` | `'label'` renders a `<label>`; `'legend'` a `<legend>`, for rows whose control is a group (radios, checkboxes). |
 | `@legendType` | `'legend' \| 'fieldset'` | a `<div>` | `'legend'` renders the row as a `<fieldset>` (use it with `@labelType="legend"` for groups). |
 | `@fullWidth` | `boolean` |  | Lets the row (and its control) take the container's full width. |
@@ -97,7 +98,7 @@ A form control with its label, help text and errors:
 | `@id` | `string` | a random id | Id of the control; the label points to it. |
 | `@display` |  | `'row'` | Layout: `'row'` (label above), `'rowCompressed'`, `'columnCompressed'` (label beside, for dense forms), `'columnCompressedSwitch'` (for an `EuiSwitch`), or `'center'` / `'centerCompressed'` (vertically centers a control without a label, e.g. a button next to rows). |
 
-Deprecated: `@labelAppend` (Currently not rendered.); `@extra` (Has no effect.).
+Deprecated: `@extra` (Has no effect.).
 
 | Block | Description |
 | --- | --- |
@@ -106,6 +107,7 @@ Deprecated: `@labelAppend` (Currently not rendered.); `@extra` (Has no effect.).
 | `<:field>` | The control; same as the default block. |
 | `<:errors>` | Renders each error (while `@isInvalid`); yields the error. |
 | `<:helpText>` | Custom help text, instead of `@helpText`. |
+| `<:labelAppend>` | Content at the end of the label line, e.g. a help link. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<fieldset>`.
 

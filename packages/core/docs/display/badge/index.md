@@ -35,7 +35,7 @@ Generated from the components' TypeScript signatures by
 | `@onClick` | `() => void` |  | Makes the badge (or its text, when it has an `@iconType`) a button calling this function. |
 | `@onClickAriaLabel` | `string` |  | Accessible label of the `@onClick` button, when the text alone does not describe the action. |
 | `@href` | `string` |  | Makes the badge (or its text, when it has an `@iconType`) a link. |
-| `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'` (only without `@iconType`). |
+| `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@closeButtonProps` |  |  | Extra props for the `@iconOnClick` button. |
 
 Deprecated: `@iconUseSvg` (Has no effect, see `EuiIcon`.).

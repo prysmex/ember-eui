@@ -58,6 +58,7 @@ For yes/no questions use EuiConfirmModal.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@onClose` | `(e: Event) => void` |  | Called by the close button, Escape and (with `@clickOutsideToClose`) clicks on the mask. Stop rendering the modal here. |
+| `@closeButtonAriaLabel` | `string` | "Close this dialog" | Accessible label of the close button. |
 | `@maxWidth` | `boolean \| string` | the content's width | `true` for EUI's default max width, or any CSS width (e.g. `'800px'`). |
 | `@clickOutsideToClose` | `boolean` |  | Clicking the mask around the modal calls `@onClose`. |
 | `@isFocusTrapActive` | `boolean` | `true` | Traps keyboard focus inside the modal. |

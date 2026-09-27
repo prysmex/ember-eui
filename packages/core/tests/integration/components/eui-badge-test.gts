@@ -45,6 +45,17 @@ module('Integration | Component | eui-badge', function (hooks) {
     assert.dom('a.euiBadge').hasAttribute('href', '#here');
   });
 
+  test('@href with @iconType keeps @target', async function (assert) {
+    await render(
+      <template>
+        <EuiBadge @href="https://example.com" @target="_blank" @iconType="check">Docs</EuiBadge>
+      </template>
+    );
+
+    assert.dom('a.euiBadge__childButton').hasAttribute('href', 'https://example.com');
+    assert.dom('a.euiBadge__childButton').hasAttribute('target', '_blank');
+  });
+
   test('@iconType with @iconSide', async function (assert) {
     await render(<template><EuiBadge @iconType="check" @iconSide="right">Done</EuiBadge></template>);
 

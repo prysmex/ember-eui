@@ -84,4 +84,22 @@ module('Integration | Component | eui-collapsible-nav', function (hooks) {
     assert.dom('.collapsible.euiAccordion').hasClass('euiAccordion-isOpen');
     assert.dom('.collapsible .collapsible-content').hasText('more');
   });
+
+  test('EuiCollapsibleNavGroup renders its title as one heading', async function (assert) {
+    await render(
+      <template>
+        <EuiCollapsibleNavGroup class="default">
+          <:title>Kibana</:title>
+        </EuiCollapsibleNavGroup>
+        <EuiCollapsibleNavGroup @titleElement="h2" class="custom">
+          <:title>Settings</:title>
+        </EuiCollapsibleNavGroup>
+      </template>
+    );
+
+    assert.dom('.default h3').exists({ count: 1 });
+    assert.dom('.default h3').hasClass('euiTitle').hasClass('euiCollapsibleNavGroup__title').hasText('Kibana');
+    assert.dom('.custom h2.euiCollapsibleNavGroup__title').hasText('Settings');
+    assert.dom('.custom h3').doesNotExist();
+  });
 });

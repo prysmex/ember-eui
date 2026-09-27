@@ -1,7 +1,9 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
+import { array } from '@ember/helper';
 import { render } from '@ember/test-helpers';
 
+import EuiButton from '#src/components/eui-button.gts';
 import EuiEmptyPrompt from '#src/components/eui-empty-prompt.gts';
 
 module('Integration | Component | eui-empty-prompt', function (hooks) {
@@ -33,5 +35,16 @@ module('Integration | Component | eui-empty-prompt', function (hooks) {
     assert.dom('.euiEmptyPrompt__icon .custom-icon').exists();
     assert.dom('.euiEmptyPrompt__contentInner .custom-content').exists();
     assert.dom('.euiEmptyPrompt__footer .custom-footer').exists();
+  });
+
+  test('a single action gets one spacer above it', async function (assert) {
+    await render(
+      <template>
+        <EuiEmptyPrompt @title="No results" @body="Try another search" @actions={{array (component EuiButton)}} />
+      </template>
+    );
+
+    assert.dom('.euiEmptyPrompt button.euiButton').exists();
+    assert.dom('.euiEmptyPrompt .euiSpacer--l').exists({ count: 1 });
   });
 });

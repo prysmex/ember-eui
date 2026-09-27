@@ -280,6 +280,31 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.dom('.euiComboBoxPill').hasText('Durian');
   });
 
+  test('the create option shows the typed text as text, not HTML', async function (assert) {
+    const state = new State();
+
+    await render(
+      <template>
+        <EuiComboBox
+          @options={{OPTIONS}}
+          @selectedOptions={{state.selected}}
+          @onChange={{state.onChange}}
+          @onCreateOption={{state.onCreateOption}}
+          as |option|
+        >
+          {{option}}
+        </EuiComboBox>
+      </template>
+    );
+
+    await open();
+    await fillIn(INPUT, '<img src=x>');
+    await waitUntil(inDocument('.euiComboBoxOption__emptyStateText'));
+
+    assert.dom('.euiComboBoxOption__emptyStateText img').doesNotExist();
+    assert.dom('.euiComboBoxOption__emptyStateText').includesText('<img src=x>');
+  });
+
   test('@singleSelection keeps only the last chosen option', async function (assert) {
     const state = new State();
     state.selected = ['Apple'];

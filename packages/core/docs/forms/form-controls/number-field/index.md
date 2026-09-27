@@ -52,7 +52,7 @@ Generated from the components' TypeScript signatures by
 | `@value` | `number \| string` |  | The value. Update it from `{{on "input" …}}` (the event's value is a string). |
 | `@disabled` | `boolean` |  | Disables the input. |
 | `@step` | `number \| 'any'` |  | Specifies the granularity that the value must adhere to. Accepts a `number` or the string `'any'` for no stepping to allow for any value. Defaults to `1` |
-| `@inputRef` | `(ele: Element) => void` |  | Called with the `<input>` element once rendered (only with `@controlOnly`). |
+| `@inputRef` | `(ele: Element) => void` |  | Called with the `<input>` element once rendered. |
 | `@controlOnly` | `boolean` |  | Completely removes form control layout wrapper and ignores icon, prepend, and append. Best used inside EuiFormControlLayoutDelimited. |
 | `@compressed` | `boolean` |  | Shorter input, for dense forms. |
 | `@clear` |  |  | Shows a clear ("x") button calling this function; empty the value there. |

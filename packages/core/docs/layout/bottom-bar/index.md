@@ -54,7 +54,7 @@ Generated from the components' TypeScript signatures by
 | `@bodyClassName` | `string` |  | Class added to `<body>` while the bar is rendered. |
 | `@position` | `'fixed' \| 'static' \| 'sticky'` | `'fixed'` | `'fixed'` renders the bar in a portal, fixed to the bottom of the window. `'sticky'` keeps it at the bottom of its scrolling container, `'static'` renders it in place. |
 | `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding inside the bar: `'none'`, `'s'`, `'m'` or `'l'`. |
-| `@landmarkHeading` | `string` | "Page level controls" | Accessible name of the bar's region landmark (announced to screen readers). Currently only used when `@position` is `'sticky'` or `'static'`. |
+| `@landmarkHeading` | `string` | "Page level controls" | Accessible name of the bar's region landmark (announced to screen readers). With `@position="fixed"`, screen readers are also told the bar appeared at the end of the page. |
 | `@top` | `number` | `0` | Distance from the top in px (only for `'sticky'` / `'static'`). |
 | `@right` | `number` | `0` | Distance from the right edge in px. |
 | `@left` | `number` | `0` | Distance from the left edge in px, e.g. the width of a side nav. |

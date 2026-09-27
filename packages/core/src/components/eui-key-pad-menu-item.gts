@@ -115,7 +115,7 @@ const EuiKeyPadMenuItem: TemplateOnlyComponent<EuiKeyPadMenuItemSignature> =
                   {{on "change" (fn @onChange itemId)}}
                 />
               {{/if}}
-            {{else}}
+            {{else if @betaBadgeLabel}}
               <EuiBetaBadge
                 @size="s"
                 @color="subdued"

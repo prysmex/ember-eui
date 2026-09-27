@@ -66,8 +66,7 @@ export interface EuiBadgeSignature {
      */
     href?: string;
     /**
-     * `target` of the `@href` link, e.g. `'_blank'` (only without
-     * `@iconType`).
+     * `target` of the `@href` link, e.g. `'_blank'`.
      */
     target?: string;
     /**
@@ -171,6 +170,7 @@ const EuiBadge: TemplateOnlyComponent<EuiBadgeSignature> = <template>
             <a
               class="euiBadge__childButton"
               href={{@href}}
+              target={{@target}}
               disabled={{@isDisabled}}
             >
               {{yield}}

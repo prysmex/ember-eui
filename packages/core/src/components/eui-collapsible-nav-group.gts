@@ -1,7 +1,7 @@
 import { concat } from '@ember/helper';
 
 import { element } from 'ember-element-helper';
-import { and, notEq } from 'ember-truth-helpers';
+import { and, or } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
@@ -10,7 +10,6 @@ import EuiAccordion from './eui-accordion.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiIcon from './eui-icon.gts';
-import EuiTitle from './eui-title.gts';
 
 import type { EuiAccordionSignature } from './eui-accordion';
 import type { EuiIconSignature } from './eui-icon';
@@ -22,7 +21,7 @@ export interface EuiCollapsibleNavGroupSignature {
   Args: {
     /** Id of the group. Defaults to a random id. */
     id?: string;
-    /** Tag wrapping the title. Defaults to `'h3'`. */
+    /** Tag of the title, e.g. `'h2'` or `'div'`. Defaults to `'h3'`. */
     titleElement?: string;
     /**
      * Makes the group an accordion that opens and closes from its title
@@ -35,7 +34,7 @@ export interface EuiCollapsibleNavGroupSignature {
     iconType?: EuiIconSignature['Args']['type'];
     /** Size of the icon. Defaults to `'l'`. */
     iconSize?: EuiIconSignature['Args']['size'];
-    /** Tag of the `EuiTitle` around the title. Defaults to `'h3'`. */
+    /** Same as `@titleElement`, limited to `EuiTitle`'s tags. Defaults to `'h3'`. */
     titleTagName?: EuiTitleSignature['Args']['tagName'];
     /** Size of the title, any `EuiTitle` size. Defaults to `'xxs'`. */
     titleSize?: EuiTitleSignature['Args']['size'];
@@ -58,7 +57,7 @@ export interface EuiCollapsibleNavGroupSignature {
 const EuiCollapsibleNavGroup: TemplateOnlyComponent<EuiCollapsibleNavGroupSignature> =
   <template>
     {{#let
-      (argOrDefault @id (randomId)) (argOrDefault @titleElement "h3")
+      (argOrDefault @id (randomId)) (or @titleElement @titleTagName "h3")
       as |groupID titleElement|
     }}
       {{#let (concat groupID "__title") as |titleID|}}
@@ -90,26 +89,18 @@ const EuiCollapsibleNavGroup: TemplateOnlyComponent<EuiCollapsibleNavGroupSignat
                   </EuiFlexItem>
                 {{/if}}
                 <EuiFlexItem>
-                  <EuiTitle
-                    id={{concat groupID "__title"}}
-                    @tagName={{argOrDefault @titleTagName "h3"}}
-                    @size={{argOrDefault @titleSize "xxs"}}
-                  >
-                    {{#if (notEq titleElement "h3")}}
-                      {{#let (element titleElement) as |TitleElement|}}
-                        <TitleElement
-                          id={{titleID}}
-                          class="euiCollapsibleNavGroup__title"
-                        >
-                          {{yield to="title"}}
-                        </TitleElement>
-                      {{/let}}
-                    {{else}}
-                      <h3 id={{titleID}} class="euiCollapsibleNavGroup__title">
-                        {{yield to="title"}}
-                      </h3>
-                    {{/if}}
-                  </EuiTitle>
+                  {{#let (element titleElement) as |TitleElement|}}
+                    <TitleElement
+                      id={{titleID}}
+                      class={{classNames
+                        "euiCollapsibleNavGroup__title"
+                        componentName="EuiTitle"
+                        size=(argOrDefault @titleSize "xxs")
+                      }}
+                    >
+                      {{yield to="title"}}
+                    </TitleElement>
+                  {{/let}}
                 </EuiFlexItem>
               </EuiFlexGroup>
             </:buttonContent>
@@ -147,29 +138,18 @@ const EuiCollapsibleNavGroup: TemplateOnlyComponent<EuiCollapsibleNavGroupSignat
                     </EuiFlexItem>
                   {{/if}}
                   <EuiFlexItem>
-                    <EuiTitle
-                      id={{concat groupID "__title"}}
-                      @tagName={{argOrDefault @titleTagName "h3"}}
-                      @size={{argOrDefault @titleSize "xxs"}}
-                    >
-                      {{#if (notEq titleElement "h3")}}
-                        {{#let (element titleElement) as |TitleElement|}}
-                          <TitleElement
-                            id={{titleID}}
-                            class="euiCollapsibleNavGroup__title"
-                          >
-                            {{yield to="title"}}
-                          </TitleElement>
-                        {{/let}}
-                      {{else}}
-                        <h3
-                          id={{titleID}}
-                          class="euiCollapsibleNavGroup__title"
-                        >
-                          {{yield to="title"}}
-                        </h3>
-                      {{/if}}
-                    </EuiTitle>
+                    {{#let (element titleElement) as |TitleElement|}}
+                      <TitleElement
+                        id={{titleID}}
+                        class={{classNames
+                          "euiCollapsibleNavGroup__title"
+                          componentName="EuiTitle"
+                          size=(argOrDefault @titleSize "xxs")
+                        }}
+                      >
+                        {{yield to="title"}}
+                      </TitleElement>
+                    {{/let}}
                   </EuiFlexItem>
                 </EuiFlexGroup>
               </div>

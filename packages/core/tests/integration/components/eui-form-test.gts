@@ -84,6 +84,24 @@ module('Integration | Component | eui-form', function (hooks) {
     assert.dom('.euiFormErrorText').hasText('Name is required').hasAttribute('aria-live', 'polite');
   });
 
+  test('EuiFormRow renders @labelAppend and the <:labelAppend> block', async function (assert) {
+    await render(
+      <template>
+        <EuiFormRow @label="Nickname" @labelAppend="Optional" class="text">
+          <EuiFieldText />
+        </EuiFormRow>
+        <EuiFormRow @label="Password" class="block">
+          <:labelAppend><a href="#help" class="help">Help</a></:labelAppend>
+          <:field><EuiFieldText /></:field>
+        </EuiFormRow>
+      </template>
+    );
+
+    assert.dom('.text .euiFormRow__labelWrapper').includesText('Optional');
+    assert.dom('.text .euiFormRow__label').hasText('Nickname');
+    assert.dom('.block .euiFormRow__labelWrapper a.help').hasText('Help');
+  });
+
   test('EuiFormRow: focus highlights the label; errors only show when invalid', async function (assert) {
     await render(
       <template>

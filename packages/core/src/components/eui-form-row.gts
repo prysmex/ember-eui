@@ -30,7 +30,10 @@ export interface EuiFormRowSignature {
      * the row automatically (no need to pass ids around).
      */
     label?: string;
-    /** @deprecated Currently not rendered. */
+    /**
+     * Text at the end of the label line, e.g. "Optional". Use the
+     * `<:labelAppend>` block for markup such as a help link.
+     */
     labelAppend?: string;
     /**
      * `'label'` renders a `<label>`; `'legend'` a `<legend>`, for rows whose
@@ -94,6 +97,8 @@ export interface EuiFormRowSignature {
     errors: [string?];
     /** Custom help text, instead of `@helpText`. */
     helpText: [string?];
+    /** Content at the end of the label line, e.g. a help link. */
+    labelAppend: [];
   };
 }
 
@@ -134,7 +139,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
         ...attributes
         {{associateFormRowLabel rowId}}
       >
-        {{#if (or @label @labelAppend hasLabelBlock)}}
+        {{#if (or @label @labelAppend hasLabelBlock (has-block "labelAppend"))}}
           <div class="euiFormRow__labelWrapper">
             {{#if isLegend}}
               {{#if hasLabelBlock}}
@@ -188,6 +193,11 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
               >
                 {{@label}}
               </EuiFormLabel>
+            {{/if}}
+            {{#if (has-block "labelAppend")}}
+              {{yield to="labelAppend"}}
+            {{else if @labelAppend}}
+              {{@labelAppend}}
             {{/if}}
           </div>
         {{/if}}
@@ -249,7 +259,7 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
         ...attributes
         {{associateFormRowLabel rowId}}
       >
-        {{#if (or @label @labelAppend hasLabelBlock)}}
+        {{#if (or @label @labelAppend hasLabelBlock (has-block "labelAppend"))}}
           <div class="euiFormRow__labelWrapper">
             {{#if isLegend}}
               {{#if hasLabelBlock}}
@@ -303,6 +313,11 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
               >
                 {{@label}}
               </EuiFormLabel>
+            {{/if}}
+            {{#if (has-block "labelAppend")}}
+              {{yield to="labelAppend"}}
+            {{else if @labelAppend}}
+              {{@labelAppend}}
             {{/if}}
           </div>
         {{/if}}

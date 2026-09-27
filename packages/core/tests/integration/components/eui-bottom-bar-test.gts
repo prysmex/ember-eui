@@ -30,4 +30,22 @@ module('Integration | Component | eui-bottom-bar', function (hooks) {
 
     assert.dom('.euiBottomBar').hasClass('euiBottomBar--static');
   });
+
+  test('the bar is a labelled region, also when fixed', async function (assert) {
+    await render(
+      <template>
+        <EuiBottomBar @landmarkHeading="Form actions">Save</EuiBottomBar>
+      </template>
+    );
+
+    assert.dom('section.euiBottomBar', document.body).hasAria('label', 'Form actions');
+    assert.dom('section.euiBottomBar h2', document.body).hasText('Form actions');
+    assert.dom('[aria-live="assertive"]', document.body).includesText('Form actions');
+  });
+
+  test('a static bar has the default label', async function (assert) {
+    await render(<template><EuiBottomBar @position="static">Save</EuiBottomBar></template>);
+
+    assert.dom('section.euiBottomBar').hasAria('label', 'Page level controls');
+  });
 });

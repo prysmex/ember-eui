@@ -75,12 +75,12 @@ Deprecated: `@children` (Has no effect, use the `<:content>` block.).
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the group. |
-| `@titleElement` | `string` | `'h3'` | Tag wrapping the title. |
+| `@titleElement` | `string` | `'h3'` | Tag of the title, e.g. `'h2'` or `'div'`. |
 | `@isCollapsible` | `boolean` |  | Makes the group an accordion that opens and closes from its title (needs a `<:title>` block). |
 | `@initialIsOpen` | `boolean` | `true` | Whether a collapsible group starts open. |
 | `@iconType` |  |  | Icon before the title; anything `EuiIcon`'s `@type` accepts. |
 | `@iconSize` |  | `'l'` | Size of the icon. |
-| `@titleTagName` |  | `'h3'` | Tag of the `EuiTitle` around the title. |
+| `@titleTagName` |  | `'h3'` | Same as `@titleElement`, limited to `EuiTitle`'s tags. |
 | `@titleSize` |  | `'xxs'` | Size of the title, any `EuiTitle` size. |
 | `@background` | `string` | `'none'` | Background of the group: `'none'`, `'light'` or `'dark'`. |
 

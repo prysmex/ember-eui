@@ -66,7 +66,7 @@ that keep the page context. Render it only while open:
 | `@paddingSize` | `string` | `'l'` | Padding of `EuiFlyoutHeader`, `EuiFlyoutBody` and `EuiFlyoutFooter`: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@hideCloseButton` | `boolean` |  | Hides the close button (e.g. when the flyout has its own). |
 | `@closeButtonProps` |  |  | Props for the close button: `{ className, onClick }`. |
-| `@closeButtonAriaLabel` | `string` |  | Accessible label of the close button, e.g. "Close this dialog". |
+| `@closeButtonAriaLabel` | `string` | "Close this dialog" | Accessible label of the close button. |
 | `@onClose` | `() => void` |  | Called by the close button, Escape, the mask and outside clicks. Stop rendering the flyout here. Without it there is no close button. |
 | `@maxWidth` | `boolean \| number` | `false` | Caps the width: `true` for EUI's default max width, or a number in px. |
 | `@type` | `string` | `'overlay'` | `'overlay'` covers the page; `'push'` pads the page so the flyout sits beside it (on windows at least `@pushMinBreakpoint` wide). |

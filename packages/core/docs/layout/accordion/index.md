@@ -57,7 +57,7 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@id` | `string` |  | Id of the collapsible content region; the trigger's `aria-controls` points to it. Give each accordion a unique id. |
+| `@id` | `string` | a random id | Id of the collapsible content region; the trigger's `aria-controls` points to it. |
 | `@element` | `'div' \| 'fieldset'` | `'div'` | Element wrapping the accordion. With `'fieldset'` the trigger renders as a `<legend>`, for accordions that group form controls. |
 | `@buttonClassName` | `string` |  | Class that will apply to the trigger for the accordion. |
 | `@buttonProps` | `CommonArgs` |  | Extra props for the trigger: `id` (defaults to a generated id) and `className`. |

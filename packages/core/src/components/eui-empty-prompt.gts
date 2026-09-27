@@ -121,7 +121,7 @@ const EuiEmptyPrompt: TemplateOnlyComponent<EuiEmptyPromptSignature> =
                   </EuiTextColor>
                 {{/if}}
                 {{#if @actions.length}}
-                  <EuiSpacer size="l" />
+                  <EuiSpacer @size="l" />
                 {{/if}}
                 {{#if (gte @actions.length 2)}}
                   <EuiFlexGroup
@@ -138,7 +138,6 @@ const EuiEmptyPrompt: TemplateOnlyComponent<EuiEmptyPromptSignature> =
                     {{/each}}
                   </EuiFlexGroup>
                 {{else}}
-                  <EuiSpacer size="l" />
                   {{#each @actions as |oneAction|}}
                     {{oneAction}}
                   {{/each}}

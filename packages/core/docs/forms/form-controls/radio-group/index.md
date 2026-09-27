@@ -46,7 +46,7 @@ A group of radios to pick one option.
 | --- | --- | --- | --- |
 | `@idSelected` (required) | `string` |  | Id (`@valueKey` value) of the checked option. |
 | `@options` (required) |  |  | The radios: `[{ id: 'a', label: 'Option A' }, …]` (keys set by `@valueKey` / `@labelKey`); `value`, `disabled` and `className` are optional. |
-| `@name` | `string` |  | `name` shared by the radios. |
+| `@name` | `string` | a random name | `name` shared by the radios. |
 | `@legend` | `string` |  | Wraps the radios in an `EuiFormFieldset` with this legend. Use it when the group is not inside an `EuiFormRow`. |
 | `@compressed` | `boolean` |  | Smaller radios, for dense forms. |
 | `@disabled` | `boolean` |  | Disables every radio. |

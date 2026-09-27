@@ -39,8 +39,8 @@ export interface EuiButtomBarArgs {
   paddingSize?: 'none' | 's' | 'm' | 'l';
   /**
    * Accessible name of the bar's region landmark (announced to screen
-   * readers). Defaults to "Page level controls". Currently only used when
-   * `@position` is `'sticky'` or `'static'`.
+   * readers). Defaults to "Page level controls". With `@position="fixed"`,
+   * screen readers are also told the bar appeared at the end of the page.
    */
   landmarkHeading?: string;
   /**
@@ -168,10 +168,32 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBar
             dimensions=this.dimensions
             bodyClassName=@bodyClassName
           }}
+          aria-label={{if
+            @landmarkHeading
+            @landmarkHeading
+            "Page level controls"
+          }}
           ...attributes
         >
+          <div {{screenReaderOnly}}>
+            <h2>
+              {{if @landmarkHeading @landmarkHeading "Page level controls"}}
+            </h2>
+          </div>
           {{yield}}
         </section>
+        <div {{screenReaderOnly}}>
+          <p aria-live="assertive">
+            {{#if @landmarkHeading}}
+              There is a new region landmark called
+              {{@landmarkHeading}}
+              with page level controls at the end of the document.
+            {{else}}
+              There is a new region landmark with page level controls at the end
+              of the document.
+            {{/if}}
+          </p>
+        </div>
       </EuiPortal>
     {{else}}
       <section
@@ -202,18 +224,6 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBar
         </div>
         {{yield}}
       </section>
-      <div {{screenReaderOnly}}>
-        <p aria-live="assertive">
-          {{#if @landmarkHeading}}
-            There is a new region landmark called
-            {{@landmarkHeading}}
-            with page level controls at the end of the document.
-          {{else}}
-            There is a new region landmark with page level controls at the end
-            of the document.
-          {{/if}}
-        </p>
-      </div>
     {{/if}}
   </template>
 }

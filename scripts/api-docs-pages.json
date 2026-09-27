@@ -215,6 +215,10 @@
     "EuiCollapsibleNav",
     "EuiCollapsibleNavGroup"
   ],
+  "packages/core/docs/navigation/context-menu/index.md": [
+    "EuiContextMenuPanel",
+    "EuiContextMenuItem"
+  ],
   "packages/core/docs/navigation/key-pad-menu.md": [
     "EuiKeyPadMenu",
     "EuiKeyPadMenuItem"

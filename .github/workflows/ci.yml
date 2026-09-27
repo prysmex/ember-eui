@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+jobs:
+  lint:
+    name: Lint, types and docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      # also runs glint on each addon (build:types) and builds the site
+      - run: pnpm build
+      - run: pnpm lint
+      # fails when an argument's docs changed without `pnpm docs:api`
+      - run: pnpm docs:api:check
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      # builds what each package's tests depend on, then runs every
+      # package's tests (and the site's) in headless Chrome
+      - run: pnpm turbo test --continue

@@ -1,0 +1,24 @@
+name: Setup
+description: Node, pnpm (the version in package.json, via corepack) and the workspace's dependencies
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+    - name: Enable pnpm
+      shell: bash
+      run: corepack enable && pnpm --version
+    - name: Locate the pnpm store
+      id: pnpm-store
+      shell: bash
+      run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+    - uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-store.outputs.path }}
+        key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-store-${{ runner.os }}-
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

@@ -1,3 +1,7 @@
+---
+title: Portal
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Portal"/>
 <EuiSpacer @size="l" />

@@ -96,9 +96,17 @@ export default class ApplicationController extends Controller {
         // build routes for node
         const nodeRoutes = getSidenavRoutes([node, handlerFn]);
 
-        // add fake items based on page headings to simulate 'on this page' feature inside sidebar
+        // add fake items based on page headings to simulate 'on this page' feature inside sidebar:
+        // the page's own sections and its demos (the children of "Examples"),
+        // but not the API reference tables
         node.pages.forEach((page: Page) => {
-          const headings = page?.headings?.[0]?.headings;
+          const headings = (page?.headings ?? []).flatMap(
+            (heading: Heading) => {
+              if (heading.id === 'api-reference') return [];
+              if (heading.id === 'examples') return heading.headings ?? [];
+              return [heading];
+            },
+          );
           const item = nodeRoutes?.[0]?.items?.find(
             (item: Item) => item.name == page.title,
           );

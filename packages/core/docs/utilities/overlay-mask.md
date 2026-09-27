@@ -1,3 +1,7 @@
+---
+title: Overlay mask
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Overlay mask"/>
 <EuiSpacer @size="l" />

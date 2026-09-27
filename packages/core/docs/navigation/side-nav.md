@@ -1,3 +1,7 @@
+---
+title: Side nav
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Side nav"/>
 <EuiSpacer @size="l" />

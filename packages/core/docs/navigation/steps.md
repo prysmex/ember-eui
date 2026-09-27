@@ -1,3 +1,7 @@
+---
+title: Steps
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Steps"/>
 <EuiSpacer @size="l" />

@@ -1,3 +1,7 @@
+---
+title: Copy
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Copy"/>
 <EuiSpacer @size="l" />

@@ -1,3 +1,7 @@
+---
+title: Link
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Link"/>
 <EuiSpacer @size="l" />

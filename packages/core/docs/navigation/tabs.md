@@ -1,3 +1,7 @@
+---
+title: Tabs
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Tabs"/>
 <EuiSpacer @size="l" />

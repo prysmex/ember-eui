@@ -1,3 +1,7 @@
+---
+title: Base editor
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Base editor"/>
 <EuiSpacer @size="l" />

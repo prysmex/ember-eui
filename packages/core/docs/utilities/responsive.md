@@ -1,3 +1,7 @@
+---
+title: Responsive
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Responsive"/>
 <EuiSpacer @size="l" />

@@ -1,3 +1,7 @@
+---
+title: Collapsible nav
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Collapsible nav"/>
 <EuiSpacer @size="l" />

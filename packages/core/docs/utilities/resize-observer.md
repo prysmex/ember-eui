@@ -1,3 +1,7 @@
+---
+title: Resize observer
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Resize observer"/>
 <EuiSpacer @size="l" />

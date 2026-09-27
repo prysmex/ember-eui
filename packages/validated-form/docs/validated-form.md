@@ -1,3 +1,7 @@
+---
+title: Validated form
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Validated form"/>
 <EuiSpacer @size="l" />

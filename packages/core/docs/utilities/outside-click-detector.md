@@ -1,3 +1,7 @@
+---
+title: Outside click detector
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Outside click detector"/>
 <EuiSpacer @size="l" />

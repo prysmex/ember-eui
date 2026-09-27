@@ -1,3 +1,7 @@
+---
+title: Flatpickr
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Flatpickr"/>
 <EuiSpacer @size="l" />

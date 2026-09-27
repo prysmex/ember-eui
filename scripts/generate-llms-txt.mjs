@@ -135,13 +135,16 @@ function cleanProse(text) {
   let out = text
     .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/\{\{'([^']*)'\}\}/g, '$1')
+    // backticks first: they may show tags, e.g. `<EuiCode>…</EuiCode>`
+    .replace(/`([^`\n]+)`/g, (_, code) => protect(code))
     .replace(/<EuiCode[^>]*>([\s\S]*?)<\/EuiCode>/g, (_, code) => protect(code))
     .replace(/<code[^>]*>([\s\S]*?)<\/code>/g, (_, code) => protect(code))
-    .replace(/`([^`\n]+)`/g, (_, code) => protect(code))
     .replace(/<EuiPageHeader[^>]*?\/>/g, '')
     .replace(/<EuiSpacer[^>]*?\/>/g, '')
     .replace(/<EuiHorizontalRule[^>]*?\/>/g, '')
     .replace(/<IconGallery\s*\/>/g, '*(An interactive gallery of every icon is on the site.)*')
+    // docfy's demo marker; the demos are appended after the prose
+    .replace(/^\[\[demos?-?[^\]]*\]\]$/gm, '')
     .replace(/<(strong|b)>([\s\S]*?)<\/\1>/g, '**$2**')
     .replace(/<(em|i)>([\s\S]*?)<\/\1>/g, '*$2*')
     .replace(/<EuiLink[^>]*@href="([^"]+)"[^>]*>([\s\S]*?)<\/EuiLink>/g, '[$2]($1)')
@@ -153,7 +156,13 @@ function cleanProse(text) {
     // any other tag (HTML or component): keep its text only
     .replace(/<\/?(?:[a-z][\w-]*|Eui\w+|:\w+)(?:\s[^>]*)?\/?>/g, '');
 
-  out = decode(out).replace(/\u0000(\d+)\u0000/g, (_, i) => `\`${spans[i]}\``);
+  out = decode(out);
+
+  // a span can hold another span's placeholder (e.g. <EuiCode> inside
+  // backticks): restore until none are left
+  while (/\u0000\d+\u0000/.test(out)) {
+    out = out.replace(/\u0000(\d+)\u0000/g, (_, i) => `\`${spans[i]}\``);
+  }
 
   return out
     .split('\n')
@@ -185,7 +194,13 @@ function pageBody(page) {
           .replace(/Generated from the components' TypeScript signatures by\s*`scripts\/generate-api-docs.mjs`\./, '')
           .replace(/^## API reference/m, '');
 
-  const parts = [`# ${page.title}`, `Source: ${page.url}`, clean(intro)];
+  // a page placing its demos by hand has its own "Examples" heading; each
+  // demo below gets an "Example: …" heading anyway
+  const parts = [
+    `# ${page.title}`,
+    `Source: ${page.url}`,
+    clean(page.demos.length ? intro.replace(/^## Examples$/m, '') : intro),
+  ];
 
   for (const demo of page.demos) {
     const body = demo.body

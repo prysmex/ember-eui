@@ -2,11 +2,13 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import autoImportComponents from './lib/docfy-auto-imports.mjs';
+import remarkKeepHeadingDepth from './lib/remark-keep-heading-depth.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 
 export default {
   plugins: [autoImportComponents],
+  remarkPlugins: [remarkKeepHeadingDepth],
   sources: [
     {
       root: resolve(root, '../docs'),

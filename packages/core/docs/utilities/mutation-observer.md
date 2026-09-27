@@ -1,3 +1,7 @@
+---
+title: Mutation observer
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Mutation observer"/>
 <EuiSpacer @size="l" />

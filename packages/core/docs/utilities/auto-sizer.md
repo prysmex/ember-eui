@@ -1,3 +1,7 @@
+---
+title: Auto sizer
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Auto sizer"/>
 <EuiSpacer @size="l" />

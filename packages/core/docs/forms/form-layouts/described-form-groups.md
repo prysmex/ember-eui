@@ -1,3 +1,7 @@
+---
+title: Described form groups
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Described form groups"/>
 <EuiSpacer @size="l" />

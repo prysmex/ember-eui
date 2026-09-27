@@ -1,5 +1,6 @@
 ---
 title: Icons
+manualDemoInsertion: true
 ---
 
 <EuiSpacer/>
@@ -20,7 +21,7 @@ and accept the same values.
 <EuiButton @iconType="plusInCircle">Add</EuiButton>
 ```
 
-### What `@type` accepts
+## What `@type` accepts
 
 | `@type`                         | Renders                                                                  |
 | ------------------------------- | ------------------------------------------------------------------------ |
@@ -29,7 +30,7 @@ and accept the same values.
 | A component                     | The component, with the icon classes and attributes (see *Custom SVGs*). |
 | Any other string                | An `<img>` with that string as `src`, for image URLs.                    |
 
-### Setup
+## Setup
 
 Nothing to configure: EUI's icons ship with `@ember-eui/core`. Each icon is
 its own small chunk that is loaded the first time it renders, so an app only
@@ -53,7 +54,7 @@ export default defineConfig({
 
 The full list of arguments is in the *API reference* at the end of the page.
 
-### All icons
+## All icons
 
 Search by name or filter by category; click an icon to copy its tag.
 
@@ -62,6 +63,16 @@ Search by name or filter by category; click an icon to copy its tag.
 <EuiSpacer @size="m" />
 
 <IconGallery />
+
+<EuiSpacer @size="xl" />
+
+<EuiText>
+
+## Examples
+
+</EuiText>
+
+[[demos-all]]
 
 <EuiSpacer @size="l" />
 <EuiHorizontalRule/>

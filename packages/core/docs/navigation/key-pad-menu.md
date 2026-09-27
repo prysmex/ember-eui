@@ -1,3 +1,7 @@
+---
+title: Key pad menu
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Key pad menu"/>
 <EuiSpacer @size="l" />

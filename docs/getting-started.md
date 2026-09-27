@@ -1,5 +1,6 @@
 ---
 order: 2
+title: Getting started
 ---
 
 <EuiPageHeader @pageTitle="Getting started" />

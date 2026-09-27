@@ -1,3 +1,7 @@
+---
+title: Pikaday
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Pikaday"/>
 <EuiSpacer @size="l" />

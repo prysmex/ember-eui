@@ -1,3 +1,7 @@
+---
+title: Changeset form
+---
+
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Changeset form"/>
 <EuiSpacer @size="l" />

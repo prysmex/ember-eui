@@ -39,9 +39,12 @@ interface LinkFormRowControlSignature {
   Args: {
     Positional: [rowId: string];
     Named: {
-      /** Truthy when the row renders its help text (`<rowId>-help`). */
+      /**
+       * The row's help text and number of errors shown: only passed so the
+       * modifier runs again when they change (their ids are read from the
+       * DOM).
+       */
       helpText?: unknown;
-      /** How many errors the row renders (`<rowId>-error-<i>`). */
       errorCount?: number;
     };
   };
@@ -81,6 +84,16 @@ function associate(row: HTMLElement): { target: HTMLElement | null; linked: bool
   return { target: fallback, linked: false };
 }
 
+/** Ids of the errors and help text shown in the row, in order. */
+function describedByIds(row: HTMLElement): string[] {
+  return Array.from(
+    row.querySelectorAll<HTMLElement>(
+      ':scope > .euiFormRow__fieldWrapper > .euiFormErrorText[id], :scope > .euiFormRow__fieldWrapper > .euiFormHelpText[id]'
+    ),
+    (element) => element.id
+  );
+}
+
 /** Sets the ids (those rendered) in the element's aria-describedby. */
 function describe(element: HTMLElement, ids: string[]): void {
   const previous = added.get(element) ?? [];
@@ -105,13 +118,12 @@ function describe(element: HTMLElement, ids: string[]): void {
 
 export default modifier<LinkFormRowControlSignature>(function linkFormRowControl(
   row,
-  [rowId],
-  { helpText, errorCount = 0 }
+  // the row id is read so that a new id re-runs the association
+  [_rowId],
+  // the named args are only read so that changes re-run the modifier
+  { helpText: _helpText, errorCount: _errorCount }
 ) {
-  const ids = [
-    ...Array.from({ length: errorCount }, (_, i) => `${rowId}-error-${i}`),
-    ...(helpText ? [`${rowId}-help`] : [])
-  ];
+  const ids = describedByIds(row);
 
   const initial = associate(row);
   const linked = initial.linked;

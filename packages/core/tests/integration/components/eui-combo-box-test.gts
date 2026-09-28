@@ -301,8 +301,9 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     await fillIn(INPUT, '<img src=x>');
     await waitUntil(inDocument('.euiComboBoxOption__emptyStateText'));
 
-    assert.dom('.euiComboBoxOption__emptyStateText img').doesNotExist();
-    assert.dom('.euiComboBoxOption__emptyStateText').includesText('<img src=x>');
+    // the options list renders in the dropdown's wormhole, outside the test container
+    assert.dom('.euiComboBoxOption__emptyStateText img', document.body).doesNotExist();
+    assert.dom('.euiComboBoxOption__emptyStateText', document.body).includesText('<img src=x>');
   });
 
   test('@singleSelection keeps only the last chosen option', async function (assert) {

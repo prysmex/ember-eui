@@ -64,7 +64,7 @@ module('Integration | Component | eui-modal', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiModal__closeIcon').hasAttribute('aria-label', 'Close this dialog');
+    assert.dom('.euiModal__closeIcon', document.body).hasAttribute('aria-label', 'Close this dialog');
   });
 
   test('@closeButtonAriaLabel labels the close button', async function (assert) {
@@ -74,6 +74,6 @@ module('Integration | Component | eui-modal', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiModal__closeIcon').hasAttribute('aria-label', 'Cerrar');
+    assert.dom('.euiModal__closeIcon', document.body).hasAttribute('aria-label', 'Cerrar');
   });
 });

@@ -271,7 +271,7 @@ module('Integration | Component | eui-form', function (hooks) {
         <template><EuiFormRow @id="nick" @label="Nickname" @helpText="Shown to others"><EuiFieldText /></EuiFormRow></template>
       );
 
-      assert.dom('input').hasAria('describedby', 'nick-help');
+      assert.dom('input').hasAria('describedby', 'nick-help-0');
     });
 
     test('errors are added while invalid, and ids the app set are kept', async function (assert) {
@@ -290,15 +290,15 @@ module('Integration | Component | eui-form', function (hooks) {
         </template>
       );
 
-      assert.dom('input').hasAria('describedby', 'mine user-help');
+      assert.dom('input').hasAria('describedby', 'mine user-help-0');
 
       state.isInvalid = true;
       await rerender();
-      assert.dom('input').hasAria('describedby', 'mine user-error-0 user-error-1 user-help');
+      assert.dom('input').hasAria('describedby', 'mine user-error-0 user-error-1 user-help-0');
 
       state.isInvalid = false;
       await rerender();
-      assert.dom('input').hasAria('describedby', 'mine user-help');
+      assert.dom('input').hasAria('describedby', 'mine user-help-0');
     });
 
     test('a replaced control is described too', async function (assert) {
@@ -315,11 +315,11 @@ module('Integration | Component | eui-form', function (hooks) {
         </template>
       );
 
-      assert.dom('input').hasAria('describedby', 'bio-help');
+      assert.dom('input').hasAria('describedby', 'bio-help-0');
 
       state.long = true;
       await rerender();
-      assert.dom('textarea').hasAria('describedby', 'bio-help');
+      assert.dom('textarea').hasAria('describedby', 'bio-help-0');
     });
 
     test('a fieldset row is described itself', async function (assert) {

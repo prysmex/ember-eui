@@ -54,7 +54,7 @@ module('Integration | Component | eui-panel', function (hooks) {
     await triggerKeyEvent('.euiPanel', 'keydown', ' ');
     assert.strictEqual(clicks, 2);
 
-    await triggerKeyEvent('.euiPanel', 'keydown', 'a');
+    await triggerKeyEvent('.euiPanel', 'keydown', 'A');
     await triggerKeyEvent('.inner', 'keydown', 'Enter');
     assert.strictEqual(clicks, 2, 'other keys and keys in inner controls are ignored');
   });

@@ -1,3 +1,4 @@
+import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import Service from '@ember/service';
 
@@ -28,8 +29,18 @@ function flatten(
   return acc;
 }
 
+const defaultNumberFormat = new Intl.NumberFormat('en');
+
 export default class EuiI18n extends Service {
   translations = {};
+
+  /**
+   * Formats numbers for `EuiI18nNumber`. Defaults to English
+   * (`1,234.5`); replace it to follow your app's locale, e.g.
+   * `this.euiI18n.formatNumber = (n) => new Intl.NumberFormat('de').format(n)`.
+   */
+  @tracked formatNumber: (value: number) => string = (value) => defaultNumberFormat.format(value);
+
   @action
   addTranslations(translations: Record<string, unknown>) {
     // TODO: deep merge?

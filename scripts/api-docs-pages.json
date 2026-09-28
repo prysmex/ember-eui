@@ -2,6 +2,9 @@
   "packages/changeset-form/docs/changeset-form.md": [
     "EuiChangesetForm"
   ],
+  "packages/core/docs/display/aspect-ratio/index.md": [
+    "EuiAspectRatio"
+  ],
   "packages/core/docs/display/avatar/index.md": [
     "EuiAvatar"
   ],
@@ -10,6 +13,9 @@
     "EuiBetaBadge",
     "EuiBadgeGroup",
     "EuiNotificationBadge"
+  ],
+  "packages/core/docs/display/beacon/index.md": [
+    "EuiBeacon"
   ],
   "packages/core/docs/display/callout/index.md": [
     "EuiCallOut"
@@ -33,6 +39,10 @@
   "packages/core/docs/display/health/index.md": [
     "EuiHealth"
   ],
+  "packages/core/docs/display/highlight-and-mark/index.md": [
+    "EuiHighlight",
+    "EuiMark"
+  ],
   "packages/core/docs/display/icons/index.md": [
     "EuiIcon"
   ],
@@ -41,12 +51,15 @@
   ],
   "packages/core/docs/display/list-group/index.md": [
     "EuiListGroup",
-    "EuiListGroupItem"
+    "EuiListGroupItem",
+    "EuiPinnableListGroup"
   ],
   "packages/core/docs/display/loading/index.md": [
     "EuiLoadingSpinner",
     "EuiLoadingContent",
-    "EuiLoadingLogo"
+    "EuiLoadingLogo",
+    "EuiLoadingChart",
+    "EuiLoadingElastic"
   ],
   "packages/core/docs/display/notification-event/index.md": [
     "EuiNotificationEvent"
@@ -56,6 +69,9 @@
   ],
   "packages/core/docs/display/stat-demo/index.md": [
     "EuiStat"
+  ],
+  "packages/core/docs/display/text-diff/index.md": [
+    "EuiTextDiff"
   ],
   "packages/core/docs/display/text/index.md": [
     "EuiText",
@@ -69,9 +85,15 @@
     "EuiGlobalToastList",
     "EuiToast"
   ],
+  "packages/core/docs/display/token/index.md": [
+    "EuiToken"
+  ],
   "packages/core/docs/display/tool-tip/index.md": [
     "EuiToolTip",
     "EuiIconTip"
+  ],
+  "packages/core/docs/display/tree-view/index.md": [
+    "EuiTreeView"
   ],
   "packages/core/docs/editors/code/index.md": [
     "EuiCode",
@@ -83,6 +105,21 @@
   ],
   "packages/core/docs/forms/combo-box/index.md": [
     "EuiComboBox"
+  ],
+  "packages/core/docs/forms/date-picker-range/index.md": [
+    "EuiDatePickerRange"
+  ],
+  "packages/core/docs/forms/expression/index.md": [
+    "EuiExpression"
+  ],
+  "packages/core/docs/forms/facet/index.md": [
+    "EuiFacetButton",
+    "EuiFacetGroup"
+  ],
+  "packages/core/docs/forms/filter-group/index.md": [
+    "EuiFilterGroup",
+    "EuiFilterButton",
+    "EuiFilterSelectItem"
   ],
   "packages/core/docs/forms/form-controls/checkbox-group/index.md": [
     "EuiCheckboxGroup"
@@ -151,6 +188,9 @@
   "packages/core/docs/layout/bottom-bar/index.md": [
     "EuiBottomBar"
   ],
+  "packages/core/docs/layout/control-bar/index.md": [
+    "EuiControlBar"
+  ],
   "packages/core/docs/layout/flex/index.md": [
     "EuiFlexGroup",
     "EuiFlexItem",
@@ -216,6 +256,7 @@
     "EuiCollapsibleNavGroup"
   ],
   "packages/core/docs/navigation/context-menu/index.md": [
+    "EuiContextMenu",
     "EuiContextMenuPanel",
     "EuiContextMenuItem"
   ],
@@ -252,14 +293,23 @@
     "EuiPageContent",
     "EuiPageContentBody"
   ],
+  "packages/core/docs/utilities/accessibility/index.md": [
+    "EuiScreenReaderOnly",
+    "EuiSkipLink"
+  ],
   "packages/core/docs/utilities/auto-sizer.md": [
     "EuiAutoSizer"
   ],
   "packages/core/docs/utilities/copy.md": [
     "EuiCopy"
   ],
+  "packages/core/docs/utilities/delay/index.md": [
+    "EuiDelayRender",
+    "EuiDelayHide"
+  ],
   "packages/core/docs/utilities/i18n/index.md": [
-    "EuiI18n"
+    "EuiI18n",
+    "EuiI18nNumber"
   ],
   "packages/core/docs/utilities/overlay-mask.md": [
     "EuiOverlayMask"

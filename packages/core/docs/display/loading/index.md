@@ -14,7 +14,10 @@ Loading indicators, from smallest to largest:
   (buttons and fields have their own `@isLoading`).
 - **`EuiLoadingContent`** shows animated placeholder lines where text will
   appear.
-- **`EuiLoadingLogo`** for loading a whole app or page.
+- **`EuiLoadingChart`** in place of a chart or visualization that is
+  loading.
+- **`EuiLoadingLogo`** and **`EuiLoadingElastic`** for loading a whole app
+  or page.
 
 ```hbs
 <EuiLoadingSpinner @size="l" />
@@ -66,6 +69,29 @@ A bouncing logo, for loading a whole page or app.
 | --- | --- | --- | --- |
 | `@logo` | `string` | `'logoKibana'` | The logo, anything `EuiIcon`'s `@type` accepts. |
 | `@size` | `'m' \| 'l' \| 'xl'` | `'m'` | `'m'`, `'l'` or `'xl'`. |
+
+### EuiLoadingChart
+
+Animated bars, for a chart or visualization that is loading. Give it an
+`aria-label` (e.g. "Loading chart").
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@size` | `'m' \| 'l' \| 'xl'` | `'m'` | `'m'`, `'l'` or `'xl'`. |
+| `@mono` | `boolean` |  | Gray bars instead of colored ones. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
+
+### EuiLoadingElastic
+
+The Elastic logo, animated, for a full page or app that is loading.
+Give it an `aria-label` (e.g. "Loading").
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@size` | `'m' \| 'l' \| 'xl' \| 'xxl'` | `'m'` | `'m'`, `'l'`, `'xl'` or `'xxl'`. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
 
 </EuiText>
 <!-- api:end -->

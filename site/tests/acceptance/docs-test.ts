@@ -18,7 +18,22 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.euiSideNav').exists();
     assert
       .dom('.euiSideNavItem')
-      .exists({ count: 74 }, 'every docs section is listed');
+      .exists({ count: 88 }, 'every docs section is listed');
+  });
+
+  test('every docs page renders with its demos', async function (assert) {
+    const docfy = this.owner.lookup('service:docfy') as DocfyService;
+    const pages = docfy.flat.filter((page) => !page.frontmatter['disabled']);
+
+    for (const page of pages) {
+      await visit(page.url);
+
+      assert.strictEqual(currentURL(), page.url, `${page.url} renders`);
+    }
+
+    // demos with a fixed control bar or bottom bar clean up when leaving
+    await visit('/docs/introduction');
+    assert.strictEqual(document.body.style.paddingBottom, '');
   });
 
   test('every docs page renders with its demos', async function (assert) {

@@ -29,8 +29,33 @@ handler or a link.
 ```
 
 Use `@panelPaddingSize="none"` on the popover so the items reach its
-edges. Unlike EUI's React version, the panel doesn't navigate between
-nested panels; open another popover or change the content yourself.
+edges. Arrow keys move between the items; `@title` adds a title.
+
+For sub-menus, `EuiContextMenu` takes a flat list of `@panels`: an
+item with `panel: id` opens that panel, which slides in with a back
+button, and arrow right / left move between panels with the keyboard.
+
+```hbs
+<EuiContextMenu @panels={{this.panels}} @initialPanelId={{0}} />
+```
+
+```js
+panels = [
+  {
+    id: 0,
+    title: 'Actions',
+    items: [
+      { name: 'Share', icon: 'share', panel: 1 },
+      { isSeparator: true },
+      { name: 'Delete', icon: 'trash', onClick: () => this.delete() },
+    ],
+  },
+  { id: 1, title: 'Share', items: [{ name: 'Copy link', icon: 'link' }] },
+];
+```
+
+A panel without `items` renders the `<:content>` block instead (it
+yields the panel), e.g. for a small form.
 
 </EuiText>
 
@@ -46,14 +71,43 @@ nested panels; open another popover or change the content yourself.
 Generated from the components' TypeScript signatures by
 `scripts/generate-api-docs.mjs`.
 
-### EuiContextMenuPanel
+### EuiContextMenu
 
-A list of `EuiContextMenuItem`s, usually as a popover's content. Unlike
-EUI's React version it has no built-in panel navigation.
+A menu of panels: items can open another panel (a sub-menu), which
+slides in with a back button to return. Usually the content of an
+`EuiPopover`. For a single list of items, `EuiContextMenuPanel` is
+enough.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@panels` (required) | `EuiContextMenuPanelDescriptor[]` |  | Every panel, flat: an item's `panel` is the id of the panel it opens. |
+| `@initialPanelId` (required) | `PanelId` |  | Id of the panel shown first. |
+| `@size` | `'s' \| 'm'` | `'m'` | `'s'` for smaller items and titles. |
 
 | Block | Description |
 | --- | --- |
-| default block | The `EuiContextMenuItem`s (and e.g. `EuiHorizontalRule`s). |
+| `<:content>` | Content of the panels without `items`; yields the panel. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+### EuiContextMenuPanel
+
+A list of `EuiContextMenuItem`s, usually as a popover's content, with
+an optional title. Arrow keys move between the items. For menus with
+several panels (items opening sub-menus), use `EuiContextMenu`, which
+renders these panels for you.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@title` | `string` |  | Title above the items. |
+| `@onClose` | `() => void` |  | Makes the title a "back" button calling this function, e.g. to return to the previous panel. |
+| `@size` | `'s' \| 'm'` | `'m'` | `'s'` for a smaller title. |
+| `@hasFocus` | `boolean` |  | Moves focus into the panel once rendered: to the item at `@initialFocusedItemIndex`, else to its first focusable element when it has no items, else to the panel itself. |
+| `@initialFocusedItemIndex` | `number` |  | Index of the item to focus with `@hasFocus`; `-1` focuses the panel. |
+
+| Block | Description |
+| --- | --- |
+| default block | The `EuiContextMenuItem`s (and e.g. `EuiHorizontalRule`s), or any content. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
@@ -70,7 +124,7 @@ An action in a menu, usually inside an `EuiContextMenuPanel` in an
 | `@href` | `string` |  | Renders the item as a link. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@isLoading` | `boolean` |  | Shows a spinner instead of the icon. |
-| `@icon` (required) |  |  | Icon before the text; anything `EuiIcon`'s `@type` accepts. Pass `'empty'` to align items without an icon with the others. |
+| `@icon` |  |  | Icon before the text; anything `EuiIcon`'s `@type` accepts. Pass `'empty'` to align items without an icon with the others. |
 | `@iconClasses` | `string` |  | Extra classes for the icon. |
 | `@hasPanel` | `boolean` |  | Shows an arrow on the right, for items opening another panel. |
 

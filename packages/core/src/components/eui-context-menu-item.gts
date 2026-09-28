@@ -40,7 +40,7 @@ export interface EuiContextMenuItemSignature {
      * Icon before the text; anything `EuiIcon`'s `@type` accepts. Pass
      * `'empty'` to align items without an icon with the others.
      */
-    icon: EuiIconSignature['Args']['type'];
+    icon?: EuiIconSignature['Args']['type'];
     /** Extra classes for the icon. */
     iconClasses?: string;
     /** Shows an arrow on the right, for items opening another panel. */
@@ -110,7 +110,7 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
           {{#if @isLoading}}
             {{! spinner is not part of eui spec }}
             <EuiLoadingSpinner class="euiContextMenu__icon" />
-          {{else}}
+          {{else if @icon}}
             <EuiIcon
               @iconClasses={{concat "euiContextMenu__icon " @iconClasses}}
               @type={{@icon}}

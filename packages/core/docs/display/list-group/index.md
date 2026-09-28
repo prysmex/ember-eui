@@ -23,6 +23,11 @@ action on the right.
 An item with `@href` renders a link, with `@onClick` a button, otherwise
 plain text. `@isActive` highlights the current one.
 
+`EuiPinnableListGroup` adds a pin button to each item, for navigations
+where users keep favorite pages at the top. It takes the items as an
+array (`@listItems`) with a `pinned` flag you keep up to date from
+`@onPinClick`.
+
 </EuiText>
 
 <EuiHorizontalRule />
@@ -75,6 +80,14 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | default block | Custom content instead of `@label`. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<li>` / `<a>` / `<button>` / `<span>`.
+
+### EuiPinnableListGroup
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@item` (required) | `EuiPinnableListGroupItem` |  |  |
+| `@title` (required) | `string` |  |  |
+| `@onPinClick` (required) | `(item: EuiPinnableListGroupItem) => void` |  |  |
 
 </EuiText>
 <!-- api:end -->

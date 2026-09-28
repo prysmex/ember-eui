@@ -1,8 +1,10 @@
 import EuiAccordion from './components/eui-accordion.gts';
+import EuiAspectRatio from './components/eui-aspect-ratio.gts';
 import EuiAutoSizer from './components/eui-auto-sizer.gts';
 import EuiAvatar from './components/eui-avatar.gts';
 import EuiBadge from './components/eui-badge.gts';
 import EuiBadgeGroup from './components/eui-badge-group.gts';
+import EuiBeacon from './components/eui-beacon.gts';
 import EuiBetaBadge from './components/eui-beta-badge.gts';
 import EuiBottomBar from './components/eui-bottom-bar.gts';
 import EuiBreadcrumbs from './components/eui-breadcrumbs.gts';
@@ -25,20 +27,31 @@ import EuiComboBoxPill from './components/eui-combo-box-pill.gts';
 import EuiComment from './components/eui-comment.gts';
 import EuiCommentList from './components/eui-comment-list.gts';
 import EuiConfirmModal from './components/eui-confirm-modal.gts';
+import EuiContextMenu from './components/eui-context-menu.gts';
 import EuiContextMenuItem from './components/eui-context-menu-item.gts';
 import EuiContextMenuPanel from './components/eui-context-menu-panel.gts';
+import EuiControlBar from './components/eui-control-bar.gts';
 import EuiCopy from './components/eui-copy.gts';
+import EuiDatePickerRange from './components/eui-date-picker-range.gts';
+import EuiDelayHide from './components/eui-delay-hide.gts';
+import EuiDelayRender from './components/eui-delay-render.gts';
 import EuiDescribedFormGroup from './components/eui-described-form-group.gts';
 import EuiDescriptionList from './components/eui-description-list.gts';
 import EuiDescriptionListDescription from './components/eui-description-list-description.gts';
 import EuiDescriptionListTitle from './components/eui-description-list-title.gts';
 import EuiDualRange from './components/eui-dual-range.gts';
 import EuiEmptyPrompt from './components/eui-empty-prompt.gts';
+import EuiExpression from './components/eui-expression.gts';
+import EuiFacetButton from './components/eui-facet-button.gts';
+import EuiFacetGroup from './components/eui-facet-group.gts';
 import EuiFieldNumber from './components/eui-field-number.gts';
 import EuiFieldPassword from './components/eui-field-password.gts';
 import EuiFieldSearch from './components/eui-field-search.gts';
 import EuiFieldText from './components/eui-field-text.gts';
 import EuiFilePicker from './components/eui-file-picker.gts';
+import EuiFilterButton from './components/eui-filter-button.gts';
+import EuiFilterGroup from './components/eui-filter-group.gts';
+import EuiFilterSelectItem from './components/eui-filter-select-item.gts';
 import EuiFlexGrid from './components/eui-flex-grid.gts';
 import EuiFlexGroup from './components/eui-flex-group.gts';
 import EuiFlexItem from './components/eui-flex-item.gts';
@@ -68,8 +81,10 @@ import EuiHeaderSectionItem from './components/eui-header-section-item.gts';
 import EuiHeaderSectionItemButton from './components/eui-header-section-item-button.gts';
 import EuiHealth from './components/eui-health.gts';
 import EuiHideFor from './components/eui-hide-for.gts';
+import EuiHighlight from './components/eui-highlight.gts';
 import EuiHorizontalRule from './components/eui-horizontal-rule.gts';
 import EuiI18n from './components/eui-i18n.gts';
+import EuiI18nNumber from './components/eui-i18n-number.gts';
 import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
 import EuiImage from './components/eui-image.gts';
@@ -79,9 +94,12 @@ import EuiKeyPadMenuItem from './components/eui-key-pad-menu-item.gts';
 import EuiLink from './components/eui-link.gts';
 import EuiListGroup from './components/eui-list-group.gts';
 import EuiListGroupItem from './components/eui-list-group-item.gts';
+import EuiLoadingChart from './components/eui-loading-chart.gts';
 import EuiLoadingContent from './components/eui-loading-content.gts';
+import EuiLoadingElastic from './components/eui-loading-elastic.gts';
 import EuiLoadingLogo from './components/eui-loading-logo.gts';
 import EuiLoadingSpinner from './components/eui-loading-spinner.gts';
+import EuiMark from './components/eui-mark.gts';
 import EuiMarkdownEditor from './components/eui-markdown-editor.gts';
 import EuiMarkdownFormat from './components/eui-markdown-format.gts';
 import EuiModal from './components/eui-modal.gts';
@@ -109,6 +127,7 @@ import EuiPageTemplate from './components/eui-page-template.gts';
 import EuiPagination from './components/eui-pagination.gts';
 import EuiPaginationButton from './components/eui-pagination-button.gts';
 import EuiPanel from './components/eui-panel.gts';
+import EuiPinnableListGroup from './components/eui-pinnable-list-group.gts';
 import EuiPopover from './components/eui-popover.gts';
 import EuiPopoverFooter from './components/eui-popover-footer.gts';
 import EuiPopoverTitle from './components/eui-popover-title.gts';
@@ -127,10 +146,12 @@ import EuiRangeTicks from './components/eui-range-ticks.gts';
 import EuiRangeTooltip from './components/eui-range-tooltip.gts';
 import EuiRangeTrack from './components/eui-range-track.gts';
 import EuiRangeWrapper from './components/eui-range-wrapper.gts';
+import EuiScreenReaderOnly from './components/eui-screen-reader-only.gts';
 import EuiSelect from './components/eui-select.gts';
 import EuiSelectableListItem from './components/eui-selectable-list-item.gts';
 import EuiShowFor from './components/eui-show-for.gts';
 import EuiSideNav from './components/eui-side-nav.gts';
+import EuiSkipLink from './components/eui-skip-link.gts';
 import EuiSpacer from './components/eui-spacer.gts';
 import EuiSplitPanelInner from './components/eui-split-panel/inner.gts';
 import EuiSplitPanelOuter from './components/eui-split-panel/outer.gts';
@@ -150,19 +171,24 @@ import EuiText from './components/eui-text.gts';
 import EuiTextAlign from './components/eui-text-align.gts';
 import EuiTextArea from './components/eui-text-area.gts';
 import EuiTextColor from './components/eui-text-color.gts';
+import EuiTextDiff from './components/eui-text-diff.gts';
 import EuiTitle from './components/eui-title.gts';
 import EuiToast from './components/eui-toast.gts';
+import EuiToken from './components/eui-token.gts';
 import EuiToolTip from './components/eui-tool-tip.gts';
 import EuiToolTipPopover from './components/eui-tool-tip-popover.gts';
+import EuiTreeView from './components/eui-tree-view.gts';
 import EuiWrappingPopover from './components/eui-wrapping-popover.gts';
 import TextBlock from './components/text-block.gts';
 
 export {
   EuiAccordion,
+  EuiAspectRatio,
   EuiAutoSizer,
   EuiAvatar,
   EuiBadge,
   EuiBadgeGroup,
+  EuiBeacon,
   EuiBetaBadge,
   EuiBottomBar,
   EuiBreadcrumbs,
@@ -185,20 +211,31 @@ export {
   EuiComment,
   EuiCommentList,
   EuiConfirmModal,
+  EuiContextMenu,
   EuiContextMenuItem,
   EuiContextMenuPanel,
+  EuiControlBar,
   EuiCopy,
+  EuiDatePickerRange,
+  EuiDelayHide,
+  EuiDelayRender,
   EuiDescribedFormGroup,
   EuiDescriptionList,
   EuiDescriptionListDescription,
   EuiDescriptionListTitle,
   EuiDualRange,
   EuiEmptyPrompt,
+  EuiExpression,
+  EuiFacetButton,
+  EuiFacetGroup,
   EuiFieldNumber,
   EuiFieldPassword,
   EuiFieldSearch,
   EuiFieldText,
   EuiFilePicker,
+  EuiFilterButton,
+  EuiFilterGroup,
+  EuiFilterSelectItem,
   EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
@@ -228,8 +265,10 @@ export {
   EuiHeaderSectionItemButton,
   EuiHealth,
   EuiHideFor,
+  EuiHighlight,
   EuiHorizontalRule,
   EuiI18n,
+  EuiI18nNumber,
   EuiIcon,
   EuiIconTip,
   EuiImage,
@@ -239,9 +278,12 @@ export {
   EuiLink,
   EuiListGroup,
   EuiListGroupItem,
+  EuiLoadingChart,
   EuiLoadingContent,
+  EuiLoadingElastic,
   EuiLoadingLogo,
   EuiLoadingSpinner,
+  EuiMark,
   EuiMarkdownEditor,
   EuiMarkdownFormat,
   EuiModal,
@@ -269,6 +311,7 @@ export {
   EuiPagination,
   EuiPaginationButton,
   EuiPanel,
+  EuiPinnableListGroup,
   EuiPopover,
   EuiPopoverFooter,
   EuiPopoverTitle,
@@ -287,10 +330,12 @@ export {
   EuiRangeTooltip,
   EuiRangeTrack,
   EuiRangeWrapper,
+  EuiScreenReaderOnly,
   EuiSelect,
   EuiSelectableListItem,
   EuiShowFor,
   EuiSideNav,
+  EuiSkipLink,
   EuiSpacer,
   EuiSplitPanelInner,
   EuiSplitPanelOuter,
@@ -310,10 +355,13 @@ export {
   EuiTextAlign,
   EuiTextArea,
   EuiTextColor,
+  EuiTextDiff,
   EuiTitle,
   EuiToast,
+  EuiToken,
   EuiToolTip,
   EuiToolTipPopover,
+  EuiTreeView,
   EuiWrappingPopover,
   TextBlock
 };

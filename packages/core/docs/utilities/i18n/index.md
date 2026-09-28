@@ -36,6 +36,15 @@ A translation can contain `{placeholders}` that components fill in. To
 translate your own strings the same way, use `EuiI18n` (or
 `this.euiI18n.lookupToken(token, defaultText, values)` in JavaScript).
 
+`EuiI18nNumber` formats numbers for the reader (`1234567` as "1,234,567")
+with the service's `formatNumber`, which uses English by default. Replace
+it to follow your app's locale:
+
+```js
+this.euiI18n.formatNumber = (value) =>
+  new Intl.NumberFormat('de-DE').format(value);
+```
+
 </EuiText>
 
 <EuiHorizontalRule />
@@ -67,6 +76,21 @@ Deprecated: `@tokens` (Has no effect, use one `EuiI18n` per token.); `@defaults`
 | Block | Description |
 | --- | --- |
 | default block | Yields a component rendering the text: `as \|Text\|` → `<Text />`. |
+
+### EuiI18nNumber
+
+Formats a number for the reader, e.g. `1234567` as "1,234,567", with
+the `euiI18n` service's `formatNumber` (English by default; set it to
+use your app's locale).
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@value` | `number` |  | The number to format. |
+| `@values` | `number[]` |  | Several numbers to format; yielded as an array. |
+
+| Block | Description |
+| --- | --- |
+| default block | Renders the formatted text yourself: yields it (or an array for `@values`). |
 
 </EuiText>
 <!-- api:end -->

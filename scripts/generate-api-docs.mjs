@@ -69,6 +69,12 @@ function sourceOf(component) {
     const matches = sources.filter((path) => path.endsWith(`/${file}`));
 
     if (matches.length === 1) return matches[0];
+
+    // a public component is directly in a components folder; the others
+    // are private parts of another component (in its own folder)
+    const topLevel = matches.filter((path) => path.endsWith(`/components/${file}`));
+
+    if (topLevel.length === 1) return topLevel[0];
     if (matches.length > 1) throw new Error(`Several ${file}: ${matches}`);
   }
 

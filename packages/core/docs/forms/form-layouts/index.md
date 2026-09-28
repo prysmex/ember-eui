@@ -91,8 +91,8 @@ A form control with its label, help text and errors:
 | `@isDisabled` | `boolean` |  | Disables the label's focus styling. |
 | `@hasEmptyLabelSpace` | `boolean` |  | Adds space above the control as if it had a label, to align it with labelled rows next to it (e.g. a button in an `EuiFlexGroup` of rows). |
 | `@hasChildLabel` | `boolean` | `true` | Link the label to the control. Set `false` when the control has its own label (e.g. a single checkbox). |
-| `@helpText` | `string` |  | Help text under the control (a string, or an array for several lines). |
-| `@error` | `string \| string[] \| null` |  | Error message(s) shown under the control while `@isInvalid`. |
+| `@helpText` | `string` |  | Help text under the control (a string, or an array for several lines). The control's `aria-describedby` points to it, so screen readers read it with the control. |
+| `@error` | `string \| string[] \| null` |  | Error message(s) shown under the control while `@isInvalid`; they are added to the control's `aria-describedby` while shown. |
 | `@errorClasses` | `string` |  | Extra classes for each error message. |
 | `@helpTextClasses` | `string` |  | Extra classes for the help text. |
 | `@id` | `string` | a random id | Id of the control; the label points to it. |

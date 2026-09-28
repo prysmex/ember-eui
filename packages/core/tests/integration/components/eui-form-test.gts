@@ -266,6 +266,103 @@ module('Integration | Component | eui-form', function (hooks) {
       assert.dom('input#second').exists();
     });
 
+    test('the control is described by the help text', async function (assert) {
+      await render(
+        <template><EuiFormRow @id="nick" @label="Nickname" @helpText="Shown to others"><EuiFieldText /></EuiFormRow></template>
+      );
+
+      assert.dom('input').hasAria('describedby', 'nick-help');
+    });
+
+    test('errors are added while invalid, and ids the app set are kept', async function (assert) {
+      class State {
+        @tracked isInvalid = false;
+      }
+      const state = new State();
+      const errors = ['Too short', 'Taken'];
+
+      await render(
+        <template>
+          <span id="mine">Hint</span>
+          <EuiFormRow @id="user" @label="User" @helpText="Help" @isInvalid={{state.isInvalid}} @error={{errors}}>
+            <EuiFieldText aria-describedby="mine" />
+          </EuiFormRow>
+        </template>
+      );
+
+      assert.dom('input').hasAria('describedby', 'mine user-help');
+
+      state.isInvalid = true;
+      await rerender();
+      assert.dom('input').hasAria('describedby', 'mine user-error-0 user-error-1 user-help');
+
+      state.isInvalid = false;
+      await rerender();
+      assert.dom('input').hasAria('describedby', 'mine user-help');
+    });
+
+    test('a replaced control is described too', async function (assert) {
+      class State {
+        @tracked long = false;
+      }
+      const state = new State();
+
+      await render(
+        <template>
+          <EuiFormRow @id="bio" @label="Bio" @helpText="Markdown works">
+            {{#if state.long}}<EuiTextArea />{{else}}<EuiFieldText />{{/if}}
+          </EuiFormRow>
+        </template>
+      );
+
+      assert.dom('input').hasAria('describedby', 'bio-help');
+
+      state.long = true;
+      await rerender();
+      assert.dom('textarea').hasAria('describedby', 'bio-help');
+    });
+
+    test('a fieldset row is described itself', async function (assert) {
+      await render(
+        <template>
+          <EuiFormRow @id="fruit" @label="Fruits" @labelType="legend" @legendType="legend" @helpText="Pick any">
+            <EuiCheckboxGroup @options={{CHECKBOX_OPTIONS}} @idToSelectedMap={{NO_CHECKS}} @onChange={{noop}} />
+          </EuiFormRow>
+        </template>
+      );
+
+      assert.dom('fieldset.euiFormRow').hasAria('describedby', 'fruit-help');
+      assert.dom('input[type="checkbox"][aria-describedby]').doesNotExist();
+    });
+
+    test('a row whose label already points to its field observes nothing', async function (assert) {
+      const Original = window.MutationObserver;
+      const observed: Node[] = [];
+
+      window.MutationObserver = class extends Original {
+        observe(target: Node, options?: MutationObserverInit) {
+          observed.push(target);
+          super.observe(target, options);
+        }
+      };
+
+      try {
+        await render(
+          <template>
+            <EuiFormRow @id="linked" @label="Linked"><EuiFieldText @id="linked" /></EuiFormRow>
+            <EuiFormRow @label="Unlinked" class="unlinked"><EuiFieldText /></EuiFormRow>
+          </template>
+        );
+      } finally {
+        window.MutationObserver = Original;
+      }
+
+      const wrappers = observed.filter((node) => (node as Element).classList?.contains('euiFormRow__fieldWrapper'));
+
+      assert.strictEqual(wrappers.length, 1, 'only the row that had to link its field is observed');
+      assert.true(this.element.querySelector('.unlinked')!.contains(wrappers[0]!));
+    });
+
     test('checkbox groups and checkboxes are not associated with the row label', async function (assert) {
       const changes: string[] = [];
       const onChange = (id: string) => changes.push(id);

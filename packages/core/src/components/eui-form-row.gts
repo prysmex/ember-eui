@@ -6,7 +6,7 @@ import { on } from '@ember/modifier';
 import { and, eq, gt, not, or } from 'ember-truth-helpers';
 import isArray from 'ember-truth-helpers/helpers/is-array';
 
-import associateFormRowLabel from '../-private/associate-form-row-label.ts';
+import linkFormRowControl from '../-private/link-form-row-control.ts';
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -65,9 +65,16 @@ export interface EuiFormRowSignature {
     isFakeLabelBlock?: boolean;
     /** @private Ignore the `<:helpText>` block. */
     isFakeHelpTextBlock?: boolean;
-    /** Help text under the control (a string, or an array for several lines). */
+    /**
+     * Help text under the control (a string, or an array for several lines).
+     * The control's `aria-describedby` points to it, so screen readers read
+     * it with the control.
+     */
     helpText?: string;
-    /** Error message(s) shown under the control while `@isInvalid`. */
+    /**
+     * Error message(s) shown under the control while `@isInvalid`; they are
+     * added to the control's `aria-describedby` while shown.
+     */
     error?: string | string[] | null;
     /** Extra classes for each error message. */
     errorClasses?: string;
@@ -137,7 +144,11 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
         class={{classes}}
         id="{{rowId}}-row"
         ...attributes
-        {{associateFormRowLabel rowId}}
+        {{linkFormRowControl
+          rowId
+          helpText=(or @helpText hasHelpTextBlock)
+          errorCount=(if @isInvalid errors.length 0)
+        }}
       >
         {{#if (or @label @labelAppend hasLabelBlock (has-block "labelAppend"))}}
           <div class="euiFormRow__labelWrapper">
@@ -257,7 +268,11 @@ const EuiFormRow: TemplateOnlyComponent<EuiFormRowSignature> = <template>
         class={{classes}}
         id="{{rowId}}-row"
         ...attributes
-        {{associateFormRowLabel rowId}}
+        {{linkFormRowControl
+          rowId
+          helpText=(or @helpText hasHelpTextBlock)
+          errorCount=(if @isInvalid errors.length 0)
+        }}
       >
         {{#if (or @label @labelAppend hasLabelBlock (has-block "labelAppend"))}}
           <div class="euiFormRow__labelWrapper">

@@ -20,6 +20,23 @@ import type Owner from '@ember/owner';
 import type RouterService from '@ember/routing/router-service';
 import type ThemeManager from 'site/services/theme-manager';
 
+/** Every page of a docfy node, including those of its child nodes. */
+function allPages(node: DocfyNode): Page[] {
+  return [...node.pages, ...node.children.flatMap(allPages)];
+}
+
+/** The side nav item with the given id, at any depth. */
+function findItem(items: Item[], id: NodeId): Item | undefined {
+  for (const item of items) {
+    if (item.id === id) return item;
+
+    const found = findItem(item.items, id);
+    if (found) return found;
+  }
+
+  return undefined;
+}
+
 export default class ApplicationController extends Controller {
   @service declare router: RouterService;
   @service declare docfy: DocfyService;
@@ -99,7 +116,7 @@ export default class ApplicationController extends Controller {
         // add fake items based on page headings to simulate 'on this page' feature inside sidebar:
         // the page's own sections and its demos (the children of "Examples"),
         // but not the API reference tables
-        node.pages.forEach((page: Page) => {
+        allPages(node).forEach((page: Page) => {
           const headings = (page?.headings ?? []).flatMap(
             (heading: Heading) => {
               if (heading.id === 'api-reference') return [];
@@ -107,9 +124,8 @@ export default class ApplicationController extends Controller {
               return [heading];
             },
           );
-          const item = nodeRoutes?.[0]?.items?.find(
-            (item: Item) => item.name == page.title,
-          );
+          // pages can be nested (forms > form controls > checkbox)
+          const item = findItem(nodeRoutes, page.url);
 
           if (item) {
             // set disabled to page item
@@ -117,7 +133,7 @@ export default class ApplicationController extends Controller {
             // create fake items
             headings?.forEach((heading: Heading) => {
               item?.items.push({
-                id: `fake-${heading.id}`,
+                id: `fake-${page.url}#${heading.id}`,
                 items: [],
                 name: heading.title,
                 onClick: () => {
@@ -207,16 +223,18 @@ export default class ApplicationController extends Controller {
         toAdd.items.push(...this.filterSideNav(str, [item], depth + 1));
       });
 
-      const currName = curr.name[0]?.toLowerCase();
+      const nameMatches = curr.name
+        .toLowerCase()
+        .includes(str.trim().toLowerCase());
 
-      if (
-        (currName && currName.indexOf(str?.toLowerCase()) > -1) ||
-        toAdd.items.length > 0
-      ) {
+      if (nameMatches || toAdd.items.length > 0) {
         toAdd = {
           ...toAdd,
           ...curr,
-          items: toAdd.items,
+          // a matching page keeps all of its demos and sections
+          items:
+            nameMatches && toAdd.items.length === 0 ? curr.items : toAdd.items,
+          forceOpen: true,
         };
       }
 

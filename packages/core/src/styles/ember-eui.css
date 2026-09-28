@@ -25,3 +25,18 @@
 .euiBadge__iconButton svg {
   pointer-events: none;
 }
+
+/*
+  EuiScreenReaderOnly wraps its content, so with @showOnFocus the focused
+  element is inside it: show the wrapper while it contains focus.
+*/
+.euiScreenReaderOnly--showOnFocus:focus-within:not(:focus, :active) {
+  position: static;
+  left: auto;
+  width: auto;
+  height: auto;
+  clip: auto;
+  clip-path: none;
+  overflow: visible;
+  margin: 0;
+}

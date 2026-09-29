@@ -1,11 +1,18 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { registerDestructor } from '@ember/destroyable';
 import { hash } from '@ember/helper';
 
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+
+import { randomId } from '../-private/random-id.ts';
+import { isDraggableData } from '../-private/drag-drop.ts';
 import EuiDroppable from './eui-droppable.gts';
 
+import type { DraggableData } from '../-private/drag-drop.ts';
 import type { DraggableLocation } from '../utils/drag-drop.ts';
 import type { EuiDroppableSignature } from './eui-droppable';
+import type Owner from '@ember/owner';
 import type { ComponentLike } from '@glint/template';
 
 export type { DraggableLocation };
@@ -42,6 +49,9 @@ export interface DragState extends DragStart {
  * between lists. It yields `{ Droppable }`; each droppable yields its
  * `Draggable`. You own the lists: update them in `@onDragEnd`, e.g. with
  * `euiDragDropReorder` from `@ember-eui/core/utils/drag-drop`.
+ *
+ * Dragging with the pointer is handled by Atlassian's pragmatic drag and
+ * drop; the keyboard (Space, arrows, Escape) by these components.
  */
 export interface EuiDragDropContextSignature {
   Args: {
@@ -70,6 +80,38 @@ export default class EuiDragDropContext extends Component<EuiDragDropContextSign
   @tracked drag: DragState | null = null;
 
   session = 0;
+
+  /** Scopes the drags to this context (several can share a page). */
+  contextId = `euiDragDropContext_${randomId()}`;
+
+  constructor(owner: Owner, args: EuiDragDropContextSignature['Args']) {
+    super(owner, args);
+
+    const stopMonitoring = monitorForElements({
+      canMonitor: ({ source }) => isDraggableData(source.data, this.contextId),
+      onDragStart: ({ source }) => {
+        const data = source.data as DraggableData;
+
+        this.start({
+          draggableId: data.draggableId,
+          type: data.type,
+          source: { droppableId: data.droppableId, index: data.index },
+          size: data.size,
+          isKeyboard: false,
+          isClone: data.isClone
+        });
+      },
+      onDrop: ({ location }) => {
+        const onList = location.current.dropTargets.some(
+          (target) => target.data['euiDragDropContext'] === this.contextId
+        );
+
+        this.end(onList && this.drag?.destination ? 'DROP' : 'CANCEL');
+      }
+    });
+
+    registerDestructor(this, stopMonitoring);
+  }
 
   start(drag: Omit<DragState, 'destination' | 'session'>): void {
     this.drag = {

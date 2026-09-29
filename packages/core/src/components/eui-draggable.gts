@@ -1,14 +1,14 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { next } from '@ember/runloop';
 
+import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { modifier } from 'ember-modifier';
 
 import cssStyle from '../-private/css-style.ts';
 
+import type { DraggableData } from '../-private/drag-drop.ts';
 import type EuiDroppable from './eui-droppable.gts';
 
 const SPACING = {
@@ -59,9 +59,9 @@ export interface EuiDraggableSignature {
 }
 
 export default class EuiDraggable extends Component<EuiDraggableSignature> {
-  @tracked handleActive = false;
-
   element?: HTMLElement;
+  handle?: HTMLElement;
+  disconnect?: () => void;
 
   get droppable(): EuiDroppable {
     return this.args.droppable;
@@ -101,10 +101,6 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
     ]
       .filter(Boolean)
       .join(' ');
-  }
-
-  get isDraggable(): boolean {
-    return !this.args.isDragDisabled && (!this.args.customDragHandle || this.handleActive);
   }
 
   /** How far the item slides to make room for the dragged one, in px. */
@@ -176,29 +172,6 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
   }
 
   @action
-  onDragStart(event: DragEvent): void {
-    if (!this.isDraggable) {
-      event.preventDefault();
-
-      return;
-    }
-
-    event.dataTransfer?.setData('text/plain', this.args.draggableId);
-    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
-
-    // after the browser took its snapshot of the item for the drag image
-    next(() => this.start(false));
-  }
-
-  @action
-  onDragEnd(): void {
-    this.handleActive = false;
-
-    // dropped outside a list (a drop in one ends the drag first)
-    if (this.drag && this.isDragging) this.droppable.context.end('CANCEL');
-  }
-
-  @action
   onKeyDown(event: KeyboardEvent): void {
     if (this.args.isDragDisabled) return;
 
@@ -234,21 +207,55 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
     }
   }
 
-  register = modifier((element: HTMLElement) => {
+  /** Registers the item with pragmatic drag and drop (again when its handle appears). */
+  connect(): void {
+    this.disconnect?.();
+    this.disconnect = undefined;
+
+    const element = this.element;
+
+    if (!element || this.args.isDragDisabled) return;
+    // with a custom handle, wait for it
+    if (this.args.customDragHandle && !this.handle) return;
+
+    const context = this.droppable.context;
+
+    this.disconnect = draggable({
+      element,
+      dragHandle: this.args.customDragHandle ? this.handle : undefined,
+      // the keyboard drag in progress keeps the pointer out
+      canDrag: () => !this.args.isDragDisabled && !context.drag,
+      getInitialData: (): DraggableData => ({
+        euiDragDropContext: context.contextId,
+        draggableId: this.args.draggableId,
+        droppableId: this.droppable.args.droppableId,
+        index: this.args.index,
+        type: this.droppable.type,
+        size: this.size(),
+        isClone: this.isClone
+      })
+    });
+  }
+
+  register = modifier((element: HTMLElement, [isDragDisabled]: [boolean | undefined]) => {
     this.element = element;
-  });
-
-  /** For `@customDragHandle`: only a press on the handle makes the item draggable. */
-  dragHandle = modifier((handle: HTMLElement) => {
-    const activate = () => (this.handleActive = true);
-
-    handle.setAttribute('data-drag-handle', '');
-    handle.addEventListener('mousedown', activate);
-    handle.addEventListener('touchstart', activate);
+    void isDragDisabled;
+    this.connect();
 
     return () => {
-      handle.removeEventListener('mousedown', activate);
-      handle.removeEventListener('touchstart', activate);
+      this.disconnect?.();
+      this.disconnect = undefined;
+    };
+  });
+
+  /** For `@customDragHandle`: the element that starts a drag. */
+  dragHandle = modifier((handle: HTMLElement) => {
+    this.handle = handle;
+    handle.setAttribute('data-drag-handle', '');
+    this.connect();
+
+    return () => {
+      if (this.handle === handle) this.handle = undefined;
     };
   });
 
@@ -257,15 +264,12 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
       class={{this.classes}}
       data-test-subj="draggable"
       data-draggable-id={{@draggableId}}
-      draggable={{this.isDraggable}}
       tabindex={{unless @isDragDisabled "0"}}
       role="button"
       aria-roledescription="Draggable item"
       aria-pressed={{if this.isDragging "true" "false"}}
       style={{this.style}}
-      {{this.register}}
-      {{on "dragstart" this.onDragStart}}
-      {{on "dragend" this.onDragEnd}}
+      {{this.register @isDragDisabled}}
       {{on "keydown" this.onKeyDown}}
       ...attributes
     >

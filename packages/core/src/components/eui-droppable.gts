@@ -1,10 +1,10 @@
 import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
-import { on } from '@ember/modifier';
-import { action } from '@ember/object';
 
+import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { modifier } from 'ember-modifier';
 
+import { isDraggableData } from '../-private/drag-drop.ts';
 import EuiDraggable from './eui-draggable.gts';
 
 import type EuiDragDropContext from './eui-drag-drop-context.gts';
@@ -113,13 +113,6 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
       .join(' ');
   }
 
-  /** Whether the drag in progress may be dropped here. */
-  get accepts(): boolean {
-    const drag = this.context.drag;
-
-    return Boolean(drag && drag.type === this.type && !this.isDropDisabled);
-  }
-
   /** The list's items in order. */
   items(): HTMLElement[] {
     if (!this.element) return [];
@@ -160,36 +153,37 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
     return others.filter((slot) => (slot.start + slot.end) / 2 < position).length;
   }
 
-  @action
-  onDragOver(event: DragEvent): void {
-    if (!this.accepts || this.context.drag?.isKeyboard) return;
-
-    event.preventDefault();
-
-    const position = this.isHorizontal ? event.clientX : event.clientY;
-
-    this.context.setDestination({ droppableId: this.args.droppableId, index: this.indexAt(position) });
-  }
-
-  @action
-  onDragLeave(event: DragEvent): void {
-    const next = event.relatedTarget as Node | null;
-
-    if (!this.accepts || (next && this.element?.contains(next))) return;
-
-    if (this.isDraggingOver) this.context.setDestination(null);
-  }
-
-  @action
-  onDrop(event: DragEvent): void {
-    if (!this.accepts) return;
-
-    event.preventDefault();
-    this.context.end('DROP');
-  }
-
+  /** The list as a pragmatic drag and drop target. */
   register = modifier((element: HTMLElement) => {
     this.element = element;
+
+    const context = this.context;
+
+    return dropTargetForElements({
+      element,
+      getData: () => ({
+        euiDragDropContext: context.contextId,
+        droppableId: this.args.droppableId
+      }),
+      canDrop: ({ source }) =>
+        isDraggableData(source.data, context.contextId) &&
+        source.data.type === this.type &&
+        !this.isDropDisabled,
+      onDrag: ({ location, self }) => {
+        // only the innermost list under the pointer takes the item
+        if (location.current.dropTargets[0]?.element !== self.element) return;
+
+        const { clientX, clientY } = location.current.input;
+
+        context.setDestination({
+          droppableId: this.args.droppableId,
+          index: this.indexAt(this.isHorizontal ? clientX : clientY)
+        });
+      },
+      onDragLeave: () => {
+        if (this.isDraggingOver) context.setDestination(null);
+      }
+    });
   });
 
   <template>
@@ -198,9 +192,6 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
       data-test-subj="droppable"
       data-droppable-id={{@droppableId}}
       {{this.register}}
-      {{on "dragover" this.onDragOver}}
-      {{on "dragleave" this.onDragLeave}}
-      {{on "drop" this.onDrop}}
       ...attributes
     >
       {{yield (hash Draggable=(component EuiDraggable droppable=this))}}

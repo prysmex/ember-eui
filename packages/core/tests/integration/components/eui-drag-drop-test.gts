@@ -47,7 +47,8 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
 
     assert.dom('.euiDroppable').hasClass('euiDroppable--m').hasClass('euiDroppable--withPanel').hasClass('euiDroppable--noGrow');
     assert.dom('.euiDraggable').exists({ count: 3 });
-    assert.dom('.euiDraggable').hasClass('euiDraggable--s').hasAttribute('draggable', 'true').hasAttribute('tabindex', '0');
+    assert.dom('.euiDraggable').hasClass('euiDraggable--s').hasAttribute('tabindex', '0');
+    assert.dom('.euiDraggable').hasAttribute('draggable', 'true', 'registered with pragmatic drag and drop');
     assert.dom('.euiDraggable .euiDraggable__item').exists({ count: 3 });
   });
 
@@ -114,10 +115,56 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
     assert.strictEqual(state.results.at(-1)!.reason, 'CANCEL');
     assert.strictEqual(state.results.at(-1)!.destination, null);
 
-    assert.dom('[data-id="b"]').hasAttribute('draggable', 'false').doesNotHaveAttribute('tabindex');
+    assert.dom('[data-id="b"]').doesNotHaveAttribute('draggable').doesNotHaveAttribute('tabindex');
     assert.dom('[data-id="b"] .euiDraggable__item').hasClass('euiDraggable__item--isDisabled');
     await triggerKeyEvent('[data-id="b"]', 'keydown', ' ');
     assert.dom('.euiDraggable--isDragging').doesNotExist();
+  });
+
+  test('dragging with the pointer reorders the list', async function (assert) {
+    const state = new State();
+
+    await render(
+      <template>
+        <EuiDragDropContext @onDragEnd={{state.onDragEnd}} as |dnd|>
+          <dnd.Droppable @droppableId="list" as |list|>
+            {{#each state.items key="id" as |item index|}}
+              <list.Draggable @draggableId={{item.id}} @index={{index}} data-id={{item.id}}>
+                <div style="height: 40px;">{{item.label}}</div>
+              </list.Draggable>
+            {{/each}}
+          </dnd.Droppable>
+        </EuiDragDropContext>
+      </template>
+    );
+
+    const dataTransfer = new DataTransfer();
+    const frame = () => new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
+    const fire = (element: Element, type: string, clientY = 0) =>
+      element.dispatchEvent(
+        new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer, clientX: 10, clientY })
+      );
+    const itemA = this.element.querySelector('[data-id="a"]')!;
+    const itemC = this.element.querySelector('[data-id="c"]')!;
+    const below = itemC.getBoundingClientRect().bottom - 2;
+
+    fire(itemA, 'dragstart', itemA.getBoundingClientRect().top + 5);
+    await frame();
+    await frame();
+    assert.dom('[data-id="a"]').hasClass('euiDraggable--isDragging');
+
+    fire(itemC, 'dragenter', below);
+    fire(itemC, 'dragover', below);
+    await frame();
+    await frame();
+    assert.dom('.euiDroppable').hasClass('euiDroppable--isDraggingOver');
+
+    fire(itemC, 'drop', below);
+    await frame();
+
+    assert.strictEqual(state.results.at(-1)?.reason, 'DROP');
+    assert.deepEqual(state.results.at(-1)?.destination, { droppableId: 'list', index: 2 });
+    assert.deepEqual(state.items.map((item) => item.id), ['b', 'c', 'a']);
   });
 
   test('list helpers', function (assert) {

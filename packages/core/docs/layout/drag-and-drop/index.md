@@ -39,9 +39,13 @@ You own the lists: `@onDragEnd` gets `{ draggableId, source, destination }`
 outside a list), and `euiDragDropReorder`, `euiDragDropMove` and
 `euiDragDropCopy` compute the new lists.
 
-Items can be dragged with the mouse or the keyboard: focus an item, press
+Items can be dragged with the mouse (through Atlassian's
+[pragmatic drag and drop](https://atlassian.design/components/pragmatic-drag-and-drop),
+a dependency of `@ember-eui/core`) or the keyboard: focus an item, press
 Space to lift it, the arrow keys to move it, Space to drop it and Escape
-to cancel. Items only move between lists of the same `@type`;
+to cancel. Each context only reacts to its own items, so other pragmatic
+drag and drop code on the page (e.g. your own `draggable()` modifiers)
+does not interfere. Items only move between lists of the same `@type`;
 `@isDropDisabled` and `@isDragDisabled` lock lists and items, and
 `@cloneDraggables` makes a list of templates that are copied, not moved.
 
@@ -65,6 +69,9 @@ Wraps lists whose items can be dragged to reorder them or to move them
 between lists. It yields `{ Droppable }`; each droppable yields its
 `Draggable`. You own the lists: update them in `@onDragEnd`, e.g. with
 `euiDragDropReorder` from `@ember-eui/core/utils/drag-drop`.
+
+Dragging with the pointer is handled by Atlassian's pragmatic drag and
+drop; the keyboard (Space, arrows, Escape) by these components.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |

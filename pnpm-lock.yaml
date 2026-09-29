@@ -470,6 +470,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@atlaskit/pragmatic-drag-and-drop':
+        specifier: ^1.7.6
+        version: 1.8.1
       '@babel/core':
         specifier: ^7.26.7
         version: 7.29.7(supports-color@10.2.2)
@@ -1864,6 +1867,9 @@ packages:
   '@asamuzakjp/css-color@3.1.1':
     resolution: {integrity: sha512-hpRD68SV2OMcZCsrbdkccTw5FXjNDLo5OuqSHyHZfwweGsDWZwDJ2+gONyNAbazZclobMirACLw0lk8WVxIqxA==}
 
+  '@atlaskit/pragmatic-drag-and-drop@1.8.1':
+    resolution: {integrity: sha512-uXWNPpL8n4OmTVbduH7nq8pk8htqGo/prR5cYEE8sVCPJGAUMWn6lzvWTfI+4VCeQvHiDRODVz4YzH06OVAxhw==}
+
   '@babel/code-frame@7.26.2':
     resolution: {integrity: sha512-RJlIHRueQgwWitWgF8OdFYGZX328Ax5BCemNGlqHfplnRT9ESi8JkFlvaVYbS+UubVY6dpv87Fs2u5M29iNFVQ==}
     engines: {node: '>=6.9.0'}
@@ -3169,7 +3175,7 @@ packages:
     resolution: {directory: packages/changeset-form, type: directory}
     engines: {node: '>= 18'}
     peerDependencies:
-      '@ember-eui/core': ^13.0.5
+      '@ember-eui/core': ^14.0.0
       '@ember/string': ^4.0.0
       ember-source: '>= 4.12.0'
 
@@ -3190,7 +3196,7 @@ packages:
     resolution: {directory: packages/flatpickr, type: directory}
     engines: {node: '>= 18'}
     peerDependencies:
-      '@ember-eui/core': ^13.0.5
+      '@ember-eui/core': ^14.0.0
       '@glimmer/component': ^2.0.0
       ember-source: '>= 4.12.0'
       flatpickr: ^4.6.13
@@ -3199,7 +3205,7 @@ packages:
     resolution: {directory: packages/pikaday, type: directory}
     engines: {node: '>= 18'}
     peerDependencies:
-      '@ember-eui/core': ^13.0.5
+      '@ember-eui/core': ^14.0.0
       '@glimmer/component': ^2.0.0
       ember-source: '>= 4.12.0'
 
@@ -3207,7 +3213,7 @@ packages:
     resolution: {directory: packages/validated-form, type: directory}
     engines: {node: '>= 18'}
     peerDependencies:
-      '@ember-eui/core': ^13.0.5
+      '@ember-eui/core': ^14.0.0
       '@glimmer/component': ^2.0.0
       ember-source: '>= 4.12.0'
 
@@ -5542,6 +5548,9 @@ packages:
 
   bind-decorator@1.0.11:
     resolution: {integrity: sha512-yzkH0uog6Vv/vQ9+rhSKxecnqGUZHYncg7qS7voz3Q76+TAi1SGiOKk2mlOvusQnFz9Dc4BC/NMkeXu11YgjJg==}
+
+  bind-event-listener@3.0.0:
+    resolution: {integrity: sha512-PJvH288AWQhKs2v9zyfYdPzlPqf5bXbGMmhmUIY9x4dAUGIWgomO771oBQNwJnMQSnUIXhKu6sgzpBRXTlvb8Q==}
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -10097,6 +10106,9 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  raf-schd@4.0.3:
+    resolution: {integrity: sha512-tQkJl2GRWh83ui2DiPTJz9wEiMN20syf+5oKfB03yYP7ioZcJwsIK8FjrtLwH1m7C7e+Tt2yYBlrOpdT+dyeIQ==}
+
   randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
 
@@ -12106,6 +12118,12 @@ snapshots:
       '@csstools/css-parser-algorithms': 3.0.4(@csstools/css-tokenizer@3.0.3)
       '@csstools/css-tokenizer': 3.0.3
       lru-cache: 10.4.3
+
+  '@atlaskit/pragmatic-drag-and-drop@1.8.1':
+    dependencies:
+      '@babel/runtime': 7.29.7
+      bind-event-listener: 3.0.0
+      raf-schd: 4.0.3
 
   '@babel/code-frame@7.26.2':
     dependencies:
@@ -14301,6 +14319,7 @@ snapshots:
 
   '@ember-eui/core@file:packages/core(ffadf514592ee253d82a7bac1b047695)':
     dependencies:
+      '@atlaskit/pragmatic-drag-and-drop': 1.8.1
       '@babel/core': 7.29.7(supports-color@10.2.2)
       '@babel/runtime': 7.29.7
       '@elastic/datemath': 5.0.3(moment@2.30.1)
@@ -17396,6 +17415,8 @@ snapshots:
   binaryextensions@2.3.0: {}
 
   bind-decorator@1.0.11: {}
+
+  bind-event-listener@3.0.0: {}
 
   bl@4.1.0:
     dependencies:
@@ -23826,6 +23847,8 @@ snapshots:
       commander: 7.2.0
       node-watch: 0.7.3
       tiny-glob: 0.2.9
+
+  raf-schd@4.0.3: {}
 
   randombytes@2.1.0:
     dependencies:

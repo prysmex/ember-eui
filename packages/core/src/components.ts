@@ -22,6 +22,11 @@ import EuiCode from './components/eui-code';
 import EuiCodeBlock from './components/eui-code-block';
 import EuiCollapsibleNav from './components/eui-collapsible-nav';
 import EuiCollapsibleNavGroup from './components/eui-collapsible-nav-group';
+import EuiColorPaletteDisplay from './components/eui-color-palette-display';
+import EuiColorPalettePicker from './components/eui-color-palette-picker';
+import EuiColorPicker from './components/eui-color-picker';
+import EuiColorPickerSwatch from './components/eui-color-picker-swatch';
+import EuiColorStops from './components/eui-color-stops';
 import EuiComboBox from './components/eui-combo-box';
 import EuiComboBoxPill from './components/eui-combo-box-pill';
 import EuiComment from './components/eui-comment';
@@ -83,6 +88,7 @@ import EuiHealth from './components/eui-health';
 import EuiHideFor from './components/eui-hide-for';
 import EuiHighlight from './components/eui-highlight';
 import EuiHorizontalRule from './components/eui-horizontal-rule';
+import EuiHue from './components/eui-hue';
 import EuiI18n from './components/eui-i18n';
 import EuiI18nNumber from './components/eui-i18n-number';
 import EuiIcon from './components/eui-icon';
@@ -146,6 +152,7 @@ import EuiRangeTicks from './components/eui-range-ticks';
 import EuiRangeTooltip from './components/eui-range-tooltip';
 import EuiRangeTrack from './components/eui-range-track';
 import EuiRangeWrapper from './components/eui-range-wrapper';
+import EuiSaturation from './components/eui-saturation';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only';
 import EuiSelect from './components/eui-select';
 import EuiSelectable from './components/eui-selectable';
@@ -216,6 +223,11 @@ export {
   EuiCodeBlock,
   EuiCollapsibleNav,
   EuiCollapsibleNavGroup,
+  EuiColorPaletteDisplay,
+  EuiColorPalettePicker,
+  EuiColorPicker,
+  EuiColorPickerSwatch,
+  EuiColorStops,
   EuiComboBox,
   EuiComboBoxPill,
   EuiComment,
@@ -277,6 +289,7 @@ export {
   EuiHideFor,
   EuiHighlight,
   EuiHorizontalRule,
+  EuiHue,
   EuiI18n,
   EuiI18nNumber,
   EuiIcon,
@@ -340,6 +353,7 @@ export {
   EuiRangeTooltip,
   EuiRangeTrack,
   EuiRangeWrapper,
+  EuiSaturation,
   EuiScreenReaderOnly,
   EuiSelect,
   EuiSelectable,

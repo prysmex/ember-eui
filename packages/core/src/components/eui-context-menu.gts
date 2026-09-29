@@ -97,6 +97,12 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
   @tracked height?: number;
   @tracked focusedItemIndex?: number;
   @tracked isUsingKeyboardToNavigate = false;
+  /**
+   * Whether the user moved to another panel. The first panel does not take
+   * the focus (in a popover, the popover focuses its first item once it is
+   * positioned); panels reached afterwards do.
+   */
+  @tracked hasNavigated = false;
 
   constructor(owner: Owner, args: EuiContextMenuSignature['Args']) {
     super(owner, args);
@@ -149,6 +155,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
   hasPreviousPanel = (panelId: PanelId): boolean => this.previousPanelIds.has(panelId);
 
   showPanel(panelId: PanelId, direction: Direction): void {
+    this.hasNavigated = true;
     this.outgoingPanelId = this.incomingPanelId;
     this.incomingPanelId = panelId;
     this.transitionDirection = direction;
@@ -266,7 +273,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
             this.isOutgoingPanelVisible
             this.transitionDirection
           }}
-          @hasFocus={{true}}
+          @hasFocus={{this.hasNavigated}}
           @initialFocusedItemIndex={{this.initialFocusedItemIndex panel}}
           @onHeightChange={{this.onIncomingHeightChange}}
           @showNextPanel={{this.showNextPanel}}

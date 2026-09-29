@@ -79,8 +79,6 @@ export default class EuiSuperSelect extends Component<EuiSuperSelectSignature> {
   labelledById = `euiSuperSelect_${randomId()}_screenreaderLabelId`;
   describedById = `euiSuperSelect_${randomId()}_screenreaderDescribeId`;
 
-  // the option to focus once the list renders
-  indexToFocus?: number;
   itemNodes: HTMLElement[] = [];
 
   get isOpen(): boolean {
@@ -111,12 +109,20 @@ export default class EuiSuperSelect extends Component<EuiSuperSelectSignature> {
     return index === -1 ? undefined : this.optionId(index);
   }
 
+  /**
+   * What the popover focuses once it is positioned: the selected option,
+   * or the first enabled one.
+   */
+  initialFocus = (): HTMLElement | null => {
+    const selected = this.args.options.findIndex(this.isSelected);
+    const index =
+      selected !== -1 ? selected : this.args.options.findIndex((option) => !option.disabled);
+
+    return index === -1 ? null : document.getElementById(this.optionId(index));
+  };
+
   @action
   openPopover(): void {
-    const selected = this.args.options.findIndex(this.isSelected);
-
-    this.indexToFocus =
-      selected !== -1 ? selected : this.args.options.findIndex((option) => !option.disabled);
     this.isPopoverOpen = true;
     this.args.onFocus?.();
   }
@@ -178,11 +184,6 @@ export default class EuiSuperSelect extends Component<EuiSuperSelectSignature> {
 
   registerItem = modifier((element: HTMLElement, [index]: [number]) => {
     this.itemNodes[index] = element;
-
-    if (this.indexToFocus === index) {
-      this.indexToFocus = undefined;
-      element.focus();
-    }
   });
 
   <template>
@@ -193,6 +194,7 @@ export default class EuiSuperSelect extends Component<EuiSuperSelectSignature> {
       @panelPaddingSize="none"
       @fullWidth={{@fullWidth}}
       @disableFocusTrap={{true}}
+      @initialFocus={{this.initialFocus}}
     >
       <:input>
         <EuiSuperSelectControl

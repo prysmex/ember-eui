@@ -82,4 +82,29 @@ module('Integration | Component | eui-super-select', function (hooks) {
     assert.dom('.euiSuperSelect__item em.item', document.body).exists({ count: 3 });
     assert.dom('.euiSuperSelect__item', document.body).hasClass('euiSuperSelect__item--hasDividers');
   });
+
+  test('the popover focuses the selected option once it is positioned', async function (assert) {
+    const panelTops: string[] = [];
+    const original = HTMLElement.prototype.focus;
+
+    HTMLElement.prototype.focus = function (this: HTMLElement, options?: FocusOptions) {
+      if (this.classList.contains('euiSuperSelect__item')) {
+        panelTops.push(document.querySelector<HTMLElement>('.euiPopover__panel')?.style.top ?? '');
+      }
+      original.call(this, options);
+    };
+
+    try {
+      await render(<template><EuiSuperSelect @options={{OPTIONS}} @valueOfSelected="minor" /></template>);
+      await click('button.euiSuperSelectControl');
+      await waitUntil(() => document.activeElement?.classList.contains('euiSuperSelect__item'));
+    } finally {
+      HTMLElement.prototype.focus = original;
+    }
+
+    // focusing a panel that is not placed yet made the page jump to it
+    assert.strictEqual(panelTops.length, 1);
+    assert.notStrictEqual(panelTops[0], '', 'the panel had its position when the option got focus');
+    assert.dom(option('minor')).isFocused();
+  });
 });

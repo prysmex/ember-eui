@@ -111,8 +111,11 @@ export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSi
   }
 
   moveFocus(amount: number): void {
-    const count = this.menuItems.length;
-    const current = this.focusedItemIndex;
+    const items = this.menuItems;
+    const count = items.length;
+    // start from the focused item (e.g. focused by the popover on open)
+    const focused = items.indexOf(document.activeElement as HTMLElement);
+    const current = focused !== -1 ? focused : this.focusedItemIndex;
 
     // starting to use the keyboard: the first or the last item
     const next =

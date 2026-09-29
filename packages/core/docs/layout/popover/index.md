@@ -68,7 +68,7 @@ control `@isOpen` and close it in `@closePopover`.
 | `@container` | `HTMLElement` |  | Restrict the popover's position within this element |
 | `@display` |  | `'inlineBlock'` | CSS display of the anchor: `'inlineBlock'` or `'block'`. |
 | `@hasArrow` | `boolean` | `true` | Show arrow indicating to originating button. |
-| `@initialFocus` | `FocusTarget \| false` |  | Specifies what element should initially have focus; Can be a DOM node, or a selector string (which will be passed to document.querySelector() to find the DOM node), or a function that returns a DOM node |
+| `@initialFocus` | `FocusTarget \| false` |  | The element to focus when the popover opens: a DOM node, a selector (for `document.querySelector()`) or a function returning a node. It is focused once the panel is positioned and visible (so the page does not scroll to a panel still being placed), also without `@ownFocus`. `false` focuses nothing. |
 | `@insert` |  |  | Passed directly to EuiPortal for DOM positioning. Both properties are required if prop is specified |
 | `@isOpen` | `boolean` | `false` | Whether the popover is open. Toggle it from the `<:button>` block's button. |
 | `@ownFocus` | `boolean` | `true` | Traps tab focus within the popover contents. |

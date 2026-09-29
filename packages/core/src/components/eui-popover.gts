@@ -110,10 +110,11 @@ export type EuiPopoverArgs = {
    */
   hasArrow?: boolean;
   /**
-   * Specifies what element should initially have focus; Can be a DOM
-   * node, or a selector string (which will be passed to
-   * document.querySelector() to find the DOM node), or a function that
-   * returns a DOM node
+   * The element to focus when the popover opens: a DOM node, a selector
+   * (for `document.querySelector()`) or a function returning a node. It is
+   * focused once the panel is positioned and visible (so the page does not
+   * scroll to a panel still being placed), also without `@ownFocus`.
+   * `false` focuses nothing.
    */
   initialFocus?: FocusTarget | false;
   /**
@@ -273,7 +274,7 @@ export function getPopoverAlignFromAnchorPosition(
 
 export const ANCHOR_POSITIONS = Object.keys(anchorPositionMapping);
 export const DISPLAY = Object.keys(displayMapping);
-export type FocusTarget = HTMLElement | string | (() => HTMLElement);
+export type FocusTarget = HTMLElement | string | (() => HTMLElement | null);
 
 const DEFAULT_POPOVER_STYLES = {
   top: 50,
@@ -431,7 +432,15 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   updateFocus(): void {
     // Wait for the DOM to update.
     this.updateFocusAnimationFrame = window.requestAnimationFrame(() => {
-      if (!this.ownFocus || !this.panel || this.args.initialFocus === false) {
+      // without @ownFocus, only an explicit @initialFocus moves the focus
+      const hasInitialFocus =
+        this.args.initialFocus !== undefined && this.args.initialFocus !== null;
+
+      if (
+        !(this.ownFocus || hasInitialFocus) ||
+        !this.panel ||
+        this.args.initialFocus === false
+      ) {
         return;
       }
 
@@ -828,6 +837,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
                 {{didInsert this.registerPanel}}
                 {{outsideClickDetector onOutsideClick=this.onClickOutside}}
                 {{onKey "Escape" this.onEscapeKey}}
+                {{! the trap only traps: updateFocus sets the initial focus,
+                    once the panel is positioned and visible }}
                 {{focusTrap
                   isActive=(not
                     (or
@@ -839,7 +850,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
                   focusTrapOptions=(merge
                     (hash
                       returnFocusOnDeactivate=this.isOpenStable
-                      initialFocus=(or @initialFocus this.panel)
+                      initialFocus=false
                       onDeactivate=(optional @onTrapDeactivation)
                       preventScroll=true
                       clickOutsideDeactivates=true

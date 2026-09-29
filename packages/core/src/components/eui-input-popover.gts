@@ -148,6 +148,7 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
         class="euiInputPopover
           {{if this.fullWidth 'euiInputPopover--fullWidth'}}"
         @ownFocus={{false}}
+        @initialFocus={{@initialFocus}}
         @buttonRef={{this.didInsertInput}}
         @panelRef={{this.didInsertPanel}}
         @anchorPosition={{this.anchorPosition}}

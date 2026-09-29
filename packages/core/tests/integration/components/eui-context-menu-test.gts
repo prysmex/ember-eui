@@ -192,4 +192,41 @@ module('Integration | Component | eui-context-menu', function (hooks) {
       assert.dom('.custom').hasText('Content of Settings');
     });
   });
+
+  test('the first panel leaves the focus to its popover', async function (assert) {
+    const panels = [
+      { id: 0, title: 'Options', items: [{ name: 'Share', panel: 1 }] },
+      { id: 1, title: 'Share', items: [{ name: 'Copy link' }] },
+    ];
+
+    await render(<template><EuiContextMenu @panels={{panels}} @initialPanelId={{0}} /></template>);
+
+    assert.false(
+      this.element.querySelector('.euiContextMenu')!.contains(document.activeElement),
+      'nothing in the menu is focused on render'
+    );
+
+    await click('.euiContextMenuItem');
+    assert.dom('.euiContextMenuPanelTitle').hasText('Share');
+    assert.true(
+      this.element.querySelector('.euiContextMenu')!.contains(document.activeElement),
+      'a panel reached by navigating takes the focus'
+    );
+  });
+
+  test('arrow keys start from the item that has the focus', async function (assert) {
+    await render(
+      <template>
+        <EuiContextMenuPanel>
+          <EuiContextMenuItem class="one">One</EuiContextMenuItem>
+          <EuiContextMenuItem class="two">Two</EuiContextMenuItem>
+        </EuiContextMenuPanel>
+      </template>
+    );
+
+    // e.g. a popover focused the first item when it opened
+    (this.element.querySelector('.one') as HTMLElement).focus();
+    await triggerKeyEvent('.one', 'keydown', 'ArrowDown');
+    assert.dom('.two').isFocused();
+  });
 });

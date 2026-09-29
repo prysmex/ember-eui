@@ -4,6 +4,11 @@ import { registerDestructor } from '@ember/destroyable';
 import { hash } from '@ember/helper';
 
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import {
+  autoScrollForElements,
+  autoScrollWindowForElements
+} from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
+import { modifier } from 'ember-modifier';
 
 import { randomId } from '../-private/random-id.ts';
 import { isDraggableData } from '../-private/drag-drop.ts';
@@ -61,6 +66,8 @@ export interface EuiDragDropContextSignature {
     onDragStart?: (start: DragStart) => void;
     /** Called when the destination changes during a drag. */
     onDragUpdate?: (update: DropResult) => void;
+    /** Scrolls the window while dragging near its edges. Defaults to `true`. */
+    autoScrollWindow?: boolean;
   };
   Blocks: {
     default: [
@@ -71,6 +78,11 @@ export interface EuiDragDropContextSignature {
           Args: Omit<EuiDroppableSignature['Args'], 'context'>;
           Blocks: EuiDroppableSignature['Blocks'];
         }>;
+        /**
+         * Scrolls another container while its items are dragged near its
+         * edges, e.g. a board holding several lists: `{{dnd.autoScroll}}`.
+         */
+        autoScroll: EuiDragDropContext['autoScroll'];
       }
     ];
   };
@@ -110,8 +122,25 @@ export default class EuiDragDropContext extends Component<EuiDragDropContextSign
       }
     });
 
-    registerDestructor(this, stopMonitoring);
+    const stopWindowScroll = autoScrollWindowForElements({
+      canScroll: ({ source }) =>
+        this.args.autoScrollWindow !== false &&
+        isDraggableData(source.data, this.contextId)
+    });
+
+    registerDestructor(this, () => {
+      stopMonitoring();
+      stopWindowScroll();
+    });
   }
+
+  /** Scrolls the element while this context's items are dragged near its edges. */
+  autoScroll = modifier((element: HTMLElement) =>
+    autoScrollForElements({
+      element,
+      canScroll: ({ source }) => isDraggableData(source.data, this.contextId)
+    })
+  );
 
   start(drag: Omit<DragState, 'destination' | 'session'>): void {
     this.drag = {
@@ -119,7 +148,11 @@ export default class EuiDragDropContext extends Component<EuiDragDropContextSign
       destination: drag.isKeyboard ? drag.source : null,
       session: ++this.session
     };
-    this.args.onDragStart?.({ draggableId: drag.draggableId, type: drag.type, source: drag.source });
+    this.args.onDragStart?.({
+      draggableId: drag.draggableId,
+      type: drag.type,
+      source: drag.source
+    });
   }
 
   setDestination(destination: DraggableLocation | null): void {
@@ -157,6 +190,11 @@ export default class EuiDragDropContext extends Component<EuiDragDropContextSign
   }
 
   <template>
-    {{yield (hash Droppable=(component EuiDroppable context=this))}}
+    {{yield
+      (hash
+        Droppable=(component EuiDroppable context=this)
+        autoScroll=this.autoScroll
+      )
+    }}
   </template>
 }

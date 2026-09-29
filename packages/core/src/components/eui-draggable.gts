@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import { schedule } from '@ember/runloop';
 
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { modifier } from 'ember-modifier';
@@ -124,8 +125,18 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
     const isDestination = destination.droppableId === listId;
 
     if (isSource && isDestination) {
-      if (destination.index > source.index && index > source.index && index <= destination.index) return -size;
-      if (destination.index < source.index && index >= destination.index && index < source.index) return size;
+      if (
+        destination.index > source.index &&
+        index > source.index &&
+        index <= destination.index
+      )
+        return -size;
+      if (
+        destination.index < source.index &&
+        index >= destination.index &&
+        index < source.index
+      )
+        return size;
 
       return 0;
     }
@@ -147,7 +158,10 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
           ? `translateX(${offset}px)`
           : `translateY(${offset}px)`
         : undefined,
-      transition: this.drag && !(this.isDragging && !this.drag.isKeyboard) ? 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)' : undefined,
+      transition:
+        this.drag && !(this.isDragging && !this.drag.isKeyboard)
+          ? 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)'
+          : undefined,
       opacity: hidden ? 0 : undefined
     });
   }
@@ -164,7 +178,10 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
     this.droppable.context.start({
       draggableId: this.args.draggableId,
       type: this.droppable.type,
-      source: { droppableId: this.droppable.args.droppableId, index: this.args.index },
+      source: {
+        droppableId: this.droppable.args.droppableId,
+        index: this.args.index
+      },
       size: this.size(),
       isKeyboard,
       isClone: this.isClone
@@ -204,7 +221,54 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
         droppableId: drag.destination.droppableId,
         index: Math.min(Math.max(index, 0), last)
       });
+
+      // keep the moved item in view (pragmatic only auto-scrolls pointer drags)
+      schedule('afterRender', () => this.scrollIntoView());
     }
+  }
+
+  /**
+   * Scrolls the closest scrollable container so the item shows where it
+   * moved to (`scrollIntoView` ignores the transform that moves it).
+   */
+  scrollIntoView(): void {
+    const element = this.element;
+    let container = element?.parentElement;
+
+    while (container && container !== document.body) {
+      const { overflowX, overflowY } = getComputedStyle(container);
+      const scrolls =
+        (/(auto|scroll)/.test(overflowY) &&
+          container.scrollHeight > container.clientHeight) ||
+        (/(auto|scroll)/.test(overflowX) &&
+          container.scrollWidth > container.clientWidth);
+
+      if (scrolls) break;
+      container = container.parentElement;
+    }
+
+    if (!element || !container || container === document.body) return;
+
+    // where the item is going: its place without the (animating)
+    // transform, moved by its target offset
+    const rect = element.getBoundingClientRect();
+    const current = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    const horizontal = this.droppable.isHorizontal;
+    const dx = (horizontal ? this.offset : 0) - current.m41;
+    const dy = (horizontal ? 0 : this.offset) - current.m42;
+    const item = {
+      top: rect.top + dy,
+      bottom: rect.bottom + dy,
+      left: rect.left + dx,
+      right: rect.right + dx
+    };
+    const box = container.getBoundingClientRect();
+
+    if (item.bottom > box.bottom)
+      container.scrollTop += item.bottom - box.bottom;
+    else if (item.top < box.top) container.scrollTop -= box.top - item.top;
+    if (item.right > box.right) container.scrollLeft += item.right - box.right;
+    else if (item.left < box.left) container.scrollLeft -= box.left - item.left;
   }
 
   /** Registers the item with pragmatic drag and drop (again when its handle appears). */
@@ -237,16 +301,18 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
     });
   }
 
-  register = modifier((element: HTMLElement, [isDragDisabled]: [boolean | undefined]) => {
-    this.element = element;
-    void isDragDisabled;
-    this.connect();
+  register = modifier(
+    (element: HTMLElement, [isDragDisabled]: [boolean | undefined]) => {
+      this.element = element;
+      void isDragDisabled;
+      this.connect();
 
-    return () => {
-      this.disconnect?.();
-      this.disconnect = undefined;
-    };
-  });
+      return () => {
+        this.disconnect?.();
+        this.disconnect = undefined;
+      };
+    }
+  );
 
   /** For `@customDragHandle`: the element that starts a drag. */
   dragHandle = modifier((handle: HTMLElement) => {

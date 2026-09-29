@@ -1,7 +1,9 @@
 import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
 
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
 import { modifier } from 'ember-modifier';
 
 import { isDraggableData } from '../-private/drag-drop.ts';
@@ -48,6 +50,11 @@ export interface EuiDroppableSignature {
     withPanel?: boolean;
     /** Grows to fill its flex container. */
     grow?: boolean;
+    /**
+     * Scrolls the list while an item is dragged near its edges (when the
+     * list itself scrolls, e.g. with a max height). Defaults to `true`.
+     */
+    autoScroll?: boolean;
     /** @private The context, set by `EuiDragDropContext`. */
     context: EuiDragDropContext;
   };
@@ -94,7 +101,9 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
   }
 
   get isDraggingOver(): boolean {
-    return this.context.drag?.destination?.droppableId === this.args.droppableId;
+    return (
+      this.context.drag?.destination?.droppableId === this.args.droppableId
+    );
   }
 
   get classes(): string {
@@ -118,7 +127,8 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
     if (!this.element) return [];
 
     return Array.from(this.element.children).filter(
-      (el): el is HTMLElement => el instanceof HTMLElement && el.classList.contains('euiDraggable')
+      (el): el is HTMLElement =>
+        el instanceof HTMLElement && el.classList.contains('euiDraggable')
     );
   }
 
@@ -133,8 +143,16 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
 
       // positions without the sliding transforms
       return this.isHorizontal
-        ? { start: rect.left - offset.m41, end: rect.right - offset.m41, draggableId: item.dataset['draggableId'] ?? '' }
-        : { start: rect.top - offset.m42, end: rect.bottom - offset.m42, draggableId: item.dataset['draggableId'] ?? '' };
+        ? {
+            start: rect.left - offset.m41,
+            end: rect.right - offset.m41,
+            draggableId: item.dataset['draggableId'] ?? ''
+          }
+        : {
+            start: rect.top - offset.m42,
+            end: rect.bottom - offset.m42,
+            draggableId: item.dataset['draggableId'] ?? ''
+          };
     });
   }
 
@@ -148,9 +166,12 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
     }
 
     const slots = this.slots;
-    const others = slots.filter((slot) => slot.draggableId !== drag?.draggableId);
+    const others = slots.filter(
+      (slot) => slot.draggableId !== drag?.draggableId
+    );
 
-    return others.filter((slot) => (slot.start + slot.end) / 2 < position).length;
+    return others.filter((slot) => (slot.start + slot.end) / 2 < position)
+      .length;
   }
 
   /** The list as a pragmatic drag and drop target. */
@@ -159,31 +180,39 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
 
     const context = this.context;
 
-    return dropTargetForElements({
-      element,
-      getData: () => ({
-        euiDragDropContext: context.contextId,
-        droppableId: this.args.droppableId
+    return combine(
+      autoScrollForElements({
+        element,
+        canScroll: ({ source }) =>
+          this.args.autoScroll !== false &&
+          isDraggableData(source.data, context.contextId)
       }),
-      canDrop: ({ source }) =>
-        isDraggableData(source.data, context.contextId) &&
-        source.data.type === this.type &&
-        !this.isDropDisabled,
-      onDrag: ({ location, self }) => {
-        // only the innermost list under the pointer takes the item
-        if (location.current.dropTargets[0]?.element !== self.element) return;
+      dropTargetForElements({
+        element,
+        getData: () => ({
+          euiDragDropContext: context.contextId,
+          droppableId: this.args.droppableId
+        }),
+        canDrop: ({ source }) =>
+          isDraggableData(source.data, context.contextId) &&
+          source.data.type === this.type &&
+          !this.isDropDisabled,
+        onDrag: ({ location, self }) => {
+          // only the innermost list under the pointer takes the item
+          if (location.current.dropTargets[0]?.element !== self.element) return;
 
-        const { clientX, clientY } = location.current.input;
+          const { clientX, clientY } = location.current.input;
 
-        context.setDestination({
-          droppableId: this.args.droppableId,
-          index: this.indexAt(this.isHorizontal ? clientX : clientY)
-        });
-      },
-      onDragLeave: () => {
-        if (this.isDraggingOver) context.setDestination(null);
-      }
-    });
+          context.setDestination({
+            droppableId: this.args.droppableId,
+            index: this.indexAt(this.isHorizontal ? clientX : clientY)
+          });
+        },
+        onDragLeave: () => {
+          if (this.isDraggingOver) context.setDestination(null);
+        }
+      })
+    );
   });
 
   <template>

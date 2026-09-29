@@ -49,6 +49,13 @@ does not interfere. Items only move between lists of the same `@type`;
 `@isDropDisabled` and `@isDragDisabled` lock lists and items, and
 `@cloneDraggables` makes a list of templates that are copied, not moved.
 
+Dragging near an edge scrolls: the window (turn it off with
+`@autoScrollWindow={{false}}` on the context), a list that scrolls itself
+(`@autoScroll={{false}}` on the droppable turns it off), and any other
+container you give the yielded modifier, e.g. a board of lists:
+`<div class="board" &#123;&#123;dnd.autoScroll}}>`. Moving an item with the
+keyboard keeps it in view.
+
 </EuiText>
 
 <EuiHorizontalRule />
@@ -78,6 +85,7 @@ drop; the keyboard (Space, arrows, Escape) by these components.
 | `@onDragEnd` (required) | `(result: DropResult) => void` |  | Called with the result when an item is dropped (or the drag cancelled). |
 | `@onDragStart` | `(start: DragStart) => void` |  | Called when a drag starts. |
 | `@onDragUpdate` | `(update: DropResult) => void` |  | Called when the destination changes during a drag. |
+| `@autoScrollWindow` | `boolean` | `true` | Scrolls the window while dragging near its edges. |
 
 ### EuiDroppable
 
@@ -95,6 +103,7 @@ items.
 | `@spacing` | `'none' \| 's' \| 'm' \| 'l'` | `'none'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@withPanel` | `boolean` |  | Panel look (background, padding, rounded corners). |
 | `@grow` | `boolean` |  | Grows to fill its flex container. |
+| `@autoScroll` | `boolean` | `true` | Scrolls the list while an item is dragged near its edges (when the list itself scrolls, e.g. with a max height). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

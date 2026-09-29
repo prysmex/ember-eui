@@ -44,6 +44,9 @@ import EuiDescribedFormGroup from './components/eui-described-form-group';
 import EuiDescriptionList from './components/eui-description-list';
 import EuiDescriptionListDescription from './components/eui-description-list-description';
 import EuiDescriptionListTitle from './components/eui-description-list-title';
+import EuiDragDropContext from './components/eui-drag-drop-context';
+import EuiDraggable from './components/eui-draggable';
+import EuiDroppable from './components/eui-droppable';
 import EuiDualRange from './components/eui-dual-range';
 import EuiEmptyPrompt from './components/eui-empty-prompt';
 import EuiExpression from './components/eui-expression';
@@ -152,6 +155,7 @@ import EuiRangeTicks from './components/eui-range-ticks';
 import EuiRangeTooltip from './components/eui-range-tooltip';
 import EuiRangeTrack from './components/eui-range-track';
 import EuiRangeWrapper from './components/eui-range-wrapper';
+import EuiResizableContainer from './components/eui-resizable-container';
 import EuiSaturation from './components/eui-saturation';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only';
 import EuiSelect from './components/eui-select';
@@ -194,6 +198,9 @@ import EuiToast from './components/eui-toast';
 import EuiToken from './components/eui-token';
 import EuiToolTip from './components/eui-tool-tip';
 import EuiToolTipPopover from './components/eui-tool-tip-popover';
+import EuiTour from './components/eui-tour';
+import EuiTourStep from './components/eui-tour-step';
+import EuiTourStepIndicator from './components/eui-tour-step-indicator';
 import EuiTreeView from './components/eui-tree-view';
 import EuiWrappingPopover from './components/eui-wrapping-popover';
 import TextBlock from './components/text-block';
@@ -245,6 +252,9 @@ export {
   EuiDescriptionList,
   EuiDescriptionListDescription,
   EuiDescriptionListTitle,
+  EuiDragDropContext,
+  EuiDraggable,
+  EuiDroppable,
   EuiDualRange,
   EuiEmptyPrompt,
   EuiExpression,
@@ -353,6 +363,7 @@ export {
   EuiRangeTooltip,
   EuiRangeTrack,
   EuiRangeWrapper,
+  EuiResizableContainer,
   EuiSaturation,
   EuiScreenReaderOnly,
   EuiSelect,
@@ -395,6 +406,9 @@ export {
   EuiToken,
   EuiToolTip,
   EuiToolTipPopover,
+  EuiTour,
+  EuiTourStep,
+  EuiTourStepIndicator,
   EuiTreeView,
   EuiWrappingPopover,
   TextBlock

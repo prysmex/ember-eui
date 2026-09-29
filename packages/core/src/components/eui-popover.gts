@@ -8,6 +8,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, scheduleOnce } from '@ember/runloop';
 import { htmlSafe } from '@ember/template';
+import { buildWaiter } from '@ember/test-waiters';
 import type Owner from '@ember/owner';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -274,6 +275,9 @@ export function getPopoverAlignFromAnchorPosition(
 
 export const ANCHOR_POSITIONS = Object.keys(anchorPositionMapping);
 export const DISPLAY = Object.keys(displayMapping);
+// tests settle once an opening popover has set its focus
+const focusWaiter = buildWaiter('@ember-eui/core:eui-popover-focus');
+
 export type FocusTarget = HTMLElement | string | (() => HTMLElement | null);
 
 const DEFAULT_POPOVER_STYLES = {
@@ -354,6 +358,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   private closingTransitionTimeout: ReturnType<typeof later> | null = null;
   private closingTransitionAnimationFrame: number | undefined;
   private updateFocusAnimationFrame: number | undefined;
+  private updateFocusToken: unknown;
   private hasSetInitialFocus: boolean = false;
   @tracked _button: HTMLElement | null = null;
   @tracked panel: HTMLElement | null = null;
@@ -429,9 +434,26 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     }
   }
 
+  private cancelUpdateFocus(): void {
+    cancelAnimationFrame(this.updateFocusAnimationFrame as number);
+
+    if (this.updateFocusToken) {
+      focusWaiter.endAsync(this.updateFocusToken);
+      this.updateFocusToken = undefined;
+    }
+  }
+
   updateFocus(): void {
+    this.cancelUpdateFocus();
+
+    const token = focusWaiter.beginAsync();
+
+    this.updateFocusToken = token;
     // Wait for the DOM to update.
     this.updateFocusAnimationFrame = window.requestAnimationFrame(() => {
+      focusWaiter.endAsync(token);
+      this.updateFocusToken = undefined;
+
       // without @ownFocus, only an explicit @initialFocus moves the focus
       const hasInitialFocus =
         this.args.initialFocus !== undefined && this.args.initialFocus !== null;
@@ -625,7 +647,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     cancel(this.respositionTimeout as ReturnType<typeof later>);
     cancel(this.closingTransitionTimeout as ReturnType<typeof later>);
     cancelAnimationFrame(this.closingTransitionAnimationFrame as number);
-    cancelAnimationFrame(this.updateFocusAnimationFrame as number);
+    this.cancelUpdateFocus();
   }
 
   @action

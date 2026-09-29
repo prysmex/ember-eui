@@ -2,6 +2,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, rerender, triggerKeyEvent } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
+import { htmlSafe } from '@ember/template';
 
 import EuiDragDropContext from '#src/components/eui-drag-drop-context.gts';
 import {
@@ -141,6 +142,47 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
       ['b', 'c', 'a']
     );
     assert.dom('.euiDraggable--isDragging').doesNotExist();
+  });
+
+  // the test container is scaled, so this also checks CSS px vs screen px
+  test('the keyboard moves an item past items of other heights', async function (assert) {
+    const state = new State();
+    const heights: Record<string, string> = { a: 'height: 20px', b: 'height: 60px', c: 'height: 30px' };
+    const heightOf = (id: string) => htmlSafe(heights[id] ?? '');
+
+    await render(
+      <template>
+        <EuiDragDropContext @onDragEnd={{state.onDragEnd}} as |dnd|>
+          <dnd.Droppable @droppableId="list" as |list|>
+            {{#each state.items key="id" as |item index|}}
+              <list.Draggable
+                @draggableId={{item.id}}
+                @index={{index}}
+                data-id={{item.id}}
+              >
+                <div style={{heightOf item.id}}>{{item.label}}</div>
+              </list.Draggable>
+            {{/each}}
+          </dnd.Droppable>
+        </EuiDragDropContext>
+      </template>
+    );
+
+    const transformOf = (id: string) =>
+      this.element.querySelector<HTMLElement>(`[data-id="${id}"]`)!.style.transform;
+
+    await triggerKeyEvent('[data-id="a"]', 'keydown', ' ');
+    await triggerKeyEvent('[data-id="a"]', 'keydown', 'ArrowDown');
+    assert.strictEqual(transformOf('a'), 'translateY(60px)', 'past the tall item');
+    assert.strictEqual(transformOf('b'), 'translateY(-20px)', 'which slides up by the moved item');
+
+    await triggerKeyEvent('[data-id="a"]', 'keydown', 'ArrowDown');
+    assert.strictEqual(transformOf('a'), 'translateY(90px)', 'then past the last one');
+
+    await triggerKeyEvent('[data-id="a"]', 'keydown', 'Escape');
+    await triggerKeyEvent('[data-id="c"]', 'keydown', ' ');
+    await triggerKeyEvent('[data-id="c"]', 'keydown', 'ArrowUp');
+    assert.strictEqual(transformOf('c'), 'translateY(-60px)', 'and up the same way');
   });
 
   test('Escape cancels; disabled items cannot be lifted', async function (assert) {

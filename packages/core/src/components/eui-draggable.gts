@@ -115,10 +115,23 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
     const index = this.args.index;
 
     if (this.isDragging) {
-      // with the keyboard the item itself moves (assuming items of its size)
-      return drag.isKeyboard && source.droppableId === listId
-        ? (destination.index - source.index) * size
-        : 0;
+      // with the keyboard the item itself moves, past the items between
+      if (!drag.isKeyboard || source.droppableId !== listId) return 0;
+
+      const items = this.droppable.items();
+      const from = items[source.index];
+      const to = items[destination.index];
+
+      if (!from || !to) return 0;
+
+      // layout positions, which transforms and scaling leave alone
+      const [start, length] = this.droppable.isHorizontal
+        ? (['offsetLeft', 'offsetWidth'] as const)
+        : (['offsetTop', 'offsetHeight'] as const);
+
+      return destination.index > source.index
+        ? to[start] + to[length] - (from[start] + from[length])
+        : to[start] - from[start];
     }
 
     const isSource = source.droppableId === listId;
@@ -169,9 +182,8 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
   size(): number {
     if (!this.element) return 0;
 
-    const rect = this.element.getBoundingClientRect();
-
-    return this.droppable.isHorizontal ? rect.width : rect.height;
+    // CSS px (not scaled like getBoundingClientRect), as the transforms use
+    return this.droppable.isHorizontal ? this.element.offsetWidth : this.element.offsetHeight;
   }
 
   start(isKeyboard: boolean): void {

@@ -148,7 +148,12 @@ import EuiRangeTrack from './components/eui-range-track';
 import EuiRangeWrapper from './components/eui-range-wrapper';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only';
 import EuiSelect from './components/eui-select';
+import EuiSelectable from './components/eui-selectable';
+import EuiSelectableList from './components/eui-selectable-list';
 import EuiSelectableListItem from './components/eui-selectable-list-item';
+import EuiSelectableMessage from './components/eui-selectable-message';
+import EuiSelectableSearch from './components/eui-selectable-search';
+import EuiSelectableTemplateSitewide from './components/eui-selectable-template-sitewide';
 import EuiShowFor from './components/eui-show-for';
 import EuiSideNav from './components/eui-side-nav';
 import EuiSkipLink from './components/eui-skip-link';
@@ -162,7 +167,12 @@ import EuiStepNumber from './components/eui-step-number';
 import EuiSteps from './components/eui-steps';
 import EuiStepsHorizontal from './components/eui-steps-horizontal';
 import EuiSubSteps from './components/eui-sub-steps';
+import EuiSuggest from './components/eui-suggest';
+import EuiSuggestInput from './components/eui-suggest-input';
+import EuiSuggestItem from './components/eui-suggest-item';
 import EuiSuperDatePicker from './components/eui-super-date-picker';
+import EuiSuperSelect from './components/eui-super-select';
+import EuiSuperSelectControl from './components/eui-super-select-control';
 import EuiSwitch from './components/eui-switch';
 import EuiTab from './components/eui-tab';
 import EuiTabbedContent from './components/eui-tabbed-content';
@@ -332,7 +342,12 @@ export {
   EuiRangeWrapper,
   EuiScreenReaderOnly,
   EuiSelect,
+  EuiSelectable,
+  EuiSelectableList,
   EuiSelectableListItem,
+  EuiSelectableMessage,
+  EuiSelectableSearch,
+  EuiSelectableTemplateSitewide,
   EuiShowFor,
   EuiSideNav,
   EuiSkipLink,
@@ -346,7 +361,12 @@ export {
   EuiSteps,
   EuiStepsHorizontal,
   EuiSubSteps,
+  EuiSuggest,
+  EuiSuggestInput,
+  EuiSuggestItem,
   EuiSuperDatePicker,
+  EuiSuperSelect,
+  EuiSuperSelectControl,
   EuiSwitch,
   EuiTab,
   EuiTabbedContent,

@@ -3,10 +3,10 @@ import { assert, warn } from '@ember/debug';
 import { hexToRgb } from '../../helpers/hex-to-rgb.ts';
 import { isColorDark } from '../../helpers/is-color-dark.ts';
 import { isValidHex } from '../../helpers/is-valid-hex.ts';
-import { euiPaletteColorBlindBehindText } from '../../utils/color/eui_palettes.ts';
+import { VIS_COLORS_BEHIND_TEXT } from '../../-private/vis-colors.ts';
 
 export const baseClass = 'euiAvatar';
-export const VIS_COLORS = euiPaletteColorBlindBehindText();
+export const VIS_COLORS = VIS_COLORS_BEHIND_TEXT;
 
 export const sizeMapping = {
   s: `${baseClass}--s`,

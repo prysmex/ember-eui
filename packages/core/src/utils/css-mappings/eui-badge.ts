@@ -1,9 +1,9 @@
 import { keysOf } from '../../components/common.ts';
 import { hexToRgb } from '../../helpers/hex-to-rgb.ts';
 import { isColorDark } from '../../helpers/is-color-dark.ts';
-import { euiPaletteColorBlindBehindText } from '../color/index.ts';
+import { VIS_COLORS_BEHIND_TEXT } from '../../-private/vis-colors.ts';
 
-export const VIS_COLORS = euiPaletteColorBlindBehindText();
+export const VIS_COLORS = VIS_COLORS_BEHIND_TEXT;
 
 export const colorToHexMap = {
   default: '#d3dae6',

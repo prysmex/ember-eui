@@ -92,6 +92,11 @@
     "EuiToolTip",
     "EuiIconTip"
   ],
+  "packages/core/docs/display/tour/index.md": [
+    "EuiTour",
+    "EuiTourStep",
+    "EuiTourStepIndicator"
+  ],
   "packages/core/docs/display/tree-view/index.md": [
     "EuiTreeView"
   ],
@@ -220,6 +225,11 @@
   "packages/core/docs/layout/control-bar/index.md": [
     "EuiControlBar"
   ],
+  "packages/core/docs/layout/drag-and-drop/index.md": [
+    "EuiDragDropContext",
+    "EuiDroppable",
+    "EuiDraggable"
+  ],
   "packages/core/docs/layout/flex/index.md": [
     "EuiFlexGroup",
     "EuiFlexItem",
@@ -267,6 +277,11 @@
     "EuiPopoverFooter",
     "EuiInputPopover",
     "EuiWrappingPopover"
+  ],
+  "packages/core/docs/layout/resizable-container/index.md": [
+    "EuiResizableContainer",
+    "EuiResizablePanel",
+    "EuiResizableButton"
   ],
   "packages/core/docs/layout/spacer/index.md": [
     "EuiSpacer"

@@ -51,7 +51,9 @@ function kebab(name) {
 /** Components whose file name doesn't follow from their name. */
 const ALIASES = {
   EuiSplitPanelOuter: 'eui-split-panel/outer',
-  EuiSplitPanelInner: 'eui-split-panel/inner'
+  EuiSplitPanelInner: 'eui-split-panel/inner',
+  EuiResizablePanel: 'eui-resizable-container/panel',
+  EuiResizableButton: 'eui-resizable-container/button'
 };
 
 /** `EuiButton` → packages/core/src/components/eui-button.gts */

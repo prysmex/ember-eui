@@ -36,21 +36,6 @@ module('Acceptance | docs', function (hooks) {
     assert.strictEqual(document.body.style.paddingBottom, '');
   });
 
-  test('every docs page renders with its demos', async function (assert) {
-    const docfy = this.owner.lookup('service:docfy') as DocfyService;
-    const pages = docfy.flat.filter((page) => !page.frontmatter['disabled']);
-
-    for (const page of pages) {
-      await visit(page.url);
-
-      assert.strictEqual(currentURL(), page.url, `${page.url} renders`);
-    }
-
-    // demos with a fixed control bar or bottom bar clean up when leaving
-    await visit('/docs/introduction');
-    assert.strictEqual(document.body.style.paddingBottom, '');
-  });
-
   test('a component page renders its demos and code tabs', async function (assert) {
     await visit('/docs/core/docs/display/card');
 

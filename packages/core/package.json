@@ -45,6 +45,10 @@
       ]
     }
   },
+  "sideEffects": [
+    "*.css",
+    "./tests/**"
+  ],
   "files": [
     "addon-main.cjs",
     "declarations",

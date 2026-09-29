@@ -1,12 +1,13 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
+import { modifier } from 'ember-modifier';
 import { eq, or } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default';
-import classNames from '../helpers/class-names';
+import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import classNames from '../helpers/class-names.ts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
@@ -14,8 +15,8 @@ import EuiDatePopoverButton from './eui-super-date-picker/date-popover/eui-date-
 import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
 import EuiQuickSelectPopover from './eui-super-date-picker/eui-quick-select-popover.gts';
 import EuiSuperUpdateButton from './eui-super-date-picker/eui-super-update-button.gts';
-import { isRangeInvalid } from './eui-super-date-picker/utils';
-import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options';
+import { isRangeInvalid } from './eui-super-date-picker/utils/index.ts';
+import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type {
@@ -28,25 +29,44 @@ import type { LocaleSpecifier } from 'moment';
 
 export type { ApplyRefreshInterval, DurationRange, Milliseconds, ShortDate };
 
+/**
+ * EuiSuperDatePicker picks a time range (absolute dates, relative like
+ * "last 15 minutes", or "now") with a quick select popover and optional
+ * auto refresh, as in Kibana. `@onTimeChange` receives date math strings.
+ */
 export interface EuiSuperDatePickerArgs {
+  /**
+   * Ranges listed as "Commonly used" in the quick select popover:
+   * `[{ start: 'now/d', end: 'now/d', label: 'Today' }, …]`. Defaults to
+   * EUI's list (Today, This week, Last 15 minutes, …).
+   */
   commonlyUsedRanges?: DurationRange[];
   // customQuickSelectPanels?: QuickSelectPanel[];
   /**
-   * Specifies the formatted used when displaying dates and/or datetimes
+   * moment format for absolute dates. Defaults to
+   * `'MMM D, YYYY @ HH:mm:ss.SSS'`.
    */
   dateFormat?: string;
   /**
-   * Set isAutoRefreshOnly to true to limit the component to only display auto refresh content.
+   * Set isAutoRefreshOnly to true to limit the component to only display
+   * auto refresh content. Defaults to `false`.
    */
   isAutoRefreshOnly?: boolean;
+  /** Disables the picker. Defaults to `false`. */
   isDisabled?: boolean;
+  /** Shows the update button's loading state, e.g. while data refreshes. */
   isLoading?: boolean;
+  /**
+   * Whether auto refresh is paused (with `@onRefreshChange`).
+   * Defaults to `true`.
+   */
   isPaused?: boolean;
   /**
    * Sets the overall width by adding sensible min and max widths.
    * - `auto`: fits width to internal content / time string.
    * - `restricted`: static width that fits the longest possible time string.
    * - `full`: expands to 100% of the container.
+   * Defaults to `'restricted'`.
    */
   width?: 'restricted' | 'full' | 'auto';
   /**
@@ -58,19 +78,19 @@ export interface EuiSuperDatePickerArgs {
    */
   locale?: LocaleSpecifier;
   /**
-   * Callback for when the refresh interval is fired.
-   * EuiSuperDatePicker will only manage a refresh interval timer when onRefresh callback is supplied
-   * If a promise is returned, the next refresh interval will not start until the promise has resolved.
-   * If the promise rejects the refresh interval will stop and the error thrown
+   * Called every `@refreshInterval` ms while not `@isPaused` (and by the
+   * update button when the range has not changed), with `{ start, end,
+   * refreshInterval }`. If it returns a promise, the next call waits for
+   * it; if the promise rejects, refreshing stops.
    */
   onRefresh?: (props: {
     start: string;
     end: string;
     refreshInterval: number;
-  }) => void;
+  }) => void | Promise<unknown>;
   /**
-   * Callback for when the refresh interval changes.
-   * Supply onRefreshChange to show refresh interval inputs in quick select popover
+   * Adds the "Refresh every" section to the quick select popover; called
+   * with `{ refreshInterval, isPaused }` when the user changes them.
    */
   onRefreshChange?: ApplyRefreshInterval;
   /**
@@ -84,18 +104,26 @@ export interface EuiSuperDatePickerArgs {
   }) => void;
   // recentlyUsedRanges?: DurationRange[];
   /**
-   * Refresh interval in milliseconds
+   * Refresh interval in milliseconds. Defaults to `1000`.
    */
   refreshInterval?: Milliseconds;
+  /**
+   * Start of the range, as date math (`'now-15m'`, `'now/d'`) or an ISO
+   * date. Defaults to `'now-15m'`.
+   */
   start?: ShortDate;
+  /** End of the range, like `@start`. Defaults to `'now'`. */
   end?: ShortDate;
   /**
-   * Specifies the formatted used when displaying times
+   * moment format for times in the date picker. Defaults to `'HH:mm'`.
    */
   timeFormat?: string;
+  /** UTC offset in minutes for absolute dates, e.g. `-300`. */
   utcOffset?: number;
   /**
-   * Set showUpdateButton to false to immediately invoke onTimeChange for all start and end changes.
+   * Set showUpdateButton to false to immediately invoke onTimeChange for
+   * all start and end changes; `'iconOnly'` shows a compact button.
+   * Defaults to `true`.
    */
   showUpdateButton?: boolean | 'iconOnly';
   /**
@@ -123,16 +151,54 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
 
   @service declare euiI18n: EuiI18n;
 
-  @tracked start: ShortDate;
-  @tracked end: ShortDate;
-  @tracked isInvalid = false;
-  @tracked hasChanged = false;
+  /**
+   * The range the user is editing, before it is applied with the update
+   * button. It remembers the @start/@end it was based on: when the parent
+   * passes a different range, the draft no longer applies and the picker
+   * shows the new arguments (like EUI React's getDerivedStateFromProps).
+   */
+  @tracked private draft?: {
+    start: ShortDate;
+    end: ShortDate;
+    hasChanged: boolean;
+    forStart: ShortDate | undefined;
+    forEnd: ShortDate | undefined;
+  };
 
-  constructor(owner: any, args: EuiSuperDatePickerArgs) {
-    super(owner, args);
+  private get currentDraft() {
+    const { draft } = this;
 
-    this.start = this.args.start ?? 'now-15m';
-    this.end = this.args.end ?? 'now';
+    return draft &&
+      draft.forStart === this.args.start &&
+      draft.forEnd === this.args.end
+      ? draft
+      : undefined;
+  }
+
+  get start(): ShortDate {
+    return this.currentDraft?.start ?? this.args.start ?? 'now-15m';
+  }
+
+  get end(): ShortDate {
+    return this.currentDraft?.end ?? this.args.end ?? 'now';
+  }
+
+  get isInvalid(): boolean {
+    return isRangeInvalid(this.start, this.end);
+  }
+
+  get hasChanged(): boolean {
+    return this.currentDraft?.hasChanged ?? false;
+  }
+
+  private setDraft(start: ShortDate, end: ShortDate, hasChanged: boolean) {
+    this.draft = {
+      start,
+      end,
+      hasChanged,
+      forStart: this.args.start,
+      forEnd: this.args.end
+    };
   }
 
   get timeOptions() {
@@ -140,17 +206,14 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   }
 
   setTime({ start, end }: DurationRange) {
-    this.hasChanged = !(this.start === start && this.end === end);
-    this.start = start;
-    this.end = end;
-    this.isInvalid = isRangeInvalid(start, end);
+    this.setDraft(start, end, !(this.start === start && this.end === end));
 
     if (!this.showUpdateButton) {
       this.args.onTimeChange({
         start,
         end,
         isQuickSelection: false,
-        isInvalid: this.isInvalid
+        isInvalid: isRangeInvalid(start, end)
       });
     }
   }
@@ -166,8 +229,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
 
   @action
   applyQuickTime({ start, end }: DurationRange) {
-    this.start = start;
-    this.end = end;
+    this.setDraft(start, end, false);
 
     this.args.onTimeChange({
       start,
@@ -190,8 +252,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   @action
   handleClickUpdateButton() {
     if (!this.hasChanged && this.args.onRefresh) {
-      // const { start, end, refreshInterval } = this.args;
-      this.args.onRefresh({
+      void this.args.onRefresh({
         start: this.start,
         end: this.end,
         refreshInterval: this.refreshInterval
@@ -200,11 +261,52 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
       this.applyTime();
     }
 
-    this.hasChanged = false;
+    if (this.currentDraft) {
+      this.draft = { ...this.currentDraft, hasChanged: false };
+    }
   }
+
+  /**
+   * Calls `@onRefresh` every `@refreshInterval` ms while not `@isPaused`.
+   * A returned promise delays the next call until it settles; a rejected
+   * one stops the refreshing.
+   */
+  autoRefresh = modifier(
+    (
+      _element: Element,
+      [onRefresh, isPaused, refreshInterval]: [
+        EuiSuperDatePickerArgs['onRefresh'],
+        boolean,
+        number
+      ]
+    ) => {
+      if (!onRefresh || isPaused || !(refreshInterval > 0)) return;
+
+      let stopped = false;
+      let timer: ReturnType<typeof setTimeout>;
+
+      const tick = async () => {
+        try {
+          await onRefresh({ start: this.start, end: this.end, refreshInterval });
+        } catch {
+          stopped = true;
+        }
+
+        if (!stopped) timer = setTimeout(() => void tick(), refreshInterval);
+      };
+
+      timer = setTimeout(() => void tick(), refreshInterval);
+
+      return () => {
+        stopped = true;
+        clearTimeout(timer);
+      };
+    }
+  );
 
   <template>
     <EuiFlexGroup
+      {{this.autoRefresh @onRefresh this.isPaused this.refreshInterval}}
       @gutterSize="s"
       @responsive={{false}}
       class={{classNames
@@ -243,6 +345,9 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
                 @commonlyUsedRanges
                 this.timeOptions.commonDurationRanges
               }}
+              @applyRefreshInterval={{@onRefreshChange}}
+              @isPaused={{this.isPaused}}
+              @refreshInterval={{this.refreshInterval}}
             />
           </:prepend>
 

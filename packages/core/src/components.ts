@@ -155,6 +155,7 @@ import EuiRangeTicks from './components/eui-range-ticks';
 import EuiRangeTooltip from './components/eui-range-tooltip';
 import EuiRangeTrack from './components/eui-range-track';
 import EuiRangeWrapper from './components/eui-range-wrapper';
+import EuiRefreshInterval from './components/eui-refresh-interval';
 import EuiResizableContainer from './components/eui-resizable-container';
 import EuiSaturation from './components/eui-saturation';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only';
@@ -378,6 +379,7 @@ export {
   EuiRangeTooltip,
   EuiRangeTrack,
   EuiRangeWrapper,
+  EuiRefreshInterval,
   EuiResizableContainer,
   EuiSaturation,
   EuiScreenReaderOnly,

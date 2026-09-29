@@ -219,6 +219,7 @@ import type EuiTableHeaderMobile from './components/eui-table-header-mobile';
 import type EuiTableSortMobile from './components/eui-table-sort-mobile';
 import type EuiTableSortMobileItem from './components/eui-table-sort-mobile-item';
 import type EuiTablePagination from './components/eui-table-pagination';
+import type EuiRefreshInterval from './components/eui-refresh-interval';
 import type argOrDefault from './helpers/arg-or-default';
 import type castTo from './helpers/cast-to';
 import type classNames from './helpers/class-names';
@@ -677,6 +678,8 @@ export default interface EmberEuiRegistry {
   'eui-table-sort-mobile-item': typeof EuiTableSortMobileItem;
   EuiTablePagination: typeof EuiTablePagination;
   'eui-table-pagination': typeof EuiTablePagination;
+  EuiRefreshInterval: typeof EuiRefreshInterval;
+  'eui-refresh-interval': typeof EuiRefreshInterval;
   'text-block': typeof TextBlock;
   'arg-or-default': typeof argOrDefault;
   'cast-to': typeof castTo;

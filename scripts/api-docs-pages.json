@@ -103,6 +103,19 @@
     "EuiMarkdownEditor",
     "EuiMarkdownFormat"
   ],
+  "packages/core/docs/forms/color-palette-picker/index.md": [
+    "EuiColorPalettePicker",
+    "EuiColorPaletteDisplay"
+  ],
+  "packages/core/docs/forms/color-picker/index.md": [
+    "EuiColorPicker",
+    "EuiColorPickerSwatch",
+    "EuiHue",
+    "EuiSaturation"
+  ],
+  "packages/core/docs/forms/color-stops/index.md": [
+    "EuiColorStops"
+  ],
   "packages/core/docs/forms/combo-box/index.md": [
     "EuiComboBox"
   ],

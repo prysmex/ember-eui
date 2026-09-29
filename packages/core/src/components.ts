@@ -22,6 +22,11 @@ import EuiCode from './components/eui-code.gts';
 import EuiCodeBlock from './components/eui-code-block.gts';
 import EuiCollapsibleNav from './components/eui-collapsible-nav.gts';
 import EuiCollapsibleNavGroup from './components/eui-collapsible-nav-group.gts';
+import EuiColorPaletteDisplay from './components/eui-color-palette-display.gts';
+import EuiColorPalettePicker from './components/eui-color-palette-picker.gts';
+import EuiColorPicker from './components/eui-color-picker.gts';
+import EuiColorPickerSwatch from './components/eui-color-picker-swatch.gts';
+import EuiColorStops from './components/eui-color-stops.gts';
 import EuiComboBox from './components/eui-combo-box.gts';
 import EuiComboBoxPill from './components/eui-combo-box-pill.gts';
 import EuiComment from './components/eui-comment.gts';
@@ -83,6 +88,7 @@ import EuiHealth from './components/eui-health.gts';
 import EuiHideFor from './components/eui-hide-for.gts';
 import EuiHighlight from './components/eui-highlight.gts';
 import EuiHorizontalRule from './components/eui-horizontal-rule.gts';
+import EuiHue from './components/eui-hue.gts';
 import EuiI18n from './components/eui-i18n.gts';
 import EuiI18nNumber from './components/eui-i18n-number.gts';
 import EuiIcon from './components/eui-icon.gts';
@@ -146,6 +152,7 @@ import EuiRangeTicks from './components/eui-range-ticks.gts';
 import EuiRangeTooltip from './components/eui-range-tooltip.gts';
 import EuiRangeTrack from './components/eui-range-track.gts';
 import EuiRangeWrapper from './components/eui-range-wrapper.gts';
+import EuiSaturation from './components/eui-saturation.gts';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only.gts';
 import EuiSelect from './components/eui-select.gts';
 import EuiSelectable from './components/eui-selectable.gts';
@@ -216,6 +223,11 @@ export {
   EuiCodeBlock,
   EuiCollapsibleNav,
   EuiCollapsibleNavGroup,
+  EuiColorPaletteDisplay,
+  EuiColorPalettePicker,
+  EuiColorPicker,
+  EuiColorPickerSwatch,
+  EuiColorStops,
   EuiComboBox,
   EuiComboBoxPill,
   EuiComment,
@@ -277,6 +289,7 @@ export {
   EuiHideFor,
   EuiHighlight,
   EuiHorizontalRule,
+  EuiHue,
   EuiI18n,
   EuiI18nNumber,
   EuiIcon,
@@ -340,6 +353,7 @@ export {
   EuiRangeTooltip,
   EuiRangeTrack,
   EuiRangeWrapper,
+  EuiSaturation,
   EuiScreenReaderOnly,
   EuiSelect,
   EuiSelectable,

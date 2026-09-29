@@ -6,9 +6,10 @@
  * Side Public License, v 1.
  */
 
-import refractor from 'refractor';
+import { highlight } from 'refractor/core';
 import visit from 'unist-util-visit';
 
+import { highlightLanguage } from '../../../-private/language-loader.ts';
 import { checkSupportedLanguage } from '../../code/utils.ts';
 
 import type { Plugin } from 'unified';
@@ -28,7 +29,9 @@ const attacher: Plugin = () => {
     const actualLanguage = checkSupportedLanguage(language);
 
     node.data = data;
-    data.hChildren = refractor.highlight(node.value, actualLanguage);
+    // plain until the language has loaded; reading it re-renders the
+    // markdown then
+    data.hChildren = highlight(node.value, highlightLanguage(actualLanguage));
     data.hProperties = {
       ...data.hProperties,
       language,

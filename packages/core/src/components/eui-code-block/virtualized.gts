@@ -10,7 +10,7 @@ import randomId from '../../-private/random-id.ts';
 import { getHtmlContent } from '../../utils/code/utils.ts';
 import EuiAutoSizer from '../eui-auto-sizer.gts';
 
-import type { RefractorNode } from 'refractor';
+import type { RefractorNode } from 'refractor/core';
 
 export interface VirtualizedCodeBlockSignature<T> {
   Element: HTMLPreElement;

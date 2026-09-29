@@ -7,14 +7,15 @@ import { scheduleOnce } from '@ember/runloop';
 import type Owner from '@ember/owner';
 
 import set from 'ember-set-helper/helpers/set';
-import { highlight } from 'refractor';
+import { highlight } from 'refractor/core';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
+import { highlightLanguage } from '../-private/language-loader.ts';
 import { checkSupportedLanguage,getHtmlContent } from '../utils/code/utils.ts';
 
 import type { EuiCodeSharedProps } from '../utils/code/utils.ts';
-import type { RefractorNode } from 'refractor';
+import type { RefractorNode } from 'refractor/core';
 
 export type EuiCodeArgs = EuiCodeSharedProps;
 
@@ -46,6 +47,11 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
     return checkSupportedLanguage(this.args.language || '');
   }
 
+  /** Plain text until the language has loaded. */
+  get highlightLanguage() {
+    return highlightLanguage(this.language);
+  }
+
   setupObserver() {
     this.observer?.disconnect();
     this.observer = new MutationObserver((mutationsList) => {
@@ -74,7 +80,7 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
       if (typeof html !== 'string') {
         data = [];
       } else {
-        data = highlight(html, this.language);
+        data = highlight(html, this.highlightLanguage);
       }
 
       const code = this.code;
@@ -109,8 +115,7 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
       data-code-language={{argOrDefault @language "text"}}
       {{didInsert (set this "code")}}
       {{didInsert this.update}}
-      {{didUpdate this.update this.language}}
-      {{didUpdate this.update this.language}}
+      {{didUpdate this.update this.highlightLanguage}}
       ...attributes
     ></code>
   </template>

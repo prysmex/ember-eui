@@ -6,10 +6,12 @@
  * Side Public License, v 1.
  */
 
-import { highlight,listLanguages } from 'refractor';
+import { highlight } from 'refractor/core';
+
+import { isSupportedLanguage, SUPPORTED_LANGUAGES } from '../../-private/language-loader.ts';
 
 import type { CommonArgs } from '../../components/common.ts';
-import type { AST, RefractorNode } from 'refractor';
+import type { AST, RefractorNode } from 'refractor/core';
 
 /**
  * Utils shared between EuiCode and EuiCodeBlock
@@ -27,11 +29,11 @@ export type EuiCodeSharedProps = CommonArgs & {
   transparentBackground?: boolean;
 };
 
-export const SUPPORTED_LANGUAGES = listLanguages();
+export { SUPPORTED_LANGUAGES };
 export const DEFAULT_LANGUAGE = 'text';
 
 export const checkSupportedLanguage = (language: string): string => {
-  return SUPPORTED_LANGUAGES.includes(language) ? language : DEFAULT_LANGUAGE;
+  return isSupportedLanguage(language) ? language : DEFAULT_LANGUAGE;
 };
 
 const createDocument = () => {

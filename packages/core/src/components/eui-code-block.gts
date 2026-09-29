@@ -13,6 +13,7 @@ import set from 'ember-set-helper/helpers/set';
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, not,or } from 'ember-truth-helpers';
 
+import { highlightLanguage } from '../-private/language-loader.ts';
 import Controls from '../components/eui-code-block/controls.gts';
 import FullScreenDisplay from '../components/eui-code-block/full-screen-display.gts';
 import VirtualizedCodeBlock from '../components/eui-code-block/virtualized.gts';
@@ -27,7 +28,7 @@ import {
 } from '../utils/code/utils.ts';
 
 import type { EuiCodeSharedProps } from '../utils/code/utils.ts';
-import type { RefractorNode } from 'refractor';
+import type { RefractorNode } from 'refractor/core';
 
 interface LineNumbersConfig {
   start?: number;
@@ -220,6 +221,11 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
     return checkSupportedLanguage(this.args.language || '');
   }
 
+  /** Plain text until the language has loaded. */
+  get highlightLanguage() {
+    return highlightLanguage(this.language);
+  }
+
   get transparentBackground() {
     return this.args.transparentBackground ?? false;
   }
@@ -402,7 +408,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
           {{style this.optionalStyles}}
           {{highlightTargetModifier
             element=this.codeTarget
-            language=this.language
+            language=this.highlightLanguage
             lineNumbersConfig=this.lineNumbersConfig
             onChange=this.updateCode
           }}

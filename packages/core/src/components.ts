@@ -187,6 +187,21 @@ import EuiSuperSelectControl from './components/eui-super-select-control';
 import EuiSwitch from './components/eui-switch';
 import EuiTab from './components/eui-tab';
 import EuiTabbedContent from './components/eui-tabbed-content';
+import EuiTable from './components/eui-table';
+import EuiTableBody from './components/eui-table-body';
+import EuiTableFooter from './components/eui-table-footer';
+import EuiTableFooterCell from './components/eui-table-footer-cell';
+import EuiTableHeader from './components/eui-table-header';
+import EuiTableHeaderButton from './components/eui-table-header-button';
+import EuiTableHeaderCell from './components/eui-table-header-cell';
+import EuiTableHeaderCellCheckbox from './components/eui-table-header-cell-checkbox';
+import EuiTableHeaderMobile from './components/eui-table-header-mobile';
+import EuiTablePagination from './components/eui-table-pagination';
+import EuiTableRow from './components/eui-table-row';
+import EuiTableRowCell from './components/eui-table-row-cell';
+import EuiTableRowCellCheckbox from './components/eui-table-row-cell-checkbox';
+import EuiTableSortMobile from './components/eui-table-sort-mobile';
+import EuiTableSortMobileItem from './components/eui-table-sort-mobile-item';
 import EuiTabs from './components/eui-tabs';
 import EuiText from './components/eui-text';
 import EuiTextAlign from './components/eui-text-align';
@@ -395,6 +410,21 @@ export {
   EuiSwitch,
   EuiTab,
   EuiTabbedContent,
+  EuiTable,
+  EuiTableBody,
+  EuiTableFooter,
+  EuiTableFooterCell,
+  EuiTableHeader,
+  EuiTableHeaderButton,
+  EuiTableHeaderCell,
+  EuiTableHeaderCellCheckbox,
+  EuiTableHeaderMobile,
+  EuiTablePagination,
+  EuiTableRow,
+  EuiTableRowCell,
+  EuiTableRowCellCheckbox,
+  EuiTableSortMobile,
+  EuiTableSortMobileItem,
   EuiTabs,
   EuiText,
   EuiTextAlign,

@@ -133,4 +133,54 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     await rerender();
     assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /hours ago/, 'new arguments win');
   });
+
+  test('with @onRefreshChange the quick select shows the refresh interval', async function (assert) {
+    const changes: { refreshInterval: number; isPaused: boolean }[] = [];
+    const noop = () => {};
+    const onRefreshChange = (change: { refreshInterval: number; isPaused: boolean }) => changes.push(change);
+
+    await render(
+      <template>
+        <EuiSuperDatePicker @onTimeChange={{noop}} @onRefreshChange={{onRefreshChange}} @refreshInterval={{120000}} />
+      </template>
+    );
+
+    await click('.euiQuickSelectPopover__anchor button');
+    await waitUntil(() => document.querySelector('[data-test-subj="superDatePickerRefreshIntervalInput"]'));
+
+    assert.dom('[data-test-subj="superDatePickerRefreshIntervalInput"]', document.body).hasValue('2');
+    assert.dom('[data-test-subj="superDatePickerRefreshIntervalUnitsSelect"]', document.body).hasValue('m');
+
+    await click(document.querySelector('[data-test-subj="superDatePickerToggleRefreshButton"]') as Element);
+    assert.deepEqual(changes, [{ refreshInterval: 120000, isPaused: false }]);
+  });
+
+  test('it calls @onRefresh every @refreshInterval while not paused', async function (assert) {
+    class State {
+      @tracked isPaused = false;
+    }
+    const state = new State();
+    let refreshes = 0;
+    const noop = () => {};
+    const onRefresh = () => {
+      refreshes++;
+    };
+
+    await render(
+      <template>
+        <EuiSuperDatePicker @onTimeChange={{noop}} @onRefresh={{onRefresh}} @isPaused={{state.isPaused}} @refreshInterval={{20}} />
+      </template>
+    );
+
+    await waitUntil(() => refreshes >= 2, { timeout: 2000 });
+    assert.true(refreshes >= 2, 'refreshes repeatedly');
+
+    state.isPaused = true;
+    await rerender();
+
+    const count = refreshes;
+
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    assert.strictEqual(refreshes, count, 'stops while paused');
+  });
 });

@@ -71,8 +71,8 @@ auto refresh, as in Kibana. `@onTimeChange` receives date math strings.
 | `@width` | `'restricted' \| 'full' \| 'auto'` | `'restricted'` | Sets the overall width by adding sensible min and max widths. - `auto`: fits width to internal content / time string. - `restricted`: static width that fits the longest possible time string. - `full`: expands to 100% of the container. |
 | `@compressed` | `boolean` |  | Reduces overall height to compressed form size |
 | `@locale` | `LocaleSpecifier` |  | Used to localize e.g. month names, passed to `moment` |
-| `@onRefresh` |  |  | Callback for when the refresh interval is fired. EuiSuperDatePicker will only manage a refresh interval timer when onRefresh callback is supplied If a promise is returned, the next refresh interval will not start until the promise has resolved. If the promise rejects the refresh interval will stop and the error thrown |
-| `@onRefreshChange` | `ApplyRefreshInterval` |  | Callback for when the refresh interval changes. Supply onRefreshChange to show refresh interval inputs in quick select popover |
+| `@onRefresh` |  |  | Called every `@refreshInterval` ms while not `@isPaused` (and by the update button when the range has not changed), with `{ start, end, refreshInterval }`. If it returns a promise, the next call waits for it; if the promise rejects, refreshing stops. |
+| `@onRefreshChange` | `ApplyRefreshInterval` |  | Adds the "Refresh every" section to the quick select popover; called with `{ refreshInterval, isPaused }` when the user changes them. |
 | `@onTimeChange` (required) |  |  | Callback for when the time changes. |
 | `@refreshInterval` | `Milliseconds` | `1000` | Refresh interval in milliseconds. |
 | `@start` | `ShortDate` | `'now-15m'` | Start of the range, as date math (`'now-15m'`, `'now/d'`) or an ISO date. |
@@ -81,6 +81,20 @@ auto refresh, as in Kibana. `@onTimeChange` receives date math strings.
 | `@utcOffset` | `number` |  | UTC offset in minutes for absolute dates, e.g. `-300`. |
 | `@showUpdateButton` | `boolean \| 'iconOnly'` | `true` | Set showUpdateButton to false to immediately invoke onTimeChange for all start and end changes; `'iconOnly'` shows a compact button. |
 | `@isQuickSelectOnly` | `boolean` |  | Hides the actual input reducing to just the quick select button. |
+
+### EuiRefreshInterval
+
+"Refresh every [5] [minutes] [Start / Stop]": sets how often data
+refreshes. `EuiSuperDatePicker` shows it in its quick select popover
+when given `@onRefreshChange`; it also works on its own.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@isPaused` | `boolean` | `true` | Whether refreshing is stopped. |
+| `@refreshInterval` | `number` | `1000` | The interval in milliseconds. |
+| `@applyRefreshInterval` (required) |  |  | Called with `{ refreshInterval, isPaused }` after a change. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<fieldset>`.
 
 </EuiText>
 <!-- api:end -->

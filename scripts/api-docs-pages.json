@@ -210,7 +210,8 @@
     "EuiSuggestInput"
   ],
   "packages/core/docs/forms/super-date-picker/index.md": [
-    "EuiSuperDatePicker"
+    "EuiSuperDatePicker",
+    "EuiRefreshInterval"
   ],
   "packages/core/docs/forms/super-select/index.md": [
     "EuiSuperSelect",

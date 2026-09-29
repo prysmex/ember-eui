@@ -412,6 +412,7 @@
       "./components/eui-range-track.js": "./dist/_app_/components/eui-range-track.js",
       "./components/eui-range-wrapper.js": "./dist/_app_/components/eui-range-wrapper.js",
       "./components/eui-range.js": "./dist/_app_/components/eui-range.js",
+      "./components/eui-refresh-interval.js": "./dist/_app_/components/eui-refresh-interval.js",
       "./components/eui-resizable-container.js": "./dist/_app_/components/eui-resizable-container.js",
       "./components/eui-resizable-container/button.js": "./dist/_app_/components/eui-resizable-container/button.js",
       "./components/eui-resizable-container/collapse-button.js": "./dist/_app_/components/eui-resizable-container/collapse-button.js",

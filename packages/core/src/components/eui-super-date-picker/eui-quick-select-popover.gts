@@ -16,11 +16,13 @@ import EuiCommonlyUsedTimeRanges from './eui-quick-select-popover/eui-commonly-u
 import EuiQuickSelect from './eui-quick-select-popover/eui-quick-select.gts';
 import { useI18nTimeOptions } from './utils/time-options.ts';
 
+import EuiRefreshInterval from '../eui-refresh-interval.gts';
+
 import type EuiI18n from '../../services/eui-i18n';
 import type { EuiRecentlyUsedSignature } from '../eui-super-date-picker/eui-quick-select-popover/eui-recently-used';
 import type { EuiCommonlyUsedTimeRangesSignature } from './eui-quick-select-popover/eui-commonly-used-time-ranges';
 import type { EuiQuickSelectSignature } from './eui-quick-select-popover/eui-quick-select';
-import type { ApplyTime } from './types/global';
+import type { ApplyRefreshInterval, ApplyTime } from './types/global';
 
 /** @private EuiSuperDatePicker's quick select popover. */
 export interface EuiQuickSelectPopoverSignature {
@@ -39,6 +41,12 @@ export interface EuiQuickSelectPopoverSignature {
     end: string;
     /** Time units and tenses for the quick select. */
     timeOptions: EuiQuickSelectSignature['Args']['timeOptions'];
+    /** Shows the refresh interval section, calling this on change. */
+    applyRefreshInterval?: ApplyRefreshInterval;
+    /** Whether auto refresh is paused. */
+    isPaused?: boolean;
+    /** The refresh interval in milliseconds. */
+    refreshInterval?: number;
   };
 }
 
@@ -114,6 +122,15 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
             <EuiRecentlyUsed
               @applyTime={{this.applyTime}}
               @recentlyUsedRanges={{@recentlyUsedRanges}}
+            />
+          {{/if}}
+
+          {{#if @applyRefreshInterval}}
+            <EuiHorizontalRule @margin="s" />
+            <EuiRefreshInterval
+              @applyRefreshInterval={{@applyRefreshInterval}}
+              @isPaused={{@isPaused}}
+              @refreshInterval={{@refreshInterval}}
             />
           {{/if}}
 

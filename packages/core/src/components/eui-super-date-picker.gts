@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
+import { modifier } from 'ember-modifier';
 import { eq, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
@@ -77,19 +78,19 @@ export interface EuiSuperDatePickerArgs {
    */
   locale?: LocaleSpecifier;
   /**
-   * Callback for when the refresh interval is fired.
-   * EuiSuperDatePicker will only manage a refresh interval timer when onRefresh callback is supplied
-   * If a promise is returned, the next refresh interval will not start until the promise has resolved.
-   * If the promise rejects the refresh interval will stop and the error thrown
+   * Called every `@refreshInterval` ms while not `@isPaused` (and by the
+   * update button when the range has not changed), with `{ start, end,
+   * refreshInterval }`. If it returns a promise, the next call waits for
+   * it; if the promise rejects, refreshing stops.
    */
   onRefresh?: (props: {
     start: string;
     end: string;
     refreshInterval: number;
-  }) => void;
+  }) => void | Promise<unknown>;
   /**
-   * Callback for when the refresh interval changes.
-   * Supply onRefreshChange to show refresh interval inputs in quick select popover
+   * Adds the "Refresh every" section to the quick select popover; called
+   * with `{ refreshInterval, isPaused }` when the user changes them.
    */
   onRefreshChange?: ApplyRefreshInterval;
   /**
@@ -251,7 +252,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   @action
   handleClickUpdateButton() {
     if (!this.hasChanged && this.args.onRefresh) {
-      this.args.onRefresh({
+      void this.args.onRefresh({
         start: this.start,
         end: this.end,
         refreshInterval: this.refreshInterval
@@ -265,8 +266,47 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
     }
   }
 
+  /**
+   * Calls `@onRefresh` every `@refreshInterval` ms while not `@isPaused`.
+   * A returned promise delays the next call until it settles; a rejected
+   * one stops the refreshing.
+   */
+  autoRefresh = modifier(
+    (
+      _element: Element,
+      [onRefresh, isPaused, refreshInterval]: [
+        EuiSuperDatePickerArgs['onRefresh'],
+        boolean,
+        number
+      ]
+    ) => {
+      if (!onRefresh || isPaused || !(refreshInterval > 0)) return;
+
+      let stopped = false;
+      let timer: ReturnType<typeof setTimeout>;
+
+      const tick = async () => {
+        try {
+          await onRefresh({ start: this.start, end: this.end, refreshInterval });
+        } catch {
+          stopped = true;
+        }
+
+        if (!stopped) timer = setTimeout(() => void tick(), refreshInterval);
+      };
+
+      timer = setTimeout(() => void tick(), refreshInterval);
+
+      return () => {
+        stopped = true;
+        clearTimeout(timer);
+      };
+    }
+  );
+
   <template>
     <EuiFlexGroup
+      {{this.autoRefresh @onRefresh this.isPaused this.refreshInterval}}
       @gutterSize="s"
       @responsive={{false}}
       class={{classNames
@@ -305,6 +345,9 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
                 @commonlyUsedRanges
                 this.timeOptions.commonDurationRanges
               }}
+              @applyRefreshInterval={{@onRefreshChange}}
+              @isPaused={{this.isPaused}}
+              @refreshInterval={{this.refreshInterval}}
             />
           </:prepend>
 

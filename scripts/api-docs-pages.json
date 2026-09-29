@@ -329,6 +329,23 @@
     "EuiTab",
     "EuiTabbedContent"
   ],
+  "packages/core/docs/tabular/table/index.md": [
+    "EuiTable",
+    "EuiTableHeader",
+    "EuiTableHeaderCell",
+    "EuiTableHeaderCellCheckbox",
+    "EuiTableHeaderButton",
+    "EuiTableBody",
+    "EuiTableRow",
+    "EuiTableRowCell",
+    "EuiTableRowCellCheckbox",
+    "EuiTableFooter",
+    "EuiTableFooterCell",
+    "EuiTablePagination",
+    "EuiTableHeaderMobile",
+    "EuiTableSortMobile",
+    "EuiTableSortMobileItem"
+  ],
   "packages/core/docs/templates/page-template/index.md": [
     "EuiPageTemplate",
     "EuiPage",

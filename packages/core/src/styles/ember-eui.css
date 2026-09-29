@@ -36,3 +36,12 @@
   overflow: visible;
   margin: 0;
 }
+
+/*
+  EuiSelectableList renders the prepend / append wrappers of every option
+  when blocks are given; an option without content takes no space.
+*/
+.euiSelectableListItem__prepend:empty,
+.euiSelectableListItem__append:empty {
+  display: none;
+}

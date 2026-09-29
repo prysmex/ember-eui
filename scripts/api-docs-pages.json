@@ -179,8 +179,24 @@
     "EuiFormHelpText",
     "EuiFormErrorText"
   ],
+  "packages/core/docs/forms/selectable/index.md": [
+    "EuiSelectable",
+    "EuiSelectableList",
+    "EuiSelectableListItem",
+    "EuiSelectableSearch",
+    "EuiSelectableMessage"
+  ],
+  "packages/core/docs/forms/suggest/index.md": [
+    "EuiSuggest",
+    "EuiSuggestItem",
+    "EuiSuggestInput"
+  ],
   "packages/core/docs/forms/super-date-picker/index.md": [
     "EuiSuperDatePicker"
+  ],
+  "packages/core/docs/forms/super-select/index.md": [
+    "EuiSuperSelect",
+    "EuiSuperSelectControl"
   ],
   "packages/core/docs/layout/accordion/index.md": [
     "EuiAccordion"
@@ -292,6 +308,9 @@
     "EuiPageBody",
     "EuiPageContent",
     "EuiPageContentBody"
+  ],
+  "packages/core/docs/templates/sitewide-search/index.md": [
+    "EuiSelectableTemplateSitewide"
   ],
   "packages/core/docs/utilities/accessibility/index.md": [
     "EuiScreenReaderOnly",

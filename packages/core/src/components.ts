@@ -148,7 +148,12 @@ import EuiRangeTrack from './components/eui-range-track.gts';
 import EuiRangeWrapper from './components/eui-range-wrapper.gts';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only.gts';
 import EuiSelect from './components/eui-select.gts';
+import EuiSelectable from './components/eui-selectable.gts';
+import EuiSelectableList from './components/eui-selectable-list.gts';
 import EuiSelectableListItem from './components/eui-selectable-list-item.gts';
+import EuiSelectableMessage from './components/eui-selectable-message.gts';
+import EuiSelectableSearch from './components/eui-selectable-search.gts';
+import EuiSelectableTemplateSitewide from './components/eui-selectable-template-sitewide.gts';
 import EuiShowFor from './components/eui-show-for.gts';
 import EuiSideNav from './components/eui-side-nav.gts';
 import EuiSkipLink from './components/eui-skip-link.gts';
@@ -162,7 +167,12 @@ import EuiStepNumber from './components/eui-step-number.gts';
 import EuiSteps from './components/eui-steps.gts';
 import EuiStepsHorizontal from './components/eui-steps-horizontal.gts';
 import EuiSubSteps from './components/eui-sub-steps.gts';
+import EuiSuggest from './components/eui-suggest.gts';
+import EuiSuggestInput from './components/eui-suggest-input.gts';
+import EuiSuggestItem from './components/eui-suggest-item.gts';
 import EuiSuperDatePicker from './components/eui-super-date-picker.gts';
+import EuiSuperSelect from './components/eui-super-select.gts';
+import EuiSuperSelectControl from './components/eui-super-select-control.gts';
 import EuiSwitch from './components/eui-switch.gts';
 import EuiTab from './components/eui-tab.gts';
 import EuiTabbedContent from './components/eui-tabbed-content.gts';
@@ -332,7 +342,12 @@ export {
   EuiRangeWrapper,
   EuiScreenReaderOnly,
   EuiSelect,
+  EuiSelectable,
+  EuiSelectableList,
   EuiSelectableListItem,
+  EuiSelectableMessage,
+  EuiSelectableSearch,
+  EuiSelectableTemplateSitewide,
   EuiShowFor,
   EuiSideNav,
   EuiSkipLink,
@@ -346,7 +361,12 @@ export {
   EuiSteps,
   EuiStepsHorizontal,
   EuiSubSteps,
+  EuiSuggest,
+  EuiSuggestInput,
+  EuiSuggestItem,
   EuiSuperDatePicker,
+  EuiSuperSelect,
+  EuiSuperSelectControl,
   EuiSwitch,
   EuiTab,
   EuiTabbedContent,

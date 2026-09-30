@@ -14,8 +14,13 @@
   font-weight: 500;
 }
 
-.ember-basic-dropdown-content {
-  z-index: 99999;
+/*
+  Dropdowns (e.g. EuiComboBox's options) above EUI's modals, flyouts and
+  their overlay masks. ember-basic-dropdown styles the same selector and its
+  styles can load after this file, so set its variable instead.
+*/
+:root {
+  --ember-basic-dropdown-content-z-index: 99999;
 }
 
 .euiBadge__iconButton svg {

@@ -466,6 +466,20 @@ module('Integration | Component | eui-combo-box', function (hooks) {
       assert.strictEqual(offsets('prose').listStyle, 'none');
     });
 
+    test('the options list stays above modals, whatever loads first', async function (assert) {
+      // ember-basic-dropdown's own styles set the same property on the same
+      // selector; they may load after ember-eui.css (e.g. with a lazy route)
+      document.head.prepend(style);
+
+      await render(<template><EuiComboBox @options={{OPTIONS}} as |o|>{{o}}</EuiComboBox></template>);
+      await open();
+
+      const content = document.querySelector('.ember-basic-dropdown-content')!;
+
+      // above EUI's modals (8000) and their overlay mask (6000)
+      assert.true(Number(getComputedStyle(content).zIndex) > 8000);
+    });
+
     test('the announcement of the results is for screen readers only', async function (assert) {
       await render(<template><EuiComboBox @options={{OPTIONS}} as |o|>{{o}}</EuiComboBox></template>);
       await open();

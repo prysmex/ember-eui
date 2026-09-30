@@ -7,8 +7,8 @@ html {
   text-size-adjust: 100%;
   font-kerning: normal;
   height: 100%;
-  background-color: rgb(248 250 253);
-  color: rgb(52 55 65);
+
+  /* background and text colors come from the EUI theme (light or dark) */
 }
 
 body.euiBody--headerIsFixed {

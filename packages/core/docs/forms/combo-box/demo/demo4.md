@@ -53,7 +53,12 @@ export default class extends Component {
       arr[i] = {
         value: i,
         label: `${prefix} Number ${i}`,
-        color: '#' + (((1 << 24) * Math.random()) | 0).toString(16)
+        // a random 6-digit hex color for the pill
+        color:
+          '#' +
+          Math.floor(Math.random() * 0x1000000)
+            .toString(16)
+            .padStart(6, '0')
       };
     }
     return arr;
@@ -71,12 +76,10 @@ export default class extends Component {
       value: `${newOption}`,
       label: `${newOption}`
     };
-    if (
-      this.options.filter((opt) => opt.value == newOptionStructure.value)
-        .length == 0
-    ) {
-      this.options.addObject(newOptionStructure);
-      this.selected.addObject(newOptionStructure);
+    if (!this.options.some((opt) => opt.value === newOptionStructure.value)) {
+      this.options = [...this.options, newOptionStructure];
+      this.groupedOptions = [...this.groupedOptions, newOptionStructure];
+      this.selected = [...this.selected, newOptionStructure];
     }
   }
 }

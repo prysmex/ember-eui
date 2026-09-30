@@ -1,3 +1,4 @@
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
@@ -23,24 +24,16 @@ import type EuiConfigService from '../../services/eui-config';
  */
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @service declare euiConfig: EuiConfigService;
-  _optionsCache: readonly unknown[] = [];
 
+  /**
+   * Groups followed by their options, in one list (the rows of the
+   * virtualized list; `data-option-index` is an index in it).
+   */
+  @cached
   get flattedOptions(): unknown[] {
-    if (this._optionsCache !== this.args.options) {
-      this._optionsCache = this.args.options;
-
-      return this.args.options?.reduce<unknown[]>((acc, curr) => {
-        if (emberPowerSelectIsGroup(curr)) {
-          acc.push(curr, ...curr.options);
-        } else {
-          acc.push(curr);
-        }
-
-        return acc;
-      }, []);
-    }
-
-    return this._optionsCache as unknown[];
+    return (this.args.options ?? []).flatMap((option) =>
+      emberPowerSelectIsGroup(option) ? [option, ...option.options] : [option]
+    );
   }
 
   _optionFromIndex(index: string) {

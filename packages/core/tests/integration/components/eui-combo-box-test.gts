@@ -367,6 +367,35 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.dom('.euiComboBoxTitle', document.body).hasText('Fruits');
   });
 
+  test('choosing an option in a group selects that option', async function (assert) {
+    const state = new State();
+    const grouped = [
+      'Loose',
+      { groupName: 'Fruits', options: [{ label: 'Apple' }, { label: 'Banana' }] },
+      { groupName: 'Veggies', options: [{ label: 'Carrot' }] }
+    ];
+
+    await render(
+      <template>
+        <EuiComboBox
+          @options={{grouped}}
+          @selectedOptions={{state.selected}}
+          @onChange={{state.onChange}}
+          as |option|
+        >
+          {{option.label}}
+        </EuiComboBox>
+      </template>
+    );
+
+    await open();
+    await choose('Apple');
+
+    assert.deepEqual(state.changes, [[{ label: 'Apple' }]], 'the option, not its group');
+    // the old cache lost the flattening, so this chose the "Veggies" group
+    assert.dom('.euiComboBoxPill').hasText('Apple');
+  });
+
   test('@isDisabled disables the input and hides the clear button', async function (assert) {
     const state = new State();
     state.selected = ['Apple'];

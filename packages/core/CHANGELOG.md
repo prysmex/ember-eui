@@ -1,5 +1,55 @@
 # @ember-eui/core
 
+## 14.1.0
+
+### Minor Changes
+
+- fixes and docs
+- 646cdcb: Add the EUI 41 components that were missing, each with a docs page and tests:
+  EuiSuperSelect, EuiSelectable (and its templates), EuiSuggest, the color
+  components (EuiColorPicker, EuiColorPalettePicker, EuiColorStops, ...),
+  EuiTour, EuiResizableContainer, EuiRefreshInterval (EuiSuperDatePicker now
+  refreshes automatically), the table building blocks, and drag and drop
+  (EuiDragDropContext, EuiDroppable, EuiDraggable).
+
+  Drag and drop is built on Atlassian's pragmatic drag and drop, so
+  `@atlaskit/pragmatic-drag-and-drop` and its auto scroll package are new
+  dependencies (installed with core; nothing to add to the app).
+
+- 8d277d4: EuiCode, EuiCodeBlock and EuiMarkdownFormat load each syntax highlighting
+  language the first time it is used, instead of bundling all of refractor's
+  ~280 languages (about 580 KB minified) with the first code component. Code
+  shows as plain text until its language has loaded, then highlights;
+  `settled()` waits for it in tests. HTML/XML, CSS and JavaScript are built in
+  and need no loading.
+- 646cdcb: EuiPopover focuses `@initialFocus` (an element, a selector or a function
+  returning an element) once its panel is positioned and visible, also without
+  `@ownFocus`, so opening a popover no longer scrolls the page to an element
+  that was not placed yet.
+
+  Behaviour change: a popover with `@ownFocus` and no `@initialFocus` now
+  focuses the first focusable element in it, as EUI does, instead of the
+  panel. Pass `@initialFocus` to choose another element.
+
+### Patch Changes
+
+- ec6c8de: EuiBadge and EuiAvatar no longer load chroma-js (about 43 KB minified): the
+  palette they color with is kept precomputed.
+- 646cdcb: - EuiFormRow points its control's `aria-describedby` at the help text and
+  errors, and gives help texts unique ids.
+  - Labelled icons (header logo, icon tip, links, notifications) are announced
+    by screen readers; EuiIcon `@title` and `@aria-label` name the icon.
+  - EuiContextMenuItem `@layoutAlign` aligns the icon and the text.
+  - Export the public components missing from `@ember-eui/core/components`.
+- 75b9d33: - Keyboard drags move the item past items of any height (or width), also
+  on zoomed pages.
+  - `settled()` waits for an opening EuiPopover to set its focus, so tests
+    can assert the focus right after opening it.
+- 3e32853: Declare `sideEffects` so apps bundle only the components they import:
+  importing one component from `@ember-eui/core/components` no longer pulls
+  in the whole library (e.g. EuiButton alone: ~43 KB of core code instead of
+  ~680 KB, minified, before the lazily loaded icons).
+
 ## 14.0.0
 
 ### Major Changes

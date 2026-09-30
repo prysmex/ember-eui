@@ -1,5 +1,15 @@
 # @ember-eui/changeset-form
 
+## 14.1.0
+
+### Minor Changes
+
+- fixes and docs
+
+### Patch Changes
+
+- 646cdcb: EuiChangesetForm's args type lists the args it uses.
+
 ## 14.0.0
 
 ### Major Changes

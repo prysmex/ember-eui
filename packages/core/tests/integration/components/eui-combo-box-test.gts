@@ -12,6 +12,9 @@ import {
 import { tracked } from '@glimmer/tracking';
 
 import EuiComboBox from '#src/components/eui-combo-box.gts';
+import EuiText from '#src/components/eui-text.gts';
+// what apps load with `import '@ember-eui/core/styles/ember-eui.css'`
+import emberEuiCss from '#src/styles/ember-eui.css?raw';
 
 import type { TOC } from '@ember/component/template-only';
 
@@ -385,5 +388,64 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.dom(TRIGGER).hasClass('euiComboBox-isDisabled');
     assert.dom(INPUT).isDisabled();
     assert.dom('.euiFormControlLayoutClearButton').doesNotExist();
+  });
+
+  module('styles', function (hooks) {
+    let style: HTMLStyleElement;
+
+    hooks.beforeEach(function () {
+      style = document.createElement('style');
+      // EUI's prose styles, which also reach lists inside components
+      style.textContent = `${emberEuiCss}
+        .euiText ul { list-style: disc; margin-left: 24px; }`;
+      document.head.append(style);
+    });
+
+    hooks.afterEach(function () {
+      style.remove();
+    });
+
+    test('prose list styles leave the input alone', async function (assert) {
+      const selected = ['Apple', 'Banana'];
+
+      await render(
+        <template>
+          <div id="plain">
+            <EuiComboBox @options={{OPTIONS}} @selectedOptions={{selected}} as |o|>{{o}}</EuiComboBox>
+          </div>
+          <EuiText id="prose">
+            <EuiComboBox @options={{OPTIONS}} @selectedOptions={{selected}} as |o|>{{o}}</EuiComboBox>
+          </EuiText>
+        </template>
+      );
+
+      // ember-power-select renders the input wrap as a <ul>
+      const offsets = (id: string) => {
+        const combo = document.querySelector(`#${id} .euiComboBox`)!.getBoundingClientRect();
+        const wrap = document.querySelector(`#${id} .euiComboBox__inputWrap`)!;
+
+        return {
+          wrap: wrap.getBoundingClientRect().left - combo.left,
+          listStyle: getComputedStyle(wrap).listStyleType,
+          pills: [...wrap.querySelectorAll('.euiComboBoxPill')].map(
+            (pill) => pill.getBoundingClientRect().left - combo.left
+          )
+        };
+      };
+
+      assert.deepEqual(offsets('prose'), offsets('plain'));
+      assert.strictEqual(offsets('prose').listStyle, 'none');
+    });
+
+    test('the announcement of the results is for screen readers only', async function (assert) {
+      await render(<template><EuiComboBox @options={{OPTIONS}} as |o|>{{o}}</EuiComboBox></template>);
+      await open();
+
+      const status = document.querySelector('.ember-power-select-visually-hidden[role="status"]')!;
+      const rect = status.getBoundingClientRect();
+
+      assert.dom(status).hasText('3 results');
+      assert.true(rect.width <= 1 && rect.height <= 1, 'takes no space');
+    });
   });
 });

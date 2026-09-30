@@ -45,3 +45,25 @@
 .euiSelectableListItem__append:empty {
   display: none;
 }
+
+/*
+  ember-power-select renders EuiComboBox's input wrap as a list (<ul>), where
+  EUI has a <div>: keep list styles, e.g. EuiText's prose margin, off it.
+*/
+.euiComboBox .euiComboBox__inputWrap {
+  margin: 0;
+  list-style: none;
+}
+
+/*
+  ember-power-select's announcements for screen readers ("3 results"), hidden
+  like EuiScreenReaderOnly (core does not load ember-power-select's styles).
+*/
+.ember-power-select-visually-hidden {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

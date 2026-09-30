@@ -8,6 +8,8 @@ import Resolver from 'ember-resolver';
 import config from 'site/config/environment';
 
 import '@ember-eui/core/styles/ember-eui.css';
+// layout of the prose code blocks (e.g. the copy button in the corner)
+import '@docfy/ember/code-block.css';
 import 'flatpickr/dist/flatpickr.css';
 
 if (macroCondition(isDevelopingApp())) {

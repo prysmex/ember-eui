@@ -264,3 +264,20 @@ button {
 .euiText th {
   font-weight: 600;
 }
+
+/* the copy button of the prose code blocks, placed by docfy's code-block.css */
+.docfy-code-block__copy {
+  z-index: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.docfy-code-block__copy:hover,
+.docfy-code-block__copy:focus-visible {
+  text-decoration: underline;
+  opacity: 1;
+}

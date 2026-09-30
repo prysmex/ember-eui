@@ -1,5 +1,11 @@
 # @ember-eui/flatpickr
 
+## 14.1.0
+
+### Minor Changes
+
+- fixes and docs
+
 ## 14.0.0
 
 ### Major Changes

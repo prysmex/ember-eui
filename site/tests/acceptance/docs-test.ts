@@ -36,6 +36,21 @@ module('Acceptance | docs', function (hooks) {
     assert.strictEqual(document.body.style.paddingBottom, '');
   });
 
+  test('tables scroll on their own, so narrow screens keep the page width', async function (assert) {
+    await visit('/docs/core/docs/forms/combo-box');
+
+    const tables = [...document.querySelectorAll('.euiPageBody table')];
+
+    assert.ok(tables.length > 0, 'the API reference has tables');
+    assert.deepEqual(
+      tables.filter(
+        (table) => !table.parentElement?.classList.contains('guideTableScroll'),
+      ),
+      [],
+      'every table is in a scroll container (lib/docfy-scroll-tables.mjs)',
+    );
+  });
+
   test('a component page renders its demos and code tabs', async function (assert) {
     await visit('/docs/core/docs/display/card');
 

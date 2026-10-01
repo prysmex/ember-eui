@@ -21,7 +21,7 @@ For your own svgs to take a color, remove their `fill` attributes.
 <EuiFlexGroup @gutterSize="l" @wrap={{true}}>
   {{#each this.colors as |color|}}
     <EuiFlexItem @grow={{false}}>
-      <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s">
+      <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s" @responsive={{false}}>
         <EuiFlexItem @grow={{false}}>
           <EuiIcon @type="brush" @size="l" @color={{color}} />
         </EuiFlexItem>

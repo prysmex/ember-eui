@@ -108,12 +108,22 @@ body.euiBody--headerIsFixed {
 
 /* Elastic UI docs specific */
 
-.docfy-demo__description {
-  padding: 24px;
+/*
+  the page's gutter, which prose and demos share (on the page body, not the
+  panel around it, which gets the same class)
+*/
+.euiPageBody.pageBodyShadow:not(.euiPanel) {
+  padding-inline: 24px;
 }
 
-.docfy-demo {
-  padding-inline: 24px;
+@media only screen and (width <= 574px) {
+  .euiPageBody.pageBodyShadow:not(.euiPanel) {
+    padding-inline: 16px;
+  }
+}
+
+.docfy-demo__description {
+  padding-block: 24px;
 }
 
 .guideSectionTabs {
@@ -280,4 +290,31 @@ button {
 .docfy-code-block__copy:focus-visible {
   text-decoration: underline;
   opacity: 1;
+}
+
+/* markdown tables (lib/docfy-scroll-tables.mjs) scroll sideways when wide */
+.guideTableScroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* demos fit narrow screens: images shrink to the panel ... */
+.docfy-demo__example .euiImage__img {
+  max-width: 100%;
+}
+
+/*
+  ... and content wider than a phone (e.g. a full header) scrolls in its
+  panel instead of widening the page. Phones only: the scroll container
+  would clip anything a demo renders in place outside its panel.
+*/
+@media (width <= 767px) {
+  .docfy-demo__example {
+    overflow-x: auto;
+  }
+}
+
+/* a line of code that cannot wrap scrolls in its block, not the page */
+.docfy-code-block pre {
+  overflow-x: auto;
 }

@@ -3,12 +3,13 @@ import { fileURLToPath } from 'node:url';
 
 import autoImportComponents from './lib/docfy-auto-imports.mjs';
 import demosOutsideProse from './lib/docfy-demos-outside-prose.mjs';
+import scrollTables from './lib/docfy-scroll-tables.mjs';
 import remarkKeepHeadingDepth from './lib/remark-keep-heading-depth.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 
 export default {
-  plugins: [demosOutsideProse, autoImportComponents],
+  plugins: [demosOutsideProse, scrollTables, autoImportComponents],
   remarkPlugins: [remarkKeepHeadingDepth],
   sources: [
     {

@@ -86,7 +86,8 @@ export interface EuiBadgeSignature {
 
 const EuiBadge: TemplateOnlyComponent<EuiBadgeSignature> = <template>
   {{#if (and (or @onClick @href) (not @iconType))}}
-    {{#if @onClick}}
+    {{! like EUI: a disabled badge is a disabled button, as <a> cannot be disabled }}
+    {{#if (or @onClick @isDisabled)}}
       <button
         type="button"
         class={{classNames
@@ -122,8 +123,6 @@ const EuiBadge: TemplateOnlyComponent<EuiBadgeSignature> = <template>
         }}
         target={{@target}}
         href={{@href}}
-        aria-label={{if @onClick @onClickAriaLabel}}
-        disabled={{@isDisabled}}
         ...attributes
         {{simpleStyle
           (inlineStyles
@@ -157,7 +156,7 @@ const EuiBadge: TemplateOnlyComponent<EuiBadgeSignature> = <template>
     >
       <span class="euiBadge__content">
         {{#if (has-block)}}
-          {{#if @onClick}}
+          {{#if (or @onClick @isDisabled)}}
             <button
               class="euiBadge__childButton"
               type="button"
@@ -171,7 +170,6 @@ const EuiBadge: TemplateOnlyComponent<EuiBadgeSignature> = <template>
               class="euiBadge__childButton"
               href={{@href}}
               target={{@target}}
-              disabled={{@isDisabled}}
             >
               {{yield}}
             </a>

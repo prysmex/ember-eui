@@ -45,4 +45,11 @@ module('Integration | Component | eui-link', function (hooks) {
     assert.strictEqual(clicks, 1);
     assert.dom('button.disabled').isDisabled();
   });
+
+  test('a disabled link with @href is a disabled button, as links cannot be disabled', async function (assert) {
+    await render(<template><EuiLink @href="#here" @disabled={{true}} class="off">Off</EuiLink></template>);
+
+    assert.dom('a').doesNotExist();
+    assert.dom('button.off').isDisabled().hasClass('euiLink-disabled');
+  });
 });

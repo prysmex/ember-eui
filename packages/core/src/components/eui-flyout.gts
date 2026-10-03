@@ -373,7 +373,6 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
             tabindex={{-1}}
             {{!@glint-expect-error}}
             {{currentStyles}}
-            {{!@glint-expect-error}}
             {{focusTrapModifier}}
             {{outsideClickDetector}}
             {{onEscape}}
@@ -406,7 +405,6 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
             class={{classes}}
             tabindex={{-1}}
             {{currentStyles}}
-            {{!@glint-expect-error}}
             {{focusTrapModifier}}
             {{outsideClickDetector}}
             {{onEscape}}
@@ -438,7 +436,6 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
           class={{classes}}
           tabindex={{-1}}
           {{currentStyles}}
-          {{!@glint-expect-error}}
           {{focusTrapModifier}}
           {{outsideClickDetector}}
           {{onEscape}}

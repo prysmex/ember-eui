@@ -96,10 +96,14 @@ Each component can also be imported on its own, e.g.
 classic `.hbs` templates the components are available by name without
 imports.
 
-For Glint (typed templates) in loose mode, add the registry to your types:
+With [Glint](https://typed-ember.gitbook.io/glint) 2 (`ember-tsc`), templates
+in `.gjs` / `.gts` files are type-checked through their imports: the
+components' arguments, blocks and the attributes their element accepts. No
+registry is needed. Apps still on Glint 1 with loose-mode `.hbs` templates can
+register the components by name:
 
 ```ts
-// types/glint.d.ts
+// types/glint.d.ts (Glint 1, loose mode)
 import type EmberEuiRegistry from '@ember-eui/core/template-registry';
 
 declare module '@glint/environment-ember-loose/registry' {

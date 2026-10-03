@@ -21,7 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      # also runs glint on each addon (build:types) and builds the site
+      # also writes each addon's declarations with ember-tsc (build:types)
+      # and builds the site; `pnpm lint` type-checks them (lint:types)
       - run: pnpm build
       - run: pnpm lint
       # fails when an argument's docs changed without `pnpm docs:api`

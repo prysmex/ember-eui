@@ -7,10 +7,20 @@
     "rootDir": "./src",
     "skipLibCheck": true,
     "noEmitOnError": false,
-    "types": ["ember-source/types"]
+    "types": [
+      "ember-source/types",
+      "@glint/ember-tsc/types"
+    ],
+    "plugins": [
+      {
+        "name": "@glint/tsserver-plugin"
+      }
+    ],
+    "noEmit": false,
+    "emitDeclarationOnly": true
   },
-  "include": ["src/**/*", "unpublished-development-types/**/*"],
-  "glint": {
-    "environment": ["ember-loose", "ember-template-imports"]
-  }
+  "include": [
+    "src/**/*",
+    "unpublished-development-types/**/*"
+  ]
 }

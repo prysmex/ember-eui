@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.0",
-    "@glint/core": "^1.5.2",
     "@pnpm/workspace.injected-deps-syncer": "1100.0.39",
     "concurrently": "^9.1.2",
     "prettier": "^3.0.3",

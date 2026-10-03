@@ -245,7 +245,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
                 {{/if}}
               {{/if}}
               {{#if (and (not normalFormControl) @isLoading)}}
-                <EuiProgress @size="xs" @color="accent" position="absolute" />
+                <EuiProgress @size="xs" @color="accent" @position="absolute" />
               {{/if}}
             </div>
           </div>

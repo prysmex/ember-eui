@@ -33,7 +33,7 @@ const EuiRangeThumb: TemplateOnlyComponent<EuiRangeThumbSignature> = <template>
     aria-valuemin={{@min}}
     aria-valuemax={{@max}}
     aria-valuenow={{castTo @value to="number"}}
-    aria-diabled={{@disabled}}
+    aria-disabled={{if @disabled "true"}}
     tabindex={{if @disabled -1 (if @tabIndex @tabIndex 0)}}
     ...attributes
   >
@@ -42,7 +42,7 @@ const EuiRangeThumb: TemplateOnlyComponent<EuiRangeThumbSignature> = <template>
       aria-valuemin={{@min}}
       aria-valuemax={{@max}}
       aria-valuenow={{castTo @value to="number"}}
-      aria-diabled={{@disabled}}
+      aria-disabled={{if @disabled "true"}}
       tabindex={{if @disabled -1 (if @tabIndex 0)}}
     ></div>
   </button>

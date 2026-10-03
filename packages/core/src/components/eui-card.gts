@@ -228,7 +228,6 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
               <a
                 class="euiCard__titleAnchor"
                 target={{@target}}
-                disabled={{@isDisabled}}
                 href={{@href}}
                 {{didInsert (set this "link")}}
               >

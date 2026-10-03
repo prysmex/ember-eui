@@ -12,7 +12,8 @@ import type { EuiButtonContentSignature } from './eui-button-content';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonSignature {
-  Element: HTMLElement;
+  /** A button, a link (with `@href`) or what `@element` names, e.g. a label. */
+  Element: HTMLButtonElement | HTMLAnchorElement | HTMLLabelElement;
   Args: {
     /**
      * @private Class prefix, so other buttons can reuse this markup.

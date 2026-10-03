@@ -38,7 +38,7 @@ const EuiFormLabel: TemplateOnlyComponent<EuiFormLabelSignature> = <template>
     as |classes|
   }}
     {{#if (eq @type "legend")}}
-      <legend class={{classes}} for={{@for}} ...attributes>
+      <legend class={{classes}} ...attributes>
         {{@label}}
         {{yield}}
       </legend>

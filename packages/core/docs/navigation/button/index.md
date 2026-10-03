@@ -72,6 +72,8 @@ Deprecated: `@useComponent` (Not needed: a component passed as `@iconType` is re
 | --- | --- |
 | default block | The button's text. |
 
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<a>` / `<label>`.
+
 ### EuiButtonEmpty
 
 | Argument | Type | Default | Description |

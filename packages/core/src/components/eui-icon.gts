@@ -303,7 +303,6 @@ export default class EuiIcon extends Component<EuiIconSignature> {
             componentName="EuiIcon"
             size=this.size
           }}
-          color={{@color}}
           alt={{if @title @title}}
           {{! @glint-expect-error }}
           tabIndex={{@tabIndex}}

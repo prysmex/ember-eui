@@ -1,4 +1,4 @@
-import { and,eq, notEq, or } from 'ember-truth-helpers';
+import { and, eq, not, notEq, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -44,16 +44,12 @@ export interface EuiLinkSignature {
 
 const EuiLink: TemplateOnlyComponent<EuiLinkSignature> = <template>
   {{#let (argOrDefault @color "primary") as |color|}}
-    {{#if @href}}
+    {{! like EuiTab and EuiBadge: <a> cannot be disabled, a disabled link is a button }}
+    {{#if (and @href (not @disabled))}}
       <a
         href={{@href}}
-        class={{classNames
-          (if @disabled "euiLink--disabled")
-          componentName="EuiLink"
-          color=(unless @disabled color)
-        }}
+        class={{classNames componentName="EuiLink" color=color}}
         target={{@target}}
-        disabled={{@disabled}}
         ...attributes
       >
 

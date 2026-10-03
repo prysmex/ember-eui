@@ -100,7 +100,7 @@ export default class ValidatedFormFieldTextArea extends ValidatedFormFieldBase<F
             @rows={{@rows}}
             autofocus={{@autofocus}}
             placeholder={{@placeholder}}
-            readOnly={{@readOnly}}
+            readonly={{@readOnly}}
             ...attributes
             {{on "input" this.handleChange}}
           >

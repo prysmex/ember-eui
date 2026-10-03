@@ -4,6 +4,7 @@ import { click, fillIn, render } from '@ember/test-helpers';
 
 import EuiDualRange from '#src/components/eui-dual-range.gts';
 import EuiRange from '#src/components/eui-range.gts';
+import EuiRangeThumb from '#src/components/eui-range-thumb.gts';
 
 const noop = () => {};
 const DUAL_VALUE = [2, 8];
@@ -221,5 +222,18 @@ module('Integration | Component | eui-range', function (hooks) {
 
     assert.dom('.euiRangeThumb').exists({ count: 2 });
     assert.dom('.euiRangeThumb:first-of-type').hasAttribute('aria-valuenow', '2');
+  });
+
+  test('a disabled thumb is announced as disabled', async function (assert) {
+    await render(
+      <template>
+        <EuiRangeThumb @min={{0}} @max={{10}} @value={{5}} @disabled={{true}} class="off" />
+        <EuiRangeThumb @min={{0}} @max={{10}} @value={{5}} class="on" />
+      </template>
+    );
+
+    assert.dom('button.off').hasAria('disabled', 'true');
+    assert.dom('button.off [role="slider"]').hasAria('disabled', 'true');
+    assert.dom('button.on').doesNotHaveAria('disabled');
   });
 });

@@ -95,7 +95,6 @@ export default class EuiChangesetFormFieldComboBox extends Base<EuiChangesetForm
           @searchEnabled={{argOrDefault @searchEnabled true}}
           @searchField={{@searchField}}
           aria-label={{@ariaLabel}}
-          form={{@formId}}
           @isInvalid={{this.isInvalid}}
           @isDisabled={{@isDisabled}}
           @fullWidth={{@fullWidth}}

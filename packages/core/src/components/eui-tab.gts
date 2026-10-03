@@ -40,13 +40,8 @@ const EuiTab: TemplateOnlyComponent<EuiTabSignature> = <template>
         id={{id}}
         role="tab"
         aria-selected={{if @isSelected "true" "false"}}
-        class={{classNames
-          "euiTab"
-          (if @isSelected "euiTab-isSelected")
-          (if @disabled "euiTab-isDisabled")
-        }}
+        class={{classNames "euiTab" (if @isSelected "euiTab-isSelected")}}
         href={{@href}}
-        disabled={{@disabled}}
         ...attributes
       >
         {{#if (has-block "prepend")}}

@@ -62,4 +62,17 @@ module('Integration | Component | eui-badge', function (hooks) {
     assert.dom('.euiBadge').hasClass('euiBadge--iconRight');
     assert.dom('.euiBadge svg.euiIcon').exists();
   });
+
+  test('a disabled badge with @href is a disabled button, as links cannot be disabled', async function (assert) {
+    await render(
+      <template>
+        <EuiBadge @href="#here" @isDisabled={{true}} class="plain">Off</EuiBadge>
+        <EuiBadge @href="#here" @isDisabled={{true}} @iconType="check" class="icon">Off</EuiBadge>
+      </template>
+    );
+
+    assert.dom('button.plain').isDisabled().hasClass('euiBadge-isDisabled');
+    assert.dom('.icon button.euiBadge__childButton').isDisabled();
+    assert.dom('a').doesNotExist();
+  });
 });

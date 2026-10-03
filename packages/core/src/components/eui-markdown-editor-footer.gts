@@ -120,14 +120,14 @@ export default class EuiMarkdownEditorFooterComponent extends Component<EuiMarkd
             <EuiHorizontalRule />
             {{#each @uiPlugins as |uiPlugin|}}
               {{#if uiPlugin.helpText}}
-                <EuiTitle size="xxs">
+                <EuiTitle @size="xxs">
                   <p>
                     <strong>{{uiPlugin.name}}</strong>
                   </p>
                 </EuiTitle>
-                <EuiSpacer size="s" />
+                <EuiSpacer @size="s" />
                 <EuiMarkdownFormat @value={{uiPlugin.helpText}} />
-                <EuiSpacer size="l" />
+                <EuiSpacer @size="l" />
 
               {{/if}}
             {{/each}}

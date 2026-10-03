@@ -106,7 +106,6 @@ export default class ValidatedFormFieldComboBox extends ValidatedFormFieldBase<F
             @searchMessage={{@searchMessage}}
             @search={{@search}}
             aria-label={{@ariaLabel}}
-            form={{@formId}}
             @isInvalid={{this.isInvalidAndTouched}}
             @isClearable={{@isClearable}}
             @fullWidth={{@fullWidth}}

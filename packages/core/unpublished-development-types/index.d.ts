@@ -1,23 +1,7 @@
 /// <reference types="@svg-jar/plugin/client/ember" />
-import '@glint/environment-ember-loose';
-import '@glint/environment-ember-template-imports';
 
-import Modifier from 'ember-modifier';
-
-
-declare class RenderModifier<
-  Args extends unknown[] = unknown[]
-> extends Modifier<{
-  Element: HTMLElement;
-  Args: { Positional: [(element: Element, args: Args) => void, ...Args] };
-}> {}
-
-declare module '@glint/environment-ember-loose/registry' {
-  export default interface Registry {
-    'did-insert': typeof RenderModifier;
-    'will-destroy': typeof RenderModifier;
-  }
-}
+// a module, so the declarations below extend the modules they name
+export {};
 
 declare module '@glimmer/tracking' {
   /**

@@ -1,5 +1,21 @@
 # @ember-eui/core
 
+## 14.1.1
+
+### Patch Changes
+
+- c37c14b: EuiComboBox with groups: choosing an option selected the wrong item (often a
+  whole group, shown as an empty pill).
+- 6f269da: EuiComboBox: the input no longer shifts right inside EuiText (or anywhere
+  lists are styled), and ember-power-select's screen reader announcement
+  ("3 results") no longer shows under the options. Both fixes are in
+  `@ember-eui/core/styles/ember-eui.css`.
+- 00421f6: EuiComboBox's options list shows above modals and flyouts again: its
+  z-index is now set through ember-basic-dropdown's
+  `--ember-basic-dropdown-content-z-index`, so it no longer depends on which
+  stylesheet loads last.
+- Publush last fixes
+
 ## 14.1.0
 
 ### Minor Changes

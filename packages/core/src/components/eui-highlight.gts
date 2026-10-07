@@ -43,7 +43,7 @@ export function highlightChunks(
   let last = 0;
 
   for (const match of text.matchAll(regex)) {
-    const start = match.index;
+    const start = match.index!;
 
     if (start > last) chunks.push({ text: text.slice(last, start), highlight: false });
     chunks.push({ text: match[0], highlight: true });

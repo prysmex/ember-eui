@@ -3,7 +3,6 @@ import Helper from '@ember/component/helper';
 import { cancel, later } from '@ember/runloop';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
-import type { Timer } from '@ember/runloop';
 
 /**
  * Keeps its content shown for a minimum time once it appears, even if
@@ -33,7 +32,7 @@ class IsShown extends Helper<{
 }> {
   countdown = 0;
   @tracked expiredCountdown = 0;
-  timer?: Timer;
+  timer?: ReturnType<typeof later>;
   wasHidden?: boolean;
 
   compute([hide, minimumDuration]: [boolean | undefined, number | undefined]): boolean {

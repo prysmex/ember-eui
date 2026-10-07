@@ -74,7 +74,7 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
   prevPanelId: string | null = null;
   nextPanelId: string | null = null;
   containerSize = 1;
-  element?: HTMLElement;
+  registeredElement?: HTMLElement;
 
   get isHorizontal(): boolean {
     return (this.args.direction ?? 'horizontal') === 'horizontal';
@@ -85,9 +85,9 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
   }
 
   measure(): void {
-    if (!this.element) return;
+    if (!this.registeredElement) return;
 
-    const { width, height } = this.element.getBoundingClientRect();
+    const { width, height } = this.registeredElement.getBoundingClientRect();
 
     this.containerSize = this.isHorizontal ? width : height;
   }
@@ -346,7 +346,7 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
   }
 
   registerElement = modifier((element: HTMLElement) => {
-    this.element = element;
+    this.registeredElement = element;
     this.measure();
   });
 

@@ -72,7 +72,7 @@ interface Slot {
 }
 
 export default class EuiDroppable extends Component<EuiDroppableSignature> {
-  element?: HTMLElement;
+  registeredElement?: HTMLElement;
   // item positions, measured once per drag (before items slide)
   slots?: Slot[];
   slotsSession?: number;
@@ -122,9 +122,9 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
 
   /** The list's items in order. */
   items(): HTMLElement[] {
-    if (!this.element) return [];
+    if (!this.registeredElement) return [];
 
-    return Array.from(this.element.children).filter(
+    return Array.from(this.registeredElement.children).filter(
       (el): el is HTMLElement => el instanceof HTMLElement && el.classList.contains('euiDraggable')
     );
   }
@@ -175,7 +175,7 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
   onDragLeave(event: DragEvent): void {
     const next = event.relatedTarget as Node | null;
 
-    if (!this.accepts || (next && this.element?.contains(next))) return;
+    if (!this.accepts || (next && this.registeredElement?.contains(next))) return;
 
     if (this.isDraggingOver) this.context.setDestination(null);
   }
@@ -189,7 +189,7 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
   }
 
   register = modifier((element: HTMLElement) => {
-    this.element = element;
+    this.registeredElement = element;
   });
 
   <template>

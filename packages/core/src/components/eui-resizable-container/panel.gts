@@ -72,7 +72,7 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
   @service declare euiI18n: EuiI18n;
 
   ownId = `resizable-panel_${randomId()}`;
-  element?: HTMLElement;
+  registeredElement?: HTMLElement;
   // ids of the resize buttons before and after it
   resizerIds: [string, string] = ['', ''];
 
@@ -202,7 +202,7 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
   }
 
   register = modifier((element: HTMLElement, [size, minSize, mode]: [number | undefined, string | undefined, unknown]) => {
-    this.element = element;
+    this.registeredElement = element;
     void mode;
 
     const id = this.id;
@@ -317,4 +317,3 @@ function fnToggle(
 ): (event: MouseEvent) => void {
   return (event) => handler(position, event);
 }
-

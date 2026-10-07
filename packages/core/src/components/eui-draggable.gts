@@ -61,7 +61,7 @@ export interface EuiDraggableSignature {
 export default class EuiDraggable extends Component<EuiDraggableSignature> {
   @tracked handleActive = false;
 
-  element?: HTMLElement;
+  registeredElement?: HTMLElement;
 
   get droppable(): EuiDroppable {
     return this.args.droppable;
@@ -157,9 +157,9 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
   }
 
   size(): number {
-    if (!this.element) return 0;
+    if (!this.registeredElement) return 0;
 
-    const rect = this.element.getBoundingClientRect();
+    const rect = this.registeredElement.getBoundingClientRect();
 
     return this.droppable.isHorizontal ? rect.width : rect.height;
   }
@@ -235,7 +235,7 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
   }
 
   register = modifier((element: HTMLElement) => {
-    this.element = element;
+    this.registeredElement = element;
   });
 
   /** For `@customDragHandle`: only a press on the handle makes the item draggable. */

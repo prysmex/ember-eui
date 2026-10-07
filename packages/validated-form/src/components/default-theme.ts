@@ -1,3 +1,4 @@
+import ValidatedFormComponent from './validated-form.gts';
 import FieldBase from './validated-form/field-base.gts';
 import FieldCheckboxGroupComponent from './validated-form/field-checkbox-group.gts';
 import FieldComboBoxComponent from './validated-form/field-combo-box.gts';
@@ -15,6 +16,7 @@ import FieldTextAreaComponent from './validated-form/field-text-area.gts';
 import type { ComponentLike } from '@glint/template';
 
 export interface IValidatedFormTheme {
+  FieldNestedForm: ComponentLike<any>;
   FieldBase: ComponentLike<any>;
   FieldNumber: ComponentLike<any>;
   FieldText: ComponentLike<any>;
@@ -31,6 +33,10 @@ export interface IValidatedFormTheme {
 }
 
 export const ValidatedFormDefaultTheme: IValidatedFormTheme = {
+  // Resolve lazily because ValidatedForm also imports its default theme.
+  get FieldNestedForm(): ComponentLike<any> {
+    return ValidatedFormComponent;
+  },
   FieldBase: FieldBase,
   FieldNumber: FieldNumberComponent,
   FieldText: FieldTextComponent,

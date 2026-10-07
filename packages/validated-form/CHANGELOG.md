@@ -1,5 +1,17 @@
 # @ember-eui/validated-form
 
+## 8.0.66
+
+### Patch Changes
+
+- nested form
+- fbd6fc9: Add yielded Form and FieldNestedForm components that contribute aggregate validity and touched state to their parent, with recursive submit touch handling and outer form input association.
+
+  Allow the nested form component to be overridden through theme.FieldNestedForm for application-specific wrappers and model-aware yielded fields.
+
+- Updated dependencies
+  - @ember-eui/core@8.0.66
+
 ## 8.0.65
 
 ### Patch Changes

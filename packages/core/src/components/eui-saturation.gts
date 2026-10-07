@@ -4,7 +4,7 @@ import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { schedule } from '@ember/runloop';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import { modifier } from 'ember-modifier';
 

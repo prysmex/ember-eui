@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiContextMenuPanel from './eui-context-menu-panel.gts';

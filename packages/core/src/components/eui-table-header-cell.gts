@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { on } from '@ember/modifier';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import { element } from 'ember-element-helper';
 

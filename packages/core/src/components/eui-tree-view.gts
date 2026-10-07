@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import { randomId } from '../-private/random-id.ts';
 import EuiIcon from './eui-icon.gts';

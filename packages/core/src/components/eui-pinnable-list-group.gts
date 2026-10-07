@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiListGroup from './eui-list-group.gts';

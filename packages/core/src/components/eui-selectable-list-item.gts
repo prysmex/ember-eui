@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import EuiBadge from './eui-badge.gts';
 import EuiIcon from './eui-icon.gts';

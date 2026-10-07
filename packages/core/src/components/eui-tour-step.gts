@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import { randomId } from '../-private/random-id.ts';
 import EuiBeacon from './eui-beacon.gts';

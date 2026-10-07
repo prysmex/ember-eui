@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import type EuiI18n from '../services/eui-i18n';
 

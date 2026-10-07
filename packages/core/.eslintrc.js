@@ -40,7 +40,24 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         '@typescript-eslint/restrict-plus-operands': 'off',
-        'no-prototype-builtins': 'off'
+        'no-prototype-builtins': 'off',
+        /**
+         * `service` is only exported by `@ember/service` in Ember 4.1+,
+         * we still support 3.28, so it must be `inject as service`
+         */
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: '@ember/service',
+                importNames: ['service'],
+                message:
+                  "Use `import { inject as service } from '@ember/service'`, `service` only exists in Ember 4.1+."
+              }
+            ]
+          }
+        ]
       }
     },
     // node files

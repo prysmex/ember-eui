@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import { getChromaColor } from '../-private/color.ts';
 import cssStyle from '../-private/css-style.ts';

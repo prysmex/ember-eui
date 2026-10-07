@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiInnerText from './eui-inner-text.gts';

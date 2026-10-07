@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import cssStyle from '../-private/css-style.ts';
 import EuiAvatar from './eui-avatar.gts';

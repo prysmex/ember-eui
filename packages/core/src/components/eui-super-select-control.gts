@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { service } from '@ember/service';
+import { inject as service } from '@ember/service';
 
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';

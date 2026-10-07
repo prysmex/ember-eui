@@ -165,6 +165,7 @@ valid.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the form; fields join it with `form=`. |
+| `@formId` | `string` |  | HTML form that owns the fields; inherited by nested forms. |
 | `@onInvalid` | `() => void` |  | Called on submit while a field is invalid (all fields show their errors). |
 | `@onSubmit` | `() => void \| Promise<void>` |  | Called on submit when every field is valid. If it returns a promise that rejects, the fields are marked touched again. |
 | `@onReset` | `(e: Event) => void` |  | Called when the form is reset. |

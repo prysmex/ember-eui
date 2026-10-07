@@ -1,5 +1,4 @@
 import { hash } from '@ember/helper';
-import Component from '@glimmer/component';
 import { blur, fillIn, focus, render, settled, triggerEvent } from '@ember/test-helpers';
 import { ValidatedFormDefaultTheme } from '#src/components/default-theme.ts';
 import ValidatedForm from '#src/components/validated-form.gts';
@@ -170,8 +169,7 @@ module('Integration | Component | validated-form | nested forms', function (hook
 
 
   test('themed nested wrappers can bind a model and preserve parent wiring', async function (assert) {
-    class ModelForm extends Component {
-      <template>
+    const ModelForm = <template>
       <ValidatedForm
         @theme={{@theme}}
         @register={{@register}}
@@ -190,8 +188,7 @@ module('Integration | Component | validated-form | nested forms', function (hook
           isValid=form.isValid
         )}}
       </ValidatedForm>
-    </template>
-    }
+    </template>;
 
     this.owner.register('component:model-form', ModelForm);
     this.setProperties({

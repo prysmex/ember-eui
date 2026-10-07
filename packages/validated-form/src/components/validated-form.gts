@@ -17,14 +17,14 @@ import type { IValidatedFormTheme } from './default-theme';
 import type FieldBase from './validated-form/field-base.gts';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 
+export type ValidatedFormChild = FieldBase | ValidatedFormComponent;
+
 /**
  * A form whose fields validate their own values with ember-validators
  * (`@validations`) or functions (`@customValidations`). Errors show once a
  * field is touched; submitting calls `@onSubmit` only when all fields are
  * valid.
  */
-export type ValidatedFormChild = FieldBase | ValidatedFormComponent;
-
 export interface ValidatedFormSignature {
   Element: EuiFormSignature['Element'];
   Args: {

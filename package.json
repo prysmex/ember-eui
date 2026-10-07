@@ -9,9 +9,9 @@
     "build": "pnpm turbo build",
     "build:site": "pnpm turbo build --filter site",
     "lint:js": "eslint . --fix --ext .js,.ts,.hbs,.gts,.gjs",
-    "start": "concurrently 'npm:_start:*' --names '_start:'",
+    "start": "concurrently --passthrough-arguments 'npm:_start:site -- {@}' 'npm:_start:packages' --names 'site,packages'",
     "_start:site": "pnpm --filter site start",
-    "_start:packages": "pnpm --stream -parallel --filter './packages/*' start --no-watch.clearScreen",
+    "_start:packages": "pnpm --stream --parallel --filter './packages/*' start --no-watch.clearScreen",
     "publish-packages": "pnpm build --filter './packages/*' && changeset version && changeset publish"
   },
   "devDependencies": {

@@ -16,14 +16,17 @@ import type { IValidatedFormTheme } from './default-theme';
 import type FieldBase from './validated-form/field-base.gts';
 import type { EuiFormSignature } from '@ember-eui/core/components/eui-form';
 
+export type ValidatedFormChild = FieldBase | ValidatedFormComponent;
+
 export interface ValidatedFormSignature {
   Element: EuiFormSignature['Element'];
   Args: {
     id?: string;
+    formId?: string;
     register?: (child: ValidatedFormComponent) => void;
     unregister?: (child: ValidatedFormComponent) => void;
-    addChild?: (child: FieldBase) => void;
-    removeChild?: (child: FieldBase) => void;
+    addChild?: (child: ValidatedFormChild) => void;
+    removeChild?: (child: ValidatedFormChild) => void;
     onInvalid?: () => void;
     onSubmit?: () => void;
     onReset?: (e: Event) => void;
@@ -49,13 +52,15 @@ export interface ValidatedFormSignature {
           isTouched: boolean,
           isInvalidAndTouched: boolean
         ) => void;
-        register: (child: FieldBase) => void;
-        unregister: (child: FieldBase) => void;
+        register: (child: ValidatedFormChild) => void;
+        unregister: (child: ValidatedFormChild) => void;
         isValid: boolean;
         isInvalid: boolean;
         isTouched: boolean;
         isInvalidAndTouched: boolean;
         formId: string;
+        Form: IValidatedFormTheme['FieldNestedForm'];
+        FieldNestedForm: IValidatedFormTheme['FieldNestedForm'];
         FieldBase: IValidatedFormTheme['FieldBase'];
         FieldNumber: IValidatedFormTheme['FieldNumber'];
         FieldText: IValidatedFormTheme['FieldText'];
@@ -75,7 +80,7 @@ export interface ValidatedFormSignature {
 }
 
 export default class ValidatedFormComponent extends Component<ValidatedFormSignature> {
-  @tracked childComponents = A<FieldBase>([]);
+  @tracked childComponents = A<ValidatedFormChild>([]);
   //cache to only notify if changed
   lastIsValid?: boolean;
   lastIsTouched?: boolean;
@@ -101,47 +106,62 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
     return this.isInvalid && this.isTouched;
   }
 
-  addChild(child: FieldBase) {
+  addChild(child: ValidatedFormChild) {
     this.childComponents.pushObject(child);
+    this.triggerValidityChange();
   }
 
-  removeChild(child: FieldBase) {
+  removeChild(child: ValidatedFormChild) {
     this.childComponents.removeObject(child);
   }
 
   @action
   async handleSubmit(e: Event) {
+    if (e.target !== e.currentTarget) {
+      return;
+    }
+
     e.preventDefault();
 
     if (this.isInvalid) {
-      this.childComponents.setEach('isTouched', true);
+      this.setIsTouched(true);
       this.args.onInvalid?.();
     } else {
-      this.childComponents.setEach('isTouched', false);
+      this.setIsTouched(false);
 
       try {
         await this.args.onSubmit?.();
       } catch (e) {
-        this.childComponents.setEach('isTouched', true);
+        this.setIsTouched(true);
       }
     }
   }
 
   @action
+  setIsTouched(isTouched: boolean) {
+    this.childComponents.forEach((child) => child.setIsTouched(isTouched));
+    this.updateValidity();
+  }
+
+  @action
   handleReset(e: Event) {
+    if (e.target !== e.currentTarget) {
+      return;
+    }
+
     e.preventDefault();
     this.args.onReset?.(e);
   }
 
   @action
-  register(child: FieldBase) {
+  register(child: ValidatedFormChild) {
     if (!this.isDestroyed) {
       schedule('afterRender', this, this.addChild, child);
     }
   }
 
   @action
-  unregister(child: FieldBase) {
+  unregister(child: ValidatedFormChild) {
     if (!this.isDestroyed) {
       schedule('afterRender', this, this.removeChild, child);
       // When adding a child the validation gets calculated on a `did-insert` modifier
@@ -178,6 +198,10 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   @action
   setNewValidity() {
     next(() => {
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
       this.isInvalid = !this.getIsValid();
       this.isTouched = this.getIsTouched();
 
@@ -200,12 +224,15 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
 
   @action
   onFocusOut(e: FocusEvent) {
-    
     const targetEuiFormRow = (e.target as HTMLInputElement)?.closest?.('.euiFormRow');
-    
+
+    if (!targetEuiFormRow) {
+      return;
+    }
+
     this.childComponents
       .find((child) => {
-        return targetEuiFormRow === child.formRowElement;
+        return 'formRowElement' in child && targetEuiFormRow === child.formRowElement;
       })
       ?.setIsTouched(true);
   }
@@ -240,13 +267,35 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
             isInvalid=this.isInvalid
             isTouched=this.isTouched
             isInvalidAndTouched=this.isInvalidAndTouched
-            formId=formId
+            formId=(argOrDefault @formId formId)
+            Form=(component
+              this.theme.FieldNestedForm
+              register=this.register
+              unregister=this.unregister
+              onValidityChange=this.onChildValidityChange
+              tagName="div"
+              formId=(argOrDefault @formId formId)
+              theme=@theme
+              isDisabled=@isDisabled
+              fullWidth=@fullWidth
+            )
+            FieldNestedForm=(component
+              this.theme.FieldNestedForm
+              register=this.register
+              unregister=this.unregister
+              onValidityChange=this.onChildValidityChange
+              tagName="div"
+              formId=(argOrDefault @formId formId)
+              theme=@theme
+              isDisabled=@isDisabled
+              fullWidth=@fullWidth
+            )
             FieldBase=(component
               this.theme.FieldBase
               register=this.register
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldNumber=(component
@@ -255,7 +304,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldText=(component
@@ -264,7 +313,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldPassword=(component
@@ -273,7 +322,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldTextArea=(component
@@ -282,7 +331,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldSelect=(component
@@ -291,7 +340,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldComboBox=(component
@@ -300,7 +349,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               isDisabled=@isDisabled
             )
             FieldCheckboxGroup=(component
@@ -309,7 +358,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldRadioGroup=(component
@@ -318,7 +367,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldRangeSlider=(component
@@ -327,7 +376,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldDualRangeSlider=(component
@@ -336,7 +385,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldSwitch=(component
@@ -345,7 +394,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
             FieldMarkdownEditor=(component
@@ -354,7 +403,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               unregister=this.unregister
               onValidityChange=this.onChildValidityChange
               fullWidth=@fullWidth
-              formId=formId
+              formId=(argOrDefault @formId formId)
               disabled=@isDisabled
             )
           )

@@ -1,0 +1,134 @@
+# Ember EUI
+
+> Ember components for Elastic's EUI design system: over a hundred accessible, themeable components (buttons, forms, layout, overlays, data display, a markdown editor, date pickers) for Ember apps, as v2 addons.
+
+Full text of every page, with examples and API references: https://ember-eui.vercel.app/llms-full.txt
+
+## Rules for using Ember EUI
+
+- Install `@ember-eui/core` with its peer dependencies (`@ember/string`, `ember-basic-dropdown`, `ember-concurrency`, `ember-focus-trap`, `ember-power-select`, `moment`) and import a theme once: `import '@ember-eui/core/themes/light.css'` (or `dark.css`) and `import '@ember-eui/core/styles/ember-eui.css'`.
+- In `.gjs`/`.gts`, import components by name: `import { EuiButton, EuiFormRow } from '@ember-eui/core/components';`. In classic `.hbs` templates they are available without imports.
+- Component options are arguments with `@` (`@iconType="check"`, `@size="s"`). Plain HTML attributes and modifiers (`class`, `aria-label`, `placeholder`, `{{on "click" …}}`) go to the component's main element. Writing an argument without `@` (`size="s"`) silently does nothing.
+- Form controls don't store their value: pass `@value` (or `@checked`) and update it from the event, e.g. `{{on "input" this.update}}` with `event.target.value`. `EuiSwitch` calls `@onChange(event)`; `EuiComboBox` calls `@onChange(selectedOptions)` with an array.
+- Wrap controls in `EuiFormRow` for a label, help text and errors (`@isInvalid` + `@error`); it links the label to the control automatically.
+- `EuiTitle` renders the heading itself: `<EuiTitle @size="s" @tagName="h2">Title</EuiTitle>`. Don't nest an `<h2>` inside it.
+- Icons: `<EuiIcon @type="bell" />` with EUI's icon names (lazy loaded), or your own svgs imported with `@svg-jar/plugin` and passed as `@type` / registered in the `euiIcon.icons` config. Icon-only buttons (`EuiButtonIcon`) need an `aria-label`.
+- Overlays (EuiModal, EuiFlyout, EuiPopover) are controlled: render modals/flyouts inside `{{#if this.isOpen}}` and close them in `@onClose`; popovers take `@isOpen` and `@closePopover`, with the trigger in the `<:button>` block and the content in `<:content>`.
+- Named blocks are used for parts of components (`<:title>`, `<:content>`, `<:prepend>`, …); each page's API reference lists them.
+
+## Guides
+
+- [Getting started](https://ember-eui.vercel.app/docs/getting-started): Ember EUI is Elastic's [EUI](https://eui.elastic.co) design system for Ember: over a hundred components (buttons, forms, layout, popovers, a markdown editor, a date picker, …) that share EUI's look, accessibility and …
+
+## @ember-eui/core
+
+- [Aspect ratio](https://ember-eui.vercel.app/docs/core/docs/display/aspect-ratio): `EuiAspectRatio` keeps one child (an `<iframe>`, `<video>`, image or map) at a fixed ratio while it takes the available width: `@width={{16}} @height={{9}}`for widescreen video,`1`and`1` for a square.
+- [Avatar](https://ember-eui.vercel.app/docs/core/docs/display/avatar): The **EuiAvatar** component typically creates a user icon.
+- [Badge](https://ember-eui.vercel.app/docs/core/docs/display/badge): **EuiBadges** are used to focus on important bits of information.
+- [Beacon](https://ember-eui.vercel.app/docs/core/docs/display/beacon): `EuiBeacon` is a pulsing dot that draws the eye to something new or something a guided tour points at.
+- [Callout](https://ember-eui.vercel.app/docs/core/docs/display/callout): **EuiCallOut** contains a message directly related to content on the page.
+- [Card](https://ember-eui.vercel.app/docs/core/docs/display/card): **EuiCard** is a content-oriented component built on top of EuiPanel.
+- [Comment List](https://ember-eui.vercel.app/docs/core/docs/display/comment-list): `EuiCommentList` shows a timeline of `EuiComment`s, like the activity of an issue: comments with a body, and one-line updates ("closed the issue").
+- [Description list](https://ember-eui.vercel.app/docs/core/docs/display/description-list): `EuiDescriptionList` shows pairs of terms and descriptions (a `<dl>`), e.g.
+- [Empty prompt](https://ember-eui.vercel.app/docs/core/docs/display/empty-prompt): The **EuiEmptyPrompt** is the building block to create an empty state.
+- [Health](https://ember-eui.vercel.app/docs/core/docs/display/health): The **EuiHealth** component should be used when showing comparitive health of listed objects (like servers, HTTP response status codes(as per convenience), nodes, indexes..etc).
+- [Highlight and mark](https://ember-eui.vercel.app/docs/core/docs/display/highlight-and-mark): `EuiHighlight` renders a string with the parts that match a search highlighted, e.g.
+- [Icons](https://ember-eui.vercel.app/docs/core/docs/display/icons): `<EuiIcon>` renders one of EUI's ~470 named icons, an svg component of your own, or an image URL.
+- [Image](https://ember-eui.vercel.app/docs/core/docs/display/image): Use **EuiImage** when you need to place a static image into a page with an optional caption.
+- [List Group](https://ember-eui.vercel.app/docs/core/docs/display/list-group): `EuiListGroup` renders a list of `EuiListGroupItem`s: navigation links, a list of actions, or plain rows, each with an optional icon and an extra action on the right.
+- [Loading](https://ember-eui.vercel.app/docs/core/docs/display/loading): Loading indicators, from smallest to largest: - **`EuiLoadingSpinner`** for a part of the page or an action in progress (buttons and fields have their own `@isLoading`).
+- [Notification Event](https://ember-eui.vercel.app/docs/core/docs/display/notification-event): `EuiNotificationEvent` is one entry of a notifications list (usually in a flyout opened from the header): its source, severity, time, title, messages, read state and actions.
+- [Progress](https://ember-eui.vercel.app/docs/core/docs/display/progress): `EuiProgress` shows progress as a bar.
+- [Text](https://ember-eui.vercel.app/docs/core/docs/display/text): **EuiText** is a generic catchall wrapper that will apply our standard typography styling and spacing to naked HTML.
+- [Text diff](https://ember-eui.vercel.app/docs/core/docs/display/text-diff): `EuiTextDiff` shows what changed between two versions of a text, inline: removed text in `<del>` (struck through), added text in `<ins>` (underlined).
+- [Title](https://ember-eui.vercel.app/docs/core/docs/display/title): `EuiTitle` renders a heading styled with EUI's type scale.
+- [Toast](https://ember-eui.vercel.app/docs/core/docs/display/toast): Toasts are short messages that appear in a corner of the window, e.g.
+- [Token](https://ember-eui.vercel.app/docs/core/docs/display/token): `EuiToken` is a small icon in a colored shape that tells the type of something at a glance: a field's type (string, number, date, geo point…) in a list of fields, or a symbol's kind in code search.
+- [Tooltip](https://ember-eui.vercel.app/docs/core/docs/display/tool-tip): A tooltip shows a short hint when its anchor is hovered or focused: what an icon button does, or the full text of a truncated label.
+- [Tour](https://ember-eui.vercel.app/docs/core/docs/display/tour): A tour walks users through a page step by step: each step is a popover with a pulsing beacon next to the element it explains, a title, text, the progress, and a button to skip or end the tour.
+- [Tree view](https://ember-eui.vercel.app/docs/core/docs/display/tree-view): `EuiTreeView` shows a hierarchy that opens and closes, like folders and files or sections and pages.
+- [Code](https://ember-eui.vercel.app/docs/core/docs/editors/code): `EuiCode` shows inline code and `EuiCodeBlock` multi-line code, both with syntax highlighting for a `@language` (`js`, `ts`, `html`, `css`, `json`, `bash`, `hbs`, `sql`, …; unknown languages are shown as plain text).
+- [Base editor](https://ember-eui.vercel.app/docs/core/docs/editors/markdown-editor/base-editor): `EuiMarkdownEditor` is a markdown textarea with a formatting toolbar, a preview tab and interactive task lists; `EuiMarkdownFormat` renders markdown with EUI's styles (use it to show saved markdown).
+- [Color palette picker](https://ember-eui.vercel.app/docs/core/docs/forms/color-palette-picker): `EuiColorPalettePicker` picks a color palette, e.g.
+- [Color picker](https://ember-eui.vercel.app/docs/core/docs/forms/color-picker): `EuiColorPicker` is a color field: a text input showing the color that opens a popover to pick it from a saturation square, a hue slider and swatches.
+- [Color stops](https://ember-eui.vercel.app/docs/core/docs/forms/color-stops): `EuiColorStops` edits a gradient made of color stops, each a value and a color, e.g.
+- [Combo box](https://ember-eui.vercel.app/docs/core/docs/forms/combo-box): `EuiComboBox` is a searchable select for picking one or many options from a (possibly long) list, with optional custom values.
+- [Date picker range](https://ember-eui.vercel.app/docs/core/docs/forms/date-picker-range): `EuiDatePickerRange` joins a start and an end date input into one field with an arrow between them.
+- [Expression](https://ember-eui.vercel.app/docs/core/docs/forms/expression): `EuiExpression` builds sentence-like rules and queries, like **WHEN** `avg()` **OF** `bytes` **IS ABOVE** `100`.
+- [Facet](https://ember-eui.vercel.app/docs/core/docs/forms/facet): Facets filter a list by one value at a time and show how many items have it, like the filters beside search results.
+- [Filter group](https://ember-eui.vercel.app/docs/core/docs/forms/filter-group): A filter group is a bar of filter buttons, usually beside a search field above a list or table: - **`EuiFilterGroup`** joins the buttons in one bordered bar.
+- [Checkbox](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/checkbox): `EuiCheckbox` renders an `<input type="checkbox">` with its label.
+- [Checkbox group](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/checkbox-group): `EuiCheckboxGroup` renders a list of checkboxes from `@options`.
+- [File picker](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/file-picker): **EuiFilePicker** is a stylized, but generic HTML `<input type="file">` tag.
+- [Form control layout](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/form-control-layout): Building block only **EuiFormControlLayout** is generally used internally to consistently style form controls, but it's published in case you want to create your own form control which matches those of EUI.
+- [Form control layout delimited](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/form-control-layout-delimited): Building block only Like **EuiFormControlLayout**, **EuiFormControlLayoutDelimited** is generally used internally to consistently style form controls.
+- [Number field](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/number-field): `EuiFieldNumber` renders an `<input type="number">`: arrows and the keyboard's up/down keys change the value by `@step`, within `@min` and `@max`.
+- [Password field](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/password-field): `EuiFieldPassword` is an input for passwords and other secrets.
+- [Radio](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/radio): `EuiRadio` renders one `<input type="radio">` with its label.
+- [Radio group](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/radio-group): `EuiRadioGroup` renders a group of radios from `@options` (`{ id, label }`) and checks the one whose id is `@idSelected`.
+- [Range](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/range): `EuiRange` is a slider for picking a number between `@min` and `@max` (0 and 100 by default) in `@step`s; `EuiDualRange` picks a range with two thumbs (`@value` is `[lower, upper]`).
+- [Search field](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/search-field): `EuiFieldSearch` is a text input with a search icon and a clear button.
+- [Select](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/select): `EuiSelect` renders a native `<select>` styled like the other fields.
+- [Switch](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/switch): `EuiSwitch` is an on/off toggle.
+- [Text field](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/text-field): `EuiFieldText` renders an `<input type="text">` styled for EUI, with optional icon, clear button, loading spinner and content before or after the input.
+- [Textarea](https://ember-eui.vercel.app/docs/core/docs/forms/form-controls/textarea): `EuiTextArea` renders a `<textarea>` for multi-line text.
+- [Form layouts](https://ember-eui.vercel.app/docs/core/docs/forms/form-layouts): Forms are built from **form rows**: `EuiFormRow` wraps one control (a text field, a select, a group of radios, …) with its label, help text and error messages, and links the label to the control for you.
+- [Described form groups](https://ember-eui.vercel.app/docs/core/docs/forms/form-layouts/described-form-groups): `EuiDescribedFormGroup` splits a long form into titled sections, each with an explanation on the left and its fields on the right, like a settings page.
+- [Selectable](https://ember-eui.vercel.app/docs/core/docs/forms/selectable): `EuiSelectable` is a list of options to pick one or several from, with an optional search field.
+- [Suggest](https://ember-eui.vercel.app/docs/core/docs/forms/suggest): `EuiSuggest` is a text field that suggests values while you type, like a query bar suggesting fields, values and saved queries.
+- [Super date picker](https://ember-eui.vercel.app/docs/core/docs/forms/super-date-picker): `EuiSuperDatePicker` picks a time range for dashboards and logs: absolute dates, relative ranges ("last 15 minutes", "today") or "now", with a quick select menu of commonly and recently used ranges and optional auto r…
+- [Super select](https://ember-eui.vercel.app/docs/core/docs/forms/super-select): `EuiSuperSelect` is a select whose options can show more than a line of text: a title with a description, an icon, a color.
+- [Accordion](https://ember-eui.vercel.app/docs/core/docs/layout/accordion): `EuiAccordion` shows and hides content under a clickable title.
+- [Bottom bar](https://ember-eui.vercel.app/docs/core/docs/layout/bottom-bar): `EuiBottomBar` pins actions to the bottom of the window, e.g.
+- [Control bar](https://ember-eui.vercel.app/docs/core/docs/layout/control-bar): `EuiControlBar` is a dark bar of controls at the bottom of the window or of a container, like an editor's toolbar or a console: breadcrumbs, text, buttons, icons and tabs.
+- [Drag and drop](https://ember-eui.vercel.app/docs/core/docs/layout/drag-and-drop): Lists whose items can be dragged to reorder them, or moved between lists.
+- [Flex](https://ember-eui.vercel.app/docs/core/docs/layout/flex): Flex components lay out other components without writing CSS: - **`EuiFlexGroup`** puts its `EuiFlexItem`s in a row (or a column), with a gutter between them.
+- [Flyout](https://ember-eui.vercel.app/docs/core/docs/layout/flyout): A flyout is a panel that slides in from the side of the window, for details, settings or forms that relate to the page the user is on.
+- [Header](https://ember-eui.vercel.app/docs/core/docs/layout/header): `EuiHeader` is the app's top bar: logo, breadcrumbs, search, links and action buttons (help, notifications, the user menu).
+- [Horizontal Rule](https://ember-eui.vercel.app/docs/core/docs/layout/horizontal-rule): `EuiHorizontalRule` draws a divider between sections.
+- [Modal](https://ember-eui.vercel.app/docs/core/docs/layout/modal): A modal focuses the user on a **short** task or decision: it covers the page with a mask and traps keyboard focus until it closes.
+- [Page header](https://ember-eui.vercel.app/docs/core/docs/layout/page-header): `EuiPageHeader` is the top of a page: an optional icon and breadcrumbs, the page title (an `<h1>`), a description, tabs, and actions on the right.
+- [Panel](https://ember-eui.vercel.app/docs/core/docs/layout/panel): `EuiPanel` is a box for grouping content: a white background, padding, a rounded border and a shadow by default.
+- [Popover](https://ember-eui.vercel.app/docs/core/docs/layout/popover): A popover is a small panel anchored to a button: menus, pickers, short forms or extra information.
+- [Resizable container](https://ember-eui.vercel.app/docs/core/docs/layout/resizable-container): `EuiResizableContainer` lays out panels side by side (or stacked) with a draggable separator between them, like an editor with a sidebar.
+- [Spacer](https://ember-eui.vercel.app/docs/core/docs/layout/spacer): `EuiSpacer` adds vertical space between blocks of content, using EUI's spacing scale: `xs` (4px), `s` (8px), `m` (16px), `l` (24px, the default), `xl` (32px) and `xxl` (40px).
+- [Breadcrumbs](https://ember-eui.vercel.app/docs/core/docs/navigation/breadcrumbs): Breadcrumbs show where the current page sits in the app's hierarchy and link back up.
+- [Button](https://ember-eui.vercel.app/docs/core/docs/navigation/button): Buttons trigger actions.
+- [Collapsible nav](https://ember-eui.vercel.app/docs/core/docs/navigation/collapsible-nav): `EuiCollapsibleNav` is an app's main navigation in a flyout on the side, opened from a button in the header.
+- [Context menu](https://ember-eui.vercel.app/docs/core/docs/navigation/context-menu): A context menu is a list of actions, usually in a popover opened from a button ("Actions", "…").
+- [Key pad menu](https://ember-eui.vercel.app/docs/core/docs/navigation/key-pad-menu): `EuiKeyPadMenu` is a grid of large square buttons with an icon and a label, e.g.
+- [Link](https://ember-eui.vercel.app/docs/core/docs/navigation/link): `EuiLink` is a text link.
+- [Pagination](https://ember-eui.vercel.app/docs/core/docs/navigation/pagination): `EuiPagination` lets users move between pages of a list or table.
+- [Side nav](https://ember-eui.vercel.app/docs/core/docs/navigation/side-nav): `EuiSideNav` renders a navigation tree for a page's side bar from `@items`.
+- [Steps](https://ember-eui.vercel.app/docs/core/docs/navigation/steps): Steps guide users through a sequence: - **`EuiSteps`** lists numbered `EuiStep`s vertically, e.g.
+- [Tabs](https://ember-eui.vercel.app/docs/core/docs/navigation/tabs): Tabs switch between views of the same context.
+- [Table](https://ember-eui.vercel.app/docs/core/docs/tabular/table): `EuiTable` and its parts render EUI's table markup and styles: they only produce HTML.
+- [Page template](https://ember-eui.vercel.app/docs/core/docs/templates/page-template): `EuiPageTemplate` builds a whole page layout in one component: an optional side bar, a page header, the content, and an optional bottom bar.
+- [Sitewide search](https://ember-eui.vercel.app/docs/core/docs/templates/sitewide-search): `EuiSelectableTemplateSitewide` is the "Search for anything…" field of an app's header: typing opens a popover of results, each with an icon, details (`meta`) and an optional avatar, and keyboard navigation (up, down,…
+- [Accessibility](https://ember-eui.vercel.app/docs/core/docs/utilities/accessibility): Helpers for content that only screen reader and keyboard users need.
+- [Auto sizer](https://ember-eui.vercel.app/docs/core/docs/utilities/auto-sizer): `EuiAutoSizer` measures the space its parent gives it and yields the width and height in pixels, for content that needs explicit sizes (e.g.
+- [Copy](https://ember-eui.vercel.app/docs/core/docs/utilities/copy): `EuiCopy` copies text to the clipboard from any element and shows a tooltip.
+- [Delay](https://ember-eui.vercel.app/docs/core/docs/utilities/delay): Two helpers that keep loading indicators from flashing when things are fast: - **`EuiDelayRender`** renders its content only after `@delay` ms (500 by default): a spinner for a request that takes 100ms never appears.
+- [i18n](https://ember-eui.vercel.app/docs/core/docs/utilities/i18n): EUI components ship English texts ("No results found", "Loading options...", "Close this dialog", …).
+- [Mutation observer](https://ember-eui.vercel.app/docs/core/docs/utilities/mutation-observer): The `mutation-observer` modifier calls a function when an element's content or attributes change (a [MutationObserver](https://developer.mozilla.org/docs/Web/API/MutationObserver)).
+- [Outside click detector](https://ember-eui.vercel.app/docs/core/docs/utilities/outside-click-detector): The `outside-click-detector` modifier calls `onOutsideClick` when the user clicks anywhere outside the element, e.g.
+- [Overlay mask](https://ember-eui.vercel.app/docs/core/docs/utilities/overlay-mask): `EuiOverlayMask` covers the page with a dark overlay, rendered in a portal, and stops the page from scrolling.
+- [Portal](https://ember-eui.vercel.app/docs/core/docs/utilities/portal): `EuiPortal` renders its content at the end of `<body>` instead of where it is written, so it escapes parents with `overflow: hidden` or a `z-index`.
+- [Resize observer](https://ember-eui.vercel.app/docs/core/docs/utilities/resize-observer): The `resize-observer` modifier calls `onResize` with the element's new `{ width, height }` whenever its size changes (a [ResizeObserver](https://developer.mozilla.org/docs/Web/API/ResizeObserver)).
+- [Responsive](https://ember-eui.vercel.app/docs/core/docs/utilities/responsive): `EuiShowFor` and `EuiHideFor` render their content only on, or except on, some screen sizes.
+
+## @ember-eui/changeset-form
+
+- [Changeset form](https://ember-eui.vercel.app/docs/changeset-form/docs/changeset-form): `@ember-eui/changeset-form` binds EUI form fields to an [ember-changeset](https://github.com/adopted-ember-addons/ember-changeset): each field reads and writes one property of the changeset (by `@fieldName`) and shows…
+
+## @ember-eui/validated-form
+
+- [Validated form](https://ember-eui.vercel.app/docs/validated-form/docs/validated-form): `@ember-eui/validated-form` is a form whose fields validate their own values: pass `@validations` (with [ember-validators](https://github.com/rwjblue/ember-validators)) or `@customValidations` to each field.
+
+## @ember-eui/pikaday
+
+- [Pikaday](https://ember-eui.vercel.app/docs/pikaday/docs/pikaday): `@ember-eui/pikaday` is a date input with a [Pikaday](https://github.com/Pikaday/Pikaday) calendar (through ember-pikaday), styled as an EUI text field.
+
+## @ember-eui/flatpickr
+
+- [Flatpickr](https://ember-eui.vercel.app/docs/flatpickr/docs/flatpickr): `@ember-eui/flatpickr` is a date (and time) picker built on [flatpickr](https://flatpickr.js.org), styled as an EUI text field.

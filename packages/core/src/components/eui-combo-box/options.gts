@@ -103,7 +103,6 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
               @select={{@select}}
               @extra={{@extra}}
               style={{this.rowHeightString}}
-              data-option-index="{{index}}"
             />
           {{else}}
             <button

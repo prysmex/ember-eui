@@ -95,4 +95,65 @@ module('Integration | Component | eui-accordion', function (hooks) {
 
     assert.dom('.with-id [role="region"]').hasAttribute('id', 'details');
   });
+
+  test('@isLoading shows spinners in place of the content and extra action', async function (assert) {
+    const state = new (class {
+      @tracked isLoading = true;
+    })();
+
+    await render(
+      <template>
+        <EuiAccordion
+          @id="acc"
+          @buttonContent="Toggle"
+          @initialIsOpen={{true}}
+          @isLoading={{state.isLoading}}
+          @isLoadingMessage={{true}}
+          @extraAction={{true}}
+        >
+          <:content><span data-test-content>Ready</span></:content>
+          <:extraAction><button data-test-extra>Extra</button></:extraAction>
+        </EuiAccordion>
+      </template>
+    );
+
+    assert.dom('.euiLoadingSpinner').exists({ count: 2 });
+    assert.dom('[data-test-content]').doesNotExist();
+    assert.dom('[data-test-extra]').doesNotExist();
+
+    state.isLoading = false;
+    await rerender();
+
+    assert.dom('.euiLoadingSpinner').doesNotExist();
+    assert.dom('[data-test-content]').hasText('Ready');
+    assert.dom('[data-test-extra]').exists();
+  });
+
+  test('@isLoadingMessage={{false}} keeps the content while the trigger loads', async function (assert) {
+    const state = new (class {
+      @tracked isLoadingMessage = true;
+    })();
+
+    await render(
+      <template>
+        <EuiAccordion
+          @id="acc"
+          @buttonContent="Toggle"
+          @initialIsOpen={{true}}
+          @isLoading={{true}}
+          @isLoadingMessage={{state.isLoadingMessage}}
+        >
+          <:content><span data-test-content>Ready</span></:content>
+        </EuiAccordion>
+      </template>
+    );
+
+    assert.dom('.euiLoadingSpinner').exists({ count: 2 });
+
+    state.isLoadingMessage = false;
+    await rerender();
+
+    assert.dom('.euiLoadingSpinner').exists({ count: 1 });
+    assert.dom('[data-test-content]').hasText('Ready');
+  });
 });

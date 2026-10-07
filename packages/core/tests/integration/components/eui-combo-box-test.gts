@@ -491,4 +491,33 @@ module('Integration | Component | eui-combo-box', function (hooks) {
       assert.true(rect.width <= 1 && rect.height <= 1, 'takes no space');
     });
   });
+
+  test('a group heading cannot be selected', async function (assert) {
+    const state = new State();
+    const grouped = [
+      { groupName: 'Fruits', options: [{ label: 'Apple' }, { label: 'Banana' }] }
+    ];
+
+    await render(
+      <template>
+        <EuiComboBox
+          @options={{grouped}}
+          @selectedOptions={{state.selected}}
+          @onChange={{state.onChange}}
+          as |option|
+        >
+          {{option.label}}
+        </EuiComboBox>
+      </template>
+    );
+
+    await open();
+    await triggerEvent(
+      document.querySelector('.euiComboBoxTitle')!,
+      'mouseup'
+    );
+
+    assert.deepEqual(state.changes, [], 'the group is not chosen');
+    assert.dom('.euiComboBoxPill').doesNotExist();
+  });
 });

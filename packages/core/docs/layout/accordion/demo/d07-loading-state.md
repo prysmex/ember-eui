@@ -7,13 +7,27 @@ order: 7
 <EuiText>
 
 `@isLoading` replaces the `<:extraAction>` block with a spinner while the
-content isn't ready. `@isLoadingMessage` replaces the content too: `true`
-shows "Loading...", a string shows your own message.
+content isn't ready. `@isLoadingMessage` separately controls the content:
+`true` shows "Loading...", a string shows your own message, and `false` keeps
+the content visible while the trigger still shows the spinner.
 
 </EuiText>
 
 ```hbs template
-<TodoText @text="missing EuiButtonGroup component"/>
+<EuiFlexGroup @alignItems="center">
+  <EuiFlexItem><EuiText>isLoading:</EuiText></EuiFlexItem>
+  <EuiFlexItem @grow={{false}}>
+    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoading) false)}}>
+      False
+    </EuiButtonEmpty>
+  </EuiFlexItem>
+  <EuiFlexItem @grow={{false}}>
+    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoading) true)}}>
+      True
+    </EuiButtonEmpty>
+  </EuiFlexItem>
+</EuiFlexGroup>
+<EuiSpacer @size="s" />
 <EuiFlexGroup>
   <EuiFlexItem>
     <EuiText>
@@ -22,12 +36,12 @@ shows "Loading...", a string shows your own message.
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
     <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) false)}}>
-      False
+      None
     </EuiButtonEmpty>
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
     <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) true)}}>
-      True
+      Default
     </EuiButtonEmpty>
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
@@ -43,12 +57,12 @@ shows "Loading...", a string shows your own message.
 </EuiFlexGroup>
 <EuiSpacer />
 <EuiAccordion
-  @isLoading={{true}}
+  @isLoading={{this.isLoading}}
   @isLoadingMessage={{this.isLoadingMessage}}
   @extraAction={{true}}
 >
   <:buttonContent>
-    Accordion is loading, click to toggle
+    {{if this.isLoading "Loading" "Ready"}} — click to toggle
   </:buttonContent>
   <:content>
     <EuiPanel @color='subdued'>
@@ -66,6 +80,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
 export default class AccordionDemo1Component extends Component {
+  @tracked isLoading = true;
   @tracked isLoadingMessage = false;
 }
 ```

@@ -1,5 +1,14 @@
 # @ember-eui/pikaday
 
+## 8.0.67
+
+### Patch Changes
+
+- fix service and combo box
+- Updated dependencies
+- Updated dependencies [30a1d7f]
+  - @ember-eui/core@8.0.67
+
 ## 8.0.66
 
 ### Patch Changes

@@ -1,6 +1,14 @@
 # @ember-eui/core
 
 ## 14.1.1
+## 8.0.67
+
+### Patch Changes
+
+- fix service and combo box
+- 30a1d7f: Use `inject as service` from `@ember/service` again. The bare `service` export only exists in Ember 4.1+, so on older Ember versions `@service` was `undefined` and loading a component failed with "decorator is not a function".
+
+## 8.0.66
 
 ### Patch Changes
 

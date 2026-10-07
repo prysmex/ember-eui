@@ -4,24 +4,26 @@ order: 7
 
 # Loading state
 
-<!-- <EuiText>
-  Use the
-  <EuiCode>isLoading</EuiCode>
-  prop when not all of the accordion's content is ready yet. When using
-  <EuiCode>isLoading</EuiCode>, the content of
-  <EuiCode>extraAction</EuiCode>
-  is replaced with a loading spinner.<br /><br />
-  Manage the content of the accordion using
-  <EuiCode>isLoadingMessage</EuiCode>. By default, it is set to
-  <EuiCode>false</EuiCode>
-  and the content will remain unaltered. Set it to
-  <EuiCode>true</EuiCode>
-  to show a default loading message or pass a node to show a custom loading
-  message.
-</EuiText> -->
+Use `isLoading` to start or stop loading. While loading, the spinner replaces
+extra actions in the trigger. `isLoadingMessage` separately controls whether the
+expanded content shows a default or custom loading message; setting that message
+to `false` keeps the content visible while the trigger still shows loading.
 
 ```hbs template
-<TodoText @text="missing EuiButtonGroup component"/>
+<EuiFlexGroup @alignItems="center">
+  <EuiFlexItem><EuiText>isLoading:</EuiText></EuiFlexItem>
+  <EuiFlexItem @grow={{false}}>
+    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoading) false)}}>
+      False
+    </EuiButtonEmpty>
+  </EuiFlexItem>
+  <EuiFlexItem @grow={{false}}>
+    <EuiButtonEmpty {{on 'click' (fn (mut this.isLoading) true)}}>
+      True
+    </EuiButtonEmpty>
+  </EuiFlexItem>
+</EuiFlexGroup>
+<EuiSpacer @size="s" />
 <EuiFlexGroup>
   <EuiFlexItem>
     <EuiText>
@@ -30,12 +32,12 @@ order: 7
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
     <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) false)}}>
-      False
+      None
     </EuiButtonEmpty>
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
     <EuiButtonEmpty {{on 'click' (fn (mut this.isLoadingMessage) true)}}>
-      True
+      Default
     </EuiButtonEmpty>
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
@@ -51,12 +53,12 @@ order: 7
 </EuiFlexGroup>
 <EuiSpacer />
 <EuiAccordion
-  @isLoading={{true}}
+  @isLoading={{this.isLoading}}
   @isLoadingMessage={{this.isLoadingMessage}}
   @extraAction={{true}}
 >
   <:buttonContent>
-    Accordion is loading, click to toggle
+    {{if this.isLoading "Loading" "Ready"}} — click to toggle
   </:buttonContent>
   <:content>
     <EuiPanel @color='subdued'>
@@ -64,7 +66,7 @@ order: 7
     </EuiPanel>
   </:content>
   <:extraAction>
-    <EuiButton size='s'>Extra action!</EuiButton>
+    <EuiButton @size='s'>Extra action!</EuiButton>
   </:extraAction>
 </EuiAccordion>
 ```
@@ -74,6 +76,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
 export default class AccordionDemo1Component extends Component {
+  @tracked isLoading = true;
   @tracked isLoadingMessage = false;
 }
 ```

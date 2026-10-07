@@ -1,3 +1,4 @@
+import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import { inject as service } from '@ember/service';
@@ -24,29 +25,22 @@ import type EuiConfigService from '../../services/eui-config';
 
 export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions {
   @service declare euiConfig: EuiConfigService;
-  _optionsCache: any[] = [];
+  @cached
+  get flattedOptions(): any[] {
+    return (this.args.options || []).reduce((acc, curr) => {
+      if (emberPowerSelectIsGroup([curr])) {
+        acc.push(curr, ...curr.options);
+      } else {
+        acc.push(curr);
+      }
 
-  get flattedOptions() {
-    if (this._optionsCache !== this.args.options) {
-      this._optionsCache = this.args.options;
-
-      return this.args.options?.reduce((acc, curr) => {
-        if (emberPowerSelectIsGroup([curr])) {
-          acc.push(curr, ...curr.options);
-        } else {
-          acc.push(curr);
-        }
-
-        return acc;
-      }, []);
-    }
-
-    return this._optionsCache;
+      return acc;
+    }, []);
   }
 
   _optionFromIndex(index: string) {
     let parts = index.split('.');
-    let option = this.flattedOptions.at?.(parseInt(parts[0]!, 10));
+    let option = this.flattedOptions[parseInt(parts[0]!, 10)];
 
     for (let i = 1; i < parts.length; i++) {
       option = option.options[parseInt(parts[i]!, 10)];
@@ -112,7 +106,6 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
               @select={{@select}}
               @extra={{@extra}}
               style={{this.rowHeightString}}
-              data-option-index="{{index}}"
             />
           {{else}}
             <button

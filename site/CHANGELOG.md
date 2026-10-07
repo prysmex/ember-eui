@@ -1,6 +1,13 @@
 # site
 
+## 14.1.2
+
+### Patch Changes
+
+- redeploy
+
 ## 14.1.1
+
 ## 8.0.67
 
 ### Patch Changes

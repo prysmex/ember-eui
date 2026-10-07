@@ -1,5 +1,11 @@
 # @ember-eui/changeset-form
 
+## 14.1.2
+
+### Patch Changes
+
+- redeploy
+
 ## 14.1.1
 
 ### Patch Changes
@@ -21,6 +27,7 @@
 ### Major Changes
 
 - VITE
+
 ## 8.0.67
 
 ### Patch Changes

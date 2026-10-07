@@ -1,6 +1,14 @@
 # @ember-eui/core
 
+## 14.1.2
+
+### Patch Changes
+
+- Group headings in `EuiComboBox` can no longer be selected, and the accordion loading demo has separate controls for `@isLoading` and `@isLoadingMessage`.
+- redeploy
+
 ## 14.1.1
+
 ## 8.0.67
 
 ### Patch Changes

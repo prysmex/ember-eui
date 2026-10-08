@@ -1,4 +1,3 @@
-import ValidatedFormComponent from './validated-form.gts';
 import FieldBase from './validated-form/field-base.gts';
 import FieldCheckboxGroupComponent from './validated-form/field-checkbox-group.gts';
 import FieldComboBoxComponent from './validated-form/field-combo-box.gts';
@@ -33,10 +32,9 @@ export interface IValidatedFormTheme {
 }
 
 export const ValidatedFormDefaultTheme: IValidatedFormTheme = {
-  // Resolve lazily because ValidatedForm also imports its default theme.
-  get FieldNestedForm(): ComponentLike<any> {
-    return ValidatedFormComponent;
-  },
+  // Set by validated-form.gts; importing it here would create a cycle that
+  // makes rollup emit a bare `import '@ember/template-compilation'`.
+  FieldNestedForm: undefined as unknown as ComponentLike<any>,
   FieldBase: FieldBase,
   FieldNumber: FieldNumberComponent,
   FieldText: FieldTextComponent,

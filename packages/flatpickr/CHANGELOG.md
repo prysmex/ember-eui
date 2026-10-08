@@ -1,5 +1,11 @@
 # @ember-eui/flatpickr
 
+## 14.1.3
+
+### Patch Changes
+
+- redeploy
+
 ## 14.1.2
 
 ### Patch Changes
@@ -23,6 +29,7 @@
 ### Major Changes
 
 - VITE
+
 ## 8.0.68
 
 ### Patch Changes

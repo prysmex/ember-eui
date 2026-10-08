@@ -1,5 +1,11 @@
 # @ember-eui/core
 
+## 14.1.3
+
+### Patch Changes
+
+- redeploy
+
 ## 14.1.2
 
 ### Patch Changes
@@ -8,6 +14,7 @@
 - redeploy
 
 ## 14.1.1
+
 ## 8.0.68
 
 ### Patch Changes

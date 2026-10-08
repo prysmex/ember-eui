@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/pikaday",
-  "version": "14.1.2",
+  "version": "14.1.3",
   "description": "ember-pikaday integration with @ember-eui/core",
   "keywords": [
     "ember-addon",

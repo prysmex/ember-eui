@@ -413,4 +413,5 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
   </template>
 }
 
+// Default theme for ValidatedFormComponent. Do not remove.
 ValidatedFormDefaultTheme.FieldNestedForm = ValidatedFormComponent;

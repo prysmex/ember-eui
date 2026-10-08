@@ -24,7 +24,7 @@
     "lint:js:fix": "eslint . --fix",
     "lint:types": "ember-tsc --noEmit",
     "start": "node ../scripts/generate-llms-txt.mjs && concurrently 'vite' 'node ../scripts/sync-injected.mjs --watch' --names 'site,sync'",
-    "test": "node --test lib/demo-playgrounds.test.mjs && node ../scripts/sync-injected.mjs && vite build --mode development && testem ci --port 0"
+    "test": "node --test lib/*.test.mjs && node ../scripts/sync-injected.mjs && vite build --mode development && testem ci --port 0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

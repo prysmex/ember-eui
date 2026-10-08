@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import {
   demoFiles,
   playgroundManifest,
+  playgroundOverrides,
   starterFiles,
 } from './demo-playgrounds.mjs';
 
@@ -17,13 +18,84 @@ test('the starter is a standalone Ember/Vite app with published dependencies', (
   assert.ok(files['babel.config.mjs']);
   assert.ok(files['index.html']);
   assert.ok(files['app/app.js'].includes('@ember-eui/core/themes/light.css'));
-  assert.ok(files['app/routes/application.js'].includes('addTranslations'));
-  assert.ok(files['app/icons/rocket.svg']);
-  assert.ok(files['translations/en-us.json']);
+  assert.equal(files['app/routes/application.js'], undefined);
+  assert.equal(files['app/icons/rocket.svg'], undefined);
+  assert.equal(files['translations/en-us.json'], undefined);
+  assert.ok(!files['app/styles/app.css'].includes('guideSideNav'));
   for (const version of Object.values(pkg.devDependencies)) {
     assert.ok(!version.startsWith('workspace:'), 'no workspace-only versions');
   }
   assert.equal(pkg.devDependencies['@docfy/ember'], undefined);
+});
+
+test('a core demo omits optional date, form, and translation dependencies', () => {
+  const starter = starterFiles();
+  const files = playgroundOverrides(
+    [{ ext: 'hbs', code: '<EuiAccordion />' }],
+    starter,
+  );
+  const { devDependencies } = JSON.parse(files['package.json']);
+  assert.ok(devDependencies['@ember-eui/core']);
+  for (const name of [
+    '@ember-eui/flatpickr',
+    '@ember-eui/pikaday',
+    '@ember-eui/validated-form',
+    '@ember-eui/changeset-form',
+    'flatpickr',
+    'ember-changeset',
+    'ember-changeset-validations',
+    'ember-intl',
+  ]) {
+    assert.equal(devDependencies[name], undefined, `${name} is unnecessary`);
+  }
+  assert.equal(
+    files['app/app.js'],
+    undefined,
+    'the minimal app needs no extra setup',
+  );
+  assert.equal(files['app/routes/application.js'], undefined);
+});
+
+test('specialized demos retain their packages and setup', () => {
+  const starter = starterFiles();
+  const files = playgroundOverrides(
+    [
+      {
+        ext: 'hbs',
+        code: '<EuiFlatpickr /><EuiPikaday /><ValidatedForm /><EuiChangesetForm />{{t "label"}}',
+      },
+    ],
+    starter,
+  );
+  const { devDependencies } = JSON.parse(files['package.json']);
+  for (const name of [
+    '@ember-eui/flatpickr',
+    '@ember-eui/pikaday',
+    '@ember-eui/validated-form',
+    '@ember-eui/changeset-form',
+    'flatpickr',
+    'ember-changeset',
+    'ember-changeset-validations',
+    'ember-intl',
+  ]) {
+    assert.ok(devDependencies[name], `${name} is required`);
+  }
+  assert.ok(files['app/app.js'].includes('flatpickr/dist/flatpickr.css'));
+  assert.ok(files['app/routes/application.js'].includes('addTranslations'));
+  assert.ok(files['translations/en-us.json']);
+});
+
+test('custom SVG demos include the plugin and assets only when needed', () => {
+  const files = playgroundOverrides(
+    [{ ext: 'js', code: "import Rocket from 'site/icons/rocket.svg';" }],
+    starterFiles(),
+  );
+  assert.ok(
+    JSON.parse(files['package.json']).devDependencies['@svg-jar/plugin'],
+  );
+  assert.ok(files['app/icons/rocket.svg']);
+  assert.ok(files['vite.config.mjs'].includes('svgJar'));
+  assert.ok(files['app/routes/application.js'].includes('iconsFromGlob'));
 });
 
 test('template-only demos get a component and preserve their source literally', () => {

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import autoImportComponents from './lib/docfy-auto-imports.mjs';
 import demosOutsideProse from './lib/docfy-demos-outside-prose.mjs';
 import demoPlaygrounds from './lib/demo-playgrounds.mjs';
+import demoCode from './lib/docfy-demo-code.mjs';
 import scrollTables from './lib/docfy-scroll-tables.mjs';
 import remarkKeepHeadingDepth from './lib/remark-keep-heading-depth.mjs';
 
@@ -15,6 +16,7 @@ export default {
     scrollTables,
     autoImportComponents,
     demoPlaygrounds,
+    demoCode,
   ],
   remarkPlugins: [remarkKeepHeadingDepth],
   sources: [

@@ -37,7 +37,12 @@ turbo cache hits.
   demo chunks. The demo frame loads this in a separate bundle and submits the
   chosen demo plus an Ember/Vite starter to StackBlitz's POST API. Dependencies
   use published EUI versions, so package changes need publishing before they
-  appear in the playground. Generator checks: `node --test lib/demo-playgrounds.test.mjs`.
+  appear in the playground. Optional form, date-picker, and translation
+  dependencies are included only when the demo uses them.
+- `lib/docfy-demo-code.mjs` removes Docfy's nested code-block controls from
+  demo snippets so EUI highlights only the source, without Copy labels or
+  layout whitespace. Prose code blocks keep their controls.
+- Generator checks: `node --test lib/*.test.mjs`.
 
 ## Scripts
 

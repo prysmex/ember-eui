@@ -64,6 +64,26 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.docfy-demo .euiCodeBlock').exists();
   });
 
+  test('demo template and component tabs start with source code', async function (assert) {
+    await visit('/docs/core/docs/navigation/tabs');
+
+    const demo = document.querySelector('.docfy-demo')!;
+    const buttons = demo.querySelectorAll<HTMLButtonElement>(
+      '.docfy-demo__snippets__tabs__button',
+    );
+
+    for (const [index, prefix] of ['<EuiTabs>', 'import Component'].entries()) {
+      await click(buttons[index]!);
+      await waitUntil(() => demo.querySelector('.docfy-demo__snippet .token'));
+
+      const source = demo.querySelector('.docfy-demo__snippet')!.textContent;
+      assert.true(
+        source?.startsWith(prefix),
+        'no Copy label or leading blank lines',
+      );
+    }
+  });
+
   test('prose components are auto-imported into strict page templates', async function (assert) {
     await visit('/docs/core/docs/display/icons');
 

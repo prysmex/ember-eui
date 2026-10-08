@@ -13,7 +13,7 @@ export default async function (defaults) {
   return compatBuild(app, buildOnce, {
     // imported by the docs pages only (see vite.config.mjs), so it loads
     // with them instead of up front like other app files
-    staticAppPaths: ['docfy-overrides.js'],
+    staticAppPaths: ['docfy-overrides.js', 'demo-playgrounds.json'],
     // every docs page is its own bundle, loaded when you visit it; with
     // components imported one by one, a page brings only what it uses
     splitAtRoutes: [

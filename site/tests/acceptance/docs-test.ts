@@ -75,6 +75,52 @@ module('Acceptance | docs', function (hooks) {
       .exists('the site component <IconGallery> in the prose renders');
   });
 
+  test('opening a playground submits a standalone project for the selected demo', async function (assert) {
+    await visit('/docs/core/docs/display/card');
+    await waitUntil(() => {
+      const button = document.querySelector<HTMLButtonElement>(
+        '[data-test-demo-playground]',
+      );
+      return button && !button.disabled;
+    });
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- saved only to restore the prototype
+    const originalSubmit = HTMLFormElement.prototype.submit;
+    let submitted = false;
+    HTMLFormElement.prototype.submit = function () {
+      submitted = true;
+      const fields = new FormData(this);
+      const pkg = JSON.parse(
+        fields.get('project[files][package.json]') as string,
+      ) as { devDependencies: Record<string, string> };
+
+      assert.strictEqual(this.action, 'https://stackblitz.com/run');
+      assert.strictEqual(this.method, 'post');
+      assert.strictEqual(this.target, '_blank');
+      assert.strictEqual(this.rel, 'noopener noreferrer');
+      assert.strictEqual(fields.get('project[template]'), 'node');
+      assert.true(
+        (
+          fields.get('project[files][app/components/demo.hbs]') as string
+        ).includes('<EuiCard'),
+        'the selected card demo is included',
+      );
+      assert.true(fields.has('project[files][ember-cli-build.mjs]'));
+      assert.true(fields.has('project[files][babel.config.mjs]'));
+      assert.false(
+        pkg.devDependencies['@ember-eui/core']!.startsWith('workspace:'),
+      );
+    };
+
+    try {
+      await click('[data-test-demo-playground]');
+      assert.true(submitted, 'the button submits the project');
+      assert.dom('form[action="https://stackblitz.com/run"]').doesNotExist();
+    } finally {
+      HTMLFormElement.prototype.submit = originalSubmit;
+    }
+  });
+
   test('switching theme swaps the EUI stylesheet', async function (assert) {
     await visit('/docs/introduction');
 

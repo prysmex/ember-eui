@@ -6,6 +6,7 @@ import DocfyDemoDescription from './description.gjs';
 import DocfyDemoExample from './example.gjs';
 import DocfyDemoSnippet from './snippet.gjs';
 import DocfyDemoSnippets from './snippets.gjs';
+import DemoPlayground from '../demo-playground.gjs';
 
 /**
  * Replaces @docfy/ember's DocfyDemo (see vite.config.mjs, which points the
@@ -24,6 +25,7 @@ import DocfyDemoSnippets from './snippets.gjs';
       @grow={{false}}
       ...attributes
     >
+      <DemoPlayground @id={{@id}} />
       {{yield
         (hash
           Example=DocfyDemoExample

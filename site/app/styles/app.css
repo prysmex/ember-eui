@@ -134,6 +134,16 @@ body.euiBody--headerIsFixed {
   padding-bottom: 0;
 }
 
+/* @margin="none" adds no class, so reset the browser's default hr margins. */
+.docfy-demo__snippets > .euiHorizontalRule {
+  margin: 0;
+}
+
+.docfy-demo__playground {
+  padding: 8px 12px 0;
+  text-align: right;
+}
+
 @media only screen and (width <= 574px) {
   .guideSideNav__content {
     padding: 0;

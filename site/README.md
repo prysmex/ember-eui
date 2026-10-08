@@ -33,6 +33,11 @@ turbo cache hits.
   so the markdown stays free of import boilerplate.
 - `app/components/docfy-demo/` is the EUI-styled demo frame; `vite.config.mjs`
   points the generated pages at it instead of docfy's default.
+- `lib/demo-playgrounds.mjs` generates `app/demo-playgrounds.json` from Docfy's
+  demo chunks. The demo frame loads this in a separate bundle and submits the
+  chosen demo plus an Ember/Vite starter to StackBlitz's POST API. Dependencies
+  use published EUI versions, so package changes need publishing before they
+  appear in the playground. Generator checks: `node --test lib/demo-playgrounds.test.mjs`.
 
 ## Scripts
 

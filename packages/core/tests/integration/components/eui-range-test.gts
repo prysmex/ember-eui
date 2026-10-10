@@ -1,6 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, fillIn, render } from '@ember/test-helpers';
+import { click, fillIn, render, rerender } from '@ember/test-helpers';
+import { tracked } from '@glimmer/tracking';
 
 import EuiDualRange from '#src/components/eui-dual-range.gts';
 import EuiRange from '#src/components/eui-range.gts';
@@ -235,5 +236,70 @@ module('Integration | Component | eui-range', function (hooks) {
     assert.dom('button.off').hasAria('disabled', 'true');
     assert.dom('button.off [role="slider"]').hasAria('disabled', 'true');
     assert.dom('button.on').doesNotHaveAria('disabled');
+  });
+
+  test('external values and accepted input changes synchronize the range display, including zero', async function (assert) {
+    const state = new (class {
+      @tracked value = 5;
+      @tracked max = 10;
+      changes: [number, boolean][] = [];
+      change = (event: Event, valid: boolean) => {
+        this.value = Number((event.currentTarget as HTMLInputElement).value);
+        this.changes.push([this.value, valid]);
+      };
+    })();
+
+    await render(
+      <template>
+        <EuiRange @min={{0}} @max={{state.max}} @step={{5}} @value={{state.value}} @showInput={{true}} @showValue={{true}} @showTicks={{true}} @showRange={{true}} @onChange={{state.change}} />
+      </template>
+    );
+
+    state.value = 0;
+    await rerender();
+    assert.dom('input.euiRangeInput').hasValue('0');
+    assert.dom('input[type="range"]').hasValue('0');
+    assert.dom('.euiRangeTooltip__value').hasText('0');
+    assert.dom('.euiRangeTick--selected').hasText('0');
+    assert.dom('.euiRangeHighlight__progress').exists('zero is a valid highlighted value');
+
+    await fillIn('input.euiRangeInput', '10');
+    assert.deepEqual(state.changes, [[10, true]]);
+    assert.dom('input[type="range"]').hasValue('10');
+    assert.dom('.euiRangeTooltip__value').hasText('10');
+    assert.dom('.euiRangeTick--selected').hasText('10');
+
+    state.max = 20;
+    state.value = 15;
+    await rerender();
+    assert.dom('input[type="range"]').hasAttribute('max', '20').hasValue('15');
+    assert.dom('input.euiRangeInput').hasAttribute('max', '20').hasValue('15');
+    assert.dom('.euiRangeTick--selected').hasText('15');
+    assert.deepEqual(tickLabels(), ['0', '5', '10', '15', '20']);
+    assert.deepEqual(state.changes, [[10, true]], 'external changes do not emit input callbacks');
+  });
+
+  test('dual range replacement synchronizes number inputs and accessible thumb values', async function (assert) {
+    const state = new (class {
+      @tracked value: number[] = [2, 8];
+    })();
+
+    await render(
+      <template>
+        <div class="inputs"><EuiDualRange @min={{0}} @max={{10}} @value={{state.value}} @showInput={{true}} @onChange={{noop}} /></div>
+        <div class="thumbs"><EuiDualRange @min={{0}} @max={{10}} @value={{state.value}} @onChange={{noop}} /></div>
+      </template>
+    );
+
+    state.value = [0, 10];
+    await rerender();
+    const inputs = this.element.querySelectorAll('.inputs input.euiRangeInput');
+    const thumbs = this.element.querySelectorAll('.thumbs .euiRangeThumb');
+    assert.dom(inputs[0]).hasValue('0');
+    assert.dom(inputs[1]).hasValue('10');
+    assert.dom(thumbs[0]).hasAttribute('aria-valuenow', '0');
+    assert.dom(thumbs[1]).hasAttribute('aria-valuenow', '10');
+    assert.dom(thumbs[0]!.querySelector('[role="slider"]')).hasAttribute('aria-valuenow', '0');
+    assert.dom(thumbs[1]!.querySelector('[role="slider"]')).hasAttribute('aria-valuenow', '10');
   });
 });

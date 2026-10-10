@@ -10,7 +10,7 @@ order: 6
 <EuiSpacer />
 <EuiCallOut>
   <:title>
-    This layout will automatically be achieved through <strong>EuiPageTemplate</strong> by leaving <EuiCode>pageSideBar</EuiCode> as <EuiCode>undefined</EuiCode>.
+    This layout will automatically be achieved through <strong>EuiPageTemplate</strong> by omitting the <EuiCode>&lt;:pageSideBar&gt;</EuiCode> block.
   </:title>
 </EuiCallOut>
 
@@ -31,6 +31,7 @@ order: 6
     </Item>
   </:pageHeaderRightSideItems>
   <:default>
+    <EuiText><p>Selected section: {{this.selectedTab}}</p></EuiText>
     <EuiLoadingContent @lines={{16}} />
   </:default>
 </EuiPageTemplate>
@@ -39,21 +40,19 @@ order: 6
 ```js component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 
-export default class DemoIconComponent extends Component {
-  tabs = [
-    { label: 'Tab 1', isSelected: true },
-    {
-      label: 'Tab 2',
-      onClick: this.setShowBottomBar
-    }
-  ];
-  @tracked showing = false;
+export default class PageTabsDemo extends Component {
+  @tracked selectedTab = 'overview';
 
-  @action
-  setSHowBottomBar() {
-    this.showing = !this.showing;
+  get tabs() {
+    return [
+      { label: 'Overview', isSelected: this.selectedTab === 'overview', onClick: () => this.selectTab('overview') },
+      { label: 'Activity', isSelected: this.selectedTab === 'activity', onClick: () => this.selectTab('activity') }
+    ];
   }
+
+  selectTab = (tab) => {
+    this.selectedTab = tab;
+  };
 }
 ```

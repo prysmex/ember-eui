@@ -9,7 +9,8 @@ import classNames from '../helpers/class-names.ts';
 import type {
   borderRadiusMapping,
   colorMapping,
-  paddingSizeMapping} from '../utils/css-mappings/eui-panel.ts';
+  paddingSizeMapping
+} from '../utils/css-mappings/eui-panel.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** A box grouping content, with background, padding, border and shadow options. */
@@ -94,12 +95,11 @@ const EuiPanel: TemplateOnlyComponent<EuiPanelSignature> = <template>
             (if (argOrDefault @isClickable true) "euiPanel--isClickable")
             (if (and canHaveShadow (eq hasShadow true)) "euiPanel--hasShadow")
             (if
-              (and (not canHaveShadow) (eq hasShadow false))
-              "euiPanel--noShadow"
+              (or (not canHaveShadow) (eq hasShadow false)) "euiPanel--noShadow"
             )
             (if (and canHaveBorder (eq @hasBorder true)) "euiPanel--hasBorder")
             (if
-              (and (not canHaveBorder) (eq @hasBorder false))
+              (or (not canHaveBorder) (eq @hasBorder false))
               "euiPanel--noBorder"
             )
             (unless grow "euiPanel--flexGrowZero")
@@ -120,12 +120,11 @@ const EuiPanel: TemplateOnlyComponent<EuiPanelSignature> = <template>
           class={{classNames
             (if (and canHaveShadow (eq hasShadow true)) "euiPanel--hasShadow")
             (if
-              (and (not canHaveShadow) (eq hasShadow false))
-              "euiPanel--noShadow"
+              (or (not canHaveShadow) (eq hasShadow false)) "euiPanel--noShadow"
             )
             (if (and canHaveBorder (eq @hasBorder true)) "euiPanel--hasBorder")
             (if
-              (and (not canHaveBorder) (eq @hasBorder false))
+              (or (not canHaveBorder) (eq @hasBorder false))
               "euiPanel--noBorder"
             )
             (unless grow "euiPanel--flexGrowZero")

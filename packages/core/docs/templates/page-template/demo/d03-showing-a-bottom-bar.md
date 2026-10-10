@@ -5,25 +5,12 @@ order: 3
 # Showing a bottom bar
 
 <EuiSpacer />
-<!-- <EuiText>
-  Adding an
-  <strong>EuiBottomBar</strong>
-  can be tricky to use and account for any side bars.
-  <strong>EuiPageTemplate</strong>
-  handles this nicely by supplying a
-  <EuiCode>@bottomBar</EuiCode>
-  argument for passing the contents of your bottom bar, and
-  <EuiCode>@bottomBarProps</EuiCode>
-  that extends
-  <strong>EuiBottomBar</strong>.<br /><br />
-
-  <!-- It uses the
-  <EuiCode>@sticky</EuiCode>
-  position so that it sticks to the bottom of and remains within the bounds of
-  <strong>EuiPageBody</strong>. This way it will never overlap the
-  <strong>EuiPageSideBar</strong>, no matter the screen size. It also means not
-  needing to accommodate for the height of the bar in the body element.
-</EuiText> -->
+<EuiText>
+  Put controls in the named bottomBar block. By default the bar stays within the
+  page body using sticky positioning, so it does not overlap the side bar.
+  Bottom-bar props override padding, position and the region's accessible name.
+  The bar becomes static when the default template's full-height layout is active.
+</EuiText>
 <EuiSpacer />
 <EuiCallOut>
   <:title>
@@ -37,6 +24,7 @@ order: 3
 ```hbs template
 <EuiPageTemplate
   @grow={{true}}
+  @bottomBarProps={{hash paddingSize='s' landmarkHeading='Save page changes'}}
   @pageHeader={{hash iconType='logoElastic' pageTitle='Page Title'}}
 >
   <:pageSideBar>

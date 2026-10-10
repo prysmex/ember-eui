@@ -24,7 +24,11 @@ export function restrictWidth(
     widthClassName = 'restrictWidth-default';
   } else if (restrictWidth !== false) {
     widthClassName = 'restrictWidth-custom';
-    newStyle = { ...newStyle, maxWidth: restrictWidth };
+    newStyle = {
+      ...newStyle,
+      maxWidth:
+        typeof restrictWidth === 'number' ? `${restrictWidth}px` : restrictWidth
+    };
   }
 
   return { widthClassName, newStyle };

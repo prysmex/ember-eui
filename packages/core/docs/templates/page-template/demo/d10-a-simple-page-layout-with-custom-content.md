@@ -5,7 +5,7 @@ order: 10
 # A simple page layout with custom content
 
 <EuiText>
- You can replace the inner parts of <strong>EuiPageBody</strong> with your own content, with or without a page header. This allows you to create dashboard style layouts with lots of panels. It is not recommended, however, to use this setup when you also have side bar.
+ Use the empty template for dashboard layouts with your own panels, with or without a page header. This example omits the side bar and removes the width limit; the final example shows custom content with a side bar.
 </EuiText>
 <EuiSpacer />
 <EuiCallOut>

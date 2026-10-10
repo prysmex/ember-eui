@@ -6,7 +6,7 @@ order: 5
 
 <EuiSpacer />
 <EuiText>
-  Similar to the previous example, you can create a centered panel to emphasize incompleteness even with a page header. For this setup, we recommend using setting <strong>EuiPageContent</strong> to use the <EuiCode>subdued</EuiCode> color as to not have nested shadows.
+  Similar to the previous example, you can create a centered panel to emphasize incompleteness even with a page header. The centeredContent template uses a subdued, shadowless inner panel by default.
 </EuiText>
 <EuiSpacer />
 <EuiCallOut>

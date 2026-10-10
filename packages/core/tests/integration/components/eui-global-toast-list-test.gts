@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, settled } from '@ember/test-helpers';
+import { click, render, settled, triggerEvent, waitUntil } from '@ember/test-helpers';
 
 import EuiGlobalToastList from '#src/components/eui-global-toast-list.gts';
 
@@ -26,5 +26,25 @@ module('Integration | Component | eui-global-toast-list', function (hooks) {
 
     assert.dom('.euiToast').exists({ count: 1 });
     assert.dom('.euiToast').containsText('Saved');
+  });
+
+  test('dismissal removes only the closed toast and reports it once', async function (assert) {
+    const toaster = this.owner.lookup('service:eui-toaster') as EuiToasterService;
+    const dismissed: string[] = [];
+    const dismiss = (toast: { id?: string }) => dismissed.push(toast.id!);
+
+    await render(<template><EuiGlobalToastList @toastLifeTimeMs={{60000}} @dismissToast={{dismiss}} /></template>);
+
+    toaster.show({ id: 'saved', title: 'Saved' });
+    toaster.show({ id: 'other', title: 'Other' });
+    await waitUntil(() => this.element.querySelectorAll('.euiToast').length === 2);
+    await triggerEvent('.euiGlobalToastList', 'mouseenter');
+    await click(this.element.querySelectorAll('.euiToast__closeButton')[0]!);
+    await waitUntil(() => toaster.toasts.length === 1);
+    await settled();
+
+    assert.deepEqual(dismissed, ['saved']);
+    assert.deepEqual(toaster.toasts.map((toast) => toast.id), ['other']);
+    assert.dom('.euiToast').exists({ count: 1 }).containsText('Other');
   });
 });

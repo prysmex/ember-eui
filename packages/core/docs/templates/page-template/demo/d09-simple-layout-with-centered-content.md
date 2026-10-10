@@ -5,7 +5,7 @@ order: 9
 # Simple layout with centered content
 
 <EuiText>
- Also similar to the previous examples, you can create a centered panel to emphasis incompleteness even with a page header. For this setup, You will need to use nested <strong>EuiPageContent</strong> components in order for the centering to work.
+ The centeredContent template creates the nested containers needed to center the prompt below a header. Omit the side bar block and put the prompt directly in the default block; no extra EuiPageContent is needed.
 </EuiText>
 
 ```hbs template

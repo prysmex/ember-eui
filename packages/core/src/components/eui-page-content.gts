@@ -12,7 +12,7 @@ export interface EuiPageContentSignature {
   Element: HTMLDivElement;
   Args: {
     /** `role` of the content. Defaults to `'main'`; pass `null` for none. */
-    role?: string;
+    role?: string | null;
     /** Vertically centers (`'center'`) or bottom-aligns the content panel. */
     verticalPosition?: 'center' | 'bottom';
     /** Horizontally centers the content panel (e.g. an empty prompt). */

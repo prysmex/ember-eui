@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import { randomId } from '../-private/random-id.ts';
 import EuiButton from './eui-button.gts';
@@ -59,6 +60,7 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
   // the fields, which may be empty or invalid while typing
   @tracked value: number | '';
   @tracked units: Units;
+  private lastAppliedInterval?: number;
 
   legendId = `euiRefreshInterval_${randomId()}`;
   descriptionId = `euiRefreshInterval_${randomId()}`;
@@ -74,6 +76,21 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
 
   get isPaused(): boolean {
     return this.args.isPaused ?? true;
+  }
+
+  @action
+  syncInterval(): void {
+    const interval = this.args.refreshInterval ?? 1000;
+
+    // Preserve the user's units when the owner accepts an edit. Independent
+    // argument changes replace the local draft, including invalid/empty input.
+    if (interval !== this.lastAppliedInterval || this.value === '') {
+      const { value, units } = fromMilliseconds(interval);
+      this.value = value;
+      this.units = units;
+    }
+
+    this.lastAppliedInterval = undefined;
   }
 
   t = (token: string, text: string, values?: Record<string, unknown>): string =>
@@ -106,6 +123,7 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
     if (this.value === '') return;
 
     const refreshInterval = toMilliseconds(this.units, this.value);
+    this.lastAppliedInterval = refreshInterval;
 
     this.args.applyRefreshInterval({
       refreshInterval,
@@ -149,7 +167,7 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
   }
 
   <template>
-    <fieldset ...attributes>
+    <fieldset {{didUpdate this.syncInterval @refreshInterval}} ...attributes>
       <EuiTitle @size="xxxs" @tagName="legend" id={{this.legendId}}>
         {{this.t "euiRefreshInterval.legend" "Refresh every"}}
       </EuiTitle>

@@ -2,27 +2,8 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
-// import { tabbable } from 'tabbable';
-// import {
-//   anchorPositionMapping,
-//   displayMapping
-// } from '../../utils/css-mappings/eui-popover.ts';
-// import { paddingSizeMapping } from '../../utils/css-mappings/eui-panel.ts';
-// import { scheduleOnce, later, cancel } from '@ember/runloop';
-// import { assert } from '@ember/debug';
-// import { htmlSafe } from '@ember/template';
 import { and, eq, or } from 'ember-truth-helpers';
 
-// import { action } from '@ember/object';
-// import { tracked } from '@glimmer/tracking';
-// import {
-//   getTransitionTimings,
-//   getWaitDuration,
-//   performOnFrame
-// } from '../../utils/transition';
-// import { findPopoverPosition, getElementZIndex } from '../../utils/popover';
-// import { EuiPopoverPosition } from '../../utils/popover/types';
-// import { cascadingMenuKeys } from '../../utils/accesibility';
 import argOrDefault, {
   argOrDefaultDecorator
 } from '../helpers/arg-or-default.ts';
@@ -69,25 +50,25 @@ export type EuiPageTemplateProps = {
    */
   template?: (typeof TEMPLATES)[number];
 
-  /** Props for the `EuiPageBody`: `{ className }`. */
-  pageBodyProps: NormalProps & EuiPageBodySignature['Args'];
+  /** Props for the `EuiPageBody`, overriding layout defaults. */
+  pageBodyProps?: NormalProps & EuiPageBodySignature['Args'];
   /**
    * Props for the `EuiPageContent`: `{ className, hasBorder, hasShadow,
    * color, borderRadius, grow, role }`.
    */
-  pageContentProps: NormalProps & EuiPageContentSignature['Args'];
-  /** Props for the `EuiPageContentBody`: `{ className }`. */
-  pageContentBodyProps: NormalProps & EuiPageContentBodySignature['Args'];
+  pageContentProps?: NormalProps & EuiPageContentSignature['Args'];
+  /** Props for the `EuiPageContentBody`, overriding layout defaults. */
+  pageContentBodyProps?: NormalProps & EuiPageContentBodySignature['Args'];
 
   /**
    * The page header, as EuiPageHeader args: `{ pageTitle, iconType,
    * description, tabs, responsive, bottomBorder }`. Use the
    * `<:pageHeader…>` blocks for its title, description and actions.
    */
-  pageHeader: NormalProps & EuiPageHeaderSignature['Args'];
+  pageHeader?: NormalProps & EuiPageHeaderSignature['Args'];
 
-  /** Props for the `EuiPageSideBar`: `{ className }`. */
-  pageSideBarProps: NormalProps & EuiPageSideBarSignature['Args'];
+  /** Props for the side bar, including `sticky` and `paddingSize`. */
+  pageSideBarProps?: NormalProps & EuiPageSideBarSignature['Args'];
 
   /** @deprecated Has no effect, use the `<:bottomBar>` block. */
   bottomBar?: any;
@@ -95,16 +76,17 @@ export type EuiPageTemplateProps = {
   /** @private Render the `<:bottomBar>` block. Defaults to `true`. */
   hasBottomBarBlock?: boolean;
 
-  /** @deprecated Has no effect. */
-  bottomBarProps?: EuiButtomBarArgs;
+  /** Props for the bottom bar; override the layout defaults. */
+  bottomBarProps?: NormalProps & EuiButtomBarArgs;
   /**
    * Stretches the page to the window's height and scrolls the content
    * instead of the page (templates `'default'` and `'empty'`, on medium
-   * screens and up). Defaults to `false`.
+   * screens and up). Use `'noscroll'` to fill the height without adding
+   * a scrolling wrapper around the content. Defaults to `false`.
    */
-  fullHeight?: boolean;
+  fullHeight?: boolean | 'noscroll';
   /** Minimum height of the page, in px or any CSS height. Defaults to `460`. */
-  minHeight?: number;
+  minHeight?: number | string;
 
   /**
    * Max width of the header and content: `true` for EUI's default, a number
@@ -161,7 +143,7 @@ export interface EuiPageTemplateSignature {
 
 export default class EuiPageTemplate extends Component<EuiPageTemplateSignature> {
   // Defaults
-  @argOrDefaultDecorator(false) fullHeight!: boolean;
+  @argOrDefaultDecorator(false) fullHeight!: boolean | 'noscroll';
   @argOrDefaultDecorator('default') template!: (typeof TEMPLATES)[number];
 
   @tracked isWithinBreakpoints = false;
@@ -173,7 +155,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
   get minHeight() {
     const minHeight = this.args.minHeight ?? 460;
 
-    if (typeof this.args.minHeight === 'number') {
+    if (typeof minHeight === 'number') {
       return `${minHeight}px`;
     }
 
@@ -210,15 +192,21 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
   }
 
   get pageBodyPropsClass() {
-    return `${this.fullHeightClass} ${this.args.pageBodyProps?.className}`;
+    return [this.fullHeightClass, this.args.pageBodyProps?.className]
+      .filter(Boolean)
+      .join(' ');
   }
 
   get pageContentPropsClass() {
-    return `${this.yScrollClass} ${this.args.pageContentProps?.className}`;
+    return [this.yScrollClass, this.args.pageContentProps?.className]
+      .filter(Boolean)
+      .join(' ');
   }
 
   get pageContentBodyPropsClass() {
-    return `${this.fullHeightClass} ${this.args.pageContentBodyProps?.className}`;
+    return [this.fullHeightClass, this.args.pageContentBodyProps?.className]
+      .filter(Boolean)
+      .join(' ');
   }
 
   <template>
@@ -273,50 +261,105 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             >
               <EuiPageSideBar
                 class={{@pageSideBarProps.className}}
-                @sticky={{true}}
-                @paddingSize={{paddingSize}}
+                @sticky={{argOrDefault @pageSideBarProps.sticky true}}
+                @paddingSize={{argOrDefault
+                  @pageSideBarProps.paddingSize
+                  paddingSize
+                }}
               >
                 {{yield to="pageSideBar"}}
               </EuiPageSideBar>
               <EuiPageBody
                 class={{this.pageBodyPropsClass}}
-                @paddingSize={{paddingSize}}
+                @paddingSize={{argOrDefault
+                  @pageBodyProps.paddingSize
+                  paddingSize
+                }}
+                @tagName={{@pageBodyProps.tagName}}
+                @restrictWidth={{@pageBodyProps.restrictWidth}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @panelled={{@pageBodyProps.panelled}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
               >
-                <EuiPageHeader
-                  @restrictWidth={{this.restrictWidth}}
-                  @responsive={{@pageHeader.responsive}}
-                  @iconType={{@pageHeader.iconType}}
-                  @tabs={{@pageHeader.tabs}}
-                  @pageTitle={{@pageHeader.pageTitle}}
-                  @description={{@pageHeader.description}}
-                  @hasPageTitleBlock={{hasPageHeaderPageTitleBlock}}
-                  @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
-                  @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
-                  @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
-                >
-                  <:pageTitle>
-                    {{yield to="pageHeaderPageTitle"}}
-                  </:pageTitle>
-                  <:default>
-                    {{yield to="pageHeaderDefault"}}
-                  </:default>
-                  <:description>
-                    {{yield to="pageHeaderDescription"}}
-                  </:description>
-                  <:rightSideItems as |item|>
-                    {{yield item to="pageHeaderRightSideItems"}}
-                  </:rightSideItems>
-                </EuiPageHeader>
+                {{#if hasPageHeader}}
+                  <EuiPageHeader
+                    class={{@pageHeader.className}}
+                    @restrictWidth={{argOrDefault
+                      @pageHeader.restrictWidth
+                      this.restrictWidth
+                    }}
+                    @responsive={{@pageHeader.responsive}}
+                    @iconType={{@pageHeader.iconType}}
+                    @tabs={{@pageHeader.tabs}}
+                    @pageTitle={{@pageHeader.pageTitle}}
+                    @description={{@pageHeader.description}}
+                    @hasPageTitleBlock={{hasPageHeaderPageTitleBlock}}
+                    @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
+                    @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
+                    @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                    @paddingSize={{@pageHeader.paddingSize}}
+                    @bottomBorder={{@pageHeader.bottomBorder}}
+                    @alignItems={{@pageHeader.alignItems}}
+                    @breadcrumbs={{@pageHeader.breadcrumbs}}
+                    @pageTitleProps={{@pageHeader.pageTitleProps}}
+                    @style={{@pageHeader.style}}
+                  >
+                    <:pageTitle>
+                      {{#if hasPageHeaderPageTitleBlock}}{{yield
+                          to="pageHeaderPageTitle"
+                        }}{{/if}}
+                    </:pageTitle>
+                    <:default>
+                      {{#if hasPageHeaderDefaultBlock}}{{yield
+                          to="pageHeaderDefault"
+                        }}{{/if}}
+                    </:default>
+                    <:description>
+                      {{#if hasPageHeaderDescriptionBlock}}{{yield
+                          to="pageHeaderDescription"
+                        }}{{/if}}
+                    </:description>
+                    <:rightSideItems as |item|>
+                      {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                          item
+                          to="pageHeaderRightSideItems"
+                        }}{{/if}}
+                    </:rightSideItems>
+                  </EuiPageHeader>
+                {{/if}}
 
                 <EuiPageContent
                   class={{this.pageContentPropsClass}}
-                  @verticalPosition="center"
-                  @horizontalPosition="center"
-                  @paddingSize={{paddingSize}}
+                  @verticalPosition={{argOrDefault
+                    @pageContentProps.verticalPosition
+                    "center"
+                  }}
+                  @horizontalPosition={{argOrDefault
+                    @pageContentProps.horizontalPosition
+                    "center"
+                  }}
+                  @paddingSize={{argOrDefault
+                    @pageContentProps.paddingSize
+                    paddingSize
+                  }}
+                  @role={{@pageContentProps.role}}
+                  @hasBorder={{@pageContentProps.hasBorder}}
+                  @hasShadow={{@pageContentProps.hasShadow}}
+                  @color={{@pageContentProps.color}}
+                  @borderRadius={{@pageContentProps.borderRadius}}
+                  @grow={{@pageContentProps.grow}}
                 >
                   <EuiPageContentBody
                     class={{this.pageContentBodyPropsClass}}
-                    @restrictWidth={{this.restrictWidth}}
+                    @restrictWidth={{argOrDefault
+                      @pageContentBodyProps.restrictWidth
+                      this.restrictWidth
+                    }}
+                    @paddingSize={{@pageContentBodyProps.paddingSize}}
+                    @style={{@pageContentBodyProps.style}}
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
@@ -355,13 +398,28 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             >
               <EuiPageBody
                 class={{this.pageBodyPropsClass}}
-                @restrictWidth={{this.restrictWidth}}
+                @restrictWidth={{argOrDefault
+                  @pageBodyProps.restrictWidth
+                  this.restrictWidth
+                }}
+                @tagName={{@pageBodyProps.tagName}}
+                @paddingSize={{@pageBodyProps.paddingSize}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @panelled={{@pageBodyProps.panelled}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
               >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    @restrictWidth={{false}}
-                    @bottomBorder={{@pageHeader.bottomBorder}}
-                    @paddingSize="none"
+                    class={{@pageHeader.className}}
+                    @restrictWidth={{argOrDefault
+                      @pageHeader.restrictWidth
+                      false
+                    }}
+                    @bottomBorder={{argOrDefault @pageHeader.bottomBorder true}}
+                    @paddingSize={{argOrDefault @pageHeader.paddingSize "none"}}
                     @responsive={{@pageHeader.responsive}}
                     @iconType={{@pageHeader.iconType}}
                     @tabs={{@pageHeader.tabs}}
@@ -371,38 +429,67 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
                     @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
                     @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                    @alignItems={{@pageHeader.alignItems}}
+                    @breadcrumbs={{@pageHeader.breadcrumbs}}
+                    @pageTitleProps={{@pageHeader.pageTitleProps}}
+                    @style={{@pageHeader.style}}
                   >
                     <:pageTitle>
-                      {{yield to="pageHeaderPageTitle"}}
+                      {{#if hasPageHeaderPageTitleBlock}}{{yield
+                          to="pageHeaderPageTitle"
+                        }}{{/if}}
                     </:pageTitle>
                     <:default>
-                      {{yield to="pageHeaderDefault"}}
+                      {{#if hasPageHeaderDefaultBlock}}{{yield
+                          to="pageHeaderDefault"
+                        }}{{/if}}
                     </:default>
                     <:description>
-                      {{yield to="pageHeaderDescription"}}
+                      {{#if hasPageHeaderDescriptionBlock}}{{yield
+                          to="pageHeaderDescription"
+                        }}{{/if}}
                     </:description>
                     <:rightSideItems as |item|>
-                      {{yield item to="pageHeaderRightSideItems"}}
+                      {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                          item
+                          to="pageHeaderRightSideItems"
+                        }}{{/if}}
                     </:rightSideItems>
                   </EuiPageHeader>
                 {{/if}}
                 <EuiPageBody>
                   <EuiPageContent
                     class={{this.pageContentPropsClass}}
-                    @verticalPosition="center"
-                    @horizontalPosition="center"
+                    @verticalPosition={{argOrDefault
+                      @pageContentProps.verticalPosition
+                      "center"
+                    }}
+                    @horizontalPosition={{argOrDefault
+                      @pageContentProps.horizontalPosition
+                      "center"
+                    }}
                     @hasBorder={{@pageContentProps.hasBorder}}
                     @hasShadow={{@pageContentProps.hasShadow}}
                     @color={{@pageContentProps.color}}
                     @borderRadius={{@pageContentProps.borderRadius}}
                     @grow={{@pageContentProps.grow}}
                     @role={{@pageContentProps.role}}
-                    @paddingSize={{paddingSize}}
+                    @paddingSize={{argOrDefault
+                      @pageContentProps.paddingSize
+                      paddingSize
+                    }}
                   >
                     <EuiPageContentBody
                       class={{this.pageContentBodyPropsClass}}
-                      @paddingSize="none"
-                      @restrictWidth={{this.restrictWidth}}
+                      @paddingSize={{argOrDefault
+                        @pageContentBodyProps.paddingSize
+                        "none"
+                      }}
+                      @restrictWidth={{argOrDefault
+                        @pageContentBodyProps.restrictWidth
+                        this.restrictWidth
+                      }}
+                      @style={{@pageContentBodyProps.style}}
                     >
                       {{#if (and this.canFullHeight this.fullHeight)}}
                         <EuiFlexGroup
@@ -444,19 +531,36 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             >
               <EuiPageSideBar
                 class={{@pageSideBarProps.className}}
-                @sticky={{true}}
-                @paddingSize={{paddingSize}}
+                @sticky={{argOrDefault @pageSideBarProps.sticky true}}
+                @paddingSize={{argOrDefault
+                  @pageSideBarProps.paddingSize
+                  paddingSize
+                }}
               >
                 {{yield to="pageSideBar"}}
               </EuiPageSideBar>
               <EuiPageBody
-                @panelled={{true}}
-                @paddingSize={{paddingSize}}
+                @panelled={{argOrDefault @pageBodyProps.panelled true}}
+                @paddingSize={{argOrDefault
+                  @pageBodyProps.paddingSize
+                  paddingSize
+                }}
                 class={{this.pageBodyPropsClass}}
+                @tagName={{@pageBodyProps.tagName}}
+                @restrictWidth={{@pageBodyProps.restrictWidth}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
               >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    @restrictWidth={{this.restrictWidth}}
+                    class={{@pageHeader.className}}
+                    @restrictWidth={{argOrDefault
+                      @pageHeader.restrictWidth
+                      this.restrictWidth
+                    }}
                     @paddingSize={{@pageHeader.paddingSize}}
                     @responsive={{@pageHeader.responsive}}
                     @iconType={{@pageHeader.iconType}}
@@ -467,32 +571,64 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
                     @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
                     @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                    @bottomBorder={{@pageHeader.bottomBorder}}
+                    @alignItems={{@pageHeader.alignItems}}
+                    @breadcrumbs={{@pageHeader.breadcrumbs}}
+                    @pageTitleProps={{@pageHeader.pageTitleProps}}
+                    @style={{@pageHeader.style}}
                   >
                     <:pageTitle>
-                      {{yield to="pageHeaderPageTitle"}}
+                      {{#if hasPageHeaderPageTitleBlock}}{{yield
+                          to="pageHeaderPageTitle"
+                        }}{{/if}}
                     </:pageTitle>
                     <:default>
-                      {{yield to="pageHeaderDefault"}}
+                      {{#if hasPageHeaderDefaultBlock}}{{yield
+                          to="pageHeaderDefault"
+                        }}{{/if}}
                     </:default>
                     <:description>
-                      {{yield to="pageHeaderDescription"}}
+                      {{#if hasPageHeaderDescriptionBlock}}{{yield
+                          to="pageHeaderDescription"
+                        }}{{/if}}
                     </:description>
                     <:rightSideItems as |item|>
-                      {{yield item to="pageHeaderRightSideItems"}}
+                      {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                          item
+                          to="pageHeaderRightSideItems"
+                        }}{{/if}}
                     </:rightSideItems>
                   </EuiPageHeader>
                 {{/if}}
                 <EuiPageContent
-                  @verticalPosition="center"
-                  @horizontalPosition="center"
-                  @hasShadow={{false}}
-                  @color="subdued"
-                  @paddingSize={{paddingSize}}
+                  @verticalPosition={{argOrDefault
+                    @pageContentProps.verticalPosition
+                    "center"
+                  }}
+                  @horizontalPosition={{argOrDefault
+                    @pageContentProps.horizontalPosition
+                    "center"
+                  }}
+                  @hasShadow={{argOrDefault @pageContentProps.hasShadow false}}
+                  @color={{argOrDefault @pageContentProps.color "subdued"}}
+                  @paddingSize={{argOrDefault
+                    @pageContentProps.paddingSize
+                    paddingSize
+                  }}
                   class={{this.pageContentPropsClass}}
+                  @role={{@pageContentProps.role}}
+                  @hasBorder={{@pageContentProps.hasBorder}}
+                  @borderRadius={{@pageContentProps.borderRadius}}
+                  @grow={{@pageContentProps.grow}}
                 >
                   <EuiPageContentBody
-                    @restrictWidth={{this.restrictWidth}}
+                    @restrictWidth={{argOrDefault
+                      @pageContentBodyProps.restrictWidth
+                      this.restrictWidth
+                    }}
                     class={{this.pageContentBodyPropsClass}}
+                    @paddingSize={{@pageContentBodyProps.paddingSize}}
+                    @style={{@pageContentBodyProps.style}}
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
@@ -529,11 +665,29 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               {{style (inlineStyles min-height=this.minHeight)}}
               ...attributes
             >
-              <EuiPageBody class={{this.pageBodyPropsClass}}>
+              <EuiPageBody
+                class={{this.pageBodyPropsClass}}
+                @tagName={{@pageBodyProps.tagName}}
+                @restrictWidth={{@pageBodyProps.restrictWidth}}
+                @paddingSize={{@pageBodyProps.paddingSize}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @panelled={{@pageBodyProps.panelled}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
+              >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    @restrictWidth={{this.restrictWidth}}
-                    @paddingSize={{paddingSize}}
+                    class={{@pageHeader.className}}
+                    @restrictWidth={{argOrDefault
+                      @pageHeader.restrictWidth
+                      this.restrictWidth
+                    }}
+                    @paddingSize={{argOrDefault
+                      @pageHeader.paddingSize
+                      paddingSize
+                    }}
                     @responsive={{@pageHeader.responsive}}
                     @iconType={{@pageHeader.iconType}}
                     @tabs={{@pageHeader.tabs}}
@@ -543,18 +697,32 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
                     @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
                     @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                    @bottomBorder={{@pageHeader.bottomBorder}}
+                    @alignItems={{@pageHeader.alignItems}}
+                    @breadcrumbs={{@pageHeader.breadcrumbs}}
+                    @pageTitleProps={{@pageHeader.pageTitleProps}}
+                    @style={{@pageHeader.style}}
                   >
                     <:pageTitle>
-                      {{yield to="pageHeaderPageTitle"}}
+                      {{#if hasPageHeaderPageTitleBlock}}{{yield
+                          to="pageHeaderPageTitle"
+                        }}{{/if}}
                     </:pageTitle>
                     <:default>
-                      {{yield to="pageHeaderDefault"}}
+                      {{#if hasPageHeaderDefaultBlock}}{{yield
+                          to="pageHeaderDefault"
+                        }}{{/if}}
                     </:default>
                     <:description>
-                      {{yield to="pageHeaderDescription"}}
+                      {{#if hasPageHeaderDescriptionBlock}}{{yield
+                          to="pageHeaderDescription"
+                        }}{{/if}}
                     </:description>
                     <:rightSideItems as |item|>
-                      {{yield item to="pageHeaderRightSideItems"}}
+                      {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                          item
+                          to="pageHeaderRightSideItems"
+                        }}{{/if}}
                     </:rightSideItems>
                   </EuiPageHeader>
                 {{/if}}
@@ -568,16 +736,37 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 >
                   {{!template-lint-enable}}
                   <EuiPageContent
-                    @verticalPosition="center"
-                    @horizontalPosition="center"
-                    @hasShadow={{false}}
-                    @color="subdued"
-                    @paddingSize={{paddingSize}}
+                    @verticalPosition={{argOrDefault
+                      @pageContentProps.verticalPosition
+                      "center"
+                    }}
+                    @horizontalPosition={{argOrDefault
+                      @pageContentProps.horizontalPosition
+                      "center"
+                    }}
+                    @hasShadow={{argOrDefault
+                      @pageContentProps.hasShadow
+                      false
+                    }}
+                    @color={{argOrDefault @pageContentProps.color "subdued"}}
+                    @paddingSize={{argOrDefault
+                      @pageContentProps.paddingSize
+                      paddingSize
+                    }}
                     class={{this.pageContentPropsClass}}
+                    @role={{@pageContentProps.role}}
+                    @hasBorder={{@pageContentProps.hasBorder}}
+                    @borderRadius={{@pageContentProps.borderRadius}}
+                    @grow={{@pageContentProps.grow}}
                   >
                     <EuiPageContentBody
-                      @restrictWidth={{this.restrictWidth}}
+                      @restrictWidth={{argOrDefault
+                        @pageContentBodyProps.restrictWidth
+                        this.restrictWidth
+                      }}
                       class={{this.pageContentBodyPropsClass}}
+                      @paddingSize={{@pageContentBodyProps.paddingSize}}
+                      @style={{@pageContentBodyProps.style}}
                     >
                       {{#if (and this.canFullHeight this.fullHeight)}}
                         <EuiFlexGroup
@@ -620,18 +809,36 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             >
               <EuiPageSideBar
                 class={{@pageSideBarProps.className}}
-                @sticky={{true}}
-                @paddingSize={{paddingSize}}
+                @sticky={{argOrDefault @pageSideBarProps.sticky true}}
+                @paddingSize={{argOrDefault
+                  @pageSideBarProps.paddingSize
+                  paddingSize
+                }}
               >
                 {{yield to="pageSideBar"}}
               </EuiPageSideBar>
               <EuiPageBody
-                @paddingSize={{paddingSize}}
+                @paddingSize={{argOrDefault
+                  @pageBodyProps.paddingSize
+                  paddingSize
+                }}
                 class={{this.pageBodyPropsClass}}
+                @tagName={{@pageBodyProps.tagName}}
+                @restrictWidth={{@pageBodyProps.restrictWidth}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @panelled={{@pageBodyProps.panelled}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
               >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    @restrictWidth={{this.restrictWidth}}
+                    class={{@pageHeader.className}}
+                    @restrictWidth={{argOrDefault
+                      @pageHeader.restrictWidth
+                      this.restrictWidth
+                    }}
                     @paddingSize={{@pageHeader.paddingSize}}
                     @responsive={{@pageHeader.responsive}}
                     @iconType={{@pageHeader.iconType}}
@@ -642,32 +849,61 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
                     @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
                     @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                    @bottomBorder={{@pageHeader.bottomBorder}}
+                    @alignItems={{@pageHeader.alignItems}}
+                    @breadcrumbs={{@pageHeader.breadcrumbs}}
+                    @pageTitleProps={{@pageHeader.pageTitleProps}}
+                    @style={{@pageHeader.style}}
                   >
                     <:pageTitle>
-                      {{yield to="pageHeaderPageTitle"}}
+                      {{#if hasPageHeaderPageTitleBlock}}{{yield
+                          to="pageHeaderPageTitle"
+                        }}{{/if}}
                     </:pageTitle>
                     <:default>
-                      {{yield to="pageHeaderDefault"}}
+                      {{#if hasPageHeaderDefaultBlock}}{{yield
+                          to="pageHeaderDefault"
+                        }}{{/if}}
                     </:default>
                     <:description>
-                      {{yield to="pageHeaderDescription"}}
+                      {{#if hasPageHeaderDescriptionBlock}}{{yield
+                          to="pageHeaderDescription"
+                        }}{{/if}}
                     </:description>
                     <:rightSideItems as |item|>
-                      {{yield item to="pageHeaderRightSideItems"}}
+                      {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                          item
+                          to="pageHeaderRightSideItems"
+                        }}{{/if}}
                     </:rightSideItems>
                   </EuiPageHeader>
                 {{/if}}
                 <EuiPageContent
-                  @hasBorder={{false}}
-                  @hasShadow={{false}}
-                  @paddingSize="none"
-                  @color="transparent"
-                  @borderRadius="none"
+                  @hasBorder={{argOrDefault @pageContentProps.hasBorder false}}
+                  @hasShadow={{argOrDefault @pageContentProps.hasShadow false}}
+                  @paddingSize={{argOrDefault
+                    @pageContentProps.paddingSize
+                    "none"
+                  }}
+                  @color={{argOrDefault @pageContentProps.color "transparent"}}
+                  @borderRadius={{argOrDefault
+                    @pageContentProps.borderRadius
+                    "none"
+                  }}
                   class={{this.pageContentPropsClass}}
+                  @role={{@pageContentProps.role}}
+                  @verticalPosition={{@pageContentProps.verticalPosition}}
+                  @horizontalPosition={{@pageContentProps.horizontalPosition}}
+                  @grow={{@pageContentProps.grow}}
                 >
                   <EuiPageContentBody
-                    @restrictWidth={{this.restrictWidth}}
+                    @restrictWidth={{argOrDefault
+                      @pageContentBodyProps.restrictWidth
+                      this.restrictWidth
+                    }}
                     class={{this.pageContentBodyPropsClass}}
+                    @paddingSize={{@pageContentBodyProps.paddingSize}}
+                    @style={{@pageContentBodyProps.style}}
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
@@ -705,14 +941,29 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               ...attributes
             >
               <EuiPageBody
-                @restrictWidth={{this.restrictWidth}}
+                @restrictWidth={{argOrDefault
+                  @pageBodyProps.restrictWidth
+                  this.restrictWidth
+                }}
                 class={{this.pageBodyPropsClass}}
+                @tagName={{@pageBodyProps.tagName}}
+                @paddingSize={{@pageBodyProps.paddingSize}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @panelled={{@pageBodyProps.panelled}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
               >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    @bottomBorder={{@pageHeader.bottomBorder}}
-                    @restrictWidth={{false}}
-                    @paddingSize={{@pageHeader.paddingSize}}
+                    class={{@pageHeader.className}}
+                    @bottomBorder={{argOrDefault @pageHeader.bottomBorder true}}
+                    @restrictWidth={{argOrDefault
+                      @pageHeader.restrictWidth
+                      false
+                    }}
+                    @paddingSize={{argOrDefault @pageHeader.paddingSize "none"}}
                     @responsive={{@pageHeader.responsive}}
                     @iconType={{@pageHeader.iconType}}
                     @tabs={{@pageHeader.tabs}}
@@ -722,32 +973,63 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
                     @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
                     @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                    @alignItems={{@pageHeader.alignItems}}
+                    @breadcrumbs={{@pageHeader.breadcrumbs}}
+                    @pageTitleProps={{@pageHeader.pageTitleProps}}
+                    @style={{@pageHeader.style}}
                   >
                     <:pageTitle>
-                      {{yield to="pageHeaderPageTitle"}}
+                      {{#if hasPageHeaderPageTitleBlock}}{{yield
+                          to="pageHeaderPageTitle"
+                        }}{{/if}}
                     </:pageTitle>
                     <:default>
-                      {{yield to="pageHeaderDefault"}}
+                      {{#if hasPageHeaderDefaultBlock}}{{yield
+                          to="pageHeaderDefault"
+                        }}{{/if}}
                     </:default>
                     <:description>
-                      {{yield to="pageHeaderDescription"}}
+                      {{#if hasPageHeaderDescriptionBlock}}{{yield
+                          to="pageHeaderDescription"
+                        }}{{/if}}
                     </:description>
                     <:rightSideItems as |item|>
-                      {{yield item to="pageHeaderRightSideItems"}}
+                      {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                          item
+                          to="pageHeaderRightSideItems"
+                        }}{{/if}}
                     </:rightSideItems>
                   </EuiPageHeader>
                 {{/if}}
                 <EuiPageContent
-                  @hasBorder={{false}}
-                  @hasShadow={{false}}
-                  @paddingSize="none"
-                  @color="transparent"
-                  @borderRadius="none"
+                  @hasBorder={{argOrDefault @pageContentProps.hasBorder false}}
+                  @hasShadow={{argOrDefault @pageContentProps.hasShadow false}}
+                  @paddingSize={{argOrDefault
+                    @pageContentProps.paddingSize
+                    "none"
+                  }}
+                  @color={{argOrDefault @pageContentProps.color "transparent"}}
+                  @borderRadius={{argOrDefault
+                    @pageContentProps.borderRadius
+                    "none"
+                  }}
                   class={{this.pageContentPropsClass}}
+                  @role={{@pageContentProps.role}}
+                  @verticalPosition={{@pageContentProps.verticalPosition}}
+                  @horizontalPosition={{@pageContentProps.horizontalPosition}}
+                  @grow={{@pageContentProps.grow}}
                 >
                   <EuiPageContentBody
-                    @restrictWidth={{false}}
+                    @restrictWidth={{argOrDefault
+                      @pageContentBodyProps.restrictWidth
+                      false
+                    }}
                     class={{this.pageContentBodyPropsClass}}
+                    @paddingSize={{argOrDefault
+                      @pageContentBodyProps.paddingSize
+                      "none"
+                    }}
+                    @style={{@pageContentBodyProps.style}}
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
@@ -788,15 +1070,25 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             >
               <EuiPageSideBar
                 class={{@pageSideBarProps.className}}
-                @sticky={{true}}
-                @paddingSize={{paddingSize}}
+                @sticky={{argOrDefault @pageSideBarProps.sticky true}}
+                @paddingSize={{argOrDefault
+                  @pageSideBarProps.paddingSize
+                  paddingSize
+                }}
               >
                 {{yield to="pageSideBar"}}
               </EuiPageSideBar>
               <EuiPageBody
-                @panelled={{true}}
-                @paddingSize="none"
+                @panelled={{argOrDefault @pageBodyProps.panelled true}}
+                @paddingSize={{argOrDefault @pageBodyProps.paddingSize "none"}}
                 class={{this.pageBodyPropsClass}}
+                @tagName={{@pageBodyProps.tagName}}
+                @restrictWidth={{@pageBodyProps.restrictWidth}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
               >
                 <EuiPageBody
                   class={{this.pageBodyPropsClass}}
@@ -805,8 +1097,15 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 >
                   {{#if hasPageHeader}}
                     <EuiPageHeader
-                      @bottomBorder={{@pageHeader.bottomBorder}}
-                      @restrictWidth={{this.restrictWidth}}
+                      class={{@pageHeader.className}}
+                      @bottomBorder={{argOrDefault
+                        @pageHeader.bottomBorder
+                        true
+                      }}
+                      @restrictWidth={{argOrDefault
+                        @pageHeader.restrictWidth
+                        this.restrictWidth
+                      }}
                       @paddingSize={{@pageHeader.paddingSize}}
                       @responsive={{@pageHeader.responsive}}
                       @iconType={{@pageHeader.iconType}}
@@ -817,32 +1116,69 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                       @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
                       @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
                       @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                      @alignItems={{@pageHeader.alignItems}}
+                      @breadcrumbs={{@pageHeader.breadcrumbs}}
+                      @pageTitleProps={{@pageHeader.pageTitleProps}}
+                      @style={{@pageHeader.style}}
                     >
                       <:pageTitle>
-                        {{yield to="pageHeaderPageTitle"}}
+                        {{#if hasPageHeaderPageTitleBlock}}{{yield
+                            to="pageHeaderPageTitle"
+                          }}{{/if}}
                       </:pageTitle>
                       <:default>
-                        {{yield to="pageHeaderDefault"}}
+                        {{#if hasPageHeaderDefaultBlock}}{{yield
+                            to="pageHeaderDefault"
+                          }}{{/if}}
                       </:default>
                       <:description>
-                        {{yield to="pageHeaderDescription"}}
+                        {{#if hasPageHeaderDescriptionBlock}}{{yield
+                            to="pageHeaderDescription"
+                          }}{{/if}}
                       </:description>
                       <:rightSideItems as |item|>
-                        {{yield item to="pageHeaderRightSideItems"}}
+                        {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                            item
+                            to="pageHeaderRightSideItems"
+                          }}{{/if}}
                       </:rightSideItems>
                     </EuiPageHeader>
                   {{/if}}
                   <EuiPageContent
-                    @hasShadow={{false}}
-                    @hasBorder={{false}}
-                    @color="transparent"
-                    @borderRadius="none"
-                    @paddingSize="none"
+                    @hasShadow={{argOrDefault
+                      @pageContentProps.hasShadow
+                      false
+                    }}
+                    @hasBorder={{argOrDefault
+                      @pageContentProps.hasBorder
+                      false
+                    }}
+                    @color={{argOrDefault
+                      @pageContentProps.color
+                      "transparent"
+                    }}
+                    @borderRadius={{argOrDefault
+                      @pageContentProps.borderRadius
+                      "none"
+                    }}
+                    @paddingSize={{argOrDefault
+                      @pageContentProps.paddingSize
+                      "none"
+                    }}
                     class={{this.pageContentPropsClass}}
+                    @role={{@pageContentProps.role}}
+                    @verticalPosition={{@pageContentProps.verticalPosition}}
+                    @horizontalPosition={{@pageContentProps.horizontalPosition}}
+                    @grow={{@pageContentProps.grow}}
                   >
                     <EuiPageContentBody
-                      @restrictWidth={{this.restrictWidth}}
+                      @restrictWidth={{argOrDefault
+                        @pageContentBodyProps.restrictWidth
+                        this.restrictWidth
+                      }}
                       class={{this.pageContentBodyPropsClass}}
+                      @paddingSize={{@pageContentBodyProps.paddingSize}}
+                      @style={{@pageContentBodyProps.style}}
                     >
                       {{#if (and this.canFullHeight this.fullHeight)}}
                         <EuiFlexGroup
@@ -871,12 +1207,26 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 </EuiPageBody>
                 {{#if hasBottomBarBlock}}
                   <EuiBottomBar
-                    @paddingSize={{paddingSize}}
-                    @position={{if
-                      (and this.canFullHeight this.fullHeight)
-                      "static"
-                      "sticky"
+                    class={{@bottomBarProps.className}}
+                    @paddingSize={{argOrDefault
+                      @bottomBarProps.paddingSize
+                      paddingSize
                     }}
+                    @position={{argOrDefault
+                      @bottomBarProps.position
+                      (if
+                        (and this.canFullHeight this.fullHeight)
+                        "static"
+                        "sticky"
+                      )
+                    }}
+                    @affordForDisplacement={{@bottomBarProps.affordForDisplacement}}
+                    @bodyClassName={{@bottomBarProps.bodyClassName}}
+                    @landmarkHeading={{@bottomBarProps.landmarkHeading}}
+                    @top={{@bottomBarProps.top}}
+                    @right={{@bottomBarProps.right}}
+                    @left={{@bottomBarProps.left}}
+                    @bottom={{@bottomBarProps.bottom}}
                   >
                     <EuiPageContentBody
                       @paddingSize="none"
@@ -897,12 +1247,30 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
               {{style (inlineStyles min-height=this.minHeight)}}
               ...attributes
             >
-              <EuiPageBody class={{this.pageBodyPropsClass}}>
+              <EuiPageBody
+                class={{this.pageBodyPropsClass}}
+                @tagName={{@pageBodyProps.tagName}}
+                @restrictWidth={{@pageBodyProps.restrictWidth}}
+                @paddingSize={{@pageBodyProps.paddingSize}}
+                @borderRadius={{@pageBodyProps.borderRadius}}
+                @panelled={{@pageBodyProps.panelled}}
+                @color={{@pageBodyProps.color}}
+                @hasBorder={{@pageBodyProps.hasBorder}}
+                @hasShadow={{@pageBodyProps.hasShadow}}
+                @style={{@pageBodyProps.style}}
+              >
                 {{#if hasPageHeader}}
                   <EuiPageHeader
-                    @restrictWidth={{this.restrictWidth}}
+                    class={{@pageHeader.className}}
+                    @restrictWidth={{argOrDefault
+                      @pageHeader.restrictWidth
+                      this.restrictWidth
+                    }}
                     @bottomBorder={{@pageHeader.bottomBorder}}
-                    @paddingSize={{paddingSize}}
+                    @paddingSize={{argOrDefault
+                      @pageHeader.paddingSize
+                      paddingSize
+                    }}
                     @responsive={{@pageHeader.responsive}}
                     @iconType={{@pageHeader.iconType}}
                     @tabs={{@pageHeader.tabs}}
@@ -912,33 +1280,67 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     @hasDefaultBlock={{hasPageHeaderDefaultBlock}}
                     @hasDescriptionBlock={{hasPageHeaderDescriptionBlock}}
                     @hasRightSideItemsBlock={{hasPageHeaderRightSideItemsBlock}}
+                    @alignItems={{@pageHeader.alignItems}}
+                    @breadcrumbs={{@pageHeader.breadcrumbs}}
+                    @pageTitleProps={{@pageHeader.pageTitleProps}}
+                    @style={{@pageHeader.style}}
                   >
                     <:pageTitle>
-                      {{yield to="pageHeaderPageTitle"}}
+                      {{#if hasPageHeaderPageTitleBlock}}{{yield
+                          to="pageHeaderPageTitle"
+                        }}{{/if}}
                     </:pageTitle>
                     <:default>
-                      {{yield to="pageHeaderDefault"}}
+                      {{#if hasPageHeaderDefaultBlock}}{{yield
+                          to="pageHeaderDefault"
+                        }}{{/if}}
                     </:default>
                     <:description>
-                      {{yield to="pageHeaderDescription"}}
+                      {{#if hasPageHeaderDescriptionBlock}}{{yield
+                          to="pageHeaderDescription"
+                        }}{{/if}}
                     </:description>
                     <:rightSideItems as |item|>
-                      {{yield item to="pageHeaderRightSideItems"}}
+                      {{#if hasPageHeaderRightSideItemsBlock}}{{yield
+                          item
+                          to="pageHeaderRightSideItems"
+                        }}{{/if}}
                     </:rightSideItems>
                   </EuiPageHeader>
                 {{/if}}
                 <EuiPageContent
-                  @hasBorder={{if hasPageHeader false}}
-                  @hasShadow={{false}}
-                  @paddingSize="none"
-                  @color="plain"
-                  @borderRadius="none"
+                  @hasBorder={{if
+                    (eq @pageContentProps.hasBorder undefined)
+                    (if hasPageHeader undefined false)
+                    @pageContentProps.hasBorder
+                  }}
+                  @hasShadow={{argOrDefault @pageContentProps.hasShadow false}}
+                  @paddingSize={{argOrDefault
+                    @pageContentProps.paddingSize
+                    "none"
+                  }}
+                  @color={{argOrDefault @pageContentProps.color "plain"}}
+                  @borderRadius={{argOrDefault
+                    @pageContentProps.borderRadius
+                    "none"
+                  }}
                   class={{this.pageContentPropsClass}}
+                  @role={{@pageContentProps.role}}
+                  @verticalPosition={{@pageContentProps.verticalPosition}}
+                  @horizontalPosition={{@pageContentProps.horizontalPosition}}
+                  @grow={{@pageContentProps.grow}}
                 >
                   <EuiPageContentBody
-                    @restrictWidth={{this.restrictWidth}}
-                    @paddingSize={{paddingSize}}
+                    @restrictWidth={{argOrDefault
+                      @pageContentBodyProps.restrictWidth
+                      this.restrictWidth
+                    }}
+                    @paddingSize={{argOrDefault
+                      @pageContentBodyProps.paddingSize
+                      paddingSize
+                    }}
                     class={{this.pageContentBodyPropsClass}}
+                    @style={{@pageContentBodyProps.style}}
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
@@ -966,12 +1368,26 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 </EuiPageContent>
                 {{#if hasBottomBarBlock}}
                   <EuiBottomBar
-                    @paddingSize={{paddingSize}}
-                    @position={{if
-                      (and this.canFullHeight this.fullHeight)
-                      "static"
-                      "sticky"
+                    class={{@bottomBarProps.className}}
+                    @paddingSize={{argOrDefault
+                      @bottomBarProps.paddingSize
+                      paddingSize
                     }}
+                    @position={{argOrDefault
+                      @bottomBarProps.position
+                      (if
+                        (and this.canFullHeight this.fullHeight)
+                        "static"
+                        "sticky"
+                      )
+                    }}
+                    @affordForDisplacement={{@bottomBarProps.affordForDisplacement}}
+                    @bodyClassName={{@bottomBarProps.bodyClassName}}
+                    @landmarkHeading={{@bottomBarProps.landmarkHeading}}
+                    @top={{@bottomBarProps.top}}
+                    @right={{@bottomBarProps.right}}
+                    @left={{@bottomBarProps.left}}
+                    @bottom={{@bottomBarProps.bottom}}
                   >
                     <EuiPageContentBody
                       @paddingSize="none"

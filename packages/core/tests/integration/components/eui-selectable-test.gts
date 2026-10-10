@@ -44,13 +44,36 @@ module('Integration | Component | eui-selectable', function (hooks) {
     await click('li[title="Banana"]');
     await rerender();
     assert.deepEqual(state.checked, ['Apple:on', 'Banana:on']);
+    assert.dom('li[title="Banana"]').hasAttribute('aria-selected', 'true');
 
     await click('li[title="Apple"]');
     await rerender();
     assert.deepEqual(state.checked, ['Banana:on']);
+    assert.dom('li[title="Apple"]').hasAttribute('aria-selected', 'false');
 
     await click('li[title="Cherry"]');
     assert.deepEqual(state.checked, ['Banana:on'], 'disabled options do nothing');
+  });
+
+  test('replacing options externally updates selected state and removes stale rows', async function (assert) {
+    const state = new State();
+
+    await render(<template><EuiSelectable @options={{state.options}} @onChange={{state.onChange}} aria-label="Food" /></template>);
+
+    state.options = [{ label: 'Pear', checked: 'on' }, { label: 'Plum' }];
+    await rerender();
+    assert.dom('.euiSelectableListItem').exists({ count: 2 });
+    assert.dom('li[title="Apple"]').doesNotExist();
+    assert.dom('li[title="Pear"]').hasAttribute('aria-selected', 'true');
+
+    await click('li[title="Plum"]');
+    assert.dom('li[title="Plum"]').hasAttribute('aria-selected', 'true');
+    assert.deepEqual(state.checked, ['Pear:on', 'Plum:on']);
+
+    state.options = [];
+    await rerender();
+    assert.dom('.euiSelectableListItem').doesNotExist();
+    assert.dom('.euiSelectableMessage').exists();
   });
 
   test('single selection and exclusions', async function (assert) {

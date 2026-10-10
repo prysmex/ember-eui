@@ -1,6 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, render, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
+import { click, render, rerender, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
+import { tracked } from '@glimmer/tracking';
 
 import EuiTable from '#src/components/eui-table.gts';
 import EuiTableBody from '#src/components/eui-table-body.gts';
@@ -146,15 +147,25 @@ module('Integration | Component | eui-table', function (hooks) {
   test('table pagination', async function (assert) {
     const pages: number[] = [];
     const sizes: number[] = [];
-    const onChangePage = (page: number) => pages.push(page);
-    const onChangeItemsPerPage = (size: number) => sizes.push(size);
+    const state = new (class {
+      @tracked page = 0;
+      @tracked size = 20;
+    })();
+    const onChangePage = (page: number) => {
+      pages.push(page);
+      state.page = page;
+    };
+    const onChangeItemsPerPage = (size: number) => {
+      sizes.push(size);
+      state.size = size;
+    };
 
     await render(
       <template>
         <EuiTablePagination
-          @activePage={{0}}
+          @activePage={{state.page}}
           @pageCount={{5}}
-          @itemsPerPage={{20}}
+          @itemsPerPage={{state.size}}
           @onChangePage={{onChangePage}}
           @onChangeItemsPerPage={{onChangeItemsPerPage}}
         />
@@ -167,8 +178,19 @@ module('Integration | Component | eui-table', function (hooks) {
     await waitUntil(() => document.querySelector('[data-test-subj="tablePagination-50-rows"]'));
     await click(document.querySelector('[data-test-subj="tablePagination-50-rows"]') as Element);
     assert.deepEqual(sizes, [50]);
+    assert.dom('[data-test-subj="tablePaginationPopoverButton"]').hasText('Rows per page: 50');
 
     await click('.euiPagination [aria-label^="Next"]');
     assert.deepEqual(pages, [1]);
+    assert.dom('[aria-current="true"]').hasText('2');
+
+    state.page = 4;
+    state.size = 10;
+    await rerender();
+    assert.dom('[aria-current="true"]').hasText('5');
+    assert.dom('[aria-label="Next page"]').isDisabled();
+    assert.dom('[data-test-subj="tablePaginationPopoverButton"]').hasText('Rows per page: 10');
+    assert.deepEqual(sizes, [50]);
+    assert.deepEqual(pages, [1], 'external updates do not emit callbacks');
   });
 });

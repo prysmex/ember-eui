@@ -13,7 +13,7 @@ order: 1
     <li><strong>EuiPage</strong>
       and
       <strong>EuiPageBody</strong>
-      provide the overall wrapper with a column flex display.</li>
+      provide the overall wrapper: the page places the side bar beside the body on larger screens, and the body stacks the header and content.</li>
     <li><strong>EuiPageSideBar</strong>
       provides a way to add side navigation that can be made sticky to scroll
       independent of the page content. See

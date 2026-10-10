@@ -5,55 +5,59 @@ order: 7
 # Full height layout
 
 <EuiText>
-  Though it is not recomended for most layouts, some require the control of scrolling to be handled through child components. You can achieve this through nested flex groups and overflow properties; adding certain combinations of CSS overflow utility classes to these children. There are a few <strong>caveats</strong> to understand when trying to achieve full height layouts with <strong>EuiPageTemplate</strong>.
-
-  <ol>
-    <li>Using the <EuiCode>@fullHeight</EuiCode> argument adds an extra layer of <strong>EuiFlexGroup</strong> and <strong>EuiFlexItem</strong> around the template children to negate the negative margins.</li>
-    <li>Using <EuiCode>fullHeight=true</EuiCode> will automatically add scrolling behavior to the <strong>EuiFlexItem</strong> that wraps the children.</li>
-    <li>Using <EuiCode>@fullHeight="noscroll"</EuiCode> removes all scrolling behavior and your layouts will break if you do not manually add them.</li>
-    <li>When using either values for <EuiCode>@fullHeight</EuiCode>, there will always be a minimum height of <EuiCode>460px</EuiCode> to the page contents.</li>
-    <li>Full height layouts are restricted to <strong>medium breakpoints</strong> and above. We recommend retaining any responsive behavior and allowing normal page scroll on smaller screens.</li>
-  </ol>
+  Full height is supported by the default and empty templates on medium screens
+  and above (768px). This demo provides a 480px parent and sets minHeight to zero;
+  otherwise the page defaults to a 460px minimum. A CSS height string is also
+  accepted. On smaller screens, the content returns to normal page flow.
+  Choose automatic scrolling, or noscroll with a child that manages its own
+  scrolling. The centered templates ignore fullHeight.
 </EuiText>
 <EuiSpacer />
-<EuiCallOut @iconType="accessibility" @color="warning">
-  <:title>
-   When applying the <EuiCode>.eui-yScroll</EuiCode> class, it is recommended to also apply <EuiCode>tabindex=0</EuiCode> to ensure keyboard users can scroll these containers.
-  </:title>
+<EuiCallOut @iconType="accessibility">
+  <:title>Give custom scroll regions an accessible name and tabindex="0" so keyboard users can reach them.</:title>
 </EuiCallOut>
 
 ```hbs template
-<EuiPageTemplate @grow={{true}} @fullHeight={{true}} @template='empty'>
-  <EuiFlexGroup
-    class='eui-fullHeight'
-    @gutterSize='none'
-    @direction='column'
-    @responsive={{false}}
-  >
-    <EuiFlexItem class='eui-yScroll'>
-      <EuiFlexItem @grow={{false}}>
-        <EuiPanel @color='danger' />
-      </EuiFlexItem>
-      <EuiSpacer @size='l' />
-      <EuiFlexItem class='eui-fullHeight'>
-        <EuiFlexGroup class='eui-fullHeight' @gutterSize='l'>
-          <EuiFlexItem @grow={{2}}>
-            <EuiPanel tabindex={{0}} class='eui-yScroll' @hasShadow={{false}}>
-              <EuiLoadingContent @lines={{8}} />
-              <EuiSpacer />
-              <EuiLoadingContent @lines={{8}} />
-            </EuiPanel>
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <EuiPanel @hasShadow={{false}} />
-            <EuiSpacer />
-            <EuiButton>
-              Go full screen
-            </EuiButton>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiFlexItem>
-    </EuiFlexItem>
-  </EuiFlexGroup>
-</EuiPageTemplate>
+<EuiFlexGroup @gutterSize='s' @wrap={{true}}>
+  <EuiFlexItem @grow={{false}}><EuiButton {{on 'click' (fn this.setMode true)}}>Automatic scrolling</EuiButton></EuiFlexItem>
+  <EuiFlexItem @grow={{false}}><EuiButton {{on 'click' (fn this.setMode 'noscroll')}}>Child scrolling</EuiButton></EuiFlexItem>
+  <EuiFlexItem @grow={{false}}><EuiButton {{on 'click' (fn this.setMode false)}}>Normal flow</EuiButton></EuiFlexItem>
+</EuiFlexGroup>
+<EuiSpacer />
+<div style='height: 480px; display: flex; flex-direction: column; overflow: auto;'>
+  <EuiPageTemplate @template='empty' @fullHeight={{this.mode}} @minHeight={{0}}>
+    <div
+      class={{if (eq this.mode 'noscroll') 'eui-yScroll'}}
+      tabindex='0'
+      role='region'
+      aria-label='Example page content'
+    >
+      <EuiText><p>Scroll to the end of this content.</p></EuiText>
+      <EuiText>
+        {{#each this.paragraphs as |paragraph|}}
+          <p>{{paragraph}}</p>
+        {{/each}}
+      </EuiText>
+      <EuiSpacer />
+      <EuiText><p>End of content.</p></EuiText>
+    </div>
+  </EuiPageTemplate>
+</div>
+```
+
+```js component
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+
+export default class FullHeightDemo extends Component {
+  @tracked mode = true;
+
+  paragraphs = Array.from({ length: 30 }, (_, index) =>
+    `Paragraph ${index + 1}: This content is taller than the example's parent. Scroll within the page or choose a different scrolling mode.`
+  );
+
+  setMode = (mode) => {
+    this.mode = mode;
+  };
+}
 ```

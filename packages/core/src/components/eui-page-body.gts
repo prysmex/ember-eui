@@ -17,7 +17,8 @@ export interface EuiPageBodySignature {
   Element: EuiPanelSignature['Element'];
   Args: {
     /**
-     * Max width of the content: `true` for EUI's default (1000px), a
+     * Max width of the content: `true` for the bundled Amsterdam theme's
+     * default (1200px), a
      * number in px, or any CSS width. Defaults to `false` (no limit).
      */
     restrictWidth?: boolean | number | string;

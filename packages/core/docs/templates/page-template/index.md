@@ -35,7 +35,66 @@ bar. Pick the arrangement with `@template`:
 `@pageHeader` takes `EuiPageHeader`'s options; the `<:pageHeader…>`
 blocks fill its parts. The same layouts can be built by hand from
 `EuiPage`, `EuiPageSideBar`, `EuiPageBody`, `EuiPageContent` and
-`EuiPageContentBody`, which the examples also show.
+`EuiPageContentBody`. The live examples below cover each template with and
+without a side bar.
+
+### Optional sections and layout defaults
+
+Omit `<:pageSideBar>` for the layout without a side bar. Omit `@pageHeader` and
+all `<:pageHeader…>` blocks to render no header. Put the page's content directly
+in `<:default>`: the template creates the content containers and one `main`
+landmark. Adding another `EuiPageContent` inside it would add another landmark.
+When embedding the template inside an existing main region, use
+`@pageContentProps={{hash role=null}}`.
+
+The side bar stacks above the content below 768px. Its default sticky behavior
+starts at 768px. The bundled light and dark themes use Elastic EUI 41.4.0
+Amsterdam; `@restrictWidth={{true}}` means a maximum of **1200px**. Use a number
+for pixels, a CSS string such as `"75%"`, or `false` for no width restriction.
+The `empty` layout without a side bar restricts the outer body rather than the
+inner content body.
+
+### Customizing the inner components
+
+`@pageBodyProps`, `@pageContentProps`, `@pageContentBodyProps`,
+`@pageSideBarProps`, and `@pageHeader` forward the corresponding component's
+arguments and `className`. Supplied values override the template's defaults,
+including `false`, zero widths, and a `null` content role. Header options include
+breadcrumbs, title props, alignment, padding, width and styles.
+
+```hbs
+<EuiPageTemplate
+  @restrictWidth={{900}}
+  @pageHeader={{hash pageTitle="Users" restrictWidth=720 bottomBorder=false}}
+  @pageSideBarProps={{hash sticky=false paddingSize="s"}}
+  @pageContentProps={{hash hasShadow=false paddingSize="s"}}
+  @pageContentBodyProps={{hash restrictWidth=640 paddingSize="m"}}
+>
+  <:pageSideBar>Navigation</:pageSideBar>
+  <:default>User list</:default>
+</EuiPageTemplate>
+```
+
+Use `<:pageHeaderPageTitle>`, `<:pageHeaderDescription>`,
+`<:pageHeaderDefault>` and `<:pageHeaderRightSideItems>` for header markup.
+Prefer a title block or `pageHeader.pageTitle` individually; supplying both can
+render both titles.
+
+### Bottom bars and full height
+
+Only the `default` template renders `<:bottomBar>`. `@bottomBarProps` forwards
+`EuiBottomBar` options, including padding, position and the accessible
+`landmarkHeading`. The default position is `sticky`, or `static` while the
+full-height layout is active. An explicit `position="fixed"` uses a portal and
+can reserve space at the bottom of the document.
+
+`@fullHeight` works on `default` and `empty` at widths of 768px and above.
+The parent must provide a constrained height. `true` makes the content wrapper
+scroll; `"noscroll"` fills the height and clips overflow in that wrapper, so a
+child must provide its own scrolling. Below 768px the template uses normal
+page flow. The minimum height defaults to 460px; override `@minHeight` with a
+number or CSS height, including `0` when the parent's height should control the
+layout. The full-height demo lets you switch between all three modes.
 
 </EuiText>
 
@@ -59,18 +118,19 @@ bottom bar, arranged by `@template`.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@template` |  | `'default'` | Layout: `'default'` (header and content), `'centeredBody'` (content panel centered in the page), `'centeredContent'` (content centered in the body, e.g. an empty prompt) or `'empty'` (no panels). |
-| `@pageBodyProps` (required) |  |  | Props for the `EuiPageBody`: `{ className }`. |
-| `@pageContentProps` (required) |  |  | Props for the `EuiPageContent`: `{ className, hasBorder, hasShadow, color, borderRadius, grow, role }`. |
-| `@pageContentBodyProps` (required) |  |  | Props for the `EuiPageContentBody`: `{ className }`. |
-| `@pageHeader` (required) |  |  | The page header, as EuiPageHeader args: `{ pageTitle, iconType, description, tabs, responsive, bottomBorder }`. Use the `<:pageHeader…>` blocks for its title, description and actions. |
-| `@pageSideBarProps` (required) |  |  | Props for the `EuiPageSideBar`: `{ className }`. |
-| `@fullHeight` | `boolean` | `false` | Stretches the page to the window's height and scrolls the content instead of the page (templates `'default'` and `'empty'`, on medium screens and up). |
-| `@minHeight` | `number` | `460` | Minimum height of the page, in px or any CSS height. |
+| `@pageBodyProps` |  |  | Props for the `EuiPageBody`, overriding layout defaults. |
+| `@pageContentProps` |  |  | Props for the `EuiPageContent`: `{ className, hasBorder, hasShadow, color, borderRadius, grow, role }`. |
+| `@pageContentBodyProps` |  |  | Props for the `EuiPageContentBody`, overriding layout defaults. |
+| `@pageHeader` |  |  | The page header, as EuiPageHeader args: `{ pageTitle, iconType, description, tabs, responsive, bottomBorder }`. Use the `<:pageHeader…>` blocks for its title, description and actions. |
+| `@pageSideBarProps` |  |  | Props for the side bar, including `sticky` and `paddingSize`. |
+| `@bottomBarProps` | `NormalProps & EuiButtomBarArgs` |  | Props for the bottom bar; override the layout defaults. |
+| `@fullHeight` | `boolean \| 'noscroll'` | `false` | Stretches the page to the window's height and scrolls the content instead of the page (templates `'default'` and `'empty'`, on medium screens and up). Use `'noscroll'` to fill the height without adding a scrolling wrapper around the content. |
+| `@minHeight` | `number \| string` | `460` | Minimum height of the page, in px or any CSS height. |
 | `@restrictWidth` | `boolean \| number \| string` | `true` | Max width of the header and content: `true` for EUI's default, a number in px or any CSS width. |
 | `@grow` | `boolean` | `true` | Fills the window's height. |
 | `@paddingSize` |  | `'l'` | Padding of the page's sections: `'none'`, `'s'`, `'m'` or `'l'`. |
 
-Deprecated: `@bottomBar` (Has no effect, use the `<:bottomBar>` block.); `@bottomBarProps` (Has no effect.); `@hasPageHeader` (Has no effect.); `@hasPageContent` (Has no effect.); `@hasPageContentBody` (Has no effect.).
+Deprecated: `@bottomBar` (Has no effect, use the `<:bottomBar>` block.); `@hasPageHeader` (Has no effect.); `@hasPageContent` (Has no effect.); `@hasPageContentBody` (Has no effect.).
 
 | Block | Description |
 | --- | --- |
@@ -88,7 +148,7 @@ The outermost layout of a page: holds an optional `EuiPageSideBar` and an `EuiPa
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for EUI's default (1000px), a number in px, or any CSS width. |
+| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for the bundled Amsterdam theme's default (1200px), a number in px, or any CSS width. |
 | `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding around the page: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@grow` | `boolean` | `true` | Fills the window's height. |
 | `@direction` | `'row' \| 'column'` | `'row'` | `'row'` puts an `EuiPageSideBar` beside the body, `'column'` stacks them. |
@@ -121,7 +181,7 @@ The main column of an EuiPage: header, content and so on.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for EUI's default (1000px), a number in px, or any CSS width. |
+| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for the bundled Amsterdam theme's default (1200px), a number in px, or any CSS width. |
 | `@tagName` | `string` | `'div'` | Tag of the body (without `@panelled`). |
 | `@borderRadius` |  | `'none'` | Border radius of the panel: `'none'` or `'m'`. |
 | `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'l'` when `@panelled`, `'none'` otherwise | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
@@ -141,7 +201,7 @@ A panel holding the page's main content, inside EuiPageBody.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@role` | `string` | `'main'`; pass `null` for none | `role` of the content. |
+| `@role` | `string \| null` | `'main'`; pass `null` for none | `role` of the content. |
 | `@verticalPosition` | `'center' \| 'bottom'` |  | Vertically centers (`'center'`) or bottom-aligns the content panel. |
 | `@horizontalPosition` | `'center'` |  | Horizontally centers the content panel (e.g. an empty prompt). |
 | `@hasShadow` | `boolean` |  | Adds a shadow. |
@@ -163,7 +223,7 @@ The content of an EuiPageContent.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for EUI's default (1000px), a number in px, or any CSS width. |
+| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for the bundled Amsterdam theme's default (1200px), a number in px, or any CSS width. |
 | `@paddingSize` |  |  | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@style` | `{ [key: string]: string; }` |  | Inline styles, merged with the max width. |
 

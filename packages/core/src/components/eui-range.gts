@@ -190,7 +190,7 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
   }
 
   get isValid(): boolean {
-    return isWithinRange(this.min, this.max, this.args.value || '');
+    return isWithinRange(this.min, this.max, this.args.value ?? '');
   }
 
   get digitTolerance(): number {

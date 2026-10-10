@@ -107,4 +107,31 @@ module('Integration | Component | eui-super-select', function (hooks) {
     assert.notStrictEqual(panelTops[0], '', 'the panel had its position when the option got focus');
     assert.dom(option('minor')).isFocused();
   });
+
+  test('external value and option replacements synchronize the display, form value and list selection', async function (assert) {
+    const state = new (class {
+      @tracked value = 'minor';
+      @tracked options = OPTIONS;
+      changes: string[] = [];
+      change = (value: string) => this.changes.push(value);
+    })();
+
+    await render(<template><EuiSuperSelect @options={{state.options}} @valueOfSelected={{state.value}} @name="severity" @onChange={{state.change}} /></template>);
+
+    state.value = 'warning';
+    state.options = OPTIONS.map((item) => ({ ...item, inputDisplay: `${item.inputDisplay} updated` }));
+    await rerender();
+    assert.dom('button.euiSuperSelectControl').hasText('Warning updated');
+    assert.dom('input[name="severity"]').hasValue('warning');
+
+    await click('button.euiSuperSelectControl');
+    await waitUntil(() => document.querySelector('.euiSuperSelect__listbox'));
+    assert.dom(option('warning')).hasAria('selected', 'true').isFocused();
+    assert.dom(option('minor')).hasAria('selected', 'false');
+
+    await click(option('minor')!);
+    assert.deepEqual(state.changes, ['minor']);
+    assert.dom('button.euiSuperSelectControl').hasText('Warning updated', 'ignored callbacks preserve controlled selection');
+    assert.dom('input[name="severity"]').hasValue('warning');
+  });
 });

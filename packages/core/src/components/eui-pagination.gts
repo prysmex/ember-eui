@@ -153,13 +153,13 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
   get prevPageButtonProps() {
     let prevPageButtonProps = {};
 
-    if (this.hasControl && this.activePage !== 0) {
+    if (this.hasControl && this.activePage > 0) {
       prevPageButtonProps = {
         'aria-controls': this.ariaControls,
         href: `#${this.ariaControls}`
       };
     } else {
-      prevPageButtonProps = { disabled: this.activePage === 0 };
+      prevPageButtonProps = { disabled: this.activePage <= 0 };
     }
 
     return prevPageButtonProps;
@@ -168,14 +168,14 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
   get nextPageButtonProps() {
     let nextPageButtonProps = {};
 
-    if (this.hasControl && this.activePage !== this.pageCount - 1) {
+    if (this.hasControl && this.activePage < this.pageCount - 1) {
       nextPageButtonProps = {
         'aria-controls': this.ariaControls,
         href: `#${this.ariaControls}`
       };
     } else {
       nextPageButtonProps = {
-        disabled: this.activePage === this.pageCount - 1
+        disabled: this.activePage >= this.pageCount - 1
       };
     }
 
@@ -183,6 +183,10 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
   }
 
   safeClick: SafeClickHandler = (pageIndex) => {
+    if (pageIndex < 0 || pageIndex >= this.pageCount) {
+      return;
+    }
+
     if (this.ariaControls) {
       const controlledElement = document.getElementById(this.ariaControls);
 

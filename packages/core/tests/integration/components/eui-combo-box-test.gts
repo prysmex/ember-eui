@@ -72,6 +72,34 @@ async function choose(text: string) {
 module('Integration | Component | eui-combo-box', function (hooks) {
   setupRenderingTest(hooks);
 
+  test('external options and selection replacements update pills and available choices', async function (assert) {
+    const state = new (class {
+      @tracked options = ['Apple', 'Banana'];
+      @tracked selected = ['Apple'];
+      changes: string[][] = [];
+      change = (selected: string[]) => this.changes.push(selected);
+    })();
+
+    await render(<template><EuiComboBox @options={{state.options}} @selectedOptions={{state.selected}} @onChange={{state.change}} as |option|>{{option}}</EuiComboBox></template>);
+
+    state.options = ['Cherry', 'Date'];
+    state.selected = ['Cherry'];
+    await rerender();
+    assert.dom('.euiComboBoxPill').exists({ count: 1 }).hasText('Cherry');
+
+    await open();
+    assert.deepEqual(optionTexts(), ['Cherry', 'Date']);
+    await choose('Date');
+    assert.deepEqual(state.changes, [['Cherry', 'Date']]);
+    assert.dom('.euiComboBoxPill').exists({ count: 1 }).hasText('Cherry', 'ignored callback does not change the pills');
+
+    state.selected = [];
+    state.options = [];
+    await rerender();
+    assert.dom('.euiComboBoxPill').doesNotExist();
+    assert.deepEqual(state.changes, [['Cherry', 'Date']], 'external replacements do not emit changes');
+  });
+
   test('it renders selected options as pills by default', async function (assert) {
     const state = new State();
     state.selected = ['Apple', 'Cherry'];

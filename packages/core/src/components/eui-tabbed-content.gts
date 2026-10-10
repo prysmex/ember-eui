@@ -136,7 +136,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
     const relatedTarget = blurEvent.relatedTarget! as HTMLElement;
 
     if (currentTarget.contains(relatedTarget) === false) {
-      this.inFocus = true;
+      this.inFocus = false;
     }
   };
 
@@ -160,12 +160,14 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
   };
 
   focusTab = () => {
-    if (this.tabsRef) {
-      const targetTab: HTMLDivElement | null = this.tabsRef.querySelector(
-        `#${this.selectedTabId}`
+    const selectedTab = this.selectedTab;
+
+    if (this.tabsRef && selectedTab) {
+      const targetTab = this.tabsRef.querySelector<HTMLElement>(
+        `#${CSS.escape(selectedTab.id)}`
       );
 
-      targetTab!.focus();
+      targetTab?.focus();
     }
   };
 
@@ -190,7 +192,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
           @expand={{@expand}}
           @display={{@display}}
           @size={{@size}}
-          {{on "focus" this.initializeFocus}}
+          {{on "focusin" this.initializeFocus}}
           {{didInsert this.setTabsRef}}
         >
           {{#each @tabs as |tab|}}
@@ -207,7 +209,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
         </EuiTabs>
 
         {{#let
-          (findBy "id" (if this.selectedTabId this.selectedTabId "") @tabs)
+          (findBy "id" (if this.selectedTab this.selectedTab.id "") @tabs)
           as |currentTab|
         }}
           {{#if currentTab}}

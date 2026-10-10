@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { on } from '@ember/modifier';
-import { click, render, rerender, triggerEvent, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
+import { clearRender, click, render, rerender, triggerEvent, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
 
 import EuiButton from '#src/components/eui-button.gts';
@@ -72,6 +72,8 @@ module('Integration | Component | eui-popover', function (hooks) {
     await waitUntil(panel);
     await triggerKeyEvent(panel()!, 'keydown', 'Escape');
     assert.strictEqual(state.closes, 1, 'Escape');
+    await waitUntil(() => !panel());
+    assert.dom('.euiPopover__panel', document.body).doesNotExist('Escape closes the rendered panel');
 
     state.isOpen = true;
     await rerender();
@@ -80,6 +82,28 @@ module('Integration | Component | eui-popover', function (hooks) {
     await triggerEvent('.outside', 'mouseup');
     await click('.outside');
     assert.true(state.closes >= 2, 'outside click');
+    await waitUntil(() => !panel());
+    assert.dom('.euiPopover__panel', document.body).doesNotExist();
+  });
+
+  test('destroying an open popover removes its portaled panel', async function (assert) {
+    const state = new State();
+    state.isOpen = true;
+
+    await render(
+      <template>
+        <EuiPopover @isOpen={{state.isOpen}} @closePopover={{state.close}}>
+          <:button><button type="button">Anchor</button></:button>
+          <:content><span data-test-portaled-content>Content</span></:content>
+        </EuiPopover>
+      </template>
+    );
+
+    await waitUntil(panel);
+    await clearRender();
+    assert.dom('.euiPopover__panel', document.body).doesNotExist();
+    assert.dom('[data-test-portaled-content]', document.body).doesNotExist();
+    assert.strictEqual(state.closes, 0, 'teardown does not report a user dismissal');
   });
 
   test('display block and no arrow', async function (assert) {

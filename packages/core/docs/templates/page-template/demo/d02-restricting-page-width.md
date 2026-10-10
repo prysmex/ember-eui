@@ -4,53 +4,38 @@ order: 2
 
 # Restricting page width
 
-<EuiSpacer />
 <EuiText>
-  Most content does not scale well to the full width of the window. You can
-  restrict this to a typical width and center the page by setting the
-  <EuiCode>@restrictWidth</EuiCode>
-  argument to
-  <EuiCode>true</EuiCode>
-  on
-  <strong>EuiPageHeader</strong>
-  and
-  <strong>EuiPageContent</strong>. You can also pass an integer to this property
-  to max out the width at a custom pixel value or a string with a custom
-  measurement.
+  The template defaults to the Amsterdam theme's 1200px maximum width.
+  Use a number for pixels, a CSS string for another unit, or false for no limit.
+  The header and content can also override this through their own props.
 </EuiText>
-<EuiSpacer />
-<EuiCallOut>
-  <:title>
-    The
-    <strong>EuiPageTemplate</strong>
-    allows setting this property at the top level and defaults to true.
-  </:title>
-</EuiCallOut>
 
 ```hbs template
+<EuiFlexGroup @gutterSize='s' @wrap={{true}}>
+  <EuiFlexItem @grow={{false}}><EuiButton {{on 'click' (fn this.setWidth true)}}>Default width</EuiButton></EuiFlexItem>
+  <EuiFlexItem @grow={{false}}><EuiButton {{on 'click' (fn this.setWidth 840)}}>840px</EuiButton></EuiFlexItem>
+  <EuiFlexItem @grow={{false}}><EuiButton {{on 'click' (fn this.setWidth '75%')}}>75%</EuiButton></EuiFlexItem>
+  <EuiFlexItem @grow={{false}}><EuiButton {{on 'click' (fn this.setWidth false)}}>Full width</EuiButton></EuiFlexItem>
+</EuiFlexGroup>
+<EuiSpacer />
 <EuiPageTemplate
-  @grow={{true}}
-  @restrictWidth='75%'
-  @grow={{true}}
-  @pageHeader={{hash
-    iconType='logoElastic'
-    pageTitle='Page Title'
-    tabs=this.tabs
-    description='Restricting the width to 75%.'
-  }}
+  @restrictWidth={{this.width}}
+  @pageHeader={{hash pageTitle='Choose a page width'}}
 >
-  <:pageSideBar>
-    <EuiLoadingContent @lines={{8}} />
-  </:pageSideBar>
-  <:pageHeaderRightSideItems as |Item|>
-    <Item>
-      <EuiButton>
-        Go to full screen
-      </EuiButton>
-    </Item>
-  </:pageHeaderRightSideItems>
-  <:default>
-    <EuiLoadingContent @lines={{16}} />
-  </:default>
+  <:pageSideBar><EuiLoadingContent @lines={{8}} /></:pageSideBar>
+  <:default><EuiLoadingContent @lines={{16}} /></:default>
 </EuiPageTemplate>
+```
+
+```js component
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+
+export default class PageWidthDemo extends Component {
+  @tracked width = true;
+
+  setWidth = (width) => {
+    this.width = width;
+  };
+}
 ```

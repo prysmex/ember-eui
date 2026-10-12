@@ -836,7 +836,6 @@ module('Integration | Component | Borealis page sections, banner and live region
         <EuiScreenReaderLive @role="alert" @ariaLive="assertive" data-alert>Error</EuiScreenReaderLive>
       </template>
     );
-    await settled();
 
     const live = el(this.element, '[data-live]');
     const [first, second] = Array.from(live.querySelectorAll<HTMLElement>('[role]'));
@@ -886,7 +885,6 @@ module('Integration | Component | Borealis page sections, banner and live region
         <EuiScreenReaderLive @focusRegionOnTextChange={{true}} data-live>{{state.message}}</EuiScreenReaderLive>
       </template>
     );
-    await settled();
 
     const live = el(this.element, '[data-live]');
     assert.dom(live).hasAttribute('tabindex', '-1');

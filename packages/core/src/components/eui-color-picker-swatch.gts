@@ -1,9 +1,14 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { service } from '@ember/service';
 
 import { getChromaColor } from '../-private/color.ts';
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { buttonReset } from '../utils/eui/color-picker.ts';
+import { euiColorPickerSwatchStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 
@@ -19,8 +24,17 @@ export interface EuiColorPickerSwatchSignature {
   };
 }
 
+/** A color swatch button on the upstream EUI 123 / Borealis swatch styles. */
 export default class EuiColorPickerSwatch extends Component<EuiColorPickerSwatchSignature> {
   @service declare euiI18n: EuiI18n;
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorPickerSwatchStyles);
+
+    return `euiColorPickerSwatch ${euiClass(context, buttonReset, styles.euiColorPickerSwatch)}`;
+  }
 
   get background(): string {
     return getChromaColor(this.args.color, true)?.css() ?? 'transparent';
@@ -35,7 +49,7 @@ export default class EuiColorPickerSwatch extends Component<EuiColorPickerSwatch
   <template>
     <button
       type="button"
-      class="euiColorPickerSwatch"
+      class={{this.classes}}
       aria-label={{this.label}}
       style={{cssStyle (hash background=this.background)}}
       ...attributes

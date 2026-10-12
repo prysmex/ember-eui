@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { fn, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
@@ -20,8 +20,20 @@ import {
   removeStop
 } from '../-private/color.ts';
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  boxReset,
+  euiColorStopsAddContainerStyles,
+  euiColorStopsStyles
+} from '../utils/eui/color-picker.ts';
+import {
+  euiRangeHighlightProgressStyles,
+  euiRangeHighlightStyles,
+  euiRangeTrackStyles,
+  euiRangeWrapperStyles
+} from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiColorStopThumb from './eui-color-stops/thumb.gts';
-import EuiRangeWrapper from './eui-range-wrapper.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
 import type EuiI18n from '../services/eui-i18n';
@@ -147,15 +159,81 @@ export default class EuiColorStops extends Component<EuiColorStopsSignature> {
     return Boolean(this.args.disabled || this.args.readOnly);
   }
 
+  /**
+   * The root: upstream EuiRangeWrapper styles (height, form width) with
+   * the EUI 88.5.4 color stops states composed last. The range pieces are
+   * rendered here (not through EuiRangeWrapper/Track/Highlight/Thumb) so
+   * each element keeps a single Emotion class, as upstream composes them
+   * through `css`.
+   */
+  @cached
   get classes(): string {
-    return [
-      'euiColorStops',
-      this.isHoverDisabled && 'euiColorStops-isDragging',
-      this.args.disabled && 'euiColorStops-isDisabled',
-      this.args.readOnly && 'euiColorStops-isReadOnly'
-    ]
-      .filter(Boolean)
-      .join(' ');
+    const context = getEuiThemeContext(this);
+    const wrapper = useEuiBorealisStyles(context, euiRangeWrapperStyles);
+    const styles = useEuiBorealisStyles(context, euiColorStopsStyles);
+    const { compressed, fullWidth, disabled, readOnly } = this.args;
+
+    return `euiRangeWrapper euiColorStops ${euiClass(
+      context,
+      boxReset,
+      wrapper.euiRangeWrapper,
+      compressed ? wrapper.compressed : wrapper.uncompressed,
+      fullWidth ? wrapper.fullWidth : wrapper.formWidth,
+      styles.euiColorStops,
+      disabled ? styles.isDisabled : styles.isEnabled,
+      readOnly && styles.isReadOnly,
+      this.isHoverDisabled && styles.isDragging
+    )}`;
+  }
+
+  @cached
+  get trackClasses(): string {
+    const context = getEuiThemeContext(this);
+    const track = useEuiBorealisStyles(context, euiRangeTrackStyles);
+    const styles = useEuiBorealisStyles(context, euiColorStopsStyles);
+
+    return `euiRangeTrack euiColorStops__track ${euiClass(
+      context,
+      track.euiRangeTrack,
+      this.args.disabled && track.disabled,
+      styles.euiColorStops__track
+    )}`;
+  }
+
+  @cached
+  get highlightClasses() {
+    const context = getEuiThemeContext(this);
+    const highlight = useEuiBorealisStyles(context, euiRangeHighlightStyles);
+    const progress = useEuiBorealisStyles(context, euiRangeHighlightProgressStyles);
+
+    return {
+      highlight: `euiRangeHighlight euiColorStops__highlight ${euiClass(context, highlight.euiRangeHighlight)}`,
+      progress: `euiRangeHighlight__progress ${euiClass(context, progress.euiRangeHighlight__progress)}`
+    };
+  }
+
+  get isAddDisabled(): boolean {
+    return this.isHoverDisabled || this.isNotInteractive;
+  }
+
+  @cached
+  get addContainerClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorStopsAddContainerStyles);
+
+    return `euiColorStops__addContainer ${euiClass(
+      context,
+      styles.euiColorStopsAddContainer,
+      this.isAddDisabled ? styles.isDisabled : styles.isEnabled
+    )}`;
+  }
+
+  @cached
+  get addTargetClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorStopsStyles);
+
+    return `euiColorStops__addTarget ${euiClass(context, styles.euiColorStops__addTarget)}`;
   }
 
   get announcement(): string {
@@ -177,10 +255,11 @@ export default class EuiColorStops extends Component<EuiColorStopsSignature> {
     const stops = this.sortedStops;
     const positions = stops.map((stop) => this.positionOf(stop.stop));
     const colorAt = (index: number) =>
-      getChromaColor(stops[index]!.color, this.args.showAlpha)?.css() ?? 'currentColor';
+      getChromaColor(stops[index]!.color, this.args.showAlpha)?.css() ?? 'transparent';
+    // before the first stop the track (stripes) shows through, as upstream
     const gradientStop = (index: number) =>
       index === 0
-        ? `currentColor, currentColor ${positions[0]}%, ${colorAt(0)} ${positions[0]}%`
+        ? `transparent, transparent ${positions[0]}%, ${colorAt(0)} ${positions[0]}%`
         : `${colorAt(index)} ${positions[index]}%`;
 
     if (this.args.stopType === 'stepped' && positions.length > 0) {
@@ -192,12 +271,13 @@ export default class EuiColorStops extends Component<EuiColorStopsSignature> {
         .map((color, i) => `${color} ${start + width * i}% ${start + width * (i + 1)}%`)
         .join(', ');
 
-      return `linear-gradient(to right, currentColor ${start}%, ${steps})`;
+      return `linear-gradient(to right, transparent ${start}%, ${steps})`;
     }
 
+    // fixed: each color holds until the next stop (upstream `fixedStop`)
     const parts = stops.map((_, index) =>
       this.args.stopType === 'fixed' && index < stops.length - 1
-        ? `${gradientStop(index)}, ${gradientStop(index + 1)}`
+        ? `${gradientStop(index)}, ${colorAt(index)} ${positions[index + 1]}%`
         : gradientStop(index)
     );
 
@@ -385,12 +465,10 @@ export default class EuiColorStops extends Component<EuiColorStopsSignature> {
   });
 
   <template>
-    <EuiRangeWrapper
+    <div
       class={{this.classes}}
       data-test-subj="euiColorStops"
       tabindex={{if @disabled "-1" "0"}}
-      @fullWidth={{@fullWidth}}
-      @compressed={{@compressed}}
       {{this.registerWrapper @colorStops}}
       {{on "mousedown" (fn this.setHoverDisabled true)}}
       {{on "mouseup" (fn this.setHoverDisabled false)}}
@@ -401,31 +479,25 @@ export default class EuiColorStops extends Component<EuiColorStopsSignature> {
       ...attributes
     >
       <EuiScreenReaderOnly><p aria-live="polite">{{this.announcement}}</p></EuiScreenReaderOnly>
-      <div class="euiRangeTrack {{if @disabled 'euiRangeTrack--disabled'}}">
-        <div
-          class="euiRangeHighlight euiColorStops__highlight
-            {{if @compressed 'euiRangeHighlight--compressed'}}"
-        >
+      <div class={{this.trackClasses}}>
+        <div class={{this.highlightClasses.highlight}}>
           <div
-            class="euiRangeHighlight__progress"
+            class={{this.highlightClasses.progress}}
+            data-test-subj="euiRangeHighlightProgress"
             style={{cssStyle
-              (hash marginLeft="0%" width="100%" background=this.gradient)
+              (hash background=this.gradient marginInlineStart="0%" width="100%")
             }}
           ></div>
         </div>
         {{! template-lint-disable no-invalid-interactive }}
         <div
-          class="euiColorStops__addContainer
-            {{if
-              (or2 this.isHoverDisabled this.isNotInteractive)
-              'euiColorStops__addContainer-isDisabled'
-            }}"
+          class={{this.addContainerClasses}}
           data-test-subj="euiColorStopsAdd"
           {{on "click" this.onAddClick}}
           {{on "mousemove" this.onAddHover}}
         >
           <div
-            class="euiColorStops__addTarget"
+            class={{this.addTargetClasses}}
             style={{cssStyle (hash left=(percent this.addTargetPosition))}}
           ></div>
         </div>
@@ -462,12 +534,8 @@ export default class EuiColorStops extends Component<EuiColorStopsSignature> {
           />
         {{/each}}
       </div>
-    </EuiRangeWrapper>
+    </div>
   </template>
-}
-
-function or2(a: unknown, b: unknown): boolean {
-  return Boolean(a || b);
 }
 
 function gt1(n: number): boolean {

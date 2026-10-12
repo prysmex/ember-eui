@@ -127,6 +127,30 @@
       "sha256": "4a828ebba6e6b5f9732a9609eb5b6d9aee027aae12e0977d765e5d6f2532517f"
     },
     {
+      "path": "@elastic/eui/es/components/color_picker/color_palette_display/color_palette_display_fixed.styles.js",
+      "sha256": "2f74446f853b753cb7f6a4213ef9f8eeb9c35fb3e2d9759320ca2f56e0ed4916"
+    },
+    {
+      "path": "@elastic/eui/es/components/color_picker/color_palette_display/color_palette_display.styles.js",
+      "sha256": "2ed625b6640e22e19997e7b0843ca38ed7bd8b5f20d751ae0b4fb3590752d5a3"
+    },
+    {
+      "path": "@elastic/eui/es/components/color_picker/color_picker_swatch.styles.js",
+      "sha256": "8e26f391b6d8b630ffc2de995c31f23dd21ed2d7c0a4cc8add72d018113549fa"
+    },
+    {
+      "path": "@elastic/eui/es/components/color_picker/color_picker.styles.js",
+      "sha256": "868d0deb474baaebdcaeec60a661177ad6df3a1be589132234cf0e00ce6f9183"
+    },
+    {
+      "path": "@elastic/eui/es/components/color_picker/hue.styles.js",
+      "sha256": "6a68386e8a59f53d6152e6512e8646e8664df3a32cf17a3771f2bb092f51b0c9"
+    },
+    {
+      "path": "@elastic/eui/es/components/color_picker/saturation.styles.js",
+      "sha256": "69f444aabe566f7994f5ce855fec2cff62e807a74cb53a904eb6d0848dda49da"
+    },
+    {
       "path": "@elastic/eui/es/components/color_picker/utils.js",
       "sha256": "0a1e020df394c10fa8e3eee7e64b173c0b9e3f4570ce65c5e0537aa48b8112e3"
     },
@@ -301,6 +325,26 @@
     {
       "path": "@elastic/eui/es/components/form/radio/radio.styles.js",
       "sha256": "eabdf359a94203e5df2a230fc2279d3ca86565bbbc356e2607b80261fa7185f1"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_highlight.styles.js",
+      "sha256": "8a1da28f3e3b0383a0f0115a021a5bca773b01304f4ce180937cbe354f46858d"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_thumb.styles.js",
+      "sha256": "00c4ce34ef3f046f1644f1b1777c9a7030be4a572620f434f37e701d3cc0a0a6"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_track.styles.js",
+      "sha256": "f125af60759ba816718bc607004fe215d3cae626f63ed6c673d28fea5ce624ec"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_wrapper.styles.js",
+      "sha256": "e31cb1ee629b608bc5780faeea44d0daaa69624e9573ff9fd7825967ae3efd67"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range.styles.js",
+      "sha256": "d9666dd1831eba5b52d8efe36606d0f97a72f598c1a1baaafdead487f0fd468a"
     },
     {
       "path": "@elastic/eui/es/components/form/select/select.styles.js",

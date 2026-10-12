@@ -106,7 +106,7 @@ Rendered for you by the color picker.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@hue` | `number` | `1` | The hue, 0 to 359. |
-| `@hex` | `string` |  | The current color as hex, announced to screen readers. |
+| `@hex` | `string` |  | The current color as hex. Upstream shows it in a tooltip over the thumb, which is not ported; `EuiColorPicker` announces the color. |
 | `@id` | `string` |  | Prefix of the input's id. |
 | `@onChange` (required) | `(hue: number) => void` |  | Called with the new hue. |
 
@@ -121,7 +121,7 @@ you by the color picker.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@color` | `HSV` | `[1, 0, 0]` | The color as HSV: `[hue, saturation, value]`. |
-| `@hex` | `string` |  | The current color as hex, for screen readers. |
+| `@hex` | `string` |  | The current color as hex. Upstream shows it in a tooltip over the indicator, which is not ported; `EuiColorPicker` announces the color. |
 | `@id` | `string` |  | Prefix of the ids inside. |
 | `@onChange` (required) | `(color: HSV) => void` |  | Called with the new `[hue, saturation, value]`. |
 

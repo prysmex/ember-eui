@@ -1,7 +1,11 @@
 import Component from '@glimmer/component';
 
 import EuiColorPaletteDisplay from './eui-color-palette-display.gts';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
+import EuiSpacer from './eui-spacer.gts';
 import EuiSuperSelect from './eui-super-select.gts';
+import EuiText from './eui-text.gts';
 
 import type { ColorStop } from '../-private/color.ts';
 import type { EuiSuperSelectOption } from './eui-super-select';
@@ -22,7 +26,8 @@ export interface EuiColorPalettePickerPalette {
 
 /**
  * A select of color palettes (e.g. for charts), showing each palette as a
- * bar of colors. Built on `EuiSuperSelect`.
+ * bar of colors. Built on `EuiSuperSelect`; each option shows the title
+ * (EuiText `xs`) above the palette, as upstream.
  */
 export interface EuiColorPalettePickerSignature {
   Element: HTMLButtonElement;
@@ -46,6 +51,10 @@ export interface EuiColorPalettePickerSignature {
     isInvalid?: boolean;
     /** Shows a spinner. */
     isLoading?: boolean;
+    /** Disables the select. */
+    disabled?: boolean;
+    /** Read-only: the list does not open. */
+    readOnly?: boolean;
   };
 }
 
@@ -68,11 +77,12 @@ export default class EuiColorPalettePicker extends Component<EuiColorPalettePick
       @options={{this.options}}
       @valueOfSelected={{@valueOfSelected}}
       @onChange={{@onChange}}
-      @hasDividers={{true}}
       @compressed={{@compressed}}
       @fullWidth={{@fullWidth}}
       @isInvalid={{@isInvalid}}
       @isLoading={{@isLoading}}
+      @disabled={{@disabled}}
+      @readOnly={{@readOnly}}
       ...attributes
     >
       <:inputDisplay as |option|>
@@ -96,7 +106,16 @@ export default class EuiColorPalettePicker extends Component<EuiColorPalettePick
             {{else}}
               {{#if palette.title}}
                 {{! the display's screen reader title names the option }}
-                <div aria-hidden="true" class="euiColorPalettePicker__itemTitle">{{palette.title}}</div>
+                <EuiFlexGroup @responsive={{false}}>
+                  <EuiFlexItem>
+                    <EuiText
+                      aria-hidden="true"
+                      class="euiColorPalettePicker__itemTitle"
+                      @size="xs"
+                    >{{palette.title}}</EuiText>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+                <EuiSpacer @size="xs" />
               {{/if}}
               <EuiColorPaletteDisplay
                 @type={{fixedOrGradient palette.type}}

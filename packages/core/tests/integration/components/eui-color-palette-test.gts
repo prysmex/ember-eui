@@ -25,10 +25,13 @@ module('Integration | Component | eui-color-palette-display and picker', functio
       </template>
     );
 
-    assert.dom('.fixed').hasClass('euiColorPaletteDisplay').hasClass('euiColorPaletteDisplay--sizeSmall');
+    // the legacy `--size*` modifier classes are gone: sizes are computed styles
+    assert.dom('.fixed').hasClass('euiColorPaletteDisplay').doesNotHaveClass('euiColorPaletteDisplay--sizeSmall');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.fixed')!).height, '8px', 'size s by default');
     assert.dom('.fixed .euiColorPaletteDisplayFixed__bleedArea span').exists({ count: 3 });
     assert.dom('.fixed .euiScreenReaderOnly').hasText('Primary');
-    assert.dom('.gradient').hasClass('euiColorPaletteDisplay--sizeMedium').hasAttribute('aria-hidden', 'true');
+    assert.dom('.gradient').hasClass('euiColorPaletteDisplay').hasAttribute('aria-hidden', 'true');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.gradient')!).height, '16px', 'size m');
     assert.ok(this.element.querySelector<HTMLElement>('.gradient')!.style.background.includes('linear-gradient'));
   });
 

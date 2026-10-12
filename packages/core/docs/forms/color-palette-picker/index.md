@@ -45,7 +45,8 @@ Generated from the components' TypeScript signatures by
 ### EuiColorPalettePicker
 
 A select of color palettes (e.g. for charts), showing each palette as a
-bar of colors. Built on `EuiSuperSelect`.
+bar of colors. Built on `EuiSuperSelect`; each option shows the title
+(EuiText `xs`) above the palette, as upstream.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -57,6 +58,8 @@ bar of colors. Built on `EuiSuperSelect`.
 | `@fullWidth` | `boolean` |  | Takes the container's full width. |
 | `@isInvalid` | `boolean` |  | Invalid look. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
+| `@disabled` | `boolean` |  | Disables the select. |
+| `@readOnly` | `boolean` |  | Read-only: the list does not open. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 

@@ -170,7 +170,7 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
 
     // icons via the migrated form control layout
     assert.dom('[data-c="multi"] .euiFormControlLayoutClearButton').hasAttribute('aria-label', 'Clear input');
-    assert.dom('[data-c="multi"] [data-icon-type="arrowDown"]').exists('dropdown arrow');
+    assert.dom('[data-c="multi"] [data-icon-type="chevronSingleDown"]').exists('dropdown arrow');
     assert.dom('[data-c="full"] .euiFormControlLayoutClearButton').doesNotExist('no clear button without a selection');
     assert.strictEqual(css(wrapOf('[data-c="full"]')).paddingRight, '36px', 'only the arrow');
   });
@@ -349,7 +349,7 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.dom(input).isDisabled().doesNotHaveAttribute('aria-invalid');
     assert.strictEqual(css(wrap).backgroundColor, rgb(lightForm.backgroundDisabledColor));
     assert.strictEqual(css(wrap).color, rgb(lightForm.textColorDisabled));
-    assert.dom('[data-c="combo"] [data-icon-type="arrowDown"]').doesNotExist('no arrow while disabled (upstream)');
+    assert.dom('[data-c="combo"] [data-icon-type="chevronSingleDown"]').doesNotExist('no arrow while disabled (upstream)');
     assert.dom('[data-c="combo"] .euiFormControlLayoutClearButton').doesNotExist();
     assert.dom('[data-c="combo"] .euiComboBox').hasClass('euiComboBox-isDisabled');
   });
@@ -453,7 +453,7 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     // the first option is highlighted when the list opens
     assert.strictEqual(a.backgroundColor, rgb(light.colors.backgroundBaseInteractiveHover), 'focused');
     assert.dom(q('.euiComboBoxOption__enterBadge', apple!)).hasAttribute('aria-hidden', 'true');
-    assert.dom('.euiComboBoxOption__enterBadge [data-icon-type="returnKey"]', panel()).exists({ count: 1 });
+    assert.dom('.euiComboBoxOption__enterBadge [data-icon-type="return"]', panel()).exists({ count: 1 });
     assert.strictEqual(css(banana!).backgroundColor, 'rgba(0, 0, 0, 0)');
 
     assert.strictEqual(css(cherry!).color, rgb(light.colors.textPrimary), 'selected');
@@ -569,7 +569,7 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.strictEqual(css(q('.euiComboBoxOption__contentWrapper', create)).display, 'flex');
     assert.strictEqual(css(q('.euiComboBoxOption__emptyStateText', create)).textAlign, 'start');
     assert.strictEqual(css(q('.euiComboBoxOption__emptyStateText', create)).marginBottom, '0px');
-    assert.dom('.euiComboBoxOption__enterBadge [data-icon-type="returnKey"]', create).exists();
+    assert.dom('.euiComboBoxOption__enterBadge [data-icon-type="return"]', create).exists();
     assert.strictEqual(css(q('.euiComboBoxOption__enterBadge', create)).marginLeft, '4px');
     await triggerKeyEvent('[data-c="create"] ' + INPUT, 'keydown', 'Enter');
     assert.deepEqual(state.created, ['Kiwi']);

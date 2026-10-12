@@ -15,7 +15,7 @@ import type { EuiSuggestItemTint, EuiSuggestLabelWidth } from '../utils/eui/sugg
 import type { EuiIconSignature } from './eui-icon';
 
 export interface EuiSuggestItemType {
-  /** Icon of the suggestion's type, e.g. `'kqlField'` or `'search'`. */
+  /** Icon of the suggestion's type, e.g. `'queryField'` or `'magnify'`. */
   iconType: EuiIconSignature['Args']['type'];
   /** `'tint0'` to `'tint10'`, the color behind the icon. */
   color?: string;

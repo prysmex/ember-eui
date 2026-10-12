@@ -456,7 +456,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
             <EuiButtonIcon
               class={{this.arrowClasses}}
               @color="text"
-              @iconType="arrowRight"
+              @iconType="chevronSingleRight"
               @isDisabled={{this.isDisabled}}
               @css={{this.arrowCss}}
               aria-controls={{this.regionId}}
@@ -505,7 +505,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
             <EuiButtonIcon
               class={{this.arrowClasses}}
               @color="text"
-              @iconType="arrowRight"
+              @iconType="chevronSingleRight"
               @isDisabled={{this.isDisabled}}
               @css={{this.arrowCss}}
               aria-controls={{this.regionId}}

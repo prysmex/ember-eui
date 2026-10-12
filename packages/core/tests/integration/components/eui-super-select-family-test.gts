@@ -143,7 +143,7 @@ module('Integration | Component | Borealis super select', function (hooks) {
     assert.strictEqual(box(m).width, 400);
     assert.strictEqual(mc.cursor, 'pointer');
 
-    const arrow = layoutOf(m).querySelector('.euiFormControlLayoutIcons [data-icon-type="arrowDown"]');
+    const arrow = layoutOf(m).querySelector('.euiFormControlLayoutIcons [data-icon-type="chevronSingleDown"]');
     assert.ok(arrow, 'the layout renders the dropdown arrow');
     assert.true(
       box(arrow!).right <= box(m).right && box(arrow!).left > box(m).left + 300,
@@ -215,7 +215,7 @@ module('Integration | Component | Borealis super select', function (hooks) {
     assert.strictEqual(css(disabled).color, rgb(forms(light)['colorDisabled']!));
     assert.strictEqual(css(disabled).cursor, 'not-allowed');
     assert.dom(layoutOf(disabled)).hasClass('euiFormControlLayout-isDisabled');
-    assert.notOk(layoutOf(disabled).querySelector('[data-icon-type="arrowDown"]'), 'no arrow while disabled');
+    assert.notOk(layoutOf(disabled).querySelector('[data-icon-type="chevronSingleDown"]'), 'no arrow while disabled');
 
     const readonly = control('readonly');
     assert.dom(readonly).isDisabled('a read-only control cannot be opened');
@@ -223,7 +223,7 @@ module('Integration | Component | Borealis super select', function (hooks) {
     assert.strictEqual(css(readonly).backgroundColor, rgb(forms(light)['backgroundReadOnly']!));
     assert.strictEqual(css(readonly).cursor, 'default');
     assert.dom(layoutOf(readonly)).hasClass('euiFormControlLayout-readOnly');
-    assert.notOk(layoutOf(readonly).querySelector('[data-icon-type="arrowDown"]'), 'no arrow while read-only');
+    assert.notOk(layoutOf(readonly).querySelector('[data-icon-type="chevronSingleDown"]'), 'no arrow while read-only');
     assert.dom('input[type="hidden"][name="ro"]').hasValue('minor').hasAttribute('readonly');
 
     const loading = control('loading');
@@ -626,7 +626,7 @@ module('Integration | Component | Borealis super select', function (hooks) {
     assert.strictEqual(css(button).paddingLeft, '36px', 'the arrow affordance is on the left');
     assert.strictEqual(css(button).paddingRight, '12px');
     assert.strictEqual(css(button).textAlign, 'start');
-    const arrow = layoutOf(button).querySelector('[data-icon-type="arrowDown"]')!;
+    const arrow = layoutOf(button).querySelector('[data-icon-type="chevronSingleDown"]')!;
     assert.true(box(arrow).left < box(button).left + 40, 'the arrow sits on the left');
 
     // the list is portaled to the body: it follows the document direction

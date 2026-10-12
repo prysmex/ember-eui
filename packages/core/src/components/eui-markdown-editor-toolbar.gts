@@ -14,7 +14,6 @@ import { MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiI18n from './eui-i18n.gts';
-import MarkdownCheckmark from './eui-markdown-editor-toolbar/icons/markdown-checkmark.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
 import type MarkdownActions from '../utils/markdown/markdown-actions';
@@ -68,15 +67,14 @@ type EuiMarkdownEditorToolbarIconItem = EuiMarkdownEditorToolbarItem & {
 /** Upstream highlights the button of the node under the cursor inline. */
 const SELECTED_STYLE = { background: 'rgba(0, 0, 0, 0.15)' };
 
-// Upstream icon names (`textBold`, `listBullet`, `code`, `link`…) are not in
-// the bundled icon set yet; the equivalent bundled glyphs are used.
+// Upstream's icon names.
 const BOLD_ITALIC_BUTTONS: EuiMarkdownEditorToolbarIconItem[] = [
-  { id: 'mdBold', label: 'Bold', name: 'strong', iconType: 'editorBold' },
+  { id: 'mdBold', label: 'Bold', name: 'strong', iconType: 'textBold' },
   {
     id: 'mdItalic',
     label: 'Italic',
     name: 'emphasis',
-    iconType: 'editorItalic'
+    iconType: 'textItalic'
   }
 ];
 
@@ -85,20 +83,19 @@ const LIST_BUTTONS: EuiMarkdownEditorToolbarItem[] = [
     id: 'mdUl',
     label: 'Unordered list',
     name: 'ul',
-    iconType: 'editorUnorderedList'
+    iconType: 'listBullet'
   },
   {
     id: 'mdOl',
     label: 'Ordered list',
     name: 'ol',
-    iconType: 'editorOrderedList'
+    iconType: 'listNumber'
   },
   {
     id: 'mdTl',
     label: 'Task list',
     name: 'tl',
-    useSvg: true,
-    iconType: { component: MarkdownCheckmark }
+    iconType: 'listCheck'
   }
 ];
 
@@ -108,9 +105,9 @@ const QUOTE_CODE_LINK_BUTTONS: EuiMarkdownEditorToolbarIconItem[] = [
     id: 'mdCode',
     label: 'Code',
     name: 'inlineCode',
-    iconType: 'editorCodeBlock'
+    iconType: 'code'
   },
-  { id: 'mdLink', label: 'Link', name: 'link', iconType: 'editorLink' }
+  { id: 'mdLink', label: 'Link', name: 'link', iconType: 'link' }
 ];
 
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarSignature> {
@@ -254,7 +251,7 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
 
       {{#if this.isPreviewing}}
         <EuiButtonEmpty
-          @iconType="editorCodeBlock"
+          @iconType="code"
           @color="text"
           @size="s"
           @isDisabled={{@readOnly}}

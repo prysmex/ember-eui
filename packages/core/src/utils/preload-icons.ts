@@ -12,7 +12,7 @@ import type { EuiIconType } from '../components/eui-icon.gts';
  *
  * export default class ApplicationRoute extends Route {
  *   async beforeModel() {
- *     await preloadIcons(['arrowDown', 'cross', 'search']);
+ *     await preloadIcons(['chevronSingleDown', 'cross', 'magnify']);
  *   }
  * }
  * ```

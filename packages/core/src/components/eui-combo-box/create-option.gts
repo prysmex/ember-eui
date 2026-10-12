@@ -136,7 +136,7 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
           <EuiBadge
             class="euiComboBoxOption__enterBadge"
             @color="hollow"
-            @iconType={{unless @alwaysShow "returnKey"}}
+            @iconType={{unless @alwaysShow "return"}}
             aria-hidden={{unless @alwaysShow "true"}}
           >
             {{#if @alwaysShow}}

@@ -55,7 +55,7 @@ export interface IEuiToast {
    */
   color?: EuiToastColor | 'none';
   /**
-   * Icon before the content, e.g. `'check'` or `'alert'`, colored like the
+   * Icon before the content, e.g. `'check'` or `'warning'`, colored like the
    * highlight. Without it, a notification icon matching `@color` is shown.
    */
   iconType?: EuiIconSignature['Args']['type'];
@@ -96,16 +96,15 @@ export interface EuiToastSignature {
 }
 
 /**
- * Upstream's notification icons (`infoFill`, `checkCircleFill`,
- * `warningStatic`, `errorFill`) are not in Ember's icon set; these are the
- * closest glyphs (same mapping as EuiCallOut), with upstream's colors.
+ * Upstream's default notification icons (EuiNotificationIcon) and colors,
+ * as in EuiCallOut; `warningStatic` has its own two-tone colors.
  */
-const DEFAULT_ICONS: Record<EuiToastColor, { type: string; color: string }> =
+const DEFAULT_ICONS: Record<EuiToastColor, { type: string; color?: string }> =
   {
-    primary: { type: 'iInCircle', color: 'primary' },
-    success: { type: 'checkInCircleFilled', color: 'success' },
-    warning: { type: 'warning', color: 'warning' },
-    danger: { type: 'error', color: 'danger' }
+    primary: { type: 'infoFill', color: 'primary' },
+    success: { type: 'checkCircleFill', color: 'success' },
+    warning: { type: 'warningStatic' },
+    danger: { type: 'errorFill', color: 'danger' }
   };
 
 /** React's global reset for the title paragraph (EuiTitle's own reset). */

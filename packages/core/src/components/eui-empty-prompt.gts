@@ -64,7 +64,7 @@ export interface EuiEmptyPromptSignature {
     color?: EuiPanelSignature['Args']['color'];
     /** Adds a border around the prompt. Defaults to `true` for `'plain'`, `false` otherwise. */
     hasBorder?: boolean;
-    /** Large icon above the title, e.g. `'search'` or `'logoKibana'`. */
+    /** Large icon above the title, e.g. `'magnify'` or `'logoKibana'`. */
     iconType?: EuiIconSignature['Args']['type'];
     /**
      * Color of the icon. Defaults to `@color` when it is a named icon color

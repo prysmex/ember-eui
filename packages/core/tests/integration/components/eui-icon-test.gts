@@ -1,15 +1,28 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { getRootElement, render } from '@ember/test-helpers';
+import { click, getRootElement, render } from '@ember/test-helpers';
 
 import EuiBadge from '#src/components/eui-badge.gts';
 import EuiButton from '#src/components/eui-button.gts';
+import EuiCallOut from '#src/components/eui-call-out.gts';
+import EuiFieldPassword from '#src/components/eui-field-password.gts';
+import EuiFieldSearch from '#src/components/eui-field-search.gts';
 import EuiIcon, { TYPES } from '#src/components/eui-icon.gts';
+import EuiIconTip from '#src/components/eui-icon-tip.gts';
+import EuiLink from '#src/components/eui-link.gts';
+import EuiPagination from '#src/components/eui-pagination.gts';
+import {
+  deprecatedIconTypes,
+  legacyIconAliases,
+  legacyIconTypes,
+  typeToPathMap
+} from '#src/utils/css-mappings/eui-icon.ts';
 import { clearIconCache } from '#src/-private/icon-loader.ts';
 import { iconsFromGlob } from '#src/utils/icons-from-glob.ts';
 import { preloadIcons } from '#src/utils/preload-icons.ts';
 import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
+import type { EuiIconType } from '#src/components/eui-icon.gts';
 import type EuiConfigService from '#src/services/eui-config.ts';
 import type { TOC } from '@ember/component/template-only';
 
@@ -52,6 +65,24 @@ function rgb(color: string) {
   return value;
 }
 
+/** Splits the icon catalog into tests that each finish well within the timeout. */
+function chunks<T>(items: T[], size = 120): T[][] {
+  const result: T[][] = [];
+
+  for (let i = 0; i < items.length; i += size) result.push(items.slice(i, i + size));
+
+  return result;
+}
+
+/** Names whose rendered svg (`[data-icon-name]`) has no content or viewBox. */
+function emptyIcons(element: Element, types: readonly string[]): string[] {
+  return types.filter((type) => {
+    const svg = element.querySelector(`svg[data-icon-name="${type}"]`);
+
+    return !svg || svg.children.length === 0 || !svg.getAttribute('viewBox');
+  });
+}
+
 const DATA_URL =
   'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"></svg>';
 
@@ -81,7 +112,8 @@ module('Integration | Component | eui-icon', function (hooks) {
       await render(<template><EuiIcon @type="logoElastic" /></template>);
 
       assert.dom('svg').hasAttribute('data-type', 'logoElastic');
-      assert.dom('svg .outline').exists();
+      // the EUI 123 logo is four filled, white-stroked shapes (no `.outline`)
+      assert.dom('svg path[fill]').exists();
     });
 
     test('it resolves icons that live in sub folders (tokens)', async function (assert) {
@@ -91,23 +123,168 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg > *').exists();
     });
 
-    test('every named icon renders an svg with content', async function (assert) {
-      const empty: string[] = [];
-      // Render the catalog together: repeated render/teardown for each icon can
-      // exhaust the browser timeout while other migration checks are running.
-      const types = TYPES.filter((type) => type !== 'empty');
+  });
+
+  module('icon set (EUI 123.1.0)', function () {
+    // Each chunk renders its icons together: one render per icon, or the
+    // whole catalog in one test, can exceed the browser timeout under load.
+    for (const [index, chunk] of chunks(TYPES.filter((type) => type !== 'empty')).entries()) {
+      test(`every named icon renders an svg with content (${index + 1})`, async function (assert) {
+        await render(<template>
+          {{#each chunk as |type|}}<EuiIcon @type={{type}} data-icon-name={{type}} />{{/each}}
+        </template>);
+
+        assert.dom('svg[data-icon-name]').exists({ count: chunk.length });
+        assert.deepEqual(emptyIcons(this.element, chunk), [], `${chunk.length} icons render`);
+      });
+    }
+
+    test('every upstream icon name is bundled', function (assert) {
+      const legacy = new Set<string>([...Object.keys(legacyIconAliases), ...legacyIconTypes]);
+      const upstream = TYPES.filter((type) => !legacy.has(type));
+
+      // 567 names of upstream's icon map + EuiNotificationIcon's infoFill
+      // and warningStatic; a different count means the set drifted from 123.1.0
+      assert.strictEqual(upstream.length, 569);
+
+      for (const type of ['external', 'question', 'magnify', 'eyeSlash', 'chevronSingleDown',
+        'infoFill', 'checkCircleFill', 'warningStatic', 'errorFill', 'stopFill',
+        'transitionLeftIn', 'transitionLeftOut', 'textBold', 'listBullet', 'return', 'copy',
+        'tokenVectorDense', 'tokenSemanticText', 'sparkles', 'workflow',
+        // deprecated upstream, still upstream names
+        'search', 'alert', 'help', 'apps']) {
+        assert.true(Object.prototype.hasOwnProperty.call(typeToPathMap, type), type);
+      }
+    });
+
+    test('legacy names and upstream deprecations point at bundled icons', function (assert) {
+      for (const [name, target] of Object.entries(legacyIconAliases)) {
+        assert.strictEqual(
+          typeToPathMap[name as EuiIconType],
+          typeToPathMap[target],
+          `${name} renders ${target}`
+        );
+        assert.false(target in legacyIconAliases, `${target} is not an alias itself`);
+      }
+
+      for (const name of legacyIconTypes) {
+        assert.true(typeToPathMap[name].startsWith('legacy/'), `${name} keeps its legacy svg`);
+      }
+
+      for (const [name, replacement] of Object.entries(deprecatedIconTypes)) {
+        if (replacement) {
+          assert.true(replacement in typeToPathMap, `${name} → ${replacement}`);
+        }
+      }
+    });
+
+    test('legacy aliases render the same svg as their upstream icon', async function (assert) {
+      const pairs = Object.entries(legacyIconAliases).map(([name, target]) => ({ name, target }));
+
+      await render(<template>
+        {{#each pairs as |pair|}}
+          <EuiIcon @type={{pair.name}} data-alias={{pair.name}} />
+          <EuiIcon @type={{pair.target}} data-target={{pair.name}} />
+        {{/each}}
+      </template>);
+
+      const different = pairs
+        .filter(({ name }) => {
+          const alias = this.element.querySelector(`svg[data-alias="${name}"]`);
+          const target = this.element.querySelector(`svg[data-target="${name}"]`);
+
+          return !alias?.innerHTML || alias.innerHTML !== target?.innerHTML;
+        })
+        .map(({ name }) => name);
+
+      assert.deepEqual(different, [], `${pairs.length} aliases`);
+      assert.dom('svg[data-alias="arrowDown"]').hasAttribute('data-icon-type', 'arrowDown');
+    });
+
+    test('renamed icons render the upstream artwork', async function (assert) {
+      const renamed = [
+        { old: 'arrowDown', current: 'chevronSingleDown' },
+        { old: 'popout', current: 'external' },
+        { old: 'questionInCircle', current: 'question' },
+        { old: 'iInCircle', current: 'info' },
+        { old: 'eyeClosed', current: 'eyeSlash' },
+        { old: 'editorBold', current: 'textBold' },
+        { old: 'returnKey', current: 'return' },
+        { old: 'copyClipboard', current: 'copy' },
+        { old: 'tokenDenseVector', current: 'tokenVectorDense' },
+        // upstream deprecations keep upstream's own mapping
+        { old: 'search', current: 'magnify' },
+        { old: 'alert', current: 'warning' }
+      ];
+
+      await render(<template>
+        {{#each renamed as |pair|}}
+          <EuiIcon @type={{pair.old}} data-old={{pair.old}} />
+          <EuiIcon @type={{pair.current}} data-new={{pair.old}} />
+        {{/each}}
+      </template>);
+
+      for (const { old, current } of renamed) {
+        const before = this.element.querySelector(`svg[data-old="${old}"]`)!;
+        const after = this.element.querySelector(`svg[data-new="${old}"]`)!;
+
+        assert.ok(before.innerHTML.length > 0, `${old} has content`);
+        assert.strictEqual(before.innerHTML, after.innerHTML, `${old} renders ${current}`);
+        assert.strictEqual(before.getAttribute('viewBox'), after.getAttribute('viewBox'));
+      }
+    });
+
+    test('legacy names without an upstream equivalent keep their artwork', async function (assert) {
+      const types = [...legacyIconTypes];
+
       await render(<template>
         {{#each types as |type|}}<EuiIcon @type={{type}} data-icon-name={{type}} />{{/each}}
       </template>);
-      assert.dom('svg[data-icon-name]').exists({ count: types.length });
-      for (const type of types) {
-        const svg = this.element.querySelector(`svg[data-icon-name="${type}"]`);
-        if (!svg || svg.children.length === 0 || !svg.getAttribute('viewBox')) {
-          empty.push(type);
-        }
-      }
 
-      assert.deepEqual(empty, [], `all ${TYPES.length} icons render`);
+      assert.dom('svg[data-icon-name]').exists({ count: types.length });
+      assert.deepEqual(emptyIcons(this.element, types), []);
+    });
+  });
+
+  module('components use the upstream icon names', function () {
+    test('callout defaults, icon tip, external link, search, password, pagination', async function (assert) {
+      const noop = () => {};
+
+      await render(
+        <template>
+          <EuiCallOut @title="i" data-co="primary" />
+          <EuiCallOut @title="s" @color="success" data-co="success" />
+          <EuiCallOut @title="w" @color="warning" data-co="warning" />
+          <EuiCallOut @title="d" @color="danger" data-co="danger" />
+          <EuiIconTip @content="Help" data-tip />
+          <EuiLink @href="https://example.com" @target="_blank" data-link>Out</EuiLink>
+          <EuiFieldSearch @onSearch={{noop}} data-search />
+          <EuiFieldPassword data-password />
+          <EuiPagination @pageCount={{5}} @activePage={{2}} @responsive={{false}} data-pagination />
+        </template>
+      );
+
+      const type = (selector: string) =>
+        [...document.querySelectorAll(`${selector} [data-icon-type]`)].map((icon) =>
+          icon.getAttribute('data-icon-type')
+        );
+
+      // upstream EuiNotificationIcon glyphs
+      assert.deepEqual(type('[data-co="primary"]'), ['infoFill']);
+      assert.deepEqual(type('[data-co="success"]'), ['checkCircleFill']);
+      assert.deepEqual(type('[data-co="warning"]'), ['warningStatic']);
+      assert.deepEqual(type('[data-co="danger"]'), ['errorFill']);
+      assert.deepEqual(type('.euiToolTipAnchor'), ['question']);
+      assert.deepEqual(type('[data-link]'), ['external']);
+      assert.true(type('.euiFormControlLayout:has([data-search])').includes('magnify'));
+      assert.true(type('[data-pagination]').includes('chevronSingleLeft'));
+      assert.true(type('[data-pagination]').includes('chevronSingleRight'));
+
+      const password = '.euiFormControlLayout:has([data-password])';
+
+      assert.true(type(password).includes('eye'));
+      await click(`${password} button`);
+      assert.true(type(password).includes('eyeSlash'), 'eyeSlash while the text shows');
     });
   });
 
@@ -283,6 +460,26 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg.my-custom-icon').hasClass('euiIcon');
       assert.dom('svg.my-custom-icon').hasStyle({ width: '24px', color: rgb(light.colors.textPrimary) });
       assert.dom('svg.my-custom-icon').hasAttribute('role', 'presentation');
+    });
+
+    test('an icon registered under an EUI icon name wins over the EUI icon', async function (assert) {
+      // EUI 123 added names apps may already register (e.g. `rocket`, `copy`)
+      const config = this.owner.lookup('service:eui-config') as EuiConfigService;
+
+      config.updateConfig({ 'euiIcon.icons': { copy: CustomIcon } });
+
+      await render(
+        <template>
+          <EuiIcon @type="copy" data-registered />
+          <EuiIcon @type="copyClipboard" data-eui />
+        </template>
+      );
+
+      assert.dom('svg[data-registered]').hasClass('my-custom-icon');
+      assert.dom('svg[data-registered]').doesNotHaveAttribute('data-icon-type');
+      assert.dom('svg[data-registered]').doesNotHaveAttribute('data-is-loading');
+      assert.dom('svg[data-eui]').doesNotHaveClass('my-custom-icon');
+      assert.dom('svg[data-eui]').hasAttribute('data-icon-type', 'copyClipboard');
     });
 
     test('a folder of svgs can be registered with iconsFromGlob', async function (assert) {

@@ -187,7 +187,7 @@ export default class EuiLink extends Component<EuiLinkSignature> {
         {{yield}}
         {{#if this.showExternalIcon}}
           <EuiIcon
-            @type="popout"
+            @type="external"
             @size="s"
             class="euiLink__externalIcon"
             role="presentation"

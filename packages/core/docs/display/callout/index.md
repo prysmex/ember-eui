@@ -32,7 +32,7 @@ A colored box drawing attention to a message, e.g. a warning or a success notice
 | `@title` | `string` |  | Title in the callout's header. Use the `<:title>` block for markup. |
 | `@heading` |  | `'p'` | Tag of the title, e.g. `'h2'` so it appears in the page outline: `'h1'`–`'h6'` or `'p'`. |
 | `@text` | `string` |  | Main text, rendered inline after the title in small callouts. Use the default (or `<:body>`) block for other content. |
-| `@iconType` |  |  | Icon before the content, e.g. `'alert'`, `'check'` or `'help'`. Without it, a default icon matching `@color` is shown. |
+| `@iconType` |  |  | Icon before the content, e.g. `'warning'`, `'check'` or `'question'`. Without it, a default icon matching `@color` is shown. |
 | `@size` | `EuiCallOutSize` | `'m'` | `'s'` or `'m'`. |
 | `@color` | `EuiCallOutColor` | `'primary'` | `'primary'`, `'success'`, `'warning'` or `'danger'`. Other values fall back to `'primary'`. |
 | `@textColor` |  | `'default'` | Color of the body text, any `EuiText` color. |

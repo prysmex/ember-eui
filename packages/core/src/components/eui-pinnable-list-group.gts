@@ -130,7 +130,7 @@ export default class EuiPinnableListGroup extends Component<EuiPinnableListGroup
     if (item.pinnable === false) return undefined;
     const title = this.title(item);
     return {
-      iconType: 'pinFilled',
+      iconType: 'pinFill',
       iconSize: 's',
       className: 'euiPinnableListGroup__itemExtraAction',
       css: item.pinned ? this.pinCss.pinned : this.pinCss.unpinned,

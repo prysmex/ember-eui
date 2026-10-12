@@ -179,7 +179,7 @@ export default class EuiFieldPassword extends Component<EuiFieldPasswordSignatur
             {{/if}}
             {{#if (eq this.type "dual")}}
               <EuiButtonIcon
-                @iconType={{if this.isVisible "eyeClosed" "eye"}}
+                @iconType={{if this.isVisible "eyeSlash" "eye"}}
                 @isDisabled={{@disabled}}
                 aria-label={{this.toggleLabel}}
                 title={{this.toggleLabel}}

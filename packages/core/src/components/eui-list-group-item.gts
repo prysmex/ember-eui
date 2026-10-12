@@ -148,7 +148,7 @@ const Content: TemplateOnlyComponent<ContentSignature> = <template>
       {{yield}}
       {{#if @showExternal}}
         <EuiIcon
-          @type="popout"
+          @type="external"
           @size="m"
           class="euiListGroupItem__externalIcon"
           @css={{@externalIconCss}}

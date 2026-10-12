@@ -39,7 +39,7 @@ export interface EuiDraggableSignature {
     isDragDisabled?: boolean;
     /**
      * Only a handle drags the item: put the yielded `dragHandle` modifier
-     * on it, e.g. `<EuiIcon @type="grab" {{item.dragHandle}} />`. With
+     * on it, e.g. `<EuiIcon @type="dragVertical" {{item.dragHandle}} />`. With
      * `'custom'` the item itself is not focusable and has no role either:
      * the handle becomes the focusable `role="button"` that lifts the item
      * with the keyboard (upstream's fully custom handle).

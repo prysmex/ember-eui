@@ -27,7 +27,7 @@ export interface EuiIconTipSignature {
     iconProps?: {
       className?: string;
     };
-    /** The icon. Defaults to `'questionInCircle'`. */
+    /** The icon. Defaults to `'question'`. */
     type?: string;
     /** Color of the icon, any `EuiIcon` color. */
     color?: string;
@@ -68,7 +68,7 @@ const EuiIconTip: TemplateOnlyComponent<EuiIconTipSignature> = <template>
         <EuiIcon
           tabindex="0"
           @iconClasses={{@iconProps.className}}
-          @type={{argOrDefault @type "questionInCircle"}}
+          @type={{argOrDefault @type "question"}}
           @color={{@color}}
           @size={{@size}}
           @aria-label={{argOrDefault @ariaLabel "Info"}}

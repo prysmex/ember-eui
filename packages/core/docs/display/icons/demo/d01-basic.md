@@ -21,7 +21,7 @@ styling. Find names in the gallery above.
     <EuiIcon @type="gear" @size="l" />
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
-    <EuiIcon @type="checkInCircleFilled" @size="l" @color="success" />
+    <EuiIcon @type="checkCircleFill" @size="l" @color="success" />
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
     <EuiIcon @type="logoElastic" @size="xl" @title="Elastic" />

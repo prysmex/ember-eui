@@ -116,7 +116,7 @@ export default class EuiFormControlLayoutIcons extends Component<EuiFormControlL
       {{#if @isDropdown}}
         <EuiFormControlLayoutCustomIcon
           @size="m"
-          @type="arrowDown"
+          @type="chevronSingleDown"
           @disabled={{@isDisabled}}
         />
       {{/if}}

@@ -7,7 +7,7 @@ EUI icons work out of the box: they are bundled with the addon, no build
 configuration is needed (this used to require `ember-svg-jar`).
 
 ```hbs
-<EuiIcon @type="arrowDown" />
+<EuiIcon @type="chevronSingleDown" />
 ```
 
 Each EUI icon is its own chunk, loaded the first time it renders, so apps
@@ -20,7 +20,7 @@ import { preloadIcons } from '@ember-eui/core/utils/preload-icons';
 
 export default class ApplicationRoute extends Route {
   async beforeModel() {
-    await preloadIcons(['arrowDown', 'cross', 'search']);
+    await preloadIcons(['chevronSingleDown', 'cross', 'magnify']);
   }
 }
 ```

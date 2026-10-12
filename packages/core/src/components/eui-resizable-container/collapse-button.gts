@@ -24,18 +24,15 @@ interface CollapseButtonSignature {
   };
 }
 
-/**
- * Upstream uses the `transition*In/Out` icons, which the Ember icon set
- * does not include yet; the menu arrows point the same ways.
- */
+/** Upstream's `transition*In/Out` icons. */
 function icon(externalPosition: string, direction: string, isCollapsed?: boolean): string {
   const horizontal = direction === 'horizontal';
 
   if (externalPosition === 'before') {
-    return isCollapsed ? (horizontal ? 'menuLeft' : 'menuUp') : horizontal ? 'menuRight' : 'menuDown';
+    return isCollapsed ? (horizontal ? 'transitionLeftOut' : 'transitionTopOut') : horizontal ? 'transitionLeftIn' : 'transitionTopIn';
   }
 
-  return isCollapsed ? (horizontal ? 'menuRight' : 'menuDown') : horizontal ? 'menuLeft' : 'menuUp';
+  return isCollapsed ? (horizontal ? 'transitionRightOut' : 'transitionBottomOut') : horizontal ? 'transitionRightIn' : 'transitionBottomIn';
 }
 
 /**

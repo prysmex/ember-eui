@@ -189,7 +189,7 @@ export default class EuiExpression extends Component<EuiExpressionSignature> {
         {{#if @isInvalid}}
           <EuiIcon
             class="euiExpression__icon"
-            @type="alert"
+            @type="warning"
             @color="danger"
             @css={{this.iconCss}}
           />

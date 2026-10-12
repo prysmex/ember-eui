@@ -9,16 +9,16 @@ manualDemoInsertion: true
 
 <EuiText>
 
-`<EuiIcon>` renders one of EUI's ~470 named icons, an svg component of your
-own, or an image URL. Components with an `@iconType` argument (`EuiButton`,
+`<EuiIcon>` renders one of the ~570 named icons of EUI 123.1.0, an svg
+component of your own, or an image URL. Components with an `@iconType` argument (`EuiButton`,
 `EuiBadge`, `EuiCallOut`, `EuiListGroupItem`, …) render an `EuiIcon` for you
 and accept the same values.
 
 ```hbs
 <EuiIcon @type="bell" />
 <EuiIcon @type="logoElastic" @size="xl" />
-<EuiIcon @type="alert" @color="danger" @title="Error" />
-<EuiButton @iconType="plusInCircle">Add</EuiButton>
+<EuiIcon @type="warning" @color="danger" @title="Error" />
+<EuiButton @iconType="plusCircle">Add</EuiButton>
 ```
 
 ## What `@type` accepts
@@ -53,6 +53,28 @@ export default defineConfig({
 ```
 
 The full list of arguments is in the *API reference* at the end of the page.
+
+## Renamed icons
+
+The icons are the current upstream (Borealis) set, under upstream's names.
+Names from earlier EUI releases keep working: names upstream renamed render
+the renamed icon (e.g. `arrowDown` → `chevronSingleDown`, `popout` →
+`external`, `questionInCircle` → `question`, `editorBold` → `textBold`), and
+the few without an upstream equivalent keep their previous artwork. Upstream's
+own deprecated names (e.g. `search`, `alert`) render what upstream renders.
+These names are left out of the gallery; prefer the upstream names in new code.
+The full lists are exported next to the icon map:
+
+```js
+import {
+  legacyIconAliases, // { arrowDown: 'chevronSingleDown', … }
+  legacyIconTypes, // legacy names that keep their previous artwork
+  deprecatedIconTypes // upstream deprecations: { search: 'magnify', … }
+} from '@ember-eui/core/utils/css-mappings/eui-icon';
+```
+
+An icon registered in `euiIcon.icons` under the same name as an EUI icon
+wins, so app icons keep rendering when EUI adds icons with their names.
 
 ## All icons
 

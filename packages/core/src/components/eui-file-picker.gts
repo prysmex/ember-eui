@@ -203,7 +203,7 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
             <div class="euiFilePicker__prompt" id={{promptId}}>
               <EuiIcon
                 @iconClasses="euiFilePicker__icon"
-                @type="importAction"
+                @type="upload"
                 @size={{if true "m" "l"}}
                 aria-hidden="true"
               />

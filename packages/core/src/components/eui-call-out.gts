@@ -29,18 +29,17 @@ export type EuiCallOutColor = 'primary' | 'success' | 'warning' | 'danger';
 export type EuiCallOutSize = 's' | 'm';
 
 /**
- * Upstream's default notification icons (`infoFill`, `checkCircleFill`,
- * `warningStatic`, `errorFill`) are not in Ember's icon set yet; these are
- * the closest available glyphs, with upstream's colors.
+ * Upstream's default notification icons (EuiNotificationIcon) and colors;
+ * `warningStatic` has its own two-tone colors.
  */
 const DEFAULT_ICONS: Record<
   EuiCallOutColor,
   { type: string; color?: string }
 > = {
-  primary: { type: 'iInCircle', color: 'primary' },
-  success: { type: 'checkInCircleFilled', color: 'success' },
-  warning: { type: 'warning', color: 'warning' },
-  danger: { type: 'error', color: 'danger' }
+  primary: { type: 'infoFill', color: 'primary' },
+  success: { type: 'checkCircleFill', color: 'success' },
+  warning: { type: 'warningStatic' },
+  danger: { type: 'errorFill', color: 'danger' }
 };
 
 /** Shrink-wraps the dismiss button (no line box around it). */
@@ -103,7 +102,7 @@ export interface EuiCallOutSignature {
      */
     text?: string;
     /**
-     * Icon before the content, e.g. `'alert'`, `'check'` or `'help'`. Without
+     * Icon before the content, e.g. `'warning'`, `'check'` or `'question'`. Without
      * it, a default icon matching `@color` is shown.
      */
     iconType?: EuiIconSignature['Args']['type'];

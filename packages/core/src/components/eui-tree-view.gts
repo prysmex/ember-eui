@@ -24,7 +24,7 @@ export interface EuiTreeViewNode {
   id: string;
   /** The node's text. Use the `<:label>` block for markup. */
   label: string;
-  /** Icon before the label, any `EuiIcon` type, e.g. `'folderClosed'`. */
+  /** Icon before the label, any `EuiIcon` type, e.g. `'folder'`. */
   icon?: EuiIconSignature['Args']['type'];
   /** Icon while the node is open, e.g. `'folderOpen'`. */
   iconWhenExpanded?: EuiIconSignature['Args']['type'];
@@ -310,7 +310,7 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
                 <EuiIcon
                   class="euiTreeView__expansionArrow"
                   @size={{if this.isCompressed "s" "m"}}
-                  @type={{if (this.isOpen node) "arrowDown" "arrowRight"}}
+                  @type={{if (this.isOpen node) "chevronSingleDown" "chevronSingleRight"}}
                 />
               {{else}}
                 <span

@@ -225,7 +225,7 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
           {{#if @hasPanel}}
             <span class={{this.parts.append}}>
               <EuiIcon
-                @type="arrowRight"
+                @type="chevronSingleRight"
                 @size="m"
                 @iconClasses={{this.parts.arrow}}
               />

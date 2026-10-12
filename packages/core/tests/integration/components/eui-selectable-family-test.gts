@@ -316,7 +316,7 @@ module('Borealis selectable and suggest', function (hooks) {
 
     state.checked = 'mixed';
     await settled();
-    assert.dom('.item .euiCheckboxControl .euiIcon').hasAttribute('data-icon-type', 'stopFilled');
+    assert.dom('.item .euiCheckboxControl .euiIcon').hasAttribute('data-icon-type', 'stopFill');
     assert.dom(li).hasAria('checked', 'mixed');
 
     state.checked = undefined;
@@ -559,7 +559,7 @@ module('Borealis selectable and suggest', function (hooks) {
     assert.strictEqual(
       el(root, '.euiSelectableListItem__onFocusBadge').lastElementChild?.getAttribute('data-icon-type') ??
         el(root, '.euiSelectableListItem__onFocusBadge .euiIcon').getAttribute('data-icon-type'),
-      'returnKey'
+      'return'
     );
   });
 
@@ -736,7 +736,7 @@ module('Borealis selectable and suggest', function (hooks) {
     state.status = 'saved';
     await settled();
     assert.strictEqual(el(root, 'input'), input, 'same input');
-    assert.dom('.euiSuggestInput__statusIcon').hasAttribute('data-icon-type', 'checkInCircleFilled');
+    assert.dom('.euiSuggestInput__statusIcon').hasAttribute('data-icon-type', 'checkCircleFill');
 
     state.status = 'loading';
     await settled();

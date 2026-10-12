@@ -225,7 +225,7 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
                 >
                   <EuiButtonIcon
                     aria-label={{previousLabel}}
-                    @iconType="arrowLeft"
+                    @iconType="chevronSingleLeft"
                     {{on "click" this.stepBackward}}
                   />
                 </EuiToolTip>
@@ -245,7 +245,7 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
                 >
                   <EuiButtonIcon
                     aria-label={{nextLabel}}
-                    @iconType="arrowRight"
+                    @iconType="chevronSingleRight"
                     {{on "click" this.stepForward}}
                   />
                 </EuiToolTip>

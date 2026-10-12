@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { modifier } from 'ember-modifier';
 import { provide } from 'ember-provide-consume-context';
 import { eq } from 'ember-truth-helpers';
 
@@ -11,7 +12,18 @@ import EuiSpacer from './eui-spacer.gts';
 import type { EuiFormContext } from '../-private/eui-form-context.ts';
 
 /**
- * Wraps a form's rows and shows its errors in a callout. For validation
+ * Focuses the errors callout when it is inserted, i.e. when the form
+ * becomes invalid (upstream's callback ref). It reads no tracked state, so
+ * re-renders of the visible callout (new errors, title) do not move focus.
+ */
+const focusOnInsert = modifier((element: HTMLElement) => {
+  element.focus();
+});
+
+/**
+ * Wraps a form's rows and shows its errors in a callout. When the callout
+ * appears (the form becomes invalid) it receives focus, so screen reader
+ * and keyboard users land on the errors. For validation
  * built on it see `@ember-eui/changeset-form` and
  * `@ember-eui/validated-form`.
  */
@@ -30,7 +42,10 @@ export interface EuiFormSignature {
      * single message with `@array={{true}}`.
      */
     error?: string | string[];
-    /** Shows the errors callout (with `@error`). */
+    /**
+     * Shows the errors callout (with `@error`). The callout is focused when
+     * it appears.
+     */
     isInvalid?: boolean;
     /** Treats a single string `@error` as a one-item list. */
     array?: boolean;
@@ -87,6 +102,8 @@ export default class EuiForm extends Component<EuiFormSignature> implements EuiF
             class="euiForm__errors"
             role="alert"
             aria-live="assertive"
+            tabindex="-1"
+            {{focusOnInsert}}
             @title={{argOrDefault @errorTitle "Please correct the fields"}}
             @color="danger"
           >

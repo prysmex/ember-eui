@@ -151,3 +151,21 @@ Environment: Node 22.22.1, pnpm unavailable (binaries run directly), Chromium 13
 ## Next step
 
 Root: merge (union the `// forms-layout` generator/parity blocks with the form-controls agents' blocks), regenerate in the main checkout, run the core build, the validated-form / changeset-form tests and site checks, then visually pass the form-layout docs pages.
+
+## Follow-up: EuiForm error callout focus (upstream decision, branch `eui-wave/upstream-decisions`)
+
+The user chose "keep upstream behavior", which resolves Unresolved item 3 above. Upstream 123.1.0 `form.js` renders the callout with `tabIndex={-1}` and a stable callback ref (`useCallback(node => node?.focus(), [])`), so focus moves only when the callout element mounts.
+
+- **Port:** the callout now has `tabindex="-1"` and a local `focusOnInsert` function modifier (`ember-modifier`). The modifier reads no tracked state, so it runs once per inserted callout, just like the callback ref.
+- **When focus moves:**
+  - The callout appears: `@isInvalid` becomes true while there are errors and `@invalidCallout` is `'above'`. This also covers the first render of an already invalid form, as upstream's ref does on mount.
+  - Re-renders of a visible callout do not move focus. Examples are new errors and a new `@errorTitle`.
+  - Becoming valid does not move focus. The next invalid transition focuses again.
+  - `@invalidCallout="none"` never focuses.
+- **Unchanged:**
+  - `role="alert"` and `aria-live="assertive"`.
+  - The default title "Please correct the fields".
+  - The callout still appears only when there are errors. Upstream shows it whenever `isInvalid`, even with no errors; the Ember condition was kept.
+  - The `@array` and `tagName` APIs.
+- **Tests:** `eui-upstream-decisions-test.gts` covers this ("EuiForm error callout focus", 2 tests). No existing form test asserted the old no-focus behavior, so none changed.
+- **Watch:** the validated-form and changeset-form packages render EuiForm. On submit with errors, focus now goes to the callout. Their suites were not run here.

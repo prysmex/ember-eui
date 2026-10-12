@@ -83,8 +83,9 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 ### EuiRefreshInterval
 
-"Refresh every [5] [minutes] [Start / Stop]": sets how often data
-refreshes. `EuiSuperDatePicker` shows it in its quick select popover
+"[switch] Refresh every [5] [minutes]": sets how often data refreshes.
+The switch turns refreshing on and off; the interval fields are
+disabled while it is off (upstream EUI). `EuiSuperDatePicker` shows it in its quick select popover
 when given `@onRefreshChange`; it also works on its own.
 
 | Argument | Type | Default | Description |

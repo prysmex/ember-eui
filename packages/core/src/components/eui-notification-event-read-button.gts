@@ -2,12 +2,14 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { concat } from '@ember/helper';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
 import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 
 import type { EuiButtonIconSignature } from './eui-button-icon';
+import type Owner from '@ember/owner';
 
 /** @private Button toggling an EuiNotificationEvent's read state. */
 export interface EuiNotificationEventReadButtonSignature {
@@ -23,6 +25,15 @@ export interface EuiNotificationEventReadButtonSignature {
 }
 
 export default class EuiNotificationEventReadButton extends Component<EuiNotificationEventReadButtonSignature> {
+  constructor(owner: Owner, args: EuiNotificationEventReadButtonSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-notification-event-read-button',
+      'EuiNotificationEventReadButton',
+      'Compose notifications from EuiPanel, EuiTitle, EuiText and EuiContextMenu instead.'
+    );
+  }
+
   /** Read styles composed into EuiButtonIcon's own class (`@css`). */
   @cached
   get buttonCss() {

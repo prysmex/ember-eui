@@ -54,7 +54,9 @@ Generated from the components' TypeScript signatures by
 
 ### EuiForm
 
-Wraps a form's rows and shows its errors in a callout. For validation
+Wraps a form's rows and shows its errors in a callout. When the callout
+appears (the form becomes invalid) it receives focus, so screen reader
+and keyboard users land on the errors. For validation
 built on it see `@ember-eui/changeset-form` and
 `@ember-eui/validated-form`.
 
@@ -63,7 +65,7 @@ built on it see `@ember-eui/changeset-form` and
 | `@errorTitle` | `string` | "Please correct the fields" | Title of the errors callout. |
 | `@invalidCallout` | `'above' \| 'none'` | `'above'` | `'above'` shows `@error` in a callout above the form while `@isInvalid`; `'none'` hides it. |
 | `@error` | `string \| string[]` |  | The form's errors, listed in the callout: an array of messages, or a single message with `@array={{true}}`. |
-| `@isInvalid` | `boolean` |  | Shows the errors callout (with `@error`). |
+| `@isInvalid` | `boolean` |  | Shows the errors callout (with `@error`). The callout is focused when it appears. |
 | `@array` | `boolean` |  | Treats a single string `@error` as a one-item list. |
 | `@fullWidth` | `boolean` | `false` | Default `@fullWidth` of every EuiFormRow and EuiDescribedFormGroup inside the form (their own `@fullWidth` wins). |
 | `@tagName` | `'form' \| 'div'` | `'div'` | `'form'` renders a `<form>` (add `{{on "submit" …}}`); `'div'` for forms without native submission. |

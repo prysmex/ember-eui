@@ -63,6 +63,22 @@
       "sha256": "f1249555fc82a572e4674b15fb7025afaa3c7af28f097349801ee386561145f6"
     },
     {
+      "path": "@elastic/eui/es/components/basic_table/basic_table.styles.js",
+      "sha256": "28f0fffaaf5d01dcbf189ede5974695072376a26410bbf223e7dee7c12902a85"
+    },
+    {
+      "path": "@elastic/eui/es/components/basic_table/pagination_bar.styles.js",
+      "sha256": "82e82160ecb229e57d64815b3a069bb5d1dbb4000a26cac4be9c53226fdf31e2"
+    },
+    {
+      "path": "@elastic/eui/es/components/basic_table/panel.styles.js",
+      "sha256": "0d6f12584df643c762b67b75139637364c2fb438063e3cb8a70603303e322eca"
+    },
+    {
+      "path": "@elastic/eui/es/components/basic_table/use_panel_props.js",
+      "sha256": "56e69f6b0dafea15026f4aad8d2f20b8ec014d29efeacfa4eab5e56be3369299"
+    },
+    {
       "path": "@elastic/eui/es/components/beacon/beacon.styles.js",
       "sha256": "22d5ec2175819c7862e237333b58fc333f9adf99666f5ebd1e939eae2afe42d1"
     },
@@ -745,6 +761,10 @@
     {
       "path": "@elastic/eui/es/components/resizable_container/resizable_panel.styles.js",
       "sha256": "cb13c63b14417f222a0c6ef6379e504db7d95669d773d27e3a78ac93d117ae85"
+    },
+    {
+      "path": "@elastic/eui/es/components/search_bar/search_bar.styles.js",
+      "sha256": "a222a3db75f091ef47593983343805ffd930f67e3125720ad7ea585bad0c7b63"
     },
     {
       "path": "@elastic/eui/es/components/selectable/selectable_message/selectable_message.styles.js",

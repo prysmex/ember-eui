@@ -306,7 +306,13 @@ const entries = {
   'components/banner/banner.styles.js': ['euiBannerStyles'],
   // text truncate
   'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles'],
-  'components/text_truncate/utils.js': ['TruncationUtils']
+  'components/text_truncate/utils.js': ['TruncationUtils'],
+  // new-tables (EuiSearchBar, EuiBasicTable, EuiInMemoryTable)
+  'components/search_bar/search_bar.styles.js': ['euiSearchBar__searchHolder', 'euiSearchBar__filtersHolder'],
+  'components/basic_table/basic_table.styles.js': ['euiBasicTableBodyLoading', 'euiBasicTableWrapperPanelledStyles', 'safariLoadingWorkaround'],
+  'components/basic_table/pagination_bar.styles.js': ['euiBasicTablePaginationBarStyles'],
+  'components/basic_table/panel.styles.js': ['euiBasicTablePanelStyles'],
+  'components/basic_table/use_panel_props.js': ['EUI_BASIC_TABLE_PANEL_CLASS_NAME']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

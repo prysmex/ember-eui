@@ -274,7 +274,12 @@ const factories = {
   // page-a11y
   'components/banner/banner.styles.js': ['euiBannerStyles'],
   // text truncate
-  'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles']
+  'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles'],
+  // new-tables
+  'components/search_bar/search_bar.styles.js': ['euiSearchBar__searchHolder', 'euiSearchBar__filtersHolder'],
+  'components/basic_table/basic_table.styles.js': ['euiBasicTableBodyLoading'],
+  'components/basic_table/pagination_bar.styles.js': ['euiBasicTablePaginationBarStyles'],
+  'components/basic_table/panel.styles.js': ['euiBasicTablePanelStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1876,4 +1881,18 @@ test('table format and sort helpers match upstream services', () => {
     [...records].sort(upstreamSort.Comparators.property('p.n', upstreamSort.Comparators.reverse(upstreamSort.Comparators.default('desc'))))
   );
   assert.equal(sort.SortDirection.reverse('asc'), upstreamSort.SortDirection.reverse('asc'));
+});
+
+test('basic table panelled wrapper, Safari workaround and panel class match upstream', () => {
+  const reference = require(resolve(eui, 'lib/components/basic_table/basic_table.styles.js'));
+  const panel = require(resolve(eui, 'lib/components/basic_table/use_panel_props.js'));
+  assert.deepEqual(normalize(styles.safariLoadingWorkaround), normalize(reference.safariLoadingWorkaround));
+  assert.equal(styles.EUI_BASIC_TABLE_PANEL_CLASS_NAME, panel.EUI_BASIC_TABLE_PANEL_CLASS_NAME);
+  for (const context of themeMatrix())
+    for (const breakpoint of [undefined, false, true, 'xs', 's', 'm', 'l', 'xl'])
+      assert.deepEqual(
+        normalize(styles.euiBasicTableWrapperPanelledStyles(breakpoint)(context)),
+        normalize(reference.euiBasicTableWrapperPanelledStyles(breakpoint)(context)),
+        String(breakpoint)
+      );
 });

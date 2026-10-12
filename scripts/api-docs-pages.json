@@ -227,7 +227,9 @@
   ],
   "packages/core/docs/forms/super-date-picker/index.md": [
     "EuiSuperDatePicker",
-    "EuiRefreshInterval"
+    "EuiRefreshInterval",
+    "EuiAutoRefresh",
+    "EuiAutoRefreshButton"
   ],
   "packages/core/docs/forms/super-select/index.md": [
     "EuiSuperSelect",
@@ -256,7 +258,9 @@
     "EuiFlyout",
     "EuiFlyoutHeader",
     "EuiFlyoutBody",
-    "EuiFlyoutFooter"
+    "EuiFlyoutFooter",
+    "EuiFlyoutResizable",
+    "EuiFlyoutMenu"
   ],
   "packages/core/docs/layout/header/index.md": [
     "EuiHeader",

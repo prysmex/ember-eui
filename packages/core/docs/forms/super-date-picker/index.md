@@ -92,9 +92,56 @@ when given `@onRefreshChange`; it also works on its own.
 | --- | --- | --- | --- |
 | `@isPaused` | `boolean` | `true` | Whether refreshing is stopped. |
 | `@refreshInterval` | `number` | `1000` | The interval in milliseconds. |
-| `@applyRefreshInterval` (required) |  |  | Called with `{ refreshInterval, isPaused }` after a change. |
+| `@minInterval` | `number` | `0` | The smallest interval in milliseconds; edits are raised to it and the number field's `min` follows it. |
+| `@intervalUnits` | `Units` |  | Shows the interval in this unit (`'s'`, `'m'` or `'h'`) instead of the largest unit that fits (90 seconds becomes 2 minutes). |
+| `@applyRefreshInterval` |  |  | Called with `{ refreshInterval, isPaused }` after a change. |
+| `@onRefreshChange` |  |  | Upstream's callback: called like `@applyRefreshInterval`, with the chosen `intervalUnits` as well. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<fieldset>`.
+
+### EuiAutoRefresh
+
+A read-only text input showing the auto refresh state ("Off", "5 minutes")
+with an "Auto refresh" prepend button; both open a popover with
+`EuiRefreshInterval`. Upstream's `EuiAutoRefresh`; for a compact button use
+`EuiAutoRefreshButton`. Attributes land on the input.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@isPaused` | `boolean` | `true` | Whether refreshing is paused. |
+| `@refreshInterval` | `number` | `1000` | The interval in milliseconds. |
+| `@minInterval` | `number` | `0` | The smallest allowed interval in milliseconds. |
+| `@intervalUnits` | `'s' \| 'm' \| 'h'` |  | By default the unit is rounded up to the next largest one (90 seconds becomes 2 minutes). Pass `'s'`, `'m'` or `'h'` to fix it. |
+| `@onRefreshChange` (required) | `OnRefreshChange` |  | Called with `{ isPaused, refreshInterval, intervalUnits }` when the user changes the refresh settings. |
+| `@isDisabled` | `boolean` |  | Disables the input and its button. |
+| `@readOnly` | `boolean` | `true` | The input is read-only by default because its value is edited in the popover. |
+| `@fullWidth` | `boolean` |  | Stretches the input to its container's width. |
+| `@compressed` | `boolean` |  | Compressed input, for dense forms. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<input>`.
+
+### EuiAutoRefreshButton
+
+A button showing the auto refresh state ("Auto refresh is off", "5 minutes")
+that opens a popover with `EuiRefreshInterval` to change it. Upstream's
+`EuiAutoRefreshButton`; for a text input look-alike use `EuiAutoRefresh`.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@isPaused` | `boolean` | `true` | Whether refreshing is paused. |
+| `@refreshInterval` | `number` | `1000` | The interval in milliseconds. |
+| `@minInterval` | `number` | `0` | The smallest allowed interval in milliseconds. |
+| `@intervalUnits` | `'s' \| 'm' \| 'h'` |  | By default the unit is rounded up to the next largest one (90 seconds becomes 2 minutes). Pass `'s'`, `'m'` or `'h'` to fix it. |
+| `@onRefreshChange` (required) | `OnRefreshChange` |  | Called with `{ isPaused, refreshInterval, intervalUnits }` when the user changes the refresh settings. |
+| `@isDisabled` | `boolean` |  | Disables the button (it stays focusable, as `aria-disabled`). |
+| `@shortHand` | `boolean` | `false` | Reduces the time unit to a single letter. |
+| `@color` |  | `'text'` | `EuiButtonEmpty` color. |
+| `@size` |  | `'s'` | `EuiButtonEmpty` size. |
+| `@flush` |  |  | `EuiButtonEmpty` flush. |
+| `@isLoading` | `boolean` |  | Shows the loading spinner and disables the button. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the button's class. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<a>`.
 
 </EuiText>
 <!-- api:end -->

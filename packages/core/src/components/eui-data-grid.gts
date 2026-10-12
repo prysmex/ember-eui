@@ -402,9 +402,13 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     | undefined {
     const pagination = this.args.pagination;
     if (!pagination) return undefined;
-    return { ...PAGINATION_DEFAULTS, ...pagination } as EuiDataGridPaginationProps & {
-      pageSize: number;
-      pageSizeOptions: number[];
+    // read each field: consumers often pass objects with tracked accessors
+    return {
+      pageIndex: pagination.pageIndex,
+      pageSize: pagination.pageSize ?? PAGINATION_DEFAULTS.pageSize,
+      pageSizeOptions: pagination.pageSizeOptions ?? PAGINATION_DEFAULTS.pageSizeOptions,
+      onChangePage: pagination.onChangePage,
+      onChangeItemsPerPage: pagination.onChangeItemsPerPage
     };
   }
 

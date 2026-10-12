@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
-import { render, settled, waitUntil } from '@ember/test-helpers';
+import { click, render, settled, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
 import Component from '@glimmer/component';
 
 import EuiDataGrid from '#src/components/eui-data-grid.gts';
@@ -374,7 +374,116 @@ module('Integration | Component | EuiDataGrid', function (hooks) {
     );
     assert.notStrictEqual(overridden.size.m, light.size.m);
   });
+
+  test('setCellProps, rowClasses and reactive args keep existing cells', async function (assert) {
+    class State {
+      @tracked rowCount = 3;
+      @tracked context: Record<string, unknown> = { suffix: '!' };
+    }
+    const state = new State();
+    const gridStyle: EuiDataGridStyle = { rowClasses: { 1: 'highlighted-row' } };
+
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid
+            @columns={{COLUMNS}}
+            @rowCount={{state.rowCount}}
+            @toolbarVisibility={{false}}
+            @gridStyle={{gridStyle}}
+            @cellContext={{state.context}}
+          >
+            <:cell as |c|>
+              {{#if (isFirst c.rowIndex c.columnId)}}
+                {{c.setCellProps (cellProps)}}
+              {{/if}}
+              {{c.columnId}}{{c.rowIndex}}{{c.cellContext.suffix}}
+            </:cell>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+
+    const first = cell(0, 0);
+    assert.dom(first).hasClass('custom-cell').hasAttribute('data-test-subj', 'dataGridRowCell custom-subj');
+    assert.dom(first).hasAttribute('data-custom', 'yes');
+    assert.strictEqual(getComputedStyle(first).backgroundColor, 'rgb(255, 0, 0)');
+    assert.dom('.euiDataGridRowCell__actions', first).doesNotExist();
+    await click(first);
+    assert.dom('.euiDataGridRowCell__actions', first).doesNotExist('setCellProps isExpandable: false');
+    assert.dom('.euiDataGridRow[data-grid-visible-row-index="1"]').hasClass('highlighted-row');
+    assert.dom(cell(2, 1)).hasText('email2!');
+
+    const kept = cell(1, 1);
+    state.rowCount = 4;
+    state.context = { suffix: '?' };
+    await settled();
+    assert.strictEqual(cell(1, 1), kept, 'cells survive row count and context changes');
+    assert.dom(cell(1, 1)).hasText('email1?');
+    assert.dom('.euiDataGridRow').exists({ count: 4 });
+    assert.dom('[role=grid]').hasAttribute('aria-rowcount', '4');
+  });
+
+  test('custom popover renderers and the JSON default popover', async function (assert) {
+    const columns: EuiDataGridColumn[] = [
+      { id: 'json', schema: 'json' },
+      { id: 'text' }
+    ];
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid @columns={{columns}} @rowCount={{2}} @toolbarVisibility={{false}}>
+            <:cell as |c|>{{#if (isJson c.columnId)}}{{jsonValue c.rowIndex}}{{else}}text{{/if}}</:cell>
+          </EuiDataGrid>
+        </div>
+        <div style="width:600px" data-custom-popover>
+          <EuiDataGrid @columns={{columns}} @rowCount={{2}} @toolbarVisibility={{false}}>
+            <:cell as |c|>value {{c.rowIndex}}</:cell>
+            <:cellPopover as |p|>
+              <div data-popover-body>{{p.columnId}} {{p.rowIndex}} {{p.schema}}</div>
+              <p.cellActions />
+            </:cellPopover>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+
+    await click(cell(1, 0));
+    await triggerKeyEvent(cell(1, 0), 'keydown', 'Enter');
+    assert.dom('[data-test-subj=euiDataGridExpansionPopover] .euiCodeBlock', document.body).exists('json cells use a code block');
+    assert.dom('[data-test-subj=euiDataGridExpansionPopover] code', document.body).includesText('"a": 1');
+    await triggerKeyEvent(el('[data-test-subj=euiDataGridExpansionPopover]', document.body), 'keydown', 'F2');
+    assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).doesNotExist('F2 closes the popover');
+
+    const customCell = el('[data-custom-popover] [data-gridcell-visible-row-index="0"][data-gridcell-column-index="1"]');
+    await click(customCell);
+    await triggerKeyEvent(customCell, 'keydown', 'F2');
+    assert.dom('[data-popover-body]', document.body).hasText('text 0');
+  });
+
 });
+
+function isFirst(rowIndex: number, columnId: string): boolean {
+  return rowIndex === 0 && columnId === 'name';
+}
+
+function cellProps() {
+  return {
+    className: 'custom-cell',
+    style: { backgroundColor: 'red' },
+    isExpandable: false,
+    'data-test-subj': 'custom-subj',
+    'data-custom': 'yes'
+  };
+}
+
+function jsonValue(rowIndex: number): string {
+  return JSON.stringify({ a: rowIndex });
+}
+
+function isJson(columnId: string): boolean {
+  return columnId === 'json';
+}
 
 function isTall(rowIndex: number, columnId: string): boolean {
   return rowIndex === 1 && columnId === 'email';

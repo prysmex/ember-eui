@@ -28,9 +28,48 @@ function siteDocfyComponents() {
   };
 }
 
+/**
+ * @docfy/ember-vite (0.14.2) still registers its virtual-module rule as an
+ * `optimizeDeps.esbuildOptions` plugin, which Vite 8 ignores and warns about
+ * (the dependency optimizer is Rolldown now). Move the rule to
+ * `optimizeDeps.rolldownOptions`. Runs after docfy's `config` hook: both are
+ * `enforce: 'pre'` and this one comes later in `plugins`.
+ */
+function docfyRolldownOptimizeDeps() {
+  return {
+    name: 'site-docfy-rolldown-optimize-deps',
+    enforce: 'pre',
+    config(config) {
+      const optimizeDeps = config.optimizeDeps;
+      if (!optimizeDeps?.esbuildOptions) return;
+      const esbuildPlugins = optimizeDeps.esbuildOptions.plugins ?? [];
+      optimizeDeps.esbuildOptions.plugins = esbuildPlugins.filter(
+        (plugin) => plugin.name !== 'docfy-virtual-modules',
+      );
+      if (
+        optimizeDeps.esbuildOptions.plugins.length === 0 &&
+        Object.keys(optimizeDeps.esbuildOptions).length === 1
+      ) {
+        delete optimizeDeps.esbuildOptions;
+      }
+      optimizeDeps.rolldownOptions ??= {};
+      optimizeDeps.rolldownOptions.plugins ??= [];
+      optimizeDeps.rolldownOptions.plugins.push({
+        name: 'docfy-virtual-modules',
+        resolveId(id) {
+          if (/^@docfy\/ember\/.*:virtual$/.test(id)) {
+            return { id, external: true };
+          }
+        },
+      });
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     docfy({ root }),
+    docfyRolldownOptimizeDeps(),
     siteDocfyComponents(),
     classicEmberSupport(),
     ember(),

@@ -96,6 +96,7 @@ import EuiI18n from './components/eui-i18n.gts';
 import EuiI18nNumber from './components/eui-i18n-number.gts';
 import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
+import EuiIllustration from './components/eui-illustration.gts';
 import EuiImage from './components/eui-image.gts';
 import EuiInputPopover from './components/eui-input-popover.gts';
 import EuiKeyPadMenu from './components/eui-key-pad-menu.gts';
@@ -168,6 +169,11 @@ import EuiSelectableSearch from './components/eui-selectable-search.gts';
 import EuiSelectableTemplateSitewide from './components/eui-selectable-template-sitewide.gts';
 import EuiShowFor from './components/eui-show-for.gts';
 import EuiSideNav from './components/eui-side-nav.gts';
+import EuiSkeletonCircle from './components/eui-skeleton-circle.gts';
+import EuiSkeletonLoading from './components/eui-skeleton-loading.gts';
+import EuiSkeletonRectangle from './components/eui-skeleton-rectangle.gts';
+import EuiSkeletonText from './components/eui-skeleton-text.gts';
+import EuiSkeletonTitle from './components/eui-skeleton-title.gts';
 import EuiSkipLink from './components/eui-skip-link.gts';
 import EuiSpacer from './components/eui-spacer.gts';
 import EuiSplitPanelInner from './components/eui-split-panel/inner.gts';
@@ -320,6 +326,7 @@ export {
   EuiI18nNumber,
   EuiIcon,
   EuiIconTip,
+  EuiIllustration,
   EuiImage,
   EuiInputPopover,
   EuiKeyPadMenu,
@@ -392,6 +399,11 @@ export {
   EuiSelectableTemplateSitewide,
   EuiShowFor,
   EuiSideNav,
+  EuiSkeletonCircle,
+  EuiSkeletonLoading,
+  EuiSkeletonRectangle,
+  EuiSkeletonText,
+  EuiSkeletonTitle,
   EuiSkipLink,
   EuiSpacer,
   EuiSplitPanelInner,

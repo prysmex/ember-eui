@@ -46,6 +46,9 @@
   "packages/core/docs/display/icons/index.md": [
     "EuiIcon"
   ],
+  "packages/core/docs/display/illustration/index.md": [
+    "EuiIllustration"
+  ],
   "packages/core/docs/display/image/index.md": [
     "EuiImage"
   ],
@@ -66,6 +69,13 @@
   ],
   "packages/core/docs/display/progress/index.md": [
     "EuiProgress"
+  ],
+  "packages/core/docs/display/skeleton/index.md": [
+    "EuiSkeletonText",
+    "EuiSkeletonTitle",
+    "EuiSkeletonCircle",
+    "EuiSkeletonRectangle",
+    "EuiSkeletonLoading"
   ],
   "packages/core/docs/display/stat-demo/index.md": [
     "EuiStat"

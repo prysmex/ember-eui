@@ -535,6 +535,10 @@
       "sha256": "6c71e3966c11c7e7977ff4934e8f183d5eba0e0b5c508f52c6cf62ba12018531"
     },
     {
+      "path": "@elastic/eui/es/components/illustration/illustration.styles.js",
+      "sha256": "4081c4636e88a4f3244fe0f132fe46418cee1604b64f1dd68eab484dd5c7db07"
+    },
+    {
       "path": "@elastic/eui/es/components/image/image_button.styles.js",
       "sha256": "4aa7f72f6e90ac4318100d08f57ea390654a185e43fe689fa582fd9fa0d5e839"
     },
@@ -755,8 +759,20 @@
       "sha256": "5b13c47080530636f2c04a3371fdd904a3348e3640e9e007730053b27b2ac03f"
     },
     {
+      "path": "@elastic/eui/es/components/skeleton/skeleton_circle.styles.js",
+      "sha256": "36292e0b51e1d54e408d66bf57c8266cadf9f7b13ddd137e24187330f3c26058"
+    },
+    {
+      "path": "@elastic/eui/es/components/skeleton/skeleton_rectangle.styles.js",
+      "sha256": "5d1c91f96da576a77570ff76d6968bc8b114968bc19295302908466628d42480"
+    },
+    {
       "path": "@elastic/eui/es/components/skeleton/skeleton_text.styles.js",
       "sha256": "d8da64965154d2fa7a8d788b8880f0e920e6bcf5de9d4cdc794daec33a061c9c"
+    },
+    {
+      "path": "@elastic/eui/es/components/skeleton/skeleton_title.styles.js",
+      "sha256": "1fd5208d679dac8219c09c8f00ac55eb9468421457f0f30562260e5292824d16"
     },
     {
       "path": "@elastic/eui/es/components/skeleton/utils.js",

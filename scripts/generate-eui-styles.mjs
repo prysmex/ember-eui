@@ -186,7 +186,12 @@ const entries = {
   'components/card/card.styles.js': ['euiCardStyles', 'euiCardTextStyles', 'euiCardBetaBadgeStyles'],
   'components/card/card_select/card_select.styles.js': ['euiCardSelectStyles'],
   'components/card/checkable_card/checkable_card.styles.js': ['euiCheckableCardStyles'],
-  'components/panel/split_panel/split_panel.styles.js': ['euiSplitPanelOuterStyles', 'euiSplitPanelInnerStyles']
+  'components/panel/split_panel/split_panel.styles.js': ['euiSplitPanelOuterStyles', 'euiSplitPanelInnerStyles'],
+  // combo box
+  'components/combo_box/combo_box.styles.js': ['euiComboBoxStyles'],
+  'components/combo_box/combo_box_input/combo_box_input.styles.js': ['euiComboBoxInputStyles'],
+  'components/combo_box/combo_box_input/combo_box_pill.styles.js': ['euiComboBoxPillStyles'],
+  'components/combo_box/combo_box_options_list/combo_box_options_list.styles.js': ['euiComboBoxOptionListStyles', 'LIST_MAX_HEIGHT']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

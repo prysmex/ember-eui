@@ -123,7 +123,7 @@ Deprecated: `@readOnly` (Has no effect; use `@isDisabled`.); `@noMatchesMessageC
 
 | Block | Description |
 | --- | --- |
-| default block | Renders each option, with its index: `as \|option\|` → `{{option.label}}`. Strings can be rendered as they are. |
+| default block | Renders each option (in the list and in the pills), with its index: `as \|option\|` → `{{option.label}}`. Strings can be rendered as they are. Optional: without a block, options show their text (strings, or `@searchField` / `label` of objects), with the search text highlighted in the list like upstream. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

@@ -42,7 +42,8 @@ class State {
 
 const TRIGGER = '.ember-power-select-trigger';
 const INPUT = 'input.euiComboBox__input:not(.fake-input-for-html-form-validity)';
-const OPTION = '.euiComboBoxOptionsList button.euiFilterSelectItem';
+// upstream EuiListItemLayout rows (were `button.euiFilterSelectItem`)
+const OPTION = '.euiComboBoxOptionsList .euiComboBoxOption[role="option"]';
 
 // the dropdown renders into #ember-basic-dropdown-wormhole, outside of the
 // test root element, so query the whole document
@@ -453,10 +454,9 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     hooks.beforeEach(function () {
       style = document.createElement('style');
       // EUI's prose styles, which also reach lists inside components. The
-      // input wrap's own box/font (from the theme CSS) is what EuiText's
-      // zero-specificity reset must not override.
+      // input wrap carries its own (upstream) box and font now, and is a
+      // <div> like upstream's, so no theme CSS is injected for it.
       style.textContent = `${emberEuiCss}
-        .euiComboBox .euiComboBox__inputWrap { padding: 4px 40px 4px 8px; font: 14px sans-serif; }
         .euiText ul { list-style: disc; margin-left: 24px; }`;
       document.head.append(style);
     });

@@ -32,5 +32,5 @@ export {
   euiPaletteGray,
   euiPaletteNegative,
   euiPalettePositive,
-  euiPaletteWarm} from './color/index.ts';
-export { default } from './css-mappings/index.ts';
+  euiPaletteWarm
+} from './color/index.ts';

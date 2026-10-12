@@ -172,7 +172,8 @@ module('Integration | Component | eui-changeset-form', function (hooks) {
     );
 
     assert.dom('input').isDisabled();
-    assert.dom('.euiFormRow').hasClass('euiFormRow--fullWidth');
+    // Borealis full width row: no 400px form max-width
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiFormRow')!).maxWidth, '100%');
   });
 
   test('@errors overrides the changeset errors', async function (assert) {

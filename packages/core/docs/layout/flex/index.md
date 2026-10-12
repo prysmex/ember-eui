@@ -56,12 +56,12 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@gutterSize` |  | `'l'` | Space between items: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
-| `@alignItems` |  | `'stretch'` | Cross axis alignment (`align-items`): `'stretch'`, `'flexStart'`, `'flexEnd'`, `'center'` or `'baseline'`. |
-| `@justifyContent` |  | `'flexStart'` | Main axis distribution (`justify-content`): `'flexStart'`, `'flexEnd'`, `'center'`, `'spaceBetween'`, `'spaceAround'` or `'spaceEvenly'`. |
-| `@direction` |  | `'row'` | `'row'`, `'rowReverse'`, `'column'` or `'columnReverse'`. |
+| `@gutterSize` | `EuiFlexGroupGutterSize` | `'m'` | Space between items (CSS `gap`): `'none'`, `'xs'` (4px), `'s'` (8px), `'m'` (16px), `'l'` (24px) or `'xl'` (40px). |
+| `@alignItems` | `EuiFlexGroupAlignItems` | `'stretch'` | Cross axis alignment (`align-items`): `'stretch'`, `'flexStart'`, `'flexEnd'`, `'center'` or `'baseline'`. |
+| `@justifyContent` | `EuiFlexGroupJustifyContent` | `'flexStart'` | Main axis distribution (`justify-content`): `'flexStart'`, `'flexEnd'`, `'center'`, `'spaceBetween'`, `'spaceAround'` or `'spaceEvenly'`. |
+| `@direction` | `EuiFlexGroupDirection` | `'row'` | `'row'`, `'rowReverse'`, `'column'` or `'columnReverse'`. |
 | `@wrap` | `boolean` | `false` | Lets items wrap onto several lines. |
-| `@responsive` | `boolean` | `true` | Stacks the items in one column on small screens. Set `false` for rows that must stay on one line (e.g. icon + text). |
+| `@responsive` | `boolean` | `true` | Below the theme's `m` breakpoint (767px in Borealis), wraps the group and makes every direct `EuiFlexItem` full width. Set `false` for rows that must stay on one line (e.g. icon + text). Column directions are never affected. |
 | `@tagName` | `'div' \| 'span'` | `'div'` | `'div'` or `'span'` (inside text). |
 
 | Block | Description |
@@ -74,7 +74,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@grow` |  |  | How the item grows: `true` (default) takes an equal share of the space, `false` only takes its content's width, `1`–`10` take that many shares. |
+| `@grow` | `EuiFlexItemGrow` |  | How the item grows: `true` (default) takes an equal share of the space, `false` (or `0`) only takes its content's width, `1`–`10` take that many shares. |
 | `@tagName` | `string` | `'div'` | Tag of the item. |
 
 | Block | Description |
@@ -86,10 +86,11 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@tagName` | `string` | `'div'` | Passes the HTML tag to the wrapping element. |
-| `@direction` |  | `'row'` | `'row'` fills the grid row by row, `'column'` column by column. |
-| `@columns` | `number` | `0` | Number of columns, `1` to `4`. `0` lets the items wrap at their own width. |
-| `@gutterSize` |  | `'l'` | Space between items: `'none'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
-| `@responsive` | `boolean` | `true` | Stacks the items in one column on small screens. |
+| `@direction` | `EuiFlexGridDirection` | `'row'` | `'row'` fills the grid row by row, `'column'` column by column. |
+| `@columns` | `number` | `1` | Number of columns, `1` to `4` (upstream default `1`). The Ember-only `0` lets the items wrap at their own width. |
+| `@gutterSize` | `EuiFlexGridGutterSize` | `'l'` | Space between items (CSS `gap`): `'none'`, `'s'` (8px), `'m'` (16px), `'l'` (24px) or `'xl'` (32px). |
+| `@alignItems` | `EuiFlexGridAlignItems` | `'stretch'` | Cross axis alignment of the items in their cells: `'stretch'`, `'start'`, `'end'`, `'center'` or `'baseline'`. |
+| `@responsive` | `boolean` | `true` | Below the theme's `m` breakpoint (767px in Borealis), stacks the items in one column. |
 
 | Block | Description |
 | --- | --- |

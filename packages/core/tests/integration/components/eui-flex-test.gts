@@ -20,11 +20,24 @@ module('Integration | Component | eui-flex', function (hooks) {
       </template>
     );
 
-    assert.dom('div.default').hasClass('euiFlexGroup').hasClass('euiFlexGroup--gutterLarge').hasClass('euiFlexGroup--responsive');
+    // Latest-only: legacy modifier classes are gone; assert native styles.
+    // Geometry coverage lives in eui-flex-family-test.gts.
+    const css = (selector: string) =>
+      getComputedStyle(document.querySelector(selector)!);
+    assert.dom('div.default').hasClass('euiFlexGroup');
+    assert.strictEqual(css('div.default').display, 'flex');
+    assert.strictEqual(css('div.default').columnGap, '16px', 'default gutter m');
     assert.dom('div.default .euiFlexItem').exists();
-    assert.dom('span.custom').hasClass('euiFlexGroup--gutterSmall').hasClass('euiFlexGroup--alignItemsCenter').hasClass('euiFlexGroup--justifyContentSpaceBetween').hasClass('euiFlexGroup--directionColumn').hasClass('euiFlexGroup--wrap').doesNotHaveClass('euiFlexGroup--responsive');
-    assert.dom('span.item-a').hasClass('euiFlexItem--flexGrowZero');
-    assert.dom('section.item-b').hasClass('euiFlexItem--flexGrow3');
+    assert.dom('span.custom').hasClass('euiFlexGroup');
+    const custom = css('span.custom');
+    assert.strictEqual(custom.rowGap, '8px');
+    assert.strictEqual(custom.alignItems, 'center');
+    assert.strictEqual(custom.justifyContent, 'space-between');
+    assert.strictEqual(custom.flexDirection, 'column');
+    assert.strictEqual(custom.flexWrap, 'wrap');
+    assert.dom('span.item-a').hasClass('euiFlexItem');
+    assert.strictEqual(css('span.item-a').flexGrow, '0');
+    assert.strictEqual(css('section.item-b').flexGrow, '3');
   });
 
   test('EuiFlexGrid columns, gutter and direction', async function (assert) {
@@ -37,8 +50,16 @@ module('Integration | Component | eui-flex', function (hooks) {
       </template>
     );
 
-    assert.dom('.grid').hasClass('euiFlexGrid--thirds').hasClass('euiFlexGrid--gutterSmall').hasClass('euiFlexGrid--directionColumn').hasClass('euiFlexGrid--responsive');
+    const css = (selector: string) =>
+      getComputedStyle(document.querySelector(selector)!);
+    assert.dom('.grid').hasClass('euiFlexGrid');
+    const grid = css('.grid');
+    assert.strictEqual(grid.display, 'grid');
+    assert.strictEqual(grid.gridTemplateColumns.split(' ').length, 3, 'three columns');
+    assert.strictEqual(grid.columnGap, '8px');
+    assert.strictEqual(grid.gridAutoFlow, 'column');
     assert.dom('.grid .euiFlexItem').exists({ count: 3 });
-    assert.dom('ul.list').hasClass('euiFlexGrid--wrap').doesNotHaveClass('euiFlexGrid--responsive');
+    assert.dom('ul.list').hasClass('euiFlexGrid');
+    assert.strictEqual(css('ul.list').display, 'grid', 'default is one grid column (upstream)');
   });
 });

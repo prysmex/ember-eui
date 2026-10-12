@@ -1,12 +1,73 @@
+import Component from '@glimmer/component';
+import { modifier } from 'ember-modifier';
 import { eq } from 'ember-truth-helpers';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiFlexGridStyles } from '../utils/eui/styles.generated.ts';
+import { euiFlexRootReset } from './eui-flex-item.gts';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import type { CSSObject } from '@emotion/css/create-instance';
+import type { EuiBorealisContext } from '../utils/eui/theme.ts';
 
-import type {
-  directionMapping,
-  gutterSizeMapping} from '../utils/css-mappings/eui-flex-grid.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+export type EuiFlexGridDirection = 'row' | 'column';
+export type EuiFlexGridGutterSize = 'none' | 's' | 'm' | 'l' | 'xl';
+export type EuiFlexGridAlignItems =
+  | 'stretch'
+  | 'start'
+  | 'end'
+  | 'center'
+  | 'baseline';
+
+/**
+ * Ember-only `@columns={{0}}`: items keep their own width and wrap. Upstream
+ * removed this mode; it is kept so existing callers do not collapse into a
+ * single column.
+ */
+function euiFlexGridWrap(
+  context: EuiBorealisContext,
+  responsive: boolean
+): CSSObject {
+  const breakpoint = context.euiTheme.breakpoint.m as number;
+  return {
+    display: 'flex',
+    flexWrap: 'wrap',
+    '& > .euiFlexItem': { flexGrow: 0, flexBasis: 'auto' },
+    ...(responsive
+      ? {
+          [`@media only screen and (max-width: ${breakpoint - 1}px)`]: {
+            flexDirection: 'column',
+            '& > .euiFlexItem': { inlineSize: '100%' }
+          }
+        }
+      : {})
+  };
+}
+
+/**
+ * Upstream sets `grid-template-rows: repeat(ceil(children / columns), 1fr)`
+ * inline for column direction. Ember counts element children and keeps the
+ * count current as items are added or removed.
+ */
+const columnRows = modifier(
+  (
+    element: Element,
+    [direction, columns]: [EuiFlexGridDirection, number]
+  ) => {
+    const target = element as HTMLElement;
+    if (direction !== 'column' || !(columns > 0)) return;
+    const update = () => {
+      const rows = Math.ceil(target.children.length / columns);
+      target.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    };
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(target, { childList: true });
+    return () => {
+      observer.disconnect();
+      target.style.removeProperty('grid-template-rows');
+    };
+  }
+);
 
 export interface EuiFlexGridSignature {
   Element: HTMLDivElement | any;
@@ -19,19 +80,25 @@ export interface EuiFlexGridSignature {
      * `'row'` fills the grid row by row, `'column'` column by column.
      * Defaults to `'row'`.
      */
-    direction?: keyof typeof directionMapping;
+    direction?: EuiFlexGridDirection;
     /**
-     * Number of columns, `1` to `4`. `0` lets the items wrap at their own
-     * width. Defaults to `0`.
+     * Number of columns, `1` to `4` (upstream default `1`). The Ember-only
+     * `0` lets the items wrap at their own width. Defaults to `1`.
      */
     columns?: number;
     /**
-     * Space between items: `'none'`, `'s'`, `'m'`, `'l'` or `'xl'`.
-     * Defaults to `'l'`.
+     * Space between items (CSS `gap`): `'none'`, `'s'` (8px), `'m'` (16px),
+     * `'l'` (24px) or `'xl'` (32px). Defaults to `'l'`.
      */
-    gutterSize?: keyof typeof gutterSizeMapping;
+    gutterSize?: EuiFlexGridGutterSize;
     /**
-     * Stacks the items in one column on small screens. Defaults to `true`.
+     * Cross axis alignment of the items in their cells: `'stretch'`,
+     * `'start'`, `'end'`, `'center'` or `'baseline'`. Defaults to `'stretch'`.
+     */
+    alignItems?: EuiFlexGridAlignItems;
+    /**
+     * Below the theme's `m` breakpoint (767px in Borealis), stacks the items
+     * in one column. Defaults to `true`.
      */
     responsive?: boolean;
   };
@@ -41,38 +108,61 @@ export interface EuiFlexGridSignature {
   };
 }
 
-const EuiFlexGrid: TemplateOnlyComponent<EuiFlexGridSignature> = <template>
-  {{#let (argOrDefault @tagName "div") as |tagName|}}
-    {{#if (eq tagName "div")}}
+export default class EuiFlexGrid extends Component<EuiFlexGridSignature> {
+  columnRows = columnRows;
+
+  get tagName() {
+    return this.args.tagName ?? 'div';
+  }
+
+  get direction() {
+    return this.args.direction ?? 'row';
+  }
+
+  get columns() {
+    return this.args.columns ?? 1;
+  }
+
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFlexGridStyles);
+    const responsive = this.args.responsive !== false;
+    // Same order as upstream's `cssStyles`.
+    return euiClass(
+      context,
+      euiFlexRootReset(this.tagName),
+      styles.euiFlexGrid,
+      styles.gutterSizes[this.args.gutterSize ?? 'l'],
+      styles.direction[this.direction],
+      styles.alignItems[this.args.alignItems ?? 'stretch'],
+      this.columns === 0
+        ? euiFlexGridWrap(context.upstream, responsive)
+        : styles.columnCount[
+            String(this.columns) as keyof typeof styles.columnCount
+          ],
+      responsive && this.columns !== 0 ? styles.responsive : undefined
+    );
+  }
+
+  <template>
+    {{#if (eq this.tagName "div")}}
       <div
-        class={{classNames
-          (unless (eq @responsive false) "euiFlexGrid--responsive")
-          componentName="EuiFlexGrid"
-          gutterSize=(argOrDefault @gutterSize "l")
-          direction=(argOrDefault @direction "row")
-          columns=(argOrDefault @columns 0)
-        }}
+        class="euiFlexGrid {{this.classes}}"
+        {{this.columnRows this.direction this.columns}}
         ...attributes
       >
         {{yield}}
       </div>
     {{else}}
-      {{#let (element tagName) as |Element|}}
-        <Element
-          class={{classNames
-            (unless (eq @responsive false) "euiFlexGrid--responsive")
-            componentName="EuiFlexGrid"
-            gutterSize=(argOrDefault @gutterSize "l")
-            direction=(argOrDefault @direction "row")
-            columns=(argOrDefault @columns 0)
-          }}
+      {{#let (element this.tagName) as |Tag|}}
+        <Tag
+          class="euiFlexGrid {{this.classes}}"
+          {{this.columnRows this.direction this.columns}}
           ...attributes
         >
           {{yield}}
-        </Element>
+        </Tag>
       {{/let}}
     {{/if}}
-  {{/let}}
-</template>;
-
-export default EuiFlexGrid;
+  </template>
+}

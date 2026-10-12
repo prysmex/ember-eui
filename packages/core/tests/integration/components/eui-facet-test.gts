@@ -64,11 +64,19 @@ module('Integration | Component | eui-facet-button and eui-facet-group', functio
       .hasClass('euiFacetGroup')
       .hasClass('euiFacetGroup--vertical')
       .hasClass('euiFacetGroup--gutterMedium')
-      .hasClass('euiFlexGroup--directionColumn');
+      .hasClass('euiFlexGroup');
+    // EuiFlexGroup is latest-only: check native flex styles, not legacy classes.
+    assert.strictEqual(
+      getComputedStyle(document.querySelector('.vertical')!).flexDirection,
+      'column'
+    );
     assert
       .dom('.horizontal')
       .hasClass('euiFacetGroup--horizontal')
-      .hasClass('euiFacetGroup--gutterLarge')
-      .hasClass('euiFlexGroup--wrap');
+      .hasClass('euiFacetGroup--gutterLarge');
+    assert.strictEqual(
+      getComputedStyle(document.querySelector('.horizontal')!).flexWrap,
+      'wrap'
+    );
   });
 });

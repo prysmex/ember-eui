@@ -101,6 +101,12 @@ export interface EuiSearchBarSignature {
      * `true`.
      */
     showErrorTooltip?: boolean;
+    /** @private Whether the caller's `<:toolsLeft>` block exists (when forwarding it). */
+    hasToolsLeftBlock?: boolean;
+    /** @private Whether the caller's `<:toolsRight>` block exists (when forwarding it). */
+    hasToolsRightBlock?: boolean;
+    /** @private Whether the caller's `<:hint>` block exists (when forwarding it). */
+    hasHintBlock?: boolean;
   };
   Blocks: {
     /** Tools left of the field (in a non-growing flex item). */
@@ -292,7 +298,7 @@ export default class EuiSearchBar extends Component<EuiSearchBarSignature> {
       @wrap={{true}}
       ...attributes
     >
-      {{#if (has-block "toolsLeft")}}
+      {{#if (flag @hasToolsLeftBlock (has-block "toolsLeft"))}}
         <EuiFlexItem @grow={{false}}>{{yield to="toolsLeft"}}</EuiFlexItem>
       {{/if}}
       <EuiFlexItem
@@ -312,7 +318,7 @@ export default class EuiSearchBar extends Component<EuiSearchBarSignature> {
               @hint={{this.hint}}
             >
               <:hint>
-                {{#if (has-block "hint")}}{{yield to="hint"}}{{else}}{{@hint.content}}{{/if}}
+                {{#if (flag @hasHintBlock (has-block "hint"))}}{{yield to="hint"}}{{else}}{{@hint.content}}{{/if}}
               </:hint>
             </EuiSearchBox>
           </EuiToolTip>
@@ -327,7 +333,7 @@ export default class EuiSearchBar extends Component<EuiSearchBarSignature> {
             @hint={{this.hint}}
           >
             <:hint>
-              {{#if (has-block "hint")}}{{yield to="hint"}}{{else}}{{@hint.content}}{{/if}}
+              {{#if (flag @hasHintBlock (has-block "hint"))}}{{yield to="hint"}}{{else}}{{@hint.content}}{{/if}}
             </:hint>
           </EuiSearchBox>
         {{/if}}
@@ -346,9 +352,14 @@ export default class EuiSearchBar extends Component<EuiSearchBarSignature> {
           />
         </EuiFlexItem>
       {{/if}}
-      {{#if (has-block "toolsRight")}}
+      {{#if (flag @hasToolsRightBlock (has-block "toolsRight"))}}
         <EuiFlexItem @grow={{false}}>{{yield to="toolsRight"}}</EuiFlexItem>
       {{/if}}
     </EuiFlexGroup>
   </template>
+}
+
+/** A forwarded block flag, or this component's own `has-block`. */
+function flag(forwarded: boolean | undefined, own: boolean): boolean {
+  return forwarded ?? own;
 }

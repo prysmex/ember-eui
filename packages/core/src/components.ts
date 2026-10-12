@@ -5,6 +5,7 @@ import EuiAvatar from './components/eui-avatar.gts';
 import EuiBadge from './components/eui-badge.gts';
 import EuiBadgeGroup from './components/eui-badge-group.gts';
 import EuiBanner from './components/eui-banner.gts';
+import EuiBasicTable from './components/eui-basic-table.gts';
 import EuiBeacon from './components/eui-beacon.gts';
 import EuiBetaBadge from './components/eui-beta-badge.gts';
 import EuiBottomBar from './components/eui-bottom-bar.gts';
@@ -99,6 +100,7 @@ import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
 import EuiIllustration from './components/eui-illustration.gts';
 import EuiImage from './components/eui-image.gts';
+import EuiInMemoryTable from './components/eui-in-memory-table.gts';
 import EuiInputPopover from './components/eui-input-popover.gts';
 import EuiKeyPadMenu from './components/eui-key-pad-menu.gts';
 import EuiKeyPadMenuItem from './components/eui-key-pad-menu-item.gts';
@@ -248,6 +250,7 @@ export {
   EuiBadge,
   EuiBadgeGroup,
   EuiBanner,
+  EuiBasicTable,
   EuiBeacon,
   EuiBetaBadge,
   EuiBottomBar,
@@ -342,6 +345,7 @@ export {
   EuiIconTip,
   EuiIllustration,
   EuiImage,
+  EuiInMemoryTable,
   EuiInputPopover,
   EuiKeyPadMenu,
   EuiKeyPadMenuItem,

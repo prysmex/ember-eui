@@ -4,8 +4,6 @@ order: 4
 
 # Adjusting padding
 
-<EuiSpacer />
-
 <EuiText>
   <p>
 

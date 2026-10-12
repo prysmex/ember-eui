@@ -3,8 +3,6 @@ order: 3
 ---
 
 # Showing a bottom bar
-
-<EuiSpacer />
 <EuiText>
   Put controls in the named bottomBar block. By default the bar stays within the
   page body using sticky positioning, so it does not overlap the side bar.

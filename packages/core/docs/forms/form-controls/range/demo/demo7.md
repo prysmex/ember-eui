@@ -342,8 +342,8 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class extends Component {
-  @tracked value = 0;
-  @tracked valueDual = [0, 0];
+  @tracked value = 150;
+  @tracked valueDual = [120, 180];
   @tracked validatedData = {};
   changeset = {};
 }

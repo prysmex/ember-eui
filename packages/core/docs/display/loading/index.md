@@ -1,5 +1,7 @@
 ---
 title: Loading
+# not .../loading: Ember renders a route named `loading` as its parent's loading substate
+url: docs/display/loading-indicators
 ---
 
 <EuiSpacer/>

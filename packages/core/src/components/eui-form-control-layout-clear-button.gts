@@ -9,6 +9,7 @@ import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type EuiI18n from '../services/eui-i18n';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import type { CommonArgs } from './common.ts';
 
 export type EuiFormControlLayoutClearButtonArgs = CommonArgs & {
@@ -63,14 +64,17 @@ export default class EuiFormControlLayoutClearButton extends Component<EuiFormCo
       styles.size[this.size]
     );
   }
+  /**
+   * Upstream's `css` on the icon, composed last into EuiIcon's own class so
+   * the 8px/6px cross wins over EuiIcon's size (a separate class does not).
+   */
   @cached
-  get iconClasses() {
-    const { context, styles } = this.styles;
-    return euiClass(
-      context,
+  get iconCss(): EuiCss {
+    const { styles } = this.styles;
+    return [
       styles.icon.euiFormControlLayoutClearButton__icon,
       styles.icon.size[this.size]
-    );
+    ];
   }
 
   <template>
@@ -81,7 +85,8 @@ export default class EuiFormControlLayoutClearButton extends Component<EuiFormCo
       ...attributes
     >
       <EuiIcon
-        @iconClasses="euiFormControlLayoutClearButton__icon {{this.iconClasses}}"
+        @iconClasses="euiFormControlLayoutClearButton__icon"
+        @css={{this.iconCss}}
         @type="cross"
         @size={{this.size}}
       />

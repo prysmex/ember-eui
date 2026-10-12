@@ -4,8 +4,6 @@ order: 5
 
 # Adding a banner
 
-<EuiSpacer />
-
 <EuiText>
   <p>
 

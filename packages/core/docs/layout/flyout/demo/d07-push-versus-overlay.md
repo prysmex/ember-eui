@@ -4,8 +4,6 @@ order: 7
 
 # Push versus overlay
 
-<EuiSpacer />
-
 <EuiText>
   <p>
 Another way to allow for continued interactions of the page content while a flyout is visible, is to change the <EuiCode>@type</EuiCode> from <EuiCode>overlay</EuiCode> to <EuiCode>push</EuiCode>.

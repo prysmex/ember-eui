@@ -3,8 +3,6 @@ order: 2
 ---
 # More complicated flyout
 
-<EuiSpacer />
-
 <EuiText>
   <p>
 
@@ -111,7 +109,7 @@ This component also comes with related child components for ease of creating hea
         </p>
 
         <p>
-          And from the fox&rsquo;s perspective, life was full of hoops to jump{' '}
+          And from the fox&rsquo;s perspective, life was full of hoops to jump
           <em>through</em>, low-hanging fruit to jump <em>for</em>, and dead car
           batteries to jump-<em>start</em>.
         </p>

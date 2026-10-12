@@ -3,8 +3,6 @@ order: 4
 ---
 
 # Centered body
-
-<EuiSpacer />
 <EuiText>
   When the content for the page is minimal or in an empty/pre-setup state, the page content can be centered vertically and horizontally. We recommend then using the <strong>EuiEmptyPrompt</strong> for the content.
 </EuiText>

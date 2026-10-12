@@ -18,11 +18,11 @@ order: 2
   <div>
     <EuiHorizontalRule @margin="s" />
   </div>
-  <EuiCode>m</EuiCode>
+  <EuiCode>m (default)</EuiCode>
   <div>
     <EuiHorizontalRule @margin="m" />
   </div>
-  <EuiCode>l (default)</EuiCode>
+  <EuiCode>l</EuiCode>
   <div>
     <EuiHorizontalRule @margin="l" />
   </div>

@@ -51,6 +51,26 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
     assert.strictEqual(cleared, 1);
   });
 
+  test('the clear button cross is scaled to half of its icon size', async function (assert) {
+    const clear = () => {};
+
+    await render(
+      <template>
+        <EuiFormControlLayout @clear={{clear}}><input /></EuiFormControlLayout>
+      </template>
+    );
+
+    // Upstream composes `transform: scale(0.5)` into EuiIcon's class; as a
+    // separate class it lost to EuiIcon's own `transform` and the 16px cross
+    // overflowed its 16px circle.
+    const icon = document.querySelector('.euiFormControlLayoutClearButton__icon')!;
+    const button = document.querySelector('.euiFormControlLayoutClearButton')!;
+
+    assert.notStrictEqual(getComputedStyle(icon).transform, 'none');
+    assert.strictEqual(icon.getBoundingClientRect().width, 8, 'the cross is 8px wide');
+    assert.strictEqual(button.getBoundingClientRect().width, 16, 'in a 16px circle');
+  });
+
   test('right icon, and prepend/append make a group', async function (assert) {
     await render(
       <template>

@@ -13,7 +13,7 @@ toggle them from elsewhere with the yielded `togglePanel`.
 </EuiText>
 
 ```hbs template
-<EuiResizableContainer style="height: 240px;" @onToggleCollapsed={{this.onToggle}} as |c|>
+<EuiResizableContainer style="height: 240px; margin-top: 40px;" @onToggleCollapsed={{this.onToggle}} as |c|>
   <EuiFlexGroup @gutterSize="s" @responsive={{false}} style="position: absolute; top: -40px;">
     <EuiFlexItem @grow={{false}}>
       <EuiButton @size="s" {{on "click" (fn c.togglePanel "left-panel" (hash direction="left"))}}>

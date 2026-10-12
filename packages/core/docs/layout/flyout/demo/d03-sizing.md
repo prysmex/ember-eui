@@ -4,8 +4,6 @@ order: 3
 
 # Sizing
 
-<EuiSpacer />
-
 <EuiText>
   <p>
 

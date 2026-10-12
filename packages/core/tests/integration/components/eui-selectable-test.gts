@@ -203,4 +203,29 @@ module('Integration | Component | eui-selectable', function (hooks) {
     assert.dom('.euiSelectableMessage').hasNoClass('euiSelectableMessage--bordered').hasText('Message');
     assert.strictEqual(getComputedStyle(this.element.querySelector('.euiSelectableMessage')!).borderTopStyle, 'solid');
   });
+  test('a checked single-selection option scrolls into view in the list, not the page', async function (assert) {
+    const options: EuiSelectableOption[] = Array.from({ length: 30 }, (_, i) => ({
+      label: `Option ${i}`,
+      checked: i === 25 ? ('on' as const) : undefined,
+    }));
+    const noop = () => {};
+
+    await render(
+      <template>
+        <div class="page" style="height: 300px; overflow: auto">
+          <div style="height: 1000px"></div>
+          <EuiSelectable @options={{options}} @onChange={{noop}} @singleSelection={{true}} @height={{160}} aria-label="Options" />
+          <div style="height: 1000px"></div>
+        </div>
+      </template>
+    );
+
+    const page = this.element.querySelector<HTMLElement>('.page')!;
+    const list = this.element.querySelector<HTMLElement>('.euiSelectableList__list')!;
+    const item = this.element.querySelectorAll('.euiSelectableListItem')[25]!;
+
+    assert.strictEqual(page.scrollTop, 0, 'the page did not scroll');
+    assert.true(list.scrollTop > 0, 'the list scrolled');
+    assert.true(item.getBoundingClientRect().bottom <= list.getBoundingClientRect().bottom + 1, 'the option is visible in the list');
+  });
 });

@@ -10,7 +10,8 @@
 /* eslint-disable no-case-declarations */
 
 import { dateFormatAliases } from '../format.ts';
-import moment, { Moment, MomentInput } from 'moment';
+import moment from 'moment';
+import type { Moment, MomentInput } from 'moment';
 
 const utc = moment.utc;
 

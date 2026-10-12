@@ -220,6 +220,10 @@
     "EuiFormHelpText",
     "EuiFormErrorText"
   ],
+  "packages/core/docs/forms/search-bar/index.md": [
+    "EuiSearchBar",
+    "EuiSearchBarFilters"
+  ],
   "packages/core/docs/forms/selectable/index.md": [
     "EuiSelectable",
     "EuiSelectableList",
@@ -356,6 +360,12 @@
     "EuiTabs",
     "EuiTab",
     "EuiTabbedContent"
+  ],
+  "packages/core/docs/tabular/basic-table/index.md": [
+    "EuiBasicTable"
+  ],
+  "packages/core/docs/tabular/in-memory-table/index.md": [
+    "EuiInMemoryTable"
   ],
   "packages/core/docs/tabular/table/index.md": [
     "EuiTable",

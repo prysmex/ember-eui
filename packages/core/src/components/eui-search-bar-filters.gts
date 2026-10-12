@@ -32,7 +32,7 @@ export type {
 export interface EuiSearchBarFiltersSignature {
   Element: HTMLDivElement;
   Args: {
-    /** The current query (a `Query` from `utils/eui/search-bar`). */
+    /** The current query (a `Query`, exported by `components/eui-search-bar`). */
     query: Query;
     /** Called with the updated query when a filter changes. */
     onChange: (query: Query) => void;

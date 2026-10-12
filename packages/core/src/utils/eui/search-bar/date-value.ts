@@ -15,7 +15,8 @@ import {
   dateGranularity,
   GranularityType,
 } from './date-format.ts';
-import moment, { MomentInput } from 'moment';
+import moment from 'moment';
+import type { MomentInput } from 'moment';
 
 export const DATE_TYPE = 'date';
 

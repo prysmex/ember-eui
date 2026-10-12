@@ -31,6 +31,7 @@ import type EuiContextMenuItem from './components/eui-context-menu-item';
 import type EuiContextMenuPanel from './components/eui-context-menu-panel';
 import type EuiCopy from './components/eui-copy';
 import type EuiDataGrid from './components/eui-data-grid';
+import type EuiDataGridToolbarControl from './components/eui-data-grid-toolbar-control';
 import type EuiDescribedFormGroup from './components/eui-described-form-group';
 import type EuiDescriptionList from './components/eui-description-list';
 import type EuiDescriptionListDescription from './components/eui-description-list-description';
@@ -331,6 +332,8 @@ export default interface EmberEuiRegistry {
   'eui-copy': typeof EuiCopy;
   EuiDataGrid: typeof EuiDataGrid;
   'eui-data-grid': typeof EuiDataGrid;
+  EuiDataGridToolbarControl: typeof EuiDataGridToolbarControl;
+  'eui-data-grid-toolbar-control': typeof EuiDataGridToolbarControl;
   EuiDescribedFormGroup: typeof EuiDescribedFormGroup;
   'eui-described-form-group': typeof EuiDescribedFormGroup;
   EuiDescriptionList: typeof EuiDescriptionList;

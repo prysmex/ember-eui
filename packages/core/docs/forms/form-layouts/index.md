@@ -65,6 +65,7 @@ built on it see `@ember-eui/changeset-form` and
 | `@error` | `string \| string[]` |  | The form's errors, listed in the callout: an array of messages, or a single message with `@array={{true}}`. |
 | `@isInvalid` | `boolean` |  | Shows the errors callout (with `@error`). |
 | `@array` | `boolean` |  | Treats a single string `@error` as a one-item list. |
+| `@fullWidth` | `boolean` | `false` | Default `@fullWidth` of every EuiFormRow and EuiDescribedFormGroup inside the form (their own `@fullWidth` wins). |
 | `@tagName` | `'form' \| 'div'` | `'div'` | `'form'` renders a `<form>` (add `{{on "submit" …}}`); `'div'` for forms without native submission. |
 
 | Block | Description |
@@ -83,12 +84,12 @@ A form control with its label, help text and errors:
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@label` | `string` |  | The control's label. It is linked to the first text-like control in the row automatically (no need to pass ids around). |
-| `@labelAppend` | `string` |  | Text at the end of the label line, e.g. "Optional". Use the `<:labelAppend>` block for markup such as a help link. |
+| `@labelAppend` | `string` |  | Text at the end of the label line, e.g. "Optional" (small subdued text). Use the `<:labelAppend>` block for markup such as a help link. |
 | `@labelType` | `'label' \| 'legend'` | `'label'` | `'label'` renders a `<label>`; `'legend'` a `<legend>`, for rows whose control is a group (radios, checkboxes). |
 | `@legendType` | `'legend' \| 'fieldset'` | a `<div>` | `'legend'` renders the row as a `<fieldset>` (use it with `@labelType="legend"` for groups). |
-| `@fullWidth` | `boolean` |  | Lets the row (and its control) take the container's full width. |
+| `@fullWidth` | `boolean` | the enclosing EuiForm's `@fullWidth`, else `false` | Lets the row (and its control) take the container's full width instead of the theme's form max width (400px in Borealis). |
 | `@isInvalid` | `boolean` |  | Shows `@error` under the control and styles the label as invalid. |
-| `@isDisabled` | `boolean` |  | Disables the label's focus styling. |
+| `@isDisabled` | `boolean` |  | Disables the label's focus state and pointer cursor (pass `@disabled` to the control itself). |
 | `@hasEmptyLabelSpace` | `boolean` |  | Adds space above the control as if it had a label, to align it with labelled rows next to it (e.g. a button in an `EuiFlexGroup` of rows). |
 | `@hasChildLabel` | `boolean` | `true` | Link the label to the control. Set `false` when the control has its own label (e.g. a single checkbox). |
 | `@helpText` | `string` |  | Help text under the control (a string, or an array for several lines). The control's `aria-describedby` points to it, so screen readers read it with the control. |
@@ -96,7 +97,7 @@ A form control with its label, help text and errors:
 | `@errorClasses` | `string` |  | Extra classes for each error message. |
 | `@helpTextClasses` | `string` |  | Extra classes for the help text. |
 | `@id` | `string` | a random id | Id of the control; the label points to it. |
-| `@display` |  | `'row'` | Layout: `'row'` (label above), `'rowCompressed'`, `'columnCompressed'` (label beside, for dense forms), `'columnCompressedSwitch'` (for an `EuiSwitch`), or `'center'` / `'centerCompressed'` (vertically centers a control without a label, e.g. a button next to rows). |
+| `@display` | `EuiFormRowDisplay` | `'row'` | Layout: `'row'` (label above), `'columnCompressed'` (label beside, for dense forms; also used for switches), or `'center'` / `'centerCompressed'` (vertically centers content shorter than a control, e.g. a switch or text next to rows). `'rowCompressed'` and `'columnCompressedSwitch'` are kept as aliases of `'row'` and `'columnCompressed'`. |
 
 Deprecated: `@extra` (Has no effect.).
 
@@ -106,7 +107,7 @@ Deprecated: `@extra` (Has no effect.).
 | `<:label>` | Custom label content, instead of `@label`; yields `@label`. |
 | `<:field>` | The control; same as the default block. |
 | `<:errors>` | Renders each error (while `@isInvalid`); yields the error. |
-| `<:helpText>` | Custom help text, instead of `@helpText`. |
+| `<:helpText>` | Custom help text, instead of `@helpText`; yields `@helpText`. |
 | `<:labelAppend>` | Content at the end of the label line, e.g. a help link. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<fieldset>`.
@@ -118,7 +119,7 @@ Groups related controls (e.g. radios) under a legend.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@legend` | `string` |  | The legend describing the group. Use the `<:legend>` block for markup. |
-| `@compressed` | `boolean` |  | Smaller legend, for compressed forms. |
+| `@compressed` | `boolean` |  | Smaller space under the legend, for compressed forms. |
 | `@display` |  | `'visible'` | `'hidden'` keeps the legend for screen readers only. |
 
 | Block | Description |
@@ -136,7 +137,7 @@ The legend of an EuiFormFieldset.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@display` | `'hidden' \| 'visible'` | `'visible'` | `'hidden'` keeps it for screen readers only. |
-| `@compressed` | `boolean` |  | Smaller legend, for compressed forms. |
+| `@compressed` | `boolean` |  | Smaller space under the legend, for compressed forms. |
 
 | Block | Description |
 | --- | --- |
@@ -150,8 +151,9 @@ The label of a control; EuiFormRow renders it from `@label`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@isFocused` | `boolean` |  | Focused styling (the control has focus). |
-| `@isInvalid` | `boolean` |  | Invalid styling. |
+| `@isFocused` | `boolean` |  | The control has focus. Adds the `euiFormLabel-isFocused` class; the latest theme no longer recolors focused labels. |
+| `@isInvalid` | `boolean` |  | Invalid styling (danger text color). |
+| `@isDisabled` | `boolean` |  | Disabled: drops the pointer cursor of a `for` label. |
 | `@type` | `'legend' \| 'label'` | `'label'` | `'label'` renders a `<label>`, `'legend'` a `<legend>` (for fieldsets). |
 | `@for` | `string` |  | Id of the control it labels. |
 | `@label` | `string` |  | The label text, before the block content. |

@@ -79,6 +79,24 @@ const entries = {
   'global_styling/mixins/_button.js': [
     'euiButtonDisplaysColors',
     'euiButtonInteractionStyles'
+  ],
+  // forms-layout
+  'components/form/form_row/form_row.styles.js': ['euiFormRowStyles'],
+  'components/form/form_label/form_label.styles.js': ['euiFormLabelStyles'],
+  'components/form/form_fieldset/form_legend.styles.js': [
+    'euiFormLegendStyles'
+  ],
+  'components/form/form_help_text/form_help_text.styles.js': [
+    'euiFormHelpTextStyles'
+  ],
+  'components/form/form_error_text/form_error_text.styles.js': [
+    'euiFormErrorTextStyles'
+  ],
+  'components/form/form_label_append/form_label_append.styles.js': [
+    'euiFormLabelAppendStyles'
+  ],
+  'components/form/described_form_group/described_form_group.styles.js': [
+    'euiDescribedFormGroupStyles'
   ]
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}

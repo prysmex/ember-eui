@@ -71,6 +71,38 @@
       "sha256": "1f236bad4ac395827192d0b4842ec9b2a2ff8095489562e2a91ecfac62a0dc33"
     },
     {
+      "path": "@elastic/eui/es/components/form/described_form_group/described_form_group.styles.js",
+      "sha256": "56cf53cf4a6027fe4523db4d6031465847bcd5ccf2f87ef58471bcc2d1bbb0e9"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_error_text/form_error_text.styles.js",
+      "sha256": "826df05e017b744a1b6ac783e3bd9046f2988a3b3cf4966f62bec4e4923df48f"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_fieldset/form_legend.styles.js",
+      "sha256": "0a774fb9963c138e0dfd082fcd9aca51f6e5594ef117a8a95650d09f147d52e0"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_help_text/form_help_text.styles.js",
+      "sha256": "57b170f52d03bfbcaef7d73d4dc5637b24570e36db6791bae8235b0e4290dfbe"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_label_append/form_label_append.styles.js",
+      "sha256": "6f9753ad5df3f24b4db5759ebb32ba2e422377caf34a5823083e9490e33840e7"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_label/form_label.styles.js",
+      "sha256": "399205e8bc1b0c0a6aa5da020e7f48bd7a83f391e2b9eb38c2752aa327edf281"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_row/form_row.styles.js",
+      "sha256": "523d609a625ae758dbda336e4fe8ce3af1b4e9c92fea38aac29fcbd35d95ad76"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form.styles.js",
+      "sha256": "9f603baf9de93cdbee9742e9e2e8cfa50cf14df216e2bdad56b1c6b034d9b47c"
+    },
+    {
       "path": "@elastic/eui/es/components/horizontal_rule/horizontal_rule.styles.js",
       "sha256": "b8161495ca1fe5639c9ede467e3334f3403482716713e1d0891cd66295c80d1e"
     },

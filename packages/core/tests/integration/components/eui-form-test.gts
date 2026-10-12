@@ -111,7 +111,8 @@ module('Integration | Component | eui-form', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiFormRow').hasClass('euiFormRow--fullWidth');
+    // latest-only: fullWidth is a computed max width, not a legacy modifier class
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiFormRow')!).maxWidth, '100%');
     assert.dom('.euiFormErrorText').doesNotExist();
 
     await focus('input#email');
@@ -137,7 +138,7 @@ module('Integration | Component | eui-form', function (hooks) {
     assert.dom('fieldset .inside').exists();
   });
 
-  test('EuiFormLegend hidden and compressed classes', async function (assert) {
+  test('EuiFormLegend hidden and compressed', async function (assert) {
     await render(
       <template>
         <EuiFormLegend @display="hidden" class="hidden">Hidden</EuiFormLegend>
@@ -147,7 +148,8 @@ module('Integration | Component | eui-form', function (hooks) {
 
     assert.dom('legend.hidden').hasClass('euiFormLegend-isHidden');
     assert.dom('legend.hidden .euiScreenReaderOnly').hasText('Hidden');
-    assert.dom('legend.compressed').hasClass('euiFormLegend--compressed');
+    // latest-only: compressed is upstream's smaller (size.xs) legend spacing, not a legacy class
+    assert.strictEqual(getComputedStyle(this.element.querySelector('legend.compressed')!).marginBottom, '4px');
   });
 
   test('EuiDescribedFormGroup renders title, description and fields', async function (assert) {
@@ -161,7 +163,8 @@ module('Integration | Component | eui-form', function (hooks) {
       </template>
     );
 
-    assert.dom('[role="group"].euiDescribedFormGroup').hasClass('euiDescribedFormGroup--fullWidth');
+    // latest-only: fullWidth lifts upstream's max width instead of adding a legacy class
+    assert.strictEqual(getComputedStyle(this.element.querySelector('[role="group"].euiDescribedFormGroup')!).maxWidth, '100%');
     assert.dom('.euiDescribedFormGroup__title h3').hasText('Settings');
     assert.dom('.euiDescribedFormGroup__description').hasText('Configure things');
     assert.dom('.euiDescribedFormGroup__fields .fields').exists();

@@ -1,4 +1,7 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import Component from '@glimmer/component';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiFormErrorTextStyles } from '../utils/eui/styles.generated.ts';
 
 /** An error message under a control; EuiFormRow renders these from `@error`. */
 export interface EuiFormErrorTextSignature {
@@ -9,11 +12,28 @@ export interface EuiFormErrorTextSignature {
   };
 }
 
-const EuiFormErrorText: TemplateOnlyComponent<EuiFormErrorTextSignature> =
+export default class EuiFormErrorText extends Component<EuiFormErrorTextSignature> {
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFormErrorTextStyles);
+    return euiClass(
+      context,
+      // React's global styles supply the box model and body font.
+      {
+        boxSizing: 'border-box',
+        fontFamily: context.upstream.euiTheme.font.family
+      },
+      styles.euiFormErrorText
+    );
+  }
+
   <template>
-    <div class="euiFormErrorText" aria-live="polite" ...attributes>
+    <div
+      class="euiFormErrorText {{this.classes}}"
+      aria-live="polite"
+      ...attributes
+    >
       {{yield}}
     </div>
-  </template>;
-
-export default EuiFormErrorText;
+  </template>
+}

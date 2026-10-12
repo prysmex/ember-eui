@@ -1,26 +1,37 @@
-import { hash } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import style from 'ember-style-modifier/modifiers/style';
-import { and } from 'ember-truth-helpers';
-import { eq,notEq } from 'ember-truth-helpers';
+import { provide } from 'ember-provide-consume-context';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import inlineStyles from '../helpers/inline-styles.ts';
+import { EUI_LIST_GROUP_CONTEXT } from '../-private/eui-list-context.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiListGroupStyles } from '../utils/eui/styles.generated.ts';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiListGroupContext } from '../-private/eui-list-context.ts';
 
 /** A list of `EuiListGroupItem`s, e.g. navigation links in a side bar. */
 export interface EuiListGroupSignature {
   Element: HTMLUListElement;
   Args: {
-    /** `true` for EUI's default max width, or any CSS width. */
-    maxWidth?: boolean | string;
-    /** Adds a border around the list. */
+    /**
+     * Limits the list's width: `true` for upstream's default (the form max
+     * width, 400px), `false` for none, or any CSS width (numbers are
+     * pixels). Defaults to `true`.
+     */
+    maxWidth?: boolean | string | number;
+    /** Adds a rounded border around the list. */
     bordered?: boolean;
-    /** Removes the list's padding. */
+    /**
+     * Default `@color` of the items in the block: `'text'`, `'primary'` or
+     * `'subdued'`. An item's own `@color` wins. Defaults to `'text'`.
+     */
+    color?: string;
+    /** Default `@wrapText` of the items in the block. */
+    wrapText?: boolean;
+    /** @deprecated Has no effect: latest EUI lists have no padding. */
     flush?: boolean;
-    /** Space between items: `'none'`, `'s'` or `'m'`. Defaults to `'s'`. */
+    /** @deprecated Has no effect: latest EUI lists have no item gutters. */
     gutterSize?: string;
   };
   Blocks: {
@@ -29,31 +40,52 @@ export interface EuiListGroupSignature {
   };
 }
 
-const EuiListGroup: TemplateOnlyComponent<EuiListGroupSignature> = <template>
-  {{#let
-    (if
-      (and @maxWidth (notEq @maxWidth true))
-      (inlineStyles
-        componentName="EuiListGroup" componentArgs=(hash maxWidth=@maxWidth)
-      )
-      (hash)
-    )
-    as |inlineStyles|
-  }}
-    <ul
-      class={{classNames
-        (if (eq @maxWidth true) "euiListGroup-maxWidthDefault")
-        (if @bordered "euiListGroup-bordered")
-        (if @flush "euiListGroup-flush")
-        componentName="EuiListGroup"
-        gutterSize=(argOrDefault @gutterSize "s")
-      }}
-      ...attributes
-      {{style inlineStyles}}
-    >
+/** Scoped stand-in for React's global list reset; upstream comes after. */
+const RESET = {
+  boxSizing: 'border-box' as const,
+  margin: 0,
+  padding: 0,
+  listStyle: 'none'
+};
+
+/** Native Ember list group using the upstream EUI 123 / Borealis factory. */
+export default class EuiListGroup
+  extends Component<EuiListGroupSignature>
+  implements EuiListGroupContext
+{
+  @provide(EUI_LIST_GROUP_CONTEXT)
+  get listGroupContext(): EuiListGroupContext {
+    return this;
+  }
+
+  get color(): string | undefined {
+    return this.args.color;
+  }
+
+  get wrapText(): boolean | undefined {
+    return this.args.wrapText;
+  }
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiListGroupStyles);
+    const maxWidth = this.args.maxWidth ?? true;
+    return `euiListGroup ${euiClass(
+      context,
+      RESET,
+      styles.euiListGroup,
+      this.args.bordered && styles.bordered,
+      maxWidth === true && styles.maxWidthDefault,
+      // Upstream sets custom widths as an inline logical style.
+      typeof maxWidth === 'string' && { maxInlineSize: maxWidth },
+      typeof maxWidth === 'number' && { maxInlineSize: `${maxWidth}px` }
+    )}`;
+  }
+
+  <template>
+    <ul class={{this.classes}} ...attributes>
       {{yield}}
     </ul>
-  {{/let}}
-</template>;
-
-export default EuiListGroup;
+  </template>
+}

@@ -1,24 +1,32 @@
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import argOrDefault from '../../helpers/arg-or-default.ts';
 import classNames from '../../helpers/class-names.ts';
 import EuiIcon from '../eui-icon.gts';
 import EuiInnerText from '../eui-inner-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-/** @private The button or link of an EuiSideNav item. */
+/**
+ * @private The content of an EuiSideNav item's button or link: icon,
+ * label and the accordion caret (upstream `euiSideNavItemButton__content`).
+ */
 export interface EuiSideNavItemButtonSignature {
   Element: HTMLButtonElement;
   Args: {
     /** Icon before the text. */
     icon?: string;
-    /** Shows an arrow, for items with children. */
+    /** Shows the accordion caret, for section items with children. */
     caret?: boolean;
-    /** Truncates long text. Defaults to `true`. */
+    /** Points the caret down (open) instead of right (closed). */
+    isOpen?: boolean;
+    /** Truncates long text, with the full text as `title`. Defaults to `true`. */
     truncate?: boolean;
     /** Extra classes for the icon. */
     buttonIconClasses?: string;
+    /** Class of the content span (upstream styles). */
+    contentClass?: string;
+    /** Class of the label span (upstream styles). */
+    labelClass?: string;
   };
   Blocks: {
     /** The text. */
@@ -28,33 +36,32 @@ export interface EuiSideNavItemButtonSignature {
 
 const EuiSideNavItemButton: TemplateOnlyComponent<EuiSideNavItemButtonSignature> =
   <template>
-    {{#let (argOrDefault @truncate true) as |truncate|}}
-      <span class="euiSideNavItemButton__content">
-        {{#if @icon}}
-          <EuiIcon
-            @type={{@icon}}
-            @size="m"
-            class={{classNames "euiSideNavItemButton__icon" @buttonIconClasses}}
-          />
-        {{/if}}
+    <span class="euiSideNavItemButton__content {{@contentClass}}">
+      {{#if @icon}}
+        <EuiIcon
+          @type={{@icon}}
+          @size="m"
+          class={{classNames "euiSideNavItemButton__icon" @buttonIconClasses}}
+        />
+      {{/if}}
 
-        <EuiInnerText as |setRef innerText|>
-          <span
-            class={{classNames
-              "euiSideNavItemButton__label"
-              (if truncate "euiSideNavItemButton__label--truncated")
-            }}
-            {{didInsert setRef}}
-            title={{if truncate innerText}}
-          >
-            {{yield}}
-          </span>
-        </EuiInnerText>
-        {{#if @caret}}
-          <EuiIcon @type="arrowDown" @color="subdued" @size="s" />
-        {{/if}}
-      </span>
-    {{/let}}
+      <EuiInnerText as |setRef innerText|>
+        <span
+          class="euiSideNavItemButton__label {{@labelClass}}"
+          {{didInsert setRef}}
+          title={{if @truncate innerText}}
+        >
+          {{yield}}
+        </span>
+      </EuiInnerText>
+      {{#if @caret}}
+        <EuiIcon
+          class="euiSideNavItemButton__caret"
+          @type={{if @isOpen "arrowDown" "arrowRight"}}
+          @size="s"
+        />
+      {{/if}}
+    </span>
   </template>;
 
 export default EuiSideNavItemButton;

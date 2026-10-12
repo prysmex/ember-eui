@@ -129,7 +129,38 @@ const factories = {
     [
       'euiFormControlLayoutDelimitedStyles',
       'euiFormControlLayoutDelimited__delimiter'
-    ]
+    ],
+  // lists
+  'components/list_item_layout/_list_item_layout.styles.js': [
+    'euiListItemLayoutStyles',
+    'euiListItemLayoutWrapperStyles'
+  ],
+  'components/list_group/list_group.styles.js': ['euiListGroupStyles'],
+  'components/list_group/list_group_item.styles.js': ['euiListGroupItemStyles'],
+  'components/list_group/list_group_item_extra_action.styles.js': [
+    'euiListGroupItemExtraActionStyles'
+  ],
+  'components/list_group/pinnable_list_group/pinnable_list_group.styles.js': [
+    'euiPinnableListGroupItemExtraActionStyles'
+  ],
+  'components/key_pad_menu/key_pad_menu.styles.js': [
+    'euiKeyPadMenuStyles',
+    'euiKeyPadMenuVariables'
+  ],
+  'components/description_list/description_list.styles.js': [
+    'euiDescriptionListStyles'
+  ],
+  'components/description_list/description_list_title.styles.js': [
+    'euiDescriptionListTitleStyles'
+  ],
+  'components/description_list/description_list_description.styles.js': [
+    'euiDescriptionListDescriptionStyles'
+  ],
+  'components/side_nav/side_nav.styles.js': ['euiSideNavMobileStyles'],
+  'components/side_nav/side_nav_item.styles.js': [
+    'euiSideNavItemStyles',
+    'euiSideNavItemButtonStyles'
+  ]
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -520,4 +551,107 @@ test('form control hand ports match upstream custom icon styles and icon afforda
   } finally {
     Module._load = originalLoad;
   }
+});
+
+test('list group tooltip slot matches upstream static styles', () => {
+  const reference = require(
+    resolve(eui, 'lib/components/list_group/list_group_item.styles.js')
+  );
+  assert.deepEqual(
+    normalize(styles.euiListGroupItemTooltipStyles),
+    normalize(reference.euiListGroupItemTooltipStyles)
+  );
+});
+
+test('list helper exports match upstream logicals, typography, contrast and sr-only mixins', () => {
+  const logicals = require(resolve(eui, 'lib/global_styling/functions/logicals.js'));
+  const typography = require(resolve(eui, 'lib/global_styling/mixins/_typography.js'));
+  const contrast = require(resolve(eui, 'lib/global_styling/functions/high_contrast.js'));
+  const srOnly = require(
+    resolve(eui, 'lib/components/accessibility/screen_reader_only/screen_reader_only.styles.js')
+  );
+  for (const [property, value] of [
+    ['margin-bottom', '8px'],
+    ['top', 'auto'],
+    ['right', '4px'],
+    ['padding-horizontal', '8px'],
+    ['border-left', '1px solid red'],
+    ['max-width', '400px']
+  ])
+    assert.equal(styles.logicalCSS(property, value), logicals.logicalCSS(property, value));
+  assert.equal(styles.logicalSizeCSS('96px'), logicals.logicalSizeCSS('96px'));
+  assert.equal(styles.euiTextTruncate(), typography.euiTextTruncate());
+  assert.equal(styles.logicalSizeCSS('1px', '2px'), logicals.logicalSizeCSS('1px', '2px'));
+  assert.equal(styles.euiScreenReaderOnly(), srOnly.euiScreenReaderOnly());
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced']) {
+      const context = {
+        colorMode,
+        highContrastMode,
+        euiTheme: getComputed(
+          EuiThemeBorealis,
+          buildTheme({ font: { defaultUnits: 'px' } }, 'parity'),
+          colorMode,
+          highContrastMode
+        )
+      };
+      for (const scale of ['xxs', 'xs', 's', 'm', 'l'])
+        assert.deepEqual(
+          styles.euiFontSize(context, scale),
+          typography.euiFontSize(context, scale)
+        );
+      const options = { none: 'a:1;', preferred: 'b:2;', forced: 'c:3;' };
+      assert.equal(
+        styles.highContrastModeStyles(context, options),
+        contrast.highContrastModeStyles(context, options)
+      );
+    }
+});
+
+test('key pad menu item hand port matches upstream in 12 theme configurations', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/lists.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-lists-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const reference = require(
+    resolve(eui, 'lib/components/key_pad_menu/key_pad_menu_item.styles.js')
+  );
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        };
+        for (const name of ['euiKeyPadMenuItemStyles', 'euiKeyPadMenuItemChildStyles'])
+          assert.deepEqual(
+            normalize(port[name](context)),
+            normalize(reference[name](context)),
+            `${name} ${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`
+          );
+      }
 });

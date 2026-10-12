@@ -42,9 +42,12 @@ Generated from the components' TypeScript signatures by
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@compressed` | `boolean` |  | Smaller text. |
-| `@type` |  | `'row'` | `'row'` stacks each title above its description, `'column'` puts them side by side, `'responsiveColumn'` is a column that stacks on small screens, `'inline'` flows them as compact inline text. |
-| `@textStyle` |  | `'normal'` | `'reverse'` styles the descriptions as the prominent text and the titles as the smaller labels. |
-| `@align` |  | `'left'` | `'left'` or `'center'`. |
+| `@type` | `EuiDescriptionListType` | `'row'` | `'row'` stacks each title above its description, `'column'` puts them side by side, `'responsiveColumn'` is a column that stacks below the `m` breakpoint, `'inline'` flows them as compact inline text. |
+| `@textStyle` | `'normal' \| 'reverse'` | `'normal'` | `'reverse'` styles the descriptions as the prominent text and the titles as the smaller labels. |
+| `@align` | `'left' \| 'center'` | `'left'` | `'left'` or `'center'`. |
+| `@rowGutterSize` | `'s' \| 'm'` | `'s'` | Space between rows: `'s'` or `'m'`. Column lists use it as the grid's row gap, row lists as the title's top margin. |
+| `@columnGutterSize` | `'s' \| 'm'` | `'s'` | Space between the columns of a column list: `'s'` or `'m'`. |
+| `@columnWidths` | `[number \| string, number \| string]` |  | Widths of the title and description columns of a column list: numbers are `fr` units, strings any grid track (`'200px'`, `'minmax(…)'`). |
 | `@listItems` | `{ title: string; description: string; }[]` |  | The terms: `[{ title: 'Name', description: 'Jane' }]`. Without it, pass `EuiDescriptionListTitle` / `EuiDescriptionListDescription` in the block. |
 | `@titleProps` | `{ className?: string; }` |  | Props for each title from `@listItems`: `{ className }`. |
 | `@descriptionProps` | `{ className?: string; }` |  | Props for each description from `@listItems`: `{ className }`. |
@@ -55,7 +58,8 @@ Generated from the components' TypeScript signatures by
 
 ### EuiDescriptionListTitle
 
-A term (`<dt>`) in an EuiDescriptionList.
+A term (`<dt>`) in an EuiDescriptionList. Its styles follow the nearest
+list's `@type`, `@textStyle`, `@compressed`, `@align` and `@rowGutterSize`.
 
 | Block | Description |
 | --- | --- |
@@ -64,6 +68,8 @@ A term (`<dt>`) in an EuiDescriptionList.
 ### EuiDescriptionListDescription
 
 The description (`<dd>`) of the term before it, in an EuiDescriptionList.
+Its styles follow the nearest list's `@type`, `@textStyle`, `@compressed`
+and `@align`.
 
 | Block | Description |
 | --- | --- |

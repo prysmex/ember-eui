@@ -1,5 +1,25 @@
 import { helper } from '@ember/component/helper';
 
+interface SideNavItemLike {
+  id?: string;
+  isSelected?: boolean;
+  forceOpen?: boolean;
+  items?: SideNavItemLike[];
+}
+
+/**
+ * Whether an EuiSideNav item is the current one: its own `isSelected` (as
+ * upstream) or its `id` matching the side nav's `@selectedItem`.
+ */
+export function isItemSelected(
+  item: SideNavItemLike,
+  selectedItem?: string
+): boolean {
+  return Boolean(
+    item.isSelected || (selectedItem !== undefined && item.id === selectedItem)
+  );
+}
+
 export function isItemOpen(item: any, selectedItem?: string): boolean {
   // The developer can force the item to be open.
   if (item.forceOpen) {
@@ -7,7 +27,7 @@ export function isItemOpen(item: any, selectedItem?: string): boolean {
   }
 
   // Of course a selected item is open.
-  if (item.id === selectedItem) {
+  if (isItemSelected(item, selectedItem)) {
     return true;
   }
 

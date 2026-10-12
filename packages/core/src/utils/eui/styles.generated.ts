@@ -28,8 +28,8 @@ var highContrastModeStyles = function highContrastModeStyles2(euiThemeContext, o
   }
   return defaultStyles.trim();
 };
-var preventForcedColors = function preventForcedColors2(_ref39) {
-  var highContrastMode = _ref39.highContrastMode;
+var preventForcedColors = function preventForcedColors2(_ref51) {
+  var highContrastMode = _ref51.highContrastMode;
   return highContrastMode === "forced" ? "forced-color-adjust: none;" : "";
 };
 
@@ -293,8 +293,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
       break;
   }
   var borderRadiusCSS = [];
-  Object.entries(borderRadiusMap).forEach(function(_ref39) {
-    var _ref214 = _slicedToArray(_ref39, 2), property = _ref214[0], value2 = _ref214[1];
+  Object.entries(borderRadiusMap).forEach(function(_ref51) {
+    var _ref217 = _slicedToArray(_ref51, 2), property = _ref217[0], value2 = _ref217[1];
     if (value2) {
       if (ignoreZeroes && value2 !== "0" && value2 !== "0px" || !ignoreZeroes) {
         borderRadiusCSS.push("".concat(property, ": ").concat(value2, ";"));
@@ -308,9 +308,9 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
 import { mathWithUnits } from "@elastic/eui-theme-common";
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/functions/typography.js
-function euiFontSizeFromScale(scale, _ref39) {
-  var base = _ref39.base, font = _ref39.font;
-  var _ref214 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref214.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref214.customScale;
+function euiFontSizeFromScale(scale, _ref51) {
+  var base = _ref51.base, font = _ref51.font;
+  var _ref217 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref217.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref217.customScale;
   if (unit === "em") {
     return "".concat(font.scale[scale], "em");
   }
@@ -319,9 +319,9 @@ function euiFontSizeFromScale(scale, _ref39) {
   var denominator = base * font.scale[font.body.scale];
   return unit === "px" ? "".concat(numerator, "px") : "".concat((numerator / denominator).toFixed(4), "rem");
 }
-function euiLineHeightFromBaseline(scale, _ref39) {
-  var base = _ref39.base, font = _ref39.font;
-  var _ref45 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref4$unit = _ref45.unit, unit = _ref4$unit === void 0 ? font.defaultUnits : _ref4$unit, customScale = _ref45.customScale;
+function euiLineHeightFromBaseline(scale, _ref310) {
+  var base = _ref310.base, font = _ref310.font;
+  var _ref410 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref4$unit = _ref410.unit, unit = _ref4$unit === void 0 ? font.defaultUnits : _ref4$unit, customScale = _ref410.customScale;
   var baseline = font.baseline, lineHeightMultiplier = font.lineHeightMultiplier;
   var numerator = base * font.scale[scale];
   if (customScale) numerator *= font.scale[customScale];
@@ -549,8 +549,8 @@ var SEVERITY_COLORS = ["neutral", "risk"];
 var BUTTON_COLORS = ["text", "accent", "accentSecondary", "primary", "success", "warning", "danger"];
 var EXTENDED_BUTTON_COLORS = [].concat(BUTTON_COLORS, SEVERITY_COLORS);
 var BUTTON_DISPLAYS = ["base", "fill", "empty"];
-var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref39, color, variant) {
-  var euiTheme = _ref39.euiTheme, highContrastMode = _ref39.highContrastMode;
+var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref51, color, variant) {
+  var euiTheme = _ref51.euiTheme, highContrastMode = _ref51.highContrastMode;
   var backgroundTokenBase = variant === "base" ? "background" : "background".concat(variant.charAt(0).toUpperCase() + variant.slice(1));
   var textTokenBase = variant === "filled" ? "textColorFilled" : "textColor";
   var backgroundTokenName = getTokenName(backgroundTokenBase, color);
@@ -717,14 +717,14 @@ var euiButtonInteractionStyles = function euiButtonInteractionStyles2(euiThemeCo
     forced: "\n        position: relative;\n        overflow: hidden;\n\n        ".concat(highContrastHoverIndicatorStyles(euiThemeContext), "\n      ")
   }), "\n  ");
 };
-var highContrastHoverIndicatorStyles = function highContrastHoverIndicatorStyles2(_ref214) {
-  var euiTheme = _ref214.euiTheme;
+var highContrastHoverIndicatorStyles = function highContrastHoverIndicatorStyles2(_ref217) {
+  var euiTheme = _ref217.euiTheme;
   return "\n  &:hover:not(".concat(euiDisabledSelector, ") {\n    transition: none;\n\n    /* using pseudo border to be able to control the color */\n    &::after {\n      content: '';\n      position: absolute;\n      inset: ").concat(euiTheme.border.width.thin, ";\n      border: ").concat(euiTheme.border.width.thick, " solid var(--highContrastHoverIndicatorColor, ").concat(euiTheme.border.color, ");\n      border-radius: ").concat(mathWithUnits2(euiTheme.border.radius.inline, function(x) {
     return x / 2;
   }), ";\n      background-color: transparent;\n      pointer-events: none;\n    }\n  }\n");
 };
-var _highContrastBorder = function _highContrastBorder2(_ref39, color) {
-  var highContrastMode = _ref39.highContrastMode, euiTheme = _ref39.euiTheme;
+var _highContrastBorder = function _highContrastBorder2(_ref310, color) {
+  var highContrastMode = _ref310.highContrastMode, euiTheme = _ref310.euiTheme;
   return highContrastMode ? {
     border: "".concat(euiTheme.border.width.thin, " solid ").concat(color)
   } : {};
@@ -756,9 +756,9 @@ function _arrayLikeToArray4(r, a) {
   return n;
 }
 var BACKGROUND_COLORS = ["transparent", "plain", "subdued", "highlighted", "accent", "accentSecondary", "primary", "success", "warning", "danger"].concat(_toConsumableArray2(SEVERITY_COLORS));
-var euiBackgroundColor = function euiBackgroundColor2(_ref39, color) {
-  var euiTheme = _ref39.euiTheme;
-  var _ref214 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref214.method;
+var euiBackgroundColor = function euiBackgroundColor2(_ref51, color) {
+  var euiTheme = _ref51.euiTheme;
+  var _ref217 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref217.method;
   if (color === "transparent") return "transparent";
   if (method === "transparent") {
     var tokenName = getTokenName2("backgroundTransparent", color);
@@ -768,8 +768,8 @@ var euiBackgroundColor = function euiBackgroundColor2(_ref39, color) {
     return euiTheme.colors[_tokenName];
   }
 };
-var euiBorderColor = function euiBorderColor2(_ref45, color) {
-  var euiTheme = _ref45.euiTheme;
+var euiBorderColor = function euiBorderColor2(_ref410, color) {
+  var euiTheme = _ref410.euiTheme;
   switch (color) {
     case "transparent":
       return euiTheme.border.color;
@@ -782,9 +782,9 @@ var euiBorderColor = function euiBorderColor2(_ref45, color) {
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_helpers.js
 import { euiCanAnimate as euiCanAnimate2, euiCantAnimate as euiCantAnimate2 } from "@elastic/eui-theme-common";
-var euiScrollBarStyles = function euiScrollBarStyles2(_ref39) {
-  var _ref$euiTheme = _ref39.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
-  var _ref214 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref214.thumbColor, _ref2$trackColor = _ref214.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref214.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref214.size, _corner = _ref214.corner;
+var euiScrollBarStyles = function euiScrollBarStyles2(_ref51) {
+  var _ref$euiTheme = _ref51.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
+  var _ref217 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref217.thumbColor, _ref2$trackColor = _ref217.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref217.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref217.size, _corner = _ref217.corner;
   var thumbColor = _thumbColor || transparentize(colors.darkShade, 0.5);
   var scrollBarSize = _size || size.base;
   var scrollBarCorner = _corner || width === "thin" ? "calc(".concat(size.s, " * 0.75)") : size.xs;
@@ -793,8 +793,8 @@ var euiScrollBarStyles = function euiScrollBarStyles2(_ref39) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_padding.js
-var euiPaddingSize = function euiPaddingSize2(_ref39, size) {
-  var euiTheme = _ref39.euiTheme;
+var euiPaddingSize = function euiPaddingSize2(_ref51, size) {
+  var euiTheme = _ref51.euiTheme;
   switch (size) {
     case "none":
       return null;
@@ -806,8 +806,8 @@ var euiPaddingSize = function euiPaddingSize2(_ref39, size) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_states.js
-var euiOutline = function euiOutline2(_ref39) {
-  var euiTheme = _ref39.euiTheme;
+var euiOutline = function euiOutline2(_ref51) {
+  var euiTheme = _ref51.euiTheme;
   var offset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "center";
   var color = arguments.length > 2 ? arguments[2] : void 0;
   var outlineWidth = euiTheme.focus.width;
@@ -831,8 +831,8 @@ var euiFocusRing = function euiFocusRing2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_typography.js
-var euiFontSize = function euiFontSize2(_ref39, scale, options) {
-  var euiTheme = _ref39.euiTheme;
+var euiFontSize = function euiFontSize2(_ref51, scale, options) {
+  var euiTheme = _ref51.euiTheme;
   return {
     fontSize: euiFontSizeFromScale(scale, euiTheme, options),
     lineHeight: euiLineHeightFromBaseline(scale, euiTheme, options)
@@ -848,14 +848,14 @@ var euiTextTruncate = function euiTextTruncate2() {
     "\n  overflow: hidden !important;\n  text-overflow: ellipsis !important;\n  white-space: nowrap !important;\n"
   );
 };
-var euiNumberFormat = function euiNumberFormat2(_ref214) {
-  var euiTheme = _ref214.euiTheme;
+var euiNumberFormat = function euiNumberFormat2(_ref217) {
+  var euiTheme = _ref217.euiTheme;
   return "\n  font-feature-settings: ".concat(euiTheme.font.featureSettings, ", 'tnum' 1;\n");
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_responsive.js
-var euiMaxBreakpoint = function euiMaxBreakpoint2(_ref39, size) {
-  var euiTheme = _ref39.euiTheme;
+var euiMaxBreakpoint = function euiMaxBreakpoint2(_ref310, size) {
+  var euiTheme = _ref310.euiTheme;
   var maxBreakpointSize = euiTheme.breakpoint[size];
   if (maxBreakpointSize) {
     return "@media only screen and (max-width: ".concat(maxBreakpointSize - 1, "px)");
@@ -874,8 +874,8 @@ var _ref = true ? {
   styles: "flex-shrink:0;label:euiSpacer;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiSpacerStyles = function euiSpacerStyles2(_ref214) {
-  var euiTheme = _ref214.euiTheme;
+var euiSpacerStyles = function euiSpacerStyles2(_ref217) {
+  var euiTheme = _ref217.euiTheme;
   return {
     euiSpacer: _ref,
     // Sizes
@@ -916,7 +916,7 @@ var euiHorizontalRuleStyles = function euiHorizontalRuleStyles2(euiThemeContext)
 import { euiBorderStyles, euiShadow, euiShadowHover } from "@elastic/eui-theme-common";
 var euiPanelBorderStyles = function euiPanelBorderStyles2(euiThemeContext, options) {
   var euiTheme = euiThemeContext.euiTheme;
-  var _ref39 = options !== null && options !== void 0 ? options : {}, borderColor = _ref39.borderColor;
+  var _ref310 = options !== null && options !== void 0 ? options : {}, borderColor = _ref310.borderColor;
   return highContrastModeStyles(euiThemeContext, {
     none: "\n      /* Using a pseudo element for the border instead of floating border only\n      because the transparent border might otherwise be visible with arbitrary\n      full-width/height content in light mode. */\n      ".concat(euiBorderStyles(euiThemeContext, {
       borderColor: borderColor !== null && borderColor !== void 0 ? borderColor : euiTheme.colors.borderBaseFloating
@@ -976,8 +976,8 @@ var spinnerSizes = {
   xl: "xl",
   xxl: "xxl"
 };
-var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref39: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
-  var euiTheme = _ref39.euiTheme, highContrastMode = _ref39.highContrastMode;
+var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref51: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
+  var euiTheme = _ref51.euiTheme, highContrastMode = _ref51.highContrastMode;
   var colors = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
   var _colors$border = colors.border, border = _colors$border === void 0 ? euiTheme.components.loadingSpinnerBorder : _colors$border, _colors$highlight = colors.highlight, highlight = _colors$highlight === void 0 ? euiTheme.components.loadingSpinnerHighlight : _colors$highlight;
   if (highContrastMode === "forced") {
@@ -1183,8 +1183,8 @@ var euiTitleStyles = function euiTitleStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/code/code_syntax.styles.js
-var euiCodeTextColors = function euiCodeTextColors2(_ref39) {
-  var euiTheme = _ref39.euiTheme;
+var euiCodeTextColors = function euiCodeTextColors2(_ref51) {
+  var euiTheme = _ref51.euiTheme;
   return {
     backgroundColor: euiTheme.components.codeBackground,
     color: euiTheme.components.codeColor
@@ -1270,8 +1270,8 @@ var _ref6 = true ? {
   styles: "color:inherit;label:inherit;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiTextColorStyles = function euiTextColorStyles2(_ref214) {
-  var euiTheme = _ref214.euiTheme;
+var euiTextColorStyles = function euiTextColorStyles2(_ref217) {
+  var euiTheme = _ref217.euiTheme;
   return {
     euiTextColor: /* @__PURE__ */ css(";label:euiTextColor;"),
     default: /* @__PURE__ */ css("color:", euiTheme.colors.textParagraph, ";;label:default;"),
@@ -1470,13 +1470,13 @@ var getBadgeColors = function getBadgeColors2(euiThemeContext, backgroundColor) 
     color
   };
 };
-var getTextColor = function getTextColor2(_ref39, bgColor) {
-  var euiTheme = _ref39.euiTheme;
+var getTextColor = function getTextColor2(_ref51, bgColor) {
+  var euiTheme = _ref51.euiTheme;
   var textColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb())) ? euiTheme.colors.textGhost : euiTheme.colors.textInk;
   return textColor;
 };
-var getCustomInteractiveColors = function getCustomInteractiveColors2(_ref214, bgColor) {
-  var euiTheme = _ref214.euiTheme;
+var getCustomInteractiveColors = function getCustomInteractiveColors2(_ref217, bgColor) {
+  var euiTheme = _ref217.euiTheme;
   var isDarkColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb()));
   var backgroundHover = isDarkColor ? "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textGhost, " 10%)") : "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textInk, " 10%)");
   var backgroundActive = isDarkColor ? "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textGhost, " 15%)") : "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textInk, " 15%)");
@@ -1645,8 +1645,8 @@ var euiBadgeStyles = function euiBadgeStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/badge/badge_group/badge_group.styles.js
-var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref39) {
-  var euiTheme = _ref39.euiTheme;
+var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref51) {
+  var euiTheme = _ref51.euiTheme;
   return {
     euiBadgeGroup: /* @__PURE__ */ css("display:inline-flex;flex-wrap:wrap;", logicalCSS("max-width", "100%"), ".euiBadge+.euiBadge{", logicalCSS("margin-left", 0), ";};label:euiBadgeGroup;"),
     // Gutter sizes
@@ -2241,8 +2241,8 @@ function _toPrimitive4(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
-var euiFormMaxWidth = function euiFormMaxWidth2(_ref39) {
-  var euiTheme = _ref39.euiTheme;
+var euiFormMaxWidth = function euiFormMaxWidth2(_ref51) {
+  var euiTheme = _ref51.euiTheme;
   return euiTheme.components.forms.maxWidth;
 };
 var euiFormPlaceholderStyles = function euiFormPlaceholderStyles2(euiThemeContext, color) {
@@ -2350,7 +2350,7 @@ var euiFormControlText = function euiFormControlText2(euiThemeContext) {
   return "\n    font-family: ".concat(euiTheme.font.family, ";\n    font-size: ").concat(fontSize, ";\n    color: ").concat(form.textColor, ";\n\n    ").concat(euiPlaceholderPerBrowser(euiFormPlaceholderStyles(euiThemeContext, form.controlPlaceholderText)), "\n  ");
 };
 var euiFormControlDefaultShadow = function euiFormControlDefaultShadow2(euiThemeContext) {
-  var _ref214 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$withBorder = _ref214.withBorder, withBorder = _ref2$withBorder === void 0 ? true : _ref2$withBorder, _ref2$withBackground = _ref214.withBackground, withBackground = _ref2$withBackground === void 0 ? true : _ref2$withBackground, _ref2$withBackgroundC = _ref214.withBackgroundColor, withBackgroundColor = _ref2$withBackgroundC === void 0 ? withBackground : _ref2$withBackgroundC;
+  var _ref217 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$withBorder = _ref217.withBorder, withBorder = _ref2$withBorder === void 0 ? true : _ref2$withBorder, _ref2$withBackground = _ref217.withBackground, withBackground = _ref2$withBackground === void 0 ? true : _ref2$withBackground, _ref2$withBackgroundC = _ref217.withBackgroundColor, withBackgroundColor = _ref2$withBackgroundC === void 0 ? withBackground : _ref2$withBackgroundC;
   var euiTheme = euiThemeContext.euiTheme;
   var form = euiFormVariables(euiThemeContext);
   var border = highContrastModeStyles(euiThemeContext, {
@@ -2583,8 +2583,8 @@ var _ref28 = true ? {
   styles: "display:flex;flex-direction:column;label:euiCheckboxGroup;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiCheckboxGroupStyles = function euiCheckboxGroupStyles2(_ref39) {
-  var euiTheme = _ref39.euiTheme;
+var euiCheckboxGroupStyles = function euiCheckboxGroupStyles2(_ref310) {
+  var euiTheme = _ref310.euiTheme;
   return {
     euiCheckboxGroup: _ref28,
     // Skip css`` to avoid generating a className
@@ -2638,8 +2638,8 @@ var _ref210 = true ? {
   styles: "display:flex;flex-direction:column;label:euiRadioGroup;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiRadioGroupStyles = function euiRadioGroupStyles2(_ref39) {
-  var euiTheme = _ref39.euiTheme;
+var euiRadioGroupStyles = function euiRadioGroupStyles2(_ref310) {
+  var euiTheme = _ref310.euiTheme;
   return {
     euiRadioGroup: _ref210,
     // Skip css`` to avoid generating a className
@@ -2761,8 +2761,8 @@ var buttonStyles = function buttonStyles2(euiThemeContext, switchVars) {
     mini: /* @__PURE__ */ css(logicalSizeCSS(mini.width, mini.height), " border-radius:", mini.height, ";;label:mini;")
   };
 };
-var bodyStyles = function bodyStyles2(euiThemeContext, _ref39) {
-  var colors = _ref39.colors;
+var bodyStyles = function bodyStyles2(euiThemeContext, _ref310) {
+  var colors = _ref310.colors;
   var euiTheme = euiThemeContext.euiTheme;
   var _disabledStyles = function _disabledStyles2(color) {
     return /* @__PURE__ */ css("label:disabled;background-color:", color, ";", highContrastModeStyles(euiThemeContext, {
@@ -2785,8 +2785,8 @@ var bodyStyles = function bodyStyles2(euiThemeContext, _ref39) {
     }
   };
 };
-var iconStyles = function iconStyles2(_ref45, _ref54) {
-  var euiTheme = _ref45.euiTheme;
+var iconStyles = function iconStyles2(_ref410, _ref54) {
+  var euiTheme = _ref410.euiTheme;
   var colors = _ref54.colors, animation = _ref54.animation;
   return {
     euiSwitch__icons: /* @__PURE__ */ css("position:absolute;", logicalCSS("vertical", 0), " ", logicalCSS("left", "-50%"), " ", logicalCSS("width", "200%"), " display:flex;justify-content:space-around;align-items:center;", logicalCSS("padding-horizontal", euiTheme.size.xs), " ", euiCanAnimate, "{transition-property:inset-inline-start;transition-duration:", animation.speed, ";transition-timing-function:", animation.easing, ";};label:euiSwitch__icons;"),
@@ -3313,6 +3313,437 @@ var euiFormControlLayoutDelimited__delimiter = function euiFormControlLayoutDeli
   })), ";;label:euiFormControlLayoutDelimited__delimiter;");
 };
 var euiFormControlLayoutDelimited__input = /* @__PURE__ */ css("box-shadow:none;border:none;text-align:center;", logicalCSS("height", "100%"), ";;label:euiFormControlLayoutDelimited__input;");
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_item_layout/_list_item_layout.styles.js
+import { mathWithUnits as mathWithUnits3 } from "@elastic/eui-theme-common";
+var notDisabledSelector = '&:not([aria-disabled="true"])';
+var ariaDisabledSelector = '&[aria-disabled="true"]';
+var euiListItemVariables = function euiListItemVariables2(_ref310) {
+  var euiTheme = _ref310.euiTheme;
+  var spacing = {
+    horizontal: euiTheme.size.s,
+    vertical: euiTheme.size.xs
+  };
+  var textPadding = {
+    horizontal: euiTheme.size.xs,
+    vertical: mathWithUnits3([spacing.vertical, euiTheme.size.xxs], function(x, y) {
+      return x + y;
+    })
+  };
+  return {
+    spacing,
+    textPadding
+  };
+};
+var listItemCommonStyles = function listItemCommonStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return "\n    display: inline-flex; /* Necessary to make sure it doesn't force the whole popover to be too wide */\n    align-items: center;\n    ".concat(logicalCSS("width", "100%"), "\n    border-radius: ").concat(euiTheme.border.radius.control, ";\n    line-height: ").concat(euiFontSize(euiThemeContext, "s").lineHeight, ";\n    font-size: ").concat(euiFontSize(euiThemeContext, "s").fontSize, ";\n    color: ").concat(euiTheme.colors.textParagraph, ";\n    overflow: hidden;\n  ");
+};
+var _ref39 = true ? {
+  name: "8595p9-isDisabled",
+  styles: "cursor:not-allowed;label:isDisabled;"
+} : {
+  name: "8595p9-isDisabled",
+  styles: "cursor:not-allowed;label:isDisabled;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref214 = true ? {
+  name: "2nxums-buttonIsDisabled",
+  styles: "&[aria-disabled='true']{pointer-events:none;>*{pointer-events:none;}};label:buttonIsDisabled;"
+} : {
+  name: "2nxums-buttonIsDisabled",
+  styles: "&[aria-disabled='true']{pointer-events:none;>*{pointer-events:none;}};label:buttonIsDisabled;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListItemLayoutStyles = function euiListItemLayoutStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiListItemVariables = euiListItemVariables(euiThemeContext), spacing = _euiListItemVariables.spacing, textPadding = _euiListItemVariables.textPadding;
+  var sharedFlexStyles = "\n    display: flex;\n    align-items: center;\n    flex-shrink: 0;\n  ";
+  var highlightedStyles = "\n    background-color: ".concat(euiTheme.colors.backgroundBaseInteractiveHover, ";\n\n    ").concat(highContrastModeStyles(euiThemeContext, {
+    preferred: "\n        text-decoration: underline;\n\n        &:not(:focus, :focus-visible) {\n          /* uses outline to prevent layout jumps between navigated items */\n          outline: ".concat(euiTheme.border.width.thin, " solid ").concat(euiTheme.colors.borderBasePlain, ";\n          outline-offset: -").concat(euiTheme.border.width.thin, ";\n        }\n      ")
+  }), "\n  ");
+  return {
+    euiListItemLayout: /* @__PURE__ */ css(listItemCommonStyles(euiThemeContext), " ", logicalCSS("padding-horizontal", spacing.horizontal), ";;label:euiListItemLayout;"),
+    euiListItemLayout__action: /* @__PURE__ */ css("display:flex;flex-grow:1;", logicalCSS("width", "100%"), " color:inherit;overflow:hidden;;label:euiListItemLayout__action;"),
+    euiListItemLayout__content: /* @__PURE__ */ css(logicalCSS("width", "100%"), " display:flex;align-items:center;gap:", spacing.horizontal, ";;label:euiListItemLayout__content;"),
+    euiListItemLayout__text: /* @__PURE__ */ css("flex-grow:1;", logicalCSS("padding-vertical", textPadding.vertical), " ", euiFontSize(euiThemeContext, "s"), " text-align:start;.euiHealth{vertical-align:middle;}>*+*{", logicalCSS("margin-top", euiTheme.size.xxs), ";};label:euiListItemLayout__text;"),
+    textWrap: {
+      truncate: /* @__PURE__ */ css(euiTextTruncate(), ";label:truncate;"),
+      wrap: /* @__PURE__ */ css(";label:wrap;")
+    },
+    euiListItemLayout__prepend: /* @__PURE__ */ css(sharedFlexStyles, " gap:", spacing.horizontal, ";;label:euiListItemLayout__prepend;"),
+    euiListItemLayout__append: /* @__PURE__ */ css(sharedFlexStyles, " gap:", spacing.horizontal, ";;label:euiListItemLayout__append;"),
+    euiListItemLayout__icon: /* @__PURE__ */ css(sharedFlexStyles, ";;label:euiListItemLayout__icon;"),
+    isInteractive: /* @__PURE__ */ css("cursor:pointer;&:hover{", highlightedStyles, ";};label:isInteractive;"),
+    isDisabled: /* @__PURE__ */ css("color:", euiTheme.colors.textDisabled, ";cursor:not-allowed;", notDisabledSelector, "{background-color:transparent;};label:isDisabled;"),
+    buttonIsDisabled: _ref214,
+    isFocused: /* @__PURE__ */ css(highlightedStyles, ";;label:isFocused;"),
+    isSelected: /* @__PURE__ */ css("color:", euiTheme.colors.textPrimary, ";", notDisabledSelector, "{background-color:", euiTheme.colors.backgroundBaseInteractiveSelect, ";", highContrastModeStyles(euiThemeContext, {
+      preferred: "\n          outline: ".concat(euiTheme.border.width.thin, " solid ").concat(euiTheme.colors.borderStrongPrimary, ";\n          outline-offset: -").concat(euiTheme.border.width.thin, ";\n        ")
+    }), ";&:hover{background-color:", euiTheme.colors.backgroundBaseInteractiveSelectHover, ";}}&", ariaDisabledSelector, "{&:hover{background-color:", euiTheme.colors.backgroundBaseInteractiveHover, ";}}.euiIcon,.euiButtonIcon{color:inherit;}.euiListItemLayout__prepend,.euiListItemLayout__append{.euiIcon{color:", euiTheme.colors.textPrimary, ";}};label:isSelected;"),
+    isSelectedFocused: /* @__PURE__ */ css(notDisabledSelector, "{background-color:", euiTheme.colors.backgroundBaseInteractiveSelectHover, ";}&", ariaDisabledSelector, "{background-color:", euiTheme.colors.backgroundBaseInteractiveHover, ";};label:isSelectedFocused;"),
+    tooltip: {
+      isDisabled: _ref39
+    },
+    externalIcon: /* @__PURE__ */ css("color:", euiTheme.colors.textDisabled, ";;label:externalIcon;")
+  };
+};
+var euiListItemLayoutWrapperStyles = function euiListItemLayoutWrapperStyles2(euiThemeContext) {
+  var _euiListItemVariables2 = euiListItemVariables(euiThemeContext), spacing = _euiListItemVariables2.spacing;
+  return {
+    euiListItemLayout__wrapper: /* @__PURE__ */ css(listItemCommonStyles(euiThemeContext), "flex-shrink:0;list-style:none;;label:euiListItemLayout__wrapper;"),
+    hasExtraAction: /* @__PURE__ */ css(logicalCSS("padding-right", spacing.horizontal), ";;label:hasExtraAction;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/list_group.styles.js
+var _ref40 = true ? {
+  name: "2tmo78-euiListGroup",
+  styles: "display:flex;flex-direction:column;label:euiListGroup;"
+} : {
+  name: "2tmo78-euiListGroup",
+  styles: "display:flex;flex-direction:column;label:euiListGroup;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListGroupStyles = function euiListGroupStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var formMaxWidth = euiFormMaxWidth(euiThemeContext);
+  return {
+    // Base
+    euiListGroup: _ref40,
+    bordered: /* @__PURE__ */ css("border-radius:", euiTheme.border.radius.panel, ";border:", euiTheme.border.thin, ";;label:bordered;"),
+    maxWidthDefault: /* @__PURE__ */ css(logicalCSS("max-width", formMaxWidth), ";;label:maxWidthDefault;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/list_group_item.styles.js
+var _ref41 = true ? {
+  name: "1o0ywoj-euiListGroupItem__inner",
+  styles: "display:flex;align-items:center;flex-grow:1;max-inline-size:100%;overflow:hidden;font-weight:inherit;label:euiListGroupItem__inner;"
+} : {
+  name: "1o0ywoj-euiListGroupItem__inner",
+  styles: "display:flex;align-items:center;flex-grow:1;max-inline-size:100%;overflow:hidden;font-weight:inherit;label:euiListGroupItem__inner;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref215 = true ? {
+  name: "2fwdx2-euiListGroupItem",
+  styles: "position:relative;label:euiListGroupItem;"
+} : {
+  name: "2fwdx2-euiListGroupItem",
+  styles: "position:relative;label:euiListGroupItem;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListGroupItemStyles = function euiListGroupItemStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return {
+    // Base
+    euiListGroupItem: _ref215,
+    euiListGroupItem__inner: _ref41,
+    // Colors
+    primary: /* @__PURE__ */ css("color:", euiButtonColor(euiThemeContext, "primary").color, ";;label:primary;"),
+    text: /* @__PURE__ */ css("color:", euiButtonColor(euiThemeContext, "text").color, ";;label:text;"),
+    subdued: /* @__PURE__ */ css("color:", euiTheme.colors.textSubdued, ";;label:subdued;")
+  };
+};
+var euiListGroupItemTooltipStyles = {
+  // Base
+  euiListGroupItem__tooltip: /* @__PURE__ */ css("display:inline-flex;", logicalCSS("width", "100%"), ";;label:euiListGroupItem__tooltip;")
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/list_group_item_extra_action.styles.js
+var _ref45 = true ? {
+  name: "ls7zqx-alwaysShow",
+  styles: "opacity:1;label:alwaysShow;"
+} : {
+  name: "ls7zqx-alwaysShow",
+  styles: "opacity:1;label:alwaysShow;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref216 = true ? {
+  name: "13tj7xa-hoverStyles",
+  styles: ".euiListGroupItem:hover &,.euiListGroupItem:hover+&,.euiListGroupItem__button:focus+&,&:hover,&:focus{opacity:1;};label:hoverStyles;"
+} : {
+  name: "13tj7xa-hoverStyles",
+  styles: ".euiListGroupItem:hover &,.euiListGroupItem:hover+&,.euiListGroupItem__button:focus+&,&:hover,&:focus{opacity:1;};label:hoverStyles;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListGroupItemExtraActionStyles = function euiListGroupItemExtraActionStyles2(_ref310) {
+  var euiTheme = _ref310.euiTheme;
+  return {
+    euiListGroupItemExtraAction: /* @__PURE__ */ css("flex-shrink:0;opacity:0;", euiCanAnimate, "{transition:opacity ", euiTheme.animation.fast, ";};label:euiListGroupItemExtraAction;"),
+    hoverStyles: _ref216,
+    alwaysShow: _ref45
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/pinnable_list_group/pinnable_list_group.styles.js
+var _ref46 = true ? {
+  name: "1du20m7-euiPinnableListGroup__itemExtraAction",
+  styles: "svg{transform:rotate(45deg);};label:euiPinnableListGroup__itemExtraAction;"
+} : {
+  name: "1du20m7-euiPinnableListGroup__itemExtraAction",
+  styles: "svg{transform:rotate(45deg);};label:euiPinnableListGroup__itemExtraAction;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiPinnableListGroupItemExtraActionStyles = function euiPinnableListGroupItemExtraActionStyles2(_ref217) {
+  var euiTheme = _ref217.euiTheme;
+  return {
+    // Base
+    euiPinnableListGroup__itemExtraAction: _ref46,
+    // Variants
+    pinned: /* @__PURE__ */ css("&:not(:hover, :focus){color:", makeHighContrastColor(euiTheme.colors.lightShade)(euiTheme), ";};label:pinned;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/key_pad_menu/key_pad_menu.styles.js
+var euiKeyPadMenuVariables = function euiKeyPadMenuVariables2(_ref51) {
+  var euiTheme = _ref51.euiTheme;
+  return {
+    euiKeyPadMenuSize: mathWithUnits(euiTheme.size.base, function(x) {
+      return x * 6;
+    }),
+    euiKeyPadMenuMarginSize: euiTheme.size.xs
+  };
+};
+var euiKeyPadMenuStyles = function euiKeyPadMenuStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiKeyPadMenuVariabl = euiKeyPadMenuVariables(euiThemeContext), euiKeyPadMenuSize = _euiKeyPadMenuVariabl.euiKeyPadMenuSize, euiKeyPadMenuMarginSize = _euiKeyPadMenuVariabl.euiKeyPadMenuMarginSize;
+  return {
+    euiKeyPadMenu: /* @__PURE__ */ css("display:flex;flex-direction:row;flex-wrap:wrap;", logicalCSS("width", mathWithUnits([euiKeyPadMenuSize, euiKeyPadMenuMarginSize], function(x, y) {
+      return x * 3 + y * 3;
+    })), " ", logicalCSS("max-width", "100%"), " gap:", euiKeyPadMenuMarginSize, ";;label:euiKeyPadMenu;"),
+    // Checkable = Fieldset and Legend
+    euiKeyPadMenu__legend: /* @__PURE__ */ css(logicalCSS("margin-bottom", euiTheme.size.s), ";;label:euiKeyPadMenu__legend;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/accessibility/screen_reader_only/screen_reader_only.styles.js
+var euiScreenReaderOnly = function euiScreenReaderOnly2() {
+  return "\n  /* Take the element out of the layout */\n  position: absolute;\n  /* Keep it vertically inline */\n  ".concat(logicalCSS("top", "auto"), "\n  /* Chrome requires a left value, and Selenium (used by Kibana's FTR) requires an off-screen position for its .getVisibleText() to not register SR-only text */\n  ").concat(logicalCSS("left", "-10000px"), "\n  /* The element must have a size (for some screen readers) */\n  ").concat(logicalSizeCSS("1px", "1px"), "\n  /* But reduce the visible size to nothing */\n  clip: rect(0 0 0 0);\n  clip-path: inset(50%);\n  /* And ensure no overflows occur */\n  overflow: hidden;\n  /* Chrome requires the negative margin to not cause overflows of parent containers */\n  margin: -1px;\n");
+};
+var euiScreenReaderOnlyStyles = {
+  euiScreenReaderOnly: /* @__PURE__ */ css(euiScreenReaderOnly(), ";label:euiScreenReaderOnly;"),
+  "euiScreenReaderOnly-showOnFocus": /* @__PURE__ */ css("&:not(:focus, :active, :focus-within){", euiScreenReaderOnly(), ";};label:euiScreenReaderOnly-showOnFocus;")
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/description_list/description_list.styles.js
+var _ref47 = true ? {
+  name: "zr5fhc-column",
+  styles: "display:grid;grid-template-columns:minmax(auto, max-content) minmax(auto, max-content);align-items:baseline;label:column;"
+} : {
+  name: "zr5fhc-column",
+  styles: "display:grid;grid-template-columns:minmax(auto, max-content) minmax(auto, max-content);align-items:baseline;label:column;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiDescriptionListStyles = function euiDescriptionListStyles2(euiThemeContext) {
+  return {
+    euiDescriptionList: /* @__PURE__ */ css(";label:euiDescriptionList;"),
+    // Types
+    row: /* @__PURE__ */ css(";label:row;"),
+    inline: /* @__PURE__ */ css(";label:inline;"),
+    column: _ref47,
+    columnGap: {
+      s: /* @__PURE__ */ css("column-gap:", euiThemeContext.euiTheme.size.s, ";;label:s;"),
+      m: /* @__PURE__ */ css("column-gap:", euiThemeContext.euiTheme.size.xl, ";;label:m;")
+    },
+    rowGap: {
+      s: /* @__PURE__ */ css("row-gap:", euiThemeContext.euiTheme.size.s, ";;label:s;"),
+      m: /* @__PURE__ */ css("row-gap:", euiThemeContext.euiTheme.size.m, ";;label:m;")
+    },
+    // Alignment
+    center: /* @__PURE__ */ css(logicalTextAlignCSS("center"), ";;label:center;"),
+    left: /* @__PURE__ */ css(logicalTextAlignCSS("left"), ";;label:left;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/description_list/description_list_title.styles.js
+var euiDescriptionListTitleStyles = function euiDescriptionListTitleStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme, colorMode = euiThemeContext.colorMode;
+  return {
+    euiDescriptionList__title: /* @__PURE__ */ css(euiTextBreakWord(), ";;label:euiDescriptionList__title;"),
+    // Types
+    row: /* @__PURE__ */ css(";label:row;"),
+    column: /* @__PURE__ */ css(";label:column;"),
+    inline: /* @__PURE__ */ css("display:inline;border-radius:", euiTheme.border.radius.inline, ";font-weight:", euiTheme.font.weight.medium, ";background-color:", colorMode === "DARK" ? euiTheme.colors.lightShade : euiTheme.colors.lightestShade, ";", logicalCSS("margin-vertical", "0"), " ", logicalCSS("margin-horizontal", euiTheme.size.xs), " ", colorMode === "DARK" && "color: ".concat(euiTheme.colors.textHeading, ";"), "&:first-of-type{", logicalCSS("margin-left", "0"), ";};label:inline;"),
+    // This nested block handles just the font styling based on compressed and reverse
+    fontStyles: {
+      normal: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xs"), ";;label:normal;"),
+      reverse: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), ";;label:reverse;"),
+      compressed: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xxs"), ";;label:compressed;"),
+      // reverse's compressed size, without the inline type's pill padding
+      compressedReverse: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "xs"), ";;label:compressedReverse;")
+    },
+    // Inline types
+    inlineStyles: {
+      normal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), " ", logicalCSS("padding-vertical", "1px"), " ", logicalCSS("padding-horizontal", euiTheme.size.xs), ";;label:normal;"),
+      compressed: /* @__PURE__ */ css("font-size:", euiFontSize(euiThemeContext, "xs").fontSize, ";line-height:", euiTheme.font.lineHeightMultiplier, ";", logicalCSS("padding-vertical", "0"), " ", logicalCSS("padding-horizontal", euiTheme.size.xs), ";;label:compressed;")
+    },
+    // Alignment
+    right: /* @__PURE__ */ css(logicalTextAlignCSS("right"), ";;label:right;"),
+    // Gutter
+    // Add margin only to the non-first <dt>.
+    s: /* @__PURE__ */ css("&:not(:first-of-type){", logicalCSS("margin-top", euiTheme.size.s), ";};label:s;"),
+    m: /* @__PURE__ */ css("&:not(:first-of-type){", logicalCSS("margin-top", euiTheme.size.base), ";};label:m;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/description_list/description_list_description.styles.js
+var _ref48 = true ? {
+  name: "1yn9gig-inline",
+  styles: "display:inline;label:inline;"
+} : {
+  name: "1yn9gig-inline",
+  styles: "display:inline;label:inline;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiDescriptionListDescriptionStyles = function euiDescriptionListDescriptionStyles2(euiThemeContext) {
+  return {
+    euiDescriptionList__description: /* @__PURE__ */ css(";label:euiDescriptionList__description;"),
+    // Types
+    row: /* @__PURE__ */ css(";label:row;"),
+    column: /* @__PURE__ */ css(";label:column;"),
+    inline: _ref48,
+    // This nested block handles just the font styling based on compressed and reverse
+    fontStyles: {
+      normal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), ";;label:normal;"),
+      reverse: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xs"), ";;label:reverse;"),
+      compressed: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xxs"), ";;label:compressed;"),
+      compressedNormal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "xs"), ";;label:compressedNormal;")
+    },
+    // Nested inline styles for type and font
+    inlineStyles: {
+      compressed: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "xs"), ";;label:compressed;"),
+      normal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), ";;label:normal;")
+    },
+    // Column types should align description text to the left when EuiDecriptionList is centered
+    left: /* @__PURE__ */ css(logicalTextAlignCSS("left"), ";;label:left;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/side_nav/side_nav.styles.js
+var _ref49 = true ? {
+  name: "f0todx-euiSideNav__mobileToggleContent",
+  styles: "justify-content:space-between;label:euiSideNav__mobileToggleContent;"
+} : {
+  name: "f0todx-euiSideNav__mobileToggleContent",
+  styles: "justify-content:space-between;label:euiSideNav__mobileToggleContent;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiSideNavMobileStyles = function euiSideNavMobileStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var fastTransition = "".concat(euiTheme.animation.extraFast, " ").concat(euiTheme.animation.resistance);
+  var slowTransition = "".concat(euiTheme.animation.extraSlow, " ").concat(euiTheme.animation.resistance);
+  return {
+    // Mobile button
+    euiSideNav__mobileToggle: /* @__PURE__ */ css(logicalCSS("width", "100%"), " ", logicalCSS("height", "auto"), "padding:1em;font-size:inherit;text-align:start;border-radius:0;", logicalCSS("border-bottom", euiTheme.border.thin), ";;label:euiSideNav__mobileToggle;"),
+    euiSideNav__mobileToggleContent: _ref49,
+    // Mobile content
+    content: {
+      euiSideNav__mobileContent: /* @__PURE__ */ css(euiCanAnimate, "{transition:max-block-size ", fastTransition, ",padding-block ", fastTransition, ",opacity ", slowTransition, ",visibility ", slowTransition, ";};label:euiSideNav__mobileContent;"),
+      hidden: /* @__PURE__ */ css("overflow:hidden;visibility:hidden;opacity:0;max-block-size:0;padding-inline:", euiTheme.size.l, ";;label:hidden;"),
+      open: /* @__PURE__ */ css("visibility:visible;opacity:1;max-block-size:5000px;padding:", euiTheme.size.l, ";;label:open;")
+    }
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/side_nav/side_nav_item.styles.js
+function _typeof7(o) {
+  "@babel/helpers - typeof";
+  return _typeof7 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+    return typeof o2;
+  } : function(o2) {
+    return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+  }, _typeof7(o);
+}
+function ownKeys5(e, r) {
+  var t = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(e);
+    r && (o = o.filter(function(r2) {
+      return Object.getOwnPropertyDescriptor(e, r2).enumerable;
+    })), t.push.apply(t, o);
+  }
+  return t;
+}
+function _objectSpread5(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {};
+    r % 2 ? ownKeys5(Object(t), true).forEach(function(r2) {
+      _defineProperty5(e, r2, t[r2]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys5(Object(t)).forEach(function(r2) {
+      Object.defineProperty(e, r2, Object.getOwnPropertyDescriptor(t, r2));
+    });
+  }
+  return e;
+}
+function _defineProperty5(e, r, t) {
+  return (r = _toPropertyKey5(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: true, configurable: true, writable: true }) : e[r] = t, e;
+}
+function _toPropertyKey5(t) {
+  var i = _toPrimitive5(t, "string");
+  return "symbol" == _typeof7(i) ? i : i + "";
+}
+function _toPrimitive5(t, r) {
+  if ("object" != _typeof7(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof7(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+var euiSideNavItemStyles = function euiSideNavItemStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var emphasizedBackgroundColor = euiTheme.components.sideNavItemEmphasizedBackground;
+  return {
+    euiSideNavItem: /* @__PURE__ */ css(";label:euiSideNavItem;"),
+    emphasized: /* @__PURE__ */ css("background-color:", emphasizedBackgroundColor, ";color:", euiTheme.colors.textHeading, ";box-shadow:100px 0 0 0 ", emphasizedBackgroundColor, ",-100px 0 0 0 ", emphasizedBackgroundColor, ";& &{background-color:transparent;box-shadow:none;};label:emphasized;"),
+    // Layout
+    root: /* @__PURE__ */ css(logicalCSS("padding-bottom", euiTheme.size.s), " &+&{", logicalCSS("margin-top", euiTheme.size.s), " ", logicalCSS("padding-top", euiTheme.size.s), ";};label:root;"),
+    trunk: /* @__PURE__ */ css("color:", euiTheme.colors.textHeading, ";;label:trunk;"),
+    branch: /* @__PURE__ */ css("position:relative;color:", euiTheme.colors.textSubdued, ";&::after{position:absolute;content:'';", logicalCSS("vertical", 0), " ", logicalCSS("left", 0), " ", logicalCSS("border-left", euiTheme.border.thin), ";}&:last-of-type::after{", logicalCSS("height", euiTheme.size.m), ";};label:branch;"),
+    items: {
+      euiSideNavItem__items: /* @__PURE__ */ css(";label:euiSideNavItem__items;"),
+      rootWithIcon: /* @__PURE__ */ css(logicalCSS("margin-left", euiTheme.size.l), ";;label:rootWithIcon;"),
+      trunk: /* @__PURE__ */ css(logicalCSS("width", "100%"), logicalCSS("margin-left", euiTheme.size.s), ";;label:trunk;"),
+      branch: /* @__PURE__ */ css(logicalCSS("margin-left", euiTheme.size.base), ";;label:branch;")
+    }
+  };
+};
+var _ref50 = true ? {
+  name: "1nca8qt-euiSideNavItemButton__label",
+  styles: "flex-grow:1;label:euiSideNavItemButton__label;"
+} : {
+  name: "1nca8qt-euiSideNavItemButton__label",
+  styles: "flex-grow:1;label:euiSideNavItemButton__label;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiSideNavItemButtonStyles = function euiSideNavItemButtonStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var lineHeightOverride = euiFontSize(euiThemeContext, "m").lineHeight;
+  var paddingMarginOffset = "\n    padding-inline: ".concat(euiTheme.size.s, ";\n    ").concat(logicalCSS("margin-left", "-".concat(euiTheme.size.s)), "\n    ").concat(logicalCSS("width", "calc(100% + ".concat(mathWithUnits(euiTheme.size.s, function(x) {
+    return x * 2;
+  }), ")")), ";\n  ");
+  return {
+    euiSideNavItemButton: /* @__PURE__ */ css("display:block;", logicalCSS("width", "100%"), "padding-block:", euiTheme.size.xxs, ";font-size:", euiFontSize(euiThemeContext, "s").fontSize, ";line-height:", lineHeightOverride, ";text-align:start;color:inherit;&:is(a, button):not(:disabled){&:hover{cursor:pointer;}&:hover,&:focus{.euiSideNavItemButton__label{text-decoration:underline;}}}&:disabled{cursor:not-allowed;color:", euiTheme.colors.textDisabled, ";};label:euiSideNavItemButton;"),
+    selected: /* @__PURE__ */ css("color:", euiTheme.colors.textPrimary, ";font-weight:", euiTheme.font.weight.bold, ";.euiSideNavItemButton__label{text-decoration:underline;};label:selected;"),
+    emphasized: /* @__PURE__ */ css("font-weight:", euiTheme.font.weight.bold, ";;label:emphasized;"),
+    // Layout
+    root: /* @__PURE__ */ css(logicalCSS("margin-bottom", euiTheme.size.xs), " padding-block:0;", paddingMarginOffset, ";;label:root;"),
+    trunk: /* @__PURE__ */ css(paddingMarginOffset, ";;label:trunk;"),
+    branch: /* @__PURE__ */ css("position:relative;padding-inline:", euiTheme.size.s, ";&::after{position:absolute;content:'';", logicalCSS("top", euiTheme.size.m), " ", logicalCSS("left", 0), " ", logicalCSS("width", euiTheme.size.xs), " ", logicalCSS("border-bottom", euiTheme.border.thin), ";};label:branch;"),
+    // Child elements
+    euiSideNavItemButton__content: /* @__PURE__ */ css("display:flex;align-items:center;gap:", euiTheme.size.s, ";;label:euiSideNavItemButton__content;"),
+    label: {
+      euiSideNavItemButton__label: _ref50,
+      root: _objectSpread5(_objectSpread5({}, euiTitle(euiThemeContext, "xxs")), {}, {
+        lineHeight: lineHeightOverride,
+        color: "inherit"
+      })
+    }
+  };
+};
 export {
   EuiFormControlLayoutClearButtonStyles,
   euiBackgroundColor,
@@ -3331,6 +3762,9 @@ export {
   euiCheckboxGroupStyles,
   euiCheckboxStyles,
   euiDescribedFormGroupStyles,
+  euiDescriptionListDescriptionStyles,
+  euiDescriptionListStyles,
+  euiDescriptionListTitleStyles,
   euiFieldNumberStyles,
   euiFieldPasswordStyles,
   euiFieldSearchStyles,
@@ -3339,6 +3773,7 @@ export {
   euiFlexGroupStyles,
   euiFlexItemStyles,
   euiFocusRing,
+  euiFontSize,
   euiFormControlLayoutDelimitedStyles,
   euiFormControlLayoutDelimited__delimiter,
   euiFormControlLayoutDelimited__input,
@@ -3354,15 +3789,28 @@ export {
   euiFormRowStyles,
   euiFormVariables,
   euiHorizontalRuleStyles,
+  euiKeyPadMenuStyles,
+  euiKeyPadMenuVariables,
   euiLinkStyles,
+  euiListGroupItemExtraActionStyles,
+  euiListGroupItemStyles,
+  euiListGroupItemTooltipStyles,
+  euiListGroupStyles,
+  euiListItemLayoutStyles,
+  euiListItemLayoutWrapperStyles,
   euiLoadingSpinnerStyles,
   euiNotificationBadgeStyles,
   euiPaddingSize,
   euiPanelStyles,
+  euiPinnableListGroupItemExtraActionStyles,
   euiRadioGroupStyles,
   euiRadioStyles,
+  euiScreenReaderOnly,
   euiScrollBarStyles,
   euiSelectStyles,
+  euiSideNavItemButtonStyles,
+  euiSideNavItemStyles,
+  euiSideNavMobileStyles,
   euiSpacerStyles,
   euiSpinnerBorderColorsCSS,
   euiSwitchStyles,
@@ -3370,11 +3818,15 @@ export {
   euiTextAreaStyles,
   euiTextColorStyles,
   euiTextStyles,
+  euiTextTruncate,
   euiTitleStyles,
   getBadgeColors,
   getCustomInteractiveColors,
   getIsValidColor,
   getTextColor,
+  highContrastModeStyles,
+  logicalCSS,
+  logicalSizeCSS,
   resetStyles,
   transparentize
 };

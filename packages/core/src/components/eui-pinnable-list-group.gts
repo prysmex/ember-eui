@@ -1,16 +1,22 @@
 import Component from '@glimmer/component';
-import { fn } from '@ember/helper';
-import { on } from '@ember/modifier';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
-import EuiButtonIcon from './eui-button-icon.gts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiPinnableListGroupItemExtraActionStyles } from '../utils/eui/styles.generated.ts';
 import EuiListGroup from './eui-list-group.gts';
 import EuiListGroupItem from './eui-list-group-item.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiListGroupSignature } from './eui-list-group';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type {
+  EuiListGroupItemColor,
+  EuiListGroupItemExtraActionProps
+} from './eui-list-group-item';
+import type { CSSInterpolation } from '@emotion/css/create-instance';
+import type { ComponentLike } from '@glint/template';
 
 export interface EuiPinnableListGroupItem {
   /** The item's text. */
@@ -29,6 +35,17 @@ export interface EuiPinnableListGroupItem {
   pinned?: boolean;
   /** Set `false` for items that cannot be pinned. Defaults to `true`. */
   pinnable?: boolean;
+  /** Target of the link. */
+  target?: string;
+  /** Wraps long text instead of truncating it. */
+  wrapText?: boolean;
+  /** Class for the item. */
+  className?: string;
+  /**
+   * The item's own extra action; when set, no pin button is added (as
+   * upstream).
+   */
+  extraAction?: ComponentLike | EuiListGroupItemExtraActionProps;
   [key: string]: unknown;
 }
 
@@ -50,42 +67,23 @@ export interface EuiPinnableListGroupSignature {
     unpinTitle?: (item: EuiPinnableListGroupItem) => string;
     /** Adds a border around the list. */
     bordered?: boolean;
-    /** Removes the padding around the list. */
+    /** @deprecated Has no effect: latest EUI lists have no padding. */
     flush?: boolean;
-    /** Space between items: `'none'` or `'s'`. Defaults to `'s'`. */
+    /** @deprecated Has no effect: latest EUI lists have no item gutters. */
     gutterSize?: EuiListGroupSignature['Args']['gutterSize'];
-    /** Limits the list's width: `true` for EUI's default, or a CSS width. */
+    /**
+     * Limits the list's width: `true` for EUI's default (400px), `false` for
+     * none, or a CSS width. Defaults to `true`.
+     */
     maxWidth?: EuiListGroupSignature['Args']['maxWidth'];
-    /** Text size of the items: `'xs'`, `'s'`, `'m'` or `'l'`. */
+    /** @deprecated Has no effect: latest EUI list items have one size. */
     size?: 'xs' | 's' | 'm' | 'l';
-    /** Text color of the items: `'primary'`, `'text'`, `'subdued'`, `'ghost'`. */
-    color?: 'primary' | 'text' | 'subdued' | 'ghost' | 'inherit';
+    /** Color of the items: `'text'`, `'primary'` or `'subdued'`. Defaults to `'text'`. */
+    color?: EuiListGroupItemColor;
+    /** Wraps long item text instead of truncating it. */
+    wrapText?: boolean;
   };
 }
-
-interface PinButtonSignature {
-  Args: {
-    item: EuiPinnableListGroupItem;
-    title: string;
-    onPinClick: (item: EuiPinnableListGroupItem) => void;
-  };
-}
-
-const PinButton: TemplateOnlyComponent<PinButtonSignature> = <template>
-  <EuiButtonIcon
-    class="euiListGroupItem__extraAction euiPinnableListGroup__itemExtraAction
-      {{if
-        @item.pinned
-        'euiPinnableListGroup__itemExtraAction-pinned euiListGroupItem__extraAction-alwaysShow'
-      }}"
-    @iconType="pinFilled"
-    @iconSize="s"
-    @color="primary"
-    title={{@title}}
-    aria-label={{@title}}
-    {{on "click" (fn @onPinClick @item)}}
-  />
-</template>;
 
 export default class EuiPinnableListGroup extends Component<EuiPinnableListGroupSignature> {
   @service declare euiI18n: EuiI18n;
@@ -94,47 +92,76 @@ export default class EuiPinnableListGroup extends Component<EuiPinnableListGroup
     if (item.pinned) {
       return (
         this.args.unpinTitle?.(item) ??
-        this.euiI18n.lookupToken('euiPinnableListGroup.pinnedExtraActionLabel', 'Unpin item')
+        this.euiI18n.lookupToken(
+          'euiPinnableListGroup.pinnedExtraActionLabel',
+          'Unpin item'
+        )
       );
     }
 
     return (
       this.args.pinTitle?.(item) ??
-      this.euiI18n.lookupToken('euiPinnableListGroup.pinExtraActionLabel', 'Pin item')
+      this.euiI18n.lookupToken(
+        'euiPinnableListGroup.pinExtraActionLabel',
+        'Pin item'
+      )
     );
   };
 
-  isPinnable = (item: EuiPinnableListGroupItem): boolean => item.pinnable !== false;
+  /** Pin button styles (upstream rotation, pinned color). */
+  @cached
+  get pinCss(): { pinned: CSSInterpolation; unpinned: CSSInterpolation } {
+    const styles = useEuiBorealisStyles(
+      getEuiThemeContext(this),
+      euiPinnableListGroupItemExtraActionStyles
+    );
+    const base = styles.euiPinnableListGroup__itemExtraAction;
+    return { pinned: [base, styles.pinned], unpinned: base };
+  }
+
+  /**
+   * Upstream adds the pin action unless the item is not pinnable or brings
+   * its own `extraAction`.
+   */
+  extraAction = (
+    item: EuiPinnableListGroupItem
+  ): ComponentLike | EuiListGroupItemExtraActionProps | undefined => {
+    if (item.extraAction) return item.extraAction;
+    if (item.pinnable === false) return undefined;
+    const title = this.title(item);
+    return {
+      iconType: 'pinFilled',
+      iconSize: 's',
+      className: 'euiPinnableListGroup__itemExtraAction',
+      css: item.pinned ? this.pinCss.pinned : this.pinCss.unpinned,
+      alwaysShow: Boolean(item.pinned),
+      'aria-label': title,
+      title,
+      onClick: () => this.args.onPinClick(item)
+    };
+  };
 
   <template>
     <EuiListGroup
       class="euiPinnableListGroup"
       @bordered={{@bordered}}
-      @flush={{@flush}}
-      @gutterSize={{@gutterSize}}
       @maxWidth={{@maxWidth}}
+      @color={{@color}}
+      @wrapText={{@wrapText}}
       ...attributes
     >
       {{#each @listItems as |item|}}
         <EuiListGroupItem
-          class="euiPinnableListGroup__item"
+          class="euiPinnableListGroup__item {{item.className}}"
           @label={{item.label}}
           @href={{item.href}}
+          @target={{item.target}}
           @onClick={{item.onClick}}
           @iconType={{item.iconType}}
           @isActive={{item.isActive}}
           @isDisabled={{item.isDisabled}}
-          @size={{@size}}
-          @color={{@color}}
-          @extraAction={{if
-            (this.isPinnable item)
-            (component
-              PinButton
-              item=item
-              title=(this.title item)
-              onPinClick=@onPinClick
-            )
-          }}
+          @wrapText={{item.wrapText}}
+          @extraAction={{this.extraAction item}}
         />
       {{/each}}
     </EuiListGroup>

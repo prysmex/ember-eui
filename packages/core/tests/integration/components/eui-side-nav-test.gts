@@ -41,7 +41,8 @@ module('Integration | Component | eui-side-nav', function (hooks) {
 
     assert.dom('nav.euiSideNav').exists();
     assert.dom('.euiSideNavItem--root').exists({ count: 2 });
-    assert.dom('.euiSideNavItem--root').hasClass('euiSideNavItem--hasChildItems');
+    // Upstream spells the open-children modifier `-hasChildItems`.
+    assert.dom('.euiSideNavItem--root').hasClass('euiSideNavItem-hasChildItems');
     assert.dom('.euiSideNavItemButton-isSelected').hasText('Users');
     assert.dom('button.euiSideNavItemButton[disabled]').hasText('Sources');
 
@@ -81,8 +82,11 @@ module('Integration | Component | eui-side-nav', function (hooks) {
       <template><EuiSideNav @heading="Hidden heading" @headingProps={{headingProps}} @items={{items}} /></template>
     );
 
-    assert.dom('.euiSideNav__heading').doesNotExist();
-    assert.dom('nav.euiSideNav h2').hasText('Hidden heading').hasClass('euiScreenReaderOnly');
+    // As upstream, the visually hidden heading keeps `euiSideNav__heading`
+    // and still labels the nav.
+    assert.dom('.euiTitle').doesNotExist();
+    assert.dom('nav.euiSideNav h2').hasText('Hidden heading').hasClass('euiScreenReaderOnly').hasStyle({ position: 'absolute', width: '1px' });
+    assert.dom('nav.euiSideNav').hasAttribute('aria-labelledby', document.querySelector('nav.euiSideNav h2')!.id);
   });
 
   test('a clickable root item can be selected through @selectedItem', async function (assert) {

@@ -11,11 +11,6 @@ import {
   euiPaddingSize,
   euiBorderColor
 } from '../utils/eui/styles.generated.ts';
-import type {
-  borderRadiusMapping,
-  colorMapping,
-  paddingSizeMapping
-} from '../utils/css-mappings/eui-panel.ts';
 
 /** A box grouping content, with background, padding, border and shadow options. */
 export interface EuiPanelSignature {
@@ -37,17 +32,25 @@ export interface EuiPanelSignature {
     /**
      * Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`.
      */
-    paddingSize?: keyof typeof paddingSizeMapping;
+    paddingSize?: 'none' | 's' | 'm' | 'l';
     /**
      * `'none'` or `'m'`. Defaults to `'m'`.
      */
-    borderRadius?: keyof typeof borderRadiusMapping;
+    borderRadius?: 'none' | 'm';
     /**
      * Background: `'plain'`, `'transparent'`, `'subdued'`, `'accent'`,
      * `'primary'`, `'success'`, `'warning'` or `'danger'`.
      * Defaults to `'plain'`.
      */
-    color?: keyof typeof colorMapping;
+    color?:
+      | 'transparent'
+      | 'plain'
+      | 'subdued'
+      | 'accent'
+      | 'primary'
+      | 'success'
+      | 'warning'
+      | 'danger';
     /**
      * Grows to fill a flex parent's height. Defaults to `true`.
      */

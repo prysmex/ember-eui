@@ -23,8 +23,8 @@ export function deprecateRemovedUpstream(
     {
       id: `ember-eui.${fileName}.removed-upstream`,
       for: '@ember-eui/core',
-      since: { available: '14.2.0', enabled: '14.2.0' },
-      until: '15.0.0'
+      since: { available: '15.0.0', enabled: '15.0.0' },
+      until: '16.0.0'
     }
   );
 }

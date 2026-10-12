@@ -7,6 +7,16 @@ import EuiPikaday from '#src/components/eui-pikaday.gts';
 // pikaday renders its calendar into <body>
 const calendar = () => document.querySelector('.pika-single:not(.is-hidden)') as HTMLElement | null;
 
+/** Upstream drops the control's inset border inside a prepend/append group. */
+function isInGroup(selector: string) {
+  const input = document.querySelector<HTMLInputElement>(selector)!;
+
+  return (
+    input.closest('.euiFormControlLayout--group') !== null &&
+    getComputedStyle(input).boxShadow === 'none'
+  );
+}
+
 module('Integration | Component | eui-pikaday', function (hooks) {
   setupRenderingTest(hooks);
 
@@ -62,7 +72,10 @@ module('Integration | Component | eui-pikaday', function (hooks) {
 
     const input = (this.element as HTMLElement).querySelector('input')!;
 
-    assert.dom(input).isDisabled().hasClass('euiFieldText--fullWidth').hasClass('euiFieldText--compressed');
+    assert.dom(input).isDisabled();
+    // Borealis form control: full width lifts the 400px max-width, compressed is 32px tall
+    assert.strictEqual(getComputedStyle(input).maxWidth, '100%', 'full width');
+    assert.strictEqual(input.offsetHeight, 32, 'compressed');
     assert.false(input.validity.valid);
   });
 
@@ -76,9 +89,9 @@ module('Integration | Component | eui-pikaday', function (hooks) {
       </template>
     );
 
-    assert.dom('input.plain').doesNotHaveClass('euiFieldText--inGroup');
+    assert.false(isInGroup('input.plain'), 'plain input is not grouped');
     assert.dom('.pre').hasText('From');
-    assert.dom('input.with-prepend').hasClass('euiFieldText--inGroup');
+    assert.true(isInGroup('input.with-prepend'), 'prepend groups the input');
   });
 
   test('append is only rendered when given', async function (assert) {
@@ -91,6 +104,6 @@ module('Integration | Component | eui-pikaday', function (hooks) {
     );
 
     assert.dom('.post').hasText('UTC');
-    assert.dom('input.with-append').hasClass('euiFieldText--inGroup');
+    assert.true(isInGroup('input.with-append'), 'append groups the input');
   });
 });

@@ -5,7 +5,7 @@ import { service } from '@ember/service';
 
 import { getTokenName } from '@elastic/eui-theme-common';
 import { modifier } from 'ember-modifier';
-import { eq, or } from 'ember-truth-helpers';
+import { and, eq, or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -17,6 +17,7 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
+import EuiLiveAnnouncer from './eui-live-announcer.gts';
 import EuiPanel from './eui-panel.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
@@ -122,6 +123,12 @@ export interface EuiCallOutSignature {
     onDismiss?: (event: MouseEvent) => void;
     /** Accessible label of the dismiss button. Defaults to "Dismiss this callout" (i18n token `euiCallOut.dismissAriaLabel`). */
     dismissButtonAriaLabel?: string;
+    /**
+     * Announces the title, text and body to screen readers when the callout
+     * is inserted (through `EuiLiveAnnouncer`). Use it only when the callout
+     * is feedback to a user action, not on page load. Defaults to `false`.
+     */
+    announceOnMount?: boolean;
   };
   Blocks: {
     /** The title, instead of `@title`. */
@@ -355,6 +362,19 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
           </div>
         {{/if}}
       </div>
+      {{#if @announceOnMount}}
+        {{#if (or @title (has-block "title") @text (has-block "body") (has-block))}}
+          {{! Upstream: title, text and children joined by ",&nbsp;". }}
+          <EuiLiveAnnouncer>{{#if (has-block "title")}}{{yield to="title"}}{{else}}{{@title}}{{/if}}{{#if
+                (and (or @title (has-block "title")) @text)
+              }},&nbsp;{{/if}}{{@text}}{{#if
+                (and
+                  (or @title (has-block "title") @text)
+                  (or (has-block "body") (has-block))
+                )
+              }},&nbsp;{{/if}}{{#if (has-block "body")}}{{yield to="body"}}{{else if (has-block)}}{{yield}}{{/if}}</EuiLiveAnnouncer>
+        {{/if}}
+      {{/if}}
     </EuiPanel>
   </template>
 }

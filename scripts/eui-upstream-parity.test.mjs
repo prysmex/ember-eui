@@ -265,7 +265,16 @@ const factories = {
   'components/table/table_row_cell.styles.js': ['euiTableRowCellStyles'],
   'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles'],
   // control bar and file picker
-  'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles']
+  'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles'],
+  // new-skeleton
+  'components/skeleton/skeleton_title.styles.js': ['euiSkeletonTitleStyles'],
+  'components/skeleton/skeleton_circle.styles.js': ['euiSkeletonCircleStyles'],
+  'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
+  'components/illustration/illustration.styles.js': ['euiIllustrationStyles'],
+  // page-a11y
+  'components/banner/banner.styles.js': ['euiBannerStyles'],
+  // text truncate
+  'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1578,6 +1587,120 @@ test('table static slots and container helper match upstream', () => {
     assert.deepEqual(normalize(styles.euiContainerCSS(...args)), normalize(container.euiContainerCSS(...args)), JSON.stringify(args));
 });
 
+// text truncate
+test('text truncation utils match upstream TruncationUtils for every type, offset, position and ellipsis', () => {
+  const { TruncationUtils } = require(
+    resolve(eui, 'lib/components/text_truncate/utils.js')
+  );
+  // Node has no canvas: a deterministic proportional "font" stands in for
+  // `measureText`, so both implementations measure identically.
+  const charWidth = (char) => 4 + (char.charCodeAt(0) % 7);
+  const fakeCanvas = {
+    getContext: () => ({
+      font: '',
+      measureText: (text) => ({
+        width: Array.from(text).reduce((sum, char) => sum + charWidth(char), 0)
+      })
+    })
+  };
+  const originalDocument = globalThis.document;
+  const originalError = console.error;
+  globalThis.document = { createElement: () => fakeCanvas };
+  console.error = () => {};
+  try {
+    const texts = [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+      'some/very/long/path/to/a/file/name_with_suffix.tsx',
+      'short'
+    ];
+    let compared = 0;
+    // Same flow as EuiTextTruncate: the truncate methods only run after the
+    // "needed" and "sufficient ellipsis width" guards (they loop forever
+    // otherwise, upstream too).
+    const run = (Utils, options, truncation, method, args) => {
+      const utils = new Utils(options);
+      if (utils.checkIfTruncationIsNeeded() === false) return ['none', utils.textWidth];
+      if (utils.checkSufficientEllipsisWidth(truncation) === false) return ['ellipsis', utils.textWidth];
+      return [utils[method](...args), utils.textWidth];
+    };
+    for (const fullText of texts)
+      for (const availableWidth of [0, 12, 40, 75, 120, 200, 600])
+        for (const ellipsis of ['…', '...', ' ~ '])
+          for (const [truncation, method, ...args] of [
+            ['end', 'truncateEnd'],
+            ['end', 'truncateEnd', 3],
+            ['end', 'truncateEnd', 30],
+            ['start', 'truncateStart'],
+            ['start', 'truncateStart', 4],
+            ['start', 'truncateStart', 30],
+            ['middle', 'truncateMiddle'],
+            ['startEnd', 'truncateStartEndAtMiddle'],
+            ['startEnd', 'truncateStartEndAtPosition', 5],
+            ['startEnd', 'truncateStartEndAtPosition', 20],
+            ['startEnd', 'truncateStartEndAtPosition', 48]
+          ]) {
+            const options = { fullText, ellipsis, availableWidth, font: '14px x' };
+            assert.deepEqual(
+              run(styles.TruncationUtils, options, truncation, method, args),
+              run(TruncationUtils, options, truncation, method, args),
+              `${method}(${args}) "${fullText}" @${availableWidth} "${ellipsis}"`
+            );
+            compared++;
+          }
+    assert.ok(compared > 500, `${compared} comparisons`);
+  } finally {
+    globalThis.document = originalDocument;
+    console.error = originalError;
+  }
+});
 
-
+test('text block truncate hand port matches upstream EuiTextBlockTruncate css', () => {
+  const port = loadPort('text-truncate.ts', 'eui-text-truncate-parity.cjs');
+  const { serializeStyles } = require('@emotion/serialize');
+  const jsx = (type, props, ...children) => ({ type, props: props ?? {}, children });
+  const originalLoad = Module._load;
+  Module._load = function (request, parent, isMain) {
+    if (request === '@emotion/react')
+      return { css: (...args) => serializeStyles(args), jsx };
+    if (request === 'react')
+      return {
+        __esModule: true,
+        default: { createElement: jsx },
+        isValidElement: (node) => Boolean(node && typeof node === 'object' && 'type' in node),
+        useMemo: (fn) => fn()
+      };
+    if (request === 'prop-types') {
+      const any = new Proxy(function () {}, { get: () => any, apply: () => any });
+      return any;
+    }
+    if (/\.\.\/\.\.\/services$/.test(request))
+      return { cloneElementWithCss: (element, props) => ({ ...element, props: { ...element.props, ...props } }) };
+    return originalLoad.call(this, request, parent, isMain);
+  };
+  try {
+    const path = resolve(eui, 'lib/components/text_truncate/text_block_truncate.js');
+    delete require.cache[path];
+    const { EuiTextBlockTruncate } = require(path);
+    const wrapper = EuiTextBlockTruncate({ lines: 3, children: 'text' });
+    assert.strictEqual(wrapper.type, 'div');
+    assert.deepEqual(
+      normalize(port.euiTextBlockTruncateStyles.euiTextBlockTruncate),
+      normalize(wrapper.props.css)
+    );
+    assert.deepEqual(wrapper.props.style, { WebkitLineClamp: 3 });
+    const cloned = EuiTextBlockTruncate({
+      lines: 2,
+      cloneElement: true,
+      children: jsx('p', { className: 'own', style: { color: 'red' } }, 'text')
+    });
+    assert.deepEqual(
+      normalize(port.euiTextBlockTruncateStyles.euiTextBlockTruncate),
+      normalize(cloned.props.css)
+    );
+    assert.deepEqual(cloned.props.style, { color: 'red', WebkitLineClamp: 2 });
+    assert.strictEqual(cloned.props.className, 'own euiTextBlockTruncate');
+  } finally {
+    Module._load = originalLoad;
+  }
+});
 

@@ -4,6 +4,7 @@ import EuiAutoSizer from './components/eui-auto-sizer.gts';
 import EuiAvatar from './components/eui-avatar.gts';
 import EuiBadge from './components/eui-badge.gts';
 import EuiBadgeGroup from './components/eui-badge-group.gts';
+import EuiBanner from './components/eui-banner.gts';
 import EuiBeacon from './components/eui-beacon.gts';
 import EuiBetaBadge from './components/eui-beta-badge.gts';
 import EuiBottomBar from './components/eui-bottom-bar.gts';
@@ -96,6 +97,7 @@ import EuiI18n from './components/eui-i18n.gts';
 import EuiI18nNumber from './components/eui-i18n-number.gts';
 import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
+import EuiIllustration from './components/eui-illustration.gts';
 import EuiImage from './components/eui-image.gts';
 import EuiInputPopover from './components/eui-input-popover.gts';
 import EuiKeyPadMenu from './components/eui-key-pad-menu.gts';
@@ -103,6 +105,7 @@ import EuiKeyPadMenuItem from './components/eui-key-pad-menu-item.gts';
 import EuiLink from './components/eui-link.gts';
 import EuiListGroup from './components/eui-list-group.gts';
 import EuiListGroupItem from './components/eui-list-group-item.gts';
+import EuiLiveAnnouncer from './components/eui-live-announcer.gts';
 import EuiLoadingChart from './components/eui-loading-chart.gts';
 import EuiLoadingContent from './components/eui-loading-content.gts';
 import EuiLoadingElastic from './components/eui-loading-elastic.gts';
@@ -131,7 +134,9 @@ import EuiPageContentHeader from './components/eui-page-content-header.gts';
 import EuiPageContentHeaderSection from './components/eui-page-content-header-section.gts';
 import EuiPageHeader from './components/eui-page-header.gts';
 import EuiPageHeaderSection from './components/eui-page-header-section.gts';
+import EuiPageSection from './components/eui-page-section.gts';
 import EuiPageSideBar from './components/eui-page-side-bar.gts';
+import EuiPageSidebar from './components/eui-page-sidebar.gts';
 import EuiPageTemplate from './components/eui-page-template.gts';
 import EuiPagination from './components/eui-pagination.gts';
 import EuiPaginationButton from './components/eui-pagination-button.gts';
@@ -158,6 +163,7 @@ import EuiRangeWrapper from './components/eui-range-wrapper.gts';
 import EuiRefreshInterval from './components/eui-refresh-interval.gts';
 import EuiResizableContainer from './components/eui-resizable-container.gts';
 import EuiSaturation from './components/eui-saturation.gts';
+import EuiScreenReaderLive from './components/eui-screen-reader-live.gts';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only.gts';
 import EuiSelect from './components/eui-select.gts';
 import EuiSelectable from './components/eui-selectable.gts';
@@ -168,6 +174,11 @@ import EuiSelectableSearch from './components/eui-selectable-search.gts';
 import EuiSelectableTemplateSitewide from './components/eui-selectable-template-sitewide.gts';
 import EuiShowFor from './components/eui-show-for.gts';
 import EuiSideNav from './components/eui-side-nav.gts';
+import EuiSkeletonCircle from './components/eui-skeleton-circle.gts';
+import EuiSkeletonLoading from './components/eui-skeleton-loading.gts';
+import EuiSkeletonRectangle from './components/eui-skeleton-rectangle.gts';
+import EuiSkeletonText from './components/eui-skeleton-text.gts';
+import EuiSkeletonTitle from './components/eui-skeleton-title.gts';
 import EuiSkipLink from './components/eui-skip-link.gts';
 import EuiSpacer from './components/eui-spacer.gts';
 import EuiSplitPanelInner from './components/eui-split-panel/inner.gts';
@@ -207,8 +218,14 @@ import EuiTabs from './components/eui-tabs.gts';
 import EuiText from './components/eui-text.gts';
 import EuiTextAlign from './components/eui-text-align.gts';
 import EuiTextArea from './components/eui-text-area.gts';
+import EuiTextBlockTruncate from './components/eui-text-block-truncate.gts';
 import EuiTextColor from './components/eui-text-color.gts';
 import EuiTextDiff from './components/eui-text-diff.gts';
+import EuiTextTruncate from './components/eui-text-truncate.gts';
+import EuiTimeline from './components/eui-timeline.gts';
+import EuiTimelineItem from './components/eui-timeline-item.gts';
+import EuiTimelineItemEvent from './components/eui-timeline-item-event.gts';
+import EuiTimelineItemIcon from './components/eui-timeline-item-icon.gts';
 import EuiTitle from './components/eui-title.gts';
 import EuiToast from './components/eui-toast.gts';
 import EuiToken from './components/eui-token.gts';
@@ -228,6 +245,7 @@ export {
   EuiAvatar,
   EuiBadge,
   EuiBadgeGroup,
+  EuiBanner,
   EuiBeacon,
   EuiBetaBadge,
   EuiBottomBar,
@@ -320,6 +338,7 @@ export {
   EuiI18nNumber,
   EuiIcon,
   EuiIconTip,
+  EuiIllustration,
   EuiImage,
   EuiInputPopover,
   EuiKeyPadMenu,
@@ -327,6 +346,7 @@ export {
   EuiLink,
   EuiListGroup,
   EuiListGroupItem,
+  EuiLiveAnnouncer,
   EuiLoadingChart,
   EuiLoadingContent,
   EuiLoadingElastic,
@@ -355,7 +375,9 @@ export {
   EuiPageContentHeaderSection,
   EuiPageHeader,
   EuiPageHeaderSection,
+  EuiPageSection,
   EuiPageSideBar,
+  EuiPageSidebar,
   EuiPageTemplate,
   EuiPagination,
   EuiPaginationButton,
@@ -382,6 +404,7 @@ export {
   EuiRefreshInterval,
   EuiResizableContainer,
   EuiSaturation,
+  EuiScreenReaderLive,
   EuiScreenReaderOnly,
   EuiSelect,
   EuiSelectable,
@@ -392,6 +415,11 @@ export {
   EuiSelectableTemplateSitewide,
   EuiShowFor,
   EuiSideNav,
+  EuiSkeletonCircle,
+  EuiSkeletonLoading,
+  EuiSkeletonRectangle,
+  EuiSkeletonText,
+  EuiSkeletonTitle,
   EuiSkipLink,
   EuiSpacer,
   EuiSplitPanelInner,
@@ -431,8 +459,14 @@ export {
   EuiText,
   EuiTextAlign,
   EuiTextArea,
+  EuiTextBlockTruncate,
   EuiTextColor,
   EuiTextDiff,
+  EuiTextTruncate,
+  EuiTimeline,
+  EuiTimelineItem,
+  EuiTimelineItemEvent,
+  EuiTimelineItemIcon,
   EuiTitle,
   EuiToast,
   EuiToken,

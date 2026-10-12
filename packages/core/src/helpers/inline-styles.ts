@@ -1,36 +1,35 @@
 import { helper } from '@ember/component/helper';
-import { assert } from '@ember/debug';
 
-import cssMappings from '../utils/css-mappings/index.ts';
+import { deprecateUnusedAfterBorealis } from '../-private/unused-after-borealis.ts';
 
 interface InlineStylesParams {
+  /**
+   * @deprecated Ignored since the Borealis migration: the legacy Amsterdam
+   * css-mappings it looked up were removed. Removed in 16.0.0.
+   */
   componentName?: string;
+  /** @deprecated Only used with `componentName`; ignored. */
   componentArgs?: Record<string, unknown>;
   [property: string]: unknown;
 }
 
 export function inlineStyles(_: unknown, params: InlineStylesParams) {
-  const { componentName, componentArgs = {}, ...properties } = params;
-  let componentStyles = {};
+  const {
+    componentName,
+    componentArgs: _componentArgs,
+    ...properties
+  } = params;
 
-  if (componentName) {
-    assert(
-      `Could not find component ${componentName} in cssMappings.`,
-      cssMappings[componentName]
-    );
-    assert(
-      `Could not find inlineStyles in ${componentName}'s cssMapping.`,
-      cssMappings[componentName]?.inlineStyles
-    );
-    componentStyles =
-      cssMappings[componentName]?.inlineStyles?.(componentArgs) || {};
-  }
+  deprecateUnusedAfterBorealis(
+    'inline-styles-component-name',
+    `The \`componentName\` option of \`inline-styles\` (\`${componentName}\`) is ignored: the legacy Amsterdam css-mappings it looked up were removed.`,
+    componentName === undefined
+  );
 
   const finalProperties: {
     [name: string]: string | undefined;
   } = {
-    ...properties,
-    ...componentStyles
+    ...(properties as Record<string, string | undefined>)
   };
 
   for (const property in finalProperties) {

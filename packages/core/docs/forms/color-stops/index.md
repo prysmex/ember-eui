@@ -9,7 +9,7 @@ title: Color stops
 <EuiCallOut @title="Deprecated: removed upstream" @color="warning">
   <p>
     Elastic UI removed EuiColorStops upstream, so it is deprecated since
-    14.2.0 and will be removed in the next major version (15.0.0). It
+    15.0.0 and will be removed in the next major version (16.0.0). It
     keeps working until then and reports the
     <EuiCode>ember-eui.eui-color-stops.removed-upstream</EuiCode> deprecation (and <EuiCode>ember-eui.eui-color-stops-thumb.removed-upstream</EuiCode> per stop) in
     development. There is no direct upstream replacement; for predefined gradients use <strong>EuiColorPalettePicker</strong>.

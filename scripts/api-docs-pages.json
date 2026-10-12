@@ -14,6 +14,9 @@
     "EuiBadgeGroup",
     "EuiNotificationBadge"
   ],
+  "packages/core/docs/display/banner/index.md": [
+    "EuiBanner"
+  ],
   "packages/core/docs/display/beacon/index.md": [
     "EuiBeacon"
   ],
@@ -46,6 +49,9 @@
   "packages/core/docs/display/icons/index.md": [
     "EuiIcon"
   ],
+  "packages/core/docs/display/illustration/index.md": [
+    "EuiIllustration"
+  ],
   "packages/core/docs/display/image/index.md": [
     "EuiImage"
   ],
@@ -67,11 +73,28 @@
   "packages/core/docs/display/progress/index.md": [
     "EuiProgress"
   ],
+  "packages/core/docs/display/skeleton/index.md": [
+    "EuiSkeletonText",
+    "EuiSkeletonTitle",
+    "EuiSkeletonCircle",
+    "EuiSkeletonRectangle",
+    "EuiSkeletonLoading"
+  ],
   "packages/core/docs/display/stat-demo/index.md": [
     "EuiStat"
   ],
   "packages/core/docs/display/text-diff/index.md": [
     "EuiTextDiff"
+  ],
+  "packages/core/docs/display/text-truncation/index.md": [
+    "EuiTextTruncate",
+    "EuiTextBlockTruncate"
+  ],
+  "packages/core/docs/display/timeline/index.md": [
+    "EuiTimeline",
+    "EuiTimelineItem",
+    "EuiTimelineItemEvent",
+    "EuiTimelineItemIcon"
   ],
   "packages/core/docs/display/text/index.md": [
     "EuiText",
@@ -267,6 +290,10 @@
   "packages/core/docs/layout/page-header/index.md": [
     "EuiPageHeader"
   ],
+  "packages/core/docs/layout/page-section/index.md": [
+    "EuiPageSection",
+    "EuiPageSidebar"
+  ],
   "packages/core/docs/layout/panel/index.md": [
     "EuiPanel",
     "EuiSplitPanelOuter",
@@ -375,6 +402,10 @@
   "packages/core/docs/utilities/i18n/index.md": [
     "EuiI18n",
     "EuiI18nNumber"
+  ],
+  "packages/core/docs/utilities/live-regions/index.md": [
+    "EuiScreenReaderLive",
+    "EuiLiveAnnouncer"
   ],
   "packages/core/docs/utilities/overlay-mask.md": [
     "EuiOverlayMask"

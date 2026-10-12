@@ -8,6 +8,9 @@ if (typeof module !== 'undefined') {
     launch_in_ci: ['Chrome'],
     launch_in_dev: ['Chrome'],
     browser_start_timeout: 120,
+    // Rendering every docs route can block the browser longer than Testem's
+    // 10s default on constrained CI runners.
+    browser_disconnect_timeout: 120,
     browser_args: {
       Chrome: {
         ci: [

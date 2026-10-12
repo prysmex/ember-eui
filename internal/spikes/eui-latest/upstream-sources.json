@@ -59,6 +59,10 @@
       "sha256": "cf389fe3358050e6ffd0153b7d75b8a596800d0a203e1349c8f19bfac2749eca"
     },
     {
+      "path": "@elastic/eui/es/components/banner/banner.styles.js",
+      "sha256": "f1249555fc82a572e4674b15fb7025afaa3c7af28f097349801ee386561145f6"
+    },
+    {
       "path": "@elastic/eui/es/components/beacon/beacon.styles.js",
       "sha256": "22d5ec2175819c7862e237333b58fc333f9adf99666f5ebd1e939eae2afe42d1"
     },
@@ -535,6 +539,10 @@
       "sha256": "6c71e3966c11c7e7977ff4934e8f183d5eba0e0b5c508f52c6cf62ba12018531"
     },
     {
+      "path": "@elastic/eui/es/components/illustration/illustration.styles.js",
+      "sha256": "4081c4636e88a4f3244fe0f132fe46418cee1604b64f1dd68eab484dd5c7db07"
+    },
+    {
       "path": "@elastic/eui/es/components/image/image_button.styles.js",
       "sha256": "4aa7f72f6e90ac4318100d08f57ea390654a185e43fe689fa582fd9fa0d5e839"
     },
@@ -755,8 +763,20 @@
       "sha256": "5b13c47080530636f2c04a3371fdd904a3348e3640e9e007730053b27b2ac03f"
     },
     {
+      "path": "@elastic/eui/es/components/skeleton/skeleton_circle.styles.js",
+      "sha256": "36292e0b51e1d54e408d66bf57c8266cadf9f7b13ddd137e24187330f3c26058"
+    },
+    {
+      "path": "@elastic/eui/es/components/skeleton/skeleton_rectangle.styles.js",
+      "sha256": "5d1c91f96da576a77570ff76d6968bc8b114968bc19295302908466628d42480"
+    },
+    {
       "path": "@elastic/eui/es/components/skeleton/skeleton_text.styles.js",
       "sha256": "d8da64965154d2fa7a8d788b8880f0e920e6bcf5de9d4cdc794daec33a061c9c"
+    },
+    {
+      "path": "@elastic/eui/es/components/skeleton/skeleton_title.styles.js",
+      "sha256": "1fd5208d679dac8219c09c8f00ac55eb9468421457f0f30562260e5292824d16"
     },
     {
       "path": "@elastic/eui/es/components/skeleton/utils.js",
@@ -829,6 +849,14 @@
     {
       "path": "@elastic/eui/es/components/text_diff/text_diff.styles.js",
       "sha256": "95ad566994abf41caaa48e59c615fc7028e3f62ec3414f9e22d5a2e616b5af0c"
+    },
+    {
+      "path": "@elastic/eui/es/components/text_truncate/text_truncate.styles.js",
+      "sha256": "3a3798d2f70914f1e09b23a5d8feb08cf9d02ef46d71f97abbd43f4be258c0b5"
+    },
+    {
+      "path": "@elastic/eui/es/components/text_truncate/utils.js",
+      "sha256": "ccc29d143c230ba39cc8a2e2d1e7e052adc741147eaa124cb2cd0ecf46688799"
     },
     {
       "path": "@elastic/eui/es/components/text/text_align.styles.js",
@@ -1033,6 +1061,14 @@
     {
       "path": "@elastic/eui/es/services/breakpoint/_sorting.js",
       "sha256": "33ea167029ecd767219c9f72ddfaa0247157a39c31474cd6197a913ec9f4a152"
+    },
+    {
+      "path": "@elastic/eui/es/services/canvas/canvas_text_utils.js",
+      "sha256": "e01a9b0cef782e71f528efcb2e888990139e710c4039a9b7d9e2bb598786b2e6"
+    },
+    {
+      "path": "@elastic/eui/es/services/canvas/index.js",
+      "sha256": "c5582dac8960ac90a1ad00dd81ebcd4856b0ebfbdd6bd694e522bfd82b40acdf"
     },
     {
       "path": "@elastic/eui/es/services/color/color_palette.js",

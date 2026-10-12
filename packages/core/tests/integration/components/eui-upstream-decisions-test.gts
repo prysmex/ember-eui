@@ -137,7 +137,7 @@ module('Integration | Component | upstream decisions', function (hooks) {
         if (!deprecation) continue;
         assert.deepEqual(
           { for: deprecation.options.for, since: deprecation.options.since, until: deprecation.options.until },
-          { for: '@ember-eui/core', since: { available: '14.2.0', enabled: '14.2.0' }, until: '15.0.0' },
+          { for: '@ember-eui/core', since: { available: '15.0.0', enabled: '15.0.0' }, until: '16.0.0' },
           `${fileName} options`
         );
         assert.true(deprecation.message.startsWith(`${name} was removed from Elastic UI (EUI) upstream`), `${fileName} message names the component`);

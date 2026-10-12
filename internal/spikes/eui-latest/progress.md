@@ -29,17 +29,43 @@ Branch: `feat/eui-latest`, based on `feat/emotion`. No catalog-wide completion c
 
 Updated 2026-10-12 (coordinator session). Process: parallel agents per component family in git worktrees (`<scratchpad>/wt/<family>`, branch `eui-wave/<family>`), max 6 at once (8 cores / 7 GB). Rules for agents: [wave-brief.md](wave-brief.md) (incl. Performance rules and `@css`).
 
+Resume update (2026-10-12): merged `new-skeleton` as `3253d497` and regenerated
+portable source paths (`6f96d7c6`). Added the new EuiTimeline family in small
+commits (`7d7bf077`, `c9e267ca`) with six focused browser tests and docs. The
+replacement Chromium 141 runtime is now available: timeline passes 6/6, full
+core 1134/1134, and site Node 8/8 plus acceptance 17/17. Its four inventory rows
+are Migrated. The site navigation count is now 104 and its Testem heartbeat
+matches core's 120s because the catalog-wide route test takes about 45s on ARM.
+See [new-timeline-handoff.md](new-timeline-handoff.md).
+
+Resume update 2 (2026-10-12, new coordinator session, scratchpad `625fa540…/scratchpad`):
+the README's `/tmp/ember-eui-toolchain` and Chromium 141 paths are gone; tests run
+on Playwright Chromium 130 via the old scratchpad `bin/google-chrome` symlink
+(timeline 9/9). Model plan agreed with the user: Opus for recovery, tables and
+data grid; Sonnet for refresh-flyout and the visual pass. Running: new-inline-split
+and new-page-a11y (recovering uncommitted work in their old worktrees, merging
+`feat/eui-latest` in), new-truncate (fresh worktree; salvages EuiTextTruncate and
+EuiTextBlockTruncate from the old new-timeline worktree, whose timeline parts are
+superseded), new-refresh-flyout (fresh worktree). Next: visual-pass recovery,
+new-tables, then new-data-grid alone. Merge tooling copied to the new scratchpad.
+
 Coordinator loop per finished agent:
 1. Merge `eui-wave/<family>` into `feat/eui-latest`. Shared-file conflicts: `components.md` row-wise (non-Pending row wins); generator/parity entry objects unioned by key with insert-only test additions replayed; generated files regenerated in the main checkout (`node scripts/generate-eui-styles.mjs`), then parity (`node --test scripts/eui-upstream-parity.test.mjs`).
 2. Check new code follows the perf rules (all style getters `@cached`, factories only via `useEuiBorealisStyles`) and `@css` for migrated children.
 3. Run the full core suite in the main checkout (don't edit sources while its vite build runs); fix cross-family interactions; commit; remove the worktree and branch; start the next family in the freed slot.
 
-In flight / pending at this point (updated 2026-10-12, all component families merged):
-- Every component family is merged into `feat/eui-latest`. Main: core 1051/1051, parity 304/304 (347 factories), core build + types, site acceptance 17/17, site types and production build pass. Docs render fully in Borealis without legacy CSS ([intro](evidence/docs-introduction-2026-10-12.png), [form layouts](evidence/docs-form-layouts-2026-10-12.png)).
-- Running agents: upstream-decisions, control-file (EuiControlBar + EuiFilePicker, the last two Pending rows), css-sweep (add `@css` to remaining migrated components and remove caller workarounds), icon-assets (bundle the upstream 123.1.0 icon set with legacy aliases and switch fallback icon names). The old `wt/icons-refresh` worktree is reference only; delete it after icon-assets merges.
+In flight / pending at this point (updated 2026-10-12, migration complete, final cleanup running):
+- Every component row is Migrated. Merged since last update: icon-assets (EUI 123.1.0 icon set, 698 names incl. 111 legacy aliases), control-file (EuiControlBar deprecated, EuiFilePicker), upstream-decisions (form error callout focus, refresh interval switch, deprecations of components removed upstream), css-sweep (`@css` on ~25 components, all styling workarounds removed). Main core suite 1117/1117 at `9bb97be3`; parity 305/305 (348 factories).
+- Merged: cleanup (core 1120/1120 at 189641fc; companion suites pass; `componentName` option of class-names/inline-styles deprecated). Release notes merged (docs/migrating-to-borealis.md); deprecations now since 15.0.0 until 16.0.0 (a major changeset is pending).
+- Running agents (may have been cut off by the usage limit — resume them via SendMessage): new-skeleton, new-timeline, new-inline-split, new-page-a11y, visual-pass. Worktree `wt/new-refresh-flyout` is created but its agent was NOT started yet. Previously listed: cleanup (dead css-mappings and helpers, companion package suites: validated-form, changeset-form, flatpickr, pikaday), release-notes (docs/migrating-to-borealis.md, changelog/changeset, getting-started update), visual-pass (screenshot every docs page desktop/mobile/dark, fix demo/site bugs).
 - Environment: the host reinstalled the shared node_modules with macOS binaries. `/etc/sandbox-persistent.sh` sets `NODE_PATH` and `ESBUILD_BINARY_PATH` to Linux copies in `<scratchpad>/linux-natives` (esbuild, rolldown, rollup, lightningcss). Never reinstall node_modules from the sandbox. Don't stop servers with `pkill -f`/`pgrep -f` patterns that match the shell's own command line.
-- User decision (2026-10-12): keep upstream behavior for all open questions — EuiForm focuses its error callout on the invalid transition; components removed upstream (EuiNotificationEvent, EuiSuggest, EuiColorStops, EuiControlBar if absent) are deprecated (until 15.0.0) but keep working; EuiRefreshInterval uses upstream's switch. Being applied by the upstream-decisions agent (control bar deprecation by the control-file agent).
-- After the running agents: final cleanup — delete unused `utils/css-mappings/*` and registry entries, docs demo visual pass at desktop/mobile, release notes for changed defaults (Panel border, gutter m, link color text, text size s, form widths 400/800, pagination 10/page, toasts primary, combo box width, etc.), drop the two leftover agent stashes.
+- User decisions: keep upstream behavior (applied); deprecating removed-upstream components is fine (until 16.0.0).
+- User request (2026-10-12): also port components that exist upstream (123.1.0) but not in Ember EUI, with tests and docs. Inventory (upstream exports minus Ember files, excluding React contexts/providers/observers and internal sub-parts already ported): 
+  - running: new-skeleton (EuiSkeletonText/Title/Circle/Rectangle/Loading, EuiIllustration), new-timeline (EuiTimeline + Item/ItemEvent/ItemIcon, EuiTextTruncate, EuiTextBlockTruncate), new-inline-split (EuiInlineEditText/Title, EuiSplitButton, EuiFormControlButton, EuiFormAppend/Prepend);
+  - queued: new-page-a11y (EuiPageSection, EuiPageSidebar, EuiBanner, EuiLiveAnnouncer, EuiScreenReaderLive); new-refresh-flyout (EuiAutoRefresh, EuiAutoRefreshButton, EuiFlyoutResizable, EuiFlyoutMenu); new-tables (EuiSearchBar + Filters, EuiBasicTable, EuiInMemoryTable); new-data-grid (EuiDataGrid — largest, last).
+  - not ported (React-only plumbing; Ember uses modifiers/services/EuiEmotionProvider): EuiProvider/EuiThemeProvider/*Context, EuiFocusTrap, EuiOutsideClickDetector, EuiMutationObserver, EuiResizeObserver, EuiWindowEvent, EuiErrorBoundary, EuiValidatableControl. EuiDatePicker (single): core has no calendar engine (companion flatpickr/pikaday packages provide inputs) — gap noted.
+  New components get registered in components.ts/template-registry.ts (merge by union) and docs pages (see wave-brief "New components").
+- After all agents: merge, run core + site checks, final progress/README summary. Leftover agent stashes and the icons-refresh worktree were removed.
 - Merge tooling lives in the scratchpad: `wave-merge.sh <family>`, `merge_lists.py`, `rows.py`, `dupkeys.mjs`, `mkwt.sh <family>`.
 - Open user decision: whether forms move focus to the error callout when invalid (upstream does).
 - Cleanup later: unused `utils/css-mappings/*` files, docs demo visual pass, release notes for changed defaults.

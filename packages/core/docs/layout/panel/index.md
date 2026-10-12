@@ -51,8 +51,8 @@ A box grouping content, with background, padding, border and shadow options.
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@hasShadow` | `boolean` | `false` | Adds a box shadow (plain panels without a border only). |
 | `@hasBorder` | `boolean` | `true` | Adds a border (plain and transparent panels only). |
-| `@paddingSize` |  | `'m'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
-| `@borderRadius` |  | `'m'` | `'none'` or `'m'`. |
+| `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@borderRadius` | `'none' \| 'm'` | `'m'` | `'none'` or `'m'`. |
 | `@color` |  | `'plain'` | Background: `'plain'`, `'transparent'`, `'subdued'`, `'accent'`, `'primary'`, `'success'`, `'warning'` or `'danger'`. |
 | `@grow` | `boolean` | `true` | Grows to fill a flex parent's height. |
 | `@onClick` | `(e: MouseEvent) => void` |  | Makes the whole panel clickable (hover styles, `role="button"`, focusable, Enter and Space activate it). |

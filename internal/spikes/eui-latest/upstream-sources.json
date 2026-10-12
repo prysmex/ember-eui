@@ -11,6 +11,26 @@
   ],
   "sources": [
     {
+      "path": "@elastic/eui/es/components/badge/badge_group/badge_group.styles.js",
+      "sha256": "a1abb2f0f200027fdb6053bc101178f98db80fbf89a4c89584802c541e14c4f7"
+    },
+    {
+      "path": "@elastic/eui/es/components/badge/badge.styles.js",
+      "sha256": "ef6afd65b40a900db3401540aa4fdf2d5200ce6d56cb83dbb6e8799b1e907463"
+    },
+    {
+      "path": "@elastic/eui/es/components/badge/beta_badge/beta_badge.styles.js",
+      "sha256": "4f9b03dc3f93911b37260317fb92beb686b179cbe17a013e31f60868bf31d441"
+    },
+    {
+      "path": "@elastic/eui/es/components/badge/color_utils.js",
+      "sha256": "144328c9bb385b26338663fab86f5adaac673180e250915f323d480217a59299"
+    },
+    {
+      "path": "@elastic/eui/es/components/badge/notification_badge/badge_notification.styles.js",
+      "sha256": "cf389fe3358050e6ffd0153b7d75b8a596800d0a203e1349c8f19bfac2749eca"
+    },
+    {
       "path": "@elastic/eui/es/components/button/button_display/_button_display_content.styles.js",
       "sha256": "d47b90cddb0181b983e80c69f912f53a2dafe51d063e43ff8c56d329ba239cca"
     },
@@ -19,12 +39,36 @@
       "sha256": "9ca0838d55f9c3da97fbb9b240c7395f41af0125a6aaf52feb7187f392a0a96b"
     },
     {
+      "path": "@elastic/eui/es/components/button/button_empty/button_empty.styles.js",
+      "sha256": "6f7145ef9939e38e9aa343ee80f80700436d0374a65b5f0deb3dae0c1731915e"
+    },
+    {
+      "path": "@elastic/eui/es/components/button/button_icon/button_icon.styles.js",
+      "sha256": "9a702acb8d4b606412ecd70db4c7b4168be6fd0cfc01e64b4e996ddfe7fa4395"
+    },
+    {
       "path": "@elastic/eui/es/components/code/code_syntax.styles.js",
       "sha256": "dc198bf65eef50a9ac8d2ef2bde3c1cd952e118a647442f497906f7352a107eb"
     },
     {
+      "path": "@elastic/eui/es/components/color_picker/utils.js",
+      "sha256": "0a1e020df394c10fa8e3eee7e64b173c0b9e3f4570ce65c5e0537aa48b8112e3"
+    },
+    {
       "path": "@elastic/eui/es/components/common.js",
       "sha256": "b94d98693be5c8cf22392a939bc65a658deeceac235733b6e149a2ce93ecf05c"
+    },
+    {
+      "path": "@elastic/eui/es/components/flex/flex_grid.styles.js",
+      "sha256": "52767d279d82cd42c88343e2c988a638bab1c5ae7e98ad3c8e98b30512c53067"
+    },
+    {
+      "path": "@elastic/eui/es/components/flex/flex_group.styles.js",
+      "sha256": "a1a09859ad5157288d266eae92b122f88a73b20dc0f7f20ea107bfdb7d8d2cbd"
+    },
+    {
+      "path": "@elastic/eui/es/components/flex/flex_item.styles.js",
+      "sha256": "1f236bad4ac395827192d0b4842ec9b2a2ff8095489562e2a91ecfac62a0dc33"
     },
     {
       "path": "@elastic/eui/es/components/horizontal_rule/horizontal_rule.styles.js",
@@ -273,102 +317,6 @@
     {
       "path": "@elastic/eui/es/services/theme/utils.js",
       "sha256": "023d2763491990f37e656b32b17bb60ae02740cde13f56ee654bb73398890150"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/index.js",
-      "sha256": "eb764f88a149aedd28a8b6db8a3229fb2d7dea9c77ce5efc5a028430b30c351e"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_animation.js",
-      "sha256": "c1bfac4a4b2ebd2980c7e03a0a3838c20690b01c1287f8ce82de486947d9b33b"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_borders.js",
-      "sha256": "41eaeb6f98fb8ed0ff5160813d3b63b0e36a155de45f9a750f3ad359f841e744"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_breakpoint.js",
-      "sha256": "2ee15f80e3c0002f65ebf7916177df7dfdb374c16b2d71cba9390373e86a836a"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_buttons.js",
-      "sha256": "122add88fb42e866bf8f496413d465ae7e7ac4c04ddc57ac123a11f492d21e60"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_components.js",
-      "sha256": "7ec6695edfc4e30584fed7c3d86cda6b1f8e585b2e3be3e6dda79de812ca43ce"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_forms.js",
-      "sha256": "96566a4a901a33336efd9a04c43ee8826cb898fecd7336d730545cb5be629880"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_levels.js",
-      "sha256": "feca961e708717d12e0393d226b9f28be73459da54a77568ba9ef3fb17802c90"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_overrides.js",
-      "sha256": "99ce36d890bd5746eaf572ddcd1565a692c5c45a833c288e2723d6530d628db0"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_shadows.js",
-      "sha256": "44c3c84ac7ae7202206d2e4ebf53038520effc4d86c3e92d4ac0879bc11d4d06"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_size.js",
-      "sha256": "7e7cd5e27834047bf07759f407f5a16765f906791fc7148869659aedcba64fc8"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_states.js",
-      "sha256": "c8fcfe236ebfcdc016cc7fa384ea1152bf18e85c61f55a6e819e52c189a7deb5"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_typography.js",
-      "sha256": "3559b11dcd0f79f37605bbe9db3578fd9494dbec3ac2db80e73728457f2ddc85"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_dark.js",
-      "sha256": "e0f7ff0450f63cec891d465e01a556b2b19b01e02438855d00691f958379e136"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_light.js",
-      "sha256": "9d36127ab74350ef80c08534e13f55bab175712a501d5e32c2dcc4d29618614f"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_severity_hcm.js",
-      "sha256": "49dd67103181fcb9e0ee9be78072c01b072638bb074efdc8e8ce65abcf26b79d"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_severity.js",
-      "sha256": "332144f8c130a5a27edd808097a1b4e4012d161c6ebc12c52283a9a19e4f53eb"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_vis_dark.js",
-      "sha256": "2e9d68447c4e82bc5d6991b4184ab077229a9484e0a829b9808c07239adc9b47"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_vis_hcm.js",
-      "sha256": "9c701bf4cf7996567799c80a6a0dbc5f1086b491b2b820e164311b3cad0d6b6b"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_vis_light.js",
-      "sha256": "92d9a5c356207c4026a57215b3f0cc8d65d3eb07b1ec85e1b646f41aa535cd08"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_primitive_colors.js",
-      "sha256": "c3bf6dd6a554fbe4c1f359c242ea38f30a4bf3be135f81f463619faab058f7b2"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_semantic_colors.js",
-      "sha256": "b15a5623bff3cdc0f2fad703300e737aeab5635b04e730df3012402f0ecf9c44"
-    },
-    {
-      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/index.js",
-      "sha256": "a9c22122038d24d1a0b5f54fa80467290f3edb74e08891318a93894ad6aec96a"
-    },
-    {
-      "path": "node_modules/.pnpm/chroma-js@2.4.2/node_modules/chroma-js/chroma.js",
-      "sha256": "26a2e532b90f6d97639cd96d5054dd0abc2fcd55554086cf11ae8c874ed66c6d"
     }
   ]
 }

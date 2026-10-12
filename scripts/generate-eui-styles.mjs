@@ -45,6 +45,31 @@ const entries = {
   'components/text/text_color.styles.js': ['euiTextColorStyles'],
   'components/text/text_align.styles.js': ['euiTextAlignStyles'],
   'components/title/title.styles.js': ['euiTitleStyles'],
+  'components/link/link.styles.js': ['euiLinkStyles'],
+  'components/badge/badge.styles.js': ['euiBadgeStyles'],
+  'components/badge/color_utils.js': [
+    'euiBadgeColors',
+    'getBadgeColors',
+    'getTextColor',
+    'getCustomInteractiveColors',
+    'getIsValidColor'
+  ],
+  'components/badge/badge_group/badge_group.styles.js': [
+    'euiBadgeGroupStyles'
+  ],
+  'components/badge/beta_badge/beta_badge.styles.js': ['euiBetaBadgeStyles'],
+  'components/badge/notification_badge/badge_notification.styles.js': [
+    'euiNotificationBadgeStyles'
+  ],
+  'components/flex/flex_group.styles.js': ['euiFlexGroupStyles'],
+  'components/flex/flex_item.styles.js': ['euiFlexItemStyles'],
+  'components/flex/flex_grid.styles.js': ['euiFlexGridStyles'],
+  'components/button/button_empty/button_empty.styles.js': [
+    'euiButtonEmptyStyles'
+  ],
+  'components/button/button_icon/button_icon.styles.js': [
+    'euiButtonIconStyles'
+  ],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
@@ -72,7 +97,12 @@ const result = await build({
   platform: 'browser',
   target: 'es2022',
   metafile: true,
-  external: ['@elastic/eui-theme-common', '@emotion/serialize'],
+  external: [
+    '@elastic/eui-theme-common',
+    '@elastic/eui-theme-borealis',
+    '@emotion/serialize',
+    'chroma-js'
+  ],
   define: { 'process.env.NODE_ENV': '"production"' },
   plugins: [
     {
@@ -107,7 +137,7 @@ export const keyframes = (...args) => { const value = css(...args); const name =
           () => ({ contents: hooks, loader: 'js' })
         );
         builder.onLoad({ filter: /\/es\/services\/index\.js$/ }, (args) => ({
-          contents: `${hooks}\nexport * from './color/contrast';\nexport * from './color/manipulation';`,
+          contents: `${hooks}\nexport * from './color/contrast';\nexport * from './color/manipulation';\nexport * from './color/is_color_dark';`,
           resolveDir: dirname(args.path),
           loader: 'js'
         }));

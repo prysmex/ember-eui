@@ -15,7 +15,12 @@ const bundle = buildSync({
   write: false,
   format: 'cjs',
   platform: 'node',
-  external: ['@elastic/eui-theme-common', '@emotion/serialize']
+  external: [
+    '@elastic/eui-theme-common',
+    '@elastic/eui-theme-borealis',
+    '@emotion/serialize',
+    'chroma-js'
+  ]
 });
 const filename = resolve(root, 'packages/core/eui-style-parity.cjs');
 const adapted = new Module(filename);
@@ -46,7 +51,25 @@ const factories = {
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'components/text/text.styles.js': ['euiTextStyles'],
   'components/text/text_color.styles.js': ['euiTextColorStyles'],
-  'components/title/title.styles.js': ['euiTitleStyles']
+  'components/title/title.styles.js': ['euiTitleStyles'],
+  'components/link/link.styles.js': ['euiLinkStyles'],
+  'components/badge/badge.styles.js': ['euiBadgeStyles'],
+  'components/badge/color_utils.js': ['euiBadgeColors'],
+  'components/badge/badge_group/badge_group.styles.js': [
+    'euiBadgeGroupStyles'
+  ],
+  'components/badge/beta_badge/beta_badge.styles.js': ['euiBetaBadgeStyles'],
+  'components/badge/notification_badge/badge_notification.styles.js': [
+    'euiNotificationBadgeStyles'
+  ],
+  'components/flex/flex_group.styles.js': ['euiFlexGroupStyles'],
+  'components/flex/flex_grid.styles.js': ['euiFlexGridStyles'],
+  'components/button/button_empty/button_empty.styles.js': [
+    'euiButtonEmptyStyles'
+  ],
+  'components/button/button_icon/button_icon.styles.js': [
+    'euiButtonIconStyles'
+  ]
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -221,4 +244,51 @@ test('typography factories match upstream with text token and font overrides', (
       );
     }
   }
+});
+
+test('flex item slots match upstream static styles', () => {
+  const reference = require(resolve(eui, 'lib/components/flex/flex_item.styles.js'));
+  assert.deepEqual(
+    normalize(styles.euiFlexItemStyles),
+    normalize(reference.euiFlexItemStyles)
+  );
+});
+
+test('badge color helpers match upstream for named, custom and invalid colors', () => {
+  const reference = require(resolve(eui, 'lib/components/badge/color_utils.js'));
+  const colors = ['#ffffff', '#000000', '#E7664C', '#54B399', '#6092C0', 'rgb(200, 100, 50)'];
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced']) {
+      const context = {
+        colorMode,
+        highContrastMode,
+        euiTheme: getComputed(
+          EuiThemeBorealis,
+          buildTheme({}, 'parity'),
+          colorMode,
+          highContrastMode
+        )
+      };
+      for (const color of colors) {
+        assert.deepEqual(
+          styles.getBadgeColors(context, color),
+          reference.getBadgeColors(context, color),
+          `getBadgeColors ${color}`
+        );
+        assert.deepEqual(
+          styles.getTextColor(context, color),
+          reference.getTextColor(context, color)
+        );
+        assert.deepEqual(
+          styles.getCustomInteractiveColors(context, color),
+          reference.getCustomInteractiveColors(context, color)
+        );
+      }
+    }
+  for (const color of [...colors, 'primary', 'not-a-color', '#12', ''])
+    assert.strictEqual(
+      styles.getIsValidColor(color),
+      reference.getIsValidColor(color),
+      `getIsValidColor ${color}`
+    );
 });

@@ -14,6 +14,9 @@
     "EuiBadgeGroup",
     "EuiNotificationBadge"
   ],
+  "packages/core/docs/display/banner/index.md": [
+    "EuiBanner"
+  ],
   "packages/core/docs/display/beacon/index.md": [
     "EuiBeacon"
   ],
@@ -283,6 +286,10 @@
   "packages/core/docs/layout/page-header/index.md": [
     "EuiPageHeader"
   ],
+  "packages/core/docs/layout/page-section/index.md": [
+    "EuiPageSection",
+    "EuiPageSidebar"
+  ],
   "packages/core/docs/layout/panel/index.md": [
     "EuiPanel",
     "EuiSplitPanelOuter",
@@ -391,6 +398,10 @@
   "packages/core/docs/utilities/i18n/index.md": [
     "EuiI18n",
     "EuiI18nNumber"
+  ],
+  "packages/core/docs/utilities/live-regions/index.md": [
+    "EuiScreenReaderLive",
+    "EuiLiveAnnouncer"
   ],
   "packages/core/docs/utilities/overlay-mask.md": [
     "EuiOverlayMask"

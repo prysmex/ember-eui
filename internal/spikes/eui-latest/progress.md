@@ -16,6 +16,7 @@ Branch: `feat/eui-latest`, based on `feat/emotion`. No catalog-wide completion c
 
 - Text family (EuiText/Title/TextColor/TextAlign) migrated to extracted factories; generator now extracts 17 factories. Full core suite 609/609 in Chromium 130, parity 17/17, types/lint/API docs/core build pass. See [text-handoff.md](text-handoff.md).
 - Batch 2 base: pre-registered Link, Badge (+group/beta/notification, color helpers), Flex (group/item/grid), ButtonEmpty and ButtonIcon factories (32 total); parity 29/29, core 609/609. Borealis theme and chroma-js are now external imports instead of being inlined into `styles.generated.ts` (same pinned versions; removes a duplicate theme copy). Services barrel shim also re-exports `is_color_dark`. See [batch2-brief.md](batch2-brief.md).
+- No coordinator/root agent exists (user, 2026-10-12); this session owns root duties. Fixed template `(hash)` Borealis overrides (cebf6dbc). Root validation: core 611/611, site node 8/8, site acceptance 17/17, site build + types, core build + types, showcase screenshot. First five ports + PageContent marked Migrated.
 
 ## Current resume point
 

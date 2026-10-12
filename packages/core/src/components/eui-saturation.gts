@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
@@ -10,6 +10,10 @@ import { modifier } from 'ember-modifier';
 
 import { getEventPosition } from '../-private/color.ts';
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { boxReset, buttonReset } from '../utils/eui/color-picker.ts';
+import { euiSaturationStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { HSV } from '../-private/color.ts';
@@ -24,7 +28,10 @@ export interface EuiSaturationSignature {
   Args: {
     /** The color as HSV: `[hue, saturation, value]`. Defaults to `[1, 0, 0]`. */
     color?: HSV;
-    /** The current color as hex, for screen readers. */
+    /**
+     * The current color as hex. Upstream shows it in a tooltip over the
+     * indicator, which is not ported; `EuiColorPicker` announces the color.
+     */
     hex?: string;
     /** Prefix of the ids inside. */
     id?: string;
@@ -33,8 +40,24 @@ export interface EuiSaturationSignature {
   };
 }
 
+/** The saturation / value square on the upstream EUI 123 / Borealis styles. */
 export default class EuiSaturation extends Component<EuiSaturationSignature> {
   @service declare euiI18n: EuiI18n;
+
+  @cached
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiSaturationStyles);
+
+    return {
+      root: `euiSaturation ${euiClass(context, boxReset, styles.euiSaturation)}`,
+      lightness: `euiSaturation__lightness ${euiClass(context, styles.euiSaturation__lightness)}`,
+      saturation: `euiSaturation__saturation ${euiClass(context, styles.euiSaturation__saturation)}`,
+      // upstream: the EuiToolTip anchor that positions the indicator
+      anchor: euiClass(context, { display: 'block' }, styles.euiSaturation__tooltip),
+      indicator: `euiSaturation__indicator ${euiClass(context, buttonReset, styles.euiSaturation__indicator)}`
+    };
+  }
 
   // the indicator follows the pointer; otherwise it shows @color
   @tracked dragged?: { left: number; top: number; forColor: string };
@@ -54,10 +77,14 @@ export default class EuiSaturation extends Component<EuiSaturationSignature> {
     return { left: s * this.boxSize.width, top: (1 - v) * this.boxSize.height };
   }
 
+  get ariaLabel(): string {
+    return this.euiI18n.lookupToken('euiSaturation.ariaLabel', 'Select a color');
+  }
+
   get roleDescription(): string {
     return this.euiI18n.lookupToken(
-      'euiSaturation.ariaLabel',
-      'HSV color mode saturation and value 2-axis slider'
+      'euiSaturation.roleDescription',
+      'HSV color mode saturation and value 2-axis slider.'
     );
   }
 
@@ -148,7 +175,7 @@ export default class EuiSaturation extends Component<EuiSaturationSignature> {
   <template>
     {{! template-lint-disable no-invalid-interactive }}
     <div
-      class="euiSaturation"
+      class={{this.styles.root}}
       data-test-subj="euiSaturation"
       tabindex="-1"
       style={{cssStyle (hash background=(hueBackground this.color))}}
@@ -158,19 +185,22 @@ export default class EuiSaturation extends Component<EuiSaturationSignature> {
       {{on "keydown" this.onKeyDown}}
       ...attributes
     >
-      <div class="euiSaturation__lightness" {{this.registerBox}}>
-        <div class="euiSaturation__saturation"></div>
+      <div class={{this.styles.lightness}} {{this.registerBox}}>
+        <div class={{this.styles.saturation}}></div>
       </div>
-      <button
-        type="button"
-        id="{{@id}}-saturationIndicator"
-        class="euiSaturation__indicator"
+      <span
+        class={{this.styles.anchor}}
         style={{cssStyle (hash left=this.indicator.left top=this.indicator.top)}}
-        aria-roledescription={{this.roleDescription}}
-        aria-label={{@hex}}
-        aria-describedby="{{@id}}-instructions"
-      ></button>
-      <span hidden aria-live="assertive">{{@hex}}</span>
+      >
+        <button
+          type="button"
+          id="{{@id}}-saturationIndicator"
+          class={{this.styles.indicator}}
+          aria-roledescription={{this.roleDescription}}
+          aria-label={{this.ariaLabel}}
+          aria-describedby="{{@id}}-instructions"
+        ></button>
+      </span>
       <span hidden id="{{@id}}-instructions">{{this.instructions}}</span>
     </div>
   </template>

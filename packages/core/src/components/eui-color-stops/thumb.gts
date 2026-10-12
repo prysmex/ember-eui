@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
@@ -13,6 +13,15 @@ import {
   isStopInvalid
 } from '../../-private/color.ts';
 import cssStyle from '../../-private/css-style.ts';
+import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
+import {
+  buttonReset,
+  euiColorStopStyles,
+  euiColorStopThumbPopoverStyles,
+  euiColorStopThumbStyles
+} from '../../utils/eui/color-picker.ts';
+import { euiRangeThumbStyles } from '../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import EuiButtonIcon from '../eui-button-icon.gts';
 import EuiColorPicker from '../eui-color-picker.gts';
 import EuiFieldNumber from '../eui-field-number.gts';
@@ -20,12 +29,12 @@ import EuiFlexGroup from '../eui-flex-group.gts';
 import EuiFlexItem from '../eui-flex-item.gts';
 import EuiFormRow from '../eui-form-row.gts';
 import EuiPopover from '../eui-popover.gts';
-import EuiRangeThumb from '../eui-range-thumb.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
 import EuiSpacer from '../eui-spacer.gts';
 
 import type EuiI18n from '../../services/eui-i18n';
 import type { ColorStop } from '../../-private/color.ts';
+import type { CSSInterpolation } from '@emotion/css/create-instance';
 
 interface ThumbSignature {
   Element: HTMLButtonElement;
@@ -82,10 +91,41 @@ export default class EuiColorStopThumb extends Component<ThumbSignature> {
     return isColorInvalid(this.args.color, this.args.showAlpha);
   }
 
-  get classes(): string {
-    return this.hasFocus || this.args.isPopoverOpen
-      ? 'euiColorStopPopover euiColorStopPopover-hasFocus'
-      : 'euiColorStopPopover';
+  get hasFocusStyle(): boolean {
+    return this.hasFocus || this.args.isPopoverOpen;
+  }
+
+  /** The popover root: EUI 88.5.4 `euiColorStopThumbPopoverStyles`. */
+  @cached
+  get popoverCss(): CSSInterpolation {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorStopThumbPopoverStyles);
+
+    return [styles.euiColorStopThumbPopover, this.hasFocusStyle && styles.hasFocus];
+  }
+
+  /** Upstream EuiRangeThumb styles with the color stop thumb styles last. */
+  @cached
+  get thumbClasses(): string {
+    const context = getEuiThemeContext(this);
+    const range = useEuiBorealisStyles(context, euiRangeThumbStyles);
+    const styles = useEuiBorealisStyles(context, euiColorStopThumbStyles);
+
+    return `euiRangeThumb euiColorStopThumb ${euiClass(
+      context,
+      buttonReset,
+      range.euiRangeThumb,
+      styles.euiColorStopThumb,
+      this.args.isPopoverOpen && styles.isPopoverOpen
+    )}`;
+  }
+
+  @cached
+  get formClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorStopStyles);
+
+    return `euiColorStop ${euiClass(context, styles.euiColorStop)}`;
   }
 
   t = (token: string, text: string): string => this.euiI18n.lookupToken(`euiColorStopThumb.${token}`, text);
@@ -184,41 +224,46 @@ export default class EuiColorStopThumb extends Component<ThumbSignature> {
 
   <template>
     <EuiPopover
-      class={{this.classes}}
+      class="euiColorStopPopover"
       style={{cssStyle (hash left=this.position)}}
-      @anchorClassName="euiColorStopPopover__anchor"
+      @rootCss={{this.popoverCss}}
+      @anchorClassName="euiColorStopThumbPopover__anchor"
       @panelPaddingSize="s"
       @isOpen={{@isPopoverOpen}}
       @closePopover={{@closePopover}}
       @ownFocus={{false}}
     >
       <:button>
-        <EuiRangeThumb
-          class="euiColorStopThumb"
+        {{! upstream EuiRangeThumb: a button with the slider role }}
+        <button
+          type="button"
+          role="slider"
+          class={{this.thumbClasses}}
           data-test-subj="euiColorStopThumb"
           data-index="euiColorStop_{{@index}}"
+          aria-valuemin={{@localMin}}
+          aria-valuemax={{@localMax}}
+          aria-valuenow={{@stop}}
+          aria-disabled={{if @disabled "true" "false"}}
           aria-valuetext={{this.valueText}}
           aria-label={{this.t
             "buttonAriaLabel"
             "Press the Enter key to modify this stop. Press Escape to focus the group"
           }}
           title={{this.t "buttonTitle" "Click to edit, drag to reposition"}}
+          tabindex="-1"
+          disabled={{@disabled}}
           style={{cssStyle (hash background=this.background)}}
-          @min={{@localMin}}
-          @max={{@localMax}}
-          @value={{@stop}}
-          @tabIndex={{-1}}
-          @disabled={{@disabled}}
           {{on "focus" this.onFocus}}
           {{on "blur" (fnSet this.setFocus false)}}
           {{on "mouseover" (fnSet this.setFocus true)}}
           {{on "mouseout" (fnSet this.setFocus false)}}
           {{on "keydown" this.onKeyDown}}
           {{on "mousedown" this.onMouseDown}}
-        />
+        ></button>
       </:button>
       <:content>
-        <div class="euiColorStop" data-test-subj="euiColorStopPopover">
+        <div class={{this.formClasses}} data-test-subj="euiColorStopPopover">
           <EuiScreenReaderOnly>
             <p aria-live="polite">{{this.t
                 "screenReaderAnnouncement"

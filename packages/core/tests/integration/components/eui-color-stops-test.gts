@@ -89,8 +89,13 @@ module('Integration | Component | eui-color-stops', function (hooks) {
       </template>
     );
 
-    assert.dom('.readonly').hasClass('euiColorStops-isReadOnly');
-    assert.dom('.readonly .euiColorStops__addContainer').hasClass('euiColorStops__addContainer-isDisabled');
-    assert.dom('.disabled').hasClass('euiColorStops-isDisabled').hasAttribute('tabindex', '-1');
+    // the legacy `-isReadOnly` / `-isDisabled` state classes are gone: assert the behavior
+    const before = state.colorStops;
+    await click('.readonly .euiColorStops__addContainer');
+    assert.strictEqual(state.colorStops, before, 'read-only: clicking the track adds no stop');
+    assert.dom('.disabled').hasAttribute('tabindex', '-1');
+    assert.dom('.disabled .euiColorStopThumb').isDisabled();
+    await click('.disabled .euiColorStops__addContainer');
+    assert.strictEqual(state.colorStops, before, 'disabled: clicking the track adds no stop');
   });
 });

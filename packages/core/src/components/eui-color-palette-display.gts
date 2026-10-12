@@ -1,17 +1,19 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 
 import { getFixedLinearGradient, getLinearGradient } from '../-private/color.ts';
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { boxReset } from '../utils/eui/color-picker.ts';
+import {
+  euiColorPaletteDisplayFixed__bleedArea,
+  euiColorPaletteDisplayStyles
+} from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
 import type { ColorStop } from '../-private/color.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-const SIZES = {
-  xs: 'euiColorPaletteDisplay--sizeExtraSmall',
-  s: 'euiColorPaletteDisplay--sizeSmall',
-  m: 'euiColorPaletteDisplay--sizeMedium'
-};
 
 /**
  * Shows a color palette as a bar: `'fixed'` blocks of solid color or a
@@ -34,33 +36,61 @@ export interface EuiColorPaletteDisplaySignature {
   };
 }
 
-function classes(size: keyof typeof SIZES = 's'): string {
-  return `euiColorPaletteDisplay ${SIZES[size]}`;
-}
+/** A palette bar on the upstream EUI 123 / Borealis palette display styles. */
+export default class EuiColorPaletteDisplay extends Component<EuiColorPaletteDisplaySignature> {
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorPaletteDisplayStyles);
+    const size = this.args.size ?? 's';
 
-function isGradient(type?: string): boolean {
-  return type === 'gradient';
-}
+    return `euiColorPaletteDisplay ${euiClass(
+      context,
+      boxReset,
+      styles.euiColorPaletteDisplay,
+      styles[size] ?? styles.s
+    )}`;
+  }
 
-const EuiColorPaletteDisplay: TemplateOnlyComponent<EuiColorPaletteDisplaySignature> =
+  @cached
+  get bleedAreaClasses(): string {
+    const context = getEuiThemeContext(this);
+
+    return `euiColorPaletteDisplayFixed__bleedArea ${euiClass(context, euiColorPaletteDisplayFixed__bleedArea)}`;
+  }
+
+  get isGradient(): boolean {
+    return this.args.type === 'gradient';
+  }
+
+  @cached
+  get gradient(): string {
+    return getLinearGradient(this.args.palette);
+  }
+
+  @cached
+  get fixed() {
+    return getFixedLinearGradient(this.args.palette);
+  }
+
   <template>
-    {{#if (isGradient @type)}}
+    {{#if this.isGradient}}
       {{#if @title}}
-        <EuiScreenReaderOnly>{{@title}}</EuiScreenReaderOnly>
+        <EuiScreenReaderOnly><span>{{@title}}</span></EuiScreenReaderOnly>
       {{/if}}
       <span
-        class={{classes @size}}
+        class={{this.classes}}
         aria-hidden="true"
-        style={{cssStyle (hash background=(getLinearGradient @palette))}}
+        style={{cssStyle (hash background=this.gradient)}}
         ...attributes
       ></span>
     {{else}}
-      <span class={{classes @size}} ...attributes>
+      <span class={{this.classes}} ...attributes>
         {{#if @title}}
-          <EuiScreenReaderOnly>{{@title}}</EuiScreenReaderOnly>
+          <EuiScreenReaderOnly><span>{{@title}}</span></EuiScreenReaderOnly>
         {{/if}}
-        <span aria-hidden="true" class="euiColorPaletteDisplayFixed__bleedArea">
-          {{#each (getFixedLinearGradient @palette) as |item|}}
+        <span aria-hidden="true" class={{this.bleedAreaClasses}}>
+          {{#each this.fixed as |item|}}
             <span
               style={{cssStyle
                 (hash backgroundColor=item.color width=item.width)
@@ -70,6 +100,5 @@ const EuiColorPaletteDisplay: TemplateOnlyComponent<EuiColorPaletteDisplaySignat
         </span>
       </span>
     {{/if}}
-  </template>;
-
-export default EuiColorPaletteDisplay;
+  </template>
+}

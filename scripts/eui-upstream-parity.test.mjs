@@ -223,7 +223,19 @@ const factories = {
   'components/date_picker/super_date_picker/date_popover/absolute_tab.styles.js': ['euiAbsoluteTabDateFormStyles'],
   'components/date_picker/super_date_picker/quick_select_popover/quick_select_panel.styles.js': ['euiQuickSelectPanelStyles'],
   'components/date_picker/super_date_picker/quick_select_popover/quick_select_popover.styles.js': ['euiQuickSelectPopoverStyles'],
-  'components/form/form_control_layout/append_prepend/form_append_prepend.styles.js': ['euiFormAppendPrependStyles']
+  'components/form/form_control_layout/append_prepend/form_append_prepend.styles.js': ['euiFormAppendPrependStyles'],
+  // color picker
+  'components/color_picker/color_picker.styles.js': ['euiColorPickerStyles'],
+  'components/color_picker/color_picker_swatch.styles.js': ['euiColorPickerSwatchStyles'],
+  'components/color_picker/hue.styles.js': ['euiHueStyles'],
+  'components/color_picker/saturation.styles.js': ['euiSaturationStyles'],
+  'components/color_picker/color_palette_display/color_palette_display.styles.js': ['euiColorPaletteDisplayStyles'],
+  // color picker: range pieces composed by EuiColorStops
+  'components/form/range/range.styles.js': ['euiRangeVariables', 'euiRangeThumbStyle', 'euiRangeThumbFocus'],
+  'components/form/range/range_wrapper.styles.js': ['euiRangeWrapperStyles'],
+  'components/form/range/range_track.styles.js': ['euiRangeTrackStyles'],
+  'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles'],
+  'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -355,6 +367,67 @@ test('misc-display: static expression value styles match upstream', () => {
     normalize(styles.euiExpressionValueStyles),
     normalize(reference.euiExpressionValueStyles)
   );
+});
+
+test('color picker: static palette display bleed area matches upstream', () => {
+  const reference = require(
+    resolve(
+      eui,
+      'lib/components/color_picker/color_palette_display/color_palette_display_fixed.styles.js'
+    )
+  );
+  assert.deepEqual(
+    normalize(styles.euiColorPaletteDisplayFixed__bleedArea),
+    normalize(reference.euiColorPaletteDisplayFixed__bleedArea)
+  );
+});
+
+test('color picker: EuiColorStops hand port (EUI 88.5.4, removed upstream in 89) follows the 123.1.0 range tokens', () => {
+  // Upstream 123.1.0 has no color stops module to compare against; check the
+  // port is built from the current upstream range factories and tokens.
+  const port = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/color-picker.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const mod = new Module(resolve(root, 'packages/core/eui-color-picker-port.cjs'));
+  mod.paths = adapted.paths;
+  mod._compile(port.outputFiles[0].text, mod.id);
+  const hand = mod.exports;
+  const range = require(resolve(eui, 'lib/components/form/range/range.styles.js'));
+  const picker = require(resolve(eui, 'lib/components/color_picker/color_picker.styles.js'));
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [{}, { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(EuiThemeBorealis, buildTheme(modifications, 'parity'), colorMode, highContrastMode)
+        };
+        const vars = range.euiRangeVariables(context);
+        const stops = hand.euiColorStopsStyles(context);
+        assert.ok(stops.euiColorStops__addTarget.styles.includes(range.euiRangeThumbStyle(context).trim().split('\n')[0].trim()));
+        assert.ok(stops.euiColorStops__addTarget.styles.includes(`block-size:${vars.thumbHeight};inline-size:${vars.thumbHeight};`));
+        assert.ok(stops.euiColorStops__track.styles.includes(vars.trackColor));
+        assert.ok(stops.isEnabled.styles.includes(`0 0 0 3px ${vars.focusColor}`));
+        const thumb = hand.euiColorStopThumbStyles(context);
+        assert.ok(thumb.isPopoverOpen.styles.includes(range.euiRangeThumbFocus(context).trim().split('\n')[0].trim()));
+        const popover = hand.euiColorStopThumbPopoverStyles(context);
+        assert.ok(popover.euiColorStopThumbPopover.styles.includes(`inline-size:${vars.thumbWidth};block-size:${vars.thumbHeight};`));
+        assert.ok(popover.hasFocus.styles.includes(`z-index:${vars.thumbZIndex};`));
+        // the stop editor is the upstream picker width
+        const width = /inline-size:\s*([^;]+);/.exec(picker.euiColorPickerStyles(context).euiColorPicker.styles)[1];
+        assert.ok(hand.euiColorStopStyles(context).euiColorStop.styles.includes(`inline-size:${width};`));
+      }
 });
 
 test('generated artifact has no React or upstream hook execution paths', () => {

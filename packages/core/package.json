@@ -19,7 +19,7 @@
     "Victor Aguilar",
     "Diego Zubieta",
     "Gustavo Rodriguez",
-    "Gerardo P\u00e9rez"
+    "Gerardo Pérez"
   ],
   "imports": {
     "#src/*": "./src/*"
@@ -403,6 +403,7 @@
       "./components/eui-page.js": "./dist/_app_/components/eui-page.js",
       "./components/eui-pagination-button.js": "./dist/_app_/components/eui-pagination-button.js",
       "./components/eui-pagination.js": "./dist/_app_/components/eui-pagination.js",
+      "./components/eui-pagination/arrow-button.js": "./dist/_app_/components/eui-pagination/arrow-button.js",
       "./components/eui-pagination/button-wrapper.js": "./dist/_app_/components/eui-pagination/button-wrapper.js",
       "./components/eui-pagination/next-button.js": "./dist/_app_/components/eui-pagination/next-button.js",
       "./components/eui-pagination/previous-button.js": "./dist/_app_/components/eui-pagination/previous-button.js",
@@ -470,6 +471,7 @@
       "./components/eui-super-date-picker/eui-date-picker-range.js": "./dist/_app_/components/eui-super-date-picker/eui-date-picker-range.js",
       "./components/eui-super-date-picker/eui-quick-select-popover.js": "./dist/_app_/components/eui-super-date-picker/eui-quick-select-popover.js",
       "./components/eui-super-date-picker/eui-quick-select-popover/eui-commonly-used-time-ranges.js": "./dist/_app_/components/eui-super-date-picker/eui-quick-select-popover/eui-commonly-used-time-ranges.js",
+      "./components/eui-super-date-picker/eui-quick-select-popover/eui-quick-select-panel.js": "./dist/_app_/components/eui-super-date-picker/eui-quick-select-popover/eui-quick-select-panel.js",
       "./components/eui-super-date-picker/eui-quick-select-popover/eui-quick-select.js": "./dist/_app_/components/eui-super-date-picker/eui-quick-select-popover/eui-quick-select.js",
       "./components/eui-super-date-picker/eui-quick-select-popover/eui-recently-used.js": "./dist/_app_/components/eui-super-date-picker/eui-quick-select-popover/eui-recently-used.js",
       "./components/eui-super-date-picker/eui-super-update-button.js": "./dist/_app_/components/eui-super-date-picker/eui-super-update-button.js",

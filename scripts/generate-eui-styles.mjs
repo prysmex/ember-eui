@@ -250,7 +250,20 @@ const entries = {
   // `global_styling/index.js` is the pure barrel (global styles removed by the adapter);
   // the extension-less form.styles key avoids editing the form-controls entry above.
   'global_styling/index.js': ['euiButtonColor', 'euiButtonEmptyColor', 'euiButtonFillColor', 'euiCanAnimate', 'mathWithUnits'],
-  'components/form/form.styles': ['euiFormControlText', 'euiFormControlDefaultShadow']
+  'components/form/form.styles': ['euiFormControlText', 'euiFormControlDefaultShadow'],
+  // color picker
+  'components/color_picker/color_picker.styles.js': ['euiColorPickerStyles'],
+  'components/color_picker/color_picker_swatch.styles.js': ['euiColorPickerSwatchStyles'],
+  'components/color_picker/hue.styles.js': ['euiHueStyles'],
+  'components/color_picker/saturation.styles.js': ['euiSaturationStyles'],
+  'components/color_picker/color_palette_display/color_palette_display.styles.js': ['euiColorPaletteDisplayStyles'],
+  'components/color_picker/color_palette_display/color_palette_display_fixed.styles.js': ['euiColorPaletteDisplayFixed__bleedArea'],
+  // color picker: range pieces EuiColorStops composes (shared with the range family; union names on merge)
+  'components/form/range/range.styles.js': ['euiRangeVariables', 'euiRangeThumbStyle', 'euiRangeThumbFocus'],
+  'components/form/range/range_wrapper.styles.js': ['euiRangeWrapperStyles'],
+  'components/form/range/range_track.styles.js': ['euiRangeTrackStyles'],
+  'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles'],
+  'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;
@@ -311,7 +324,7 @@ export const keyframes = (...args) => { const value = css(...args); const name =
           () => ({ contents: hooks, loader: 'js' })
         );
         builder.onLoad({ filter: /\/es\/services\/index\.js$/ }, (args) => ({
-          contents: `${hooks}\nexport * from './color/contrast';\nexport * from './color/manipulation';\nexport * from './color/is_color_dark';`,
+          contents: `${hooks}\nexport * from './color/contrast';\nexport * from './color/manipulation';\nexport * from './color/is_color_dark';\nexport * from './color/hex_to_rgb';`,
           resolveDir: dirname(args.path),
           loader: 'js'
         }));

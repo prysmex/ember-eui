@@ -83,6 +83,10 @@
   "packages/core/docs/display/text-diff/index.md": [
     "EuiTextDiff"
   ],
+  "packages/core/docs/display/text-truncation/index.md": [
+    "EuiTextTruncate",
+    "EuiTextBlockTruncate"
+  ],
   "packages/core/docs/display/timeline/index.md": [
     "EuiTimeline",
     "EuiTimelineItem",

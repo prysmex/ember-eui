@@ -167,6 +167,7 @@ export default class EuiFieldNumber extends Component<EuiFieldNumberSignature> {
           />
         {{else}}
           <EuiFormControlLayout
+            @inputId={{inputId}}
             @icon={{@icon}}
             @clear={{@clear}}
             @fullWidth={{@fullWidth}}

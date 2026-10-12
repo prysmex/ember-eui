@@ -103,6 +103,10 @@
       "sha256": "9a702acb8d4b606412ecd70db4c7b4168be6fd0cfc01e64b4e996ddfe7fa4395"
     },
     {
+      "path": "@elastic/eui/es/components/button/split_button/split_button.styles.js",
+      "sha256": "9859dc55294451945beec1e1cf3c8545ea92e976f40b0f9e07d1c1a8cb3dd9cf"
+    },
+    {
       "path": "@elastic/eui/es/components/call_out/call_out.styles.js",
       "sha256": "a32b2d2512f382b320633feae1806d4cf6f706e377e90f457f8dc99554dd3160"
     },
@@ -367,6 +371,10 @@
       "sha256": "37fb33931d208a2471dcbf4e3a72afc79c3b2a7e56b587f2ad0d9fefea7a8ae9"
     },
     {
+      "path": "@elastic/eui/es/components/form/form_control_button/form_control_button.styles.js",
+      "sha256": "8abe9a5ba3681ff5993ab00dbada623d57f13b56071b7775aa4e883ec763cf9c"
+    },
+    {
       "path": "@elastic/eui/es/components/form/form_control_layout/append_prepend/form_append_prepend.styles.js",
       "sha256": "4ff33cbbdc1df3e8badb86cab04da7544984603ea570b790dbee285509b743d3"
     },
@@ -561,6 +569,18 @@
     {
       "path": "@elastic/eui/es/components/image/image.styles.js",
       "sha256": "6fe8c3d37a5e7851874b4c09a2232add17306fb672e7d157a8b8138a2d2f11fb"
+    },
+    {
+      "path": "@elastic/eui/es/components/inline_edit/inline_edit_form.styles.js",
+      "sha256": "94a2cc634e42e05c32fc1c6867e27a4bb8e1b901e1045f9a88e53f5ac1e3785a"
+    },
+    {
+      "path": "@elastic/eui/es/components/inline_edit/inline_edit_text.styles.js",
+      "sha256": "d9d41ae00fe7c288fb8832b645ee5e7c1787daa7478ce9df8e81db1c0c31e615"
+    },
+    {
+      "path": "@elastic/eui/es/components/inline_edit/inline_edit_title.styles.js",
+      "sha256": "3f8bbc19eb70816ef42be3624b5233a02655165da3f95bfad3827ea6a7ce8a22"
     },
     {
       "path": "@elastic/eui/es/components/key_pad_menu/key_pad_menu.styles.js",

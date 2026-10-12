@@ -69,6 +69,8 @@ import EuiFlyoutBody from './components/eui-flyout-body.gts';
 import EuiFlyoutFooter from './components/eui-flyout-footer.gts';
 import EuiFlyoutHeader from './components/eui-flyout-header.gts';
 import EuiForm from './components/eui-form.gts';
+import EuiFormAppend from './components/eui-form-append.gts';
+import EuiFormControlButton from './components/eui-form-control-button.gts';
 import EuiFormControlLayout from './components/eui-form-control-layout.gts';
 import EuiFormControlLayoutDelimited from './components/eui-form-control-layout-delimited.gts';
 import EuiFormControlLayoutIcons from './components/eui-form-control-layout-icons.gts';
@@ -77,6 +79,7 @@ import EuiFormFieldset from './components/eui-form-fieldset.gts';
 import EuiFormHelpText from './components/eui-form-help-text.gts';
 import EuiFormLabel from './components/eui-form-label.gts';
 import EuiFormLegend from './components/eui-form-legend.gts';
+import EuiFormPrepend from './components/eui-form-prepend.gts';
 import EuiFormRow from './components/eui-form-row.gts';
 import EuiGlobalToastList from './components/eui-global-toast-list.gts';
 import EuiHeader from './components/eui-header.gts';
@@ -99,6 +102,8 @@ import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
 import EuiIllustration from './components/eui-illustration.gts';
 import EuiImage from './components/eui-image.gts';
+import EuiInlineEditText from './components/eui-inline-edit-text.gts';
+import EuiInlineEditTitle from './components/eui-inline-edit-title.gts';
 import EuiInputPopover from './components/eui-input-popover.gts';
 import EuiKeyPadMenu from './components/eui-key-pad-menu.gts';
 import EuiKeyPadMenuItem from './components/eui-key-pad-menu-item.gts';
@@ -181,6 +186,9 @@ import EuiSkeletonText from './components/eui-skeleton-text.gts';
 import EuiSkeletonTitle from './components/eui-skeleton-title.gts';
 import EuiSkipLink from './components/eui-skip-link.gts';
 import EuiSpacer from './components/eui-spacer.gts';
+import EuiSplitButton from './components/eui-split-button.gts';
+import EuiSplitButtonActionPrimary from './components/eui-split-button/eui-split-button-action-primary.gts';
+import EuiSplitButtonActionSecondary from './components/eui-split-button/eui-split-button-action-secondary.gts';
 import EuiSplitPanelInner from './components/eui-split-panel/inner.gts';
 import EuiSplitPanelOuter from './components/eui-split-panel/outer.gts';
 import EuiStat from './components/eui-stat.gts';
@@ -310,6 +318,8 @@ export {
   EuiFlyoutFooter,
   EuiFlyoutHeader,
   EuiForm,
+  EuiFormAppend,
+  EuiFormControlButton,
   EuiFormControlLayout,
   EuiFormControlLayoutDelimited,
   EuiFormControlLayoutIcons,
@@ -318,6 +328,7 @@ export {
   EuiFormHelpText,
   EuiFormLabel,
   EuiFormLegend,
+  EuiFormPrepend,
   EuiFormRow,
   EuiGlobalToastList,
   EuiHeader,
@@ -340,6 +351,8 @@ export {
   EuiIconTip,
   EuiIllustration,
   EuiImage,
+  EuiInlineEditText,
+  EuiInlineEditTitle,
   EuiInputPopover,
   EuiKeyPadMenu,
   EuiKeyPadMenuItem,
@@ -422,6 +435,9 @@ export {
   EuiSkeletonTitle,
   EuiSkipLink,
   EuiSpacer,
+  EuiSplitButton,
+  EuiSplitButtonActionPrimary,
+  EuiSplitButtonActionSecondary,
   EuiSplitPanelInner,
   EuiSplitPanelOuter,
   EuiStat,

@@ -274,7 +274,12 @@ const factories = {
   // page-a11y
   'components/banner/banner.styles.js': ['euiBannerStyles'],
   // text truncate
-  'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles']
+  'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles'],
+  // new-inline-split (split button factories with arguments have their own test below)
+  'components/inline_edit/inline_edit_form.styles.js': ['euiInlineEditReadModeStyles'],
+  'components/inline_edit/inline_edit_text.styles.js': ['euiInlineEditTextStyles'],
+  'components/inline_edit/inline_edit_title.styles.js': ['euiInlineEditTitleStyles'],
+  'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1704,3 +1709,32 @@ test('text block truncate hand port matches upstream EuiTextBlockTruncate css', 
   }
 });
 
+
+
+
+
+test('split button factories and button color helpers match upstream for every argument in 12 theme configurations', () => {
+  const split = require(resolve(eui, 'lib/components/button/split_button/split_button.styles.js'));
+  const button = require(resolve(eui, 'lib/global_styling/mixins/_button.js'));
+  const colors = ['primary', 'accent', 'accentSecondary', 'neutral', 'success', 'warning', 'risk', 'danger', 'text', 'disabled'];
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [{}, { base: 20, border: { radius: { control: '20px' } } }]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(EuiThemeBorealis, buildTheme(modifications, 'parity'), colorMode, highContrastMode)
+        };
+        const label = `${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`;
+        for (const color of colors) {
+          for (const helper of ['getEuiButtonColorValues', 'getEuiFilledButtonColorValues'])
+            assert.deepEqual(styles[helper](context, color), button[helper](context, color), `${helper} ${color} ${label}`);
+          const background = button.getEuiButtonColorValues(context, color).backgroundColor;
+          assert.deepEqual(normalize(styles.euiSplitButtonStyles(context, background)), normalize(split.euiSplitButtonStyles(context, background)), `styles ${color} ${label}`);
+          assert.deepEqual(normalize(styles.euiSplitButtonDividerStyles(context, background)), normalize(split.euiSplitButtonDividerStyles(context, background)), `divider ${color} ${label}`);
+        }
+        for (const size of ['xs', 's', 'm'])
+          assert.deepEqual(normalize(styles.euiSplitButtonActionStyles(context, size)), normalize(split.euiSplitButtonActionStyles(context, size)), `actions ${size} ${label}`);
+      }
+});

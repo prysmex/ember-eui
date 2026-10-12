@@ -306,7 +306,15 @@ const entries = {
   'components/banner/banner.styles.js': ['euiBannerStyles'],
   // text truncate
   'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles'],
-  'components/text_truncate/utils.js': ['TruncationUtils']
+  'components/text_truncate/utils.js': ['TruncationUtils'],
+  // new-inline-split (EuiInlineEdit*, EuiSplitButton, EuiFormControlButton, EuiFormAppend/Prepend)
+  'components/inline_edit/inline_edit_form.styles.js': ['euiInlineEditReadModeStyles'],
+  'components/inline_edit/inline_edit_text.styles.js': ['euiInlineEditTextStyles'],
+  'components/inline_edit/inline_edit_title.styles.js': ['euiInlineEditTitleStyles'],
+  'components/button/split_button/split_button.styles.js': ['euiSplitButtonStyles', 'euiSplitButtonActionStyles', 'euiSplitButtonDividerStyles'],
+  // extension-less key so the existing `_button.js` entry is not edited (union on merge)
+  'global_styling/mixins/_button': ['getEuiButtonColorValues', 'getEuiFilledButtonColorValues'],
+  'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

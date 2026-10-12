@@ -207,7 +207,14 @@ const entries = {
   'components/expression/expression.styles.js': ['euiExpressionStyles', 'euiExpressionDescriptionStyles', 'euiExpressionValueStyles', 'euiExpressionIconStyles'],
   'components/tour/tour.styles.js': ['euiTourStyles', 'euiTourBeaconStyles'],
   'components/tour/_tour_header.styles.js': ['euiTourHeaderStyles'],
-  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor']
+  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor'],
+  // resizable-dnd
+  'components/resizable_container/resizable_container.styles.js': ['euiResizableContainerStyles'],
+  'components/resizable_container/resizable_button.styles.js': ['euiResizableButtonStyles'],
+  'components/resizable_container/resizable_collapse_button.styles.js': ['euiResizableCollapseButtonStyles'],
+  'components/resizable_container/resizable_panel.styles.js': ['euiResizablePanelStyles', 'euiResizablePanelContentStyles'],
+  'components/drag_and_drop/draggable.styles.js': ['euiDraggableStyles', 'euiDraggableItemStyles'],
+  'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

@@ -192,7 +192,13 @@ const factories = {
   'components/expression/expression.styles.js': ['euiExpressionStyles', 'euiExpressionDescriptionStyles', 'euiExpressionIconStyles'],
   'components/tour/tour.styles.js': ['euiTourStyles', 'euiTourBeaconStyles'],
   'components/tour/_tour_header.styles.js': ['euiTourHeaderStyles'],
-  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor']
+  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor'],
+  // resizable-dnd
+  'components/resizable_container/resizable_button.styles.js': ['euiResizableButtonStyles'],
+  'components/resizable_container/resizable_collapse_button.styles.js': ['euiResizableCollapseButtonStyles'],
+  'components/resizable_container/resizable_panel.styles.js': ['euiResizablePanelContentStyles'],
+  'components/drag_and_drop/draggable.styles.js': ['euiDraggableStyles', 'euiDraggableItemStyles'],
+  'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1041,6 +1047,23 @@ test('split panel outer slots match upstream static styles', () => {
   assert.deepEqual(
     normalize(styles.euiSplitPanelOuterStyles),
     normalize(reference.euiSplitPanelOuterStyles)
+  );
+});
+
+test('resizable container and panel slots match upstream static styles', () => {
+  const container = require(
+    resolve(eui, 'lib/components/resizable_container/resizable_container.styles.js')
+  );
+  const panel = require(
+    resolve(eui, 'lib/components/resizable_container/resizable_panel.styles.js')
+  );
+  assert.deepEqual(
+    normalize(styles.euiResizableContainerStyles),
+    normalize(container.euiResizableContainerStyles)
+  );
+  assert.deepEqual(
+    normalize(styles.euiResizablePanelStyles),
+    normalize(panel.euiResizablePanelStyles)
   );
 });
 

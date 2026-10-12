@@ -167,6 +167,14 @@
       "sha256": "24b448a49c8b9e5183e33999f6ad1ac94a5175be12c3d6b9c36395e7e9348bfc"
     },
     {
+      "path": "@elastic/eui/es/components/drag_and_drop/draggable.styles.js",
+      "sha256": "2e704e562cacd7e36a6c4acdbad48e44241dc23e4327cc00e93ab4e835cfb903"
+    },
+    {
+      "path": "@elastic/eui/es/components/drag_and_drop/droppable.styles.js",
+      "sha256": "e3065b9276caca4c0a52b32dd819b755c5085a92036b08cc5023d7f291418fea"
+    },
+    {
       "path": "@elastic/eui/es/components/empty_prompt/empty_prompt.styles.js",
       "sha256": "8b31630b3bd4ae626b81475f5a1181d809bb42cecd2968114158e55b2d76ad23"
     },
@@ -509,6 +517,22 @@
     {
       "path": "@elastic/eui/es/components/progress/progress.styles.js",
       "sha256": "c1845c6affec294c39d83621c336264f3294c2ee1e1cdfc50a4cc5ded52b9c0a"
+    },
+    {
+      "path": "@elastic/eui/es/components/resizable_container/resizable_button.styles.js",
+      "sha256": "43c16c2474c2f87273b7e4c65993fac7cf39676f673dad272d67b8d6203ca81d"
+    },
+    {
+      "path": "@elastic/eui/es/components/resizable_container/resizable_collapse_button.styles.js",
+      "sha256": "23ff74dbf1ff490bff1dde1b73cc17f3372481acb5e050f9241e44f3b9dc12eb"
+    },
+    {
+      "path": "@elastic/eui/es/components/resizable_container/resizable_container.styles.js",
+      "sha256": "3ebd93968edf0d5fd7951a1af442a0781034b798ded11c1c2b40f60c3959f785"
+    },
+    {
+      "path": "@elastic/eui/es/components/resizable_container/resizable_panel.styles.js",
+      "sha256": "cb13c63b14417f222a0c6ef6379e504db7d95669d773d27e3a78ac93d117ae85"
     },
     {
       "path": "@elastic/eui/es/components/side_nav/side_nav_item.styles.js",

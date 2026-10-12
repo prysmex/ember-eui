@@ -20,9 +20,6 @@ export interface ResizerState {
   isDisabled: boolean;
 }
 
-/** Padding of EuiPanel per size, in px. */
-export const PANEL_PADDING = { none: 0, s: 8, m: 16, l: 24 };
-
 export function pxToPercent(proportion: number, whole: number): number {
   if (whole < 1 || proportion < 0) return 0;
 
@@ -61,7 +58,7 @@ export function getSiblingPanel(element: Element | null, adjacency: 'prev' | 'ne
   let sibling = step(element);
 
   while (sibling) {
-    if (sibling.matches('.euiResizablePanel:not(.euiResizablePanel-isCollapsed)')) return sibling;
+    if (sibling.matches('.euiResizablePanel:not([data-collapsed])')) return sibling;
     sibling = step(sibling);
   }
 

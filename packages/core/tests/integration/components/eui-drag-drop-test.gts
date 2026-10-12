@@ -66,16 +66,18 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
       </template>
     );
 
-    assert
-      .dom('.euiDroppable')
-      .hasClass('euiDroppable--m')
-      .hasClass('euiDroppable--withPanel')
-      .hasClass('euiDroppable--noGrow');
+    // spacing m = size.xs, withPanel renders an EuiPanel, grow defaults to false
+    assert.dom('.euiDroppable').hasAttribute('data-eui-panel');
+    const droppable = getComputedStyle(this.element.querySelector('.euiDroppable')!);
+    assert.strictEqual(droppable.paddingTop, '4px');
+    assert.strictEqual(droppable.flexGrow, '0');
     assert.dom('.euiDraggable').exists({ count: 3 });
-    assert
-      .dom('.euiDraggable')
-      .hasClass('euiDraggable--s')
-      .hasAttribute('tabindex', '0');
+    assert.dom('.euiDraggable').hasAttribute('tabindex', '0');
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('.euiDraggable')!).paddingTop,
+      '2px',
+      'spacing s = size.xxs'
+    );
     assert
       .dom('.euiDraggable')
       .hasAttribute(
@@ -108,14 +110,14 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
     );
 
     await triggerKeyEvent('[data-id="a"]', 'keydown', ' ');
-    assert
-      .dom('[data-id="a"]')
-      .hasClass('euiDraggable--isDragging')
-      .hasAria('pressed', 'true');
-    assert
-      .dom('.euiDroppable')
-      .hasClass('euiDroppable--isDraggingType')
-      .hasClass('euiDroppable--isDraggingOver');
+    // the list background transitions over animation.slow
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    assert.dom('[data-id="a"]').hasAria('pressed', 'true');
+    assert.notStrictEqual(
+      getComputedStyle(this.element.querySelector('.euiDroppable')!).backgroundColor,
+      'rgba(0, 0, 0, 0)',
+      'the list being dragged over is highlighted'
+    );
 
     await triggerKeyEvent('[data-id="a"]', 'keydown', 'ArrowDown');
     await triggerKeyEvent('[data-id="a"]', 'keydown', 'ArrowDown');
@@ -141,7 +143,7 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
       state.items.map((item) => item.id),
       ['b', 'c', 'a']
     );
-    assert.dom('.euiDraggable--isDragging').doesNotExist();
+    assert.dom('.euiDraggable[aria-pressed="true"]').doesNotExist();
   });
 
   // the test container is scaled, so this also checks CSS px vs screen px
@@ -219,9 +221,9 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
       .doesNotHaveAttribute('tabindex');
     assert
       .dom('[data-id="b"] .euiDraggable__item')
-      .hasClass('euiDraggable__item--isDisabled');
+      .hasClass('euiDraggable__item-isDisabled');
     await triggerKeyEvent('[data-id="b"]', 'keydown', ' ');
-    assert.dom('.euiDraggable--isDragging').doesNotExist();
+    assert.dom('.euiDraggable[aria-pressed="true"]').doesNotExist();
   });
 
   test('dragging with the pointer reorders the list', async function (assert) {
@@ -265,13 +267,19 @@ module('Integration | Component | eui-drag-drop', function (hooks) {
     fire(itemA, 'dragstart', itemA.getBoundingClientRect().top + 5);
     await frame();
     await frame();
-    assert.dom('[data-id="a"]').hasClass('euiDraggable--isDragging');
+    assert.dom('[data-id="a"]').hasAria('pressed', 'true');
 
     fire(itemC, 'dragenter', below);
     fire(itemC, 'dragover', below);
     await frame();
     await frame();
-    assert.dom('.euiDroppable').hasClass('euiDroppable--isDraggingOver');
+    // the list background transitions over animation.slow
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    assert.notStrictEqual(
+      getComputedStyle(this.element.querySelector('.euiDroppable')!).backgroundColor,
+      'rgba(0, 0, 0, 0)',
+      'the list being dragged over is highlighted'
+    );
 
     fire(itemC, 'drop', below);
     await frame();

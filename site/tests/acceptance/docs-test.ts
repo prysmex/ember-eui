@@ -25,6 +25,9 @@ module('Acceptance | docs', function (hooks) {
     const docfy = this.owner.lookup('service:docfy') as DocfyService;
     const pages = docfy.flat.filter((page) => !page.frontmatter['disabled']);
 
+    // every page loads its own bundle, ~0.5s each on a busy CI machine
+    assert.timeout(180_000);
+
     for (const page of pages) {
       await visit(page.url);
 

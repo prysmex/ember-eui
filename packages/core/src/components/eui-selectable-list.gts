@@ -230,10 +230,14 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
     const listBox = list.getBoundingClientRect();
     const itemBox = item.getBoundingClientRect();
 
+    // rects are in screen pixels, scrollTop in the list's own (a transformed
+    // ancestor scales them)
+    const scale = list.offsetHeight ? listBox.height / list.offsetHeight : 1;
+
     if (itemBox.top < listBox.top) {
-      list.scrollTop -= listBox.top - itemBox.top;
+      list.scrollTop -= (listBox.top - itemBox.top) / scale;
     } else if (itemBox.bottom > listBox.bottom) {
-      list.scrollTop += itemBox.bottom - listBox.bottom;
+      list.scrollTop += (itemBox.bottom - listBox.bottom) / scale;
     }
   });
 

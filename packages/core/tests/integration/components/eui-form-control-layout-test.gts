@@ -67,8 +67,12 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
     const button = document.querySelector('.euiFormControlLayoutClearButton')!;
 
     assert.notStrictEqual(getComputedStyle(icon).transform, 'none');
-    assert.strictEqual(icon.getBoundingClientRect().width, 8, 'the cross is 8px wide');
-    assert.strictEqual(button.getBoundingClientRect().width, 16, 'in a 16px circle');
+    // measured as a ratio: the test container itself is scaled
+    assert.strictEqual(
+      icon.getBoundingClientRect().width / button.getBoundingClientRect().width,
+      0.5,
+      'the 8px cross sits in a 16px circle'
+    );
   });
 
   test('right icon, and prepend/append make a group', async function (assert) {

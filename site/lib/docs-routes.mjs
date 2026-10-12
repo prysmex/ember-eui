@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { basename, dirname, join, parse, relative, sep } from 'node:path';
 
 import config from '../docfy.config.mjs';
@@ -54,6 +54,15 @@ export default function docsPageRoutes() {
     const pages = files.filter((file) => !isDemo(file, files));
 
     return pages.map((file) => {
+      // a `url` frontmatter replaces the path-based URL, as in docfy
+      const custom = /^url:\s*(\S+)\s*$/m.exec(
+        readFileSync(file, 'utf8').split(/^---\s*$/m)[1] ?? '',
+      )?.[1];
+
+      if (custom) {
+        return [...urlPrefix.split('/'), ...custom.split('/').filter(Boolean)].join('.');
+      }
+
       const path = relative(root, file).replace(/\.md$/, '').split(sep);
       const folder = dirname(file);
       // an index page keeps its `index` route when its folder has other

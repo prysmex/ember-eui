@@ -1,12 +1,16 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
+import cssStyle from '../-private/css-style.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getMatchingOptions, toggleOption } from '../-private/selectable-options.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiSelectableStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass } from '../utils/eui/styles.ts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiSelectableList from './eui-selectable-list.gts';
 import EuiSelectableMessage from './eui-selectable-message.gts';
@@ -14,6 +18,7 @@ import EuiSelectableSearch from './eui-selectable-search.gts';
 import EuiSpacer from './eui-spacer.gts';
 
 import type EuiI18n from '../services/eui-i18n';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiSelectableOption } from '../-private/selectable-options.ts';
 import type Owner from '@ember/owner';
 import type { ComponentLike } from '@glint/template';
@@ -57,7 +62,8 @@ export interface EuiSelectableSignature {
     };
     /**
      * `true`: one option at most; `'always'`: exactly one (clicking the
-     * checked option keeps it).
+     * checked option keeps it); `false`: several, shown with check boxes
+     * and `aria-checked`. Defaults to `false`.
      */
     singleSelection?: boolean | 'always';
     /** Pressing a checked option excludes it (`checked: 'off'`, a cross). */
@@ -69,10 +75,12 @@ export interface EuiSelectableSignature {
     /** Height of the list in px, or `'full'` to fill the container. */
     height?: number | 'full';
     /**
-     * Options of the list: `{ bordered, showIcons, rowHeight, onFocusBadge }`.
+     * Options of the list: `{ bordered, paddingSize, showIcons, rowHeight,
+     * onFocusBadge }` (`onFocusBadge` defaults to `false`, upstream).
      */
     listProps?: {
       bordered?: boolean;
+      paddingSize?: 'none' | 's';
       showIcons?: boolean;
       rowHeight?: number;
       onFocusBadge?: boolean | { text?: string; iconSide?: 'left' | 'right' };
@@ -83,6 +91,11 @@ export interface EuiSelectableSignature {
     noMatchesMessage?: string;
     /** Message when there are no options. Defaults to "No options available". */
     emptyMessage?: string;
+    /**
+     * Styles composed last into the root's class (upstream's `css` prop),
+     * e.g. from a template built on EuiSelectable.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /**
@@ -92,7 +105,14 @@ export interface EuiSelectableSignature {
      */
     default: [
       {
-        list: ComponentLike<{ Element: HTMLDivElement; Blocks: OptionBlocks }>;
+        list: ComponentLike<{
+          Element: HTMLDivElement;
+          Args: {
+            /** @private Minimum height (px) of the message replacing the list. */
+            messageMinHeight?: number;
+          };
+          Blocks: OptionBlocks;
+        }>;
         search: ComponentLike<{ Element: HTMLInputElement }> | undefined;
       }
     ];
@@ -133,6 +153,32 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
 
   get messageId(): string {
     return `${this.rootId}_messageContent`;
+  }
+
+  get instructionsId(): string {
+    return `${this.rootId}_instructions`;
+  }
+
+  /** Upstream default: multiple selection. */
+  get singleSelection(): boolean | 'always' {
+    return this.args.singleSelection ?? false;
+  }
+
+  get screenReaderInstructions(): string {
+    return this.euiI18n.lookupToken(
+      'euiSelectable.screenReaderInstructions',
+      'Use the Up and Down arrow keys to move focus over options. Press Enter to select. Press Escape to collapse options.'
+    );
+  }
+
+  @cached
+  get classes(): string {
+    return euiClass(
+      getEuiThemeContext(this),
+      euiSelectableStyles.euiSelectable,
+      this.args.height === 'full' && euiSelectableStyles.fullHeight,
+      this.args.css
+    );
   }
 
   makeOptionId = (index: number): string => `${this.listId}_option-${index}`;
@@ -210,7 +256,7 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
       return;
     }
 
-    if (!this.visibleOptions.length || this.activeOptionIndex) return;
+    if (!this.visibleOptions.length || this.activeOptionIndex !== undefined) return;
 
     const firstChecked = this.visibleOptions.findIndex(
       (option) => option.checked && this.isSelectable(option)
@@ -234,6 +280,11 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
   @action
   onKeyDown(event: KeyboardEvent): void {
     switch (event.key) {
+      case 'Alt':
+      case 'Shift':
+      case 'Control':
+      case 'Meta':
+        break;
       case 'ArrowUp':
         event.preventDefault();
         event.stopPropagation();
@@ -244,7 +295,16 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
         event.stopPropagation();
         this.moveActiveOption(1);
         break;
+      case ' ':
       case 'Enter': {
+        // in a search field, Space types (upstream)
+        if (
+          event.key === ' ' &&
+          this.args.searchable &&
+          (event.target as HTMLElement).tagName === 'INPUT'
+        )
+          return;
+
         event.preventDefault();
         event.stopPropagation();
 
@@ -256,7 +316,7 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
         const options = option
           ? toggleOption(this.args.options, option, {
               allowExclusions: this.args.allowExclusions,
-              singleSelection: this.args.singleSelection
+              singleSelection: this.singleSelection
             })
           : undefined;
 
@@ -312,7 +372,7 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
 
   <template>
     <div
-      class="euiSelectable {{if (isFull @height) 'euiSelectable-fullHeight'}}"
+      class="euiSelectable {{this.classes}}"
       {{on "keydown" this.onKeyDown}}
       {{on "focusin" this.onFocus}}
       {{on "focusout" this.onBlur}}
@@ -331,6 +391,8 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
             compressed=@searchProps.compressed
             isPreFiltered=@isPreFiltered
             listId=(if this.message undefined this.listId)
+            ariaDescribedby=this.instructionsId
+            instructions=this.screenReaderInstructions
           )
         )
         (component
@@ -338,7 +400,7 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
           selectable=this
           options=@options
           searchable=@searchable
-          singleSelection=@singleSelection
+          singleSelection=this.singleSelection
           allowExclusions=@allowExclusions
           height=@height
           listProps=@listProps
@@ -378,10 +440,6 @@ function flag(explicit: boolean | undefined, hasBlock: boolean): boolean {
   return explicit ?? hasBlock;
 }
 
-function isFull(height: unknown): boolean {
-  return height === 'full';
-}
-
 interface SelectableBodySignature {
   Element: HTMLDivElement;
   Args: {
@@ -398,6 +456,8 @@ interface SelectableBodySignature {
     hasOption?: boolean;
     hasOptionPrepend?: boolean;
     hasOptionAppend?: boolean;
+    /** @private Minimum height of the message (sitewide template: 300px). */
+    messageMinHeight?: number;
   };
   Blocks: OptionBlocks;
 }
@@ -412,6 +472,7 @@ class SelectableBody extends Component<SelectableBodySignature> {
     {{#if @message}}
       <EuiSelectableMessage
         id={{this.selectable.messageId}}
+        style={{cssStyle (hash minHeight=@messageMinHeight)}}
         @bordered={{@listProps.bordered}}
         ...attributes
       >
@@ -440,6 +501,7 @@ class SelectableBody extends Component<SelectableBodySignature> {
         @searchable={{@searchable}}
         @height={{@height}}
         @bordered={{@listProps.bordered}}
+        @paddingSize={{@listProps.paddingSize}}
         @showIcons={{@listProps.showIcons}}
         @rowHeight={{@listProps.rowHeight}}
         @onFocusBadge={{@listProps.onFocusBadge}}
@@ -448,7 +510,7 @@ class SelectableBody extends Component<SelectableBodySignature> {
         @hasOption={{flag @hasOption (has-block "option")}}
         @hasOptionPrepend={{flag @hasOptionPrepend (has-block "optionPrepend")}}
         @hasOptionAppend={{flag @hasOptionAppend (has-block "optionAppend")}}
-        aria-label={{if @searchable this.selectable.placeholder}}
+        @ariaLabel={{if @searchable this.selectable.placeholder}}
         ...attributes
       >
         <:option as |option searchValue|>{{yield option searchValue to="option"}}</:option>

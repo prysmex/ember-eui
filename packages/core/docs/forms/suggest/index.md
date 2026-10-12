@@ -75,7 +75,7 @@ optional description. With `@onClick` it is a button.
 | `@description` | `string` |  | More about it, after the label. |
 | `@labelDisplay` | `'fixed' \| 'expand'` | `'fixed'` (`'expand'` without a description) | `'fixed'` keeps the label at `@labelWidth`; `'expand'` lets it take the space it needs. |
 | `@labelWidth` |  | `'50'` | Width of the label in percent, `'20'` to `'90'` by tens. |
-| `@descriptionDisplay` | `'truncate' \| 'wrap'` | `'truncate'` | `'truncate'` or `'wrap'` a long description. |
+| `@descriptionDisplay` | `'truncate' \| 'wrap'` | `'truncate'` | `'truncate'` (label and description, with `title`s) or `'wrap'` long text. |
 | `@onClick` | `(event: MouseEvent) => void` |  | Makes it a button. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<div>`.

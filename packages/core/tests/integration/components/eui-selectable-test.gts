@@ -38,20 +38,22 @@ module('Integration | Component | eui-selectable', function (hooks) {
     assert.dom('ul[role="listbox"]').hasAttribute('aria-multiselectable', 'true');
     assert.dom('.euiSelectableList__groupLabel').exists({ count: 2 });
     assert.dom('.euiSelectableListItem').exists({ count: 4 });
-    assert.dom('.euiSelectableListItem:not([aria-disabled])[aria-selected="true"]').hasText('Apple');
-    assert.dom('li[title="Carrot"] .euiSelectableListItem__append').hasText('12');
+    // multiple selection options use aria-checked (upstream EuiListItemLayout)
+    assert.dom('.euiSelectableListItem:not([aria-disabled])[aria-checked="true"]').hasText('Apple');
+    assert.dom('.euiSelectableListItem[aria-selected]').doesNotExist();
+    assert.dom('li:has([title="Carrot"]) .euiSelectableListItem__append').hasText('12');
 
-    await click('li[title="Banana"]');
+    await click('li:has([title="Banana"])');
     await rerender();
     assert.deepEqual(state.checked, ['Apple:on', 'Banana:on']);
-    assert.dom('li[title="Banana"]').hasAttribute('aria-selected', 'true');
+    assert.dom('li:has([title="Banana"])').hasAttribute('aria-checked', 'true');
 
-    await click('li[title="Apple"]');
+    await click('li:has([title="Apple"])');
     await rerender();
     assert.deepEqual(state.checked, ['Banana:on']);
-    assert.dom('li[title="Apple"]').hasAttribute('aria-selected', 'false');
+    assert.dom('li:has([title="Apple"])').hasAttribute('aria-checked', 'false');
 
-    await click('li[title="Cherry"]');
+    await click('li:has([title="Cherry"])');
     assert.deepEqual(state.checked, ['Banana:on'], 'disabled options do nothing');
   });
 
@@ -63,11 +65,11 @@ module('Integration | Component | eui-selectable', function (hooks) {
     state.options = [{ label: 'Pear', checked: 'on' }, { label: 'Plum' }];
     await rerender();
     assert.dom('.euiSelectableListItem').exists({ count: 2 });
-    assert.dom('li[title="Apple"]').doesNotExist();
-    assert.dom('li[title="Pear"]').hasAttribute('aria-selected', 'true');
+    assert.dom('li:has([title="Apple"])').doesNotExist();
+    assert.dom('li:has([title="Pear"])').hasAttribute('aria-checked', 'true');
 
-    await click('li[title="Plum"]');
-    assert.dom('li[title="Plum"]').hasAttribute('aria-selected', 'true');
+    await click('li:has([title="Plum"])');
+    assert.dom('li:has([title="Plum"])').hasAttribute('aria-checked', 'true');
     assert.deepEqual(state.checked, ['Pear:on', 'Plum:on']);
 
     state.options = [];
@@ -87,18 +89,18 @@ module('Integration | Component | eui-selectable', function (hooks) {
       </template>
     );
 
-    await click('.single li[title="Banana"]');
+    await click('.single li:has([title="Banana"])');
     await rerender();
     assert.deepEqual(single.checked, ['Banana:on'], 'one option at most');
-    await click('.single li[title="Banana"]');
+    await click('.single li:has([title="Banana"])');
     await rerender();
     assert.deepEqual(single.checked, ['Banana:on'], "'always' keeps one option");
 
-    await click('.exclusions li[title="Apple"]');
+    await click('.exclusions li:has([title="Apple"])');
     await rerender();
     assert.deepEqual(exclusions.checked, ['Apple:off'], 'a checked option is excluded first');
-    assert.dom('.exclusions li[title="Apple"] .euiScreenReaderOnly').includesText('Excluded option.');
-    await click('.exclusions li[title="Apple"]');
+    assert.dom('.exclusions li:has([title="Apple"]) .euiScreenReaderOnly').includesText('Excluded option.');
+    await click('.exclusions li:has([title="Apple"])');
     await rerender();
     assert.deepEqual(exclusions.checked, [], 'then unchecked');
   });
@@ -129,16 +131,16 @@ module('Integration | Component | eui-selectable', function (hooks) {
   test('the keyboard moves the current option and Enter toggles it', async function (assert) {
     const state = new State();
 
-    await render(<template><EuiSelectable @options={{state.options}} @onChange={{state.onChange}} @searchable={{true}} /></template>);
+    await render(<template><EuiSelectable @options={{state.options}} @onChange={{state.onChange}} @searchable={{true}} @listProps={{hash onFocusBadge=true}} /></template>);
 
     await triggerKeyEvent('.euiSelectable', 'keydown', 'ArrowDown');
-    assert.dom('li[title="Apple"]').hasClass('euiSelectableListItem-isFocused', 'group labels are skipped');
-    assert.dom('input.euiSelectableSearch').hasAria('activedescendant', this.element.querySelector('li[title="Apple"]')!.id);
+    assert.dom('li:has([title="Apple"])').hasClass('euiSelectableListItem-isFocused', 'group labels are skipped');
+    assert.dom('input.euiSelectableSearch').hasAria('activedescendant', this.element.querySelector('li:has([title="Apple"])')!.id);
 
     await triggerKeyEvent('.euiSelectable', 'keydown', 'ArrowDown');
     await triggerKeyEvent('.euiSelectable', 'keydown', 'ArrowDown');
-    assert.dom('li[title="Carrot"]').hasClass('euiSelectableListItem-isFocused', 'disabled options are skipped');
-    assert.dom('li[title="Carrot"] .euiSelectableListItem__onFocusBadge').exists();
+    assert.dom('li:has([title="Carrot"])').hasClass('euiSelectableListItem-isFocused', 'disabled options are skipped');
+    assert.dom('li:has([title="Carrot"]) .euiSelectableListItem__onFocusBadge').exists();
 
     await triggerKeyEvent('.euiSelectable', 'keydown', 'Enter');
     await rerender();
@@ -175,9 +177,9 @@ module('Integration | Component | eui-selectable', function (hooks) {
       </template>
     );
 
-    assert.dom('.list-first li[title="Banana"] em').hasText('Banana');
-    assert.dom('.list-first li[title="Apple"] .euiSelectableListItem__prepend .dot').exists();
-    assert.dom('.list-first li[title="Banana"] .euiSelectableListItem__prepend').hasText('', 'an empty wrapper');
+    assert.dom('.list-first li:has([title="Banana"]) em').hasText('Banana');
+    assert.dom('.list-first li:has([title="Apple"]) .euiSelectableListItem__prepend .dot').exists();
+    assert.dom('.list-first li:has([title="Banana"]) .euiSelectableListItem__prepend').hasText('', 'an empty wrapper');
     assert.dom('.search-last input.euiSelectableSearch').exists();
   });
 
@@ -185,7 +187,7 @@ module('Integration | Component | eui-selectable', function (hooks) {
     await render(
       <template>
         <ul role="listbox" aria-label="Items">
-          <EuiSelectableListItem class="on" @checked="on" @isFocused={{true}} @prepend="#">Included</EuiSelectableListItem>
+          <EuiSelectableListItem class="on" @checked="on" @isFocused={{true}} @prepend="#" @onFocusBadge={{true}}>Included</EuiSelectableListItem>
           <EuiSelectableListItem class="off" @checked="off" @showIcons={{false}} @onFocusBadge={{false}}>Excluded</EuiSelectableListItem>
         </ul>
         <EuiSelectableMessage @bordered={{true}}>Message</EuiSelectableMessage>
@@ -197,6 +199,8 @@ module('Integration | Component | eui-selectable', function (hooks) {
     assert.dom('.on .euiSelectableListItem__prepend').hasText('#');
     assert.dom('.on .euiSelectableListItem__onFocusBadge').exists();
     assert.dom('.off .euiSelectableListItem__icon').doesNotExist();
-    assert.dom('.euiSelectableMessage').hasClass('euiSelectableMessage--bordered').hasText('Message');
+    // the legacy --bordered modifier class is gone: the border is measured
+    assert.dom('.euiSelectableMessage').hasNoClass('euiSelectableMessage--bordered').hasText('Message');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiSelectableMessage')!).borderTopStyle, 'solid');
   });
 });

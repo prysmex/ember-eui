@@ -35,7 +35,7 @@ const entries = {
   'components/text/text.styles.js': ['euiTextStyles'],
   'components/text/text_color.styles.js': ['euiTextColorStyles'],
   'components/text/text_align.styles.js': ['euiTextAlignStyles'],
-  'components/title/title.styles.js': ['euiTitleStyles'],
+  'components/title/title.styles.js': ['euiTitleStyles', 'euiTitle'],
   'components/link/link.styles.js': ['euiLinkStyles'],
   'components/badge/badge.styles.js': ['euiBadgeStyles'],
   'components/badge/color_utils.js': ['euiBadgeColors', 'getBadgeColors', 'getTextColor', 'getCustomInteractiveColors', 'getIsValidColor'],
@@ -60,7 +60,7 @@ const entries = {
   'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles'],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/reset/reset.js': ['resetStyles'],
-  'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight'],
+  'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight', 'euiYScrollWithShadows'],
   'services/color/manipulation.js': ['transparentize', 'tint', 'shade'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
@@ -136,7 +136,7 @@ const entries = {
   'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
   'components/steps/step_horizontal.styles.js': ['euiStepHorizontalStyles', 'euiStepHorizontalNumberStyles', 'euiStepHorizontalTitleStyles'],
   'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
-  'global_styling/mixins/_typography.js': ['euiTextTruncate', 'euiFontSize'],
+  'global_styling/mixins/_typography.js': ['euiTextTruncate', 'euiFontSize', 'euiTextBreakWord'],
   // lists
   'components/list_item_layout/_list_item_layout.styles.js': ['euiListItemLayoutStyles', 'euiListItemLayoutWrapperStyles', 'euiListItemVariables'],
   'components/list_group/list_group.styles.js': ['euiListGroupStyles'],
@@ -216,7 +216,10 @@ const entries = {
   'components/drag_and_drop/draggable.styles.js': ['euiDraggableStyles', 'euiDraggableItemStyles'],
   'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles'],
   // super select
-  'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles']
+  'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles'],
+  // selectable and suggest
+  'components/selectable/selectable.styles.js': ['euiSelectableStyles'],
+  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

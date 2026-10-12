@@ -69,15 +69,16 @@ change applied.
 | `@onChange` | `(options: EuiSelectableOption[]) => void` |  | Called with all options after one is checked or unchecked. |
 | `@searchable` | `boolean` |  | Adds a search field that filters the options. |
 | `@searchProps` |  |  | Options of the search field: `{ placeholder, compressed, defaultValue, onSearch(searchValue, matchingOptions) }`. |
-| `@singleSelection` | `boolean \| 'always'` |  | `true`: one option at most; `'always'`: exactly one (clicking the checked option keeps it). |
+| `@singleSelection` | `boolean \| 'always'` | `false` | `true`: one option at most; `'always'`: exactly one (clicking the checked option keeps it); `false`: several, shown with check boxes and `aria-checked`. |
 | `@allowExclusions` | `boolean` |  | Pressing a checked option excludes it (`checked: 'off'`, a cross). |
 | `@isLoading` | `boolean` |  | Shows a loading message instead of the list. |
 | `@isPreFiltered` | `boolean` |  | The options are already filtered (e.g. by a server): the search does not filter. |
 | `@height` | `number \| 'full'` |  | Height of the list in px, or `'full'` to fill the container. |
-| `@listProps` |  |  | Options of the list: `{ bordered, showIcons, rowHeight, onFocusBadge }`. |
+| `@listProps` |  |  | Options of the list: `{ bordered, paddingSize, showIcons, rowHeight, onFocusBadge }` (`onFocusBadge` defaults to `false`, upstream). |
 | `@loadingMessage` | `string` | "Loading options" | Message while `@isLoading`. |
 | `@noMatchesMessage` | `string` |  | Message when the search matches nothing. |
 | `@emptyMessage` | `string` | "No options available" | Message when there are no options. |
+| `@css` | `EuiCss` |  | Styles composed last into the root's class (upstream's `css` prop), e.g. from a template built on EuiSelectable. |
 
 | Block | Description |
 | --- | --- |
@@ -99,16 +100,19 @@ view. Usually rendered for you by `EuiSelectable`.
 | `@activeOptionIndex` | `number` |  | Index (in the visible options) of the keyboard's current option. |
 | `@setActiveOptionIndex` | `(index: number) => void` |  | Called when an option is pressed, to make it the current one. |
 | `@onOptionClick` (required) | `(options: EuiSelectableOption[]) => void` |  | Called with all options after one is checked or unchecked. |
-| `@singleSelection` | `boolean \| 'always'` |  | `true`: one option at most; `'always'`: exactly one (it cannot be unchecked). |
+| `@singleSelection` | `boolean \| 'always'` |  | `true`: one option at most; `'always'`: exactly one (it cannot be unchecked); `false`: several, with check box indicators. Left undefined, options look single (upstream EuiSelectableList) while the listbox stays multiselectable; `EuiSelectable` passes `false`. |
 | `@allowExclusions` | `boolean` |  | Pressing a checked option excludes it (`checked: 'off'`) first. |
-| `@showIcons` | `boolean` | `true` | Shows the check mark column. |
-| `@onFocusBadge` |  | `true` | Shows the "return key" badge on the current option: `true`, `false` or `{ text, iconSide }`. |
+| `@showIcons` | `boolean` | `true` | Shows the selection indicator column. |
+| `@onFocusBadge` |  | `false` (upstream) | Shows the "return key" badge on the current option: `true`, `false` or `{ text, iconSide }`. |
 | `@bordered` | `boolean` |  | Adds a border around the list. |
+| `@paddingSize` | `'none' \| 's'` | `'none'` | `'s'` pads the list. |
 | `@rowHeight` | `number` | `32` | Height of each option in px. |
 | `@height` | `number \| 'full'` |  | Height of the list in px, or `'full'` to fill its container. By default it shows up to 7 options (and half of the next one). |
 | `@listId` | `string` |  | `id` of the `<ul role="listbox">`. |
 | `@makeOptionId` | `(index: number) => string` |  | Id of each option's `<li>`, for `aria-activedescendant`. |
 | `@searchable` | `boolean` |  | The list is driven from a search field (which keeps focus). |
+| `@ariaLabel` | `string` |  | `aria-label` of the listbox. |
+| `@ariaDescribedby` | `string` |  | `aria-describedby` of the listbox. |
 
 | Block | Description |
 | --- | --- |
@@ -120,20 +124,25 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 ### EuiSelectableListItem
 
-One option of an `EuiSelectable` list: a check mark (or a cross when
-excluded), the label, and optional prepend / append content. Usually
-rendered for you by `EuiSelectable`.
+One option of an `EuiSelectable` list: a selection indicator, the label,
+and optional prepend / append content. Usually rendered for you by
+`EuiSelectable`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@isFocused` | `boolean` |  | Highlights it as the keyboard's current option. |
 | `@disabled` | `boolean` |  | Disables the option. |
-| `@checked` | `boolean \| 'on' \| 'off'` |  | `'on'` (check mark), `'off'` (cross, excluded) or nothing. |
-| `@showIcons` | `boolean` | `true` | Shows the check mark / cross column. |
+| `@checked` | `boolean \| 'on' \| 'off' \| 'mixed'` |  | `'on'` (checked), `'off'` (excluded), `'mixed'` (checked for some) or nothing. `true` is treated as `'on'`. |
+| `@showIcons` | `boolean` | `true` | Shows the selection indicator: a check box for multiple selection, else a check mark / cross / dash. |
 | `@prepend` | `string` |  | Text before the label. Use the `<:prepend>` block for markup. |
 | `@append` | `string` |  | Text after the label. Use the `<:append>` block for markup. |
-| `@allowExclusions` | `boolean` |  | Tells screen readers that Enter includes / excludes the option. |
-| `@onFocusBadge` |  | `true` | Shows a "return key" badge on the focused option, to hint that Enter selects it: `true`, `false`, or `{ text, iconSide }` for a badge with text (e.g. "Go to"). |
+| `@allowExclusions` | `boolean` |  | Tells screen readers that Enter excludes the option. |
+| `@singleSelection` | `boolean \| 'always'` |  | `false` for an option of a multiple selection list: a check box indicator and `aria-checked`. Otherwise (the default, as upstream) a single selection option: an icon indicator, the selected background and `aria-selected`. |
+| `@searchable` | `boolean` |  | The list is driven from a search field: adds the "press Enter" instructions for screen readers. |
+| `@onFocusBadge` |  | `false` (upstream) | Shows a "return key" badge on the focused option, to hint that Enter selects it: `true`, `false`, or `{ text, iconSide }` for a badge with text (e.g. "Go to"). |
+| `@role` | `string` | `'option'` | `role` of the `<li>`. |
+| `@isInteractive` | `boolean` |  | Hover styles and pointer cursor (set when the list handles clicks). |
+| `@title` | `string` |  | Text of the label's `title` (on the text, not the option). |
 | `@hasPrepend` | `boolean` |  | Renders the prepend wrapper (for blocks that may be empty). |
 | `@hasAppend` | `boolean` |  | Renders the append wrapper (for blocks that may be empty). |
 
@@ -158,7 +167,7 @@ Usually rendered for you by `EuiSelectable` with `@searchable={{true}}`.
 | `@defaultValue` | `string` |  | Initial search. |
 | `@isPreFiltered` | `boolean` |  | Every option matches (they were already filtered, e.g. by a server). |
 | `@listId` | `string` |  | `id` of the list, to link the field to it for screen readers. |
-| `@compressed` | `boolean` |  | Smaller field. |
+| `@compressed` | `boolean` | `true` (upstream) | Smaller field. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<input>`.

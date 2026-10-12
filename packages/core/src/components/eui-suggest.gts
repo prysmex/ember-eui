@@ -68,7 +68,7 @@ export default class EuiSuggest extends Component<EuiSuggestSignature> {
   }
 
   <template>
-    <div>
+    <div class="euiSuggest">
       {{#if (has-block "append")}}
         <EuiSuggestInput
           @hasSuggestions={{if @suggestions.length true false}}

@@ -539,6 +539,14 @@
       "sha256": "cb13c63b14417f222a0c6ef6379e504db7d95669d773d27e3a78ac93d117ae85"
     },
     {
+      "path": "@elastic/eui/es/components/selectable/selectable_message/selectable_message.styles.js",
+      "sha256": "00580c361a7f5202c85489653a05ed24901763fbc7469d8be8c2248111ba17b9"
+    },
+    {
+      "path": "@elastic/eui/es/components/selectable/selectable.styles.js",
+      "sha256": "249f5d77346de5151e63071ad7a0871a9b4d0c1a9546673ec5b4839df5e62400"
+    },
+    {
       "path": "@elastic/eui/es/components/side_nav/side_nav_item.styles.js",
       "sha256": "1728a8db1f27f94ee1808bd9b883ddb36a1483efd2aee534271ed0c307157157"
     },

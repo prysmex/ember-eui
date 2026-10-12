@@ -1,8 +1,11 @@
 export interface EuiSelectableOption {
   /** The option's text; also what the search matches. */
   label: string;
-  /** `'on'` (selected / included), `'off'` (excluded) or nothing. */
-  checked?: 'on' | 'off';
+  /**
+   * `'on'` (selected / included), `'off'` (excluded), `'mixed'` (included
+   * for some; pressing it checks it) or nothing.
+   */
+  checked?: 'on' | 'off' | 'mixed';
   /** Disables the option. */
   disabled?: boolean;
   /** A heading between groups of options, not selectable. */

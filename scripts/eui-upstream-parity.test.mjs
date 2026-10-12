@@ -166,7 +166,9 @@ const factories = {
   'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
   'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
   'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
-  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles']
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  // selectable and suggest
+  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -971,4 +973,98 @@ test('flyout constants and inline style composition match upstream', () => {
         );
 });
 
+// selectable and suggest
+function themeMatrix() {
+  const contexts = [];
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        {
+          base: 20,
+          border: { radius: { panel: '20px' } },
+          colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } }
+        }
+      ])
+        contexts.push({
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        });
+  return contexts;
+}
 
+// static upstream slots omit `next`; serialized ones carry `next: undefined`
+const plain = (value) => JSON.parse(JSON.stringify(normalize(value)));
+
+function loadPort(file, cjsName) {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui', file)],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core', cjsName);
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  return portModule.exports;
+}
+
+test('selectable static styles and new helpers match upstream', () => {
+  const reference = require(resolve(eui, 'lib/components/selectable/selectable.styles.js'));
+  assert.deepEqual(normalize(styles.euiSelectableStyles), normalize(reference.euiSelectableStyles));
+  const helpers = require(resolve(eui, 'lib/global_styling/mixins/_helpers.js'));
+  const typography = require(resolve(eui, 'lib/global_styling/mixins/_typography.js'));
+  const title = require(resolve(eui, 'lib/components/title/title.styles.js'));
+  assert.equal(styles.euiTextBreakWord(), typography.euiTextBreakWord());
+  for (const context of themeMatrix()) {
+    for (const options of [{}, { hasAnimatedOverflowShadow: true }, { side: 'end', height: '20px' }])
+      assert.equal(
+        styles.euiYScrollWithShadows(context, options),
+        helpers.euiYScrollWithShadows(context, options)
+      );
+    for (const size of ['xxxs', 'xxs', 'xs', 's', 'm', 'l'])
+      assert.deepEqual(styles.euiTitle(context, size), title.euiTitle(context, size));
+  }
+});
+
+test('selectable list and sitewide hand ports match upstream in 12 theme configurations', () => {
+  const port = loadPort('selectable.ts', 'eui-selectable-parity.cjs');
+  const list = require(resolve(eui, 'lib/components/selectable/selectable_list/selectable_list.styles.js'));
+  const sitewide = require(resolve(eui, 'lib/components/selectable/selectable_templates/selectable_template_sitewide.styles.js'));
+  // upstream builds the scroll container class with @emotion/css; read its registered styles
+  const { EUI_VIS_COLOR_STORE } = require(resolve(eui, 'lib/services/color/vis_color_store.js'));
+  const { colorVis } = require('@elastic/eui-theme-borealis');
+  const emotionCss = createRequire(resolve(eui, 'lib/components/selectable/selectable_list/selectable_list.styles.js'))('@emotion/css');
+  for (const context of themeMatrix()) {
+    const label = `${context.colorMode}/${context.highContrastMode}/${JSON.stringify(context.modifications)}`;
+    const ours = port.euiSelectableListStyles(context);
+    const theirs = list.euiSelectableListStyles(context);
+    const { euiSelectableList__list: ourList, ...ourRest } = ours;
+    const { euiSelectableList__list: theirList, ...theirRest } = theirs;
+    assert.deepEqual(plain(ourRest), plain(theirRest), label);
+    assert.equal(`css-${ourList.name}`, theirList, label);
+    assert.equal(emotionCss.cache.registered[theirList], ourList.styles, label);
+    for (const name of ['euiSelectableListGroupLabelStyles'])
+      assert.deepEqual(plain(port[name](context)), plain(list[name](context)), `${name} ${label}`);
+    // upstream reads the palette from the global store the React provider fills
+    EUI_VIS_COLOR_STORE.setVisColors(context.euiTheme.colors.vis);
+    for (const name of ['euiSelectableTemplateSitewideStyles', 'euiSelectableTemplateSitewidePopoverStyles'])
+      assert.deepEqual(plain(port[name](context)), plain(sitewide[name](context)), `${name} ${label}`);
+  }
+  EUI_VIS_COLOR_STORE.setVisColors(colorVis);
+});

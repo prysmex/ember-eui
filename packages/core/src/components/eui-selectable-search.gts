@@ -3,6 +3,7 @@ import { action } from '@ember/object';
 
 import { getMatchingOptions } from '../-private/selectable-options.ts';
 import EuiFieldSearch from './eui-field-search.gts';
+import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
 import type { EuiSelectableOption } from '../-private/selectable-options.ts';
 
@@ -25,10 +26,14 @@ export interface EuiSelectableSearchSignature {
     isPreFiltered?: boolean;
     /** `id` of the list, to link the field to it for screen readers. */
     listId?: string;
-    /** Smaller field. */
+    /** Smaller field. Defaults to `true` (upstream). */
     compressed?: boolean;
     /** Shows a spinner. */
     isLoading?: boolean;
+    /** @private Id of the screen reader instructions (`aria-describedby`). */
+    ariaDescribedby?: string;
+    /** @private Screen reader instructions, rendered after the field. */
+    instructions?: string;
   };
 }
 
@@ -54,7 +59,7 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
       @value={{this.initialValue}}
       @incremental={{true}}
       @fullWidth={{true}}
-      @compressed={{@compressed}}
+      @compressed={{if (isFalse @compressed) false true}}
       @isLoading={{@isLoading}}
       @onSearch={{this.onSearch}}
       autocomplete="off"
@@ -63,7 +68,18 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
       aria-autocomplete={{if @listId "list"}}
       aria-expanded={{if @listId "true"}}
       aria-controls={{@listId}}
+      aria-owns={{@listId}}
+      aria-describedby={{@ariaDescribedby}}
       ...attributes
     />
+    {{#if @instructions}}
+      <EuiScreenReaderOnly>
+        <p id={{@ariaDescribedby}}>{{@instructions}}</p>
+      </EuiScreenReaderOnly>
+    {{/if}}
   </template>
+}
+
+function isFalse(value: unknown): boolean {
+  return value === false;
 }

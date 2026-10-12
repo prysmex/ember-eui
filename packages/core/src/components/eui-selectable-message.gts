@@ -1,6 +1,13 @@
-import EuiText from './eui-text.gts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiSelectableMessageStyles,
+  euiTextStyles
+} from '../utils/eui/styles.generated.ts';
+import { euiTextColorCss } from './eui-text-color.gts';
 
 /**
  * A message shown by `EuiSelectable` instead of its list: while loading,
@@ -18,15 +25,40 @@ export interface EuiSelectableMessageSignature {
   };
 }
 
-const EuiSelectableMessage: TemplateOnlyComponent<EuiSelectableMessageSignature> =
-  <template>
-    <EuiText
-      class="euiSelectableMessage
-        {{if @bordered 'euiSelectableMessage--bordered'}}"
-      @color="subdued"
-      @size="xs"
-      ...attributes
-    >{{yield}}</EuiText>
-  </template>;
+/**
+ * Upstream renders `<EuiText color="subdued" size="xs" css={message}>`. Until
+ * EuiText takes `@css`, the same styles are composed here into one class
+ * (text, size, color, then the message styles), so precedence never depends
+ * on rule insertion order.
+ */
+export default class EuiSelectableMessage extends Component<EuiSelectableMessageSignature> {
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const { euiTheme } = context.upstream;
+    const text = useEuiBorealisStyles(context, euiTextStyles);
+    const message = useEuiBorealisStyles(context, euiSelectableMessageStyles);
+    return euiClass(
+      context,
+      {
+        boxSizing: 'border-box',
+        margin: 0,
+        fontFamily: euiTheme.font.family,
+        '& :where(p)': { margin: 0, padding: 0, fontSize: 'inherit' }
+      },
+      text.euiText,
+      text.xs,
+      euiTextColorCss(context, 'subdued'),
+      message.euiSelectableMessage,
+      this.args.bordered && message.bordered
+    );
+  }
 
-export default EuiSelectableMessage;
+  <template>
+    <div
+      class="euiText euiSelectableMessage {{this.classes}}"
+      data-test-subj="euiSelectableMessage"
+      ...attributes
+    >{{yield}}</div>
+  </template>
+}

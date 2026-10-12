@@ -48,6 +48,7 @@ module('Integration | Component | eui-combo-box-pill / selectable-list-item', fu
     assert.dom('li.on').hasAttribute('role', 'option').hasAttribute('aria-selected', 'true');
     assert.dom('li.on .euiSelectableListItem__text').hasText('On');
     assert.dom('li.off').hasAttribute('aria-selected', 'false');
-    assert.dom('li.disabled').hasAttribute('aria-selected', 'false').hasAttribute('aria-disabled', 'true');
+    // upstream EuiListItemLayout: a checked option stays selected while disabled
+    assert.dom('li.disabled').hasAttribute('aria-selected', 'true').hasAttribute('aria-disabled', 'true');
   });
 });

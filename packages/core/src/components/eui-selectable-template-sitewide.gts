@@ -1,11 +1,17 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  euiSelectableTemplateSitewideStyles,
+  SITEWIDE_META_TYPES
+} from '../utils/eui/selectable.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiAvatar from './eui-avatar.gts';
 import EuiHighlight from './eui-highlight.gts';
 import EuiIcon from './eui-icon.gts';
@@ -14,6 +20,7 @@ import EuiPopover from './eui-popover.gts';
 import EuiPopoverFooter from './eui-popover-footer.gts';
 import EuiPopoverTitle from './eui-popover-title.gts';
 import EuiSelectable from './eui-selectable.gts';
+import EuiSelectableMessage from './eui-selectable-message.gts';
 import EuiSpacer from './eui-spacer.gts';
 
 import type EuiI18n from '../services/eui-i18n';
@@ -87,10 +94,16 @@ export interface EuiSelectableTemplateSitewideSignature {
   };
 }
 
-function metaClass(meta: EuiSelectableTemplateSitewideMeta): string {
-  return meta.type
-    ? `euiSelectableTemplateSitewide__optionMeta euiSelectableTemplateSitewide__optionMeta--${meta.type}`
-    : 'euiSelectableTemplateSitewide__optionMeta';
+const isMetaType = (
+  type: string | undefined
+): type is (typeof SITEWIDE_META_TYPES)[number] =>
+  (SITEWIDE_META_TYPES as readonly (string | undefined)[]).includes(type);
+
+/** Upstream `title`: the label and the meta texts. */
+function optionTitle(option: EuiSelectableTemplateSitewideOption): string {
+  return option.meta?.length
+    ? `${option.label} \u2022${option.meta.map((meta) => ` ${meta.text}`).join('')}`
+    : option.label;
 }
 
 export default class EuiSelectableTemplateSitewide extends Component<EuiSelectableTemplateSitewideSignature> {
@@ -101,11 +114,49 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
   get formattedOptions(): EuiSelectableTemplateSitewideOption[] {
     return this.args.options.map((option) => ({
       key: option.label,
+      title: optionTitle(option),
       ...option,
       className: ['euiSelectableTemplateSitewide__listItem', option.className]
         .filter(Boolean)
         .join(' ')
     }));
+  }
+
+  @cached
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(
+      context,
+      euiSelectableTemplateSitewideStyles
+    );
+    const metaClasses = new Map<string | undefined, string>();
+    return {
+      root: styles.euiSelectableTemplateSitewide,
+      metasList: `euiSelectableTemplateSitewide__optionMetasList ${euiClass(
+        context,
+        styles.euiSelectableTemplateSitewide__optionMetasList
+      )}`,
+      meta: (meta: EuiSelectableTemplateSitewideMeta): string => {
+        const key = isMetaType(meta.type) ? meta.type : undefined;
+        let className = metaClasses.get(key);
+        if (!className) {
+          className = euiClass(
+            context,
+            styles.euiSelectableTemplateSitewide__optionMeta,
+            key && styles.metaTypes.fontWeight,
+            key && styles.metaTypes[key]
+          );
+          metaClasses.set(key, className);
+        }
+        return [
+          meta.type && `euiSelectableTemplateSitewide__optionMeta--${meta.type}`,
+          'euiSelectableTemplateSitewide__optionMeta',
+          className
+        ]
+          .filter(Boolean)
+          .join(' ');
+      }
+    };
   }
 
   get placeholder(): string {
@@ -174,8 +225,9 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
       @isLoading={{@isLoading}}
       @isPreFiltered={{@isPreFiltered}}
       @searchProps={{hash placeholder=this.placeholder onSearch=@onSearch}}
+      @css={{this.styles.root}}
       @listProps={{hash
-        rowHeight=68
+        rowHeight=52
         showIcons=false
         onFocusBadge=(hash text=this.goTo iconSide="right")
       }}
@@ -188,7 +240,8 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
       <EuiPopover
         @isOpen={{this.isOpen}}
         @closePopover={{this.close}}
-        @panelPaddingSize="none"
+        @panelPaddingSize="s"
+        @anchorPosition="downCenter"
         @ownFocus={{if (has-block "popoverButton") true false}}
         @display={{if (has-block "popoverButton") "inlineBlock" "block"}}
       >
@@ -231,16 +284,16 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
               </EuiPopoverTitle>
             {{/if}}
             {{#if @isLoading}}
-              <div
-                class="euiText euiText--extraSmall euiSelectableMessage"
-                style="min-height: 300px;"
-              >
+              <EuiSelectableMessage style="min-height: 300px;">
                 <EuiLoadingSpinner @size="l" />
                 <br />
                 <p>{{this.loadingText}}</p>
-              </div>
+              </EuiSelectableMessage>
             {{else}}
-              <parts.list class="euiSelectableTemplateSitewide__list">
+              <parts.list
+                class="euiSelectableTemplateSitewide__list"
+                @messageMinHeight={{300}}
+              >
                 <:option as |option searchValue|>
                   <EuiHighlight
                     class="euiSelectableTemplateSitewide__listItemTitle"
@@ -248,10 +301,10 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
                     @search={{searchValue}}
                   />
                   {{#if (metaOf option)}}
-                    <span class="euiSelectableTemplateSitewide__optionMetasList">
+                    <span class={{this.styles.metasList}}>
                       {{#each (metaOf option) as |meta|}}
                         <EuiHighlight
-                          class={{metaClass meta}}
+                          class={{this.styles.meta meta}}
                           @text={{meta.text}}
                           @search={{if meta.highlightSearchString searchValue ""}}
                         />

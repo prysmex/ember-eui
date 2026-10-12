@@ -21,6 +21,7 @@ export interface DynamicComponent {
     Args: {
       node: DynamicComponent;
       replaceNode?: Replacer;
+      readOnly?: boolean;
     };
   }>;
 }
@@ -49,7 +50,8 @@ export const toDOM = (
   const createElement = (
     name: string,
     node: RehypeNode,
-    classesToAdd?: string[] | string
+    classesToAdd?: string[] | string,
+    mapAttributes = true
   ) => {
     const element = document.createElement(name);
     const properties = node.properties;
@@ -60,7 +62,9 @@ export const toDOM = (
         finalClassNames.push(...(properties['className'] as string[]));
       }
 
-      for (const key in properties) {
+      // Plugin component wrappers pass their properties to the component
+      // (`@node`), not to the wrapper element.
+      for (const key in mapAttributes ? properties : {}) {
         if (attributes.includes(key)) {
           const value = properties[key];
 
@@ -107,9 +111,12 @@ export const toDOM = (
         return document.createTextNode(node.value);
       } else if (type === 'component') {
         const { inline } = node.properties;
-        const element = createElement(inline ? 'span' : 'div', node, [
-          'component'
-        ]);
+        const element = createElement(
+          inline ? 'span' : 'div',
+          node,
+          ['component'],
+          false
+        );
         const { _children, ...properties } = node.properties;
         const content = toElements(document.createElement('span'), node.children);
 

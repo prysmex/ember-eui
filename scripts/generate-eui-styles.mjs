@@ -277,7 +277,15 @@ const entries = {
   'components/form/range/range_levels_colors.js': ['euiRangeLevelColor', 'getLevelColor', 'isNamedLevelColor'],
   'components/form/range/range_slider.styles.js': ['euiRangeSliderStyles'],
   'components/form/range/range_ticks.styles.js': ['euiRangeTicksStyles', 'euiRangeTickStyles'],
-  'components/form/range/range_tooltip.styles.js': ['euiRangeTooltipStyles', 'euiRangeTooltipValueStyles']
+  'components/form/range/range_tooltip.styles.js': ['euiRangeTooltipStyles', 'euiRangeTooltipValueStyles'],
+  // markdown
+  'components/markdown_editor/markdown_editor.styles.js': ['euiMarkdownEditorStyles', 'euiMarkdownEditorVariables'],
+  'components/markdown_editor/markdown_editor_drop_zone.styles.js': ['euiMarkdownEditorDropZoneStyles'],
+  'components/markdown_editor/markdown_editor_footer.styles.js': ['euiMarkdownEditorFooterStyles'],
+  'components/markdown_editor/markdown_editor_help_button.styles.js': ['euiMarkdownEditorHelpButtonStyles'],
+  'components/markdown_editor/markdown_editor_text_area.styles.js': ['euiMarkdownEditorTextAreaStyles'],
+  'components/markdown_editor/markdown_editor_toolbar.styles.js': ['euiMarkdownEditorToolbarStyles'],
+  'components/markdown_editor/markdown_format.styles.js': ['euiMarkdownFormatStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

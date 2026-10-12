@@ -84,29 +84,39 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 | `@maxHeight` | `number \| string` | `500` | Maximum height in px when the textarea grows. |
 | `@autoExpandPreview` | `boolean` | `true` | Grows the preview to fit its content. |
 | `@disabled` | `boolean` |  | Disables the textarea. |
-| `@isInvalid` | `boolean` |  | Marks the textarea invalid for native form validation. |
+| `@isInvalid` | `boolean` |  | Marks the textarea invalid: native validity, `aria-invalid` and the danger state styling. |
+| `@readOnly` | `boolean` |  | Read-only: the textarea is `readonly`, toolbar/footer buttons are disabled, file drops are ignored and preview checkboxes do not toggle. |
+| `@errors` | `EuiMarkdownParseError[]` |  | Errors listed in the footer's error popover (e.g. from `@onParse` messages). Any error also gives the textarea the danger state. |
+| `@dropHandlers` | `EuiMarkdownDropHandler[]` | none | Handlers turning dropped or picked files into markdown: `{ supportedFiles, accepts(type), getFormattingForItem(file) }`. Any handler adds the footer's upload button. |
+| `@showFooter` | `boolean` | `true` | Renders the footer (upload, errors and syntax help). |
 | `@ariaLabel` | `string` |  | Accessible label of the textarea. |
 | `@ariaLabelledBy` | `string` |  | Id of the element labelling the textarea (e.g. a form row label). |
 | `@ariaDescribedBy` | `string` |  | Id of the element describing the textarea. |
 | `@formatRootClasses` |  |  | `@rootClasses` of the preview's EuiMarkdownFormat. |
 | `@formatTextSize` |  |  | `@textSize` of the preview's EuiMarkdownFormat. |
+| `@formatColor` |  |  | `@color` of the preview's EuiMarkdownFormat. |
 | `@formatShouldIncludeDefaultRootClasses` |  |  | `@shouldIncludeDefaultRootClasses` of the preview's EuiMarkdownFormat. |
 
 ### EuiMarkdownFormat
 
 Renders markdown as EUI-styled content (headings, lists, code blocks,
 tables, checkboxes, tooltips and emoji):
-`<EuiMarkdownFormat @value={{this.markdown}} />`.
+`<EuiMarkdownFormat @value={{this.markdown}} />`. Attributes go to the
+root `<div class="euiMarkdownFormat">`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@parsingPluginList` |  | `getDefaultEuiMarkdownParsingPlugins()` | remark parsing plugins. |
 | `@processingPluginList` |  | `getDefaultEuiMarkdownProcessingPlugins()` | Processing plugins. |
 | `@replaceNode` | `Replacer` |  | Called when rendered content edits the markdown, e.g. clicking a task list checkbox (`- [ ] todo`), with the node's position in the source and its new text. Splice it into your value to make checkboxes interactive; EuiMarkdownEditor does this for you. |
+| `@readOnly` | `boolean` |  | Renders interactive plugin content (task list checkboxes) read-only. |
 | `@value` (required) | `string` |  | The markdown to render. |
 | `@rootClasses` | `string \| string[]` |  | Extra class(es) for the root element: a string or an array of strings. |
-| `@textSize` |  | `'m'` | Text size, any `EuiText` size. |
-| `@shouldIncludeDefaultRootClasses` | `boolean` | `true` | Keeps the default `euiMarkdownFormat` classes. |
+| `@textSize` |  | `'m'` | Text size, any `EuiText` size; `'relative'` scales with the parent's font size. |
+| `@color` | `EuiTextColorValue` | `'default'` | Any EuiText color: a named color (`'subdued'`, `'danger'`…) or a CSS color. Also tints blockquote, rule and table borders. |
+| `@shouldIncludeDefaultRootClasses` | `boolean` | `true`; `false` keeps only the markdown-specific styles | Applies EuiText typography (and the `euiText` class) to the content. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
 </EuiText>
 <!-- api:end -->

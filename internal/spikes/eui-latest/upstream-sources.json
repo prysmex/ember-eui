@@ -595,6 +595,34 @@
       "sha256": "8c3fc9f9fbc3bc8b61abd1e06992e8dd82e0c53d7783d003be321a23b891581b"
     },
     {
+      "path": "@elastic/eui/es/components/markdown_editor/markdown_editor_drop_zone.styles.js",
+      "sha256": "7bfe137e6ddef689c8eaeec0d99cb761ac3d4787d0bf83a0e9c3add3919d7627"
+    },
+    {
+      "path": "@elastic/eui/es/components/markdown_editor/markdown_editor_footer.styles.js",
+      "sha256": "9107c5ea6055ce1a7d1b9af2ebea67ddd041561bca2957c49b368c7b5df9ba5d"
+    },
+    {
+      "path": "@elastic/eui/es/components/markdown_editor/markdown_editor_help_button.styles.js",
+      "sha256": "ba584cc9ca194fea6cfa88bf394da1751a2e65695088e628800deadbbff6c4a5"
+    },
+    {
+      "path": "@elastic/eui/es/components/markdown_editor/markdown_editor_text_area.styles.js",
+      "sha256": "28a06b1160ab401a9d206420f791ae28b0d64aeb54cc36223f4b6d99cdc8985d"
+    },
+    {
+      "path": "@elastic/eui/es/components/markdown_editor/markdown_editor_toolbar.styles.js",
+      "sha256": "311bff27248833103139cf8bdd36cc03a4e9e90cc2931f5919a23bee971e293b"
+    },
+    {
+      "path": "@elastic/eui/es/components/markdown_editor/markdown_editor.styles.js",
+      "sha256": "505b386d4f54dfca87982ded742707225f0042315eb8ec71eeb0a5353448cfaa"
+    },
+    {
+      "path": "@elastic/eui/es/components/markdown_editor/markdown_format.styles.js",
+      "sha256": "987ca4c1a3ead7e95008f6ebb0c2a2528f46dd9a3dacf66636b50078b62d223a"
+    },
+    {
       "path": "@elastic/eui/es/components/modal/modal_body.styles.js",
       "sha256": "2a95c8fb8de912c0e3be4256f0970a7ce9c420f8b7829c83a8ecc9e2406f065e"
     },

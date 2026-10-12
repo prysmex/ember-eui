@@ -1,6 +1,8 @@
-import EuiHoritzontalRule from '../../../../components/eui-horizontal-rule.gts';
+import EuiMarkdownFormatMarkdownCheckbox from '../../../../components/eui-markdown-format/markdown-checkbox.gts';
 import EuiMarkdownFormatMarkdownCode from '../../../../components/eui-markdown-format/markdown-code.gts';
 import EuiMarkdownFormatMarkdownCodeBlock from '../../../../components/eui-markdown-format/markdown-code-block.gts';
+import EuiMarkdownFormatMarkdownHorizontalRule from '../../../../components/eui-markdown-format/markdown-horizontal-rule.gts';
+import EuiMarkdownFormatMarkdownLink from '../../../../components/eui-markdown-format/markdown-link.gts';
 import { FENCED_CLASS } from '../../remark/remark-prismjs.ts';
 
 import type { RehypeNode } from '../../markdown-types.ts';
@@ -35,10 +37,22 @@ export const processor = function MarkdownAddComponents(): (
     visit(tree, (node: RehypeNode) => {
       if (node.tagName === 'component') {
         node.type = 'component';
+
+        // Task list wrappers are styled by EuiMarkdownFormat
+        if (
+          node.properties.componentName ===
+          (EuiMarkdownFormatMarkdownCheckbox as unknown)
+        ) {
+          node.properties.className = ['euiMarkdownFormat__checkbox'];
+        }
       }
 
+      // Links render through EuiLink, as upstream's `a` renderer does
       if (node.type === 'element' && node.tagName === 'a') {
-        node.properties.className = ['euiLink', 'euiLink--primary'];
+        node.type = 'component';
+        //@ts-expect-error
+        node.properties.componentName = EuiMarkdownFormatMarkdownLink;
+        node.properties['inline'] = true;
       }
 
       if (node.type === 'element' && node.tagName === 'pre') {
@@ -56,7 +70,7 @@ export const processor = function MarkdownAddComponents(): (
 
       if (node.type === 'element' && node.tagName === 'hr') {
         node.type = 'component';
-        node.properties.componentName = EuiHoritzontalRule;
+        node.properties.componentName = EuiMarkdownFormatMarkdownHorizontalRule;
       }
 
       if (node.type === 'element' && node.tagName === 'code') {

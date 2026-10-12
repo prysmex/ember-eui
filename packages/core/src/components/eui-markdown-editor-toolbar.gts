@@ -1,13 +1,15 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
-import { hash } from '@ember/helper';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
 import style from 'ember-style-modifier/modifiers/style';
-import { and, eq, gte } from 'ember-truth-helpers';
+import { or } from 'ember-truth-helpers';
 
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiMarkdownEditorToolbarStyles } from '../utils/eui/styles.generated.ts';
 import { MODE_VIEWING } from '../utils/markdown/markdown-modes.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
@@ -24,7 +26,7 @@ export interface EuiMarkdownEditorToolbarArgs {
   viewMode?: string;
   /** Applies a formatting button to the textarea. */
   markdownActions: MarkdownActions;
-  /** Plugins adding toolbar buttons. */
+  /** Plugins adding toolbar buttons (plugins without `button` are skipped). */
   uiPlugins: any[];
   /** Opens a plugin's editor (plugins with `editor`). */
   openPluginEditor?: (plugin: EuiMarkdownEditorUiPlugin) => void;
@@ -32,6 +34,8 @@ export interface EuiMarkdownEditorToolbarArgs {
   onClickPreview: () => void;
   /** The node under the cursor, to highlight its button. */
   selectedNode: any;
+  /** Disables every button, including the preview switch. */
+  readOnly?: boolean;
 }
 
 /** @private EuiMarkdownEditor's toolbar. */
@@ -47,6 +51,7 @@ export interface EuiMarkdownEditorToolbarSignature {
 export interface EuiMarkdownEditorToolbarItem {
   id: string;
   label: string;
+  /** The markdown AST node type that highlights this button. */
   name: string;
   iconType:
     | string
@@ -56,77 +61,109 @@ export interface EuiMarkdownEditorToolbarItem {
   useSvg?: boolean;
 }
 
+type EuiMarkdownEditorToolbarIconItem = EuiMarkdownEditorToolbarItem & {
+  iconType: string;
+};
+
+/** Upstream highlights the button of the node under the cursor inline. */
+const SELECTED_STYLE = { background: 'rgba(0, 0, 0, 0.15)' };
+
+// Upstream icon names (`textBold`, `listBullet`, `code`, `link`…) are not in
+// the bundled icon set yet; the equivalent bundled glyphs are used.
+const BOLD_ITALIC_BUTTONS: EuiMarkdownEditorToolbarIconItem[] = [
+  { id: 'mdBold', label: 'Bold', name: 'strong', iconType: 'editorBold' },
+  {
+    id: 'mdItalic',
+    label: 'Italic',
+    name: 'emphasis',
+    iconType: 'editorItalic'
+  }
+];
+
+const LIST_BUTTONS: EuiMarkdownEditorToolbarItem[] = [
+  {
+    id: 'mdUl',
+    label: 'Unordered list',
+    name: 'ul',
+    iconType: 'editorUnorderedList'
+  },
+  {
+    id: 'mdOl',
+    label: 'Ordered list',
+    name: 'ol',
+    iconType: 'editorOrderedList'
+  },
+  {
+    id: 'mdTl',
+    label: 'Task list',
+    name: 'tl',
+    useSvg: true,
+    iconType: { component: MarkdownCheckmark }
+  }
+];
+
+const QUOTE_CODE_LINK_BUTTONS: EuiMarkdownEditorToolbarIconItem[] = [
+  { id: 'mdQuote', label: 'Quote', name: 'quote', iconType: 'quote' },
+  {
+    id: 'mdCode',
+    label: 'Code',
+    name: 'inlineCode',
+    iconType: 'editorCodeBlock'
+  },
+  { id: 'mdLink', label: 'Link', name: 'link', iconType: 'editorLink' }
+];
+
 export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMarkdownEditorToolbarSignature> {
-  boldItalicsButtons = [
-    {
-      id: 'mdBold',
-      label: 'Bold',
-      name: 'bold',
-      iconType: 'editorBold'
-    },
-    {
-      id: 'mdItalic',
-      label: 'Italic',
-      name: 'italic',
-      iconType: 'editorItalic'
-    }
-  ];
+  boldItalicsButtons = BOLD_ITALIC_BUTTONS;
+  listButtons = LIST_BUTTONS;
+  quoteCodeLinkButtons = QUOTE_CODE_LINK_BUTTONS;
 
   @cached
-  get listButtons() {
-    return [
-      {
-        id: 'mdUl',
-        label: 'Unordered list',
-        name: 'ul',
-        iconType: 'editorUnorderedList'
-      },
-      {
-        id: 'mdOl',
-        label: 'Ordered list',
-        name: 'ol',
-        iconType: 'editorOrderedList'
-      },
-      {
-        id: 'mdTl',
-        label: 'Task list',
-        name: 'tl',
-        useSvg: true,
-        iconType: {
-          component: MarkdownCheckmark
-        }
-      }
-    ];
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(
+      context,
+      euiMarkdownEditorToolbarStyles
+    );
+
+    return {
+      root: euiClass(context, styles.euiMarkdownEditorToolbar),
+      buttons: euiClass(context, styles.euiMarkdownEditorToolbar__buttons),
+      divider: euiClass(context, styles.euiMarkdownEditorToolbar__divider)
+    };
   }
 
-  quoteCodeLinkButtons = [
-    {
-      id: 'mdQuote',
-      label: 'Quote',
-      name: 'quote',
-      iconType: 'quote'
-    },
-    {
-      id: 'mdCode',
-      label: 'Code',
-      name: 'code',
-      iconType: 'editorCodeBlock'
-    },
-    {
-      id: 'mdLink',
-      label: 'Link',
-      name: 'link',
-      iconType: 'editorLink'
-    }
-  ];
-
+  @cached
   get uiPlugins() {
-    return this.args.uiPlugins || [];
+    return (this.args.uiPlugins || []).filter((plugin) => !!plugin.button);
   }
 
   get isPreviewing() {
     return this.args.viewMode === MODE_VIEWING;
   }
+
+  /** Upstream `!isEditable`: previewing or read-only. */
+  get isLocked() {
+    return this.isPreviewing || !!this.args.readOnly;
+  }
+
+  isComponentIcon = (item: EuiMarkdownEditorToolbarItem) => {
+    return typeof item.iconType !== 'string';
+  };
+
+  isSelected = (nodeId: string) => {
+    return !!this.args.selectedNode && this.args.selectedNode.type === nodeId;
+  };
+
+  testSubj = (nodeId: string) => {
+    return this.isSelected(nodeId)
+      ? 'euiMarkdownEditorToolbarButton pressed'
+      : 'euiMarkdownEditorToolbarButton';
+  };
+
+  selectedStyle = (nodeId: string) => {
+    return this.isSelected(nodeId) ? SELECTED_STYLE : undefined;
+  };
 
   @action
   handleMdButtonClick(mdButtonId: string) {
@@ -142,71 +179,75 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
   }
 
   <template>
-    <div class="euiMarkdownEditorToolbar" ...attributes>
-      <div class="euiMarkdownEditorToolbar__buttons">
+    <div
+      class="euiMarkdownEditorToolbar {{this.styles.root}}"
+      data-test-subj="euiMarkdownEditorToolbar"
+      ...attributes
+    >
+      <div class="euiMarkdownEditorToolbar__buttons {{this.styles.buttons}}">
         {{#each this.boldItalicsButtons as |item|}}
-          <EuiToolTip @content={{item.label}} @delay="long">
+          <EuiToolTip @content={{item.label}}>
             <EuiButtonIcon
               @color="text"
-              {{on "click" (fn this.handleMdButtonClick item.id)}}
               @iconType={{item.iconType}}
+              @isDisabled={{this.isLocked}}
               aria-label={{item.label}}
-              @isDisabled={{this.isPreviewing}}
+              data-test-subj={{this.testSubj item.name}}
+              {{style (this.selectedStyle item.name)}}
+              {{on "click" (fn this.handleMdButtonClick item.id)}}
             />
           </EuiToolTip>
-
         {{/each}}
-        <span class="euiMarkdownEditorToolbar__divider"></span>
+        <span
+          class="euiMarkdownEditorToolbar__divider {{this.styles.divider}}"
+        ></span>
         {{#each this.listButtons as |item|}}
-          <EuiToolTip @content={{item.label}} @delay="long">
+          <EuiToolTip @content={{item.label}}>
             <EuiButtonIcon
               @color="text"
-              {{on "click" (fn this.handleMdButtonClick item.id)}}
               @iconType={{this.itemComponent item}}
-              {{!@glint-expect-error}}
-              @useComponent={{if item.iconType.component true}}
-              aria-label={{item.label}}
+              @useComponent={{this.isComponentIcon item}}
               @useSvg={{item.useSvg}}
-              @isDisabled={{this.isPreviewing}}
+              @isDisabled={{this.isLocked}}
+              aria-label={{item.label}}
+              data-test-subj={{this.testSubj item.name}}
+              {{style (this.selectedStyle item.name)}}
+              {{on "click" (fn this.handleMdButtonClick item.id)}}
             />
           </EuiToolTip>
-
         {{/each}}
-        <span class="euiMarkdownEditorToolbar__divider"></span>
+        <span
+          class="euiMarkdownEditorToolbar__divider {{this.styles.divider}}"
+        ></span>
         {{#each this.quoteCodeLinkButtons as |item|}}
-          <EuiToolTip @content={{item.label}} @delay="long">
+          <EuiToolTip @content={{item.label}}>
             <EuiButtonIcon
               @color="text"
-              {{on "click" (fn this.handleMdButtonClick item.id)}}
               @iconType={{item.iconType}}
+              @isDisabled={{this.isLocked}}
               aria-label={{item.label}}
-              @isDisabled={{this.isPreviewing}}
+              data-test-subj={{this.testSubj item.name}}
+              {{style (this.selectedStyle item.name)}}
+              {{on "click" (fn this.handleMdButtonClick item.id)}}
             />
           </EuiToolTip>
-
         {{/each}}
-        {{#if (gte this.uiPlugins.length 0)}}
-          <span class="euiMarkdownEditorToolbar__divider"></span>
+        {{#if this.uiPlugins.length}}
+          <span
+            class="euiMarkdownEditorToolbar__divider {{this.styles.divider}}"
+          ></span>
           {{#each this.uiPlugins as |plugin|}}
-            {{#let
-              (and @selectedNode (eq @selectedNode.type plugin.name))
-              as |isSelectedNodeType|
-            }}
-              <EuiToolTip @content={{plugin.button.label}} @delay="long">
-                <EuiButtonIcon
-                  @color="text"
-                  {{style
-                    (if
-                      isSelectedNodeType (hash background="rgba(0, 0, 0, 0.15)")
-                    )
-                  }}
-                  {{on "click" (fn this.handleMdButtonClick plugin.name)}}
-                  @iconType={{plugin.button.iconType}}
-                  aria-label={{plugin.button.label}}
-                  @isDisabled={{this.isPreviewing}}
-                />
-              </EuiToolTip>
-            {{/let}}
+            <EuiToolTip @content={{plugin.button.label}}>
+              <EuiButtonIcon
+                @color="text"
+                @iconType={{plugin.button.iconType}}
+                @isDisabled={{or this.isLocked plugin.button.isDisabled}}
+                aria-label={{plugin.button.label}}
+                data-test-subj={{this.testSubj plugin.name}}
+                {{style (this.selectedStyle plugin.name)}}
+                {{on "click" (fn this.handleMdButtonClick plugin.name)}}
+              />
+            </EuiToolTip>
           {{/each}}
         {{/if}}
       </div>
@@ -216,9 +257,10 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
           @iconType="editorCodeBlock"
           @color="text"
           @size="s"
+          @isDisabled={{@readOnly}}
+          data-test-subj="markdown_editor_preview_button"
           {{on "click" @onClickPreview}}
         >
-
           <EuiI18n
             @token="euiMarkdownEditorToolbar.editor"
             @default="Editor"
@@ -229,12 +271,13 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
             </Token>
           </EuiI18n>
         </EuiButtonEmpty>
-
       {{else}}
         <EuiButtonEmpty
           @iconType="eye"
           @color="text"
           @size="s"
+          @isDisabled={{@readOnly}}
+          data-test-subj="markdown_editor_edit_button"
           {{on "click" @onClickPreview}}
         >
           <EuiI18n

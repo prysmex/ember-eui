@@ -8,12 +8,10 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import { randomId } from '../../-private/random-id.ts';
-import screenReaderOnly from '../../modifiers/screen-reader-only.ts';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import {
   euiFormVariables,
-  euiInlineEditReadModeStyles,
-  euiSkeletonRectangleStyles
+  euiInlineEditReadModeStyles
 } from '../../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import EuiButtonEmpty from '../eui-button-empty.gts';
@@ -22,7 +20,10 @@ import EuiFieldText from '../eui-field-text.gts';
 import EuiFlexGroup from '../eui-flex-group.gts';
 import EuiFlexItem from '../eui-flex-item.gts';
 import EuiFormRow from '../eui-form-row.gts';
+import EuiSkeletonLoading from '../eui-skeleton-loading.gts';
+import EuiSkeletonRectangle from '../eui-skeleton-rectangle.gts';
 
+import type Owner from '@ember/owner';
 import type EuiI18n from '../../services/eui-i18n';
 import type { EuiCss } from '../../utils/eui/styles.ts';
 import type { EuiButtonIconSignature } from '../eui-button-icon';
@@ -166,10 +167,17 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
   @tracked _isEditing = Boolean(this.args.startWithEditOpen);
   @tracked editModeValue = this.args.defaultValue ?? '';
   // Like upstream, also seeded with the controlled value as an onCancel backup.
-  @tracked readModeValue = this.args.value || this.args.defaultValue || '';
+  @tracked readModeValue: string;
 
   /** Which element takes focus once it renders (after a mode switch). */
   pendingFocus: 'read' | 'edit' | null = null;
+
+  constructor(owner: Owner, args: EuiInlineEditFormSignature['Args']) {
+    super(owner, args);
+    // Seeded eagerly: tracked field initializers run lazily on first read,
+    // which would pick up a controlled value changed since.
+    this.readModeValue = args.value || args.defaultValue || '';
+  }
 
   readModeDescribedById = `inlineEdit_${randomId()}`;
   editModeDescribedById = `inlineEdit_${randomId()}`;
@@ -213,14 +221,6 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
       'Click to edit this text inline.'
     );
   }
-  get loadingAriaText() {
-    // Upstream passes no `contentAriaLabel`: "Loading ".
-    return this.euiI18n.lookupToken(
-      'euiSkeletonLoading.loadingAriaText',
-      () => 'Loading '
-    );
-  }
-
   // prop bags
   get readModeProps() {
     return this.args.readModeProps ?? {};
@@ -275,21 +275,12 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
     ];
   }
 
-  /** Upstream `EuiSkeletonRectangle` (control-sized, `m` radius). */
-  @cached
-  get skeletonClass() {
-    const context = this.context;
-    const styles = useEuiBorealisStyles(context, euiSkeletonRectangleStyles);
-    const form = useEuiBorealisStyles(context, euiFormVariables);
-    const size = this.args.sizes.compressed
+  /** Upstream `loadingSkeletonSize`: the control height. */
+  get skeletonSize() {
+    const form = useEuiBorealisStyles(this.context, euiFormVariables);
+    return this.args.sizes.compressed
       ? form.controlCompressedHeight
       : form.controlHeight;
-    return `euiSkeletonRectangle ${euiClass(
-      context,
-      { boxSizing: 'border-box', inlineSize: size, blockSize: size },
-      styles.euiSkeletonRectangle,
-      styles.m
-    )}`;
   }
 
   // focus management: focus the element of the new mode once it renders
@@ -423,23 +414,30 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
             </span>
           </EuiFlexItem>
           <EuiFlexItem @grow={{false}}>
-            <div
-              aria-busy={{if @isLoading "true" "false"}}
-              data-test-subj="euiSkeletonLoadingAriaWrapper"
+            <EuiSkeletonLoading
+              @isLoading={{if @isLoading true false}}
+              @announceLoadingStatus={{true}}
+              @announceLoadedStatus={{false}}
             >
-              {{#if @isLoading}}
-                <div aria-live="polite" role="status" {{screenReaderOnly}}>
-                  {{this.loadingAriaText}}
-                </div>
+              <:loadingContent as |loading|>
                 <EuiFlexGroup
                   @gutterSize="s"
-                  role="progressbar"
-                  aria-label={{this.loadingAriaText}}
+                  role={{loading.role}}
+                  aria-label={{loading.ariaLabel}}
                 >
-                  <div class={{this.skeletonClass}}></div>
-                  <div class={{this.skeletonClass}}></div>
+                  <EuiSkeletonRectangle
+                    @width={{this.skeletonSize}}
+                    @height={{this.skeletonSize}}
+                    @borderRadius="m"
+                  />
+                  <EuiSkeletonRectangle
+                    @width={{this.skeletonSize}}
+                    @height={{this.skeletonSize}}
+                    @borderRadius="m"
+                  />
                 </EuiFlexGroup>
-              {{else}}
+              </:loadingContent>
+              <:loadedContent>
                 <EuiFlexGroup @gutterSize="s">
                   <EuiButtonIcon
                     @iconType={{if
@@ -506,8 +504,8 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
                     {{on "click" this.onCancelClick}}
                   />
                 </EuiFlexGroup>
-              {{/if}}
-            </div>
+              </:loadedContent>
+            </EuiSkeletonLoading>
           </EuiFlexItem>
         </EuiFlexGroup>
       {{else}}

@@ -3,6 +3,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import {
+  blur,
   click,
   fillIn,
   render,
@@ -257,7 +258,9 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       assert.dom('.euiFormErrorText').hasText('Required field');
       const errorId = el('.euiFormErrorText').id;
       assert.true(input.getAttribute('aria-describedby')!.split(' ').includes(errorId), 'error describes the input');
-      assert.strictEqual(css(input).outlineColor, rgb(forms(light)['borderInvalid']!));
+      assert.strictEqual(css(input).outlineColor, rgb(forms(light)['borderFocused']!), 'focus wins over invalid (upstream :not(:focus))');
+      await blur(input);
+      assert.strictEqual(css(input).outlineColor, rgb(forms(light)['borderInvalid']!), 'invalid outline once blurred');
       assert.dom('.euiFormControlLayoutIcons [data-icon-type="warning"]').exists('invalid icon');
 
       state.isInvalid = false;
@@ -277,7 +280,7 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       assert.strictEqual(css(skeletons[0]!).borderTopLeftRadius, (light.border.radius as unknown as Tokens)['inline']);
       assert.dom('[role="progressbar"]', busy).exists();
       assert.dom('[role="status"]', busy).hasText('Loading');
-      assert.dom('.euiLoadingSpinner', input.parentElement!).exists('field spinner');
+      assert.dom('.euiBorealisLoadingSpinner', input.parentElement!).exists('field spinner');
 
       state.resolve!(true);
       state.isLoading = false;
@@ -343,8 +346,8 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       await fillIn(inside('ctl', INPUT), 'Changed');
       assert.strictEqual(state.value, 'Changed', 'onChange');
       await triggerKeyEvent(inside('ctl', INPUT), 'keydown', 'Escape');
-      assert.deepEqual(state.cancelled, ['Controlled']);
-      assert.dom(inside('ctl', READ)).hasText('Controlled');
+      assert.strictEqual(state.cancelled.join(','), 'Controlled', 'onCancel gets the read mode value');
+      assert.dom(inside('ctl', READ)).hasText('Controlled', 'controlled value restored');
 
       assert.dom(inside('open', INPUT)).hasValue('Open', 'starts in edit mode');
     });
@@ -498,6 +501,10 @@ module('Integration | Component | Borealis inline edit, split button, form appen
                 <p data-test-subj="popover-content">Run later</p>
               </split.ActionSecondary>
             </EuiSplitButton>
+            <EuiSplitButton @isDisabled={{true}} data-p="bare" as |split|>
+              <split.ActionPrimary>Go</split.ActionPrimary>
+              <split.ActionSecondary aria-label="More" @iconType="gear" />
+            </EuiSplitButton>
           </EuiEmotionProvider>
         </template>
       );
@@ -507,7 +514,11 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       assert.true(primary.disabled);
       assert.true(secondary.disabled);
       assert.strictEqual(css(root).backgroundColor, rgb(light.colors.backgroundBaseDisabled), 'all-disabled background');
-      assert.strictEqual(css('.euiSplitButton__divider').borderInlineStartColor, rgb(light.colors.borderBaseDisabled));
+      // Upstream's disabled divider rule needs the secondary button as a
+      // sibling (`~ .euiSplitButtonActionSecondary:disabled`): a popover or
+      // tooltip wrapper keeps the color's divider, a bare action greys it.
+      assert.strictEqual(css(inside('d', '.euiSplitButton__divider')).borderInlineStartColor, rgb(colors(light)['borderBasePrimary']!), 'wrapped secondary keeps the divider color');
+      assert.strictEqual(css(inside('bare', '.euiSplitButton__divider')).borderInlineStartColor, rgb(light.colors.borderBaseDisabled), 'all-disabled divider');
 
       state.isDisabled = false;
       await settled();
@@ -517,11 +528,12 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       assert.strictEqual(state.clicks, 1);
 
       assert.dom('[data-icon-type="chevronSingleDown"]', secondary).exists('popover icon is fixed');
-      assert.dom(secondary).hasAttribute('aria-expanded', 'false');
+      // Like upstream, the popover sets aria-expanded when it opens (the
+      // button was disabled when the popover mounted).
       assert.dom(secondary.closest('.euiToolTipAnchor')!).exists('tooltip anchor');
       await click(secondary);
       assert.dom(secondary).hasAttribute('aria-expanded', 'true');
-      assert.dom('[data-test-subj="popover-content"]').hasText('Run later');
+      assert.dom('[data-test-subj="popover-content"]', document.body).hasText('Run later', 'popover content (portalled to the body)');
       assert.strictEqual(el('[data-test-subj="popover-content"]').closest('[data-popover-panel]')!.getAttribute('role'), 'dialog');
 
       state.isOpen = false;
@@ -529,8 +541,8 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       await settled();
       assert.true(primary.disabled, 'loading disables');
       assert.true(secondary.disabled);
-      assert.dom('.euiLoadingSpinner', primary).exists();
-      assert.dom('.euiLoadingSpinner', secondary).exists();
+      assert.dom('.euiBorealisLoadingSpinner', primary).exists();
+      assert.dom('.euiBorealisLoadingSpinner', secondary).exists();
     });
   });
 
@@ -587,7 +599,7 @@ module('Integration | Component | Borealis inline edit, split button, form appen
 
       const loading = el<HTMLButtonElement>('[data-p="loading"]');
       assert.true(loading.disabled);
-      assert.dom('.euiLoadingSpinner', loading).exists();
+      assert.dom('.euiBorealisLoadingSpinner', loading).exists();
       assert.strictEqual(css(loading).backgroundColor, rgb(forms(light)['background']!), 'loading keeps the form background');
 
       const disabled = el<HTMLButtonElement>('[data-p="disabled"]');
@@ -635,7 +647,8 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       assert.strictEqual(css(prepend).paddingInlineEnd, '8px');
       assert.strictEqual(css(prepend).columnGap, '8px');
       assert.strictEqual(css(prepend).fontStyle, 'italic', '@css composed last');
-      assert.strictEqual(css(prepend).height, css(el('.euiFormControlLayout__prepend')).height, 'full side height');
+      assert.strictEqual(box(el('.euiFormControlLayout__prepend')).height, 40);
+      assert.strictEqual(box(prepend).height, 32, 'side content height (upstream side node pads by size.xs)');
 
       const append = el<HTMLButtonElement>('[data-p="append"]');
       assert.strictEqual(append.tagName, 'BUTTON', '@onClick renders a button');
@@ -658,8 +671,10 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       await settled();
       assert.strictEqual(el('[data-p="prepend"]'), prepend, 'no replacement');
       assert.strictEqual(css(prepend).paddingInlineStart, '4px', 'compressed from the layout');
-      assert.strictEqual(css(prepend).color, rgb(forms(light)['textColorDisabled']!), 'static node follows the disabled layout');
-      assert.strictEqual(css(label).color, rgb(forms(light)['textColorDisabled']!));
+      assert.strictEqual(css(prepend).color, rgb(forms(light)['colorDisabled']!), 'static node follows the disabled layout');
+      // EuiFormLabel transitions its color: finish it before reading.
+      label.getAnimations().forEach((animation) => animation.finish());
+      assert.strictEqual(css(label).color, rgb(forms(light)['colorDisabled']!));
       assert.false(append.disabled, 'buttons are not disabled by the layout');
 
       const layoutButton = el<HTMLButtonElement>('[data-p="layout-button"]');
@@ -669,7 +684,7 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       const standalone = el<HTMLButtonElement>('[data-p="standalone"]');
       assert.true(standalone.disabled);
       assert.strictEqual(css(standalone).paddingInlineStart, '4px');
-      assert.strictEqual(css(standalone).color, rgb(forms(light)['textColorDisabled']!));
+      assert.strictEqual(css(standalone).color, rgb(forms(light)['colorDisabled']!));
       assert.dom('label', standalone).doesNotExist('no label element in a button');
     });
 
@@ -691,7 +706,7 @@ module('Integration | Component | Borealis inline edit, split button, form appen
       const button = el<HTMLButtonElement>('[data-p="in"]');
       assert.strictEqual(box(button).height, 32, 'compressed from the layout');
       assert.true(button.disabled, 'disabled from the layout');
-      assert.dom('.euiLoadingSpinner', button).doesNotExist('the layout shows the spinner');
+      assert.dom('.euiBorealisLoadingSpinner', button).doesNotExist('the layout shows the spinner');
       state.compressed = false;
       await settled();
       assert.strictEqual(box(button).height, 40);

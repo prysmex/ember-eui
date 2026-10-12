@@ -6,81 +6,72 @@ order: 1
 
 <EuiText>
 
-Wrap your own input (with the matching EUI class, e.g. `euiFieldText`) in
-`EuiFormControlLayout` to get EUI's icon, spinner and clear button. Your
-input needs its own padding for the icons.
+Wrap a control in `EuiFormControlLayout` to get EUI's icon, spinner and
+clear button. Here the controls are EUI fields with `@controlOnly={{true}}`:
+they render just their styled `<input>`, which makes room for the icons.
 
 </EuiText>
 
 ```hbs template
 <EuiFormControlLayout @icon='search'>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}}>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @clear={{(optional)}}>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}}>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}} @icon='search'>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}} @icon='arrowDown' @iconSide='right'>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @clear={{(optional)}} @icon='search'>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @clear={{(optional)}} @icon='arrowDown' @iconSide='right'>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}} @icon='search'>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
@@ -91,17 +82,15 @@ input needs its own padding for the icons.
   @icon='arrowDown'
   @iconSide='right'
 >
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
 <EuiSpacer @size='m' />
 <EuiFormControlLayout @isLoading={{true}} @clear={{(optional)}} @icon='search'>
-  <input
-    type='text'
-    class='euiFieldText'
+  <EuiFieldText
+    @controlOnly={{true}}
     aria-label='Use aria labels when no actual label is in use'
   />
 </EuiFormControlLayout>
@@ -113,10 +102,9 @@ input needs its own padding for the icons.
     </EuiFormLabel>
   </:prepend>
   <:field>
-    <input
-      type='text'
-      class='euiFieldText euiFieldText--inGroup'
-      id='textField19'
+    <EuiFieldText
+      @controlOnly={{true}}
+      @id='textField19'
     />
   </:field>
 </EuiFormControlLayout>
@@ -128,10 +116,9 @@ input needs its own padding for the icons.
     </EuiFormLabel>
   </:prepend>
   <:field>
-    <input
-      type='text'
-      class='euiFieldText euiFieldText--inGroup'
-      id='textField19a'
+    <EuiFieldText
+      @controlOnly={{true}}
+      @id='textField19a'
     />
   </:field>
 </EuiFormControlLayout>
@@ -145,9 +132,8 @@ input needs its own padding for the icons.
     </EuiText>
   </:prepend>
   <:field>
-    <input
-      type='number'
-      class='euiFieldNumber euiFieldNumber--inGroup'
+    <EuiFieldNumber
+      @controlOnly={{true}}
       aria-label='Use aria labels when no actual label is in use'
     />
   </:field>
@@ -165,9 +151,8 @@ input needs its own padding for the icons.
     </EuiButtonEmpty>
   </:prepend>
   <:field>
-    <input
-      type='text'
-      class='euiFieldText euiFieldText--inGroup'
+    <EuiFieldText
+      @controlOnly={{true}}
       aria-label='Use aria labels when no actual label is in use'
     />
   </:field>

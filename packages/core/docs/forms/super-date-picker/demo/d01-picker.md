@@ -2,13 +2,16 @@
 order: 1
 ---
 
-```hbs template
-<EuiText @size="s">
-  EuiSuperDatePicker should be resilient to invalid date values. You can try to break it with unexpected values here.
+# Picking a time range
+
+<EuiText>
+
+The picker should be resilient to invalid date values: try to break it with
+unexpected values in the start and end fields above it.
+
 </EuiText>
 
-<EuiSpacer />
-
+```hbs template
 <EuiFormControlLayoutDelimited>
   <:prepend as |classes|>
     <EuiFormLabel class={{classes}}>Dates</EuiFormLabel>

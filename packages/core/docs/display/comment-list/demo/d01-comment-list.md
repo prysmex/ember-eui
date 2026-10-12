@@ -113,7 +113,7 @@ single line recording an event. Each comment's blocks fill its parts:
       </EuiText>
     </:body>
     <:actions>
-      <EuiButtonIcon @iconType='questionInCircle' />
+      <EuiButtonIcon @iconType='questionInCircle' aria-label='Help' />
     </:actions>
     <:timestamp>
       on 2015-02-05

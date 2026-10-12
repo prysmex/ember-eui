@@ -215,13 +215,30 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
     if (options) this.args.onOptionClick(options);
   }
 
-  /** Keeps the keyboard's current option in view. */
+  /**
+   * Keeps the keyboard's current option in view by scrolling the list only,
+   * like upstream's `scrollToItem`: `scrollIntoView` would also scroll the
+   * page, e.g. to a single-selection list's checked option on first render.
+   */
   scrollActiveIntoView = modifier((list: HTMLElement, [index]: [number | undefined]) => {
     if (index === undefined || index < 0) return;
 
     const item = list.querySelectorAll<HTMLElement>(':scope > ul > li')[index];
 
-    item?.scrollIntoView?.({ block: 'nearest' });
+    if (!item) return;
+
+    const listBox = list.getBoundingClientRect();
+    const itemBox = item.getBoundingClientRect();
+
+    // rects are in screen pixels, scrollTop in the list's own (a transformed
+    // ancestor scales them)
+    const scale = list.offsetHeight ? listBox.height / list.offsetHeight : 1;
+
+    if (itemBox.top < listBox.top) {
+      list.scrollTop -= (listBox.top - itemBox.top) / scale;
+    } else if (itemBox.bottom > listBox.bottom) {
+      list.scrollTop += (itemBox.bottom - listBox.bottom) / scale;
+    }
   });
 
   <template>

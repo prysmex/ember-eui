@@ -10,7 +10,7 @@ title: Horizontal Rule
 
 `EuiHorizontalRule` draws a divider between sections. `@size` makes it
 `full` (default), `half` or `quarter` width and `@margin` sets the space
-above and below (`none` to `xxl`, `l` by default).
+above and below (`none` to `xxl`, `m` by default).
 
 ```hbs
 <EuiHorizontalRule @margin="m" />

@@ -20,7 +20,7 @@ order: 2
   <EuiStep @step={{2}} @title='Step 2 has sub steps'>
     <EuiText>
       <p>
-        In order to complete this step, do the following things{' '}
+        In order to complete this step, do the following things
         <strong>in order</strong>.
       </p>
       <EuiSubSteps>
@@ -41,13 +41,13 @@ order: 2
   <EuiStep @step={{3}} @title='Step 3 has an intro and one line instruction'>
     <EuiText>
       <p>
-        Now that you&apos;ve completed step 2, go find the{' '}
+        Now that you&apos;ve completed step 2, go find the
         <EuiCode>thing</EuiCode>.
       </p>
       <p>
         Go to
         <strong>Overview &gt;&gt; Endpoints</strong>
-        note{' '}
+        note
         <strong>Elasticsearch</strong>
         as
         <EuiCode>&lt;thing&gt;</EuiCode>.

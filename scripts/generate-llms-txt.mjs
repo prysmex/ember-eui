@@ -56,7 +56,7 @@ function pages() {
 
     const path = relative(join(root, 'docs'), file).replace(/\.md$/, '');
 
-    result.push({ file, url: `${SITE}/docs/${path}`, section: 'Guides' });
+    result.push({ file, prefix: `${SITE}/docs`, url: `${SITE}/docs/${path}`, section: 'Guides' });
   }
 
   for (const pkg of PACKAGES) {
@@ -71,7 +71,7 @@ function pages() {
         .replace(/\/index\.md$/, '')
         .replace(/\.md$/, '');
 
-      result.push({ file, url: `${SITE}/docs/${pkg}/docs/${path}`, section: pkg });
+      result.push({ file, prefix: `${SITE}/docs/${pkg}`, url: `${SITE}/docs/${pkg}/docs/${path}`, section: pkg });
     }
   }
 
@@ -81,7 +81,10 @@ function pages() {
       const title =
         /@pageTitle="([^"]+)"/.exec(body)?.[1] ?? data.title ?? page.url.split('/').pop();
 
-      return { ...page, title, order: Number(data.order ?? 99), body, demos: demosOf(page.file) };
+      // a `url` frontmatter replaces the path-based URL, as in docfy
+      const url = data.url ? `${page.prefix}/${data.url.replace(/^\//, '')}` : page.url;
+
+      return { ...page, url, title, order: Number(data.order ?? 99), body, demos: demosOf(page.file) };
     })
     .filter((page) => !/^disabled: true/m.test(readFileSync(page.file, 'utf8')))
     .sort((a, b) =>

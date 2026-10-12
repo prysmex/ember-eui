@@ -3,8 +3,6 @@ order: 5
 ---
 
 # Centered content
-
-<EuiSpacer />
 <EuiText>
   Similar to the previous example, you can create a centered panel to emphasize incompleteness even with a page header. The centeredContent template uses a subdued, shadowless inner panel by default.
 </EuiText>

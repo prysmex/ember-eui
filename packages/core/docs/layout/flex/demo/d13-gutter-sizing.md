@@ -6,7 +6,7 @@ order: 13
 
 <EuiText>
 
-`@gutterSize` sets the space between items: `none`, `xs`, `s`, `m`, `l` (default) or `xl`.
+`@gutterSize` sets the space between items: `none`, `xs`, `s`, `m` (default), `l` or `xl`.
 
 </EuiText>
 
@@ -40,19 +40,19 @@ order: 13
   <EuiSpacer />
 
   <EuiFlexGroup class="flex-demo" @gutterSize="m">
-    <EuiFlexItem>Medium</EuiFlexItem>
-    <EuiFlexItem>Medium</EuiFlexItem>
-    <EuiFlexItem>Medium</EuiFlexItem>
-    <EuiFlexItem>Medium</EuiFlexItem>
+    <EuiFlexItem>Medium (default)</EuiFlexItem>
+    <EuiFlexItem>Medium (default)</EuiFlexItem>
+    <EuiFlexItem>Medium (default)</EuiFlexItem>
+    <EuiFlexItem>Medium (default)</EuiFlexItem>
   </EuiFlexGroup>
 
   <EuiSpacer />
 
   <EuiFlexGroup class="flex-demo" @gutterSize="l">
-    <EuiFlexItem>Large (default)</EuiFlexItem>
-    <EuiFlexItem>Large (default)</EuiFlexItem>
-    <EuiFlexItem>Large (default)</EuiFlexItem>
-    <EuiFlexItem>Large (default)</EuiFlexItem>
+    <EuiFlexItem>Large</EuiFlexItem>
+    <EuiFlexItem>Large</EuiFlexItem>
+    <EuiFlexItem>Large</EuiFlexItem>
+    <EuiFlexItem>Large</EuiFlexItem>
   </EuiFlexGroup>
 
   <EuiSpacer />

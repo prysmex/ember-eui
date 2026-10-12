@@ -26,7 +26,7 @@ order: 2
   <:content>
     <EuiText @size='s' @color='subdued'>
       <p>
-        This is a nice group with a heading supplied via{' '}
+        This is a nice group with a heading supplied via
         <EuiCode>title</EuiCode>
         and
         <EuiCode>iconType</EuiCode>.

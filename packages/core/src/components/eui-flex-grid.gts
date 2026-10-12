@@ -1,4 +1,3 @@
-import { element } from 'ember-element-helper';
 import { eq } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';

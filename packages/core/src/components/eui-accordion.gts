@@ -7,7 +7,6 @@ import { htmlSafe } from '@ember/template';
 import type Owner from '@ember/owner';
 
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
-import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
 

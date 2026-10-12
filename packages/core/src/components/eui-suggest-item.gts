@@ -1,6 +1,5 @@
 import { on } from '@ember/modifier';
 
-import { element } from 'ember-element-helper';
 
 import EuiIcon from './eui-icon.gts';
 

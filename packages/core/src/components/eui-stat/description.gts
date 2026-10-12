@@ -1,5 +1,4 @@
 
-import { element } from 'ember-element-helper';
 
 import EuiText from '../eui-text.gts';
 

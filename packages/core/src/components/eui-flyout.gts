@@ -6,7 +6,6 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { throttle } from '@ember/runloop';
 
-import { element } from 'ember-element-helper';
 import { focusTrap } from 'ember-focus-trap';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { modifier as modBuilder } from 'ember-modifier';

@@ -1,7 +1,6 @@
 import { concat } from '@ember/helper';
 import { classify } from '@ember/string';
 
-import { element } from 'ember-element-helper';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';

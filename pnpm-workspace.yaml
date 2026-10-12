@@ -35,12 +35,6 @@ packageExtensions:
         optional: true
       '@glint/template':
         optional: true
-  ember-element-helper:
-    peerDependencies:
-      '@glint/template': '*'
-    peerDependenciesMeta:
-      '@glint/template':
-        optional: true
 
 # dependency install scripts run only when allowed (pnpm >= 11 errors on
 # unlisted ones)

@@ -219,6 +219,74 @@
       "sha256": "9eed405ae70856c03885b7006492c1c96f25119e977548ba412c1a3d3b12ab40"
     },
     {
+      "path": "@elastic/eui/es/components/datagrid/body/cell/data_grid_cell_actions.styles.js",
+      "sha256": "5c51f5d5495bb4dac67a260562728449d5b7a3e2f4ba7c785ae3848f28e1da87"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/cell/data_grid_cell_popover.styles.js",
+      "sha256": "4d137d7ada369cec14486291116b109fe248dd99aa3f6f8d0f42f58a1cbc3896"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/cell/data_grid_cell.styles.js",
+      "sha256": "0290ef06a4b80060a09bc13f99b93fc58c39314709c698e2351f35553b21754d"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/data_grid_body.styles.js",
+      "sha256": "9d809a3899c01069972015687925c878137910fce250927e42efdf90c7acb376"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/footer/data_grid_footer.styles.js",
+      "sha256": "a3d9f76d723764177162da9cac9023eca7f85740ebde2474eac0ecbb23b44f09"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/header/column_resizer.styles.js",
+      "sha256": "fc02dc4dce84d239f2ad9749d7c894c7b6f6a2da4f7797f9ee5be8e527614def"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/header/data_grid_header_cell_wrapper.styles.js",
+      "sha256": "6e79a056cd7fb60e5c231050626ef901867b846b82b7997337d098aca7688961"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/header/data_grid_header_cell.styles.js",
+      "sha256": "2b108b25abaee0f0377aab9bc91ba114615d2c759879a9ecea0a7838ca4280e3"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/header/data_grid_header_row.styles.js",
+      "sha256": "d14166a3cc0a38be1bd55aec5e581298dd513ede7a8fc7c843edd82446cf6e82"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/body/header/draggable_columns.styles.js",
+      "sha256": "da29f1b14a10aa7c6dffcc3ad759968bc2bd9bfc75dba89e705464d1fd24ea55"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/controls/column_selector.styles.js",
+      "sha256": "1cdc9daceb80b34814d045e53768663aad06ffd847f38f526a8a10d4e3d446e6"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/controls/column_sorting.styles.js",
+      "sha256": "343ea534966989288eb8c3c9334075f97e645ec644041fdb2f5910291b0d6d26"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/controls/data_grid_toolbar.styles.js",
+      "sha256": "f1f216c2747363921e159e74133216e3d60bc3a720b131df8e409c04aadc30ce"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/controls/keyboard_shortcuts.styles.js",
+      "sha256": "e30bc610958bff7aefb03c07dd95eb3acdfdf890094869b823ec8d3ec0ea61b4"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/data_grid.styles.js",
+      "sha256": "b9cd94c05875df1b6d42773cdc684414a7fb7197b84b026cf4053f2c43e6bef8"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/pagination/data_grid_pagination.styles.js",
+      "sha256": "a6138289bbc7c47514378d42ed9d271333aaf170c0e939163608dcb44e6e48a4"
+    },
+    {
+      "path": "@elastic/eui/es/components/datagrid/utils/scrolling.styles.js",
+      "sha256": "09d9b91254510c9febec0eb7aafb011bbe0db9c13f2fd05f7479f3ee3e57628b"
+    },
+    {
       "path": "@elastic/eui/es/components/date_picker/date_picker_range.styles.js",
       "sha256": "2ec57a14745db8b8241795b3a925ab7265fe2636a530bda2932d288b454bdefc"
     },

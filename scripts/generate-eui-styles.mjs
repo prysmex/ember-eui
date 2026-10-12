@@ -316,7 +316,26 @@ const entries = {
   'global_styling/mixins/_button': ['getEuiButtonColorValues', 'getEuiFilledButtonColorValues'],
   'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles'],
   // new-refresh-flyout
-  'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles']
+  'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles'],
+  // new-data-grid (fullscreen_selector.styles uses vanilla @emotion/css and the toolbar control's
+  // inline styles use a hook: both hand-ported in utils/eui/data-grid.ts)
+  'components/datagrid/data_grid.styles.js': ['euiDataGridVariables', 'euiDataGridStyles'],
+  'components/datagrid/body/data_grid_body.styles.js': ['euiDataGridBodyStyles'],
+  'components/datagrid/utils/scrolling.styles.js': ['euiDataGridScrollBarStyles'],
+  'components/datagrid/body/cell/data_grid_cell.styles.js': ['euiDataGridCellOutlineStyles', 'euiDataGridCellOutlineSelectors', 'euiDataGridRowCellStyles'],
+  'components/datagrid/body/cell/data_grid_cell_actions.styles.js': ['euiDataGridCellActionsStyles'],
+  'components/datagrid/body/cell/data_grid_cell_popover.styles.js': ['euiDataGridCellPopoverStyles'],
+  'components/datagrid/body/header/data_grid_header_row.styles.js': ['euiDataGridHeaderStyles'],
+  'components/datagrid/body/header/data_grid_header_cell.styles.js': ['euiDataGridHeaderCellStyles'],
+  'components/datagrid/body/header/data_grid_header_cell_wrapper.styles.js': ['euiDataGridHeaderCellWrapperStyles'],
+  'components/datagrid/body/header/column_resizer.styles.js': ['euiDataGridColumnResizerStyles'],
+  'components/datagrid/body/header/draggable_columns.styles.js': ['euiDataGridDraggableHeaderStyles'],
+  'components/datagrid/body/footer/data_grid_footer.styles.js': ['euiDataGridFooterStyles'],
+  'components/datagrid/controls/data_grid_toolbar.styles.js': ['euiDataGridToolbarStyles'],
+  'components/datagrid/controls/column_selector.styles.js': ['euiDataGridColumnSelectorStyles'],
+  'components/datagrid/controls/column_sorting.styles.js': ['euiDataGridColumnSortingStyles'],
+  'components/datagrid/controls/keyboard_shortcuts.styles.js': ['euiDataGridKeyboardShortcutsStyles'],
+  'components/datagrid/pagination/data_grid_pagination.styles.js': ['euiDataGridPaginationStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

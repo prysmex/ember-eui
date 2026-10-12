@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -57,6 +58,7 @@ export default class EuiFormControlLayoutIcons extends Component<EuiFormControlL
       ? 'right'
       : 'left';
   }
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(

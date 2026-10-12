@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import type { CSSObject } from '@emotion/css/create-instance';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -117,6 +118,7 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
   get iconSize() {
     return this.size === 'xs' ? 's' : (this.args.iconSize ?? 'm');
   }
+  @cached
   get classes() {
     const context = this.context;
     const theme = context.upstream.euiTheme;
@@ -150,6 +152,7 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
     );
     return `euiButtonEmpty ${css}`;
   }
+  @cached
   get contentClasses() {
     const context = this.context;
     const styles = useEuiBorealisStyles(context, euiButtonDisplayContentStyles);
@@ -179,6 +182,7 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
       .filter(Boolean)
       .join(' ');
   }
+  @cached
   get textClasses() {
     const context = this.context;
     const styles = useEuiBorealisStyles(context, euiButtonDisplayContentStyles);

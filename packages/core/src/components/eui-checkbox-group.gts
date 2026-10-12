@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn, get } from '@ember/helper';
 import { on } from '@ember/modifier';
 
@@ -68,6 +69,7 @@ export interface EuiCheckboxGroupSignature {
 }
 
 export default class EuiCheckboxGroup extends Component<EuiCheckboxGroupSignature> {
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiCheckboxGroupStyles);

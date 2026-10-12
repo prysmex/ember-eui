@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -52,6 +53,7 @@ export interface EuiTextAreaSignature {
 
 /** A textarea on the upstream EUI 123 / Borealis form control styles. */
 export default class EuiTextArea extends Component<EuiTextAreaSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiTextAreaStyles);

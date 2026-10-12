@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
@@ -139,6 +139,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
     return euiScreenReaderOnlyClass(this.context);
   }
 
+  @cached
   get wrapperClasses() {
     const styles = useEuiBorealisStyles(this.context, euiImageWrapperStyles);
     const { float, margin } = this.args;
@@ -153,6 +154,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
     )}`;
   }
 
+  @cached
   get imageClasses() {
     const styles = useEuiBorealisStyles(this.context, euiImageStyles);
     const size = this.size;
@@ -173,6 +175,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
     )}`;
   }
 
+  @cached
   get fullScreenImageClasses() {
     const styles = useEuiBorealisStyles(this.context, euiImageStyles);
     return `euiImage ${euiClass(this.context, styles.euiImage, styles.isFullScreen)}`;
@@ -197,6 +200,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
     return this.buttonClasses(true);
   }
 
+  @cached
   get openIconClasses() {
     const styles = useEuiBorealisStyles(this.context, euiImageButtonIconStyles);
     return `euiImageButton__icon ${euiClass(
@@ -206,6 +210,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
     )}`;
   }
 
+  @cached
   get closeIconClasses() {
     const styles = useEuiBorealisStyles(this.context, euiImageButtonIconStyles);
     return `euiImageButton__icon ${euiClass(
@@ -215,11 +220,13 @@ export default class EuiImage extends Component<EuiImageSignature> {
     )}`;
   }
 
+  @cached
   get captionClasses() {
     const styles = useEuiBorealisStyles(this.context, euiImageCaptionStyles);
     return `euiImageCaption ${euiClass(this.context, styles.euiImageCaption)}`;
   }
 
+  @cached
   get overlayCaptionClasses() {
     const styles = useEuiBorealisStyles(this.context, euiImageCaptionStyles);
     return `euiImageCaption ${euiClass(
@@ -229,6 +236,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
     )}`;
   }
 
+  @cached
   get fullScreenWrapperClasses() {
     const styles = useEuiBorealisStyles(
       this.context,

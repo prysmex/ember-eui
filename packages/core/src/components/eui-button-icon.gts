@@ -1,9 +1,11 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 import type { CSSObject } from '@emotion/css/create-instance';
 import { modifier } from 'ember-modifier';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiButtonDisplaysColors,
   euiButtonIconStyles,
@@ -56,6 +58,11 @@ const iconButtonA11y = modifier(function iconButtonA11y(element: Element) {
 export interface EuiButtonIconSignature {
   Element: HTMLButtonElement | HTMLAnchorElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /**
      * The icon; anything `EuiIcon`'s `@type` accepts. An icon-only button
      * has no visible text, so always pass an `aria-label="…"` (or
@@ -160,6 +167,7 @@ export default class EuiButtonIcon extends Component<EuiButtonIconSignature> {
     const size = this.iconSize;
     return (size as string) === 'original' ? undefined : size;
   }
+  @cached
   get classes() {
     const context = this.context;
     const styles = useEuiBorealisStyles(context, euiButtonIconStyles);
@@ -196,7 +204,8 @@ export default class EuiButtonIcon extends Component<EuiButtonIconSignature> {
           flexShrink: 0,
           margin: 0
         }
-      }
+      },
+      this.args.css
     );
     return `euiButtonIcon ${css}`;
   }

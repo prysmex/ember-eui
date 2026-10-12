@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, not, or } from 'ember-truth-helpers';
@@ -118,6 +119,7 @@ export interface EuiPageHeaderSignature {
 
 /** Upstream `EuiPageHeader` (`euiPageHeaderStyles`) on the Borealis theme. */
 export default class EuiPageHeader extends Component<EuiPageHeaderSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const upstream = context.upstream;

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
@@ -21,6 +22,7 @@ export default class EuiLoadingSpinner extends Component<EuiLoadingSpinnerSignat
   get size() {
     return this.args.size ?? 'm';
   }
+  @cached
   get styles() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiLoadingSpinnerStyles);

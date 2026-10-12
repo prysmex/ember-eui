@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -70,6 +71,7 @@ export interface EuiTextColorSignature {
 }
 
 export default class EuiTextColor extends Component<EuiTextColorSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     return euiClass(

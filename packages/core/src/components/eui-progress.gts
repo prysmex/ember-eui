@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 import { modifier } from 'ember-modifier';
@@ -7,6 +7,7 @@ import { or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiBorealisContext } from '../utils/eui/theme.ts';
 import {
   euiProgressDataStyles,
   euiProgressLabelStyles,
@@ -113,6 +114,13 @@ export interface EuiProgressSignature {
   };
 }
 
+
+/** Stable factories, so progress styles memoize per resolved theme. */
+const progressNative = (theme: EuiBorealisContext) =>
+  euiProgressStyles(theme, true);
+const progressIndeterminate = (theme: EuiBorealisContext) =>
+  euiProgressStyles(theme, false);
+
 export default class EuiProgress extends Component<EuiProgressSignature> {
   @service declare euiI18n: EuiI18n;
 
@@ -152,12 +160,10 @@ export default class EuiProgress extends Component<EuiProgressSignature> {
     return typeof valueText === 'string' && valueText ? valueText : undefined;
   }
 
+  @cached
   get classes() {
     const context = this.context;
-    const styles = euiProgressStyles(
-      context.upstream,
-      this.isDeterminate
-    );
+    const styles = useEuiBorealisStyles(context, this.isDeterminate ? progressNative : progressIndeterminate);
     const color = this.color;
     return `euiProgress ${euiClass(
       context,
@@ -169,6 +175,7 @@ export default class EuiProgress extends Component<EuiProgressSignature> {
     )}`;
   }
 
+  @cached
   get dataClasses() {
     const styles = useEuiBorealisStyles(
       this.context,
@@ -181,11 +188,13 @@ export default class EuiProgress extends Component<EuiProgressSignature> {
     )}`;
   }
 
+  @cached
   get labelClassNames() {
     const styles = euiProgressLabelStyles;
     return `euiProgress__label ${euiClass(this.context, styles.euiProgress__label)}`;
   }
 
+  @cached
   get valueTextClasses() {
     const context = this.context;
     const styles = useEuiBorealisStyles(
@@ -196,7 +205,7 @@ export default class EuiProgress extends Component<EuiProgressSignature> {
     const custom = isNamedColor(color)
       ? styles[color]
       : [
-          (euiProgressStyles(context.upstream, true))
+          useEuiBorealisStyles(context, progressNative)
             .customColor,
           {
             color: (

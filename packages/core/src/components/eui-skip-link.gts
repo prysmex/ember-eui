@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
 import { isTabbable } from 'tabbable';
@@ -58,6 +59,7 @@ export default class EuiSkipLink extends Component<EuiSkipLinkSignature> {
     return this.position === 'fixed' ? 0 : this.args.tabIndex;
   }
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiSkipLinkStyles);

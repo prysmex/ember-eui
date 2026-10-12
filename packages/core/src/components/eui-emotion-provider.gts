@@ -3,6 +3,7 @@ import type {
   EuiBorealisHighContrastMode
 } from '../utils/eui/theme.ts';
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { getContext, provide } from 'ember-provide-consume-context';
 import {
   EUI_EMOTION_CONTEXT,
@@ -111,6 +112,7 @@ export default class EuiEmotionProvider extends Component<EuiEmotionProviderSign
     this.removeGlobalStyles();
   }
 
+  @cached
   get colorClass() {
     const { colorMode, euiTheme } = this.context.upstream;
     return euiClass(this.context, {

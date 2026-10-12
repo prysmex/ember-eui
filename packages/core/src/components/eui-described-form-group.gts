@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { modifier } from 'ember-modifier';
 
@@ -101,6 +102,7 @@ export interface EuiDescribedFormGroupSignature {
 export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGroupSignature> {
   readonly titleId = `euiDescribedFormGroupTitle-${randomId()}`;
 
+  @cached
   get styles() {
     return useEuiBorealisStyles(
       getEuiThemeContext(this),
@@ -108,6 +110,7 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
     );
   }
 
+  @cached
   get classes(): string {
     const { styles } = this;
     return euiClass(
@@ -119,6 +122,7 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
     );
   }
 
+  @cached
   get descriptionColumnClasses(): string {
     return euiClass(
       getEuiThemeContext(this),
@@ -126,6 +130,7 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
     );
   }
 
+  @cached
   get descriptionClasses(): string {
     return euiClass(
       getEuiThemeContext(this),
@@ -133,6 +138,7 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
     );
   }
 
+  @cached
   get fieldsClasses(): string {
     return euiClass(
       getEuiThemeContext(this),

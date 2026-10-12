@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
@@ -54,6 +55,7 @@ export interface EuiPageSideBarSignature {
  * media queries in the theme class, so callers' `style` is never replaced.
  */
 export default class EuiPageSideBar extends Component<EuiPageSideBarSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const upstream = context.upstream;

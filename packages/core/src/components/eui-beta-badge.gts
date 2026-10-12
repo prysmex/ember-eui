@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
 import { eq } from 'ember-truth-helpers';
@@ -117,6 +118,7 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
       : undefined;
   }
 
+  @cached
   get classes(): string {
     const context = this.context;
     const styles = useEuiBorealisStyles(context, euiBetaBadgeStyles);
@@ -139,6 +141,7 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
     );
   }
 
+  @cached
   get iconClass(): string {
     const context = this.context;
     const styles = useEuiBorealisStyles(context, euiBetaBadgeStyles);

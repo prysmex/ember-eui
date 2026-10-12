@@ -296,10 +296,12 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
     );
   };
 
+  @cached
   get contentClass(): string {
     return euiClass(this.context, this.styles.euiBadge__content);
   }
 
+  @cached
   get textClass(): string {
     const { text } = this.styles;
     return euiClass(
@@ -309,6 +311,7 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
     );
   }
 
+  @cached
   get iconClass(): string {
     const { icon } = this.styles;
     return euiClass(
@@ -319,6 +322,7 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
     );
   }
 
+  @cached
   get iconButtonClass(): string {
     const { iconButton } = this.styles;
     return euiClass(
@@ -329,6 +333,7 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
     );
   }
 
+  @cached
   get childButtonClass(): string {
     return euiClass(
       this.context,

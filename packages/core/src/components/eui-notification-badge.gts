@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -20,6 +21,7 @@ export interface EuiNotificationBadgeSignature {
 }
 
 export default class EuiNotificationBadge extends Component<EuiNotificationBadgeSignature> {
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiNotificationBadgeStyles);

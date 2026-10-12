@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiPageBoxSizing } from '../utils/eui/page-layout.ts';
@@ -29,6 +30,7 @@ export interface EuiPageContentHeaderSignature {
 }
 
 export default class EuiPageContentHeader extends Component<EuiPageContentHeaderSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const upstream = context.upstream;

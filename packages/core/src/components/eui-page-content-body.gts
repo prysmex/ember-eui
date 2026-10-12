@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
 
@@ -43,10 +44,15 @@ export interface EuiPageContentBodySignature {
   };
 }
 
+
+/** Theme-independent, so built once. */
+const PAGE_SECTION_CONTENT_STYLES = euiPageSectionContentStyles();
+
 export default class EuiPageContentBody extends Component<EuiPageContentBodySignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
-    const styles = euiPageSectionContentStyles();
+    const styles = PAGE_SECTION_CONTENT_STYLES;
     return euiClass(
       context,
       euiPageBoxSizing,

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -30,6 +31,7 @@ export default class EuiLoadingLogo extends Component<EuiLoadingLogoSignature> {
     return this.euiI18n.lookupToken('euiLoadingStrings.ariaLabel', 'Loading');
   }
 
+  @cached
   get styles() {
     return useEuiBorealisStyles(
       getEuiThemeContext(this),
@@ -37,6 +39,7 @@ export default class EuiLoadingLogo extends Component<EuiLoadingLogoSignature> {
     );
   }
 
+  @cached
   get classes() {
     return `euiLoadingLogo ${euiClass(
       getEuiThemeContext(this),
@@ -45,6 +48,7 @@ export default class EuiLoadingLogo extends Component<EuiLoadingLogoSignature> {
     )}`;
   }
 
+  @cached
   get iconClasses() {
     return `euiLoadingLogo__icon ${euiClass(
       getEuiThemeContext(this),

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -37,6 +38,7 @@ export default class EuiLoadingChart extends Component<EuiLoadingChartSignature>
     return this.euiI18n.lookupToken('euiLoadingStrings.ariaLabel', 'Loading');
   }
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiLoadingChartStyles);
@@ -48,6 +50,7 @@ export default class EuiLoadingChart extends Component<EuiLoadingChartSignature>
     )}`;
   }
 
+  @cached
   get barClasses() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -46,6 +47,7 @@ export default class EuiLoadingContent extends Component<EuiLoadingContentSignat
     return this.euiI18n.lookupToken('euiLoadingStrings.ariaLabel', 'Loading');
   }
 
+  @cached
   get lineClasses() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiSkeletonTextStyles);

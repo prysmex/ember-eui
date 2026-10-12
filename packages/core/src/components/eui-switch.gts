@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
@@ -101,6 +102,7 @@ export default class EuiSwitch extends Component<EuiSwitchSignature> {
     return this.size === 'uncompressed';
   }
 
+  @cached
   get styles() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiSwitchStyles);

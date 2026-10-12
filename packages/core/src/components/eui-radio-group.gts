@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn, get } from '@ember/helper';
 import { on } from '@ember/modifier';
 
@@ -57,6 +58,7 @@ export interface EuiRadioGroupSignature {
 }
 
 export default class EuiRadioGroup extends Component<EuiRadioGroupSignature> {
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiRadioGroupStyles);

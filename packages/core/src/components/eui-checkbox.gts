@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -10,6 +11,7 @@ import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiCheckboxControlStyles,
   euiCheckboxStyles
@@ -109,6 +111,7 @@ export interface EuiCheckboxSignature {
 }
 
 export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
+  @cached
   get styles() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiCheckboxStyles);
@@ -139,18 +142,18 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
       // Hidden icons are removed rather than made transparent, so forced
       // colors (which override `color`) never reveal them (upstream swaps in
       // its `empty` icon for the same reason).
-      check: euiClass(
-        context,
+      // Composed into EuiIcon's own class via @css, so they win over the
+      // icon's display rule regardless of insertion order.
+      check: [
         control.icon.euiCheckbox__icon,
         control.icon.check,
         { ...hidden, [CHECKED_ONLY]: { display: 'block' } }
-      ),
-      indeterminate: euiClass(
-        context,
+      ] as EuiCss,
+      indeterminate: [
         control.icon.euiCheckbox__icon,
         control.icon.indeterminate,
         { ...hidden, [INDETERMINATE]: { display: 'block' } }
-      ),
+      ] as EuiCss,
       input: euiClass(
         context,
         euiCheckableInputReset,
@@ -189,13 +192,15 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
               @type="check"
               @size="m"
               role="presentation"
-              class="euiCheckbox__icon {{styles.check}}"
+              @css={{styles.check}}
+              class="euiCheckbox__icon"
             />
             <EuiIcon
               @type="stopFilled"
               @size="m"
               role="presentation"
-              class="euiCheckbox__icon {{styles.indeterminate}}"
+              @css={{styles.indeterminate}}
+              class="euiCheckbox__icon"
             />
           </span>
           <input

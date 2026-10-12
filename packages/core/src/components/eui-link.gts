@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -139,6 +140,7 @@ export default class EuiLink extends Component<EuiLinkSignature> {
     return this.args.target === '_blank';
   }
 
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const theme = context.upstream.euiTheme;

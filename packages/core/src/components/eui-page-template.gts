@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
 import { and, eq, or } from 'ember-truth-helpers';
@@ -184,17 +184,20 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
    * the utility classes globally; here the class name stays as a hook and
    * the rule comes from the extracted `euiFullHeight` mixin.
    */
+  @cached
   get fullHeightUtility() {
     return `eui-fullHeight ${euiClass(getEuiThemeContext(this), euiFullHeight() as string)}`;
   }
 
   /** Upstream's `eui-yScroll` utility class (`euiYScroll` mixin). */
+  @cached
   get yScrollUtility() {
     const context = getEuiThemeContext(this);
     return `eui-yScroll ${euiClass(context, euiYScroll(context.upstream) as string)}`;
   }
 
   /** Upstream `_EuiPageBottomBar`: hides wide flex margins, never shrinks. */
+  @cached
   get bottomBarClass() {
     return [
       euiClass(getEuiThemeContext(this), { overflow: 'hidden', flexShrink: 0 }),

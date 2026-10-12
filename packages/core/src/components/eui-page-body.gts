@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
 
@@ -52,6 +53,10 @@ export interface EuiPageBodySignature {
 }
 
 /** Upstream `EuiPageBody` (`euiPageBodyStyles`) on the Borealis theme. */
+
+/** Theme-independent, so built once. */
+const PAGE_BODY_STYLES = euiPageBodyStyles();
+
 export default class EuiPageBody extends Component<EuiPageBodySignature> {
   get tagName() {
     return this.args.tagName ?? 'div';
@@ -62,13 +67,14 @@ export default class EuiPageBody extends Component<EuiPageBodySignature> {
   }
 
   get bodyStyles() {
-    const styles = euiPageBodyStyles();
+    const styles = PAGE_BODY_STYLES;
     return [
       styles.euiPageBody,
       isRestricted(this.args.restrictWidth) && styles.restrictWidth
     ];
   }
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     useEuiBorealisStyles(context, euiPageBodyStyles);
@@ -81,6 +87,7 @@ export default class EuiPageBody extends Component<EuiPageBodySignature> {
   }
 
   /** Upstream passes the body styles as the panel's `css`, after its own. */
+  @cached
   get panelClasses() {
     return euiClass(getEuiThemeContext(this), composedOver(...this.bodyStyles));
   }

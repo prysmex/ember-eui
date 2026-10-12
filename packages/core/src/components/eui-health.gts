@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -36,6 +37,7 @@ export interface EuiHealthSignature {
 
 /** Native Ember health status using the upstream EUI 123 / Borealis styles. */
 export default class EuiHealth extends Component<EuiHealthSignature> {
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(

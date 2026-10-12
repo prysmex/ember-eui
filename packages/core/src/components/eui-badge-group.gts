@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -46,6 +47,7 @@ export interface EuiBadgeGroupSignature {
 }
 
 export default class EuiBadgeGroup extends Component<EuiBadgeGroupSignature> {
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiBadgeGroupStyles);
@@ -57,6 +59,7 @@ export default class EuiBadgeGroup extends Component<EuiBadgeGroupSignature> {
     );
   }
 
+  @cached
   get itemClass(): string {
     return euiClass(getEuiThemeContext(this), {
       boxSizing: 'border-box',

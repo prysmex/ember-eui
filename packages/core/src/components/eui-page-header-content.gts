@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 
@@ -199,6 +200,7 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
     return getEuiThemeContext(this);
   }
 
+  @cached
   get styles() {
     return useEuiBorealisStyles(this.context, euiPageHeaderContentStyles);
   }
@@ -236,7 +238,7 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
     }
     const context = this.context;
     const styles = this.styles;
-    const pageHeader = euiPageHeaderStyles(context.upstream);
+    const pageHeader = useEuiBorealisStyles(context, euiPageHeaderStyles);
     const responsive = this.args.responsive ?? true;
     return {
       onlyChildren,
@@ -268,6 +270,7 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
     return euiPageRestrictWidthStyle(this.args.restrictWidth);
   }
 
+  @cached
   get topClass() {
     return euiClass(
       this.context,
@@ -275,6 +278,7 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
     );
   }
 
+  @cached
   get leftClass() {
     return euiClass(
       this.context,
@@ -287,6 +291,7 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
    * `responsive="reverse"`; Ember keeps the DOM order and reorders it
    * visually below the same breakpoint.
    */
+  @cached
   get rightClass() {
     const upstream = this.context.upstream;
     return euiClass(
@@ -300,10 +305,12 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
     );
   }
 
+  @cached
   get titleIconClass() {
     return euiClass(this.context, this.styles.euiPageHeaderContent__titleIcon);
   }
 
+  @cached
   get screenReaderOnlyClass() {
     return euiClass(this.context, euiScreenReaderOnlyCss);
   }

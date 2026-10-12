@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
@@ -197,6 +198,7 @@ export default class EuiFormRow extends Component<EuiFormRowSignature> {
     }
   }
 
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiFormRowStyles);
@@ -212,6 +214,7 @@ export default class EuiFormRow extends Component<EuiFormRowSignature> {
     );
   }
 
+  @cached
   get labelAppendClasses(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiFormLabelAppendStyles);

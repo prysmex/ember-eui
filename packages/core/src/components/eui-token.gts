@@ -1,9 +1,11 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { hexToRgb } from '../helpers/hex-to-rgb.ts';
 import { isColorDark } from '../helpers/is-color-dark.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiClass } from '../utils/eui/styles.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiBorealisContext } from '../utils/eui/theme.ts';
 import { TOKEN_MAP } from '../utils/eui/styles.generated.ts';
 import { euiTokenStyles, TOKEN_COLORS } from '../utils/eui/token.ts';
 import EuiIcon from './eui-icon.gts';
@@ -15,6 +17,14 @@ import type { IconType } from './eui-icon';
 export const SIZES = ['xs', 's', 'm', 'l'] as const;
 export const SHAPES = ['circle', 'square', 'rectangle'] as const;
 export const FILLS = ['light', 'dark', 'none'] as const;
+
+/** One stable factory per fill, so styles memoize per resolved theme. */
+const TOKEN_STYLES = Object.fromEntries(
+  FILLS.map((fill) => [
+    fill,
+    (theme: EuiBorealisContext) => euiTokenStyles(theme, fill)
+  ])
+) as Record<(typeof FILLS)[number], (theme: EuiBorealisContext) => ReturnType<typeof euiTokenStyles>>;
 export { TOKEN_COLORS as COLORS };
 
 type TokenSize = (typeof SIZES)[number];
@@ -99,6 +109,7 @@ export default class EuiToken extends Component<EuiTokenSignature> {
     return size;
   }
 
+  @cached
   get classes(): string {
     const { iconType } = this.args;
     const context = getEuiThemeContext(this);
@@ -111,7 +122,7 @@ export default class EuiToken extends Component<EuiTokenSignature> {
     const fill = oneOf(FILLS, this.args.fill, 'light');
     // upstream builds the styles for the requested fill, before a custom
     // color switches the token to `dark`
-    const styles = euiTokenStyles(context.upstream, fill);
+    const styles = useEuiBorealisStyles(context, TOKEN_STYLES[fill]);
     let custom: CSSObject | undefined;
     let colorStyles = styles[color];
 

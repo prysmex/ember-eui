@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass } from '../utils/eui/styles.ts';
@@ -29,6 +30,7 @@ export interface EuiAspectRatioSignature {
  * wrapper takes those styles and its content fills it.
  */
 export default class EuiAspectRatio extends Component<EuiAspectRatioSignature> {
+  @cached
   get classes() {
     const { width, height, maxWidth } = this.args;
     return `euiAspectRatio ${euiClass(getEuiThemeContext(this), {

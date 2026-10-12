@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
 
@@ -56,6 +57,7 @@ export interface EuiPageSignature {
 
 /** Upstream `EuiPage` (`euiPageStyles`) on the Borealis theme. */
 export default class EuiPage extends Component<EuiPageSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const upstream = context.upstream;

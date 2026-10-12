@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
 import { modifier } from 'ember-modifier';
@@ -50,6 +51,7 @@ export default class EuiOverlayMaskComponent extends Component<EuiOverlayMaskSig
     return this.args.headerZindexLocation === 'below' ? 'below' : 'above';
   }
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiOverlayMaskStyles);
@@ -62,6 +64,7 @@ export default class EuiOverlayMaskComponent extends Component<EuiOverlayMaskSig
   }
 
   /** Upstream renders a global `body { overflow: hidden }`; a ref-counted body class here. */
+  @cached
   get bodyClasses() {
     return `euiBody-hasOverlayMask ${euiClass(getEuiThemeContext(this), {
       overflow: 'hidden'

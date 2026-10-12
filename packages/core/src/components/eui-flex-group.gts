@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -69,6 +70,7 @@ export interface EuiFlexGroupSignature {
 }
 
 export default class EuiFlexGroup extends Component<EuiFlexGroupSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiFlexGroupStyles);

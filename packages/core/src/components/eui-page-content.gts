@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass } from '../utils/eui/styles.ts';
 import EuiPanel from './eui-panel.gts';
@@ -50,6 +51,7 @@ export default class EuiPageContent extends Component<EuiPageContentSignature> {
   }
 
   /** Positions inside EuiPageBody's flex column (upstream removed this API). */
+  @cached
   get positionClass() {
     const { verticalPosition, horizontalPosition } = this.args;
     return euiClass(

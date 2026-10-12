@@ -8,6 +8,9 @@ if (typeof module !== 'undefined') {
     launch_in_ci: ['Chrome'],
     launch_in_dev: ['Chrome'],
     browser_start_timeout: 120,
+    // the icon catalog test renders every icon at once; under load it can
+    // block the browser longer than testem's 10s default and abort the run
+    browser_disconnect_timeout: 120,
     browser_args: {
       Chrome: {
         ci: [

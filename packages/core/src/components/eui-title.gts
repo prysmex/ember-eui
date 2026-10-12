@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiTitleStyles } from '../utils/eui/styles.generated.ts';
@@ -35,6 +36,7 @@ export interface EuiTitleSignature {
 }
 
 export default class EuiTitle extends Component<EuiTitleSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiTitleStyles);

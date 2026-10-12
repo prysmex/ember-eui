@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -41,6 +42,7 @@ export default class EuiFormControlLayoutClearButton extends Component<EuiFormCo
       )
     );
   }
+  @cached
   get styles() {
     const context = getEuiThemeContext(this);
     return {
@@ -51,6 +53,7 @@ export default class EuiFormControlLayoutClearButton extends Component<EuiFormCo
       )
     };
   }
+  @cached
   get classes() {
     const { context, styles } = this.styles;
     return euiClass(
@@ -60,6 +63,7 @@ export default class EuiFormControlLayoutClearButton extends Component<EuiFormCo
       styles.size[this.size]
     );
   }
+  @cached
   get iconClasses() {
     const { context, styles } = this.styles;
     return euiClass(

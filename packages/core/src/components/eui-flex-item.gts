@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass } from '../utils/eui/styles.ts';
@@ -62,6 +63,7 @@ export default class EuiFlexItem extends Component<EuiFlexItemSignature> {
     return this.args.tagName ?? 'div';
   }
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = euiFlexItemStyles;

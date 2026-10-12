@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -33,6 +34,7 @@ export interface EuiMarkSignature {
 export default class EuiMark extends Component<EuiMarkSignature> {
   @service declare euiI18n: EuiI18n;
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiMarkStyles);

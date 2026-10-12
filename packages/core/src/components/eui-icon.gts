@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { warn } from '@ember/debug';
 import { guidFor } from '@ember/object/internals';
 import { service } from '@ember/service';
@@ -10,14 +11,14 @@ import { emptyIcon, iconDataTypes } from '../-private/icons.ts';
 
 import { typeToPathMap } from '../utils/css-mappings/eui-icon.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiClass } from '../utils/eui/styles.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiIconStyles } from '../utils/eui/styles.generated.ts';
 import { keysOf } from './common.ts';
 
 import type { EuiIconComponent } from '../-private/icons.ts';
 import type EuiConfigService from '../services/eui-config';
 import type { EuiThemeContext } from '../utils/emotion/context.ts';
-import type { EuiBorealisContext } from '../utils/eui/theme.ts';
 import type { CommonArgs } from './common.ts';
 import type { SerializedStyles } from '@emotion/serialize';
 import type { ComponentLike } from '@glint/template';
@@ -69,18 +70,8 @@ type IconStyles = Record<string, SerializedStyles>;
  * EuiIcon renders everywhere, so the upstream factory runs once per resolved
  * theme (contexts cache their `upstream` theme), not once per icon.
  */
-const stylesByTheme = new WeakMap<EuiBorealisContext, IconStyles>();
-
 function iconStyles(context: EuiThemeContext): IconStyles {
-  const theme = context.upstream;
-  let styles = stylesByTheme.get(theme);
-
-  if (!styles) {
-    styles = euiIconStyles(theme) as IconStyles;
-    stylesByTheme.set(theme, styles);
-  }
-
-  return styles;
+  return useEuiBorealisStyles(context, euiIconStyles) as IconStyles;
 }
 
 /**
@@ -111,6 +102,11 @@ function isAppIconType(type: unknown): boolean {
 }
 
 export type EuiIconArgs = CommonArgs & {
+  /**
+   * Extra styles composed last into this component's class (like upstream's
+   * `css` prop). Prefer this to an extra class when styling it from a parent.
+   */
+  css?: EuiCss;
   /**
    * `Enum` is any of the named icons listed in the docs, `string` is usually a URL to an SVG file, and `elementType` is any Ember Icon SVG component
    */
@@ -277,6 +273,7 @@ export default class EuiIcon extends Component<EuiIconSignature> {
     return true;
   }
 
+  @cached
   get classes(): string {
     const { color, type } = this.args;
     const context = this.context;
@@ -299,7 +296,8 @@ export default class EuiIcon extends Component<EuiIconSignature> {
       isElasticLogoOutline && styles['logoElasticOutline'],
       isAppIconType(type) && !appIconHasColor && styles['app'],
       this.isLoading && styles['isLoading'],
-      this.isLoaded && styles['isLoaded']
+      this.isLoaded && styles['isLoaded'],
+      this.args.css
     );
 
     return ['euiIcon', this.args.iconClasses, css].filter(Boolean).join(' ');

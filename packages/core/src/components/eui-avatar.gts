@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { warn } from '@ember/debug';
 
 import { hexToRgb } from '../helpers/hex-to-rgb.ts';
@@ -169,6 +170,7 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
     return this.context.upstream.highContrastMode === 'forced';
   }
 
+  @cached
   get classes(): string {
     const context = this.context;
     const styles = useEuiBorealisStyles(

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiFormLegendStyles } from '../utils/eui/styles.generated.ts';
@@ -47,6 +48,7 @@ export default class EuiFormLegend extends Component<EuiFormLegendSignature> {
     return this.args.display === 'hidden';
   }
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiFormLegendStyles);

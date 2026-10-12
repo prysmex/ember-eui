@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -36,6 +37,7 @@ export interface EuiBeaconSignature {
 
 /** Native Ember beacon using the upstream EUI 123 / Borealis styles. */
 export default class EuiBeacon extends Component<EuiBeaconSignature> {
+  @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(

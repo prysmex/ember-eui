@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -34,6 +35,7 @@ export interface EuiFormControlLayoutCustomIconSignature {
 }
 
 export default class EuiFormControlLayoutCustomIcon extends Component<EuiFormControlLayoutCustomIconSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const clickable = Boolean(this.args.onClick);

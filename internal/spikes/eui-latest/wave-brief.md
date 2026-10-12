@@ -27,6 +27,10 @@ Style work must not repeat on every render:
 - Helpers that take extra arguments (e.g. `getBadgeColors(context, color)`) are cheap per call but should still live in a `@cached` getter.
 - Do not build per-instance objects for static styles; hoist constants to module scope.
 
+## Styling migrated children
+
+To style a migrated child component (EuiIcon, EuiPanel, EuiButtonIcon, …) pass its `@css` argument (type `EuiCss` from `utils/eui/styles.ts`): it is composed **last into the child's own class**, like upstream's `css` prop. Never add a second Emotion class to a migrated child — which class wins then depends on rule insertion order (this broke checkbox marks when EuiIcon migrated). If a migrated child you need lacks `@css`, add it in your component only if it is in your family; otherwise report it and the coordinator adds it.
+
 ## Rules
 
 - Work only in your assigned worktree and branch. Do not touch other families' components, providers/shared utilities (`utils/emotion/*`, `utils/eui/theme.ts`, `utils/eui/styles.ts`, `eui-emotion-provider.gts`), the site/showcase, or already-migrated components (report needed changes instead). Never stage `.vscode/settings.json` or the `node_modules` symlinks. Do not push.

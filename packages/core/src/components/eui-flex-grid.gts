@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { modifier } from 'ember-modifier';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -123,6 +124,7 @@ export default class EuiFlexGrid extends Component<EuiFlexGridSignature> {
     return this.args.columns ?? 1;
   }
 
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiFlexGridStyles);

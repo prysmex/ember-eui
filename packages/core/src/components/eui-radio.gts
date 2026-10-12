@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -9,6 +10,7 @@ import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiRadioStyles } from '../utils/eui/styles.generated.ts';
 import { euiCheckableInputReset, euiCheckableReset } from './eui-checkbox.gts';
 import EuiIcon from './eui-icon.gts';
@@ -68,6 +70,7 @@ export interface EuiRadioSignature {
 }
 
 export default class EuiRadio extends Component<EuiRadioSignature> {
+  @cached
   get styles() {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiRadioStyles);
@@ -90,10 +93,12 @@ export default class EuiRadio extends Component<EuiRadioSignature> {
         ),
       // Removed (not transparent) when unchecked, so forced colors never
       // reveal it; upstream swaps in its `empty` icon for the same reason.
-      dot: euiClass(context, styles.input.euiRadio__icon, {
-        display: 'none',
-        [DOT_VISIBLE]: { display: 'block' }
-      }),
+      // Composed into EuiIcon's own class via @css, so it wins over the
+      // icon's display rule regardless of insertion order.
+      dot: [
+        styles.input.euiRadio__icon,
+        { display: 'none', [DOT_VISIBLE]: { display: 'block' } }
+      ] as EuiCss,
       input: euiClass(
         context,
         euiCheckableInputReset,
@@ -120,7 +125,7 @@ export default class EuiRadio extends Component<EuiRadioSignature> {
         <div
           class="euiRadio__circle {{styles.circle (or hasLabelBlock @label)}}"
         >
-          <EuiIcon @type="dot" class="euiRadio__icon {{styles.dot}}" />
+          <EuiIcon @type="dot" @css={{styles.dot}} class="euiRadio__icon" />
           <input
             class="euiRadio__input {{styles.input}}"
             type="radio"

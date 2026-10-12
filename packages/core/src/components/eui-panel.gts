@@ -1,8 +1,10 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { useEuiBorealisStyles, euiClass } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiPanelStyles,
   euiBackgroundColor,
@@ -19,6 +21,11 @@ import type {
 export interface EuiPanelSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /**
      * Adds a box shadow (plain panels without a border only). Defaults to `false`.
      */
@@ -81,6 +88,7 @@ function activateOnKey(
 
 /** Borealis surface styles composed directly from the latest upstream factory. */
 export default class EuiPanel extends Component<EuiPanelSignature> {
+  @cached
   get classes() {
     const context = getEuiThemeContext(this);
     const upstream = context.upstream;
@@ -130,7 +138,8 @@ export default class EuiPanel extends Component<EuiPanelSignature> {
         '&:focus-visible': {
           outline: `${upstream.euiTheme.focus.width} solid ${upstream.euiTheme.focus.color}`
         }
-      }
+      },
+      this.args.css
     );
     return ['euiPanelBorealis', `euiPanel--${color}`, generated].join(' ');
   }

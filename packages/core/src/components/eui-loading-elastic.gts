@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -24,6 +25,7 @@ export default class EuiLoadingElastic extends Component<EuiLoadingElasticSignat
     return this.euiI18n.lookupToken('euiLoadingStrings.ariaLabel', 'Loading');
   }
 
+  @cached
   get classes() {
     const styles = euiLoadingElasticStyles;
     return `euiLoadingElastic ${euiClass(

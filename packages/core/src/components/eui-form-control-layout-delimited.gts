@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
@@ -78,6 +79,7 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
   get delimiter() {
     return this.args.delimiter ?? '→';
   }
+  @cached
   get styles() {
     return useEuiBorealisStyles(
       this.context,
@@ -101,6 +103,7 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
     ];
   }
   /** The class yielded to each control: upstream's cloned input styles. */
+  @cached
   get inputClass() {
     return `euiFormControlLayoutDelimited__input ${euiClass(
       this.context,
@@ -108,6 +111,7 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
     )}`;
   }
   /** Upstream renders the delimiter as `EuiText size="s"` with these styles last. */
+  @cached
   get delimiterClass() {
     const context = this.context;
     const text = useEuiBorealisStyles(context, euiTextStyles);

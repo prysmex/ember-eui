@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { or } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass } from '../utils/eui/styles.ts';
@@ -44,6 +45,7 @@ export interface EuiFormFieldsetSignature {
 }
 
 export default class EuiFormFieldset extends Component<EuiFormFieldsetSignature> {
+  @cached
   get classes() {
     return euiClass(getEuiThemeContext(this), euiFieldsetReset);
   }

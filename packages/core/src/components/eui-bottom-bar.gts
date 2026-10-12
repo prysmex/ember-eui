@@ -1,5 +1,5 @@
 import GlimmerComponent from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 
 import { modifier } from 'ember-modifier';
 import set from 'ember-set-helper/helpers/set';
@@ -175,6 +175,7 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBar
     );
   };
 
+  @cached
   get screenReaderOnlyClass() {
     return euiClass(getEuiThemeContext(this), euiScreenReaderOnlyCss);
   }

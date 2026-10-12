@@ -10,8 +10,10 @@ import set from 'ember-set-helper/helpers/set';
 import { highlight } from 'refractor/core';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
 import { highlightLanguage } from '../-private/language-loader.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiCodeStyles } from '../utils/eui/styles.generated.ts';
 import { checkSupportedLanguage,getHtmlContent } from '../utils/code/utils.ts';
 
 import type { EuiCodeSharedProps } from '../utils/code/utils.ts';
@@ -45,6 +47,16 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
 
   get language() {
     return checkSupportedLanguage(this.args.language || '');
+  }
+
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiCodeStyles);
+    return `euiCode ${euiClass(
+      context,
+      styles.euiCode,
+      this.args.transparentBackground ? styles.transparentBackground : undefined
+    )}`;
   }
 
   /** Plain text until the language has loaded. */
@@ -108,10 +120,7 @@ export default class EuiCodeComponent extends Component<EuiCodeSignature> {
       {{/in-element}}
     {{/if}}
     <code
-      class={{classNames
-        "euiCode"
-        (if @transparentBackground "euiCode--transparentBackground")
-      }}
+      class={{this.classes}}
       data-code-language={{argOrDefault @language "text"}}
       {{didInsert (set this "code")}}
       {{didInsert this.update}}

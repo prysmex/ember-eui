@@ -79,6 +79,42 @@ const entries = {
   'global_styling/mixins/_button.js': [
     'euiButtonDisplaysColors',
     'euiButtonInteractionStyles'
+  ],
+  // utilities
+  'components/accessibility/screen_reader_only/screen_reader_only.styles.js': [
+    'euiScreenReaderOnly',
+    'euiScreenReaderOnlyStyles'
+  ],
+  'components/accessibility/skip_link/skip_link.styles.js': [
+    'euiSkipLinkStyles'
+  ],
+  'components/progress/progress.styles.js': [
+    'euiProgressStyles',
+    'euiProgressDataStyles',
+    'euiProgressLabelStyles',
+    'euiProgressValueTextStyles'
+  ],
+  'services/color/contrast.js': ['makeHighContrastColor'],
+  'components/skeleton/skeleton_text.styles.js': ['euiSkeletonTextStyles'],
+  'components/loading/loading_chart.styles.js': [
+    'euiLoadingChartStyles',
+    'euiLoadingChartBarStyles'
+  ],
+  'components/loading/loading_elastic.styles.js': ['euiLoadingElasticStyles'],
+  'components/loading/loading_logo.styles.js': ['euiLoadingLogoStyles'],
+  'global_styling/utility/animations.js': ['euiAnimFadeIn'],
+  'global_styling/functions/high_contrast.js': ['highContrastModeStyles'],
+  'global_styling/functions/logicals.js': ['logicalCSS'],
+  'components/code/code.styles.js': ['euiCodeStyles'],
+  'components/image/image.styles.js': ['euiImageStyles'],
+  'components/image/image_wrapper.styles.js': ['euiImageWrapperStyles'],
+  'components/image/image_button.styles.js': [
+    'euiImageButtonStyles',
+    'euiImageButtonIconStyles'
+  ],
+  'components/image/image_caption.styles.js': ['euiImageCaptionStyles'],
+  'components/image/image_fullscreen_wrapper.styles.js': [
+    'euiImageFullscreenWrapperStyles'
   ]
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}

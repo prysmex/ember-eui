@@ -24,19 +24,22 @@ Generated from the components' TypeScript signatures by
 
 ### EuiImage
 
+An image with an optional caption, shadow and full screen view.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@alt` (required) | `string` |  | Separate from the caption is a title on the alt tag itself. This one is required for accessibility. |
-| `@size` | `ImageSize \| number \| string` | `'original'` | `'s'` (100px), `'m'` (200px), `'l'` (360px), `'xl'` (600px), `'fullWidth'`, `'original'`, or a number for a max size in px. |
-| `@fullScreenIconColor` | `FullScreenIconColor` |  | Changes the color of the icon that floats above the image when it can be clicked to fullscreen. The default value of `light` is fine unless your image has a white background, in which case you should change it to `dark`. |
-| `@url` (required) | `string` |  | URL of the image. |
-| `@caption` | `string` |  | Provides the visible caption to the image |
-| `@hasShadow` | `boolean` |  | When set to `true` (default) will apply a slight shadow to the image |
-| `@allowFullScreen` | `boolean` |  | When set to `true` will make the image clickable to a larger version |
-| `@float` | `'left' \| 'right' \| 'none'` |  | Floats the image `'left'` or `'right'` of the text around it. |
+| `@alt` (required) | `string` |  | Describes the image for screen reader users (required). Pass an empty string when the image is decorative or described by nearby text. |
+| `@size` | `EuiImageSize \| number \| string` | `'original'` | `'s'` (100px), `'m'` (200px), `'l'` (360px), `'xl'` (600px), `'fullWidth'`, `'original'`, or a custom maximum size: a number (px) or a CSS length such as `'50%'`. |
+| `@fullScreenIconColor` | `'light' \| 'dark'` |  | Color of the icon over a full screen image: `'light'` (default) or `'dark'` (for images with a white background). |
+| `@url` | `string` |  | URL of the image. |
+| `@caption` | `string` |  | A visible caption, also the figure's accessible name. |
+| `@hasShadow` | `boolean` | `false`, as upstream | Adds a slight shadow to the image. |
+| `@allowFullScreen` | `boolean` |  | Makes the image clickable to show a larger version over the page. |
+| `@float` | `'left' \| 'right' \| 'none'` |  | Floats the image `'left'` or `'right'` of the text around it (from the `m` breakpoint). |
 | `@margin` | `'none' \| 's' \| 'm' \| 'l' \| 'xl'` |  | Space around the image: `'none'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
-| `@ariaLabel` | `string` |  | Accessible label of the full screen button (`@allowFullScreen`). |
-| `@src` | `string` |  | Same as `@url`. |
+| `@ariaLabel` | `string` |  | Accessible label of the full screen button (`@allowFullScreen`), replacing the instructions. |
+| `@onFullScreen` | `(isFullScreen: boolean) => void` |  | Called with `true` / `false` when the full screen view opens / closes. |
+| `@src` | `string` |  | Same as `@url`; wins when both are given. |
 
 </EuiText>
 <!-- api:end -->

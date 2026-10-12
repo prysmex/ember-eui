@@ -1,19 +1,20 @@
 import Component from '@glimmer/component';
-import { getValue } from '@glimmer/tracking/primitives/cache';
-import { invokeHelper } from '@ember/helper';
 
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { CurrentBreakPointHelper } from './eui-show-for.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
+import type { EuiBreakpointSize, EuiBreakpoints } from '../utils/breakpoint.ts';
+import type { EuiResponsiveSizes } from './eui-show-for.gts';
 
 export type EuiHideForBreakpoints = EuiBreakpointSize;
 
 export interface EuiHideForArgs {
   /**
    * Screen sizes to hide the content on: any of `'xs'`, `'s'`, `'m'`,
-   * `'l'`, `'xl'`, or `'all'`. E.g. `(array "xs" "s")` hides it on phones.
+   * `'l'`, `'xl'` (the nearest theme's `breakpoint` values), or `'all'` /
+   * `'none'`. E.g. `(array "xs" "s")` hides it on phones.
    */
-  sizes: EuiHideForBreakpoints[] | 'all' | 'none';
+  sizes: EuiResponsiveSizes;
 }
 
 /** Renders its content except on the given screen sizes. See EuiShowFor. */
@@ -26,23 +27,14 @@ export interface EuiHideForSignature {
 }
 
 export default class EuiHideForComponent extends Component<EuiHideForSignature> {
-  currentBreakpointHelper: any = invokeHelper(
-    this,
-    CurrentBreakPointHelper,
-    () => {
-      return {
-        positional: [this.args.sizes]
-      };
-    }
-  );
-
-  get shouldShow() {
-    return !getValue(this.currentBreakpointHelper);
+  get breakpoints(): EuiBreakpoints {
+    return getEuiThemeContext(this).upstream.euiTheme
+      .breakpoint as EuiBreakpoints;
   }
 
   <template>
-    {{#if this.shouldShow}}
+    {{#unless (CurrentBreakPointHelper @sizes this.breakpoints)}}
       {{yield}}
-    {{/if}}
+    {{/unless}}
   </template>
 }

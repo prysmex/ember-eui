@@ -49,7 +49,8 @@ module('Integration | Component | eui-loading-*', function (hooks) {
       <template><EuiLoadingLogo @logo="logoElastic" @size="l" /></template>
     );
 
-    assert.dom('.euiLoadingLogo').hasClass('euiLoadingLogo--large');
+    // Legacy `--large` modifier class removed; the role/label are upstream's.
+    assert.dom('.euiLoadingLogo').hasAttribute('role', 'progressbar');
     assert
       .dom('.euiLoadingLogo__icon svg')
       .hasAttribute('data-type', 'logoElastic');

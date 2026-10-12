@@ -43,9 +43,10 @@ search results or the options of a filtered list.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@text` (required) | `string` |  | The text to show. |
-| `@search` | `string` |  | What to highlight in it. Nothing is highlighted when empty. |
+| `@search` | `string \| string[]` |  | What to highlight in it. Nothing is highlighted when empty. With `@highlightAll`, an array highlights every one of several words or phrases. |
 | `@strict` | `boolean` |  | Match case exactly (by default "app" also matches "Apple"). |
 | `@highlightAll` | `boolean` |  | Highlight every match instead of only the first one. |
+| `@hasScreenReaderHelpText` | `boolean` |  | Passed to each EuiMark; defaults to `true`. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
 
@@ -53,6 +54,10 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 Highlights text with a `<mark>`, e.g. the part of a result that matches
 a search. To highlight the matches in a string, use `EuiHighlight`.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@hasScreenReaderHelpText` | `boolean` | `true` | Screen readers announce "highlight start" / "highlight end" around the text (visually hidden `::before`/`::after` content). Set to `false` to remove it. |
 
 | Block | Description |
 | --- | --- |

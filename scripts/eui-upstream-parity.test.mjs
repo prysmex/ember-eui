@@ -69,6 +69,31 @@ const factories = {
   ],
   'components/button/button_icon/button_icon.styles.js': [
     'euiButtonIconStyles'
+  ],
+  // utilities
+  'components/accessibility/skip_link/skip_link.styles.js': [
+    'euiSkipLinkStyles'
+  ],
+  'components/progress/progress.styles.js': [
+    'euiProgressDataStyles',
+    'euiProgressValueTextStyles'
+  ],
+  'components/skeleton/skeleton_text.styles.js': ['euiSkeletonTextStyles'],
+  'components/loading/loading_chart.styles.js': [
+    'euiLoadingChartStyles',
+    'euiLoadingChartBarStyles'
+  ],
+  'components/loading/loading_logo.styles.js': ['euiLoadingLogoStyles'],
+  'components/code/code.styles.js': ['euiCodeStyles'],
+  'components/image/image.styles.js': ['euiImageStyles'],
+  'components/image/image_wrapper.styles.js': ['euiImageWrapperStyles'],
+  'components/image/image_button.styles.js': [
+    'euiImageButtonStyles',
+    'euiImageButtonIconStyles'
+  ],
+  'components/image/image_caption.styles.js': ['euiImageCaptionStyles'],
+  'components/image/image_fullscreen_wrapper.styles.js': [
+    'euiImageFullscreenWrapperStyles'
   ]
 };
 function normalize(value) {
@@ -356,4 +381,114 @@ test('global styles port matches upstream EuiGlobalStyles in every mode and cont
   } finally {
     Module._load = originalLoad;
   }
+});
+
+// utilities
+function utilityContexts() {
+  const contexts = [];
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        {
+          base: 20,
+          colors: {
+            LIGHT: { primary: '#663399', success: '#117711' },
+            DARK: { primary: '#aa77dd', success: '#77dd77' }
+          },
+          components: { LIGHT: { markBackground: '#ffee00' }, DARK: { markBackground: '#665500' } }
+        }
+      ])
+        contexts.push({
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        });
+  return contexts;
+}
+
+test('progress bar slots match upstream for native and indeterminate bars', () => {
+  const reference = require(resolve(eui, 'lib/components/progress/progress.styles.js'));
+  for (const context of utilityContexts())
+    for (const isNative of [true, false])
+      assert.deepEqual(
+        normalize(styles.euiProgressStyles(context, isNative)),
+        normalize(reference.euiProgressStyles(context, isNative)),
+        `${context.colorMode}/${context.highContrastMode}/${isNative}`
+      );
+});
+
+test('static utility styles match upstream', () => {
+  const sr = require(
+    resolve(eui, 'lib/components/accessibility/screen_reader_only/screen_reader_only.styles.js')
+  );
+  assert.deepEqual(normalize(styles.euiScreenReaderOnlyStyles), normalize(sr.euiScreenReaderOnlyStyles));
+  assert.strictEqual(styles.euiScreenReaderOnly(), sr.euiScreenReaderOnly());
+  const progress = require(resolve(eui, 'lib/components/progress/progress.styles.js'));
+  assert.deepEqual(
+    normalize(styles.euiProgressLabelStyles),
+    normalize(progress.euiProgressLabelStyles)
+  );
+  const elastic = require(resolve(eui, 'lib/components/loading/loading_elastic.styles.js'));
+  assert.deepEqual(
+    normalize(styles.euiLoadingElasticStyles),
+    normalize(elastic.euiLoadingElasticStyles)
+  );
+});
+
+test('high contrast text color helper matches upstream for custom colors', () => {
+  const reference = require(resolve(eui, 'lib/services/color/contrast.js'));
+  for (const context of utilityContexts())
+    for (const color of ['#E7664C', '#54B399', '#ffff00', 'rgb(20, 40, 200)', context.euiTheme.colors.vis.euiColorVis3])
+      assert.strictEqual(
+        styles.makeHighContrastColor(color)(context.euiTheme),
+        reference.makeHighContrastColor(color)(context.euiTheme),
+        color
+      );
+});
+
+test('hand-ported mark and overlay mask styles match upstream', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/utilities.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-utilities-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const mark = require(resolve(eui, 'lib/components/mark/mark.styles.js'));
+  const mask = require(resolve(eui, 'lib/components/overlay_mask/overlay_mask.styles.js'));
+  const { cache } = require('@emotion/css');
+  for (const context of utilityContexts()) {
+    const label = `${context.colorMode}/${context.highContrastMode}`;
+    assert.deepEqual(normalize(port.euiMarkStyles(context)), normalize(mark.euiMarkStyles(context)), label);
+    // Upstream registers @emotion/css classes; compare the registered styles and names.
+    const upstream = mask.euiOverlayMaskStyles(context);
+    const ours = port.euiOverlayMaskStyles(context);
+    for (const slot of Object.keys(upstream)) {
+      assert.strictEqual(upstream[slot], `css-${ours[slot].name}`, `${label} ${slot}`);
+      assert.strictEqual(cache.registered[upstream[slot]], ours[slot].styles, `${label} ${slot}`);
+    }
+  }
+  for (const [start, end] of [['highlight start', 'highlight end'], ['début', 'fin']])
+    assert.deepEqual(
+      normalize(port.euiMarkScreenReaderStyles(start, end)),
+      normalize(mark.euiMarkScreenReaderStyles(start, end))
+    );
 });

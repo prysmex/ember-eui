@@ -16,15 +16,16 @@ module('Integration | Component | eui-loading-chart and eui-loading-elastic', fu
       </template>
     );
 
-    assert.dom('.default').hasClass('euiLoadingChart--medium').hasAria('label', 'Loading chart');
+    // Legacy size/mono modifier classes removed; sizes are computed (eui-utilities-test).
+    assert.dom('.default').hasClass('euiLoadingChart').hasAria('label', 'Loading chart');
     assert.dom('.default .euiLoadingChart__bar').exists({ count: 4 });
-    assert.dom('.mono').hasClass('euiLoadingChart--xLarge').hasClass('euiLoadingChart--mono');
+    assert.strictEqual(getComputedStyle(document.querySelector('.mono')!).height, '32px');
   });
 
   test('EuiLoadingElastic renders the logo', async function (assert) {
     await render(<template><EuiLoadingElastic @size="xxl" /></template>);
 
-    assert.dom('.euiLoadingElastic').hasClass('euiLoadingElastic--xxLarge');
+    assert.dom('.euiLoadingElastic').hasAttribute('role', 'progressbar');
     assert.dom('.euiLoadingElastic .euiIcon').exists();
   });
 });

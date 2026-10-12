@@ -12,9 +12,10 @@ module('Integration | Component | eui-image', function (hooks) {
   test('it renders the image without an inline style by default', async function (assert) {
     await render(<template><EuiImage @url={{URL}} @alt="Pixel" /></template>);
 
-    assert.dom('img.euiImage__img').hasAttribute('src', URL);
-    assert.dom('img.euiImage__img').hasAttribute('alt', 'Pixel');
-    assert.dom('img.euiImage__img').doesNotHaveAttribute('style');
+    // Upstream class names: `euiImage` on the img, `euiImageWrapper` on the figure.
+    assert.dom('figure.euiImageWrapper img.euiImage').hasAttribute('src', URL);
+    assert.dom('img.euiImage').hasAttribute('alt', 'Pixel');
+    assert.dom('img.euiImage').doesNotHaveAttribute('style');
   });
 
   test('a numeric @size becomes an inline max size', async function (assert) {
@@ -22,7 +23,7 @@ module('Integration | Component | eui-image', function (hooks) {
       <template><EuiImage @url={{URL}} @alt="Pixel" @size={{120}} /></template>
     );
 
-    assert.dom('img.euiImage__img').hasStyle({ maxWidth: '120px' });
+    assert.dom('img.euiImage').hasStyle({ maxWidth: '120px' });
   });
 
   test('allowFullScreen renders the image inside a button', async function (assert) {
@@ -32,7 +33,7 @@ module('Integration | Component | eui-image', function (hooks) {
       </template>
     );
 
-    assert.dom('button.euiImage__button img.euiImage__img').exists();
-    assert.dom('img.euiImage__img').doesNotHaveAttribute('style');
+    assert.dom('button.euiImageButton img.euiImage').exists();
+    assert.dom('img.euiImage').doesNotHaveAttribute('style');
   });
 });

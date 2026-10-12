@@ -11,13 +11,15 @@ module('Integration | Component | eui-progress', function (hooks) {
     await render(<template><EuiProgress @size="xs" @color="primary" /></template>);
 
     assert.dom('progress').doesNotExist();
-    assert.dom('.euiProgress').hasClass('euiProgress--indeterminate').hasClass('euiProgress--xs').hasClass('euiProgress--primary');
+    // Legacy modifier classes are replaced by computed styles (see eui-utilities-test).
+    assert.dom('div.euiProgress').exists();
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiProgress')!).height, '2px');
   });
 
   test('with @max it renders a native progress element', async function (assert) {
     await render(<template><EuiProgress @max={{100}} @value={{40}} @color="danger" /></template>);
 
-    assert.dom('progress.euiProgress').hasAttribute('max', '100').hasAttribute('value', '40').hasClass('euiProgress--danger');
+    assert.dom('progress.euiProgress').hasAttribute('max', '100').hasAttribute('value', '40');
   });
 
   test('label and @valueText', async function (assert) {
@@ -30,6 +32,7 @@ module('Integration | Component | eui-progress', function (hooks) {
     );
 
     assert.dom('.euiProgress__label').hasText('Upload');
-    assert.dom('.euiProgress__valueText').hasText('70');
+    // Upstream renders `@valueText={{true}}` as a percentage.
+    assert.dom('.euiProgress__valueText').hasText('70%');
   });
 });

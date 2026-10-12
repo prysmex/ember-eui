@@ -13,9 +13,11 @@ module('Integration | Component | eui-skip-link', function (hooks) {
     assert
       .dom('a.euiSkipLink')
       .hasAttribute('href', '#main')
-      .hasClass('euiSkipLink--static')
-      .hasClass('euiScreenReaderOnly--showOnFocus')
       .hasText('Skip to content');
+    // Legacy `euiSkipLink--static` / `euiScreenReaderOnly--showOnFocus`
+    // classes are gone; hiding and focus reveal are asserted on computed
+    // styles in eui-utilities-test.
+    assert.strictEqual(getComputedStyle(document.querySelector('a.euiSkipLink')!).clipPath, 'inset(50%)');
   });
 
   test('a fixed link is always reachable with the keyboard', async function (assert) {
@@ -23,6 +25,7 @@ module('Integration | Component | eui-skip-link', function (hooks) {
       <template><EuiSkipLink @destinationId="main" @position="fixed" @tabIndex={{-1}}>Skip</EuiSkipLink></template>
     );
 
-    assert.dom('a.euiSkipLink').hasClass('euiSkipLink--fixed').hasAttribute('tabindex', '0');
+    assert.dom('a.euiSkipLink').hasAttribute('tabindex', '0');
+    assert.strictEqual(getComputedStyle(document.querySelector('a.euiSkipLink')!).position, 'fixed');
   });
 });

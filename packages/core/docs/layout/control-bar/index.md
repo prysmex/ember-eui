@@ -9,7 +9,7 @@ title: Control bar
 <EuiCallOut @title="Deprecated" @color="warning" @iconType="warning">
   <p>
     Elastic UI removed <strong>EuiControlBar</strong> upstream (its last release was EUI 91.3.1).
-    It is deprecated since 14.2.0 (deprecation id <code>ember-eui.eui-control-bar.removed-upstream</code>)
+    It is deprecated since 15.0.0 (deprecation id <code>ember-eui.eui-control-bar.removed-upstream</code>)
     and will be removed in the next major version. Use <strong>EuiBottomBar</strong>, or compose a bar
     with <strong>EuiFlexGroup</strong> and <strong>EuiTabs</strong>.
   </p>

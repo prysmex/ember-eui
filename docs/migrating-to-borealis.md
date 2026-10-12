@@ -181,7 +181,7 @@ EUI's icon silently shadowed yours).
 
 **8. Deprecations.** Components that upstream removed log a deprecation
 in development (see [Deprecations](#deprecations)). Plan their
-replacement before 15.0.0.
+replacement before 16.0.0.
 
 ### Changed defaults and behaviors
 
@@ -461,8 +461,8 @@ export of `eui-screen-reader-only`.
 
 Components that Elastic UI removed upstream keep working, but log an
 Ember deprecation in development (once per rendered instance, stripped in
-production) and will be removed in **15.0.0**. Ids have the form
-`ember-eui.<file>.removed-upstream` (since 14.2.0); add them to your
+production) and will be removed in **16.0.0**. Ids have the form
+`ember-eui.<file>.removed-upstream` (since 15.0.0); add them to your
 deprecation workflow while you migrate.
 
 | Component | Deprecation id | Use instead |

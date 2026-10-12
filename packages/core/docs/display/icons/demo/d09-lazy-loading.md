@@ -19,7 +19,7 @@ import { preloadIcons } from '@ember-eui/core/utils/preload-icons';
 
 export default class ApplicationRoute extends Route {
   async beforeModel() {
-    await preloadIcons(['arrowDown', 'cross', 'search', 'gear']);
+    await preloadIcons(['chevronSingleDown', 'cross', 'magnify', 'gear']);
   }
 }
 ```

@@ -360,7 +360,7 @@ export default class EuiSelectableListItem extends Component<EuiSelectableListIt
           ? control.enabled.selected
           : control.enabled.unselected;
     const icon = indeterminate
-      ? 'stopFilled'
+      ? 'stopFill'
       : excluded
         ? 'cross'
         : checked === 'on'
@@ -462,7 +462,7 @@ export default class EuiSelectableListItem extends Component<EuiSelectableListIt
             {{#if this.showFocusBadge}}
               <EuiBadge
                 class="euiSelectableListItem__onFocusBadge"
-                @iconType="returnKey"
+                @iconType="return"
                 @iconSide={{if this.focusBadge.iconSide this.focusBadge.iconSide "left"}}
                 @color="hollow"
                 aria-hidden="true"

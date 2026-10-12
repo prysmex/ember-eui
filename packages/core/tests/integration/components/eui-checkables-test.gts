@@ -93,7 +93,7 @@ function controlStyle(root: Element, name: string) {
 /** Rendered (not `display: none`) state icons, by their upstream type. */
 function visibleIcons(root: Element, name: string) {
   const host = el(root, `[data-test="${name}"]`).closest('.euiCheckbox, .euiRadio')!;
-  const types = host.classList.contains('euiRadio') ? ['dot'] : ['check', 'stopFilled'];
+  const types = host.classList.contains('euiRadio') ? ['dot'] : ['check', 'stopFill'];
   return [...host.querySelectorAll('.euiCheckbox__icon, .euiRadio__icon')]
     .map((icon, index) => [icon, types[index]] as const)
     .filter(([icon]) => getComputedStyle(icon).display !== 'none')
@@ -172,7 +172,7 @@ module('Integration | Component | Borealis checkables (checkbox, radio, switch)'
     // forced colors can never reveal a hidden one.
     assert.deepEqual(visibleIcons(root, 'off'), [], 'no mark when unchecked');
     assert.deepEqual(visibleIcons(root, 'on'), ['check'], 'check mark');
-    assert.deepEqual(visibleIcons(root, 'some'), ['stopFilled'], 'indeterminate bar');
+    assert.deepEqual(visibleIcons(root, 'some'), ['stopFill'], 'indeterminate bar');
     assert.deepEqual(visibleIcons(root, 'disabled-on'), ['check']);
     const checkIcon = [...el(root, '[data-test="on"]').parentElement!.querySelectorAll('.euiCheckbox__icon')]
       .find((icon) => getComputedStyle(icon).display !== 'none')!;
@@ -296,7 +296,7 @@ module('Integration | Component | Borealis checkables (checkbox, radio, switch)'
     assert.true(input.indeterminate, 'indeterminate property set via JS');
     assert.false(input.hasAttribute('indeterminate'), 'not an attribute');
     assertControl(assert, getComputedStyle(control), s.selected, 'indeterminate');
-    assert.deepEqual(visibleIcons(this.element, 'cb'), ['stopFilled']);
+    assert.deepEqual(visibleIcons(this.element, 'cb'), ['stopFill']);
 
     state.indeterminate = false;
     state.checked = true;

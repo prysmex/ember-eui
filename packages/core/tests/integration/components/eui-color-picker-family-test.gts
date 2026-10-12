@@ -130,12 +130,12 @@ module('Integration | Component | Borealis color picker family', function (hooks
     const layout = layoutOf(m);
     assert.true(layout.classList.contains('euiFormControlLayout'));
     assert.notOk(layout.classList.contains('euiFormControlLayout--group'), 'no group without prepend/append');
-    assert.ok(layout.querySelector('[data-icon-type="arrowDown"]'), 'upstream isDropdown arrow');
+    assert.ok(layout.querySelector('[data-icon-type="chevronSingleDown"]'), 'upstream isDropdown arrow');
 
     const swatch = leftIcon(m);
     assert.strictEqual(swatch.getAttribute('data-icon-type'), 'swatchInput');
     assert.strictEqual(css(swatch).color, 'rgb(211, 96, 134)', 'the swatch icon takes the chosen color');
-    const arrow = q('[data-icon-type="arrowDown"]', layout);
+    const arrow = q('[data-icon-type="chevronSingleDown"]', layout);
     assert.notStrictEqual(css(arrow).color, 'rgb(211, 96, 134)', 'the arrow keeps its own color');
     await waitUntil(() => swatch.querySelector('.euiSwatchInput__stroke'));
     const stroke = q('.euiSwatchInput__stroke', swatch);
@@ -171,14 +171,14 @@ module('Integration | Component | Borealis color picker family', function (hooks
 
     const disabled = input('disabled');
     assert.true(disabled.disabled);
-    assert.notOk(layoutOf(disabled).querySelector('[data-icon-type="arrowDown"]'), 'no arrow while disabled');
+    assert.notOk(layoutOf(disabled).querySelector('[data-icon-type="chevronSingleDown"]'), 'no arrow while disabled');
     assert.true(layoutOf(disabled).classList.contains('euiFormControlLayout-isDisabled'));
     assert.strictEqual(css(disabled).backgroundColor, rgb(forms(light)['backgroundDisabled']!));
     assert.strictEqual(css(leftIcon(disabled)).color, 'rgb(211, 96, 134)', 'the swatch keeps its color');
 
     const readonly = input('readonly');
     assert.true(readonly.readOnly);
-    assert.notOk(layoutOf(readonly).querySelector('[data-icon-type="arrowDown"]'), 'no arrow while read-only');
+    assert.notOk(layoutOf(readonly).querySelector('[data-icon-type="chevronSingleDown"]'), 'no arrow while read-only');
     await click(readonly);
     
     assert.notOk(popover(), 'read-only never opens');
@@ -539,7 +539,7 @@ module('Integration | Component | Borealis color picker family', function (hooks
     await settled();
     assert.strictEqual(input('r'), field);
     assert.true(field.disabled);
-    assert.notOk(layout.querySelector('[data-icon-type="arrowDown"]'));
+    assert.notOk(layout.querySelector('[data-icon-type="chevronSingleDown"]'));
 
     const pd = q('.pd');
     assert.strictEqual(box(pd).height, 8);
@@ -949,7 +949,7 @@ module('Integration | Component | Borealis color picker family', function (hooks
     assert.strictEqual(css(field).paddingRight, '36px', 'swatch affordance on the right');
     assert.strictEqual(css(field).paddingLeft, '36px', 'arrow affordance on the left');
     assert.true(box(leftIcon(field)).left > box(field).left + box(field).width / 2, 'the swatch icon sits at inline start (right)');
-    const arrow = q('[data-icon-type="arrowDown"]', layoutOf(field));
+    const arrow = q('[data-icon-type="chevronSingleDown"]', layoutOf(field));
     assert.true(box(arrow).left < box(field).left + 40, 'the arrow sits at inline end (left)');
 
     const thumbs = q('.cs').querySelectorAll('.euiColorStopThumb');

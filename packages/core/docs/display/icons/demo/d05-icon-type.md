@@ -20,10 +20,10 @@ A few of them: `EuiButton`, `EuiButtonEmpty`, `EuiButtonIcon`,
 ```hbs template
 <EuiFlexGroup @gutterSize="s" @alignItems="center" @wrap={{true}}>
   <EuiFlexItem @grow={{false}}>
-    <EuiButton @iconType="plusInCircle">Add data</EuiButton>
+    <EuiButton @iconType="plusCircle">Add data</EuiButton>
   </EuiFlexItem>
   <EuiFlexItem @grow={{false}}>
-    <EuiButtonEmpty @iconType="arrowDown" @iconSide="right">
+    <EuiButtonEmpty @iconType="chevronSingleDown" @iconSide="right">
       More
     </EuiButtonEmpty>
   </EuiFlexItem>

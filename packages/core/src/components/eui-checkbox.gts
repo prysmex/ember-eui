@@ -196,7 +196,7 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
               class="euiCheckbox__icon"
             />
             <EuiIcon
-              @type="stopFilled"
+              @type="stopFill"
               @size="m"
               role="presentation"
               @css={{styles.indeterminate}}

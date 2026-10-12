@@ -248,7 +248,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     }}
       {{#let (this.inputClasses (or hasPrepend hasAppend)) as |classes|}}
         <EuiFormControlLayout
-          @icon="search"
+          @icon="magnify"
           @fullWidth={{@fullWidth}}
           @isLoading={{@isLoading}}
           @isInvalid={{@isInvalid}}

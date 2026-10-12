@@ -139,7 +139,7 @@ export default class EuiTablePagination extends Component<EuiTablePaginationSign
               <EuiButtonEmpty
                 @size="xs"
                 @color="text"
-                @iconType="arrowDown"
+                @iconType="chevronSingleDown"
                 @iconSide="right"
                 data-test-subj="tablePaginationPopoverButton"
                 {{on "click" this.toggle}}

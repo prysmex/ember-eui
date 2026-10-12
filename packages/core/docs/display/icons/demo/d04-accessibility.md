@@ -27,7 +27,7 @@ adding click handlers to `EuiIcon`.
   <EuiFlexItem>
     <EuiText @size="s">
       <p>
-        <EuiIcon @type="checkInCircleFilled" @color="success" />
+        <EuiIcon @type="checkCircleFill" @color="success" />
         Saved (decorative: the text says it all)
       </p>
     </EuiText>
@@ -35,7 +35,7 @@ adding click handlers to `EuiIcon`.
   <EuiFlexItem>
     <EuiText @size="s">
       <p>
-        <EuiIcon @type="alert" @color="danger" @title="Error" />
+        <EuiIcon @type="warning" @color="danger" @title="Error" />
         Disk usage (the icon alone says there is a problem, hover it)
       </p>
     </EuiText>

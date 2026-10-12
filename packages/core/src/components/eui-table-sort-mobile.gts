@@ -79,7 +79,7 @@ export default class EuiTableSortMobile extends Component<EuiTableSortMobileSign
       >
         <:button>
           <EuiButtonEmpty
-            @iconType="arrowDown"
+            @iconType="chevronSingleDown"
             @iconSide="right"
             @flush="right"
             @size="xs"

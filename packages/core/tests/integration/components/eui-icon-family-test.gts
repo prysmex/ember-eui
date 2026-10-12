@@ -481,7 +481,7 @@ module('Integration | Component | Borealis icon family', function (hooks) {
       assert.strictEqual(icons.length, 2);
       const [first, second] = [...icons];
       assert.dom(first).hasAttribute('tabindex', '0').hasAttribute('role', 'img');
-      assert.dom(first).hasAttribute('aria-label', 'Info').hasAttribute('data-icon-type', 'questionInCircle');
+      assert.dom(first).hasAttribute('aria-label', 'Info').hasAttribute('data-icon-type', 'question');
       assert.strictEqual(box(first!).width, 16, 'default icon size m');
       assert.dom(second).hasAttribute('aria-label', 'Warning').hasAttribute('data-icon-type', 'alert');
       assert.strictEqual(box(second!).width, 24);

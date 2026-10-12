@@ -157,7 +157,7 @@ export default class EuiNotificationEventMeta extends Component<EuiNotificationE
                     aria-controls={{this.popoverId}}
                     aria-expanded={{if isPopoverOpen.value "true" "false"}}
                     aria-haspopup="true"
-                    @iconType="boxesVertical"
+                    @iconType="ellipsis"
                     @color="text"
                     data-test-subj={{concat @id "-notificationEventMetaButton"}}
                     {{on

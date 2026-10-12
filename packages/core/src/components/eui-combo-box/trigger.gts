@@ -148,7 +148,7 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
   <template>
     {{! @glint-nocheck: not typesafe yet }}
     <EuiFormControlLayout
-      @icon={{unless @select.disabled (argOrDefault @icon "arrowDown")}}
+      @icon={{unless @select.disabled (argOrDefault @icon "chevronSingleDown")}}
       @iconSide="right"
       @fullWidth={{@fullWidth}}
       @compressed={{@compressed}}

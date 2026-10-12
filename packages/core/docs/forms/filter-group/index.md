@@ -73,11 +73,11 @@ active filters.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@iconType` |  |  | Icon, e.g. `'arrowDown'` for a button opening a popover. |
+| `@iconType` |  |  | Icon, e.g. `'chevronSingleDown'` for a button opening a popover. |
 | `@iconSide` | `'left' \| 'right'` | `'right'` | `'left'` or `'right'` of the text. |
 | `@color` |  | `'text'` | Text color, any `EuiButtonEmpty` color. |
 | `@badgeColor` | `'accent' \| 'success'` | `'accent'` | Color of the badge while `@hasActiveFilters`: `'accent'` or `'success'`. |
-| `@isSelected` | `boolean` |  | Pressed look, e.g. while its popover is open or a toggle is on. Sets `aria-expanded` on popover anchors (`@iconType="arrowDown"` or `"chevronSingleDown"`), `aria-pressed` otherwise. |
+| `@isSelected` | `boolean` |  | Pressed look, e.g. while its popover is open or a toggle is on. Sets `aria-expanded` on popover anchors (`@iconType="chevronSingleDown"` or its legacy alias `"arrowDown"`), `aria-pressed` otherwise. |
 | `@isToggle` | `boolean` |  | Renders an on/off toggle (upstream `isToggle`): a small `EuiButton` look, highlighted while `@isSelected`. |
 | `@hasActiveFilters` | `boolean` |  | Bold text and an accent badge: some of its filters are applied. |
 | `@numFilters` | `number` |  | Number of available filters, shown in a badge. |

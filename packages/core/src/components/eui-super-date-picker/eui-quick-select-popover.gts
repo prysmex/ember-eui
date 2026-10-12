@@ -166,7 +166,7 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
               {{on "click" this.toggle}}
             >
               <EuiIcon @type="calendar" />
-              <EuiIcon @type="arrowDown" />
+              <EuiIcon @type="chevronSingleDown" />
             </button>
           </div>
         </EuiToolTip>

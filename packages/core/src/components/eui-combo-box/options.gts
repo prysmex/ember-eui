@@ -375,7 +375,7 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
                       <EuiBadge
                         class="euiComboBoxOption__enterBadge"
                         @color="hollow"
-                        @iconType="returnKey"
+                        @iconType="return"
                         aria-hidden="true"
                       />
                     </span>

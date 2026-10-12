@@ -57,7 +57,7 @@ const EuiSideNavItemButton: TemplateOnlyComponent<EuiSideNavItemButtonSignature>
       {{#if @caret}}
         <EuiIcon
           class="euiSideNavItemButton__caret"
-          @type={{if @isOpen "arrowDown" "arrowRight"}}
+          @type={{if @isOpen "chevronSingleDown" "chevronSingleRight"}}
           @size="s"
         />
       {{/if}}

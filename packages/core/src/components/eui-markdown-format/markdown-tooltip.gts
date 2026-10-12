@@ -26,7 +26,7 @@ const MarkdownTooltip: TemplateOnlyComponent<MarkdownTooltipSignature> =
           <strong>{{@node.content}}</strong>
           {{! upstream: type "question", absent from the bundled icon set }}
           <EuiIcon
-            @type="questionInCircle"
+            @type="question"
             @css={{tooltipMarkdownIconStyles}}
           />
         </span>

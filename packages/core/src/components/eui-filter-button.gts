@@ -50,7 +50,7 @@ const COLLAPSIBLE_ICONS = new Set(['chevronSingleDown', 'arrowDown']);
 export interface EuiFilterButtonSignature {
   Element: EuiButtonEmptySignature['Element'];
   Args: {
-    /** Icon, e.g. `'arrowDown'` for a button opening a popover. */
+    /** Icon, e.g. `'chevronSingleDown'` for a button opening a popover. */
     iconType?: EuiButtonEmptySignature['Args']['iconType'];
     /** `'left'` or `'right'` of the text. Defaults to `'right'`. */
     iconSide?: 'left' | 'right';
@@ -63,8 +63,8 @@ export interface EuiFilterButtonSignature {
     badgeColor?: 'accent' | 'success';
     /**
      * Pressed look, e.g. while its popover is open or a toggle is on. Sets
-     * `aria-expanded` on popover anchors (`@iconType="arrowDown"` or
-     * `"chevronSingleDown"`), `aria-pressed` otherwise.
+     * `aria-expanded` on popover anchors (`@iconType="chevronSingleDown"` or its
+     * legacy alias `"arrowDown"`), `aria-pressed` otherwise.
      */
     isSelected?: boolean;
     /**

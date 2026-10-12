@@ -499,7 +499,7 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
                 {{on "click" (fn popover.setState (if popover.value false true))}}
               >
                 <span class={{this.truncationClass}}>&hellip;</span>
-                <EuiIcon @type="arrowDown" @size="s" />
+                <EuiIcon @type="chevronSingleDown" @size="s" />
               </EuiLink>
             </:button>
             <:content>

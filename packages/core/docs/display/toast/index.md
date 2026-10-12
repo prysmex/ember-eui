@@ -80,7 +80,7 @@ EuiGlobalToastList rather than rendered directly.
 | `@title` | `string` |  | The title of the toast. |
 | `@body` | `string` |  | The body text of the toast (markdown with `useMarkdownFormat`); upstream calls it `text`. |
 | `@color` | `EuiToastColor \| 'none'` | `'primary'` | `'primary'`, `'success'`, `'warning'` or `'danger'`: the highlight bar and default icon. `'none'` (Ember only) renders a neutral toast without a highlight or default icon. |
-| `@iconType` |  |  | Icon before the content, e.g. `'check'` or `'alert'`, colored like the highlight. Without it, a notification icon matching `@color` is shown. |
+| `@iconType` |  |  | Icon before the content, e.g. `'check'` or `'warning'`, colored like the highlight. Without it, a notification icon matching `@color` is shown. |
 | `@onClose` | `() => void` |  | Shows a dismiss (cross) button calling this function. |
 | `@useMarkdownFormat` | `boolean` |  | Renders `body` as markdown (EuiMarkdownFormat). |
 | `@actionProps` |  |  | Action buttons below the content: `primary` renders an `EuiButton`, `secondary` an `EuiButtonEmpty`, both small and in the toast's color. |

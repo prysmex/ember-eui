@@ -10,7 +10,7 @@ import EuiToolTip from './eui-tool-tip.gts';
 
 const STATUS = {
   unsaved: { icon: 'dot', color: 'accent', tooltip: 'Changes have not been saved.' },
-  saved: { icon: 'checkInCircleFilled', color: 'success', tooltip: 'Saved.' }
+  saved: { icon: 'checkCircleFill', color: 'success', tooltip: 'Saved.' }
 } as const;
 
 export type EuiSuggestStatus = 'unchanged' | 'unsaved' | 'saved' | 'loading';

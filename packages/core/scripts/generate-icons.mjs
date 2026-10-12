@@ -7,14 +7,15 @@
  * an icon loads, is imported statically.
  *
  * The icon names come from `typeToPathMap` in
- * src/utils/css-mappings/eui-icon.ts, which stays the source of truth.
- * Files are matched by name anywhere under vendor/icon/svgs (e.g. the
- * `tokens/` folder), like ember-svg-jar's `stripPath` did.
+ * src/utils/css-mappings/eui-icon.ts, which stays the source of truth. Its
+ * values are svg paths relative to vendor/icon/svgs, without `.svg` (e.g.
+ * `tokens/token_alias`); aliases share their target's svg, and so its chunk.
  *
- * Re-run after adding or renaming icons:
+ * Re-run after adding or renaming icons (scripts/update-eui-icons.mjs
+ * rewrites the map from upstream EUI):
  *   node scripts/generate-icons.mjs
  */
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,26 +23,6 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const svgDir = join(root, 'vendor/icon/svgs');
 const mappingFile = join(root, 'src/utils/css-mappings/eui-icon.ts');
 const outFile = join(root, 'src/-private/icons.ts');
-
-function walk(dir) {
-  return readdirSync(dir).flatMap((name) => {
-    const path = join(dir, name);
-
-    return statSync(path).isDirectory() ? walk(path) : [path];
-  });
-}
-
-const filesByName = new Map();
-
-for (const file of walk(svgDir).filter((f) => f.endsWith('.svg'))) {
-  const name = file.slice(file.lastIndexOf(sep) + 1, -'.svg'.length);
-
-  if (filesByName.has(name)) {
-    throw new Error(`Duplicate icon file name "${name}":\n${filesByName.get(name)}\n${file}`);
-  }
-
-  filesByName.set(name, file);
-}
 
 const source = readFileSync(mappingFile, 'utf8');
 const start = source.indexOf('export const typeToPathMap = {');
@@ -62,9 +43,9 @@ let emptySpecifier;
 const dataTypes = [];
 
 for (const [type, fileName] of entries) {
-  const file = filesByName.get(fileName);
+  const file = join(svgDir, `${fileName}.svg`);
 
-  if (!file) {
+  if (!existsSync(file)) {
     throw new Error(`No svg found for icon "${type}" (${fileName}.svg)`);
   }
 

@@ -13,13 +13,12 @@ import type { EuiButtonIconSignature } from '../eui-button-icon';
 
 export type EuiPaginationArrowType = 'first' | 'previous' | 'next' | 'last';
 
-// Upstream uses `chevronLimitLeft`/`chevronSingleLeft`/…; the Ember icon set
-// has the equivalent arrow glyphs.
+// Upstream's icons.
 const ICONS: Record<EuiPaginationArrowType, string> = {
-  first: 'arrowStart',
-  previous: 'arrowLeft',
-  next: 'arrowRight',
-  last: 'arrowEnd'
+  first: 'chevronLimitLeft',
+  previous: 'chevronSingleLeft',
+  next: 'chevronSingleRight',
+  last: 'chevronLimitRight'
 };
 
 const LABELS: Record<EuiPaginationArrowType, [string, string]> = {

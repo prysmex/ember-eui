@@ -204,6 +204,28 @@ export default class EuiIcon extends Component<EuiIconSignature> {
       : 'm';
   }
 
+  /** The icon registered by the app under this name (`euiIcon.icons`). */
+  get registeredIcon(): EuiIconComponent | undefined {
+    const { type } = this.args;
+    const icons = typeof type === 'string' ? this.euiConfig.getConfig('euiIcon.icons') : undefined;
+
+    return icons && Object.prototype.hasOwnProperty.call(icons, type as string)
+      ? (icons[type as string] as EuiIconComponent)
+      : undefined;
+  }
+
+  /**
+   * The EUI icon name to render, if `@type` is one. A name the app
+   * registered through the `euiIcon.icons` config wins over an EUI icon of
+   * the same name, so app icons keep rendering when EUI adds icons (e.g.
+   * `rocket` or `copy` in EUI 123).
+   */
+  get euiIconType(): EuiIconType | undefined {
+    const { type } = this.args;
+
+    return isEuiIconType(type) && !this.registeredIcon ? type : undefined;
+  }
+
   /**
    * The component rendering the svg: for EUI icon names, for names
    * registered by the app through the `euiIcon.icons` config, and for
@@ -220,9 +242,11 @@ export default class EuiIcon extends Component<EuiIconSignature> {
 
     if (typeof type !== 'string') return undefined;
 
-    if (isEuiIconType(type)) return loadedIcon(type) ?? emptyIcon;
+    const euiType = this.euiIconType;
 
-    return this.euiConfig.getConfig('euiIcon.icons')?.[type];
+    if (euiType) return loadedIcon(euiType) ?? emptyIcon;
+
+    return this.registeredIcon;
   }
 
   /**
@@ -230,9 +254,9 @@ export default class EuiIcon extends Component<EuiIconSignature> {
    * shows as a faint rounded square instead of an invisible empty svg.
    */
   get isLoading(): boolean {
-    const { type } = this.args;
+    const type = this.euiIconType;
 
-    if (!isEuiIconType(type) || type === 'empty') return false;
+    if (!type || type === 'empty') return false;
 
     const loading = loadedIcon(type) === undefined;
 
@@ -247,15 +271,13 @@ export default class EuiIcon extends Component<EuiIconSignature> {
   }
 
   get dataType(): string | undefined {
-    const { type } = this.args;
+    const type = this.euiIconType;
 
-    return isEuiIconType(type) ? iconDataTypes[type] : undefined;
+    return type ? iconDataTypes[type] : undefined;
   }
 
   get iconType(): string | undefined {
-    const { type } = this.args;
-
-    return isEuiIconType(type) ? type : undefined;
+    return this.euiIconType;
   }
 
   get useImage(): boolean {

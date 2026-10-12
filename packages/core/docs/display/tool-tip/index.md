@@ -82,7 +82,7 @@ setting next to its label.
 | `@title` | `string` |  | Bold title of the tooltip. |
 | `@content` | `string` |  | The tooltip's text. |
 | `@iconProps` | `{ className?: string; }` |  | Props for the icon: `{ className }`. |
-| `@type` | `string` | `'questionInCircle'` | The icon. |
+| `@type` | `string` | `'question'` | The icon. |
 | `@color` | `string` |  | Color of the icon, any `EuiIcon` color. |
 | `@size` |  |  | Size of the icon. |
 | `@ariaLabel` | `string` | "Info" | Accessible name of the icon. |

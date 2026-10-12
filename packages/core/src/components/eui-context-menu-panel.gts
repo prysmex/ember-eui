@@ -331,7 +331,7 @@ export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSi
           {{#if @onClose}}
             <EuiButtonIcon
               id={{this.backButtonId}}
-              @iconType="arrowLeft"
+              @iconType="chevronSingleLeft"
               @color="text"
               aria-label={{this.backButtonLabel}}
               aria-labelledby="{{this.backButtonId}} {{this.titleId}}"

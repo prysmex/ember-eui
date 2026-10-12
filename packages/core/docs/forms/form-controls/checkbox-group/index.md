@@ -56,7 +56,7 @@ Generated from the components' TypeScript signatures by
 | `@labelKey` | `string` | `'label'` | Key of each option holding its label. |
 | `@isInvalid` | `boolean` |  | Marks the group invalid for native form validation (e.g. EuiForm's `checkValidity()`). |
 | `@legend` |  |  | Wraps the checkboxes in an `EuiFormFieldset` with this legend, e.g. "Choose toppings". Use it when the group is not inside an `EuiFormRow`. |
-| `@compressed` |  |  | Smaller checkboxes, for dense forms. |
+| `@compressed` |  |  | Removes the spacing between checkbox rows, for dense forms. |
 | `@options` (required) |  |  | The checkboxes: `[{ id: 'a', label: 'Option A' }, …]` (keys set by `@valueKey` / `@labelKey`). `disabled` and `className` apply to one checkbox. |
 | `@formId` | `string` |  | `form` attribute of the checkboxes, to join a form by id. |
 | `@disabled` |  |  | Disables every checkbox. |
@@ -65,7 +65,7 @@ Generated from the components' TypeScript signatures by
 
 Deprecated: `@label` (Has no effect; use `@legend` or an `EuiFormRow` label.).
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<fieldset>`.
 
 </EuiText>
 <!-- api:end -->

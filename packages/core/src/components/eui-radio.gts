@@ -1,3 +1,4 @@
+import Component from '@glimmer/component';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -6,12 +7,28 @@ import { and, not, or } from 'ember-truth-helpers';
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
-
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiRadioStyles } from '../utils/eui/styles.generated.ts';
+import { euiCheckableInputReset, euiCheckableReset } from './eui-checkbox.gts';
+import EuiIcon from './eui-icon.gts';
 
 /**
- * A single radio. Attributes and modifiers (`value`, `{{on "change" …}}`)
- * go to the `<input type="radio">`. For a list of choices use
+ * Native state selectors: the visual state follows the `<input>`
+ * (`:checked`, `:disabled`) rather than upstream's props, so uncontrolled
+ * radios (and siblings unchecked by the browser) stay in sync.
+ */
+const INPUT = '> .euiRadio__input';
+const SELECTED = `&:has(${INPUT}:checked)`;
+const DISABLED = `&:has(${INPUT}:disabled)`;
+const DISABLED_SELECTED = `&:has(${INPUT}:disabled:checked)`;
+const DOT_VISIBLE = `.euiRadio__circle:has(${INPUT}:checked) &`;
+const LABEL_DISABLED = `.euiRadio:has(> .euiRadio__circle ${INPUT}:disabled) &`;
+
+/**
+ * A single radio: a styled circle over a visually hidden native
+ * `<input type="radio">`. Attributes and modifiers (`value`,
+ * `{{on "change" …}}`) go to the `<input>`. For a list of choices use
  * EuiRadioGroup.
  */
 export interface EuiRadioSignature {
@@ -29,7 +46,11 @@ export interface EuiRadioSignature {
     labelProps?: {
       className?: string;
     };
-    /** Smaller radio, for dense forms. */
+    /**
+     * @deprecated Has no effect on a single radio (upstream EUI has no
+     * compressed radio). `EuiRadioGroup`'s `@compressed` tightens the spacing
+     * between rows.
+     */
     compressed?: boolean;
     /** Extra classes for the wrapper around the input and label. */
     containerClass?: string;
@@ -46,36 +67,78 @@ export interface EuiRadioSignature {
   };
 }
 
-const EuiRadio: TemplateOnlyComponent<EuiRadioSignature> = <template>
-  {{#let
-    (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
-    (argOrDefault @id (randomId))
-    as |hasLabelBlock id|
-  }}
-    {{#let
-      (classNames
-        @containerClass
-        (if (not (or hasLabelBlock @label)) "euiRadio--noLabel")
-        (if @compressed "euiRadio--compressed")
-        "euiRadio"
+export default class EuiRadio extends Component<EuiRadioSignature> {
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiRadioStyles);
+    const reset = euiCheckableReset(context.upstream);
+
+    return {
+      root: euiClass(context, reset, styles.euiRadio),
+      circle: (hasLabel: unknown) =>
+        euiClass(
+          context,
+          reset,
+          styles.input.euiRadio__circle,
+          hasLabel ? styles.input.hasLabel : undefined,
+          styles.input.enabled.unselected,
+          {
+            [SELECTED]: styles.input.enabled.selected,
+            [DISABLED]: styles.input.disabled.unselected,
+            [DISABLED_SELECTED]: styles.input.disabled.selected
+          }
+        ),
+      // Removed (not transparent) when unchecked, so forced colors never
+      // reveal it; upstream swaps in its `empty` icon for the same reason.
+      dot: euiClass(context, styles.input.euiRadio__icon, {
+        display: 'none',
+        [DOT_VISIBLE]: { display: 'block' }
+      }),
+      input: euiClass(
+        context,
+        euiCheckableInputReset,
+        styles.input.euiRadio__input
+      ),
+      label: euiClass(
+        context,
+        reset,
+        styles.label.euiRadio__label,
+        styles.label.enabled,
+        { [LABEL_DISABLED]: styles.label.disabled }
       )
-      as |classes|
+    };
+  }
+
+  <template>
+    {{#let
+      (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
+      (argOrDefault @id (randomId))
+      this.styles
+      as |hasLabelBlock id styles|
     }}
-      <div class={{classes}}>
-        <input
-          class="euiRadio__input"
-          type="radio"
-          id={{id}}
-          checked={{@checked}}
-          disabled={{@disabled}}
-          name={{@name}}
-          {{didInsert (optional @inputRef)}}
-          ...attributes
-        />
-        <div class="euiRadio__circle"></div>
+      <div class={{classNames "euiRadio" styles.root @containerClass}}>
+        <div
+          class="euiRadio__circle {{styles.circle (or hasLabelBlock @label)}}"
+        >
+          <EuiIcon @type="dot" class="euiRadio__icon {{styles.dot}}" />
+          <input
+            class="euiRadio__input {{styles.input}}"
+            type="radio"
+            id={{id}}
+            checked={{@checked}}
+            disabled={{@disabled}}
+            name={{@name}}
+            {{didInsert (optional @inputRef)}}
+            ...attributes
+          />
+        </div>
         {{#if (or hasLabelBlock @label)}}
           <label
-            class={{classNames "euiRadio__label" @labelProps.className}}
+            class={{classNames
+              "euiRadio__label"
+              styles.label
+              @labelProps.className
+            }}
             for={{id}}
           >
             {{#if hasLabelBlock}}
@@ -87,7 +150,5 @@ const EuiRadio: TemplateOnlyComponent<EuiRadioSignature> = <template>
         {{/if}}
       </div>
     {{/let}}
-  {{/let}}
-</template>;
-
-export default EuiRadio;
+  </template>
+}

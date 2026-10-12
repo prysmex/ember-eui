@@ -44,15 +44,15 @@ Generated from the components' TypeScript signatures by
 
 ### EuiCheckbox
 
-Attributes and modifiers (`value`, `{{on "change" …}}`) go to the
-`<input type="checkbox">`.
+A checkbox: a styled square over a visually hidden native
+`<input type="checkbox">`. Attributes and modifiers (`value`,
+`{{on "change" …}}`) go to the `<input>`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@checked` | `boolean` |  | Whether it is checked. Update it from `{{on "change" …}}`. |
 | `@disabled` | `boolean` |  | Disables the checkbox. |
-| `@indeterminate` | `boolean` |  | Shows the "partially checked" state, e.g. for a "select all" box. |
-| `@compressed` | `boolean` |  | Smaller checkbox, for dense forms. |
+| `@indeterminate` | `boolean` |  | Shows the "partially checked" state, e.g. for a "select all" box. Sets the input's `indeterminate` property. |
 | `@label` | `string` |  | Label next to the checkbox. Use the `<:label>` block for markup. |
 | `@labelProps` | `{ className?: string; }` |  | Props for the `<label>`: `{ className }`. |
 | `@containerClass` | `string` |  | Extra classes for the wrapper around the input and label. |
@@ -60,6 +60,8 @@ Attributes and modifiers (`value`, `{{on "change" …}}`) go to the
 | `@inputRef` | `(element: HTMLInputElement) => void` |  | Called with the `<input>` element once rendered. |
 | `@id` | `string` | a random id | Id of the input, linked to the label. |
 | `@name` | `string` |  | `name` of the input, for forms. |
+
+Deprecated: `@icon` (Has no effect; upstream EUI has no icon variant.); `@compressed` (Has no effect on a single checkbox (upstream EUI has no compressed checkbox). `EuiCheckboxGroup`'s `@compressed` tightens the spacing between rows.).
 
 | Block | Description |
 | --- | --- |

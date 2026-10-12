@@ -71,6 +71,34 @@
       "sha256": "1f236bad4ac395827192d0b4842ec9b2a2ff8095489562e2a91ecfac62a0dc33"
     },
     {
+      "path": "@elastic/eui/es/components/form/checkbox/checkbox_control.styles.js",
+      "sha256": "325c4fb973816edabedd25bf5fc5d909cf7999f51f84346eef0bcaf61d2f17ad"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/checkbox/checkbox_group.styles.js",
+      "sha256": "fc63d8f988f9066018cb27eda00765913725fed2c0232b8ae62948d64259da93"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/checkbox/checkbox.styles.js",
+      "sha256": "efa4c94009166a787fb0daddd49bcff7c14cc37706bf277e05a52247e9ac5fe4"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form.styles.js",
+      "sha256": "9f603baf9de93cdbee9742e9e2e8cfa50cf14df216e2bdad56b1c6b034d9b47c"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/radio/radio_group.styles.js",
+      "sha256": "3960d73afa6c6e6e0346b35dd52042a44f64fdaf84866e673580de4708f557e2"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/radio/radio.styles.js",
+      "sha256": "eabdf359a94203e5df2a230fc2279d3ca86565bbbc356e2607b80261fa7185f1"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/switch/switch.styles.js",
+      "sha256": "f3997acaffbcbddf702cf07b4d4ba092e2c93631ee72fd15146c314e9b5b8e40"
+    },
+    {
       "path": "@elastic/eui/es/components/horizontal_rule/horizontal_rule.styles.js",
       "sha256": "b8161495ca1fe5639c9ede467e3334f3403482716713e1d0891cd66295c80d1e"
     },

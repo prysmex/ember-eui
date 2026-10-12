@@ -70,6 +70,17 @@ const entries = {
   'components/button/button_icon/button_icon.styles.js': [
     'euiButtonIconStyles'
   ],
+  // checkables
+  'components/form/checkbox/checkbox.styles.js': ['euiCheckboxStyles'],
+  'components/form/checkbox/checkbox_control.styles.js': [
+    'euiCheckboxControlStyles'
+  ],
+  'components/form/checkbox/checkbox_group.styles.js': [
+    'euiCheckboxGroupStyles'
+  ],
+  'components/form/radio/radio.styles.js': ['euiRadioStyles'],
+  'components/form/radio/radio_group.styles.js': ['euiRadioGroupStyles'],
+  'components/form/switch/switch.styles.js': ['euiSwitchStyles'],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/reset/reset.js': ['resetStyles'],
   'global_styling/mixins/_helpers.js': ['euiScrollBarStyles'],

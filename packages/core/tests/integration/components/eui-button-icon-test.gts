@@ -18,7 +18,11 @@ module('Integration | Component | eui-button-icon', function (hooks) {
       <template><EuiButtonIcon @iconType="gear" aria-label="Settings" {{on "click" onClick}} /></template>
     );
 
-    assert.dom('button.euiButtonIcon').hasClass('euiButtonIcon--empty').hasClass('euiButtonIcon--primary').hasClass('euiButtonIcon--xSmall').hasAttribute('aria-label', 'Settings').hasAttribute('aria-pressed', 'false');
+    // Latest-only: no display/color/size modifier classes, and no aria-pressed
+    // unless @isSelected is defined (upstream). Styles are covered in
+    // eui-button-empty-icon-test.
+    assert.dom('button.euiButtonIcon').hasAttribute('aria-label', 'Settings').doesNotHaveAttribute('aria-pressed');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiButtonIcon')!).height, '24px', 'xs');
     assert.dom('button.euiButtonIcon svg.euiButtonIcon__icon').hasAttribute('aria-hidden', 'true');
     await click('button.euiButtonIcon');
     assert.strictEqual(clicks, 1);
@@ -33,9 +37,12 @@ module('Integration | Component | eui-button-icon', function (hooks) {
       </template>
     );
 
-    assert.dom('.fill').hasClass('euiButtonIcon--fill').hasClass('euiButtonIcon--danger').hasClass('euiButtonIcon--medium').hasAttribute('aria-pressed', 'true');
+    assert.dom('.fill').hasAttribute('aria-pressed', 'true');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.fill')!).height, '40px', 'm');
+    assert.notStrictEqual(getComputedStyle(this.element.querySelector('.fill')!).backgroundColor, 'rgba(0, 0, 0, 0)', 'fill');
     assert.dom('a.link').hasAttribute('href', '#x');
-    assert.dom('button.disabled').isDisabled().hasClass('euiButtonIcon-isDisabled');
+    assert.dom('button.disabled').isDisabled();
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.disabled')!).cursor, 'not-allowed');
   });
 
   test('the default size comes from the euiButtonIcon.size config', async function (assert) {
@@ -45,6 +52,6 @@ module('Integration | Component | eui-button-icon', function (hooks) {
 
     await render(<template><EuiButtonIcon @iconType="gear" aria-label="Settings" /></template>);
 
-    assert.dom('.euiButtonIcon').hasClass('euiButtonIcon--small');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiButtonIcon')!).height, '32px', 'config size s');
   });
 });

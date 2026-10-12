@@ -444,18 +444,19 @@ module('Integration | Component | eui-button', function (hooks) {
       </template>
     );
 
-    assert
-      .dom('button.empty')
-      .hasClass('euiButtonEmpty--danger')
-      .hasClass('euiButtonEmpty--xSmall')
-      .hasClass('euiButtonEmpty--flushLeft');
+    // Latest-only: modifier classes are gone, check the computed styles.
+    const empty = getComputedStyle(this.element.querySelector('button.empty')!);
+    assert.strictEqual(empty.height, '24px', 'xs');
+    assert.strictEqual(empty.paddingInlineStart, '0px', 'flush');
+    assert.strictEqual(empty.marginInlineEnd, '8px', 'flush left');
     await click('button.empty');
     assert.strictEqual(clicks, 1);
     assert.dom('a.link').hasAttribute('href', '#docs');
-    assert
-      .dom('button.disabled')
-      .isDisabled()
-      .hasClass('euiButtonEmpty-isDisabled');
+    assert.dom('button.disabled').isDisabled();
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('button.disabled')!).cursor,
+      'not-allowed'
+    );
     assert
       .dom('button.empty')
       .doesNotHaveAttribute('aria-pressed', 'not a toggle without @isSelected');

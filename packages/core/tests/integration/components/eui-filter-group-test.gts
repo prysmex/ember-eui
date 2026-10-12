@@ -6,6 +6,19 @@ import { click, render } from '@ember/test-helpers';
 import EuiFilterButton from '#src/components/eui-filter-button.gts';
 import EuiFilterGroup from '#src/components/eui-filter-group.gts';
 import EuiFilterSelectItem from '#src/components/eui-filter-select-item.gts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+
+/** Borealis empty-button text token, normalized to computed `rgb()`. */
+function emptyButtonColor(color: 'Primary' | 'Text') {
+  const tokens = resolveBorealisTheme('light').euiTheme.components
+    .buttons as unknown as Record<string, string>;
+  const probe = document.createElement('span');
+  probe.style.color = tokens[`textColor${color}`]!;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
 
 module('Integration | Component | eui-filter-group', function (hooks) {
   setupRenderingTest(hooks);
@@ -29,7 +42,9 @@ module('Integration | Component | eui-filter-group', function (hooks) {
       .hasClass('euiFilterButton')
       .hasClass('euiFilterButton--withNext')
       .hasClass('euiFilterButton-hasActiveFilters')
-      .hasClass('euiButtonEmpty--text');
+      .hasClass('euiButtonEmpty');
+    // Latest-only EuiButtonEmpty has no color modifier classes: check the style.
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.on')!).color, emptyButtonColor('Text'));
     assert.dom('.on .euiFilterButton__textShift').hasText('On').hasAttribute('data-text', 'On').hasAttribute('title', 'On');
 
     await click('.on');

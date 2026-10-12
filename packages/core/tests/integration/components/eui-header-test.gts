@@ -12,6 +12,19 @@ import EuiHeaderLogo from '#src/components/eui-header-logo.gts';
 import EuiHeaderSection from '#src/components/eui-header-section.gts';
 import EuiHeaderSectionItem from '#src/components/eui-header-section-item.gts';
 import EuiHeaderSectionItemButton from '#src/components/eui-header-section-item-button.gts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+
+/** Borealis empty-button text token, normalized to computed `rgb()`. */
+function emptyButtonColor(color: 'Primary' | 'Text') {
+  const tokens = resolveBorealisTheme('light').euiTheme.components
+    .buttons as unknown as Record<string, string>;
+  const probe = document.createElement('span');
+  probe.style.color = tokens[`textColor${color}`]!;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
 
 module('Integration | Component | eui-header', function (hooks) {
   setupRenderingTest(hooks);
@@ -53,8 +66,11 @@ module('Integration | Component | eui-header', function (hooks) {
     assert.dom('.euiHeaderLogo svg.euiHeaderLogo__icon').doesNotHaveAttribute('aria-hidden');
     assert.dom('.euiHeaderLogo__text').hasText('Brand');
     assert.dom('.euiHeaderLinks__list').hasClass('euiHeaderLinks__list--gutterS');
-    assert.dom('.active').hasClass('euiHeaderLink-isActive').hasClass('euiButtonEmpty--primary');
-    assert.dom('a.blog').hasClass('euiButtonEmpty--text').hasAttribute('href', '#blog');
+    assert.dom('.active').hasClass('euiHeaderLink-isActive').hasClass('euiButtonEmpty');
+    assert.dom('a.blog').hasClass('euiButtonEmpty').hasAttribute('href', '#blog');
+    // Latest-only EuiButtonEmpty has no color modifier classes: check the styles.
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.active')!).color, emptyButtonColor('Primary'));
+    assert.strictEqual(getComputedStyle(this.element.querySelector('a.blog')!).color, emptyButtonColor('Text'));
     assert.dom('.euiHeaderSectionItemButton .euiHeaderSectionItemButton__content').hasText('N');
     assert.dom('.euiHeaderSectionItemButton__notification--badge').hasText('3');
 

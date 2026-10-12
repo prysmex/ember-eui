@@ -118,7 +118,19 @@ const entries = {
   'components/health/health.styles.js': ['euiHealthStyles'],
   'components/token/token_map.js': ['TOKEN_MAP', 'TOKEN_COLOR_TO_ICON_COLOR_MAP'],
   'services/color/is_color_dark.js': ['isColorDark'],
-  'services/color/hex_to_rgb.js': ['hexToRgb']
+  'services/color/hex_to_rgb.js': ['hexToRgb'],
+  // overlays
+  'components/popover/popover.styles.js': ['euiPopoverStyles'],
+  'components/popover/popover_title.styles.js': ['euiPopoverTitleStyles'],
+  'components/popover/popover_footer.styles.js': ['euiPopoverFooterStyles'],
+  'components/popover/popover_panel/_popover_panel.styles.js': ['euiPopoverPanelStyles'],
+  'components/popover/popover_arrow/_popover_arrow.styles.js': ['euiPopoverArrowStyles'],
+  'components/tool_tip/tool_tip.styles.js': ['euiToolTipStyles', 'euiToolTipAnchorStyles', 'euiToolTipBackgroundColor', 'euiToolTipBorderColor'],
+  'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
+  'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
+  'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  'components/list_item_layout/_list_item_layout.styles.js': ['euiListItemLayoutStyles', 'euiListItemLayoutWrapperStyles', 'euiListItemVariables']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

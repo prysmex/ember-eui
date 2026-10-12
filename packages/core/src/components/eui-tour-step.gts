@@ -171,7 +171,8 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
       @ownFocus={{false}}
       @panelClassName="euiTour"
       @panelStyle={{this.panelStyle}}
-      @offset={{if this.hasBeacon 10 0}}
+      @hasArrow={{this.hasBeacon}}
+      @offset={{if this.hasBeacon 10}}
       @ariaLabelledBy={{this.titleId}}
       ...attributes
     >

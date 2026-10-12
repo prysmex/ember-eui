@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
+import { concat } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
@@ -7,12 +8,19 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, next, scheduleOnce } from '@ember/runloop';
 
+import { modifier } from 'ember-modifier';
 import style from 'ember-style-modifier/modifiers/style';
-import { and, eq, or } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiToolTipAnchorStyles,
+  euiToolTipStyles
+} from '../utils/eui/styles.generated.ts';
 import { keys } from '../utils/keys.ts';
 import { findPopoverPosition } from '../utils/popover/index.ts';
 import EuiPortal from './eui-portal.gts';
@@ -35,10 +43,82 @@ interface ToolTipStyles {
   right?: string | 'auto';
   opacity?: string;
   visibility?: 'hidden';
-  display?: 'inlineBlock';
 }
 
-type EuiToolTipDisplay = 'inlineBlock' | 'block';
+type EuiToolTipDisplay = 'inlineBlock' | 'block' | 'flex';
+
+/** Upstream default distance between the anchor and the tooltip. */
+export const DEFAULT_TOOLTIP_OFFSET = 16;
+
+/** A tooltip shown right after another closes skips the fade in (upstream). */
+const SKIP_ANIMATION_WINDOW = 250;
+
+/**
+ * Upstream `toolTipManager`: one tooltip is visible at a time, and a
+ * tooltip replacing another (or shown right after one closed) appears
+ * without the entry animation.
+ */
+class ToolTipManager {
+  toolTipsToHide = new Set<() => void>();
+  lastHiddenAt: number | null = null;
+
+  registerTooltip(hideCallback: () => void): { skipAnimation: boolean } | null {
+    if (this.toolTipsToHide.has(hideCallback)) return null;
+
+    const hadOpen = this.toolTipsToHide.size > 0;
+    const recentlyClosed =
+      this.lastHiddenAt !== null &&
+      Date.now() - this.lastHiddenAt < SKIP_ANIMATION_WINDOW;
+
+    this.toolTipsToHide.forEach((hide) => hide());
+    this.toolTipsToHide.clear();
+    this.toolTipsToHide.add(hideCallback);
+
+    return { skipAnimation: hadOpen || recentlyClosed };
+  }
+
+  deregisterToolTip(hideCallback: () => void): void {
+    if (this.toolTipsToHide.delete(hideCallback)) this.lastHiddenAt = Date.now();
+  }
+}
+
+export const toolTipManager = new ToolTipManager();
+
+/**
+ * Upstream links the anchor's child to the visible tooltip with
+ * `aria-describedby` (the tooltip id first, existing ids kept). Only the id
+ * added here is removed again.
+ */
+const describedBy = modifier(
+  (
+    anchor: HTMLElement,
+    [target, id, isVisible]: [Element | null | undefined, string, boolean]
+  ) => {
+    const element = target ?? anchor.firstElementChild;
+
+    if (!element || !isVisible) return;
+
+    const current = (element.getAttribute('aria-describedby') ?? '')
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (current.includes(id)) return;
+
+    element.setAttribute('aria-describedby', [id, ...current].join(' '));
+
+    return () => {
+      const remaining = (element.getAttribute('aria-describedby') ?? '')
+        .split(/\s+/)
+        .filter((token) => token && token !== id);
+
+      if (remaining.length) {
+        element.setAttribute('aria-describedby', remaining.join(' '));
+      } else {
+        element.removeAttribute('aria-describedby');
+      }
+    };
+  }
+);
 
 const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // position the tooltip content near the top-left
@@ -50,8 +130,7 @@ const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // the tooltip before it is positioned
   opacity: '0',
   // prevent accidental mouse interaction while positioning
-  visibility: 'hidden',
-  display: 'inlineBlock'
+  visibility: 'hidden'
 };
 
 export type EuiTooltipArgs = {
@@ -68,9 +147,20 @@ export type EuiTooltipArgs = {
    */
   content?: string;
   /**
-   * Display of the anchor wrapper: `'inlineBlock'` or `'block'`.
+   * Display of the anchor wrapper: `'inlineBlock'`, `'block'` or `'flex'`.
+   * Defaults to `'inlineBlock'`.
    */
   display?: EuiToolTipDisplay;
+  /**
+   * Distance between the anchor and the tooltip. Defaults to `16`.
+   */
+  offset?: number;
+  /**
+   * Keeps the tooltip visual only: the anchor's element is not linked to
+   * it with `aria-describedby`, and Escape does not stop propagating.
+   * Use when the anchor's label already says the same. Defaults to `false`.
+   */
+  disableScreenReaderOutput?: boolean;
   /**
    * Delay before showing: `'regular'` (250ms) or `'long'` (for
    * repeated items). Defaults to `'regular'`.
@@ -149,6 +239,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   @tracked calculatedPosition: ToolTipPositions = this.position;
   @tracked toolTipStyles: ToolTipStyles = DEFAULT_TOOLTIP_STYLES;
   @tracked arrowStyles: { left?: string; top?: string } = {};
+  @tracked skipAnimation = false;
   @tracked id: string = this.args.id || guidFor({});
   @tracked _attachTo: undefined | HTMLElement | string | null = null;
 
@@ -249,7 +340,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   showToolTip(): void {
     if (!this.timeoutId && !this.visible) {
       const fn = (): void => {
-        this.visible = true;
+        this.markVisible();
       };
 
       this.timeoutId = later(
@@ -260,6 +351,57 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         delayToMsMap[this.delay]
       );
     }
+  }
+
+  /** Shows the tooltip through the manager (hides any other one). */
+  markVisible(): void {
+    if (this.isDestroying || this.isDestroyed) return;
+
+    const result = toolTipManager.registerTooltip(this.hideToolTip);
+
+    if (result) this.skipAnimation = result.skipAnimation;
+
+    this.visible = true;
+  }
+
+  get anchorDisplay(): EuiToolTipDisplay {
+    return this.args.display ?? 'inlineBlock';
+  }
+
+  /** Upstream `euiToolTipAnchorStyles`: display and disabled children. */
+  @cached
+  get anchorClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiToolTipAnchorStyles);
+
+    return `euiToolTipAnchor ${euiClass(
+      context,
+      styles.euiToolTipAnchor,
+      styles[this.anchorDisplay] ?? styles.inlineBlock
+    )}`;
+  }
+
+  @cached
+  get arrowClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiToolTipStyles);
+
+    return `euiToolTip__arrow ${euiClass(
+      context,
+      styles.euiToolTip__arrow,
+      styles.arrowPositions[this.calculatedPosition]
+    )}`;
+  }
+
+  get popoverStyles(): ToolTipStyles & { animation?: string } {
+    // inline `animation: none` overrides the fade in (upstream)
+    return this.skipAnimation
+      ? { ...this.toolTipStyles, animation: 'none' }
+      : this.toolTipStyles;
+  }
+
+  get describesAnchor(): boolean {
+    return this.visible && !this.args.disableScreenReaderOutput;
   }
 
   @cached
@@ -287,10 +429,15 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       anchor: this._anchor as HTMLElement,
       popover: this.popover,
       position: requestedPosition,
-      offset: 16, // offset popover 16px from the anchor
+      offset: this.args.offset ?? DEFAULT_TOOLTIP_OFFSET,
+      // upstream: the arrow stays out of the control-radius corners
       arrowConfig: {
         arrowWidth: 12,
-        arrowBuffer: 4
+        arrowBuffer: 4,
+        borderRadius:
+          parseFloat(
+            String(getEuiThemeContext(this).upstream.euiTheme.border.radius.control)
+          ) || undefined
       }
     });
 
@@ -306,7 +453,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         : 'auto'
     };
 
-    this.visible = true;
+    if (!this.visible) this.markVisible();
     this.calculatedPosition = position;
     this.toolTipStyles = toolTipStyles;
 
@@ -326,13 +473,29 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
 
     this.clearAnimationTimeout();
 
+    toolTipManager.deregisterToolTip(this.hideToolTip);
+
     const fn = (): void => {
-      if (!this.isDestroying || !this.isDestroyed) {
+      if (!this.isDestroying && !this.isDestroyed) {
         this.visible = false;
       }
     };
 
     scheduleOnce('afterRender', this, fn);
+  }
+
+  /** Escape hides the tooltip (upstream). */
+  @action
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key !== keys.ESCAPE) return;
+
+    // a visual-only tooltip does not take the Escape key from the page
+    if (!this.args.disableScreenReaderOutput && this.visible) {
+      event.stopPropagation();
+    }
+
+    this.hasFocus = false;
+    this.hideToolTip();
   }
 
   @action
@@ -383,6 +546,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     super.willDestroy();
 
     this.clearAnimationTimeout();
+    toolTipManager.deregisterToolTip(this.hideToolTip);
     this.removeAttachToHandlers();
     this.anchor = null;
     this.popover = null;
@@ -398,6 +562,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         <span
           {{didInsert this.updateAttachTo}}
           {{didUpdate this.updateAttachTo @attachTo}}
+          {{describedBy this.attachTo this.id this.describesAnchor}}
           {{didUpdate
             (if (eq @isShown true) this.onFocus this.onBlur)
             @isShown
@@ -405,14 +570,14 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
           {{didInsert (if (eq @isShown true) this.onFocus this.onBlur)}}
         ></span>
       {{else}}
+        {{! A11y: NVDA merges identical markup into one stop; the id keeps
+            wrappers apart (upstream) }}
         <span
-          role="tooltip"
-          class={{classNames
-            "euiToolTipAnchor"
-            (if (eq @display "block") "euiToolTipAnchor--displayBlock")
-            @anchorClassName
-          }}
+          id={{if (not @disableScreenReaderOutput) (concat this.id "-wrapper")}}
+          class={{classNames this.anchorClasses @anchorClassName}}
           {{didInsert this.didInsertAnchor}}
+          {{describedBy null this.id this.describesAnchor}}
+          {{on "keydown" this.onKeyDown}}
           {{on "mouseover" this.showToolTip}}
           {{on "focusin" this.onFocus}}
           {{on "focusout" this.onBlur}}
@@ -435,12 +600,8 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       }}
         <EuiPortal>
           <EuiToolTipPopover
-            class={{classNames
-              "euiToolTip"
-              @className
-              componentName="EuiToolTip"
-              position=this.calculatedPosition
-            }}
+            class={{classNames "euiToolTip" @className}}
+            @calculatedPosition={{this.calculatedPosition}}
             @positionToolTip={{this.positionToolTip}}
             @popoverRef={{this.setPopoverRef}}
             id={{this.id}}
@@ -450,7 +611,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
             }}
             role="tooltip"
             ...attributes
-            {{style this.toolTipStyles}}
+            {{style this.popoverStyles}}
           >
             <:title>
               {{#if hasTitleBlock}}
@@ -460,7 +621,10 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
               {{/if}}
             </:title>
             <:content>
-              <div class="euiToolTip__arrow" {{style this.arrowStyles}}></div>
+              <div
+                class={{this.arrowClasses}}
+                {{style this.arrowStyles}}
+              ></div>
               <div {{resizeObserver onResize=this.positionToolTip}}>
                 {{#if hasContentBlock}}
                   {{yield to="content"}}

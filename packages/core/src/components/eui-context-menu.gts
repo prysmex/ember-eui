@@ -1,10 +1,13 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { fn, get, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiContextMenuStyles } from '../utils/eui/styles.generated.ts';
 import EuiContextMenuItem from './eui-context-menu-item.gts';
 import EuiContextMenuPanel from './eui-context-menu-panel.gts';
 import EuiHorizontalRule from './eui-horizontal-rule.gts';
@@ -35,6 +38,12 @@ export type EuiContextMenuPanelItem =
       disabled?: boolean;
       /** Aligns the icon with the `'center'` or the `'top'` of the text. */
       layoutAlign?: EuiContextMenuItemSignature['Args']['layoutAlign'];
+      /** Color of the item: `'text'` (default) or e.g. `'danger'`. */
+      color?: string;
+      /** Tooltip shown on the right of the item. */
+      toolTipContent?: string;
+      /** Title of the item's tooltip. */
+      toolTipTitle?: string;
       /** `data-test-subj` of the item, for tests. */
       'data-test-subj'?: string;
     };
@@ -68,7 +77,7 @@ export interface EuiContextMenuSignature {
     panels: EuiContextMenuPanelDescriptor[];
     /** Id of the panel shown first. */
     initialPanelId: PanelId;
-    /** `'s'` for smaller items and titles. Defaults to `'m'`. */
+    /** @deprecated Has no effect: latest EUI has a single item size. */
     size?: 's' | 'm';
   };
   Blocks: {
@@ -78,10 +87,6 @@ export interface EuiContextMenuSignature {
 }
 
 type Direction = 'next' | 'previous';
-
-function itemSize(size?: 's' | 'm'): 's' | undefined {
-  return size === 's' ? 's' : undefined;
-}
 
 function isSeparator(
   item: EuiContextMenuPanelItem
@@ -148,8 +153,24 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
     return this.panelsById.get(this.incomingPanelId)?.width;
   }
 
+  /** Upstream: 256px wide (a panel `width` wins), clipped, animated height. */
+  @cached
   get classes(): string {
-    return this.args.size === 's' ? 'euiContextMenu euiContextMenu--small' : 'euiContextMenu';
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiContextMenuStyles);
+
+    return `euiContextMenu ${euiClass(context, { boxSizing: 'border-box' }, styles.euiContextMenu)}`;
+  }
+
+  /** Upstream stacks the sliding panels on top of each other. */
+  @cached
+  get panelClasses(): string {
+    const context = getEuiThemeContext(this);
+
+    return `euiContextMenu__panel ${euiClass(context, {
+      position: 'absolute',
+      label: 'euiContextMenu__panel'
+    })}`;
   }
 
   hasPreviousPanel = (panelId: PanelId): boolean => this.previousPanelIds.has(panelId);
@@ -229,9 +250,9 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
     >
       {{#each this.outgoingPanels key="id" as |panel|}}
         <EuiContextMenuPanel
-          class="euiContextMenu__panel"
+          class={{this.panelClasses}}
           @title={{panel.title}}
-          @size={{@size}}
+          @isMenu={{if panel.items true false}}
           @transitionType="out"
           @transitionDirection={{this.transitionDirection}}
           @onTransitionComplete={{this.onOutgoingTransitionComplete}}
@@ -240,7 +261,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
           {{#if panel.items}}
             {{#each panel.items as |item index|}}
               {{#if item.isSeparator}}
-                <EuiHorizontalRule @margin="none" />
+                <EuiHorizontalRule @margin="xs" role="separator" />
               {{else}}
                 <EuiContextMenuItem
                   @icon={{item.icon}}
@@ -249,7 +270,10 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
                   @target={{item.target}}
                   @disabled={{item.disabled}}
                   @layoutAlign={{item.layoutAlign}}
-                  @size={{itemSize @size}}
+                  @color={{item.color}}
+                  @toolTipContent={{item.toolTipContent}}
+                  @toolTipTitle={{item.toolTipTitle}}
+                  role="menuitem"
                   {{on "click" (fn this.onItemClick item index)}}
                 >{{item.name}}</EuiContextMenuItem>
               {{/if}}
@@ -261,9 +285,9 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
       {{/each}}
       {{#each this.incomingPanels key="id" as |panel|}}
         <EuiContextMenuPanel
-          class="euiContextMenu__panel"
+          class={{this.panelClasses}}
           @title={{panel.title}}
-          @size={{@size}}
+          @isMenu={{if panel.items true false}}
           @onClose={{if
             (this.hasPreviousPanel panel.id)
             this.showPreviousPanel
@@ -283,7 +307,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
           {{#if panel.items}}
             {{#each panel.items as |item index|}}
               {{#if item.isSeparator}}
-                <EuiHorizontalRule @margin="none" />
+                <EuiHorizontalRule @margin="xs" role="separator" />
               {{else}}
                 <EuiContextMenuItem
                   @icon={{item.icon}}
@@ -292,7 +316,10 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
                   @target={{item.target}}
                   @disabled={{item.disabled}}
                   @layoutAlign={{item.layoutAlign}}
-                  @size={{itemSize @size}}
+                  @color={{item.color}}
+                  @toolTipContent={{item.toolTipContent}}
+                  @toolTipTitle={{item.toolTipTitle}}
+                  role="menuitem"
                   data-test-subj={{get item "data-test-subj"}}
                   {{on "click" (fn this.onItemClick item index)}}
                 >{{item.name}}</EuiContextMenuItem>

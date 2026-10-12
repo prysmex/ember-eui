@@ -1,11 +1,14 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { on } from '@ember/modifier';
-import { click, render, triggerKeyEvent } from '@ember/test-helpers';
+import { click, render, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
 
 import EuiContextMenu from '#src/components/eui-context-menu.gts';
 import EuiContextMenuItem from '#src/components/eui-context-menu-item.gts';
 import EuiContextMenuPanel from '#src/components/eui-context-menu-panel.gts';
+
+/** Panels slide (Borealis animations); wait until only the new one is left. */
+const transitioned = () => waitUntil(() => document.querySelectorAll('.euiContextMenuPanel').length === 1);
 
 module('Integration | Component | eui-context-menu', function (hooks) {
   setupRenderingTest(hooks);
@@ -30,8 +33,8 @@ module('Integration | Component | eui-context-menu', function (hooks) {
     assert.dom('button.copy .euiContextMenuItem__text').hasText('Copy');
     assert.dom('button.copy svg.euiContextMenu__icon').exists();
     assert.dom('a.share').hasAttribute('href', '#share');
-    assert.dom('button.delete').isDisabled().hasClass('euiContextMenuItem-isDisabled');
-    assert.dom('button.more').hasClass('euiContextMenuItem--small');
+    // `euiContextMenuItem-isDisabled` / `--small` are gone (no sizes upstream)
+    assert.dom('button.delete').isDisabled().hasStyle({ cursor: 'not-allowed' });
     assert.dom('button.more svg.euiIcon').exists({ count: 2 }, 'icon and panel arrow');
 
     await click('button.copy');
@@ -52,12 +55,10 @@ module('Integration | Component | eui-context-menu', function (hooks) {
       </template>
     );
 
-    assert.dom('.top .euiContextMenu__itemLayout').hasClass('euiContextMenu__itemLayout--top');
-    assert.dom('.top').doesNotHaveClass('euiContextMenu__itemLayout--top', 'only on the inner layout');
-    assert
-      .dom('.center .euiContextMenu__itemLayout')
-      .doesNotHaveClass('euiContextMenu__itemLayout--top')
-      .doesNotHaveClass('euiContextMenu__itemLayout--bottom');
+    // the legacy `euiContextMenu__itemLayout--top` wrapper class is gone;
+    // upstream aligns the prepended icon
+    assert.dom('.top .euiListItemLayout__prepend').hasStyle({ alignSelf: 'flex-start' });
+    assert.dom('.center .euiListItemLayout__prepend').hasStyle({ alignSelf: 'center' });
   });
 
   test('an item without @icon renders no icon', async function (assert) {
@@ -78,9 +79,12 @@ module('Integration | Component | eui-context-menu', function (hooks) {
       </template>
     );
 
+    // upstream title: a heading, plus a back icon button with @onClose
+    // (was a `button.euiContextMenuPanelTitle` with a `--small` class)
     assert.dom('.plain div.euiContextMenuPanelTitle').hasText('Actions');
-    assert.dom('.back button.euiContextMenuPanelTitle').hasClass('euiContextMenuPanelTitle--small').hasText('Share');
-    await click('.back button.euiContextMenuPanelTitle');
+    assert.dom('.plain [data-test-subj="contextMenuPanelTitleButton"]').doesNotExist();
+    assert.dom('.back .euiContextMenuPanelTitle h2').hasText('Share');
+    await click('.back [data-test-subj="contextMenuPanelTitleButton"]');
     assert.strictEqual(closed, 1);
   });
 
@@ -134,13 +138,15 @@ module('Integration | Component | eui-context-menu', function (hooks) {
       assert.dom('.euiContextMenuItem .euiContextMenu__arrow').exists({ count: 1 }, 'items opening a panel have an arrow');
 
       await click('.euiContextMenuItem');
-      assert.dom('.euiContextMenuPanel').exists({ count: 1 }, 'without animations the old panel goes at once');
-      assert.dom('button.euiContextMenuPanelTitle').hasText('Share');
+      await transitioned();
+      assert.dom('.euiContextMenuPanel').exists({ count: 1 }, 'the old panel goes once the slide ends');
+      assert.dom('.euiContextMenuPanelTitle').hasText('Share');
       assert.dom('.euiContextMenuItem').hasText('Copy link');
 
-      await click('button.euiContextMenuPanelTitle');
+      await click('[data-test-subj="contextMenuPanelTitleButton"]');
+      await transitioned();
       assert.dom('.euiContextMenuPanelTitle').hasText('Options');
-      assert.dom('div.euiContextMenuPanelTitle').exists('the first panel has no back button');
+      assert.dom('[data-test-subj="contextMenuPanelTitleButton"]').doesNotExist('the first panel has no back button');
     });
 
     test('item clicks call onClick', async function (assert) {
@@ -160,6 +166,7 @@ module('Integration | Component | eui-context-menu', function (hooks) {
 
       await click('.euiContextMenuItem:first-child');
       await click('.euiContextMenuItem:last-child');
+      await transitioned();
       assert.deepEqual(clicked, ['edit', 'more']);
       assert.dom('.euiContextMenuItem').hasText('Archive');
     });
@@ -171,11 +178,15 @@ module('Integration | Component | eui-context-menu', function (hooks) {
       assert.dom('.euiContextMenuItem').isFocused();
 
       await triggerKeyEvent('.euiContextMenuPanel', 'keydown', 'ArrowRight');
+      await transitioned();
       assert.dom('.euiContextMenuPanelTitle').hasText('Share');
+      await waitUntil(() => document.activeElement?.classList.contains('euiContextMenuItem'));
       assert.dom('.euiContextMenuItem').isFocused('the first item of the new panel is focused');
 
       await triggerKeyEvent('.euiContextMenuPanel', 'keydown', 'ArrowLeft');
+      await transitioned();
       assert.dom('.euiContextMenuPanelTitle').hasText('Options');
+      await waitUntil(() => document.activeElement?.classList.contains('euiContextMenuItem'));
       assert.dom('.euiContextMenuItem').isFocused('back on the item that opened it');
     });
 
@@ -188,7 +199,8 @@ module('Integration | Component | eui-context-menu', function (hooks) {
         </template>
       );
 
-      assert.dom('.euiContextMenu').hasClass('euiContextMenu--small');
+      // `@size` is deprecated (no `euiContextMenu--small` class upstream)
+      assert.dom('.euiContextMenu').doesNotHaveClass('euiContextMenu--small');
       assert.dom('.custom').hasText('Content of Settings');
     });
   });
@@ -207,7 +219,9 @@ module('Integration | Component | eui-context-menu', function (hooks) {
     );
 
     await click('.euiContextMenuItem');
+    await transitioned();
     assert.dom('.euiContextMenuPanelTitle').hasText('Share');
+    await waitUntil(() => this.element.querySelector('.euiContextMenu')!.contains(document.activeElement));
     assert.true(
       this.element.querySelector('.euiContextMenu')!.contains(document.activeElement),
       'a panel reached by navigating takes the focus'

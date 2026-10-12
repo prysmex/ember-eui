@@ -105,7 +105,19 @@ const factories = {
   'components/icon/icon.styles.js': ['euiIconStyles'],
   'components/avatar/avatar.styles.js': ['euiAvatarStyles'],
   'components/beacon/beacon.styles.js': ['euiBeaconStyles'],
-  'components/health/health.styles.js': ['euiHealthStyles']
+  'components/health/health.styles.js': ['euiHealthStyles'],
+  // overlays
+  'components/popover/popover.styles.js': ['euiPopoverStyles'],
+  'components/popover/popover_title.styles.js': ['euiPopoverTitleStyles'],
+  'components/popover/popover_footer.styles.js': ['euiPopoverFooterStyles'],
+  'components/popover/popover_panel/_popover_panel.styles.js': ['euiPopoverPanelStyles'],
+  'components/popover/popover_arrow/_popover_arrow.styles.js': ['euiPopoverArrowStyles'],
+  'components/tool_tip/tool_tip.styles.js': ['euiToolTipStyles', 'euiToolTipAnchorStyles'],
+  'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
+  'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
+  'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  'components/list_item_layout/_list_item_layout.styles.js': ['euiListItemLayoutStyles', 'euiListItemLayoutWrapperStyles', 'euiListItemVariables']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

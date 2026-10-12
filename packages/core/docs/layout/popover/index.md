@@ -60,27 +60,30 @@ control `@isOpen` and close it in `@closePopover`.
 | --- | --- | --- | --- |
 | `@portalRef` | `(ref: HTMLElement) => void` |  | Callback to have a reference to the portal element |
 | `@anchorClassName` | `string` |  | Class name passed to the direct parent of the button |
-| `@anchorPosition` | `PopoverAnchorPosition` | `'downCenter'` | Where the popover opens relative to the button: `'upCenter'`, `'upLeft'`, `'upRight'`, `'downCenter'`, `'downLeft'`, `'downRight'`, `'leftCenter'`, `'leftUp'`, `'leftDown'`, `'rightCenter'`, `'rightUp'` or `'rightDown'`. It flips when there is no room. |
+| `@anchorPosition` | `PopoverAnchorPosition` | `'downLeft'` (upstream EUI default) | Where the popover opens relative to the button: `'upCenter'`, `'upLeft'`, `'upRight'`, `'downCenter'`, `'downLeft'`, `'downRight'`, `'leftCenter'`, `'leftUp'`, `'leftDown'`, `'rightCenter'`, `'rightUp'` or `'rightDown'`. It flips when there is no room. |
 | `@attachToAnchor` | `boolean` |  | Style and position alteration for arrow-less, left-aligned attachment. Intended for use with inputs as anchors, e.g. EuiInputPopover |
 | `@button` | `HTMLElement` |  | Element to align the popover to, instead of the `<:button>` block's content. |
 | `@buttonRef` | `(e: HTMLDivElement) => unknown` |  | Called with the element wrapping the `<:button>` block. |
 | `@closePopover` (required) | `() => void` |  | Called to close the popover (Escape, clicks outside); set `@isOpen` to `false` here. |
 | `@container` | `HTMLElement` |  | Restrict the popover's position within this element |
-| `@display` |  | `'inlineBlock'` | CSS display of the anchor: `'inlineBlock'` or `'block'`. |
-| `@hasArrow` | `boolean` | `true` | Show arrow indicating to originating button. |
+| `@display` | `PopoverDisplay` | `'inlineBlock'` | CSS display of the popover's root: `'inlineBlock'`, `'block'` or any CSS `display` value. |
+| `@hasArrow` | `boolean` | `false` (upstream EUI default) | Show an arrow pointing to the anchor. |
 | `@initialFocus` | `FocusTarget \| false` |  | The element to focus when the popover opens: a DOM node, a selector (for `document.querySelector()`) or a function returning a node. It is focused once the panel is positioned and visible (so the page does not scroll to a panel still being placed), also without `@ownFocus`. `false` focuses nothing. |
 | `@insert` |  |  | Passed directly to EuiPortal for DOM positioning. Both properties are required if prop is specified |
 | `@isOpen` | `boolean` | `false` | Whether the popover is open. Toggle it from the `<:button>` block's button. |
 | `@ownFocus` | `boolean` | `true` | Traps tab focus within the popover contents. |
-| `@panelClassName` | `string` |  | Custom class added to the EuiPanel containing the popover contents |
-| `@panelPaddingSize` | `PanelPaddingSize` | `'m'` | Padding of the popover: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@panelClassName` | `string` |  | Custom class added to the panel containing the popover contents |
+| `@panelPaddingSize` | `PanelPaddingSize` | `'m'` | Padding of the popover: `'none'`, `'s'`, `'m'` or `'l'` (`'xs'` and `'xl'` are discouraged upstream). |
+| `@panelStyle` | `{ [i: string]: string }` |  | Inline styles for the panel (positioning styles win). |
+| `@popoverScreenReaderText` | `string` |  | Extra screen reader text, announced with the panel (with `@ownFocus` it follows the default "You are in a dialog…" instructions). |
 | `@panelRef` | `(e: HTMLElement \| null) => unknown` |  | Called with the popover's panel element (`null` when it closes). |
 | `@popoverRef` | `(e: HTMLElement) => unknown` |  | Called with the popover's root element. |
 | `@shouldAccountForOtherPopovers` | `boolean` | `true` | When not `false`, a popover opened from inside another popover positions itself relative to that one. |
 | `@repositionOnScroll` | `boolean` |  | When `true`, the popover's position is re-calculated when the user scrolls, this supports having fixed-position popover anchors |
+| `@repositionToCrossAxis` | `boolean` | `true` | Whether the popover may move to the cross axis (e.g. from below to the side of the anchor) when there is no room. |
 | `@zIndex` | `number` |  | By default, popover content inherits the z-index of the anchor component; pass `zIndex` to override |
 | `@onTrapDeactivation` | `() => void` |  | Function callback for when the focus trap is deactivated |
-| `@offset` | `number` |  | Distance away from the anchor that the popover will render |
+| `@offset` | `number` |  | Distance away from the anchor that the popover will render. Defaults to `0` with an arrow and `4` without (upstream). |
 | `@buffer` | `number \| [number, number, number, number]` |  | Minimum distance between the popover and the bounding container; Pass an array of 4 values to adjust each side differently: `[top, right, bottom, left]` Default is 16 |
 | `@ariaLabel` | `string` |  | Provide a name to the popover panel |
 | `@ariaLabelledBy` | `string` |  | Alternative option to `aria-label` that takes an `id`. Usually takes the `id` of the popover title |
@@ -90,7 +93,7 @@ control `@isOpen` and close it in `@closePopover`.
 | `@focusTrapOptions` |  |  | Options for the focus trap (focus-trap library). |
 | `@mutationObserverOptions` |  | watching the panel's subtree | What content changes reposition the popover (MutationObserver options). |
 
-Deprecated: `@panelStyle` (Has no effect.); `@arrowChildren` (Has no effect, use the `<:arrowChildren>` block.).
+Deprecated: `@arrowChildren` (Has no effect, use the `<:arrowChildren>` block.).
 
 | Block | Description |
 | --- | --- |
@@ -106,7 +109,7 @@ The title of an EuiPopover (separated by a border).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@paddingSize` |  |  | Padding: `'none'`, `'s'`, `'m'` or `'l'`. Should match the popover's. |
+| `@paddingSize` | `EuiPopoverPanelPaddingSize` | the containing EuiPopover's `@panelPaddingSize` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
 
 | Block | Description |
 | --- | --- |
@@ -120,7 +123,7 @@ The footer of an EuiPopover (separated by a border).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@paddingSize` |  |  | Padding: `'none'`, `'s'`, `'m'` or `'l'`. Should match the popover's. |
+| `@paddingSize` | `EuiPopoverPanelPaddingSize` | the containing EuiPopover's `@panelPaddingSize` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
 
 | Block | Description |
 | --- | --- |
@@ -136,7 +139,8 @@ picker. Takes EuiPopover's args (`@isOpen`, `@closePopover`, …).
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@disableFocusTrap` | `boolean` | `false` (Tab cycles through the popover, closing after its last element) | Lets focus leave the popover; Tab then closes it. |
-| `@fullWidth` | `boolean` |  | Stretches the input (and popover) to its container's width. |
+| `@fullWidth` | `boolean` | `false` | Stretches the input (and popover) to its container's width. Otherwise the popover is at most the form max width (upstream). |
+| `@panelMinWidth` | `number` | `0` | Minimum width of the panel, when the input is narrower. |
 | `@onPanelResize` | `(width?: number) => void` |  | Called with the popover's new width when the input resizes. |
 
 Deprecated: `@input` (Has no effect, use the `<:input>` block.); `@inputRef` (Has no effect.).

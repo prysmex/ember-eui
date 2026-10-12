@@ -29,6 +29,17 @@ Branch: `feat/eui-latest`, based on `feat/emotion`. No catalog-wide completion c
 
 Updated 2026-10-12 (coordinator session). Process: parallel agents per component family in git worktrees (`<scratchpad>/wt/<family>`, branch `eui-wave/<family>`), max 6 at once (8 cores / 7 GB). Rules for agents: [wave-brief.md](wave-brief.md) (incl. Performance rules and `@css`).
 
+Resume update (2026-10-12): merged `new-skeleton` as `3253d497` and regenerated
+portable source paths (`6f96d7c6`). Its recorded checks remain core 1125/1125
+and parity 309/309; current main also passes parity 309/309, types, lint, core
+build, site types and site production build. Added the new EuiTimeline family in
+small commits (`7d7bf077`, `c9e267ca`) with six focused browser tests and docs.
+Timeline is deliberately still **In progress**: the current sandbox lost the
+previous Linux Chromium cache, and the Playwright replacement download requires
+network approval for `cdn.playwright.dev`. Once approved, run the focused
+timeline tests and then the full core/site browser suites before changing its
+four inventory rows to Migrated. See [new-timeline-handoff.md](new-timeline-handoff.md).
+
 Coordinator loop per finished agent:
 1. Merge `eui-wave/<family>` into `feat/eui-latest`. Shared-file conflicts: `components.md` row-wise (non-Pending row wins); generator/parity entry objects unioned by key with insert-only test additions replayed; generated files regenerated in the main checkout (`node scripts/generate-eui-styles.mjs`), then parity (`node --test scripts/eui-upstream-parity.test.mjs`).
 2. Check new code follows the perf rules (all style getters `@cached`, factories only via `useEuiBorealisStyles`) and `@css` for migrated children.

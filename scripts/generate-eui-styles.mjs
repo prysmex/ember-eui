@@ -71,6 +71,9 @@ const entries = {
     'euiButtonIconStyles'
   ],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
+  'global_styling/reset/reset.js': ['resetStyles'],
+  'global_styling/mixins/_helpers.js': ['euiScrollBarStyles'],
+  'services/color/manipulation.js': ['transparentize'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
   'global_styling/mixins/_button.js': [

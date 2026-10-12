@@ -292,3 +292,68 @@ test('badge color helpers match upstream for named, custom and invalid colors', 
       `getIsValidColor ${color}`
     );
 });
+
+test('global styles port matches upstream EuiGlobalStyles in every mode and contrast', () => {
+  const { serializeStyles } = require('@emotion/serialize');
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/global-styles.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-global-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const { euiGlobalStyles } = portModule.exports;
+
+  // Run upstream's React component body with React/Emotion/hooks stubbed out.
+  let current;
+  const originalLoad = Module._load;
+  Module._load = function (request, parent, isMain) {
+    if (request === '@emotion/react')
+      return {
+        Global: 'Global',
+        css: (...args) => serializeStyles(args),
+        jsx: (type, props) => ({ type, props })
+      };
+    if (/services\/theme$/.test(request))
+      return { useEuiTheme: () => current };
+    return originalLoad.call(this, request, parent, isMain);
+  };
+  try {
+    const globalsPath = resolve(eui, 'lib/global_styling/reset/global_styles.js');
+    delete require.cache[globalsPath];
+    const { EuiGlobalStyles } = require(globalsPath);
+    for (const colorMode of ['LIGHT', 'DARK'])
+      for (const highContrastMode of [false, 'preferred', 'forced'])
+        for (const modifications of [{}, { font: { defaultUnits: 'px' }, base: 18 }]) {
+          current = {
+            colorMode,
+            highContrastMode,
+            modifications,
+            euiTheme: getComputed(
+              EuiThemeBorealis,
+              buildTheme(modifications, 'parity'),
+              colorMode,
+              highContrastMode
+            )
+          };
+          const upstream = EuiGlobalStyles({}).props.styles.styles;
+          assert.strictEqual(
+            serializeStyles(euiGlobalStyles(current)).styles,
+            upstream,
+            `${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`
+          );
+        }
+  } finally {
+    Module._load = originalLoad;
+  }
+});

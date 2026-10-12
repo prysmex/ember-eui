@@ -1,10 +1,12 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { render, settled } from '@ember/test-helpers';
+import { clearRender, render, settled } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
 import { hash } from '@ember/helper';
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
+import EuiText from '#src/components/eui-text.gts';
+import EuiTitle from '#src/components/eui-title.gts';
 import { getEuiThemeContext } from '#src/utils/emotion/consume.ts';
 import { EuiThemeContext } from '#src/utils/emotion/context.ts';
 import {
@@ -197,5 +199,92 @@ module('Integration | Borealis | context', function (hooks) {
       resolveBorealisTheme('light', merged).euiTheme.colors.textHeading,
       '#abcdef'
     );
+  });
+
+  test('the outermost provider owns upstream global styles; nested and opted-out ones do not', async function (assert) {
+    const globalTags = () =>
+      document.querySelectorAll('style[data-emotion^="eui-global"]').length;
+    const rootSize = () => getComputedStyle(document.documentElement).fontSize;
+    const before = rootSize();
+    class State {
+      @tracked mode: EuiColorMode = 'light';
+      @tracked show = true;
+    }
+    const state = new State();
+    await render(
+      <template>
+        {{#if state.show}}
+          <EuiEmotionProvider @colorMode={{state.mode}}>
+            <EuiText data-text><p>Body</p></EuiText>
+            <EuiTitle @size="m" data-title>Title</EuiTitle>
+            <EuiEmotionProvider @colorMode="dark">
+              <EuiText data-nested>Nested</EuiText>
+            </EuiEmotionProvider>
+          </EuiEmotionProvider>
+        {{/if}}
+      </template>
+    );
+    assert.strictEqual(rootSize(), '14px', 'Borealis body scale on the root');
+    assert.true(globalTags() > 0, 'global styles injected');
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('[data-text]')!).fontSize,
+      '14px',
+      'EuiText s renders at the upstream size'
+    );
+    assert.strictEqual(
+      Math.round(
+        parseFloat(
+          getComputedStyle(this.element.querySelector('[data-title]')!).fontSize
+        )
+      ),
+      24,
+      'EuiTitle m renders at the upstream size (1.7143rem)'
+    );
+    assert.strictEqual(
+      getComputedStyle(document.querySelector('[data-text] p')!).marginTop,
+      '0px'
+    );
+    const light = resolveBorealisTheme('light').euiTheme.colors.body;
+    const probe = document.createElement('i');
+    probe.style.color = light;
+    document.body.append(probe);
+    const lightBody = getComputedStyle(probe).color;
+    probe.remove();
+    assert.strictEqual(
+      getComputedStyle(document.documentElement).backgroundColor,
+      lightBody
+    );
+
+    state.mode = 'dark';
+    await settled();
+    assert.notStrictEqual(
+      getComputedStyle(document.documentElement).backgroundColor,
+      lightBody,
+      'global styles follow the root provider mode'
+    );
+
+    state.show = false;
+    await settled();
+    assert.strictEqual(globalTags(), 0, 'teardown removes global styles');
+    assert.strictEqual(rootSize(), before, 'root font size restored');
+  });
+
+  test('globalStyles=false and explicit @parent providers inject nothing', async function (assert) {
+    const parent = new EuiThemeContext(() => ({ colorMode: 'dark' }));
+    const before = getComputedStyle(document.documentElement).fontSize;
+    await render(
+      <template>
+        <EuiEmotionProvider @globalStyles={{false}}>
+          <EuiText>Off</EuiText>
+        </EuiEmotionProvider>
+        <EuiEmotionProvider @parent={{parent}}><Probe /></EuiEmotionProvider>
+      </template>
+    );
+    assert.strictEqual(
+      document.querySelectorAll('style[data-emotion^="eui-global"]').length,
+      0
+    );
+    assert.strictEqual(getComputedStyle(document.documentElement).fontSize, before);
+    await clearRender();
   });
 });

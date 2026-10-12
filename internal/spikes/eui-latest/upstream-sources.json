@@ -183,6 +183,10 @@
       "sha256": "b137f8317515ab3d22db1e55757ad466827d372511f40518981f39ee5af4c03e"
     },
     {
+      "path": "@elastic/eui/es/global_styling/reset/reset.js",
+      "sha256": "028b2384065da0b008076f371dffed44244b867d4e6d2680fed7c82d48dbafb9"
+    },
+    {
       "path": "@elastic/eui/es/global_styling/utility/animations.js",
       "sha256": "7fbc6d11d043a2bc90f2c3251d37db2d504d44a90b76e10234e3878802a170fe"
     },

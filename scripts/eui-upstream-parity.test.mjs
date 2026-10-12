@@ -134,7 +134,14 @@ const factories = {
   'components/description_list/description_list_title.styles.js': ['euiDescriptionListTitleStyles'],
   'components/description_list/description_list_description.styles.js': ['euiDescriptionListDescriptionStyles'],
   'components/side_nav/side_nav.styles.js': ['euiSideNavMobileStyles'],
-  'components/side_nav/side_nav_item.styles.js': ['euiSideNavItemStyles', 'euiSideNavItemButtonStyles']
+  'components/side_nav/side_nav_item.styles.js': ['euiSideNavItemStyles', 'euiSideNavItemButtonStyles'],
+  // buttons-misc
+  'components/button/button_group/button_group.styles.js': ['euiButtonGroupButtonsStyles'],
+  'components/facet/facet_button.styles.js': ['euiFacetButtonStyles', 'euiFacetButtonTextStyles'],
+  'components/facet/facet_group.styles.js': ['euiFacetGroupStyles'],
+  'components/filter_group/filter_button.styles.js': ['euiFilterButtonDisplay', 'euiFilterButtonStyles', 'euiFilterButtonWrapperStyles', 'euiFilterButtonChildStyles'],
+  'components/filter_group/filter_group.styles.js': ['euiFilterGroupStyles'],
+  'components/filter_group/filter_select_item.styles.js': ['euiFilterSelectItemStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -920,3 +927,60 @@ test('key pad menu item hand port matches upstream in 12 theme configurations', 
       }
 });
 
+
+test('button group button hand port matches upstream in 12 theme configurations', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/buttons-misc.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-buttons-misc-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const reference = require(
+    resolve(eui, 'lib/components/button/button_group/button_group_button.styles.js')
+  );
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        };
+        for (const name of ['euiButtonGroupButtonStyles', '_compressedButtonFocusColors'])
+          assert.deepEqual(
+            normalize(port[name](context)),
+            normalize(reference[name](context)),
+            `${name} ${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`
+          );
+      }
+});
+
+test('button group and facet static slots match upstream', () => {
+  const group = require(resolve(eui, 'lib/components/button/button_group/button_group.styles.js'));
+  assert.deepEqual(normalize(styles.euiButtonGroupStyles), normalize(group.euiButtonGroupStyles));
+  const facet = require(resolve(eui, 'lib/components/facet/facet_button.styles.js'));
+  assert.deepEqual(normalize(styles.euiFacetButton__disabled), normalize(facet.euiFacetButton__disabled));
+  for (const name of ['euiTextShift', 'euiDisabledSelector', 'preventForcedColors', 'euiOutline', 'BUTTON_COLORS'])
+    assert.ok(styles[name] !== undefined, name);
+});

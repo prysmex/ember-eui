@@ -107,6 +107,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@iconType` |  |  | The icon; anything `EuiIcon`'s `@type` accepts. An icon-only button has no visible text, so always pass an `aria-label="…"` (or `aria-labelledby`) describing the action; a warning is logged otherwise. |
 | `@iconSize` |  | `'m'` | Size of the icon. |
 | `@iconClasses` | `string` |  | Extra classes for the icon. |
@@ -130,7 +131,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@buttonSize` | `'s' \| 'm' \| 'compressed'` | `'s'` | `'s'`, `'m'`, or `'compressed'` (for forms, e.g. inside an `EuiFormRow` with `@display="rowCompressed"`). |
-| `@color` |  | `'text'` | Color of the selected buttons: `'primary'`, `'text'`, `'ghost'`, `'success'`, `'warning'` or `'danger'`. |
+| `@color` |  | `'text'` | Color of the selected buttons: `'text'`, `'primary'`, `'accent'`, `'accentSecondary'`, `'success'`, `'warning'`, `'danger'`, `'neutral'` or `'risk'`. `'ghost'` is still accepted and renders as `'text'` (latest EUI dropped it). |
 | `@isFullWidth` | `boolean` |  | Stretches the group, and its buttons evenly, to its container's width. |
 | `@isDisabled` | `boolean` |  | Disables every option. |
 | `@type` | `'single' \| 'multi'` | `'single'` | `'single'`: one option selected at a time, set with `@idSelected` (radio buttons). `'multi'`: each option toggles, set with `@idToSelectedMap`. |

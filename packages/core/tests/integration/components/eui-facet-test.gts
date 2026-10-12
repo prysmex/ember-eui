@@ -43,7 +43,9 @@ module('Integration | Component | eui-facet-button and eui-facet-group', functio
       </template>
     );
 
-    assert.dom('button.euiFacetButton').hasClass('euiFacetButton--unSelected').hasAttribute('title', 'Errors');
+    assert.dom('button.euiFacetButton').hasAttribute('title', 'Errors');
+    // Latest-only: the unselected text is not bold (no `--unSelected` class).
+    assert.notStrictEqual(getComputedStyle(document.querySelector('.euiFacetButton__text')!).fontWeight, '600');
     assert.dom('.euiFacetButton__text').hasText('Errors').hasAttribute('data-text', 'Errors');
     assert.dom('.euiFacetButton__quantity').hasText('6').hasStyle(SUBDUED);
     assert.dom('.euiFacetButton__icon').exists();
@@ -61,7 +63,8 @@ module('Integration | Component | eui-facet-button and eui-facet-group', functio
       </template>
     );
 
-    assert.dom('.selected').hasClass('euiFacetButton--isSelected');
+    // Latest-only: selected text is bold (no `--isSelected` class).
+    assert.strictEqual(getComputedStyle(document.querySelector('.selected .euiFacetButton__text')!).fontWeight, '600');
     // accent is the badge's default color
     assert.dom('.selected .euiFacetButton__quantity').hasStyle(ACCENT);
     assert.dom('.loading').isDisabled();
@@ -81,19 +84,19 @@ module('Integration | Component | eui-facet-button and eui-facet-group', functio
 
     assert
       .dom('.vertical')
-      .hasClass('euiFacetGroup')
-      .hasClass('euiFacetGroup--vertical')
-      .hasClass('euiFacetGroup--gutterMedium')
-      .hasClass('euiFlexGroup');
+      .hasClass('euiFacetGroup');
+    // Latest-only: upstream EuiFacetGroup is a plain flex div (no EuiFlexGroup,
+    // no layout/gutter modifier classes); gaps are measured in
+    // eui-buttons-misc-test.gts.
     // EuiFlexGroup is latest-only: check native flex styles, not legacy classes.
     assert.strictEqual(
       getComputedStyle(document.querySelector('.vertical')!).flexDirection,
       'column'
     );
-    assert
-      .dom('.horizontal')
-      .hasClass('euiFacetGroup--horizontal')
-      .hasClass('euiFacetGroup--gutterLarge');
+    assert.strictEqual(
+      getComputedStyle(document.querySelector('.horizontal')!).flexDirection,
+      'row'
+    );
     assert.strictEqual(
       getComputedStyle(document.querySelector('.horizontal')!).flexWrap,
       'wrap'

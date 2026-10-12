@@ -39,7 +39,9 @@ module('Integration | Component | eui-button-group', function (hooks) {
       </template>
     );
 
-    assert.dom('fieldset.euiButtonGroup').hasClass('euiButtonGroup--small').hasClass('euiButtonGroup--text');
+    // Latest-only: no size/color modifier classes (sizes and colors are
+    // measured in eui-buttons-misc-test.gts).
+    assert.dom('fieldset.euiButtonGroup').doesNotHaveClass('euiButtonGroup--small');
     assert.dom('fieldset legend').hasText('Alignment');
     assert.dom('input[type="radio"]').exists({ count: 2 }, 'disabled options render as buttons');
     assert.dom('.euiButtonGroupButton-isSelected').hasText('Left');
@@ -78,7 +80,12 @@ module('Integration | Component | eui-button-group', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiButtonGroup').hasClass('euiButtonGroup--medium').hasClass('euiButtonGroup--primary').hasClass('euiButtonGroup--fullWidth');
+    // Latest-only: full width is measured instead of a modifier class.
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiButtonGroup')!).display, 'block');
+    assert.strictEqual(
+      document.querySelector('.euiButtonGroup__buttons')!.getBoundingClientRect().width,
+      document.querySelector('.euiButtonGroup')!.getBoundingClientRect().width
+    );
     assert.dom('.euiButtonGroupButton').hasClass('euiButtonGroupButton-isIconOnly');
     assert.dom('.euiButtonGroupButton svg.euiIcon').exists();
   });
@@ -87,7 +94,8 @@ module('Integration | Component | eui-button-group', function (hooks) {
     await render(<template><EuiButtonGroup @legend="Off" @options={{OPTIONS}} @isDisabled={{true}} /></template>);
 
     assert.dom('fieldset').isDisabled();
-    assert.dom('fieldset').doesNotHaveClass('euiButtonGroup--fullWidth');
-    assert.dom('fieldset').hasClass('euiButtonGroup--isDisabled');
+    assert.strictEqual(getComputedStyle(document.querySelector('fieldset')!).display, 'inline-block', 'not full width');
+    // Upstream's state class is `euiButtonGroup-isDisabled`.
+    assert.dom('fieldset').hasClass('euiButtonGroup-isDisabled');
   });
 });

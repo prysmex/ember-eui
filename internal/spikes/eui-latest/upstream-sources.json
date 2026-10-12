@@ -75,6 +75,10 @@
       "sha256": "6f7145ef9939e38e9aa343ee80f80700436d0374a65b5f0deb3dae0c1731915e"
     },
     {
+      "path": "@elastic/eui/es/components/button/button_group/button_group.styles.js",
+      "sha256": "1600844cf27985fe7b42009a1a03cc841c1ef75b4994a4604593804ac5ba71df"
+    },
+    {
       "path": "@elastic/eui/es/components/button/button_icon/button_icon.styles.js",
       "sha256": "9a702acb8d4b606412ecd70db4c7b4168be6fd0cfc01e64b4e996ddfe7fa4395"
     },
@@ -113,6 +117,26 @@
     {
       "path": "@elastic/eui/es/components/empty_prompt/empty_prompt.styles.js",
       "sha256": "8b31630b3bd4ae626b81475f5a1181d809bb42cecd2968114158e55b2d76ad23"
+    },
+    {
+      "path": "@elastic/eui/es/components/facet/facet_button.styles.js",
+      "sha256": "5b11811a31c9eb8fd12a47aed30fc26ac4efcc4a512538073039cb4b1a9f4326"
+    },
+    {
+      "path": "@elastic/eui/es/components/facet/facet_group.styles.js",
+      "sha256": "c4af6604e87ed1f4bb4fd757edd663288cabf991e53d9a61d06574b9880178e8"
+    },
+    {
+      "path": "@elastic/eui/es/components/filter_group/filter_button.styles.js",
+      "sha256": "1e66655717f3b73c5a5b46fe0278fa9efcde3ab0c65d539e008f414d74d3c60b"
+    },
+    {
+      "path": "@elastic/eui/es/components/filter_group/filter_group.styles.js",
+      "sha256": "d6cfd1165468d4f7b70e7dccb5a4f712dc6ec135bf67997c4ba15795122c47a9"
+    },
+    {
+      "path": "@elastic/eui/es/components/filter_group/filter_select_item.styles.js",
+      "sha256": "84f813b4e0011d895216b60015d334ee4b818510eb5a8f47e9af9151b3c02735"
     },
     {
       "path": "@elastic/eui/es/components/flex/flex_grid.styles.js",

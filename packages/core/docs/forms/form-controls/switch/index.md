@@ -47,10 +47,12 @@ An on/off toggle, for settings that apply immediately.
 | `@id` | `string` | a random id | Id of the switch button. |
 | `@showLabel` | `boolean` | `true` | Whether to render the text label. Without it `@label` becomes the accessible label. |
 | `@label` | `string` |  | Must be a string if `showLabel` prop is true |
+| `@labelProps` | `{ className?: string; id?: string; }` |  | Props for the label `<span>`: `{ className, id }`. |
 | `@checked` (required) | `boolean` |  | Whether it is on. |
 | `@onChange` | `(event: MouseEvent) => void` |  | Called on click; `event.target.checked` is the new state. Update `@checked` here. |
 | `@disabled` | `boolean` |  | Disables the switch. |
-| `@compressed` | `boolean` |  | Smaller switch, for dense forms. |
+| `@compressed` | `boolean` |  | Smaller switch (16px tall, no check/cross icons), for dense forms. |
+| `@mini` | `boolean` |  | Smallest switch (10px tall, no icons, `xs` label). Takes precedence over `@compressed`. |
 | `@type` | `'submit' \| 'reset' \| 'button'` | `'button'` | `type` of the button. |
 | `@containerClass` | `string` |  | Extra classes for the wrapper. |
 

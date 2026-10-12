@@ -26,7 +26,8 @@ module('Integration | Component | eui-radio', function (hooks) {
     assert.dom('#r1[type="radio"]').isChecked().hasAttribute('name', 'size');
     assert.dom('label[for="r1"]').hasClass('euiRadio__label').hasText('Medium');
     assert.dom('#r2').isDisabled();
-    assert.dom('.euiRadio--noLabel.euiRadio--compressed #r2').exists();
+    // Upstream has no noLabel/compressed modifiers: no <label> is rendered.
+    assert.dom('.euiRadio:has(#r2) .euiRadio__label').doesNotExist();
   });
 
   test('EuiRadioGroup checks @idSelected and calls @onChange(id, value)', async function (assert) {

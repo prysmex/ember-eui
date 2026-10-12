@@ -69,7 +69,18 @@ const factories = {
   ],
   'components/button/button_icon/button_icon.styles.js': [
     'euiButtonIconStyles'
-  ]
+  ],
+  // checkables
+  'components/form/checkbox/checkbox.styles.js': ['euiCheckboxStyles'],
+  'components/form/checkbox/checkbox_control.styles.js': [
+    'euiCheckboxControlStyles'
+  ],
+  'components/form/checkbox/checkbox_group.styles.js': [
+    'euiCheckboxGroupStyles'
+  ],
+  'components/form/radio/radio.styles.js': ['euiRadioStyles'],
+  'components/form/radio/radio_group.styles.js': ['euiRadioGroupStyles'],
+  'components/form/switch/switch.styles.js': ['euiSwitchStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

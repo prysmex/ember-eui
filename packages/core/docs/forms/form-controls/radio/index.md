@@ -42,8 +42,9 @@ Generated from the components' TypeScript signatures by
 
 ### EuiRadio
 
-A single radio. Attributes and modifiers (`value`, `{{on "change" …}}`)
-go to the `<input type="radio">`. For a list of choices use
+A single radio: a styled circle over a visually hidden native
+`<input type="radio">`. Attributes and modifiers (`value`,
+`{{on "change" …}}`) go to the `<input>`. For a list of choices use
 EuiRadioGroup.
 
 | Argument | Type | Default | Description |
@@ -53,10 +54,11 @@ EuiRadioGroup.
 | `@name` | `string` |  | `name` of the radio; radios with the same name form a group. |
 | `@label` | `string` |  | Label next to the radio. Use the `<:label>` block for markup. |
 | `@labelProps` | `{ className?: string; }` |  | Props for the `<label>`: `{ className }`. |
-| `@compressed` | `boolean` |  | Smaller radio, for dense forms. |
 | `@containerClass` | `string` |  | Extra classes for the wrapper around the input and label. |
 | `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the `<input>` element once rendered. |
 | `@id` | `string` | a random id | Id of the input, linked to the label. |
+
+Deprecated: `@compressed` (Has no effect on a single radio (upstream EUI has no compressed radio). `EuiRadioGroup`'s `@compressed` tightens the spacing between rows.).
 
 | Block | Description |
 | --- | --- |

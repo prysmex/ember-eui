@@ -39,9 +39,11 @@ module('Integration | Component | eui-checkbox', function (hooks) {
     );
 
     assert.dom('input.on').isChecked();
-    assert.dom('.euiCheckbox--compressed input.on').exists();
+    // Upstream has no compressed/noLabel modifiers: a label-less checkbox
+    // simply renders no <label> (computed styles: eui-checkables-test).
+    assert.dom('.euiCheckbox:has(input.on) .euiCheckbox__label').hasText('On');
     assert.dom('input.off').isDisabled();
-    assert.dom('.euiCheckbox--noLabel input.off').exists();
+    assert.dom('.euiCheckbox:has(input.off) .euiCheckbox__label').doesNotExist();
     assert.true((document.querySelector('input.some') as HTMLInputElement).indeterminate);
   });
 

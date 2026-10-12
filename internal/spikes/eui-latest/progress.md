@@ -38,6 +38,17 @@ are Migrated. The site navigation count is now 104 and its Testem heartbeat
 matches core's 120s because the catalog-wide route test takes about 45s on ARM.
 See [new-timeline-handoff.md](new-timeline-handoff.md).
 
+Resume update 2 (2026-10-12, new coordinator session, scratchpad `625fa540…/scratchpad`):
+the README's `/tmp/ember-eui-toolchain` and Chromium 141 paths are gone; tests run
+on Playwright Chromium 130 via the old scratchpad `bin/google-chrome` symlink
+(timeline 9/9). Model plan agreed with the user: Opus for recovery, tables and
+data grid; Sonnet for refresh-flyout and the visual pass. Running: new-inline-split
+and new-page-a11y (recovering uncommitted work in their old worktrees, merging
+`feat/eui-latest` in), new-truncate (fresh worktree; salvages EuiTextTruncate and
+EuiTextBlockTruncate from the old new-timeline worktree, whose timeline parts are
+superseded), new-refresh-flyout (fresh worktree). Next: visual-pass recovery,
+new-tables, then new-data-grid alone. Merge tooling copied to the new scratchpad.
+
 Coordinator loop per finished agent:
 1. Merge `eui-wave/<family>` into `feat/eui-latest`. Shared-file conflicts: `components.md` row-wise (non-Pending row wins); generator/parity entry objects unioned by key with insert-only test additions replayed; generated files regenerated in the main checkout (`node scripts/generate-eui-styles.mjs`), then parity (`node --test scripts/eui-upstream-parity.test.mjs`).
 2. Check new code follows the perf rules (all style getters `@cached`, factories only via `useEuiBorealisStyles`) and `@css` for migrated children.

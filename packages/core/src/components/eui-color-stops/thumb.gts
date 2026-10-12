@@ -12,6 +12,7 @@ import {
   isColorInvalid,
   isStopInvalid
 } from '../../-private/color.ts';
+import { deprecateRemovedUpstream } from '../../-private/removed-upstream.ts';
 import cssStyle from '../../-private/css-style.ts';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import {
@@ -35,6 +36,7 @@ import EuiSpacer from '../eui-spacer.gts';
 import type EuiI18n from '../../services/eui-i18n';
 import type { ColorStop } from '../../-private/color.ts';
 import type { CSSInterpolation } from '@emotion/css/create-instance';
+import type Owner from '@ember/owner';
 
 interface ThumbSignature {
   Element: HTMLButtonElement;
@@ -69,6 +71,15 @@ interface ThumbSignature {
 
 /** @private One stop of EuiColorStops: a thumb opening an edit popover. */
 export default class EuiColorStopThumb extends Component<ThumbSignature> {
+  constructor(owner: Owner, args: ThumbSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-color-stops-thumb',
+      'EuiColorStopThumb',
+      'There is no direct upstream replacement; for predefined gradients use EuiColorPalettePicker.'
+    );
+  }
+
   @service declare euiI18n: EuiI18n;
 
   @tracked hasFocus = false;

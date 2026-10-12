@@ -8,6 +8,7 @@ import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
 import { and, eq, not } from 'ember-truth-helpers';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import useState from '../helpers/use-state.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
@@ -19,6 +20,7 @@ import EuiPopover from './eui-popover.gts';
 
 import type { EuiBadgeSignature } from './eui-badge';
 import type { EuiIconSignature } from './eui-icon';
+import type Owner from '@ember/owner';
 
 /** @private The source, time and menu row of an EuiNotificationEvent. */
 export interface EuiNotificationEventMetaSignature {
@@ -57,6 +59,15 @@ export interface EuiNotificationEventMetaSignature {
 export type EuiNotificationEventSignature = EuiNotificationEventMetaSignature;
 
 export default class EuiNotificationEventMeta extends Component<EuiNotificationEventMetaSignature> {
+  constructor(owner: Owner, args: EuiNotificationEventMetaSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-notification-event-meta',
+      'EuiNotificationEventMeta',
+      'Compose notifications from EuiPanel, EuiTitle, EuiText and EuiContextMenu instead.'
+    );
+  }
+
   popoverId = `euiNotificationEventMeta${guidFor(this)}`;
 
   get context() {

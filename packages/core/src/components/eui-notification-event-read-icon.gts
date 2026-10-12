@@ -2,12 +2,14 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { concat } from '@ember/helper';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
 import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type { EuiIconSignature } from './eui-icon';
+import type Owner from '@ember/owner';
 
 /** @private Dot showing an EuiNotificationEvent's read state. */
 export interface EuiNotificationEventReadIconSignature {
@@ -25,6 +27,15 @@ export interface EuiNotificationEventReadIconSignature {
 }
 
 export default class EuiNotificationEventReadIcon extends Component<EuiNotificationEventReadIconSignature> {
+  constructor(owner: Owner, args: EuiNotificationEventReadIconSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-notification-event-read-icon',
+      'EuiNotificationEventReadIcon',
+      'Compose notifications from EuiPanel, EuiTitle, EuiText and EuiContextMenu instead.'
+    );
+  }
+
   /** Read styles composed into EuiIcon's own class (`@css`). */
   @cached
   get iconCss() {

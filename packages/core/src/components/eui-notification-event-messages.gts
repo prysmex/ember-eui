@@ -2,11 +2,13 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { guidFor } from '@ember/object/internals';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiAccordion from './eui-accordion.gts';
 import EuiText from './eui-text.gts';
+import type Owner from '@ember/owner';
 
 /** @private The messages of an EuiNotificationEvent. */
 export interface EuiNotificationEventMessagesSignature {
@@ -24,6 +26,15 @@ export interface EuiNotificationEventMessagesSignature {
 }
 
 export default class EuiNotificationEventMessages extends Component<EuiNotificationEventMessagesSignature> {
+  constructor(owner: Owner, args: EuiNotificationEventMessagesSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-notification-event-messages',
+      'EuiNotificationEventMessages',
+      'Compose notifications from EuiPanel, EuiTitle, EuiText and EuiContextMenu instead.'
+    );
+  }
+
   accordionId = `euiNotificationEventMessagesAccordion${guidFor(this)}`;
 
   get context() {

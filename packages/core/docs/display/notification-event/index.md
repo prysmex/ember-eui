@@ -6,6 +6,18 @@ title: Notification Event
 <EuiPageHeader @pageTitle="Notification Event"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Deprecated: removed upstream" @color="warning">
+  <p>
+    Elastic UI removed EuiNotificationEvent and its EuiNotificationEvent* pieces upstream, so they are deprecated since
+    14.2.0 and will be removed in the next major version (15.0.0). They
+    keep working until then and report the
+    <EuiCode>ember-eui.eui-notification-event.removed-upstream</EuiCode> deprecation (and one per sub-component) in
+    development. Compose notifications from <strong>EuiPanel</strong>, <strong>EuiTitle</strong>, <strong>EuiText</strong> and <strong>EuiContextMenu</strong> instead.
+  </p>
+</EuiCallOut>
+
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiNotificationEvent` is one entry of a notifications list (usually in

@@ -5,6 +5,7 @@ import { guidFor } from '@ember/object/internals';
 
 import { and, eq, not, or } from 'ember-truth-helpers';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -19,6 +20,7 @@ import type { EuiBadgeSignature } from './eui-badge';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages';
 import type { TextBlockSignature } from './text-block';
+import type Owner from '@ember/owner';
 
 /**
  * One notification in a list (e.g. a flyout from the header): title,
@@ -97,6 +99,15 @@ const TITLE_RESET = { boxSizing: 'border-box', margin: 0, padding: 0 } as const;
  * removed it); the Borealis styles live in `utils/eui/notification-event.ts`.
  */
 export default class EuiNotificationEvent extends Component<EuiNotificationEventSignature> {
+  constructor(owner: Owner, args: EuiNotificationEventSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-notification-event',
+      'EuiNotificationEvent',
+      'Compose notifications from EuiPanel, EuiTitle, EuiText and EuiContextMenu instead.'
+    );
+  }
+
   titleId = `euiNotificationEventTitle${guidFor(this)}`;
 
   get context() {

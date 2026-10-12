@@ -17,6 +17,8 @@ class State {
   };
 }
 
+const TOGGLE = '[data-test-subj="superDatePickerToggleRefreshButton"]';
+
 module('Integration | Component | eui-refresh-interval', function (hooks) {
   setupRenderingTest(hooks);
 
@@ -29,21 +31,21 @@ module('Integration | Component | eui-refresh-interval', function (hooks) {
       </template>
     );
 
-    assert.dom('legend').hasText('Refresh every');
+    assert.dom('.euiSwitch__label').hasText('Refresh every');
     assert.dom('input').hasValue('5');
     assert.dom('select').hasValue('s');
-    assert.dom('.euiRefreshInterval__startButton').hasText('Start');
+    assert.dom(TOGGLE).hasAria('checked', 'false');
 
-    await click('.euiRefreshInterval__startButton');
+    await click(TOGGLE);
     await rerender();
     assert.deepEqual(state.changes.at(-1), { refreshInterval: 5000, isPaused: false });
-    assert.dom('.euiRefreshInterval__startButton').hasText('Stop');
+    assert.dom(TOGGLE).hasAria('checked', 'true');
 
-    await click('.euiRefreshInterval__startButton');
+    await click(TOGGLE);
     assert.deepEqual(state.changes.at(-1), { refreshInterval: 5000, isPaused: true });
-    assert.dom('.euiRefreshInterval__startButton').hasText('Start');
+    assert.dom(TOGGLE).hasAria('checked', 'false');
 
-    await click('.euiRefreshInterval__startButton');
+    await click(TOGGLE);
 
     await fillIn('input', '2');
     await select('select', 'm');
@@ -54,8 +56,9 @@ module('Integration | Component | eui-refresh-interval', function (hooks) {
     assert.dom('select').hasValue('m', 'accepting an edit preserves the units chosen by the user');
   });
 
-  test('an empty value disables the button; Enter starts', async function (assert) {
+  test('an empty value is ignored by the switch; Enter starts', async function (assert) {
     const state = new State();
+    state.isPaused = false;
 
     await render(
       <template>
@@ -64,7 +67,9 @@ module('Integration | Component | eui-refresh-interval', function (hooks) {
     );
 
     await fillIn('input', '');
-    assert.dom('.euiRefreshInterval__startButton').isDisabled();
+    const count = state.changes.length;
+    await click(TOGGLE);
+    assert.strictEqual(state.changes.length, count, 'an empty value cannot be toggled (upstream)');
 
     await fillIn('input', '10');
     await triggerKeyEvent('input', 'keydown', 'Enter');
@@ -80,16 +85,15 @@ module('Integration | Component | eui-refresh-interval', function (hooks) {
     await rerender();
     assert.dom('input').hasValue('2');
     assert.dom('select').hasValue('m');
-    assert.dom('.euiScreenReaderOnly').hasText('Refresh interval currently set to 2 Minutes.');
+    assert.dom('.euiScreenReaderOnly').hasText('Refresh is off, interval set to 2 Minutes.');
     assert.deepEqual(state.changes, [], 'synchronization does not emit a user change');
 
-    await click('.euiRefreshInterval__startButton');
+    await click(TOGGLE);
     assert.deepEqual(state.changes.at(-1), { refreshInterval: 120000, isPaused: false });
 
     state.refreshInterval = 0;
     await rerender();
-    assert.dom('input').hasValue('0');
-    assert.dom('.euiRefreshInterval__startButton').isDisabled();
+    assert.dom('input').hasValue('0').hasAria('invalid', 'true');
     const count = state.changes.length;
     await triggerKeyEvent('input', 'keydown', 'Enter');
     assert.strictEqual(state.changes.length, count, 'invalid intervals cannot start through Enter');
@@ -100,7 +104,7 @@ module('Integration | Component | eui-refresh-interval', function (hooks) {
     const changes: number[] = [];
     const record = ({ refreshInterval }: { refreshInterval: number }) => changes.push(refreshInterval);
 
-    await render(<template><EuiRefreshInterval @refreshInterval={{state.refreshInterval}} @applyRefreshInterval={{record}} /></template>);
+    await render(<template><EuiRefreshInterval @isPaused={{false}} @refreshInterval={{state.refreshInterval}} @applyRefreshInterval={{record}} /></template>);
 
     await fillIn('input', '2');
     await select('select', 'm');

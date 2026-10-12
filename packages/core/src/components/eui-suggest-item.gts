@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
@@ -13,6 +14,7 @@ import EuiIcon from './eui-icon.gts';
 
 import type { EuiSuggestItemTint, EuiSuggestLabelWidth } from '../utils/eui/suggest.ts';
 import type { EuiIconSignature } from './eui-icon';
+import type Owner from '@ember/owner';
 
 export interface EuiSuggestItemType {
   /** Icon of the suggestion's type, e.g. `'queryField'` or `'magnify'`. */
@@ -73,6 +75,15 @@ const BOX_RESET = {
 function noop(): void {}
 
 export default class EuiSuggestItem extends Component<EuiSuggestItemSignature> {
+  constructor(owner: Owner, args: EuiSuggestItemSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-suggest-item',
+      'EuiSuggestItem',
+      'Use EuiSelectable or EuiComboBox instead, as upstream recommends.'
+    );
+  }
+
   get context() {
     return getEuiThemeContext(this);
   }

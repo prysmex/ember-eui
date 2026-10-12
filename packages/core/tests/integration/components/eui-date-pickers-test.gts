@@ -488,7 +488,8 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     assert.dom(root).hasClass('euiRefreshInterval').hasClass('euiQuickSelectPanel');
     assert.strictEqual(css(root).borderTopStyle, 'none', 'first panel');
     assert.strictEqual(css(root).paddingLeft, '0px', 'fieldset reset');
-    assert.dom('legend', root).hasText('Refresh every');
+    assert.dom('legend', root).doesNotExist('no legend: the switch label names the control (upstream)');
+    assert.dom('.euiSwitch__label', root).hasText('Refresh every');
     const input = el<HTMLInputElement>('[data-test-subj="superDatePickerRefreshIntervalInput"]', root);
     const select = el('[data-test-subj="superDatePickerRefreshIntervalUnitsSelect"]', root);
     assert.strictEqual(box(input).height, 32);
@@ -496,13 +497,14 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     assert.strictEqual(css(input).maxWidth, '100%', 'full width');
     assert.dom(input).hasAttribute('aria-label', 'Refresh interval value').doesNotHaveAttribute('aria-invalid');
     assert.dom(select).hasAttribute('aria-label', 'Refresh interval units');
-    assert.dom('.euiRefreshInterval__startButton', root).hasText('Stop');
+    assert.dom('[data-test-subj="superDatePickerToggleRefreshButton"]', root).hasAttribute('role', 'switch').hasAria('checked', 'true');
 
     await fillIn(input, '');
     assert.dom(input).hasAttribute('aria-invalid', 'true', 'invalid while running');
     state.isPaused = true;
     await settled();
     assert.dom(input).doesNotHaveAttribute('aria-invalid', 'not while paused');
+    assert.dom(input).isDisabled('disabled while paused');
 
     // inside the super date picker it is the last quick select panel
     await openQuickSelect('p');

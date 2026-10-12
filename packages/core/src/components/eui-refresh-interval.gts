@@ -6,12 +6,13 @@ import { service } from '@ember/service';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import { randomId } from '../-private/random-id.ts';
-import EuiButton from './eui-button.gts';
 import EuiFieldNumber from './eui-field-number.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
+import EuiFormLabel from './eui-form-label.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 import EuiSelect from './eui-select.gts';
+import EuiSwitch from './eui-switch.gts';
 import EuiQuickSelectPanel from './eui-super-date-picker/eui-quick-select-popover/eui-quick-select-panel.gts';
 
 import type EuiI18n from '../services/eui-i18n';
@@ -37,8 +38,9 @@ function toMilliseconds(units: Units, value: number): number {
 }
 
 /**
- * "Refresh every [5] [minutes] [Start / Stop]": sets how often data
- * refreshes. `EuiSuperDatePicker` shows it in its quick select popover
+ * "[switch] Refresh every [5] [minutes]": sets how often data refreshes.
+ * The switch turns refreshing on and off; the interval fields are
+ * disabled while it is off (upstream EUI). `EuiSuperDatePicker` shows it in its quick select popover
  * when given `@onRefreshChange`; it also works on its own.
  */
 export interface EuiRefreshIntervalSignature {
@@ -61,7 +63,6 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
   @tracked units: Units;
   private lastAppliedInterval?: number;
 
-  legendId = `euiRefreshInterval_${randomId()}`;
   descriptionId = `euiRefreshInterval_${randomId()}`;
 
   constructor(owner: Owner, args: EuiRefreshIntervalSignature['Args']) {
@@ -104,14 +105,22 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
   }
 
   get description(): string {
-    return this.t(
-      'euiRefreshInterval.fullDescription',
-      'Refresh interval currently set to {optionValue} {optionText}.',
-      {
-        optionValue: this.value,
-        optionText: this.unitOptions.find((option) => option.value === this.units)?.text ?? ''
-      }
-    );
+    const values = {
+      optionValue: this.value,
+      optionText: this.unitOptions.find((option) => option.value === this.units)?.text ?? ''
+    };
+
+    return this.isPaused
+      ? this.t(
+          'euiRefreshInterval.fullDescriptionOff',
+          'Refresh is off, interval set to {optionValue} {optionText}.',
+          values
+        )
+      : this.t(
+          'euiRefreshInterval.fullDescriptionOn',
+          'Refresh is on, interval set to {optionValue} {optionText}.',
+          values
+        );
   }
 
   get isInvalid(): boolean {
@@ -123,8 +132,8 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
     return !this.isPaused && this.isInvalid;
   }
 
-  get legend(): string {
-    return this.t('euiRefreshInterval.legend', 'Refresh every');
+  get toggleLabel(): string {
+    return this.t('euiRefreshInterval.toggleLabel', 'Refresh every');
   }
 
   apply(): void {
@@ -164,6 +173,7 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
     });
   }
 
+  /** Upstream toggles even an invalid (≤ 0) interval; only an empty one is ignored. */
   @action
   toggle(): void {
     if (this.value === '') return;
@@ -175,10 +185,10 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
   }
 
   <template>
+    {{! A fieldset without a title (upstream renders a plain panel); the
+      switch label names the control. }}
     <EuiQuickSelectPanel
       @tagName="fieldset"
-      @title={{this.legend}}
-      @titleId={{this.legendId}}
       class="euiRefreshInterval"
       {{didUpdate this.syncInterval @refreshInterval}}
       ...attributes
@@ -189,17 +199,39 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
         @responsive={{false}}
         @wrap={{true}}
       >
+        <EuiFlexItem @grow={{false}}>
+          {{! The visible label's id is unused: the aria-label names the switch (upstream). }}
+          <EuiSwitch
+            @checked={{if this.isPaused false true}}
+            @compressed={{true}}
+            @label={{this.toggleLabel}}
+            @onChange={{this.toggle}}
+            aria-label={{this.t
+              "euiRefreshInterval.toggleAriaLabel"
+              "Toggle refresh"
+            }}
+            aria-labelledby={{undefined}}
+            aria-describedby={{this.descriptionId}}
+            data-test-subj="superDatePickerToggleRefreshButton"
+          >
+            <:label>
+              <EuiFormLabel>{{this.toggleLabel}}</EuiFormLabel>
+            </:label>
+          </EuiSwitch>
+        </EuiFlexItem>
         <EuiFlexItem style="min-width: 60px">
           <EuiFieldNumber
             @compressed={{true}}
             @fullWidth={{true}}
             @value={{this.value}}
             @isInvalid={{this.showInvalid}}
+            @disabled={{this.isPaused}}
+            @min={{0}}
             aria-label={{this.t
               "euiRefreshInterval.valueAriaLabel"
               "Refresh interval value"
             }}
-            aria-describedby="{{this.descriptionId}} {{this.legendId}}"
+            aria-describedby={{this.descriptionId}}
             data-test-subj="superDatePickerRefreshIntervalInput"
             {{on "input" this.onValueInput}}
             {{on "keydown" this.onKeyDown}}
@@ -211,32 +243,16 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
             @fullWidth={{true}}
             @value={{this.units}}
             @options={{this.unitOptions}}
+            @disabled={{this.isPaused}}
             aria-label={{this.t
               "euiRefreshInterval.unitsAriaLabel"
               "Refresh interval units"
             }}
-            aria-describedby="{{this.descriptionId}} {{this.legendId}}"
+            aria-describedby={{this.descriptionId}}
             data-test-subj="superDatePickerRefreshIntervalUnitsSelect"
             {{on "change" this.onUnitsChange}}
             {{on "keydown" this.onKeyDown}}
           />
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButton
-            class="euiRefreshInterval__startButton"
-            @iconType={{if this.isPaused "play" "stop"}}
-            @size="s"
-            @isDisabled={{this.isInvalid}}
-            data-test-subj="superDatePickerToggleRefreshButton"
-            aria-describedby={{this.descriptionId}}
-            {{on "click" this.toggle}}
-          >
-            {{#if this.isPaused}}
-              {{this.t "euiRefreshInterval.start" "Start"}}
-            {{else}}
-              {{this.t "euiRefreshInterval.stop" "Stop"}}
-            {{/if}}
-          </EuiButton>
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiScreenReaderOnly><p

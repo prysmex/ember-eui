@@ -19,6 +19,7 @@ import {
   isStopsInvalid,
   removeStop
 } from '../-private/color.ts';
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import cssStyle from '../-private/css-style.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
@@ -38,6 +39,7 @@ import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { ColorStop } from '../-private/color.ts';
+import type Owner from '@ember/owner';
 
 export type { ColorStop };
 
@@ -102,6 +104,15 @@ function validStops(colorStops: ColorStop[]): number[] {
 }
 
 export default class EuiColorStops extends Component<EuiColorStopsSignature> {
+  constructor(owner: Owner, args: EuiColorStopsSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-color-stops',
+      'EuiColorStops',
+      'There is no direct upstream replacement; for predefined gradients use EuiColorPalettePicker.'
+    );
+  }
+
   @service declare euiI18n: EuiI18n;
 
   @tracked wrapper?: HTMLElement;

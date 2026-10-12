@@ -4,6 +4,7 @@ import EuiAutoSizer from './components/eui-auto-sizer.gts';
 import EuiAvatar from './components/eui-avatar.gts';
 import EuiBadge from './components/eui-badge.gts';
 import EuiBadgeGroup from './components/eui-badge-group.gts';
+import EuiBanner from './components/eui-banner.gts';
 import EuiBeacon from './components/eui-beacon.gts';
 import EuiBetaBadge from './components/eui-beta-badge.gts';
 import EuiBottomBar from './components/eui-bottom-bar.gts';
@@ -103,6 +104,7 @@ import EuiKeyPadMenuItem from './components/eui-key-pad-menu-item.gts';
 import EuiLink from './components/eui-link.gts';
 import EuiListGroup from './components/eui-list-group.gts';
 import EuiListGroupItem from './components/eui-list-group-item.gts';
+import EuiLiveAnnouncer from './components/eui-live-announcer.gts';
 import EuiLoadingChart from './components/eui-loading-chart.gts';
 import EuiLoadingContent from './components/eui-loading-content.gts';
 import EuiLoadingElastic from './components/eui-loading-elastic.gts';
@@ -131,7 +133,9 @@ import EuiPageContentHeader from './components/eui-page-content-header.gts';
 import EuiPageContentHeaderSection from './components/eui-page-content-header-section.gts';
 import EuiPageHeader from './components/eui-page-header.gts';
 import EuiPageHeaderSection from './components/eui-page-header-section.gts';
+import EuiPageSection from './components/eui-page-section.gts';
 import EuiPageSideBar from './components/eui-page-side-bar.gts';
+import EuiPageSidebar from './components/eui-page-sidebar.gts';
 import EuiPageTemplate from './components/eui-page-template.gts';
 import EuiPagination from './components/eui-pagination.gts';
 import EuiPaginationButton from './components/eui-pagination-button.gts';
@@ -158,6 +162,7 @@ import EuiRangeWrapper from './components/eui-range-wrapper.gts';
 import EuiRefreshInterval from './components/eui-refresh-interval.gts';
 import EuiResizableContainer from './components/eui-resizable-container.gts';
 import EuiSaturation from './components/eui-saturation.gts';
+import EuiScreenReaderLive from './components/eui-screen-reader-live.gts';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only.gts';
 import EuiSelect from './components/eui-select.gts';
 import EuiSelectable from './components/eui-selectable.gts';
@@ -228,6 +233,7 @@ export {
   EuiAvatar,
   EuiBadge,
   EuiBadgeGroup,
+  EuiBanner,
   EuiBeacon,
   EuiBetaBadge,
   EuiBottomBar,
@@ -327,6 +333,7 @@ export {
   EuiLink,
   EuiListGroup,
   EuiListGroupItem,
+  EuiLiveAnnouncer,
   EuiLoadingChart,
   EuiLoadingContent,
   EuiLoadingElastic,
@@ -355,7 +362,9 @@ export {
   EuiPageContentHeaderSection,
   EuiPageHeader,
   EuiPageHeaderSection,
+  EuiPageSection,
   EuiPageSideBar,
+  EuiPageSidebar,
   EuiPageTemplate,
   EuiPagination,
   EuiPaginationButton,
@@ -382,6 +391,7 @@ export {
   EuiRefreshInterval,
   EuiResizableContainer,
   EuiSaturation,
+  EuiScreenReaderLive,
   EuiScreenReaderOnly,
   EuiSelect,
   EuiSelectable,

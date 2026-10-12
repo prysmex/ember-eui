@@ -2,14 +2,7 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import {
-  euiBreakpointsMedia,
-  euiOutsideBreakpointsMedia,
-  euiPageBoxSizing,
-  euiPagePadding
-} from '../utils/eui/page-layout.ts';
-import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
-import { euiPageSidebarStyles } from '../utils/eui/styles.generated.ts';
+import { euiPageSidebarClass } from './eui-page-sidebar.gts';
 
 import type {
   EuiPageBreakpoint,
@@ -50,53 +43,14 @@ export interface EuiPageSideBarSignature {
 }
 
 /**
- * Upstream `EuiPageSidebar` (`euiPageSidebarStyles`). Upstream measures the
- * window in JS and writes inline styles; here the same breakpoints are
- * media queries in the theme class, so callers' `style` is never replaced.
+ * Upstream `EuiPageSidebar` styles under the older Ember name; renders the
+ * same class as EuiPageSidebar (`euiPageSidebarClass`) with the
+ * `euiPageSideBar` root class.
  */
 export default class EuiPageSideBar extends Component<EuiPageSideBarSignature> {
   @cached
   get classes() {
-    const context = getEuiThemeContext(this);
-    const upstream = context.upstream;
-    const styles = useEuiBorealisStyles(context, euiPageSidebarStyles);
-    const responsive =
-      this.args.responsive === false
-        ? []
-        : (this.args.responsive ?? ['xs', 's']);
-    const responding = euiBreakpointsMedia(upstream, responsive);
-    const desktop = responsive.length
-      ? euiOutsideBreakpointsMedia(upstream, responsive)
-      : undefined;
-    const minWidth = this.args.minWidth ?? 248;
-    const { sticky } = this.args;
-    const offset =
-      typeof sticky === 'object' && sticky
-        ? `${sticky.offset ?? 0}px`
-        : 'var(--euiFixedHeadersOffset, 0)';
-    const stickyStyles = sticky && [
-      styles.sticky,
-      { insetBlockStart: offset, maxBlockSize: `calc(100vh - ${offset})` }
-    ];
-    return euiClass(
-      context,
-      euiPageBoxSizing,
-      styles.euiPageSidebar,
-      // Upstream applies sticky only while not responding.
-      stickyStyles &&
-        (desktop
-          ? { [desktop]: stickyStyles }
-          : responsive.length
-            ? undefined
-            : stickyStyles),
-      this.args.hasEmbellish && styles.embellish,
-      euiPagePadding(upstream, this.args.paddingSize ?? 'none'),
-      {
-        minInlineSize:
-          typeof minWidth === 'number' ? `${minWidth}px` : minWidth
-      },
-      responding && { [responding]: { minInlineSize: '100%' } }
-    );
+    return euiPageSidebarClass(getEuiThemeContext(this), this.args);
   }
 
   <template>

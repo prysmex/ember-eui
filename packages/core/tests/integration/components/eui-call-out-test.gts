@@ -15,9 +15,11 @@ module('Integration | Component | eui-call-out', function (hooks) {
     );
 
     assert.dom('.euiCallOut').hasClass('euiCallOut--warning');
-    assert.dom('.euiCallOutHeader__title').hasText('Heads up');
-    assert.dom('.euiCallOutHeader svg.euiCallOutHeader__icon').exists();
-    assert.dom('.euiCallOut .euiText').hasText('Body text');
+    // Upstream has no header wrapper: the title is a `p` by default.
+    assert.dom('p.euiCallOutHeader__title').hasText('Heads up');
+    assert.dom('.euiCallOut svg[aria-hidden="true"]').exists({ count: 1 }, 'the custom icon replaces the default one');
+    assert.dom('.euiCallOut .euiNotificationIcon').doesNotExist();
+    assert.dom('.euiCallOut .euiCallOut__additionalContent').hasText('Body text');
   });
 
   test('named blocks and @heading', async function (assert) {
@@ -30,8 +32,9 @@ module('Integration | Component | eui-call-out', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiCallOut').hasClass('euiCallOut--small');
+    // Upstream has no size modifier class; size is the `data-size` attribute.
+    assert.dom('.euiCallOut').hasAttribute('data-size', 's');
     assert.dom('h3.euiCallOutHeader__title').hasText('Block title');
-    assert.dom('.euiCallOut .euiText').hasText('Block body');
+    assert.dom('.euiCallOut .euiCallOut__additionalContent').hasText('Block body');
   });
 });

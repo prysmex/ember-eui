@@ -12,8 +12,9 @@ module('Integration | Component | eui-stat', function (hooks) {
       <template><EuiStat @title="1,000" @description="Total" @titleColor="success" @textAlign="center" /></template>
     );
 
-    assert.dom('.euiStat').hasClass('euiStat--centerAligned');
-    assert.dom('.euiStat__title').hasText('1,000').hasClass('euiStat__title--success');
+    // Alignment and color are styles now (no modifier classes); see eui-content-blocks-test.
+    assert.dom('.euiStat').doesNotHaveClass('euiStat--centerAligned').hasStyle({ textAlign: 'center' });
+    assert.dom('.euiStat__title').hasText('1,000').doesNotHaveClass('euiStat__title--success');
     assert.dom('.euiStat__description').hasText('Total');
   });
 
@@ -22,7 +23,7 @@ module('Integration | Component | eui-stat', function (hooks) {
       <template><EuiStat @title="42" @description="Answer" @isLoading={{true}} @reverse={{true}} /></template>
     );
 
-    assert.dom('.euiStat__title').hasText('--').hasClass('euiStat__title-isLoading');
+    assert.dom('.euiStat__title').hasText('--').hasAttribute('aria-label', 'Statistic is loading');
     assert.dom('.euiStat > :first-child').hasClass('euiStat__title');
   });
 });

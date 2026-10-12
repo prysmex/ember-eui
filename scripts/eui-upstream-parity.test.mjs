@@ -80,7 +80,14 @@ const factories = {
   ],
   'components/form/radio/radio.styles.js': ['euiRadioStyles'],
   'components/form/radio/radio_group.styles.js': ['euiRadioGroupStyles'],
-  'components/form/switch/switch.styles.js': ['euiSwitchStyles']
+  'components/form/switch/switch.styles.js': ['euiSwitchStyles'],
+  // content-blocks
+  'components/call_out/call_out.styles.js': [
+    'euiCallOutStyles',
+    'euiCallOutHeaderStyles'
+  ],
+  'components/empty_prompt/empty_prompt.styles.js': ['euiEmptyPromptStyles'],
+  'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

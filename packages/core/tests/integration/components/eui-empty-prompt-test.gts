@@ -14,10 +14,12 @@ module('Integration | Component | eui-empty-prompt', function (hooks) {
       <template><EuiEmptyPrompt @iconType="search" @title="No results" @body="Try another search" /></template>
     );
 
-    assert.dom('.euiEmptyPrompt').hasClass('euiEmptyPrompt--vertical').hasClass('euiEmptyPrompt--paddingLarge');
+    // Layout and padding are styles now (no modifier classes); see eui-content-blocks-test.
+    assert.dom('.euiEmptyPrompt').doesNotHaveClass('euiEmptyPrompt--vertical');
+    assert.dom('.euiEmptyPrompt__main').exists();
     assert.dom('.euiEmptyPrompt__icon svg.euiIcon').exists();
     assert.dom('.euiEmptyPrompt .euiTitle').hasText('No results');
-    assert.dom('.euiEmptyPrompt__contentInner').containsText('Try another search');
+    assert.dom('.euiEmptyPrompt__content').containsText('Try another search');
   });
 
   test('layout, padding and blocks', async function (assert) {
@@ -31,9 +33,9 @@ module('Integration | Component | eui-empty-prompt', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiEmptyPrompt').hasClass('euiEmptyPrompt--horizontal').hasClass('euiEmptyPrompt--paddingSmall');
+    assert.dom('.euiEmptyPrompt').doesNotHaveClass('euiEmptyPrompt--horizontal');
     assert.dom('.euiEmptyPrompt__icon .custom-icon').exists();
-    assert.dom('.euiEmptyPrompt__contentInner .custom-content').exists();
+    assert.dom('.euiEmptyPrompt__content > .custom-content').exists('upstream has no contentInner wrapper');
     assert.dom('.euiEmptyPrompt__footer .custom-footer').exists();
   });
 
@@ -44,8 +46,9 @@ module('Integration | Component | eui-empty-prompt', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiEmptyPrompt button.euiButton').exists();
+    assert.dom('.euiEmptyPrompt .euiEmptyPrompt__actions button.euiButton').exists('an actions array is always a flex group, as upstream');
     assert.dom('.euiEmptyPrompt .euiBorealisSpacer').exists({ count: 2 });
-    assert.deepEqual([...this.element.querySelectorAll('.euiEmptyPrompt .euiBorealisSpacer')].map((element) => getComputedStyle(element).blockSize), ['16px', '24px'], 'body and action spacing use native sizes');
+    // Upstream 123 puts an `s` spacer between title and body (was `m`).
+    assert.deepEqual([...this.element.querySelectorAll('.euiEmptyPrompt .euiBorealisSpacer')].map((element) => getComputedStyle(element).blockSize), ['8px', '24px'], 'body and action spacing use native sizes');
   });
 });

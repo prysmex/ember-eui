@@ -29,16 +29,16 @@ and actions, e.g. when a list has no items yet or a page failed to load.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@layout` | `'vertical' \| 'horizontal'` | `'vertical'` | `'vertical'` centers everything in a column; `'horizontal'` puts the icon beside the text. |
-| `@paddingSize` |  | `'l'` | Padding around the content, any `EuiPanel` padding size. |
+| `@layout` | `Layout` | `'vertical'` | `'vertical'` centers everything in a column; `'horizontal'` puts the icon beside the text on large screens (it stacks below the `l` breakpoint). |
+| `@paddingSize` | `PaddingSize` | `'l'` | Padding around the content: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@color` |  | `'transparent'` | Background, any `EuiPanel` color (`'plain'`, `'subdued'`, `'danger'`, …). |
-| `@hasBorder` |  |  | Adds a border around the prompt. |
+| `@hasBorder` | `boolean` | `true` for `'plain'`, `false` otherwise | Adds a border around the prompt. |
 | `@iconType` |  |  | Large icon above the title, e.g. `'search'` or `'logoKibana'`. |
-| `@iconColor` |  | `@color`, or `'subdued'` | Color of the icon. |
+| `@iconColor` |  | `@color` when it is a named icon color (e.g | Color of the icon. `'danger'`), or `'subdued'`. |
 | `@title` | `string` |  | Title, e.g. "No dashboards yet". |
 | `@titleSize` |  | `'m'` | Size of the title, any `EuiTitle` size. |
 | `@body` | `string` |  | Text explaining the situation and what to do. |
-| `@actions` | `ComponentLike[]` |  | Components rendered as the prompt's actions (e.g. a primary `EuiButton` and an `EuiButtonEmpty`), laid out in a row or column. Use the `<:content>` block for full control. |
+| `@actions` | `ComponentLike[]` |  | Components rendered as the prompt's actions (e.g. a primary `EuiButton` and an `EuiButtonEmpty`), laid out in a column (vertical) or row (horizontal). Use the `<:content>` block for full control. |
 | `@footer` | `string` |  | Text in a footer, e.g. a link to the docs. Use the `<:footer>` block for markup. |
 
 | Block | Description |

@@ -1,36 +1,45 @@
-import { helper } from '@ember/component/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import screenReaderOnly from '../modifiers/screen-reader-only.ts';
-import { colorMapping } from '../utils/css-mappings/eui-stat.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiStatStyles } from '../utils/eui/styles.generated.ts';
 import EuiStatDescription from './eui-stat/description.gts';
 import EuiStatTitle from './eui-stat/title.gts';
 
-import type {textAlignMapping } from '../utils/css-mappings/eui-stat.ts';
 import type { EuiStatDescriptionSignature } from './eui-stat/description';
-import type { EuiStatTitleSignature } from './eui-stat/title';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiStatTitleColor, EuiStatTitleSignature } from './eui-stat/title';
+
+const BOX_SIZING = { boxSizing: 'border-box' } as const;
+
+export type EuiStatTextAlign = 'left' | 'center' | 'right';
 
 /** A key number with a description, e.g. on a dashboard. */
 export interface EuiStatSignature {
   Element: HTMLDivElement;
   Args: {
-    /** `'left'`, `'center'` or `'right'`. Defaults to `'left'`. */
-    textAlign?: keyof typeof textAlignMapping;
+    /**
+     * `'left'`, `'center'` or `'right'` (logical, so left/right flip in RTL).
+     * Defaults to `'left'`.
+     */
+    textAlign?: EuiStatTextAlign;
     /** The number or value, e.g. "1,234". Use the `<:title>` block for markup. */
     title?: string;
     /** What it measures, e.g. "Total users". Use the `<:description>` block for markup. */
     description?: string;
     /**
      * Color of the title: `'default'`, `'subdued'`, `'primary'`,
-     * `'success'`, `'danger'`, `'accent'`, or any CSS color.
+     * `'success'`, `'warning'`, `'danger'`, `'accent'`, or any CSS color.
      * Defaults to `'default'`.
      */
-    titleColor?: keyof typeof colorMapping;
+    titleColor?: EuiStatTitleColor | string;
     /** Size of the title, any `EuiTitle` size. Defaults to `'l'`. */
     titleSize?: EuiStatTitleSignature['Args']['titleSize'];
-    /** Shows "--" instead of the title, e.g. while it loads. */
+    /**
+     * Shows "--" instead of the title, pulses it (unless reduced motion is
+     * requested) and labels it "Statistic is loading" (i18n token
+     * `euiStat.loadingText`).
+     */
     isLoading?: boolean;
     /** Puts the title above the description. Defaults to `false`. */
     reverse?: boolean;
@@ -51,52 +60,23 @@ export interface EuiStatSignature {
   };
 }
 
-const isColorClass = helper(([input]: [string | undefined]) => {
-  if (!input) return false;
-
-  return colorMapping.hasOwnProperty(input);
-});
-
-const useScreenReader = helper(
-  ([title, description]: [string | undefined, string | undefined]) => {
-    return typeof title === 'string' && typeof description === 'string';
+/** Native Ember stat on the upstream EUI 123 / Borealis factories. */
+export default class EuiStat extends Component<EuiStatSignature> {
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiStatStyles);
+    return euiClass(
+      context,
+      BOX_SIZING,
+      styles.euiStat,
+      styles[this.args.textAlign ?? 'left']
+    );
   }
-);
 
-const EuiStat: TemplateOnlyComponent<EuiStatSignature> = <template>
-  {{#let
-    (classNames
-      textAlign=(argOrDefault @textAlign "left") componentName="EuiStat"
-    )
-    (classNames
-      "euiStat__title"
-      (if @isLoading "euiStat__title-isLoading")
-      color=(argOrDefault @titleColor "default")
-      addBase=false
-      componentName="EuiStat"
-    )
-    (argOrDefault @reverse false)
-    (argOrDefault @titleSize "l")
-    as |classes titleClasses reverse titleSize|
-  }}
-    <div class={{classes}} ...attributes>
-      {{#if reverse}}
-        <EuiStatTitle
-          class={{titleClasses}}
-          @titleElement={{@titleElement}}
-          @titleSize={{titleSize}}
-          @isColorClass={{isColorClass @titleColor}}
-        >
-          {{#if @isLoading}}
-            --
-          {{else}}
-            {{#if (has-block "title")}}
-              {{yield to="title"}}
-            {{else}}
-              {{@title}}
-            {{/if}}
-          {{/if}}
-        </EuiStatTitle>
+  <template>
+    <div class="euiStat {{this.classes}}" ...attributes>
+      {{#unless @reverse}}
         <EuiStatDescription @descriptionElement={{@descriptionElement}}>
           {{#if (has-block "description")}}
             {{yield to="description"}}
@@ -104,7 +84,22 @@ const EuiStat: TemplateOnlyComponent<EuiStatSignature> = <template>
             {{@description}}
           {{/if}}
         </EuiStatDescription>
-      {{else}}
+      {{/unless}}
+      <EuiStatTitle
+        @titleElement={{@titleElement}}
+        @titleSize={{@titleSize}}
+        @titleColor={{@titleColor}}
+        @isLoading={{@isLoading}}
+      >
+        {{#if @isLoading}}
+          --
+        {{else if (has-block "title")}}
+          {{yield to="title"}}
+        {{else}}
+          {{@title}}
+        {{/if}}
+      </EuiStatTitle>
+      {{#if @reverse}}
         <EuiStatDescription @descriptionElement={{@descriptionElement}}>
           {{#if (has-block "description")}}
             {{yield to="description"}}
@@ -112,37 +107,8 @@ const EuiStat: TemplateOnlyComponent<EuiStatSignature> = <template>
             {{@description}}
           {{/if}}
         </EuiStatDescription>
-        <EuiStatTitle
-          class={{titleClasses}}
-          @titleElement={{@titleElement}}
-          @titleSize={{titleSize}}
-          @isColorClass={{isColorClass @titleColor}}
-        >
-          {{#if @isLoading}}
-            --
-          {{else}}
-            {{#if (has-block "title")}}
-              {{yield to="title"}}
-            {{else}}
-              {{@title}}
-            {{/if}}
-          {{/if}}
-        </EuiStatTitle>
-      {{/if}}
-      {{#if (useScreenReader @title @description)}}
-        <p {{screenReaderOnly}}>
-          {{#if reverse}}
-            {{@title}}
-            {{@description}}
-          {{else}}
-            {{@description}}
-            {{@title}}
-          {{/if}}
-        </p>
       {{/if}}
       {{yield}}
     </div>
-  {{/let}}
-</template>;
-
-export default EuiStat;
+  </template>
+}

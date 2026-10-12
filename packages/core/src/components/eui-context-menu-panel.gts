@@ -1,24 +1,37 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import { service } from '@ember/service';
 import { schedule } from '@ember/runloop';
 
 import { modifier } from 'ember-modifier';
+import { and } from 'ember-truth-helpers';
 import { tabbable } from 'tabbable';
 
 import type Owner from '@ember/owner';
 
+import { randomId } from '../-private/random-id.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
-import EuiIcon from './eui-icon.gts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiContextMenuPanelStyles,
+  euiContextMenuPanelTitleStyles
+} from '../utils/eui/styles.generated.ts';
+import EuiButtonIcon from './eui-button-icon.gts';
+
+import type EuiI18n from '../services/eui-i18n.ts';
 
 type TransitionType = 'in' | 'out';
 type TransitionDirection = 'next' | 'previous';
 
-const TRANSITIONS: Record<TransitionDirection, Record<TransitionType, string>> = {
-  next: { in: 'euiContextMenuPanel-txInLeft', out: 'euiContextMenuPanel-txOutLeft' },
-  previous: { in: 'euiContextMenuPanel-txInRight', out: 'euiContextMenuPanel-txOutRight' }
-};
+const HEADING_RESET = {
+  margin: 0,
+  fontSize: 'inherit',
+  fontWeight: 'inherit',
+  lineHeight: 'inherit'
+} as const;
 
 /**
  * A list of `EuiContextMenuItem`s, usually as a popover's content, with
@@ -36,8 +49,13 @@ export interface EuiContextMenuPanelSignature {
      * return to the previous panel.
      */
     onClose?: () => void;
-    /** `'s'` for a smaller title. Defaults to `'m'`. */
+    /** @deprecated Has no effect: latest EUI has a single title size. */
     size?: 's' | 'm';
+    /**
+     * @private Set by `EuiContextMenu` for panels of `items`: the list gets
+     * `role="menu"` (labelled by the title), as upstream.
+     */
+    isMenu?: boolean;
     /**
      * Moves focus into the panel once rendered: to the item at
      * `@initialFocusedItemIndex`, else to its first focusable element when
@@ -68,7 +86,11 @@ export interface EuiContextMenuPanelSignature {
 }
 
 export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSignature> {
+  @service declare euiI18n: EuiI18n;
+
   @tracked focusedItemIndex?: number;
+
+  titleId = randomId();
 
   constructor(owner: Owner, args: EuiContextMenuPanelSignature['Args']) {
     super(owner, args);
@@ -80,20 +102,47 @@ export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSi
   content?: HTMLElement;
   backButton?: HTMLElement;
 
+  /** Upstream panel styles plus the slide animation (none under reduced motion). */
+  @cached
   get classes(): string {
     const { transitionType, transitionDirection } = this.args;
-    const transition =
-      transitionType && transitionDirection
-        ? TRANSITIONS[transitionDirection][transitionType]
-        : undefined;
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiContextMenuPanelStyles);
 
-    return ['euiContextMenuPanel', transition].filter(Boolean).join(' ');
+    return `euiContextMenuPanel ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiContextMenuPanel,
+      transitionType &&
+        transitionDirection &&
+        styles[transitionDirection][transitionType]
+    )}`;
   }
 
-  get titleClasses(): string {
-    return this.args.size === 's'
-      ? 'euiContextMenuPanelTitle euiContextMenuPanelTitle--small'
-      : 'euiContextMenuPanelTitle';
+  @cached
+  get titleParts(): { title: string; text: string } {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiContextMenuPanelTitleStyles);
+
+    return {
+      title: `euiContextMenuPanelTitle euiContextMenuPanel__title ${euiClass(
+        context,
+        styles.euiContextMenuPanelTitle
+      )}`,
+      // the heading inherits the title type (React's global reset)
+      text: `euiContextMenuPanelTitle__text ${euiClass(context, HEADING_RESET, styles.text)}`
+    };
+  }
+
+  get backButtonLabel(): string {
+    return this.euiI18n.lookupToken(
+      'euiContextMenuPanelTitle.ariaLabel',
+      'Close current panel:'
+    );
+  }
+
+  get backButtonId(): string {
+    return `${this.titleId}-closeButton`;
   }
 
   /** The panel's own menu items (not those of a nested panel). */
@@ -202,9 +251,17 @@ export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSi
       schedule('afterRender', () => {
         if (!panel.isConnected) return;
 
-        // without an animation (e.g. no CSS), the transition ends at once
-        if (transitionType && getComputedStyle(panel).animationName === 'none') {
-          this.args.onTransitionComplete?.();
+        // without an animation (no CSS, or reduced motion: 0s), the
+        // transition ends at once
+        if (transitionType) {
+          const { animationName, animationDuration } = getComputedStyle(panel);
+
+          if (
+            animationName === 'none' ||
+            animationDuration.split(',').every((d) => parseFloat(d) === 0)
+          ) {
+            this.args.onTransitionComplete?.();
+          }
         }
 
         if (!hasFocus) {
@@ -270,30 +327,28 @@ export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSi
       ...attributes
     >
       {{#if @title}}
-        {{#if @onClose}}
-          <button
-            class={{this.titleClasses}}
-            type="button"
-            data-test-subj="contextMenuPanelTitleButton"
-            {{on "click" @onClose}}
-            {{this.registerBackButton}}
-          >
-            <span class="euiContextMenu__itemLayout">
-              <EuiIcon
-                @type="arrowLeft"
-                @size="m"
-                class="euiContextMenu__icon"
-              />
-              <span class="euiContextMenu__text">{{@title}}</span>
-            </span>
-          </button>
-        {{else}}
-          <div class={{this.titleClasses}}>
-            <span class="euiContextMenu__itemLayout">{{@title}}</span>
-          </div>
-        {{/if}}
+        <div class={{this.titleParts.title}} data-test-subj="contextMenuPanelTitle">
+          {{#if @onClose}}
+            <EuiButtonIcon
+              id={{this.backButtonId}}
+              @iconType="arrowLeft"
+              @color="text"
+              aria-label={{this.backButtonLabel}}
+              aria-labelledby="{{this.backButtonId}} {{this.titleId}}"
+              data-test-subj="contextMenuPanelTitleButton"
+              {{on "click" @onClose}}
+              {{this.registerBackButton}}
+            />
+          {{/if}}
+          <h2 class={{this.titleParts.text}} id={{this.titleId}}>{{@title}}</h2>
+        </div>
       {{/if}}
-      <div {{this.registerContent}}>
+      <div
+        class="euiContextMenuPanel__list"
+        role={{if @isMenu "menu"}}
+        aria-labelledby={{if (and @isMenu @title) this.titleId}}
+        {{this.registerContent}}
+      >
         <div {{resizeObserver onResize=this.onResize}}>
           {{yield}}
         </div>

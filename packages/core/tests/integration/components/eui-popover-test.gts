@@ -41,17 +41,24 @@ module('Integration | Component | eui-popover', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiPopover').hasClass('euiPopover--anchorUpCenter');
+    // legacy `euiPopover--anchorUpCenter` class is gone; placement is
+    // asserted on geometry below
     assert.dom('.euiPopover__anchor .trigger').exists();
     assert.strictEqual(panel(), null, 'closed initially');
 
     await click('.trigger');
     await waitUntil(panel);
 
-    assert.dom(panel()).hasAttribute('role', 'dialog').hasClass('euiPopover__panel--top');
-    assert.dom('.euiPopoverTitle', panel()).hasText('Title').hasClass('euiPopoverTitle--paddingSmall');
+    assert.dom(panel()).hasAttribute('role', 'dialog');
+    // was `euiPopover__panel--top`: the panel now sits above the trigger
+    assert.true(
+      panel()!.getBoundingClientRect().bottom <= document.querySelector('.trigger')!.getBoundingClientRect().top,
+      'upCenter opens above the anchor'
+    );
+    // was `euiPopoverTitle--paddingSmall` / `euiPopoverFooter--paddingMedium`
+    assert.dom('.euiPopoverTitle', panel()).hasText('Title').hasStyle({ paddingTop: '8px' });
     assert.dom('.popover-body', panel()).hasText('Content');
-    assert.dom('.euiPopoverFooter', panel()).hasText('Footer').hasClass('euiPopoverFooter--paddingMedium');
+    assert.dom('.euiPopoverFooter', panel()).hasText('Footer').hasStyle({ paddingTop: '16px' });
   });
 
   test('Escape and outside clicks call @closePopover', async function (assert) {
@@ -120,8 +127,9 @@ module('Integration | Component | eui-popover', function (hooks) {
     );
 
     await waitUntil(panel);
-    assert.dom('.euiPopover').hasClass('euiPopover--displayBlock');
-    assert.dom(panel()).hasClass('euiPopover__panel-noArrow');
+    // were `euiPopover--displayBlock` / `euiPopover__panel-noArrow`
+    assert.dom('.euiPopover').hasStyle({ display: 'block' });
+    assert.dom('.euiPopover__arrow', panel()).doesNotExist();
   });
 
   test('EuiInputPopover attaches the panel to the input', async function (assert) {
@@ -138,9 +146,11 @@ module('Integration | Component | eui-popover', function (hooks) {
     );
 
     await waitUntil(panel);
-    assert.dom('.euiInputPopover').hasClass('euiInputPopover--fullWidth');
+    // were `euiInputPopover--fullWidth` / `euiPopover__panel-isAttached`
+    assert.dom('.euiInputPopover').hasStyle({ maxWidth: '100%' });
     assert.dom('.euiInputPopover .the-input').exists();
-    assert.dom(panel()).hasClass('euiPopover__panel-isAttached');
+    assert.dom('.euiPopover__arrow', panel()).doesNotExist();
+    assert.dom(panel()).hasStyle({ transform: 'none' }, 'attached panels do not slide');
     assert.dom('.input-popover-content', panel()).hasText('Options');
   });
 });

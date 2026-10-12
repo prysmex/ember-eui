@@ -82,7 +82,8 @@ enough.
 | --- | --- | --- | --- |
 | `@panels` (required) | `EuiContextMenuPanelDescriptor[]` |  | Every panel, flat: an item's `panel` is the id of the panel it opens. |
 | `@initialPanelId` (required) | `PanelId` |  | Id of the panel shown first. |
-| `@size` | `'s' \| 'm'` | `'m'` | `'s'` for smaller items and titles. |
+
+Deprecated: `@size` (Has no effect: latest EUI has a single item size.).
 
 | Block | Description |
 | --- | --- |
@@ -101,9 +102,10 @@ renders these panels for you.
 | --- | --- | --- | --- |
 | `@title` | `string` |  | Title above the items. |
 | `@onClose` | `() => void` |  | Makes the title a "back" button calling this function, e.g. to return to the previous panel. |
-| `@size` | `'s' \| 'm'` | `'m'` | `'s'` for a smaller title. |
 | `@hasFocus` | `boolean` |  | Moves focus into the panel once rendered: to the item at `@initialFocusedItemIndex`, else to its first focusable element when it has no items, else to the panel itself. |
 | `@initialFocusedItemIndex` | `number` |  | Index of the item to focus with `@hasFocus`; `-1` focuses the panel. |
+
+Deprecated: `@size` (Has no effect: latest EUI has a single title size.).
 
 | Block | Description |
 | --- | --- |
@@ -118,15 +120,18 @@ An action in a menu, usually inside an `EuiContextMenuPanel` in an
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@layoutAlign` |  | `'center'` | Vertical alignment of the icon and text: `'center'`, `'top'` or `'bottom'`. |
 | `@disabled` | `boolean` |  | Disables the item. |
-| `@size` |  | `'m'` | `'s'` or `'m'`. |
 | `@href` | `string` |  | Renders the item as a link. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@isLoading` | `boolean` |  | Shows a spinner instead of the icon. |
 | `@icon` |  |  | Icon before the text; anything `EuiIcon`'s `@type` accepts. Pass `'empty'` to align items without an icon with the others. |
 | `@iconClasses` | `string` |  | Extra classes for the icon. |
 | `@hasPanel` | `boolean` |  | Shows an arrow on the right, for items opening another panel. |
+| `@color` | `string` |  | Color of the text and icon: `'text'` (default) or a button color such as `'danger'` (upstream recommends `'text'` and `'danger'`). |
+| `@toolTipContent` | `string` |  | Shows a tooltip on the right of the item on hover and focus. |
+| `@toolTipTitle` | `string` |  | Title of the `@toolTipContent` tooltip. |
+
+Deprecated: `@layoutAlign` (Upstream will always center. Vertical alignment of the icon with the text: `'center'`, `'top'` or `'bottom'`. Defaults to `'center'`.); `@size` (Has no effect: latest EUI has a single item size.).
 
 | Block | Description |
 | --- | --- |

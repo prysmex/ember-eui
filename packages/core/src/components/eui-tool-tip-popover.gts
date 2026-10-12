@@ -1,9 +1,14 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import willDestroy from '@ember/render-modifiers/modifiers/will-destroy';
 import type Owner from '@ember/owner';
+
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiToolTipStyles } from '../utils/eui/styles.generated.ts';
 
 import type { CommonArgs } from './common.ts';
 
@@ -16,6 +21,8 @@ type EuiTooltipPopoverArgs = CommonArgs & {
   popoverRef?: (ref: HTMLDivElement | null) => void;
   /** Render the title. */
   hasTitle?: boolean;
+  /** Position the tooltip ended up in (`data-position`, upstream). */
+  calculatedPosition?: 'top' | 'right' | 'bottom' | 'left';
 };
 
 /** @private The floating part of EuiToolTip. */
@@ -59,6 +66,28 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignat
     }
   }
 
+  /** Upstream `euiToolTipStyles`: base and the position slot. */
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiToolTipStyles);
+    const position = this.args.calculatedPosition;
+
+    return `euiToolTipPopover ${euiClass(
+      context,
+      styles.euiToolTip,
+      position && styles[position]
+    )}`;
+  }
+
+  @cached
+  get titleClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiToolTipStyles);
+
+    return `euiToolTip__title ${euiClass(context, styles.euiToolTip__title)}`;
+  }
+
   @action
   updateDimensions(): void {
     requestAnimationFrame(() => {
@@ -71,13 +100,14 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignat
 
   <template>
     <div
-      class="euiToolTipPopover"
+      class={{this.classes}}
+      data-position={{@calculatedPosition}}
       {{didInsert this.setPopoverRef}}
       {{willDestroy (fn this.setPopoverRef null)}}
       ...attributes
     >
       {{#if @hasTitle}}
-        <div class="euiToolTip__title">
+        <div class={{this.titleClasses}}>
           {{yield to="title"}}
         </div>
       {{/if}}

@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { concat } from '@ember/helper';
 import { hash } from '@ember/helper';
 import { action } from '@ember/object';
@@ -13,6 +13,12 @@ import randomId from '../-private/random-id.ts';
 import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
 import { cascadingMenuKeys } from '../utils/accesibility/index.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiFormVariables,
+  logicalCSS
+} from '../utils/eui/styles.generated.ts';
 import EuiPopover from './eui-popover.gts';
 
 import type { EuiPopoverArgs } from './eui-popover';
@@ -24,8 +30,16 @@ export interface EuiInputPopoverArgs
    * (Tab cycles through the popover, closing after its last element).
    */
   disableFocusTrap?: boolean;
-  /** Stretches the input (and popover) to its container's width. */
+  /**
+   * Stretches the input (and popover) to its container's width. Otherwise
+   * the popover is at most the form max width (upstream). Defaults to
+   * `false`.
+   */
   fullWidth?: boolean;
+  /**
+   * Minimum width of the panel, when the input is narrower. Defaults to `0`.
+   */
+  panelMinWidth?: number;
   /** @deprecated Has no effect, use the `<:input>` block. */
   input?: EuiPopoverArgs['button'];
   /** @deprecated Has no effect. */
@@ -68,6 +82,19 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
   @argOrDefaultDecorator('s') panelPaddingSize!: EuiPopoverArgs['panelPaddingSize'];
   @argOrDefaultDecorator(false) fullWidth!: boolean;
   @argOrDefaultDecorator(false) disableFocusTrap!: boolean;
+  @argOrDefaultDecorator(2) offset!: number;
+  @argOrDefaultDecorator(false) repositionToCrossAxis!: boolean;
+
+  /** Upstream: `max-width` of the form controls unless `@fullWidth`. */
+  @cached
+  get rootCss(): string | undefined {
+    if (this.fullWidth) return undefined;
+
+    const context = getEuiThemeContext(this);
+    const { maxWidth } = useEuiBorealisStyles(context, euiFormVariables);
+
+    return `${logicalCSS('max-width', maxWidth)};label:EuiInputPopover;`;
+  }
 
   //State
   @tracked panel: HTMLElement | null = null;
@@ -90,10 +117,14 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
   @action
   setPanelWidth(width?: number): void {
     const { panel, inputWidth } = this;
-    const newWidth = width || inputWidth;
+    const inputOrWidth = width || inputWidth;
+    const minWidth = this.args.panelMinWidth ?? 0;
+    // upstream: the input's width, at least `@panelMinWidth`
+    const newWidth =
+      inputOrWidth && inputOrWidth < minWidth ? minWidth : inputOrWidth;
 
     if (panel && !!newWidth) {
-      panel.style.width = `${newWidth}px`;
+      panel.style.inlineSize = `${newWidth}px`;
       this.args.onPanelResize?.(newWidth);
     }
   }
@@ -145,8 +176,10 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
   <template>
     {{#let (randomId) as |id|}}
       <EuiPopover
-        class="euiInputPopover
-          {{if this.fullWidth 'euiInputPopover--fullWidth'}}"
+        class="euiInputPopover"
+        @rootCss={{this.rootCss}}
+        @offset={{this.offset}}
+        @repositionToCrossAxis={{this.repositionToCrossAxis}}
         @ownFocus={{false}}
         @initialFocus={{@initialFocus}}
         @buttonRef={{this.didInsertInput}}

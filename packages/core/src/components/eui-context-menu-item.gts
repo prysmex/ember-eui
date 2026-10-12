@@ -1,18 +1,33 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { concat } from '@ember/helper';
+import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import { and, not } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiContextMenuItemStyles,
+  euiListItemLayoutStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
+import EuiToolTip from './eui-tool-tip.gts';
 
-import type { layoutAlignMapping, sizeMapping } from '../utils/css-mappings/eui-context-menu-item.ts';
 import type { EuiIconSignature } from './eui-icon';
+
+/** Scoped button/link reset (no React global reset); upstream rules follow. */
+const ITEM_RESET = {
+  boxSizing: 'border-box',
+  margin: 0,
+  padding: 0,
+  border: 'none',
+  background: 'none',
+  font: 'inherit',
+  textDecoration: 'none',
+  textAlign: 'start'
+} as const;
 
 /**
  * An action in a menu, usually inside an `EuiContextMenuPanel` in an
@@ -22,14 +37,17 @@ export interface EuiContextMenuItemSignature {
   Element: HTMLAnchorElement | HTMLButtonElement;
   Args: {
     /**
-     * Vertical alignment of the icon and text: `'center'`, `'top'` or
-     * `'bottom'`. Defaults to `'center'`.
+     * @deprecated Upstream will always center. Vertical alignment of the
+     * icon with the text: `'center'`, `'top'` or `'bottom'`. Defaults to
+     * `'center'`.
      */
-    layoutAlign?: keyof typeof layoutAlignMapping;
+    layoutAlign?: 'center' | 'top' | 'bottom';
     /** Disables the item. */
     disabled?: boolean;
-    /** `'s'` or `'m'`. Defaults to `'m'`. */
-    size?: keyof typeof sizeMapping;
+    /**
+     * @deprecated Has no effect: latest EUI has a single item size.
+     */
+    size?: 's' | 'm';
     /** Renders the item as a link. */
     href?: string;
     /** `target` of the `@href` link, e.g. `'_blank'`. */
@@ -45,6 +63,15 @@ export interface EuiContextMenuItemSignature {
     iconClasses?: string;
     /** Shows an arrow on the right, for items opening another panel. */
     hasPanel?: boolean;
+    /**
+     * Color of the text and icon: `'text'` (default) or a button color
+     * such as `'danger'` (upstream recommends `'text'` and `'danger'`).
+     */
+    color?: string;
+    /** Shows a tooltip on the right of the item on hover and focus. */
+    toolTipContent?: string;
+    /** Title of the `@toolTipContent` tooltip. */
+    toolTipTitle?: string;
   };
 
   Blocks: {
@@ -63,70 +90,146 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
 
   willDestroy() {
     super.willDestroy();
-    
+
     this.link = null;
   }
 
+  /**
+   * Upstream renders the item through the internal `EuiListItemLayout`
+   * (interactive, no indicator, wrapping text) with the context menu item
+   * styles composed after it.
+   */
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const layout = useEuiBorealisStyles(context, euiListItemLayoutStyles);
+    const styles = useEuiBorealisStyles(context, euiContextMenuItemStyles);
+    const disabled = !!this.args.disabled;
+    const color = this.args.color ?? 'text';
+
+    return `euiContextMenuItem euiListItemLayout ${euiClass(
+      context,
+      ITEM_RESET,
+      layout.euiListItemLayout,
+      !disabled && layout.isInteractive,
+      styles.euiContextMenuItem,
+      styles.layoutAlign[this.args.layoutAlign ?? 'center'],
+      !disabled && color !== 'text' && styles.colors[color],
+      disabled && layout.isDisabled
+    )}`;
+  }
+
+  @cached
+  get parts(): {
+    content: string;
+    prepend: string;
+    text: string;
+    append: string;
+    icon: string;
+    arrow: string;
+  } {
+    const context = getEuiThemeContext(this);
+    const layout = useEuiBorealisStyles(context, euiListItemLayoutStyles);
+    const styles = useEuiBorealisStyles(context, euiContextMenuItemStyles);
+
+    return {
+      content: `euiListItemLayout__content ${euiClass(context, layout.euiListItemLayout__content)}`,
+      prepend: `euiListItemLayout__prepend ${euiClass(context, layout.euiListItemLayout__prepend)}`,
+      text: `euiListItemLayout__text euiContextMenuItem__text ${euiClass(
+        context,
+        layout.euiListItemLayout__text,
+        layout.textWrap.wrap,
+        styles.text.euiContextMenuItem__text
+      )}`,
+      append: `euiListItemLayout__append ${euiClass(context, layout.euiListItemLayout__append)}`,
+      // EuiIcon/EuiLoadingSpinner are migrated children: no second Emotion
+      // class on them (rule precedence would depend on insertion order).
+      // Upstream `euiContextMenu__icon` (flex-shrink: 0) is already EuiIcon's
+      // own style; `euiContextMenuItem__arrow` (align-self: flex-end) waits
+      // for EuiIcon's `@css` (see overlays-handoff.md).
+      icon: 'euiContextMenu__icon',
+      arrow: 'euiContextMenu__arrow'
+    };
+  }
+
+  get iconClasses(): string {
+    return [this.parts.icon, this.args.iconClasses].filter(Boolean).join(' ');
+  }
+
   <template>
-    {{#let
-      (classNames
-        "euiContextMenuItem"
-        componentName="EuiContextMenuItem"
-        disabled=@disabled
-        size=@size
-      )
-      as |classes|
-    }}
-      {{#if (and @href (not @disabled))}}
-        <a
-          class={{classes}}
-          href={{@href}}
-          target={{@target}}
-          {{didInsert this.registerLink}}
-          ...attributes
-        />
+    {{#if @toolTipContent}}
+      <EuiToolTip
+        @content={{@toolTipContent}}
+        @title={{@toolTipTitle}}
+        @position="right"
+        @display="block"
+      >
+        {{#if (and @href (not @disabled))}}
+          <a
+            class={{this.classes}}
+            href={{@href}}
+            target={{@target}}
+            {{didInsert this.registerLink}}
+            ...attributes
+          />
+        {{else}}
+          <button
+            class={{this.classes}}
+            disabled={{@disabled}}
+            type="button"
+            {{didInsert this.registerLink}}
+            ...attributes
+          />
+        {{/if}}
+      </EuiToolTip>
+    {{else if (and @href (not @disabled))}}
+      <a
+        class={{this.classes}}
+        href={{@href}}
+        target={{@target}}
+        {{didInsert this.registerLink}}
+        ...attributes
+      />
+    {{else}}
+      <button
+        class={{this.classes}}
+        disabled={{@disabled}}
+        type="button"
+        {{didInsert this.registerLink}}
+        ...attributes
+      />
+    {{/if}}
 
-      {{else}}
-        <button
-          class={{classes}}
-          disabled={{@disabled}}
-          type="button"
-          {{didInsert this.registerLink}}
-          ...attributes
-        />
-      {{/if}}
-    {{/let}}
-
-    {{! shared code that will be rendered inside the button or anchor }}
+    {{! shared content rendered inside the button or anchor }}
     {{#if this.link}}
       {{#in-element this.link}}
-        <span
-          class={{classNames
-            "euiContextMenu__itemLayout"
-            componentName="EuiContextMenuItem"
-            layoutAlign=(argOrDefault @layoutAlign "center")
-          }}
-        >
+        <span class={{this.parts.content}}>
           {{#if @isLoading}}
-            {{! spinner is not part of eui spec }}
-            <EuiLoadingSpinner class="euiContextMenu__icon" />
+            <span class={{this.parts.prepend}}>
+              {{! spinner is not part of eui spec }}
+              <EuiLoadingSpinner class={{this.parts.icon}} />
+            </span>
           {{else if @icon}}
-            <EuiIcon
-              @iconClasses={{concat "euiContextMenu__icon " @iconClasses}}
-              @type={{@icon}}
-              @size="m"
-              @color="inherit"
-            />
+            <span class={{this.parts.prepend}}>
+              <EuiIcon
+                @iconClasses={{this.iconClasses}}
+                @type={{@icon}}
+                @size="m"
+                @color="inherit"
+              />
+            </span>
           {{/if}}
-          <span class="euiContextMenuItem__text">
+          <span class={{this.parts.text}}>
             {{yield}}
           </span>
           {{#if @hasPanel}}
-            <EuiIcon
-              @type="arrowRight"
-              @size="m"
-              class="euiContextMenu__arrow"
-            />
+            <span class={{this.parts.append}}>
+              <EuiIcon
+                @type="arrowRight"
+                @size="m"
+                @iconClasses={{this.parts.arrow}}
+              />
+            </span>
           {{/if}}
         </span>
       {{/in-element}}

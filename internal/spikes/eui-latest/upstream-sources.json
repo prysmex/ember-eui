@@ -107,6 +107,22 @@
       "sha256": "b94d98693be5c8cf22392a939bc65a658deeceac235733b6e149a2ce93ecf05c"
     },
     {
+      "path": "@elastic/eui/es/components/context_menu/context_menu_item.styles.js",
+      "sha256": "9d81a3764a895a7622d56ed1612756d85da77d58fdb4d9d86f478dc8ae897ad0"
+    },
+    {
+      "path": "@elastic/eui/es/components/context_menu/context_menu_panel_title.styles.js",
+      "sha256": "3304f76506cd111a3684f087a5060479352cee4c145f7a289be89612b2364612"
+    },
+    {
+      "path": "@elastic/eui/es/components/context_menu/context_menu_panel.styles.js",
+      "sha256": "c628dca13f0f3cb66a09ddcda43d28a5e9c36f9dc5cc8cdb07cb61a4125c4d2e"
+    },
+    {
+      "path": "@elastic/eui/es/components/context_menu/context_menu.styles.js",
+      "sha256": "9eed405ae70856c03885b7006492c1c96f25119e977548ba412c1a3d3b12ab40"
+    },
+    {
       "path": "@elastic/eui/es/components/description_list/description_list_description.styles.js",
       "sha256": "91dbcfa6063dbdfb2e06492f82d743d74a2382e0464b74df57a892961cfa1d88"
     },
@@ -427,6 +443,26 @@
       "sha256": "7ecc94047e65d421eba7d71354ea01bf3573e1a4878b6cf681808fdebd3270f0"
     },
     {
+      "path": "@elastic/eui/es/components/popover/popover_arrow/_popover_arrow.styles.js",
+      "sha256": "84499ddc1c5a75fcd752c739a30677ddb18023f24f0b28183cd323ebd85177ed"
+    },
+    {
+      "path": "@elastic/eui/es/components/popover/popover_footer.styles.js",
+      "sha256": "98bbcd203ae4f206347fb8397d1dc0324e813c56a43e19201dca6ec8311d342a"
+    },
+    {
+      "path": "@elastic/eui/es/components/popover/popover_panel/_popover_panel.styles.js",
+      "sha256": "9403149d703ab2a666a9949b5e1dc11edf4c67be542a61ed10627dd6ac859bcd"
+    },
+    {
+      "path": "@elastic/eui/es/components/popover/popover_title.styles.js",
+      "sha256": "df6ea0c82e219b2a4aeae29eed717f3a95a99d9763cc2ab85577b452afe636d5"
+    },
+    {
+      "path": "@elastic/eui/es/components/popover/popover.styles.js",
+      "sha256": "d3f92ffa14292263b25474029983fdeba25733d607015bc4743fa3a7a11f0849"
+    },
+    {
       "path": "@elastic/eui/es/components/progress/progress.styles.js",
       "sha256": "c1845c6affec294c39d83621c336264f3294c2ee1e1cdfc50a4cc5ded52b9c0a"
     },
@@ -501,6 +537,10 @@
     {
       "path": "@elastic/eui/es/components/token/token_map.js",
       "sha256": "6f11f9490103c48e7286154626567a372eeeab8d7a99550fd33ffaa855824cf7"
+    },
+    {
+      "path": "@elastic/eui/es/components/tool_tip/tool_tip.styles.js",
+      "sha256": "fdf3b4564bd00f0e8b8c8b08060060396ae1e4b7e260b4d86a88ea018ce5dbe0"
     },
     {
       "path": "@elastic/eui/es/global_styling/functions/high_contrast.js",
@@ -705,6 +745,22 @@
     {
       "path": "@elastic/eui/es/services/index.js",
       "sha256": "512dd71de7ac8171c4954ab07bd4ba0ad53f46b8e71a38648f39fa5abb07adfe"
+    },
+    {
+      "path": "@elastic/eui/es/services/popover/calculate_popover_position.js",
+      "sha256": "5032363ec70a23334cdbdaf87048bbd1016e9c6586b4eb0af7ff79a1d8e1937a"
+    },
+    {
+      "path": "@elastic/eui/es/services/popover/index.js",
+      "sha256": "3dbb52848456fe007d1175e23917a5da9f34ee5b1735d4217ec060a9de9e265a"
+    },
+    {
+      "path": "@elastic/eui/es/services/popover/popover_arrow.styles.js",
+      "sha256": "5863802bada66d7c31c16ee1ce31d007c5ebc00b76f9767ef9fa9773c0c6b1d7"
+    },
+    {
+      "path": "@elastic/eui/es/services/popover/popover_positioning.js",
+      "sha256": "0368d104bca7de80575a0cf98cc5ad594f7879a360af158a68a57f660b35557c"
     },
     {
       "path": "@elastic/eui/es/services/theme/hooks.js",

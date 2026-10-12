@@ -88,6 +88,14 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         @panelStyle={{@panelStyle}}
         @panelRef={{@panelRef}}
         @popoverRef={{@popoverRef}}
+        @offset={{@offset}}
+        @buffer={{@buffer}}
+        @zIndex={{@zIndex}}
+        @repositionOnScroll={{@repositionOnScroll}}
+        @repositionToCrossAxis={{@repositionToCrossAxis}}
+        @popoverScreenReaderText={{@popoverScreenReaderText}}
+        @ariaLabel={{@ariaLabel}}
+        @ariaLabelledBy={{@ariaLabelledBy}}
         ...attributes
       >
         <:button>

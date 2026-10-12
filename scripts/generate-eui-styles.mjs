@@ -138,7 +138,7 @@ const entries = {
   'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
   'global_styling/mixins/_typography.js': ['euiTextTruncate', 'euiFontSize'],
   // lists
-  'components/list_item_layout/_list_item_layout.styles.js': ['euiListItemLayoutStyles', 'euiListItemLayoutWrapperStyles'],
+  'components/list_item_layout/_list_item_layout.styles.js': ['euiListItemLayoutStyles', 'euiListItemLayoutWrapperStyles', 'euiListItemVariables'],
   'components/list_group/list_group.styles.js': ['euiListGroupStyles'],
   'components/list_group/list_group_item.styles.js': ['euiListGroupItemStyles', 'euiListGroupItemTooltipStyles'],
   'components/list_group/list_group_item_extra_action.styles.js': ['euiListGroupItemExtraActionStyles'],
@@ -170,7 +170,18 @@ const entries = {
   'components/flyout/_flyout_close_button.styles.js': ['euiFlyoutCloseButtonStyles'],
   'components/flyout/flyout_header.styles.js': ['euiFlyoutHeaderStyles'],
   'components/flyout/flyout_body.styles.js': ['euiFlyoutBodyStyles'],
-  'components/flyout/flyout_footer.styles.js': ['euiFlyoutFooterStyles']
+  'components/flyout/flyout_footer.styles.js': ['euiFlyoutFooterStyles'],
+  // overlays
+  'components/popover/popover.styles.js': ['euiPopoverStyles'],
+  'components/popover/popover_title.styles.js': ['euiPopoverTitleStyles'],
+  'components/popover/popover_footer.styles.js': ['euiPopoverFooterStyles'],
+  'components/popover/popover_panel/_popover_panel.styles.js': ['euiPopoverPanelStyles'],
+  'components/popover/popover_arrow/_popover_arrow.styles.js': ['euiPopoverArrowStyles'],
+  'components/tool_tip/tool_tip.styles.js': ['euiToolTipStyles', 'euiToolTipAnchorStyles', 'euiToolTipBackgroundColor', 'euiToolTipBorderColor'],
+  'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
+  'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
+  'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

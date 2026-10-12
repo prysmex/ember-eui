@@ -55,16 +55,23 @@ A dialog over the page, with a mask behind it. Render it only while
 open: `{{#if this.isOpen}}<EuiModal @onClose={{…}}>…</EuiModal>{{/if}}`.
 For yes/no questions use EuiConfirmModal.
 
+The modal is a `role="dialog"` with `aria-modal="true"`, described by a
+screen reader hint and, unless you pass `aria-label`/`aria-labelledby`,
+labelled by its `EuiModalHeaderTitle`. Pass `role="alertdialog"` for
+destructive confirmations.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@onClose` | `(e: Event) => void` |  | Called by the close button, Escape and (with `@clickOutsideToClose`) clicks on the mask. Stop rendering the modal here. |
 | `@closeButtonAriaLabel` | `string` | "Close this dialog" | Accessible label of the close button. |
-| `@maxWidth` | `boolean \| string` | the content's width | `true` for EUI's default max width, or any CSS width (e.g. `'800px'`). |
+| `@maxWidth` | `boolean \| number \| string` | `true` | `true` for EUI's default max width (the `m` breakpoint, 768px), `false` for none (the window width), a number in px or any CSS width (e.g. `'800px'`). |
 | `@clickOutsideToClose` | `boolean` |  | Clicking the mask around the modal calls `@onClose`. |
+| `@outsideClickCloses` | `boolean` |  | Same as `@clickOutsideToClose` (upstream name). |
+| `@initialFocus` | `FocusTarget` | the modal itself | The element focused when the modal opens: a selector, an element or a function returning one. |
 | `@isFocusTrapActive` | `boolean` | `true` | Traps keyboard focus inside the modal. |
 | `@shouldSelfFocus` | `boolean` | `true` | Focuses the modal itself when it opens. |
 | `@isFocusTrapPaused` | `boolean` |  | Pauses the focus trap, e.g. while a nested popover has focus. |
-| `@focusTrapOptions` |  |  | Options for the focus trap (focus-trap library), e.g. `{ initialFocus: '#name' }` to focus a field when it opens. |
+| `@focusTrapOptions` |  |  | Options for the focus trap (focus-trap library), e.g. `{ initialFocus: '#name' }` to focus a field when it opens. Outside clicks reach the mask and Escape is left to the modal by default. |
 
 | Block | Description |
 | --- | --- |
@@ -84,11 +91,13 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 ### EuiModalHeaderTitle
 
-The title of an EuiModal.
+The title of an EuiModal, styled like upstream's `EuiTitle size="m"`.
+EuiModal is labelled by it unless you give the modal an `aria-label` or
+`aria-labelledby`.
 
 | Block | Description |
 | --- | --- |
-| default block | The title text (wrap it in a heading, e.g. `<h1>`). |
+| default block | The title text. Wrap it in a heading (e.g. `<h1>`) for the page outline; the heading inherits the title's styles. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
@@ -116,13 +125,15 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@title` | `string` |  | Title of the modal. Use the `<:title>` block for markup. |
-| `@message` | `string` |  | The question or explanation, e.g. "This can't be undone.". |
+| `@title` | `string` |  | Title of the modal (an `<h1>`). Use the `<:title>` block for markup. |
+| `@message` | `string` |  | The question or explanation (a `<p>`), e.g. "This can't be undone.". |
 | `@cancelButtonText` | `string` |  | Text of the cancel button. Required: there is no default text. |
 | `@confirmButtonText` | `string` |  | Text of the confirm button, ideally the action ("Delete report"). Required. |
 | `@buttonColor` | `string` | `'primary'` | Color of the confirm button, any `EuiButton` color; `'danger'` for destructive actions. |
+| `@defaultFocusedButton` | `'confirm' \| 'cancel'` | the modal itself | The button focused when the modal opens: `'confirm'` or `'cancel'`. |
 | `@confirmButtonDisabled` | `boolean` |  | Disables the confirm button, e.g. until a checkbox is checked. |
 | `@isLoading` | `boolean` |  | Shows a spinner in the confirm button while the action runs. |
+| `@maxWidth` |  | `true` | Width cap, as `EuiModal`'s `@maxWidth`. |
 | `@onCancel` (required) | `() => void` |  | Called by the cancel and close buttons and Escape. Close the modal here. |
 | `@onConfirm` (required) | `() => void` |  | Called by the confirm button. |
 

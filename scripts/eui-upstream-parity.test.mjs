@@ -145,7 +145,17 @@ const factories = {
   'components/header/header_alert/header_alert.styles.js': ['euiHeaderAlertStyles'],
   'components/header/header_breadcrumbs/header_breadcrumbs.styles.js': ['euiHeaderBreadcrumbsStyles'],
   'components/collapsible_nav/collapsible_nav.styles.js': ['euiCollapsibleNavStyles'],
-  'components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js': ['euiCollapsibleNavGroupStyles']
+  'components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js': ['euiCollapsibleNavGroupStyles'],
+  // modal and flyout
+  'components/modal/modal.styles.js': ['euiModalStyles'],
+  'components/modal/modal_header.styles.js': ['euiModalHeaderStyles'],
+  'components/modal/modal_body.styles.js': ['euiModalBodyStyles'],
+  'components/modal/modal_footer.styles.js': ['euiModalFooterStyles'],
+  'components/flyout/flyout.styles.js': ['euiFlyoutStyles'],
+  'components/flyout/_flyout_close_button.styles.js': ['euiFlyoutCloseButtonStyles'],
+  'components/flyout/flyout_header.styles.js': ['euiFlyoutHeaderStyles'],
+  'components/flyout/flyout_body.styles.js': ['euiFlyoutBodyStyles'],
+  'components/flyout/flyout_footer.styles.js': ['euiFlyoutFooterStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -930,4 +940,24 @@ test('key pad menu item hand port matches upstream in 12 theme configurations', 
           );
       }
 });
+
+// modal and flyout
+test('flyout constants and inline style composition match upstream', () => {
+  const consts = require(resolve(eui, 'lib/components/flyout/const.js'));
+  const reference = require(resolve(eui, 'lib/components/flyout/flyout.styles.js'));
+  for (const name of ['FLYOUT_SIZES', 'FLYOUT_SIDES', 'FLYOUT_TYPES', 'FLYOUT_PADDING_SIZES'])
+    assert.deepEqual(styles[name], consts[name], name);
+  assert.equal(styles.FLYOUT_BREAKPOINT, reference.FLYOUT_BREAKPOINT);
+  for (const value of ['s', 'm', 'l', 'fill', 480, '40vw', 'nope', undefined])
+    assert.equal(styles.isEuiFlyoutSizeNamed(value), consts.isEuiFlyoutSizeNamed(value), String(value));
+  for (const size of ['s', 'm', 'l', 'fill', 480, '40vw'])
+    for (const maxWidth of [false, true, 600, '35rem'])
+      for (const zIndex of [1000, 6000])
+        assert.deepEqual(
+          styles.composeFlyoutInlineStyles(size, 'side-by-side', null, null, maxWidth, zIndex),
+          reference.composeFlyoutInlineStyles(size, 'side-by-side', null, null, maxWidth, zIndex),
+          `${size}/${maxWidth}/${zIndex}`
+        );
+});
+
 

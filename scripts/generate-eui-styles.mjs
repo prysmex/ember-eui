@@ -159,7 +159,18 @@ const entries = {
   'components/header/header_alert/header_alert.styles.js': ['euiHeaderAlertStyles'],
   'components/header/header_breadcrumbs/header_breadcrumbs.styles.js': ['euiHeaderBreadcrumbsStyles'],
   'components/collapsible_nav/collapsible_nav.styles.js': ['euiCollapsibleNavStyles'],
-  'components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js': ['euiCollapsibleNavGroupStyles']
+  'components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js': ['euiCollapsibleNavGroupStyles'],
+  // modal and flyout
+  'components/modal/modal.styles.js': ['euiModalStyles'],
+  'components/modal/modal_header.styles.js': ['euiModalHeaderStyles'],
+  'components/modal/modal_body.styles.js': ['euiModalBodyStyles'],
+  'components/modal/modal_footer.styles.js': ['euiModalFooterStyles'],
+  'components/flyout/const.js': ['FLYOUT_SIZES', 'FLYOUT_SIDES', 'FLYOUT_TYPES', 'FLYOUT_PADDING_SIZES', 'isEuiFlyoutSizeNamed'],
+  'components/flyout/flyout.styles.js': ['euiFlyoutStyles', 'composeFlyoutInlineStyles', 'FLYOUT_BREAKPOINT'],
+  'components/flyout/_flyout_close_button.styles.js': ['euiFlyoutCloseButtonStyles'],
+  'components/flyout/flyout_header.styles.js': ['euiFlyoutHeaderStyles'],
+  'components/flyout/flyout_body.styles.js': ['euiFlyoutBodyStyles'],
+  'components/flyout/flyout_footer.styles.js': ['euiFlyoutFooterStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

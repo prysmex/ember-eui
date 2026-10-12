@@ -135,6 +135,30 @@
       "sha256": "1f236bad4ac395827192d0b4842ec9b2a2ff8095489562e2a91ecfac62a0dc33"
     },
     {
+      "path": "@elastic/eui/es/components/flyout/_flyout_close_button.styles.js",
+      "sha256": "58697ee388b9209edff750a057539e13c18619a73d13022ac4aa755f81d991a1"
+    },
+    {
+      "path": "@elastic/eui/es/components/flyout/const.js",
+      "sha256": "7112786a10e354555d4f74a42ec6ab8c9c01954d5a9855984f4d4afd1ddef3fa"
+    },
+    {
+      "path": "@elastic/eui/es/components/flyout/flyout_body.styles.js",
+      "sha256": "d239a1c542c8000d15f154db847992ba8e9f2f3b06984fa2754c656a4bbfcdf1"
+    },
+    {
+      "path": "@elastic/eui/es/components/flyout/flyout_footer.styles.js",
+      "sha256": "36209198b10f6f9285f731896101bd69554a9a8a450b16e92b452c8ea99b7d21"
+    },
+    {
+      "path": "@elastic/eui/es/components/flyout/flyout_header.styles.js",
+      "sha256": "8ce281ced19113e6ab4f7df475fee83c011ba2e617f4255ed146ea4d15df63ed"
+    },
+    {
+      "path": "@elastic/eui/es/components/flyout/flyout.styles.js",
+      "sha256": "8005345f4c8e8307bac53bb70cab23d2b3002199d8d040420398b540717ad691"
+    },
+    {
       "path": "@elastic/eui/es/components/form/checkbox/checkbox_control.styles.js",
       "sha256": "325c4fb973816edabedd25bf5fc5d909cf7999f51f84346eef0bcaf61d2f17ad"
     },
@@ -337,6 +361,22 @@
     {
       "path": "@elastic/eui/es/components/loading/loading_spinner.styles.js",
       "sha256": "8c3fc9f9fbc3bc8b61abd1e06992e8dd82e0c53d7783d003be321a23b891581b"
+    },
+    {
+      "path": "@elastic/eui/es/components/modal/modal_body.styles.js",
+      "sha256": "2a95c8fb8de912c0e3be4256f0970a7ce9c420f8b7829c83a8ecc9e2406f065e"
+    },
+    {
+      "path": "@elastic/eui/es/components/modal/modal_footer.styles.js",
+      "sha256": "22b8ea5ff387d117bbfa5b33ef1f1d245fdfd1d9cfb4fad03e10d90d32c50920"
+    },
+    {
+      "path": "@elastic/eui/es/components/modal/modal_header.styles.js",
+      "sha256": "3cc6a2f0846d6c4805a179d75a5cc9bcc08d979c64a1f3385ee950c0dcff62bd"
+    },
+    {
+      "path": "@elastic/eui/es/components/modal/modal.styles.js",
+      "sha256": "6fdc993b91d55079f1d6dec48698ea075e4f77cf7e1569484f8464edfbf0f447"
     },
     {
       "path": "@elastic/eui/es/components/page_template/inner/page_inner.styles.js",

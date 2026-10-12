@@ -35,12 +35,12 @@ Coordinator loop per finished agent:
 3. Run the full core suite in the main checkout (don't edit sources while its vite build runs); fix cross-family interactions; commit; remove the worktree and branch; start the next family in the freed slot.
 
 In flight / pending at this point (updated 2026-10-12, later check-in):
-- Running agents: buttons-misc (button group/content, facet, filter), date-pickers, resizable-dnd (resizable container, drag and drop), selectable (+ suggest), combo-box, super-select.
-- Merged since last update: lists, header, modal-flyout, overlays, cards, feedback, misc-display. Main core suite 886/886. Open decision: keep or deprecate EuiNotificationEvent (removed upstream; styles hand-written). All rows that were In progress are now Migrated.
+- Running agents: buttons-misc (button group/content, facet, filter), date-pickers, range, selectable (+ suggest), combo-box, super-select.
+- Merged since last update: lists, header, modal-flyout, overlays, cards, feedback, misc-display, resizable-dnd. Main core suite 900/900. Open decision: keep or deprecate EuiNotificationEvent (removed upstream; styles hand-written). All rows that were In progress are now Migrated.
 - Leftovers to review: worktree `wt/icons-refresh` (branch `eui-wave/icons-refresh`, no commits) holds an uncoordinated icon-asset refresh by the earlier icon agent (632 SVGs + 31 components + `icon-assets-handoff.md`) — evaluate as its own family after current waves; do not merge blindly. Two agent stashes (`WIP on eui-wave/overlays`, `RECOVER eui-wave/header work`) duplicate merged work and can be dropped; the user's own older stashes must stay. Agents must never use `git stash` (shared across worktrees).
 - `@css` follow-ups: modal/flyout close buttons still use wrapper spans (`closeIconCss`, `closeButtonPositionCss`, `closeButtonLookCss` getters ready); context menu item icons (`align-self`, spinner); EuiButton/EuiText/EuiBetaBadge/EuiButtonEmpty/EuiTitle/EuiPopover/EuiFlyout lack `@css` (some callers use `&&` doubled specificity meanwhile).
 - Merge tooling lives in the scratchpad: `wave-merge.sh <family>`, `merge_lists.py`, `rows.py`, `dupkeys.mjs`, `mkwt.sh <family>`.
-- Next families after the running ones: range/dual range; color picker/palette; markdown editor/format; code block; table family.
+- Next families after the running ones: color picker/palette; markdown editor/format; code block; table family.
 - Open user decision: whether forms move focus to the error callout when invalid (upstream does).
 - Cleanup later: unused `utils/css-mappings/*` files, docs demo visual pass, release notes for changed defaults.
 

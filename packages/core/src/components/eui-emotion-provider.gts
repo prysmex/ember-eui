@@ -1,3 +1,7 @@
+import type {
+  EuiBorealisOverrides,
+  EuiBorealisHighContrastMode
+} from '../utils/eui/theme.ts';
 import Component from '@glimmer/component';
 import { provide } from 'ember-provide-consume-context';
 import {
@@ -20,6 +24,8 @@ import type { ComponentLike } from '@glint/template';
 export interface EuiEmotionProviderSignature {
   Args: {
     colorMode?: EuiColorMode;
+    borealisOverrides?: EuiBorealisOverrides;
+    highContrastMode?: EuiBorealisHighContrastMode;
     overrides?: EuiThemeOverrides;
     parent?: EuiThemeContext;
     cache?: EuiEmotionCache;

@@ -27,6 +27,7 @@ jobs:
       - run: pnpm lint
       # fails when an argument's docs changed without `pnpm docs:api`
       - run: pnpm docs:api:check
+      - run: pnpm eui:check
 
   test:
     name: Tests

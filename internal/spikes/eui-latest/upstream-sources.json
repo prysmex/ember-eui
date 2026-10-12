@@ -1,0 +1,350 @@
+{
+  "versions": {
+    "@elastic/eui": "123.1.0",
+    "@elastic/eui-theme-borealis": "8.1.0",
+    "@elastic/eui-theme-common": "10.1.0"
+  },
+  "adapters": [
+    "Emotion serialization only",
+    "pure style barrels",
+    "Object.keys helper"
+  ],
+  "sources": [
+    {
+      "path": "@elastic/eui/es/components/button/button_display/_button_display_content.styles.js",
+      "sha256": "d47b90cddb0181b983e80c69f912f53a2dafe51d063e43ff8c56d329ba239cca"
+    },
+    {
+      "path": "@elastic/eui/es/components/button/button_display/_button_display.styles.js",
+      "sha256": "9ca0838d55f9c3da97fbb9b240c7395f41af0125a6aaf52feb7187f392a0a96b"
+    },
+    {
+      "path": "@elastic/eui/es/components/common.js",
+      "sha256": "b94d98693be5c8cf22392a939bc65a658deeceac235733b6e149a2ce93ecf05c"
+    },
+    {
+      "path": "@elastic/eui/es/components/horizontal_rule/horizontal_rule.styles.js",
+      "sha256": "b8161495ca1fe5639c9ede467e3334f3403482716713e1d0891cd66295c80d1e"
+    },
+    {
+      "path": "@elastic/eui/es/components/loading/loading_spinner.styles.js",
+      "sha256": "8c3fc9f9fbc3bc8b61abd1e06992e8dd82e0c53d7783d003be321a23b891581b"
+    },
+    {
+      "path": "@elastic/eui/es/components/panel/panel.styles.js",
+      "sha256": "7ecc94047e65d421eba7d71354ea01bf3573e1a4878b6cf681808fdebd3270f0"
+    },
+    {
+      "path": "@elastic/eui/es/components/spacer/spacer.styles.js",
+      "sha256": "e6eaf9292456bce230fff4cbb55d2d1e7a3ac0f78988eb9482a6b714831358ae"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/high_contrast.js",
+      "sha256": "9779a2213c4c7242c7d62a95ca0fe940f0295e031054f86284c6fa2b51d948ae"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/index.js",
+      "sha256": "7e83c682e6e41199a799d84a0273a754188d06f797e4d5502241bf5c92430bca"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/logical_shorthands.js",
+      "sha256": "24229db7f26b70b8788cd32802a2e2c393a8d9e5ff0f37bc6aa8bfa7140c21c2"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/logicals.js",
+      "sha256": "1472df847e365244b73df498a6f85ce3ffe2013ade85c119b0ce489a91c2893f"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/logicals.json",
+      "sha256": "a93295eb53d2af6d701141f0bf3152eb176813a430455601f482e0f905f8259f"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/math.js",
+      "sha256": "2f413d306a73b0912df3c5985227012bf2f3281d26419bb06563cd5bffbd59d0"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/size.js",
+      "sha256": "04fdfa1f729ae785e9df1bed31273e2682cf4ca5cb21f2c264dc8ba03f9975d4"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/typography.js",
+      "sha256": "30f87cc5d84a6fc66500701899e6782613547b8165a9b367d0d02ef7d450597e"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/index.js",
+      "sha256": "7e2359b835e33dd2af84456302b116a9fbca1e554e63ef1c19aa015fff45ee6f"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_button.js",
+      "sha256": "f8d325713c3f854b8513387ed92987d9c899c448829248341de055915946eaa4"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_color.js",
+      "sha256": "cb7caf18f8277fd617cb704beb7958620f358fdd809b0205e36ecdb32c4cae2e"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_container_query.js",
+      "sha256": "7ad60297dd8ac21d2c56ca215e363ae8a5f5a0b50cc5be8e32f4e90299cec5d1"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_helpers.js",
+      "sha256": "110ab0eddd113024817719cca579637a258e94977b3726ff411dc47e228d6685"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_padding.js",
+      "sha256": "81cd211c84e7c9cf46ac443820e1bca4e77663b2df4cff72ad6815bdc03fc21c"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_responsive.js",
+      "sha256": "0e571e23347fe144a682b8ed3a1140926e8e0f7253d08f13f7797003935dfbc7"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_shadow.js",
+      "sha256": "db0ff3385889f064ef3064c5f3df7e5df0e6a725c9e92bdf3aa502259cace1f4"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_states.js",
+      "sha256": "693e1150ea0034b63ebdff5de249782afec7b4e72c9c52f3dab04df96d265d3d"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/_typography.js",
+      "sha256": "57d12ba1639b647f48d02d57618622663afaa02cf644ac758cc4e103089029da"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/mixins/index.js",
+      "sha256": "b137f8317515ab3d22db1e55757ad466827d372511f40518981f39ee5af4c03e"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/utility/animations.js",
+      "sha256": "7fbc6d11d043a2bc90f2c3251d37db2d504d44a90b76e10234e3878802a170fe"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/utility/selectors.js",
+      "sha256": "4d98d33d36987f3791e8b82798b67fd6021d69818a77357b14482fca5be15a03"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/animations.js",
+      "sha256": "b0e04d1e114a0a45e7512f67ba61a380cf4ed0c4e8da542453f64b82c2db005d"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/borders.js",
+      "sha256": "2e29cd9a98755c46896f7a2d56524db2d6d96b248e36db46de14c30bf47c8d05"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/breakpoint.js",
+      "sha256": "659b247f9664b4215217ad360f15569dc3da190e01b83d36c00cea62f1e51214"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/colors.js",
+      "sha256": "2e29cd9a98755c46896f7a2d56524db2d6d96b248e36db46de14c30bf47c8d05"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/index.js",
+      "sha256": "d27d7146f3606ff3a7a12d63769abd2390931c95f52ff17f3243b6c8d2a46ed7"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/levels.js",
+      "sha256": "498b35b6cc8f73ff27955eb400d38ae6fea8d2d50fb63f908f18427711667b3c"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/shadow.js",
+      "sha256": "53f0f17c3446af19064325d2dde3c9f67f1091108030a8f7984e7c3cd5fcd25a"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/size.js",
+      "sha256": "a383a573456c73b12d272ac01ee819384cacc1053cd9c6244d6a557380d85e53"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/states.js",
+      "sha256": "2e29cd9a98755c46896f7a2d56524db2d6d96b248e36db46de14c30bf47c8d05"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/variables/typography.js",
+      "sha256": "0aff9315bef5f986895494cd1d66bb01bd9654c1efd1ec697f6387fc0381a7c4"
+    },
+    {
+      "path": "@elastic/eui/es/services/breakpoint/_sorting.js",
+      "sha256": "33ea167029ecd767219c9f72ddfaa0247157a39c31474cd6197a913ec9f4a152"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/color_palette.js",
+      "sha256": "cd7e487f7a803512639c6545c8b3c54aa343768227b27da471518df054288dac"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/contrast.js",
+      "sha256": "d8adc37f6f4f8acaa94e697f398315141167f461a9c0b900e82d4831c73abd70"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/eui_palettes.js",
+      "sha256": "fa57068ace755e0c6b28b556f1464f7ed11bf5991ad3ec4bbd3251cdf6deeb0d"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/hex_to_hsv.js",
+      "sha256": "0f1a2f058e3d914da155730255656ef6cc6bbff9fabdae2bd9a49612615c2220"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/hex_to_rgb.js",
+      "sha256": "654c2c7831c5599177758d12eb46f444cdad040378541145c60198cbdcd0f4d2"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/hsv_to_hex.js",
+      "sha256": "244b512c397d2cb785e35ac9cd227fc21b8765f2d5b37944be6b896ef067a053"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/hsv_to_rgb.js",
+      "sha256": "5687e289be7bc0e43c95b0465a564aff902d7a3446b30dc40c87320942439509"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/index.js",
+      "sha256": "c8a857c21a9d57e2e9f864a2bd9477afc481ca9739d110796baf9c27bfb134a1"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/is_color_dark.js",
+      "sha256": "2a8d35f8b1dc2a1d27de7a628ae7c641034186d1d9083ea5b2eea4d404994e80"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/is_valid_hex.js",
+      "sha256": "fb3c8e6253e2f1140fddc8fee9b2a843ff76f167ad02e6b66f44481cc54b733c"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/luminance_and_contrast.js",
+      "sha256": "313db5c6d108f778fcf95e66bbd7fc10397b0535c9424c8cb1e98bc86e74fc4e"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/manipulation.js",
+      "sha256": "39fe87e862f41477870906517795011bbde024a15cb74845dfbc960a8c0c9f74"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/rgb_to_hex.js",
+      "sha256": "7773f82a245e7e33881c0c52e6b8c745b474b4f375dff91e0a66bb8869ea247e"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/rgb_to_hsv.js",
+      "sha256": "d66c35cc8482177dc392d8821546a114257f16859960b0e9db183f313bd0f16f"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/stepped_gradient.js",
+      "sha256": "79bdc0ac355316feb4ed24e28f9fe82785aae60a8a2118a50e490b55edcd387f"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/vis_color_store.js",
+      "sha256": "ffe2816d272018b225355502b1767564b70f233846ef71de583913020a3044e8"
+    },
+    {
+      "path": "@elastic/eui/es/services/color/visualization_colors.js",
+      "sha256": "44bf711fba76ec54eebe979dd841fe0fdd0afb344521d3eed23219138df9234d"
+    },
+    {
+      "path": "@elastic/eui/es/services/index.js",
+      "sha256": "512dd71de7ac8171c4954ab07bd4ba0ad53f46b8e71a38648f39fa5abb07adfe"
+    },
+    {
+      "path": "@elastic/eui/es/services/theme/hooks.js",
+      "sha256": "6a8162f6a8241d63bcdb4e8b73b440e13f86bc8d7e72d535df0c05fbe80ac9e7"
+    },
+    {
+      "path": "@elastic/eui/es/services/theme/index.js",
+      "sha256": "d4223bb80e5a014704b997212a70dfbe3873748cf2f20f821b5c3a0b29a4ff26"
+    },
+    {
+      "path": "@elastic/eui/es/services/theme/utils.js",
+      "sha256": "023d2763491990f37e656b32b17bb60ae02740cde13f56ee654bb73398890150"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/index.js",
+      "sha256": "eb764f88a149aedd28a8b6db8a3229fb2d7dea9c77ce5efc5a028430b30c351e"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_animation.js",
+      "sha256": "c1bfac4a4b2ebd2980c7e03a0a3838c20690b01c1287f8ce82de486947d9b33b"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_borders.js",
+      "sha256": "41eaeb6f98fb8ed0ff5160813d3b63b0e36a155de45f9a750f3ad359f841e744"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_breakpoint.js",
+      "sha256": "2ee15f80e3c0002f65ebf7916177df7dfdb374c16b2d71cba9390373e86a836a"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_buttons.js",
+      "sha256": "122add88fb42e866bf8f496413d465ae7e7ac4c04ddc57ac123a11f492d21e60"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_components.js",
+      "sha256": "7ec6695edfc4e30584fed7c3d86cda6b1f8e585b2e3be3e6dda79de812ca43ce"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_forms.js",
+      "sha256": "96566a4a901a33336efd9a04c43ee8826cb898fecd7336d730545cb5be629880"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_levels.js",
+      "sha256": "feca961e708717d12e0393d226b9f28be73459da54a77568ba9ef3fb17802c90"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_overrides.js",
+      "sha256": "99ce36d890bd5746eaf572ddcd1565a692c5c45a833c288e2723d6530d628db0"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_shadows.js",
+      "sha256": "44c3c84ac7ae7202206d2e4ebf53038520effc4d86c3e92d4ac0879bc11d4d06"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_size.js",
+      "sha256": "7e7cd5e27834047bf07759f407f5a16765f906791fc7148869659aedcba64fc8"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_states.js",
+      "sha256": "c8fcfe236ebfcdc016cc7fa384ea1152bf18e85c61f55a6e819e52c189a7deb5"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/_typography.js",
+      "sha256": "3559b11dcd0f79f37605bbe9db3578fd9494dbec3ac2db80e73728457f2ddc85"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_dark.js",
+      "sha256": "e0f7ff0450f63cec891d465e01a556b2b19b01e02438855d00691f958379e136"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_light.js",
+      "sha256": "9d36127ab74350ef80c08534e13f55bab175712a501d5e32c2dcc4d29618614f"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_severity_hcm.js",
+      "sha256": "49dd67103181fcb9e0ee9be78072c01b072638bb074efdc8e8ce65abcf26b79d"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_severity.js",
+      "sha256": "332144f8c130a5a27edd808097a1b4e4012d161c6ebc12c52283a9a19e4f53eb"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_vis_dark.js",
+      "sha256": "2e9d68447c4e82bc5d6991b4184ab077229a9484e0a829b9808c07239adc9b47"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_vis_hcm.js",
+      "sha256": "9c701bf4cf7996567799c80a6a0dbc5f1086b491b2b820e164311b3cad0d6b6b"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_colors_vis_light.js",
+      "sha256": "92d9a5c356207c4026a57215b3f0cc8d65d3eb07b1ec85e1b646f41aa535cd08"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_primitive_colors.js",
+      "sha256": "c3bf6dd6a554fbe4c1f359c242ea38f30a4bf3be135f81f463619faab058f7b2"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/_semantic_colors.js",
+      "sha256": "b15a5623bff3cdc0f2fad703300e737aeab5635b04e730df3012402f0ecf9c44"
+    },
+    {
+      "path": "node_modules/.pnpm/@elastic+eui-theme-borealis@8.1.0_@emotion+react@11.14.0_@types+react@18.3.31_react@18._7cb714bd9c07dfa0c1b1173e508bf950/node_modules/@elastic/eui-theme-borealis/lib/esm/variables/colors/index.js",
+      "sha256": "a9c22122038d24d1a0b5f54fa80467290f3edb74e08891318a93894ad6aec96a"
+    },
+    {
+      "path": "node_modules/.pnpm/chroma-js@2.4.2/node_modules/chroma-js/chroma.js",
+      "sha256": "26a2e532b90f6d97639cd96d5054dd0abc2fcd55554086cf11ae8c874ed66c6d"
+    }
+  ]
+}

@@ -13,7 +13,9 @@
     "_start:site": "pnpm --filter site start",
     "_start:packages": "pnpm --stream -parallel --filter './packages/*' start --no-watch.clearScreen",
     "publish-packages": "pnpm build --filter './packages/*' && changeset version && changeset publish",
-    "sync-injected": "node scripts/sync-injected.mjs"
+    "sync-injected": "node scripts/sync-injected.mjs",
+    "eui:generate": "node scripts/generate-eui-styles.mjs",
+    "eui:check": "node scripts/generate-eui-styles.mjs --check && node --test scripts/eui-upstream-parity.test.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.0",

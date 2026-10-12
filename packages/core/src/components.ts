@@ -218,8 +218,10 @@ import EuiTabs from './components/eui-tabs.gts';
 import EuiText from './components/eui-text.gts';
 import EuiTextAlign from './components/eui-text-align.gts';
 import EuiTextArea from './components/eui-text-area.gts';
+import EuiTextBlockTruncate from './components/eui-text-block-truncate.gts';
 import EuiTextColor from './components/eui-text-color.gts';
 import EuiTextDiff from './components/eui-text-diff.gts';
+import EuiTextTruncate from './components/eui-text-truncate.gts';
 import EuiTimeline from './components/eui-timeline.gts';
 import EuiTimelineItem from './components/eui-timeline-item.gts';
 import EuiTimelineItemEvent from './components/eui-timeline-item-event.gts';
@@ -457,8 +459,10 @@ export {
   EuiText,
   EuiTextAlign,
   EuiTextArea,
+  EuiTextBlockTruncate,
   EuiTextColor,
   EuiTextDiff,
+  EuiTextTruncate,
   EuiTimeline,
   EuiTimelineItem,
   EuiTimelineItemEvent,

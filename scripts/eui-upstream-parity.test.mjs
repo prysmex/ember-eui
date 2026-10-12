@@ -184,7 +184,9 @@ const factories = {
   'components/timeline/timeline.styles.js': ['euiTimelineStyles'],
   'components/timeline/timeline_item.styles.js': ['euiTimelineItemStyles'],
   'components/timeline/timeline_item_event.styles.js': ['euiTimelineItemEventStyles'],
-  'components/timeline/timeline_item_icon.styles.js': ['euiTimelineItemIconStyles']
+  'components/timeline/timeline_item_icon.styles.js': ['euiTimelineItemIconStyles'],
+  // super select
+  'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

@@ -7506,6 +7506,40 @@ var euiTimelineItemIconStyles = function euiTimelineItemIconStyles2(euiThemeCont
     center: _ref108
   };
 };
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/form/super_select/super_select.styles.js
+var euiSuperSelectStyles = function euiSuperSelectStyles2(_ref109) {
+  var euiTheme = _ref109.euiTheme;
+  return {
+    euiSuperSelect__listbox: /* @__PURE__ */ css(logicalCSS("max-height", "300px"), " ", logicalCSSWithFallback("overflow-y", "auto"), " ", logicalCSSWithFallback("overflow-x", "hidden"), " padding:", euiTheme.size.s, ";.euiSuperSelect__item:focus{outline:none;};label:euiSuperSelect__listbox;")
+  };
+};
+var euiSuperSelectControlStyles = function euiSuperSelectControlStyles2(euiThemeContext) {
+  var formStyles = euiFormControlStyles(euiThemeContext);
+  var formVariables = euiFormVariables(euiThemeContext);
+  return {
+    euiSuperSelect__control: /* @__PURE__ */ css(formStyles.shared, " display:block;", logicalTextAlignCSS("left"), " ", euiTextTruncate(
+      ""
+      // maxWidth is already set by width modifiers below
+    ), " &:focus{", formStyles.focus, ";};label:euiSuperSelect__control;"),
+    // Since the control is a button and not an actual input, we have to set
+    // certain state styles manually instead of relying on CSS selectors
+    open: /* @__PURE__ */ css(formStyles.focus, ";;label:open;"),
+    invalid: /* @__PURE__ */ css(formStyles.invalid, ";;label:invalid;"),
+    disabled: /* @__PURE__ */ css(formStyles.disabled, ";;label:disabled;"),
+    readOnly: /* @__PURE__ */ css(formStyles.readOnly, ";;label:readOnly;"),
+    // Skip the css() on the default height to avoid generating a className
+    uncompressed: "\n      ".concat(formStyles.uncompressed, "\n      /* Match line height with inputs */\n      ").concat(logicalCSS("padding-vertical", 0), "\n      line-height: ").concat(formVariables.controlHeight, ";\n    "),
+    compressed: /* @__PURE__ */ css(formStyles.compressed, logicalCSS("padding-vertical", 0), " line-height:", formVariables.controlCompressedHeight, ";;label:compressed;"),
+    // Skip the css() on the default width to avoid generating a className
+    formWidth: formStyles.formWidth,
+    fullWidth: /* @__PURE__ */ css(formStyles.fullWidth, ";label:fullWidth;"),
+    // Layout modifiers
+    inGroup: /* @__PURE__ */ css(formStyles.inGroup, ";label:inGroup;"),
+    // Children
+    euiSuperSelect__placeholder: /* @__PURE__ */ css("color:", formVariables.controlPlaceholderText, ";;label:euiSuperSelect__placeholder;")
+  };
+};
 export {
   EuiFormControlLayoutClearButtonStyles,
   FLYOUT_BREAKPOINT,
@@ -7692,6 +7726,8 @@ export {
   euiStepVariables,
   euiStepsHorizontalStyles,
   euiSubStepsStyles,
+  euiSuperSelectControlStyles,
+  euiSuperSelectStyles,
   euiSwitchStyles,
   euiTabContentStyles,
   euiTabStyles,

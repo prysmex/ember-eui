@@ -46,17 +46,18 @@ fields on the right (stacked on small screens).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@fullWidth` | `boolean` |  | Lets the fields column grow to the container's width. |
+| `@fullWidth` | `boolean` | the enclosing EuiForm's `@fullWidth`, else `false` | Lets the group grow to the container's width instead of twice the theme's form max width. |
 | `@gutterSize` |  | `'l'` | Space between the description and the fields. |
-| `@titleSize` |  | `'xs'` | Size of the title, any `EuiTitle` size; also aligns the fields with it. |
-| `@titleTagName` |  |  | Tag of the title, e.g. `'h3'`. |
+| `@ratio` | `EuiDescribedFormGroupRatio` | `'half'` | Width of the fields column relative to the description: `'half'` (1:1), `'third'` (fields 2:1) or `'quarter'` (fields 3:1). |
+| `@titleSize` |  | `'xs'` | Size of the title, any `EuiTitle` size. |
+| `@titleTagName` |  | `'h2'` | Tag of the title, e.g. `'h3'`. |
 | `@fieldFlexItemProps` |  |  | Props for the fields column: `{ grow, class }`. |
 | `@descriptionFlexItemProps` |  |  | Props for the title and description column: `{ grow, class }`. |
 
 | Block | Description |
 | --- | --- |
 | default block | The fields, usually `EuiFormRow`s. |
-| `<:title>` | Title of the group (on the left), as text: it is rendered in an `EuiTitle` whose tag is `@titleTagName`. |
+| `<:title>` | Title of the group (on the left), as text: it is rendered in an `EuiTitle` whose tag is `@titleTagName`, and names the group (`aria-labelledby`) unless the group has its own `aria-label` or `aria-labelledby`. |
 | `<:description>` | Explanation under the title. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.

@@ -1,23 +1,26 @@
-import { hash } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import { and, eq } from 'ember-truth-helpers';
+import { and } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
-import castTo from '../helpers/cast-to.ts';
-import inlineStyles from '../helpers/inline-styles.ts';
-import simpleStyle from '../modifiers/simple-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { logicalStyle } from '../utils/eui/range.ts';
+import { euiFormVariables } from '../utils/eui/styles.generated.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiFieldNumber from './eui-field-number.gts';
 
-import type { EuiFieldNumberSignature } from './eui-field-number';
-import type { EuiFieldNumberArgs } from './eui-field-number';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiFieldNumberArgs, EuiFieldNumberSignature } from './eui-field-number';
 
 export interface EuiRangeInputArgs
   extends Omit<EuiFieldNumberArgs, 'max' | 'min' | 'value'> {
-  /** Sizes the input to its digits. */
+  /**
+   * Sizes the input to its value (up to the longer of `@min`/`@max` plus one
+   * character), as upstream. Defaults to `true`.
+   */
   autoSize?: boolean;
-  /** Number of digits to size the input for. */
-  digitTolerance: number;
+  /** @deprecated Has no effect: the auto size follows the value, as upstream. */
+  digitTolerance?: number;
   /** `name` of the input. */
   name?: string;
   /** Highest value. */
@@ -44,46 +47,71 @@ export interface EuiRangeInputSignature {
   };
 }
 
-const EuiRangeInput: TemplateOnlyComponent<EuiRangeInputSignature> = <template>
-  {{#let
-    (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
-    (and (argOrDefault @isAppendProvided true) (has-block "append"))
-    as |hasAppend hasPrepend|
-  }}
-    <EuiFieldNumber
-      class="euiRangeInput euiRangeInput--{{argOrDefault @side 'max'}}"
-      name={{@name}}
-      min={{castTo @min to="number"}}
-      max={{castTo @max to="number"}}
-      @step={{@step}}
-      {{!@glint-expect-error}}
-      @value={{if (eq @value "") "" (castTo @value to="number")}}
-      @disabled={{@disabled}}
-      @compressed={{@compressed}}
-      @fullWidth={{@fullWidth}}
-      @controlOnly={{@controlOnly}}
-      @isPrependProvided={{hasAppend}}
-      @isAppendProvided={{hasPrepend}}
-      @isInvalid={{@isInvalid}}
-      ...attributes
-      {{simpleStyle
-        (inlineStyles
-          componentName="EuiRangeInput"
-          componentArgs=(hash
-            autoSize=(argOrDefault @autoSize true)
-            digitTolerance=@digitTolerance
-          )
-        )
-      }}
-    >
-      <:prepend as |classes|>
-        {{yield classes to="prepend"}}
-      </:prepend>
-      <:append as |classes|>
-        {{yield classes to="append"}}
-      </:append>
-    </EuiFieldNumber>
-  {{/let}}
-</template>;
+/**
+ * Upstream `EuiRangeInput`: an EuiFieldNumber sized to its value. Upstream's
+ * `euiRangeInput` styles (`min-inline-size`, and the auto width) are applied
+ * inline, because EuiFieldNumber has no `@css` yet.
+ */
+export default class EuiRangeInput extends Component<EuiRangeInputSignature> {
+  get numberValue(): number | string | undefined {
+    const { value } = this.args;
+    return value === '' ? '' : value === undefined ? undefined : Number(value);
+  }
 
-export default EuiRangeInput;
+  @cached
+  get style() {
+    const context = getEuiThemeContext(this);
+    const { euiTheme } = context.upstream;
+    const { min, max, value, compressed, isInvalid } = this.args;
+    const autoSize = this.args.autoSize ?? true;
+    let width: string | undefined;
+    if (autoSize) {
+      // Characters to show: the min/max length is the max, plus a UX buffer of 1
+      const maxChars = Math.max(String(min).length, String(max).length) + 1;
+      const inputCharWidth = Math.min(String(value).length, maxChars);
+      const form = useEuiBorealisStyles(context, euiFormVariables);
+      const padding = compressed ? form.controlCompressedPadding : form.controlPadding;
+      const invalidIconWidth = isInvalid
+        ? euiTheme.base * (compressed ? 1.125 : 1.375)
+        : 0;
+      // Guesstimated stepper width (a little wider in Firefox than in Chrome)
+      width = `calc(${padding} + ${inputCharWidth}ch + 2em + ${invalidIconWidth}px)`;
+    }
+    return logicalStyle({ minWidth: `${euiTheme.base * 3.5}px`, width });
+  }
+
+  <template>
+    {{#let
+      (and (argOrDefault @isPrependProvided true) (has-block "prepend"))
+      (and (argOrDefault @isAppendProvided true) (has-block "append"))
+      as |hasPrepend hasAppend|
+    }}
+      <EuiFieldNumber
+        class="euiRangeInput euiRangeInput--{{argOrDefault @side 'max'}}"
+        style={{this.style}}
+        name={{@name}}
+        @min={{@min}}
+        @max={{@max}}
+        @step={{@step}}
+        @value={{this.numberValue}}
+        @disabled={{@disabled}}
+        @readOnly={{@readOnly}}
+        @compressed={{@compressed}}
+        @fullWidth={{@fullWidth}}
+        @isLoading={{@isLoading}}
+        @controlOnly={{@controlOnly}}
+        @isPrependProvided={{hasPrepend}}
+        @isAppendProvided={{hasAppend}}
+        @isInvalid={{@isInvalid}}
+        ...attributes
+      >
+        <:prepend as |classes|>
+          {{yield classes to="prepend"}}
+        </:prepend>
+        <:append as |classes|>
+          {{yield classes to="append"}}
+        </:append>
+      </EuiFieldNumber>
+    {{/let}}
+  </template>
+}

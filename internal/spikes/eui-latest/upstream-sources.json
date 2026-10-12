@@ -303,6 +303,62 @@
       "sha256": "eabdf359a94203e5df2a230fc2279d3ca86565bbbc356e2607b80261fa7185f1"
     },
     {
+      "path": "@elastic/eui/es/components/form/range/dual_range.styles.js",
+      "sha256": "9b2e08cd66bb1d310184980129d3ffc8e501cbe6e741a634f63729bad9453194"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_draggable.styles.js",
+      "sha256": "942e164d4b193c9c7b619f3c3f6d53f03945d500175698c457a8b0ceb193a37d"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_highlight.styles.js",
+      "sha256": "8a1da28f3e3b0383a0f0115a021a5bca773b01304f4ce180937cbe354f46858d"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_input.styles.js",
+      "sha256": "f5d0cf0aba14ff0ab57c51ebbe7d552078d38fc8dfb52fe4911593d7481dfd6e"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_label.styles.js",
+      "sha256": "499aa135f7d4c390842e85f99f2814a556adc0a94b1c804e7e210219a90cac41"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_levels_colors.js",
+      "sha256": "e6a2d469ab9e63354cb47bba9e0a8ba7be8aed3bac3cd1a211ae6256da4f7c1a"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_levels.styles.js",
+      "sha256": "ae988a4a91c382e82fa55c83486d09c35517414601da8573d95b09658cca770d"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_slider.styles.js",
+      "sha256": "9076f4fccd7d9e343a16d1b2413352646d0fca4d391efdda54dcd2c4f01a1298"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_thumb.styles.js",
+      "sha256": "00c4ce34ef3f046f1644f1b1777c9a7030be4a572620f434f37e701d3cc0a0a6"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_ticks.styles.js",
+      "sha256": "66dbbf615684bfb0f028b8ab1e3bce42a42e1f6fc34f8c4dd49152f83606a5ce"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_tooltip.styles.js",
+      "sha256": "a8f31e9341ede3fce3647af3c8d2f65befccdec33b7591a01862be814ee1549c"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_track.styles.js",
+      "sha256": "f125af60759ba816718bc607004fe215d3cae626f63ed6c673d28fea5ce624ec"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range_wrapper.styles.js",
+      "sha256": "e31cb1ee629b608bc5780faeea44d0daaa69624e9573ff9fd7825967ae3efd67"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/range/range.styles.js",
+      "sha256": "d9666dd1831eba5b52d8efe36606d0f97a72f598c1a1baaafdead487f0fd468a"
+    },
+    {
       "path": "@elastic/eui/es/components/form/select/select.styles.js",
       "sha256": "572bd872bfdd33b2ef7b7e9d6b18e870c4c76d838fa1c4ff7ae60bf9ca44b001"
     },

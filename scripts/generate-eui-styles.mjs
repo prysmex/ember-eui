@@ -214,7 +214,22 @@ const entries = {
   'components/resizable_container/resizable_collapse_button.styles.js': ['euiResizableCollapseButtonStyles'],
   'components/resizable_container/resizable_panel.styles.js': ['euiResizablePanelStyles', 'euiResizablePanelContentStyles'],
   'components/drag_and_drop/draggable.styles.js': ['euiDraggableStyles', 'euiDraggableItemStyles'],
-  'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles']
+  'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles'],
+  // range
+  'components/form/range/range.styles.js': ['euiRangeVariables', 'euiRangeStyles'],
+  'components/form/range/dual_range.styles.js': ['euiDualRangeStyles'],
+  'components/form/range/range_draggable.styles.js': ['euiRangeDraggableStyles', 'euiRangeDraggableInnerStyles'],
+  'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles', 'euiRangeHighlightLevelsWrapperStyles', 'euiRangeHighlightLevelsStyles'],
+  'components/form/range/range_input.styles.js': ['euiRangeInputStyles'],
+  'components/form/range/range_label.styles.js': ['euiRangeLabelStyles'],
+  'components/form/range/range_levels.styles.js': ['euiRangeLevelsStyles', 'euiRangeLevelStyles'],
+  'components/form/range/range_levels_colors.js': ['euiRangeLevelColor', 'getLevelColor', 'isNamedLevelColor'],
+  'components/form/range/range_slider.styles.js': ['euiRangeSliderStyles'],
+  'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles'],
+  'components/form/range/range_ticks.styles.js': ['euiRangeTicksStyles', 'euiRangeTickStyles'],
+  'components/form/range/range_tooltip.styles.js': ['euiRangeTooltipStyles', 'euiRangeTooltipValueStyles'],
+  'components/form/range/range_track.styles.js': ['euiRangeTrackStyles'],
+  'components/form/range/range_wrapper.styles.js': ['euiRangeWrapperStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;
@@ -275,7 +290,7 @@ export const keyframes = (...args) => { const value = css(...args); const name =
           () => ({ contents: hooks, loader: 'js' })
         );
         builder.onLoad({ filter: /\/es\/services\/index\.js$/ }, (args) => ({
-          contents: `${hooks}\nexport * from './color/contrast';\nexport * from './color/manipulation';\nexport * from './color/is_color_dark';`,
+          contents: `${hooks}\nexport * from './color/contrast';\nexport * from './color/manipulation';\nexport * from './color/is_color_dark';\nexport * from './color/hex_to_rgb';`,
           resolveDir: dirname(args.path),
           loader: 'js'
         }));

@@ -1,32 +1,23 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { assert } from '@ember/debug';
-import { fn } from '@ember/helper';
-import { action } from '@ember/object';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
-import { htmlSafe } from '@ember/template';
 
-import { and, gt,or } from 'ember-truth-helpers';
 import { range } from 'lodash-es';
+import { modifier } from 'ember-modifier';
 
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiRangeTrackStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { isEvenlyDivisibleBy } from '../utils/number/index.ts';
 import { LEVEL_COLORS } from './eui-range-levels.gts';
 import EuiRangeLevels from './eui-range-levels.gts';
 import EuiRangeTicks from './eui-range-ticks.gts';
 
 import type { EuiRangeLevel } from './eui-range-levels';
+import type { EuiRangeTick } from './eui-range-ticks';
 
 export { LEVEL_COLORS };
-
-/** A custom tick of EuiRange / EuiDualRange: `{ value: 20, label: '20kb' }`. */
-export interface EuiRangeTick {
-  /** Where the tick is. */
-  value: number;
-  /** Its label. */
-  label: Component;
-}
+export type { EuiRangeTick };
 
 type Value = number | string;
 
@@ -39,201 +30,143 @@ export type EuiRangeTrackArgs = {
   step?: number;
   /** The value. */
   value?: Value | Value[];
-  /** Compressed (smaller) styling. */
+  /** Compressed (smaller) tick spacing. */
   compressed?: boolean;
-  /** Disabled styling. */
+  /** Disabled styling (half opacity) and disabled ticks. */
   disabled?: boolean;
-  /** Leaves room for ticks under the track. */
+  /** Shows the ticks and leaves room for them under the track. */
   showTicks?: boolean;
+  /** Stripes the levels, so a highlighted range stands out. */
+  showRange?: boolean;
   /** Interval between ticks. */
   tickInterval?: number;
   /** Custom ticks, see `EuiRangeTick`. */
   ticks?: EuiRangeTick[];
-  /** Called when the value changes (a tick or the track is clicked). */
+  /** Called when a tick is clicked. */
   onChange?: (e: MouseEvent) => void;
   /** Colored intervals, see `EuiRangeLevel`. */
   levels?: EuiRangeLevel[];
 };
 
-type Styling = {
-  tickSequence?: number[];
-  styles: ReturnType<typeof htmlSafe>;
-};
-
-/** @private The track (levels, ticks, highlight) of EuiRange / EuiDualRange. */
+/**
+ * @private The track (levels, ticks and the yielded slider/highlight/thumbs)
+ * of EuiRange / EuiDualRange.
+ */
 export interface EuiRangeTrackSignature {
   Element: HTMLElement;
   Args: EuiRangeTrackArgs;
   Blocks: {
-    default: [];
+    /** Yields the measured track width in px (0 until measured). */
+    default: [trackWidth: number];
   };
 }
 
-export default class EuiRangeTrackComponent extends Component<EuiRangeTrackSignature> {
-  @tracked trackEl?: HTMLElement;
+function validateValueIsInStep(
+  value: number,
+  { min, max, step }: { min: number; max: number; step?: number }
+): number {
+  assert(
+    `The value of ${value} is lower than the min value of ${min}.`,
+    !(value < min)
+  );
+  assert(
+    `The value of ${value} is higher than the max value of ${max}.`,
+    !(value > max)
+  );
+  assert(
+    `The value of ${value} is not included in the possible sequence provided by the step of ${step}.`,
+    isEvenlyDivisibleBy(value - min, step !== undefined ? step : 1)
+  );
+  return value;
+}
 
-  @action
-  registerTrack(el: HTMLElement) {
-    this.trackEl = el;
-  }
+/**
+ * Upstream `EuiRangeTrack`: the 6px track line (`::after`), levels and ticks.
+ * The track measures itself (like upstream's resize observer on the slider)
+ * and yields the width for thumb, tick and level positions.
+ */
+export default class EuiRangeTrack extends Component<EuiRangeTrackSignature> {
+  @tracked trackWidth = 0;
+  /** Untracked copy, so the modifier never reads what it writes. */
+  measuredWidth = 0;
 
-  @action
-  validateValueIsInStep(value: number): number {
-    const { min, max, step } = this.args;
-
-    if (value < min) {
-      assert(
-        `The value of ${value} is lower than the min value of ${min}.`,
-        false
-      );
-    }
-
-    if (value > max) {
-      assert(
-        `The value of ${value} is higher than the max value of ${max}.`,
-        false
-      );
-    }
-
-    // Error out if the value doesn't line up with the sequence of steps
-    if (!isEvenlyDivisibleBy(value - min, step !== undefined ? step : 1)) {
-      assert(
-        `The value of ${value} is not included in the possible sequence provided by the step of ${step}.`,
-        false
-      );
-    }
-
-    // Return the value if nothing fails
-    return value;
-  }
-
-  calculateSequence(
-    min: EuiRangeTrackArgs['min'],
-    max: EuiRangeTrackArgs['max'],
-    interval?: EuiRangeTrackArgs['tickInterval']
-  ): number[] {
-    // Loop from min to max, creating adding values at each interval
-    // (adds a very small number to the max since `range` is not inclusive of the max value)
-    const toBeInclusive = 0.000000001;
-
-    return range(min, max + toBeInclusive, interval);
-  }
-
-  calculateTicks(
-    min: EuiRangeTrackArgs['min'],
-    max: EuiRangeTrackArgs['max'],
-    step?: EuiRangeTrackArgs['step'],
-    tickInterval?: EuiRangeTrackArgs['tickInterval'],
-    customTicks?: EuiRangeTick[]
-  ): number[] {
-    let ticks;
-
-    if (customTicks) {
-      // If custom values were passed, use those for the sequence
-      // But make sure they align with the possible sequence
-      ticks = customTicks.map((tick) => {
-        return this.validateValueIsInStep(tick.value);
-      });
-    } else {
-      // If a custom interval was passed, use those for the sequence
-      // But make sure they align with the possible sequence
-      const interval = tickInterval || step;
-      const tickSequence = this.calculateSequence(min, max, interval);
-
-      ticks = tickSequence.map((tick) => {
-        return this.validateValueIsInStep(tick);
-      });
-    }
-
-    // Error out if there are too many ticks to render
-    if (ticks.length > 20) {
-      assert(
-        `The number of ticks to render is too high (${ticks.length}), increase the interval.`,
-        true
-      );
-    }
-
-    return ticks;
-  }
-
-  get derivedState(): Styling {
-    let tickSequence;
-    let styles = '';
-    const { showTicks, min, max, step, tickInterval, ticks } = this.args;
-
-    if (showTicks) {
-      tickSequence = this.calculateTicks(min, max, step, tickInterval, ticks);
-
-      // Calculate if any extra margin should be added to the inputWrapper
-      // because of longer tick labels on the ends
-      const lengthOfMinLabel = String(tickSequence[0]).length;
-      const lenghtOfMaxLabel = String(
-        tickSequence[tickSequence.length - 1]
-      ).length;
-      const isLastTickTheMax = tickSequence[tickSequence.length - 1] === max;
-
-      if (lengthOfMinLabel > 2) {
-        styles = `margin-left: ${lengthOfMinLabel / 5}em`;
-      }
-
-      if (isLastTickTheMax && lenghtOfMaxLabel > 2) {
-        styles = `margin-right: ${lenghtOfMaxLabel / 5}em`;
-      }
-    }
-
-    return {
-      tickSequence,
-      styles: htmlSafe(styles)
+  measure = modifier((element: HTMLElement) => {
+    const update = () => {
+      const width = element.clientWidth;
+      if (width === this.measuredWidth) return;
+      this.measuredWidth = width;
+      this.trackWidth = width;
     };
+    update();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  });
+
+  @cached
+  get tickSequence(): number[] | undefined {
+    const { showTicks, min, max, step, tickInterval, ticks } = this.args;
+    validateValueIsInStep(max, { min, max, step });
+    if (showTicks !== true) return undefined;
+    if (ticks) {
+      // Custom ticks must line up with the possible sequence
+      return ticks.map((tick) =>
+        validateValueIsInStep(tick.value, { min, max, step })
+      );
+    }
+    // (adds a tiny number to the max since `range` is not inclusive of it)
+    const interval = tickInterval || step;
+    return range(min, max + 0.000000001, interval).map((tick) =>
+      validateValueIsInStep(tick, { min, max, step })
+    );
   }
 
-  willDestroy(): void {
-    super.willDestroy();
-    
-    this.trackEl = undefined;
+  get hasLevels(): boolean {
+    return !!this.args.levels && this.args.levels.length > 0;
+  }
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiRangeTrackStyles);
+    const { disabled, showTicks, ticks } = this.args;
+    return `euiRangeTrack ${euiClass(
+      context,
+      styles.euiRangeTrack,
+      disabled && styles.disabled,
+      this.hasLevels && styles.hasLevels,
+      showTicks && (this.tickSequence || ticks) && styles.hasTicks
+    )}`;
   }
 
   <template>
-    <div
-      class={{classNames
-        "euiRangeTrack"
-        (if @disabled "euiRangeTrack--disabled")
-        (if @showTicks "euiRangeTrack--hasTicks")
-        (if (and @levels (gt @levels.length 0)) "euiRangeTrack--hasLevels")
-      }}
-      style={{if this.derivedState.styles this.derivedState.styles}}
-      ...attributes
-      {{didInsert (fn this.validateValueIsInStep @max)}}
-      {{didInsert this.registerTrack}}
-      {{didUpdate (fn this.validateValueIsInStep @max) @max}}
-      {{didUpdate (fn this.validateValueIsInStep @max) @min}}
-      {{didUpdate (fn this.validateValueIsInStep @max) @step}}
-    >
-      {{#if (gt @levels.length 0)}}
+    <div class={{this.classes}} ...attributes {{this.measure}}>
+      {{#if this.hasLevels}}
         <EuiRangeLevels
-          @compressed={{@compressed}}
           @levels={{@levels}}
           @max={{@max}}
           @min={{@min}}
           @showTicks={{@showTicks}}
-          @trackWidth={{this.trackEl.clientWidth}}
+          @showRange={{@showRange}}
+          @trackWidth={{this.trackWidth}}
         />
       {{/if}}
-      {{#if this.derivedState.tickSequence}}
+      {{#if this.tickSequence}}
         <EuiRangeTicks
           @disabled={{@disabled}}
           @compressed={{@compressed}}
           @ticks={{@ticks}}
-          @tickSequence={{this.derivedState.tickSequence}}
+          @tickSequence={{this.tickSequence}}
           @value={{@value}}
           @min={{@min}}
           @max={{@max}}
-          @interval={{or @tickInterval @step}}
+          @interval={{if @tickInterval @tickInterval @step}}
           @onChange={{@onChange}}
-          @trackWidth={{this.trackEl.clientWidth}}
+          @trackWidth={{this.trackWidth}}
         />
       {{/if}}
-      {{yield}}
+      {{yield this.trackWidth}}
     </div>
   </template>
 }

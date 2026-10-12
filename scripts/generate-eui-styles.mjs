@@ -57,7 +57,7 @@ const entries = {
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/reset/reset.js': ['resetStyles'],
   'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight'],
-  'services/color/manipulation.js': ['transparentize'],
+  'services/color/manipulation.js': ['transparentize', 'tint', 'shade'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
   'global_styling/mixins/_button.js': ['euiButtonDisplaysColors', 'euiButtonInteractionStyles'],
@@ -104,13 +104,21 @@ const entries = {
   'components/loading/loading_logo.styles.js': ['euiLoadingLogoStyles'],
   'global_styling/utility/animations.js': ['euiAnimFadeIn'],
   'global_styling/functions/high_contrast.js': ['highContrastModeStyles'],
-  'global_styling/functions/logicals.js': ['logicalCSS'],
+  'global_styling/functions/logicals.js': ['logicalCSS', 'logicalSizeCSS'],
   'components/code/code.styles.js': ['euiCodeStyles'],
   'components/image/image.styles.js': ['euiImageStyles'],
   'components/image/image_wrapper.styles.js': ['euiImageWrapperStyles'],
   'components/image/image_button.styles.js': ['euiImageButtonStyles', 'euiImageButtonIconStyles'],
   'components/image/image_caption.styles.js': ['euiImageCaptionStyles'],
-  'components/image/image_fullscreen_wrapper.styles.js': ['euiImageFullscreenWrapperStyles']
+  'components/image/image_fullscreen_wrapper.styles.js': ['euiImageFullscreenWrapperStyles'],
+  // icon family
+  'components/icon/icon.styles.js': ['euiIconStyles'],
+  'components/avatar/avatar.styles.js': ['euiAvatarStyles'],
+  'components/beacon/beacon.styles.js': ['euiBeaconStyles'],
+  'components/health/health.styles.js': ['euiHealthStyles'],
+  'components/token/token_map.js': ['TOKEN_MAP', 'TOKEN_COLOR_TO_ICON_COLOR_MAP'],
+  'services/color/is_color_dark.js': ['isColorDark'],
+  'services/color/hex_to_rgb.js': ['hexToRgb']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

@@ -42,6 +42,7 @@ feature a tour points at.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@size` | `number` | `12` | Diameter of the center dot in px. |
+| `@color` | `EuiBeaconColor` | `'success'` | `'subdued'`, `'primary'`, `'success'`, `'accent'`, `'danger'` or `'warning'`. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

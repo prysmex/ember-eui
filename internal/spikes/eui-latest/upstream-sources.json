@@ -19,6 +19,10 @@
       "sha256": "92645a24303358649393a95fe0edf2e554927ebcdbcfb58b7e0358a1553fa120"
     },
     {
+      "path": "@elastic/eui/es/components/avatar/avatar.styles.js",
+      "sha256": "bb7644a5a955cf432e988e3e69b3235b9acc7e63a9c9ea50235dae92f60bc4a9"
+    },
+    {
       "path": "@elastic/eui/es/components/badge/badge_group/badge_group.styles.js",
       "sha256": "a1abb2f0f200027fdb6053bc101178f98db80fbf89a4c89584802c541e14c4f7"
     },
@@ -37,6 +41,10 @@
     {
       "path": "@elastic/eui/es/components/badge/notification_badge/badge_notification.styles.js",
       "sha256": "cf389fe3358050e6ffd0153b7d75b8a596800d0a203e1349c8f19bfac2749eca"
+    },
+    {
+      "path": "@elastic/eui/es/components/beacon/beacon.styles.js",
+      "sha256": "22d5ec2175819c7862e237333b58fc333f9adf99666f5ebd1e939eae2afe42d1"
     },
     {
       "path": "@elastic/eui/es/components/bottom_bar/bottom_bar.styles.js",
@@ -183,8 +191,16 @@
       "sha256": "9c4adaa5d2015f65c637c19a98e6161b9e068f22a0d17b093efdb6d3d726a44a"
     },
     {
+      "path": "@elastic/eui/es/components/health/health.styles.js",
+      "sha256": "ccf29bd60f79a6865d568fc177cbd63b1fee14eba84e1af1905992a2c9adca65"
+    },
+    {
       "path": "@elastic/eui/es/components/horizontal_rule/horizontal_rule.styles.js",
       "sha256": "b8161495ca1fe5639c9ede467e3334f3403482716713e1d0891cd66295c80d1e"
+    },
+    {
+      "path": "@elastic/eui/es/components/icon/icon.styles.js",
+      "sha256": "6c71e3966c11c7e7977ff4934e8f183d5eba0e0b5c508f52c6cf62ba12018531"
     },
     {
       "path": "@elastic/eui/es/components/image/image_button.styles.js",
@@ -297,6 +313,10 @@
     {
       "path": "@elastic/eui/es/components/title/title.styles.js",
       "sha256": "1a0b0afccb7cd7f591bfabc2394aceafa09cad049b43ef11c4255747eb9b7008"
+    },
+    {
+      "path": "@elastic/eui/es/components/token/token_map.js",
+      "sha256": "6f11f9490103c48e7286154626567a372eeeab8d7a99550fd33ffaa855824cf7"
     },
     {
       "path": "@elastic/eui/es/global_styling/functions/high_contrast.js",

@@ -9,6 +9,7 @@ import { and, eq, not } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiBadgeStyles,
   getCustomInteractiveColors,
@@ -93,25 +94,6 @@ const buttonReset: CSSObject = {
   font: 'inherit',
   cursor: 'pointer'
 };
-
-/**
- * EuiIcon is not migrated yet, so badges size and color its SVG locally like
- * upstream's EuiIcon `size="s"` (12px, `currentColor`).
- */
-export function euiBadgeIconSizing(
-  { euiTheme }: EuiBorealisContext,
-  size: 's' | 'm' = 's'
-): CSSObject {
-  const length = size === 'm' ? euiTheme.size.base : euiTheme.size.m;
-  return {
-    display: 'inline-block',
-    flexShrink: 0,
-    verticalAlign: 'middle',
-    fill: 'currentColor',
-    inlineSize: length,
-    blockSize: length
-  };
-}
 
 export interface EuiBadgeSignature {
   Element: HTMLButtonElement | HTMLAnchorElement | HTMLSpanElement;
@@ -312,14 +294,10 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
   }
 
   @cached
-  get iconClass(): string {
+  /** Composed into EuiIcon's own class via `@css`. */
+  get iconCss(): EuiCss {
     const { icon } = this.styles;
-    return euiClass(
-      this.context,
-      euiBadgeIconSizing(this.context.upstream),
-      icon.euiBadge__icon,
-      icon[this.iconSide]
-    );
+    return [icon.euiBadge__icon, icon[this.iconSide]];
   }
 
   @cached
@@ -354,7 +332,7 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
                 <BadgeIcon
                   @type={{@iconType}}
                   @useSvg={{@iconUseSvg}}
-                  @iconClass={{this.iconClass}}
+                  @iconCss={{this.iconCss}}
                   @buttonClass={{this.iconButtonClass}}
                   @onClick={{@iconOnClick}}
                   @ariaLabel={{@iconOnClickAriaLabel}}
@@ -390,7 +368,7 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
                 <BadgeIcon
                   @type={{@iconType}}
                   @useSvg={{@iconUseSvg}}
-                  @iconClass={{this.iconClass}}
+                  @iconCss={{this.iconCss}}
                   @buttonClass={{this.iconButtonClass}}
                   @onClick={{@iconOnClick}}
                   @ariaLabel={{@iconOnClickAriaLabel}}
@@ -411,7 +389,7 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
               iconSide=this.iconSide
               iconType=@iconType
               iconUseSvg=@iconUseSvg
-              iconClass=this.iconClass
+              iconCss=this.iconCss
               iconButtonClass=this.iconButtonClass
               iconOnClick=@iconOnClick
               iconOnClickAriaLabel=@iconOnClickAriaLabel
@@ -462,7 +440,7 @@ interface BadgeIconSignature {
   Args: {
     type: EuiIconSignature['Args']['type'];
     useSvg?: boolean;
-    iconClass: string;
+    iconCss: EuiCss;
     buttonClass: string;
     onClick?: (event: MouseEvent) => void;
     ariaLabel?: string;
@@ -485,7 +463,8 @@ const BadgeIcon: TemplateOnlyComponent<BadgeIconSignature> = <template>
     >
       <EuiIcon
         @color="inherit"
-        @iconClasses="euiBadge__icon {{@closeButtonProps.iconClasses}} {{@iconClass}}"
+        @iconClasses="euiBadge__icon {{@closeButtonProps.iconClasses}}"
+        @css={{@iconCss}}
         @type={{@type}}
         @useSvg={{@useSvg}}
         @size="s"
@@ -494,7 +473,8 @@ const BadgeIcon: TemplateOnlyComponent<BadgeIconSignature> = <template>
   {{else}}
     <EuiIcon
       @color="inherit"
-      @iconClasses="euiBadge__icon {{@iconClass}}"
+      @iconClasses="euiBadge__icon"
+      @css={{@iconCss}}
       @type={{@type}}
       @useSvg={{@useSvg}}
       @size="s"
@@ -510,7 +490,7 @@ interface BadgeContentSignature {
     iconSide: 'left' | 'right';
     iconType?: EuiIconSignature['Args']['type'];
     iconUseSvg?: boolean;
-    iconClass: string;
+    iconCss: EuiCss;
     iconButtonClass: string;
     iconOnClick?: (event: MouseEvent) => void;
     iconOnClickAriaLabel?: string;
@@ -527,7 +507,7 @@ const BadgeContent: TemplateOnlyComponent<BadgeContentSignature> = <template>
       <BadgeIcon
         @type={{@iconType}}
         @useSvg={{@iconUseSvg}}
-        @iconClass={{@iconClass}}
+        @iconCss={{@iconCss}}
         @buttonClass={{@iconButtonClass}}
         @onClick={{@iconOnClick}}
         @ariaLabel={{@iconOnClickAriaLabel}}
@@ -544,7 +524,7 @@ const BadgeContent: TemplateOnlyComponent<BadgeContentSignature> = <template>
       <BadgeIcon
         @type={{@iconType}}
         @useSvg={{@iconUseSvg}}
-        @iconClass={{@iconClass}}
+        @iconCss={{@iconCss}}
         @buttonClass={{@iconButtonClass}}
         @onClick={{@iconOnClick}}
         @ariaLabel={{@iconOnClickAriaLabel}}

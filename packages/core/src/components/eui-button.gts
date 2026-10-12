@@ -150,14 +150,6 @@ export default class EuiButton extends Component<EuiButtonSignature> {
   get contentClasses() {
     const context = this.context;
     const styles = useEuiBorealisStyles(context, euiButtonDisplayContentStyles);
-    const iconSize = {
-      s: '12px',
-      m: '16px',
-      l: '24px',
-      xl: '32px',
-      xxl: '40px',
-      original: 'auto'
-    }[this.args.iconSize ?? 'm'];
     return [
       'euiButton__content',
       this.args.contentClasses,
@@ -165,11 +157,6 @@ export default class EuiButton extends Component<EuiButtonSignature> {
         boxSizing: 'border-box',
         flexDirection: this.args.iconSide === 'right' ? 'row-reverse' : 'row',
         '& .euiButtonContent__icon': {
-          width: iconSize,
-          height: iconSize,
-          inlineSize: iconSize,
-          blockSize: iconSize,
-          fill: 'currentColor',
           flexShrink: 0,
           margin: 0
         },

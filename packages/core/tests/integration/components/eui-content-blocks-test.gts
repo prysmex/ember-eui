@@ -54,6 +54,19 @@ function style(root: Element, selector: string, pseudo?: string) {
 }
 
 /** Normalize any CSS color to the browser's computed `rgb()` form. */
+/** The computed color of an EuiIcon, compared with an icon color token. */
+const ICON_TOKENS: Record<string, keyof typeof light.colors> = {
+  subdued: 'textSubdued',
+  primary: 'textPrimary',
+  accent: 'textAccent',
+  success: 'textSuccess',
+  warning: 'textWarning',
+  danger: 'textDanger'
+};
+function iconColor(selector: string, root: ParentNode = document) {
+  return getComputedStyle(root.querySelector(selector)!).color;
+}
+
 function rgb(color: string) {
   const probe = document.createElement('span');
   probe.style.color = color;
@@ -632,7 +645,11 @@ module('Integration | Component | Borealis content blocks', function (hooks) {
     const icon = style(this.element, '.euiEmptyPrompt__icon');
     assert.strictEqual(icon.marginBottom, light.size.base);
     assert.strictEqual(px(icon.maxWidth), px(light.size.l) * 15);
-    assert.dom('.euiEmptyPrompt__icon svg').hasClass('euiIcon--subdued', 'icon defaults to subdued');
+    assert.strictEqual(
+      iconColor('.euiEmptyPrompt__icon svg'),
+      rgb(light.colors.textSubdued),
+      'icon defaults to subdued'
+    );
 
     const content = style(this.element, '.euiEmptyPrompt__content');
     assert.strictEqual(px(content.maxWidth), 36 * px(content.fontSize));
@@ -723,9 +740,11 @@ module('Integration | Component | Borealis content blocks', function (hooks) {
         );
       }
       const named = ['primary', 'accent', 'success', 'warning', 'danger'].includes(color);
-      assert
-        .dom('.euiEmptyPrompt__icon svg', root)
-        .hasClass(named ? `euiIcon--${color}` : 'euiIcon--subdued', `${color} icon color`);
+      assert.strictEqual(
+        iconColor('.euiEmptyPrompt__icon svg', root),
+        rgb(light.colors[ICON_TOKENS[named ? color : 'subdued']!]),
+        `${color} icon color`
+      );
     }
     assert.strictEqual(
       getComputedStyle(el(this.element, '[data-plain-borderless]'), '::after').content,
@@ -741,7 +760,11 @@ module('Integration | Component | Borealis content blocks', function (hooks) {
       '0px',
       'only borderless transparent footers round every corner'
     );
-    assert.dom('[data-icon-color] svg').hasClass('euiIcon--primary', '@iconColor wins');
+    assert.strictEqual(
+      iconColor('[data-icon-color] svg'),
+      rgb(light.colors.textPrimary),
+      '@iconColor wins'
+    );
   });
 
   test('empty prompt padding sizes, horizontal layout and responsive collapse', async function (assert) {

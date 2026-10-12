@@ -21,15 +21,6 @@ import type { EuiLoadingSpinnerSignature } from './eui-loading-spinner';
 type ButtonIconSize = 'xs' | 's' | 'm';
 type ButtonIconDisplay = 'empty' | 'base' | 'fill';
 
-/** Upstream EUI icon sizes; EuiIcon itself is not migrated yet. */
-const ICON_SIZES: Record<string, string> = {
-  s: '12px',
-  m: '16px',
-  l: '24px',
-  xl: '32px',
-  xxl: '40px',
-  original: 'auto'
-};
 
 /** Spinner border follows the (disabled) text color, as upstream does. */
 const SPINNER_COLOR = { border: 'currentcolor' };
@@ -176,7 +167,6 @@ export default class EuiButtonIcon extends Component<EuiButtonIconSignature> {
     ]!;
     const color =
       this.args.color === 'ghost' ? 'text' : (this.args.color ?? 'primary');
-    const iconSize = ICON_SIZES[this.iconSize] ?? '16px';
     // A scoped equivalent of the React global reset. Deliberately no global injection.
     const reset: CSSObject = {
       boxSizing: 'border-box',
@@ -196,11 +186,6 @@ export default class EuiButtonIcon extends Component<EuiButtonIconSignature> {
       this.isDisabled && styles.isDisabled,
       {
         '& .euiButtonIcon__icon': {
-          width: iconSize,
-          height: iconSize,
-          inlineSize: iconSize,
-          blockSize: iconSize,
-          fill: 'currentColor',
           flexShrink: 0,
           margin: 0
         }

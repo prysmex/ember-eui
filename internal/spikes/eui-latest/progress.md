@@ -27,7 +27,20 @@ Branch: `feat/eui-latest`, based on `feat/emotion`. No catalog-wide completion c
 
 ## Current resume point
 
-Latest-only full core tests and core rebuild are in progress. Previous runs are superseded by latest-only changes. Root must finish full tests, site acceptance/build, type/lint checks and browser smoke, then update component status and exact counts. Do not stage `.vscode/settings.json`.
+Updated 2026-10-12 (coordinator session). Process: parallel agents per component family in git worktrees (`<scratchpad>/wt/<family>`, branch `eui-wave/<family>`), max 6 at once (8 cores / 7 GB). Rules for agents: [wave-brief.md](wave-brief.md) (incl. Performance rules and `@css`).
+
+Coordinator loop per finished agent:
+1. Merge `eui-wave/<family>` into `feat/eui-latest`. Shared-file conflicts: `components.md` row-wise (non-Pending row wins); generator/parity entry objects unioned by key with insert-only test additions replayed; generated files regenerated in the main checkout (`node scripts/generate-eui-styles.mjs`), then parity (`node --test scripts/eui-upstream-parity.test.mjs`).
+2. Check new code follows the perf rules (all style getters `@cached`, factories only via `useEuiBorealisStyles`) and `@css` for migrated children.
+3. Run the full core suite in the main checkout (don't edit sources while its vite build runs); fix cross-family interactions; commit; remove the worktree and branch; start the next family in the freed slot.
+
+In flight / pending at this point:
+- Running agents: lists, overlays (popover/tooltip/context menu), modal-flyout, header, cards (+split panel), feedback (accordion/toast/comments/notifications).
+- Uncommitted in main: removal of local icon sizing from Button/ButtonEmpty/ButtonIcon/Link and `@css` for Badge/BetaBadge icons (types pass; needs suite + commit).
+- Main suite after content-blocks merge: 777/779 — two empty-prompt tests in `eui-content-blocks-test.gts` fail (likely icon-size interaction after the icon merge); investigate before more merges.
+- Next families after the running ones: button group + button content + facet/filter buttons; tree view, text diff, expression, tour; resizable container + drag/drop; selectable (+template sitewide) and suggest; combo box; super select; date pickers + super date picker; range/dual range; color picker/palette; markdown editor/format; code block; table family.
+- Open user decision: whether forms move focus to the error callout when invalid (upstream does).
+- Cleanup later: unused `utils/css-mappings/*` files, docs demo visual pass, release notes for changed defaults.
 
 ## Commands
 

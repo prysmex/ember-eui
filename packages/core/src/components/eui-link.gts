@@ -163,16 +163,8 @@ export default class EuiLink extends Component<EuiLinkSignature> {
             fontSize: 'inherit',
             fontFamily: theme.font.family
           }),
-      '& .euiLink__externalIcon': {
-        display: 'inline-block',
-        verticalAlign: 'middle',
-        // EuiIcon size `s` (vendor CSS is not loaded for migrated components).
-        inlineSize: theme.size.m,
-        blockSize: theme.size.m,
-        fill: 'currentColor',
-        flexShrink: 0,
-        marginInlineStart: theme.size.xs
-      },
+      // EuiIcon sizes itself (`@size="s"`); only the link's spacing here.
+      '& .euiLink__externalIcon': { marginInlineStart: theme.size.xs },
       '& .euiLink__screenReaderOnly': screenReaderOnlyCss
     };
     const colorStyles = this.isDisabled

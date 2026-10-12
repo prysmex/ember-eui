@@ -14,15 +14,6 @@ import EuiButtonContent from './eui-button-content.gts';
 import type { EuiButtonContentSignature } from './eui-button-content';
 import type { EuiIconSignature } from './eui-icon';
 
-/** Upstream EUI icon sizes; EuiIcon itself is not migrated yet. */
-const ICON_SIZES: Record<string, string> = {
-  s: '12px',
-  m: '16px',
-  l: '24px',
-  xl: '32px',
-  xxl: '40px',
-  original: 'auto'
-};
 
 export interface EuiButtonEmptySignature {
   Element: HTMLAnchorElement | HTMLButtonElement;
@@ -156,7 +147,6 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
   get contentClasses() {
     const context = this.context;
     const styles = useEuiBorealisStyles(context, euiButtonDisplayContentStyles);
-    const iconSize = ICON_SIZES[this.iconSize] ?? '16px';
     return [
       'euiButtonEmpty__content',
       this.args.contentClasses,
@@ -164,11 +154,6 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
         boxSizing: 'border-box',
         flexDirection: this.args.iconSide === 'right' ? 'row-reverse' : 'row',
         '& .euiButtonContent__icon': {
-          width: iconSize,
-          height: iconSize,
-          inlineSize: iconSize,
-          blockSize: iconSize,
-          fill: 'currentColor',
           flexShrink: 0,
           margin: 0
         },

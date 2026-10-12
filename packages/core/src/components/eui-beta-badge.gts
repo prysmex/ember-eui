@@ -6,9 +6,9 @@ import { eq } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiBetaBadgeStyles } from '../utils/eui/styles.generated.ts';
 import {
-  euiBadgeIconSizing,
   euiBadgeReset,
   secureRel
 } from './eui-badge.gts';
@@ -142,14 +142,10 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
   }
 
   @cached
-  get iconClass(): string {
-    const context = this.context;
-    const styles = useEuiBorealisStyles(context, euiBetaBadgeStyles);
-    return euiClass(
-      context,
-      euiBadgeIconSizing(context.upstream, this.size === 'm' ? 'm' : 's'),
-      styles.euiBetaBadge__icon
-    );
+  /** Composed into EuiIcon's own class via `@css`. */
+  get iconCss(): EuiCss {
+    return useEuiBorealisStyles(this.context, euiBetaBadgeStyles)
+      .euiBetaBadge__icon;
   }
 
   <template>
@@ -178,7 +174,8 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
               {{yield}}
             {{else if @iconType}}
               <EuiIcon
-                @iconClasses="euiBetaBadge__icon {{this.iconClass}}"
+                @iconClasses="euiBetaBadge__icon"
+                @css={{this.iconCss}}
                 @type={{@iconType}}
                 @size={{this.size}}
                 aria-hidden="true"
@@ -195,7 +192,8 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
             {{yield}}
           {{else if @iconType}}
             <EuiIcon
-              @iconClasses="euiBetaBadge__icon {{this.iconClass}}"
+              @iconClasses="euiBetaBadge__icon"
+                @css={{this.iconCss}}
               @type={{@iconType}}
               @size={{this.size}}
               aria-hidden="true"

@@ -1,7 +1,10 @@
 import Component from '@glimmer/component';
+import type Owner from '@ember/owner';
 import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
+import { registerDestructor } from '@ember/destroyable';
 import { guidFor } from '@ember/object/internals';
+import { next, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 
 import { focusTrap } from 'ember-focus-trap';
@@ -28,6 +31,7 @@ import {
   isEuiFlyoutSizeNamed
 } from '../utils/eui/styles.generated.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
+import EuiFlyoutResizeButton from './eui-flyout-resize-button.gts';
 import EuiOverlayMask from './eui-overlay-mask.gts';
 import EuiPortal from './eui-portal.gts';
 import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
@@ -164,6 +168,21 @@ export type EuiFlyoutArgs = {
     preventScroll?: boolean;
   };
   /**
+   * Adds a resize handle at the flyout's inner edge, dragged or moved with
+   * the arrow keys (10px a step). The width is kept as a share of the window
+   * and clamped between `@minWidth` and `@maxWidth` (a number in px) and 90%
+   * of the window. `EuiFlyoutResizable` is this set to `true`. Defaults to
+   * `false`.
+   */
+  resizable?: boolean;
+  /** Smallest width in px while `@resizable`. Defaults to `0`. */
+  minWidth?: number;
+  /**
+   * Called with the new width in px after the user resizes (when a drag ends,
+   * and on each keyboard step), while `@resizable`.
+   */
+  onResize?: (width: number) => void;
+  /**
    * Extra styles composed last into this component's class (like upstream's
    * `css` prop). Prefer this to an extra class when styling it from a parent.
    */
@@ -217,6 +236,19 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
   /** Border-box width while pushed, for the body padding. */
   @tracked width?: number;
 
+  /** The user's width in px while `@resizable`; `0` until measured. */
+  @tracked resizeWidth = 0;
+  private callOnResize = false;
+  private resizeSizeArg: unknown = UNSET;
+  private resizeReferenceWidth = 0;
+  private dragStartX = 0;
+  private dragStartWidth = 0;
+
+  constructor(owner: Owner, args: EuiFlyoutArgs) {
+    super(owner, args);
+    registerDestructor(this, this.stopDragging);
+  }
+
   id = guidFor(this);
 
   /** The flyout element, the focus trap's fallback. */
@@ -243,7 +275,29 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
     return this.args.side === 'left' ? 'left' : 'right';
   }
 
+  get resizable() {
+    return Boolean(this.args.resizable);
+  }
+
+  /** Pushed flyouts and resizable ones follow the window's width. */
+  get tracksWindowWidth() {
+    return this.type === 'push' || this.resizable;
+  }
+
+  /**
+   * While resizable, the user's width as a percentage of the window (upstream
+   * `useEuiFlyoutResizable`), which replaces the named size.
+   */
   get size() {
+    if (
+      this.resizable &&
+      this.resizeWidth &&
+      Number.isFinite(this.windowWidth) &&
+      this.windowWidth > 0
+    ) {
+      return `${(this.resizeWidth / this.windowWidth) * 100}%`;
+    }
+
     return this.args.size ?? 'm';
   }
 
@@ -476,6 +530,143 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
     this.windowWidth = window.innerWidth;
   };
 
+  // Resizing (upstream `useEuiFlyoutResizable`)
+
+  /** Clamps to `@minWidth` (which wins) and the smaller of `@maxWidth` and 90% of the window. */
+  private clampWidth(width: number): number {
+    const maxWidth =
+      typeof this.args.maxWidth === 'number' ? this.args.maxWidth : Infinity;
+    const upperBound = Math.min(maxWidth, this.windowWidth * 0.9);
+
+    return Math.max(this.args.minWidth ?? 0, Math.min(width, upperBound));
+  }
+
+  private setResizeWidth(width: number): void {
+    if (width === this.resizeWidth) return;
+
+    this.resizeWidth = width;
+    if (this.callOnResize) this.args.onResize?.(width);
+  }
+
+  /** Measures the rendered flyout as the starting width. */
+  private measure(element: Element): void {
+    if (this.isDestroying || this.isDestroyed || this.resizeWidth) return;
+
+    this.callOnResize = false;
+    this.resizeWidth = this.clampWidth((element as HTMLElement).offsetWidth);
+  }
+
+  /**
+   * Resets the width when the consumer's `@size` changes and rescales it
+   * (keeping its share of the window) when the window resizes.
+   */
+  resizeSync = functionModifier(
+    (
+      element: Element,
+      [resizable, size, referenceWidth]: [boolean, unknown, number]
+    ) => {
+      if (!resizable) return;
+
+      schedule('afterRender', () => {
+        if (this.isDestroying || this.isDestroyed) return;
+
+        if (this.resizeSizeArg !== size) {
+          this.resizeSizeArg = size;
+          this.resizeReferenceWidth = referenceWidth;
+          this.callOnResize = false;
+          this.resizeWidth =
+            typeof size === 'number' ? this.clampWidth(size) : 0;
+          // measured once the named size is rendered
+          next(() => this.measure(element));
+        } else {
+          const previous = this.resizeReferenceWidth;
+
+          this.resizeReferenceWidth = referenceWidth;
+          if (this.resizeWidth && previous > 0 && referenceWidth > 0) {
+            this.setResizeWidth(
+              this.clampWidth(this.resizeWidth * (referenceWidth / previous))
+            );
+          }
+        }
+      });
+    }
+  );
+
+  /** `1` grows the flyout towards the page when the pointer moves right. */
+  private get resizeDirection(): number {
+    let direction = this.side === 'right' ? -1 : 1;
+
+    if (
+      this.element &&
+      window.getComputedStyle(this.element).direction === 'rtl'
+    ) {
+      direction *= -1;
+    }
+
+    return direction;
+  }
+
+  private pointerX(event: MouseEvent | TouchEvent): number {
+    return 'touches' in event
+      ? (event.touches[0]?.clientX ?? event.changedTouches[0]?.clientX ?? 0)
+      : event.clientX;
+  }
+
+  private onDrag = (event: MouseEvent | TouchEvent) => {
+    const offset = this.pointerX(event) - this.dragStartX;
+
+    this.setResizeWidth(
+      this.clampWidth(this.dragStartWidth + offset * this.resizeDirection)
+    );
+  };
+
+  private onDragEnd = () => {
+    this.stopDragging();
+    this.callOnResize = true;
+    this.args.onResize?.(this.resizeWidth);
+  };
+
+  private stopDragging = () => {
+    window.removeEventListener('mousemove', this.onDrag);
+    window.removeEventListener('mouseup', this.onDragEnd);
+    window.removeEventListener('touchmove', this.onDrag);
+    window.removeEventListener('touchend', this.onDragEnd);
+  };
+
+  onResizeStart = (event: MouseEvent | TouchEvent) => {
+    this.callOnResize = false;
+    this.dragStartX = this.pointerX(event);
+    this.dragStartWidth = this.element
+      ? (this.element as HTMLElement).offsetWidth
+      : 0;
+
+    // on the window, in case the pointer leaves the handle
+    window.addEventListener('mousemove', this.onDrag);
+    window.addEventListener('mouseup', this.onDragEnd);
+    window.addEventListener('touchmove', this.onDrag);
+    window.addEventListener('touchend', this.onDragEnd);
+  };
+
+  onResizeKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+
+    // Safari + VoiceOver would navigate off the button otherwise
+    event.preventDefault();
+
+    const wasCalling = this.callOnResize;
+    const previous = this.resizeWidth;
+    const step = (event.key === 'ArrowRight' ? 1 : -1) * 10;
+
+    this.callOnResize = true;
+    this.setResizeWidth(
+      this.clampWidth(this.resizeWidth + step * this.resizeDirection)
+    );
+    // the first key press reports even when already at a limit
+    if (!wasCalling && this.resizeWidth === previous) {
+      this.args.onResize?.(this.resizeWidth);
+    }
+  };
+
   setWidth = (width: number) => {
     if (width !== this.width) this.width = width;
   };
@@ -521,12 +712,13 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
           ...attributes
           {{style this.inlineStyle}}
           {{this.registerElement}}
+          {{this.resizeSync this.resizable @size this.windowWidth}}
           {{trap}}
           {{outsideClick}}
           {{dialogDescription this.descriptionId enabled=false}}
           {{measure}}
           {{pushPadding}}
-          {{windowResize this.onWindowResize (eq this.type "push")}}
+          {{windowResize this.onWindowResize this.tracksWindowWidth}}
           {{windowKeydown this.onKeyDown}}
         >
           {{#if this.showCloseButton}}
@@ -545,6 +737,16 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
               {{on "click" this.onCloseButtonClick}}
             />
           {{/if}}
+          {{#if this.resizable}}
+            <EuiFlyoutResizeButton
+              @type={{this.type}}
+              @side={{this.side}}
+              @ownFocus={{this.ownFocus}}
+              {{on "mousedown" this.onResizeStart}}
+              {{on "touchstart" this.onResizeStart}}
+              {{on "keydown" this.onResizeKeyDown}}
+            />
+          {{/if}}
           <div class={{this.contentClass}} data-test-subj="euiFlyoutContent">
             {{yield}}
           </div>
@@ -560,10 +762,11 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
             ...attributes
             {{style this.inlineStyle}}
             {{this.registerElement}}
+          {{this.resizeSync this.resizable @size this.windowWidth}}
             {{trap}}
             {{outsideClick}}
             {{dialogDescription this.descriptionId}}
-            {{windowResize this.onWindowResize (eq this.type "push")}}
+            {{windowResize this.onWindowResize this.tracksWindowWidth}}
             {{windowKeydown this.onKeyDown}}
           >
             {{! upstream EuiScreenReaderOnly clones its child: a bare <p> }}
@@ -587,6 +790,16 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
                 {{on "click" this.onCloseButtonClick}}
               />
             {{/if}}
+            {{#if this.resizable}}
+              <EuiFlyoutResizeButton
+                @type={{this.type}}
+                @side={{this.side}}
+                @ownFocus={{this.ownFocus}}
+                {{on "mousedown" this.onResizeStart}}
+                {{on "touchstart" this.onResizeStart}}
+                {{on "keydown" this.onResizeKeyDown}}
+              />
+            {{/if}}
             <div class={{this.contentClass}} data-test-subj="euiFlyoutContent">
               {{yield}}
             </div>
@@ -596,6 +809,8 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
     {{/let}}
   </template>
 }
+
+const UNSET = Symbol('unset');
 
 function eq(a: unknown, b: unknown) {
   return a === b;

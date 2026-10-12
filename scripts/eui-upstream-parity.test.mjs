@@ -270,7 +270,9 @@ const factories = {
   'components/skeleton/skeleton_title.styles.js': ['euiSkeletonTitleStyles'],
   'components/skeleton/skeleton_circle.styles.js': ['euiSkeletonCircleStyles'],
   'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
-  'components/illustration/illustration.styles.js': ['euiIllustrationStyles']
+  'components/illustration/illustration.styles.js': ['euiIllustrationStyles'],
+  // page-a11y
+  'components/banner/banner.styles.js': ['euiBannerStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

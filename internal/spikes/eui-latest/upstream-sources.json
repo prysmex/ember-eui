@@ -59,6 +59,10 @@
       "sha256": "cf389fe3358050e6ffd0153b7d75b8a596800d0a203e1349c8f19bfac2749eca"
     },
     {
+      "path": "@elastic/eui/es/components/banner/banner.styles.js",
+      "sha256": "f1249555fc82a572e4674b15fb7025afaa3c7af28f097349801ee386561145f6"
+    },
+    {
       "path": "@elastic/eui/es/components/beacon/beacon.styles.js",
       "sha256": "22d5ec2175819c7862e237333b58fc333f9adf99666f5ebd1e939eae2afe42d1"
     },

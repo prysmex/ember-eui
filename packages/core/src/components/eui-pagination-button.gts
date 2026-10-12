@@ -1,32 +1,40 @@
-import { hash } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+import { concat } from '@ember/helper';
+import { service } from '@ember/service';
 
-import add from 'ember-math-helpers/helpers/add';
-import { or } from 'ember-truth-helpers';
-
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiPaginationButtonStyles } from '../utils/eui/styles.generated.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
-import EuiI18n from './eui-i18n.gts';
 
-import type { paddingMapping } from '../utils/css-mappings/eui-popover-footer.ts';
+import type EuiI18nService from '../services/eui-i18n.ts';
 import type { EuiButtonEmptySignature } from './eui-button-empty';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private A page number button of EuiPagination. */
 export interface EuiPaginationButtonSignature {
   Element: EuiButtonEmptySignature['Element'];
   Args: {
-    /** Padding of the button. */
-    paddingSize?: keyof typeof paddingMapping;
+    /** @deprecated Has no effect. */
+    paddingSize?: string;
     /** Zero based index of the page it goes to (shown plus one). */
     pageIndex?: number;
     /** Total number of pages, for the accessible label. */
     totalPages?: number;
-    /** Marks the current page (`aria-current`). */
+    /**
+     * Marks the current page: `aria-current="page"`, bold primary underlined
+     * text, and disabled (upstream).
+     */
     isActive?: boolean;
-    /** Renders the "…" placeholder between page ranges. */
+    /** Disables the button (e.g. a "…" placeholder). */
     isPlaceholder?: boolean;
-    /** Hides the button on small screens. */
+    /** @deprecated Has no effect; EuiPagination's `@responsive` compresses it instead. */
     hideOnMobile?: boolean;
+    /**
+     * Id of the content the page changes; also makes the button a link to
+     * it (`href="#id"`), as upstream.
+     */
+    ariaControls?: string;
   };
   Blocks: {
     /** Unused. */
@@ -34,44 +42,53 @@ export interface EuiPaginationButtonSignature {
   };
 }
 
-const EuiPaginationButton: TemplateOnlyComponent<EuiPaginationButtonSignature> =
-  <template>
-    {{#let (add @pageIndex 1) as |pageNumber|}}
-      <EuiI18n
-        @token="euiPaginationButton.longPageString"
-        @default="Page {page} of {totalPages}"
-        @values={{hash page=pageNumber totalPages=@totalPages}}
-        as |Token|
-      >
-        <Token as |longPageString|>
-          <EuiI18n
-            @token="euiPaginationButton.shortPageString"
-            @default="Page {page}"
-            @values={{hash page=pageNumber}}
-            as |InnerToken|
-          >
-            <InnerToken as |shortPageString|>
-              <EuiButtonEmpty
-                class={{classNames
-                  "euiPaginationButton"
-                  (if @isActive "euiPaginationButton-isActive")
-                  (if @isPlaceholder "euiPaginationButton-isPlaceholder")
-                  (if @hideOnMobile "euiPaginationButton--hideOnMobile")
-                }}
-                aria-label={{if @totalPages longPageString shortPageString}}
-                @size="s"
-                @color="text"
-                @isDisabled={{or @isPlaceholder @isActive}}
-                aria-current={{if @isActive "true"}}
-                ...attributes
-              >
-                {{pageNumber}}
-              </EuiButtonEmpty>
-            </InnerToken>
-          </EuiI18n>
-        </Token>
-      </EuiI18n>
-    {{/let}}
-  </template>;
+export default class EuiPaginationButton extends Component<EuiPaginationButtonSignature> {
+  @service declare euiI18n: EuiI18nService;
 
-export default EuiPaginationButton;
+  get pageNumber(): number {
+    return (this.args.pageIndex ?? 0) + 1;
+  }
+
+  get ariaLabel(): string {
+    const { totalPages } = this.args;
+    return totalPages
+      ? this.euiI18n.lookupToken(
+          'euiPaginationButton.longPageString',
+          'Page {page} of {totalPages}',
+          { page: this.pageNumber, totalPages }
+        )
+      : this.euiI18n.lookupToken(
+          'euiPaginationButton.shortPageString',
+          'Page {page}',
+          { page: this.pageNumber }
+        );
+  }
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiPaginationButtonStyles);
+    return `euiPaginationButton ${euiClass(
+      context,
+      styles.euiPaginationButton,
+      this.args.isActive && styles.isActive
+    )}`;
+  }
+
+  <template>
+    <EuiButtonEmpty
+      class={{this.classes}}
+      aria-label={{this.ariaLabel}}
+      @size="s"
+      @color="text"
+      @href={{if @ariaControls (concat "#" @ariaControls)}}
+      @isDisabled={{if @isActive true @isPlaceholder}}
+      aria-current={{if @isActive "page"}}
+      aria-controls={{@ariaControls}}
+      data-test-subj="pagination-button-{{@pageIndex}}"
+      ...attributes
+    >
+      {{this.pageNumber}}
+    </EuiButtonEmpty>
+  </template>
+}

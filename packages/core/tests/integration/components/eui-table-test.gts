@@ -182,12 +182,13 @@ module('Integration | Component | eui-table', function (hooks) {
 
     await click('.euiPagination [aria-label^="Next"]');
     assert.deepEqual(pages, [1]);
-    assert.dom('[aria-current="true"]').hasText('2');
+    // Upstream EuiPagination marks the active page with aria-current="page" (was "true").
+    assert.dom('[aria-current="page"]').hasText('2');
 
     state.page = 4;
     state.size = 10;
     await rerender();
-    assert.dom('[aria-current="true"]').hasText('5');
+    assert.dom('[aria-current="page"]').hasText('5');
     assert.dom('[aria-label="Next page"]').isDisabled();
     assert.dom('[data-test-subj="tablePaginationPopoverButton"]').hasText('Rows per page: 10');
     assert.deepEqual(sizes, [50]);

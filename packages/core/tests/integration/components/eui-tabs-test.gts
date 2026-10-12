@@ -38,12 +38,16 @@ module('Integration | Component | eui-tabs', function (hooks) {
       </template>
     );
 
-    assert.dom('[role="tablist"]').hasClass('euiTabs--small').hasClass('euiTabs--expand').hasClass('euiTabs--bottomBorder');
+    // Size/expand/border are Borealis styles now (no legacy modifier classes).
+    const tablist = document.querySelector<HTMLElement>('[role="tablist"]')!;
+    assert.strictEqual(getComputedStyle(tablist).columnGap, '12px', 'small gap');
+    assert.true(getComputedStyle(tablist).boxShadow.includes('inset'), 'bottom border');
+    assert.strictEqual(getComputedStyle(document.querySelector('button.b')!).flexGrow, '1', 'expanded');
     assert.dom('button.a').hasClass('euiTab-isSelected').hasAttribute('aria-selected', 'true');
     assert.dom('button.a .euiTab__prepend').hasText('*');
     assert.dom('button.b').hasAttribute('aria-selected', 'false', 'explicit "false", not a missing attribute');
     assert.dom('a.c').hasAttribute('href', '#c').hasAttribute('role', 'tab');
-    assert.dom('button.d').isDisabled().hasClass('euiTab-isDisabled');
+    assert.dom('button.d').isDisabled();
 
     await click('button.b');
     assert.strictEqual(state.selected, 'b');
@@ -52,7 +56,7 @@ module('Integration | Component | eui-tabs', function (hooks) {
   test('condensed tabs have no bottom border', async function (assert) {
     await render(<template><EuiTabs @display="condensed"><EuiTab>A</EuiTab></EuiTabs></template>);
 
-    assert.dom('.euiTabs').hasClass('euiTabs--condensed').doesNotHaveClass('euiTabs--bottomBorder');
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiTabs')!).boxShadow, 'none');
   });
 
   test('EuiTabbedContent switches the panel when a tab is clicked', async function (assert) {

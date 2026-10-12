@@ -108,7 +108,41 @@ const entries = {
   ],
   'components/form/described_form_group/described_form_group.styles.js': [
     'euiDescribedFormGroupStyles'
-  ]
+  ],
+  // navigation
+  'components/tabs/tabs.styles.js': ['euiTabsStyles'],
+  'components/tabs/tab.styles.js': ['euiTabStyles', 'euiTabContentStyles'],
+  'components/breadcrumbs/breadcrumbs.styles.js': ['euiBreadcrumbsListStyles'],
+  'components/breadcrumbs/breadcrumb.styles.js': ['euiBreadcrumbStyles'],
+  'components/breadcrumbs/_breadcrumb_content.styles.js': [
+    'euiBreadcrumbContentStyles',
+    'euiBreadcrumbPopoverStyles'
+  ],
+  'components/pagination/pagination.styles.js': ['euiPaginationStyles'],
+  'components/pagination/pagination_button.styles.js': [
+    'euiPaginationButtonStyles'
+  ],
+  'components/steps/step.styles.js': [
+    'euiStepVariables',
+    'euiStepStyles',
+    'euiStepContentStyles',
+    'euiStepTitleStyles'
+  ],
+  'components/steps/step_number.styles.js': [
+    'euiStepNumberStyles',
+    'euiStepNumberContentStyles'
+  ],
+  'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
+  'components/steps/step_horizontal.styles.js': [
+    'euiStepHorizontalStyles',
+    'euiStepHorizontalNumberStyles',
+    'euiStepHorizontalTitleStyles'
+  ],
+  'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
+  'components/accessibility/screen_reader_only/screen_reader_only.styles.js': [
+    'euiScreenReaderOnly'
+  ],
+  'global_styling/mixins/_typography.js': ['euiTextTruncate']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

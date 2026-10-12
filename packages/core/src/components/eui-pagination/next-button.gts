@@ -1,20 +1,16 @@
-import { fn, hash } from '@ember/helper';
-import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 import add from 'ember-math-helpers/helpers/add';
-import sub from 'ember-math-helpers/helpers/sub';
-import { eq } from 'ember-truth-helpers';
 
-import EuiButtonIcon from '../eui-button-icon.gts';
-import EuiI18n from '../eui-i18n.gts';
+import ArrowButton from './arrow-button.gts';
 
-import type { EuiButtonIconSignature } from '../eui-button-icon';
-import type { SafeClickHandler } from '../eui-pagination';
+import type { EuiPaginationArrowButtonSignature } from './arrow-button.gts';
+import type { SafeClickHandler } from '../eui-pagination.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-/** @private The "next page" button of EuiPagination. */
+/** @private The "next page" button of EuiPagination (labelled "Next page"). */
 export interface EuiPaginationNextButtonSignature {
-  Element: EuiButtonIconSignature['Element'];
+  Element: EuiPaginationArrowButtonSignature['Element'];
   Args: {
     /** Zero based index of the current page. */
     activePage: number;
@@ -22,7 +18,10 @@ export interface EuiPaginationNextButtonSignature {
     safeClick: SafeClickHandler;
     /** Total number of pages. */
     pageCount: number;
-    /** Extra props for the button: `{ disabled, aria-controls, href }`. */
+    /**
+     * `{ disabled, aria-controls }`. An enabled button with `aria-controls`
+     * links to `#<aria-controls>`. `href` is ignored (derived, as upstream).
+     */
     props: {
       disabled?: boolean;
       'aria-controls'?: string;
@@ -33,37 +32,13 @@ export interface EuiPaginationNextButtonSignature {
 
 const NextButton: TemplateOnlyComponent<EuiPaginationNextButtonSignature> =
   <template>
-    <EuiI18n
-      @token="euiPagination.nextPage"
-      @default="Next page, {page}"
-      @values={{hash page=(add @activePage 2)}}
-      as |Token|
-    >
-      <Token as |nextPage|>
-        <EuiI18n
-          @token="euiPagination.disabledNextPage"
-          @default="Next page"
-          as |InnerToken|
-        >
-          <InnerToken as |disabledNextPage|>
-            <EuiButtonIcon
-              {{on "click" (fn @safeClick (add @activePage 1))}}
-              @iconType="arrowRight"
-              @color="text"
-              aria-label={{if
-                (eq @activePage (sub @pageCount 1))
-                disabledNextPage
-                nextPage
-              }}
-              aria-controls={{if @props.aria-controls @props.aria-controls}}
-              href={{if @props.href @props.href}}
-              disabled={{eq @props.disabled true}}
-              ...attributes
-            />
-          </InnerToken>
-        </EuiI18n>
-      </Token>
-    </EuiI18n>
+    <ArrowButton
+      @type="next"
+      @disabled={{@props.disabled}}
+      @ariaControls={{@props.aria-controls}}
+      @onClick={{fn @safeClick (add @activePage 1)}}
+      ...attributes
+    />
   </template>;
 
 export default NextButton;

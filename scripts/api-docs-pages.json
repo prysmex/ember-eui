@@ -375,6 +375,10 @@
     "EuiTab",
     "EuiTabbedContent"
   ],
+  "packages/core/docs/tabular/data-grid/basics/index.md": [
+    "EuiDataGrid",
+    "EuiDataGridToolbarControl"
+  ],
   "packages/core/docs/tabular/table/index.md": [
     "EuiTable",
     "EuiTableHeader",

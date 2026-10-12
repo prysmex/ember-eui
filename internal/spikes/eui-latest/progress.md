@@ -49,6 +49,24 @@ EuiTextBlockTruncate from the old new-timeline worktree, whose timeline parts ar
 superseded), new-refresh-flyout (fresh worktree). Next: visual-pass recovery,
 new-tables, then new-data-grid alone. Merge tooling copied to the new scratchpad.
 
+**Port of upstream-only components complete (2026-10-12, `10e83539`).** Merged:
+new-page-a11y, new-truncate, new-inline-split, new-refresh-flyout, visual-pass,
+new-tables, new-data-grid (see each `<family>-handoff.md` for API, Ember
+differences and what was not ported, e.g. data grid header drag-reorder,
+imperative ref API, custom body/toolbar renderers; tables sticky columns and
+numeral formats). Checks on main: core 1239/1239, parity 349/349, ember-tsc and
+rollup pass, API docs check passes, site Node 8/8 and acceptance 17/17 (113 nav
+items; catalog test ~80s idle, 300s timeout). The site's Vite 8
+`optimizeDeps.esbuildOptions` warning (from @docfy/ember-vite 0.14.2) is fixed in
+`site/vite.config.mjs`. No worktrees or `eui-wave/*` branches remain.
+
+Follow-ups: `@css` missing on EuiButtonGroup, EuiDroppable/EuiDraggable,
+EuiFilterGroup, EuiTable; EuiTablePagination aria-label; EuiTableHeaderCell
+tooltipProps; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
+screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
+slowly (~20s under load); open decision on focusing the form error callout;
+major changeset for 16.0.0 deprecations.
+
 Coordinator loop per finished agent:
 1. Merge `eui-wave/<family>` into `feat/eui-latest`. Shared-file conflicts: `components.md` row-wise (non-Pending row wins); generator/parity entry objects unioned by key with insert-only test additions replayed; generated files regenerated in the main checkout (`node scripts/generate-eui-styles.mjs`), then parity (`node --test scripts/eui-upstream-parity.test.mjs`).
 2. Check new code follows the perf rules (all style getters `@cached`, factories only via `useEuiBorealisStyles`) and `@css` for migrated children.

@@ -276,10 +276,6 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     class={{classNames
                       "euiAccordion__iconButton"
                       (if this.isOpen "euiAccordion__iconButton-isOpen")
-                      (if
-                        (eq this._arrowDisplay "right")
-                        "euiAccordion__iconButton--right"
-                      )
                       (if @arrowProps.className @arrowProps.className)
                     }}
                     @iconType="arrowRight"
@@ -320,10 +316,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     class={{classNames
                       "euiAccordion__iconButton"
                       (if this.isOpen "euiAccordion__iconButton-isOpen")
-                      (if
-                        (eq this._arrowDisplay "right")
-                        "euiAccordion__iconButton--right"
-                      )
+                      "euiAccordion__iconButton--right"
                       (if @arrowProps.className @arrowProps.className)
                     }}
                     @iconType="arrowRight"

@@ -1,5 +1,7 @@
 import { helper } from '@ember/component/helper';
 
+import { deprecateUnusedAfterBorealis } from '../-private/unused-after-borealis.ts';
+
 export type _EuiPageRestrictWidth = {
   /**
    * Sets the max-width of the page,
@@ -11,10 +13,19 @@ export type _EuiPageRestrictWidth = {
   restrictWidth?: boolean | number | string;
 };
 
+/**
+ * @deprecated Unused since the Borealis migration: page components set an
+ * inline `max-width` themselves. Removed in 16.0.0.
+ */
 export function restrictWidth(
   restrictWidth: _EuiPageRestrictWidth['restrictWidth'],
   style?: Record<string, unknown>
 ) {
+  deprecateUnusedAfterBorealis(
+    'eui-page-restrict-width',
+    'The `eui-page-restrict-width` helper (`restrictWidth`) is deprecated; its `restrictWidth-*` classes have no styles. Pass `@restrictWidth` to the page components instead.'
+  );
+
   let widthClassName;
   let newStyle = {
     ...(style || {})

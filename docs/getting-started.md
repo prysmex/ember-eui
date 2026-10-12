@@ -33,48 +33,50 @@ pnpm add @ember-eui/core @ember/string ember-basic-dropdown ember-concurrency em
 `npm info @ember-eui/core peerDependencies` lists the supported versions.
 The app needs `ember-source` 4.12 or later.
 
-### Load a theme
+### Set up the theme
 
-Import one of the two themes and EUI's extensions once, e.g. in
+The components are styled with Elastic UI's Borealis theme (EUI 123.1.0):
+each component injects its own styles at runtime, built from upstream
+EUI's style factories. There is no theme stylesheet to load. Instead,
+render one `EuiEmotionProvider` around the whole app, e.g. in
+`app/templates/application.hbs`:
+
+```hbs
+{{! app/templates/application.hbs }}
+<EuiEmotionProvider @colorMode="light">
+  {{outlet}}
+</EuiEmotionProvider>
+```
+
+In `.gjs` / `.gts` files import it from
+`@ember-eui/core/components/eui-emotion-provider` (default export).
+
+The outermost provider injects EUI's global styles (reset, a 14px root font
+size, body colors, focus ring, selection and link colors) while it is
+rendered. Components read their theme from the nearest provider, so:
+
+- **Light/dark**: pass `@colorMode="light"` or `"dark"` (default light) and
+  change it at runtime to switch themes; nested providers can fix a section
+  to the other mode.
+- **Theme overrides**: `@borealisOverrides` takes Borealis token
+  overrides (e.g. colors or border radius), inherited by nested providers.
+- **Opt-outs**: `@globalStyles={{false}}` if your app owns its global
+  styles; `@wrapper={{false}}` to skip the provider's
+  `<span class="euiThemeProvider">` where an extra element would break a
+  flex or grid layout.
+
+Keep importing EUI's small extensions stylesheet once, e.g. in
 `app/app.js`:
 
 ```js
 // app/app.js
-import '@ember-eui/core/themes/light.css'; // or '@ember-eui/core/themes/dark.css'
 import '@ember-eui/core/styles/ember-eui.css';
 ```
 
-To let users switch themes at runtime, load the theme through a single
-`<link>` whose `href` you swap (importing both CSS files would stack them).
-With Vite, `?url` gives the built file's URL; this site does exactly this:
-
-```js
-// app/utils/change-theme.js
-import darkTheme from '@ember-eui/core/themes/dark.css?url';
-import lightTheme from '@ember-eui/core/themes/light.css?url';
-
-export function changeTheme(name) {
-  let link = document.getElementById('eui-theme');
-
-  if (!link) {
-    link = document.createElement('link');
-    link.id = 'eui-theme';
-    link.rel = 'stylesheet';
-    // before the app's styles, so your overrides still win
-    document.head.prepend(link);
-  }
-
-  link.href = name === 'dark' ? darkTheme : lightTheme;
-}
-```
-
-Keep `import '@ember-eui/core/styles/ember-eui.css'` static; it works with
-both themes.
-
-Classic apps that do not use Vite or Embroider can add the files with
-`app.import('node_modules/@ember-eui/core/vendor/eui_theme_light.min.css')`
-and `app.import('node_modules/@ember-eui/core/dist/styles/ember-eui.css')`
-in `ember-cli-build.js`.
+Upgrading from 14.1 or earlier, which loaded
+`@ember-eui/core/themes/light.css` / `dark.css`? See
+[Migrating to Borealis](/docs/migrating-to-borealis) for the steps and the
+list of changed defaults.
 
 ### Use components
 
@@ -145,8 +147,8 @@ export default class ApplicationRoute extends Route {
     this.euiConfig.updateConfig({
       // default size of every EuiButtonIcon: 'xs', 's' or 'm'
       'euiButtonIcon.size': 's',
-      // height in px of EuiComboBox options (defaults to 33)
-      euiComboBoxOptionsHeight: 33,
+      // height in px of EuiComboBox options (defaults to 29)
+      euiComboBoxOptionsHeight: 29,
       // icons usable by name, see the Icons page
       'euiIcon.icons': {},
     });

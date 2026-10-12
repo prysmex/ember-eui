@@ -266,11 +266,15 @@ const factories = {
   'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles'],
   // control bar and file picker
   'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles'],
+  // new-skeleton
+  'components/skeleton/skeleton_title.styles.js': ['euiSkeletonTitleStyles'],
+  'components/skeleton/skeleton_circle.styles.js': ['euiSkeletonCircleStyles'],
+  'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
+  'components/illustration/illustration.styles.js': ['euiIllustrationStyles'],
   // new-inline-split (split button factories with arguments have their own test below)
   'components/inline_edit/inline_edit_form.styles.js': ['euiInlineEditReadModeStyles'],
   'components/inline_edit/inline_edit_text.styles.js': ['euiInlineEditTextStyles'],
   'components/inline_edit/inline_edit_title.styles.js': ['euiInlineEditTitleStyles'],
-  'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
   'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles']
 };
 function normalize(value) {

@@ -157,8 +157,10 @@ module('Integration | Component | eui-changeset-form fields', function (hooks) {
     );
 
     await click('input.euiComboBox__input:not(.fake-input-for-html-form-validity)');
-    await waitUntil(() => document.querySelector('.euiComboBoxOptionsList button.euiFilterSelectItem'));
-    const portugal = [...document.querySelectorAll('.euiComboBoxOptionsList button.euiFilterSelectItem')].find(
+    // upstream EuiListItemLayout option rows (were `button.euiFilterSelectItem`)
+    const option = '.euiComboBoxOptionsList .euiComboBoxOption[role="option"]';
+    await waitUntil(() => document.querySelector(option));
+    const portugal = [...document.querySelectorAll(option)].find(
       (el) => el.textContent!.trim() === 'Portugal'
     )!;
 

@@ -99,6 +99,7 @@ import EuiI18n from './components/eui-i18n.gts';
 import EuiI18nNumber from './components/eui-i18n-number.gts';
 import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
+import EuiIllustration from './components/eui-illustration.gts';
 import EuiImage from './components/eui-image.gts';
 import EuiInlineEditText from './components/eui-inline-edit-text.gts';
 import EuiInlineEditTitle from './components/eui-inline-edit-title.gts';
@@ -173,6 +174,11 @@ import EuiSelectableSearch from './components/eui-selectable-search.gts';
 import EuiSelectableTemplateSitewide from './components/eui-selectable-template-sitewide.gts';
 import EuiShowFor from './components/eui-show-for.gts';
 import EuiSideNav from './components/eui-side-nav.gts';
+import EuiSkeletonCircle from './components/eui-skeleton-circle.gts';
+import EuiSkeletonLoading from './components/eui-skeleton-loading.gts';
+import EuiSkeletonRectangle from './components/eui-skeleton-rectangle.gts';
+import EuiSkeletonText from './components/eui-skeleton-text.gts';
+import EuiSkeletonTitle from './components/eui-skeleton-title.gts';
 import EuiSkipLink from './components/eui-skip-link.gts';
 import EuiSpacer from './components/eui-spacer.gts';
 import EuiSplitButton from './components/eui-split-button.gts';
@@ -217,6 +223,10 @@ import EuiTextAlign from './components/eui-text-align.gts';
 import EuiTextArea from './components/eui-text-area.gts';
 import EuiTextColor from './components/eui-text-color.gts';
 import EuiTextDiff from './components/eui-text-diff.gts';
+import EuiTimeline from './components/eui-timeline.gts';
+import EuiTimelineItem from './components/eui-timeline-item.gts';
+import EuiTimelineItemEvent from './components/eui-timeline-item-event.gts';
+import EuiTimelineItemIcon from './components/eui-timeline-item-icon.gts';
 import EuiTitle from './components/eui-title.gts';
 import EuiToast from './components/eui-toast.gts';
 import EuiToken from './components/eui-token.gts';
@@ -331,6 +341,7 @@ export {
   EuiI18nNumber,
   EuiIcon,
   EuiIconTip,
+  EuiIllustration,
   EuiImage,
   EuiInlineEditText,
   EuiInlineEditTitle,
@@ -405,6 +416,11 @@ export {
   EuiSelectableTemplateSitewide,
   EuiShowFor,
   EuiSideNav,
+  EuiSkeletonCircle,
+  EuiSkeletonLoading,
+  EuiSkeletonRectangle,
+  EuiSkeletonText,
+  EuiSkeletonTitle,
   EuiSkipLink,
   EuiSpacer,
   EuiSplitButton,
@@ -449,6 +465,10 @@ export {
   EuiTextArea,
   EuiTextColor,
   EuiTextDiff,
+  EuiTimeline,
+  EuiTimelineItem,
+  EuiTimelineItemEvent,
+  EuiTimelineItemIcon,
   EuiTitle,
   EuiToast,
   EuiToken,

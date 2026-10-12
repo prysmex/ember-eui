@@ -871,9 +871,9 @@ module('Integration | Component | Borealis control bar and file picker', functio
           since: seen[0]?.options['since']
         },
         {
-          until: '15.0.0',
+          until: '16.0.0',
           for: '@ember-eui/core',
-          since: { available: '14.2.0', enabled: '14.2.0' }
+          since: { available: '15.0.0', enabled: '15.0.0' }
         }
       );
       assert.true(seen[0]!.message.includes('removed from upstream Elastic UI'));

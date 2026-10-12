@@ -142,9 +142,9 @@ export default class EuiControlBar extends Component<EuiControlBarSignature> {
       false,
       {
         id: 'ember-eui.eui-control-bar.removed-upstream',
-        until: '15.0.0',
+        until: '16.0.0',
         for: '@ember-eui/core',
-        since: { available: '14.2.0', enabled: '14.2.0' }
+        since: { available: '15.0.0', enabled: '15.0.0' }
       }
     );
   }

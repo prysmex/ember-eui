@@ -297,11 +297,15 @@ const entries = {
   'global_styling/mixins/_container_query.js': ['euiContainerCSS'],
   // control bar and file picker (EuiControlBar has no upstream styles after EUI 91.3.1)
   'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles'],
+  // new-skeleton (EuiSkeleton* and EuiIllustration; skeleton_text is in the utilities block)
+  'components/skeleton/skeleton_title.styles.js': ['euiSkeletonTitleStyles'],
+  'components/skeleton/skeleton_circle.styles.js': ['euiSkeletonCircleStyles'],
+  'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
+  'components/illustration/illustration.styles.js': ['euiIllustrationStyles'],
   // new-inline-split (EuiInlineEdit*, EuiSplitButton, EuiFormControlButton, EuiFormAppend/Prepend)
   'components/inline_edit/inline_edit_form.styles.js': ['euiInlineEditReadModeStyles'],
   'components/inline_edit/inline_edit_text.styles.js': ['euiInlineEditTextStyles'],
   'components/inline_edit/inline_edit_title.styles.js': ['euiInlineEditTitleStyles'],
-  'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
   'components/button/split_button/split_button.styles.js': ['euiSplitButtonStyles', 'euiSplitButtonActionStyles', 'euiSplitButtonDividerStyles'],
   // extension-less key so the existing `_button.js` entry is not edited (union on merge)
   'global_styling/mixins/_button': ['getEuiButtonColorValues', 'getEuiFilledButtonColorValues'],

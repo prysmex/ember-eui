@@ -847,6 +847,14 @@
       "sha256": "95ad566994abf41caaa48e59c615fc7028e3f62ec3414f9e22d5a2e616b5af0c"
     },
     {
+      "path": "@elastic/eui/es/components/text_truncate/text_truncate.styles.js",
+      "sha256": "3a3798d2f70914f1e09b23a5d8feb08cf9d02ef46d71f97abbd43f4be258c0b5"
+    },
+    {
+      "path": "@elastic/eui/es/components/text_truncate/utils.js",
+      "sha256": "ccc29d143c230ba39cc8a2e2d1e7e052adc741147eaa124cb2cd0ecf46688799"
+    },
+    {
       "path": "@elastic/eui/es/components/text/text_align.styles.js",
       "sha256": "2d36a52e32ce2e3e8ee2702274748aa0b8b6248af329084338aae4e7edee3b11"
     },
@@ -1049,6 +1057,14 @@
     {
       "path": "@elastic/eui/es/services/breakpoint/_sorting.js",
       "sha256": "33ea167029ecd767219c9f72ddfaa0247157a39c31474cd6197a913ec9f4a152"
+    },
+    {
+      "path": "@elastic/eui/es/services/canvas/canvas_text_utils.js",
+      "sha256": "e01a9b0cef782e71f528efcb2e888990139e710c4039a9b7d9e2bb598786b2e6"
+    },
+    {
+      "path": "@elastic/eui/es/services/canvas/index.js",
+      "sha256": "c5582dac8960ac90a1ad00dd81ebcd4856b0ebfbdd6bd694e522bfd82b40acdf"
     },
     {
       "path": "@elastic/eui/es/services/color/color_palette.js",

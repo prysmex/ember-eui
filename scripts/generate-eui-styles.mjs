@@ -301,7 +301,10 @@ const entries = {
   'components/skeleton/skeleton_title.styles.js': ['euiSkeletonTitleStyles'],
   'components/skeleton/skeleton_circle.styles.js': ['euiSkeletonCircleStyles'],
   'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
-  'components/illustration/illustration.styles.js': ['euiIllustrationStyles']
+  'components/illustration/illustration.styles.js': ['euiIllustrationStyles'],
+  // text truncate
+  'components/text_truncate/text_truncate.styles.js': ['euiTextTruncateStyles'],
+  'components/text_truncate/utils.js': ['TruncationUtils']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

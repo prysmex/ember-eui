@@ -66,8 +66,10 @@ first in the page.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@destinationId` (required) | `string` |  | Id of the element to jump to (without `#`), e.g. `'main-content'`. Give that element `tabindex="-1"` if it is not focusable itself. |
-| `@position` | `'static' \| 'fixed' \| 'absolute'` | `'static'` | Where the link shows when focused: `'static'` (in place), `'fixed'` (top left of the viewport) or `'absolute'`. |
+| `@destinationId` (required) | `string` |  | Id of the element to jump to (without `#`), e.g. `'main-content'`. A destination that is not focusable is made focusable (`tabindex="-1"`) while it has focus. |
+| `@fallbackDestination` | `string \| string[]` | `'main'` | Query selector(s) to jump to when no element has `@destinationId`, tried in order. |
+| `@overrideLinkBehavior` | `boolean` |  | Scrolls to and focuses the destination itself instead of following the `#id` link (e.g. for apps with hash routing). The URL hash does not change. |
+| `@position` | `'static' \| 'fixed' \| 'absolute'` | `'static'` | Where the link shows when focused: `'static'` (in place), `'fixed'` (top left of the viewport) or `'absolute'` (position it yourself). |
 | `@tabIndex` | `number` |  | `tabindex` of the link; a fixed link always gets `0`. |
 
 | Block | Description |

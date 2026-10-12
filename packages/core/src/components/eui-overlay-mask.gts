@@ -1,27 +1,32 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
-import { action } from '@ember/object';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
-import { eq } from 'ember-truth-helpers';
+import { modifier } from 'ember-modifier';
 
 import setBodyClass from '../-private/set-body-class.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiOverlayMaskStyles } from '../utils/eui/utilities.ts';
 
 interface EuiOverlayMaskArgs {
   /** Called when the mask itself (not its content) is clicked. */
-  onClick?: (e: Event) => void;
+  onClick?: (e: MouseEvent) => void;
   /**
-   * Whether the mask covers the page header (`'above'`) or leaves it
-   * visible (`'below'`). Defaults to `'above'`.
+   * Whether the mask covers the page header (`'above'`, z-index
+   * `levels.mask`) or leaves it visible (`'below'`, z-index
+   * `levels.maskBelowHeader`, starting below `--euiFixedHeadersOffset`).
+   * Defaults to `'above'`.
    */
   headerZindexLocation?: 'above' | 'below';
+  /** Fades the mask in. Defaults to `true`. */
+  hasAnimation?: boolean;
+  /** Called with the mask element once it is rendered. */
+  maskRef?: (element: HTMLDivElement) => void;
 }
 
 /**
- * A dark overlay covering the page, rendered in a portal, e.g. behind a
- * modal. Prevents scrolling the page while shown.
+ * A dark overlay covering the page, rendered at the end of `<body>`, e.g.
+ * behind a modal. Prevents scrolling the page while shown.
  */
 export interface EuiOverlayMaskSignature {
   Element: HTMLDivElement;
@@ -32,43 +37,49 @@ export interface EuiOverlayMaskSignature {
   };
 }
 
-export default class EuiOverlayMaskComponent extends Component<EuiOverlayMaskSignature> {
-  @tracked overlayMaskNode: HTMLDivElement | undefined;
+const callWith = modifier(
+  (element: HTMLDivElement, [callback]: [((el: HTMLDivElement) => void)?]) => {
+    callback?.(element);
+  }
+);
 
+export default class EuiOverlayMaskComponent extends Component<EuiOverlayMaskSignature> {
   destinationElement = document.body;
 
-  @action
-  onClick(e: MouseEvent) {
-    if (e.target === this.overlayMaskNode) {
-      this.args.onClick?.(e);
-    }
+  get headerZindexLocation() {
+    return this.args.headerZindexLocation === 'below' ? 'below' : 'above';
   }
 
-  @action
-  setOverlayMaskNode(node: HTMLDivElement) {
-    this.overlayMaskNode = node;
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiOverlayMaskStyles);
+    return `euiOverlayMask ${euiClass(
+      context,
+      styles.euiOverlayMask,
+      styles[`${this.headerZindexLocation}Header`],
+      this.args.hasAnimation === false ? styles.noAnimation : undefined
+    )}`;
   }
 
-  willDestroy(): void {
-    super.willDestroy();
-
-    this.overlayMaskNode = undefined;
+  /** Upstream renders a global `body { overflow: hidden }`; a ref-counted body class here. */
+  get bodyClasses() {
+    return `euiBody-hasOverlayMask ${euiClass(getEuiThemeContext(this), {
+      overflow: 'hidden'
+    })}`;
   }
+
+  onClick = (e: MouseEvent) => {
+    if (e.target === e.currentTarget) this.args.onClick?.(e);
+  };
 
   <template>
-    {{(setBodyClass "euiBody-hasOverlayMask")}}
+    {{(setBodyClass this.bodyClasses)}}
     {{#in-element this.destinationElement insertBefore=null}}
       <div
-        class={{classNames
-          "euiOverlayMask"
-          (unless
-            (eq @headerZindexLocation "below")
-            "euiOverlayMask--aboveHeader"
-            "euiOverlayMask--belowHeader"
-          )
-        }}
-        {{didInsert this.setOverlayMaskNode}}
-        {{! template-lint-disable }}
+        class={{this.classes}}
+        data-relative-to-header={{this.headerZindexLocation}}
+        {{callWith @maskRef}}
+        {{! template-lint-disable no-invalid-interactive }}
         {{on "click" this.onClick}}
         ...attributes
       >

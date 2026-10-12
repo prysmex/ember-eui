@@ -1,71 +1,71 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-//@ts-ignore
-import { getValue } from '@glimmer/tracking/primitives/cache';
 import Helper from '@ember/component/helper';
-//@ts-ignore
-import { invokeHelper } from '@ember/helper';
 import { throttle } from '@ember/runloop';
 
-import { getBreakpoint } from '../utils/breakpoint.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
+import type { EuiBreakpointSize, EuiBreakpoints } from '../utils/breakpoint.ts';
 
-export class CurrentBreakPointHelper extends Helper {
-  @tracked currentBreakpoint: string | undefined;
-  functionToCallOnWindowResize: undefined | (() => void);
+export type EuiHideForBreakpoints = EuiBreakpointSize;
 
-  compute([sizes]: [EuiHideForBreakpoints[] | 'all' | 'none']) {
-    this.currentBreakpoint = getBreakpoint(
-      typeof window === 'undefined' ? -Infinity : window.innerWidth
-    );
+/** `'all'`, `'none'` or a list of breakpoint names. */
+export type EuiResponsiveSizes = EuiHideForBreakpoints[] | 'all' | 'none';
 
-    this.setupListeners();
+/**
+ * Upstream `useCurrentEuiBreakpoint`: the name of the largest breakpoint
+ * whose minimum width is at most the window width.
+ */
+export function currentBreakpoint(
+  width: number,
+  breakpoints: EuiBreakpoints
+): EuiBreakpointSize | undefined {
+  return (Object.keys(breakpoints) as EuiBreakpointSize[])
+    .sort((a, b) => breakpoints[b] - breakpoints[a])
+    .find((key) => breakpoints[key] <= width);
+}
 
-    return (
-      sizes === 'all' ||
-      sizes.includes(this.currentBreakpoint as EuiBreakpointSize)
-    );
+/** Whether the current breakpoint is one of `sizes` (`'all'` always is). */
+export class CurrentBreakPointHelper extends Helper<{
+  Args: { Positional: [sizes: EuiResponsiveSizes, breakpoints: EuiBreakpoints] };
+  Return: boolean;
+}> {
+  @tracked width = typeof window === 'undefined' ? -Infinity : window.innerWidth;
+  #listening = false;
+
+  onResize = () => {
+    throttle(this, this.measure, 50);
+  };
+
+  measure() {
+    if (this.isDestroying || this.isDestroyed) return;
+    if (window.innerWidth !== this.width) this.width = window.innerWidth;
+  }
+
+  compute([sizes, breakpoints]: [EuiResponsiveSizes, EuiBreakpoints]): boolean {
+    if (!this.#listening && typeof window !== 'undefined') {
+      window.addEventListener('resize', this.onResize);
+      this.#listening = true;
+    }
+    if (sizes === 'all') return true;
+    if (sizes === 'none' || !Array.isArray(sizes)) return false;
+    const current = currentBreakpoint(this.width, breakpoints);
+    return current !== undefined && sizes.includes(current);
   }
 
   willDestroy(): void {
     super.willDestroy();
-    this.teardown();
-  }
-
-  setupListeners() {
-    this.functionToCallOnWindowResize = () => {
-      const fn = () => {
-        const newBreakpoint = getBreakpoint(window.innerWidth);
-
-        if (newBreakpoint !== this.currentBreakpoint) {
-          this.currentBreakpoint = newBreakpoint;
-        }
-      };
-
-      throttle(this, fn, 50);
-    };
-
-    window.addEventListener('resize', this.functionToCallOnWindowResize);
-  }
-
-  teardown() {
-    if (typeof this.functionToCallOnWindowResize === 'function') {
-      window.removeEventListener('resize', this.functionToCallOnWindowResize);
-      this.functionToCallOnWindowResize = undefined;
-    }
+    if (this.#listening) window.removeEventListener('resize', this.onResize);
   }
 }
-
-export type EuiHideForBreakpoints = EuiBreakpointSize;
 
 export interface EuiShowForArgs {
   /**
    * Screen sizes to show the content on: any of `'xs'`, `'s'`, `'m'`,
-   * `'l'`, `'xl'`, or `'all'`. E.g. `(array "xs" "s")` shows it only on
-   * phones.
+   * `'l'`, `'xl'` (the nearest theme's `breakpoint` values), or `'all'` /
+   * `'none'`. E.g. `(array "xs" "s")` shows it only on phones.
    */
-  sizes: EuiHideForBreakpoints[] | 'all' | 'none';
+  sizes: EuiResponsiveSizes;
 }
 
 /** Renders its content only on the given screen sizes. See EuiHideFor. */
@@ -78,18 +78,13 @@ export interface EuiShowForSignature {
 }
 
 export default class EuiShowForComponent extends Component<EuiShowForSignature> {
-  currentBreakpointHelper: any = invokeHelper(this, CurrentBreakPointHelper, () => {
-    return {
-      positional: [this.args.sizes]
-    };
-  });
-
-  get shouldShow() {
-    return getValue(this.currentBreakpointHelper);
+  get breakpoints(): EuiBreakpoints {
+    return getEuiThemeContext(this).upstream.euiTheme
+      .breakpoint as EuiBreakpoints;
   }
 
   <template>
-    {{#if this.shouldShow}}
+    {{#if (CurrentBreakPointHelper @sizes this.breakpoints)}}
       {{yield}}
     {{/if}}
   </template>

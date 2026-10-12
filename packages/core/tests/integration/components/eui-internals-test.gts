@@ -25,7 +25,8 @@ module('Integration | Component | building blocks', function (hooks) {
 
     const mask = document.querySelector('.euiOverlayMask') as HTMLElement;
 
-    assert.dom(mask).hasClass('euiOverlayMask--belowHeader');
+    // Upstream marks the header location with a data attribute, not a modifier class.
+    assert.dom(mask).hasAttribute('data-relative-to-header', 'below');
     assert.dom(document.body).hasClass('euiBody-hasOverlayMask');
 
     await click(mask.querySelector('.mask-content')!);

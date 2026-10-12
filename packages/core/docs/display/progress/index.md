@@ -45,13 +45,12 @@ A progress bar: a value out of `@max`, or an indeterminate loading bar.
 | --- | --- | --- | --- |
 | `@max` | `number` |  | Maximum value. With it the bar shows `@value`; without it the bar is an indeterminate loading animation. |
 | `@value` | `number` |  | Current value, from 0 to `@max`. |
-| `@size` |  | `'m'` | Thickness: `'xs'`, `'s'`, `'m'` or `'l'`. |
-| `@position` |  | `'static'` | `'static'` renders in place; `'fixed'` / `'absolute'` pin it to the top of the window / its positioned parent. |
-| `@color` |  | `'success'` | `'primary'`, `'success'`, `'warning'`, `'danger'`, `'subdued'`, `'accent'` or `'vis0'`–`'vis9'`. |
+| `@size` | `'xs' \| 's' \| 'm' \| 'l'` | `'m'` | Thickness: `'xs'`, `'s'`, `'m'` or `'l'`. |
+| `@position` | `'static' \| 'fixed' \| 'absolute'` | `'static'` | `'static'` renders in place; `'fixed'` / `'absolute'` pin it to the top of the window / its positioned parent. |
+| `@color` | `EuiProgressColor` | `'success'` | `'primary'`, `'success'`, `'warning'`, `'danger'`, `'subdued'`, `'accent'`, `'accentSecondary'`, `'vis0'`–`'vis9'`, or any CSS color. |
 | `@labelClasses` | `string` |  | Classes for the value text. |
-| `@valueText` | `string \| boolean` |  | `true` shows `@value` above the bar; for other text use the `<:valueText>` block. |
-
-Deprecated: `@label` (Has no effect, use the `<:label>` block.).
+| `@valueText` | `string \| boolean` |  | `true` shows `@value` as a percentage ("70%") above the bar; a string shows that text. For other content use the `<:valueText>` block. |
+| `@label` | `string` |  | Label above the bar (with `@max`); or use the `<:label>` block. |
 
 | Block | Description |
 | --- | --- |

@@ -27,157 +27,90 @@ for (const [name, version] of Object.entries(expected)) {
 }
 const entries = {
   'components/spacer/spacer.styles.js': ['euiSpacerStyles'],
-  'components/horizontal_rule/horizontal_rule.styles.js': [
-    'euiHorizontalRuleStyles'
-  ],
+  'components/horizontal_rule/horizontal_rule.styles.js': ['euiHorizontalRuleStyles'],
   'components/panel/panel.styles.js': ['euiPanelStyles'],
-  'components/loading/loading_spinner.styles.js': [
-    'euiLoadingSpinnerStyles',
-    'euiSpinnerBorderColorsCSS'
-  ],
-  'components/button/button_display/_button_display.styles.js': [
-    'euiButtonDisplayStyles'
-  ],
-  'components/button/button_display/_button_display_content.styles.js': [
-    'euiButtonDisplayContentStyles'
-  ],
+  'components/loading/loading_spinner.styles.js': ['euiLoadingSpinnerStyles', 'euiSpinnerBorderColorsCSS'],
+  'components/button/button_display/_button_display.styles.js': ['euiButtonDisplayStyles'],
+  'components/button/button_display/_button_display_content.styles.js': ['euiButtonDisplayContentStyles'],
   'components/text/text.styles.js': ['euiTextStyles'],
   'components/text/text_color.styles.js': ['euiTextColorStyles'],
   'components/text/text_align.styles.js': ['euiTextAlignStyles'],
   'components/title/title.styles.js': ['euiTitleStyles'],
   'components/link/link.styles.js': ['euiLinkStyles'],
   'components/badge/badge.styles.js': ['euiBadgeStyles'],
-  'components/badge/color_utils.js': [
-    'euiBadgeColors',
-    'getBadgeColors',
-    'getTextColor',
-    'getCustomInteractiveColors',
-    'getIsValidColor'
-  ],
-  'components/badge/badge_group/badge_group.styles.js': [
-    'euiBadgeGroupStyles'
-  ],
+  'components/badge/color_utils.js': ['euiBadgeColors', 'getBadgeColors', 'getTextColor', 'getCustomInteractiveColors', 'getIsValidColor'],
+  'components/badge/badge_group/badge_group.styles.js': ['euiBadgeGroupStyles'],
   'components/badge/beta_badge/beta_badge.styles.js': ['euiBetaBadgeStyles'],
-  'components/badge/notification_badge/badge_notification.styles.js': [
-    'euiNotificationBadgeStyles'
-  ],
+  'components/badge/notification_badge/badge_notification.styles.js': ['euiNotificationBadgeStyles'],
   'components/flex/flex_group.styles.js': ['euiFlexGroupStyles'],
   'components/flex/flex_item.styles.js': ['euiFlexItemStyles'],
   'components/flex/flex_grid.styles.js': ['euiFlexGridStyles'],
-  'components/button/button_empty/button_empty.styles.js': [
-    'euiButtonEmptyStyles'
-  ],
-  'components/button/button_icon/button_icon.styles.js': [
-    'euiButtonIconStyles'
-  ],
+  'components/button/button_empty/button_empty.styles.js': ['euiButtonEmptyStyles'],
+  'components/button/button_icon/button_icon.styles.js': ['euiButtonIconStyles'],
   // checkables
   'components/form/checkbox/checkbox.styles.js': ['euiCheckboxStyles'],
-  'components/form/checkbox/checkbox_control.styles.js': [
-    'euiCheckboxControlStyles'
-  ],
-  'components/form/checkbox/checkbox_group.styles.js': [
-    'euiCheckboxGroupStyles'
-  ],
+  'components/form/checkbox/checkbox_control.styles.js': ['euiCheckboxControlStyles'],
+  'components/form/checkbox/checkbox_group.styles.js': ['euiCheckboxGroupStyles'],
   'components/form/radio/radio.styles.js': ['euiRadioStyles'],
   'components/form/radio/radio_group.styles.js': ['euiRadioGroupStyles'],
   'components/form/switch/switch.styles.js': ['euiSwitchStyles'],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/reset/reset.js': ['resetStyles'],
-  'global_styling/mixins/_helpers.js': [
-    'euiScrollBarStyles',
-    // page layout
-    'euiYScroll',
-    'euiFullHeight'
-  ],
+  'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight'],
   'services/color/manipulation.js': ['transparentize'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
-  'global_styling/mixins/_button.js': [
-    'euiButtonDisplaysColors',
-    'euiButtonInteractionStyles'
-  ],
+  'global_styling/mixins/_button.js': ['euiButtonDisplaysColors', 'euiButtonInteractionStyles'],
   // forms-layout
   'components/form/form_row/form_row.styles.js': ['euiFormRowStyles'],
   'components/form/form_label/form_label.styles.js': ['euiFormLabelStyles'],
-  'components/form/form_fieldset/form_legend.styles.js': [
-    'euiFormLegendStyles'
-  ],
-  'components/form/form_help_text/form_help_text.styles.js': [
-    'euiFormHelpTextStyles'
-  ],
-  'components/form/form_error_text/form_error_text.styles.js': [
-    'euiFormErrorTextStyles'
-  ],
-  'components/form/form_label_append/form_label_append.styles.js': [
-    'euiFormLabelAppendStyles'
-  ],
-  'components/form/described_form_group/described_form_group.styles.js': [
-    'euiDescribedFormGroupStyles'
-  ],
+  'components/form/form_fieldset/form_legend.styles.js': ['euiFormLegendStyles'],
+  'components/form/form_help_text/form_help_text.styles.js': ['euiFormHelpTextStyles'],
+  'components/form/form_error_text/form_error_text.styles.js': ['euiFormErrorTextStyles'],
+  'components/form/form_label_append/form_label_append.styles.js': ['euiFormLabelAppendStyles'],
+  'components/form/described_form_group/described_form_group.styles.js': ['euiDescribedFormGroupStyles'],
   // form controls
-  'components/form/form.styles.js': [
-    'euiFormVariables',
-    'euiFormControlStyles'
-  ],
+  'components/form/form.styles.js': ['euiFormVariables', 'euiFormControlStyles'],
   'components/form/field_text/field_text.styles.js': ['euiFieldTextStyles'],
-  'components/form/field_number/field_number.styles.js': [
-    'euiFieldNumberStyles'
-  ],
-  'components/form/field_password/field_password.styles.js': [
-    'euiFieldPasswordStyles'
-  ],
-  'components/form/field_search/field_search.styles.js': [
-    'euiFieldSearchStyles'
-  ],
+  'components/form/field_number/field_number.styles.js': ['euiFieldNumberStyles'],
+  'components/form/field_password/field_password.styles.js': ['euiFieldPasswordStyles'],
+  'components/form/field_search/field_search.styles.js': ['euiFieldSearchStyles'],
   'components/form/text_area/text_area.styles.js': ['euiTextAreaStyles'],
   'components/form/select/select.styles.js': ['euiSelectStyles'],
-  'components/form/form_control_layout/form_control_layout.styles.js': [
-    'euiFormControlLayoutStyles',
-    'euiFormControlLayoutSideNodeStyles'
-  ],
-  'components/form/form_control_layout/form_control_layout_icons.styles.js': [
-    'euiFormControlLayoutIconsStyles'
-  ],
-  'components/form/form_control_layout/form_control_layout_clear_button.styles.js':
-    ['EuiFormControlLayoutClearButtonStyles'],
-  'components/form/form_control_layout/form_control_layout_delimited.styles.js':
-    [
-      'euiFormControlLayoutDelimitedStyles',
-      'euiFormControlLayoutDelimited__delimiter',
-      'euiFormControlLayoutDelimited__input'
-    ],
+  'components/form/form_control_layout/form_control_layout.styles.js': ['euiFormControlLayoutStyles', 'euiFormControlLayoutSideNodeStyles'],
+  'components/form/form_control_layout/form_control_layout_icons.styles.js': ['euiFormControlLayoutIconsStyles'],
+  'components/form/form_control_layout/form_control_layout_clear_button.styles.js': ['EuiFormControlLayoutClearButtonStyles'],
+  'components/form/form_control_layout/form_control_layout_delimited.styles.js': ['euiFormControlLayoutDelimitedStyles', 'euiFormControlLayoutDelimited__delimiter', 'euiFormControlLayoutDelimited__input'],
   // page layout
   'components/page/page.styles.js': ['euiPageStyles'],
-  'components/page/_restrict_width.js': [
-    'PAGE_MAX_WIDTH',
-    'setStyleForRestrictedPageWidth'
-  ],
+  'components/page/_restrict_width.js': ['PAGE_MAX_WIDTH', 'setStyleForRestrictedPageWidth'],
   'components/page/page_body/page_body.styles.js': ['euiPageBodyStyles'],
-  'components/page/page_section/page_section.styles.js': [
-    'euiPageSectionStyles',
-    'euiPageSectionContentStyles'
-  ],
-  'components/page/page_sidebar/page_sidebar.styles.js': [
-    'euiPageSidebarStyles'
-  ],
-  'components/page/page_header/page_header.styles.js': [
-    'euiPageHeaderStyles'
-  ],
-  'components/page/page_header/page_header_content.styles.js': [
-    'euiPageHeaderContentStyles'
-  ],
-  'components/page_template/outer/page_outer.styles.js': [
-    'euiPageOuterStyles'
-  ],
-  'components/page_template/inner/page_inner.styles.js': [
-    'euiPageInnerStyles'
-  ],
+  'components/page/page_section/page_section.styles.js': ['euiPageSectionStyles', 'euiPageSectionContentStyles'],
+  'components/page/page_sidebar/page_sidebar.styles.js': ['euiPageSidebarStyles'],
+  'components/page/page_header/page_header.styles.js': ['euiPageHeaderStyles'],
+  'components/page/page_header/page_header_content.styles.js': ['euiPageHeaderContentStyles'],
+  'components/page_template/outer/page_outer.styles.js': ['euiPageOuterStyles'],
+  'components/page_template/inner/page_inner.styles.js': ['euiPageInnerStyles'],
   'components/bottom_bar/bottom_bar.styles.js': ['euiBottomBarStyles'],
-  'global_styling/mixins/_responsive.js': [
-    'euiBreakpoint',
-    'euiMinBreakpoint',
-    'euiMaxBreakpoint'
-  ]
+  'global_styling/mixins/_responsive.js': ['euiBreakpoint', 'euiMinBreakpoint', 'euiMaxBreakpoint'],
+  // utilities
+  'components/accessibility/screen_reader_only/screen_reader_only.styles.js': ['euiScreenReaderOnly', 'euiScreenReaderOnlyStyles'],
+  'components/accessibility/skip_link/skip_link.styles.js': ['euiSkipLinkStyles'],
+  'components/progress/progress.styles.js': ['euiProgressStyles', 'euiProgressDataStyles', 'euiProgressLabelStyles', 'euiProgressValueTextStyles'],
+  'services/color/contrast.js': ['makeHighContrastColor'],
+  'components/skeleton/skeleton_text.styles.js': ['euiSkeletonTextStyles'],
+  'components/loading/loading_chart.styles.js': ['euiLoadingChartStyles', 'euiLoadingChartBarStyles'],
+  'components/loading/loading_elastic.styles.js': ['euiLoadingElasticStyles'],
+  'components/loading/loading_logo.styles.js': ['euiLoadingLogoStyles'],
+  'global_styling/utility/animations.js': ['euiAnimFadeIn'],
+  'global_styling/functions/high_contrast.js': ['highContrastModeStyles'],
+  'global_styling/functions/logicals.js': ['logicalCSS'],
+  'components/code/code.styles.js': ['euiCodeStyles'],
+  'components/image/image.styles.js': ['euiImageStyles'],
+  'components/image/image_wrapper.styles.js': ['euiImageWrapperStyles'],
+  'components/image/image_button.styles.js': ['euiImageButtonStyles', 'euiImageButtonIconStyles'],
+  'components/image/image_caption.styles.js': ['euiImageCaptionStyles'],
+  'components/image/image_fullscreen_wrapper.styles.js': ['euiImageFullscreenWrapperStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

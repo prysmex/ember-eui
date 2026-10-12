@@ -53,11 +53,13 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 ### EuiLoadingContent
 
-Animated placeholder lines shown while text content loads.
+Animated placeholder lines shown while text content loads. Drawn with
+upstream EuiSkeletonText's styles (EuiLoadingContent's latest successor).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@lines` | `number` | `1` | Number of lines, 1 to 10. |
+| `@size` | `'m' \| 's' \| 'xs' \| 'relative'` | `'m'` | Line height of the text being replaced: `'m'`, `'s'`, `'xs'` (EuiText sizes) or `'relative'` (`1em`). |
 | `@singleLineClasses` | `string` |  | Extra classes for each line. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
@@ -71,22 +73,23 @@ A bouncing logo, for loading a whole page or app.
 | `@logo` | `string` | `'logoKibana'` | The logo, anything `EuiIcon`'s `@type` accepts. |
 | `@size` | `'m' \| 'l' \| 'xl'` | `'m'` | `'m'`, `'l'` or `'xl'`. |
 
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
+
 ### EuiLoadingChart
 
-Animated bars, for a chart or visualization that is loading. Give it an
-`aria-label` (e.g. "Loading chart").
+Animated bars, for a chart or visualization that is loading.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@size` | `'m' \| 'l' \| 'xl'` | `'m'` | `'m'`, `'l'` or `'xl'`. |
-| `@mono` | `boolean` |  | Gray bars instead of colored ones. |
+
+Deprecated: `@mono` (Has no effect: latest EUI draws every chart loader with the neutral `loadingChartMonoBackground` tokens.).
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
 
 ### EuiLoadingElastic
 
 The Elastic logo, animated, for a full page or app that is loading.
-Give it an `aria-label` (e.g. "Loading").
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |

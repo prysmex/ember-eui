@@ -22,6 +22,7 @@ module('Integration | Component | eui-portal', function (hooks) {
 
     assert.dom('.host .portalled').doesNotExist('not rendered in place');
     assert.dom('.portalled', document.body).hasText('Hi');
+    assert.dom(document.querySelector('.portalled')!.parentElement).hasAttribute('data-euiportal', 'true', 'upstream portal marker');
 
     state.show = false;
     await rerender();

@@ -1,43 +1,67 @@
-import { eq } from 'ember-truth-helpers';
+import Component from '@glimmer/component';
+import { service } from '@ember/service';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiLoadingLogoStyles } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type EuiI18n from '../services/eui-i18n.ts';
 
 /** A bouncing logo, for loading a whole page or app. */
 export interface EuiLoadingLogoSignature {
+  Element: HTMLSpanElement;
   Args: {
     /** The logo, anything `EuiIcon`'s `@type` accepts. Defaults to `'logoKibana'`. */
     logo?: string;
     /** `'m'`, `'l'` or `'xl'`. Defaults to `'m'`. */
     size?: 'm' | 'l' | 'xl';
   };
-  Yields: {
-    default: [];
-  };
 }
 
-const EuiLoadingLogo: TemplateOnlyComponent<EuiLoadingLogoSignature> =
+export default class EuiLoadingLogo extends Component<EuiLoadingLogoSignature> {
+  @service declare euiI18n: EuiI18n;
+
+  get size() {
+    return this.args.size ?? 'm';
+  }
+
+  get label() {
+    return this.euiI18n.lookupToken('euiLoadingStrings.ariaLabel', 'Loading');
+  }
+
+  get styles() {
+    return useEuiBorealisStyles(
+      getEuiThemeContext(this),
+      euiLoadingLogoStyles
+    );
+  }
+
+  get classes() {
+    return `euiLoadingLogo ${euiClass(
+      getEuiThemeContext(this),
+      this.styles.euiLoadingLogo,
+      this.styles[this.size]
+    )}`;
+  }
+
+  get iconClasses() {
+    return `euiLoadingLogo__icon ${euiClass(
+      getEuiThemeContext(this),
+      this.styles.euiLoadingLogo__icon
+    )}`;
+  }
+
   <template>
     <span
-      class={{classNames
-        "euiLoadingLogo"
-        (if
-          (eq @size "m")
-          "euiLoadingLogo--medium"
-          (if (eq @size "l") "euiLoadingLogo--large" "euiLoadingLogo--xLarge")
-        )
-      }}
+      class={{this.classes}}
+      role="progressbar"
+      aria-label={{this.label}}
+      ...attributes
     >
-      <span class="euiLoadingLogo__icon">
-        <EuiIcon
-          @type={{argOrDefault @logo "logoKibana"}}
-          @size={{argOrDefault @size "m"}}
-        />
+      <span class={{this.iconClasses}}>
+        <EuiIcon @type={{if @logo @logo "logoKibana"}} @size={{this.size}} />
       </span>
     </span>
-  </template>;
-
-export default EuiLoadingLogo;
+  </template>
+}

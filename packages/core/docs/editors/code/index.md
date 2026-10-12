@@ -58,14 +58,17 @@ Also takes the args of `EuiCodeSharedProps`.
 Multi-line code with syntax highlighting, optional copy button, line
 numbers and full screen view:
 `<EuiCodeBlock @language="js" @isCopyable={{true}}>{{this.code}}</EuiCodeBlock>`.
+`...attributes` go on the `<code>` element.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@paddingSize` | `PaddingSize` | `'l'` | Padding around the code: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@fontSize` | `FontSize` | `'s'` | `'s'`, `'m'` or `'l'`. |
 | `@whiteSpace` | `'pre' \| 'pre-wrap'` | `'pre-wrap'` | Specify how `white-space` inside the element is handled. `pre` respects line breaks/white space but doesn't force them to wrap the line `pre-wrap` respects line breaks/white space but does force them to wrap the line when necessary. |
-| `@isCopyable` | `boolean` |  | Displays an icon button to copy the code snippet to the clipboard. |
-| `@lineNumbers` | `boolean \| LineNumbersConfig` |  | Displays line numbers. Optionally accepts a configuration object for setting the starting number and visual highlighting ranges: `{ start: 100, highlight: '1, 5-10, 20-30, 40' }` |
+| `@isCopyable` | `boolean` |  | Displays an icon button to copy the code snippet to the clipboard (only when there is code to copy). |
+| `@copyAriaLabel` | `string` | `'Copy'` | `aria-label` of the copy button. |
+| `@ariaLabel` | `string` |  | Prefixes the code block's screen reader label (`"<ariaLabel>, <language> code block:"`). |
+| `@lineNumbers` | `boolean \| LineNumbersConfig` |  | Displays line numbers. Optionally accepts a configuration object for setting the starting number, visually highlighting ranges, or annotating specific lines: `{ start: 100, highlight: '1, 5-10, 20-30, 40', annotations: { 6: 'A special note about this line' } }` |
 | `@overflowHeight` | `number \| string` |  | Sets the maximum container height. Accepts a pixel value (`300`) or a percentage (`'100%'`) Ensure the container has calcuable height when using a percentage |
 | `@isVirtualized` | `boolean` |  | Renders code block lines virtually. Useful for improving load times of large code blocks. When using this configuration, `overflowHeight` is required and `whiteSpace` can only be `pre`. |
 

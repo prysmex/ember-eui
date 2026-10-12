@@ -224,7 +224,13 @@ const entries = {
   'components/combo_box/combo_box.styles.js': ['euiComboBoxStyles'],
   'components/combo_box/combo_box_input/combo_box_input.styles.js': ['euiComboBoxInputStyles'],
   'components/combo_box/combo_box_input/combo_box_pill.styles.js': ['euiComboBoxPillStyles'],
-  'components/combo_box/combo_box_options_list/combo_box_options_list.styles.js': ['euiComboBoxOptionListStyles', 'LIST_MAX_HEIGHT']
+  'components/combo_box/combo_box_options_list/combo_box_options_list.styles.js': ['euiComboBoxOptionListStyles', 'LIST_MAX_HEIGHT'],
+  // code-block
+  'components/code/code_syntax.styles.js': ['euiCodeSyntaxVariables', 'euiCodeTextColors'],
+  'components/code/code_block.styles.js': ['euiCodeBlockStyles', 'euiCodeBlockPreStyles', 'euiCodeBlockCodeStyles'],
+  'components/code/code_block_controls.styles.js': ['euiCodeBlockControlsStyles'],
+  'components/code/code_block_annotations.style.js': ['euiCodeBlockAnnotationsStyles'],
+  'global_styling/functions/math.js': ['mathWithUnits']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { helper } from '@ember/component/helper';
 import { concat } from '@ember/helper';
 
@@ -22,6 +23,19 @@ export interface VirtualizedCodeBlockSignature<T> {
     language: string;
     /** Height of one line in px, from the font size. */
     rowHeight: number;
+    /** Classes of the scrolling `<pre>` (upstream `euiCodeBlock__pre` styles). */
+    preClass?: string;
+    /** Classes of the `<code>` (upstream `euiCodeBlock__code` + `isVirtualized`). */
+    codeClass?: string;
+    /**
+     * A number fixes the list height to that many px (upstream); otherwise
+     * the list fills the code block's height.
+     */
+    overflowHeight?: number | string;
+    /** Screen reader label rendered before the code. */
+    label?: string;
+    /** Classes of the screen reader label. */
+    labelClass?: string;
   };
 }
 
@@ -37,14 +51,27 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
     const span = content.element.firstChild as HTMLElement;
 
     if (span) {
+      // react-window's row styles, logical (upstream `logicalStyles`)
       span.style.position = 'absolute';
-      span.style.height = `${rowHeight}px`;
-      span.style.left = '0';
-      span.style.top = `${index * rowHeight}px`;
+      span.style.blockSize = `${rowHeight}px`;
+      span.style.insetInlineStart = '0';
+      span.style.inlineSize = '100%';
+      span.style.insetBlockStart = `${index * rowHeight}px`;
     }
 
     return span;
   });
+
+  get hasFixedHeight() {
+    return typeof this.args.overflowHeight === 'number';
+  }
+
+  @cached
+  get fixedHeightStyle() {
+    return this.hasFixedHeight
+      ? { 'block-size': `${this.args.overflowHeight as number}px` }
+      : {};
+  }
 
   <template>
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
@@ -57,17 +84,19 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{#let (randomId) as |theID|}}
-      <EuiAutoSizer as |styles|>
+      <EuiAutoSizer @disableHeight={{this.hasFixedHeight}} as |styles|>
         <pre
+          class={{@preClass}}
           {{style styles}}
+          {{style this.fixedHeightStyle}}
           {{!template-lint-disable}}
-          style="position: relative; overflow: auto;"
+          style="position: relative;"
           id={{theID}}
           ...attributes
-        ><VerticalCollection
+        >{{#if @label}}<div class={{@labelClass}}>{{@label}}</div>{{/if}}<VerticalCollection
             @items={{@data}}
             @tagName="code"
-            class="euiCodeBlock__code"
+            class={{@codeClass}}
             data-code-language={{@language}}
             @estimateHeight={{@rowHeight}}
             @bufferSize={{40}}

@@ -150,5 +150,67 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<fieldset>`.
 
+### EuiSplitButton
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@size` | `'xs' \| 's' \| 'm'` | `'m'` | `'s'` or `'m'` (32/40px). |
+| `@color` | `string` |  | `'primary'`, `'accent'`, `'accentSecondary'`, `'neutral'`, `'success'`, `'warning'`, `'risk'`, `'danger'` or `'text'`. Defaults to `'primary'`. |
+| `@fill` | `boolean` | `false` | Solid background. |
+| `@isDisabled` | `boolean` |  | Disables both actions. |
+| `@isLoading` | `boolean` |  | Shows a loading spinner in both actions and disables them. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+
+| Block | Description |
+| --- | --- |
+| default block | The two actions, in this order: `<split.ActionPrimary>` then `<split.ActionSecondary>`. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+### EuiSplitButtonActionPrimary
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@isIconOnly` | `boolean` |  | Renders an `EuiButtonIcon` (pass an `aria-label`). |
+| `@iconType` |  |  | Icon; anything `EuiIcon`'s `@type` accepts. |
+| `@iconSide` |  |  | `'right'` puts the icon after the text. |
+| `@iconSize` |  |  | Size of the icon. |
+| `@isDisabled` | `boolean` |  | Disables this action (the split button's `@isDisabled` also does). |
+| `@disabled` | `boolean` |  | Same as `@isDisabled`. |
+| `@isLoading` | `boolean` |  | Shows a spinner and disables this action. |
+| `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed`. |
+| `@href` | `string` |  | Renders an `<a>` link. |
+| `@target` | `string` |  | `target` of the `@href` link. |
+| `@type` | `'button' \| 'submit' \| 'reset'` | `'button'` | `type` of the `<button>`. |
+| `@tooltipProps` | `EuiSplitButtonTooltipProps` |  | Wraps the action in an `EuiToolTip` with these arguments. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). |
+
+| Block | Description |
+| --- | --- |
+| default block | The button's text. |
+
+### EuiSplitButtonActionSecondary
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@iconType` |  |  | Icon; anything `EuiIcon`'s `@type` accepts. Always `chevronSingleDown` with `@popoverProps`. Pass an `aria-label` describing the action. |
+| `@iconSize` |  |  | Size of the icon. |
+| `@isDisabled` | `boolean` |  | Disables this action (the split button's `@isDisabled` also does). |
+| `@disabled` | `boolean` |  | Same as `@isDisabled`. |
+| `@isLoading` | `boolean` |  | Shows a spinner and disables this action. |
+| `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed`. |
+| `@href` | `string` |  | Renders an `<a>` link. |
+| `@target` | `string` |  | `target` of the `@href` link. |
+| `@type` | `'button' \| 'submit' \| 'reset'` | `'button'` | `type` of the `<button>`. |
+| `@tooltipProps` | `EuiSplitButtonTooltipProps` |  | Wraps the action in an `EuiToolTip` with these arguments. |
+| `@popoverProps` | `EuiSplitButtonPopoverProps` |  | Anchors an `EuiPopover` to the action with these arguments (default `anchorPosition`: `'downCenter'`); the block is its content. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). |
+
+| Block | Description |
+| --- | --- |
+| default block | The popover content (with `@popoverProps`). |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<a>`.
+
 </EuiText>
 <!-- api:end -->

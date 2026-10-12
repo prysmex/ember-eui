@@ -62,11 +62,10 @@ match them.
 | `@clear` |  |  | Shows a clear ("x") button calling this function. |
 | `@clearLabel` | `string` | "Clear input" | Accessible label of the clear button. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
+| `@inputId` | `string` |  | Id of the control. `EuiFormPrepend` / `EuiFormAppend` labels in the `<:prepend>` / `<:append>` blocks point to it (upstream `inputId`). |
 | `@iconColor` |  |  | Color of `@icon`, anything `EuiIcon`'s `@color` accepts (upstream's `icon.color`). |
 | `@iconCss` | `EuiCss` |  | Extra styles composed last into `@icon`'s EuiIcon class (upstream's `icon.css`). |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
-
-Deprecated: `@inputId` (Has no effect.).
 
 | Block | Description |
 | --- | --- |

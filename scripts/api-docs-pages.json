@@ -164,6 +164,13 @@
   "packages/core/docs/forms/form-controls/file-picker/index.md": [
     "EuiFilePicker"
   ],
+  "packages/core/docs/forms/form-controls/form-append-prepend/index.md": [
+    "EuiFormPrepend",
+    "EuiFormAppend"
+  ],
+  "packages/core/docs/forms/form-controls/form-control-button/index.md": [
+    "EuiFormControlButton"
+  ],
   "packages/core/docs/forms/form-controls/form-control-layout-delimited/index.md": [
     "EuiFormControlLayoutDelimited"
   ],
@@ -212,6 +219,10 @@
     "EuiFormLabel",
     "EuiFormHelpText",
     "EuiFormErrorText"
+  ],
+  "packages/core/docs/forms/inline-edit/index.md": [
+    "EuiInlineEditText",
+    "EuiInlineEditTitle"
   ],
   "packages/core/docs/forms/selectable/index.md": [
     "EuiSelectable",
@@ -310,7 +321,10 @@
     "EuiButton",
     "EuiButtonEmpty",
     "EuiButtonIcon",
-    "EuiButtonGroup"
+    "EuiButtonGroup",
+    "EuiSplitButton",
+    "EuiSplitButtonActionPrimary",
+    "EuiSplitButtonActionSecondary"
   ],
   "packages/core/docs/navigation/collapsible-nav.md": [
     "EuiCollapsibleNav",

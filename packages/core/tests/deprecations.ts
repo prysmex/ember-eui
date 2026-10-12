@@ -14,6 +14,10 @@ registerDeprecationHandler((message, options, next) => {
     throw new Error(`Uses an API removed in ember-source ${options.until}: ${message}`);
   }
 
+  // Components EUI removed upstream are deprecated on purpose (until 15.0.0);
+  // their own tests assert these with a handler registered after this one.
+  if (String(options?.id ?? '').endsWith('.removed-upstream')) return;
+
   next(message, options);
 });
 

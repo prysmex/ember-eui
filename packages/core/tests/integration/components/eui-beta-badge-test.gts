@@ -10,19 +10,19 @@ module('Integration | Component | eui-beta-badge', function (hooks) {
   test('it renders the label', async function (assert) {
     await render(<template><EuiBetaBadge @label="Beta" /></template>);
 
-    assert.dom('.euiBetaBadge').hasText('Beta').hasClass('euiBetaBadge--hollow');
+    assert.dom('.euiBetaBadge').hasText('Beta').hasStyle({ borderTopStyle: 'solid' });
   });
 
   test('single letter, color and size', async function (assert) {
     await render(<template><EuiBetaBadge @label="B" @color="accent" @size="s" /></template>);
 
-    assert.dom('.euiBetaBadge').hasClass('euiBetaBadge--singleLetter').hasClass('euiBetaBadge--accent').hasClass('euiBetaBadge--small');
+    assert.dom('.euiBetaBadge').hasStyle({ width: '20px', height: '20px' });
   });
 
   test('@iconType renders an icon only badge', async function (assert) {
     await render(<template><EuiBetaBadge @label="Lab" @iconType="beaker" /></template>);
 
-    assert.dom('.euiBetaBadge').hasClass('euiBetaBadge--iconOnly');
+    assert.dom('.euiBetaBadge').hasStyle({ width: '24px', height: '24px' });
     assert.dom('.euiBetaBadge svg.euiBetaBadge__icon').exists();
   });
 
@@ -37,7 +37,7 @@ module('Integration | Component | eui-beta-badge', function (hooks) {
       </template>
     );
 
-    assert.dom('button.button-badge').hasClass('euiBetaBadge-isClickable');
+    assert.dom('button.button-badge').hasAttribute('type', 'button');
     await click('button.button-badge');
     assert.strictEqual(clicks, 1);
     assert.dom('a.link-badge').hasAttribute('href', '#beta');

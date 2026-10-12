@@ -1,22 +1,25 @@
+import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 
-import { eq, or } from 'ember-truth-helpers';
+import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiBetaBadgeStyles } from '../utils/eui/styles.generated.ts';
+import {
+  euiBadgeIconSizing,
+  euiBadgeReset,
+  secureRel
+} from './eui-badge.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
-import type {
-  colorMapping,
-  sizeMapping
-} from '../utils/css-mappings/eui-beta-badge.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiToolTipSignature } from './eui-tool-tip';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiBetaBadgeSignature {
-  Element: HTMLSpanElement;
+  Element: HTMLSpanElement | HTMLAnchorElement | HTMLButtonElement;
   Args: {
     /**
      * The badge's text, e.g. `'Beta'`, or a single letter (rendered as a
@@ -29,19 +32,24 @@ export interface EuiBetaBadgeSignature {
      */
     title?: string;
     /**
-     * Renders an icon instead of `@label` (icon-only badge). Give it a
-     * `@title` so it has a name.
+     * Renders an icon instead of `@label` (icon-only, circular badge). Give
+     * it a `@title` so it has a name.
      */
     iconType?: EuiIconSignature['Args']['type'];
     /**
-     * `'hollow'`, `'accent'` or `'subdued'`. Defaults to `'hollow'`.
+     * `'hollow'`, `'accent'`, `'subdued'` or `'warning'`. Defaults to
+     * `'hollow'`.
      */
-    color?: keyof typeof colorMapping;
-
+    color?: 'hollow' | 'accent' | 'subdued' | 'warning';
     /**
      * `'s'` or `'m'`. Defaults to `'m'`.
      */
-    size?: keyof typeof sizeMapping;
+    size?: 's' | 'm';
+    /**
+     * Vertical alignment (`vertical-align`), `'baseline'` or `'middle'`.
+     * Defaults to `'baseline'`.
+     */
+    alignment?: 'baseline' | 'middle';
     /**
      * Where the `@tooltipContent` tooltip appears: `'top'`, `'right'`,
      * `'bottom'` or `'left'`. Defaults to `'top'`.
@@ -65,7 +73,8 @@ export interface EuiBetaBadgeSignature {
      */
     target?: string;
     /**
-     * `rel` of the `@href` link, e.g. `'noopener'`.
+     * `rel` of the `@href` link. `noreferrer` (and `noopener` for
+     * `_blank`) is always added.
      */
     rel?: string;
     /**
@@ -79,178 +88,177 @@ export interface EuiBetaBadgeSignature {
   };
 }
 
-const EuiBetaBadge: TemplateOnlyComponent<EuiBetaBadgeSignature> = <template>
-  {{#let
-    (argOrDefault @size "m")
-    (eq @label.length 1)
-    (argOrDefault @tooltipPosition "top")
-    as |size singleLetter tooltipPosition|
-  }}
+/** A small "Beta"/"Lab" badge, optionally with a tooltip explaining it. */
+export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
+  get context() {
+    return getEuiThemeContext(this);
+  }
 
+  get size(): 's' | 'm' {
+    return this.args.size ?? 'm';
+  }
+
+  get kind(): BetaBadgeElementSignature['Args']['kind'] {
+    if (this.args.href) return 'a';
+    if (this.args.onClick) return 'button';
+    return this.args.tooltipContent ? 'focusable' : 'span';
+  }
+
+  get title(): string | undefined {
+    const { label, title } = this.args;
+    // Clickable badges prefer the label, plain ones the title (upstream).
+    if (this.kind === 'a' || this.kind === 'button') return label ?? title;
+    return this.kind === 'span' ? (title ?? label) : undefined;
+  }
+
+  get rel(): string | undefined {
+    return this.args.href
+      ? secureRel(this.args.target, this.args.rel)
+      : undefined;
+  }
+
+  get classes(): string {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiBetaBadgeStyles);
+    const size = this.size;
+    const isCircular = Boolean(
+      this.args.iconType || this.args.label?.length === 1
+    );
+    return euiClass(
+      context,
+      euiBadgeReset(context.upstream),
+      this.kind === 'button'
+        ? { background: 'none', padding: 0, color: 'inherit' }
+        : undefined,
+      { padding: 0 },
+      styles.euiBetaBadge,
+      styles[this.args.color ?? 'hollow'],
+      styles[size],
+      styles[this.args.alignment ?? 'baseline'],
+      isCircular ? styles.badgeSizes.circle[size] : styles.badgeSizes.default[size]
+    );
+  }
+
+  get iconClass(): string {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiBetaBadgeStyles);
+    return euiClass(
+      context,
+      euiBadgeIconSizing(context.upstream, this.size === 'm' ? 'm' : 's'),
+      styles.euiBetaBadge__icon
+    );
+  }
+
+  <template>
     {{#let
-      (classNames
-        (if @iconType "euiBetaBadge--iconOnly")
-        (if singleLetter "euiBetaBadge--singleLetter")
-        (if (or @onClick @href) "euiBetaBadge-isClickable")
-        componentName="EuiBetaBadge"
-        color=(argOrDefault @color "hollow")
-        size=size
+      (component
+        BetaBadgeElement
+        kind=this.kind
+        class=this.classes
+        title=this.title
+        ariaLabel=@onClickAriaLabel
+        href=@href
+        target=@target
+        rel=this.rel
+        onClick=@onClick
       )
-      as |classes|
+      as |Badge|
     }}
-
-      {{#if (or @href @onClick)}}
-        {{#if @href}}
-          <a
-            aria-label={{@onClickAriaLabel}}
-            title={{if @label @label @title}}
-            class={{classes}}
-            href={{@href}}
-            target={{@target}}
-            rel={{@rel}}
-            ...attributes
-          >
+      {{#if @tooltipContent}}
+        <EuiToolTip
+          @position={{if @tooltipPosition @tooltipPosition "top"}}
+          @title={{if @title @title @label}}
+          @content={{@tooltipContent}}
+        >
+          <Badge ...attributes>
             {{#if (has-block)}}
               {{yield}}
             {{else if @iconType}}
               <EuiIcon
-                @iconClasses="euiBetaBadge__icon"
+                @iconClasses="euiBetaBadge__icon {{this.iconClass}}"
                 @type={{@iconType}}
-                @size={{if (eq size "m") "m" "s"}}
+                @size={{this.size}}
                 aria-hidden="true"
                 @color="inherit"
               />
             {{else}}
               {{@label}}
             {{/if}}
-          </a>
-        {{else if @onClick}}
-          <button
-            type="button"
-            aria-label={{@onClickAriaLabel}}
-            title={{if @label @label @title}}
-            class={{classes}}
-            {{on "click" @onClick}}
-            ...attributes
-          >
-            {{#if (has-block)}}
-              {{yield}}
-            {{else if @iconType}}
-              <EuiIcon
-                @iconClasses="euiBetaBadge__icon"
-                @type={{@iconType}}
-                @size={{if (eq size "m") "m" "s"}}
-                aria-hidden="true"
-                @color="inherit"
-              />
-            {{else}}
-              {{@label}}
-            {{/if}}
-          </button>
-        {{/if}}
-
-        {{#if @tooltipContent}}
-          <EuiToolTip
-            @position={{tooltipPosition}}
-            @title={{or @title @label}}
-            @content={{@tooltipContent}}
-          >
-            {{#if @href}}
-              <a
-                aria-label={{@onClickAriaLabel}}
-                title={{if @label @label @title}}
-                class={{classes}}
-                href={{@href}}
-                target={{@target}}
-                rel={{@rel}}
-                ...attributes
-              >
-                {{#if (has-block)}}
-                  {{yield}}
-                {{else if @iconType}}
-                  <EuiIcon
-                    @iconClasses="euiBetaBadge__icon"
-                    @type={{@iconType}}
-                    @size={{if (eq size "m") "m" "s"}}
-                    aria-hidden="true"
-                    @color="inherit"
-                  />
-                {{else}}
-                  {{@label}}
-                {{/if}}
-              </a>
-            {{else if @onClick}}
-              <button
-                type="button"
-                aria-label={{@onClickAriaLabel}}
-                title={{if @label @label @title}}
-                class={{classes}}
-                {{on "click" @onClick}}
-                ...attributes
-              >
-                {{#if (has-block)}}
-                  {{yield}}
-                {{else if @iconType}}
-                  <EuiIcon
-                    @iconClasses="euiBetaBadge__icon"
-                    @type={{@iconType}}
-                    @size={{if (eq size "m") "m" "s"}}
-                    aria-hidden="true"
-                    @color="inherit"
-                  />
-                {{else}}
-                  {{@label}}
-                {{/if}}
-              </button>
-            {{/if}}
-          </EuiToolTip>
-        {{/if}}
+          </Badge>
+        </EuiToolTip>
       {{else}}
-        {{#if @tooltipContent}}
-          <EuiToolTip
-            @position={{tooltipPosition}}
-            @title={{or @title @label}}
-            @content={{@tooltipContent}}
-          >
-            <span tabindex="0" class={{classes}} ...attributes>
-              {{#if (has-block)}}
-                {{yield}}
-              {{else if @iconType}}
-                <EuiIcon
-                  @iconClasses="euiBetaBadge__icon"
-                  @type={{@iconType}}
-                  @size={{if (eq size "m") "m" "s"}}
-                  aria-hidden="true"
-                  @color="inherit"
-                />
-              {{else}}
-                {{@label}}
-              {{/if}}
-            </span>
-          </EuiToolTip>
-        {{else}}
-          <span class={{classes}} title={{@title}} ...attributes>
-            {{#if (has-block)}}
-              {{yield}}
-            {{else if @iconType}}
-              <EuiIcon
-                @iconClasses="euiBetaBadge__icon"
-                @type={{@iconType}}
-                @size={{if (eq size "m") "m" "s"}}
-                aria-hidden="true"
-                @color="inherit"
-              />
-            {{else}}
-              {{@label}}
-            {{/if}}
-          </span>
-        {{/if}}
-
+        <Badge ...attributes>
+          {{#if (has-block)}}
+            {{yield}}
+          {{else if @iconType}}
+            <EuiIcon
+              @iconClasses="euiBetaBadge__icon {{this.iconClass}}"
+              @type={{@iconType}}
+              @size={{this.size}}
+              aria-hidden="true"
+              @color="inherit"
+            />
+          {{else}}
+            {{@label}}
+          {{/if}}
+        </Badge>
       {{/if}}
-
     {{/let}}
+  </template>
+}
 
-  {{/let}}
-</template>;
+interface BetaBadgeElementSignature {
+  Element: HTMLSpanElement | HTMLAnchorElement | HTMLButtonElement;
+  Args: {
+    kind: 'a' | 'button' | 'span' | 'focusable';
+    class: string;
+    title?: string;
+    ariaLabel?: string;
+    href?: string;
+    target?: string;
+    rel?: string;
+    onClick?: (event: MouseEvent) => void;
+  };
+  Blocks: { default: [] };
+}
 
-export default EuiBetaBadge;
+const BetaBadgeElement: TemplateOnlyComponent<BetaBadgeElementSignature> =
+  <template>
+    {{#if (eq @kind "a")}}
+      <a
+        aria-label={{@ariaLabel}}
+        title={{@title}}
+        class="euiBetaBadge {{@class}}"
+        href={{@href}}
+        target={{@target}}
+        rel={{@rel}}
+        ...attributes
+        {{on "click" (if @onClick @onClick noop)}}
+      >{{yield}}</a>
+    {{else if (eq @kind "button")}}
+      <button
+        type="button"
+        aria-label={{@ariaLabel}}
+        title={{@title}}
+        class="euiBetaBadge {{@class}}"
+        ...attributes
+        {{on "click" (if @onClick @onClick noop)}}
+      >{{yield}}</button>
+    {{else if (eq @kind "focusable")}}
+      {{! upstream: a focusable tooltip anchor }}
+      <span
+        tabindex="0"
+        role="button"
+        class="euiBetaBadge {{@class}}"
+        ...attributes
+      >{{yield}}</span>
+    {{else}}
+      <span
+        class="euiBetaBadge {{@class}}"
+        title={{@title}}
+        ...attributes
+      >{{yield}}</span>
+    {{/if}}
+  </template>;
+
+function noop() {}

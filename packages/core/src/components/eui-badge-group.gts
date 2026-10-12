@@ -1,17 +1,24 @@
+import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiBadgeGroupStyles } from '../utils/eui/styles.generated.ts';
 
-import type { gutterSize } from '../utils/css-mappings/eui-badge-group.ts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { WithBoundArgs } from '@glint/template';
 
+/**
+ * Ember-only wrapper (upstream groups the badges directly). It may shrink to
+ * the group's width so long badges truncate instead of overflowing.
+ */
 const BadgeGroupItem: TemplateOnlyComponent<{
+  Args: { class: string };
   Blocks: {
     default: [];
   };
 }> = <template>
-  <span class="euiBadgeGroup__item">
+  <span class="euiBadgeGroup__item {{@class}}">
     {{yield}}
   </span>
 </template>;
@@ -20,9 +27,10 @@ export interface EuiBadgeGroupSignature {
   Element: HTMLDivElement;
   Args: {
     /**
-     * Space between the badges, `'xs'` or `'s'`. Defaults to `'xs'`.
+     * Space between the badges, `'none'`, `'xs'` or `'s'`. Defaults to
+     * `'xs'`.
      */
-    gutterSize?: keyof typeof gutterSize;
+    gutterSize?: 'none' | 'xs' | 's';
   };
   Blocks: {
     /**
@@ -31,22 +39,35 @@ export interface EuiBadgeGroupSignature {
      */
     default: [
       {
-        item: typeof BadgeGroupItem;
+        item: WithBoundArgs<typeof BadgeGroupItem, 'class'>;
       }
     ];
   };
 }
 
-const EuiBadgeGroup: TemplateOnlyComponent<EuiBadgeGroupSignature> = <template>
-  <div
-    class={{classNames
-      componentName="EuiBadgeGroup"
-      gutterSize=(argOrDefault @gutterSize "xs")
-    }}
-    ...attributes
-  >
-    {{yield (hash item=BadgeGroupItem)}}
-  </div>
-</template>;
+export default class EuiBadgeGroup extends Component<EuiBadgeGroupSignature> {
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiBadgeGroupStyles);
+    return euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiBadgeGroup,
+      styles[this.args.gutterSize ?? 'xs']
+    );
+  }
 
-export default EuiBadgeGroup;
+  get itemClass(): string {
+    return euiClass(getEuiThemeContext(this), {
+      boxSizing: 'border-box',
+      minInlineSize: 0,
+      maxInlineSize: '100%'
+    });
+  }
+
+  <template>
+    <div class="euiBadgeGroup {{this.classes}}" ...attributes>
+      {{yield (hash item=(component BadgeGroupItem class=this.itemClass))}}
+    </div>
+  </template>
+}

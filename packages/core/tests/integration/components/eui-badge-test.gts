@@ -14,7 +14,7 @@ module('Integration | Component | eui-badge', function (hooks) {
     assert.dom('.euiBadge .euiBadge__text').exists();
   });
 
-  test('named colors get a class, custom colors an inline background', async function (assert) {
+  test('named colors use Borealis styles, custom colors a computed background', async function (assert) {
     await render(
       <template>
         <EuiBadge @color="hollow" class="hollow">Hollow</EuiBadge>
@@ -22,7 +22,8 @@ module('Integration | Component | eui-badge', function (hooks) {
       </template>
     );
 
-    assert.dom('.hollow').hasClass('euiBadge--hollow');
+    assert.dom('.hollow').hasClass('euiBadge').doesNotHaveClass('euiBadge--hollow');
+    assert.dom('.hollow').hasStyle({ borderTopStyle: 'solid' });
     assert.dom('.custom').hasStyle({ backgroundColor: 'rgb(255, 0, 0)' });
   });
 
@@ -34,7 +35,7 @@ module('Integration | Component | eui-badge', function (hooks) {
       <template><EuiBadge @onClick={{onClick}} @onClickAriaLabel="Open">Click</EuiBadge></template>
     );
 
-    assert.dom('button.euiBadge').hasClass('euiBadge-isClickable').hasAttribute('aria-label', 'Open');
+    assert.dom('button.euiBadge').hasAttribute('type', 'button').hasAttribute('aria-label', 'Open');
     await click('button.euiBadge');
     assert.strictEqual(clicks, 1);
   });
@@ -52,14 +53,16 @@ module('Integration | Component | eui-badge', function (hooks) {
       </template>
     );
 
-    assert.dom('a.euiBadge__childButton').hasAttribute('href', 'https://example.com');
-    assert.dom('a.euiBadge__childButton').hasAttribute('target', '_blank');
+    // Like upstream, the whole badge is the link; the icon sits inside it.
+    assert.dom('a.euiBadge').hasAttribute('href', 'https://example.com');
+    assert.dom('a.euiBadge').hasAttribute('target', '_blank');
+    assert.dom('a.euiBadge .euiBadge__icon').exists();
   });
 
   test('@iconType with @iconSide', async function (assert) {
     await render(<template><EuiBadge @iconType="check" @iconSide="right">Done</EuiBadge></template>);
 
-    assert.dom('.euiBadge').hasClass('euiBadge--iconRight');
+    assert.dom('.euiBadge__content > :last-child').hasClass('euiBadge__icon');
     assert.dom('.euiBadge svg.euiIcon').exists();
   });
 
@@ -71,8 +74,8 @@ module('Integration | Component | eui-badge', function (hooks) {
       </template>
     );
 
-    assert.dom('button.plain').isDisabled().hasClass('euiBadge-isDisabled');
-    assert.dom('.icon button.euiBadge__childButton').isDisabled();
+    assert.dom('button.plain').isDisabled();
+    assert.dom('button.icon').isDisabled();
     assert.dom('a').doesNotExist();
   });
 });

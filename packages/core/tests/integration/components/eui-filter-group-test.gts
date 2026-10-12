@@ -6,6 +6,8 @@ import { click, render } from '@ember/test-helpers';
 import EuiFilterButton from '#src/components/eui-filter-button.gts';
 import EuiFilterGroup from '#src/components/eui-filter-group.gts';
 import EuiFilterSelectItem from '#src/components/eui-filter-select-item.gts';
+import { euiBadgeColors } from '#src/utils/eui/styles.generated.ts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
 module('Integration | Component | eui-filter-group', function (hooks) {
   setupRenderingTest(hooks);
@@ -46,9 +48,26 @@ module('Integration | Component | eui-filter-group', function (hooks) {
     );
 
     assert.dom('.available').hasClass('euiFilterButton-hasNotification').hasClass('euiFilterButton--hasIcon');
-    assert.dom('.available .euiFilterButton__notification').hasText('12').hasAria('label', '12 available filters').hasClass('euiNotificationBadge--subdued');
+    assert.dom('.available .euiFilterButton__notification').hasText('12').hasAria('label', '12 available filters');
+    // Latest-only styles: compare the Borealis badge colors, not legacy classes.
+    const badgeColors = euiBadgeColors(resolveBorealisTheme('light')) as {
+      subdued: { backgroundColor: string };
+      accentText: { backgroundColor: string };
+    };
+    const background = (selector: string) =>
+      getComputedStyle(document.querySelector(selector)!).backgroundColor;
+    assert.strictEqual(
+      background('.available .euiFilterButton__notification'),
+      rgb(badgeColors.subdued.backgroundColor),
+      'available count is subdued'
+    );
     assert.dom('.active').hasClass('euiFilterButton-isSelected').hasAria('pressed', 'true');
-    assert.dom('.active .euiFilterButton__notification').hasText('2').hasAria('label', '2 active filters').doesNotHaveClass('euiNotificationBadge--subdued');
+    assert.dom('.active .euiFilterButton__notification').hasText('2').hasAria('label', '2 active filters');
+    assert.strictEqual(
+      background('.active .euiFilterButton__notification'),
+      rgb(badgeColors.accentText.backgroundColor),
+      'active count is accent'
+    );
     assert.dom('.none .euiFilterButton__notification').doesNotExist();
   });
 
@@ -72,3 +91,13 @@ module('Integration | Component | eui-filter-group', function (hooks) {
     assert.dom('.noicons').isDisabled();
   });
 });
+
+/** Normalize any CSS color to the browser's computed `rgb()` form. */
+function rgb(color: string) {
+  const probe = document.createElement('span');
+  probe.style.color = color;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}

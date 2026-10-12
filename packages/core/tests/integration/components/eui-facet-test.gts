@@ -6,6 +6,26 @@ import { on } from '@ember/modifier';
 import EuiFacetButton from '#src/components/eui-facet-button.gts';
 import EuiFacetGroup from '#src/components/eui-facet-group.gts';
 import EuiIcon from '#src/components/eui-icon.gts';
+import { euiBadgeColors } from '#src/utils/eui/styles.generated.ts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+
+// Latest-only badges: compare Borealis colors instead of legacy classes.
+const badgeColors = euiBadgeColors(resolveBorealisTheme('light')) as {
+  subdued: { backgroundColor: string };
+  accentText: { backgroundColor: string };
+};
+
+function rgb(color: string) {
+  const probe = document.createElement('span');
+  probe.style.color = color;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
+
+const SUBDUED = { backgroundColor: rgb(badgeColors.subdued.backgroundColor) };
+const ACCENT = { backgroundColor: rgb(badgeColors.accentText.backgroundColor) };
 
 module('Integration | Component | eui-facet-button and eui-facet-group', function (hooks) {
   setupRenderingTest(hooks);
@@ -25,7 +45,7 @@ module('Integration | Component | eui-facet-button and eui-facet-group', functio
 
     assert.dom('button.euiFacetButton').hasClass('euiFacetButton--unSelected').hasAttribute('title', 'Errors');
     assert.dom('.euiFacetButton__text').hasText('Errors').hasAttribute('data-text', 'Errors');
-    assert.dom('.euiFacetButton__quantity').hasText('6').hasClass('euiNotificationBadge--subdued');
+    assert.dom('.euiFacetButton__quantity').hasText('6').hasStyle(SUBDUED);
     assert.dom('.euiFacetButton__icon').exists();
 
     await click('button');
@@ -42,13 +62,13 @@ module('Integration | Component | eui-facet-button and eui-facet-group', functio
     );
 
     assert.dom('.selected').hasClass('euiFacetButton--isSelected');
-    // accent is the badge's default color, without a class of its own
-    assert.dom('.selected .euiFacetButton__quantity').doesNotHaveClass('euiNotificationBadge--subdued');
+    // accent is the badge's default color
+    assert.dom('.selected .euiFacetButton__quantity').hasStyle(ACCENT);
     assert.dom('.loading').isDisabled();
     assert.dom('.loading .euiFacetButton__spinner').exists();
     assert.dom('.loading .euiFacetButton__quantity').doesNotExist();
     assert.dom('.disabled').isDisabled();
-    assert.dom('.disabled .euiFacetButton__quantity').hasText('0').hasClass('euiNotificationBadge--subdued');
+    assert.dom('.disabled .euiFacetButton__quantity').hasText('0').hasStyle(SUBDUED);
   });
 
   test('a facet group lays out its buttons', async function (assert) {

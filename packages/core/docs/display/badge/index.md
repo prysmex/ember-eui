@@ -26,16 +26,18 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@color` |  | `'default'` | `'default'`, `'hollow'`, `'primary'`, `'success'`, `'accent'`, `'warning'`, `'danger'` or any hex color (`'#DA8B45'`); the text color is picked for contrast. |
+| `@color` | `EuiBadgeNamedColor \| string` | `'default'` | `'default'`, `'hollow'`, `'primary'`, `'accent'`, `'neutral'`, `'success'`, `'warning'`, `'risk'`, `'danger'` or any CSS color (`'#DA8B45'`, `'rgb(…)'`); custom colors get a text color picked for contrast. |
+| `@fill` | `boolean` | `false` | Named colors only: the stronger, filled variant of the color. |
 | `@iconType` |  |  | Icon shown in the badge, anything `EuiIcon`'s `@type` accepts. |
-| `@iconSide` | `'left' \| 'right'` | `'left'` | Side of the text the icon is on. |
-| `@iconOnClick` | `() => void` |  | Makes the icon a separate button calling this function, e.g. an "x" to remove the badge. Requires `@iconType` and `@iconOnClickAriaLabel`. |
+| `@iconSide` | `'left' \| 'right'` | `'left'` | Side of the text the icon is on (logical, so it flips in RTL). |
+| `@iconOnClick` | `(event: MouseEvent) => void` |  | Makes the icon a separate button calling this function, e.g. an "x" to remove the badge. Requires `@iconType` and `@iconOnClickAriaLabel`. |
 | `@iconOnClickAriaLabel` | `string` |  | Accessible label (and hover title) of the `@iconOnClick` button. |
 | `@isDisabled` | `boolean` |  | Disables the badge's buttons and links and greys it out. |
-| `@onClick` | `() => void` |  | Makes the badge (or its text, when it has an `@iconType`) a button calling this function. |
+| `@onClick` | `(event: MouseEvent) => void` |  | Makes the badge (or its text, with `@iconOnClick`) a button calling this function. |
 | `@onClickAriaLabel` | `string` |  | Accessible label of the `@onClick` button, when the text alone does not describe the action. |
-| `@href` | `string` |  | Makes the badge (or its text, when it has an `@iconType`) a link. |
+| `@href` | `string` |  | Makes the badge (or its text, with `@iconOnClick`) a link. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
+| `@rel` | `string` |  | `rel` of the `@href` link. `noreferrer` (and `noopener` for `_blank`) is always added. |
 | `@closeButtonProps` |  |  | Extra props for the `@iconOnClick` button. |
 
 Deprecated: `@iconUseSvg` (Has no effect, see `EuiIcon`.).
@@ -52,28 +54,29 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | --- | --- | --- | --- |
 | `@label` | `string` |  | The badge's text, e.g. `'Beta'`, or a single letter (rendered as a circle). Also its hover title. The default block replaces it. |
 | `@title` | `string` |  | Hover title when there is no `@label` (e.g. with `@iconType`), and the title of the `@tooltipContent` tooltip. |
-| `@iconType` |  |  | Renders an icon instead of `@label` (icon-only badge). Give it a `@title` so it has a name. |
-| `@color` |  | `'hollow'` | `'hollow'`, `'accent'` or `'subdued'`. |
-| `@size` |  | `'m'` | `'s'` or `'m'`. |
+| `@iconType` |  |  | Renders an icon instead of `@label` (icon-only, circular badge). Give it a `@title` so it has a name. |
+| `@color` | `'hollow' \| 'accent' \| 'subdued' \| 'warning'` | `'hollow'` | `'hollow'`, `'accent'`, `'subdued'` or `'warning'`. |
+| `@size` | `'s' \| 'm'` | `'m'` | `'s'` or `'m'`. |
+| `@alignment` | `'baseline' \| 'middle'` | `'baseline'` | Vertical alignment (`vertical-align`), `'baseline'` or `'middle'`. |
 | `@tooltipPosition` |  | `'top'` | Where the `@tooltipContent` tooltip appears: `'top'`, `'right'`, `'bottom'` or `'left'`. |
 | `@tooltipContent` | `string` |  | Shows a tooltip with this text on hover, e.g. what "Beta" means here. |
 | `@onClickAriaLabel` | `string` |  | Accessible label of the badge when it is a link or button (`@href` / `@onClick`). |
 | `@href` | `string` |  | Makes the badge a link. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
-| `@rel` | `string` |  | `rel` of the `@href` link, e.g. `'noopener'`. |
+| `@rel` | `string` |  | `rel` of the `@href` link. `noreferrer` (and `noopener` for `_blank`) is always added. |
 | `@onClick` | `(event: MouseEvent) => void` |  | Makes the badge a button calling this function. |
 
 | Block | Description |
 | --- | --- |
 | default block | Custom content instead of `@label` / `@iconType`. |
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>` / `<a>` / `<button>`.
 
 ### EuiBadgeGroup
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@gutterSize` |  | `'xs'` | Space between the badges, `'xs'` or `'s'`. |
+| `@gutterSize` | `'none' \| 'xs' \| 's'` | `'xs'` | Space between the badges, `'none'`, `'xs'` or `'s'`. |
 
 | Block | Description |
 | --- | --- |
@@ -87,8 +90,8 @@ A small count badge, e.g. unread notifications on a header button.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@size` |  | `'s'` | `'s'` or `'m'`. |
-| `@color` |  | `'accent'` | `'accent'` or `'subdued'`. |
+| `@size` | `'s' \| 'm'` | `'s'` | `'s'` or `'m'`. |
+| `@color` | `'accent' \| 'subdued' \| 'success'` | `'accent'` | `'accent'`, `'subdued'` or `'success'`. |
 
 | Block | Description |
 | --- | --- |

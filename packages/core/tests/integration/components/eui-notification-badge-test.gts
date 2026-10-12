@@ -16,6 +16,6 @@ module('Integration | Component | eui-notification-badge', function (hooks) {
     );
 
     assert.dom('.default').hasClass('euiNotificationBadge').hasText('3');
-    assert.dom('.custom').hasClass('euiNotificationBadge--medium').hasClass('euiNotificationBadge--subdued');
+    assert.dom('.custom').hasClass('euiNotificationBadge').hasStyle({ height: '20px' });
   });
 });

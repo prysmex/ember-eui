@@ -1,6 +1,7 @@
 import { helper } from '@ember/component/helper';
 import { htmlSafe } from '@ember/template';
 
+import { deprecateUnusedAfterBorealis } from '../-private/unused-after-borealis.ts';
 import { EUI_THUMB_SIZE } from '../utils/range/index.ts';
 
 import type { EuiRangeTick } from '../components/eui-range-ticks.gts';
@@ -54,6 +55,10 @@ export function calculateThumbPosition(
   return valuePosition * trackPositionScale;
 }
 
+/**
+ * @deprecated Unused since the Borealis migration (EuiRangeTicks positions
+ * ticks itself); removed in 16.0.0.
+ */
 export function getRangeTick([
   ticks,
   tickValue,
@@ -62,6 +67,11 @@ export function getRangeTick([
   percentageWidth,
   trackWidth = 0
 ]: [EuiRangeTick[] | undefined, number, number, number, number, number]) {
+  deprecateUnusedAfterBorealis(
+    'get-range-tick',
+    'The `get-range-tick` helper is deprecated.'
+  );
+
   let tickStyle: string = '';
   let customTick;
 

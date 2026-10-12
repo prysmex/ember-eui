@@ -235,7 +235,12 @@ const factories = {
   'components/form/range/range_wrapper.styles.js': ['euiRangeWrapperStyles'],
   'components/form/range/range_track.styles.js': ['euiRangeTrackStyles'],
   'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles'],
-  'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles']
+  'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles'],
+  // code-block
+  'components/code/code_syntax.styles.js': ['euiCodeSyntaxVariables', 'euiCodeTextColors'],
+  'components/code/code_block.styles.js': ['euiCodeBlockStyles', 'euiCodeBlockPreStyles', 'euiCodeBlockCodeStyles'],
+  'components/code/code_block_controls.styles.js': ['euiCodeBlockControlsStyles'],
+  'components/code/code_block_annotations.style.js': ['euiCodeBlockAnnotationsStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1415,3 +1420,44 @@ test('date picker style helpers match upstream button colors, animation and math
           );
     }
 });
+
+// code-block
+test('hand-ported code block line styles match upstream @emotion/css registrations', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/code-block.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-code-block-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const line = require(resolve(eui, 'lib/components/code/code_block_line.styles.js'));
+  const { cache } = require('@emotion/css');
+  const flat = (slots, prefix = '') =>
+    Object.entries(slots).flatMap(([key, value]) =>
+      typeof value === 'string' || 'styles' in value
+        ? [[prefix + key, value]]
+        : flat(value, `${prefix}${key}.`)
+    );
+  for (const context of utilityContexts()) {
+    const label = `${context.colorMode}/${context.highContrastMode}/${JSON.stringify(context.modifications)}`;
+    const upstream = Object.fromEntries(flat(line.euiCodeBlockLineStyles(context)));
+    const ours = Object.fromEntries(flat(port.euiCodeBlockLineStyles(context)));
+    assert.deepEqual(Object.keys(ours), Object.keys(upstream), label);
+    for (const slot of Object.keys(upstream)) {
+      assert.strictEqual(upstream[slot], `css-${ours[slot].name}`, `${label} ${slot}`);
+      assert.strictEqual(cache.registered[upstream[slot]], ours[slot].styles, `${label} ${slot}`);
+    }
+  }
+});
+

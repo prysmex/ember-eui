@@ -263,7 +263,12 @@ const entries = {
   'components/form/range/range_wrapper.styles.js': ['euiRangeWrapperStyles'],
   'components/form/range/range_track.styles.js': ['euiRangeTrackStyles'],
   'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles'],
-  'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles']
+  'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles'],
+  // code-block
+  'components/code/code_syntax.styles.js': ['euiCodeSyntaxVariables', 'euiCodeTextColors'],
+  'components/code/code_block.styles.js': ['euiCodeBlockStyles', 'euiCodeBlockPreStyles', 'euiCodeBlockCodeStyles'],
+  'components/code/code_block_controls.styles.js': ['euiCodeBlockControlsStyles'],
+  'components/code/code_block_annotations.style.js': ['euiCodeBlockAnnotationsStyles'],
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

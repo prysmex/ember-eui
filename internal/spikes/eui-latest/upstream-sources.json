@@ -115,6 +115,18 @@
       "sha256": "95c585c4699d655f74047c84293ff9cc433e07c7aaa2354a57164ebd0d4350af"
     },
     {
+      "path": "@elastic/eui/es/components/code/code_block_annotations.style.js",
+      "sha256": "8ed246c17cde3f6675aa25e3e1a7becfbf79fe9a6a90b0cd866beab6a6cc41a9"
+    },
+    {
+      "path": "@elastic/eui/es/components/code/code_block_controls.styles.js",
+      "sha256": "cfffaa9f88f248e1f804b81fba4d09c364e20ee24991df8cd2ccaf3b8675c36f"
+    },
+    {
+      "path": "@elastic/eui/es/components/code/code_block.styles.js",
+      "sha256": "2b2d8aca7f2bdc689b08646c705d7e7b8d598f02fb81ea37cbb0c49e88b4b1f9"
+    },
+    {
       "path": "@elastic/eui/es/components/code/code_syntax.styles.js",
       "sha256": "dc198bf65eef50a9ac8d2ef2bde3c1cd952e118a647442f497906f7352a107eb"
     },

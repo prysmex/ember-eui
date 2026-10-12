@@ -166,7 +166,15 @@ const factories = {
   'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
   'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
   'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
-  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles']
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  // misc-display
+  'components/tree_view/tree_view.styles.js': ['euiTreeViewStyles'],
+  'components/tree_view/tree_view_item.styles.js': ['euiTreeViewItemStyles'],
+  'components/text_diff/text_diff.styles.js': ['euiTextDiffStyles'],
+  'components/expression/expression.styles.js': ['euiExpressionStyles', 'euiExpressionDescriptionStyles', 'euiExpressionIconStyles'],
+  'components/tour/tour.styles.js': ['euiTourStyles', 'euiTourBeaconStyles'],
+  'components/tour/_tour_header.styles.js': ['euiTourHeaderStyles'],
+  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -288,6 +296,16 @@ test('navigation helpers match upstream (step variables, screen reader only, tex
     );
   for (const args of [[], ['160px'], ['none'], ['100%', 'nowrap']])
     assert.equal(styles.euiTextTruncate(...args), euiTextTruncate(...args));
+});
+
+test('misc-display: static expression value styles match upstream', () => {
+  const reference = require(
+    resolve(eui, 'lib/components/expression/expression.styles.js')
+  );
+  assert.deepEqual(
+    normalize(styles.euiExpressionValueStyles),
+    normalize(reference.euiExpressionValueStyles)
+  );
 });
 
 test('generated artifact has no React or upstream hook execution paths', () => {

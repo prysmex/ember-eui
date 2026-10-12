@@ -1,11 +1,18 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
 import { randomId } from '../-private/random-id.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiTextTruncate,
+  euiTreeViewItemStyles,
+  euiTreeViewStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
@@ -58,6 +65,24 @@ export interface EuiTreeViewSignature {
   };
 }
 
+/** Scoped stand-ins for React's global reset; upstream rules follow. */
+const LIST_RESET = { boxSizing: 'border-box', padding: 0 } as const;
+const ITEM_RESET = { boxSizing: 'border-box', margin: 0, padding: 0 } as const;
+const BUTTON_RESET = {
+  boxSizing: 'border-box',
+  margin: 0,
+  padding: 0,
+  border: 'none',
+  background: 'none',
+  color: 'inherit',
+  font: 'inherit',
+  borderRadius: 0,
+  textAlign: 'start',
+  cursor: 'pointer'
+} as const;
+// upstream's `eui-textTruncate` utility class
+const LABEL_TRUNCATE = euiTextTruncate();
+
 function initiallyOpen(items: EuiTreeViewNode[], expandByDefault?: boolean): string[] {
   return items
     .filter((node) => node.children && (expandByDefault || node.isExpanded))
@@ -93,40 +118,95 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
     );
   }
 
-  get isCompressed(): boolean {
-    return this.args.display === 'compressed';
+  get display(): 'default' | 'compressed' {
+    return this.args.display === 'compressed' ? 'compressed' : 'default';
   }
 
+  get isCompressed(): boolean {
+    return this.display === 'compressed';
+  }
+
+  /** Upstream `euiTreeViewStyles`: list reset, nested indent, font size. */
+  @cached
   get classes(): string {
-    return [
-      'euiTreeView',
-      this.isCompressed && 'euiTreeView--compressed',
-      this.args.showExpansionArrows && 'euiTreeView--withArrows'
-    ]
-      .filter(Boolean)
-      .join(' ');
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiTreeViewStyles);
+
+    return `euiTreeView ${euiClass(
+      context,
+      LIST_RESET,
+      styles.euiTreeView,
+      styles[this.display]
+    )}`;
+  }
+
+  @cached
+  get nodeStyles(): { closed: string; expanded: string } {
+    const context = getEuiThemeContext(this);
+    const { li } = useEuiBorealisStyles(context, euiTreeViewItemStyles);
+    const base = [ITEM_RESET, li.euiTreeView__node, li[this.display]];
+
+    return {
+      closed: euiClass(context, ...base),
+      expanded: euiClass(context, ...base, li.expanded)
+    };
+  }
+
+  @cached
+  get buttonStyles(): string {
+    const context = getEuiThemeContext(this);
+    const { button } = useEuiBorealisStyles(context, euiTreeViewItemStyles);
+
+    return euiClass(
+      context,
+      BUTTON_RESET,
+      button.euiTreeView__nodeInner,
+      button[this.display]
+    );
+  }
+
+  /** Icon wrapper and arrow placeholder (upstream `icon` slots). */
+  @cached
+  get iconWrapperStyles(): string {
+    const context = getEuiThemeContext(this);
+    const { icon } = useEuiBorealisStyles(context, euiTreeViewItemStyles);
+
+    return euiClass(context, icon.euiTreeView__iconWrapper, icon[this.display]);
+  }
+
+  @cached
+  get labelStyles(): string {
+    const context = getEuiThemeContext(this);
+
+    return `euiTreeView__nodeLabel eui-textTruncate ${euiClass(context, LABEL_TRUNCATE)}`;
   }
 
   isOpen = (node: EuiTreeViewNode): boolean => this.openItems.includes(node.id);
 
-  nodeClasses = (node: EuiTreeViewNode): string =>
-    [
-      'euiTreeView__node',
-      this.isCompressed && 'euiTreeView--compressed',
-      this.isOpen(node) && 'euiTreeView__node--expanded'
-    ]
-      .filter(Boolean)
-      .join(' ');
+  /** `aria-expanded` only for nodes with children (upstream). */
+  ariaExpanded = (node: EuiTreeViewNode): 'true' | 'false' | undefined =>
+    node.children ? (this.isOpen(node) ? 'true' : 'false') : undefined;
+
+  nodeClasses = (node: EuiTreeViewNode): string => {
+    const expanded = Boolean(node.children) && this.isOpen(node);
+
+    return expanded
+      ? `euiTreeView__node euiTreeView__node--expanded ${this.nodeStyles.expanded}`
+      : `euiTreeView__node ${this.nodeStyles.closed}`;
+  };
 
   buttonClasses = (node: EuiTreeViewNode): string =>
     [
       'euiTreeView__nodeInner',
-      this.args.showExpansionArrows && node.children && 'euiTreeView__nodeInner--withArrows',
+      node.className,
       this.activeItem === node.id && 'euiTreeView__node--active',
-      node.className
+      this.buttonStyles
     ]
       .filter(Boolean)
       .join(' ');
+
+  hasIcon = (node: EuiTreeViewNode): boolean =>
+    Boolean(node.icon || (node.iconWhenExpanded && this.isOpen(node)));
 
   iconOf = (node: EuiTreeViewNode): EuiIconSignature['Args']['type'] =>
     (this.isOpen(node) && node.iconWhenExpanded) || node.icon || 'empty';
@@ -200,57 +280,67 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
   }
 
   <template>
-    <div class="euiText {{if this.isCompressed 'euiText--small' 'euiText--medium'}} euiTreeView__wrapper">
-      {{#unless this.isNested}}
-        <EuiScreenReaderOnly>
-          <p id={{this.instructionsId}}>{{this.instructions}}</p>
-        </EuiScreenReaderOnly>
-      {{/unless}}
-      <ul
-        class={{this.classes}}
-        id={{unless this.isNested this.treeId}}
-        aria-describedby={{unless this.isNested this.instructionsId}}
-        ...attributes
-      >
-        {{#each @items as |node|}}
-          <li class={{this.nodeClasses node}}>
-            <button
-              type="button"
-              id={{node.id}}
-              class={{this.buttonClasses node}}
-              aria-controls={{this.childrenId node}}
-              aria-expanded={{if (this.isOpen node) "true" "false"}}
-              data-test-subj="euiTreeViewButton-{{this.treeId}}"
-              {{on "click" (fn this.onClick node)}}
-              {{on "keydown" (fn this.onKeyDown node)}}
-            >
-              {{#if (and2 @showExpansionArrows node.children)}}
+    {{#unless this.isNested}}
+      <EuiScreenReaderOnly>
+        <p id={{this.instructionsId}}>{{this.instructions}}</p>
+      </EuiScreenReaderOnly>
+    {{/unless}}
+    {{! role="list": VoiceOver drops the list role with list-style none (upstream) }}
+    <ul
+      class={{this.classes}}
+      id={{unless this.isNested this.treeId}}
+      aria-describedby={{unless this.isNested this.instructionsId}}
+      role="list"
+      ...attributes
+    >
+      {{#each @items as |node|}}
+        <li class={{this.nodeClasses node}}>
+          <button
+            type="button"
+            id={{node.id}}
+            class={{this.buttonClasses node}}
+            aria-controls={{if node.children (this.childrenId node)}}
+            aria-expanded={{this.ariaExpanded node}}
+            data-test-subj="euiTreeViewButton-{{this.treeId}}"
+            {{on "click" (fn this.onClick node)}}
+            {{on "keydown" (fn this.onKeyDown node)}}
+          >
+            {{#if @showExpansionArrows}}
+              {{#if node.children}}
                 <EuiIcon
                   class="euiTreeView__expansionArrow"
                   @size={{if this.isCompressed "s" "m"}}
                   @type={{if (this.isOpen node) "arrowDown" "arrowRight"}}
                 />
+              {{else}}
+                <span
+                  class="euiTreeView__arrowPlaceholder {{this.iconWrapperStyles}}"
+                ></span>
               {{/if}}
-              {{#if node.icon}}
-                <span class="euiTreeView__iconWrapper">
-                  <EuiIcon @type={{this.iconOf node}} />
-                </span>
-              {{else if node.useEmptyIcon}}
-                <span class="euiTreeView__iconPlaceholder"></span>
-              {{/if}}
-              <span class="euiTreeView__nodeLabel">
-                {{~#if (has-block "label")~}}
-                  {{yield node to="label"}}
-                {{~else~}}
-                  {{node.label}}
-                {{~/if~}}
+            {{/if}}
+            {{#if (this.hasIcon node)}}
+              <span class="euiTreeView__iconWrapper {{this.iconWrapperStyles}}">
+                <EuiIcon @type={{this.iconOf node}} />
               </span>
-            </button>
+            {{else if node.useEmptyIcon}}
+              <span
+                class="euiTreeView__iconWrapper {{this.iconWrapperStyles}}"
+              ></span>
+            {{/if}}
+            <span class={{this.labelStyles}}>
+              {{~#if (has-block "label")~}}
+                {{yield node to="label"}}
+              {{~else~}}
+                {{node.label}}
+              {{~/if~}}
+            </span>
+          </button>
+          {{#if node.children}}
             <div
               id={{this.childrenId node}}
               {{on "keydown" (fn this.onChildrenKeyDown node)}}
             >
-              {{#if (and2 node.children (this.isOpen node))}}
+              {{#if (this.isOpen node)}}
                 <EuiTreeView
                   @items={{childrenOf node}}
                   @display={{@display}}
@@ -269,17 +359,13 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
                 </EuiTreeView>
               {{/if}}
             </div>
-          </li>
-        {{/each}}
-      </ul>
-    </div>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
   </template>
 }
 
 function childrenOf(node: EuiTreeViewNode): EuiTreeViewNode[] {
   return node.children ?? [];
-}
-
-function and2(a: unknown, b: unknown): boolean {
-  return Boolean(a && b);
 }

@@ -1,16 +1,22 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
+import cssStyle from '../-private/css-style.ts';
+import { EuiTourFooter, EuiTourHeader } from '../-private/eui-tour-parts.gts';
 import { randomId } from '../-private/random-id.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiTourBeaconStyles,
+  euiTourStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiBeacon from './eui-beacon.gts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiPopover from './eui-popover.gts';
-import EuiPopoverFooter from './eui-popover-footer.gts';
-import EuiPopoverTitle from './eui-popover-title.gts';
-import EuiTitle from './eui-title.gts';
 import EuiTourStepIndicator from './eui-tour-step-indicator.gts';
 
 import type EuiI18n from '../services/eui-i18n';
@@ -87,6 +93,15 @@ export interface EuiTourStepSignature {
 
 type Status = 'complete' | 'active' | 'incomplete';
 
+const POSITIONS = ['top', 'right', 'bottom', 'left'] as const;
+
+/** Scoped list reset for the progress dots (no React global reset). */
+const STEP_LIST_RESET = {
+  listStyle: 'none',
+  margin: 0,
+  padding: 0
+} as const;
+
 export default class EuiTourStep extends Component<EuiTourStepSignature> {
   @service declare euiI18n: EuiI18n;
 
@@ -132,10 +147,60 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
     return (this.args.decoration ?? 'beacon') === 'beacon';
   }
 
-  get panelStyle(): Record<string, string> {
+  /** Upstream: `minWidth`/`maxWidth` as logical sizes on the content wrapper. */
+  get widthStyle() {
     const minWidth = this.args.minWidth ?? this.args.tour?.tourPopoverWidth ?? 300;
 
-    return { minWidth: `${minWidth}px`, maxWidth: `${this.args.maxWidth ?? 600}px` };
+    return cssStyle({
+      minInlineSize: minWidth,
+      maxInlineSize: this.args.maxWidth ?? 600
+    });
+  }
+
+  /**
+   * Upstream `euiTourStyles` (arrow background matching the footer). It only
+   * holds a rule for the arrow inside the panel, so it never competes with
+   * the panel's own class.
+   */
+  @cached
+  get panelClassName(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiTourStyles);
+
+    return `euiTour ${euiClass(context, styles.euiTour)}`;
+  }
+
+  /**
+   * Upstream `euiTourBeaconStyles` on a wrapper around EuiBeacon (no
+   * `@css` on it yet). The position slot follows the popover's actual
+   * position through the preceding arrow's `data-popover-arrow` (upstream
+   * reads it from `onPositionChange`).
+   */
+  @cached
+  get beaconClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiTourBeaconStyles);
+    const positions = Object.fromEntries(
+      POSITIONS.map((position) => [
+        `[data-popover-arrow='${position}'] ~ &`,
+        styles[position]
+      ])
+    );
+
+    return `euiTour__beaconWrapper ${euiClass(
+      context,
+      styles.euiTourBeacon,
+      this.isOpen && styles.isOpen,
+      positions
+    )}`;
+  }
+
+  @cached
+  get stepListClass(): string {
+    return `euiTourFooter__stepList ${euiClass(
+      getEuiThemeContext(this),
+      STEP_LIST_RESET
+    )}`;
   }
 
   get statuses(): { number: number; status: Status }[] {
@@ -146,7 +211,8 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
   }
 
   get finishLabel(): string {
-    const t = (token: string, text: string) => this.euiI18n.lookupToken(`euiTourStep.${token}`, text);
+    const t = (token: string, text: string) =>
+      this.euiI18n.lookupToken(`euiTourFooter.${token}`, text);
 
     if (this.stepsTotal > 1) {
       return this.stepsTotal === this.step ? t('endTour', 'End tour') : t('skipTour', 'Skip tour');
@@ -165,12 +231,12 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
 
   <template>
     <EuiPopover
+      class="euiTourAnchor"
       @isOpen={{this.isOpen}}
       @closePopover={{this.close}}
       @anchorPosition={{this.anchorPosition}}
       @ownFocus={{false}}
-      @panelClassName="euiTour"
-      @panelStyle={{this.panelStyle}}
+      @panelClassName={{this.panelClassName}}
       @hasArrow={{this.hasBeacon}}
       @offset={{if this.hasBeacon 10}}
       @ariaLabelledBy={{this.titleId}}
@@ -179,53 +245,62 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
       <:button>{{yield}}</:button>
       <:arrowChildren>
         {{#if this.hasBeacon}}
-          <EuiBeacon class="euiTour__beacon" />
+          <div class={{this.beaconClasses}}>
+            <EuiBeacon class="euiTour__beacon" />
+          </div>
         {{/if}}
       </:arrowChildren>
       <:content>
-        <EuiPopoverTitle class="euiTourHeader" id={{this.titleId}}>
-          {{#if this.subtitle}}
-            <EuiTitle class="euiTourHeader__subtitle" @size="xxxs" @tagName="h2">{{this.subtitle}}</EuiTitle>
-            <EuiTitle class="euiTourHeader__title" @size="xxs" @tagName="h3">{{this.title}}</EuiTitle>
-          {{else}}
-            <EuiTitle class="euiTourHeader__title" @size="xxs" @tagName="h2">{{this.title}}</EuiTitle>
-          {{/if}}
-        </EuiPopoverTitle>
-        <div class="euiTour__content">
-          {{#if (has-block "content")}}
-            {{yield to="content"}}
-          {{else}}
-            {{this.content}}
-          {{/if}}
-        </div>
-        <EuiPopoverFooter class="euiTourFooter">
-          <EuiFlexGroup
-            @responsive={{false}}
-            @justifyContent={{if (isMany this.stepsTotal) "spaceBetween" "flexEnd"}}
-          >
-            {{#if (isMany this.stepsTotal)}}
-              <EuiFlexItem @grow={{false}}>
-                <ul class="euiTourFooter__stepList">
-                  {{#each this.statuses as |indicator|}}
-                    <EuiTourStepIndicator @number={{indicator.number}} @status={{indicator.status}} />
-                  {{/each}}
-                </ul>
-              </EuiFlexItem>
+        <div style={{this.widthStyle}}>
+          <EuiTourHeader
+            id={{this.titleId}}
+            @title={{this.title}}
+            @subtitle={{this.subtitle}}
+          />
+          <div class="euiTour__content">
+            {{#if (has-block "content")}}
+              {{yield to="content"}}
+            {{else}}
+              {{this.content}}
             {{/if}}
-            <EuiFlexItem @grow={{false}}>
-              {{#if (has-block "footerAction")}}
-                {{yield to="footerAction"}}
-              {{else}}
-                <EuiButtonEmpty
-                  @color="text"
-                  @flush="right"
-                  @size="xs"
-                  {{on "click" this.finish}}
-                >{{this.finishLabel}}</EuiButtonEmpty>
+          </div>
+          <EuiTourFooter>
+            <EuiFlexGroup
+              @responsive={{false}}
+              @alignItems="center"
+              @justifyContent={{if
+                (isMany this.stepsTotal)
+                "spaceBetween"
+                "flexEnd"
+              }}
+            >
+              {{#if (isMany this.stepsTotal)}}
+                <EuiFlexItem @grow={{false}}>
+                  <ul class={{this.stepListClass}}>
+                    {{~#each this.statuses as |indicator|~}}
+                      <EuiTourStepIndicator
+                        @number={{indicator.number}}
+                        @status={{indicator.status}}
+                      />
+                    {{~/each~}}
+                  </ul>
+                </EuiFlexItem>
               {{/if}}
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiPopoverFooter>
+              <EuiFlexItem @grow={{false}}>
+                {{#if (has-block "footerAction")}}
+                  {{yield to="footerAction"}}
+                {{else}}
+                  <EuiButtonEmpty
+                    @color="text"
+                    @flush="right"
+                    @size="xs"
+                    {{on "click" this.finish}}
+                  >{{this.finishLabel}}</EuiButtonEmpty>
+                {{/if}}
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiTourFooter>
+        </div>
       </:content>
     </EuiPopover>
   </template>

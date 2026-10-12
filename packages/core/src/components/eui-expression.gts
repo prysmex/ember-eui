@@ -1,20 +1,41 @@
-import { hash } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
-
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiExpressionDescriptionStyles,
+  euiExpressionIconStyles,
+  euiExpressionStyles,
+  euiExpressionValueStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { CSSInterpolation } from '@emotion/css/create-instance';
 
-const COLORS = {
-  subdued: 'euiExpression--subdued',
-  primary: 'euiExpression--primary',
-  success: 'euiExpression--success',
-  accent: 'euiExpression--accent',
-  warning: 'euiExpression--warning',
-  danger: 'euiExpression--danger'
-};
+export const EXPRESSION_COLORS = [
+  'subdued',
+  'primary',
+  'success',
+  'accent',
+  'warning',
+  'danger'
+] as const;
+
+export type EuiExpressionColor = (typeof EXPRESSION_COLORS)[number];
+
+/** Scoped button reset (no React global reset); upstream rules follow. */
+const BUTTON_RESET = {
+  boxSizing: 'border-box',
+  margin: 0,
+  border: 'none',
+  background: 'none',
+  fontSize: 'inherit'
+} as const;
+
+const SPAN_RESET = { boxSizing: 'border-box' } as const;
 
 /**
  * One part of a sentence-like query or rule, e.g. **WHEN** `avg()` or
@@ -59,75 +80,121 @@ export interface EuiExpressionSignature {
   };
 }
 
-function classes(
-  color: keyof typeof COLORS = 'success',
-  isInvalid?: boolean,
-  isActive?: boolean,
-  clickable?: boolean,
-  uppercase = true,
-  display?: string,
-  textWrap?: string
-): string {
-  return [
-    'euiExpression',
-    isActive && 'euiExpression-isActive',
-    clickable && 'euiExpression-isClickable',
-    uppercase && 'euiExpression-isUppercase',
-    display === 'columns' && 'euiExpression--columns',
-    COLORS[isInvalid ? 'danger' : color],
-    textWrap === 'truncate' && 'euiExpression--truncate'
-  ]
-    .filter(Boolean)
-    .join(' ');
-}
-
 function noop(): void {}
 
-const EuiExpression: TemplateOnlyComponent<EuiExpressionSignature> = <template>
-  {{#let (element (if @onClick "button" "span")) as |Tag|}}
-    <Tag
-      class={{classes
-        @color
-        @isInvalid
-        @isActive
-        (if @onClick true false)
-        @uppercase
-        @display
-        @textWrap
-      }}
-      type={{if @onClick "button"}}
-      {{on "click" (if @onClick @onClick noop)}}
-      ...attributes
-    >
-      <span
-        class="euiExpression__description"
-        style={{if
-          (isColumns @display)
-          (cssStyle
-            (hash flexBasis=(if @descriptionWidth @descriptionWidth "20%"))
-          )
-        }}
+export default class EuiExpression extends Component<EuiExpressionSignature> {
+  get color(): EuiExpressionColor {
+    const color = this.args.color;
+
+    return color && (EXPRESSION_COLORS as readonly string[]).includes(color)
+      ? color
+      : 'success';
+  }
+
+  get isColumns(): boolean {
+    return this.args.display === 'columns';
+  }
+
+  get isTruncate(): boolean {
+    return this.args.textWrap === 'truncate';
+  }
+
+  /** Upstream root: `button` when clickable, else `span`. */
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiExpressionStyles);
+    const color = this.color;
+    const clickable = Boolean(this.args.onClick);
+    const parts: CSSInterpolation[] = [
+      clickable ? BUTTON_RESET : SPAN_RESET,
+      styles.euiExpression,
+      clickable && styles.isClickable,
+      styles[color],
+      this.args.isActive && styles.isActive.base,
+      this.args.isActive && styles.isActive[color],
+      this.isColumns && styles.columns,
+      this.isTruncate && styles.truncate
+    ];
+
+    return `euiExpression ${euiClass(context, ...parts)}`;
+  }
+
+  @cached
+  get descriptionClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiExpressionDescriptionStyles);
+
+    return `euiExpression__description ${euiClass(
+      context,
+      styles.euiExpression__description,
+      this.args.isInvalid ? styles.danger : styles[this.color],
+      (this.args.uppercase ?? true) && styles.isUppercase,
+      this.isTruncate && styles.truncate,
+      this.isColumns && styles.columns
+    )}`;
+  }
+
+  @cached
+  get valueClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = euiExpressionValueStyles;
+
+    return `euiExpression__value ${euiClass(
+      context,
+      styles.euiExpression__value,
+      this.isTruncate && styles.truncate,
+      this.isColumns && styles.columns
+    )}`;
+  }
+
+  /** Composed into EuiIcon's own class through `@css`. */
+  @cached
+  get iconCss(): CSSInterpolation {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiExpressionIconStyles);
+
+    return [styles.euiExpression__icon, this.isColumns && styles.columns];
+  }
+
+  get descriptionStyle() {
+    return this.isColumns
+      ? cssStyle({ flexBasis: this.args.descriptionWidth ?? '20%' })
+      : undefined;
+  }
+
+  <template>
+    {{#let (element (if @onClick "button" "span")) as |Tag|}}
+      <Tag
+        class={{this.classes}}
+        type={{if @onClick "button"}}
+        {{on "click" (if @onClick @onClick noop)}}
+        ...attributes
       >
-        {{~#if (has-block "description")~}}
-          {{yield to="description"}}
-        {{~else~}}
-          {{@description}}
-        {{~/if~}}
-      </span>
-      {{#if (has-block "value")}}
-        <span class="euiExpression__value">{{yield to="value"}}</span>
-      {{else if @value}}
-        <span class="euiExpression__value">{{@value}}</span>
-      {{/if}}
-      {{#if @isInvalid}}
-        <EuiIcon class="euiExpression__icon" @type="alert" @color="danger" />
-      {{/if}}
-    </Tag>
-  {{/let}}
-</template>;
-
-function isColumns(display?: string): boolean {
-  return display === 'columns';
+        <span
+          class={{this.descriptionClasses}}
+          style={{this.descriptionStyle}}
+        >
+          {{~#if (has-block "description")~}}
+            {{yield to="description"}}
+          {{~else~}}
+            {{@description}}
+          {{~/if~}}
+        </span>
+        {{#if (has-block "value")}}
+          <span class={{this.valueClasses}}>{{yield to="value"}}</span>
+        {{else if @value}}
+          <span class={{this.valueClasses}}>{{@value}}</span>
+        {{/if}}
+        {{#if @isInvalid}}
+          <EuiIcon
+            class="euiExpression__icon"
+            @type="alert"
+            @color="danger"
+            @css={{this.iconCss}}
+          />
+        {{/if}}
+      </Tag>
+    {{/let}}
+  </template>
 }
-
-export default EuiExpression;

@@ -181,7 +181,15 @@ const entries = {
   'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
   'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
   'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
-  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles']
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  // misc-display
+  'components/tree_view/tree_view.styles.js': ['euiTreeViewStyles'],
+  'components/tree_view/tree_view_item.styles.js': ['euiTreeViewItemStyles'],
+  'components/text_diff/text_diff.styles.js': ['euiTextDiffStyles'],
+  'components/expression/expression.styles.js': ['euiExpressionStyles', 'euiExpressionDescriptionStyles', 'euiExpressionValueStyles', 'euiExpressionIconStyles'],
+  'components/tour/tour.styles.js': ['euiTourStyles', 'euiTourBeaconStyles'],
+  'components/tour/_tour_header.styles.js': ['euiTourHeaderStyles'],
+  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

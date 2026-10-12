@@ -1,6 +1,9 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { service } from '@ember/service';
 
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass } from '../utils/eui/styles.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type EuiI18n from '../services/eui-i18n';
@@ -15,6 +18,15 @@ export interface EuiTourStepIndicatorSignature {
     status?: 'complete' | 'active' | 'incomplete';
   };
 }
+
+/** Upstream's static indicator style, plus a scoped list item reset. */
+const INDICATOR = {
+  boxSizing: 'border-box',
+  margin: 0,
+  padding: 0,
+  display: 'inline-block',
+  label: 'EuiTourStepIndicator'
+} as const;
 
 export default class EuiTourStepIndicator extends Component<EuiTourStepIndicatorSignature> {
   @service declare euiI18n: EuiI18n;
@@ -38,19 +50,27 @@ export default class EuiTourStepIndicator extends Component<EuiTourStepIndicator
     return undefined;
   }
 
+  @cached
   get classes(): string {
-    return this.args.status
-      ? `euiTourStepIndicator euiTourStepIndicator--${this.args.status}`
-      : 'euiTourStepIndicator';
+    return `euiTourStepIndicator ${euiClass(getEuiThemeContext(this), INDICATOR)}`;
+  }
+
+  /** Upstream: theme `tourStepIndicatorActiveColor` / `…InactiveColor`. */
+  @cached
+  get iconColor(): string {
+    const { components } = getEuiThemeContext(this).upstream.euiTheme;
+
+    return this.args.status === 'active'
+      ? components.tourStepIndicatorActiveColor
+      : components.tourStepIndicatorInactiveColor;
   }
 
   <template>
     <li class={{this.classes}} aria-label={{this.label}} ...attributes>
       {{#if this.iconLabel}}
         <EuiIcon
-          class="euiStepNumber__icon"
           @type="dot"
-          @color={{if (isActive @status) "success" "subdued"}}
+          @color={{this.iconColor}}
           aria-label={{this.iconLabel}}
           aria-current={{if (isActive @status) "step"}}
         />

@@ -1,5 +1,7 @@
 import type EuiAccordion from './components/eui-accordion';
 import type EuiAutoSizer from './components/eui-auto-sizer';
+import type EuiAutoRefresh from './components/eui-auto-refresh';
+import type EuiAutoRefreshButton from './components/eui-auto-refresh-button';
 import type EuiAvatar from './components/eui-avatar';
 import type EuiBadge from './components/eui-badge';
 import type EuiBadgeGroup from './components/eui-badge-group';
@@ -45,6 +47,8 @@ import type EuiFlyout from './components/eui-flyout';
 import type EuiFlyoutBody from './components/eui-flyout-body';
 import type EuiFlyoutFooter from './components/eui-flyout-footer';
 import type EuiFlyoutHeader from './components/eui-flyout-header';
+import type EuiFlyoutMenu from './components/eui-flyout-menu';
+import type EuiFlyoutResizable from './components/eui-flyout-resizable';
 import type EuiForm from './components/eui-form';
 import type EuiFormControlLayout from './components/eui-form-control-layout';
 import type EuiFormControlLayoutDelimited from './components/eui-form-control-layout-delimited';
@@ -253,6 +257,10 @@ export default interface EmberEuiRegistry {
   'eui-accordion': typeof EuiAccordion;
   EuiAutoSizer: typeof EuiAutoSizer;
   'eui-auto-sizer': typeof EuiAutoSizer;
+  EuiAutoRefresh: typeof EuiAutoRefresh;
+  'eui-auto-refresh': typeof EuiAutoRefresh;
+  EuiAutoRefreshButton: typeof EuiAutoRefreshButton;
+  'eui-auto-refresh-button': typeof EuiAutoRefreshButton;
   EuiAvatar: typeof EuiAvatar;
   'eui-avatar': typeof EuiAvatar;
   EuiBadge: typeof EuiBadge;
@@ -341,6 +349,10 @@ export default interface EmberEuiRegistry {
   'eui-flyout-footer': typeof EuiFlyoutFooter;
   EuiFlyoutHeader: typeof EuiFlyoutHeader;
   'eui-flyout-header': typeof EuiFlyoutHeader;
+  EuiFlyoutMenu: typeof EuiFlyoutMenu;
+  'eui-flyout-menu': typeof EuiFlyoutMenu;
+  EuiFlyoutResizable: typeof EuiFlyoutResizable;
+  'eui-flyout-resizable': typeof EuiFlyoutResizable;
   EuiForm: typeof EuiForm;
   'eui-form': typeof EuiForm;
   EuiFormControlLayout: typeof EuiFormControlLayout;

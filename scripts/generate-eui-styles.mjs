@@ -301,7 +301,9 @@ const entries = {
   'components/skeleton/skeleton_title.styles.js': ['euiSkeletonTitleStyles'],
   'components/skeleton/skeleton_circle.styles.js': ['euiSkeletonCircleStyles'],
   'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
-  'components/illustration/illustration.styles.js': ['euiIllustrationStyles']
+  'components/illustration/illustration.styles.js': ['euiIllustrationStyles'],
+  // new-refresh-flyout
+  'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

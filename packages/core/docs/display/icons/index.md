@@ -91,6 +91,7 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@type` (required) | `IconType` |  | `Enum` is any of the named icons listed in the docs, `string` is usually a URL to an SVG file, and `elementType` is any Ember Icon SVG component |
 | `@color` | `IconColor` |  | One of EUI's named colors (`'default'`, `'primary'`, `'neutral'`, `'success'`, `'accent'`, `'accentSecondary'`, `'warning'`, `'risk'`, `'danger'`, `'text'`, `'subdued'`, `'ghost'`, `'inherit'`) or a valid CSS color value https://developer.mozilla.org/en-US/docs/Web/CSS/color_value. Without a color, the icon uses the inherited text color. Note that coloring only works if your SVG is removed of fill attributes. |
 | `@size` | `IconSize` | `'m'` | `'s'` (12px), `'m'` (16px), `'l'` (24px), `'xl'` (32px), `'xxl'` (40px) or `'original'` (the svg's own width and height). Note that every size other than `original` assumes the provided SVG sits on a square viewbox. |

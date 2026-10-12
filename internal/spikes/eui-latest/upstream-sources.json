@@ -83,6 +83,18 @@
       "sha256": "a32b2d2512f382b320633feae1806d4cf6f706e377e90f457f8dc99554dd3160"
     },
     {
+      "path": "@elastic/eui/es/components/card/card_select/card_select.styles.js",
+      "sha256": "d009ac4975e65bd93ee9e7147a002186826004427a3fb75f31284d6f96aea95a"
+    },
+    {
+      "path": "@elastic/eui/es/components/card/card.styles.js",
+      "sha256": "0feebdc70ac7bcb0837a144577b72e8f2756fd9d8d4ab1ab64f32020bf271f90"
+    },
+    {
+      "path": "@elastic/eui/es/components/card/checkable_card/checkable_card.styles.js",
+      "sha256": "95c585c4699d655f74047c84293ff9cc433e07c7aaa2354a57164ebd0d4350af"
+    },
+    {
       "path": "@elastic/eui/es/components/code/code_syntax.styles.js",
       "sha256": "dc198bf65eef50a9ac8d2ef2bde3c1cd952e118a647442f497906f7352a107eb"
     },
@@ -309,6 +321,10 @@
     {
       "path": "@elastic/eui/es/components/panel/panel.styles.js",
       "sha256": "7ecc94047e65d421eba7d71354ea01bf3573e1a4878b6cf681808fdebd3270f0"
+    },
+    {
+      "path": "@elastic/eui/es/components/panel/split_panel/split_panel.styles.js",
+      "sha256": "c160f3c11f42533c5a1f3d2a1e0cc3542da92e02b407e089758cce76f5935b59"
     },
     {
       "path": "@elastic/eui/es/components/progress/progress.styles.js",

@@ -139,7 +139,12 @@ const entries = {
   'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
   'components/steps/step_horizontal.styles.js': ['euiStepHorizontalStyles', 'euiStepHorizontalNumberStyles', 'euiStepHorizontalTitleStyles'],
   'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
-  'global_styling/mixins/_typography.js': ['euiTextTruncate']
+  'global_styling/mixins/_typography.js': ['euiTextTruncate'],
+  // cards
+  'components/card/card.styles.js': ['euiCardStyles', 'euiCardTextStyles', 'euiCardBetaBadgeStyles'],
+  'components/card/card_select/card_select.styles.js': ['euiCardSelectStyles'],
+  'components/card/checkable_card/checkable_card.styles.js': ['euiCheckableCardStyles'],
+  'components/panel/split_panel/split_panel.styles.js': ['euiSplitPanelOuterStyles', 'euiSplitPanelInnerStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

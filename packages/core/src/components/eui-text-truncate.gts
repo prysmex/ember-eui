@@ -87,6 +87,14 @@ const container = modifier(
   }
 );
 
+/** The `EuiToolTip` arguments `@toolTipProps` accepts. */
+export type EuiTextTruncateToolTipProps = Partial<
+  Pick<
+    EuiTooltipArgs,
+    'position' | 'delay' | 'title' | 'content' | 'offset' | 'className' | 'css'
+  >
+>;
+
 export interface EuiTextTruncateSignature {
   Element: HTMLDivElement;
   Args: {
@@ -132,12 +140,7 @@ export interface EuiTextTruncateSignature {
      * Tooltip showing the full text while truncating: `position`, `delay`,
      * `title`, `content`, `offset`, `className` and `css` of `EuiToolTip`.
      */
-    toolTipProps?: Partial<
-      Pick<
-        EuiTooltipArgs,
-        'position' | 'delay' | 'title' | 'content' | 'offset' | 'className' | 'css'
-      >
-    >;
+    toolTipProps?: EuiTextTruncateToolTipProps;
     /**
      * Extra styles composed last into this component's class (like upstream's
      * `css` prop). Prefer this to an extra class when styling it from a parent.

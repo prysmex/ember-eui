@@ -704,7 +704,10 @@ module('Integration | Component | Borealis header family', function (hooks) {
     assert.dom('[data-test-toggle]').hasAttribute('aria-expanded', 'true').hasAttribute('aria-pressed', 'true');
     assert.dom('#main-nav', document.body).hasTagName('nav').hasClass('euiCollapsibleNav').hasClass('euiFlyout');
     assert.dom('#main-nav [data-test-content]', document.body).hasText('Links');
-    assert.strictEqual(css('#main-nav').zIndex, String(light.levels.navigation), 'overlay uses levels.navigation');
+    // Upstream's flyout writes its z-index inline, which wins over the
+    // collapsible nav's `levels.navigation` class, so the overlay nav sits
+    // at the flyout level, as in React.
+    assert.strictEqual(css('#main-nav').zIndex, String(light.levels.flyout), 'overlay sits at the flyout level (upstream inline z-index)');
     assert.dom('#main-nav [data-test-subj="euiFlyoutCloseButton"]', document.body).exists('overlay keeps the close button');
 
     await triggerEvent(document.querySelector('#main-nav')!, 'keydown', { key: 'Escape' });

@@ -34,11 +34,13 @@ Coordinator loop per finished agent:
 2. Check new code follows the perf rules (all style getters `@cached`, factories only via `useEuiBorealisStyles`) and `@css` for migrated children.
 3. Run the full core suite in the main checkout (don't edit sources while its vite build runs); fix cross-family interactions; commit; remove the worktree and branch; start the next family in the freed slot.
 
-In flight / pending at this point (updated after the usage-limit pause):
-- Running agents: overlays (popover/tooltip/context menu), modal-flyout, header, cards (+split panel), feedback (accordion/toast/comments/notifications) — all resumed after the API limit with their uncommitted worktree work intact — and buttons-misc (button group/content, facet, filter).
-- Merged so far: text, batch 2 (link, badges, flex, button empty/icon), wave 1 (icon, forms layout, form controls, checkables, page layout, utilities), content blocks, navigation, lists. Main core suite 796/796 at `087ed3ad`.
-- Merge tooling lives in the scratchpad: `wave-merge.sh <family>` (merge + resolve + regenerate + parity), `merge_lists.py`, `rows.py`, `dupkeys.mjs`, `mkwt.sh <family>`.
-- Next families after the running ones: tree view, text diff, expression, tour; resizable container + drag/drop; selectable (+template sitewide) and suggest; combo box; super select; date pickers + super date picker; range/dual range; color picker/palette; markdown editor/format; code block; table family.
+In flight / pending at this point (updated 2026-10-12, later check-in):
+- Running agents: feedback (accordion/toast/comments/notifications), buttons-misc (button group/content, facet, filter), misc-display (tree view, text diff, expression, tour), resizable-dnd (resizable container, drag and drop), selectable (+ suggest).
+- Merged since last update: lists, header, modal-flyout, overlays, cards. Main core suite 858/858. All rows that were In progress are now Migrated.
+- Leftovers to review: worktree `wt/icons-refresh` (branch `eui-wave/icons-refresh`, no commits) holds an uncoordinated icon-asset refresh by the earlier icon agent (632 SVGs + 31 components + `icon-assets-handoff.md`) — evaluate as its own family after current waves; do not merge blindly. Two agent stashes (`WIP on eui-wave/overlays`, `RECOVER eui-wave/header work`) duplicate merged work and can be dropped; the user's own older stashes must stay. Agents must never use `git stash` (shared across worktrees).
+- `@css` follow-ups: modal/flyout close buttons still use wrapper spans (`closeIconCss`, `closeButtonPositionCss`, `closeButtonLookCss` getters ready); context menu item icons (`align-self`, spinner); EuiButton/EuiText/EuiBetaBadge/EuiButtonEmpty/EuiTitle/EuiPopover/EuiFlyout lack `@css` (some callers use `&&` doubled specificity meanwhile).
+- Merge tooling lives in the scratchpad: `wave-merge.sh <family>`, `merge_lists.py`, `rows.py`, `dupkeys.mjs`, `mkwt.sh <family>`.
+- Next families after the running ones: combo box; super select; date pickers + super date picker; range/dual range; color picker/palette; markdown editor/format; code block; table family.
 - Open user decision: whether forms move focus to the error callout when invalid (upstream does).
 - Cleanup later: unused `utils/css-mappings/*` files, docs demo visual pass, release notes for changed defaults.
 

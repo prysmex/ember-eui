@@ -647,4 +647,56 @@ module('Integration | Component | Borealis text family', function (hooks) {
     await clearRender();
     assert.dom('.euiTitle, .euiText, .euiTextColor').doesNotExist('teardown');
   });
+
+  test('provider wrapper gives inherited text its own mode color; opt-out renders no element', async function (assert) {
+    class State {
+      @tracked mode: EuiColorMode = 'dark';
+    }
+    const state = new State();
+    await render(
+      <template>
+        <div style="color: rgb(1, 2, 3)">
+          <EuiEmotionProvider @colorMode={{state.mode}} data-wrapper>
+            <EuiText data-dark-text><p>Body</p><h3>Heading</h3></EuiText>
+          </EuiEmotionProvider>
+          <EuiEmotionProvider @colorMode="dark" @wrapper={{false}}>
+            <EuiText data-unwrapped>Inherits page</EuiText>
+          </EuiEmotionProvider>
+        </div>
+      </template>
+    );
+    assert.dom('[data-wrapper]').hasTagName('span').hasClass('euiThemeProvider');
+    assert.strictEqual(
+      style(this.element, '[data-dark-text]').color,
+      rgb(dark.colors.textParagraph),
+      'EuiText inherits the dark paragraph color'
+    );
+    assert.strictEqual(
+      style(this.element, '[data-dark-text] h3').color,
+      rgb(dark.colors.textParagraph),
+      'prose headings inherit too, as upstream'
+    );
+    assert.strictEqual(
+      style(this.element, '[data-unwrapped]').color,
+      'rgb(1, 2, 3)',
+      'wrapper=false leaves inheritance to the page'
+    );
+    assert.strictEqual(
+      this.element.querySelector('[data-unwrapped]')!.parentElement!.tagName,
+      'DIV',
+      'no wrapper element when opted out'
+    );
+    const wrapper = this.element.querySelector('[data-wrapper]');
+    state.mode = 'light';
+    await settled();
+    assert.strictEqual(
+      this.element.querySelector('[data-wrapper]'),
+      wrapper,
+      'mode change keeps the wrapper'
+    );
+    assert.strictEqual(
+      style(this.element, '[data-dark-text]').color,
+      rgb(light.colors.textParagraph)
+    );
+  });
 });

@@ -52,14 +52,11 @@ Failures fixed during the runs:
 
 ## Unresolved
 
-1. **Wrapperless provider and inherited color.** EuiEmotionProvider renders no element, so EuiText's upstream `color: inherit` takes whatever color the page sets, even inside a dark island. React's nested EuiThemeProvider sets the text color on a wrapper.
-   - Context-derived parts are still isolated: links, blockquote, code, kbd, EuiTitle and EuiTextColor.
-   - Plain EuiText body text in a dark island needs a surface that sets the color (Panel, or a page-level root).
-   - This needs a provider/root decision (owner: root agent). It shouldn't be patched per component.
+1. ~~Wrapperless provider and inherited color.~~ **Resolved 2026-10-12:** EuiEmotionProvider now wraps its content in `<span class="euiThemeProvider">` with the resolved `textParagraph` color, as upstream's nested provider does. This is on by default (user decision); `@wrapper={{false}}` opts out where an extra element would break flex/grid layout. Attributes are forwarded to the span. Covered by the text-family test "provider wrapper gives inherited text its own mode color".
 2. Unmigrated callers that render EuiText/EuiTitle (Card, CallOut, EmptyPrompt, PageHeader, Stat, Toast, etc.) now get Borealis typography. On legacy docs pages that still load Amsterdam CSS, `.euiText`/`.euiTitle` vendor rules also apply. Audit visually when those callers migrate.
 3. The `ghost` demo (`text/demo/d02-coloring-text.md`) is white `!important` and readable only on dark surfaces. Check it visually.
 4. Upstream `kbd` and `euiCodeBlock` selectors inside EuiText assume the future CodeBlock port uses the upstream class names.
-5. **Provider finding:** passing a template `(hash …)` to `@borealisOverrides` crashes upstream `buildTheme` with `key.hasOwnProperty is not a function`. Ember's `hash` creates a prototype-less object, and upstream calls `.hasOwnProperty` on override values. JS objects work, which is what the tests use. The fix belongs in the shared provider/theme utility (normalize overrides before `buildTheme`). Owner: root agent.
+5. ~~Provider finding~~ **Resolved in cebf6dbc:** passing a template `(hash …)` to `@borealisOverrides` crashes upstream `buildTheme` with `key.hasOwnProperty is not a function`. Ember's `hash` creates a prototype-less object, and upstream calls `.hasOwnProperty` on override values. JS objects work, which is what the tests use. The fix belongs in the shared provider/theme utility (normalize overrides before `buildTheme`). Owner: root agent.
 6. Root still has to run the full core suite, the core build, and the site build/acceptance tests sequentially (they share output). Also needed: browser checks of forced-colors and the RTL emulation in the showcase.
 
 ## Next step

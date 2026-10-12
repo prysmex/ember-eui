@@ -1,24 +1,24 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
+import { guidFor } from '@ember/object/internals';
 
-import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import { and, eq, or } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id.ts';
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import typeOf from '../helpers/type-of.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiTitleStyles } from '../utils/eui/styles.generated.ts';
 import EuiLink from './eui-link.gts';
 import EuiNotificationEventMessages from './eui-notification-event-messages.gts';
 import EuiNotificationEventMeta from './eui-notification-event-meta.gts';
 import EuiNotificationEventReadButton from './eui-notification-event-read-button.gts';
 import EuiNotificationEventReadIcon from './eui-notification-event-read-icon.gts';
-import TextBlock from './text-block.gts';
 
 import type { EuiBadgeSignature } from './eui-badge';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiNotificationEventMessagesSignature } from './eui-notification-event-messages';
 import type { TextBlockSignature } from './text-block';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /**
  * One notification in a list (e.g. a flyout from the header): title,
@@ -37,7 +37,8 @@ export interface EuiNotificationEventSignature {
     hasPrimaryActionBlock?: boolean;
     /**
      * Read state. When a boolean, shows a read indicator (a button with
-     * `@onRead`, otherwise an icon); leave it undefined to show none.
+     * `@onRead`, otherwise an icon) and makes unread titles bold; leave it
+     * undefined to show none.
      */
     isRead?: boolean;
     /** Makes the title a link. */
@@ -88,32 +89,94 @@ export interface EuiNotificationEventSignature {
   };
 }
 
-const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature> =
+/** React's global reset for the heading (EuiTitle's own reset). */
+const TITLE_RESET = { boxSizing: 'border-box', margin: 0, padding: 0 } as const;
+
+/**
+ * Native Ember notification event. EUI 123 has no counterpart (upstream
+ * removed it); the Borealis styles live in `utils/eui/notification-event.ts`.
+ */
+export default class EuiNotificationEvent extends Component<EuiNotificationEventSignature> {
+  titleId = `euiNotificationEventTitle${guidFor(this)}`;
+
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  @cached
+  get styles() {
+    return useEuiBorealisStyles(this.context, euiNotificationEventStyles);
+  }
+
+  get tagName(): string {
+    return this.args.tagName ?? 'article';
+  }
+
+  get headingLevel(): string {
+    return this.args.headingLevel ?? 'h2';
+  }
+
+  get hasReadState(): boolean {
+    return typeof this.args.isRead === 'boolean';
+  }
+
+  @cached
+  get classes(): string {
+    return euiClass(this.context, this.styles.euiNotificationEvent);
+  }
+
+  @cached
+  get readButtonClass(): string {
+    return euiClass(this.context, this.styles.readButton);
+  }
+
+  @cached
+  get contentClass(): string {
+    return euiClass(this.context, this.styles.content);
+  }
+
+  @cached
+  get primaryActionClass(): string {
+    return euiClass(this.context, this.styles.primaryAction);
+  }
+
+  /** An `EuiTitle` `xs` heading: bold while unread, regular once read. */
+  @cached
+  get titleClass(): string {
+    const title = useEuiBorealisStyles(this.context, euiTitleStyles);
+    return euiClass(
+      this.context,
+      TITLE_RESET,
+      { fontFamily: this.context.upstream.euiTheme.font.family },
+      title.euiTitle,
+      title.xs,
+      this.styles.title,
+      this.args.isRead && this.styles.titleIsRead
+    );
+  }
+
+  onClickTitle = (event: MouseEvent): void => {
+    this.args.onClickTitle?.(event);
+  };
+
   <template>
     {{#let
-      (randomId)
-      (element (argOrDefault @tagName "article"))
-      (and (argOrDefault @hasContextMenuBlock true) (has-block "contextMenu"))
+      (element this.tagName)
+      (element this.headingLevel)
+      (and (not (eq @hasContextMenuBlock false)) (has-block "contextMenu"))
       (and
-        (argOrDefault @hasPrimaryActionBlock true) (has-block "primaryAction")
+        (not (eq @hasPrimaryActionBlock false)) (has-block "primaryAction")
       )
-      as |id Element hasContextMenuBlock hasPrimaryActionBlock|
+      as |Element Heading hasContextMenuBlock hasPrimaryActionBlock|
     }}
       <Element
-        aria-labelledby={{id}}
+        aria-labelledby={{this.titleId}}
         key={{@id}}
-        class={{classNames
-          "euiNotificationEvent"
-          (if
-            (eq (typeOf @isRead) "boolean")
-            "euiNotificationEvent--withReadState"
-          )
-        }}
+        class="euiNotificationEvent {{this.classes}}"
         ...attributes
       >
-
-        {{#if (eq (typeOf @isRead) "boolean")}}
-          <div class="euiNotificationEvent__readButton">
+        {{#if this.hasReadState}}
+          <div class="euiNotificationEvent__readButton {{this.readButtonClass}}">
             {{#if @onRead}}
               <EuiNotificationEventReadButton
                 @id={{@id}}
@@ -132,9 +195,10 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
           </div>
         {{/if}}
 
-        <div class="euiNotificationEvent__content">
+        <div class="euiNotificationEvent__content {{this.contentClass}}">
           <EuiNotificationEventMeta
             @id={{@id}}
+            @eventName={{@title}}
             @type={{@type}}
             @severity={{@severity}}
             @badgeColor={{@badgeColor}}
@@ -148,35 +212,21 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
             {{yield to="contextMenu"}}
           </EuiNotificationEventMeta>
 
-          {{#let
-            (classNames
-              "euiNotificationEvent__title"
-              (if @isRead "euiNotificationEvent__title--isRead")
-            )
-            (argOrDefault @headingLevel "h2")
-            as |classNames headingLevel|
-          }}
-            {{#if (or @href @onClickTitle)}}
-              <EuiLink
-                class={{classNames}}
-                id={{id}}
-                @href={{@href}}
-                {{on "click" (optional @onClickTitle)}}
-              >
-                <TextBlock @tagName={{headingLevel}}>
-                  {{@title}}
-                </TextBlock>
-              </EuiLink>
-            {{else if @title}}
-              <TextBlock
-                id={{id}}
-                class={{classNames}}
-                @tagName={{headingLevel}}
-              >
-                {{@title}}
-              </TextBlock>
-            {{/if}}
-          {{/let}}
+          {{#if (or @href @onClickTitle)}}
+            <EuiLink
+              class="euiNotificationEvent__title"
+              id={{this.titleId}}
+              @href={{@href}}
+              {{on "click" this.onClickTitle}}
+            >
+              <Heading class="euiTitle {{this.titleClass}}">{{@title}}</Heading>
+            </EuiLink>
+          {{else if @title}}
+            <Heading
+              id={{this.titleId}}
+              class="euiNotificationEvent__title euiTitle {{this.titleClass}}"
+            >{{@title}}</Heading>
+          {{/if}}
 
           <EuiNotificationEventMessages
             @messages={{@messages}}
@@ -185,15 +235,14 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
           />
 
           {{#if hasPrimaryActionBlock}}
-            <div class="euiNotificationEvent__primaryAction">
+            <div
+              class="euiNotificationEvent__primaryAction {{this.primaryActionClass}}"
+            >
               {{yield to="primaryAction"}}
             </div>
           {{/if}}
-
         </div>
-
       </Element>
     {{/let}}
-  </template>;
-
-export default EuiNotificationEvent;
+  </template>
+}

@@ -22,12 +22,13 @@ module('Integration | Component | eui-comment', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiCommentList .euiComment').hasClass('euiComment--hasBody');
+    // upstream derives the type from the content (no modifier classes)
+    assert.dom('.euiCommentList .euiComment .euiCommentEvent').hasAttribute('data-type', 'regular');
     assert.dom('.euiCommentEvent__headerUsername').hasText('janed');
     assert.dom('.euiCommentEvent__headerEvent').hasText('added a comment');
     assert.dom('.euiCommentEvent__headerTimestamp time').hasText('on Jan 1');
     assert.dom('.euiCommentEvent__body p').hasText('Looks good');
-    assert.dom('.euiCommentTimeline svg.euiIcon').exists('default user timeline icon');
+    assert.dom('.euiComment .euiCommentAvatar svg.euiIcon').hasAttribute('data-icon-type', 'user', 'default user timeline avatar');
   });
 
   test('an update comment without body and a custom timeline icon', async function (assert) {
@@ -40,8 +41,8 @@ module('Integration | Component | eui-comment', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiComment').hasClass('euiComment--update');
+    assert.dom('.euiCommentEvent').hasAttribute('data-type', 'update');
     assert.dom('.euiCommentEvent__headerEvent').hasText('added a tag');
-    assert.dom('.euiCommentTimeline svg.euiIcon').exists();
+    assert.dom('.euiCommentAvatar svg.euiIcon').hasAttribute('data-icon-type', 'tag');
   });
 });

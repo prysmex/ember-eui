@@ -1,10 +1,13 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { concat } from '@ember/helper';
 
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 
 import type { EuiButtonIconSignature } from './eui-button-icon';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private Button toggling an EuiNotificationEvent's read state. */
 export interface EuiNotificationEventReadButtonSignature {
@@ -14,30 +17,36 @@ export interface EuiNotificationEventReadButtonSignature {
     id?: string;
     /** The event's title, for the accessible label. */
     eventName?: string;
-    /** Read state. */
+    /** Read state: unread is a filled dot, read a hollow one. */
     isRead?: boolean;
   };
 }
 
-const EuiNotificationEventReadButton: TemplateOnlyComponent<EuiNotificationEventReadButtonSignature> =
+export default class EuiNotificationEventReadButton extends Component<EuiNotificationEventReadButtonSignature> {
+  /** Read styles composed into EuiButtonIcon's own class (`@css`). */
+  @cached
+  get buttonCss() {
+    if (!this.args.isRead) return undefined;
+    const context = getEuiThemeContext(this);
+    return useEuiBorealisStyles(context, euiNotificationEventStyles)
+      .readButtonIsRead;
+  }
+
   <template>
     {{! ToDo: title and aria-label translations }}
     <EuiButtonIcon
       @iconType="dot"
+      @css={{this.buttonCss}}
       aria-label={{if
         @isRead
         (concat "Mark " @eventName " as unread")
         (concat "Mark " @eventName " as read")
       }}
       title={{if @isRead "Read" "Unread"}}
-      class={{classNames
-        "euiNotificationEventReadButton"
-        (if @isRead "euiNotificationEventReadButton--isRead")
-      }}
+      class="euiNotificationEventReadButton"
       data-test-subj={{concat @id "-notificationEventReadButton"}}
       id={{@id}}
       ...attributes
     />
-  </template>;
-
-export default EuiNotificationEventReadButton;
+  </template>
+}

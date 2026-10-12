@@ -39,7 +39,7 @@ module('Integration | Component | eui-global-toast-list', function (hooks) {
     toaster.show({ id: 'other', title: 'Other' });
     await waitUntil(() => this.element.querySelectorAll('.euiToast').length === 2);
     await triggerEvent('.euiGlobalToastList', 'mouseenter');
-    await click(this.element.querySelectorAll('.euiToast__closeButton')[0]!);
+    await click(this.element.querySelectorAll('[data-test-subj="toastCloseButton"]')[0]!);
     await waitUntil(() => toaster.toasts.length === 1);
     await settled();
 

@@ -186,7 +186,20 @@ const entries = {
   'components/card/card.styles.js': ['euiCardStyles', 'euiCardTextStyles', 'euiCardBetaBadgeStyles'],
   'components/card/card_select/card_select.styles.js': ['euiCardSelectStyles'],
   'components/card/checkable_card/checkable_card.styles.js': ['euiCheckableCardStyles'],
-  'components/panel/split_panel/split_panel.styles.js': ['euiSplitPanelOuterStyles', 'euiSplitPanelInnerStyles']
+  'components/panel/split_panel/split_panel.styles.js': ['euiSplitPanelOuterStyles', 'euiSplitPanelInnerStyles'],
+  // feedback
+  'components/accordion/accordion.styles.js': ['euiAccordionStyles'],
+  'components/accordion/accordion_children/accordion_children.styles.js': ['euiAccordionChildrenStyles', 'euiAccordionChildWrapperStyles'],
+  'components/accordion/accordion_trigger/accordion_arrow.styles.js': ['euiAccordionArrowStyles'],
+  'components/accordion/accordion_trigger/accordion_button.styles.js': ['euiAccordionButtonStyles'],
+  'components/toast/toast.styles.js': ['euiToastStyles', 'euiToastHeaderStyles'],
+  'components/toast/global_toast_list.styles.js': ['euiGlobalToastListStyles', 'euiGlobalToastListItemStyles'],
+  'components/notification_icon/notification_icon.styles.js': ['euiNotificationIconStyles'],
+  'components/comment_list/comment_event.styles.js': ['euiCommentEventStyles', 'euiCommentEventHeaderStyles', 'euiCommentEventBodyStyles'],
+  'components/timeline/timeline.styles.js': ['euiTimelineStyles'],
+  'components/timeline/timeline_item.styles.js': ['euiTimelineItemStyles'],
+  'components/timeline/timeline_item_event.styles.js': ['euiTimelineItemEventStyles'],
+  'components/timeline/timeline_item_icon.styles.js': ['euiTimelineItemIconStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

@@ -19,6 +19,22 @@
       "sha256": "92645a24303358649393a95fe0edf2e554927ebcdbcfb58b7e0358a1553fa120"
     },
     {
+      "path": "@elastic/eui/es/components/accordion/accordion_children/accordion_children.styles.js",
+      "sha256": "8d570276d020450dfe4e9b25d7ef33211f77c7a3e641ff80e5205bba52b74b95"
+    },
+    {
+      "path": "@elastic/eui/es/components/accordion/accordion_trigger/accordion_arrow.styles.js",
+      "sha256": "a04234f09ccdfc19a8087527c5882989cc45efd79a5882b8cbc66ed6ab529038"
+    },
+    {
+      "path": "@elastic/eui/es/components/accordion/accordion_trigger/accordion_button.styles.js",
+      "sha256": "97a074cb6cb9bc2353a6fc166120326511969cc027003460e316831eda6e65b7"
+    },
+    {
+      "path": "@elastic/eui/es/components/accordion/accordion.styles.js",
+      "sha256": "83f763775ae732859892fe7ab03c539ab598a2bdb1e46d4b561391f9a294ff98"
+    },
+    {
       "path": "@elastic/eui/es/components/avatar/avatar.styles.js",
       "sha256": "bb7644a5a955cf432e988e3e69b3235b9acc7e63a9c9ea50235dae92f60bc4a9"
     },
@@ -113,6 +129,10 @@
     {
       "path": "@elastic/eui/es/components/color_picker/utils.js",
       "sha256": "0a1e020df394c10fa8e3eee7e64b173c0b9e3f4570ce65c5e0537aa48b8112e3"
+    },
+    {
+      "path": "@elastic/eui/es/components/comment_list/comment_event.styles.js",
+      "sha256": "048793f39e80e9a4322fb503c32321d7bd2fb75bc376c99783c043ab2cfed469"
     },
     {
       "path": "@elastic/eui/es/components/common.js",
@@ -407,6 +427,10 @@
       "sha256": "6fdc993b91d55079f1d6dec48698ea075e4f77cf7e1569484f8464edfbf0f447"
     },
     {
+      "path": "@elastic/eui/es/components/notification_icon/notification_icon.styles.js",
+      "sha256": "b75a9ba4cf6238b15143f10a080f9631e61c49d1e0dcc8e78f85530571a9bc7f"
+    },
+    {
       "path": "@elastic/eui/es/components/page_template/inner/page_inner.styles.js",
       "sha256": "7cbe3e8cb901b0a71f6734d829f70fc0742c5bd1d7dec56408303eea209bfd0f"
     },
@@ -547,8 +571,32 @@
       "sha256": "60b7889ab176ed915e47d0c48cc6901003b5a941cceb962dd152cebaebedd1b4"
     },
     {
+      "path": "@elastic/eui/es/components/timeline/timeline_item_event.styles.js",
+      "sha256": "8ce4dc68699fbf29b747f195ce7369a48561bdfedda293e55c69d6f8d4b473a1"
+    },
+    {
+      "path": "@elastic/eui/es/components/timeline/timeline_item_icon.styles.js",
+      "sha256": "6a92da21c45d0d08bb458da7e831867f00964890cad275c5b8ab6edf7a575bdb"
+    },
+    {
+      "path": "@elastic/eui/es/components/timeline/timeline_item.styles.js",
+      "sha256": "d46ff6ef2ca439b6d83bcfcb15580f19ffa5e796b8c55feabc8134b3d68b68f9"
+    },
+    {
+      "path": "@elastic/eui/es/components/timeline/timeline.styles.js",
+      "sha256": "d23249868bd655d79aa1371183e3f23b5e0996421877658841ad5c8595fd8068"
+    },
+    {
       "path": "@elastic/eui/es/components/title/title.styles.js",
       "sha256": "1a0b0afccb7cd7f591bfabc2394aceafa09cad049b43ef11c4255747eb9b7008"
+    },
+    {
+      "path": "@elastic/eui/es/components/toast/global_toast_list.styles.js",
+      "sha256": "e7a289db2bdd10fc015ef1d2516db5dde8712968745223ab5b5b7dc8df5453dc"
+    },
+    {
+      "path": "@elastic/eui/es/components/toast/toast.styles.js",
+      "sha256": "996b628ce86f6898572dce34880c2dcdf44f80c9ce5828166ad03bb06af9b5ea"
     },
     {
       "path": "@elastic/eui/es/components/token/token_map.js",

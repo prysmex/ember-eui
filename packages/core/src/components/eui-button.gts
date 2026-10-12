@@ -1,14 +1,15 @@
-import { concat } from '@ember/helper';
-import { classify } from '@ember/string';
-
-import { and, eq, not, or } from 'ember-truth-helpers';
-
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import Component from '@glimmer/component';
+import type { CSSObject } from '@emotion/css/create-instance';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiButtonDisplayStyles,
+  euiButtonDisplayContentStyles,
+  euiButtonDisplaysColors,
+  euiFocusRing
+} from '../utils/eui/styles.generated.ts';
 import EuiButtonContent from './eui-button-content.gts';
-
 import type { EuiButtonContentSignature } from './eui-button-content';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiButtonSignature {
   /** A button, a link (with `@href`) or what `@element` names, e.g. a label. */
@@ -81,39 +82,138 @@ export interface EuiButtonSignature {
   };
 }
 
-const EuiButton: TemplateOnlyComponent<EuiButtonSignature> = <template>
-  {{#let
-    (argOrDefault @baseClassName "euiButton")
-    (if
-      @element
-      @element
-      (if (and @href (not (or @isLoading @isDisabled))) "a" "button")
-    )
-    as |baseClassName theElement|
-  }}
-    {{#let (element theElement) as |Element|}}
+/** Native Ember button using the upstream EUI 123 / Borealis factories. */
+export default class EuiButton extends Component<EuiButtonSignature> {
+  get context() {
+    return getEuiThemeContext(this);
+  }
+  get isDisabled() {
+    return Boolean(
+      this.args.isLoading || this.args.isDisabled || this.args.disabled
+    );
+  }
+  get tagName() {
+    return (
+      this.args.element ?? (this.args.href && !this.isDisabled ? 'a' : 'button')
+    );
+  }
+  get href() {
+    return this.tagName === 'a' && !this.isDisabled
+      ? this.args.href
+      : undefined;
+  }
+  get type() {
+    return this.tagName === 'button' ? (this.args.type ?? 'button') : undefined;
+  }
+  get pressed() {
+    return this.args.isSelected === undefined
+      ? undefined
+      : String(this.args.isSelected);
+  }
+  get size(): 's' | 'm' {
+    return this.args.size === 's' ? 's' : 'm';
+  }
+  get classes() {
+    const base = this.args.baseClassName ?? 'euiButton';
+    const context = this.context;
+    const theme = context.upstream.euiTheme;
+    const display = useEuiBorealisStyles(context, euiButtonDisplayStyles);
+    const colors = useEuiBorealisStyles(context, euiButtonDisplaysColors);
+    const color =
+      this.args.color === 'ghost' ? 'text' : (this.args.color ?? 'primary');
+    const colorStyles = colors[this.args.fill ? 'fill' : 'base']!;
+    // A scoped equivalent of the React global reset. Deliberately no global injection.
+    const reset: CSSObject = {
+      boxSizing: 'border-box',
+      border: 'none',
+      margin: 0,
+      padding: 0,
+      fontFamily: theme.font.family,
+      textDecoration: 'none'
+    };
+    const styles = euiClass(
+      context,
+      reset,
+      `&:focus { ${euiFocusRing(context.upstream)} }`,
+      display.euiButtonDisplay,
+      display[this.size],
+      this.args.fullWidth && display.fullWidth,
+      this.isDisabled && display.isDisabled,
+      colorStyles[this.isDisabled ? 'disabled' : color] ??
+        colorStyles['primary']
+    );
+    return `${base} ${styles}`;
+  }
+  get contentClasses() {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiButtonDisplayContentStyles);
+    const iconSize = {
+      s: '12px',
+      m: '16px',
+      l: '24px',
+      xl: '32px',
+      xxl: '40px',
+      original: 'auto'
+    }[this.args.iconSize ?? 'm'];
+    return [
+      'euiButton__content',
+      this.args.contentClasses,
+      euiClass(context, styles.euiButtonDisplayContent, {
+        boxSizing: 'border-box',
+        flexDirection: this.args.iconSide === 'right' ? 'row-reverse' : 'row',
+        '& .euiButtonContent__icon': {
+          width: iconSize,
+          height: iconSize,
+          inlineSize: iconSize,
+          blockSize: iconSize,
+          fill: 'currentColor',
+          flexShrink: 0,
+          margin: 0
+        },
+        '& .euiButtonContent__spinner': {
+          margin: 0,
+          borderColor: 'currentColor',
+          borderRightColor: 'transparent'
+        }
+      })
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+  get textClasses() {
+    const styles = useEuiBorealisStyles(
+      this.context,
+      euiButtonDisplayContentStyles
+    );
+    return [
+      'euiButton__text',
+      this.args.textClasses,
+      euiClass(this.context, styles.content[this.size], {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        minInlineSize: 0
+      })
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  <template>
+    {{#let (element this.tagName) as |Element|}}
       <Element
-        class={{classNames
-          (if @fill (concat baseClassName "--fill"))
-          (if @fullWidth (concat baseClassName "--fullWidth"))
-          (if
-            (or @isLoading @isDisabled @disabled)
-            (concat baseClassName "-isDisabled")
-          )
-          componentName=(classify baseClassName)
-          color=(argOrDefault @color "primary")
-          size=@size
-        }}
-        disabled={{or @isLoading @isDisabled @disabled}}
-        href={{@href}}
+        class={{this.classes}}
+        disabled={{this.isDisabled}}
+        href={{this.href}}
         target={{@target}}
-        aria-pressed={{if @isSelected "true" null}}
-        type={{if (eq theElement "button") (argOrDefault @type "button") null}}
+        aria-busy={{if @isLoading "true" null}}
+        aria-pressed={{this.pressed}}
+        type={{this.type}}
         {{!@glint-expect-error}}
         ...attributes
       >
         <EuiButtonContent
-          class={{classNames "euiButton__content" @contentClasses}}
+          class={{this.contentClasses}}
           @isLoading={{@isLoading}}
           @iconType={{@iconType}}
           @iconSize={{@iconSize}}
@@ -121,13 +221,9 @@ const EuiButton: TemplateOnlyComponent<EuiButtonSignature> = <template>
           @iconClasses={{@iconClasses}}
           @useSvg={{@useSvg}}
           @useComponent={{@useComponent}}
-          @textClasses={{classNames "euiButton__text" @textClasses}}
-        >
-          {{yield}}
-        </EuiButtonContent>
+          @textClasses={{this.textClasses}}
+        >{{yield}}</EuiButtonContent>
       </Element>
     {{/let}}
-  {{/let}}
-</template>;
-
-export default EuiButton;
+  </template>
+}

@@ -18,7 +18,7 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.euiSideNav').exists();
     assert
       .dom('.euiSideNavItem')
-      .exists({ count: 99 }, 'every docs section is listed');
+      .exists({ count: 100 }, 'every docs section is listed');
   });
 
   test('every docs page renders with its demos', async function (assert) {

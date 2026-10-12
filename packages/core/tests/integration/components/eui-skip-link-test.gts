@@ -15,7 +15,6 @@ module('Integration | Component | eui-skip-link', function (hooks) {
       .hasAttribute('href', '#main')
       .hasClass('euiSkipLink--static')
       .hasClass('euiScreenReaderOnly--showOnFocus')
-      .hasClass('euiButton--fill')
       .hasText('Skip to content');
   });
 

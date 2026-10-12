@@ -43,7 +43,10 @@ module('Integration | Component | eui-modal parts / confirm modal', function (ho
 
     assert.dom('.euiModalHeader__title', modal).hasText('Delete?');
     assert.dom('.euiModalBody', modal).hasText('This cannot be undone');
-    assert.dom('.euiModalFooter .euiButton', modal).hasText('Delete').hasClass('euiButton--danger').hasClass('euiButton--fill');
+    assert.dom('.euiModalFooter .euiButton', modal).hasText('Delete').isNotDisabled();
+
+    const confirmStyle = getComputedStyle(modal.querySelector('.euiModalFooter .euiButton')!);
+    assert.strictEqual(confirmStyle.backgroundColor, 'rgb(198, 30, 37)', 'native Borealis danger fill');
 
     await click(modal.querySelector('.euiModalFooter .euiButtonEmpty')!);
     await click(modal.querySelector('.euiModalFooter .euiButton')!);

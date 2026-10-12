@@ -80,13 +80,15 @@ module('Integration | Component | eui-icon', function (hooks) {
 
     test('every named icon renders an svg with content', async function (assert) {
       const empty: string[] = [];
-
-      // `empty` is intentionally an svg without content
-      for (const type of TYPES.filter((t) => t !== 'empty')) {
-        await render(<template><EuiIcon @type={{type}} /></template>);
-
-        const svg = (this.element as HTMLElement).querySelector('svg');
-
+      // Render the catalog together: repeated render/teardown for each icon can
+      // exhaust the browser timeout while other migration checks are running.
+      const types = TYPES.filter((type) => type !== 'empty');
+      await render(<template>
+        {{#each types as |type|}}<EuiIcon @type={{type}} data-icon-name={{type}} />{{/each}}
+      </template>);
+      assert.dom('svg[data-icon-name]').exists({ count: types.length });
+      for (const type of types) {
+        const svg = this.element.querySelector(`svg[data-icon-name="${type}"]`);
         if (!svg || svg.children.length === 0 || !svg.getAttribute('viewBox')) {
           empty.push(type);
         }

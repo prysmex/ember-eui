@@ -75,7 +75,9 @@ module('Integration | Component | eui-collapsible-nav', function (hooks) {
       </template>
     );
 
-    assert.dom('.static').hasClass('euiCollapsibleNavGroup--light').hasClass('euiCollapsibleNavGroup--withHeading');
+    // Latest-only: background/heading are computed styles (see eui-header-family-test).
+    assert.dom('.static').hasClass('euiCollapsibleNavGroup');
+    assert.notStrictEqual(getComputedStyle(this.element.querySelector('.static')!).backgroundColor, 'rgba(0, 0, 0, 0)', 'light background');
     assert.dom('.static .euiCollapsibleNavGroup__title').hasText('Kibana');
     assert.dom('.static svg.euiIcon').exists();
 

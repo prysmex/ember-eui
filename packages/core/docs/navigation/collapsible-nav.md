@@ -86,7 +86,7 @@ Deprecated: `@children` (Has no effect, use the `<:content>` block.).
 | `@iconSize` |  | `'l'` | Size of the icon. |
 | `@titleTagName` |  | `'h3'` | Same as `@titleElement`, limited to `EuiTitle`'s tags. |
 | `@titleSize` |  | `'xxs'` | Size of the title, any `EuiTitle` size. |
-| `@background` | `string` | `'none'` | Background of the group: `'none'`, `'light'` or `'dark'`. |
+| `@background` | `EuiCollapsibleNavGroupBackground \| (string & {})` | `'none'` | Background of the group: `'none'`, `'light'` or `'dark'`. A dark group renders its content in dark mode (a nested dark provider), as upstream. |
 
 | Block | Description |
 | --- | --- |

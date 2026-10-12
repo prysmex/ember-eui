@@ -91,6 +91,14 @@
       "sha256": "2c2be11637169749dfd5351eb4bc12219b3670f27ee062a057be1887df21ba3b"
     },
     {
+      "path": "@elastic/eui/es/components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js",
+      "sha256": "20d12a873f0e319d1e3c29dff820a4047911c49eef3e3e19507b65eb6dfa97f5"
+    },
+    {
+      "path": "@elastic/eui/es/components/collapsible_nav/collapsible_nav.styles.js",
+      "sha256": "4a828ebba6e6b5f9732a9609eb5b6d9aee027aae12e0977d765e5d6f2532517f"
+    },
+    {
       "path": "@elastic/eui/es/components/color_picker/utils.js",
       "sha256": "0a1e020df394c10fa8e3eee7e64b173c0b9e3f4570ce65c5e0537aa48b8112e3"
     },
@@ -221,6 +229,38 @@
     {
       "path": "@elastic/eui/es/components/form/text_area/text_area.styles.js",
       "sha256": "9c4adaa5d2015f65c637c19a98e6161b9e068f22a0d17b093efdb6d3d726a44a"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header_alert/header_alert.styles.js",
+      "sha256": "60ca8517479f77627cb947dbec37941cc7d3edcf0c5bc16b260ff1d8e15994f0"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header_breadcrumbs/header_breadcrumbs.styles.js",
+      "sha256": "bf58e373a616631b02de27b386320abd549e5973e9116fa47b9a94c55704647a"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header_links/header_links.styles.js",
+      "sha256": "1f2f03d1212cac136771775ce7f7d5a65afd744da6e2d2bc18a8a02853e8d378"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header_logo/header_logo.styles.js",
+      "sha256": "3997eac39c8822c5e6ce8a3dd89908e08c112f9bd08d85d64845f56e4f9fe869"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header_section/header_section_item_button.styles.js",
+      "sha256": "3a4f254ab286a6f32e2cfc0ae79e073b1b1ca1f057a371badd995bc82f9cd71f"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header_section/header_section_item.styles.js",
+      "sha256": "b0514a410cbaeb506add4b50b0aa96a4fcf0385c1297559fa3f265a5ba7e9e5c"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header_section/header_section.styles.js",
+      "sha256": "e24d89716df1c800300fa3feb3ff9030f6e7e865b3f078f9d7cf6cadc23f29a5"
+    },
+    {
+      "path": "@elastic/eui/es/components/header/header.styles.js",
+      "sha256": "c719e1f93cce5532eb96fcf86f634e2f9480d6b29ee76e6f2b7b8874d57eb8f9"
     },
     {
       "path": "@elastic/eui/es/components/health/health.styles.js",

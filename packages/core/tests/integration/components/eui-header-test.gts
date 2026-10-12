@@ -58,23 +58,32 @@ module('Integration | Component | eui-header', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiHeader').hasClass('euiHeader--dark').hasClass('euiHeader--static');
-    assert.dom('.euiHeaderSection--grow').exists();
-    assert.dom('.euiHeaderSection--right').exists();
-    assert.dom('.euiHeaderSectionItem--borderRight a.euiHeaderLogo').hasAttribute('href', '#home');
+    // Latest-only: no modifier classes. Theme/position/grow/side are computed styles.
+    const header = getComputedStyle(this.element.querySelector('.euiHeader')!);
+    const darkBackground = resolveBorealisTheme('light').euiTheme.components.headerDarkBackground;
+    const probe = document.createElement('span');
+    probe.style.color = darkBackground;
+    document.body.appendChild(probe);
+    assert.strictEqual(header.backgroundColor, getComputedStyle(probe).color, 'dark header background');
+    probe.remove();
+    assert.strictEqual(header.position, 'relative', 'static');
+    const sections = this.element.querySelectorAll('.euiHeaderSection');
+    assert.strictEqual(getComputedStyle(sections[0]!).flexGrow, '1', 'grow section');
+    assert.dom('.euiHeaderSectionItem a.euiHeaderLogo').hasAttribute('href', '#home');
     assert.dom('.euiHeaderLogo svg.euiHeaderLogo__icon').hasAttribute('aria-label', 'Home');
     assert.dom('.euiHeaderLogo svg.euiHeaderLogo__icon').doesNotHaveAttribute('aria-hidden');
     assert.dom('.euiHeaderLogo__text').hasText('Brand');
-    assert.dom('.euiHeaderLinks__list').hasClass('euiHeaderLinks__list--gutterS');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiHeaderLinks__list')!).columnGap, '12px', "gutter 's' gap");
     assert.dom('.active').hasClass('euiHeaderLink-isActive').hasClass('euiButtonEmpty');
     assert.dom('a.blog').hasClass('euiButtonEmpty').hasAttribute('href', '#blog');
-    // Latest-only EuiButtonEmpty has no color modifier classes: check the styles.
-    assert.strictEqual(getComputedStyle(this.element.querySelector('.active')!).color, emptyButtonColor('Primary'));
-    assert.strictEqual(getComputedStyle(this.element.querySelector('a.blog')!).color, emptyButtonColor('Text'));
-    assert.dom('.euiHeaderSectionItemButton .euiHeaderSectionItemButton__content').hasText('N');
+    // Inside a dark header, upstream recolors links: ghost text, high-contrast active.
+    assert.notStrictEqual(getComputedStyle(this.element.querySelector('.active')!).color, emptyButtonColor('Primary'));
+    assert.strictEqual(getComputedStyle(this.element.querySelector('a.blog')!).color, 'rgb(255, 255, 255)');
+    // EuiHeaderLinks' (CSS-hidden) menu button is now an EuiHeaderSectionItemButton too, as upstream.
+    assert.dom('[aria-label="News"] .euiHeaderSectionItemButton__content').hasText('N');
     assert.dom('.euiHeaderSectionItemButton__notification--badge').hasText('3');
 
-    await click('.euiHeaderSectionItemButton');
+    await click('[aria-label="News"]');
     assert.strictEqual(clicks, 1);
   });
 
@@ -94,7 +103,7 @@ module('Integration | Component | eui-header', function (hooks) {
 
     await render(<template>{{#if state.show}}<EuiHeader @position="fixed">Fixed</EuiHeader>{{/if}}</template>);
 
-    assert.dom('.euiHeader').hasClass('euiHeader--fixed');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiHeader')!).position, 'fixed');
     assert.dom(document.body).hasClass('euiBody--headerIsFixed');
 
     state.show = false;

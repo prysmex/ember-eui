@@ -10,7 +10,7 @@ import EuiDataGridColumnSorting from './column-sorting.gts';
 import EuiDataGridDisplaySelector from './display-selector.gts';
 import EuiDataGridFullScreenSelector from './fullscreen-selector.gts';
 import EuiDataGridKeyboardShortcuts from './keyboard-shortcuts.gts';
-import { checkOrDefaultToolBarDisplayOptions } from './toolbar-utils.ts';
+import { checkOrDefaultToolBarDisplayOptions } from '../../utils/data-grid/toolbar.ts';
 
 import type EuiDataGrid from '../eui-data-grid.gts';
 

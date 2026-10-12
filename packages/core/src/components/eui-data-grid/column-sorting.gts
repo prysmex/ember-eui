@@ -7,6 +7,7 @@ import { service } from '@ember/service';
 
 import { modifier } from 'ember-modifier';
 
+import { afterRender } from '../../utils/data-grid/scheduling.ts';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import { euiDataGridColumnSortingStyles } from '../../utils/eui/styles.generated.ts';
@@ -75,7 +76,8 @@ export default class EuiDataGridColumnSorting extends Component<EuiDataGridColum
     (_element: HTMLElement, [sorting, columns]: [EuiDataGridSorting, EuiDataGridColumn[]]) => {
       const available = new Set(columns.map(({ id }) => id));
       const next = sorting.columns.filter((column) => available.has(column.id));
-      if (next.length !== sorting.columns.length) sorting.onSort(next);
+      // after render: consumers update tracked state in onSort
+      if (next.length !== sorting.columns.length) afterRender(this, () => sorting.onSort(next));
     }
   );
 

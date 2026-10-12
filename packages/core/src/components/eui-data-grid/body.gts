@@ -499,7 +499,8 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
       if (!onItemsRendered || !this.isMeasured) return;
       const rowWindow = this.computeRowWindow(this.scrollTop);
       const columnWindow = this.computeColumnWindow(this.scrollLeft);
-      onItemsRendered({
+      // reported after rendering, so consumers can update their own state
+      afterRender(this, () => onItemsRendered({
         overscanRowStartIndex: rows.start,
         overscanRowStopIndex: Math.max(rows.start, rows.stop - 1),
         overscanColumnStartIndex: columns.start,
@@ -508,7 +509,7 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
         visibleRowStopIndex: rowWindow.visibleStop,
         visibleColumnStartIndex: columnWindow.visibleStart,
         visibleColumnStopIndex: columnWindow.visibleStop
-      });
+      }));
     }
   );
 

@@ -7,7 +7,7 @@
  */
 
 /** Ports of the toolbar option helpers in upstream `data_grid_toolbar.tsx`. */
-import type { EuiDataGridToolBarVisibilityOptions } from '../../utils/data-grid/types.ts';
+import type { EuiDataGridToolBarVisibilityOptions } from './types.ts';
 
 /** Whether a toolbar control is shown (missing options default to shown). */
 export function checkOrDefaultToolBarDisplayOptions(

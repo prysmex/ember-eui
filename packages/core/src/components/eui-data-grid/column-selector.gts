@@ -23,7 +23,7 @@ import EuiPopoverFooter from '../eui-popover-footer.gts';
 import EuiPopoverTitle from '../eui-popover-title.gts';
 import EuiSwitch from '../eui-switch.gts';
 import EuiText from '../eui-text.gts';
-import { getNestedObjectOptions } from './toolbar-utils.ts';
+import { getNestedObjectOptions } from '../../utils/data-grid/toolbar.ts';
 
 import type EuiI18n from '../../services/eui-i18n.ts';
 import type EuiDataGrid from '../eui-data-grid.gts';

@@ -6,6 +6,9 @@ import { click, render, triggerEvent, triggerKeyEvent, waitUntil } from '@ember/
 
 import { modifier } from 'ember-modifier';
 
+import { array, hash } from '@ember/helper';
+
+import EuiCheckbox from '#src/components/eui-checkbox.gts';
 import EuiDataGrid from '#src/components/eui-data-grid.gts';
 import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
@@ -279,6 +282,62 @@ module('Integration | Component | EuiDataGrid features', function (hooks) {
     await triggerEvent(window as unknown as Element, 'mouseup');
     assert.deepEqual(resizes, ['name:210', 'name:40'], 'columns are at least 40px wide');
   });
+
+  test('hash-based state (as in the docs demos) and EuiCheckbox control cells', async function (assert) {
+    class State {
+      @tracked pageIndex = 0;
+      @tracked sortingColumns: EuiDataGridSortingColumn[] = [];
+      @tracked visible = ['name', 'amount'];
+      onChangePage = (pageIndex: number) => (this.pageIndex = pageIndex);
+      onChangeItemsPerPage = () => {};
+      onSort = (columns: EuiDataGridSortingColumn[]) => (this.sortingColumns = columns);
+      setVisible = (columns: string[]) => (this.visible = columns);
+    }
+    const state = new State();
+    const leading: EuiDataGridControlColumn[] = [{ id: 'select', width: 36 }];
+    const inMemory = { level: 'sorting' as const };
+    await render(
+      <template>
+        <div style="width:700px">
+          <EuiDataGrid
+            @columns={{COLUMNS}}
+            @rowCount={{5}}
+            @renderCellValue={{ValueCell}}
+            @leadingControlColumns={{leading}}
+            @inMemory={{inMemory}}
+            @columnVisibility={{hash visibleColumns=state.visible setVisibleColumns=state.setVisible}}
+            @sorting={{hash columns=state.sortingColumns onSort=state.onSort}}
+            @pagination={{hash
+              pageIndex=state.pageIndex
+              pageSize=3
+              pageSizeOptions=(array 3 6)
+              onChangePage=state.onChangePage
+              onChangeItemsPerPage=state.onChangeItemsPerPage
+            }}
+          >
+            <:controlCell as |c|>
+              <EuiCheckbox aria-label="Select row {{c.rowIndex}}" @checked={{false}} />
+            </:controlCell>
+          </EuiDataGrid>
+        </div>
+      </template>
+    );
+
+    assert.dom('.euiDataGridRow').exists({ count: 3 });
+    assert.dom('.euiCheckbox', cell(0, 0)).exists();
+    state.onSort([{ id: 'name', direction: 'desc' }]);
+    await waitUntil(() => columnTexts(1)[0] === 'echo');
+    assert.deepEqual(columnTexts(1), ['echo', 'delta', 'charlie'], 'sorted before paginating');
+    state.onChangePage(1);
+    await waitUntil(() => columnTexts(1)[0] === 'bravo');
+    assert.deepEqual(columnTexts(1), ['bravo', 'alpha']);
+
+    // hiding a sorted column prunes it from the sort
+    state.setVisible(['amount']);
+    await waitUntil(() => state.sortingColumns.length === 0);
+    assert.deepEqual(state.sortingColumns, []);
+  });
+
 });
 
 function isSelect(columnId: string): boolean {

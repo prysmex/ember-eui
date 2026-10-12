@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
+import { service } from '@ember/service';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
@@ -10,12 +11,16 @@ import { and, not, or } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
 import validatableControl from '../modifiers/validatable-control.ts';
 import { Browser } from '../utils/browser/index.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { formControlReset } from '../utils/eui/form-controls.ts';
+import { euiFieldSearchStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { keys } from '../utils/keys.ts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
+import type EuiI18n from '../services/eui-i18n';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 
 let isSearchSupported = false;
@@ -51,7 +56,7 @@ type EuiFieldSearchArgs = {
   isFakeAppendBlock?: boolean;
   /** Stretches the input to its container's width. */
   fullWidth?: boolean;
-  /** Shorter input, for dense forms. */
+  /** Shorter input (32px instead of 40px), for dense forms. */
   compressed?: boolean;
   /** Shows a spinner in the input. */
   isLoading?: boolean;
@@ -65,7 +70,10 @@ type EuiFieldSearchArgs = {
   placeholder?: string;
   /** Id of the input, e.g. to match an `EuiFormRow`'s label. Defaults to a random id. */
   id?: string;
-  /** Shows the invalid state and marks the input invalid for native form validation. */
+  /**
+   * Shows the invalid state (danger border and warning icon), sets
+   * `aria-invalid` and marks the input invalid for native form validation.
+   */
   isInvalid?: boolean;
   /** Hides the clear button; use `@disabled` to disable the input. */
   isDisabled?: boolean;
@@ -83,7 +91,19 @@ export interface EuiFieldSearchSignature {
   };
 }
 
+/**
+ * A `type="search"` input on the upstream EUI 123 / Borealis form control
+ * styles, with a clear button and Enter/incremental search.
+ */
 export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
+  @service('eui-i18n') declare euiI18n: EuiI18n;
+
+  /**
+   * The value last passed to `@onSearch` by a `search` or `change` event,
+   * reset on input: Enter in a `type="search"` input fires both events.
+   */
+  lastSearched: string | null = null;
+
   @tracked inputElement: HTMLInputElement | null = null;
   @tracked value: string | undefined =
     this.args.value ||
@@ -99,6 +119,8 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
       this.value = value;
     }
 
+    if (this.lastSearched === value) return;
+    this.lastSearched = value;
     this.args.onSearch?.(this.value);
   }
 
@@ -131,6 +153,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
   @action
   trackValue(e: Event): void {
     this.value = (e.target as HTMLInputElement).value;
+    this.lastSearched = null;
   }
 
   @action
@@ -189,6 +212,27 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     isSearchSupported = Browser.isEventSupported('search', this.inputElement);
   }
 
+  get clearLabel() {
+    return this.euiI18n.lookupToken(
+      'euiFieldSearch.clearSearchButtonLabel',
+      'Clear search input'
+    );
+  }
+
+  inputClasses = (inGroup: boolean) => {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFieldSearchStyles);
+    const { compressed, fullWidth } = this.args;
+    return `euiFieldSearch ${euiClass(
+      context,
+      formControlReset,
+      styles.euiFieldSearch,
+      compressed ? styles.compressed : styles.uncompressed,
+      fullWidth ? styles.fullWidth : styles.formWidth,
+      inGroup && styles.inGroup
+    )}`;
+  };
+
   willDestroy(): void {
     super.willDestroy();
 
@@ -202,25 +246,14 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
       (argOrDefault @id (randomId))
       as |hasPrepend hasAppend inputId|
     }}
-      {{#let
-        (classNames
-          (if @fullWidth "euiFieldSearch--fullWidth")
-          (if @compressed "euiFieldSearch--compressed")
-          (if (or hasPrepend hasAppend) "euiFieldSearch--inGroup")
-          (if @isLoading "euiFieldSearch--isLoading")
-          (if
-            (and (argOrDefault @isClearable true) this.value)
-            "euiFieldSearch--isClearable"
-          )
-          "euiFieldSearch"
-        )
-        as |classes|
-      }}
+      {{#let (this.inputClasses (or hasPrepend hasAppend)) as |classes|}}
         <EuiFormControlLayout
           @icon="search"
           @fullWidth={{@fullWidth}}
           @isLoading={{@isLoading}}
+          @isInvalid={{@isInvalid}}
           @disabled={{@disabled}}
+          @clearLabel={{this.clearLabel}}
           @clear={{if
             (and
               (argOrDefault @isClearable true)
@@ -232,7 +265,8 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
           }}
           @compressed={{@compressed}}
           @readOnly={{@readOnly}}
-          @useGroup={{or hasPrepend hasAppend}}
+          @isPrependProvided={{hasPrepend}}
+          @isAppendProvided={{hasAppend}}
         >
           <:prepend as |prependClasses|>
             {{yield prependClasses inputId to="prepend"}}
@@ -243,9 +277,10 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
               class={{classes}}
               value={{this.value}}
               disabled={{@disabled}}
-              type="text"
+              type="search"
               placeholder={{@placeholder}}
               readonly={{@readOnly}}
+              aria-invalid={{if @isInvalid "true"}}
               ...attributes
               {{on "input" this.trackValue}}
               {{on "keyup" (fn this.onKeyUp this.incremental @onSearch)}}

@@ -98,7 +98,38 @@ const factories = {
   ],
   'components/form/described_form_group/described_form_group.styles.js': [
     'euiDescribedFormGroupStyles'
-  ]
+  ],
+  // form controls
+  'components/form/form.styles.js': [
+    'euiFormVariables',
+    'euiFormControlStyles'
+  ],
+  'components/form/field_text/field_text.styles.js': ['euiFieldTextStyles'],
+  'components/form/field_number/field_number.styles.js': [
+    'euiFieldNumberStyles'
+  ],
+  'components/form/field_password/field_password.styles.js': [
+    'euiFieldPasswordStyles'
+  ],
+  'components/form/field_search/field_search.styles.js': [
+    'euiFieldSearchStyles'
+  ],
+  'components/form/text_area/text_area.styles.js': ['euiTextAreaStyles'],
+  'components/form/select/select.styles.js': ['euiSelectStyles'],
+  'components/form/form_control_layout/form_control_layout.styles.js': [
+    'euiFormControlLayoutStyles',
+    'euiFormControlLayoutSideNodeStyles'
+  ],
+  'components/form/form_control_layout/form_control_layout_icons.styles.js': [
+    'euiFormControlLayoutIconsStyles'
+  ],
+  'components/form/form_control_layout/form_control_layout_clear_button.styles.js':
+    ['EuiFormControlLayoutClearButtonStyles'],
+  'components/form/form_control_layout/form_control_layout_delimited.styles.js':
+    [
+      'euiFormControlLayoutDelimitedStyles',
+      'euiFormControlLayoutDelimited__delimiter'
+    ]
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -382,6 +413,110 @@ test('global styles port matches upstream EuiGlobalStyles in every mode and cont
             `${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`
           );
         }
+  } finally {
+    Module._load = originalLoad;
+  }
+});
+
+test('delimited input slot matches upstream static styles', () => {
+  const reference = require(
+    resolve(
+      eui,
+      'lib/components/form/form_control_layout/form_control_layout_delimited.styles.js'
+    )
+  );
+  assert.deepEqual(
+    normalize(styles.euiFormControlLayoutDelimited__input),
+    normalize(reference.euiFormControlLayoutDelimited__input)
+  );
+});
+
+test('form control hand ports match upstream custom icon styles and icon affordance counts', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/form-controls.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: ['@ember/template']
+  });
+  const portFile = resolve(root, 'packages/core/eui-form-controls-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  // `htmlSafe` only wraps the string for Glimmer; a passthrough is enough here.
+  portModule.require = (request) =>
+    request === '@ember/template'
+      ? { htmlSafe: (value) => value }
+      : require(request);
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const { euiFormControlLayoutCustomIconStyles: port, iconAffordanceStyle } =
+    portModule.exports;
+
+  // Load upstream's React modules with React, Emotion and icons stubbed out.
+  const { serializeStyles } = require('@emotion/serialize');
+  const originalLoad = Module._load;
+  Module._load = function (request, parent, isMain) {
+    if (request === 'react') return { __esModule: true, default: {} };
+    if (request === '@emotion/react')
+      return {
+        css: (...args) => serializeStyles(args),
+        jsx: (type, props) => ({ type, props })
+      };
+    if (request === '../../icon') return { EuiIcon: 'EuiIcon' };
+    if (request === './form_control_layout_icons')
+      return {
+        isIconShape: (icon) => !!icon && Object.hasOwn(icon, 'type')
+      };
+    return originalLoad.call(this, request, parent, isMain);
+  };
+  try {
+    const dir = resolve(eui, 'lib/components/form/form_control_layout');
+    for (const file of ['form_control_layout_custom_icon.js', '_num_icons.js'])
+      delete require.cache[resolve(dir, file)];
+    const { EuiFormControlLayoutCustomIcon } = require(
+      resolve(dir, 'form_control_layout_custom_icon.js')
+    );
+    const { getIconAffordanceStyles } = require(resolve(dir, '_num_icons.js'));
+    const text = (style) => (typeof style === 'string' ? style : style.styles);
+    const unclickable = EuiFormControlLayoutCustomIcon({ type: 'x' }).props.css;
+    const clickable = EuiFormControlLayoutCustomIcon({
+      type: 'x',
+      onClick() {}
+    }).props.css;
+    assert.deepEqual(unclickable.map(text), [
+      port.euiFormControlLayoutCustomIcon,
+      port.unclickable
+    ]);
+    assert.deepEqual(clickable.map(text), [
+      port.euiFormControlLayoutCustomIcon,
+      port.clickable
+    ]);
+
+    const flags = ['clear', 'isLoading', 'isInvalid', 'isDropdown'];
+    for (let mask = 0; mask < 1 << flags.length; mask++)
+      for (const side of [undefined, 'left', 'right']) {
+        const args = Object.fromEntries(
+          flags.map((flag, i) => [flag, Boolean(mask & (1 << i))])
+        );
+        const upstream = getIconAffordanceStyles({
+          ...args,
+          icon: side ? (side === 'right' ? { type: 'x', side } : 'x') : undefined
+        });
+        const ours = iconAffordanceStyle({
+          ...args,
+          icon: side ? 'x' : undefined,
+          iconSide: side
+        });
+        const parsed = ours
+          ? Object.fromEntries(
+              String(ours)
+                .split('; ')
+                .map((pair) => pair.split(': '))
+                .map(([key, value]) => [key, Number(value)])
+            )
+          : undefined;
+        assert.deepEqual(parsed, upstream, `${side}/${mask}`);
+      }
   } finally {
     Module._load = originalLoad;
   }

@@ -42,7 +42,8 @@ module('Integration | Component | eui-field-search', function (hooks) {
 
     await render(<template><EuiFieldSearch @value="dogs" @isClearable={{true}} @onSearch={{onSearch}} /></template>);
 
-    assert.dom('input').hasValue('dogs').hasClass('euiFieldSearch--isClearable');
+    assert.dom('input').hasValue('dogs');
+    assert.dom('.euiFormControlLayoutClearButton').exists('clearable');
 
     await click('.euiFormControlLayoutClearButton');
 
@@ -68,7 +69,6 @@ module('Integration | Component | eui-field-search', function (hooks) {
       </template>
     );
 
-    assert.dom('input.not-clearable').doesNotHaveClass('euiFieldSearch--isClearable');
     assert.dom('.euiFormControlLayoutClearButton').doesNotExist();
     assert.dom('input.disabled').isDisabled();
   });

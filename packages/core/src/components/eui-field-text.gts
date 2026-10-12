@@ -1,3 +1,4 @@
+import Component from '@glimmer/component';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -5,12 +6,14 @@ import { and, not, or } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
 import validatableControl from '../modifiers/validatable-control.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { formControlReset } from '../utils/eui/form-controls.ts';
+import { euiFieldTextStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiFieldTextSignature {
   Element: HTMLInputElement;
@@ -27,7 +30,7 @@ export interface EuiFieldTextSignature {
     fullWidth?: boolean;
     /** Shows a spinner in the input. */
     isLoading?: boolean;
-    /** Shorter input, for dense forms. */
+    /** Shorter input (32px instead of 40px), for dense forms. */
     compressed?: boolean;
     /** Makes the input read-only. */
     readOnly?: boolean;
@@ -40,7 +43,10 @@ export interface EuiFieldTextSignature {
      * prepend/append). Best used inside EuiFormControlLayoutDelimited.
      */
     controlOnly?: boolean;
-    /** Shows the invalid state and marks the input invalid for native form validation. */
+    /**
+     * Shows the invalid state (danger border and warning icon), sets
+     * `aria-invalid` and marks the input invalid for native form validation.
+     */
     isInvalid?: boolean;
     /** Called with the `<input>` element once rendered. */
     inputRef?: (element: HTMLInputElement | null) => void;
@@ -57,72 +63,82 @@ export interface EuiFieldTextSignature {
   };
 }
 
-const EuiFieldText: TemplateOnlyComponent<EuiFieldTextSignature> = <template>
-  {{#let
-    (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
-    (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
-    (argOrDefault @id (randomId))
-    as |hasPrepend hasAppend inputId|
-  }}
-    {{#let
-      (classNames
-        (if @icon "euiFieldText--withIcon")
-        (if @fullWidth "euiFieldText--fullWidth")
-        (if @compressed "euiFieldText--compressed")
-        (if (or hasPrepend hasAppend) "euiFieldText--inGroup")
-        (if @isLoading "euiFieldText--isLoading")
-        "euiFieldText"
-      )
-      as |classes|
-    }}
-      {{#if @controlOnly}}
-        <input
-          id={{inputId}}
-          value={{@value}}
-          class={{classes}}
-          disabled={{@disabled}}
-          type="text"
-          placeholder={{@placeholder}}
-          readonly={{@readOnly}}
-          ...attributes
-          {{validatableControl @isInvalid}}
-          {{didInsert (optional @inputRef)}}
-        />
-      {{else}}
-        <EuiFormControlLayout
-          @icon={{@icon}}
-          @clear={{@clear}}
-          @fullWidth={{@fullWidth}}
-          @isLoading={{@isLoading}}
-          @compressed={{@compressed}}
-          @readOnly={{@readOnly}}
-          @disabled={{@disabled}}
-          @useGroup={{or hasPrepend hasAppend}}
-        >
-          <:prepend as |prependClasses|>
-            {{yield prependClasses inputId to="prepend"}}
-          </:prepend>
-          <:field>
-            <input
-              id={{inputId}}
-              value={{@value}}
-              class={{classes}}
-              disabled={{@disabled}}
-              type="text"
-              placeholder={{@placeholder}}
-              readonly={{@readOnly}}
-              ...attributes
-              {{validatableControl @isInvalid}}
-              {{didInsert (optional @inputRef)}}
-            />
-          </:field>
-          <:append as |appendClasses|>
-            {{yield appendClasses inputId to="append"}}
-          </:append>
-        </EuiFormControlLayout>
-      {{/if}}
-    {{/let}}
-  {{/let}}
-</template>;
+/** A text input on the upstream EUI 123 / Borealis form control styles. */
+export default class EuiFieldText extends Component<EuiFieldTextSignature> {
+  inputClasses = (inGroup: boolean) => {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFieldTextStyles);
+    const { compressed, fullWidth, controlOnly } = this.args;
+    return `euiFieldText ${euiClass(
+      context,
+      formControlReset,
+      styles.euiFieldText,
+      compressed ? styles.compressed : styles.uncompressed,
+      fullWidth ? styles.fullWidth : styles.formWidth,
+      !controlOnly && inGroup && styles.inGroup,
+      controlOnly && styles.controlOnly
+    )}`;
+  };
 
-export default EuiFieldText;
+  <template>
+    {{#let
+      (and (not (argOrDefault @isFakePrependBlock false)) (has-block "prepend"))
+      (and (not (argOrDefault @isFakeAppendBlock false)) (has-block "append"))
+      (argOrDefault @id (randomId))
+      as |hasPrepend hasAppend inputId|
+    }}
+      {{#let (this.inputClasses (or hasPrepend hasAppend)) as |classes|}}
+        {{#if @controlOnly}}
+          <input
+            id={{inputId}}
+            value={{@value}}
+            class={{classes}}
+            disabled={{@disabled}}
+            type="text"
+            placeholder={{@placeholder}}
+            readonly={{@readOnly}}
+            aria-invalid={{if @isInvalid "true"}}
+            ...attributes
+            {{validatableControl @isInvalid}}
+            {{didInsert (optional @inputRef)}}
+          />
+        {{else}}
+          <EuiFormControlLayout
+            @icon={{@icon}}
+            @clear={{@clear}}
+            @fullWidth={{@fullWidth}}
+            @isLoading={{@isLoading}}
+            @isInvalid={{@isInvalid}}
+            @compressed={{@compressed}}
+            @readOnly={{@readOnly}}
+            @disabled={{@disabled}}
+            @isPrependProvided={{hasPrepend}}
+            @isAppendProvided={{hasAppend}}
+          >
+            <:prepend as |prependClasses|>
+              {{yield prependClasses inputId to="prepend"}}
+            </:prepend>
+            <:field>
+              <input
+                id={{inputId}}
+                value={{@value}}
+                class={{classes}}
+                disabled={{@disabled}}
+                type="text"
+                placeholder={{@placeholder}}
+                readonly={{@readOnly}}
+                aria-invalid={{if @isInvalid "true"}}
+                ...attributes
+                {{validatableControl @isInvalid}}
+                {{didInsert (optional @inputRef)}}
+              />
+            </:field>
+            <:append as |appendClasses|>
+              {{yield appendClasses inputId to="append"}}
+            </:append>
+          </EuiFormControlLayout>
+        {{/if}}
+      {{/let}}
+    {{/let}}
+  </template>
+}

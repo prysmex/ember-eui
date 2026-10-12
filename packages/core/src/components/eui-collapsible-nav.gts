@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { throttle } from '@ember/runloop';
 
@@ -9,9 +9,13 @@ import { and, not, or } from 'ember-truth-helpers';
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import { isWithinMinBreakpoint } from '../utils/breakpoint.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { composedOver } from '../utils/eui/page-layout.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiCollapsibleNavStyles } from '../utils/eui/styles.generated.ts';
 import EuiFlyout from './eui-flyout.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
+import type { EuiBreakpointSize, EuiBreakpoints } from '../utils/breakpoint.ts';
 import type { EuiFlyoutSignature } from './eui-flyout';
 import type { ModifierLike } from '@glint/template';
 
@@ -131,11 +135,43 @@ export interface EuiCollapsibleNavSignature {
     content: [];
   };
 }
+/**
+ * Upstream `EuiCollapsibleNav` (the flyout-based nav, not
+ * `EuiCollapsibleNavBeta`): an `EuiFlyout` with `euiCollapsibleNavStyles`
+ * composed over it (`push` while docked, `overlay` with
+ * `levels.navigation` z-index otherwise). Docking follows the nearest
+ * theme's breakpoints, like upstream `useIsWithinMinBreakpoint`.
+ */
 export default class EuiCollapsibleNavComponent extends Component<EuiCollapsibleNavSignature> {
-  @tracked windowIsLargeEnoughToPush = isWithinMinBreakpoint(
-    typeof window === 'undefined' ? -Infinity : window.innerWidth,
-    this.dockedBreakpoint
-  );
+  @tracked windowWidth =
+    typeof window === 'undefined' ? -Infinity : window.innerWidth;
+
+  get windowIsLargeEnoughToPush(): boolean {
+    return isWithinMinBreakpoint(
+      this.windowWidth,
+      this.dockedBreakpoint,
+      this.breakpoints
+    );
+  }
+
+  get breakpoints(): EuiBreakpoints {
+    return getEuiThemeContext(this).upstream.euiTheme
+      .breakpoint as EuiBreakpoints;
+  }
+
+  get flyoutType(): 'push' | 'overlay' {
+    return this.navIsDocked ? 'push' : 'overlay';
+  }
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiCollapsibleNavStyles);
+    return euiClass(
+      context,
+      composedOver(styles.euiCollapsibleNav, styles[this.flyoutType])
+    );
+  }
 
   get isDocked() {
     return this.args.isDocked ?? false;
@@ -191,13 +227,12 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
 
   @action
   functionToCallOnWindowResize() {
-    throttle(() => {
-      if (isWithinMinBreakpoint(window.innerWidth, this.dockedBreakpoint)) {
-        this.windowIsLargeEnoughToPush = true;
-      } else {
-        this.windowIsLargeEnoughToPush = false;
-      }
-    }, 50);
+    throttle(this, this.measureWindow, 50);
+  }
+
+  measureWindow() {
+    if (this.isDestroying || this.isDestroyed) return;
+    this.windowWidth = window.innerWidth;
   }
 
   <template>
@@ -219,7 +254,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
       {{#if (or @isOpen this.navIsDocked)}}
         <EuiFlyout
           id={{flyoutID}}
-          class="euiCollapsibleNav"
+          class="euiCollapsibleNav {{this.classes}}"
           @as={{this.as}}
           @size={{this.size}}
           @side={{this.side}}
@@ -228,7 +263,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
           @outsideClickCloses={{this.outsideClickCloses}}
           @closeButtonPosition={{this.closeButtonPosition}}
           @paddingSize={{this.paddingSize}}
-          @type={{if this.navIsDocked "push" "overlay"}}
+          @type={{this.flyoutType}}
           @hideCloseButton={{this.navIsDocked}}
           @pushMinBreakpoint={{this.dockedBreakpoint}}
           @onClose={{@onClose}}

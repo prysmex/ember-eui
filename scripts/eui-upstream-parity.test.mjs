@@ -105,7 +105,18 @@ const factories = {
   'components/icon/icon.styles.js': ['euiIconStyles'],
   'components/avatar/avatar.styles.js': ['euiAvatarStyles'],
   'components/beacon/beacon.styles.js': ['euiBeaconStyles'],
-  'components/health/health.styles.js': ['euiHealthStyles']
+  'components/health/health.styles.js': ['euiHealthStyles'],
+  // header and collapsible nav
+  'components/header/header.styles.js': ['euiHeaderVariables', 'euiHeaderStyles'],
+  'components/header/header_section/header_section.styles.js': ['euiHeaderSectionStyles'],
+  'components/header/header_section/header_section_item.styles.js': ['euiHeaderSectionItemStyles'],
+  'components/header/header_section/header_section_item_button.styles.js': ['euiHeaderSectionItemButtonStyles'],
+  'components/header/header_logo/header_logo.styles.js': ['euiHeaderLogoStyles'],
+  'components/header/header_links/header_links.styles.js': ['euiHeaderLinksStyles'],
+  'components/header/header_alert/header_alert.styles.js': ['euiHeaderAlertStyles'],
+  'components/header/header_breadcrumbs/header_breadcrumbs.styles.js': ['euiHeaderBreadcrumbsStyles'],
+  'components/collapsible_nav/collapsible_nav.styles.js': ['euiCollapsibleNavStyles'],
+  'components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js': ['euiCollapsibleNavGroupStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

@@ -1,20 +1,27 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  composedOver,
+  euiBreakpointsMedia,
+  euiOutsideBreakpointsMedia
+} from '../utils/eui/page-layout.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiHeaderSectionItemButtonStyles,
+  euiMaxBreakpoint
+} from '../utils/eui/styles.generated.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
-import EuiHideFor from './eui-hide-for.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiNotificationBadge from './eui-notification-badge.gts';
-import EuiShowFor from './eui-show-for.gts';
 
-import type { colorMapping } from '../utils/css-mappings/eui-notification-badge.ts';
-import type { EuiHideForBreakpoints } from './eui-hide-for';
+import type { EuiNotificationBadgeSignature } from './eui-notification-badge';
 
 const keyframes: Keyframe[] = [
   { transform: 'rotate(0)', offset: 0, easing: 'ease-in-out' },
@@ -146,12 +153,12 @@ export interface EuiHeaderSectionItemButtonSignature {
     /** Called on click. */
     onClick?: (event: MouseEvent) => void;
     /**
-     * `true` shows a dot; a number shows a count badge (a dot on small
-     * screens).
+     * `true` shows a dot; a number shows a count badge, which becomes a dot
+     * below the theme's `m` breakpoint (as upstream; formerly only `xs`).
      */
-    notification?: boolean | number;
-    /** `'accent'` or `'subdued'`. Defaults to `'accent'`. */
-    notificationColor?: keyof typeof colorMapping;
+    notification?: boolean | number | string;
+    /** `'accent'`, `'subdued'` or `'success'`. Defaults to `'accent'`. */
+    notificationColor?: EuiNotificationBadgeSignature['Args']['color'];
   };
   Blocks: {
     /** The button's content, usually an `EuiIcon` or `EuiAvatar`. */
@@ -159,8 +166,14 @@ export interface EuiHeaderSectionItemButtonSignature {
   };
 }
 
-const sizes: EuiHideForBreakpoints[] = ['xs'];
+/** Upstream small-screen check (`useIsWithinMaxBreakpoint('s')`), as CSS. */
+const SMALL_SCREENS = ['xs', 's'] as const;
 
+/**
+ * Upstream `EuiHeaderSectionItemButton` (`euiHeaderSectionItemButtonStyles`
+ * composed over EuiButtonEmpty). Upstream swaps a count badge for a dot on
+ * small screens in JS; here both are rendered and media queries pick one.
+ */
 export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHeaderSectionItemButtonSignature> {
   @tracked buttonRef: HTMLButtonElement | HTMLAnchorElement | undefined;
   @tracked animationTargetRef: HTMLSpanElement | undefined;
@@ -180,14 +193,85 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
 
   willDestroy(): void {
     super.willDestroy();
-    
     this.buttonRef = undefined;
     this.animationTargetRef = undefined;
   }
 
+  get notificationColor() {
+    return this.args.notificationColor ?? 'accent';
+  }
+
+  /**
+   * Interpolations for the notification icons, kept apart so they can be
+   * handed to EuiIcon as `@css` (composed last into the icon's own class,
+   * like upstream's `css` prop) once that argument is available here.
+   * Until then they become a class whose only overlapping rules with
+   * EuiIcon (size, display) are doubled-specificity media rules, so
+   * precedence never depends on insertion order.
+   */
+  @cached
+  get notificationCss() {
+    const context = getEuiThemeContext(this);
+    const { notification } = useEuiBorealisStyles(
+      context,
+      euiHeaderSectionItemButtonStyles
+    );
+    const small = euiBreakpointsMedia(context.upstream, SMALL_SCREENS);
+    const large = euiOutsideBreakpointsMedia(context.upstream, SMALL_SCREENS);
+    const { size } = context.upstream.euiTheme;
+    // Upstream's `dot` shrinks the icon below `s`; repeated with doubled
+    // specificity so it beats EuiIcon's own size class. The color rules stay
+    // single-class so `EuiHeader @theme="dark"` can recolor them, as upstream.
+    const dotSize = composedOver({
+      [euiMaxBreakpoint(context.upstream, 's')]: {
+        inlineSize: size.base,
+        blockSize: size.base
+      }
+    });
+    const hidden = (media: string | undefined) =>
+      media ? composedOver({ [media]: { display: 'none' } }) : undefined;
+    const dot = [
+      notification.euiHeaderSectionItemButton__notification,
+      notification.dot,
+      dotSize
+    ];
+    return {
+      dot,
+      // A count: badge on larger screens, dot on small ones.
+      badge: [
+        notification.euiHeaderSectionItemButton__notification,
+        notification.badge,
+        hidden(small)
+      ],
+      smallDot: [...dot, hidden(large)]
+    };
+  }
+
+  @cached
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(
+      context,
+      euiHeaderSectionItemButtonStyles
+    );
+    const css = this.notificationCss;
+    return {
+      // EuiButtonEmpty has no `@css` yet: upstream's `css` prop is emulated
+      // with doubled specificity (`&&`), so it wins regardless of order.
+      button: euiClass(
+        context,
+        composedOver(styles.euiHeaderSectionItemButton)
+      ),
+      content: euiClass(context, styles.euiHeaderSectionItemButton__content),
+      dot: euiClass(context, ...css.dot),
+      badge: euiClass(context, ...css.badge),
+      smallDot: euiClass(context, ...css.smallDot)
+    };
+  }
+
   <template>
     <EuiButtonEmpty
-      class="euiHeaderSectionItemButton"
+      class="euiHeaderSectionItemButton {{this.styles.button}}"
       @isDisabled={{@disabled}}
       @href={{@href}}
       @color="text"
@@ -197,35 +281,31 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
     >
       <span
         {{didInsert this.setAnimationTargetRef}}
-        class="euiHeaderSectionItemButton__content"
+        class="euiHeaderSectionItemButton__content {{this.styles.content}}"
       >
         {{yield}}
       </span>
       {{#if @notification}}
         {{#if (eq @notification true)}}
           <EuiIcon
-            @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
-            @color={{argOrDefault @notificationColor "accent"}}
+            @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot {{this.styles.dot}}"
+            @color={{this.notificationColor}}
             @type="dot"
             @size="l"
           />
-        {{else if @notification}}
-          <EuiHideFor @sizes={{sizes}}>
-            <EuiNotificationBadge
-              class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge"
-              @color={{argOrDefault @notificationColor "accent"}}
-            >
-              {{@notification}}
-            </EuiNotificationBadge>
-          </EuiHideFor>
-          <EuiShowFor @sizes={{sizes}}>
-            <EuiIcon
-              @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
-              @color={{argOrDefault @notificationColor "accent"}}
-              @type="dot"
-              @size="l"
-            />
-          </EuiShowFor>
+        {{else}}
+          <EuiNotificationBadge
+            class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge {{this.styles.badge}}"
+            @color={{this.notificationColor}}
+          >
+            {{@notification}}
+          </EuiNotificationBadge>
+          <EuiIcon
+            @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot {{this.styles.smallDot}}"
+            @color={{this.notificationColor}}
+            @type="dot"
+            @size="l"
+          />
         {{/if}}
       {{/if}}
     </EuiButtonEmpty>

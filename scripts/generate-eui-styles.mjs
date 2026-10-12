@@ -118,7 +118,18 @@ const entries = {
   'components/health/health.styles.js': ['euiHealthStyles'],
   'components/token/token_map.js': ['TOKEN_MAP', 'TOKEN_COLOR_TO_ICON_COLOR_MAP'],
   'services/color/is_color_dark.js': ['isColorDark'],
-  'services/color/hex_to_rgb.js': ['hexToRgb']
+  'services/color/hex_to_rgb.js': ['hexToRgb'],
+  // header and collapsible nav
+  'components/header/header.styles.js': ['euiHeaderVariables', 'euiHeaderStyles'],
+  'components/header/header_section/header_section.styles.js': ['euiHeaderSectionStyles'],
+  'components/header/header_section/header_section_item.styles.js': ['euiHeaderSectionItemStyles'],
+  'components/header/header_section/header_section_item_button.styles.js': ['euiHeaderSectionItemButtonStyles'],
+  'components/header/header_logo/header_logo.styles.js': ['euiHeaderLogoStyles'],
+  'components/header/header_links/header_links.styles.js': ['euiHeaderLinksStyles'],
+  'components/header/header_alert/header_alert.styles.js': ['euiHeaderAlertStyles'],
+  'components/header/header_breadcrumbs/header_breadcrumbs.styles.js': ['euiHeaderBreadcrumbsStyles'],
+  'components/collapsible_nav/collapsible_nav.styles.js': ['euiCollapsibleNavStyles'],
+  'components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js': ['euiCollapsibleNavGroupStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

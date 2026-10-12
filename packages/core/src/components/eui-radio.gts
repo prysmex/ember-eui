@@ -62,6 +62,12 @@ export interface EuiRadioSignature {
     isFakeLabelBlock?: boolean;
     /** Id of the input, linked to the label. Defaults to a random id. */
     id?: string;
+    /**
+     * Extra styles composed last into the wrapper's class (like upstream's
+     * `css` prop, which lands on the wrapper too). Prefer this to
+     * `@containerClass` when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The label, instead of `@label`. */
@@ -77,7 +83,7 @@ export default class EuiRadio extends Component<EuiRadioSignature> {
     const reset = euiCheckableReset(context.upstream);
 
     return {
-      root: euiClass(context, reset, styles.euiRadio),
+      root: euiClass(context, reset, styles.euiRadio, this.args.css),
       circle: (hasLabel: unknown) =>
         euiClass(
           context,

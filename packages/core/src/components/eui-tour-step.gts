@@ -8,6 +8,7 @@ import { EuiTourFooter, EuiTourHeader } from '../-private/eui-tour-parts.gts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiTourBeaconStyles,
   euiTourStyles
@@ -158,26 +159,22 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
   }
 
   /**
-   * Upstream `euiTourStyles` (arrow background matching the footer). It only
-   * holds a rule for the arrow inside the panel, so it never competes with
-   * the panel's own class.
+   * Upstream `euiTourStyles` (arrow background matching the footer), the
+   * popover's `panelProps.css`.
    */
   @cached
-  get panelClassName(): string {
+  get panelCss(): EuiCss {
     const context = getEuiThemeContext(this);
-    const styles = useEuiBorealisStyles(context, euiTourStyles);
-
-    return `euiTour ${euiClass(context, styles.euiTour)}`;
+    return useEuiBorealisStyles(context, euiTourStyles).euiTour;
   }
 
   /**
-   * Upstream `euiTourBeaconStyles` on a wrapper around EuiBeacon (no
-   * `@css` on it yet). The position slot follows the popover's actual
-   * position through the preceding arrow's `data-popover-arrow` (upstream
-   * reads it from `onPositionChange`).
+   * Upstream `euiTourBeaconStyles`, EuiBeacon's `css`. The position slot
+   * follows the popover's actual position through the preceding arrow's
+   * `data-popover-arrow` (upstream reads it from `onPositionChange`).
    */
   @cached
-  get beaconClasses(): string {
+  get beaconCss(): EuiCss {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiTourBeaconStyles);
     const positions = Object.fromEntries(
@@ -187,12 +184,7 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
       ])
     );
 
-    return `euiTour__beaconWrapper ${euiClass(
-      context,
-      styles.euiTourBeacon,
-      this.isOpen && styles.isOpen,
-      positions
-    )}`;
+    return [styles.euiTourBeacon, this.isOpen && styles.isOpen, positions];
   }
 
   @cached
@@ -236,7 +228,8 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
       @closePopover={{this.close}}
       @anchorPosition={{this.anchorPosition}}
       @ownFocus={{false}}
-      @panelClassName={{this.panelClassName}}
+      @panelClassName="euiTour"
+      @panelCss={{this.panelCss}}
       @hasArrow={{this.hasBeacon}}
       @offset={{if this.hasBeacon 10}}
       @ariaLabelledBy={{this.titleId}}
@@ -245,9 +238,7 @@ export default class EuiTourStep extends Component<EuiTourStepSignature> {
       <:button>{{yield}}</:button>
       <:arrowChildren>
         {{#if this.hasBeacon}}
-          <div class={{this.beaconClasses}}>
-            <EuiBeacon class="euiTour__beacon" />
-          </div>
+          <EuiBeacon class="euiTour__beacon" @css={{this.beaconCss}} />
         {{/if}}
       </:arrowChildren>
       <:content>

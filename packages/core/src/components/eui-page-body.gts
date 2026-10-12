@@ -5,7 +5,6 @@ import style from 'ember-style-modifier/modifiers/style';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
-  composedOver,
   euiPageBoxSizing,
   euiPagePadding,
   euiPageRestrictWidthStyle,
@@ -66,6 +65,8 @@ export default class EuiPageBody extends Component<EuiPageBodySignature> {
     return this.args.paddingSize ?? 'none';
   }
 
+  /** Upstream passes these as the panel's `css`, after its own styles. */
+  @cached
   get bodyStyles() {
     const styles = PAGE_BODY_STYLES;
     return [
@@ -86,12 +87,6 @@ export default class EuiPageBody extends Component<EuiPageBodySignature> {
     );
   }
 
-  /** Upstream passes the body styles as the panel's `css`, after its own. */
-  @cached
-  get panelClasses() {
-    return euiClass(getEuiThemeContext(this), composedOver(...this.bodyStyles));
-  }
-
   get inlineStyle() {
     return euiPageRestrictWidthStyle(this.args.restrictWidth, this.args.style);
   }
@@ -99,7 +94,8 @@ export default class EuiPageBody extends Component<EuiPageBodySignature> {
   <template>
     {{#if @panelled}}
       <EuiPanel
-        class="euiPageBody {{this.panelClasses}}"
+        class="euiPageBody"
+        @css={{this.bodyStyles}}
         @paddingSize={{this.paddingSize}}
         @borderRadius={{if @borderRadius @borderRadius "none"}}
         @color={{@color}}

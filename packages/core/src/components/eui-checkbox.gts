@@ -103,6 +103,12 @@ export interface EuiCheckboxSignature {
     id?: string;
     /** `name` of the input, for forms. */
     name?: string;
+    /**
+     * Extra styles composed last into the wrapper's class (like upstream's
+     * `css` prop, which lands on the wrapper too). Prefer this to
+     * `@containerClass` when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The label, instead of `@label`. */
@@ -120,7 +126,7 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
     const hidden: CSSObject = { display: 'none' };
 
     return {
-      root: euiClass(context, reset, styles.euiCheckbox),
+      root: euiClass(context, reset, styles.euiCheckbox, this.args.css),
       square: (hasLabel: unknown) =>
         euiClass(
           context,

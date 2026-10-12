@@ -82,6 +82,11 @@ export interface EuiBetaBadgeSignature {
      * Makes the badge a button calling this function.
      */
     onClick?: (event: MouseEvent) => void;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** Custom content instead of `@label` / `@iconType`. */
@@ -137,7 +142,8 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
       styles[this.args.color ?? 'hollow'],
       styles[size],
       styles[this.args.alignment ?? 'baseline'],
-      isCircular ? styles.badgeSizes.circle[size] : styles.badgeSizes.default[size]
+      isCircular ? styles.badgeSizes.circle[size] : styles.badgeSizes.default[size],
+      this.args.css
     );
   }
 

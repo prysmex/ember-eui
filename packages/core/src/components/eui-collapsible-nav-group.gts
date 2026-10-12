@@ -5,6 +5,7 @@ import { and, eq } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiCollapsibleNavGroupStyles,
   euiTitleStyles
@@ -91,18 +92,20 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
     const styles = useEuiBorealisStyles(context, euiCollapsibleNavGroupStyles);
     const title = useEuiBorealisStyles(context, euiTitleStyles);
     const { childrenWrapper } = styles;
+    // Upstream's `css` on EuiAccordion (or the plain div).
+    const rootCss: EuiCss = [
+      { boxSizing: 'border-box' },
+      styles.euiCollapsibleNavGroup,
+      this.args.isCollapsible ? styles.isCollapsible : styles.notCollapsible,
+      styles[this.background],
+      // Upstream's dark provider clones its paragraph color onto the group.
+      this.background === 'dark' && {
+        color: context.upstream.euiTheme.colors.textParagraph
+      }
+    ];
     return {
-      root: euiClass(
-        context,
-        { boxSizing: 'border-box' },
-        styles.euiCollapsibleNavGroup,
-        this.args.isCollapsible ? styles.isCollapsible : styles.notCollapsible,
-        styles[this.background],
-        // Upstream's dark provider clones its paragraph color onto the group.
-        this.background === 'dark' && {
-          color: context.upstream.euiTheme.colors.textParagraph
-        }
-      ),
+      rootCss,
+      root: euiClass(context, rootCss),
       children: euiClass(
         context,
         { boxSizing: 'border-box' },
@@ -145,7 +148,8 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
             {{#if (and @isCollapsible (has-block "title"))}}
               <EuiAccordion
                 id={{groupID}}
-                class="euiCollapsibleNavGroup {{classes.root}}"
+                class="euiCollapsibleNavGroup"
+                @css={{classes.rootCss}}
                 @buttonClassName="euiCollapsibleNavGroup__heading"
                 @initialIsOpen={{if
                   (eq @initialIsOpen undefined)

@@ -2,8 +2,8 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { composedOver } from '../utils/eui/page-layout.ts';
-import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiHeaderBreadcrumbsStyles } from '../utils/eui/styles.generated.ts';
 import EuiBreadcrumbs from './eui-breadcrumbs.gts';
 
@@ -24,15 +24,14 @@ export interface EuiHeaderBreadcrumbsSignature {
 
 /**
  * Upstream `EuiHeaderBreadcrumbs`: `EuiBreadcrumbs` with `max` 4 and
- * truncation, plus `euiHeaderBreadcrumbsStyles` composed over the
- * breadcrumbs' own styles (upstream passes them as `css`).
+ * truncation, plus `euiHeaderBreadcrumbsStyles` as its `@css` (as upstream).
  */
 export default class EuiHeaderBreadcrumbs extends Component<EuiHeaderBreadcrumbsSignature> {
   @cached
-  get classes(): string {
+  get css(): EuiCss {
     const context = getEuiThemeContext(this);
-    const styles = useEuiBorealisStyles(context, euiHeaderBreadcrumbsStyles);
-    return euiClass(context, composedOver(styles.euiHeaderBreadcrumbs));
+    return useEuiBorealisStyles(context, euiHeaderBreadcrumbsStyles)
+      .euiHeaderBreadcrumbs;
   }
 
   <template>
@@ -40,7 +39,8 @@ export default class EuiHeaderBreadcrumbs extends Component<EuiHeaderBreadcrumbs
       @max={{4}}
       @truncate={{true}}
       @breadcrumbs={{@breadcrumbs}}
-      class="euiHeaderBreadcrumbs {{this.classes}}"
+      class="euiHeaderBreadcrumbs"
+      @css={{this.css}}
       ...attributes
     />
   </template>

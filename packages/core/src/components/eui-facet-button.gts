@@ -4,6 +4,7 @@ import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiButtonDisplayContentStyles,
   euiButtonDisplayStyles,
@@ -43,10 +44,13 @@ export interface EuiFacetButtonSignature {
   };
 }
 
-/** Upstream applies `euiFacetButton__disabled` to the icon and the quantity. */
+/**
+ * Upstream applies `euiFacetButton__disabled` to the icon and the quantity.
+ * The icon is the caller's block content, so it is reached from here; the
+ * quantity badge gets it through `@css` (`quantityCss`).
+ */
 const DISABLED_CHILDREN = {
-  '&:disabled :is(.euiFacetButton__icon, .euiFacetButton__quantity)':
-    euiFacetButton__disabled
+  '&:disabled .euiFacetButton__icon': euiFacetButton__disabled
 };
 
 export default class EuiFacetButton extends Component<EuiFacetButtonSignature> {
@@ -56,6 +60,11 @@ export default class EuiFacetButton extends Component<EuiFacetButtonSignature> {
   get isDisabled() {
     return Boolean(this.args.isDisabled || this.args.isLoading);
   }
+  @cached
+  get quantityCss(): EuiCss {
+    return this.isDisabled ? euiFacetButton__disabled : undefined;
+  }
+
   get hasQuantity() {
     return typeof this.args.quantity === 'number';
   }
@@ -134,6 +143,7 @@ export default class EuiFacetButton extends Component<EuiFacetButtonSignature> {
           {{else if this.hasQuantity}}
             <EuiNotificationBadge
               class="euiFacetButton__quantity"
+              @css={{this.quantityCss}}
               @size="m"
               @color={{this.badgeColor}}
             >{{@quantity}}</EuiNotificationBadge>

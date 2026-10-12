@@ -5,7 +5,6 @@ import { modifier } from 'ember-modifier';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
-  composedOver,
   euiBreakpointsMedia,
   euiOutsideBreakpointsMedia
 } from '../utils/eui/page-layout.ts';
@@ -115,10 +114,8 @@ export default class EuiHeaderLinksComponent extends Component<EuiHeaderLinkSign
         gutter === 'none' ? { gap: 0 } : styles.gutterSizes[gutter],
         collapsed && { [collapsed]: { display: 'none' } }
       ),
-      popover: euiClass(
-        context,
-        expanded && composedOver({ [expanded]: { display: 'none' } })
-      ),
+      // Upstream's `css` on EuiPopover.
+      popover: expanded ? { [expanded]: { display: 'none' } } : undefined,
       mobileList: euiClass(context, styles.euiHeaderLinks__mobileList)
     };
   }
@@ -138,7 +135,7 @@ export default class EuiHeaderLinksComponent extends Component<EuiHeaderLinkSign
 
       {{#if this.hasMobileVersion}}
         <EuiPopover
-          class={{this.classes.popover}}
+          @css={{this.classes.popover}}
           @isOpen={{this.mobileMenuIsOpen}}
           @anchorPosition="downRight"
           @repositionOnScroll={{true}}

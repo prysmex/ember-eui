@@ -123,12 +123,3 @@ export function euiOutsideBreakpointsMedia(
     orderedBreakpoints(context).filter((size) => !sizes.includes(size))
   );
 }
-
-/**
- * Upstream composes a parent's `css` after the child's own styles in one
- * Emotion class. Ember applies the parent's styles as a second class on the
- * child's root, so doubling the class selector restores upstream's order.
- */
-export function composedOver(...styles: unknown[]): CSSObject {
-  return { '&&': styles as CSSObject[] } as unknown as CSSObject;
-}

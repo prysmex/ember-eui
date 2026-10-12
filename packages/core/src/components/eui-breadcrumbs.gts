@@ -14,6 +14,7 @@ import useState from '../helpers/use-state.ts';
 import { getBreakpoint } from '../utils/breakpoint.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiBreadcrumbContentStyles,
   euiBreadcrumbPopoverStyles,
@@ -168,6 +169,12 @@ interface EuiBreadcrumbsComponentArgs {
   type?: EuiBreadcrumbsType;
 
   /**
+   * Extra styles composed last into this component's class (like upstream's
+   * `css` prop). Prefer this to an extra class when styling it from a parent.
+   */
+  css?: EuiCss;
+
+  /**
    * Marks the last breadcrumb as the current page (`aria-current="page"`).
    * Defaults to `true`.
    */
@@ -259,6 +266,12 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
   }
 
   @cached
+  get classes(): string {
+    if (!this.args.css) return 'euiBreadcrumbs';
+    return `euiBreadcrumbs ${euiClass(getEuiThemeContext(this), this.args.css)}`;
+  }
+
+  @cached
   get listClasses(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiBreadcrumbsListStyles);
@@ -292,7 +305,7 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
   <template>
     <nav
       aria-label={{this.ariaLabel}}
-      class="euiBreadcrumbs"
+      class={{this.classes}}
       {{onWindowResize this.onResize}}
       ...attributes
     >
@@ -322,9 +335,9 @@ interface BreadcrumbItemSignature {
 }
 
 /**
- * One breadcrumb (or the collapsed "…" item). Its classes are computed in
- * its own cached getters, so they are serialized when EuiLink splats them,
- * after EuiLink's own class (Emotion insertion order, like upstream `css`).
+ * One breadcrumb (or the collapsed "…" item). Its link styles go through
+ * EuiLink's `@css`, composed last into the link's own class (like upstream
+ * `css`).
  */
 class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
   get isCollapsed(): boolean {
@@ -425,32 +438,35 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
       : undefined;
   }
 
+  /** The content's styles: EuiLink's `@css`, or the plain span's class. */
   @cached
-  get contentClass(): string {
+  get contentStyles(): CSSInterpolation[] {
     const context = getEuiThemeContext(this);
     const popoverStyles = useEuiBorealisStyles(
       context,
       euiBreadcrumbPopoverStyles
     );
-    return [
-      'euiBreadcrumb__content',
-      this.breadcrumb?.className,
-      this.isCollapsed
-        ? euiClass(
-            context,
-            popoverStyles.euiBreadcrumb__popoverButton,
-            ...this.contentCss,
-            this.interactionCss
-          )
-        : euiClass(
-            context,
-            ...this.contentCss,
-            ...this.truncationCss,
-            this.interactionCss
-          )
-    ]
+    return this.isCollapsed
+      ? [
+          popoverStyles.euiBreadcrumb__popoverButton,
+          ...this.contentCss,
+          this.interactionCss
+        ]
+      : [...this.contentCss, ...this.truncationCss, this.interactionCss];
+  }
+
+  get contentClassNames(): string {
+    return ['euiBreadcrumb__content', this.breadcrumb?.className]
       .filter(Boolean)
       .join(' ');
+  }
+
+  @cached
+  get contentClass(): string {
+    return `${this.contentClassNames} ${euiClass(
+      getEuiThemeContext(this),
+      ...this.contentStyles
+    )}`;
   }
 
   @cached
@@ -467,18 +483,18 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
     );
   }
 
+  /** Upstream's `css` on the collapsed item's EuiPopover. */
   @cached
-  get popoverClass(): string {
+  get popoverCss(): CSSInterpolation[] {
     const context = getEuiThemeContext(this);
     const popoverStyles = useEuiBorealisStyles(
       context,
       euiBreadcrumbPopoverStyles
     );
-    return euiClass(
-      context,
+    return [
       popoverStyles.popoverWrapper.euiBreadcrumb__popoverWrapper,
       !this.args.item.isLast && popoverStyles.popoverWrapper[this.args.type]
-    );
+    ];
   }
 
   <template>
@@ -486,13 +502,14 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
       {{#let (useState false) as |popover|}}
         <li class={{this.liClass}} data-test-subj="euiBreadcrumb">
           <EuiPopover
-            class={{this.popoverClass}}
+            @css={{this.popoverCss}}
             @isOpen={{popover.value}}
             @closePopover={{fn popover.setState false}}
           >
             <:button>
               <EuiLink
-                class={{this.contentClass}}
+                class={{this.contentClassNames}}
+                @css={{this.contentStyles}}
                 @color="subdued"
                 aria-label={{@collapsedLabel}}
                 title={{@collapsedLabel}}
@@ -524,7 +541,8 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
               @href={{this.breadcrumb.href}}
               @rel={{this.breadcrumb.rel}}
               title={{if innerText innerText}}
-              class={{this.contentClass}}
+              class={{this.contentClassNames}}
+              @css={{this.contentStyles}}
               aria-current={{this.ariaCurrent}}
               {{on "click" (optional this.breadcrumb.onClick)}}
             >

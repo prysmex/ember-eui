@@ -167,6 +167,11 @@ export interface EuiBadgeSignature {
       dataSelectedIconIndex?: number;
       iconClasses?: string;
     };
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The badge's text. */
@@ -274,7 +279,8 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
               ? styles.iconClickable[variant]
               : undefined
           ]),
-      this.customColorCss
+      this.customColorCss,
+      this.args.css
     );
   };
 

@@ -360,10 +360,14 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
     return euiClass(
       this.context,
       styles.content.euiCard__content,
-      styles.content.layout[this.layout],
-      // EuiText takes no `css`; its margin is scoped from here.
-      { '& > .euiCard__description': styles.euiCard__description }
+      styles.content.layout[this.layout]
     );
+  }
+
+  /** Upstream's `css` on the description EuiText. */
+  @cached
+  get descriptionCss(): EuiCss {
+    return this.cardStyles.euiCard__description;
   }
 
   @cached
@@ -405,15 +409,22 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
   }
 
   @cached
-  get betaAnchorClass(): string {
-    const beta = useEuiBorealisStyles(
+  get betaStyles() {
+    return useEuiBorealisStyles(
       this.context,
       betaFactories[this.paddingSize] ?? betaFactories.m
     );
-    return euiClass(this.context, beta.euiCard__betaBadgeAnchor, {
-      // EuiBetaBadge takes no `css`; upstream's badge slot is scoped here.
-      '& .euiCard__betaBadge': beta.euiCard__betaBadge
-    });
+  }
+
+  @cached
+  get betaAnchorClass(): string {
+    return euiClass(this.context, this.betaStyles.euiCard__betaBadgeAnchor);
+  }
+
+  /** Upstream's `css` on the EuiBetaBadge. */
+  @cached
+  get betaBadgeCss(): EuiCss {
+    return this.betaStyles.euiCard__betaBadge;
   }
 
   get spacerSize(): 's' | 'm' | 'l' | undefined {
@@ -532,6 +543,7 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
               @size="s"
               class="euiCard__description"
               id={{this.descriptionId}}
+              @css={{this.descriptionCss}}
             >
               <p>{{yield to="description"}}</p>
             </EuiText>
@@ -540,6 +552,7 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
               @size="s"
               class="euiCard__description"
               id={{this.descriptionId}}
+              @css={{this.descriptionCss}}
             >
               <p>{{@description}}</p>
             </EuiText>
@@ -556,6 +569,7 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
             <EuiBetaBadge
               id={{this.betaBadgeId}}
               class="euiCard__betaBadge"
+              @css={{this.betaBadgeCss}}
               @color={{this.betaBadgeColor}}
               @label={{@betaBadgeProps.label}}
               @title={{@betaBadgeProps.title}}

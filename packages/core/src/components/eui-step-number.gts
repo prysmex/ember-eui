@@ -4,6 +4,7 @@ import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiScreenReaderOnly,
   euiStepNumberContentStyles,
@@ -153,12 +154,11 @@ export default class EuiStepNumber extends Component<EuiStepNumberSignature> {
   }
 
   @cached
-  get iconClasses(): string {
+  get iconCss(): EuiCss {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiStepNumberContentStyles);
     const status = this.status;
-    return `euiStepNumber__icon ${euiClass(
-      context,
+    return [
       styles.euiStepNumber__icon,
       status === 'warning'
         ? styles.warning[this.size]
@@ -166,7 +166,7 @@ export default class EuiStepNumber extends Component<EuiStepNumberSignature> {
           ? styles[status]
           : undefined,
       this.size === 'none' && styles.none
-    )}`;
+    ];
   }
 
   @cached
@@ -178,7 +178,8 @@ export default class EuiStepNumber extends Component<EuiStepNumberSignature> {
     <span class={{this.classes}} ...attributes>
       {{#if this.iconType}}
         <EuiIcon
-          class={{this.iconClasses}}
+          class="euiStepNumber__icon"
+          @css={{this.iconCss}}
           @type={{this.iconType}}
           @size={{this.iconSize}}
           @aria-label={{this.label}}

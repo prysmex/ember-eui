@@ -8,7 +8,6 @@ import { eq } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
-  composedOver,
   euiBreakpointsMedia,
   euiOutsideBreakpointsMedia
 } from '../utils/eui/page-layout.ts';
@@ -202,12 +201,9 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
   }
 
   /**
-   * Interpolations for the notification icons, kept apart so they can be
-   * handed to EuiIcon as `@css` (composed last into the icon's own class,
-   * like upstream's `css` prop) once that argument is available here.
-   * Until then they become a class whose only overlapping rules with
-   * EuiIcon (size, display) are doubled-specificity media rules, so
-   * precedence never depends on insertion order.
+   * Upstream's `css` for the notification dot (EuiIcon) and badge
+   * (EuiNotificationBadge), composed last into their own classes through
+   * `@css`.
    */
   @cached
   get notificationCss() {
@@ -219,17 +215,15 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
     const small = euiBreakpointsMedia(context.upstream, SMALL_SCREENS);
     const large = euiOutsideBreakpointsMedia(context.upstream, SMALL_SCREENS);
     const { size } = context.upstream.euiTheme;
-    // Upstream's `dot` shrinks the icon below `s`; repeated with doubled
-    // specificity so it beats EuiIcon's own size class. The color rules stay
-    // single-class so `EuiHeader @theme="dark"` can recolor them, as upstream.
-    const dotSize = composedOver({
+    // Upstream's `dot` shrinks the icon below `s`.
+    const dotSize = {
       [euiMaxBreakpoint(context.upstream, 's')]: {
         inlineSize: size.base,
         blockSize: size.base
       }
-    });
+    };
     const hidden = (media: string | undefined) =>
-      media ? composedOver({ [media]: { display: 'none' } }) : undefined;
+      media ? { [media]: { display: 'none' } } : undefined;
     const dot = [
       notification.euiHeaderSectionItemButton__notification,
       notification.dot,
@@ -254,22 +248,17 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
       context,
       euiHeaderSectionItemButtonStyles
     );
-    const css = this.notificationCss;
     return {
-      // EuiButtonEmpty has no `@css` yet: upstream's `css` prop is emulated
-      // with doubled specificity (`&&`), so it wins regardless of order.
-      button: euiClass(
-        context,
-        composedOver(styles.euiHeaderSectionItemButton)
-      ),
-      content: euiClass(context, styles.euiHeaderSectionItemButton__content),
-      badge: euiClass(context, ...css.badge)
+      // Upstream's `css` on EuiButtonEmpty.
+      button: styles.euiHeaderSectionItemButton,
+      content: euiClass(context, styles.euiHeaderSectionItemButton__content)
     };
   }
 
   <template>
     <EuiButtonEmpty
-      class="euiHeaderSectionItemButton {{this.styles.button}}"
+      class="euiHeaderSectionItemButton"
+      @css={{this.styles.button}}
       @isDisabled={{@disabled}}
       @href={{@href}}
       @color="text"
@@ -294,7 +283,8 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
           />
         {{else}}
           <EuiNotificationBadge
-            class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge {{this.styles.badge}}"
+            class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge"
+            @css={{this.notificationCss.badge}}
             @color={{this.notificationColor}}
           >
             {{@notification}}

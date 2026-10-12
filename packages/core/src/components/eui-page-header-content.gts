@@ -11,13 +11,13 @@ import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
-  composedOver,
   euiPageBoxSizing,
   euiPagePadding,
   euiPageRestrictWidthStyle,
   euiScreenReaderOnlyCss
 } from '../utils/eui/page-layout.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiMaxBreakpoint,
   euiPageHeaderContentStyles,
@@ -270,20 +270,15 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
     return euiPageRestrictWidthStyle(this.args.restrictWidth);
   }
 
+  // Upstream's `css` on the EuiFlexGroup/EuiFlexItem children.
   @cached
-  get topClass() {
-    return euiClass(
-      this.context,
-      composedOver(this.styles.euiPageHeaderContent__top)
-    );
+  get topCss(): EuiCss {
+    return this.styles.euiPageHeaderContent__top;
   }
 
   @cached
-  get leftClass() {
-    return euiClass(
-      this.context,
-      composedOver(this.styles.euiPageHeaderContent__leftSideItems)
-    );
+  get leftCss(): EuiCss {
+    return this.styles.euiPageHeaderContent__leftSideItems;
   }
 
   /**
@@ -292,22 +287,21 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
    * visually below the same breakpoint.
    */
   @cached
-  get rightClass() {
+  get rightCss(): EuiCss {
     const upstream = this.context.upstream;
-    return euiClass(
-      this.context,
-      composedOver(this.styles.euiPageHeaderContent__rightSideItems, {
-        '& > .euiFlexItem': this.styles.euiPageHeaderContent__rightSideItem
-      }),
+    return [
+      this.styles.euiPageHeaderContent__rightSideItems,
+      { '& > .euiFlexItem': this.styles.euiPageHeaderContent__rightSideItem },
       this.args.responsive === 'reverse' && {
         [euiMaxBreakpoint(upstream, 'm') as string]: { order: -1 }
       }
-    );
+    ];
   }
 
+  /** Upstream's `iconProps.css`, composed into EuiIcon's own class. */
   @cached
-  get titleIconClass() {
-    return euiClass(this.context, this.styles.euiPageHeaderContent__titleIcon);
+  get titleIconCss(): EuiCss {
+    return this.styles.euiPageHeaderContent__titleIcon;
   }
 
   @cached
@@ -362,13 +356,14 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
               <EuiSpacer @size="s" />
             {{/if}}
             <EuiFlexGroup
-              class="euiPageHeaderContent__top {{this.topClass}}"
+              class="euiPageHeaderContent__top"
+              @css={{this.topCss}}
               @responsive={{not (not responsive)}}
               @alignItems={{if @alignItems (this.alignItems @alignItems)}}
               @gutterSize="l"
               @wrap={{true}}
             >
-              <EuiFlexItem @grow={{2}} class={{this.leftClass}}>
+              <EuiFlexItem @grow={{2}} @css={{this.leftCss}}>
                 {{#if layout.tabsAsTitle}}
                   <h1 class={{this.screenReaderOnlyClass}}>
                     {{this.selectedTabLabel}}
@@ -387,9 +382,9 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
                         @type={{@iconType}}
                         @iconClasses={{classNames
                           "euiPageHeaderContent__titleIcon"
-                          this.titleIconClass
                           @iconProps.className
                         }}
+                        @css={{this.titleIconCss}}
                       />
                     {{/if}}
                     {{@pageTitle}}
@@ -423,9 +418,9 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
                   @wrap={{true}}
                   class={{classNames
                     "euiPageHeaderContent__rightSideItems"
-                    this.rightClass
                     @rightSideGroupProps.className
                   }}
+                  @css={{this.rightCss}}
                 >
                   {{yield
                     (component EuiFlexItem grow=false)

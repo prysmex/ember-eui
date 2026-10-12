@@ -9,6 +9,7 @@ import { or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiImageButtonIconStyles,
   euiImageButtonStyles,
@@ -211,13 +212,9 @@ export default class EuiImage extends Component<EuiImageSignature> {
   }
 
   @cached
-  get closeIconClasses() {
+  get closeIconCss(): EuiCss {
     const styles = useEuiBorealisStyles(this.context, euiImageButtonIconStyles);
-    return `euiImageButton__icon ${euiClass(
-      this.context,
-      styles.euiImageButton__icon,
-      styles.closeFullScreen
-    )}`;
+    return [styles.euiImageButton__icon, styles.closeFullScreen];
   }
 
   @cached
@@ -340,7 +337,8 @@ export default class EuiImage extends Component<EuiImageSignature> {
           {{/if}}
         </figure>
         <EuiIcon
-          class={{this.closeIconClasses}}
+          class="euiImageButton__icon"
+          @css={{this.closeIconCss}}
           @type="fullScreenExit"
           @color="ghost"
         />

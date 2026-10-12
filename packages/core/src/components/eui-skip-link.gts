@@ -5,7 +5,8 @@ import { on } from '@ember/modifier';
 import { isTabbable } from 'tabbable';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiSkipLinkStyles } from '../utils/eui/styles.generated.ts';
 import EuiButton from './eui-button.gts';
 import { euiScreenReaderOnlyCss } from './eui-screen-reader-only.gts';
@@ -60,15 +61,15 @@ export default class EuiSkipLink extends Component<EuiSkipLinkSignature> {
   }
 
   @cached
-  get classes() {
+  /** Upstream's `css` on EuiButton. */
+  get css(): EuiCss {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiSkipLinkStyles);
-    return `euiSkipLink ${euiClass(
-      context,
+    return [
       euiScreenReaderOnlyCss(true),
       styles.euiSkipLink,
       this.position !== 'static' ? styles[this.position] : undefined
-    )}`;
+    ];
   }
 
   /** Upstream's click handling: fallbacks, scrolling and focus. */
@@ -111,7 +112,8 @@ export default class EuiSkipLink extends Component<EuiSkipLinkSignature> {
 
   <template>
     <EuiButton
-      class={{this.classes}}
+      class="euiSkipLink"
+      @css={{this.css}}
       @href="#{{@destinationId}}"
       @size="s"
       @fill={{true}}

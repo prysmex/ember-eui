@@ -41,6 +41,7 @@ Generated from the components' TypeScript signatures by
 | `@casing` | `EuiAvatarCasing` | `'uppercase'` for users and `'none'` for spaces | Text transform of the initials: `'capitalize'`, `'uppercase'`, `'lowercase'` or `'none'`. |
 | `@initialsLength` | `1 \| 2` | the number of words in the name, up to 2 | Number of initials to compute from `@name`, `1` or `2`. |
 | `@initialLength` | `1 \| 2` |  | Same as `@initialsLength` (the former name). |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

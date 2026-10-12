@@ -8,8 +8,8 @@ import { modifier } from 'ember-modifier';
 import { eq, or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiPanelSurfaceCss } from '../utils/eui/content-blocks.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiBorderColor,
   euiCallOutHeaderStyles,
@@ -17,6 +17,7 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
+import EuiPanel from './eui-panel.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
 
@@ -41,9 +42,6 @@ const DEFAULT_ICONS: Record<
   warning: { type: 'warningStatic' },
   danger: { type: 'errorFill', color: 'danger' }
 };
-
-/** Shrink-wraps the dismiss button (no line box around it). */
-const DISMISS_WRAPPER = { display: 'flex' } as const;
 
 const SUPER_NARROW_WIDTH = 400;
 const WIDE_BREAKPOINTS: Record<EuiCallOutSize, number> = { s: 800, m: 1000 };
@@ -167,23 +165,15 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
     return useEuiBorealisStyles(this.context, euiCallOutStyles);
   }
 
+  /** Upstream: an EuiPanel with the callout's styles as its `css`. */
   @cached
-  get classes() {
+  get panelCss(): EuiCss {
     const { upstream } = this.context;
-    const color = this.color;
-    // Same order as upstream: EuiPanel's styles, then the callout's `css`.
-    return euiClass(
-      this.context,
-      euiPanelSurfaceCss(this.context, {
-        color,
-        hasBorder: true,
-        borderRadius: 'none',
-        grow: false
-      }),
+    return [
       this.styles.euiCallOut,
-      { borderColor: euiBorderColor(upstream, color) },
+      { borderColor: euiBorderColor(upstream, this.color) },
       this.args.onDismiss && this.styles.hasDismissButton
-    );
+    ];
   }
 
   @cached
@@ -206,28 +196,21 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
     return euiClass(this.context, this.styles.actions);
   }
 
-  @cached
-  get iconClass() {
-    return euiClass(this.context, this.styles.icon);
+  // Upstream's `css` on the icon and the title.
+  get iconCss(): EuiCss {
+    return this.styles.icon;
   }
 
   @cached
-  get headerClass() {
-    return euiClass(
-      this.context,
-      useEuiBorealisStyles(this.context, euiCallOutHeaderStyles).euiCallOutHeader
-    );
+  get headerCss(): EuiCss {
+    return useEuiBorealisStyles(this.context, euiCallOutHeaderStyles)
+      .euiCallOutHeader;
   }
 
+  /** Upstream's `css` on the dismiss EuiButtonIcon. */
   @cached
-  get dismissClass() {
-    // On a wrapper, not the button: EuiButtonIcon's own class sets
-    // `position: relative`, and two classes would race on insertion order.
-    return euiClass(
-      this.context,
-      DISMISS_WRAPPER,
-      this.styles.dismissButton.euiCallOut__dismissButton
-    );
+  get dismissCss(): EuiCss {
+    return this.styles.dismissButton.euiCallOut__dismissButton;
   }
 
   get titleSize(): EuiTitleSignature['Args']['size'] {
@@ -271,8 +254,15 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
   }
 
   <template>
-    <div
-      class="euiCallOut euiCallOut--{{this.color}} {{this.classes}}"
+    <EuiPanel
+      class="euiCallOut euiCallOut--{{this.color}}"
+      @color={{this.color}}
+      @hasBorder={{true}}
+      @hasShadow={{false}}
+      @paddingSize="none"
+      @borderRadius="none"
+      @grow={{false}}
+      @css={{this.panelCss}}
       data-size={{this.size}}
       {{this.layoutObserver this.size}}
       ...attributes
@@ -281,7 +271,7 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
         <div class={{this.bodyClass}}>
           {{#if @iconType}}
             <EuiIcon
-              class={{this.iconClass}}
+              @css={{this.iconCss}}
               @type={{@iconType}}
               @size={{this.iconSize}}
               @color={{this.customIconColor}}
@@ -289,7 +279,8 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
             />
           {{else}}
             <EuiIcon
-              class="euiNotificationIcon {{this.iconClass}}"
+              class="euiNotificationIcon"
+              @css={{this.iconCss}}
               @type={{this.defaultIcon.type}}
               @size={{if (eq this.size "s") "m" "l"}}
               @color={{this.defaultIcon.color}}
@@ -301,7 +292,8 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
               <EuiTitle
                 @tagName={{if @heading @heading "p"}}
                 @size={{this.titleSize}}
-                class="euiCallOutHeader__title {{this.headerClass}}"
+                class="euiCallOutHeader__title"
+                @css={{this.headerCss}}
               >
                 {{#if (has-block "title")}}
                   {{yield to="title"}}
@@ -311,16 +303,15 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
               </EuiTitle>
               {{! After the title, so screen reader users know what it dismisses. }}
               {{#if @onDismiss}}
-                <span class={{this.dismissClass}}>
-                  <EuiButtonIcon
-                    data-test-subj="euiDismissCalloutButton"
-                    aria-label={{this.dismissLabel}}
-                    @iconType="cross"
-                    @color={{this.color}}
-                    @size="xs"
-                    {{on "click" @onDismiss}}
-                  />
-                </span>
+                <EuiButtonIcon
+                  data-test-subj="euiDismissCalloutButton"
+                  aria-label={{this.dismissLabel}}
+                  @iconType="cross"
+                  @color={{this.color}}
+                  @size="xs"
+                  @css={{this.dismissCss}}
+                  {{on "click" @onDismiss}}
+                />
               {{/if}}
             {{/if}}
             {{#if @text}}
@@ -345,16 +336,15 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
             {{/if}}
             {{#unless (or @title (has-block "title"))}}
               {{#if @onDismiss}}
-                <span class={{this.dismissClass}}>
-                  <EuiButtonIcon
-                    data-test-subj="euiDismissCalloutButton"
-                    aria-label={{this.dismissLabel}}
-                    @iconType="cross"
-                    @color={{this.color}}
-                    @size="xs"
-                    {{on "click" @onDismiss}}
-                  />
-                </span>
+                <EuiButtonIcon
+                  data-test-subj="euiDismissCalloutButton"
+                  aria-label={{this.dismissLabel}}
+                  @iconType="cross"
+                  @color={{this.color}}
+                  @size="xs"
+                  @css={{this.dismissCss}}
+                  {{on "click" @onDismiss}}
+                />
               {{/if}}
             {{/unless}}
           </div>
@@ -365,6 +355,6 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
           </div>
         {{/if}}
       </div>
-    </div>
+    </EuiPanel>
   </template>
 }

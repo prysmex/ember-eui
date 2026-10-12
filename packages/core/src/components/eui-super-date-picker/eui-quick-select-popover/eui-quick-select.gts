@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { cached, tracked } from '@glimmer/tracking';
+import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import type Owner from '@ember/owner';
@@ -12,9 +12,8 @@ import { lte } from 'ember-truth-helpers';
 import moment from 'moment';
 
 import { randomId } from '../../../-private/random-id.ts';
-import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
 import { euiQuickSelectStyles } from '../../../utils/eui/date-pickers.ts';
-import { euiClass } from '../../../utils/eui/styles.ts';
+import type { EuiCss } from '../../../utils/eui/styles.ts';
 import EuiButton from '../../eui-button.gts';
 import EuiButtonIcon from '../../eui-button-icon.gts';
 import EuiFieldNumber from '../../eui-field-number.gts';
@@ -176,13 +175,12 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
     );
   }
 
-  /** The previous/next buttons sit above the inputs, next to the title. */
-  @cached
-  get timeWindowButtonsClass() {
-    return euiClass(
-      getEuiThemeContext(this),
-      euiQuickSelectStyles.timeWindowButtons
-    );
+  /**
+   * The previous/next buttons sit above the inputs, next to the title
+   * (upstream's `css` on their EuiFlexGroup).
+   */
+  get timeWindowButtonsCss(): EuiCss {
+    return euiQuickSelectStyles.timeWindowButtons;
   }
 
   @action
@@ -206,54 +204,54 @@ export default class EuiQuickSelect extends Component<EuiQuickSelectSignature> {
       @css={{this.panelCss}}
       aria-describedby={{this.timeSelectionId}}
     >
-      <div class="euiQuickSelect__timeWindowButtons {{this.timeWindowButtonsClass}}">
-        <EuiFlexGroup
-          @alignItems="center"
-          @gutterSize="s"
-          @responsive={{false}}
-        >
-          <EuiFlexItem @grow={{false}}>
-            <EuiI18n
-              @token="euiQuickSelect.previousLabel"
-              @default="Previous time window"
-              as |Token|
-            >
-              <Token as |previousLabel|>
-                <EuiToolTip
-                  @content={{previousLabel}}
-                  @disableScreenReaderOutput={{true}}
-                >
-                  <EuiButtonIcon
-                    aria-label={{previousLabel}}
-                    @iconType="chevronSingleLeft"
-                    {{on "click" this.stepBackward}}
-                  />
-                </EuiToolTip>
-              </Token>
-            </EuiI18n>
-          </EuiFlexItem>
-          <EuiFlexItem @grow={{false}}>
-            <EuiI18n
-              @token="euiQuickSelect.nextLabel"
-              @default="Next time window"
-              as |Token|
-            >
-              <Token as |nextLabel|>
-                <EuiToolTip
-                  @content={{nextLabel}}
-                  @disableScreenReaderOutput={{true}}
-                >
-                  <EuiButtonIcon
-                    aria-label={{nextLabel}}
-                    @iconType="chevronSingleRight"
-                    {{on "click" this.stepForward}}
-                  />
-                </EuiToolTip>
-              </Token>
-            </EuiI18n>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </div>
+      <EuiFlexGroup
+        class="euiQuickSelect__timeWindowButtons"
+        @alignItems="center"
+        @gutterSize="s"
+        @responsive={{false}}
+        @css={{this.timeWindowButtonsCss}}
+      >
+        <EuiFlexItem @grow={{false}}>
+          <EuiI18n
+            @token="euiQuickSelect.previousLabel"
+            @default="Previous time window"
+            as |Token|
+          >
+            <Token as |previousLabel|>
+              <EuiToolTip
+                @content={{previousLabel}}
+                @disableScreenReaderOutput={{true}}
+              >
+                <EuiButtonIcon
+                  aria-label={{previousLabel}}
+                  @iconType="chevronSingleLeft"
+                  {{on "click" this.stepBackward}}
+                />
+              </EuiToolTip>
+            </Token>
+          </EuiI18n>
+        </EuiFlexItem>
+        <EuiFlexItem @grow={{false}}>
+          <EuiI18n
+            @token="euiQuickSelect.nextLabel"
+            @default="Next time window"
+            as |Token|
+          >
+            <Token as |nextLabel|>
+              <EuiToolTip
+                @content={{nextLabel}}
+                @disableScreenReaderOutput={{true}}
+              >
+                <EuiButtonIcon
+                  aria-label={{nextLabel}}
+                  @iconType="chevronSingleRight"
+                  {{on "click" this.stepForward}}
+                />
+              </EuiToolTip>
+            </Token>
+          </EuiI18n>
+        </EuiFlexItem>
+      </EuiFlexGroup>
       <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
         <EuiFlexItem>
           <EuiI18n

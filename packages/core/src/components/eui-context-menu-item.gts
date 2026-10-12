@@ -7,6 +7,7 @@ import { and, not } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiContextMenuItemStyles,
   euiListItemLayoutStyles
@@ -142,13 +143,23 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
         styles.text.euiContextMenuItem__text
       )}`,
       append: `euiListItemLayout__append ${euiClass(context, layout.euiListItemLayout__append)}`,
-      // EuiIcon/EuiLoadingSpinner are migrated children: no second Emotion
-      // class on them (rule precedence would depend on insertion order).
-      // Upstream `euiContextMenu__icon` (flex-shrink: 0) is already EuiIcon's
-      // own style; `euiContextMenuItem__arrow` (align-self: flex-end) waits
-      // for EuiIcon's `@css` (see overlays-handoff.md).
       icon: 'euiContextMenu__icon',
       arrow: 'euiContextMenu__arrow'
+    };
+  }
+
+  /**
+   * Upstream's `css` on the icon/spinner (`euiContextMenu__icon`) and the
+   * panel arrow (`euiContextMenuItem__arrow`), composed into the children's
+   * own classes.
+   */
+  @cached
+  get childCss(): { icon: EuiCss; arrow: EuiCss } {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiContextMenuItemStyles);
+    return {
+      icon: styles.euiContextMenu__icon,
+      arrow: styles.euiContextMenuItem__arrow
     };
   }
 
@@ -207,12 +218,16 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
           {{#if @isLoading}}
             <span class={{this.parts.prepend}}>
               {{! spinner is not part of eui spec }}
-              <EuiLoadingSpinner class={{this.parts.icon}} />
+              <EuiLoadingSpinner
+                class={{this.parts.icon}}
+                @css={{this.childCss.icon}}
+              />
             </span>
           {{else if @icon}}
             <span class={{this.parts.prepend}}>
               <EuiIcon
                 @iconClasses={{this.iconClasses}}
+                @css={{this.childCss.icon}}
                 @type={{@icon}}
                 @size="m"
                 @color="inherit"
@@ -228,6 +243,7 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
                 @type="chevronSingleRight"
                 @size="m"
                 @iconClasses={{this.parts.arrow}}
+                @css={{this.childCss.arrow}}
               />
             </span>
           {{/if}}

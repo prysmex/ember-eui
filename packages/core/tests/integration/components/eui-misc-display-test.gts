@@ -515,10 +515,11 @@ module('Integration | Component | Borealis misc display (tree view, text diff, e
     const arrow = el('[data-popover-arrow]', panel);
     assert.strictEqual(arrow.dataset['popoverArrow'], 'top', 'the popover opened above');
     assert.strictEqual(css(arrow).backgroundColor, rgb(light.components.tourFooterBackground), 'arrow matches the footer below it');
-    const beaconWrapper = el('.euiTour__beaconWrapper', panel);
-    assert.dom('.euiTour__beacon.euiBeacon', beaconWrapper).exists();
-    assert.strictEqual(beaconWrapper.previousElementSibling, arrow);
-    const beacon = css(beaconWrapper);
+    // The tour styles go on EuiBeacon itself, through its `@css`.
+    const beaconElement = el('.euiTour__beacon.euiBeacon', panel);
+    assert.dom('.euiTour__beaconWrapper', panel).doesNotExist('no wrapper');
+    assert.strictEqual(beaconElement.previousElementSibling, arrow);
+    const beacon = css(beaconElement);
     assert.strictEqual(beacon.position, 'absolute');
     assert.strictEqual(beacon.pointerEvents, 'none');
     assert.strictEqual(beacon.zIndex, '1');
@@ -547,7 +548,7 @@ module('Integration | Component | Borealis misc display (tree view, text diff, e
     await tourOpened();
     let panel = tourPanel()!;
     assert.strictEqual(el('[data-popover-arrow]', panel).dataset['popoverArrow'], 'left', 'default anchorPosition leftUp');
-    const beacon = css(el('.euiTour__beaconWrapper', panel));
+    const beacon = css(el('.euiTour__beacon', panel));
     assert.strictEqual(beacon.marginTop, `-${parseFloat(light.size.m) / 2}px`, 'left: centered vertically');
     assert.strictEqual(beacon.marginLeft, '0px');
     assert.notStrictEqual(css(el('[data-popover-arrow]', panel)).backgroundColor, rgb(light.components.tourFooterBackground), 'only the top arrow takes the footer color');

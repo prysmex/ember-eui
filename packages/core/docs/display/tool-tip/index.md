@@ -62,6 +62,8 @@ short and non-essential; it is not reachable on touch screens.
 | `@onFocus` | `() => void` |  | Called when the anchor gets focus. |
 | `@onBlur` | `() => void` |  | Called when the anchor loses focus. |
 | `@hasTitle` | `boolean` | `true` | Render the title. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the tooltip's class (like upstream's `css` prop). Prefer this to `@className` for styles. |
+| `@anchorCss` | `EuiCss` |  | Extra styles composed last into the anchor wrapper's class (like upstream's `anchorProps.css`). Prefer this to `@anchorClassName` for styles. |
 
 | Block | Description |
 | --- | --- |

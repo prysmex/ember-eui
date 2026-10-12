@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiFlexItemStyles } from '../utils/eui/styles.generated.ts';
 
 import type { CSSObject } from '@emotion/css/create-instance';
@@ -51,6 +52,11 @@ export interface EuiFlexItemSignature {
     grow?: EuiFlexItemGrow;
     /** Tag of the item. Defaults to `'div'`. */
     tagName?: string;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The content. */
@@ -86,7 +92,8 @@ export default class EuiFlexItem extends Component<EuiFlexItemSignature> {
               ? String(grow)
               : '1') as keyof typeof styles.growSizes
           ]
-        : undefined
+        : undefined,
+      this.args.css
     );
   }
 

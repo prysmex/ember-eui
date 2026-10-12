@@ -10,7 +10,6 @@ import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
   euiNotificationIconStyles,
-  euiTitleStyles,
   euiToastHeaderStyles,
   euiToastStyles
 } from '../utils/eui/styles.generated.ts';
@@ -18,6 +17,7 @@ import EuiButton from './eui-button.gts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
+import EuiTitle from './eui-title.gts';
 import EuiMarkdownFormat from './eui-markdown-format.gts';
 import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
 import EuiText from './eui-text.gts';
@@ -106,9 +106,6 @@ const DEFAULT_ICONS: Record<EuiToastColor, { type: string; color?: string }> =
     warning: { type: 'warningStatic' },
     danger: { type: 'errorFill', color: 'danger' }
   };
-
-/** React's global reset for the title paragraph (EuiTitle's own reset). */
-const TITLE_RESET = { boxSizing: 'border-box', margin: 0, padding: 0 } as const;
 
 /** Native Ember toast on the upstream EUI 123 / Borealis factories. */
 export default class EuiToast extends Component<EuiToastSignature> {
@@ -211,18 +208,9 @@ export default class EuiToast extends Component<EuiToastSignature> {
 
   /** Upstream renders EuiTitle size `xs` with the header styles as `css`. */
   @cached
-  get headerClass(): string {
-    const title = useEuiBorealisStyles(this.context, euiTitleStyles);
+  get headerCss(): EuiCss {
     const header = useEuiBorealisStyles(this.context, euiToastHeaderStyles);
-    return euiClass(
-      this.context,
-      TITLE_RESET,
-      { fontFamily: this.context.upstream.euiTheme.font.family },
-      title.euiTitle,
-      title.xs,
-      header.euiToastHeader,
-      this.args.onClose && header.hasDismissButton
-    );
+    return [header.euiToastHeader, this.args.onClose && header.hasDismissButton];
   }
 
   /** Icon styles composed into EuiIcon's own class (`@css`). */
@@ -286,10 +274,13 @@ export default class EuiToast extends Component<EuiToastSignature> {
           {{/if}}
           <div class={{this.contentClass}}>
             {{#if @title}}
-              <p
-                class="euiTitle euiToastHeader__title {{this.headerClass}}"
+              <EuiTitle
+                class="euiToastHeader__title"
                 data-test-subj="euiToastHeader__title"
-              >{{@title}}</p>
+                @tagName="p"
+                @size="xs"
+                @css={{this.headerCss}}
+              >{{@title}}</EuiTitle>
             {{/if}}
             {{! Upstream DOM order: the dismiss button follows the title, so
               screen reader users know what it dismisses. }}

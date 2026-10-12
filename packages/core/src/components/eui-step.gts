@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiStepContentStyles,
   euiStepStyles,
@@ -83,15 +84,14 @@ export default class EuiStep extends Component<EuiStepSignature> {
   }
 
   @cached
-  get titleClasses(): string {
+  get titleCss(): EuiCss {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiStepTitleStyles);
-    return `euiStep__title ${euiClass(
-      context,
+    return [
       styles.euiStep__title,
       this.args.status === 'disabled' && styles.isDisabled,
       styles[this.titleSize]
-    )}`;
+    ];
   }
 
   @cached
@@ -117,7 +117,8 @@ export default class EuiStep extends Component<EuiStepSignature> {
         <EuiTitle
           @size={{this.euiTitleSize}}
           @tagName={{if @headingElement @headingElement "p"}}
-          class={{this.titleClasses}}
+          class="euiStep__title"
+          @css={{this.titleCss}}
         >
           {{@title}}
         </EuiTitle>

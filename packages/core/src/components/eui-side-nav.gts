@@ -16,6 +16,7 @@ import EuiTitle from '../components/eui-title.gts';
 import { isItemOpen, isItemSelected } from '../helpers/is-item-open.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiScreenReaderOnly,
   euiSideNavMobileStyles
@@ -107,6 +108,8 @@ export interface EuiSideNavSignature {
   };
 }
 
+const MOBILE_HEADING_CSS = { marginBlockEnd: 0 };
+
 /** Native Ember side nav using the upstream EUI 123 / Borealis factories. */
 export default class EuiSideNavComponent extends Component<EuiSideNavSignature> {
   @service declare euiI18n: EuiI18n;
@@ -149,17 +152,16 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
       : 'euiSideNav';
   }
 
-  /** Upstream EuiSideNavHeading: `xs` title with an `l` bottom margin. */
-  @cached
-  get headingClass(): string {
-    const theme = this.context.upstream.euiTheme;
-    return [
-      'euiSideNav__heading',
-      this.args.headingProps?.className,
-      euiClass(this.context, { marginBlockEnd: theme.size.l })
-    ]
+  get headingClassNames(): string {
+    return ['euiSideNav__heading', this.args.headingProps?.className]
       .filter(Boolean)
       .join(' ');
+  }
+
+  /** Upstream EuiSideNavHeading: `xs` title with an `l` bottom margin. */
+  @cached
+  get headingCss(): EuiCss {
+    return { marginBlockEnd: this.context.upstream.euiTheme.size.l };
   }
 
   @cached
@@ -174,31 +176,8 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
   }
 
   /** The mobile heading drops the bottom margin (upstream `mobileHeadingUnset`). */
-  @cached
-  get mobileHeadingClass(): string {
-    return [
-      'euiSideNav__heading',
-      this.args.headingProps?.className,
-      euiClass(this.context, { marginBlockEnd: 0 })
-    ]
-      .filter(Boolean)
-      .join(' ');
-  }
-
-  @cached
-  get mobileToggleClass(): string {
-    return `euiSideNav__mobileToggle ${euiClass(
-      this.context,
-      this.mobileStyles.euiSideNav__mobileToggle
-    )}`;
-  }
-
-  @cached
-  get mobileToggleContentClass(): string {
-    return `euiSideNav__mobileToggleContent ${euiClass(
-      this.context,
-      this.mobileStyles.euiSideNav__mobileToggleContent
-    )}`;
+  get mobileHeadingCss(): EuiCss {
+    return MOBILE_HEADING_CSS;
   }
 
   @cached
@@ -244,11 +223,14 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
               @size="xs"
               @tagName={{this.headingElement}}
               id={{this.headingId}}
-              class={{this.mobileHeadingClass}}
+              class={{this.headingClassNames}}
+              @css={{this.mobileHeadingCss}}
             >
               <EuiButtonEmpty
-                class={{this.mobileToggleClass}}
-                @contentClasses={{this.mobileToggleContentClass}}
+                class="euiSideNav__mobileToggle"
+                @css={{this.mobileStyles.euiSideNav__mobileToggle}}
+                @contentClasses="euiSideNav__mobileToggleContent"
+                @contentCss={{this.mobileStyles.euiSideNav__mobileToggleContent}}
                 @iconType="apps"
                 @iconSide="right"
                 aria-controls={{this.contentId}}
@@ -321,7 +303,8 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                 @size="xs"
                 @tagName={{this.headingElement}}
                 id={{this.headingId}}
-                class={{this.headingClass}}
+                class={{this.headingClassNames}}
+                @css={{this.headingCss}}
               >
                 {{#if (has-block "heading")}}
                   {{yield to="heading"}}

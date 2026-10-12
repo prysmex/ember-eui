@@ -75,6 +75,7 @@ that keep the page context. Render it only while open:
 | `@hasAnimation` | `boolean` | `true` for overlays and `false` for push flyouts | Slides the flyout in (only when the user allows motion). |
 | `@shouldSelfFocus` | `boolean` | `true` | Focuses the flyout itself when it opens. |
 | `@focusTrapOptions` |  | allowing outside clicks | Options for the focus trap (focus-trap library), e.g. `{ initialFocus: '#name' }`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@isOpen` (Has no effect: render the flyout only while it is open.); `@isDocked` (Has no effect, see EuiCollapsibleNav; use `@type="push"`.); `@dockedBreakpoint` (Has no effect; use `@pushMinBreakpoint`.); `@showButtonIfDocked` (Has no effect.).
 

@@ -4,6 +4,7 @@ import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiFilterSelectItemStyles,
   euiTextTruncate
@@ -67,11 +68,14 @@ export default class EuiFilterSelectItem extends Component<EuiFilterSelectItemSi
         fontFamily: context.upstream.euiTheme.font.family
       },
       styles.euiFilterSelectItem,
-      this.args.isFocused && styles.isFocused,
-      // Upstream gives the content item the `eui-textTruncate` utility class.
-      this.args.truncateContent !== false &&
-        `& .euiFilterSelectItem__content { ${euiTextTruncate()} }`
+      this.args.isFocused && styles.isFocused
     )}`;
+  }
+
+  /** Upstream gives the content item the `eui-textTruncate` utility class. */
+  @cached
+  get contentCss(): EuiCss {
+    return this.args.truncateContent !== false ? euiTextTruncate() : undefined;
   }
 
   /** Upstream scrolls an option into view when it becomes focused. */
@@ -101,7 +105,11 @@ export default class EuiFilterSelectItem extends Component<EuiFilterSelectItemSi
             <EuiIcon @type={{this.icon}} @color={{if @checked "text"}} />
           </EuiFlexItem>
         {{/if}}
-        <EuiFlexItem class="euiFilterSelectItem__content" @tagName="span">
+        <EuiFlexItem
+          class="euiFilterSelectItem__content"
+          @tagName="span"
+          @css={{this.contentCss}}
+        >
           {{yield}}
         </EuiFlexItem>
       </EuiFlexGroup>

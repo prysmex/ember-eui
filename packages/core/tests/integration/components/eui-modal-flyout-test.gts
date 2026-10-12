@@ -248,7 +248,9 @@ module('Integration | Component | Borealis modal and flyout', function (hooks) {
 
     const closeIcon = el(modal, '.euiModal__closeIcon');
     assert.true(modal.lastElementChild!.contains(closeIcon), 'the close button comes after the content (upstream order)');
-    assert.dom(closeIcon.parentElement!).hasClass('euiModal__closeIconWrapper').hasStyle({ position: 'absolute', zIndex: '3' });
+    // Positioned through EuiButtonIcon's `@css`: no wrapper.
+    assert.strictEqual(closeIcon.parentElement, modal, 'a direct child of the modal');
+    assert.dom(closeIcon).hasClass('euiButtonIcon').hasStyle({ position: 'absolute', zIndex: '3' });
     const modalRect = modal.getBoundingClientRect();
     const iconRect = closeIcon.getBoundingClientRect();
     close(assert, modalRect.right - 1 - iconRect.right, SIZE('xs'), 'close button inline end inset');
@@ -613,7 +615,9 @@ module('Integration | Component | Borealis modal and flyout', function (hooks) {
     close(assert, rect().right - b.right, SIZE('s'), 'inside: inline end inset');
     close(assert, b.top - rect().top, SIZE('s'), 'inside: top inset');
     assert.dom(button()).hasClass('my-close').hasAttribute('data-test-subj', 'euiFlyoutCloseButton').hasStyle({ backgroundColor: 'rgba(0, 0, 0, 0)' });
-    assert.dom(button().parentElement!).hasClass('euiFlyout__closeButtonWrapper').hasStyle({ position: 'absolute', zIndex: '3' });
+    // Positioned through EuiButtonIcon's `@css`: no wrapper.
+    assert.strictEqual(button().parentElement, flyout, 'a direct child of the flyout');
+    assert.dom(button()).hasStyle({ position: 'absolute', zIndex: '3' });
     const rules = animationGuarded(assert, flyout, 'flyout');
     assert.true(rules.some((rule) => !rule.media && /animation:[^;]*0s/.test(rule.text)), 'without motion the animation has no duration');
 
@@ -622,6 +626,7 @@ module('Integration | Component | Borealis modal and flyout', function (hooks) {
     b = button().getBoundingClientRect();
     close(assert, rect().left - b.right, SIZE('l'), 'outside: left of a right flyout');
     assert.notStrictEqual(css(button()).backgroundColor, 'rgba(0, 0, 0, 0)', 'outside: filled');
+    assert.notStrictEqual(css(button()).boxShadow, 'none', 'outside: upstream XL shadow (closeButtonLookCss)');
 
     state.side = 'left';
     await settled();

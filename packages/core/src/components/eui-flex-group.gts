@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiFlexGroupStyles } from '../utils/eui/styles.generated.ts';
 import { euiFlexRootReset } from './eui-flex-item.gts';
 
@@ -62,6 +63,11 @@ export interface EuiFlexGroupSignature {
     responsive?: boolean;
     /** `'div'` or `'span'` (inside text). Defaults to `'div'`. */
     tagName?: 'div' | 'span';
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The `EuiFlexItem`s. */
@@ -87,7 +93,8 @@ export default class EuiFlexGroup extends Component<EuiFlexGroupSignature> {
       styles.gutterSizes[this.args.gutterSize ?? 'm'],
       styles.justifyContent[this.args.justifyContent ?? 'flexStart'],
       styles.alignItems[this.args.alignItems ?? 'stretch'],
-      styles.direction[direction]
+      styles.direction[direction],
+      this.args.css
     );
   }
 

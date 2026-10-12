@@ -430,6 +430,8 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     const windowButtons = el('.euiQuickSelect__timeWindowButtons', quick);
     assert.strictEqual(css(windowButtons).position, 'absolute');
     assert.strictEqual(css(windowButtons).right, '0px');
+    assert.dom(windowButtons).hasClass('euiFlexGroup', 'positioned through EuiFlexGroup @css, no wrapper');
+    assert.strictEqual(css(windowButtons).display, 'flex');
     assert.dom('[aria-label="Previous time window"]', quick).exists();
     assert.dom('[aria-label="Next time window"]', quick).exists();
     const value = el<HTMLInputElement>('input[aria-label="Time value"]', quick);
@@ -615,6 +617,7 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     await chooseTab('Now');
     const nowContent = el('.euiDatePopoverContent__now', content);
     assert.strictEqual(css(nowContent).paddingTop, '16px', 'padding m');
+    assert.dom(nowContent).hasClass('euiText', 'padded through EuiText @css, no wrapper');
     const nowButton = el('[data-test-subj="superDatePickerNowButton"]', content);
     assert.dom(nowButton).hasText('Set start date and time to now');
     await click(nowButton);

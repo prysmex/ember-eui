@@ -7,6 +7,7 @@ import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiKeyPadMenuItemChildStyles, euiKeyPadMenuItemStyles } from '../utils/eui/lists.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiBetaBadge from './eui-beta-badge.gts';
 import EuiCheckbox from './eui-checkbox.gts';
 import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
@@ -179,24 +180,20 @@ export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignat
   }
 
   @cached
-  get betaBadgeClass(): string {
-    return `euiKeyPadMenuItem__betaBadge ${euiClass(
-      this.context,
-      this.childStyles.euiKeyPadMenuItem__betaBadge
-    )}`;
+  get betaBadgeCss(): EuiCss {
+    return this.childStyles.euiKeyPadMenuItem__betaBadge;
   }
 
   @cached
-  get checkableClass(): string {
+  get checkableCss(): EuiCss {
     const styles = this.childStyles;
     const selected = this.isSelected;
     const disabled = this.isDisabled;
-    return `euiKeyPadMenuItem__checkableInput ${euiClass(
-      this.context,
+    return [
       styles.euiKeyPadMenuItem__checkableInput,
       !selected && disabled && styles.hideCheckableInput,
       !selected && !disabled && styles.showCheckableInputOnInteraction
-    )}`;
+    ];
   }
 
   <template>
@@ -214,7 +211,8 @@ export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignat
             <EuiBetaBadge
               @size="s"
               @color="subdued"
-              class={{this.betaBadgeClass}}
+              class="euiKeyPadMenuItem__betaBadge"
+              @css={{this.betaBadgeCss}}
               @label={{this.betaBadgeLetter}}
               @title={{@betaBadgeLabel}}
               @iconType={{@betaBadgeIconType}}
@@ -238,7 +236,8 @@ export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignat
             <EuiBetaBadge
               @size="s"
               @color="subdued"
-              class={{this.betaBadgeClass}}
+              class="euiKeyPadMenuItem__betaBadge"
+              @css={{this.betaBadgeCss}}
               @label={{this.betaBadgeLetter}}
               @title={{@betaBadgeLabel}}
               @iconType={{@betaBadgeIconType}}
@@ -255,7 +254,8 @@ export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignat
           {{#if this.isRadio}}
             <EuiRadio
               id={{this.itemId}}
-              @containerClass={{this.checkableClass}}
+              @containerClass="euiKeyPadMenuItem__checkableInput"
+              @css={{this.checkableCss}}
               @checked={{this.isSelected}}
               @disabled={{this.isDisabled}}
               @name={{@name}}
@@ -265,7 +265,8 @@ export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignat
           {{else}}
             <EuiCheckbox
               id={{this.itemId}}
-              @containerClass={{this.checkableClass}}
+              @containerClass="euiKeyPadMenuItem__checkableInput"
+              @css={{this.checkableCss}}
               @checked={{this.isSelected}}
               @disabled={{this.isDisabled}}
               @name={{@name}}

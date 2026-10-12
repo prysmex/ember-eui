@@ -9,8 +9,9 @@ import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
-import { euiTitleStyles } from '../utils/eui/styles.generated.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiLink from './eui-link.gts';
+import EuiTitle from './eui-title.gts';
 import EuiNotificationEventMessages from './eui-notification-event-messages.gts';
 import EuiNotificationEventMeta from './eui-notification-event-meta.gts';
 import EuiNotificationEventReadButton from './eui-notification-event-read-button.gts';
@@ -91,9 +92,6 @@ export interface EuiNotificationEventSignature {
   };
 }
 
-/** React's global reset for the heading (EuiTitle's own reset). */
-const TITLE_RESET = { boxSizing: 'border-box', margin: 0, padding: 0 } as const;
-
 /**
  * Native Ember notification event. EUI 123 has no counterpart (upstream
  * removed it); the Borealis styles live in `utils/eui/notification-event.ts`.
@@ -123,7 +121,7 @@ export default class EuiNotificationEvent extends Component<EuiNotificationEvent
     return this.args.tagName ?? 'article';
   }
 
-  get headingLevel(): string {
+  get headingLevel(): TextBlockSignature['Args']['tagName'] {
     return this.args.headingLevel ?? 'h2';
   }
 
@@ -151,19 +149,10 @@ export default class EuiNotificationEvent extends Component<EuiNotificationEvent
     return euiClass(this.context, this.styles.primaryAction);
   }
 
-  /** An `EuiTitle` `xs` heading: bold while unread, regular once read. */
+  /** The `EuiTitle` `xs` heading's `css`: bold while unread, regular once read. */
   @cached
-  get titleClass(): string {
-    const title = useEuiBorealisStyles(this.context, euiTitleStyles);
-    return euiClass(
-      this.context,
-      TITLE_RESET,
-      { fontFamily: this.context.upstream.euiTheme.font.family },
-      title.euiTitle,
-      title.xs,
-      this.styles.title,
-      this.args.isRead && this.styles.titleIsRead
-    );
+  get titleCss(): EuiCss {
+    return [this.styles.title, this.args.isRead && this.styles.titleIsRead];
   }
 
   onClickTitle = (event: MouseEvent): void => {
@@ -173,12 +162,11 @@ export default class EuiNotificationEvent extends Component<EuiNotificationEvent
   <template>
     {{#let
       (element this.tagName)
-      (element this.headingLevel)
       (and (not (eq @hasContextMenuBlock false)) (has-block "contextMenu"))
       (and
         (not (eq @hasPrimaryActionBlock false)) (has-block "primaryAction")
       )
-      as |Element Heading hasContextMenuBlock hasPrimaryActionBlock|
+      as |Element hasContextMenuBlock hasPrimaryActionBlock|
     }}
       <Element
         aria-labelledby={{this.titleId}}
@@ -230,13 +218,20 @@ export default class EuiNotificationEvent extends Component<EuiNotificationEvent
               @href={{@href}}
               {{on "click" this.onClickTitle}}
             >
-              <Heading class="euiTitle {{this.titleClass}}">{{@title}}</Heading>
+              <EuiTitle
+                @tagName={{this.headingLevel}}
+                @size="xs"
+                @css={{this.titleCss}}
+              >{{@title}}</EuiTitle>
             </EuiLink>
           {{else if @title}}
-            <Heading
+            <EuiTitle
               id={{this.titleId}}
-              class="euiNotificationEvent__title euiTitle {{this.titleClass}}"
-            >{{@title}}</Heading>
+              class="euiNotificationEvent__title"
+              @tagName={{this.headingLevel}}
+              @size="xs"
+              @css={{this.titleCss}}
+            >{{@title}}</EuiTitle>
           {{/if}}
 
           <EuiNotificationEventMessages

@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 import type { CSSObject } from '@emotion/css/create-instance';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiButtonDisplayContentStyles,
   euiButtonDisplaysColors,
@@ -42,6 +43,11 @@ export interface EuiButtonEmptySignature {
     /** Classes for the element wrapping the icon and text. */
     contentClasses?: string;
     /**
+     * Extra styles composed last into the class of the element wrapping the
+     * icon and text (upstream's `contentProps.css`).
+     */
+    contentCss?: EuiCss;
+    /**
      * Removes the padding on `'left'`, `'right'` or `'both'` sides, to align
      * the text with content above or below it.
      */
@@ -68,6 +74,11 @@ export interface EuiButtonEmptySignature {
     isSelected?: boolean;
     /** Same as `@isDisabled`. */
     disabled?: boolean;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The button's text. */
@@ -139,7 +150,8 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
       colors[this.isDisabled ? 'disabled' : color] ?? colors['primary'],
       flush && styles.flush,
       flush && styles[flush],
-      this.isDisabled && styles.isDisabled
+      this.isDisabled && styles.isDisabled,
+      this.args.css
     );
     return `euiButtonEmpty ${css}`;
   }
@@ -162,7 +174,7 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
           borderColor: 'currentColor',
           borderRightColor: 'transparent'
         }
-      })
+      }, this.args.contentCss)
     ]
       .filter(Boolean)
       .join(' ');

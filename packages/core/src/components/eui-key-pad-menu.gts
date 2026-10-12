@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiKeyPadMenuStyles } from '../utils/eui/styles.generated.ts';
 import EuiFormLabel from './eui-form-label.gts';
 
@@ -89,15 +90,15 @@ export default class EuiKeyPadMenu extends Component<EuiKeyPadMenuSignature> {
   }
 
   @cached
-  get legendClass(): string {
-    return euiClass(this.context, this.styles.euiKeyPadMenu__legend);
+  get legendCss(): EuiCss {
+    return this.styles.euiKeyPadMenu__legend;
   }
 
   <template>
     {{#if this.isCheckable}}
       <fieldset class={{this.classes}} aria-label={{this.ariaLegend}} ...attributes>
         {{#if this.legend}}
-          <EuiFormLabel @type="legend" class={{this.legendClass}}>
+          <EuiFormLabel @type="legend" @css={{this.legendCss}}>
             {{this.legend}}
           </EuiFormLabel>
         {{/if}}

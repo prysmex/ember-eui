@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 import type { CSSObject } from '@emotion/css/create-instance';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiButtonDisplayStyles,
   euiButtonDisplayContentStyles,
@@ -28,6 +29,11 @@ export interface EuiButtonSignature {
     color?: string;
     /** Classes for the element wrapping the icon and text. */
     contentClasses?: string;
+    /**
+     * Extra styles composed last into the class of the element wrapping the
+     * icon and text (upstream's `contentProps.css`).
+     */
+    contentCss?: EuiCss;
     /** Same as `@isDisabled`. */
     disabled?: boolean;
     /**
@@ -76,6 +82,11 @@ export interface EuiButtonSignature {
     element?: string;
     /** Disables the button and greys it out. */
     isDisabled?: boolean;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The button's text. */
@@ -142,7 +153,8 @@ export default class EuiButton extends Component<EuiButtonSignature> {
       this.args.fullWidth && display.fullWidth,
       this.isDisabled && display.isDisabled,
       colorStyles[this.isDisabled ? 'disabled' : color] ??
-        colorStyles['primary']
+        colorStyles['primary'],
+      this.args.css
     );
     return `${base} ${styles}`;
   }
@@ -165,7 +177,7 @@ export default class EuiButton extends Component<EuiButtonSignature> {
           borderColor: 'currentColor',
           borderRightColor: 'transparent'
         }
-      })
+      }, this.args.contentCss)
     ]
       .filter(Boolean)
       .join(' ');

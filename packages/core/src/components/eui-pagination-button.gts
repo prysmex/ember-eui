@@ -4,7 +4,8 @@ import { concat } from '@ember/helper';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiPaginationButtonStyles } from '../utils/eui/styles.generated.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 
@@ -64,20 +65,18 @@ export default class EuiPaginationButton extends Component<EuiPaginationButtonSi
         );
   }
 
+  /** Upstream's `css` on EuiButtonEmpty. */
   @cached
-  get classes(): string {
+  get css(): EuiCss {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiPaginationButtonStyles);
-    return `euiPaginationButton ${euiClass(
-      context,
-      styles.euiPaginationButton,
-      this.args.isActive && styles.isActive
-    )}`;
+    return [styles.euiPaginationButton, this.args.isActive && styles.isActive];
   }
 
   <template>
     <EuiButtonEmpty
-      class={{this.classes}}
+      class="euiPaginationButton"
+      @css={{this.css}}
       aria-label={{this.ariaLabel}}
       @size="s"
       @color="text"

@@ -10,6 +10,7 @@ import style from 'ember-style-modifier/modifiers/style';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { dialogDescription } from '../utils/eui/modal-flyout.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiModalStyles } from '../utils/eui/styles.generated.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiOverlayMask from './eui-overlay-mask.gts';
@@ -74,6 +75,11 @@ export interface EuiModalSignature {
       returnFocusOnDeactivate?: boolean;
       preventScroll?: boolean;
     };
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** `EuiModalHeader`, `EuiModalBody` and `EuiModalFooter`. */
@@ -108,29 +114,19 @@ export default class EuiModal extends Component<EuiModalSignature> {
         color: context.upstream.euiTheme.colors.textParagraph
       },
       styles.euiModal,
-      this.maxWidth === true ? styles.defaultMaxWidth : undefined
+      this.maxWidth === true ? styles.defaultMaxWidth : undefined,
+      this.args.css
     )}`;
   }
 
   /**
-   * Upstream's close button `css` (`euiModal__closeIcon`, all positioning).
-   * Migrated children must not get a second Emotion class, so until
-   * EuiButtonIcon's `@css` lands here it is applied to a positioned
-   * wrapper (`euiModal__closeIconWrapper`); switch to `@css` at merge.
+   * Upstream's close button `css` (`euiModal__closeIcon`, all positioning),
+   * composed into EuiButtonIcon's own class through `@css`.
    */
   @cached
   get closeIconCss() {
     const context = getEuiThemeContext(this);
     return useEuiBorealisStyles(context, euiModalStyles).euiModal__closeIcon;
-  }
-
-  @cached
-  get closeIconWrapperClass() {
-    return `euiModal__closeIconWrapper ${euiClass(
-      getEuiThemeContext(this),
-      { display: 'flex', inlineSize: 'max-content' },
-      this.closeIconCss
-    )}`;
   }
 
   @cached
@@ -215,15 +211,14 @@ export default class EuiModal extends Component<EuiModalSignature> {
           id={{this.descriptionId}}
           class={{this.descriptionClass}}
         >{{this.description}}</p>
-        <span class={{this.closeIconWrapperClass}}>
-          <EuiButtonIcon
-            class="euiModal__closeIcon"
-            @iconType="cross"
-            @color="text"
-            aria-label={{this.closeLabel}}
-            {{on "click" this.onCloseClick}}
-          />
-        </span>
+        <EuiButtonIcon
+          class="euiModal__closeIcon"
+          @iconType="cross"
+          @color="text"
+          @css={{this.closeIconCss}}
+          aria-label={{this.closeLabel}}
+          {{on "click" this.onCloseClick}}
+        />
       </div>
     </EuiOverlayMask>
   </template>

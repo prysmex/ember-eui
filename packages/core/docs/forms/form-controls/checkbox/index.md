@@ -60,6 +60,7 @@ A checkbox: a styled square over a visually hidden native
 | `@inputRef` | `(element: HTMLInputElement) => void` |  | Called with the `<input>` element once rendered. |
 | `@id` | `string` | a random id | Id of the input, linked to the label. |
 | `@name` | `string` |  | `name` of the input, for forms. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the wrapper's class (like upstream's `css` prop, which lands on the wrapper too). Prefer this to `@containerClass` when styling it from a parent. |
 
 Deprecated: `@icon` (Has no effect; upstream EUI has no icon variant.); `@compressed` (Has no effect on a single checkbox (upstream EUI has no compressed checkbox). `EuiCheckboxGroup`'s `@compressed` tightens the spacing between rows.).
 

@@ -84,6 +84,8 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         @initialFocus={{@initialFocus}}
         @ownFocus={{@ownFocus}}
         @panelClassName={{@panelClassName}}
+        @css={{@css}}
+        @panelCss={{@panelCss}}
         @panelPaddingSize={{@panelPaddingSize}}
         @panelStyle={{@panelStyle}}
         @panelRef={{@panelRef}}

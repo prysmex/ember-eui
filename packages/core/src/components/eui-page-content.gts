@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
-import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiClass } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiPanel from './eui-panel.gts';
 
 import type { EuiPanelSignature } from './eui-panel';
@@ -52,10 +51,9 @@ export default class EuiPageContent extends Component<EuiPageContentSignature> {
 
   /** Positions inside EuiPageBody's flex column (upstream removed this API). */
   @cached
-  get positionClass() {
+  get positionCss(): EuiCss {
     const { verticalPosition, horizontalPosition } = this.args;
-    return euiClass(
-      getEuiThemeContext(this),
+    return [
       verticalPosition === 'center' && {
         alignSelf: 'center',
         marginBlock: 'auto'
@@ -66,13 +64,14 @@ export default class EuiPageContent extends Component<EuiPageContentSignature> {
         inlineSize: 'auto',
         maxInlineSize: '100%'
       }
-    );
+    ];
   }
 
   <template>
     <EuiPanel
       role={{this.role}}
-      class="euiPageContent {{this.positionClass}}"
+      class="euiPageContent"
+      @css={{this.positionCss}}
       @hasShadow={{@hasShadow}}
       @hasBorder={{@hasBorder}}
       @paddingSize={{if @paddingSize @paddingSize "l"}}

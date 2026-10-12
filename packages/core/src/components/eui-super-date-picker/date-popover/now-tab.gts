@@ -7,7 +7,7 @@ import { eq } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
 import { euiPaddingSize } from '../../../utils/eui/styles.generated.ts';
-import { euiClass } from '../../../utils/eui/styles.ts';
+import type { EuiCss } from '../../../utils/eui/styles.ts';
 import EuiButton from '../../eui-button.gts';
 import EuiI18n from '../../eui-i18n.gts';
 import EuiText from '../../eui-text.gts';
@@ -23,19 +23,20 @@ export interface NowTabSignature {
 }
 
 export default class EuiSuperDatePickerDatePopoverNowTab extends Component<NowTabSignature> {
-  /** Upstream pads the text with `useEuiPaddingCSS().m`. */
+  /** Upstream pads the text with `useEuiPaddingCSS().m` (EuiText `css`). */
   @cached
-  get paddingClass() {
+  get paddingCss(): EuiCss {
     const context = getEuiThemeContext(this);
-    return euiClass(context, {
-      boxSizing: 'border-box',
-      padding: euiPaddingSize(context.upstream, 'm')
-    });
+    return { padding: euiPaddingSize(context.upstream, 'm') };
   }
 
   <template>
-    <div class="euiDatePopoverContent__now {{this.paddingClass}}">
-    <EuiText @size="s" @color="subdued">
+    <EuiText
+      class="euiDatePopoverContent__now"
+      @size="s"
+      @color="subdued"
+      @css={{this.paddingCss}}
+    >
       <p>
         <EuiI18n
           @token="euiDatePopoverContent.nowTabContent"
@@ -77,6 +78,5 @@ export default class EuiSuperDatePickerDatePopoverNowTab extends Component<NowTa
         {{/if}}
       </EuiButton>
     </EuiText>
-    </div>
   </template>
 }

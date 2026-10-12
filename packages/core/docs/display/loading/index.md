@@ -48,6 +48,7 @@ A spinning circle, for loading content or actions in progress.
 | --- | --- | --- | --- |
 | `@size` | `'s' \| 'm' \| 'l' \| 'xl' \| 'xxl'` | `'m'` | `'s'`, `'m'`, `'l'`, `'xl'` or `'xxl'`. |
 | `@color` | `{ border?: string; highlight?: string }` |  | Native upstream border/highlight color customization. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
 

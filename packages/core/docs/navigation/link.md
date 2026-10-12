@@ -50,6 +50,7 @@ link (add `{{on "click" …}}`).
 | `@rel` | `string` |  | `rel` of the link. `noreferrer` is always added, and `noopener` too for `@target="_blank"`. |
 | `@target` | `string` |  | `target` of the link. `'_blank'` also adds the external icon and a screen reader note that it opens a new tab. |
 | `@type` | `string` | `'button'` | `type` of the button (without `@href`). |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

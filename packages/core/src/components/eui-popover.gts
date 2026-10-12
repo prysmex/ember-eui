@@ -196,6 +196,16 @@ export type EuiPopoverArgs = {
    */
   rootCss?: CSSInterpolation;
   /**
+   * Extra styles composed last into the root's class (like upstream's `css`
+   * prop). Prefer this to an extra class when styling it from a parent.
+   */
+  css?: CSSInterpolation;
+  /**
+   * Extra styles composed last into the panel's class (like upstream's
+   * `panelProps.css`). Prefer this to `@panelClassName` for styles.
+   */
+  panelCss?: CSSInterpolation;
+  /**
    * By default, popover content inherits the z-index of the anchor
    * component; pass `zIndex` to override
    */
@@ -897,7 +907,8 @@ export default class EuiPopoverComponent
       context,
       styles.euiPopover,
       { display, label: display },
-      this.args.rootCss
+      this.args.rootCss,
+      this.args.css
     )}`;
   }
 
@@ -941,7 +952,8 @@ export default class EuiPopoverComponent
         : [
             styles.hasTransform.hasTransform,
             isOpen && position && styles.hasTransform[position]
-          ])
+          ]),
+      this.args.panelCss
     );
 
     return [

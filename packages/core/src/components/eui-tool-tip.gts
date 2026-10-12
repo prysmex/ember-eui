@@ -17,6 +17,7 @@ import classNames from '../helpers/class-names.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiToolTipAnchorStyles,
   euiToolTipStyles
@@ -202,6 +203,17 @@ export type EuiTooltipArgs = {
 
   /** Render the title. Defaults to `true`. */
   hasTitle?: boolean;
+  /**
+   * Extra styles composed last into the tooltip's class (like upstream's
+   * `css` prop). Prefer this to `@className` for styles.
+   */
+  css?: EuiCss;
+  /**
+   * Extra styles composed last into the anchor wrapper's class (like
+   * upstream's `anchorProps.css`). Prefer this to `@anchorClassName` for
+   * styles.
+   */
+  anchorCss?: EuiCss;
 };
 
 /**
@@ -377,7 +389,8 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     return `euiToolTipAnchor ${euiClass(
       context,
       styles.euiToolTipAnchor,
-      styles[this.anchorDisplay] ?? styles.inlineBlock
+      styles[this.anchorDisplay] ?? styles.inlineBlock,
+      this.args.anchorCss
     )}`;
   }
 
@@ -604,6 +617,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
             @calculatedPosition={{this.calculatedPosition}}
             @positionToolTip={{this.positionToolTip}}
             @popoverRef={{this.setPopoverRef}}
+            @css={{@css}}
             id={{this.id}}
             @hasTitle={{if
               (and (argOrDefault @hasTitle true) (or hasTitleBlock @title))

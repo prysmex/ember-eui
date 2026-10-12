@@ -2,12 +2,10 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
-import {
-  euiSelectableMessageStyles,
-  euiTextStyles
-} from '../utils/eui/styles.generated.ts';
-import { euiTextColorCss } from './eui-text-color.gts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import { euiSelectableMessageStyles } from '../utils/eui/styles.generated.ts';
+import EuiText from './eui-text.gts';
 
 /**
  * A message shown by `EuiSelectable` instead of its list: while loading,
@@ -25,40 +23,23 @@ export interface EuiSelectableMessageSignature {
   };
 }
 
-/**
- * Upstream renders `<EuiText color="subdued" size="xs" css={message}>`. Until
- * EuiText takes `@css`, the same styles are composed here into one class
- * (text, size, color, then the message styles), so precedence never depends
- * on rule insertion order.
- */
+/** Upstream: `<EuiText color="subdued" size="xs" css={message}>`. */
 export default class EuiSelectableMessage extends Component<EuiSelectableMessageSignature> {
   @cached
-  get classes(): string {
+  get css(): EuiCss {
     const context = getEuiThemeContext(this);
-    const { euiTheme } = context.upstream;
-    const text = useEuiBorealisStyles(context, euiTextStyles);
     const message = useEuiBorealisStyles(context, euiSelectableMessageStyles);
-    return euiClass(
-      context,
-      {
-        boxSizing: 'border-box',
-        margin: 0,
-        fontFamily: euiTheme.font.family,
-        '& :where(p)': { margin: 0, padding: 0, fontSize: 'inherit' }
-      },
-      text.euiText,
-      text.xs,
-      euiTextColorCss(context, 'subdued'),
-      message.euiSelectableMessage,
-      this.args.bordered && message.bordered
-    );
+    return [message.euiSelectableMessage, this.args.bordered && message.bordered];
   }
 
   <template>
-    <div
-      class="euiText euiSelectableMessage {{this.classes}}"
+    <EuiText
+      class="euiSelectableMessage"
       data-test-subj="euiSelectableMessage"
+      @color="subdued"
+      @size="xs"
+      @css={{this.css}}
       ...attributes
-    >{{yield}}</div>
+    >{{yield}}</EuiText>
   </template>
 }

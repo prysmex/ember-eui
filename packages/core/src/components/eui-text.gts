@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiTextStyles } from '../utils/eui/styles.generated.ts';
 import { euiTextAlignCss } from './eui-text-align.gts';
 import { euiTextColorCss } from './eui-text-color.gts';
@@ -15,7 +16,7 @@ import type { EuiTextColorValue } from './eui-text-color.gts';
  * The parts of React EUI's global reset that EuiText content relies on,
  * scoped to descendants. `:where()` keeps them below every upstream rule.
  */
-function euiTextReset({ euiTheme }: EuiBorealisContext): CSSObject {
+export function euiTextReset({ euiTheme }: EuiBorealisContext): CSSObject {
   return {
     boxSizing: 'border-box',
     margin: 0,
@@ -53,6 +54,11 @@ export interface EuiTextSignature {
      * `'danger'`, or a CSS color. Inherits when omitted.
      */
     color?: EuiTextColorValue;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** HTML content (paragraphs, lists, headings, code…), styled by EuiText. */
@@ -74,7 +80,8 @@ export default class EuiText extends Component<EuiTextSignature> {
       this.args.grow === false ? styles.constrainedWidth : undefined,
       styles[this.args.size ?? 's'],
       color ? euiTextColorCss(context, color) : undefined,
-      textAlign ? euiTextAlignCss(textAlign) : undefined
+      textAlign ? euiTextAlignCss(textAlign) : undefined,
+      this.args.css
     );
   }
 

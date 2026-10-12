@@ -57,6 +57,7 @@ EuiRadioGroup.
 | `@containerClass` | `string` |  | Extra classes for the wrapper around the input and label. |
 | `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the `<input>` element once rendered. |
 | `@id` | `string` | a random id | Id of the input, linked to the label. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the wrapper's class (like upstream's `css` prop, which lands on the wrapper too). Prefer this to `@containerClass` when styling it from a parent. |
 
 Deprecated: `@compressed` (Has no effect on a single radio (upstream EUI has no compressed radio). `EuiRadioGroup`'s `@compressed` tightens the spacing between rows.).
 

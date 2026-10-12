@@ -79,15 +79,15 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@isLoading` | `boolean` |  | Shows a spinner instead of the icon and disables the button. |
-| `@size` |  | `'m'` | `'xs'`, `'s'` or `'m'`. |
-| `@iconSize` |  | `'m'` (`'s'` for `@size="xs"`) | Size of the icon. |
-| `@color` |  | `'primary'` | `'primary'`, `'danger'`, `'text'`, `'ghost'`, `'warning'` or `'success'`. |
+| `@size` | `'xs' \| 's' \| 'm'` | `'m'` | `'xs'`, `'s'` or `'m'`. |
+| `@iconSize` |  | `'m'` (always `'s'` for `@size="xs"`) | Size of the icon. |
+| `@color` | `string` | `'primary'` | `'primary'`, `'accent'`, `'accentSecondary'`, `'success'`, `'warning'`, `'danger'`, `'text'`, `'neutral'` or `'risk'`. `'ghost'` is still accepted and renders as `'text'` (latest EUI dropped it): wrap it in a dark `EuiEmotionProvider`. |
 | `@iconType` |  |  | Icon next to the text; anything `EuiIcon`'s `@type` accepts. |
 | `@iconSide` |  | the left side | `'right'` puts the icon after the text. |
 | `@iconClasses` | `string` |  | Extra classes for the icon. |
 | `@textClasses` | `string` |  | Classes for the element wrapping the text. |
 | `@contentClasses` | `string` |  | Classes for the element wrapping the icon and text. |
-| `@flush` |  |  | Removes the padding on `'left'`, `'right'` or `'both'` sides, to align the text with content above or below it. |
+| `@flush` | `'left' \| 'right' \| 'both'` |  | Removes the padding on `'left'`, `'right'` or `'both'` sides, to align the text with content above or below it. |
 | `@href` | `string` |  | Renders an `<a>` link instead of a `<button>` (a disabled or loading button stays a `<button>`). |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@isDisabled` | `boolean` |  | Disables the button and greys it out. |
@@ -107,16 +107,17 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@iconType` |  |  | The icon; anything `EuiIcon`'s `@type` accepts. An icon-only button has no visible text, so always pass an `aria-label="…"` describing the action. |
+| `@iconType` |  |  | The icon; anything `EuiIcon`'s `@type` accepts. An icon-only button has no visible text, so always pass an `aria-label="…"` (or `aria-labelledby`) describing the action; a warning is logged otherwise. |
 | `@iconSize` |  | `'m'` | Size of the icon. |
 | `@iconClasses` | `string` |  | Extra classes for the icon. |
-| `@href` | `string` |  | Renders an `<a>` link instead of a `<button>`. |
+| `@href` | `string` |  | Renders an `<a>` link instead of a `<button>` (a disabled or loading button stays a `<button>`). |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@isDisabled` | `boolean` |  | Disables the button and greys it out. |
-| `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed="true"` while selected. |
-| `@display` |  | `'empty'` | `'empty'` (just the icon), `'base'` (light background) or `'fill'` (solid background). |
-| `@color` |  | `'primary'` | `'primary'`, `'accent'`, `'success'`, `'warning'`, `'danger'`, `'ghost'` or `'text'`. |
-| `@size` |  | the `euiButtonIcon.size` config, or `'xs'` | Size of the button: `'xs'`, `'s'` or `'m'`. |
+| `@isLoading` | `boolean` |  | Replaces the icon with a loading spinner and disables the button. |
+| `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed` to `"true"` / `"false"`. Leave it undefined for regular buttons. |
+| `@display` | `'empty' \| 'base' \| 'fill'` | `'empty'` | `'empty'` (just the icon), `'base'` (light background) or `'fill'` (solid background). |
+| `@color` | `string` | `'primary'` | `'primary'`, `'accent'`, `'accentSecondary'`, `'success'`, `'warning'`, `'danger'`, `'text'`, `'neutral'` or `'risk'`. `'ghost'` is still accepted and renders as `'text'` (latest EUI dropped it): wrap it in a dark `EuiEmotionProvider`. |
+| `@size` | `'xs' \| 's' \| 'm'` | the `euiButtonIcon.size` config, or `'xs'` | Size of the button: `'xs'` (24px), `'s'` (32px) or `'m'` (40px). |
 | `@type` | `'button' \| 'submit' \| 'reset'` | `'button'` | `type` of the `<button>`. |
 | `@disabled` | `boolean` |  | Same as `@isDisabled`. |
 

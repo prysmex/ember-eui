@@ -86,6 +86,7 @@ tools around it.
 | `@hint` | `EuiSearchBarHint` |  | A hint shown below the field while it has focus. |
 | `@compressed` | `boolean` |  | Shorter field and filters. |
 | `@showErrorTooltip` | `boolean` | `true` | Shows a tooltip with the parse error of an invalid query. With `false`, surface and announce parse errors yourself. |
+| `@css` | `EuiCss` |  | Styles composed last into the root flex group's class. |
 
 | Block | Description |
 | --- | --- |

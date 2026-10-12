@@ -101,6 +101,7 @@ that state.
 | `@responsiveBreakpoint` | `TableResponsiveBreakpoint` | `'m'` | Breakpoint below which rows become cards (`true` always, `false` never). |
 | `@hasBackground` | `boolean` | `true` | The table's plain background. |
 | `@scrollableInline` | `boolean` |  | Lets the table scroll inline (upstream beta). |
+| `@css` | `EuiCss` |  | Styles composed last into the root `<div>`'s class (upstream `css`). |
 
 | Block | Description |
 | --- | --- |

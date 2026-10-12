@@ -1806,3 +1806,85 @@ test('split button factories and button color helpers match upstream for every a
           assert.deepEqual(normalize(styles.euiSplitButtonActionStyles(context, size)), normalize(split.euiSplitButtonActionStyles(context, size)), `actions ${size} ${label}`);
       }
 });
+
+// new-data-grid
+test('data grid hand ports match upstream fullscreen, toolbar control and display selector styles', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/data-grid.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-data-grid-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const fullScreen = require(
+    resolve(eui, 'lib/components/datagrid/controls/fullscreen_selector.styles.js')
+  );
+  const { euiFormMaxWidth } = require(resolve(eui, 'lib/components/form/form.styles.js'));
+  const { cache } = require('@emotion/css');
+  const toolbarControl = readFileSync(
+    resolve(eui, 'lib/components/datagrid/controls/data_grid_toolbar_control.js'),
+    'utf8'
+  );
+  const displaySelector = readFileSync(
+    resolve(eui, 'lib/components/datagrid/controls/display_selector.js'),
+    'utf8'
+  );
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        };
+        const label = `${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`;
+        // Upstream registers @emotion/css classes; compare names and registered styles.
+        const upstream = fullScreen.euiDataGridFullScreenStyles(context);
+        const ours = port.euiDataGridFullScreenStyles(context);
+        for (const key of ['euiDataGrid--fullScreen', 'euiDataGrid__restrictBody']) {
+          assert.strictEqual(upstream[key], `css-${ours[key].name}`, `${key} ${label}`);
+          assert.strictEqual(cache.registered[upstream[key]], ours[key].styles, `${key} ${label}`);
+        }
+        const { euiTheme } = context;
+        assert.strictEqual(
+          port.euiDataGridDisplayPopoverWidth(context),
+          `${parseFloat(euiFormMaxWidth(context)) + parseFloat(euiTheme.size.s) * 2}px`,
+          label
+        );
+        assert.strictEqual(
+          port.euiDataGridToolbarControlStyles(context).interactive.styles,
+          `&:focus,&:hover:not(:disabled){.euiDataGridToolbarControl__badge{background-color:${euiTheme.components.filterButtonBadgeBackgroundHover};}};label:interactiveStyles;`,
+          label
+        );
+      }
+  // inline styles, from upstream's compiled source
+  assert.ok(
+    toolbarControl.includes(
+      '"&:focus,&:hover:not(:disabled){.euiDataGridToolbarControl__badge{background-color:", euiTheme.components.filterButtonBadgeBackgroundHover, ";}};label:interactiveStyles;"'
+    )
+  );
+  const { badge } = port.euiDataGridToolbarControlStyles({ euiTheme: { components: {} } });
+  assert.ok(toolbarControl.includes(`name: "${badge.name}"`) && toolbarControl.includes(`styles: "${badge.styles}"`));
+  const rowHeight = port.euiDataGridRowHeightControlStyles;
+  assert.ok(displaySelector.includes(`name: "${rowHeight.name}"`) && displaySelector.includes(`styles: "${rowHeight.styles}"`));
+});

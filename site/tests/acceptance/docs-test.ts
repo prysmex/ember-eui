@@ -18,15 +18,15 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.euiSideNav').exists();
     assert
       .dom('.euiSideNavItem')
-      .exists({ count: 112 }, 'every docs section is listed');
+      .exists({ count: 113 }, 'every docs section is listed');
   });
 
   test('every docs page renders with its demos', async function (assert) {
     const docfy = this.owner.lookup('service:docfy') as DocfyService;
     const pages = docfy.flat.filter((page) => !page.frontmatter['disabled']);
 
-    // every page loads its own bundle, ~0.5s each on a busy CI machine; the
-    // icons and button pages alone take ~45s on a loaded ARM sandbox
+    // every page loads its own bundle: ~80s for the catalog on an idle ARM
+    // sandbox, over twice that under load
     assert.timeout(300_000);
 
     for (const page of pages) {

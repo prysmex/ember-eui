@@ -13,12 +13,13 @@ import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
 import { modifier } from 'ember-modifier';
 import set from 'ember-set-helper/helpers/set';
 import style from 'ember-style-modifier/modifiers/style';
-import { eq } from 'ember-truth-helpers';
 import unified from 'unified';
 
 import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiMarkdownEditorStyles } from '../utils/eui/styles.generated.ts';
 import validatableControl from '../modifiers/validatable-control.ts';
 import MarkdownActions, {
   insertText
@@ -41,12 +42,22 @@ import EuiModal from './eui-modal.gts';
 import type {
   EuiMarkdownAstNode,
   EuiMarkdownAstNodePosition,
-  EuiMarkdownEditorUiPlugin
+  EuiMarkdownDropHandler,
+  EuiMarkdownEditorUiPlugin,
+  EuiMarkdownParseError,
+  EuiMarkdownStringTagConfig
 } from '../utils/markdown/markdown-types';
+import type { CSSObject } from '@emotion/css/create-instance';
 import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area';
 import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar';
 import type { EuiMarkdownFormatSignature } from './eui-markdown-format.gts';
 import type { Processor } from 'unified';
+
+/** Stands in for React EUI's global `box-sizing` reset. */
+const editorReset: CSSObject = {
+  boxSizing: 'border-box',
+  '& :where(*, *::before, *::after)': { boxSizing: 'border-box' }
+};
 
 export interface EuiMarkdownEditorArgs {
   /**
@@ -95,8 +106,29 @@ export interface EuiMarkdownEditorArgs {
   autoExpandPreview?: boolean;
   /** Disables the textarea. */
   disabled?: boolean;
-  /** Marks the textarea invalid for native form validation. */
+  /**
+   * Marks the textarea invalid: native validity, `aria-invalid` and the
+   * danger state styling.
+   */
   isInvalid?: boolean;
+  /**
+   * Read-only: the textarea is `readonly`, toolbar/footer buttons are
+   * disabled, file drops are ignored and preview checkboxes do not toggle.
+   */
+  readOnly?: boolean;
+  /**
+   * Errors listed in the footer's error popover (e.g. from `@onParse`
+   * messages). Any error also gives the textarea the danger state.
+   */
+  errors?: EuiMarkdownParseError[];
+  /**
+   * Handlers turning dropped or picked files into markdown:
+   * `{ supportedFiles, accepts(type), getFormattingForItem(file) }`. Any
+   * handler adds the footer's upload button. Defaults to none.
+   */
+  dropHandlers?: EuiMarkdownDropHandler[];
+  /** Renders the footer (upload, errors and syntax help). Defaults to `true`. */
+  showFooter?: boolean;
   /** Accessible label of the textarea. */
   ariaLabel?: string;
   /** Id of the element labelling the textarea (e.g. a form row label). */
@@ -107,6 +139,8 @@ export interface EuiMarkdownEditorArgs {
   formatRootClasses?: EuiMarkdownFormatSignature['Args']['rootClasses'];
   /** `@textSize` of the preview's EuiMarkdownFormat. */
   formatTextSize?: EuiMarkdownFormatSignature['Args']['textSize'];
+  /** `@color` of the preview's EuiMarkdownFormat. */
+  formatColor?: EuiMarkdownFormatSignature['Args']['color'];
   /** `@shouldIncludeDefaultRootClasses` of the preview's EuiMarkdownFormat. */
   formatShouldIncludeDefaultRootClasses?: EuiMarkdownFormatSignature['Args']['shouldIncludeDefaultRootClasses'];
 }
@@ -228,6 +262,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   @tracked currentHeight: number | string = 250;
   @tracked editorFooterHeight: number = 0;
   @tracked editorToolbarHeight: number = 0;
+  @tracked hasUnacceptedItems = false;
 
   markdownActions: MarkdownActions;
 
@@ -242,6 +277,50 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
       this.toolbarPlugins
     );
     this.currentHeight = this.height;
+  }
+
+  @cached
+  get styles() {
+    const context = getEuiThemeContext(this);
+
+    return {
+      context,
+      styles: useEuiBorealisStyles(context, euiMarkdownEditorStyles)
+    };
+  }
+
+  @cached
+  get classes() {
+    const { context, styles } = this.styles;
+
+    return euiClass(
+      context,
+      editorReset,
+      styles.euiMarkdownEditor,
+      this.height === 'full' ? styles.fullHeight : undefined
+    );
+  }
+
+  @cached
+  get previewClasses() {
+    const { context, styles } = this.styles;
+
+    return euiClass(context, styles.euiMarkdownEditorPreview);
+  }
+
+  get rootClassName() {
+    return [
+      'euiMarkdownEditor',
+      this.isPreviewing ? 'euiMarkdownEditor-isPreviewing' : undefined,
+      this.classes
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  get toggleContainerDisplay() {
+    // '' removes the inline value (ember-style-modifier ignores undefined)
+    return this.isPreviewing ? 'none' : '';
   }
 
   get previewHeight() {
@@ -317,6 +396,41 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   }
 
   getCursorNode = () => {};
+
+  @action
+  setEditorFooterHeight(height: number) {
+    this.editorFooterHeight = height;
+  }
+
+  @action
+  setHasUnacceptedItems(value: boolean) {
+    this.hasUnacceptedItems = value;
+  }
+
+  @action
+  onTextAreaFocus() {
+    this.hasUnacceptedItems = false;
+  }
+
+  /** Inserts the markdown of a dropped file at the cursor, as upstream. */
+  @action
+  insertDroppedText(text: string, config: EuiMarkdownStringTagConfig) {
+    const textarea = this.textareaRef;
+
+    if (!textarea) return;
+
+    if (config.block) {
+      text = padWithNewlinesIfNeeded(textarea, text);
+    }
+
+    const newSelectionPoint = textarea.selectionStart + text.length;
+
+    insertText(textarea, {
+      text,
+      selectionStart: newSelectionPoint,
+      selectionEnd: newSelectionPoint
+    });
+  }
 
   @action
   setTextAreaRef(ref: HTMLTextAreaElement) {
@@ -449,11 +563,7 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
 
   <template>
     <div
-      class={{classNames
-        "euiMarkdownEditor"
-        (if (eq this.height "full") "euiMarkdownEditor--fullHeight")
-        (if this.isPreviewing "euiMarkdownEditor--isPreviewing")
-      }}
+      class={{this.rootClassName}}
       {{didUpdate
         this.updateCurrentHeight
         this.currentHeight
@@ -469,11 +579,14 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
         @openPluginEditor={{this.openPluginEditor}}
         @viewMode={{this.viewMode}}
         @uiPlugins={{this.toolbarPlugins}}
+        @readOnly={{@readOnly}}
         {{didInsert this.setEditorToolbarRef}}
       />
       {{#if this.isPreviewing}}
         <div
-          class="euiMarkdownEditorPreview"
+          class="euiMarkdownEditorPreview
+            {{if @readOnly 'euiMarkdownEditorPreview-isReadOnly'}}
+            {{this.previewClasses}}"
           {{didInsert (set this "previewRef")}}
           {{style (hash height=this.previewHeight)}}
         >
@@ -482,8 +595,10 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
             @processingPluginList={{this.processingPluginList}}
             @value={{@value}}
             @replaceNode={{this.replaceNode}}
+            @readOnly={{@readOnly}}
             @rootClasses={{@formatRootClasses}}
             @textSize={{@formatTextSize}}
+            @color={{@formatColor}}
             @shouldIncludeDefaultRootClasses={{@formatShouldIncludeDefaultRootClasses}}
           />
         </div>
@@ -491,25 +606,40 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
 
       <div
         class="euiMarkdownEditor__toggleContainer"
-        {{style height=this.editorToggleContainerHeight}}
+        {{style
+          height=this.editorToggleContainerHeight
+          display=this.toggleContainerDisplay
+        }}
       >
         <EuiMarkdownEditorDropZone
           @uiPlugins={{this.toolbarPlugins}}
-          {{resizeObserver onResize=this.onResize}}
+          @errors={{@errors}}
+          @dropHandlers={{@dropHandlers}}
+          @insertText={{this.insertDroppedText}}
+          @hasUnacceptedItems={{this.hasUnacceptedItems}}
+          @setHasUnacceptedItems={{this.setHasUnacceptedItems}}
+          @setEditorFooterHeight={{this.setEditorFooterHeight}}
+          @isInvalid={{@isInvalid}}
+          @showFooter={{@showFooter}}
+          @readOnly={{@readOnly}}
         >
           <EuiMarkdownEditorTextArea
             {{getCursorNodeModifier this.vFile this.setSelectedNode}}
             {{didUpdate this.onParse this.parsed}}
             {{didInsert this.setTextAreaRef}}
+            {{resizeObserver onResize=this.onResize}}
             disabled={{@disabled}}
             id={{this.editorId}}
             @height={{this.textAreaHeight}}
             @maxHeight={{this.textAreaMaxHeight}}
+            @readOnly={{@readOnly}}
             value={{@value}}
             aria-label={{@ariaLabel}}
             aria-labelledby={{@ariaLabelledBy}}
             aria-describedby={{@ariaDescribedBy}}
+            aria-invalid={{if @isInvalid "true"}}
             {{on "input" (pick "target.value" @onChange)}}
+            {{on "focus" this.onTextAreaFocus}}
             {{validatableControl @isInvalid}}
             ...attributes
           />

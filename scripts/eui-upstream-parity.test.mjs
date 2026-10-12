@@ -202,7 +202,15 @@ const factories = {
   // super select
   'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles'],
   // selectable and suggest
-  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles']
+  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles'],
+  // markdown
+  'components/markdown_editor/markdown_editor.styles.js': ['euiMarkdownEditorStyles', 'euiMarkdownEditorVariables'],
+  'components/markdown_editor/markdown_editor_drop_zone.styles.js': ['euiMarkdownEditorDropZoneStyles'],
+  'components/markdown_editor/markdown_editor_footer.styles.js': ['euiMarkdownEditorFooterStyles'],
+  'components/markdown_editor/markdown_editor_help_button.styles.js': ['euiMarkdownEditorHelpButtonStyles'],
+  'components/markdown_editor/markdown_editor_text_area.styles.js': ['euiMarkdownEditorTextAreaStyles'],
+  'components/markdown_editor/markdown_editor_toolbar.styles.js': ['euiMarkdownEditorToolbarStyles'],
+  'components/markdown_editor/markdown_format.styles.js': ['euiMarkdownFormatStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1170,3 +1178,62 @@ function themeMatrix() {
 
 
 
+
+test('markdown renderer hand ports match upstream checkbox and tooltip css', () => {
+  const port = loadPort('markdown.ts', 'eui-markdown-parity.cjs');
+  const { serializeStyles } = require('@emotion/serialize');
+  const jsx = (type, props, ...children) => ({ type, props: props ?? {}, children });
+  const originalLoad = Module._load;
+  Module._load = function (request, parent, isMain) {
+    if (request === '@emotion/react')
+      return { css: (...args) => serializeStyles(args), jsx };
+    if (request === 'react')
+      return {
+        __esModule: true,
+        default: { createElement: jsx },
+        useContext: () => ({ replaceNode() {}, readOnly: false })
+      };
+    if (request === 'prop-types') {
+      const any = new Proxy(function () {}, { get: () => any, apply: () => any });
+      return any;
+    }
+    if (/form\/checkbox$|markdown_context$|tool_tip$|\/icon$/.test(request))
+      return { EuiCheckbox: 'EuiCheckbox', EuiMarkdownContext: {}, EuiToolTip: 'EuiToolTip', EuiIcon: 'EuiIcon' };
+    if (/services\/accessibility$/.test(request))
+      return { useGeneratedHtmlId: () => 'id' };
+    return originalLoad.call(this, request, parent, isMain);
+  };
+  try {
+    const dir = resolve(eui, 'lib/components/markdown_editor/plugins');
+    const checkboxPath = resolve(dir, 'markdown_checkbox/renderer.js');
+    const tooltipPath = resolve(dir, 'markdown_tooltip/renderer.js');
+    delete require.cache[checkboxPath];
+    delete require.cache[tooltipPath];
+    const { CheckboxMarkdownRenderer } = require(checkboxPath);
+    const { tooltipMarkdownRenderer } = require(tooltipPath);
+    const checkbox = CheckboxMarkdownRenderer({
+      position: {},
+      lead: '- ',
+      label: 'x',
+      isChecked: false,
+      children: 'x'
+    });
+    assert.strictEqual(
+      serializeStyles([port.markdownCheckboxStyles]).styles,
+      checkbox.props.css.styles
+    );
+    const find = (node, type) => {
+      if (!node || typeof node !== 'object') return undefined;
+      if (node.type === type) return node;
+      for (const child of node.children ?? []) {
+        const found = find(child, type);
+        if (found) return found;
+      }
+      return undefined;
+    };
+    const icon = find(tooltipMarkdownRenderer({ content: 'c', children: 'a' }), 'EuiIcon');
+    assert.strictEqual(port.tooltipMarkdownIconStyles, icon.props.css.styles);
+  } finally {
+    Module._load = originalLoad;
+  }
+});

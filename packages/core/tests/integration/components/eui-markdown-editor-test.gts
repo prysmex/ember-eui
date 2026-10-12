@@ -45,7 +45,8 @@ module('Integration | Component | eui-markdown-editor', function (hooks) {
     await click('.euiMarkdownEditorToolbar button.euiButtonEmpty');
     await waitUntil(() => document.querySelector('.euiMarkdownEditorPreview'));
 
-    assert.dom('.euiMarkdownEditor').hasClass('euiMarkdownEditor--isPreviewing');
+    // upstream state class (was the legacy `euiMarkdownEditor--isPreviewing`)
+    assert.dom('.euiMarkdownEditor').hasClass('euiMarkdownEditor-isPreviewing');
     assert.dom('.euiMarkdownEditorPreview h1').hasText('Title');
     assert.dom('.euiMarkdownEditorPreview p').hasText('Some text');
   });

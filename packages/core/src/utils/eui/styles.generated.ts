@@ -28,8 +28,8 @@ var highContrastModeStyles = function highContrastModeStyles2(euiThemeContext, o
   }
   return defaultStyles.trim();
 };
-var preventForcedColors = function preventForcedColors2(_ref117) {
-  var highContrastMode = _ref117.highContrastMode;
+var preventForcedColors = function preventForcedColors2(_ref118) {
+  var highContrastMode = _ref118.highContrastMode;
   return highContrastMode === "forced" ? "forced-color-adjust: none;" : "";
 };
 
@@ -360,8 +360,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
       break;
   }
   var borderRadiusCSS = [];
-  Object.entries(borderRadiusMap).forEach(function(_ref117) {
-    var _ref242 = _slicedToArray2(_ref117, 2), property = _ref242[0], value2 = _ref242[1];
+  Object.entries(borderRadiusMap).forEach(function(_ref118) {
+    var _ref242 = _slicedToArray2(_ref118, 2), property = _ref242[0], value2 = _ref242[1];
     if (value2) {
       if (ignoreZeroes && value2 !== "0" && value2 !== "0px" || !ignoreZeroes) {
         borderRadiusCSS.push("".concat(property, ": ").concat(value2, ";"));
@@ -375,8 +375,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
 import { mathWithUnits } from "@elastic/eui-theme-common";
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/functions/typography.js
-function euiFontSizeFromScale(scale, _ref117) {
-  var base = _ref117.base, font = _ref117.font;
+function euiFontSizeFromScale(scale, _ref118) {
+  var base = _ref118.base, font = _ref118.font;
   var _ref242 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref242.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref242.customScale;
   if (unit === "em") {
     return "".concat(font.scale[scale], "em");
@@ -616,8 +616,8 @@ var SEVERITY_COLORS = ["neutral", "risk"];
 var BUTTON_COLORS = ["text", "accent", "accentSecondary", "primary", "success", "warning", "danger"];
 var EXTENDED_BUTTON_COLORS = [].concat(BUTTON_COLORS, SEVERITY_COLORS);
 var BUTTON_DISPLAYS = ["base", "fill", "empty"];
-var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref117, color, variant) {
-  var euiTheme = _ref117.euiTheme, highContrastMode = _ref117.highContrastMode;
+var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref118, color, variant) {
+  var euiTheme = _ref118.euiTheme, highContrastMode = _ref118.highContrastMode;
   var backgroundTokenBase = variant === "base" ? "background" : "background".concat(variant.charAt(0).toUpperCase() + variant.slice(1));
   var textTokenBase = variant === "filled" ? "textColorFilled" : "textColor";
   var backgroundTokenName = getTokenName(backgroundTokenBase, color);
@@ -823,8 +823,8 @@ function _arrayLikeToArray5(r, a) {
   return n;
 }
 var BACKGROUND_COLORS = ["transparent", "plain", "subdued", "highlighted", "accent", "accentSecondary", "primary", "success", "warning", "danger"].concat(_toConsumableArray2(SEVERITY_COLORS));
-var euiBackgroundColor = function euiBackgroundColor2(_ref117, color) {
-  var euiTheme = _ref117.euiTheme;
+var euiBackgroundColor = function euiBackgroundColor2(_ref118, color) {
+  var euiTheme = _ref118.euiTheme;
   var _ref242 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref242.method;
   if (color === "transparent") return "transparent";
   if (method === "transparent") {
@@ -907,8 +907,8 @@ function hexToRgb(hex) {
 }
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_helpers.js
-var euiScrollBarStyles = function euiScrollBarStyles2(_ref117) {
-  var _ref$euiTheme = _ref117.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
+var euiScrollBarStyles = function euiScrollBarStyles2(_ref118) {
+  var _ref$euiTheme = _ref118.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
   var _ref242 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref242.thumbColor, _ref2$trackColor = _ref242.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref242.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref242.size, _corner = _ref242.corner;
   var thumbColor = _thumbColor || transparentize(colors.darkShade, 0.5);
   var scrollBarSize = _size || size.base;
@@ -966,8 +966,8 @@ var euiFullHeight = function euiFullHeight2() {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_padding.js
-var euiPaddingSize = function euiPaddingSize2(_ref117, size) {
-  var euiTheme = _ref117.euiTheme;
+var euiPaddingSize = function euiPaddingSize2(_ref118, size) {
+  var euiTheme = _ref118.euiTheme;
   switch (size) {
     case "none":
       return null;
@@ -979,8 +979,8 @@ var euiPaddingSize = function euiPaddingSize2(_ref117, size) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_states.js
-var euiOutline = function euiOutline2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiOutline = function euiOutline2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   var offset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "center";
   var color = arguments.length > 2 ? arguments[2] : void 0;
   var outlineWidth = euiTheme.focus.width;
@@ -1004,8 +1004,8 @@ var euiFocusRing = function euiFocusRing2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_typography.js
-var euiFontSize = function euiFontSize2(_ref117, scale, options) {
-  var euiTheme = _ref117.euiTheme;
+var euiFontSize = function euiFontSize2(_ref118, scale, options) {
+  var euiTheme = _ref118.euiTheme;
   return {
     fontSize: euiFontSizeFromScale(scale, euiTheme, options),
     lineHeight: euiLineHeightFromBaseline(scale, euiTheme, options)
@@ -1078,8 +1078,8 @@ var sortMapBySmallToLargeValues = function sortMapBySmallToLargeValues2(breakpoi
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_responsive.js
-var euiBreakpoint = function euiBreakpoint2(_ref117, sizes) {
-  var euiTheme = _ref117.euiTheme;
+var euiBreakpoint = function euiBreakpoint2(_ref118, sizes) {
+  var euiTheme = _ref118.euiTheme;
   var orderedBreakpoints = Object.keys(sortMapBySmallToLargeValues(euiTheme.breakpoint));
   var orderedSizes = sizes.sort(function(a, b) {
     return orderedBreakpoints.indexOf(a) - orderedBreakpoints.indexOf(b);
@@ -1249,8 +1249,8 @@ var spinnerSizes = {
   xl: "xl",
   xxl: "xxl"
 };
-var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref117: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
-  var euiTheme = _ref117.euiTheme, highContrastMode = _ref117.highContrastMode;
+var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref118: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
+  var euiTheme = _ref118.euiTheme, highContrastMode = _ref118.highContrastMode;
   var colors = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
   var _colors$border = colors.border, border = _colors$border === void 0 ? euiTheme.components.loadingSpinnerBorder : _colors$border, _colors$highlight = colors.highlight, highlight = _colors$highlight === void 0 ? euiTheme.components.loadingSpinnerHighlight : _colors$highlight;
   if (highContrastMode === "forced") {
@@ -1456,8 +1456,8 @@ var euiTitleStyles = function euiTitleStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/code/code_syntax.styles.js
-var euiCodeTextColors = function euiCodeTextColors2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiCodeTextColors = function euiCodeTextColors2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     backgroundColor: euiTheme.components.codeBackground,
     color: euiTheme.components.codeColor
@@ -1777,8 +1777,8 @@ var getBadgeColors = function getBadgeColors2(euiThemeContext, backgroundColor) 
     color
   };
 };
-var getTextColor = function getTextColor2(_ref117, bgColor) {
-  var euiTheme = _ref117.euiTheme;
+var getTextColor = function getTextColor2(_ref118, bgColor) {
+  var euiTheme = _ref118.euiTheme;
   var textColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb())) ? euiTheme.colors.textGhost : euiTheme.colors.textInk;
   return textColor;
 };
@@ -1952,8 +1952,8 @@ var euiBadgeStyles = function euiBadgeStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/badge/badge_group/badge_group.styles.js
-var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiBadgeGroup: /* @__PURE__ */ css("display:inline-flex;flex-wrap:wrap;", logicalCSS("max-width", "100%"), ".euiBadge+.euiBadge{", logicalCSS("margin-left", 0), ";};label:euiBadgeGroup;"),
     // Gutter sizes
@@ -2548,8 +2548,8 @@ function _toPrimitive4(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
-var euiFormMaxWidth = function euiFormMaxWidth2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiFormMaxWidth = function euiFormMaxWidth2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return euiTheme.components.forms.maxWidth;
 };
 var euiFormPlaceholderStyles = function euiFormPlaceholderStyles2(euiThemeContext, color) {
@@ -3184,8 +3184,8 @@ var euiCallOutStyles = function euiCallOutStyles2(euiThemeContext) {
     actions: /* @__PURE__ */ css("display:flex;gap:", euiTheme.size.s, ";&:where([data-size='s'] &){", logicalCSS("margin-left", euiTheme.size.l), ";}&:where([data-size='m'] &){", logicalCSS("margin-left", euiTheme.size.xl), ";}&:where([data-layout='superNarrow'] &){flex-wrap:wrap;*:has(.euiCallOutAction),.euiCallOutAction{inline-size:100%;}}&:where([data-layout='wide'] &){", logicalCSS("margin-left", "0"), " align-self:center;flex-shrink:0;flex-direction:row-reverse;};label:actions;")
   };
 };
-var euiCallOutHeaderStyles = function euiCallOutHeaderStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiCallOutHeaderStyles = function euiCallOutHeaderStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiCallOutHeader: /* @__PURE__ */ css("font-weight:", euiTheme.font.weight.bold, ";", logicalCSS(
       "margin-bottom",
@@ -3365,8 +3365,8 @@ var euiStatStyles = function euiStatStyles2() {
     right: /* @__PURE__ */ css(logicalTextAlignCSS("right"), " align-items:flex-end;;label:right;")
   };
 };
-var euiStatTitleStyles = function euiStatTitleStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiStatTitleStyles = function euiStatTitleStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiStat__title: /* @__PURE__ */ css(";label:euiStat__title;"),
     // Colors
@@ -3998,8 +3998,8 @@ var euiPageSidebarStyles = function euiPageSidebarStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/page/page_header/page_header.styles.js
-var euiPageHeaderStyles = function euiPageHeaderStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiPageHeaderStyles = function euiPageHeaderStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiPageHeader: /* @__PURE__ */ css(logicalCSS("width", "100%"), logicalCSS("min-width", "0"), " display:flex;flex-direction:column;flex-shrink:0;;label:euiPageHeader;"),
     border: /* @__PURE__ */ css(logicalCSS("border-bottom", euiTheme.border.thin), ";;label:border;")
@@ -4353,8 +4353,8 @@ var euiProgressValueTextStyles = function euiProgressValueTextStyles2(_ref320) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/skeleton/utils.js
-var euiSkeletonGradientAnimation = function euiSkeletonGradientAnimation2(_ref117) {
-  var euiTheme = _ref117.euiTheme, highContrastMode = _ref117.highContrastMode;
+var euiSkeletonGradientAnimation = function euiSkeletonGradientAnimation2(_ref118) {
+  var euiTheme = _ref118.euiTheme, highContrastMode = _ref118.highContrastMode;
   var _ref242 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$slideSize = _ref242.slideSize, slideSize = _ref2$slideSize === void 0 ? "-53%" : _ref2$slideSize, _ref2$gradientSize = _ref242.gradientSize, gradientSize = _ref2$gradientSize === void 0 ? "220%" : _ref2$gradientSize;
   var gradientStartStop = euiTheme.colors.backgroundBaseSkeletonEdge;
   var gradientMiddle = highContrastMode ? euiTheme.components.skeletonBackgroundSkeletonMiddleHighContrast : euiTheme.colors.backgroundBaseSkeletonMiddle;
@@ -4457,8 +4457,8 @@ var loadingPadding = {
   l: "xs",
   xl: "s"
 };
-var euiLoadingLogoStyles = function euiLoadingLogoStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiLoadingLogoStyles = function euiLoadingLogoStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiLoadingLogo: /* @__PURE__ */ css("position:relative;display:inline-block;", euiCanAnimate, "{&::before,&::after{position:absolute;content:'';inline-size:90%;inset-inline-start:5%;border-radius:50%;opacity:0.2;z-index:1;}&::before{box-shadow:0 0 ", euiTheme.size.s, " ", euiTheme.colors.fullShade, ";animation:1s ", loadingPulsateAndFade, " ", euiTheme.animation.resistance, " infinite;}&::after{background-color:", euiTheme.colors.fullShade, ";animation:1s ", loadingPulsate, " ", euiTheme.animation.resistance, " infinite;}};label:euiLoadingLogo;"),
     euiLoadingLogo__icon: /* @__PURE__ */ css("display:inline-block;", euiCanAnimate, "{animation:1s ", loadingBounce, " ", euiTheme.animation.resistance, " infinite;};label:euiLoadingLogo__icon;"),
@@ -5208,8 +5208,8 @@ var euiBreadcrumbContentStyles = function euiBreadcrumbContentStyles2(euiThemeCo
     }
   };
 };
-var euiBreadcrumbPopoverStyles = function euiBreadcrumbPopoverStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiBreadcrumbPopoverStyles = function euiBreadcrumbPopoverStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiBreadcrumb__popoverButton: /* @__PURE__ */ css("max-inline-size:100%;display:inline-flex;align-items:center;gap:", euiTheme.size.xs, ";;label:euiBreadcrumb__popoverButton;"),
     euiBreadcrumb__popoverTruncation: /* @__PURE__ */ css(";label:euiBreadcrumb__popoverTruncation;"),
@@ -5708,8 +5708,8 @@ var euiPinnableListGroupItemExtraActionStyles = function euiPinnableListGroupIte
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/key_pad_menu/key_pad_menu.styles.js
-var euiKeyPadMenuVariables = function euiKeyPadMenuVariables2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiKeyPadMenuVariables = function euiKeyPadMenuVariables2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiKeyPadMenuSize: mathWithUnits(euiTheme.size.base, function(x) {
       return x * 6;
@@ -6111,16 +6111,16 @@ var euiHeaderAlertStyles = function euiHeaderAlertStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/header/header_breadcrumbs/header_breadcrumbs.styles.js
-var euiHeaderBreadcrumbsStyles = function euiHeaderBreadcrumbsStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiHeaderBreadcrumbsStyles = function euiHeaderBreadcrumbsStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiHeaderBreadcrumbs: /* @__PURE__ */ css(euiTextTruncate(), " align-items:center;display:flex;flex-grow:1;", logicalCSS("margin-horizontal", euiTheme.size.s), ";;label:euiHeaderBreadcrumbs;")
   };
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/collapsible_nav/collapsible_nav.styles.js
-var euiCollapsibleNavStyles = function euiCollapsibleNavStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiCollapsibleNavStyles = function euiCollapsibleNavStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiCollapsibleNav: /* @__PURE__ */ css(";label:euiCollapsibleNav;"),
     // The majority of styles extend from EuiFlyout
@@ -6131,8 +6131,8 @@ var euiCollapsibleNavStyles = function euiCollapsibleNavStyles2(_ref117) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js
-var euiCollapsibleNavGroupStyles = function euiCollapsibleNavGroupStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiCollapsibleNavGroupStyles = function euiCollapsibleNavGroupStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiCollapsibleNavGroup: /* @__PURE__ */ css("&:not(:first-child){", logicalCSS("border-top", euiTheme.border.thin), ";};label:euiCollapsibleNavGroup;"),
     // Background colors
@@ -6615,8 +6615,8 @@ var euiPopoverPanelStyles = function euiPopoverPanelStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/services/popover/popover_arrow.styles.js
-var _popoverArrowStyles = function _popoverArrowStyles2(_ref117, arrowSize) {
-  var euiTheme = _ref117.euiTheme, colorMode = _ref117.colorMode, highContrastMode = _ref117.highContrastMode;
+var _popoverArrowStyles = function _popoverArrowStyles2(_ref118, arrowSize) {
+  var euiTheme = _ref118.euiTheme, colorMode = _ref118.colorMode, highContrastMode = _ref118.highContrastMode;
   var hasBorder = colorMode === "DARK";
   var arrowOffset = mathWithUnits([
     arrowSize,
@@ -6776,8 +6776,8 @@ var euiToolTipAnchorStyles = function euiToolTipAnchorStyles2() {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/context_menu/context_menu.styles.js
-var euiContextMenuVariables = function euiContextMenuVariables2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiContextMenuVariables = function euiContextMenuVariables2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     panelWidth: mathWithUnits(euiTheme.size.base, function(x) {
       return x * 16;
@@ -7116,8 +7116,8 @@ var euiSplitPanelInnerStyles = function euiSplitPanelInnerStyles2(euiThemeContex
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/accordion/accordion.styles.js
-var euiAccordionStyles = function euiAccordionStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiAccordionStyles = function euiAccordionStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiAccordion: /* @__PURE__ */ css(";label:euiAccordion;"),
     // Borders
@@ -7341,8 +7341,8 @@ var euiGlobalToastListItemStyles = function euiGlobalToastListItemStyles2(_ref32
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/notification_icon/notification_icon.styles.js
 import { mathWithUnits as mathWithUnits5 } from "@elastic/eui-theme-common";
-var euiNotificationIconStyles = function euiNotificationIconStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiNotificationIconStyles = function euiNotificationIconStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   var sizeL = mathWithUnits5(euiTheme.size.base, function(x) {
     return x * 1.25;
   });
@@ -7410,8 +7410,8 @@ var euiCommentEventBodyStyles = function euiCommentEventBodyStyles2(_ref320) {
 var _gutterSizeAdjustment = function _gutterSizeAdjustment2(gutterSize) {
   return "\n    gap: ".concat(gutterSize, ";\n\n    // The vertical line height needs to be adjusted with the gutter size\n    [class*='euiTimelineItem-']:not(:last-child) > [class*='euiTimelineItemIcon-']::before {\n      ").concat(logicalCSS("height", "calc(100% + ".concat(gutterSize, ")")), ";\n    }\n  ");
 };
-var timelineVerticalLine = function timelineVerticalLine2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var timelineVerticalLine = function timelineVerticalLine2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return "  \n    [class*='euiTimelineItem-'] > [class*='euiTimelineItemIcon-']::before {\n      content: '';\n      position: absolute;\n      ".concat(logicalCSS("top", 0), ";\n      ").concat(logicalCSS("border-left", euiTheme.border.thick), ";\n    }\n\n    > [class*='euiTimelineItem-center']:first-child > [class*='euiTimelineItemIcon-']::before {\n      ").concat(logicalCSS("top", "50%"), ";\n    }\n  \n    > [class*='euiTimelineItem-center']:last-child:not(:only-child) > [class*='euiTimelineItemIcon-']::before {\n      ").concat(logicalCSS("height", "50%"), ";\n    }\n  ");
 };
 var euiTimelineStyles = function euiTimelineStyles2(euiThemeContext) {
@@ -7555,8 +7555,8 @@ var euiTreeViewItemStyles = function euiTreeViewItemStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/text_diff/text_diff.styles.js
-var euiTextDiffStyles = function euiTextDiffStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiTextDiffStyles = function euiTextDiffStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     // Base
     euiTextDiff: /* @__PURE__ */ css("del{color:", euiTheme.colors.textDanger, ";}ins{color:", euiTheme.colors.textSuccess, ";};label:euiTextDiff;")
@@ -7642,8 +7642,8 @@ var euiExpressionIconStyles = function euiExpressionIconStyles2(_ref320) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/tour/_tour_footer.styles.js
-var _tourFooterBgColor = function _tourFooterBgColor2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var _tourFooterBgColor = function _tourFooterBgColor2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return euiTheme.components.tourFooterBackground;
 };
 var euiTourFooterStyles = function euiTourFooterStyles2(euiThemeContext) {
@@ -7661,8 +7661,8 @@ var euiTourStyles = function euiTourStyles2(euiThemeContext) {
     euiTour: /* @__PURE__ */ css("[data-popover-arrow='top']{background-color:", _tourFooterBgColor(euiThemeContext), ";};label:euiTour;")
   };
 };
-var euiTourBeaconStyles = function euiTourBeaconStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiTourBeaconStyles = function euiTourBeaconStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   var beaconSize = euiTheme.size.m;
   var beaconOffset = mathWithUnits(beaconSize, function(x) {
     return x / -2;
@@ -7680,8 +7680,8 @@ var euiTourBeaconStyles = function euiTourBeaconStyles2(_ref117) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/tour/_tour_header.styles.js
-var euiTourHeaderStyles = function euiTourHeaderStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiTourHeaderStyles = function euiTourHeaderStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     // Base
     euiTourHeader: /* @__PURE__ */ css(logicalCSS("border-bottom", "none"), logicalCSS("margin-bottom", euiTheme.size.s), ";;label:euiTourHeader;"),
@@ -8013,8 +8013,8 @@ var euiDraggableItemStyles = function euiDraggableItemStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/form/super_select/super_select.styles.js
-var euiSuperSelectStyles = function euiSuperSelectStyles2(_ref117) {
-  var euiTheme = _ref117.euiTheme;
+var euiSuperSelectStyles = function euiSuperSelectStyles2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
   return {
     euiSuperSelect__listbox: /* @__PURE__ */ css(logicalCSS("max-height", "300px"), " ", logicalCSSWithFallback("overflow-y", "auto"), " ", logicalCSSWithFallback("overflow-x", "hidden"), " padding:", euiTheme.size.s, ";.euiSuperSelect__item:focus{outline:none;};label:euiSuperSelect__listbox;")
   };
@@ -8066,6 +8066,138 @@ var euiSelectableMessageStyles = function euiSelectableMessageStyles2(euiThemeCo
     euiSelectableMessage: /* @__PURE__ */ css("display:flex;flex-direction:column;justify-content:center;align-items:center;padding:", euiTheme.size.s, ";text-align:center;word-wrap:break-word;;label:euiSelectableMessage;"),
     // Match border from selectable_list
     bordered: /* @__PURE__ */ css("overflow:hidden;border:", euiTheme.border.thin, ";border-radius:", euiTheme.border.radius.panel, ";;label:bordered;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/markdown_editor/markdown_editor.styles.js
+var euiMarkdownEditorVariables = function euiMarkdownEditorVariables2(_ref118) {
+  var euiTheme = _ref118.euiTheme;
+  return {
+    minHeight: "150px",
+    borderRadius: euiTheme.border.radius.panel,
+    barsBackgroundColor: euiTheme.colors.lightestShade
+  };
+};
+var euiMarkdownEditorStyles = function euiMarkdownEditorStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiMarkdownEditorVar = euiMarkdownEditorVariables(euiThemeContext), minHeight = _euiMarkdownEditorVar.minHeight, borderRadius = _euiMarkdownEditorVar.borderRadius;
+  return {
+    euiMarkdownEditor: /* @__PURE__ */ css("display:flex;flex-direction:column;.euiMarkdownEditorToolbar{", logicalBorderRadiusCSS("".concat(borderRadius, " ").concat(borderRadius, " 0 0"), true), ";}.euiMarkdownEditorPreview,.euiMarkdownEditorFooter{", logicalBorderRadiusCSS("0 0 ".concat(borderRadius, " ").concat(borderRadius), true), ";};label:euiMarkdownEditor;"),
+    fullHeight: /* @__PURE__ */ css(logicalCSS("height", "100%"), " .euiMarkdownEditorTextArea{resize:none;}.euiMarkdownEditorDropZone{", logicalCSS("height", "100%"), ";};label:fullHeight;"),
+    euiMarkdownEditorPreview: /* @__PURE__ */ css(logicalCSS("min-height", minHeight), " ", logicalCSSWithFallback("overflow-y", "auto"), " ", euiScrollBarStyles(euiThemeContext), " padding:", euiTheme.size.m, ";border:", euiTheme.border.thin, ";background-color:", euiTheme.colors.emptyShade, ";;label:euiMarkdownEditorPreview;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/markdown_editor/markdown_editor_drop_zone.styles.js
+var _ref117 = true ? {
+  name: "gwjnpv-euiMarkdownEditorDropZone__input",
+  styles: "position:absolute;inset:0;opacity:0;overflow:hidden;&:hover{cursor:pointer;}&:hover:disabled{cursor:not-allowed;};label:euiMarkdownEditorDropZone__input;"
+} : {
+  name: "gwjnpv-euiMarkdownEditorDropZone__input",
+  styles: "position:absolute;inset:0;opacity:0;overflow:hidden;&:hover{cursor:pointer;}&:hover:disabled{cursor:not-allowed;};label:euiMarkdownEditorDropZone__input;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiMarkdownEditorDropZoneStyles = function euiMarkdownEditorDropZoneStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiMarkdownEditorVar = euiMarkdownEditorVariables(euiThemeContext), minHeight = _euiMarkdownEditorVar.minHeight;
+  return {
+    euiMarkdownEditorDropZone: /* @__PURE__ */ css("position:relative;display:flex;flex-direction:column;", logicalCSS("min-height", minHeight), ";;label:euiMarkdownEditorDropZone;"),
+    isDragging: /* @__PURE__ */ css(".euiMarkdownEditorFooter,.euiMarkdownEditorTextArea{background-color:", euiTheme.colors.backgroundBasePrimary, "!important;};label:isDragging;"),
+    isDraggingError: /* @__PURE__ */ css(".euiMarkdownEditorFooter,.euiMarkdownEditorTextArea{background-color:", euiTheme.colors.backgroundBaseDanger, "!important;};label:isDraggingError;"),
+    hasError: /* @__PURE__ */ css(".euiMarkdownEditorTextArea{--euiFormControlStateColor:", euiTheme.colors.danger, ";background-size:100% 100%;", euiFormControlInvalidStyles(euiThemeContext), ";};label:hasError;"),
+    euiMarkdownEditorDropZone__input: _ref117
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/markdown_editor/markdown_editor_footer.styles.js
+var euiMarkdownEditorFooterStyles = function euiMarkdownEditorFooterStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiMarkdownEditorVar = euiMarkdownEditorVariables(euiThemeContext), borderRadius = _euiMarkdownEditorVar.borderRadius, barsBackgroundColor = _euiMarkdownEditorVar.barsBackgroundColor;
+  return {
+    euiMarkdownEditorFooter: /* @__PURE__ */ css("display:inline-flex;align-items:center;padding:", euiTheme.size.xs, ";border:", euiTheme.border.thin, ";background-color:", barsBackgroundColor, ";;label:euiMarkdownEditorFooter;"),
+    euiMarkdownEditorFooter__actions: /* @__PURE__ */ css("flex:1;display:inline-flex;align-items:center;gap:", euiTheme.size.xs, ";;label:euiMarkdownEditorFooter__actions;"),
+    // Override default button border radius to match the overall markdown editor
+    euiMarkdownEditorFooter__uploadError: /* @__PURE__ */ css("border-radius:", borderRadius, ";;label:euiMarkdownEditorFooter__uploadError;"),
+    euiMarkdownEditorFooter__popover: /* @__PURE__ */ css(logicalCSS("width", "300px"), ";;label:euiMarkdownEditorFooter__popover;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/markdown_editor/markdown_editor_help_button.styles.js
+var euiMarkdownEditorHelpButtonStyles = function euiMarkdownEditorHelpButtonStyles2() {
+  return {
+    // Override the default button icon width size
+    euiMarkdownEditorFooter__helpButton: /* @__PURE__ */ css(".euiIcon{", logicalCSS("width", "26px"), ";};label:euiMarkdownEditorFooter__helpButton;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/markdown_editor/markdown_editor_text_area.styles.js
+var euiMarkdownEditorTextAreaStyles = function euiMarkdownEditorTextAreaStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiMarkdownEditorVar = euiMarkdownEditorVariables(euiThemeContext), minHeight = _euiMarkdownEditorVar.minHeight;
+  var borderCSS = "\n    border: ".concat(euiTheme.border.thin, ";\n    ").concat(logicalCSS("border-bottom", "none"), "\n  ");
+  return {
+    euiMarkdownEditorTextArea: /* @__PURE__ */ css(logicalSizeCSS("100%"), " ", logicalCSS("min-height", minHeight), " ", euiScrollBarStyles(euiThemeContext), " resize:vertical;margin:0;padding:", euiTheme.size.m, ";", euiFormControlText(euiThemeContext), " line-height:", euiTheme.font.lineHeightMultiplier, ";;label:euiMarkdownEditorTextArea;"),
+    readOnly: /* @__PURE__ */ css(borderCSS, " background-color:", euiTheme.colors.emptyShade, ";cursor:default;&:focus{outline:none;};label:readOnly;"),
+    editable: /* @__PURE__ */ css(euiFormControlDefaultShadow(euiThemeContext), borderCSS, " box-shadow:none;&:focus,.euiMarkdownEditor:focus-within &{", euiFormControlFocusStyles(euiThemeContext), ";};label:editable;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/markdown_editor/markdown_editor_toolbar.styles.js
+var euiMarkdownEditorToolbarStyles = function euiMarkdownEditorToolbarStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiMarkdownEditorVar = euiMarkdownEditorVariables(euiThemeContext), barsBackgroundColor = _euiMarkdownEditorVar.barsBackgroundColor;
+  return {
+    euiMarkdownEditorToolbar: /* @__PURE__ */ css("display:flex;flex-wrap:wrap;padding:", euiTheme.size.xs, ";background-color:", barsBackgroundColor, ";border:", euiTheme.border.thin, ";", logicalCSS("border-bottom", "none"), ";;label:euiMarkdownEditorToolbar;"),
+    euiMarkdownEditorToolbar__buttons: /* @__PURE__ */ css("flex:1;display:flex;flex-wrap:wrap;align-items:center;column-gap:", euiTheme.size.xs, ";;label:euiMarkdownEditorToolbar__buttons;"),
+    euiMarkdownEditorToolbar__divider: /* @__PURE__ */ css("display:block;", logicalCSS("height", euiTheme.size.l), " ", logicalCSS("margin-left", euiTheme.size.xs), " ", logicalCSS("padding-right", euiTheme.size.xs), " ", logicalCSS("border-left", "".concat(euiTheme.border.width.thin, " solid ").concat(euiTheme.border.color)), ";;label:euiMarkdownEditorToolbar__divider;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/markdown_editor/markdown_format.styles.js
+var euiScaleMarkdownFormatText = function euiScaleMarkdownFormatText2(euiTheme, options) {
+  var _euiFontSize = euiFontSize(euiTheme, "m", options), fontSize = _euiFontSize.fontSize;
+  var tablePaddingVertical = mathWithUnits(fontSize, function(x) {
+    return x / 4;
+  });
+  var tablePaddingHorizontal = mathWithUnits(fontSize, function(x) {
+    return x / 2;
+  });
+  return "\n    .euiMarkdownFormat__codeblockWrapper {\n      ".concat(logicalCSS("margin-bottom", fontSize), "\n    }\n\n    .euiMarkdownFormat__table {\n      ").concat(logicalCSS("margin-bottom", fontSize), "\n    }\n\n    .euiMarkdownFormat__table th,\n    .euiMarkdownFormat__table td {\n      ").concat(logicalCSS("padding-vertical", tablePaddingVertical), "\n      ").concat(logicalCSS("padding-horizontal", tablePaddingHorizontal), "\n    }\n  ");
+};
+var euiMarkdownAdjustBorderColors = function euiMarkdownAdjustBorderColors2(_ref118, color) {
+  var euiTheme = _ref118.euiTheme;
+  var border = "".concat(euiTheme.border.width.thin, " solid ").concat(color);
+  return "\n    .euiMarkdownFormat__blockquote {\n      ".concat(logicalCSS("border-left-color", color), "\n    }\n\n    .euiHorizontalRule {\n      background-color: ").concat(color, ";\n      color: ").concat(color, "; /* ensure that firefox gets the currentColor */\n    }\n\n    /* Tables */\n\n    .euiMarkdownFormat__table {\n      display: block;\n      ").concat(logicalCSS("width", "100%"), "\n      overflow: auto;\n      border-spacing: 0;\n      border-collapse: collapse;\n      ").concat(logicalCSS("border-left", border), "\n    }\n\n    .euiMarkdownFormat__table th,\n    .euiMarkdownFormat__table td {\n      ").concat(logicalCSS("border-vertical", border), "\n\n      &:last-child {\n        ").concat(logicalCSS("border-right", border), "\n      }\n    }\n\n    .euiMarkdownFormat__table tr {\n      ").concat(logicalCSS("border-top", border), "\n    }\n  ");
+};
+var euiMarkdownFormatStyles = function euiMarkdownFormatStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme, highContrastMode = euiThemeContext.highContrastMode;
+  return {
+    euiMarkdownFormat: /* @__PURE__ */ css(";label:euiMarkdownFormat;"),
+    // Text sizes
+    m: /* @__PURE__ */ css(euiScaleMarkdownFormatText(euiThemeContext, {
+      customScale: "m"
+    }), ";label:m;"),
+    s: /* @__PURE__ */ css(euiScaleMarkdownFormatText(euiThemeContext, {
+      customScale: "s"
+    }), ";label:s;"),
+    xs: /* @__PURE__ */ css(euiScaleMarkdownFormatText(euiThemeContext, {
+      customScale: "xs"
+    }), ";label:xs;"),
+    relative: /* @__PURE__ */ css(euiScaleMarkdownFormatText(euiThemeContext, {
+      unit: "em"
+    }), ";label:relative;"),
+    colors: {
+      default: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, highContrastMode ? euiTheme.border.color : euiTheme.components.markdownFormatTableBorderColor), ";label:default;"),
+      subdued: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, highContrastMode ? euiTheme.border.color : euiTheme.colors.textSubdued), ";label:subdued;"),
+      success: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, euiTheme.colors.success), ";label:success;"),
+      accent: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, euiTheme.colors.accent), ";label:accent;"),
+      accentSecondary: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, euiTheme.colors.accentSecondary), ";label:accentSecondary;"),
+      warning: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, euiTheme.colors.warning), ";label:warning;"),
+      danger: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, euiTheme.colors.danger), ";label:danger;"),
+      ghost: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, euiTheme.colors.plainLight), ";label:ghost;"),
+      inherit: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, "currentColor"), ";label:inherit;"),
+      custom: /* @__PURE__ */ css(euiMarkdownAdjustBorderColors(euiThemeContext, "currentColor"), ";label:custom;")
+    }
   };
 };
 export {
@@ -8203,6 +8335,14 @@ export {
   euiLoadingElasticStyles,
   euiLoadingLogoStyles,
   euiLoadingSpinnerStyles,
+  euiMarkdownEditorDropZoneStyles,
+  euiMarkdownEditorFooterStyles,
+  euiMarkdownEditorHelpButtonStyles,
+  euiMarkdownEditorStyles,
+  euiMarkdownEditorTextAreaStyles,
+  euiMarkdownEditorToolbarStyles,
+  euiMarkdownEditorVariables,
+  euiMarkdownFormatStyles,
   euiMaxBreakpoint,
   euiMinBreakpoint,
   euiModalBodyStyles,

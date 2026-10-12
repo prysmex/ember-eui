@@ -219,7 +219,15 @@ const entries = {
   'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles'],
   // selectable and suggest
   'components/selectable/selectable.styles.js': ['euiSelectableStyles'],
-  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles']
+  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles'],
+  // markdown
+  'components/markdown_editor/markdown_editor.styles.js': ['euiMarkdownEditorStyles', 'euiMarkdownEditorVariables'],
+  'components/markdown_editor/markdown_editor_drop_zone.styles.js': ['euiMarkdownEditorDropZoneStyles'],
+  'components/markdown_editor/markdown_editor_footer.styles.js': ['euiMarkdownEditorFooterStyles'],
+  'components/markdown_editor/markdown_editor_help_button.styles.js': ['euiMarkdownEditorHelpButtonStyles'],
+  'components/markdown_editor/markdown_editor_text_area.styles.js': ['euiMarkdownEditorTextAreaStyles'],
+  'components/markdown_editor/markdown_editor_toolbar.styles.js': ['euiMarkdownEditorToolbarStyles'],
+  'components/markdown_editor/markdown_format.styles.js': ['euiMarkdownFormatStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

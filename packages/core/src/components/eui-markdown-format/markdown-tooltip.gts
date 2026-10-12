@@ -1,3 +1,4 @@
+import { tooltipMarkdownIconStyles } from '../../utils/eui/markdown.ts';
 import EuiIcon from '../eui-icon.gts';
 import EuiToolTip from '../eui-tool-tip.gts';
 
@@ -23,9 +24,10 @@ const MarkdownTooltip: TemplateOnlyComponent<MarkdownTooltipSignature> =
       <EuiToolTip @content={{@node.tooltipText}}>
         <span>
           <strong>{{@node.content}}</strong>
+          {{! upstream: type "question", absent from the bundled icon set }}
           <EuiIcon
             @type="questionInCircle"
-            @iconClasses="euiMarkdownTooltip__icon"
+            @css={{tooltipMarkdownIconStyles}}
           />
         </span>
       </EuiToolTip>

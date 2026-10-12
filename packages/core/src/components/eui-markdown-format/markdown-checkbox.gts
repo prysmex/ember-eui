@@ -12,6 +12,8 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiMarkdownFormatMarkdownCheckboxArgs {
   /** EuiMarkdownFormat's `@replaceNode`, called when toggled. */
   replaceNode: Replacer;
+  /** Read-only: clicks do not toggle the checkbox (upstream `readOnly`). */
+  readOnly?: boolean;
   /** The parsed checkbox node. */
   node: {
     position: EuiMarkdownAstNodePosition;
@@ -39,10 +41,16 @@ const handleChange = (
   replaceNode(position, `${lead}[${isChecked ? ' ' : 'x'}]${label}`);
 };
 
+const preventToggle = (readOnly: boolean | undefined, event: Event) => {
+  if (readOnly) event.preventDefault();
+};
+
 const EuiMarkdownFormatMarkdownCheckboxComponent: TemplateOnlyComponent<EuiMarkdownFormatMarkdownCheckboxSignature> =
   <template>
     <EuiCheckbox
       @checked={{@node.isChecked}}
+      readonly={{@readOnly}}
+      {{on "click" (fn preventToggle @readOnly)}}
       {{on "change" (fn handleChange @node @replaceNode)}}
       ...attributes
     >

@@ -141,10 +141,18 @@ module('Acceptance | docs', function (hooks) {
     }
   });
 
-  test('switching theme swaps the EUI stylesheet', async function (assert) {
+  test('switching theme changes the root Borealis mode; no legacy stylesheet', async function (assert) {
     await visit('/docs/introduction');
 
-    assert.strictEqual(themeLink()?.dataset['theme'], 'light');
+    assert.strictEqual(themeLink(), null, 'no legacy theme stylesheet');
+    const background = () =>
+      getComputedStyle(document.documentElement).backgroundColor;
+    const lightBackground = background();
+    assert.strictEqual(
+      getComputedStyle(document.documentElement).fontSize,
+      '14px',
+      'upstream root font size from the global styles',
+    );
 
     await click('.euiHeader .euiButton');
     await waitUntil(() => document.querySelector('.euiContextMenuItem'));
@@ -154,11 +162,9 @@ module('Acceptance | docs', function (hooks) {
 
     await click(dark);
 
-    assert.strictEqual(themeLink()?.dataset['theme'], 'dark');
-    assert.true(
-      themeLink()!.href.includes('eui_theme_dark'),
-      'dark stylesheet',
-    );
+    assert.notStrictEqual(background(), lightBackground, 'dark body color');
+    assert.strictEqual(window.localStorage.getItem('theme'), 'dark');
+    window.localStorage.removeItem('theme');
   });
 
   test("the changelog renders core's CHANGELOG.md", async function (assert) {

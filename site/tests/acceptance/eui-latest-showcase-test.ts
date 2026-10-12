@@ -20,9 +20,10 @@ module('Acceptance | Latest EUI showcase', function (hooks) {
     await click(navButton);
     assert.strictEqual(currentURL(), '/docs/eui-latest');
     assert.dom('[data-latest-back]').hasAttribute('href', '/docs/introduction');
-    assert.true(
-      (document.getElementById('eui-theme') as HTMLLinkElement).disabled,
-      'legacy stylesheet disabled in standalone migration showcase',
+    assert.strictEqual(
+      document.getElementById('eui-theme'),
+      null,
+      'no legacy stylesheet anywhere on the site',
     );
     assert
       .dom('[data-eui-latest-showcase] h1')
@@ -34,7 +35,11 @@ module('Acceptance | Latest EUI showcase', function (hooks) {
       .dom('[data-eui-latest-showcase] a[href="/docs/emotion"]')
       .hasText('original Emotion showcase');
     await visit('/docs/introduction');
-    assert.false((document.getElementById('eui-theme') as HTMLLinkElement).disabled, 'leaving the standalone preview restores pending catalog styles');
+    assert.strictEqual(
+      getComputedStyle(document.documentElement).fontSize,
+      '14px',
+      'the docs shell keeps the Borealis global styles',
+    );
   });
 
   test('native upstream surfaces and buttons keep independent theme contexts', async function (assert) {

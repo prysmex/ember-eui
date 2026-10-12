@@ -3,8 +3,6 @@ import Service from '@ember/service';
 
 import type Owner from '@ember/owner';
 
-import { changeTheme } from '../utils/change-theme';
-
 type ThemeShape = {
   name: string;
   key: string;
@@ -35,10 +33,15 @@ export default class ThemeManager extends Service {
       this.themes.find((theme) => theme.key === currentTheme) || this.themes[0];
   }
 
+  /** The root Borealis provider follows `currentTheme`; no stylesheet swap. */
   changeTheme = (theme: ThemeShape) => {
     if (theme.key !== this.currentTheme?.key) {
       this.currentTheme = theme;
-      changeTheme(theme.key);
+      try {
+        window.localStorage?.setItem('theme', theme.key);
+      } catch {
+        // storage can be unavailable (private mode); the theme still applies
+      }
     }
   };
 }

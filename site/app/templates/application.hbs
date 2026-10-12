@@ -1,5 +1,6 @@
+<BorealisRoot @colorMode={{this.themeManager.currentTheme.key}}>
 {{#if this.isLatestShowcase}}
-  <main {{latest-styles-only}}>{{outlet}}</main>
+  <main>{{outlet}}</main>
 {{else}}
   <div id="guide">
     <EuiHeader @theme="dark" @position="fixed">
@@ -88,3 +89,4 @@
     </EuiPageTemplate>
   </div>
 {{/if}}
+</BorealisRoot>

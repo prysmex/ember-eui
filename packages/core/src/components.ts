@@ -40,6 +40,7 @@ import EuiContextMenuItem from './components/eui-context-menu-item.gts';
 import EuiContextMenuPanel from './components/eui-context-menu-panel.gts';
 import EuiControlBar from './components/eui-control-bar.gts';
 import EuiCopy from './components/eui-copy.gts';
+import EuiDataGrid from './components/eui-data-grid.gts';
 import EuiDatePickerRange from './components/eui-date-picker-range.gts';
 import EuiDelayHide from './components/eui-delay-hide.gts';
 import EuiDelayRender from './components/eui-delay-render.gts';
@@ -293,6 +294,7 @@ export {
   EuiContextMenuPanel,
   EuiControlBar,
   EuiCopy,
+  EuiDataGrid,
   EuiDatePickerRange,
   EuiDelayHide,
   EuiDelayRender,

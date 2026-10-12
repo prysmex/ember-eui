@@ -1,28 +1,37 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { concat } from '@ember/helper';
-import { hash } from '@ember/helper';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
-import { action } from '@ember/object';
-import { throttle } from '@ember/runloop';
+import { guidFor } from '@ember/object/internals';
+import { service } from '@ember/service';
 
 import { focusTrap } from 'ember-focus-trap';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import { modifier as modBuilder } from 'ember-modifier';
-import styleModifier from 'ember-style-modifier/modifiers/style';
-import { and, eq, not, or } from 'ember-truth-helpers';
+import { modifier as functionModifier } from 'ember-modifier';
+import style from 'ember-style-modifier/modifiers/style';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import setBodyClass from '../-private/set-body-class.ts';
 import outsideClickDetectorModifier from '../modifiers/outside-click-detector.ts';
-import resizeObserverModifier from '../modifiers/resize-observer.ts';
-import { isWithinMinBreakpoint } from '../utils/breakpoint.ts';
-import { sizeMapping } from '../utils/css-mappings/eui-flyout.ts';
-import { keysOf } from './common.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  dialogDescription,
+  flyoutZIndex,
+  observeWidth,
+  pushFlyoutPadding,
+  reactInlineStyle
+} from '../utils/eui/modal-flyout.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  composeFlyoutInlineStyles,
+  euiFlyoutCloseButtonStyles,
+  euiFlyoutStyles,
+  FLYOUT_SIZES,
+  isEuiFlyoutSizeNamed
+} from '../utils/eui/styles.generated.ts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiOverlayMask from './eui-overlay-mask.gts';
 import EuiPortal from './eui-portal.gts';
+import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
 
+import type EuiI18n from '../services/eui-i18n.ts';
 import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 
 export type EuiFlyoutArgs = {
@@ -44,15 +53,21 @@ export type EuiFlyoutArgs = {
   as?: string;
 
   /**
-   * Width: `'s'`, `'m'` or `'l'`, a number in px or any CSS width.
-   * Defaults to `'m'`.
+   * Width: `'s'`, `'m'`, `'l'` or `'fill'` (90%), a number in px or any
+   * CSS width. Defaults to `'m'`.
    */
   size?: number | string;
 
-  /** Side of the window it slides in from. Defaults to `'right'`. */
+  /**
+   * Side of the window it slides in from (logical: `'right'` is the
+   * inline end, so it mirrors in RTL). Defaults to `'right'`.
+   */
   side?: 'left' | 'right';
 
-  /** `role` of the flyout. Defaults to `'dialog'`. */
+  /**
+   * `role` of the flyout. Defaults to `'dialog'` (with `aria-modal`); a
+   * pushed flyout has no role unless you pass one. `null` for none.
+   */
   role?: null | string;
 
   /**
@@ -61,7 +76,11 @@ export type EuiFlyoutArgs = {
    */
   ownFocus?: boolean;
 
-  /** Clicking outside the flyout calls `@onClose`. Defaults to `false`. */
+  /**
+   * Without the mask (`@ownFocus={{false}}`), `true` closes the flyout on
+   * clicks outside it. With the mask, `false` stops mask clicks from
+   * closing it. Defaults to closing on mask clicks only.
+   */
   outsideClickCloses?: boolean;
 
   /**
@@ -74,7 +93,7 @@ export type EuiFlyoutArgs = {
    * Padding of `EuiFlyoutHeader`, `EuiFlyoutBody` and `EuiFlyoutFooter`:
    * `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'l'`.
    */
-  paddingSize?: string;
+  paddingSize?: 'none' | 's' | 'm' | 'l' | string;
 
   /** Hides the close button (e.g. when the flyout has its own). */
   hideCloseButton?: boolean;
@@ -96,26 +115,36 @@ export type EuiFlyoutArgs = {
   onClose?: () => void;
 
   /**
-   * Caps the width: `true` for EUI's default max width, or a number in px.
-   * Defaults to `false`.
+   * Caps the width: `true` for the size's max width, `false` for none, or
+   * a number in px or any CSS width. Defaults to `false`.
    */
-  maxWidth?: boolean | number;
+  maxWidth?: boolean | number | string;
 
-  /** @deprecated Has no effect. */
-  maskProps?: Record<string, unknown>;
+  /**
+   * Options for the mask: `{ headerZindexLocation: 'above' }` puts the
+   * flyout and its mask above a fixed `EuiHeader`. Defaults to `'below'`.
+   */
+  maskProps?: { headerZindexLocation?: 'above' | 'below' };
 
   /**
    * `'overlay'` covers the page; `'push'` pads the page so the flyout sits
    * beside it (on windows at least `@pushMinBreakpoint` wide).
    * Defaults to `'overlay'`.
    */
-  type?: string;
+  type?: 'overlay' | 'push' | string;
 
   /**
-   * Minimum window width for `@type="push"`: a named breakpoint (`'xs'`
-   * to `'xl'`) or px. Smaller windows get an overlay. Defaults to `'l'`.
+   * Minimum window width for `@type="push"`: a theme breakpoint name
+   * (`'xs'` to `'xl'`) or px. Smaller windows get an overlay. Defaults
+   * to `'l'`.
    */
   pushMinBreakpoint?: number | EuiBreakpointSize;
+
+  /**
+   * Slides the flyout in (only when the user allows motion). Defaults to
+   * `true` for overlays and `false` for push flyouts.
+   */
+  hasAnimation?: boolean;
 
   /** Focuses the flyout itself when it opens. Defaults to `true`. */
   shouldSelfFocus?: boolean;
@@ -135,65 +164,29 @@ export type EuiFlyoutArgs = {
   };
 };
 
-const classesModifier = modBuilder(
-  (
-    _element: Element,
-    _pos,
-    {
-      type,
-      isPushed,
-      side,
-      dimensions = {},
-      functionToCallOnWindowResize
-    }: {
-      type: string;
-      isPushed: boolean;
-      side: string;
-      dimensions?: { width?: number };
-      functionToCallOnWindowResize: () => void;
-    }
-  ) => {
-    // This class doesn't actually do anything by EUI, but is nice to add for consumers (JIC)
-    document.body.classList.add('euiBody--hasFlyout');
+export const SIZES = FLYOUT_SIZES as unknown as readonly [
+  's',
+  'm',
+  'l',
+  'fill'
+];
+export type EuiFlyoutSize = (typeof SIZES)[number];
 
-    /**
-     * Accomodate for the `isPushed` state by adding padding to the body equal to the width of the element
-     */
-    if (type === 'push') {
-      // Only add the event listener if we'll need to accommodate with padding
-      window.addEventListener('resize', functionToCallOnWindowResize);
-
-      if (isPushed && dimensions.width) {
-        if (side === 'right') {
-          document.body.style.paddingRight = `${dimensions.width}px`;
-        } else if (side === 'left') {
-          document.body.style.paddingLeft = `${dimensions.width}px`;
-        }
-      }
-    }
-
-    return () => {
-      document.body.classList.remove('euiBody--hasFlyout');
-
-      if (type === 'push') {
-        window.removeEventListener('resize', functionToCallOnWindowResize);
-
-        if (side === 'right') {
-          document.body.style.paddingRight = '';
-        } else if (side === 'left') {
-          document.body.style.paddingLeft = '';
-        }
-      }
-    };
+/** Upstream `EuiWindowEvent` keydown: Escape closes a flyout that is not pushed. */
+const windowKeydown = functionModifier(
+  (_element: Element, [handler]: [(event: KeyboardEvent) => void]) => {
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }
 );
 
-export const SIZES = keysOf(sizeMapping);
-export type EuiFlyoutSize = (typeof SIZES)[number];
-
-function isEuiFlyoutSizeNamed(value: any): value is EuiFlyoutSize {
-  return SIZES.includes(value);
-}
+const windowResize = functionModifier(
+  (_element: Element, [handler, enabled]: [() => void, boolean]) => {
+    if (!enabled) return;
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }
+);
 
 /**
  * A panel sliding in from the side of the window, for details or forms
@@ -210,39 +203,47 @@ export interface EuiFlyoutSignature {
 }
 
 export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
-  @tracked windowIsLargeEnoughToPush = isWithinMinBreakpoint(
-    typeof window === 'undefined' ? -Infinity : window.innerWidth,
-    this.pushMinBreakpoint
-  );
+  @service declare euiI18n: EuiI18n;
 
-  @tracked dimensions?: { width?: number; height?: number };
+  @tracked windowWidth =
+    typeof window === 'undefined' ? Infinity : window.innerWidth;
+
+  /** Border-box width while pushed, for the body padding. */
+  @tracked width?: number;
+
+  id = guidFor(this);
+
+  /** The flyout element, the focus trap's fallback. */
+  element?: Element;
+
+  registerElement = functionModifier((element: Element) => {
+    this.element = element;
+  });
+  descriptionId = `${this.id}-description`;
 
   get as() {
     return this.args.as ?? 'div';
   }
 
-  get hideCloseButton() {
-    return this.args.hideCloseButton ?? false;
-  }
-
   get closeButtonPosition() {
-    return this.args.closeButtonPosition ?? 'inside';
+    return this.args.closeButtonPosition === 'outside' ? 'outside' : 'inside';
   }
 
   get ownFocus() {
     return this.args.ownFocus ?? true;
   }
 
-  get side() {
-    return this.args.side ?? 'right';
+  get side(): 'left' | 'right' {
+    return this.args.side === 'left' ? 'left' : 'right';
   }
 
   get size() {
     return this.args.size ?? 'm';
   }
 
-  get paddingSize() {
-    return this.args.paddingSize ?? 'l';
+  get paddingSize(): 'none' | 's' | 'm' | 'l' {
+    const size = this.args.paddingSize;
+    return size === 'none' || size === 's' || size === 'm' ? size : 'l';
   }
 
   get maxWidth() {
@@ -250,136 +251,286 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
   }
 
   get type() {
-    return this.args.type ?? 'overlay';
+    return this.args.type === 'push' ? 'push' : 'overlay';
   }
 
-  get outsideClickCloses() {
-    return this.args.outsideClickCloses ?? false;
+  get hasAnimation() {
+    return this.args.hasAnimation ?? this.type === 'overlay';
   }
 
-  get role() {
-    return this.args.role ?? 'dialog';
+  get headerZindexLocation(): 'above' | 'below' {
+    return this.args.maskProps?.headerZindexLocation === 'above'
+      ? 'above'
+      : 'below';
   }
 
-  get pushMinBreakpoint() {
-    return this.args.pushMinBreakpoint ?? 'l';
+  get pushMinWidth(): number {
+    const min = this.args.pushMinBreakpoint ?? 'l';
+    if (typeof min === 'number') return min;
+    const breakpoints = getEuiThemeContext(this).upstream.euiTheme
+      .breakpoint as Record<string, number>;
+    return breakpoints[min] ?? Infinity;
   }
 
   get isPushed() {
-    return this.type === 'push' && this.windowIsLargeEnoughToPush;
+    return this.type === 'push' && this.windowWidth >= this.pushMinWidth;
   }
 
-  get styles() {
-    let newStyle: { [key: string]: unknown } = {};
-
-    if (this.maxWidth !== false) {
-      const value =
-        typeof this.maxWidth === 'number'
-          ? `${this.maxWidth}px`
-          : this.maxWidth;
-
-      newStyle = { maxWidth: value };
-    }
-
-    if (!isEuiFlyoutSizeNamed(this.size) && newStyle) {
-      newStyle['width'] = this.size;
-    } else {
-      newStyle = { width: this.size };
-    }
-
-    return newStyle;
+  get hasOverlayMask() {
+    return this.ownFocus && !this.isPushed;
   }
 
-  @action
-  functionToCallOnWindowResize() {
-    throttle(() => {
-      if (isWithinMinBreakpoint(window.innerWidth, this.pushMinBreakpoint)) {
-        this.windowIsLargeEnoughToPush = true;
-      } else {
-        this.windowIsLargeEnoughToPush = false;
+  get role() {
+    if (this.args.role !== undefined) return this.args.role ?? undefined;
+    return this.isPushed ? undefined : 'dialog';
+  }
+
+  get ariaModal() {
+    return !this.isPushed &&
+      (this.role === 'dialog' || this.role === 'alertdialog')
+      ? 'true'
+      : undefined;
+  }
+
+  get showCloseButton() {
+    return Boolean(this.args.onClose) && !this.args.hideCloseButton;
+  }
+
+  get zIndex() {
+    return flyoutZIndex(
+      getEuiThemeContext(this).upstream,
+      this.headerZindexLocation,
+      this.isPushed
+    );
+  }
+
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFlyoutStyles);
+    const { size, side, isPushed } = this;
+    return `euiFlyout ${euiClass(
+      context,
+      {
+        boxSizing: 'border-box',
+        // Upstream portals carry the provider's text color class.
+        color: context.upstream.euiTheme.colors.textParagraph
+      },
+      styles.euiFlyout,
+      styles.paddingSizes[this.paddingSize],
+      isEuiFlyoutSizeNamed(size) ? styles[size as EuiFlyoutSize] : undefined,
+      this.maxWidth === false ? styles.noMaxWidth : undefined,
+      isPushed ? styles.push.push : styles.overlay.overlay,
+      isPushed ? styles.push[side] : styles.overlay[side],
+      this.hasAnimation ? undefined : styles.noAnimation,
+      styles[side]
+    )}`;
+  }
+
+  @cached
+  get contentClass() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFlyoutStyles);
+    return `euiFlyout__content ${euiClass(context, styles.content)}`;
+  }
+
+  @cached
+  get inlineStyle() {
+    const size = this.size;
+    return reactInlineStyle(
+      composeFlyoutInlineStyles(
+        // React writes numeric widths as px
+        typeof size === 'number' ? `${size}px` : size,
+        'side-by-side',
+        null,
+        null,
+        this.maxWidth,
+        this.zIndex.flyout
+      )
+    );
+  }
+
+  /** Upstream overrides the mask's z-index with an `!important` class. */
+  @cached
+  get maskClass() {
+    return euiClass(getEuiThemeContext(this), {
+      zIndex: `${this.zIndex.mask} !important`
+    });
+  }
+
+  get closeButtonClass() {
+    const extra =
+      this.args.closeButtonProps?.className ??
+      this.args.closeButtonProps?.classes;
+    return ['euiFlyout__closeButton', extra].filter(Boolean).join(' ');
+  }
+
+  /**
+   * Upstream's close button `css`: positioning (`euiFlyout__closeButton`,
+   * `outsideSide`) plus the look (`inside`: transparent background;
+   * `outside`: XL shadow, no animation). Migrated children must not get a
+   * second Emotion class, so until EuiButtonIcon's `@css` lands here the
+   * positioning goes on a wrapper (`euiFlyout__closeButtonWrapper`) and
+   * `closeButtonLookCss` is not applied yet; switch both to `@css` at merge.
+   */
+  @cached
+  get closeButtonPositionCss() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFlyoutCloseButtonStyles);
+    return [
+      styles.euiFlyout__closeButton,
+      this.closeButtonPosition === 'outside'
+        ? styles.outsideSide[this.side]
+        : undefined
+    ];
+  }
+
+  @cached
+  get closeButtonLookCss() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFlyoutCloseButtonStyles);
+    return styles[this.closeButtonPosition];
+  }
+
+  @cached
+  get closeButtonWrapperClass() {
+    return `euiFlyout__closeButtonWrapper ${euiClass(
+      getEuiThemeContext(this),
+      // sized like the button, so `left`+`right` resolve as on upstream's button
+      { display: 'flex', inlineSize: 'max-content' },
+      ...this.closeButtonPositionCss
+    )}`;
+  }
+
+  @cached
+  get descriptionClass() {
+    return euiScreenReaderOnlyClass(getEuiThemeContext(this));
+  }
+
+  @cached
+  get focusTrapOptions() {
+    return (
+      this.args.focusTrapOptions ?? {
+        allowOutsideClick: true,
+        clickOutsideDeactivates: !this.ownFocus,
+        escapeDeactivates: false,
+        // upstream's focus lock tolerates flyouts without tabbable content
+        fallbackFocus: () => this.element as HTMLElement
       }
-    }, 50);
+    );
   }
 
-  @action
-  onClose() {
+  get description() {
+    return this.hasOverlayMask
+      ? this.euiI18n.lookupToken(
+          'euiFlyout.screenReaderModalDialog',
+          'You are in a modal dialog. Press Escape or tap/click outside the dialog on the shadowed overlay to close.'
+        )
+      : this.euiI18n.lookupToken(
+          'euiFlyout.screenReaderNoOverlayMaskDialog',
+          'You are in a modal dialog. To close the dialog, press Escape.'
+        );
+  }
+
+  get closeLabel() {
+    return (
+      this.args.closeButtonAriaLabel ??
+      this.args.closeAriaLabel ??
+      this.euiI18n.lookupToken(
+        'euiFlyoutCloseButton.ariaLabel',
+        'Close this dialog'
+      )
+    );
+  }
+
+  /** Clicks outside close only without a mask and with `@outsideClickCloses`. */
+  get outsideClickDisabled() {
+    return (
+      this.isPushed ||
+      this.hasOverlayMask ||
+      this.args.outsideClickCloses !== true
+    );
+  }
+
+  close = () => {
     this.args.onClose?.();
-  }
+  };
 
-  @action
-  onButtonCloseClicked(e: MouseEvent) {
-    this.onClose();
-    this.args.closeButtonProps?.onClick?.(e);
-  }
+  onMaskClick = () => {
+    if (this.args.outsideClickCloses !== false) this.close();
+  };
 
-  @action
-  onResize(dimensions: { width: number; height: number }) {
-    this.dimensions = dimensions;
-  }
+  onKeyDown = (event: KeyboardEvent) => {
+    if (!this.isPushed && event.key === 'Escape') {
+      event.preventDefault();
+      this.close();
+    }
+  };
+
+  onCloseButtonClick = (event: MouseEvent) => {
+    this.close();
+    this.args.closeButtonProps?.onClick?.(event);
+  };
+
+  onWindowResize = () => {
+    this.windowWidth = window.innerWidth;
+  };
+
+  setWidth = (width: number) => {
+    if (width !== this.width) this.width = width;
+  };
 
   <template>
+    {{(setBodyClass "euiBody--hasFlyout")}}
+    {{#if this.hasOverlayMask}}
+      <EuiOverlayMask
+        class={{this.maskClass}}
+        @headerZindexLocation={{this.headerZindexLocation}}
+        @hasAnimation={{this.hasAnimation}}
+        @onClick={{this.onMaskClick}}
+      />
+    {{/if}}
     {{#let
-      (classNames
-        (if (eq this.maxWidth true) "euiFlyout--maxWidth-default")
-        componentName="EuiFlyout"
-        type=this.type
-        side=this.side
-        size=this.size
-        padding=this.paddingSize
-      )
-      (classNames
-        "euiFlyout__closeButton"
-        (concat "euiFlyout__closeButton--" this.closeButtonPosition)
-        (or @closeButtonProps.className @closeButtonProps.classes)
-      )
+      (element this.as)
       (modifier
         focusTrap
-        isActive=(argOrDefault @isFocusTrapActive true)
-        shouldSelfFocus=(argOrDefault @shouldSelfFocus true)
+        isActive=(if (eq @isFocusTrapActive false) false true)
+        shouldSelfFocus=(if (eq @shouldSelfFocus false) false true)
         isPaused=this.isPushed
-        focusTrapOptions=(argOrDefault
-          @focusTrapOptions
-          (hash
-            allowOutsideClick=true clickOutsideDeactivates=(not this.ownFocus)
-          )
-        )
+        focusTrapOptions=this.focusTrapOptions
       )
       (modifier
         outsideClickDetectorModifier
-        isDisabled=(or this.isPushed (not this.outsideClickCloses))
-        onOutsideClick=this.onClose
+        isDisabled=this.outsideClickDisabled
+        onOutsideClick=this.close
       )
-      (modifier styleModifier this.styles)
-      (modifier onKey "Escape" this.onClose)
       (modifier
-        classesModifier
-        type=this.type
-        isPushed=this.isPushed
+        pushFlyoutPadding
+        id=this.id
         side=this.side
-        dimensions=this.dimensions
-        functionToCallOnWindowResize=this.functionToCallOnWindowResize
+        width=this.width
+        isPushed=this.isPushed
       )
-      (modifier resizeObserverModifier onResize=this.onResize)
-      (element this.as)
-      as |classes closeButtonClasses focusTrapModifier outsideClickDetector currentStyles onEscape classesModifier resizeObserver TheElement|
+      (modifier observeWidth this.setWidth this.isPushed)
+      as |TheElement trap outsideClick pushPadding measure|
     }}
-
-      {{#if (and this.ownFocus (not this.isPushed))}}
-        <EuiOverlayMask @headerZindexLocation="below" @onClick={{this.onClose}}>
-          <TheElement
-            role={{this.role}}
-            class={{classes}}
-            tabindex={{-1}}
-            {{!@glint-expect-error}}
-            {{currentStyles}}
-            {{focusTrapModifier}}
-            {{outsideClickDetector}}
-            {{onEscape}}
-            {{classesModifier}}
-            {{resizeObserver}}
-            ...attributes
-          >
-            {{#if (and @onClose (not @hideCloseButton))}}
+      {{#if this.isPushed}}
+        <TheElement
+          class={{this.classes}}
+          role={{this.role}}
+          ...attributes
+          {{style this.inlineStyle}}
+          {{this.registerElement}}
+          {{trap}}
+          {{outsideClick}}
+          {{dialogDescription this.descriptionId enabled=false}}
+          {{measure}}
+          {{pushPadding}}
+          {{windowResize this.onWindowResize (eq this.type "push")}}
+          {{windowKeydown this.onKeyDown}}
+        >
+          {{#if this.showCloseButton}}
+            <span class={{this.closeButtonWrapperClass}}>
               <EuiButtonIcon
                 @display={{if
                   (eq this.closeButtonPosition "outside")
@@ -388,78 +539,67 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
                 }}
                 @iconType="cross"
                 @color="text"
-                aria-label={{or @closeButtonAriaLabel @closeAriaLabel "Close this dialog"}}
+                aria-label={{this.closeLabel}}
                 data-test-subj="euiFlyoutCloseButton"
-                class={{closeButtonClasses}}
-                {{on "click" this.onButtonCloseClicked}}
+                class={{this.closeButtonClass}}
+                {{on "click" this.onCloseButtonClick}}
               />
-            {{/if}}
+            </span>
+          {{/if}}
+          <div class={{this.contentClass}} data-test-subj="euiFlyoutContent">
             {{yield}}
-          </TheElement>
-        </EuiOverlayMask>
-      {{else if (not this.isPushed)}}
+          </div>
+        </TheElement>
+      {{else}}
         <EuiPortal>
           <TheElement
+            class={{this.classes}}
             role={{this.role}}
-            class={{classes}}
-            tabindex={{-1}}
-            {{currentStyles}}
-            {{focusTrapModifier}}
-            {{outsideClickDetector}}
-            {{onEscape}}
-            {{classesModifier}}
-            {{resizeObserver}}
+            aria-modal={{this.ariaModal}}
+            tabindex="0"
+            data-autofocus="true"
             ...attributes
+            {{style this.inlineStyle}}
+            {{this.registerElement}}
+            {{trap}}
+            {{outsideClick}}
+            {{dialogDescription this.descriptionId}}
+            {{windowResize this.onWindowResize (eq this.type "push")}}
+            {{windowKeydown this.onKeyDown}}
           >
-            {{#if (and @onClose (not @hideCloseButton))}}
-              <EuiButtonIcon
-                @display={{if
-                  (eq this.closeButtonPosition "outside")
-                  "fill"
-                  "empty"
-                }}
-                @iconType="cross"
-                @color="text"
-                aria-label={{or @closeButtonAriaLabel @closeAriaLabel "Close this dialog"}}
-                data-test-subj="euiFlyoutCloseButton"
-                class={{closeButtonClasses}}
-                {{on "click" this.onButtonCloseClicked}}
-              />
+            {{! upstream EuiScreenReaderOnly clones its child: a bare <p> }}
+            <p
+              id={{this.descriptionId}}
+              class={{this.descriptionClass}}
+            >{{this.description}}</p>
+            {{#if this.showCloseButton}}
+              <span class={{this.closeButtonWrapperClass}}>
+                <EuiButtonIcon
+                  @display={{if
+                    (eq this.closeButtonPosition "outside")
+                    "fill"
+                    "empty"
+                  }}
+                  @iconType="cross"
+                  @color="text"
+                  aria-label={{this.closeLabel}}
+                  data-test-subj="euiFlyoutCloseButton"
+                  class={{this.closeButtonClass}}
+                  {{on "click" this.onCloseButtonClick}}
+                />
+              </span>
             {{/if}}
-            {{yield}}
+            <div class={{this.contentClass}} data-test-subj="euiFlyoutContent">
+              {{yield}}
+            </div>
           </TheElement>
         </EuiPortal>
-      {{else}}
-        <TheElement
-          role={{this.role}}
-          class={{classes}}
-          tabindex={{-1}}
-          {{currentStyles}}
-          {{focusTrapModifier}}
-          {{outsideClickDetector}}
-          {{onEscape}}
-          {{classesModifier}}
-          {{resizeObserver}}
-          ...attributes
-        >
-          {{#if (and @onClose (not @hideCloseButton))}}
-            <EuiButtonIcon
-              @display={{if
-                (eq this.closeButtonPosition "outside")
-                "fill"
-                "empty"
-              }}
-              @iconType="cross"
-              @color="text"
-              aria-label={{or @closeButtonAriaLabel @closeAriaLabel "Close this dialog"}}
-              data-test-subj="euiFlyoutCloseButton"
-              class={{closeButtonClasses}}
-              {{on "click" this.onButtonCloseClicked}}
-            />
-          {{/if}}
-          {{yield}}
-        </TheElement>
       {{/if}}
     {{/let}}
   </template>
 }
+
+function eq(a: unknown, b: unknown) {
+  return a === b;
+}
+

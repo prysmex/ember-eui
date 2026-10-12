@@ -1,6 +1,9 @@
-import classNames from '../helpers/class-names.ts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiFlyoutHeaderStyles } from '../utils/eui/styles.generated.ts';
 
 /** The top of an EuiFlyout, usually with an `EuiTitle`. */
 export interface EuiFlyoutHeaderSignature {
@@ -15,17 +18,27 @@ export interface EuiFlyoutHeaderSignature {
   };
 }
 
-const EuiFlyoutHeader: TemplateOnlyComponent<EuiFlyoutHeaderSignature> =
+export default class EuiFlyoutHeader extends Component<EuiFlyoutHeaderSignature> {
+  /**
+   * The flyout pads a bordered header's bottom through upstream's
+   * `[class*='euiFlyoutHeader-hasBorder']`, which matches the Emotion class
+   * name built from the slot labels.
+   */
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFlyoutHeaderStyles);
+    return `euiFlyoutHeader ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiFlyoutHeader,
+      this.args.hasBorder ? styles.hasBorder : undefined
+    )}`;
+  }
+
   <template>
-    <div
-      class={{classNames
-        "euiFlyoutHeader"
-        (if @hasBorder "euiFlyoutHeader--hasBorder")
-      }}
-      ...attributes
-    >
+    <div class={{this.classes}} ...attributes>
       {{yield}}
     </div>
-  </template>;
-
-export default EuiFlyoutHeader;
+  </template>
+}

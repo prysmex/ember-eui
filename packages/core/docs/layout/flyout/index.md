@@ -57,24 +57,26 @@ that keep the page context. Render it only while open:
 | `@closeAriaLabel` | `string` |  | Same as `@closeButtonAriaLabel`. |
 | `@isFocusTrapActive` | `boolean` | `true` | Traps keyboard focus inside the flyout. |
 | `@as` | `string` | `'div'` | Tag of the flyout, e.g. `'nav'` or `'aside'`. |
-| `@size` | `number \| string` | `'m'` | Width: `'s'`, `'m'` or `'l'`, a number in px or any CSS width. |
-| `@side` | `'left' \| 'right'` | `'right'` | Side of the window it slides in from. |
-| `@role` | `null \| string` | `'dialog'` | `role` of the flyout. |
+| `@size` | `number \| string` | `'m'` | Width: `'s'`, `'m'`, `'l'` or `'fill'` (90%), a number in px or any CSS width. |
+| `@side` | `'left' \| 'right'` | `'right'` | Side of the window it slides in from (logical: `'right'` is the inline end, so it mirrors in RTL). |
+| `@role` | `null \| string` | `'dialog'` (with `aria-modal`); a pushed flyout has no role unless you pass one | `role` of the flyout. `null` for none. |
 | `@ownFocus` | `boolean` | `true` | Renders a mask over the page behind the flyout, which closes it when clicked. Without it, the page stays usable. |
-| `@outsideClickCloses` | `boolean` | `false` | Clicking outside the flyout calls `@onClose`. |
+| `@outsideClickCloses` | `boolean` | closing on mask clicks only | Without the mask (`@ownFocus={{false}}`), `true` closes the flyout on clicks outside it. With the mask, `false` stops mask clicks from closing it. |
 | `@closeButtonPosition` | `'outside' \| 'inside'` | `'inside'` | Close button `'inside'` the flyout's corner or `'outside'` next to it. |
-| `@paddingSize` | `string` | `'l'` | Padding of `EuiFlyoutHeader`, `EuiFlyoutBody` and `EuiFlyoutFooter`: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@paddingSize` | `'none' \| 's' \| 'm' \| 'l' \| string` | `'l'` | Padding of `EuiFlyoutHeader`, `EuiFlyoutBody` and `EuiFlyoutFooter`: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@hideCloseButton` | `boolean` |  | Hides the close button (e.g. when the flyout has its own). |
 | `@closeButtonProps` |  |  | Props for the close button: `{ className, onClick }`. |
 | `@closeButtonAriaLabel` | `string` | "Close this dialog" | Accessible label of the close button. |
 | `@onClose` | `() => void` |  | Called by the close button, Escape, the mask and outside clicks. Stop rendering the flyout here. Without it there is no close button. |
-| `@maxWidth` | `boolean \| number` | `false` | Caps the width: `true` for EUI's default max width, or a number in px. |
-| `@type` | `string` | `'overlay'` | `'overlay'` covers the page; `'push'` pads the page so the flyout sits beside it (on windows at least `@pushMinBreakpoint` wide). |
-| `@pushMinBreakpoint` | `number \| EuiBreakpointSize` | `'l'` | Minimum window width for `@type="push"`: a named breakpoint (`'xs'` to `'xl'`) or px. Smaller windows get an overlay. |
+| `@maxWidth` | `boolean \| number \| string` | `false` | Caps the width: `true` for the size's max width, `false` for none, or a number in px or any CSS width. |
+| `@maskProps` | `{ headerZindexLocation?: 'above' \| 'below' }` | `'below'` | Options for the mask: `{ headerZindexLocation: 'above' }` puts the flyout and its mask above a fixed `EuiHeader`. |
+| `@type` | `'overlay' \| 'push' \| string` | `'overlay'` | `'overlay'` covers the page; `'push'` pads the page so the flyout sits beside it (on windows at least `@pushMinBreakpoint` wide). |
+| `@pushMinBreakpoint` | `number \| EuiBreakpointSize` |  | Minimum window width for `@type="push"`: a theme breakpoint name (`'xs'` to `'xl'`) or px. Smaller windows get an overlay. Defaults to `'l'`. |
+| `@hasAnimation` | `boolean` | `true` for overlays and `false` for push flyouts | Slides the flyout in (only when the user allows motion). |
 | `@shouldSelfFocus` | `boolean` | `true` | Focuses the flyout itself when it opens. |
 | `@focusTrapOptions` |  | allowing outside clicks | Options for the focus trap (focus-trap library), e.g. `{ initialFocus: '#name' }`. |
 
-Deprecated: `@isOpen` (Has no effect: render the flyout only while it is open.); `@isDocked` (Has no effect, see EuiCollapsibleNav; use `@type="push"`.); `@dockedBreakpoint` (Has no effect; use `@pushMinBreakpoint`.); `@showButtonIfDocked` (Has no effect.); `@maskProps` (Has no effect.).
+Deprecated: `@isOpen` (Has no effect: render the flyout only while it is open.); `@isDocked` (Has no effect, see EuiCollapsibleNav; use `@type="push"`.); `@dockedBreakpoint` (Has no effect; use `@pushMinBreakpoint`.); `@showButtonIfDocked` (Has no effect.).
 
 | Block | Description |
 | --- | --- |
@@ -97,6 +99,10 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 ### EuiFlyoutBody
 
 The scrolling main content of an EuiFlyout.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@scrollableTabIndex` | `number` | `0`; pass `-1` when the content has focusable elements | `tabindex` of the scrolling wrapper, so keyboard users can scroll it. |
 
 | Block | Description |
 | --- | --- |

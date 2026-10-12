@@ -1,106 +1,371 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
+import { service } from '@ember/service';
+
+import { getTokenName } from '@elastic/eui-theme-common';
+import { modifier } from 'ember-modifier';
 import { eq, or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiPanelSurfaceCss } from '../utils/eui/content-blocks.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiBorderColor,
+  euiCallOutHeaderStyles,
+  euiCallOutStyles
+} from '../utils/eui/styles.generated.ts';
+import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiText from './eui-text.gts';
-import TextBlock from './text-block.gts';
+import EuiTitle from './eui-title.gts';
 
-import type {
-  colorMapping,
-  sizeMapping
-} from '../utils/css-mappings/eui-call-out.ts';
+import type EuiI18n from '../services/eui-i18n';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiTextSignature } from './eui-text';
-import type { TextBlockSignature } from './text-block';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiTitleSignature } from './eui-title';
 
+export type EuiCallOutColor = 'primary' | 'success' | 'warning' | 'danger';
+export type EuiCallOutSize = 's' | 'm';
+
+/**
+ * Upstream's default notification icons (`infoFill`, `checkCircleFill`,
+ * `warningStatic`, `errorFill`) are not in Ember's icon set yet; these are
+ * the closest available glyphs, with upstream's colors.
+ */
+const DEFAULT_ICONS: Record<
+  EuiCallOutColor,
+  { type: string; color?: string }
+> = {
+  primary: { type: 'iInCircle', color: 'primary' },
+  success: { type: 'checkInCircleFilled', color: 'success' },
+  warning: { type: 'warning', color: 'warning' },
+  danger: { type: 'error', color: 'danger' }
+};
+
+/** Shrink-wraps the dismiss button (no line box around it). */
+const DISMISS_WRAPPER = { display: 'flex' } as const;
+
+const SUPER_NARROW_WIDTH = 400;
+const WIDE_BREAKPOINTS: Record<EuiCallOutSize, number> = { s: 800, m: 1000 };
+
+/**
+ * Upstream's `useLayoutObserver`: sets `data-layout="superNarrow" | "wide"`
+ * from the rendered width, which the actions/wrapper styles respond to.
+ * The attribute is written in the next frame: changing the layout resizes
+ * the callout, and writing it inside the observer callback would trigger
+ * the browser's "ResizeObserver loop" error.
+ */
+const layoutObserver = modifier(
+  (element: HTMLElement, [size]: [EuiCallOutSize]) => {
+    if (typeof ResizeObserver === 'undefined') return;
+    const wide = WIDE_BREAKPOINTS[size];
+    let frame = 0;
+    const observer = new ResizeObserver(([entry]) => {
+      const width =
+        entry?.borderBoxSize?.[0]?.inlineSize ??
+        element.getBoundingClientRect().width;
+      const layout =
+        width <= SUPER_NARROW_WIDTH
+          ? 'superNarrow'
+          : width >= wide
+            ? 'wide'
+            : null;
+      if (element.getAttribute('data-layout') === layout) return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (layout) element.setAttribute('data-layout', layout);
+        else element.removeAttribute('data-layout');
+      });
+    });
+    observer.observe(element);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }
+);
+
+/** A colored box drawing attention to a message, e.g. a warning or a success notice. */
 export interface EuiCallOutSignature {
   Element: HTMLDivElement;
   Args: {
     /** Title in the callout's header. Use the `<:title>` block for markup. */
     title?: string;
     /**
-     * Renders the title as a heading element, e.g. `'h2'`, so it appears in
-     * the page outline. Defaults to a `<span>`.
+     * Tag of the title, e.g. `'h2'` so it appears in the page outline:
+     * `'h1'`–`'h6'` or `'p'`. Defaults to `'p'`.
      */
-    heading?: TextBlockSignature['Args']['tagName'];
+    heading?: EuiTitleSignature['Args']['tagName'];
     /**
-     * Icon before the title (only shown with a title), e.g. `'alert'`,
-     * `'check'` or `'help'`.
+     * Main text, rendered inline after the title in small callouts. Use the
+     * default (or `<:body>`) block for other content.
+     */
+    text?: string;
+    /**
+     * Icon before the content, e.g. `'alert'`, `'check'` or `'help'`. Without
+     * it, a default icon matching `@color` is shown.
      */
     iconType?: EuiIconSignature['Args']['type'];
     /** `'s'` or `'m'`. Defaults to `'m'`. */
-    size?: keyof typeof sizeMapping;
+    size?: EuiCallOutSize;
     /**
-     * `'primary'`, `'success'`, `'warning'` or `'danger'`.
-     * Defaults to `'primary'`.
+     * `'primary'`, `'success'`, `'warning'` or `'danger'`. Other values fall
+     * back to `'primary'`. Defaults to `'primary'`.
      */
-    color?: keyof typeof colorMapping;
-    /** Color of the body text, any `EuiText` color. Defaults to the text color. */
+    color?: EuiCallOutColor;
+    /** Color of the body text, any `EuiText` color. Defaults to `'default'`. */
     textColor?: EuiTextSignature['Args']['color'];
-    /** Size of the title icon. Defaults to `'m'`. */
+    /** Size of a custom `@iconType`. Defaults to `'m'` for small callouts, `'l'` otherwise. */
     iconSize?: EuiIconSignature['Args']['size'];
+    /**
+     * Renders a dismiss (cross) button in the top end corner; called when it
+     * is clicked.
+     */
+    onDismiss?: (event: MouseEvent) => void;
+    /** Accessible label of the dismiss button. Defaults to "Dismiss this callout" (i18n token `euiCallOut.dismissAriaLabel`). */
+    dismissButtonAriaLabel?: string;
   };
   Blocks: {
     /** The title, instead of `@title`. */
     title?: [];
     /** The body; same as the default block. */
     body?: [];
-    /** The body, e.g. paragraphs and buttons. */
+    /** The body, e.g. paragraphs or a list. */
     default?: [];
+    /**
+     * Actions, e.g. `<EuiButton @size="s">` and `<EuiButtonEmpty @size="s">`.
+     * Laid out beside the content in wide callouts.
+     */
+    actions?: [];
   };
 }
 
-const EuiCallOut: TemplateOnlyComponent<EuiCallOutSignature> = <template>
-  <div
-    class={{classNames
-      componentName="EuiCallOut"
-      size=(argOrDefault @size "m")
-      color=(argOrDefault @color "primary")
-    }}
-    ...attributes
-  >
-    {{#if (or @title (has-block "title"))}}
-      <div class="euiCallOutHeader">
-        {{#if @iconType}}
-          <EuiIcon
-            @iconClasses="euiCallOutHeader__icon"
-            @type={{@iconType}}
-            @size={{argOrDefault @iconSize "m"}}
-            aria-hidden="true"
-            @color="inherit"
-          />
-        {{/if}}
-        {{#if @heading}}
-          <TextBlock @tagName={{@heading}} class="euiCallOutHeader__title">
-            {{#if (has-block "title")}}
-              {{yield to="title"}}
-            {{else}}
-              {{@title}}
+/** Native Ember callout on the upstream EUI 123 / Borealis factories. */
+export default class EuiCallOut extends Component<EuiCallOutSignature> {
+  @service declare euiI18n: EuiI18n;
+
+  layoutObserver = layoutObserver;
+
+  @cached
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  get color(): EuiCallOutColor {
+    const color = this.args.color;
+    return color && Object.prototype.hasOwnProperty.call(DEFAULT_ICONS, color)
+      ? color
+      : 'primary';
+  }
+
+  get size(): EuiCallOutSize {
+    return this.args.size === 's' ? 's' : 'm';
+  }
+
+  @cached
+  get styles() {
+    return useEuiBorealisStyles(this.context, euiCallOutStyles);
+  }
+
+  @cached
+  get classes() {
+    const { upstream } = this.context;
+    const color = this.color;
+    // Same order as upstream: EuiPanel's styles, then the callout's `css`.
+    return euiClass(
+      this.context,
+      euiPanelSurfaceCss(this.context, {
+        color,
+        hasBorder: true,
+        borderRadius: 'none',
+        grow: false
+      }),
+      this.styles.euiCallOut,
+      { borderColor: euiBorderColor(upstream, color) },
+      this.args.onDismiss && this.styles.hasDismissButton
+    );
+  }
+
+  @cached
+  get wrapperClass() {
+    return euiClass(this.context, this.styles.wrapper);
+  }
+
+  @cached
+  get bodyClass() {
+    return euiClass(this.context, this.styles.body);
+  }
+
+  @cached
+  get contentClass() {
+    return euiClass(this.context, this.styles.content);
+  }
+
+  @cached
+  get actionsClass() {
+    return euiClass(this.context, this.styles.actions);
+  }
+
+  @cached
+  get iconClass() {
+    return euiClass(this.context, this.styles.icon);
+  }
+
+  @cached
+  get headerClass() {
+    return euiClass(
+      this.context,
+      useEuiBorealisStyles(this.context, euiCallOutHeaderStyles).euiCallOutHeader
+    );
+  }
+
+  @cached
+  get dismissClass() {
+    // On a wrapper, not the button: EuiButtonIcon's own class sets
+    // `position: relative`, and two classes would race on insertion order.
+    return euiClass(
+      this.context,
+      DISMISS_WRAPPER,
+      this.styles.dismissButton.euiCallOut__dismissButton
+    );
+  }
+
+  get titleSize(): EuiTitleSignature['Args']['size'] {
+    return this.size === 's' ? 'xxs' : 'xs';
+  }
+
+  get iconSize(): EuiIconSignature['Args']['size'] {
+    return this.args.iconSize ?? (this.size === 's' ? 'm' : 'l');
+  }
+
+  /** Upstream colors custom icons with the `borderStrong<Color>` token. */
+  @cached
+  get customIconColor(): string {
+    const colors = this.context.upstream.euiTheme.colors as unknown as Record<
+      string,
+      string
+    >;
+    return colors[getTokenName('borderStrong', this.color)]!;
+  }
+
+  get defaultIcon() {
+    return DEFAULT_ICONS[this.color];
+  }
+
+  get childrenSize(): EuiTextSignature['Args']['size'] {
+    return this.size === 's' ? 'xs' : 's';
+  }
+
+  get textColor(): EuiTextSignature['Args']['color'] {
+    return this.args.textColor ?? 'default';
+  }
+
+  get dismissLabel(): string {
+    return (
+      this.args.dismissButtonAriaLabel ??
+      this.euiI18n.lookupToken(
+        'euiCallOut.dismissAriaLabel',
+        'Dismiss this callout'
+      )
+    );
+  }
+
+  <template>
+    <div
+      class="euiCallOut euiCallOut--{{this.color}} {{this.classes}}"
+      data-size={{this.size}}
+      {{this.layoutObserver this.size}}
+      ...attributes
+    >
+      <div class={{this.wrapperClass}}>
+        <div class={{this.bodyClass}}>
+          {{#if @iconType}}
+            <EuiIcon
+              class={{this.iconClass}}
+              @type={{@iconType}}
+              @size={{this.iconSize}}
+              @color={{this.customIconColor}}
+              aria-hidden="true"
+            />
+          {{else}}
+            <EuiIcon
+              class="euiNotificationIcon {{this.iconClass}}"
+              @type={{this.defaultIcon.type}}
+              @size={{if (eq this.size "s") "m" "l"}}
+              @color={{this.defaultIcon.color}}
+              aria-hidden="true"
+            />
+          {{/if}}
+          <div class={{this.contentClass}}>
+            {{#if (or @title (has-block "title"))}}
+              <EuiTitle
+                @tagName={{if @heading @heading "p"}}
+                @size={{this.titleSize}}
+                class="euiCallOutHeader__title {{this.headerClass}}"
+              >
+                {{#if (has-block "title")}}
+                  {{yield to="title"}}
+                {{else}}
+                  {{@title}}
+                {{/if}}
+              </EuiTitle>
+              {{! After the title, so screen reader users know what it dismisses. }}
+              {{#if @onDismiss}}
+                <span class={{this.dismissClass}}>
+                  <EuiButtonIcon
+                    data-test-subj="euiDismissCalloutButton"
+                    aria-label={{this.dismissLabel}}
+                    @iconType="cross"
+                    @color={{this.color}}
+                    @size="xs"
+                    {{on "click" @onDismiss}}
+                  />
+                </span>
+              {{/if}}
             {{/if}}
-          </TextBlock>
-        {{else}}
-          <span class="euiCallOutHeader__title">
-            {{#if (has-block "title")}}
-              {{yield to="title"}}
-            {{else}}
-              {{@title}}
+            {{#if @text}}
+              <EuiText
+                class="euiCallOut__text"
+                @size="s"
+                @color={{this.textColor}}
+              >{{@text}}</EuiText>
             {{/if}}
-          </span>
+            {{#if (has-block "body")}}
+              <EuiText
+                class="euiCallOut__additionalContent"
+                @size={{this.childrenSize}}
+                @color={{this.textColor}}
+              >{{yield to="body"}}</EuiText>
+            {{else if (has-block)}}
+              <EuiText
+                class="euiCallOut__additionalContent"
+                @size={{this.childrenSize}}
+                @color={{this.textColor}}
+              >{{yield}}</EuiText>
+            {{/if}}
+            {{#unless (or @title (has-block "title"))}}
+              {{#if @onDismiss}}
+                <span class={{this.dismissClass}}>
+                  <EuiButtonIcon
+                    data-test-subj="euiDismissCalloutButton"
+                    aria-label={{this.dismissLabel}}
+                    @iconType="cross"
+                    @color={{this.color}}
+                    @size="xs"
+                    {{on "click" @onDismiss}}
+                  />
+                </span>
+              {{/if}}
+            {{/unless}}
+          </div>
+        </div>
+        {{#if (has-block "actions")}}
+          <div class={{this.actionsClass}}>
+            {{yield to="actions"}}
+          </div>
         {{/if}}
       </div>
-    {{/if}}
-    {{#if (or (has-block "body") (has-block))}}
-      <EuiText @size={{if (eq @size "s") "xs" "s"}} @color={{@textColor}}>
-        {{#if (has-block "body")}}
-          {{yield to="body"}}
-        {{else}}
-          {{yield}}
-        {{/if}}
-      </EuiText>
-    {{/if}}
-  </div>
-</template>;
-
-export default EuiCallOut;
+    </div>
+  </template>
+}

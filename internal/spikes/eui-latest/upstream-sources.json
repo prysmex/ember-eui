@@ -79,6 +79,10 @@
       "sha256": "9a702acb8d4b606412ecd70db4c7b4168be6fd0cfc01e64b4e996ddfe7fa4395"
     },
     {
+      "path": "@elastic/eui/es/components/call_out/call_out.styles.js",
+      "sha256": "a32b2d2512f382b320633feae1806d4cf6f706e377e90f457f8dc99554dd3160"
+    },
+    {
       "path": "@elastic/eui/es/components/code/code_syntax.styles.js",
       "sha256": "dc198bf65eef50a9ac8d2ef2bde3c1cd952e118a647442f497906f7352a107eb"
     },
@@ -93,6 +97,10 @@
     {
       "path": "@elastic/eui/es/components/common.js",
       "sha256": "b94d98693be5c8cf22392a939bc65a658deeceac235733b6e149a2ce93ecf05c"
+    },
+    {
+      "path": "@elastic/eui/es/components/empty_prompt/empty_prompt.styles.js",
+      "sha256": "8b31630b3bd4ae626b81475f5a1181d809bb42cecd2968114158e55b2d76ad23"
     },
     {
       "path": "@elastic/eui/es/components/flex/flex_grid.styles.js",
@@ -317,6 +325,10 @@
     {
       "path": "@elastic/eui/es/components/spacer/spacer.styles.js",
       "sha256": "e6eaf9292456bce230fff4cbb55d2d1e7a3ac0f78988eb9482a6b714831358ae"
+    },
+    {
+      "path": "@elastic/eui/es/components/stat/stat.styles.js",
+      "sha256": "c5172c8dfa8ca1c3f5237e9c6a50def9cc2334f4df8ae2d518d4a47cbb075405"
     },
     {
       "path": "@elastic/eui/es/components/steps/step_horizontal.styles.js",

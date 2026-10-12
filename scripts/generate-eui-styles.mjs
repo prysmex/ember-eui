@@ -54,6 +54,13 @@ const entries = {
   'components/form/radio/radio.styles.js': ['euiRadioStyles'],
   'components/form/radio/radio_group.styles.js': ['euiRadioGroupStyles'],
   'components/form/switch/switch.styles.js': ['euiSwitchStyles'],
+  // content-blocks
+  'components/call_out/call_out.styles.js': [
+    'euiCallOutStyles',
+    'euiCallOutHeaderStyles'
+  ],
+  'components/empty_prompt/empty_prompt.styles.js': ['euiEmptyPromptStyles'],
+  'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles'],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/reset/reset.js': ['resetStyles'],
   'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight'],

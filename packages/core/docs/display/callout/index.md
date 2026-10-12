@@ -25,21 +25,27 @@ Generated from the components' TypeScript signatures by
 
 ### EuiCallOut
 
+A colored box drawing attention to a message, e.g. a warning or a success notice.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@title` | `string` |  | Title in the callout's header. Use the `<:title>` block for markup. |
-| `@heading` |  | a `<span>` | Renders the title as a heading element, e.g. `'h2'`, so it appears in the page outline. |
-| `@iconType` |  |  | Icon before the title (only shown with a title), e.g. `'alert'`, `'check'` or `'help'`. |
-| `@size` |  | `'m'` | `'s'` or `'m'`. |
-| `@color` |  | `'primary'` | `'primary'`, `'success'`, `'warning'` or `'danger'`. |
-| `@textColor` |  | the text color | Color of the body text, any `EuiText` color. |
-| `@iconSize` |  | `'m'` | Size of the title icon. |
+| `@heading` |  | `'p'` | Tag of the title, e.g. `'h2'` so it appears in the page outline: `'h1'`–`'h6'` or `'p'`. |
+| `@text` | `string` |  | Main text, rendered inline after the title in small callouts. Use the default (or `<:body>`) block for other content. |
+| `@iconType` |  |  | Icon before the content, e.g. `'alert'`, `'check'` or `'help'`. Without it, a default icon matching `@color` is shown. |
+| `@size` | `EuiCallOutSize` | `'m'` | `'s'` or `'m'`. |
+| `@color` | `EuiCallOutColor` | `'primary'` | `'primary'`, `'success'`, `'warning'` or `'danger'`. Other values fall back to `'primary'`. |
+| `@textColor` |  | `'default'` | Color of the body text, any `EuiText` color. |
+| `@iconSize` |  | `'m'` for small callouts, `'l'` otherwise | Size of a custom `@iconType`. |
+| `@onDismiss` | `(event: MouseEvent) => void` |  | Renders a dismiss (cross) button in the top end corner; called when it is clicked. |
+| `@dismissButtonAriaLabel` | `string` | "Dismiss this callout" (i18n token `euiCallOut.dismissAriaLabel`) | Accessible label of the dismiss button. |
 
 | Block | Description |
 | --- | --- |
 | `<:title>` | The title, instead of `@title`. |
 | `<:body>` | The body; same as the default block. |
-| default block | The body, e.g. paragraphs and buttons. |
+| default block | The body, e.g. paragraphs or a list. |
+| `<:actions>` | Actions, e.g. `<EuiButton @size="s">` and `<EuiButtonEmpty @size="s">`. Laid out beside the content in wide callouts. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

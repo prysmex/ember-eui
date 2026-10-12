@@ -1,5 +1,3 @@
-
-
 import EuiText from '../eui-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
@@ -18,24 +16,17 @@ export interface EuiStatDescriptionSignature {
   };
 }
 
+/** Upstream: `<EuiText size="s" className="euiStat__description">` around the element. */
 const EuiStatDescription: TemplateOnlyComponent<EuiStatDescriptionSignature> =
   <template>
-    {{#if @descriptionElement}}
-      {{#let (element @descriptionElement) as |DescriptionElement|}}
-        <EuiText class="euiStat__description" @size="s">
-          <DescriptionElement aria-hidden="true">
-            {{yield}}
-          </DescriptionElement>
-        </EuiText>
-      {{/let}}
-
-    {{else}}
+    {{#let
+      (element (if @descriptionElement @descriptionElement "p"))
+      as |DescriptionElement|
+    }}
       <EuiText class="euiStat__description" @size="s">
-        <p aria-hidden="true">
-          {{yield}}
-        </p>
+        <DescriptionElement>{{yield}}</DescriptionElement>
       </EuiText>
-    {{/if}}
+    {{/let}}
   </template>;
 
 export default EuiStatDescription;

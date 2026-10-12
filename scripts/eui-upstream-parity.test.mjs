@@ -118,7 +118,11 @@ const factories = {
   'components/steps/step_number.styles.js': ['euiStepNumberStyles', 'euiStepNumberContentStyles'],
   'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
   'components/steps/step_horizontal.styles.js': ['euiStepHorizontalStyles', 'euiStepHorizontalNumberStyles', 'euiStepHorizontalTitleStyles'],
-  'components/steps/sub_steps.styles.js': ['euiSubStepsStyles']
+  'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
+  // content-blocks
+  'components/call_out/call_out.styles.js': ['euiCallOutStyles', 'euiCallOutHeaderStyles'],
+  'components/empty_prompt/empty_prompt.styles.js': ['euiEmptyPromptStyles'],
+  'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

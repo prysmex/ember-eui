@@ -72,7 +72,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@title` | `string` |  |  |
 | `@showExternal` (required) | `boolean` |  |  |
 | `@newTab` (required) | `boolean` |  |  |
-| `@externalIconClass` (required) | `string` |  |  |
+| `@externalIconCss` (required) | `EuiCss` |  |  |
 | `@srOnlyClass` (required) | `string` |  |  |
 
 ### EuiPinnableListGroup

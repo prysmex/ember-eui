@@ -307,6 +307,10 @@
       "sha256": "572bd872bfdd33b2ef7b7e9d6b18e870c4c76d838fa1c4ff7ae60bf9ca44b001"
     },
     {
+      "path": "@elastic/eui/es/components/form/super_select/super_select.styles.js",
+      "sha256": "043f74075e7565f2eb9ccdd89d39e15208c47e308c5c5f523e6fb5bea2279c8b"
+    },
+    {
       "path": "@elastic/eui/es/components/form/switch/switch.styles.js",
       "sha256": "f3997acaffbcbddf702cf07b4d4ba092e2c93631ee72fd15146c314e9b5b8e40"
     },

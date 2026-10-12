@@ -214,7 +214,9 @@ const entries = {
   'components/resizable_container/resizable_collapse_button.styles.js': ['euiResizableCollapseButtonStyles'],
   'components/resizable_container/resizable_panel.styles.js': ['euiResizablePanelStyles', 'euiResizablePanelContentStyles'],
   'components/drag_and_drop/draggable.styles.js': ['euiDraggableStyles', 'euiDraggableItemStyles'],
-  'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles']
+  'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles'],
+  // super select
+  'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

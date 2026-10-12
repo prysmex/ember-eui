@@ -315,6 +315,10 @@
       "sha256": "58697ee388b9209edff750a057539e13c18619a73d13022ac4aa755f81d991a1"
     },
     {
+      "path": "@elastic/eui/es/components/flyout/_flyout_resize_button.styles.js",
+      "sha256": "a2873b3fa110bca24dfe8335dd2345cc2e901259bc352626afdb0c13f269549b"
+    },
+    {
       "path": "@elastic/eui/es/components/flyout/const.js",
       "sha256": "7112786a10e354555d4f74a42ec6ab8c9c01954d5a9855984f4d4afd1ddef3fa"
     },

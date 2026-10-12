@@ -314,7 +314,9 @@ const entries = {
   'components/button/split_button/split_button.styles.js': ['euiSplitButtonStyles', 'euiSplitButtonActionStyles', 'euiSplitButtonDividerStyles'],
   // extension-less key so the existing `_button.js` entry is not edited (union on merge)
   'global_styling/mixins/_button': ['getEuiButtonColorValues', 'getEuiFilledButtonColorValues'],
-  'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles']
+  'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles'],
+  // new-refresh-flyout
+  'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

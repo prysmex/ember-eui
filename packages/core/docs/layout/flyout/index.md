@@ -75,6 +75,9 @@ that keep the page context. Render it only while open:
 | `@hasAnimation` | `boolean` | `true` for overlays and `false` for push flyouts | Slides the flyout in (only when the user allows motion). |
 | `@shouldSelfFocus` | `boolean` | `true` | Focuses the flyout itself when it opens. |
 | `@focusTrapOptions` |  | allowing outside clicks | Options for the focus trap (focus-trap library), e.g. `{ initialFocus: '#name' }`. |
+| `@resizable` | `boolean` | `false` | Adds a resize handle at the flyout's inner edge, dragged or moved with the arrow keys (10px a step). The width is kept as a share of the window and clamped between `@minWidth` and `@maxWidth` (a number in px) and 90% of the window. `EuiFlyoutResizable` is this set to `true`. |
+| `@minWidth` | `number` | `0` | Smallest width in px while `@resizable`. |
+| `@onResize` | `(width: number) => void` |  | Called with the new width in px after the user resizes (when a drag ends, and on each keyboard step), while `@resizable`. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@isOpen` (Has no effect: render the flyout only while it is open.); `@isDocked` (Has no effect, see EuiCollapsibleNav; use `@type="push"`.); `@dockedBreakpoint` (Has no effect; use `@pushMinBreakpoint`.); `@showButtonIfDocked` (Has no effect.).
@@ -120,6 +123,38 @@ The bottom bar of an EuiFlyout, usually with its buttons.
 | Block | Description |
 | --- | --- |
 | default block | Usually an `EuiFlexGroup` with close/cancel and primary buttons. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+### EuiFlyoutResizable
+
+An `EuiFlyout` with a resize handle at its inner edge, dragged or moved
+with the arrow keys. Takes all of `EuiFlyout`'s args plus `@minWidth`,
+`@maxWidth` (a number in px) and `@onResize`.
+
+Also takes the args of `EuiFlyout`.
+
+### EuiFlyoutMenu
+
+The top menu bar of a flyout: a back button or history, pagination, a
+title and icon actions, with the flyout's close button at the end. Place
+it first inside an `EuiFlyout`. Upstream's `EuiFlyoutMenu`.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@title` | `string` |  | Title of the menu. Hidden from view by default (see `@hideTitle`) but still read by screen readers. |
+| `@titleId` | `string` |  | Id of the title element, e.g. for the flyout's `aria-labelledby`. |
+| `@hideCloseButton` | `boolean` | `false` | Hides the close button. |
+| `@onClose` | `(event: MouseEvent) => void` |  | Called by the close button. Without it the button does nothing. |
+| `@showBackButton` | `boolean` | `false` | Shows a back button. |
+| `@backButtonProps` | `EuiFlyoutMenuBackButtonProps` |  | Options of the back button, such as `onClick`. |
+| `@historyItems` | `EuiFlyoutHistoryItem[]` |  | Entries of the history popover, most recent first: index 0 is where the back button goes. Shown from two entries. |
+| `@leadingActions` | `EuiFlyoutMenuAction[]` |  | Actions at the inline start of the bar. |
+| `@trailingActions` | `EuiFlyoutMenuAction[]` |  | Actions at the inline end of the bar. |
+| `@pagination` | `EuiFlyoutMenuPagination` |  | Previous/next controls and a counter. They replace the back button and history. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the menu's class. |
+
+Deprecated: `@hideTitle` (Hides the title visually. Defaults to `true`. Use `EuiFlyoutHeader` for visible titles.); `@customActions` (Use `@trailingActions`, which takes precedence when both are set.).
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

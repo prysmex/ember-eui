@@ -279,7 +279,9 @@ const factories = {
   'components/inline_edit/inline_edit_form.styles.js': ['euiInlineEditReadModeStyles'],
   'components/inline_edit/inline_edit_text.styles.js': ['euiInlineEditTextStyles'],
   'components/inline_edit/inline_edit_title.styles.js': ['euiInlineEditTitleStyles'],
-  'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles']
+  'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles'],
+  // new-refresh-flyout
+  'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1359,6 +1361,53 @@ test('button group button hand port matches upstream in 12 theme configurations'
             normalize(reference[name](context)),
             `${name} ${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`
           );
+      }
+});
+
+test('flyout menu hand port matches upstream in 12 theme configurations', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/flyout-menu.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-flyout-menu-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const reference = require(
+    resolve(eui, 'lib/components/flyout/flyout_menu/flyout_menu.styles.js')
+  );
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        };
+        assert.deepEqual(
+          normalize(port.euiFlyoutMenuStyles(context)),
+          normalize(reference.euiFlyoutMenuStyles(context)),
+          `euiFlyoutMenuStyles ${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`
+        );
       }
 });
 

@@ -1,6 +1,8 @@
 import EuiAccordion from './components/eui-accordion.gts';
 import EuiAspectRatio from './components/eui-aspect-ratio.gts';
 import EuiAutoSizer from './components/eui-auto-sizer.gts';
+import EuiAutoRefresh from './components/eui-auto-refresh.gts';
+import EuiAutoRefreshButton from './components/eui-auto-refresh-button.gts';
 import EuiAvatar from './components/eui-avatar.gts';
 import EuiBadge from './components/eui-badge.gts';
 import EuiBadgeGroup from './components/eui-badge-group.gts';
@@ -68,6 +70,8 @@ import EuiFlyout from './components/eui-flyout.gts';
 import EuiFlyoutBody from './components/eui-flyout-body.gts';
 import EuiFlyoutFooter from './components/eui-flyout-footer.gts';
 import EuiFlyoutHeader from './components/eui-flyout-header.gts';
+import EuiFlyoutMenu from './components/eui-flyout-menu.gts';
+import EuiFlyoutResizable from './components/eui-flyout-resizable.gts';
 import EuiForm from './components/eui-form.gts';
 import EuiFormAppend from './components/eui-form-append.gts';
 import EuiFormControlButton from './components/eui-form-control-button.gts';
@@ -250,6 +254,8 @@ export {
   EuiAccordion,
   EuiAspectRatio,
   EuiAutoSizer,
+  EuiAutoRefresh,
+  EuiAutoRefreshButton,
   EuiAvatar,
   EuiBadge,
   EuiBadgeGroup,
@@ -317,6 +323,8 @@ export {
   EuiFlyoutBody,
   EuiFlyoutFooter,
   EuiFlyoutHeader,
+  EuiFlyoutMenu,
+  EuiFlyoutResizable,
   EuiForm,
   EuiFormAppend,
   EuiFormControlButton,

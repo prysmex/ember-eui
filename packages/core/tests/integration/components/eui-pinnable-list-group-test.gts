@@ -22,15 +22,18 @@ module('Integration | Component | eui-pinnable-list-group', function (hooks) {
 
     assert.dom('ul.euiPinnableListGroup').exists();
     assert.dom('.euiListGroupItem').exists({ count: 3 });
+    assert.dom('.euiPinnableListGroup__item').exists({ count: 3 });
     assert.dom('.euiPinnableListGroup__itemExtraAction').exists({ count: 2 }, 'not on unpinnable items');
+    // The pin is a sibling of the item link inside the upstream wrapper
+    // `<li>`; pinned pins are always shown (opacity 1) instead of the legacy
+    // `-pinned`/`-alwaysShow` modifier classes.
     assert
-      .dom('.euiListGroupItem:nth-child(1) .euiPinnableListGroup__itemExtraAction')
-      .hasClass('euiPinnableListGroup__itemExtraAction-pinned')
-      .hasClass('euiListGroupItem__extraAction-alwaysShow')
+      .dom('li:nth-child(1) .euiPinnableListGroup__itemExtraAction')
+      .hasStyle({ opacity: '1' })
       .hasAria('label', 'Unpin item');
-    assert.dom('.euiListGroupItem:nth-child(2) .euiPinnableListGroup__itemExtraAction').hasAria('label', 'Pin item');
+    assert.dom('li:nth-child(2) .euiPinnableListGroup__itemExtraAction').hasStyle({ opacity: '0' }).hasAria('label', 'Pin item');
 
-    await click('.euiListGroupItem:nth-child(2) .euiPinnableListGroup__itemExtraAction');
+    await click('li:nth-child(2) .euiPinnableListGroup__itemExtraAction');
     assert.deepEqual(pinned, ['Dashboards']);
   });
 

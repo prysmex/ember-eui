@@ -1,15 +1,22 @@
+import Component from '@glimmer/component';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import add from 'ember-math-helpers/helpers/add';
-import { and, eq, gt, not, or } from 'ember-truth-helpers';
 
 import Button from '../components/eui-side-nav-item/button.gts';
-import classNames from '../helpers/class-names.ts';
-import isItemOpen from '../helpers/is-item-open.ts';
+import { isItemOpen, isItemSelected } from '../helpers/is-item-open.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiSideNavItemButtonStyles,
+  euiSideNavItemStyles,
+  euiTextTruncate
+} from '../utils/eui/styles.generated.ts';
+import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 
 import type { Item } from './eui-side-nav';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private One item of an EuiSideNav (rendered from its `@items`). */
 export interface EuiSideNavItemSignature {
@@ -30,7 +37,7 @@ export interface EuiSideNavItemSignature {
     href?: string;
     /** Class for the item. */
     className?: string;
-    /** `rel` of the link. */
+    /** `rel` of the link; `noreferrer` (and `noopener` for `_blank`) is added. */
     rel?: string;
     /** `target` of the link. */
     target?: string;
@@ -44,13 +51,16 @@ export interface EuiSideNavItemSignature {
     renderItem?: unknown;
     /** Disables the item. */
     disabled?: boolean;
-    /** Truncates a long name. */
+    /** Truncates a long name. Defaults to `true`. */
     truncate?: boolean;
-    /** Bolder style. */
+    /** Bolder style with a background band. */
     emphasize?: boolean;
     /** Class for the item's button or link. */
     buttonClassName?: string;
-    /** Renders the item as a section title (children, no action). */
+    /**
+     * A section item (children, no `href`/`onClick`) below the root: it
+     * renders a button that opens and closes its children.
+     */
     childrenOnly?: boolean;
     /** Extra classes for the icon. */
     buttonIconClasses?: string;
@@ -61,121 +71,284 @@ export interface EuiSideNavItemSignature {
   };
 }
 
-const EuiSideNavItem: TemplateOnlyComponent<EuiSideNavItemSignature> =
+/** Upstream renders a section item below the root as an accordion. */
+export function isChildrenOnly(item: Item, depth: number): boolean {
+  return depth > 0 && !item.onClick && !item.href && Boolean(item.items);
+}
+
+/** Native Ember side nav item using the upstream EUI 123 / Borealis factories. */
+export default class EuiSideNavItem extends Component<EuiSideNavItemSignature> {
+  /** Accordion state toggled by the user; reset when `@isOpen` changes. */
+  @tracked toggled?: { open: boolean; from: boolean };
+
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  get depth(): number {
+    return this.args.depth ?? 0;
+  }
+
+  get isRoot(): boolean {
+    return this.depth === 0;
+  }
+
+  get isTrunk(): boolean {
+    return this.depth === 1;
+  }
+
+  get isBranch(): boolean {
+    return this.depth > 1;
+  }
+
+  get itemIsOpen(): boolean {
+    const isOpen = Boolean(this.args.isOpen);
+    const toggled = this.toggled;
+    return toggled && toggled.from === isOpen ? toggled.open : isOpen;
+  }
+
+  get hasChildItems(): boolean {
+    return Boolean(this.args.items?.length) && this.itemIsOpen;
+  }
+
+  get hasCaret(): boolean {
+    return this.depth > 0 && Boolean(this.args.childrenOnly);
+  }
+
+  get href(): string | undefined {
+    const { href } = this.args;
+    return href && isValidHref(href) ? href : undefined;
+  }
+
+  get onClick(): (() => void) | undefined {
+    return this.args.childrenOnly ? this.toggleOpen : this.args.onClick;
+  }
+
+  get kind(): 'a' | 'button' | 'div' {
+    if (this.href && !this.args.disabled) return 'a';
+    if (this.onClick || this.args.disabled) return 'button';
+    return 'div';
+  }
+
+  get isLink(): boolean {
+    return this.kind === 'a';
+  }
+
+  get isButton(): boolean {
+    return this.kind === 'button';
+  }
+
+  get rel(): string {
+    return getSecureRelForTarget(this.args.target, this.args.rel);
+  }
+
+  toggleOpen = (): void => {
+    this.toggled = {
+      open: !this.itemIsOpen,
+      from: Boolean(this.args.isOpen)
+    };
+  };
+
+  @cached
+  get classes(): string {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiSideNavItemStyles);
+    const names = [
+      'euiSideNavItem',
+      this.isRoot && 'euiSideNavItem--root',
+      this.isTrunk && 'euiSideNavItem--trunk',
+      this.isBranch && 'euiSideNavItem--branch',
+      this.args.emphasize && 'euiSideNavItem--emphasized',
+      this.hasChildItems && 'euiSideNavItem-hasChildItems',
+      this.args.className
+    ];
+    return [
+      ...names,
+      euiClass(
+        context,
+        { boxSizing: 'border-box' },
+        styles.euiSideNavItem,
+        this.isRoot && styles.root,
+        this.isTrunk && styles.trunk,
+        this.isBranch && styles.branch,
+        this.args.emphasize && styles.emphasized
+      )
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get buttonStyles() {
+    return useEuiBorealisStyles(this.context, euiSideNavItemButtonStyles);
+  }
+
+  @cached
+  get buttonClasses(): string {
+    const context = this.context;
+    const theme = context.upstream.euiTheme;
+    const styles = this.buttonStyles;
+    const { isSelected, emphasize } = this.args;
+    // Scoped stand-in for React's global button/link reset; upstream after.
+    const reset = {
+      boxSizing: 'border-box' as const,
+      margin: 0,
+      padding: 0,
+      border: 0,
+      borderRadius: 0,
+      background: 'none',
+      fontFamily: theme.font.family,
+      textDecoration: 'none'
+    };
+    return [
+      'euiSideNavItemButton',
+      this.depth > 0 &&
+        this.itemIsOpen &&
+        !isSelected &&
+        'euiSideNavItemButton-isOpen',
+      isSelected && 'euiSideNavItemButton-isSelected',
+      this.args.buttonClassName,
+      euiClass(
+        context,
+        reset,
+        styles.euiSideNavItemButton,
+        isSelected && styles.selected,
+        emphasize && styles.emphasized,
+        this.isRoot && styles.root,
+        this.isTrunk && styles.trunk,
+        this.isBranch && styles.branch
+      )
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get contentClass(): string {
+    return euiClass(this.context, this.buttonStyles.euiSideNavItemButton__content);
+  }
+
+  get truncate(): boolean {
+    return this.args.truncate ?? true;
+  }
+
+  @cached
+  get labelClass(): string {
+    const label = this.buttonStyles.label;
+    return [
+      this.truncate && 'eui-textTruncate',
+      euiClass(
+        this.context,
+        label.euiSideNavItemButton__label,
+        this.isRoot && label.root,
+        // Upstream's `eui-textTruncate` utility class.
+        this.truncate && euiTextTruncate()
+      )
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get itemsClass(): string {
+    const items = useEuiBorealisStyles(this.context, euiSideNavItemStyles).items;
+    return `euiSideNavItem__items ${euiClass(
+      this.context,
+      items.euiSideNavItem__items,
+      this.isRoot && this.args.icon && items.rootWithIcon,
+      this.isTrunk && items.trunk,
+      this.isBranch && items.branch
+    )}`;
+  }
+
+  isChildrenOnly = (item: Item): boolean => isChildrenOnly(item, this.depth + 1);
+
+  isItemOpen = (item: Item): boolean => isItemOpen(item, this.args.selectedItem);
+
+  isItemSelected = (item: Item): boolean =>
+    !isChildrenOnly(item, this.depth + 1) &&
+    isItemSelected(item, this.args.selectedItem);
+
   <template>
-    <div
-      class={{classNames
-        "euiSideNavItem"
-        (if (eq @depth 1) "euiSideNavItem--trunk")
-        (if (eq @depth 0) "euiSideNavItem--root")
-        (if (and (eq @depth 0) @icon) "euiSideNavItem--rootIcon")
-        (if (gt @depth 1) "euiSideNavItem--branch")
-        (if @items.length "euiSideNavItem--hasChildItems")
-        (if @emphasize "euiSideNavItem--emphasized")
-      }}
-    >
-      {{#let
-        (classNames
-          "euiSideNavItemButton"
-          (if (or @onClick @href) "euiSideNavItemButton--isClickable")
-          (if
-            (and (gt @depth 0) @isOpen (not @isSelected))
-            "euiSideNavItemButton-isOpen"
-          )
-          (if @isSelected "euiSideNavItemButton-isSelected")
-          @buttonClassName
-        )
-        (and (gt @depth 0) @isParent (not @isOpen) (not @isSelected))
-        as |className caret|
-      }}
-        {{#if (and @href (not @disabled))}}
-          <a
-            class={{className}}
-            href={{@href}}
-            target={{@target}}
-            rel={{@rel}}
-            {{on "click" (optional @onClick)}}
+    <div class={{this.classes}}>
+      {{#if this.isLink}}
+        <a
+          class={{this.buttonClasses}}
+          href={{this.href}}
+          target={{@target}}
+          rel={{this.rel}}
+          {{on "click" (optional @onClick)}}
+        >
+          <Button
+            @icon={{@icon}}
+            @truncate={{this.truncate}}
+            @buttonIconClasses={{@buttonIconClasses}}
+            @contentClass={{this.contentClass}}
+            @labelClass={{this.labelClass}}
           >
-            <Button
-              @icon={{@icon}}
-              @buttonIconClasses={{@buttonIconClasses}}
-              @caret={{caret}}
-            >
-              {{yield}}
-            </Button>
-          </a>
-        {{else if (or @onClick @disabled)}}
-          <button
-            type="button"
-            class={{className}}
-            disabled={{@disabled}}
-            {{on "click" (optional @onClick)}}
+            {{yield}}
+          </Button>
+        </a>
+      {{else if this.isButton}}
+        <button
+          type="button"
+          class={{this.buttonClasses}}
+          disabled={{@disabled}}
+          aria-expanded={{if this.hasCaret (if this.itemIsOpen "true" "false")}}
+          {{on "click" (optional this.onClick)}}
+        >
+          <Button
+            @icon={{@icon}}
+            @truncate={{this.truncate}}
+            @buttonIconClasses={{@buttonIconClasses}}
+            @caret={{this.hasCaret}}
+            @isOpen={{this.itemIsOpen}}
+            @contentClass={{this.contentClass}}
+            @labelClass={{this.labelClass}}
           >
-            <Button
-              @icon={{@icon}}
-              @truncate={{@truncate}}
-              @buttonIconClasses={{@buttonIconClasses}}
-              @caret={{caret}}
-            >
-              {{yield}}
-            </Button>
-          </button>
-        {{else}}
-          <div class={{className}}>
-            <Button
-              @icon={{@icon}}
-              @truncate={{@truncate}}
-              @buttonIconClasses={{@buttonIconClasses}}
-              @caret={{caret}}
-            >
-              {{yield}}
-            </Button>
-          </div>
-        {{/if}}
-      {{/let}}
-      {{#if (or (eq @depth 0) (and @items.length @isOpen))}}
-        <div class="euiSideNavItem__items">
+            {{yield}}
+          </Button>
+        </button>
+      {{else}}
+        <div class={{this.buttonClasses}}>
+          <Button
+            @icon={{@icon}}
+            @truncate={{this.truncate}}
+            @buttonIconClasses={{@buttonIconClasses}}
+            @contentClass={{this.contentClass}}
+            @labelClass={{this.labelClass}}
+          >
+            {{yield}}
+          </Button>
+        </div>
+      {{/if}}
+      {{#if this.hasChildItems}}
+        <div class={{this.itemsClass}}>
           {{#each @items as |item|}}
-            {{#let
-              (and
-                (gt @depth 0)
-                (not item.onClick)
-                (not item.href)
-                (not (not item.items))
-              )
-              as |childrenOnly|
-            }}
-              <EuiSideNavItem
-                @selectedItem={{@selectedItem}}
-                @isOpen={{isItemOpen item @selectedItem}}
-                @isSelected={{and
-                  (not childrenOnly)
-                  (eq item.id @selectedItem)
-                }}
-                @isParent={{not (not item.items)}}
-                @icon={{item.icon}}
-                @onClick={{item.onClick}}
-                @href={{item.href}}
-                @className={{item.className}}
-                @rel={{item.rel}}
-                @target={{item.target}}
-                @items={{item.items}}
-                @depth={{add @depth 1}}
-                @name={{item.name}}
-                @renderItem={{item.renderItem}}
-                @disabled={{item.disabled}}
-                @truncate={{item.truncate}}
-                @emphasize={{item.emphasize}}
-                @buttonClassName={{item.buttonClassName}}
-                @childrenOnly={{childrenOnly}}
-              >
-                {{item.name}}
-              </EuiSideNavItem>
-            {{/let}}
+            <EuiSideNavItem
+              @selectedItem={{@selectedItem}}
+              @isOpen={{this.isItemOpen item}}
+              @isSelected={{this.isItemSelected item}}
+              @isParent={{if item.items true false}}
+              @icon={{item.icon}}
+              @onClick={{item.onClick}}
+              @href={{item.href}}
+              @className={{item.className}}
+              @rel={{item.rel}}
+              @target={{item.target}}
+              @items={{item.items}}
+              @depth={{add this.depth 1}}
+              @disabled={{item.disabled}}
+              @truncate={{item.truncate}}
+              @emphasize={{item.emphasize}}
+              @buttonClassName={{item.buttonClassName}}
+              @childrenOnly={{this.isChildrenOnly item}}
+            >
+              {{item.name}}
+            </EuiSideNavItem>
           {{/each}}
         </div>
       {{/if}}
     </div>
-  </template>;
-
-export default EuiSideNavItem;
+  </template>
+}

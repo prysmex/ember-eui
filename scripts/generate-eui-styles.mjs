@@ -55,10 +55,7 @@ const entries = {
   'components/form/radio/radio_group.styles.js': ['euiRadioGroupStyles'],
   'components/form/switch/switch.styles.js': ['euiSwitchStyles'],
   // content-blocks
-  'components/call_out/call_out.styles.js': [
-    'euiCallOutStyles',
-    'euiCallOutHeaderStyles'
-  ],
+  'components/call_out/call_out.styles.js': ['euiCallOutStyles', 'euiCallOutHeaderStyles'],
   'components/empty_prompt/empty_prompt.styles.js': ['euiEmptyPromptStyles'],
   'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles'],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
@@ -139,7 +136,19 @@ const entries = {
   'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
   'components/steps/step_horizontal.styles.js': ['euiStepHorizontalStyles', 'euiStepHorizontalNumberStyles', 'euiStepHorizontalTitleStyles'],
   'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
-  'global_styling/mixins/_typography.js': ['euiTextTruncate']
+  'global_styling/mixins/_typography.js': ['euiTextTruncate', 'euiFontSize'],
+  // lists
+  'components/list_item_layout/_list_item_layout.styles.js': ['euiListItemLayoutStyles', 'euiListItemLayoutWrapperStyles'],
+  'components/list_group/list_group.styles.js': ['euiListGroupStyles'],
+  'components/list_group/list_group_item.styles.js': ['euiListGroupItemStyles', 'euiListGroupItemTooltipStyles'],
+  'components/list_group/list_group_item_extra_action.styles.js': ['euiListGroupItemExtraActionStyles'],
+  'components/list_group/pinnable_list_group/pinnable_list_group.styles.js': ['euiPinnableListGroupItemExtraActionStyles'],
+  'components/key_pad_menu/key_pad_menu.styles.js': ['euiKeyPadMenuStyles', 'euiKeyPadMenuVariables'],
+  'components/description_list/description_list.styles.js': ['euiDescriptionListStyles'],
+  'components/description_list/description_list_title.styles.js': ['euiDescriptionListTitleStyles'],
+  'components/description_list/description_list_description.styles.js': ['euiDescriptionListDescriptionStyles'],
+  'components/side_nav/side_nav.styles.js': ['euiSideNavMobileStyles'],
+  'components/side_nav/side_nav_item.styles.js': ['euiSideNavItemStyles', 'euiSideNavItemButtonStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

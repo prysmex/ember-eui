@@ -48,10 +48,12 @@ A list of `EuiListGroupItem`s, e.g. navigation links in a side bar.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@maxWidth` | `boolean \| string` |  | `true` for EUI's default max width, or any CSS width. |
-| `@bordered` | `boolean` |  | Adds a border around the list. |
-| `@flush` | `boolean` |  | Removes the list's padding. |
-| `@gutterSize` | `string` | `'s'` | Space between items: `'none'`, `'s'` or `'m'`. |
+| `@maxWidth` | `boolean \| string \| number` | `true` | Limits the list's width: `true` for upstream's default (the form max width, 400px), `false` for none, or any CSS width (numbers are pixels). |
+| `@bordered` | `boolean` |  | Adds a rounded border around the list. |
+| `@color` | `string` | `'text'` | Default `@color` of the items in the block: `'text'`, `'primary'` or `'subdued'`. An item's own `@color` wins. |
+| `@wrapText` | `boolean` |  | Default `@wrapText` of the items in the block. |
+
+Deprecated: `@flush` (Has no effect: latest EUI lists have no padding.); `@gutterSize` (Has no effect: latest EUI lists have no item gutters.).
 
 | Block | Description |
 | --- | --- |
@@ -63,31 +65,36 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@href` | `string` |  | Makes the item a link. |
-| `@target` | `string` |  | `target` of the `@href` link. |
-| `@onClick` | `(event: MouseEvent) => void` |  | Makes the item a button calling this function. |
-| `@label` | `string` |  | The item's text. |
-| `@iconType` |  |  | Icon before the text; anything `EuiIcon`'s `@type` accepts. |
-| `@isActive` | `boolean` |  | Highlights the item, e.g. the current page. |
-| `@isDisabled` | `boolean` |  | Disables the item. |
-| `@wrapText` | `boolean` |  | Wraps long text instead of truncating it. |
-| `@extraAction` | `ComponentLike` |  | A component rendered at the end of the item, e.g. an `EuiButtonIcon` to pin it (use `(component EuiButtonIcon …)`). |
-| `@size` |  | `'m'` | `'xs'`, `'s'`, `'m'` or `'l'`. |
-| `@color` |  | `'inherit'` | `'inherit'`, `'primary'`, `'text'`, `'subdued'` or `'ghost'`. |
-
-| Block | Description |
-| --- | --- |
-| default block | Custom content instead of `@label`. |
-
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<li>` / `<a>` / `<button>` / `<span>`.
+| `@contentClass` (required) | `string` |  |  |
+| `@prependClass` (required) | `string` |  |  |
+| `@textClass` (required) | `string` |  |  |
+| `@iconType` |  |  |  |
+| `@title` | `string` |  |  |
+| `@showExternal` (required) | `boolean` |  |  |
+| `@newTab` (required) | `boolean` |  |  |
+| `@externalIconClass` (required) | `string` |  |  |
+| `@srOnlyClass` (required) | `string` |  |  |
 
 ### EuiPinnableListGroup
 
+A list of links (e.g. the pages of an app) where each item can be
+pinned, usually to a "Pinned" list at the top of a navigation. You keep
+the `pinned` flags; `@onPinClick` is called with the clicked item.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@item` (required) | `EuiPinnableListGroupItem` |  |  |
-| `@title` (required) | `string` |  |  |
-| `@onPinClick` (required) | `(item: EuiPinnableListGroupItem) => void` |  |  |
+| `@listItems` (required) | `EuiPinnableListGroupItem[]` |  | The items. |
+| `@onPinClick` (required) | `(item: EuiPinnableListGroupItem) => void` |  | Called with the item whose pin was clicked. |
+| `@pinTitle` | `(item: EuiPinnableListGroupItem) => string` | "Pin item" | Accessible label of the pin button. |
+| `@unpinTitle` | `(item: EuiPinnableListGroupItem) => string` | "Unpin item" | Accessible label of the unpin button. |
+| `@bordered` | `boolean` |  | Adds a border around the list. |
+| `@maxWidth` |  | `true` | Limits the list's width: `true` for EUI's default (400px), `false` for none, or a CSS width. |
+| `@color` | `EuiListGroupItemColor` | `'text'` | Color of the items: `'text'`, `'primary'` or `'subdued'`. |
+| `@wrapText` | `boolean` |  | Wraps long item text instead of truncating it. |
+
+Deprecated: `@flush` (Has no effect: latest EUI lists have no padding.); `@gutterSize` (Has no effect: latest EUI lists have no item gutters.); `@size` (Has no effect: latest EUI list items have one size.).
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<ul>`.
 
 </EuiText>
 <!-- api:end -->

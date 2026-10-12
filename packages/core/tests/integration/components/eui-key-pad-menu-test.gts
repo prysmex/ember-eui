@@ -34,12 +34,14 @@ module('Integration | Component | eui-key-pad-menu', function (hooks) {
 
     assert.dom('ul.euiKeyPadMenu li').exists({ count: 3 });
     assert.dom('button.euiKeyPadMenuItem').exists({ count: 2 });
-    assert.dom('li:nth-child(1) button').hasClass('euiKeyPadMenuItem-isSelected').hasAttribute('aria-pressed', 'true');
+    // Legacy state classes are gone; state is semantic (aria-pressed,
+    // disabled) and the styles are measured in eui-lists-test.
+    assert.dom('li:nth-child(1) button').hasAttribute('aria-pressed', 'true');
     assert.dom('li:nth-child(1) .euiKeyPadMenuItem__label').hasText('Dashboard');
     assert.dom('li:nth-child(1) .euiKeyPadMenuItem__icon svg').exists();
-    assert.dom('li:nth-child(2) a').hasAttribute('href', '#docs').hasClass('euiKeyPadMenuItem--hasBetaBadge');
+    assert.dom('li:nth-child(2) a').hasAttribute('href', '#docs').hasAttribute('rel', 'noreferrer');
     assert.dom('li:nth-child(2) .euiKeyPadMenuItem__betaBadge').hasText('B');
-    assert.dom('li:nth-child(3) button').isDisabled().hasClass('euiKeyPadMenuItem-isDisabled');
+    assert.dom('li:nth-child(3) button').isDisabled().doesNotHaveAttribute('aria-pressed');
 
     await click('li:nth-child(1) button');
     assert.strictEqual(clicks, 1);
@@ -60,7 +62,7 @@ module('Integration | Component | eui-key-pad-menu', function (hooks) {
     );
 
     assert.dom('fieldset.euiKeyPadMenu legend').hasText('Pick one');
-    assert.dom('label.euiKeyPadMenuItem--checkable').exists({ count: 2 });
+    assert.dom('label.euiKeyPadMenuItem').exists({ count: 2 });
     assert.dom('input[type="radio"]').exists({ count: 2 });
 
     await click('#b');
@@ -83,6 +85,6 @@ module('Integration | Component | eui-key-pad-menu', function (hooks) {
 
     assert.dom('.plain .euiKeyPadMenuItem__betaBadge').doesNotExist();
     assert.dom('.beta .euiKeyPadMenuItem__betaBadge').exists();
-    assert.dom('.beta').hasClass('euiKeyPadMenuItem--hasBetaBadge');
+    assert.dom('.beta .euiKeyPadMenuItem__betaBadge').hasText('B');
   });
 });

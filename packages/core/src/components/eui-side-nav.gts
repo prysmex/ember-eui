@@ -1,22 +1,28 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import { and, eq, not, or } from 'ember-truth-helpers';
+import { not } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id.ts';
+import { randomId } from '../-private/random-id.ts';
 import EuiButtonEmpty from '../components/eui-button-empty.gts';
 import EuiHideFor from '../components/eui-hide-for.gts';
 import EuiShowFor from '../components/eui-show-for.gts';
-import EuiSideNavItem from '../components/eui-side-nav-item.gts';
+import EuiSideNavItem, { isChildrenOnly } from '../components/eui-side-nav-item.gts';
 import EuiTitle from '../components/eui-title.gts';
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import isItemOpen from '../helpers/is-item-open.ts';
-import screenReaderOnly from '../modifiers/screen-reader-only.ts';
+import { isItemOpen, isItemSelected } from '../helpers/is-item-open.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiScreenReaderOnly,
+  euiSideNavMobileStyles
+} from '../utils/eui/styles.generated.ts';
 
 import type { EuiHideForSignature } from '../components/eui-hide-for';
+import type EuiI18n from '../services/eui-i18n';
 
 export interface Item {
   /** Unique id, matched against `@selectedItem`. */
@@ -44,13 +50,18 @@ export interface Item {
   name?: string;
   /** @deprecated Has no effect. */
   renderItem?: unknown;
-  /** @deprecated Has no effect, use the side nav's `@selectedItem`. */
+  /**
+   * Marks the item as the current one, like matching `@selectedItem`:
+   * highlighted, with its parents open.
+   */
   isSelected?: boolean;
+  /** Keeps a nested item's children open. */
+  forceOpen?: boolean;
   /** Disables the item. */
   disabled?: boolean;
-  /** Truncates a long name instead of wrapping. */
+  /** Truncates a long name instead of wrapping. Defaults to `true`. */
   truncate?: boolean;
-  /** Bolder style, e.g. for the top level. */
+  /** Bolder style with a background band, e.g. for the current section. */
   emphasize?: boolean;
   /** Class for the item's button or link. */
   buttonClassName?: string;
@@ -68,15 +79,15 @@ export interface EuiSideNavSignature {
     /** Whether the collapsed (mobile) nav is open. */
     isOpenMobile?: boolean;
     /** Called by the mobile toggle button with the new open state. */
-    toggleOpenOnMobile?: () => void;
+    toggleOpenOnMobile?: (isOpen: boolean) => void;
     /** Heading above the items (and the toggle text on mobile). */
     heading?: string;
     /**
      * Props for the heading: `{ element: 'h2', id, className,
-     * screenReaderOnly }`.
+     * screenReaderOnly }`. The heading labels the `<nav>`.
      */
     headingProps?: {
-      element?: string;
+      element?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
       id?: string;
       className?: string;
       screenReaderOnly?: boolean;
@@ -96,165 +107,176 @@ export interface EuiSideNavSignature {
   };
 }
 
+/** Native Ember side nav using the upstream EUI 123 / Borealis factories. */
 export default class EuiSideNavComponent extends Component<EuiSideNavSignature> {
-  get mobileBreakpoints() {
-    return this.args.mobileBreakpoints || ['xs', 's'];
+  @service declare euiI18n: EuiI18n;
+
+  generatedHeadingId = randomId();
+  contentId = randomId();
+
+  get context() {
+    return getEuiThemeContext(this);
   }
 
-  get contentClasses() {
-    const mobileBreakpoints = Array.isArray(this.mobileBreakpoints)
-      ? this.mobileBreakpoints
-      : [this.mobileBreakpoints];
+  @cached
+  get mobileStyles() {
+    return useEuiBorealisStyles(this.context, euiSideNavMobileStyles);
+  }
 
-    return `euiSideNav__content ${mobileBreakpoints
-      .map?.((breakpointName) => {
-        return `euiSideNav__contentMobile-${breakpointName}`;
-      })
-      .join(' ')}`;
+  get mobileBreakpoints() {
+    return this.args.mobileBreakpoints ?? ['xs', 's'];
   }
 
   get hasMobileVersion() {
-    return this.mobileBreakpoints?.length > 0;
+    return this.mobileBreakpoints.length > 0;
   }
+
+  get headingId(): string {
+    return this.args.headingProps?.id ?? this.generatedHeadingId;
+  }
+
+  get headingElement() {
+    return this.args.headingProps?.element ?? 'h2';
+  }
+
+  get headingScreenReaderOnly(): boolean {
+    return Boolean(this.args.headingProps?.screenReaderOnly);
+  }
+
+  get classes(): string {
+    return this.args.isOpenMobile
+      ? 'euiSideNav euiSideNav-isOpenMobile'
+      : 'euiSideNav';
+  }
+
+  /** Upstream EuiSideNavHeading: `xs` title with an `l` bottom margin. */
+  @cached
+  get headingClass(): string {
+    const theme = this.context.upstream.euiTheme;
+    return [
+      'euiSideNav__heading',
+      this.args.headingProps?.className,
+      euiClass(this.context, { marginBlockEnd: theme.size.l })
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get srHeadingClass(): string {
+    return [
+      'euiSideNav__heading euiScreenReaderOnly',
+      this.args.headingProps?.className,
+      euiClass(this.context, euiScreenReaderOnly())
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  /** The mobile heading drops the bottom margin (upstream `mobileHeadingUnset`). */
+  @cached
+  get mobileHeadingClass(): string {
+    return [
+      'euiSideNav__heading',
+      this.args.headingProps?.className,
+      euiClass(this.context, { marginBlockEnd: 0 })
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get mobileToggleClass(): string {
+    return `euiSideNav__mobileToggle ${euiClass(
+      this.context,
+      this.mobileStyles.euiSideNav__mobileToggle
+    )}`;
+  }
+
+  @cached
+  get mobileToggleContentClass(): string {
+    return `euiSideNav__mobileToggleContent ${euiClass(
+      this.context,
+      this.mobileStyles.euiSideNav__mobileToggleContent
+    )}`;
+  }
+
+  @cached
+  get mobileContentClass(): string {
+    const content = this.mobileStyles.content;
+    return `euiSideNav__content ${euiClass(
+      this.context,
+      { boxSizing: 'border-box' },
+      content.euiSideNav__mobileContent,
+      this.args.isOpenMobile ? content.open : content.hidden
+    )}`;
+  }
+
+  /** Upstream labels the toggle when it has no visible text. */
+  get mobileToggleAriaLabel(): string | undefined {
+    const hasText = Boolean(this.args.mobileTitle || this.args.heading);
+    return !hasText || this.headingScreenReaderOnly
+      ? this.euiI18n.lookupToken(
+          'euiSideNav.mobileToggleAriaLabel',
+          'Toggle navigation'
+        )
+      : undefined;
+  }
+
+  isItemOpen = (item: Item): boolean => isItemOpen(item, this.args.selectedItem);
+
+  isItemSelected = (item: Item): boolean =>
+    !isChildrenOnly(item, 0) && isItemSelected(item, this.args.selectedItem);
 
   <template>
     {{#let
-      (classNames "euiSideNav" (if @isOpenMobile "euiSideNav-isOpenMobile"))
-      (element (argOrDefault @headingProps.element "h2"))
-      (argOrDefault @headingProps.id (randomId))
-      (randomId)
-      (or (has-block "heading") (not (not @heading)))
-      as |classes HeadingElement headingId sideNavContentId hasHeader|
+      (if (has-block "heading") true (if @heading true false))
+      as |hasHeading|
     }}
       {{#if this.hasMobileVersion}}
         <EuiShowFor @sizes={{this.mobileBreakpoints}}>
-          <nav aria-labelledby={{headingId}} class={{classes}} ...attributes>
-            <HeadingElement id={{headingId}} class={{@headingProps.className}}>
+          <nav
+            aria-labelledby={{this.headingId}}
+            class={{this.classes}}
+            ...attributes
+          >
+            <EuiTitle
+              @size="xs"
+              @tagName={{this.headingElement}}
+              id={{this.headingId}}
+              class={{this.mobileHeadingClass}}
+            >
               <EuiButtonEmpty
-                type="button"
-                class="euiSideNav__mobileToggle"
-                @contentClasses="euiSideNav__mobileToggleContent"
-                @textClasses="euiSideNav__mobileToggleText"
+                class={{this.mobileToggleClass}}
+                @contentClasses={{this.mobileToggleContentClass}}
+                @iconType="apps"
+                @iconSide="right"
+                aria-controls={{this.contentId}}
+                aria-expanded={{if @isOpenMobile "true" "false"}}
+                aria-label={{this.mobileToggleAriaLabel}}
                 {{on
                   "click"
                   (fn (optional @toggleOpenOnMobile) (not @isOpenMobile))
                 }}
-                @iconType="apps"
-                @iconSide="right"
-                aria-controls={{sideNavContentId}}
-                aria-expanded={{if @isOpenMobile "true" "false"}}
               >
-                {{#if @mobileTitle}}
-                  {{@mobileTitle}}
-                {{else if (has-block "heading")}}
-                  {{yield to="heading"}}
-                {{else}}
-                  {{@heading}}
-                {{/if}}
-              </EuiButtonEmpty>
-            </HeadingElement>
-            <div id={{sideNavContentId}} class={{this.contentClasses}}>
-              {{#each @items as |item|}}
-                {{#let
-                  (and
-                    (not item.onClick) (not item.href) (not (not item.items))
-                  )
-                  as |childrenOnly|
-                }}
-                  <EuiSideNavItem
-                    @selectedItem={{@selectedItem}}
-                    @isOpen={{isItemOpen item @selectedItem}}
-                    @isSelected={{and
-                      (not childrenOnly)
-                      (eq item.id @selectedItem)
-                    }}
-                    @isParent={{not (not item.items)}}
-                    @icon={{item.icon}}
-                    @onClick={{item.onClick}}
-                    @href={{item.href}}
-                    @className={{item.className}}
-                    @rel={{item.rel}}
-                    @target={{item.target}}
-                    @items={{item.items}}
-                    @depth={{0}}
-                    @renderItem={{item.renderItem}}
-                    @disabled={{item.disabled}}
-                    @truncate={{item.truncate}}
-                    @emphasize={{item.emphasize}}
-                    @buttonClassName={{item.buttonClassName}}
-                    @childrenOnly={{childrenOnly}}
-                  >
-                    {{item.name}}
-                  </EuiSideNavItem>
-                {{/let}}
-              {{/each}}
-            </div>
-          </nav>
-        </EuiShowFor>
-      {{/if}}
-
-      <EuiHideFor @sizes={{this.mobileBreakpoints}}>
-        <nav
-          aria-labelledby={{if hasHeader headingId}}
-          class={{classes}}
-          ...attributes
-        >
-          {{#if hasHeader}}
-            {{#let
-              (argOrDefault @headingProps.screenReaderOnly false)
-              as |shouldScreenReader|
-            }}
-              {{#if (has-block "heading")}}
-                {{#if shouldScreenReader}}
-                  <HeadingElement {{screenReaderOnly}}>
+                {{#unless this.headingScreenReaderOnly}}
+                  {{#if @mobileTitle}}
+                    {{@mobileTitle}}
+                  {{else if (has-block "heading")}}
                     {{yield to="heading"}}
-                  </HeadingElement>
-                {{else}}
-                  <EuiTitle
-                    class={{classNames
-                      "euiSideNav__heading"
-                      @headingProps.className
-                    }}
-                    @size="xs"
-                  >
-                    <HeadingElement>
-                      {{yield to="heading"}}
-                    </HeadingElement>
-                  </EuiTitle>
-                {{/if}}
-              {{else}}
-                {{#if shouldScreenReader}}
-                  <HeadingElement {{screenReaderOnly}}>
+                  {{else}}
                     {{@heading}}
-                  </HeadingElement>
-                {{else}}
-                  <EuiTitle
-                    class={{classNames
-                      "euiSideNav__heading"
-                      @headingProps.className
-                    }}
-                    @size="xs"
-                  >
-                    {{@heading}}
-                  </EuiTitle>
-                {{/if}}
-              {{/if}}
-            {{/let}}
-          {{/if}}
-          <div id={{sideNavContentId}} class={{this.contentClasses}}>
-            {{#each @items as |item|}}
-              {{#let
-                (and (not item.onClick) (not item.href) (not (not item.items)))
-                as |childrenOnly|
-              }}
+                  {{/if}}
+                {{/unless}}
+              </EuiButtonEmpty>
+            </EuiTitle>
+            <div id={{this.contentId}} class={{this.mobileContentClass}}>
+              {{#each @items as |item|}}
                 <EuiSideNavItem
                   @selectedItem={{@selectedItem}}
-                  @isOpen={{isItemOpen item @selectedItem}}
-                  @isSelected={{and
-                    (not childrenOnly)
-                    (eq item.id @selectedItem)
-                  }}
-                  @isParent={{not (not item.items)}}
+                  @isOpen={{true}}
+                  @isSelected={{this.isItemSelected item}}
+                  @isParent={{if item.items true false}}
                   @icon={{item.icon}}
                   @onClick={{item.onClick}}
                   @href={{item.href}}
@@ -263,16 +285,75 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                   @target={{item.target}}
                   @items={{item.items}}
                   @depth={{0}}
-                  @renderItem={{item.renderItem}}
                   @disabled={{item.disabled}}
                   @truncate={{item.truncate}}
                   @emphasize={{item.emphasize}}
                   @buttonClassName={{item.buttonClassName}}
-                  @childrenOnly={{childrenOnly}}
+                  @childrenOnly={{false}}
                 >
                   {{item.name}}
                 </EuiSideNavItem>
+              {{/each}}
+            </div>
+          </nav>
+        </EuiShowFor>
+      {{/if}}
+
+      <EuiHideFor @sizes={{this.mobileBreakpoints}}>
+        <nav
+          aria-labelledby={{if hasHeading this.headingId}}
+          class={{this.classes}}
+          ...attributes
+        >
+          {{#if hasHeading}}
+            {{#if this.headingScreenReaderOnly}}
+              {{#let (element this.headingElement) as |Heading|}}
+                <Heading id={{this.headingId}} class={{this.srHeadingClass}}>
+                  {{#if (has-block "heading")}}
+                    {{yield to="heading"}}
+                  {{else}}
+                    {{@heading}}
+                  {{/if}}
+                </Heading>
               {{/let}}
+            {{else}}
+              <EuiTitle
+                @size="xs"
+                @tagName={{this.headingElement}}
+                id={{this.headingId}}
+                class={{this.headingClass}}
+              >
+                {{#if (has-block "heading")}}
+                  {{yield to="heading"}}
+                {{else}}
+                  {{@heading}}
+                {{/if}}
+              </EuiTitle>
+            {{/if}}
+          {{/if}}
+          <div id={{this.contentId}} class="euiSideNav__content">
+            {{#each @items as |item|}}
+              <EuiSideNavItem
+                @selectedItem={{@selectedItem}}
+                @isOpen={{true}}
+                @isSelected={{this.isItemSelected item}}
+                @isParent={{if item.items true false}}
+                @icon={{item.icon}}
+                @onClick={{item.onClick}}
+                @href={{item.href}}
+                @className={{item.className}}
+                @rel={{item.rel}}
+                @target={{item.target}}
+                @items={{item.items}}
+                @depth={{0}}
+                @disabled={{item.disabled}}
+                @truncate={{item.truncate}}
+                @emphasize={{item.emphasize}}
+                @buttonClassName={{item.buttonClassName}}
+                @childrenOnly={{false}}
+              >
+                {{item.name}}
+              </EuiSideNavItem>
             {{/each}}
           </div>
         </nav>

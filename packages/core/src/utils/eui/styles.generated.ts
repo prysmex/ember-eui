@@ -28,8 +28,8 @@ var highContrastModeStyles = function highContrastModeStyles2(euiThemeContext, o
   }
   return defaultStyles.trim();
 };
-var preventForcedColors = function preventForcedColors2(_ref76) {
-  var highContrastMode = _ref76.highContrastMode;
+var preventForcedColors = function preventForcedColors2(_ref87) {
+  var highContrastMode = _ref87.highContrastMode;
   return highContrastMode === "forced" ? "forced-color-adjust: none;" : "";
 };
 
@@ -296,8 +296,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
       break;
   }
   var borderRadiusCSS = [];
-  Object.entries(borderRadiusMap).forEach(function(_ref76) {
-    var _ref224 = _slicedToArray(_ref76, 2), property = _ref224[0], value2 = _ref224[1];
+  Object.entries(borderRadiusMap).forEach(function(_ref87) {
+    var _ref227 = _slicedToArray(_ref87, 2), property = _ref227[0], value2 = _ref227[1];
     if (value2) {
       if (ignoreZeroes && value2 !== "0" && value2 !== "0px" || !ignoreZeroes) {
         borderRadiusCSS.push("".concat(property, ": ").concat(value2, ";"));
@@ -311,9 +311,9 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
 import { mathWithUnits } from "@elastic/eui-theme-common";
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/functions/typography.js
-function euiFontSizeFromScale(scale, _ref76) {
-  var base = _ref76.base, font = _ref76.font;
-  var _ref224 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref224.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref224.customScale;
+function euiFontSizeFromScale(scale, _ref87) {
+  var base = _ref87.base, font = _ref87.font;
+  var _ref227 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref227.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref227.customScale;
   if (unit === "em") {
     return "".concat(font.scale[scale], "em");
   }
@@ -552,8 +552,8 @@ var SEVERITY_COLORS = ["neutral", "risk"];
 var BUTTON_COLORS = ["text", "accent", "accentSecondary", "primary", "success", "warning", "danger"];
 var EXTENDED_BUTTON_COLORS = [].concat(BUTTON_COLORS, SEVERITY_COLORS);
 var BUTTON_DISPLAYS = ["base", "fill", "empty"];
-var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref76, color, variant) {
-  var euiTheme = _ref76.euiTheme, highContrastMode = _ref76.highContrastMode;
+var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref87, color, variant) {
+  var euiTheme = _ref87.euiTheme, highContrastMode = _ref87.highContrastMode;
   var backgroundTokenBase = variant === "base" ? "background" : "background".concat(variant.charAt(0).toUpperCase() + variant.slice(1));
   var textTokenBase = variant === "filled" ? "textColorFilled" : "textColor";
   var backgroundTokenName = getTokenName(backgroundTokenBase, color);
@@ -720,8 +720,8 @@ var euiButtonInteractionStyles = function euiButtonInteractionStyles2(euiThemeCo
     forced: "\n        position: relative;\n        overflow: hidden;\n\n        ".concat(highContrastHoverIndicatorStyles(euiThemeContext), "\n      ")
   }), "\n  ");
 };
-var highContrastHoverIndicatorStyles = function highContrastHoverIndicatorStyles2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var highContrastHoverIndicatorStyles = function highContrastHoverIndicatorStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return "\n  &:hover:not(".concat(euiDisabledSelector, ") {\n    transition: none;\n\n    /* using pseudo border to be able to control the color */\n    &::after {\n      content: '';\n      position: absolute;\n      inset: ").concat(euiTheme.border.width.thin, ";\n      border: ").concat(euiTheme.border.width.thick, " solid var(--highContrastHoverIndicatorColor, ").concat(euiTheme.border.color, ");\n      border-radius: ").concat(mathWithUnits2(euiTheme.border.radius.inline, function(x) {
     return x / 2;
   }), ";\n      background-color: transparent;\n      pointer-events: none;\n    }\n  }\n");
@@ -759,9 +759,9 @@ function _arrayLikeToArray4(r, a) {
   return n;
 }
 var BACKGROUND_COLORS = ["transparent", "plain", "subdued", "highlighted", "accent", "accentSecondary", "primary", "success", "warning", "danger"].concat(_toConsumableArray2(SEVERITY_COLORS));
-var euiBackgroundColor = function euiBackgroundColor2(_ref76, color) {
-  var euiTheme = _ref76.euiTheme;
-  var _ref224 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref224.method;
+var euiBackgroundColor = function euiBackgroundColor2(_ref87, color) {
+  var euiTheme = _ref87.euiTheme;
+  var _ref227 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref227.method;
   if (color === "transparent") return "transparent";
   if (method === "transparent") {
     var tokenName = getTokenName2("backgroundTransparent", color);
@@ -843,9 +843,9 @@ function hexToRgb(hex) {
 }
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_helpers.js
-var euiScrollBarStyles = function euiScrollBarStyles2(_ref76) {
-  var _ref$euiTheme = _ref76.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
-  var _ref224 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref224.thumbColor, _ref2$trackColor = _ref224.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref224.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref224.size, _corner = _ref224.corner;
+var euiScrollBarStyles = function euiScrollBarStyles2(_ref87) {
+  var _ref$euiTheme = _ref87.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
+  var _ref227 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref227.thumbColor, _ref2$trackColor = _ref227.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref227.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref227.size, _corner = _ref227.corner;
   var thumbColor = _thumbColor || transparentize(colors.darkShade, 0.5);
   var scrollBarSize = _size || size.base;
   var scrollBarCorner = _corner || width === "thin" ? "calc(".concat(size.s, " * 0.75)") : size.xs;
@@ -861,8 +861,8 @@ var euiFullHeight = function euiFullHeight2() {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_padding.js
-var euiPaddingSize = function euiPaddingSize2(_ref76, size) {
-  var euiTheme = _ref76.euiTheme;
+var euiPaddingSize = function euiPaddingSize2(_ref87, size) {
+  var euiTheme = _ref87.euiTheme;
   switch (size) {
     case "none":
       return null;
@@ -874,8 +874,8 @@ var euiPaddingSize = function euiPaddingSize2(_ref76, size) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_states.js
-var euiOutline = function euiOutline2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiOutline = function euiOutline2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   var offset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "center";
   var color = arguments.length > 2 ? arguments[2] : void 0;
   var outlineWidth = euiTheme.focus.width;
@@ -899,8 +899,8 @@ var euiFocusRing = function euiFocusRing2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_typography.js
-var euiFontSize = function euiFontSize2(_ref76, scale, options) {
-  var euiTheme = _ref76.euiTheme;
+var euiFontSize = function euiFontSize2(_ref87, scale, options) {
+  var euiTheme = _ref87.euiTheme;
   return {
     fontSize: euiFontSizeFromScale(scale, euiTheme, options),
     lineHeight: euiLineHeightFromBaseline(scale, euiTheme, options)
@@ -916,8 +916,8 @@ var euiTextTruncate = function euiTextTruncate2() {
     "\n  overflow: hidden !important;\n  text-overflow: ellipsis !important;\n  white-space: nowrap !important;\n"
   );
 };
-var euiNumberFormat = function euiNumberFormat2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var euiNumberFormat = function euiNumberFormat2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return "\n  font-feature-settings: ".concat(euiTheme.font.featureSettings, ", 'tnum' 1;\n");
 };
 
@@ -966,15 +966,15 @@ function _arrayWithHoles4(r) {
 }
 var sortMapBySmallToLargeValues = function sortMapBySmallToLargeValues2(breakpointsMap) {
   return Object.fromEntries(Object.entries(breakpointsMap).sort(function(_ref511, _ref610) {
-    var _ref76 = _slicedToArray4(_ref511, 2), a = _ref76[1];
-    var _ref84 = _slicedToArray4(_ref610, 2), b = _ref84[1];
+    var _ref710 = _slicedToArray4(_ref511, 2), a = _ref710[1];
+    var _ref87 = _slicedToArray4(_ref610, 2), b = _ref87[1];
     return a - b;
   }));
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_responsive.js
-var euiBreakpoint = function euiBreakpoint2(_ref76, sizes) {
-  var euiTheme = _ref76.euiTheme;
+var euiBreakpoint = function euiBreakpoint2(_ref87, sizes) {
+  var euiTheme = _ref87.euiTheme;
   var orderedBreakpoints = Object.keys(sortMapBySmallToLargeValues(euiTheme.breakpoint));
   var orderedSizes = sizes.sort(function(a, b) {
     return orderedBreakpoints.indexOf(a) - orderedBreakpoints.indexOf(b);
@@ -995,8 +995,8 @@ var euiBreakpoint = function euiBreakpoint2(_ref76, sizes) {
     // If undefined, don't render a max-width
   ].filter(Boolean).join(" and ");
 };
-var euiMinBreakpoint = function euiMinBreakpoint2(_ref224, size) {
-  var euiTheme = _ref224.euiTheme;
+var euiMinBreakpoint = function euiMinBreakpoint2(_ref227, size) {
+  var euiTheme = _ref227.euiTheme;
   var minBreakpointSize = euiTheme.breakpoint[size];
   if (minBreakpointSize) {
     return "@media only screen and (min-width: ".concat(minBreakpointSize, "px)");
@@ -1042,8 +1042,8 @@ var _ref = true ? {
   styles: "flex-shrink:0;label:euiSpacer;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiSpacerStyles = function euiSpacerStyles2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var euiSpacerStyles = function euiSpacerStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return {
     euiSpacer: _ref,
     // Sizes
@@ -1144,8 +1144,8 @@ var spinnerSizes = {
   xl: "xl",
   xxl: "xxl"
 };
-var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref76: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
-  var euiTheme = _ref76.euiTheme, highContrastMode = _ref76.highContrastMode;
+var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref87: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
+  var euiTheme = _ref87.euiTheme, highContrastMode = _ref87.highContrastMode;
   var colors = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
   var _colors$border = colors.border, border = _colors$border === void 0 ? euiTheme.components.loadingSpinnerBorder : _colors$border, _colors$highlight = colors.highlight, highlight = _colors$highlight === void 0 ? euiTheme.components.loadingSpinnerHighlight : _colors$highlight;
   if (highContrastMode === "forced") {
@@ -1351,8 +1351,8 @@ var euiTitleStyles = function euiTitleStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/code/code_syntax.styles.js
-var euiCodeTextColors = function euiCodeTextColors2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiCodeTextColors = function euiCodeTextColors2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     backgroundColor: euiTheme.components.codeBackground,
     color: euiTheme.components.codeColor
@@ -1472,8 +1472,8 @@ var _ref6 = true ? {
   styles: "color:inherit;label:inherit;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiTextColorStyles = function euiTextColorStyles2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var euiTextColorStyles = function euiTextColorStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return {
     euiTextColor: /* @__PURE__ */ css(";label:euiTextColor;"),
     default: /* @__PURE__ */ css("color:", euiTheme.colors.textParagraph, ";;label:default;"),
@@ -1672,13 +1672,13 @@ var getBadgeColors = function getBadgeColors2(euiThemeContext, backgroundColor) 
     color
   };
 };
-var getTextColor = function getTextColor2(_ref76, bgColor) {
-  var euiTheme = _ref76.euiTheme;
+var getTextColor = function getTextColor2(_ref87, bgColor) {
+  var euiTheme = _ref87.euiTheme;
   var textColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb())) ? euiTheme.colors.textGhost : euiTheme.colors.textInk;
   return textColor;
 };
-var getCustomInteractiveColors = function getCustomInteractiveColors2(_ref224, bgColor) {
-  var euiTheme = _ref224.euiTheme;
+var getCustomInteractiveColors = function getCustomInteractiveColors2(_ref227, bgColor) {
+  var euiTheme = _ref227.euiTheme;
   var isDarkColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb()));
   var backgroundHover = isDarkColor ? "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textGhost, " 10%)") : "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textInk, " 10%)");
   var backgroundActive = isDarkColor ? "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textGhost, " 15%)") : "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textInk, " 15%)");
@@ -1847,8 +1847,8 @@ var euiBadgeStyles = function euiBadgeStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/badge/badge_group/badge_group.styles.js
-var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     euiBadgeGroup: /* @__PURE__ */ css("display:inline-flex;flex-wrap:wrap;", logicalCSS("max-width", "100%"), ".euiBadge+.euiBadge{", logicalCSS("margin-left", 0), ";};label:euiBadgeGroup;"),
     // Gutter sizes
@@ -2443,8 +2443,8 @@ function _toPrimitive4(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
-var euiFormMaxWidth = function euiFormMaxWidth2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiFormMaxWidth = function euiFormMaxWidth2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return euiTheme.components.forms.maxWidth;
 };
 var euiFormPlaceholderStyles = function euiFormPlaceholderStyles2(euiThemeContext, color) {
@@ -2552,7 +2552,7 @@ var euiFormControlText = function euiFormControlText2(euiThemeContext) {
   return "\n    font-family: ".concat(euiTheme.font.family, ";\n    font-size: ").concat(fontSize, ";\n    color: ").concat(form.textColor, ";\n\n    ").concat(euiPlaceholderPerBrowser(euiFormPlaceholderStyles(euiThemeContext, form.controlPlaceholderText)), "\n  ");
 };
 var euiFormControlDefaultShadow = function euiFormControlDefaultShadow2(euiThemeContext) {
-  var _ref224 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$withBorder = _ref224.withBorder, withBorder = _ref2$withBorder === void 0 ? true : _ref2$withBorder, _ref2$withBackground = _ref224.withBackground, withBackground = _ref2$withBackground === void 0 ? true : _ref2$withBackground, _ref2$withBackgroundC = _ref224.withBackgroundColor, withBackgroundColor = _ref2$withBackgroundC === void 0 ? withBackground : _ref2$withBackgroundC;
+  var _ref227 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$withBorder = _ref227.withBorder, withBorder = _ref2$withBorder === void 0 ? true : _ref2$withBorder, _ref2$withBackground = _ref227.withBackground, withBackground = _ref2$withBackground === void 0 ? true : _ref2$withBackground, _ref2$withBackgroundC = _ref227.withBackgroundColor, withBackgroundColor = _ref2$withBackgroundC === void 0 ? withBackground : _ref2$withBackgroundC;
   var euiTheme = euiThemeContext.euiTheme;
   var form = euiFormVariables(euiThemeContext);
   var border = highContrastModeStyles(euiThemeContext, {
@@ -3038,8 +3038,8 @@ var thumbStyles = function thumbStyles2(_ref610, switchVars) {
     }
   };
 };
-var labelStyles = function labelStyles2(euiThemeContext, _ref76) {
-  var sizes = _ref76.sizes, label = _ref76.label;
+var labelStyles = function labelStyles2(euiThemeContext, _ref710) {
+  var sizes = _ref710.sizes, label = _ref710.label;
   var uncompressed = sizes.uncompressed, compressed = sizes.compressed, mini = sizes.mini;
   return {
     euiSwitch__label: /* @__PURE__ */ css(logicalCSS("padding-left", label.gap), ";;label:euiSwitch__label;"),
@@ -3079,8 +3079,8 @@ var euiCallOutStyles = function euiCallOutStyles2(euiThemeContext) {
     actions: /* @__PURE__ */ css("display:flex;gap:", euiTheme.size.s, ";&:where([data-size='s'] &){", logicalCSS("margin-left", euiTheme.size.l), ";}&:where([data-size='m'] &){", logicalCSS("margin-left", euiTheme.size.xl), ";}&:where([data-layout='superNarrow'] &){flex-wrap:wrap;*:has(.euiCallOutAction),.euiCallOutAction{inline-size:100%;}}&:where([data-layout='wide'] &){", logicalCSS("margin-left", "0"), " align-self:center;flex-shrink:0;flex-direction:row-reverse;};label:actions;")
   };
 };
-var euiCallOutHeaderStyles = function euiCallOutHeaderStyles2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiCallOutHeaderStyles = function euiCallOutHeaderStyles2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     euiCallOutHeader: /* @__PURE__ */ css("font-weight:", euiTheme.font.weight.bold, ";", logicalCSS(
       "margin-bottom",
@@ -3260,8 +3260,8 @@ var euiStatStyles = function euiStatStyles2() {
     right: /* @__PURE__ */ css(logicalTextAlignCSS("right"), " align-items:flex-end;;label:right;")
   };
 };
-var euiStatTitleStyles = function euiStatTitleStyles2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiStatTitleStyles = function euiStatTitleStyles2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     euiStat__title: /* @__PURE__ */ css(";label:euiStat__title;"),
     // Colors
@@ -3849,8 +3849,8 @@ var _ref46 = true ? {
   styles: "flex-grow:1;label:grow;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiPageSectionStyles = function euiPageSectionStyles2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var euiPageSectionStyles = function euiPageSectionStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return {
     euiPageSection: /* @__PURE__ */ css(logicalCSS("width", "100%"), logicalCSS("min-width", "0"), " display:flex;flex-direction:column;;label:euiPageSection;"),
     grow: _ref46,
@@ -3893,8 +3893,8 @@ var euiPageSidebarStyles = function euiPageSidebarStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/page/page_header/page_header.styles.js
-var euiPageHeaderStyles = function euiPageHeaderStyles2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiPageHeaderStyles = function euiPageHeaderStyles2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     euiPageHeader: /* @__PURE__ */ css(logicalCSS("width", "100%"), logicalCSS("min-width", "0"), " display:flex;flex-direction:column;flex-shrink:0;;label:euiPageHeader;"),
     border: /* @__PURE__ */ css(logicalCSS("border-bottom", euiTheme.border.thin), ";;label:border;")
@@ -3958,8 +3958,8 @@ var _ref74 = true ? {
   styles: "align-items:flex-start;label:top;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiPageHeaderContentStyles = function euiPageHeaderContentStyles2(_ref84) {
-  var euiTheme = _ref84.euiTheme;
+var euiPageHeaderContentStyles = function euiPageHeaderContentStyles2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     euiPageHeaderContent: /* @__PURE__ */ css(logicalCSS("width", "100%"), " ", logicalCSS("margin-horizontal", "auto"), ";;label:euiPageHeaderContent;"),
     // alignItems
@@ -4248,9 +4248,9 @@ var euiProgressValueTextStyles = function euiProgressValueTextStyles2(_ref313) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/skeleton/utils.js
-var euiSkeletonGradientAnimation = function euiSkeletonGradientAnimation2(_ref76) {
-  var euiTheme = _ref76.euiTheme, highContrastMode = _ref76.highContrastMode;
-  var _ref224 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$slideSize = _ref224.slideSize, slideSize = _ref2$slideSize === void 0 ? "-53%" : _ref2$slideSize, _ref2$gradientSize = _ref224.gradientSize, gradientSize = _ref2$gradientSize === void 0 ? "220%" : _ref2$gradientSize;
+var euiSkeletonGradientAnimation = function euiSkeletonGradientAnimation2(_ref87) {
+  var euiTheme = _ref87.euiTheme, highContrastMode = _ref87.highContrastMode;
+  var _ref227 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$slideSize = _ref227.slideSize, slideSize = _ref2$slideSize === void 0 ? "-53%" : _ref2$slideSize, _ref2$gradientSize = _ref227.gradientSize, gradientSize = _ref2$gradientSize === void 0 ? "220%" : _ref2$gradientSize;
   var gradientStartStop = euiTheme.colors.backgroundBaseSkeletonEdge;
   var gradientMiddle = highContrastMode ? euiTheme.components.skeletonBackgroundSkeletonMiddleHighContrast : euiTheme.colors.backgroundBaseSkeletonMiddle;
   return /* @__PURE__ */ css(euiCantAnimate, "{background-color:", gradientStartStop, ";}", euiCanAnimate, "{overflow:hidden;isolation:isolate;&::after{content:'';display:block;", logicalCSS("width", gradientSize), " ", logicalCSS("height", "100%"), " background:linear-gradient(\n          137deg,\n          ", gradientStartStop, " 45%,\n          ", gradientMiddle, " 50%,\n          ", gradientStartStop, " 55%\n        );animation:", euiAnimSlideX(slideSize), " 1.5s ", euiTheme.animation.resistance, " infinite;}};label:euiSkeletonGradientAnimation;");
@@ -4290,8 +4290,8 @@ var _ref56 = true ? {
   styles: "overflow:hidden;display:inline-flex;label:euiLoadingChart;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiLoadingChartStyles = function euiLoadingChartStyles2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var euiLoadingChartStyles = function euiLoadingChartStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return {
     euiLoadingChart: _ref56,
     m: /* @__PURE__ */ css(logicalCSS("height", euiTheme.size.base), " gap:", euiTheme.size.xxs, ";;label:m;"),
@@ -4352,8 +4352,8 @@ var loadingPadding = {
   l: "xs",
   xl: "s"
 };
-var euiLoadingLogoStyles = function euiLoadingLogoStyles2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiLoadingLogoStyles = function euiLoadingLogoStyles2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     euiLoadingLogo: /* @__PURE__ */ css("position:relative;display:inline-block;", euiCanAnimate, "{&::before,&::after{position:absolute;content:'';inline-size:90%;inset-inline-start:5%;border-radius:50%;opacity:0.2;z-index:1;}&::before{box-shadow:0 0 ", euiTheme.size.s, " ", euiTheme.colors.fullShade, ";animation:1s ", loadingPulsateAndFade, " ", euiTheme.animation.resistance, " infinite;}&::after{background-color:", euiTheme.colors.fullShade, ";animation:1s ", loadingPulsate, " ", euiTheme.animation.resistance, " infinite;}};label:euiLoadingLogo;"),
     euiLoadingLogo__icon: /* @__PURE__ */ css("display:inline-block;", euiCanAnimate, "{animation:1s ", loadingBounce, " ", euiTheme.animation.resistance, " infinite;};label:euiLoadingLogo__icon;"),
@@ -4469,8 +4469,8 @@ var _ref59 = true ? {
   styles: "pointer-events:none;label:closeFullScreen;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiImageButtonIconStyles = function euiImageButtonIconStyles2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var euiImageButtonIconStyles = function euiImageButtonIconStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return {
     // Base
     euiImageButton__icon: /* @__PURE__ */ css("position:absolute;", logicalCSS("top", euiTheme.size.base), " ", logicalCSS("right", euiTheme.size.base), ";;label:euiImageButton__icon;"),
@@ -4606,8 +4606,8 @@ var _ref510 = true ? {
   styles: "cursor:not-allowed;filter:grayscale(100%);label:isDisabled;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiAvatarStyles = function euiAvatarStyles2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiAvatarStyles = function euiAvatarStyles2(_ref710) {
+  var euiTheme = _ref710.euiTheme;
   var borderRadius = {
     user: "50%",
     space: euiTheme.border.radius.control
@@ -5103,8 +5103,8 @@ var euiBreadcrumbContentStyles = function euiBreadcrumbContentStyles2(euiThemeCo
     }
   };
 };
-var euiBreadcrumbPopoverStyles = function euiBreadcrumbPopoverStyles2(_ref76) {
-  var euiTheme = _ref76.euiTheme;
+var euiBreadcrumbPopoverStyles = function euiBreadcrumbPopoverStyles2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
   return {
     euiBreadcrumb__popoverButton: /* @__PURE__ */ css("max-inline-size:100%;display:inline-flex;align-items:center;gap:", euiTheme.size.xs, ";;label:euiBreadcrumb__popoverButton;"),
     euiBreadcrumb__popoverTruncation: /* @__PURE__ */ css(";label:euiBreadcrumb__popoverTruncation;"),
@@ -5316,8 +5316,8 @@ var euiStepNumberStyles = function euiStepNumberStyles2(euiThemeContext) {
     }), ";;label:current;")
   };
 };
-var euiStepNumberContentStyles = function euiStepNumberContentStyles2(_ref224) {
-  var euiTheme = _ref224.euiTheme;
+var euiStepNumberContentStyles = function euiStepNumberContentStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
   return {
     // Statuses with icon content
     euiStepNumber__icon: /* @__PURE__ */ css(";label:euiStepNumber__icon;"),
@@ -5420,6 +5420,428 @@ var euiSubStepsStyles = function euiSubStepsStyles2(euiThemeContext) {
     }), ">*:last-child{margin-block-end:0;}& ol,.euiText & ol{list-style-type:lower-alpha;};label:euiSubSteps;")
   };
 };
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_item_layout/_list_item_layout.styles.js
+import { mathWithUnits as mathWithUnits3 } from "@elastic/eui-theme-common";
+var notDisabledSelector = '&:not([aria-disabled="true"])';
+var ariaDisabledSelector = '&[aria-disabled="true"]';
+var euiListItemVariables = function euiListItemVariables2(_ref313) {
+  var euiTheme = _ref313.euiTheme;
+  var spacing = {
+    horizontal: euiTheme.size.s,
+    vertical: euiTheme.size.xs
+  };
+  var textPadding = {
+    horizontal: euiTheme.size.xs,
+    vertical: mathWithUnits3([spacing.vertical, euiTheme.size.xxs], function(x, y) {
+      return x + y;
+    })
+  };
+  return {
+    spacing,
+    textPadding
+  };
+};
+var listItemCommonStyles = function listItemCommonStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return "\n    display: inline-flex; /* Necessary to make sure it doesn't force the whole popover to be too wide */\n    align-items: center;\n    ".concat(logicalCSS("width", "100%"), "\n    border-radius: ").concat(euiTheme.border.radius.control, ";\n    line-height: ").concat(euiFontSize(euiThemeContext, "s").lineHeight, ";\n    font-size: ").concat(euiFontSize(euiThemeContext, "s").fontSize, ";\n    color: ").concat(euiTheme.colors.textParagraph, ";\n    overflow: hidden;\n  ");
+};
+var _ref76 = true ? {
+  name: "8595p9-isDisabled",
+  styles: "cursor:not-allowed;label:isDisabled;"
+} : {
+  name: "8595p9-isDisabled",
+  styles: "cursor:not-allowed;label:isDisabled;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref224 = true ? {
+  name: "2nxums-buttonIsDisabled",
+  styles: "&[aria-disabled='true']{pointer-events:none;>*{pointer-events:none;}};label:buttonIsDisabled;"
+} : {
+  name: "2nxums-buttonIsDisabled",
+  styles: "&[aria-disabled='true']{pointer-events:none;>*{pointer-events:none;}};label:buttonIsDisabled;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListItemLayoutStyles = function euiListItemLayoutStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiListItemVariables = euiListItemVariables(euiThemeContext), spacing = _euiListItemVariables.spacing, textPadding = _euiListItemVariables.textPadding;
+  var sharedFlexStyles = "\n    display: flex;\n    align-items: center;\n    flex-shrink: 0;\n  ";
+  var highlightedStyles = "\n    background-color: ".concat(euiTheme.colors.backgroundBaseInteractiveHover, ";\n\n    ").concat(highContrastModeStyles(euiThemeContext, {
+    preferred: "\n        text-decoration: underline;\n\n        &:not(:focus, :focus-visible) {\n          /* uses outline to prevent layout jumps between navigated items */\n          outline: ".concat(euiTheme.border.width.thin, " solid ").concat(euiTheme.colors.borderBasePlain, ";\n          outline-offset: -").concat(euiTheme.border.width.thin, ";\n        }\n      ")
+  }), "\n  ");
+  return {
+    euiListItemLayout: /* @__PURE__ */ css(listItemCommonStyles(euiThemeContext), " ", logicalCSS("padding-horizontal", spacing.horizontal), ";;label:euiListItemLayout;"),
+    euiListItemLayout__action: /* @__PURE__ */ css("display:flex;flex-grow:1;", logicalCSS("width", "100%"), " color:inherit;overflow:hidden;;label:euiListItemLayout__action;"),
+    euiListItemLayout__content: /* @__PURE__ */ css(logicalCSS("width", "100%"), " display:flex;align-items:center;gap:", spacing.horizontal, ";;label:euiListItemLayout__content;"),
+    euiListItemLayout__text: /* @__PURE__ */ css("flex-grow:1;", logicalCSS("padding-vertical", textPadding.vertical), " ", euiFontSize(euiThemeContext, "s"), " text-align:start;.euiHealth{vertical-align:middle;}>*+*{", logicalCSS("margin-top", euiTheme.size.xxs), ";};label:euiListItemLayout__text;"),
+    textWrap: {
+      truncate: /* @__PURE__ */ css(euiTextTruncate(), ";label:truncate;"),
+      wrap: /* @__PURE__ */ css(";label:wrap;")
+    },
+    euiListItemLayout__prepend: /* @__PURE__ */ css(sharedFlexStyles, " gap:", spacing.horizontal, ";;label:euiListItemLayout__prepend;"),
+    euiListItemLayout__append: /* @__PURE__ */ css(sharedFlexStyles, " gap:", spacing.horizontal, ";;label:euiListItemLayout__append;"),
+    euiListItemLayout__icon: /* @__PURE__ */ css(sharedFlexStyles, ";;label:euiListItemLayout__icon;"),
+    isInteractive: /* @__PURE__ */ css("cursor:pointer;&:hover{", highlightedStyles, ";};label:isInteractive;"),
+    isDisabled: /* @__PURE__ */ css("color:", euiTheme.colors.textDisabled, ";cursor:not-allowed;", notDisabledSelector, "{background-color:transparent;};label:isDisabled;"),
+    buttonIsDisabled: _ref224,
+    isFocused: /* @__PURE__ */ css(highlightedStyles, ";;label:isFocused;"),
+    isSelected: /* @__PURE__ */ css("color:", euiTheme.colors.textPrimary, ";", notDisabledSelector, "{background-color:", euiTheme.colors.backgroundBaseInteractiveSelect, ";", highContrastModeStyles(euiThemeContext, {
+      preferred: "\n          outline: ".concat(euiTheme.border.width.thin, " solid ").concat(euiTheme.colors.borderStrongPrimary, ";\n          outline-offset: -").concat(euiTheme.border.width.thin, ";\n        ")
+    }), ";&:hover{background-color:", euiTheme.colors.backgroundBaseInteractiveSelectHover, ";}}&", ariaDisabledSelector, "{&:hover{background-color:", euiTheme.colors.backgroundBaseInteractiveHover, ";}}.euiIcon,.euiButtonIcon{color:inherit;}.euiListItemLayout__prepend,.euiListItemLayout__append{.euiIcon{color:", euiTheme.colors.textPrimary, ";}};label:isSelected;"),
+    isSelectedFocused: /* @__PURE__ */ css(notDisabledSelector, "{background-color:", euiTheme.colors.backgroundBaseInteractiveSelectHover, ";}&", ariaDisabledSelector, "{background-color:", euiTheme.colors.backgroundBaseInteractiveHover, ";};label:isSelectedFocused;"),
+    tooltip: {
+      isDisabled: _ref76
+    },
+    externalIcon: /* @__PURE__ */ css("color:", euiTheme.colors.textDisabled, ";;label:externalIcon;")
+  };
+};
+var euiListItemLayoutWrapperStyles = function euiListItemLayoutWrapperStyles2(euiThemeContext) {
+  var _euiListItemVariables2 = euiListItemVariables(euiThemeContext), spacing = _euiListItemVariables2.spacing;
+  return {
+    euiListItemLayout__wrapper: /* @__PURE__ */ css(listItemCommonStyles(euiThemeContext), "flex-shrink:0;list-style:none;;label:euiListItemLayout__wrapper;"),
+    hasExtraAction: /* @__PURE__ */ css(logicalCSS("padding-right", spacing.horizontal), ";;label:hasExtraAction;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/list_group.styles.js
+var _ref77 = true ? {
+  name: "2tmo78-euiListGroup",
+  styles: "display:flex;flex-direction:column;label:euiListGroup;"
+} : {
+  name: "2tmo78-euiListGroup",
+  styles: "display:flex;flex-direction:column;label:euiListGroup;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListGroupStyles = function euiListGroupStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var formMaxWidth = euiFormMaxWidth(euiThemeContext);
+  return {
+    // Base
+    euiListGroup: _ref77,
+    bordered: /* @__PURE__ */ css("border-radius:", euiTheme.border.radius.panel, ";border:", euiTheme.border.thin, ";;label:bordered;"),
+    maxWidthDefault: /* @__PURE__ */ css(logicalCSS("max-width", formMaxWidth), ";;label:maxWidthDefault;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/list_group_item.styles.js
+var _ref78 = true ? {
+  name: "1o0ywoj-euiListGroupItem__inner",
+  styles: "display:flex;align-items:center;flex-grow:1;max-inline-size:100%;overflow:hidden;font-weight:inherit;label:euiListGroupItem__inner;"
+} : {
+  name: "1o0ywoj-euiListGroupItem__inner",
+  styles: "display:flex;align-items:center;flex-grow:1;max-inline-size:100%;overflow:hidden;font-weight:inherit;label:euiListGroupItem__inner;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref225 = true ? {
+  name: "2fwdx2-euiListGroupItem",
+  styles: "position:relative;label:euiListGroupItem;"
+} : {
+  name: "2fwdx2-euiListGroupItem",
+  styles: "position:relative;label:euiListGroupItem;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListGroupItemStyles = function euiListGroupItemStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return {
+    // Base
+    euiListGroupItem: _ref225,
+    euiListGroupItem__inner: _ref78,
+    // Colors
+    primary: /* @__PURE__ */ css("color:", euiButtonColor(euiThemeContext, "primary").color, ";;label:primary;"),
+    text: /* @__PURE__ */ css("color:", euiButtonColor(euiThemeContext, "text").color, ";;label:text;"),
+    subdued: /* @__PURE__ */ css("color:", euiTheme.colors.textSubdued, ";;label:subdued;")
+  };
+};
+var euiListGroupItemTooltipStyles = {
+  // Base
+  euiListGroupItem__tooltip: /* @__PURE__ */ css("display:inline-flex;", logicalCSS("width", "100%"), ";;label:euiListGroupItem__tooltip;")
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/list_group_item_extra_action.styles.js
+var _ref79 = true ? {
+  name: "ls7zqx-alwaysShow",
+  styles: "opacity:1;label:alwaysShow;"
+} : {
+  name: "ls7zqx-alwaysShow",
+  styles: "opacity:1;label:alwaysShow;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref226 = true ? {
+  name: "13tj7xa-hoverStyles",
+  styles: ".euiListGroupItem:hover &,.euiListGroupItem:hover+&,.euiListGroupItem__button:focus+&,&:hover,&:focus{opacity:1;};label:hoverStyles;"
+} : {
+  name: "13tj7xa-hoverStyles",
+  styles: ".euiListGroupItem:hover &,.euiListGroupItem:hover+&,.euiListGroupItem__button:focus+&,&:hover,&:focus{opacity:1;};label:hoverStyles;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiListGroupItemExtraActionStyles = function euiListGroupItemExtraActionStyles2(_ref313) {
+  var euiTheme = _ref313.euiTheme;
+  return {
+    euiListGroupItemExtraAction: /* @__PURE__ */ css("flex-shrink:0;opacity:0;", euiCanAnimate, "{transition:opacity ", euiTheme.animation.fast, ";};label:euiListGroupItemExtraAction;"),
+    hoverStyles: _ref226,
+    alwaysShow: _ref79
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/list_group/pinnable_list_group/pinnable_list_group.styles.js
+var _ref80 = true ? {
+  name: "1du20m7-euiPinnableListGroup__itemExtraAction",
+  styles: "svg{transform:rotate(45deg);};label:euiPinnableListGroup__itemExtraAction;"
+} : {
+  name: "1du20m7-euiPinnableListGroup__itemExtraAction",
+  styles: "svg{transform:rotate(45deg);};label:euiPinnableListGroup__itemExtraAction;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiPinnableListGroupItemExtraActionStyles = function euiPinnableListGroupItemExtraActionStyles2(_ref227) {
+  var euiTheme = _ref227.euiTheme;
+  return {
+    // Base
+    euiPinnableListGroup__itemExtraAction: _ref80,
+    // Variants
+    pinned: /* @__PURE__ */ css("&:not(:hover, :focus){color:", makeHighContrastColor(euiTheme.colors.lightShade)(euiTheme), ";};label:pinned;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/key_pad_menu/key_pad_menu.styles.js
+var euiKeyPadMenuVariables = function euiKeyPadMenuVariables2(_ref87) {
+  var euiTheme = _ref87.euiTheme;
+  return {
+    euiKeyPadMenuSize: mathWithUnits(euiTheme.size.base, function(x) {
+      return x * 6;
+    }),
+    euiKeyPadMenuMarginSize: euiTheme.size.xs
+  };
+};
+var euiKeyPadMenuStyles = function euiKeyPadMenuStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var _euiKeyPadMenuVariabl = euiKeyPadMenuVariables(euiThemeContext), euiKeyPadMenuSize = _euiKeyPadMenuVariabl.euiKeyPadMenuSize, euiKeyPadMenuMarginSize = _euiKeyPadMenuVariabl.euiKeyPadMenuMarginSize;
+  return {
+    euiKeyPadMenu: /* @__PURE__ */ css("display:flex;flex-direction:row;flex-wrap:wrap;", logicalCSS("width", mathWithUnits([euiKeyPadMenuSize, euiKeyPadMenuMarginSize], function(x, y) {
+      return x * 3 + y * 3;
+    })), " ", logicalCSS("max-width", "100%"), " gap:", euiKeyPadMenuMarginSize, ";;label:euiKeyPadMenu;"),
+    // Checkable = Fieldset and Legend
+    euiKeyPadMenu__legend: /* @__PURE__ */ css(logicalCSS("margin-bottom", euiTheme.size.s), ";;label:euiKeyPadMenu__legend;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/description_list/description_list.styles.js
+var _ref81 = true ? {
+  name: "zr5fhc-column",
+  styles: "display:grid;grid-template-columns:minmax(auto, max-content) minmax(auto, max-content);align-items:baseline;label:column;"
+} : {
+  name: "zr5fhc-column",
+  styles: "display:grid;grid-template-columns:minmax(auto, max-content) minmax(auto, max-content);align-items:baseline;label:column;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiDescriptionListStyles = function euiDescriptionListStyles2(euiThemeContext) {
+  return {
+    euiDescriptionList: /* @__PURE__ */ css(";label:euiDescriptionList;"),
+    // Types
+    row: /* @__PURE__ */ css(";label:row;"),
+    inline: /* @__PURE__ */ css(";label:inline;"),
+    column: _ref81,
+    columnGap: {
+      s: /* @__PURE__ */ css("column-gap:", euiThemeContext.euiTheme.size.s, ";;label:s;"),
+      m: /* @__PURE__ */ css("column-gap:", euiThemeContext.euiTheme.size.xl, ";;label:m;")
+    },
+    rowGap: {
+      s: /* @__PURE__ */ css("row-gap:", euiThemeContext.euiTheme.size.s, ";;label:s;"),
+      m: /* @__PURE__ */ css("row-gap:", euiThemeContext.euiTheme.size.m, ";;label:m;")
+    },
+    // Alignment
+    center: /* @__PURE__ */ css(logicalTextAlignCSS("center"), ";;label:center;"),
+    left: /* @__PURE__ */ css(logicalTextAlignCSS("left"), ";;label:left;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/description_list/description_list_title.styles.js
+var euiDescriptionListTitleStyles = function euiDescriptionListTitleStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme, colorMode = euiThemeContext.colorMode;
+  return {
+    euiDescriptionList__title: /* @__PURE__ */ css(euiTextBreakWord(), ";;label:euiDescriptionList__title;"),
+    // Types
+    row: /* @__PURE__ */ css(";label:row;"),
+    column: /* @__PURE__ */ css(";label:column;"),
+    inline: /* @__PURE__ */ css("display:inline;border-radius:", euiTheme.border.radius.inline, ";font-weight:", euiTheme.font.weight.medium, ";background-color:", colorMode === "DARK" ? euiTheme.colors.lightShade : euiTheme.colors.lightestShade, ";", logicalCSS("margin-vertical", "0"), " ", logicalCSS("margin-horizontal", euiTheme.size.xs), " ", colorMode === "DARK" && "color: ".concat(euiTheme.colors.textHeading, ";"), "&:first-of-type{", logicalCSS("margin-left", "0"), ";};label:inline;"),
+    // This nested block handles just the font styling based on compressed and reverse
+    fontStyles: {
+      normal: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xs"), ";;label:normal;"),
+      reverse: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), ";;label:reverse;"),
+      compressed: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xxs"), ";;label:compressed;"),
+      // reverse's compressed size, without the inline type's pill padding
+      compressedReverse: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "xs"), ";;label:compressedReverse;")
+    },
+    // Inline types
+    inlineStyles: {
+      normal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), " ", logicalCSS("padding-vertical", "1px"), " ", logicalCSS("padding-horizontal", euiTheme.size.xs), ";;label:normal;"),
+      compressed: /* @__PURE__ */ css("font-size:", euiFontSize(euiThemeContext, "xs").fontSize, ";line-height:", euiTheme.font.lineHeightMultiplier, ";", logicalCSS("padding-vertical", "0"), " ", logicalCSS("padding-horizontal", euiTheme.size.xs), ";;label:compressed;")
+    },
+    // Alignment
+    right: /* @__PURE__ */ css(logicalTextAlignCSS("right"), ";;label:right;"),
+    // Gutter
+    // Add margin only to the non-first <dt>.
+    s: /* @__PURE__ */ css("&:not(:first-of-type){", logicalCSS("margin-top", euiTheme.size.s), ";};label:s;"),
+    m: /* @__PURE__ */ css("&:not(:first-of-type){", logicalCSS("margin-top", euiTheme.size.base), ";};label:m;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/description_list/description_list_description.styles.js
+var _ref84 = true ? {
+  name: "1yn9gig-inline",
+  styles: "display:inline;label:inline;"
+} : {
+  name: "1yn9gig-inline",
+  styles: "display:inline;label:inline;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiDescriptionListDescriptionStyles = function euiDescriptionListDescriptionStyles2(euiThemeContext) {
+  return {
+    euiDescriptionList__description: /* @__PURE__ */ css(";label:euiDescriptionList__description;"),
+    // Types
+    row: /* @__PURE__ */ css(";label:row;"),
+    column: /* @__PURE__ */ css(";label:column;"),
+    inline: _ref84,
+    // This nested block handles just the font styling based on compressed and reverse
+    fontStyles: {
+      normal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), ";;label:normal;"),
+      reverse: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xs"), ";;label:reverse;"),
+      compressed: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xxs"), ";;label:compressed;"),
+      compressedNormal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "xs"), ";;label:compressedNormal;")
+    },
+    // Nested inline styles for type and font
+    inlineStyles: {
+      compressed: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "xs"), ";;label:compressed;"),
+      normal: /* @__PURE__ */ css(euiFontSize(euiThemeContext, "s"), ";;label:normal;")
+    },
+    // Column types should align description text to the left when EuiDecriptionList is centered
+    left: /* @__PURE__ */ css(logicalTextAlignCSS("left"), ";;label:left;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/side_nav/side_nav.styles.js
+var _ref85 = true ? {
+  name: "f0todx-euiSideNav__mobileToggleContent",
+  styles: "justify-content:space-between;label:euiSideNav__mobileToggleContent;"
+} : {
+  name: "f0todx-euiSideNav__mobileToggleContent",
+  styles: "justify-content:space-between;label:euiSideNav__mobileToggleContent;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiSideNavMobileStyles = function euiSideNavMobileStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var fastTransition = "".concat(euiTheme.animation.extraFast, " ").concat(euiTheme.animation.resistance);
+  var slowTransition = "".concat(euiTheme.animation.extraSlow, " ").concat(euiTheme.animation.resistance);
+  return {
+    // Mobile button
+    euiSideNav__mobileToggle: /* @__PURE__ */ css(logicalCSS("width", "100%"), " ", logicalCSS("height", "auto"), "padding:1em;font-size:inherit;text-align:start;border-radius:0;", logicalCSS("border-bottom", euiTheme.border.thin), ";;label:euiSideNav__mobileToggle;"),
+    euiSideNav__mobileToggleContent: _ref85,
+    // Mobile content
+    content: {
+      euiSideNav__mobileContent: /* @__PURE__ */ css(euiCanAnimate, "{transition:max-block-size ", fastTransition, ",padding-block ", fastTransition, ",opacity ", slowTransition, ",visibility ", slowTransition, ";};label:euiSideNav__mobileContent;"),
+      hidden: /* @__PURE__ */ css("overflow:hidden;visibility:hidden;opacity:0;max-block-size:0;padding-inline:", euiTheme.size.l, ";;label:hidden;"),
+      open: /* @__PURE__ */ css("visibility:visible;opacity:1;max-block-size:5000px;padding:", euiTheme.size.l, ";;label:open;")
+    }
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/side_nav/side_nav_item.styles.js
+function _typeof10(o) {
+  "@babel/helpers - typeof";
+  return _typeof10 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+    return typeof o2;
+  } : function(o2) {
+    return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+  }, _typeof10(o);
+}
+function ownKeys8(e, r) {
+  var t = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(e);
+    r && (o = o.filter(function(r2) {
+      return Object.getOwnPropertyDescriptor(e, r2).enumerable;
+    })), t.push.apply(t, o);
+  }
+  return t;
+}
+function _objectSpread8(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {};
+    r % 2 ? ownKeys8(Object(t), true).forEach(function(r2) {
+      _defineProperty8(e, r2, t[r2]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys8(Object(t)).forEach(function(r2) {
+      Object.defineProperty(e, r2, Object.getOwnPropertyDescriptor(t, r2));
+    });
+  }
+  return e;
+}
+function _defineProperty8(e, r, t) {
+  return (r = _toPropertyKey8(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: true, configurable: true, writable: true }) : e[r] = t, e;
+}
+function _toPropertyKey8(t) {
+  var i = _toPrimitive8(t, "string");
+  return "symbol" == _typeof10(i) ? i : i + "";
+}
+function _toPrimitive8(t, r) {
+  if ("object" != _typeof10(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof10(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+var euiSideNavItemStyles = function euiSideNavItemStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var emphasizedBackgroundColor = euiTheme.components.sideNavItemEmphasizedBackground;
+  return {
+    euiSideNavItem: /* @__PURE__ */ css(";label:euiSideNavItem;"),
+    emphasized: /* @__PURE__ */ css("background-color:", emphasizedBackgroundColor, ";color:", euiTheme.colors.textHeading, ";box-shadow:100px 0 0 0 ", emphasizedBackgroundColor, ",-100px 0 0 0 ", emphasizedBackgroundColor, ";& &{background-color:transparent;box-shadow:none;};label:emphasized;"),
+    // Layout
+    root: /* @__PURE__ */ css(logicalCSS("padding-bottom", euiTheme.size.s), " &+&{", logicalCSS("margin-top", euiTheme.size.s), " ", logicalCSS("padding-top", euiTheme.size.s), ";};label:root;"),
+    trunk: /* @__PURE__ */ css("color:", euiTheme.colors.textHeading, ";;label:trunk;"),
+    branch: /* @__PURE__ */ css("position:relative;color:", euiTheme.colors.textSubdued, ";&::after{position:absolute;content:'';", logicalCSS("vertical", 0), " ", logicalCSS("left", 0), " ", logicalCSS("border-left", euiTheme.border.thin), ";}&:last-of-type::after{", logicalCSS("height", euiTheme.size.m), ";};label:branch;"),
+    items: {
+      euiSideNavItem__items: /* @__PURE__ */ css(";label:euiSideNavItem__items;"),
+      rootWithIcon: /* @__PURE__ */ css(logicalCSS("margin-left", euiTheme.size.l), ";;label:rootWithIcon;"),
+      trunk: /* @__PURE__ */ css(logicalCSS("width", "100%"), logicalCSS("margin-left", euiTheme.size.s), ";;label:trunk;"),
+      branch: /* @__PURE__ */ css(logicalCSS("margin-left", euiTheme.size.base), ";;label:branch;")
+    }
+  };
+};
+var _ref86 = true ? {
+  name: "1nca8qt-euiSideNavItemButton__label",
+  styles: "flex-grow:1;label:euiSideNavItemButton__label;"
+} : {
+  name: "1nca8qt-euiSideNavItemButton__label",
+  styles: "flex-grow:1;label:euiSideNavItemButton__label;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiSideNavItemButtonStyles = function euiSideNavItemButtonStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var lineHeightOverride = euiFontSize(euiThemeContext, "m").lineHeight;
+  var paddingMarginOffset = "\n    padding-inline: ".concat(euiTheme.size.s, ";\n    ").concat(logicalCSS("margin-left", "-".concat(euiTheme.size.s)), "\n    ").concat(logicalCSS("width", "calc(100% + ".concat(mathWithUnits(euiTheme.size.s, function(x) {
+    return x * 2;
+  }), ")")), ";\n  ");
+  return {
+    euiSideNavItemButton: /* @__PURE__ */ css("display:block;", logicalCSS("width", "100%"), "padding-block:", euiTheme.size.xxs, ";font-size:", euiFontSize(euiThemeContext, "s").fontSize, ";line-height:", lineHeightOverride, ";text-align:start;color:inherit;&:is(a, button):not(:disabled){&:hover{cursor:pointer;}&:hover,&:focus{.euiSideNavItemButton__label{text-decoration:underline;}}}&:disabled{cursor:not-allowed;color:", euiTheme.colors.textDisabled, ";};label:euiSideNavItemButton;"),
+    selected: /* @__PURE__ */ css("color:", euiTheme.colors.textPrimary, ";font-weight:", euiTheme.font.weight.bold, ";.euiSideNavItemButton__label{text-decoration:underline;};label:selected;"),
+    emphasized: /* @__PURE__ */ css("font-weight:", euiTheme.font.weight.bold, ";;label:emphasized;"),
+    // Layout
+    root: /* @__PURE__ */ css(logicalCSS("margin-bottom", euiTheme.size.xs), " padding-block:0;", paddingMarginOffset, ";;label:root;"),
+    trunk: /* @__PURE__ */ css(paddingMarginOffset, ";;label:trunk;"),
+    branch: /* @__PURE__ */ css("position:relative;padding-inline:", euiTheme.size.s, ";&::after{position:absolute;content:'';", logicalCSS("top", euiTheme.size.m), " ", logicalCSS("left", 0), " ", logicalCSS("width", euiTheme.size.xs), " ", logicalCSS("border-bottom", euiTheme.border.thin), ";};label:branch;"),
+    // Child elements
+    euiSideNavItemButton__content: /* @__PURE__ */ css("display:flex;align-items:center;gap:", euiTheme.size.s, ";;label:euiSideNavItemButton__content;"),
+    label: {
+      euiSideNavItemButton__label: _ref86,
+      root: _objectSpread8(_objectSpread8({}, euiTitle(euiThemeContext, "xxs")), {}, {
+        lineHeight: lineHeightOverride,
+        color: "inherit"
+      })
+    }
+  };
+};
 export {
   EuiFormControlLayoutClearButtonStyles,
   PAGE_MAX_WIDTH,
@@ -5453,6 +5875,9 @@ export {
   euiCheckboxStyles,
   euiCodeStyles,
   euiDescribedFormGroupStyles,
+  euiDescriptionListDescriptionStyles,
+  euiDescriptionListStyles,
+  euiDescriptionListTitleStyles,
   euiEmptyPromptStyles,
   euiFieldNumberStyles,
   euiFieldPasswordStyles,
@@ -5462,6 +5887,7 @@ export {
   euiFlexGroupStyles,
   euiFlexItemStyles,
   euiFocusRing,
+  euiFontSize,
   euiFormControlLayoutDelimitedStyles,
   euiFormControlLayoutDelimited__delimiter,
   euiFormControlLayoutDelimited__input,
@@ -5486,7 +5912,15 @@ export {
   euiImageFullscreenWrapperStyles,
   euiImageStyles,
   euiImageWrapperStyles,
+  euiKeyPadMenuStyles,
+  euiKeyPadMenuVariables,
   euiLinkStyles,
+  euiListGroupItemExtraActionStyles,
+  euiListGroupItemStyles,
+  euiListGroupItemTooltipStyles,
+  euiListGroupStyles,
+  euiListItemLayoutStyles,
+  euiListItemLayoutWrapperStyles,
   euiLoadingChartBarStyles,
   euiLoadingChartStyles,
   euiLoadingElasticStyles,
@@ -5508,6 +5942,7 @@ export {
   euiPaginationButtonStyles,
   euiPaginationStyles,
   euiPanelStyles,
+  euiPinnableListGroupItemExtraActionStyles,
   euiProgressDataStyles,
   euiProgressLabelStyles,
   euiProgressStyles,
@@ -5518,6 +5953,9 @@ export {
   euiScreenReaderOnlyStyles,
   euiScrollBarStyles,
   euiSelectStyles,
+  euiSideNavItemButtonStyles,
+  euiSideNavItemStyles,
+  euiSideNavMobileStyles,
   euiSkeletonTextStyles,
   euiSkipLinkStyles,
   euiSpacerStyles,

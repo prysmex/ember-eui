@@ -36,8 +36,8 @@ A divider line between sections.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@margin` |  | `'l'` | Space above and below: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'`, `'xl'` or `'xxl'`. |
-| `@size` |  | `'full'` | Width: `'full'`, `'half'` or `'quarter'`. |
+| `@margin` | `'none' \| 'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'xxl'` | `'m'` | Space above and below: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'`, `'xl'` or `'xxl'`. |
+| `@size` | `'full' \| 'half' \| 'quarter'` | `'full'` | Width: `'full'`, `'half'` or `'quarter'`. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<hr>`.
 

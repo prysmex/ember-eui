@@ -45,6 +45,7 @@ module('Integration | Component | eui-empty-prompt', function (hooks) {
     );
 
     assert.dom('.euiEmptyPrompt button.euiButton').exists();
-    assert.dom('.euiEmptyPrompt .euiSpacer--l').exists({ count: 1 });
+    assert.dom('.euiEmptyPrompt .euiBorealisSpacer').exists({ count: 2 });
+    assert.deepEqual([...this.element.querySelectorAll('.euiEmptyPrompt .euiBorealisSpacer')].map((element) => getComputedStyle(element).blockSize), ['16px', '24px'], 'body and action spacing use native sizes');
   });
 });

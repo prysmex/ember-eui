@@ -15,7 +15,17 @@ module('Integration | Component | eui-horizontal-rule', function (hooks) {
       </template>
     );
 
-    assert.dom('hr.default').hasClass('euiHorizontalRule--full').hasClass('euiHorizontalRule--marginLarge');
-    assert.dom('hr.custom').hasClass('euiHorizontalRule--half').hasClass('euiHorizontalRule--marginXSmall');
+    assert.dom('hr.default').hasClass('euiBorealisHorizontalRule');
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('hr.default')!)
+        .marginBlockStart,
+      '16px',
+      'latest upstream default is m'
+    );
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('hr.custom')!)
+        .marginBlockStart,
+      '8px'
+    );
   });
 });

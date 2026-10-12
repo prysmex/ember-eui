@@ -46,7 +46,6 @@ const EuiButtonContent: TemplateOnlyComponent<EuiButtonContentSignature> =
       {{#if @isLoading}}
         <EuiLoadingSpinner
           class="euiButtonContent__spinner"
-          {{!@glint-expect-error}}
           @size={{argOrDefault @iconSize "m"}}
         />
       {{else if @iconType}}

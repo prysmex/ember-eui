@@ -48,7 +48,7 @@ module('Integration | Component | eui-suggest', function (hooks) {
     );
 
     assert.dom('.saved .euiSuggestInput__statusIcon').exists();
-    assert.dom('.loading .euiLoadingSpinner').exists();
+    assert.dom('.loading .euiBorealisLoadingSpinner').exists();
   });
 
   test('EuiSuggestItem', async function (assert) {

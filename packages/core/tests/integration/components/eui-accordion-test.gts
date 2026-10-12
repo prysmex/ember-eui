@@ -117,14 +117,14 @@ module('Integration | Component | eui-accordion', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiLoadingSpinner').exists({ count: 2 });
+    assert.dom('.euiBorealisLoadingSpinner').exists({ count: 2 });
     assert.dom('[data-test-content]').doesNotExist();
     assert.dom('[data-test-extra]').doesNotExist();
 
     state.isLoading = false;
     await rerender();
 
-    assert.dom('.euiLoadingSpinner').doesNotExist();
+    assert.dom('.euiBorealisLoadingSpinner').doesNotExist();
     assert.dom('[data-test-content]').hasText('Ready');
     assert.dom('[data-test-extra]').exists();
   });
@@ -148,12 +148,12 @@ module('Integration | Component | eui-accordion', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiLoadingSpinner').exists({ count: 2 });
+    assert.dom('.euiBorealisLoadingSpinner').exists({ count: 2 });
 
     state.isLoadingMessage = false;
     await rerender();
 
-    assert.dom('.euiLoadingSpinner').exists({ count: 1 });
+    assert.dom('.euiBorealisLoadingSpinner').exists({ count: 1 });
     assert.dom('[data-test-content]').hasText('Ready');
   });
 });

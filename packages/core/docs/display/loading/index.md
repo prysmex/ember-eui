@@ -46,7 +46,8 @@ A spinning circle, for loading content or actions in progress.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@size` |  | `'m'` | `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@size` | `'s' \| 'm' \| 'l' \| 'xl' \| 'xxl'` | `'m'` | `'s'`, `'m'`, `'l'`, `'xl'` or `'xxl'`. |
+| `@color` | `{ border?: string; highlight?: string }` |  | Native upstream border/highlight color customization. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
 

@@ -41,7 +41,7 @@ module('Integration | Component | eui-context-menu', function (hooks) {
   test('@isLoading shows a spinner instead of the icon', async function (assert) {
     await render(<template><EuiContextMenuItem @icon="copy" @isLoading={{true}}>Copy</EuiContextMenuItem></template>);
 
-    assert.dom('.euiContextMenuItem .euiContextMenu__icon.euiLoadingSpinner').exists();
+    assert.dom('.euiContextMenuItem .euiContextMenu__icon.euiBorealisLoadingSpinner').exists();
   });
 
   test('@layoutAlign aligns the icon and text', async function (assert) {
@@ -129,7 +129,7 @@ module('Integration | Component | eui-context-menu', function (hooks) {
       assert.dom('.euiContextMenu .euiContextMenuPanel').exists({ count: 1 });
       assert.dom('.euiContextMenuPanelTitle').hasText('Options');
       assert.dom('.euiContextMenuItem').exists({ count: 2 });
-      assert.dom('.euiHorizontalRule').exists();
+      assert.dom('.euiBorealisHorizontalRule').exists();
       assert.dom('[data-test-subj="delete"]').hasText('Delete');
       assert.dom('.euiContextMenuItem .euiContextMenu__arrow').exists({ count: 1 }, 'items opening a panel have an arrow');
 

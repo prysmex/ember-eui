@@ -156,7 +156,7 @@ module('Integration | Component | eui-selectable', function (hooks) {
     );
 
     assert.dom('.loading .euiSelectableMessage').includesText('Loading options');
-    assert.dom('.loading .euiLoadingSpinner').exists();
+    assert.dom('.loading .euiBorealisLoadingSpinner').exists();
     assert.dom('.empty .euiSelectableMessage').hasText('Nothing here');
   });
 

@@ -25,7 +25,7 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
     assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout--fullWidth').hasClass('euiFormControlLayout--compressed').hasClass('euiFormControlLayout--readOnly').hasClass('euiFormControlLayout--isDisabled');
     assert.dom('.euiFormControlLayout__childrenWrapper input.field').exists();
     assert.dom('.euiFormControlLayoutIcons:not(.euiFormControlLayoutIcons--right) .euiFormControlLayoutCustomIcon').exists('left icon');
-    assert.dom('.euiFormControlLayoutIcons--right .euiLoadingSpinner').exists();
+    assert.dom('.euiFormControlLayoutIcons--right .euiBorealisLoadingSpinner').exists();
 
     await click('.euiFormControlLayoutIcons--right .euiFormControlLayoutClearButton');
     assert.strictEqual(cleared, 1);

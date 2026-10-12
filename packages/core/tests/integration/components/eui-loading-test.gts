@@ -17,21 +17,41 @@ module('Integration | Component | eui-loading-*', function (hooks) {
       </template>
     );
 
-    assert.dom('.default').hasClass('euiLoadingSpinner').hasClass('euiLoadingSpinner--medium');
-    assert.dom('.big').hasClass('euiLoadingSpinner--xLarge');
+    assert
+      .dom('.default')
+      .hasClass('euiBorealisLoadingSpinner')
+      .hasAttribute('role', 'progressbar');
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('.default')!).inlineSize,
+      '16px'
+    );
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('.big')!).inlineSize,
+      '32px'
+    );
   });
 
   test('EuiLoadingContent renders @lines placeholder lines', async function (assert) {
-    await render(<template><EuiLoadingContent @lines={{4}} @singleLineClasses="extra" /></template>);
+    await render(
+      <template>
+        <EuiLoadingContent @lines={{4}} @singleLineClasses="extra" />
+      </template>
+    );
 
-    assert.dom('.euiLoadingContent .euiLoadingContent__singleLine').exists({ count: 4 });
+    assert
+      .dom('.euiLoadingContent .euiLoadingContent__singleLine')
+      .exists({ count: 4 });
     assert.dom('.euiLoadingContent__singleLine').hasClass('extra');
   });
 
   test('EuiLoadingLogo renders the logo icon at the given size', async function (assert) {
-    await render(<template><EuiLoadingLogo @logo="logoElastic" @size="l" /></template>);
+    await render(
+      <template><EuiLoadingLogo @logo="logoElastic" @size="l" /></template>
+    );
 
     assert.dom('.euiLoadingLogo').hasClass('euiLoadingLogo--large');
-    assert.dom('.euiLoadingLogo__icon svg').hasAttribute('data-type', 'logoElastic');
+    assert
+      .dom('.euiLoadingLogo__icon svg')
+      .hasAttribute('data-type', 'logoElastic');
   });
 });

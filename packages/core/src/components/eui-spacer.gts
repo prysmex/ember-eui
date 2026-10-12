@@ -1,8 +1,7 @@
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-
-import type { sizeMapping } from '../utils/css-mappings/eui-spacer.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import Component from '@glimmer/component';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiSpacerStyles } from '../utils/eui/styles.generated.ts';
 
 /** Vertical space between elements. */
 export interface EuiSpacerSignature {
@@ -12,15 +11,25 @@ export interface EuiSpacerSignature {
      * `'xs'` (4px), `'s'` (8px), `'m'` (16px), `'l'` (24px), `'xl'` (32px)
      * or `'xxl'` (40px). Defaults to `'l'`.
      */
-    size?: keyof typeof sizeMapping;
+    size?: 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl';
   };
 }
 
-const EuiSpacer: TemplateOnlyComponent<EuiSpacerSignature> = <template>
-  <div
-    class={{classNames componentName="EuiSpacer" size=(argOrDefault @size "l")}}
-    ...attributes
-  ></div>
-</template>;
-
-export default EuiSpacer;
+export default class EuiSpacer extends Component<EuiSpacerSignature> {
+  get size() {
+    return this.args.size ?? 'l';
+  }
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiSpacerStyles);
+    return euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiSpacer,
+      styles[this.size]
+    );
+  }
+  <template>
+    <div class="euiBorealisSpacer {{this.styles}}" ...attributes></div>
+  </template>
+}

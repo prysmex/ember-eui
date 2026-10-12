@@ -38,7 +38,7 @@ Vertical space between elements.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@size` |  | `'l'` | `'xs'` (4px), `'s'` (8px), `'m'` (16px), `'l'` (24px), `'xl'` (32px) or `'xxl'` (40px). |
+| `@size` | `'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'xxl'` | `'l'` | `'xs'` (4px), `'s'` (8px), `'m'` (16px), `'l'` (24px), `'xl'` (32px) or `'xxl'` (40px). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

@@ -88,8 +88,11 @@ module('Integration | Component | eui-tree-view', function (hooks) {
       </template>
     );
 
-    assert.dom('ul.euiTreeView').hasClass('euiTreeView--compressed').hasClass('euiTreeView--withArrows');
-    assert.dom('.euiTreeView__wrapper').hasClass('euiText--small');
+    // legacy `--compressed`/`--withArrows` and the `euiText` wrapper are gone:
+    // compressed is measured (upstream button height `size.l`, 24px)
+    assert.dom('.euiTreeView__wrapper').doesNotExist();
+    assert.strictEqual(getComputedStyle(this.element.querySelector('#src')!).height, '24px');
+    assert.dom('#readme .euiTreeView__arrowPlaceholder').exists('leaves keep the arrow space');
     assert.dom('#src .euiTreeView__expansionArrow').exists();
     assert.dom('#readme .euiTreeView__expansionArrow').doesNotExist();
     assert.dom('#src .euiTreeView__iconWrapper .euiIcon').exists();

@@ -199,7 +199,15 @@ const entries = {
   'components/timeline/timeline.styles.js': ['euiTimelineStyles'],
   'components/timeline/timeline_item.styles.js': ['euiTimelineItemStyles'],
   'components/timeline/timeline_item_event.styles.js': ['euiTimelineItemEventStyles'],
-  'components/timeline/timeline_item_icon.styles.js': ['euiTimelineItemIconStyles']
+  'components/timeline/timeline_item_icon.styles.js': ['euiTimelineItemIconStyles'],
+  // misc-display
+  'components/tree_view/tree_view.styles.js': ['euiTreeViewStyles'],
+  'components/tree_view/tree_view_item.styles.js': ['euiTreeViewItemStyles'],
+  'components/text_diff/text_diff.styles.js': ['euiTextDiffStyles'],
+  'components/expression/expression.styles.js': ['euiExpressionStyles', 'euiExpressionDescriptionStyles', 'euiExpressionValueStyles', 'euiExpressionIconStyles'],
+  'components/tour/tour.styles.js': ['euiTourStyles', 'euiTourBeaconStyles'],
+  'components/tour/_tour_header.styles.js': ['euiTourHeaderStyles'],
+  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

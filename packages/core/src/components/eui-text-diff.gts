@@ -1,7 +1,12 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+
 import { diffTokens, words } from '../-private/text-diff.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiTextDiffStyles } from '../utils/eui/styles.generated.ts';
 
 import type { DiffChunk } from '../-private/text-diff.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /**
  * Shows the changes between two texts inline: removed text in `<del>`,
@@ -47,13 +52,27 @@ function isRemoved(chunk: DiffChunk): boolean {
   return chunk[0] === -1;
 }
 
-const EuiTextDiff: TemplateOnlyComponent<EuiTextDiffSignature> = <template>
-  {{#let (diff @beforeText @afterText @granularity) as |chunks|}}
+export default class EuiTextDiff extends Component<EuiTextDiffSignature> {
+  /** Upstream: deletions in `textDanger`, insertions in `textSuccess`. */
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiTextDiffStyles);
+
+    return `euiTextDiff ${euiClass(context, styles.euiTextDiff)}`;
+  }
+
+  @cached
+  get chunks(): DiffChunk[] {
+    return diff(this.args.beforeText, this.args.afterText, this.args.granularity);
+  }
+
+  <template>
     {{#if (has-block)}}
-      {{yield chunks}}
+      {{yield this.chunks}}
     {{else}}
-      <span class="euiTextDiff" ...attributes>
-        {{~#each chunks as |chunk|~}}
+      <span class={{this.classes}} ...attributes>
+        {{~#each this.chunks as |chunk|~}}
           {{~#if (isAdded chunk)~}}
             <ins>{{chunkText chunk}}</ins>
           {{~else if (isRemoved chunk)~}}
@@ -64,7 +83,5 @@ const EuiTextDiff: TemplateOnlyComponent<EuiTextDiffSignature> = <template>
         {{~/each~}}
       </span>
     {{/if}}
-  {{/let}}
-</template>;
-
-export default EuiTextDiff;
+  </template>
+}

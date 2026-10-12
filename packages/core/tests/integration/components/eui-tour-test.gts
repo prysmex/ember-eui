@@ -63,7 +63,8 @@ module('Integration | Component | eui-tour', function (hooks) {
     assert.dom('.euiTourHeader__title', document.body).hasText('First');
     assert.dom('.euiTourHeader__subtitle', document.body).hasText('Demo tour');
     assert.dom('.euiTourStepIndicator', document.body).exists({ count: 2 });
-    assert.dom('.euiTourStepIndicator--active', document.body).exists({ count: 1 });
+    assert.dom('.euiTourStepIndicator [aria-current="step"]', document.body).exists({ count: 1 });
+    assert.dom('.euiTourStepIndicator', document.body).hasAria('label', 'Step 1 active');
 
     await click(document.querySelector('.next') as Element);
     await rerender();
@@ -88,8 +89,10 @@ module('Integration | Component | eui-tour', function (hooks) {
       </template>
     );
 
-    assert.dom('.done').hasClass('euiTourStepIndicator--complete').hasAria('label', 'Step 1 complete');
-    assert.dom('.now .euiIcon').hasAttribute('aria-current', 'step');
-    assert.dom('.later').hasClass('euiTourStepIndicator--incomplete');
+    // legacy `--{status}` classes removed: status is in the aria labels
+    assert.dom('.done').hasAria('label', 'Step 1 complete').hasStyle({ display: 'inline-block' });
+    assert.dom('.done .euiIcon').hasAria('label', 'complete').doesNotHaveAttribute('aria-current');
+    assert.dom('.now .euiIcon').hasAttribute('aria-current', 'step').hasAria('label', 'active');
+    assert.dom('.later').hasAria('label', 'Step 3 incomplete');
   });
 });

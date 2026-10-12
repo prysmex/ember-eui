@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { render, settled } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
+import { hash } from '@ember/helper';
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
 import { getEuiThemeContext } from '#src/utils/emotion/consume.ts';
 import { EuiThemeContext } from '#src/utils/emotion/context.ts';
@@ -146,6 +147,55 @@ module('Integration | Borealis | context', function (hooks) {
     assert.strictEqual(
       resolveBorealisTheme('light', merged).euiTheme.border.radius.panel,
       '18px'
+    );
+  });
+
+  test('template (hash) overrides resolve through nested providers', async function (assert) {
+    class State {
+      @tracked primary = '#123456';
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiEmotionProvider
+          @borealisOverrides={{hash
+            colors=(hash LIGHT=(hash primary=state.primary))
+            border=(hash radius=(hash panel="18px"))
+          }}
+        >
+          <EuiEmotionProvider
+            @borealisOverrides={{hash border=(hash radius=(hash panel="7px"))}}
+          ><Probe /></EuiEmotionProvider>
+        </EuiEmotionProvider>
+      </template>
+    );
+    assert
+      .dom('[data-native-probe]')
+      .hasAttribute('data-radius', '7px', 'nearest hash override wins')
+      .hasAttribute('data-primary', '#123456', 'parent hash override inherited');
+    state.primary = '#654321';
+    await settled();
+    assert
+      .dom('[data-native-probe]')
+      .hasAttribute('data-primary', '#654321', 'tracked hash value re-resolves')
+      .hasAttribute('data-radius', '7px');
+  });
+
+  test('merge rebuilds prototype-less override objects as plain objects', function (assert) {
+    const bare = Object.assign(Object.create(null), {
+      colors: Object.assign(Object.create(null), {
+        LIGHT: Object.assign(Object.create(null), { textHeading: '#abcdef' })
+      })
+    }) as EuiBorealisOverrides;
+    const merged = mergeBorealisOverrides(bare, {}) as Record<string, any>;
+    assert.strictEqual(Object.getPrototypeOf(merged.colors), Object.prototype);
+    assert.strictEqual(
+      Object.getPrototypeOf(merged.colors.LIGHT),
+      Object.prototype
+    );
+    assert.strictEqual(
+      resolveBorealisTheme('light', merged).euiTheme.colors.textHeading,
+      '#abcdef'
     );
   });
 });

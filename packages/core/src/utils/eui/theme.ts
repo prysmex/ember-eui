@@ -17,31 +17,30 @@ export const EUI_UPSTREAM_VERSIONS = Object.freeze({
   common: '10.1.0'
 });
 
-/** Pure recursive merge. Never mutate provider arguments or upstream defaults. */
+/**
+ * Pure recursive merge. Never mutate provider arguments or upstream defaults.
+ * Nested objects are always rebuilt as plain objects: template `(hash)`
+ * values have no prototype, and upstream `buildTheme` calls `hasOwnProperty`.
+ */
 export function mergeBorealisOverrides(
   parent: EuiBorealisOverrides = {},
   own: EuiBorealisOverrides = {}
 ): EuiBorealisOverrides {
+  const isRecord = (value: unknown): value is Record<string, unknown> =>
+    !!value && typeof value === 'object' && !Array.isArray(value);
   function merge(
     left: Record<string, unknown>,
     right: Record<string, unknown>
   ): Record<string, unknown> {
-    const result = { ...left };
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(left))
+      result[key] = isRecord(value) ? merge({}, value) : value;
     for (const [key, value] of Object.entries(right)) {
       if (value === undefined) continue;
-      const previous = left[key];
-      result[key] =
-        value &&
-        typeof value === 'object' &&
-        !Array.isArray(value) &&
-        previous &&
-        typeof previous === 'object' &&
-        !Array.isArray(previous)
-          ? merge(
-              previous as Record<string, unknown>,
-              value as Record<string, unknown>
-            )
-          : value;
+      const previous = result[key];
+      result[key] = isRecord(value)
+        ? merge(isRecord(previous) ? previous : {}, value)
+        : value;
     }
     return result;
   }

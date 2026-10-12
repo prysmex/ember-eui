@@ -1,4 +1,4 @@
-import { eq } from 'ember-truth-helpers';
+import { eq, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
@@ -17,9 +17,9 @@ export interface EuiPageContentSignature {
     verticalPosition?: 'center' | 'bottom';
     /** Horizontally centers the content panel (e.g. an empty prompt). */
     horizontalPosition?: 'center';
-    /** Adds a shadow. */
+    /** Adds a shadow. Defaults to `false`. */
     hasShadow?: boolean;
-    /** Adds a border. */
+    /** Adds a border. Defaults to `true`. */
     hasBorder?: boolean;
     /** Padding, any `EuiPanel` padding size. Defaults to `'l'`. */
     paddingSize?: EuiPanelSignature['Args']['paddingSize'];
@@ -52,7 +52,16 @@ const EuiPageContent: TemplateOnlyComponent<EuiPageContentSignature> =
         @paddingSize={{argOrDefault @paddingSize "l"}}
         @borderRadius={{@borderRadius}}
         @color={{@color}}
-        @grow={{@grow}}
+        @grow={{argOrDefault
+          @grow
+          (if
+            (or
+              (eq @verticalPosition "center") (eq @horizontalPosition "center")
+            )
+            false
+            true
+          )
+        }}
         ...attributes
       >
         {{yield}}

@@ -204,8 +204,8 @@ A panel holding the page's main content, inside EuiPageBody.
 | `@role` | `string \| null` | `'main'`; pass `null` for none | `role` of the content. |
 | `@verticalPosition` | `'center' \| 'bottom'` |  | Vertically centers (`'center'`) or bottom-aligns the content panel. |
 | `@horizontalPosition` | `'center'` |  | Horizontally centers the content panel (e.g. an empty prompt). |
-| `@hasShadow` | `boolean` |  | Adds a shadow. |
-| `@hasBorder` | `boolean` |  | Adds a border. |
+| `@hasShadow` | `boolean` | `false` | Adds a shadow. |
+| `@hasBorder` | `boolean` | `true` | Adds a border. |
 | `@paddingSize` |  | `'l'` | Padding, any `EuiPanel` padding size. |
 | `@borderRadius` |  |  | Border radius: `'none'` or `'m'`. |
 | `@color` |  |  | Background, any `EuiPanel` color. |

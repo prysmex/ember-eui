@@ -7,6 +7,7 @@ import { tracked } from '@glimmer/tracking';
 import EuiPageTemplate, {
   TEMPLATES
 } from '#src/components/eui-page-template.gts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 import lightTheme from '../../../vendor/eui_theme_light.min.css?raw';
 import darkTheme from '../../../vendor/eui_theme_dark.min.css?raw';
 
@@ -107,17 +108,18 @@ module('Integration | Component | eui-page-template', function (hooks) {
           assert.strictEqual(
             this.element
               .querySelector('.euiPage > .euiPageBody')!
-              .classList.contains('euiPanel'),
+              .hasAttribute('data-eui-panel'),
             sidebar &&
               (template === 'default' || template === 'centeredContent'),
             'only the appropriate sidebar layouts use a panelled body'
           );
           if (template === 'default' && !sidebar) {
             assert.strictEqual(
-              this.element
-                .querySelector('.euiPageContent')!
-                .classList.contains('euiPanel--noBorder'),
-              !header,
+              getComputedStyle(
+                this.element.querySelector('.euiPageContent')!,
+                '::after'
+              ).content !== 'none',
+              header,
               'default content removes its theme border only without a header'
             );
           }
@@ -206,18 +208,25 @@ module('Integration | Component | eui-page-template', function (hooks) {
           .dom('.euiPage > section.custom-body')
           .exists()
           .hasClass('euiPageBody--paddingSmall')
-          .doesNotHaveClass('euiPanel')
+          .doesNotHaveAttribute('data-eui-panel')
           .hasStyle({ maxWidth: '640px', borderTopWidth: '3px' });
         assert
           .dom('.custom-content')
           .exists({ count: 1 })
           .hasClass('euiPanel--plain')
-          .hasClass('euiPanel--hasBorder')
-          .hasClass('euiPanel--hasShadow')
-          .hasClass('euiPanel--borderRadiusMedium')
-          .hasClass('euiPanel--flexGrowZero')
-          .hasClass('euiPanel--paddingSmall')
+          .hasClass('euiPanelBorealis')
+          .hasStyle({ paddingTop: '8px', flexGrow: '0', boxShadow: 'none' })
           .hasAttribute('role', 'article');
+        const surface = this.element.querySelector('.custom-content')!;
+        assert.strictEqual(
+          getComputedStyle(surface, '::after').borderTopWidth,
+          '1px',
+          'latest panel border uses a pseudo element'
+        );
+        assert.strictEqual(
+          getComputedStyle(surface).borderRadius,
+          resolveBorealisTheme('light').euiTheme.border.radius.panel
+        );
         assert
           .dom('.custom-content-body')
           .exists({ count: 1 })
@@ -350,7 +359,7 @@ module('Integration | Component | eui-page-template', function (hooks) {
         );
         assert
           .dom('.euiPage > .euiPageBody')
-          .hasClass('euiPanel')
+          .hasAttribute('data-eui-panel')
           .hasClass('euiPageBody--restrictWidth-default');
         assert
           .dom('.euiPageContentBody')
@@ -363,7 +372,7 @@ module('Integration | Component | eui-page-template', function (hooks) {
         await rerender();
         assert
           .dom('.euiPage > .euiPageBody')
-          .doesNotHaveClass('euiPanel')
+          .doesNotHaveAttribute('data-eui-panel')
           .hasStyle({ maxWidth: '0px' });
         assert.dom('.euiPageContentBody').hasStyle({ maxWidth: '0px' });
         assert
@@ -378,8 +387,12 @@ module('Integration | Component | eui-page-template', function (hooks) {
         assert
           .dom(content)
           .doesNotHaveAttribute('role')
-          .doesNotHaveClass('euiPanel--hasBorder')
-          .doesNotHaveClass('euiPanel--hasShadow');
+          .hasStyle({ boxShadow: 'none', borderTopWidth: '0px' });
+        assert.strictEqual(
+          getComputedStyle(content, '::after').content,
+          'none',
+          'explicit false removes the native panel border'
+        );
         state.width = false;
         await rerender();
         assert

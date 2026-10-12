@@ -48,8 +48,8 @@ A box grouping content, with background, padding, border and shadow options.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@hasShadow` | `boolean` | `true` | Adds a box shadow (plain panels only). |
-| `@hasBorder` | `boolean` |  | Adds a border (plain and transparent panels only). |
+| `@hasShadow` | `boolean` | `false` | Adds a box shadow (plain panels without a border only). |
+| `@hasBorder` | `boolean` | `true` | Adds a border (plain and transparent panels only). |
 | `@paddingSize` |  | `'m'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@borderRadius` |  | `'m'` | `'none'` or `'m'`. |
 | `@color` |  | `'plain'` | Background: `'plain'`, `'transparent'`, `'subdued'`, `'accent'`, `'primary'`, `'success'`, `'warning'` or `'danger'`. |

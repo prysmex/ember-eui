@@ -12,8 +12,7 @@ import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 import EuiSelect from './eui-select.gts';
-import EuiSpacer from './eui-spacer.gts';
-import EuiTitle from './eui-title.gts';
+import EuiQuickSelectPanel from './eui-super-date-picker/eui-quick-select-popover/eui-quick-select-panel.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type Owner from '@ember/owner';
@@ -119,6 +118,15 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
     return this.value === '' || this.value <= 0;
   }
 
+  /** Upstream marks the value invalid only while refreshing. */
+  get showInvalid(): boolean {
+    return !this.isPaused && this.isInvalid;
+  }
+
+  get legend(): string {
+    return this.t('euiRefreshInterval.legend', 'Refresh every');
+  }
+
   apply(): void {
     if (this.value === '') return;
 
@@ -167,29 +175,46 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
   }
 
   <template>
-    <fieldset {{didUpdate this.syncInterval @refreshInterval}} ...attributes>
-      <EuiTitle @size="xxxs" @tagName="legend" id={{this.legendId}}>
-        {{this.t "euiRefreshInterval.legend" "Refresh every"}}
-      </EuiTitle>
-      <EuiSpacer @size="s" />
-      <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
-        <EuiFlexItem>
+    <EuiQuickSelectPanel
+      @tagName="fieldset"
+      @title={{this.legend}}
+      @titleId={{this.legendId}}
+      class="euiRefreshInterval"
+      {{didUpdate this.syncInterval @refreshInterval}}
+      ...attributes
+    >
+      <EuiFlexGroup
+        @alignItems="center"
+        @gutterSize="s"
+        @responsive={{false}}
+        @wrap={{true}}
+      >
+        <EuiFlexItem style="min-width: 60px">
           <EuiFieldNumber
             @compressed={{true}}
+            @fullWidth={{true}}
             @value={{this.value}}
-            aria-label="Refresh interval value"
+            @isInvalid={{this.showInvalid}}
+            aria-label={{this.t
+              "euiRefreshInterval.valueAriaLabel"
+              "Refresh interval value"
+            }}
             aria-describedby="{{this.descriptionId}} {{this.legendId}}"
             data-test-subj="superDatePickerRefreshIntervalInput"
             {{on "input" this.onValueInput}}
             {{on "keydown" this.onKeyDown}}
           />
         </EuiFlexItem>
-        <EuiFlexItem>
+        <EuiFlexItem @grow={{2}} style="min-width: 100px">
           <EuiSelect
             @compressed={{true}}
+            @fullWidth={{true}}
             @value={{this.units}}
             @options={{this.unitOptions}}
-            aria-label="Refresh interval units"
+            aria-label={{this.t
+              "euiRefreshInterval.unitsAriaLabel"
+              "Refresh interval units"
+            }}
             aria-describedby="{{this.descriptionId}} {{this.legendId}}"
             data-test-subj="superDatePickerRefreshIntervalUnitsSelect"
             {{on "change" this.onUnitsChange}}
@@ -214,7 +239,9 @@ export default class EuiRefreshInterval extends Component<EuiRefreshIntervalSign
           </EuiButton>
         </EuiFlexItem>
       </EuiFlexGroup>
-      <EuiScreenReaderOnly><p id={{this.descriptionId}}>{{this.description}}</p></EuiScreenReaderOnly>
-    </fieldset>
+      <EuiScreenReaderOnly><p
+          id={{this.descriptionId}}
+        >{{this.description}}</p></EuiScreenReaderOnly>
+    </EuiQuickSelectPanel>
   </template>
 }

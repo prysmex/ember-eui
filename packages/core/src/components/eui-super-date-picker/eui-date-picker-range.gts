@@ -1,9 +1,19 @@
-import classNames from '../../helpers/class-names.ts';
-import EuiIcon from '../eui-icon.gts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
+import { euiDatePickerRangeStyles } from '../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
+import EuiFormControlLayoutDelimited from '../eui-form-control-layout-delimited.gts';
 
-/** @private Two date controls with an arrow between them. */
+import type { EuiCss } from '../../utils/eui/styles.ts';
+import type { EuiFormControlLayoutSignature } from '../eui-form-control-layout';
+
+/**
+ * @private EuiSuperDatePicker's range: upstream `EuiDatePickerRange` with
+ * `isCustom` (the controls are rendered as given), i.e. a wrapper around
+ * `EuiFormControlLayoutDelimited`.
+ */
 export interface EuiDatePickerRangeSignature {
   Element: HTMLDivElement;
   Args: {
@@ -11,43 +21,76 @@ export interface EuiDatePickerRangeSignature {
     fullWidth?: boolean;
     /** Read-only styling. */
     readOnly?: boolean;
-    /** Invalid styling. */
+    /** Invalid styling (danger outline and warning icon). */
     isInvalid?: boolean;
     /** Disabled styling. */
     disabled?: boolean;
+    /** Shorter control. */
+    compressed?: boolean;
+    /** Shows a spinner. */
+    isLoading?: boolean;
+    /** Icon at the start of the control. */
+    icon?: string;
+    /** Text between the controls. Defaults to `'→'`. */
+    delimiter?: string;
     /** Extra class(es). */
     className?: string;
+    /** Extra styles composed last onto the wrapper's class. */
+    css?: EuiCss;
   };
   Blocks: {
+    /** Content before the controls (always rendered, like upstream's quick select). */
+    prepend: EuiFormControlLayoutSignature['Blocks']['prepend'];
     startDateControl: [];
     endDateControl: [];
   };
 }
 
-const EuiDatePickerRange: TemplateOnlyComponent<EuiDatePickerRangeSignature> =
+export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSignature> {
+  /**
+   * Upstream composes the caller's `css` (passed as a class) before the
+   * range's own styles.
+   */
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiDatePickerRangeStyles);
+    return [
+      'euiDatePickerRange',
+      this.args.className,
+      euiClass(
+        context,
+        { boxSizing: 'border-box' },
+        this.args.css,
+        styles.euiDatePickerRange
+      )
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
   <template>
-    <div
-      class={{classNames
-        "euiDatePickerRange"
-        (if @readOnly "euiDatePickerRange--readOnly")
-        (if @fullWidth "euiDatePickerRange--fullWidth")
-        (if @isInvalid "euiDatePickerRange--isInvalid")
-        (if @disabled "euiDatePickerRange--isDisabled")
-        @className
-      }}
-      ...attributes
-    >
-      {{yield to="startDateControl"}}
-
-      <span class="euiDatePickerRange__delimeter">
-        <EuiIcon
-          @color={{if @isInvalid "danger" "subdued"}}
-          @type={{if @isInvalid "warning" "sortRight"}}
-        />
-      </span>
-
-      {{yield to="endDateControl"}}
+    <div class={{this.classes}} ...attributes>
+      <EuiFormControlLayoutDelimited
+        @icon={{@icon}}
+        @delimiter={{@delimiter}}
+        @fullWidth={{@fullWidth}}
+        @compressed={{@compressed}}
+        @readOnly={{@readOnly}}
+        @isDisabled={{@disabled}}
+        @isInvalid={{@isInvalid}}
+        @isLoading={{@isLoading}}
+      >
+        <:prepend as |classes|>
+          {{yield classes to="prepend"}}
+        </:prepend>
+        <:startControl>
+          {{yield to="startDateControl"}}
+        </:startControl>
+        <:endControl>
+          {{yield to="endDateControl"}}
+        </:endControl>
+      </EuiFormControlLayoutDelimited>
     </div>
-  </template>;
-
-export default EuiDatePickerRange;
+  </template>
+}

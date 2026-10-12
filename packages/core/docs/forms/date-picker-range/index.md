@@ -46,15 +46,22 @@ Generated from the components' TypeScript signatures by
 ### EuiDatePickerRange
 
 Two date inputs joined in one field with an arrow between them, for a
-start and end date. It only does the layout: put any date input in the
-blocks (`EuiPikaday`, `EuiFlatpickr`, or `<EuiFieldText type="date">`),
-rendered without their own frame (`@controlOnly={{true}}`) and with the
-class each block yields.
+start and end date (upstream `EuiDatePickerRange`, built on
+`EuiFormControlLayoutDelimited`). It only does the layout: put any date
+input in the blocks (`EuiPikaday`, `EuiFlatpickr`, or
+`<EuiFieldText type="date">`), rendered without their own frame
+(`@controlOnly={{true}}`) and with the class each block yields.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@fullWidth` | `boolean` |  | Takes the container's full width instead of 400px at most. |
 | `@readOnly` | `boolean` |  | Read-only look. |
+| `@compressed` | `boolean` |  | Shorter control (32px instead of 40px). |
+| `@disabled` | `boolean` |  | Disabled look. Disable the inputs themselves too. |
+| `@isInvalid` | `boolean` |  | Invalid look: danger outline, danger delimiter and a warning icon. |
+| `@isLoading` | `boolean` |  | Shows a spinner. |
+| `@iconType` | `boolean \| string` |  | Icon at the start: `true` (the default) shows `calendar`, `false` hides it, or any `EuiIcon` type. |
+| `@delimiter` | `string` | `'→'` | Text between the inputs. |
 
 | Block | Description |
 | --- | --- |

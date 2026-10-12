@@ -1,19 +1,23 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { concat, hash } from '@ember/helper';
+import { cached, tracked } from '@glimmer/tracking';
+import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
 import set from 'ember-set-helper/helpers/set';
 import { not } from 'ember-truth-helpers';
 
-import classNames from '../../../helpers/class-names.ts';
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { buttonReset } from '../../../utils/eui/form-controls.ts';
+import { euiDatePopoverButtonStyles } from '../../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiPopover from '../../eui-popover.gts';
 import { useFormatTimeString } from '../utils/index.ts';
 import { useI18nTimeOptions } from '../utils/time-options.ts';
 import EuiDatePopoverContent from './eui-date-popover-content.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
+import type { EuiCss } from '../../../utils/eui/styles.ts';
 import type { EuiDatePopoverContentSignature } from './eui-date-popover-content';
 
 interface EuiDatePopoverButtonArgs {
@@ -47,6 +51,11 @@ interface EuiDatePopoverButtonArgs {
   timeOptions?: EuiDatePopoverContentSignature['Args']['timeOptions'];
   /** Called with the new value. */
   onChange: EuiDatePopoverContentSignature['Args']['onChange'];
+  /**
+   * Extra styles for the popover root (upstream passes the super date
+   * picker's range input styles this way).
+   */
+  css?: EuiCss;
 }
 
 /** @private The start or end date button of EuiSuperDatePicker. */
@@ -99,65 +108,125 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
     return this.args.position ?? 'start';
   }
 
-  <template>
-    {{#let
-      (classNames
-        "euiDatePopoverButton"
-        (concat "euiDatePopoverButton--" @position)
-        (if @compressed "euiDatePopoverButton--compressed")
-        (if this.isOpen "euiDatePopoverButton-isSelected")
-        (if @isInvalid "euiDatePopoverButton-isInvalid")
-        (if @needsUpdating "euiDatePopoverButton-needsUpdating")
-        (if @isDisabled "euiDatePopoverButton-disabled")
-      )
-      as |classes|
-    }}
-      <EuiPopover
-        @isOpen={{this.isOpen}}
-        @closePopover={{set this "isOpen" false}}
-        @anchorPosition={{this.anchorPosition}}
-        @panelPaddingSize="none"
-        @display="block"
-      >
-        <:button>
-          {{#if (has-block "button")}}
-            {{yield
-              (hash
-                classes=classes
-                formattedValue=this.formattedValue
-                open=(set this "isOpen" true)
-                close=(set this "isOpen" false)
-              )
-              to="button"
-            }}
-          {{else}}
-            <button
-              type="button"
-              class={{classes}}
-              title={{this.formattedValue}}
-              disabled={{@isDisabled}}
-              ...attributes
-              {{on "click" (set this "isOpen" (not this.isOpen))}}
-            >
-              {{this.formattedValue}}
-            </button>
-          {{/if}}
-        </:button>
+  get context() {
+    return getEuiThemeContext(this);
+  }
 
-        <:content>
-          <EuiDatePopoverContent
-            @position={{this.position}}
-            @value={{@value}}
-            @roundUp={{@roundUp}}
-            @dateFormat={{this.dateFormat}}
-            @timeFormat={{@timeFormat}}
-            @locale={{@locale}}
-            @utcOffset={{@utcOffset}}
-            @timeOptions={{this.timeOptions}}
-            @onChange={{@onChange}}
-          />
-        </:content>
-      </EuiPopover>
-    {{/let}}
+  @cached
+  get styles() {
+    return useEuiBorealisStyles(this.context, euiDatePopoverButtonStyles);
+  }
+
+  /** Upstream state classes plus the button styles. */
+  @cached
+  get classes() {
+    const context = this.context;
+    return [
+      'euiDatePopoverButton',
+      `euiDatePopoverButton--${this.position}`,
+      this.args.compressed && 'euiDatePopoverButton--compressed',
+      this.isOpen && 'euiDatePopoverButton-isSelected',
+      this.args.isInvalid && 'euiDatePopoverButton-isInvalid',
+      this.args.needsUpdating && 'euiDatePopoverButton-needsUpdating',
+      this.args.isDisabled && 'euiDatePopoverButton-disabled',
+      this.args.className,
+      euiClass(
+        context,
+        buttonReset,
+        {
+          fontFamily: context.upstream.euiTheme.font.family
+        },
+        this.styles.euiDatePopoverButton
+      )
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  /** Popover root: the caller's styles, and a narrower "now" (upstream). */
+  @cached
+  get rootCss() {
+    return [this.args.css, this.args.value === 'now' && this.styles.now];
+  }
+
+  /** Upstream's tooltip anchor fills the range cell; so does our anchor. */
+  @cached
+  get anchorClass() {
+    return euiClass(this.context, this.styles.tooltipAnchor);
+  }
+
+  /** Upstream title: the date, or why it is invalid / needs updating. */
+  get title() {
+    const title = this.formattedValue;
+
+    if (this.args.isInvalid) {
+      return this.euiI18n.lookupToken(
+        'euiDatePopoverButton.invalidTitle',
+        'Invalid date: {title}',
+        { title }
+      );
+    }
+
+    if (this.args.needsUpdating) {
+      return this.euiI18n.lookupToken(
+        'euiDatePopoverButton.outdatedTitle',
+        'Update needed: {title}',
+        { title }
+      );
+    }
+
+    return title;
+  }
+
+  <template>
+    <EuiPopover
+      @isOpen={{this.isOpen}}
+      @closePopover={{set this "isOpen" false}}
+      @anchorPosition={{this.anchorPosition}}
+      @anchorClassName={{this.anchorClass}}
+      @panelPaddingSize="none"
+      @display="block"
+      @rootCss={{this.rootCss}}
+    >
+      <:button>
+        {{#if (has-block "button")}}
+          {{yield
+            (hash
+              classes=this.classes
+              formattedValue=this.formattedValue
+              open=(set this "isOpen" true)
+              close=(set this "isOpen" false)
+            )
+            to="button"
+          }}
+        {{else}}
+          <button
+            type="button"
+            class={{this.classes}}
+            title={{this.title}}
+            disabled={{@isDisabled}}
+            data-test-subj="superDatePicker{{this.position}}DatePopoverButton"
+            ...attributes
+            {{on "click" (set this "isOpen" (not this.isOpen))}}
+          >
+            {{this.formattedValue}}
+          </button>
+        {{/if}}
+      </:button>
+
+      <:content>
+        <EuiDatePopoverContent
+          @position={{this.position}}
+          @value={{@value}}
+          @roundUp={{@roundUp}}
+          @dateFormat={{this.dateFormat}}
+          @timeFormat={{@timeFormat}}
+          @locale={{@locale}}
+          @utcOffset={{@utcOffset}}
+          @timeOptions={{this.timeOptions}}
+          @onChange={{@onChange}}
+        />
+      </:content>
+    </EuiPopover>
   </template>
 }

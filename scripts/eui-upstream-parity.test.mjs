@@ -69,7 +69,7 @@ const factories = {
   'components/form/form_label_append/form_label_append.styles.js': ['euiFormLabelAppendStyles'],
   'components/form/described_form_group/described_form_group.styles.js': ['euiDescribedFormGroupStyles'],
   // form controls
-  'components/form/form.styles.js': ['euiFormVariables', 'euiFormControlStyles'],
+  'components/form/form.styles.js': ['euiFormVariables', 'euiFormControlStyles', 'euiFormControlText', 'euiFormControlDefaultShadow'],
   'components/form/field_text/field_text.styles.js': ['euiFieldTextStyles'],
   'components/form/field_number/field_number.styles.js': ['euiFieldNumberStyles'],
   'components/form/field_password/field_password.styles.js': ['euiFieldPasswordStyles'],
@@ -213,7 +213,17 @@ const factories = {
   'components/facet/facet_group.styles.js': ['euiFacetGroupStyles'],
   'components/filter_group/filter_button.styles.js': ['euiFilterButtonDisplay', 'euiFilterButtonStyles', 'euiFilterButtonWrapperStyles', 'euiFilterButtonChildStyles'],
   'components/filter_group/filter_group.styles.js': ['euiFilterGroupStyles'],
-  'components/filter_group/filter_select_item.styles.js': ['euiFilterSelectItemStyles']
+  'components/filter_group/filter_select_item.styles.js': ['euiFilterSelectItemStyles'],
+  // date pickers
+  'components/date_picker/date_picker.styles.js': ['euiDatePickerStyles'],
+  'components/date_picker/date_picker_range.styles.js': ['euiDatePickerRangeStyles', 'euiDatePickerRangeInlineStyles'],
+  'components/date_picker/super_date_picker/super_date_picker.styles.js': ['euiSuperDatePickerStyles'],
+  'components/date_picker/super_date_picker/date_popover/date_popover_button.styles.js': ['euiDatePopoverButtonStyles'],
+  'components/date_picker/super_date_picker/date_popover/date_popover_content.styles.js': ['euiDatePopoverContentStyles'],
+  'components/date_picker/super_date_picker/date_popover/absolute_tab.styles.js': ['euiAbsoluteTabDateFormStyles'],
+  'components/date_picker/super_date_picker/quick_select_popover/quick_select_panel.styles.js': ['euiQuickSelectPanelStyles'],
+  'components/date_picker/super_date_picker/quick_select_popover/quick_select_popover.styles.js': ['euiQuickSelectPopoverStyles'],
+  'components/form/form_control_layout/append_prepend/form_append_prepend.styles.js': ['euiFormAppendPrependStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1244,4 +1254,91 @@ test('button group and facet static slots match upstream', () => {
     assert.ok(styles[name] !== undefined, name);
 });
 
+// date pickers
+test('date picker hand ports match upstream react-datepicker and quick select styles', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/date-pickers.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-date-pickers-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const reference = require(
+    resolve(eui, 'lib/components/date_picker/react_date_picker.styles.js')
+  );
+  const { cache } = require('@emotion/css');
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        };
+        const label = `${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`;
+        assert.deepEqual(
+          normalize(port.euiDatePickerVariables(context)),
+          normalize(reference.euiDatePickerVariables(context)),
+          label
+        );
+        // Upstream registers an @emotion/css class; compare its name and registered styles.
+        const upstream = reference.euiReactDatePickerStyles(context).euiReactDatePicker;
+        const ours = port.euiReactDatePickerStyles(context).euiReactDatePicker;
+        assert.strictEqual(upstream, `css-${ours.name}`, label);
+        assert.strictEqual(cache.registered[upstream], ours.styles, label);
+      }
 
+  // quick_select.js module-level styles, from upstream's compiled source
+  const quickSelect = readFileSync(
+    resolve(eui, 'lib/components/date_picker/super_date_picker/quick_select_popover/quick_select.js'),
+    'utf8'
+  );
+  for (const slot of Object.values(port.euiQuickSelectStyles)) {
+    assert.ok(quickSelect.includes(`name: "${slot.name}"`), slot.name);
+    assert.ok(quickSelect.includes(`styles: ${JSON.stringify(slot.styles)}`), slot.name);
+  }
+});
+
+test('date picker style helpers match upstream button colors, animation and math', () => {
+  const button = require(resolve(eui, 'lib/global_styling/mixins/_button.js'));
+  const { euiCanAnimate } = require(resolve(eui, 'lib/global_styling/variables/animations.js'));
+  const { mathWithUnits } = require(resolve(eui, 'lib/global_styling/functions/math.js'));
+  assert.strictEqual(styles.euiCanAnimate, euiCanAnimate);
+  for (const args of [['8px', (x) => x * 2], [['4px', '2px'], (x, y) => x + y], ['1rem', (x) => x / 2]])
+    assert.strictEqual(styles.mathWithUnits(...args), mathWithUnits(...args));
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced']) {
+      const context = {
+        colorMode,
+        highContrastMode,
+        euiTheme: getComputed(EuiThemeBorealis, buildTheme({}, 'parity'), colorMode, highContrastMode)
+      };
+      for (const color of ['primary', 'success', 'danger', 'disabled', 'text'])
+        for (const name of ['euiButtonColor', 'euiButtonEmptyColor', 'euiButtonFillColor'])
+          assert.deepEqual(
+            styles[name](context, color),
+            button[name](context, color),
+            `${name} ${color} ${colorMode}/${highContrastMode}`
+          );
+    }
+});

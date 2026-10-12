@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
@@ -8,6 +8,10 @@ import type Owner from '@ember/owner';
 import dateMath from '@elastic/datemath';
 import moment from 'moment';
 
+import { randomId } from '../../../-private/random-id.ts';
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { euiAbsoluteTabDateFormStyles } from '../../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiFieldText from '../../eui-field-text.gts';
 import EuiFormLabel from '../../eui-form-label.gts';
 import EuiFormRow from '../../eui-form-row.gts';
@@ -65,6 +69,27 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
     this.valueAsMoment = valueAsMoment;
   }
 
+  labelId = randomId();
+
+  /** Upstream `euiAbsoluteTabDateForm`: the text input under the calendar. */
+  @cached
+  get formClass() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiAbsoluteTabDateFormStyles);
+    return euiClass(
+      context,
+      { boxSizing: 'border-box', display: 'flex' },
+      styles.euiAbsoluteTabDateForm
+    );
+  }
+
+  @cached
+  get rowClass() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiAbsoluteTabDateFormStyles);
+    return euiClass(context, { minInlineSize: 0 }, styles.euiAbsoluteTabDateForm__row);
+  }
+
   @action
   handleChange(date: any, e: Event) {
     if (date === null) {
@@ -109,7 +134,7 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
   }
 
   <template>
-    <div>
+    <div class="euiAbsoluteTab">
       <DatetimePicker
         @onChange={{this.handleChange}}
         @dateFormat={{@dateFormat}}
@@ -122,25 +147,31 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
         as |Token|
       >
         <Token as |dateFormatError|>
-          <EuiFormRow
-            class="euiSuperDatePicker__absoluteDateFormRow"
-            @isInvalid={{this.isTextInvalid}}
-            @error={{if this.isTextInvalid dateFormatError}}
-          >
-            <EuiFieldText
-              @isInvalid={{this.isTextInvalid}}
-              @value={{this.textInputValue}}
-              @compressed={{true}}
-              {{on "input" this.triggerChange}}
-              {{on "change" this.handleTextChange}}
-            >
-              <:prepend as |classes|>
-                <EuiFormLabel class={{classes}}>
-                  {{@labelPrefix}}
-                </EuiFormLabel>
-              </:prepend>
-            </EuiFieldText>
-          </EuiFormRow>
+          <div class="euiAbsoluteTabDateForm {{this.formClass}}">
+            <div class={{this.rowClass}}>
+              <EuiFormRow
+                class="euiSuperDatePicker__absoluteDateFormRow"
+                @isInvalid={{this.isTextInvalid}}
+                @error={{if this.isTextInvalid dateFormatError}}
+              >
+                <EuiFieldText
+                  aria-labelledby={{this.labelId}}
+                  data-test-subj="superDatePickerAbsoluteDateInput"
+                  @isInvalid={{this.isTextInvalid}}
+                  @value={{this.textInputValue}}
+                  @compressed={{true}}
+                  {{on "input" this.triggerChange}}
+                  {{on "change" this.handleTextChange}}
+                >
+                  <:prepend as |classes|>
+                    <EuiFormLabel id={{this.labelId}} class={{classes}}>
+                      {{@labelPrefix}}
+                    </EuiFormLabel>
+                  </:prepend>
+                </EuiFieldText>
+              </EuiFormRow>
+            </div>
+          </div>
         </Token>
       </EuiI18n>
     </div>

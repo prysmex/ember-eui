@@ -1,10 +1,13 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { helper } from '@ember/component/helper';
 import { service } from '@ember/service';
 
 import { eq } from 'ember-truth-helpers';
 
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { euiDatePopoverContentStyles } from '../../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiTabbedContent from '../../eui-tabbed-content.gts';
 import { getDateMode, toAbsoluteString } from '../utils/index.ts';
 import { useI18nTimeOptions } from '../utils/time-options.ts';
@@ -112,6 +115,18 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
     return this.tabs.find((tab) => tab.id === getDateMode(this.args.value));
   }
 
+  /** Upstream: the form width (400px), narrower below the `s` breakpoint. */
+  @cached
+  get className() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiDatePopoverContentStyles);
+    return `euiDatePopoverContent ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiDatePopoverContent
+    )}`;
+  }
+
   get roundUp() {
     return this.args.roundUp ?? false;
   }
@@ -122,7 +137,7 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
 
   <template>
     <EuiTabbedContent
-      @className="euiDatePopoverContent"
+      @className={{this.className}}
       @tabs={{this.tabs}}
       @initialSelectedTab={{this.initialSelectedTab}}
       @autoFocus="selected"

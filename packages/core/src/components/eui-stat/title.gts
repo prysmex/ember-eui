@@ -1,6 +1,5 @@
 import { hash } from '@ember/helper';
 
-import { element } from 'ember-element-helper';
 import style from 'ember-style-modifier/modifiers/style';
 
 import EuiTitle from '../eui-title.gts';

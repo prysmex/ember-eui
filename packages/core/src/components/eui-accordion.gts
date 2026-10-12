@@ -7,7 +7,6 @@ import { htmlSafe } from '@ember/template';
 import type Owner from '@ember/owner';
 
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
-import { element } from 'ember-element-helper';
 import set from 'ember-set-helper/helpers/set';
 import { and, eq, not } from 'ember-truth-helpers';
 
@@ -276,10 +275,6 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     class={{classNames
                       "euiAccordion__iconButton"
                       (if this.isOpen "euiAccordion__iconButton-isOpen")
-                      (if
-                        (eq this._arrowDisplay "right")
-                        "euiAccordion__iconButton--right"
-                      )
                       (if @arrowProps.className @arrowProps.className)
                     }}
                     @iconType="arrowRight"
@@ -320,10 +315,7 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
                     class={{classNames
                       "euiAccordion__iconButton"
                       (if this.isOpen "euiAccordion__iconButton-isOpen")
-                      (if
-                        (eq this._arrowDisplay "right")
-                        "euiAccordion__iconButton--right"
-                      )
+                      "euiAccordion__iconButton--right"
                       (if @arrowProps.className @arrowProps.className)
                     }}
                     @iconType="arrowRight"

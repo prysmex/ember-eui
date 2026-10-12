@@ -64,7 +64,7 @@
   "peerDependencies": {
     "@ember-eui/core": "^14.0.0",
     "@ember/string": "^4.0.0",
-    "ember-source": ">= 4.12.0"
+    "ember-source": ">= 7.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -118,14 +118,14 @@
     "concurrently": "^9.1.2",
     "ember-basic-dropdown": "^9.0.0",
     "ember-changeset-validations": "^5.0.0",
-    "ember-cli": "~6.2.0",
+    "ember-cli": "~7.3.0",
     "ember-cli-clean-css": "^3.0.0",
     "ember-concurrency": "^5.1.0",
     "ember-focus-trap": "^1.1.0",
     "ember-keyboard": "^9.0.4",
     "ember-power-select": "^9.0.2",
     "ember-qunit": "^9.0.2",
-    "ember-source": "~6.12.0",
+    "ember-source": "~7.3.0",
     "ember-strict-application-resolver": "^0.1.1",
     "ember-template-lint": "^6.1.0",
     "eslint": "^9.39.5",
@@ -152,7 +152,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">= 18"
+    "node": ">= 20.19.0"
   },
   "ember": {
     "edition": "octane"

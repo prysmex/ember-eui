@@ -3,7 +3,6 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import { element } from 'ember-element-helper';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';

@@ -10,6 +10,7 @@ import { setConfig as setBasicDropdownConfig } from 'ember-basic-dropdown/config
 import EuiConfigService from '#src/services/eui-config.ts';
 import EuiI18nService from '#src/services/eui-i18n.ts';
 import EuiToasterService from '#src/services/eui-toaster.ts';
+import EuiEmotionService from '#src/services/eui-emotion.ts';
 
 // app-js re-exports of dependencies that are still resolved by name,
 // see tests/generate-addon-app-modules.mjs
@@ -36,6 +37,7 @@ class TestApp extends EmberApp {
     './services/eui-config': EuiConfigService,
     './services/eui-i18n': EuiI18nService,
     './services/eui-toaster': EuiToasterService,
+    './services/eui-emotion': EuiEmotionService,
     ...addonAppModules
   };
 }

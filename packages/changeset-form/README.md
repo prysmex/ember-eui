@@ -4,9 +4,9 @@
 
 This package depends on [`@ember-eui/core`](../core/README.md), so follow up the installation instructions over there.
 
-- Ember.js v5.8 or above
-- Ember CLI v5.8 or above
-- Node.js v18 or above
+- Ember.js v7.1 or above
+- Ember CLI v7.1 or above
+- Node.js v20.19 or above
 
 ## Installation
 

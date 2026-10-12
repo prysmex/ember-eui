@@ -22,8 +22,8 @@ module('Integration | Component | validated-form | nested forms', function (hook
       validityChanges: [],
       validityChanged: (...state) => this.validityChanges.push(state),
       updateValue: (value) => this.set('value', value),
-      submit: () => this.incrementProperty('submissions'),
-      invalid: () => this.incrementProperty('invalidSubmissions')
+      submit: () => this.set('submissions', this.submissions + 1),
+      invalid: () => this.set('invalidSubmissions', this.invalidSubmissions + 1)
     });
 
     await render(<template>
@@ -124,9 +124,9 @@ module('Integration | Component | validated-form | nested forms', function (hook
       childResets: 0,
       parentResets: 0,
       fail: async () => { throw new Error('Save failed'); },
-      childSubmit: () => this.incrementProperty('childSubmits'),
-      childReset: () => this.incrementProperty('childResets'),
-      parentReset: () => this.incrementProperty('parentResets'),
+      childSubmit: () => this.set('childSubmits', this.childSubmits + 1),
+      childReset: () => this.set('childResets', this.childResets + 1),
+      parentReset: () => this.set('parentResets', this.parentResets + 1),
       noop: () => {}
     });
 

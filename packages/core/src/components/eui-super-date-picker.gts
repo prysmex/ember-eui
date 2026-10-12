@@ -144,7 +144,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerArgs
   @argOrDefaultDecorator(false) isAutoRefreshOnly!: boolean;
   @argOrDefaultDecorator(false) isDisabled!: boolean;
   @argOrDefaultDecorator(true) isPaused!: boolean;
-  @argOrDefaultDecorator(true) showUpdateButton!: boolean;
+  @argOrDefaultDecorator(true) showUpdateButton!: boolean | 'iconOnly';
   @argOrDefaultDecorator('restricted') width!: string;
   // recentlyUsedRanges: [],
   @argOrDefaultDecorator(1000) refreshInterval!: Milliseconds;

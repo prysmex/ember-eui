@@ -1,7 +1,6 @@
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import { element } from 'ember-element-helper';
 
 import cssStyle from '../-private/css-style.ts';
 import EuiIcon from './eui-icon.gts';

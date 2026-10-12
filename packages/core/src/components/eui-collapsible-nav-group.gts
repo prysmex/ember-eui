@@ -1,6 +1,5 @@
 import { concat } from '@ember/helper';
 
-import { element } from 'ember-element-helper';
 import { and, or } from 'ember-truth-helpers';
 
 import randomId from '../-private/random-id.ts';

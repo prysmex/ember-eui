@@ -1,6 +1,5 @@
 import { concat } from '@ember/helper';
 
-import { element } from 'ember-element-helper';
 import style from 'ember-style-modifier/modifiers/style';
 import { eq } from 'ember-truth-helpers';
 

@@ -69,7 +69,12 @@ const factories = {
   ],
   'components/button/button_icon/button_icon.styles.js': [
     'euiButtonIconStyles'
-  ]
+  ],
+  // icon family
+  'components/icon/icon.styles.js': ['euiIconStyles'],
+  'components/avatar/avatar.styles.js': ['euiAvatarStyles'],
+  'components/beacon/beacon.styles.js': ['euiBeaconStyles'],
+  'components/health/health.styles.js': ['euiHealthStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -356,4 +361,90 @@ test('global styles port matches upstream EuiGlobalStyles in every mode and cont
   } finally {
     Module._load = originalLoad;
   }
+});
+
+// icon family
+test('token map and icon-family color helpers match upstream', () => {
+  const tokenMap = require(resolve(eui, 'lib/components/token/token_map.js'));
+  assert.deepEqual(styles.TOKEN_MAP, tokenMap.TOKEN_MAP);
+  assert.deepEqual(
+    styles.TOKEN_COLOR_TO_ICON_COLOR_MAP,
+    tokenMap.TOKEN_COLOR_TO_ICON_COLOR_MAP
+  );
+  const manipulation = require(
+    resolve(eui, 'lib/services/color/manipulation.js')
+  );
+  const { isColorDark } = require(
+    resolve(eui, 'lib/services/color/is_color_dark.js')
+  );
+  const { hexToRgb } = require(resolve(eui, 'lib/services/color/hex_to_rgb.js'));
+  for (const color of ['#16C5C0', '#5A6D8C', '#000000', '#ffffff', '#EAAE01'])
+    for (const ratio of [0.2, 0.3, 0.6, 0.9]) {
+      assert.equal(styles.tint(color, ratio), manipulation.tint(color, ratio));
+      assert.equal(styles.shade(color, ratio), manipulation.shade(color, ratio));
+      assert.deepEqual(styles.hexToRgb(color), hexToRgb(color));
+      assert.equal(
+        styles.isColorDark(...hexToRgb(color)),
+        isColorDark(...hexToRgb(color))
+      );
+    }
+  const logicals = require(resolve(eui, 'lib/global_styling/functions/logicals.js'));
+  for (const property of ['height', 'padding-vertical', 'padding-horizontal', 'left', 'top'])
+    assert.equal(styles.logicalCSS(property, '4px'), logicals.logicalCSS(property, '4px'));
+  assert.equal(styles.logicalSizeCSS('12px'), logicals.logicalSizeCSS('12px'));
+});
+
+test('token styles port matches upstream euiTokenStyles for every fill, mode and contrast', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/token.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-token-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const { euiTokenStyles } = portModule.exports;
+  const reference = require(resolve(eui, 'lib/components/token/token.styles.js'));
+  // Upstream reads the palette from the global store the React provider fills.
+  const { EUI_VIS_COLOR_STORE } = require(
+    resolve(eui, 'lib/services/color/vis_color_store.js')
+  );
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { border: { radius: { inline: '6px' } }, colors: { LIGHT: { darkShade: '#333366' }, DARK: { darkShade: '#9999cc' } } }
+      ])
+        for (const fill of ['light', 'dark', 'none']) {
+          const context = {
+            colorMode,
+            highContrastMode,
+            modifications,
+            euiTheme: getComputed(
+              EuiThemeBorealis,
+              buildTheme(modifications, 'parity'),
+              colorMode,
+              highContrastMode
+            )
+          };
+          EUI_VIS_COLOR_STORE.setVisColors(context.euiTheme.colors.vis);
+          const ours = euiTokenStyles(context, fill);
+          const upstream = reference.euiTokenStyles(context, fill);
+          assert.deepEqual(Object.keys(ours).sort(), Object.keys(upstream).sort());
+          for (const key of Object.keys(upstream))
+            assert.equal(
+              ours[key].styles,
+              upstream[key].styles,
+              `${key} ${fill} ${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`
+            );
+        }
 });

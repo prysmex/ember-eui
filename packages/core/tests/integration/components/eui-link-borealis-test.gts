@@ -299,7 +299,9 @@ module('Integration | Component | Borealis link', function (hooks) {
     );
 
     const icon = el(this.element, '[data-blank] .euiLink__externalIcon');
-    assert.dom(icon).hasAttribute('aria-hidden', 'true');
+    // upstream 123 EuiIcon: role="presentation" makes it decorative; it no
+    // longer adds aria-hidden by default (EuiLink passes none, as upstream)
+    assert.dom(icon).doesNotHaveAttribute('aria-hidden');
     assert.dom(icon).hasAttribute('role', 'presentation');
     assert.dom(icon).doesNotHaveAttribute('aria-label');
     const iconStyle = getComputedStyle(icon);

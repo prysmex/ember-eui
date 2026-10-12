@@ -28,8 +28,8 @@ var highContrastModeStyles = function highContrastModeStyles2(euiThemeContext, o
   }
   return defaultStyles.trim();
 };
-var preventForcedColors = function preventForcedColors2(_ref20) {
-  var highContrastMode = _ref20.highContrastMode;
+var preventForcedColors = function preventForcedColors2(_ref30) {
+  var highContrastMode = _ref30.highContrastMode;
   return highContrastMode === "forced" ? "forced-color-adjust: none;" : "";
 };
 
@@ -293,8 +293,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
       break;
   }
   var borderRadiusCSS = [];
-  Object.entries(borderRadiusMap).forEach(function(_ref20) {
-    var _ref27 = _slicedToArray(_ref20, 2), property = _ref27[0], value2 = _ref27[1];
+  Object.entries(borderRadiusMap).forEach(function(_ref30) {
+    var _ref211 = _slicedToArray(_ref30, 2), property = _ref211[0], value2 = _ref211[1];
     if (value2) {
       if (ignoreZeroes && value2 !== "0" && value2 !== "0px" || !ignoreZeroes) {
         borderRadiusCSS.push("".concat(property, ": ").concat(value2, ";"));
@@ -308,9 +308,9 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
 import { mathWithUnits } from "@elastic/eui-theme-common";
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/functions/typography.js
-function euiFontSizeFromScale(scale, _ref20) {
-  var base = _ref20.base, font = _ref20.font;
-  var _ref27 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref27.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref27.customScale;
+function euiFontSizeFromScale(scale, _ref30) {
+  var base = _ref30.base, font = _ref30.font;
+  var _ref211 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref211.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref211.customScale;
   if (unit === "em") {
     return "".concat(font.scale[scale], "em");
   }
@@ -319,9 +319,9 @@ function euiFontSizeFromScale(scale, _ref20) {
   var denominator = base * font.scale[font.body.scale];
   return unit === "px" ? "".concat(numerator, "px") : "".concat((numerator / denominator).toFixed(4), "rem");
 }
-function euiLineHeightFromBaseline(scale, _ref35) {
-  var base = _ref35.base, font = _ref35.font;
-  var _ref44 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref4$unit = _ref44.unit, unit = _ref4$unit === void 0 ? font.defaultUnits : _ref4$unit, customScale = _ref44.customScale;
+function euiLineHeightFromBaseline(scale, _ref36) {
+  var base = _ref36.base, font = _ref36.font;
+  var _ref45 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref4$unit = _ref45.unit, unit = _ref4$unit === void 0 ? font.defaultUnits : _ref4$unit, customScale = _ref45.customScale;
   var baseline = font.baseline, lineHeightMultiplier = font.lineHeightMultiplier;
   var numerator = base * font.scale[scale];
   if (customScale) numerator *= font.scale[customScale];
@@ -549,8 +549,8 @@ var SEVERITY_COLORS = ["neutral", "risk"];
 var BUTTON_COLORS = ["text", "accent", "accentSecondary", "primary", "success", "warning", "danger"];
 var EXTENDED_BUTTON_COLORS = [].concat(BUTTON_COLORS, SEVERITY_COLORS);
 var BUTTON_DISPLAYS = ["base", "fill", "empty"];
-var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref20, color, variant) {
-  var euiTheme = _ref20.euiTheme, highContrastMode = _ref20.highContrastMode;
+var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref30, color, variant) {
+  var euiTheme = _ref30.euiTheme, highContrastMode = _ref30.highContrastMode;
   var backgroundTokenBase = variant === "base" ? "background" : "background".concat(variant.charAt(0).toUpperCase() + variant.slice(1));
   var textTokenBase = variant === "filled" ? "textColorFilled" : "textColor";
   var backgroundTokenName = getTokenName(backgroundTokenBase, color);
@@ -717,14 +717,14 @@ var euiButtonInteractionStyles = function euiButtonInteractionStyles2(euiThemeCo
     forced: "\n        position: relative;\n        overflow: hidden;\n\n        ".concat(highContrastHoverIndicatorStyles(euiThemeContext), "\n      ")
   }), "\n  ");
 };
-var highContrastHoverIndicatorStyles = function highContrastHoverIndicatorStyles2(_ref27) {
-  var euiTheme = _ref27.euiTheme;
+var highContrastHoverIndicatorStyles = function highContrastHoverIndicatorStyles2(_ref211) {
+  var euiTheme = _ref211.euiTheme;
   return "\n  &:hover:not(".concat(euiDisabledSelector, ") {\n    transition: none;\n\n    /* using pseudo border to be able to control the color */\n    &::after {\n      content: '';\n      position: absolute;\n      inset: ").concat(euiTheme.border.width.thin, ";\n      border: ").concat(euiTheme.border.width.thick, " solid var(--highContrastHoverIndicatorColor, ").concat(euiTheme.border.color, ");\n      border-radius: ").concat(mathWithUnits2(euiTheme.border.radius.inline, function(x) {
     return x / 2;
   }), ";\n      background-color: transparent;\n      pointer-events: none;\n    }\n  }\n");
 };
-var _highContrastBorder = function _highContrastBorder2(_ref35, color) {
-  var highContrastMode = _ref35.highContrastMode, euiTheme = _ref35.euiTheme;
+var _highContrastBorder = function _highContrastBorder2(_ref36, color) {
+  var highContrastMode = _ref36.highContrastMode, euiTheme = _ref36.euiTheme;
   return highContrastMode ? {
     border: "".concat(euiTheme.border.width.thin, " solid ").concat(color)
   } : {};
@@ -756,9 +756,9 @@ function _arrayLikeToArray4(r, a) {
   return n;
 }
 var BACKGROUND_COLORS = ["transparent", "plain", "subdued", "highlighted", "accent", "accentSecondary", "primary", "success", "warning", "danger"].concat(_toConsumableArray2(SEVERITY_COLORS));
-var euiBackgroundColor = function euiBackgroundColor2(_ref20, color) {
-  var euiTheme = _ref20.euiTheme;
-  var _ref27 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref27.method;
+var euiBackgroundColor = function euiBackgroundColor2(_ref30, color) {
+  var euiTheme = _ref30.euiTheme;
+  var _ref211 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref211.method;
   if (color === "transparent") return "transparent";
   if (method === "transparent") {
     var tokenName = getTokenName2("backgroundTransparent", color);
@@ -768,8 +768,8 @@ var euiBackgroundColor = function euiBackgroundColor2(_ref20, color) {
     return euiTheme.colors[_tokenName];
   }
 };
-var euiBorderColor = function euiBorderColor2(_ref44, color) {
-  var euiTheme = _ref44.euiTheme;
+var euiBorderColor = function euiBorderColor2(_ref45, color) {
+  var euiTheme = _ref45.euiTheme;
   switch (color) {
     case "transparent":
       return euiTheme.border.color;
@@ -782,9 +782,67 @@ var euiBorderColor = function euiBorderColor2(_ref44, color) {
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_helpers.js
 import { euiCanAnimate as euiCanAnimate2, euiCantAnimate as euiCantAnimate2 } from "@elastic/eui-theme-common";
-var euiScrollBarStyles = function euiScrollBarStyles2(_ref20) {
-  var _ref$euiTheme = _ref20.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
-  var _ref27 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref27.thumbColor, _ref2$trackColor = _ref27.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref27.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref27.size, _corner = _ref27.corner;
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/services/color/hex_to_rgb.js
+function _slicedToArray3(r, e) {
+  return _arrayWithHoles3(r) || _iterableToArrayLimit3(r, e) || _unsupportedIterableToArray5(r, e) || _nonIterableRest3();
+}
+function _nonIterableRest3() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray5(r, a) {
+  if (r) {
+    if ("string" == typeof r) return _arrayLikeToArray5(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray5(r, a) : void 0;
+  }
+}
+function _arrayLikeToArray5(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
+}
+function _iterableToArrayLimit3(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e, n, i, u, a = [], f = true, o = false;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = false;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = true) ;
+    } catch (r2) {
+      o = true, n = r2;
+    } finally {
+      try {
+        if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+function _arrayWithHoles3(r) {
+  if (Array.isArray(r)) return r;
+}
+function hexToRgb(hex) {
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function(m, r1, g1, b1) {
+    return r1 + r1 + g1 + g1 + b1 + b1;
+  });
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (result) {
+    var _result = _slicedToArray3(result, 4), r = _result[1], g = _result[2], b = _result[3];
+    return [parseInt(r, 16), parseInt(g, 16), parseInt(b, 16)];
+  }
+  return [0, 0, 0];
+}
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_helpers.js
+var euiScrollBarStyles = function euiScrollBarStyles2(_ref30) {
+  var _ref$euiTheme = _ref30.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
+  var _ref211 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref211.thumbColor, _ref2$trackColor = _ref211.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref211.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref211.size, _corner = _ref211.corner;
   var thumbColor = _thumbColor || transparentize(colors.darkShade, 0.5);
   var scrollBarSize = _size || size.base;
   var scrollBarCorner = _corner || width === "thin" ? "calc(".concat(size.s, " * 0.75)") : size.xs;
@@ -793,8 +851,8 @@ var euiScrollBarStyles = function euiScrollBarStyles2(_ref20) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_padding.js
-var euiPaddingSize = function euiPaddingSize2(_ref20, size) {
-  var euiTheme = _ref20.euiTheme;
+var euiPaddingSize = function euiPaddingSize2(_ref30, size) {
+  var euiTheme = _ref30.euiTheme;
   switch (size) {
     case "none":
       return null;
@@ -806,8 +864,8 @@ var euiPaddingSize = function euiPaddingSize2(_ref20, size) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_states.js
-var euiOutline = function euiOutline2(_ref20) {
-  var euiTheme = _ref20.euiTheme;
+var euiOutline = function euiOutline2(_ref30) {
+  var euiTheme = _ref30.euiTheme;
   var offset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "center";
   var color = arguments.length > 2 ? arguments[2] : void 0;
   var outlineWidth = euiTheme.focus.width;
@@ -831,8 +889,8 @@ var euiFocusRing = function euiFocusRing2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_typography.js
-var euiFontSize = function euiFontSize2(_ref20, scale, options) {
-  var euiTheme = _ref20.euiTheme;
+var euiFontSize = function euiFontSize2(_ref30, scale, options) {
+  var euiTheme = _ref30.euiTheme;
   return {
     fontSize: euiFontSizeFromScale(scale, euiTheme, options),
     lineHeight: euiLineHeightFromBaseline(scale, euiTheme, options)
@@ -848,14 +906,14 @@ var euiTextTruncate = function euiTextTruncate2() {
     "\n  overflow: hidden !important;\n  text-overflow: ellipsis !important;\n  white-space: nowrap !important;\n"
   );
 };
-var euiNumberFormat = function euiNumberFormat2(_ref27) {
-  var euiTheme = _ref27.euiTheme;
+var euiNumberFormat = function euiNumberFormat2(_ref211) {
+  var euiTheme = _ref211.euiTheme;
   return "\n  font-feature-settings: ".concat(euiTheme.font.featureSettings, ", 'tnum' 1;\n");
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_responsive.js
-var euiMaxBreakpoint = function euiMaxBreakpoint2(_ref35, size) {
-  var euiTheme = _ref35.euiTheme;
+var euiMaxBreakpoint = function euiMaxBreakpoint2(_ref36, size) {
+  var euiTheme = _ref36.euiTheme;
   var maxBreakpointSize = euiTheme.breakpoint[size];
   if (maxBreakpointSize) {
     return "@media only screen and (max-width: ".concat(maxBreakpointSize - 1, "px)");
@@ -874,8 +932,8 @@ var _ref = true ? {
   styles: "flex-shrink:0;label:euiSpacer;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiSpacerStyles = function euiSpacerStyles2(_ref27) {
-  var euiTheme = _ref27.euiTheme;
+var euiSpacerStyles = function euiSpacerStyles2(_ref211) {
+  var euiTheme = _ref211.euiTheme;
   return {
     euiSpacer: _ref,
     // Sizes
@@ -916,7 +974,7 @@ var euiHorizontalRuleStyles = function euiHorizontalRuleStyles2(euiThemeContext)
 import { euiBorderStyles, euiShadow, euiShadowHover } from "@elastic/eui-theme-common";
 var euiPanelBorderStyles = function euiPanelBorderStyles2(euiThemeContext, options) {
   var euiTheme = euiThemeContext.euiTheme;
-  var _ref35 = options !== null && options !== void 0 ? options : {}, borderColor = _ref35.borderColor;
+  var _ref36 = options !== null && options !== void 0 ? options : {}, borderColor = _ref36.borderColor;
   return highContrastModeStyles(euiThemeContext, {
     none: "\n      /* Using a pseudo element for the border instead of floating border only\n      because the transparent border might otherwise be visible with arbitrary\n      full-width/height content in light mode. */\n      ".concat(euiBorderStyles(euiThemeContext, {
       borderColor: borderColor !== null && borderColor !== void 0 ? borderColor : euiTheme.colors.borderBaseFloating
@@ -976,8 +1034,8 @@ var spinnerSizes = {
   xl: "xl",
   xxl: "xxl"
 };
-var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref20: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
-  var euiTheme = _ref20.euiTheme, highContrastMode = _ref20.highContrastMode;
+var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref30: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
+  var euiTheme = _ref30.euiTheme, highContrastMode = _ref30.highContrastMode;
   var colors = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
   var _colors$border = colors.border, border = _colors$border === void 0 ? euiTheme.components.loadingSpinnerBorder : _colors$border, _colors$highlight = colors.highlight, highlight = _colors$highlight === void 0 ? euiTheme.components.loadingSpinnerHighlight : _colors$highlight;
   if (highContrastMode === "forced") {
@@ -1183,8 +1241,8 @@ var euiTitleStyles = function euiTitleStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/code/code_syntax.styles.js
-var euiCodeTextColors = function euiCodeTextColors2(_ref20) {
-  var euiTheme = _ref20.euiTheme;
+var euiCodeTextColors = function euiCodeTextColors2(_ref30) {
+  var euiTheme = _ref30.euiTheme;
   return {
     backgroundColor: euiTheme.components.codeBackground,
     color: euiTheme.components.codeColor
@@ -1270,8 +1328,8 @@ var _ref6 = true ? {
   styles: "color:inherit;label:inherit;",
   toString: _EMOTION_STRINGIFIED_CSS_ERROR__
 };
-var euiTextColorStyles = function euiTextColorStyles2(_ref27) {
-  var euiTheme = _ref27.euiTheme;
+var euiTextColorStyles = function euiTextColorStyles2(_ref211) {
+  var euiTheme = _ref211.euiTheme;
   return {
     euiTextColor: /* @__PURE__ */ css(";label:euiTextColor;"),
     default: /* @__PURE__ */ css("color:", euiTheme.colors.textParagraph, ";;label:default;"),
@@ -1348,25 +1406,25 @@ function _typeof5(o) {
   }, _typeof5(o);
 }
 function _toConsumableArray3(r) {
-  return _arrayWithoutHoles3(r) || _iterableToArray3(r) || _unsupportedIterableToArray5(r) || _nonIterableSpread3();
+  return _arrayWithoutHoles3(r) || _iterableToArray3(r) || _unsupportedIterableToArray6(r) || _nonIterableSpread3();
 }
 function _nonIterableSpread3() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray5(r, a) {
+function _unsupportedIterableToArray6(r, a) {
   if (r) {
-    if ("string" == typeof r) return _arrayLikeToArray5(r, a);
+    if ("string" == typeof r) return _arrayLikeToArray6(r, a);
     var t = {}.toString.call(r).slice(8, -1);
-    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray5(r, a) : void 0;
+    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray6(r, a) : void 0;
   }
 }
 function _iterableToArray3(r) {
   if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
 }
 function _arrayWithoutHoles3(r) {
-  if (Array.isArray(r)) return _arrayLikeToArray5(r);
+  if (Array.isArray(r)) return _arrayLikeToArray6(r);
 }
-function _arrayLikeToArray5(r, a) {
+function _arrayLikeToArray6(r, a) {
   (null == a || a > r.length) && (a = r.length);
   for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
   return n;
@@ -1470,13 +1528,13 @@ var getBadgeColors = function getBadgeColors2(euiThemeContext, backgroundColor) 
     color
   };
 };
-var getTextColor = function getTextColor2(_ref20, bgColor) {
-  var euiTheme = _ref20.euiTheme;
+var getTextColor = function getTextColor2(_ref30, bgColor) {
+  var euiTheme = _ref30.euiTheme;
   var textColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb())) ? euiTheme.colors.textGhost : euiTheme.colors.textInk;
   return textColor;
 };
-var getCustomInteractiveColors = function getCustomInteractiveColors2(_ref27, bgColor) {
-  var euiTheme = _ref27.euiTheme;
+var getCustomInteractiveColors = function getCustomInteractiveColors2(_ref211, bgColor) {
+  var euiTheme = _ref211.euiTheme;
   var isDarkColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb()));
   var backgroundHover = isDarkColor ? "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textGhost, " 10%)") : "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textInk, " 10%)");
   var backgroundActive = isDarkColor ? "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textGhost, " 15%)") : "color-mix(in oklab, ".concat(bgColor, ", ").concat(euiTheme.colors.textInk, " 15%)");
@@ -1645,8 +1703,8 @@ var euiBadgeStyles = function euiBadgeStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/badge/badge_group/badge_group.styles.js
-var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref20) {
-  var euiTheme = _ref20.euiTheme;
+var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref30) {
+  var euiTheme = _ref30.euiTheme;
   return {
     euiBadgeGroup: /* @__PURE__ */ css("display:inline-flex;flex-wrap:wrap;", logicalCSS("max-width", "100%"), ".euiBadge+.euiBadge{", logicalCSS("margin-left", 0), ";};label:euiBadgeGroup;"),
     // Gutter sizes
@@ -2196,11 +2254,465 @@ var euiButtonIconStyles = function euiButtonIconStyles2(euiThemeContext) {
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/reset/reset.js
 var resetStyles = "\n/* // Adapted from Eric Meyer's reset (http://meyerweb.com/eric/tools/css/reset/, v2.0 | 20110126). */\n\n\n*, *:before, *:after {\n  box-sizing: border-box;\n}\n\nhtml, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: none;\n  vertical-align: baseline;\n}\n\nh1, h2, h3, h4, h5, h6, p {\n  font-family: inherit;\n  font-weight: inherit;\n  font-size: inherit;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block;\n}\n\na[href],\nbutton,\n[role='button'] {\n  cursor: pointer;\n}\n\nbutton {\n  background: none;\n  border: none;\n  padding: 0;\n  margin: 0;\n  color: inherit;\n  border-radius: 0;\n  font-size: inherit;\n}\n\ninput {\n  margin: 0;\n  padding: 0;\n}\n\ninput:disabled {\n  opacity: 1; /* required on iOS */\n}\n\nol,\nul {\n  list-style: none;\n}\n\nblockquote,\nq {\n  quotes: none;\n}\n\nblockquote:before,\nblockquote:after,\nq:before,\nq:after {\n  content: '';\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n\nhr {\n  margin: 0;\n}\n\nfieldset {\n  min-inline-size: auto;\n}\n\n/* Chrome has an issue around RTL languages in SVGs when letter-spacing is negative\n * https://bugs.chromium.org/p/chromium/issues/detail?id=966480\n */\nsvg text {\n  letter-spacing: normal !important;\n}";
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/icon/icon.styles.js
+var _templateObject2;
+function _taggedTemplateLiteral2(e, t) {
+  return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } }));
+}
+var iconLoadingOpacity = 0.05;
+var iconLoading = keyframes(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral2(["\n  0% {\n    opacity: ", ";\n  }\n\n  100% {\n    opacity: 1;\n  }\n"])), iconLoadingOpacity);
+var _ref20 = true ? {
+  name: "p0011s-logoElasticOutline",
+  styles: "*[fill]{fill:none!important;stroke:currentColor!important;};label:logoElasticOutline;"
+} : {
+  name: "p0011s-logoElasticOutline",
+  styles: "*[fill]{fill:none!important;stroke:currentColor!important;};label:logoElasticOutline;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref27 = true ? {
+  name: "uacjc5-inherit",
+  styles: "color:inherit;label:inherit;"
+} : {
+  name: "uacjc5-inherit",
+  styles: "color:inherit;label:inherit;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiIconStyles = function euiIconStyles2(_ref36) {
+  var euiTheme = _ref36.euiTheme, colorMode = _ref36.colorMode;
+  return {
+    // Base
+    euiIcon: /* @__PURE__ */ css("flex-shrink:0;display:inline-block;vertical-align:middle;fill:currentColor;transform:translate(0, 0);.euiIcon__fillNegative{fill:", colorMode === "DARK" ? euiTheme.colors.fullShade : euiTheme.colors.darkestShade, ";};label:euiIcon;"),
+    // Colors
+    primary: /* @__PURE__ */ css("color:", euiTheme.colors.textPrimary, ";;label:primary;"),
+    accent: /* @__PURE__ */ css("color:", euiTheme.colors.textAccent, ";;label:accent;"),
+    accentSecondary: /* @__PURE__ */ css("color:", euiTheme.colors.textAccentSecondary, ";;label:accentSecondary;"),
+    ghost: /* @__PURE__ */ css("color:", euiTheme.colors.textGhost, ";*[fill],.euiIcon__fillNegative{fill:currentColor!important;};label:ghost;"),
+    subdued: /* @__PURE__ */ css("color:", euiTheme.colors.textSubdued, ";;label:subdued;"),
+    text: /* @__PURE__ */ css("color:", euiTheme.colors.textHeading, ";*[fill],.euiIcon__fillNegative{fill:currentColor!important;};label:text;"),
+    neutral: /* @__PURE__ */ css("color:", euiTheme.colors.textNeutral, ";;label:neutral;"),
+    success: /* @__PURE__ */ css("color:", euiTheme.colors.textSuccess, ";;label:success;"),
+    warning: /* @__PURE__ */ css("color:", euiTheme.colors.textWarning, ";;label:warning;"),
+    risk: /* @__PURE__ */ css("color:", euiTheme.colors.textRisk, ";;label:risk;"),
+    danger: /* @__PURE__ */ css("color:", euiTheme.colors.textDanger, ";;label:danger;"),
+    inherit: _ref27,
+    default: /* @__PURE__ */ css(";label:default;"),
+    customColor: /* @__PURE__ */ css(";label:customColor;"),
+    logoElasticOutline: _ref20,
+    // Sizes
+    original: /* @__PURE__ */ css(";label:original;"),
+    s: /* @__PURE__ */ css(logicalSizeCSS(euiTheme.size.m), ";label:s;"),
+    m: /* @__PURE__ */ css(logicalSizeCSS(euiTheme.size.base), ";label:m;"),
+    l: /* @__PURE__ */ css(logicalSizeCSS(euiTheme.size.l), ";label:l;"),
+    xl: /* @__PURE__ */ css(logicalSizeCSS(euiTheme.size.xl), ";label:xl;"),
+    xxl: /* @__PURE__ */ css(logicalSizeCSS(euiTheme.size.xxl), ";label:xxl;"),
+    // Variants
+    // App icons are two-toned. This provides the base color.
+    app: /* @__PURE__ */ css("fill:", euiTheme.colors.textParagraph, ";.euiIcon__fillSecondary{fill:", euiTheme.colors.primary, ";};label:app;"),
+    logo: /* @__PURE__ */ css(";label:logo;"),
+    // Loading states
+    isLoading: /* @__PURE__ */ css("opacity:", iconLoadingOpacity, ";background-color:currentColor;border-radius:", euiTheme.border.radius.inline, ";;label:isLoading;"),
+    isLoaded: /* @__PURE__ */ css(euiCanAnimate, "{animation:", iconLoading, " ", euiTheme.animation.normal, " ease-in 0s 1 forwards;};label:isLoaded;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/avatar/avatar.styles.js
+var _avatarSize = function _avatarSize2(_ref64) {
+  var size = _ref64.size, fontSize = _ref64.fontSize;
+  return "\n    ".concat(logicalSizeCSS(size), ";\n    font-size: ").concat(fontSize, ";\n  ");
+};
+var _ref21 = true ? {
+  name: "4wfy2n-none",
+  styles: "text-transform:none;label:none;"
+} : {
+  name: "4wfy2n-none",
+  styles: "text-transform:none;label:none;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref28 = true ? {
+  name: "5xhpzh-lowercase",
+  styles: "text-transform:lowercase;label:lowercase;"
+} : {
+  name: "5xhpzh-lowercase",
+  styles: "text-transform:lowercase;label:lowercase;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref35 = true ? {
+  name: "1x2qsb1-uppercase",
+  styles: "text-transform:uppercase;label:uppercase;"
+} : {
+  name: "1x2qsb1-uppercase",
+  styles: "text-transform:uppercase;label:uppercase;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref44 = true ? {
+  name: "mxeh3g-capitalize",
+  styles: "text-transform:capitalize;label:capitalize;"
+} : {
+  name: "mxeh3g-capitalize",
+  styles: "text-transform:capitalize;label:capitalize;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref54 = true ? {
+  name: "14sj6wh-isDisabled",
+  styles: "cursor:not-allowed;filter:grayscale(100%);label:isDisabled;"
+} : {
+  name: "14sj6wh-isDisabled",
+  styles: "cursor:not-allowed;filter:grayscale(100%);label:isDisabled;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiAvatarStyles = function euiAvatarStyles2(_ref74) {
+  var euiTheme = _ref74.euiTheme;
+  var borderRadius = {
+    user: "50%",
+    space: euiTheme.border.radius.control
+  };
+  return {
+    // Base
+    euiAvatar: /* @__PURE__ */ css("flex-shrink:0;display:inline-flex;justify-content:center;align-items:center;vertical-align:middle;background-size:cover;background-color:", euiTheme.colors.lightShade, ";overflow:hidden;font-weight:", euiTheme.font.weight.medium, ";;label:euiAvatar;"),
+    // Variants
+    plain: /* @__PURE__ */ css("background-color:", euiTheme.colors.emptyShade, ";;label:plain;"),
+    subdued: /* @__PURE__ */ css("background-color:", euiTheme.colors.lightestShade, ";;label:subdued;"),
+    user: /* @__PURE__ */ css("border-radius:", borderRadius.user, ";;label:user;"),
+    space: /* @__PURE__ */ css("border-radius:", borderRadius.space, ";;label:space;"),
+    // States
+    isDisabled: _ref54,
+    // Sizes
+    s: /* @__PURE__ */ css(_avatarSize({
+      size: euiTheme.size.l,
+      fontSize: euiTheme.size.m
+    }), ";label:s;"),
+    m: /* @__PURE__ */ css(_avatarSize({
+      size: euiTheme.size.xl,
+      fontSize: mathWithUnits(euiTheme.size.base, function(x) {
+        return x * 0.9;
+      })
+    }), ";label:m;"),
+    l: /* @__PURE__ */ css(_avatarSize({
+      size: euiTheme.size.xxl,
+      fontSize: mathWithUnits(euiTheme.size.l, function(x) {
+        return x * 0.8;
+      })
+    }), ";label:l;"),
+    xl: /* @__PURE__ */ css(_avatarSize({
+      size: euiTheme.size.xxxxl,
+      fontSize: mathWithUnits(euiTheme.size.xl, function(x) {
+        return x * 0.8;
+      })
+    }), ";label:xl;"),
+    // Casing
+    capitalize: _ref44,
+    uppercase: _ref35,
+    lowercase: _ref28,
+    none: _ref21,
+    tooltip: {
+      user: /* @__PURE__ */ css("border-radius:", borderRadius.user, ";;label:user;"),
+      space: /* @__PURE__ */ css("border-radius:", borderRadius.space, ";;label:space;")
+    }
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/beacon/beacon.styles.js
+var _templateObject3;
+var _templateObject22;
+function _taggedTemplateLiteral3(e, t) {
+  return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } }));
+}
+var _colorCSS3 = function _colorCSS4(color) {
+  return "\n    background-color: ".concat(color, ";\n    &:before,\n    &:after {\n      box-shadow: 0 0 1px 1px ").concat(color, ";\n    }\n  ");
+};
+var euiBeaconPulseLarge = keyframes(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral3(["\n 0% {\n    transform: scale(.1);\n    opacity: 1;\n  }\n\n  70% {\n    transform: scale(3);\n    opacity: 0;\n  }\n\n  100% {\n    opacity: 0;\n  }\n"])));
+var euiBeaconPulseSmall = keyframes(_templateObject22 || (_templateObject22 = _taggedTemplateLiteral3(["\n   0% {\n    transform: scale(.1);\n    opacity: 1;\n  }\n\n  70% {\n    transform: scale(2);\n    opacity: 0;\n  }\n\n  100% {\n    opacity: 0;\n  }\n"])));
+var euiBeaconStyles = function euiBeaconStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return {
+    // Base
+    euiBeacon: /* @__PURE__ */ css("position:relative;display:flex;justify-content:center;border-radius:50%;", preventForcedColors(euiThemeContext), " svg{", logicalSizeCSS("100%"), ";}&::before,&::after{position:absolute;content:'';", logicalSizeCSS("100%"), " ", logicalCSS("left", 0), " ", logicalCSS("top", 0), " background-color:transparent;border-radius:50%;}&::before{transform:scale(1.6);opacity:0.4;}&::after{opacity:0;}", euiCanAnimate, "{&::before{animation:", euiBeaconPulseLarge, " 2.5s infinite ease-out;}&::after{animation:", euiBeaconPulseSmall, " 2.5s infinite ease-out 0.25s;}};label:euiBeacon;"),
+    subdued: /* @__PURE__ */ css(_colorCSS3(euiTheme.colors.textSubdued), ";label:subdued;"),
+    primary: /* @__PURE__ */ css(_colorCSS3(euiTheme.colors.primary), ";label:primary;"),
+    success: /* @__PURE__ */ css(_colorCSS3(euiTheme.colors.success), ";label:success;"),
+    warning: /* @__PURE__ */ css(_colorCSS3(euiTheme.colors.warning), ";label:warning;"),
+    danger: /* @__PURE__ */ css(_colorCSS3(euiTheme.colors.danger), ";label:danger;"),
+    accent: /* @__PURE__ */ css(_colorCSS3(euiTheme.colors.accent), ";label:accent;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/health/health.styles.js
+var _ref29 = true ? {
+  name: "1qhojri-inherit",
+  styles: "font-size:inherit;label:inherit;"
+} : {
+  name: "1qhojri-inherit",
+  styles: "font-size:inherit;label:inherit;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var _ref210 = true ? {
+  name: "j8uhck-euiHealth",
+  styles: "display:inline-block;label:euiHealth;"
+} : {
+  name: "j8uhck-euiHealth",
+  styles: "display:inline-block;label:euiHealth;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiHealthStyles = function euiHealthStyles2(euiTheme) {
+  return {
+    euiHealth: _ref210,
+    // Text sizes
+    xs: /* @__PURE__ */ css(euiFontSize(euiTheme, "xs"), ";;label:xs;"),
+    s: /* @__PURE__ */ css(euiFontSize(euiTheme, "s"), ";;label:s;"),
+    m: /* @__PURE__ */ css(euiFontSize(euiTheme, "m"), ";;label:m;"),
+    inherit: _ref29
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/token/token_map.js
+var TOKEN_MAP = {
+  tokenAlias: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenAnnotation: {
+    shape: "square",
+    color: "euiColorVis8"
+  },
+  tokenArray: {
+    shape: "square",
+    color: "euiColorVis4"
+  },
+  tokenBinary: {
+    shape: "square",
+    color: "euiColorVis6"
+  },
+  tokenBoolean: {
+    shape: "square",
+    color: "euiColorVis4"
+  },
+  tokenClass: {
+    shape: "circle",
+    color: "euiColorVis2"
+  },
+  tokenCompletionSuggester: {
+    shape: "square",
+    color: "euiColorVis2"
+  },
+  tokenConstant: {
+    shape: "circle",
+    color: "euiColorVis0"
+  },
+  tokenDate: {
+    shape: "square",
+    color: "euiColorVis8"
+  },
+  tokenDimension: {
+    shape: "square",
+    color: "euiColorVis2"
+  },
+  tokenElement: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenEnum: {
+    shape: "circle",
+    color: "euiColorVis0"
+  },
+  tokenEnumMember: {
+    shape: "square",
+    color: "euiColorVis4"
+  },
+  tokenEvent: {
+    shape: "circle",
+    color: "euiColorVis6"
+  },
+  tokenException: {
+    shape: "circle",
+    color: "euiColorVis0"
+  },
+  tokenField: {
+    shape: "circle",
+    color: "euiColorVis0"
+  },
+  tokenFile: {
+    shape: "square",
+    color: "euiColorVis4"
+  },
+  tokenFlattened: {
+    shape: "square",
+    color: "euiColorVis4"
+  },
+  tokenFunction: {
+    shape: "circle",
+    color: "euiColorVis4"
+  },
+  tokenGeo: {
+    shape: "square",
+    color: "euiColorVis8"
+  },
+  tokenHistogram: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenInterface: {
+    shape: "circle",
+    color: "euiColorVis6"
+  },
+  tokenIP: {
+    shape: "square",
+    color: "euiColorVis6"
+  },
+  tokenJoin: {
+    shape: "square",
+    color: "euiColorVis8"
+  },
+  tokenKey: {
+    shape: "circle",
+    color: "euiColorVis8"
+  },
+  tokenKeyword: {
+    shape: "square",
+    color: "euiColorVis2"
+  },
+  tokenMethod: {
+    shape: "square",
+    color: "euiColorVis4"
+  },
+  tokenMetricCounter: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenMetricGauge: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenModule: {
+    shape: "square",
+    color: "euiColorVis6"
+  },
+  tokenNamespace: {
+    shape: "square",
+    color: "euiColorVis2"
+  },
+  tokenNested: {
+    shape: "circle",
+    color: "euiColorVis4"
+  },
+  tokenNull: {
+    shape: "square",
+    color: "euiColorVis4"
+  },
+  tokenNumber: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenObject: {
+    shape: "circle",
+    color: "euiColorVis0"
+  },
+  tokenOperator: {
+    shape: "circle",
+    color: "euiColorVis6"
+  },
+  tokenPackage: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenParameter: {
+    shape: "square",
+    color: "euiColorVis6"
+  },
+  tokenPercolator: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenProperty: {
+    shape: "circle",
+    color: "euiColorVis4"
+  },
+  tokenRange: {
+    shape: "circle",
+    color: "euiColorVis6"
+  },
+  tokenRankFeature: {
+    shape: "square",
+    color: "euiColorVis8"
+  },
+  tokenRankFeatures: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenRepo: {
+    shape: "square",
+    color: "euiColorVis2"
+  },
+  tokenSearchType: {
+    shape: "square",
+    color: "euiColorVis8"
+  },
+  tokenSemanticText: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenShape: {
+    shape: "circle",
+    color: "euiColorVis8"
+  },
+  tokenString: {
+    shape: "square",
+    color: "euiColorVis2"
+  },
+  tokenStruct: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenSymbol: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenTag: {
+    shape: "square",
+    color: "euiColorVis6"
+  },
+  tokenText: {
+    shape: "square",
+    color: "euiColorVis0"
+  },
+  tokenTokenCount: {
+    shape: "square",
+    color: "euiColorVis6"
+  },
+  tokenVariable: {
+    shape: "circle",
+    color: "euiColorVis4"
+  },
+  tokenVectorDense: {
+    shape: "square",
+    color: "euiColorVis8"
+  },
+  tokenVectorSparse: {
+    shape: "square",
+    color: "euiColorVis2"
+  }
+};
+var TOKEN_COLOR_TO_ICON_COLOR_MAP = {
+  euiColorVis0: "euiColorVis0",
+  euiColorVis1: "euiColorVis0",
+  euiColorVis2: "euiColorVis2",
+  euiColorVis3: "euiColorVis2",
+  euiColorVis4: "euiColorVis4",
+  euiColorVis5: "euiColorVis4",
+  euiColorVis6: "euiColorVis6",
+  euiColorVis7: "euiColorVis6",
+  euiColorVis8: "euiColorVis8",
+  euiColorVis9: "euiColorVis8"
+};
 export {
+  TOKEN_COLOR_TO_ICON_COLOR_MAP,
+  TOKEN_MAP,
+  euiAvatarStyles,
   euiBackgroundColor,
   euiBadgeColors,
   euiBadgeGroupStyles,
   euiBadgeStyles,
+  euiBeaconStyles,
   euiBetaBadgeStyles,
   euiBorderColor,
   euiButtonDisplayContentStyles,
@@ -2213,7 +2725,9 @@ export {
   euiFlexGroupStyles,
   euiFlexItemStyles,
   euiFocusRing,
+  euiHealthStyles,
   euiHorizontalRuleStyles,
+  euiIconStyles,
   euiLinkStyles,
   euiLoadingSpinnerStyles,
   euiNotificationBadgeStyles,
@@ -2230,6 +2744,13 @@ export {
   getCustomInteractiveColors,
   getIsValidColor,
   getTextColor,
+  hexToRgb,
+  highContrastModeStyles,
+  isColorDark,
+  logicalCSS,
+  logicalSizeCSS,
   resetStyles,
+  shade,
+  tint,
   transparentize
 };

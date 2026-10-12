@@ -73,13 +73,27 @@ const entries = {
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/reset/reset.js': ['resetStyles'],
   'global_styling/mixins/_helpers.js': ['euiScrollBarStyles'],
-  'services/color/manipulation.js': ['transparentize'],
+  // icon family: tint/shade feed the hand-ported token colors (utils/eui/token.ts)
+  'services/color/manipulation.js': ['transparentize', 'tint', 'shade'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
   'global_styling/mixins/_button.js': [
     'euiButtonDisplaysColors',
     'euiButtonInteractionStyles'
-  ]
+  ],
+  // icon family
+  'components/icon/icon.styles.js': ['euiIconStyles'],
+  'components/avatar/avatar.styles.js': ['euiAvatarStyles'],
+  'components/beacon/beacon.styles.js': ['euiBeaconStyles'],
+  'components/health/health.styles.js': ['euiHealthStyles'],
+  'components/token/token_map.js': [
+    'TOKEN_MAP',
+    'TOKEN_COLOR_TO_ICON_COLOR_MAP'
+  ],
+  'global_styling/functions/logicals.js': ['logicalCSS', 'logicalSizeCSS'],
+  'global_styling/functions/high_contrast.js': ['highContrastModeStyles'],
+  'services/color/is_color_dark.js': ['isColorDark'],
+  'services/color/hex_to_rgb.js': ['hexToRgb']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

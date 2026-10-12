@@ -19,8 +19,10 @@ module('Integration | Component | eui-link', function (hooks) {
 
     assert.dom('a.euiLink').hasAttribute('target', '_blank');
     assert.dom('a.euiLink').hasAttribute('rel', 'noopener noreferrer');
-    // Upstream: the icon is decorative and the screen reader text names it.
-    assert.dom('a.euiLink svg.euiIcon').hasAttribute('aria-hidden', 'true');
+    // Upstream: the icon is decorative (EuiLink passes role="presentation";
+    // latest EuiIcon no longer adds aria-hidden) and the screen reader text names it.
+    assert.dom('a.euiLink svg.euiIcon').hasAttribute('role', 'presentation');
+    assert.dom('a.euiLink svg.euiIcon').doesNotHaveAttribute('aria-label');
     assert.dom('a.euiLink').containsText('(external, opens in a new tab or window)');
   });
 

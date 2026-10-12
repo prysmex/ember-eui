@@ -8,6 +8,7 @@ import EuiIcon, { TYPES } from '#src/components/eui-icon.gts';
 import { clearIconCache } from '#src/-private/icon-loader.ts';
 import { iconsFromGlob } from '#src/utils/icons-from-glob.ts';
 import { preloadIcons } from '#src/utils/preload-icons.ts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
 import type EuiConfigService from '#src/services/eui-config.ts';
 import type { TOC } from '@ember/component/template-only';
@@ -39,6 +40,18 @@ async function firstRenderedChildren(callback: () => Promise<void>) {
   return children;
 }
 
+const light = resolveBorealisTheme('light').euiTheme;
+
+/** Normalize any CSS color to the browser's computed `rgb()` form. */
+function rgb(color: string) {
+  const probe = document.createElement('span');
+  probe.style.color = color;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
+
 const DATA_URL =
   'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"></svg>';
 
@@ -51,7 +64,7 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       assert.dom('svg').exists({ count: 1 });
       assert.dom('svg').hasClass('euiIcon');
-      assert.dom('svg').hasClass('euiIcon--medium', 'defaults to size m');
+      assert.dom('svg').hasStyle({ width: '16px', height: '16px' }, 'defaults to size m');
       assert.dom('svg').hasAttribute('viewBox', '0 0 16 16');
       assert.dom('svg path').exists();
     });
@@ -63,8 +76,8 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg .euiIcon__fillSecondary').exists();
     });
 
-    test('it keeps the data-type EUI styles the Elastic logo with', async function (assert) {
-      // .euiIcon--ghost[data-type=logoElastic] ... in the EUI theme
+    test('it keeps the data-type of the Elastic logo', async function (assert) {
+      // upstream outlines the logo through its own logoElasticOutline style
       await render(<template><EuiIcon @type="logoElastic" /></template>);
 
       assert.dom('svg').hasAttribute('data-type', 'logoElastic');
@@ -99,7 +112,7 @@ module('Integration | Component | eui-icon', function (hooks) {
   });
 
   module('size, color and classes', function () {
-    test('it applies the size class', async function (assert) {
+    test('it applies the size', async function (assert) {
       await render(
         <template>
           <EuiIcon @type="bell" @size="s" class="small" />
@@ -110,11 +123,13 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       const svgs = [...(this.element as HTMLElement).querySelectorAll('svg')];
 
-      assert.true(svgs[0]?.classList.contains('euiIcon--small'));
-      assert.true(svgs[1]?.classList.contains('euiIcon--xLarge'));
-      assert.false(
-        [...(svgs[2]?.classList ?? [])].some((c) => /--(small|medium|large)/.test(c)),
-        'original has no size class'
+      // upstream sizes are emotion styles now, not legacy --small/--xLarge classes
+      assert.strictEqual(getComputedStyle(svgs[0]!).width, '12px');
+      assert.strictEqual(getComputedStyle(svgs[1]!).width, '32px');
+      assert.strictEqual(
+        getComputedStyle(svgs[2]!).width,
+        '16px',
+        'original keeps the svg width attribute'
       );
     });
 
@@ -129,21 +144,23 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('svg[style]').doesNotExist();
     });
 
-    test('a named color becomes a class', async function (assert) {
+    test('a named color sets the theme text color', async function (assert) {
       await render(<template><EuiIcon @type="bell" @color="danger" /></template>);
 
-      assert.dom('svg').hasClass('euiIcon--danger');
-      assert.dom('svg').doesNotHaveClass('euiIcon--customColor');
+      // was the legacy euiIcon--danger class; upstream colors through `color`
+      const danger = rgb(light.colors.textDanger);
+      assert.dom('svg').hasStyle({ color: danger, fill: danger });
     });
 
-    test('a custom color becomes an inline fill', async function (assert) {
+    test('a custom color sets color, filled with currentColor', async function (assert) {
       await render(<template><EuiIcon @type="bell" @color="#ff0000" /></template>);
 
-      assert.dom('svg').hasClass('euiIcon--customColor');
-      assert.dom('svg').hasStyle({ fill: 'rgb(255, 0, 0)' });
+      // upstream: `color` (inline there, a class here) + `fill: currentColor`
+      assert.dom('svg').hasStyle({ color: 'rgb(255, 0, 0)', fill: 'rgb(255, 0, 0)' });
+      assert.dom('svg').doesNotHaveAttribute('style');
     });
 
-    test('app icons get euiIcon--app unless they are colored', async function (assert) {
+    test('app icons are two-toned unless they are colored', async function (assert) {
       await render(
         <template>
           <EuiIcon @type="apmApp" />
@@ -153,8 +170,12 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       const svgs = [...(this.element as HTMLElement).querySelectorAll('svg')];
 
-      assert.true(svgs[0]?.classList.contains('euiIcon--app'));
-      assert.false(svgs[1]?.classList.contains('euiIcon--app'));
+      // was the legacy euiIcon--app class: upstream app styles fill the
+      // secondary shapes with the primary color
+      const secondary = (svg: SVGSVGElement) =>
+        getComputedStyle(svg.querySelector('.euiIcon__fillSecondary')!).fill;
+      assert.strictEqual(secondary(svgs[0]!), rgb(light.colors.primary));
+      assert.strictEqual(secondary(svgs[1]!), getComputedStyle(svgs[1]!).fill);
     });
 
     test('extra attributes are passed to the svg', async function (assert) {
@@ -176,10 +197,13 @@ module('Integration | Component | eui-icon', function (hooks) {
   });
 
   module('accessibility', function () {
-    test('it is aria-hidden without a title', async function (assert) {
+    test('it is presentational without a title', async function (assert) {
       await render(<template><EuiIcon @type="bell" /></template>);
 
-      assert.dom('svg').hasAttribute('aria-hidden', 'true');
+      // upstream 123: decorative icons get role="presentation"; aria-hidden is
+      // only set when the caller passes it
+      assert.dom('svg').hasAttribute('role', 'presentation');
+      assert.dom('svg').doesNotHaveAttribute('aria-hidden');
     });
 
     test('it is not aria-hidden with a title', async function (assert) {
@@ -189,7 +213,7 @@ module('Integration | Component | eui-icon', function (hooks) {
         document.querySelector('svg')?.getAttribute('aria-hidden'),
         'true'
       );
-      assert.dom('svg').hasAttribute('role', 'image');
+      assert.dom('svg').hasAttribute('role', 'img');
     });
 
     test('@title renders a <title> that labels the svg', async function (assert) {
@@ -257,9 +281,8 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('img').doesNotExist();
       assert.dom('svg.my-custom-icon').exists();
       assert.dom('svg.my-custom-icon').hasClass('euiIcon');
-      assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
-      assert.dom('svg.my-custom-icon').hasClass('euiIcon--primary');
-      assert.dom('svg.my-custom-icon').hasAttribute('aria-hidden', 'true');
+      assert.dom('svg.my-custom-icon').hasStyle({ width: '24px', color: rgb(light.colors.textPrimary) });
+      assert.dom('svg.my-custom-icon').hasAttribute('role', 'presentation');
     });
 
     test('a folder of svgs can be registered with iconsFromGlob', async function (assert) {
@@ -282,7 +305,7 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       // plain `.svg` imports use @svg-jar/plugin's sprite mode in builds:
       // the svg references a symbol in the emitted sprite sheet
-      const logo = document.querySelector('svg.euiIcon.euiIcon--large use');
+      const logo = document.querySelector('svg.euiIcon:not(.euiButton svg) use');
       const rocket = document.querySelector('.euiButton svg.euiIcon use');
 
       assert.dom('img').doesNotExist();
@@ -299,8 +322,7 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.dom('img').doesNotExist();
       assert.dom('svg.my-custom-icon').exists({ count: 1 });
       assert.dom('svg.my-custom-icon').hasClass('euiIcon');
-      assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
-      assert.dom('svg.my-custom-icon').hasClass('euiIcon--danger');
+      assert.dom('svg.my-custom-icon').hasStyle({ width: '24px', color: rgb(light.colors.textDanger) });
     });
 
     test('components passed as @iconType work through other components', async function (assert) {
@@ -322,7 +344,7 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       assert.dom('svg.my-custom-icon').exists();
       assert.dom('svg.my-custom-icon').hasClass('euiIcon');
-      assert.dom('svg.my-custom-icon').hasClass('euiIcon--large');
+      assert.dom('svg.my-custom-icon').hasStyle({ width: '24px', height: '24px' });
     });
   });
 
@@ -338,7 +360,7 @@ module('Integration | Component | eui-icon', function (hooks) {
 
       assert.strictEqual(children, 0, 'the empty icon renders first');
       assert.dom('svg path').exists('await render() waits for the icon');
-      assert.dom('svg').hasClass('euiIcon--large');
+      assert.dom('svg').hasStyle({ width: '24px' });
     });
 
     test('preloaded icons render right away', async function (assert) {

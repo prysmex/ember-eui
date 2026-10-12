@@ -18,7 +18,7 @@ module('Integration | Component | eui-badge-group', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiBadgeGroup').hasClass('euiBadgeGroup--gutterSmall');
+    assert.dom('.euiBadgeGroup').hasStyle({ columnGap: '8px' });
     assert.dom('.euiBadgeGroup__item .euiBadge').exists({ count: 2 });
   });
 });

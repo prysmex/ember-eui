@@ -285,7 +285,16 @@ const entries = {
   'components/markdown_editor/markdown_editor_help_button.styles.js': ['euiMarkdownEditorHelpButtonStyles'],
   'components/markdown_editor/markdown_editor_text_area.styles.js': ['euiMarkdownEditorTextAreaStyles'],
   'components/markdown_editor/markdown_editor_toolbar.styles.js': ['euiMarkdownEditorToolbarStyles'],
-  'components/markdown_editor/markdown_format.styles.js': ['euiMarkdownFormatStyles']
+  'components/markdown_editor/markdown_format.styles.js': ['euiMarkdownFormatStyles'],
+  // table
+  'components/table/table.styles.js': ['euiTableVariables', 'euiTableStyles', 'euiTableCaptionStyles'],
+  'components/table/table_cells_shared.styles.js': ['euiTableHeaderFooterCellStyles', 'euiTableCellCheckboxStyles'],
+  'components/table/_table_cell_content.styles.js': ['euiTableCellContentStyles'],
+  'components/table/table_row.styles.js': ['euiTableRowStyles'],
+  'components/table/table_row_cell.styles.js': ['euiTableRowCellStyles'],
+  'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles'],
+  'components/table/const.js': ['EUI_TABLE_CSS_CONTAINER_NAME'],
+  'global_styling/mixins/_container_query.js': ['euiContainerCSS']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

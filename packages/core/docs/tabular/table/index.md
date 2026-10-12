@@ -65,11 +65,17 @@ A styled `<table>`, built from `EuiTableHeader`, `EuiTableHeaderCell`,
 only render the markup: sorting, selection and pagination stay yours
 (or come from a headless table library).
 
+Like upstream, the table is wrapped in a `div.euiTable__wrapper`;
+attributes go to the `<table>`.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@compressed` | `boolean` |  | Smaller text and padding. |
+| `@compressed` | `boolean` |  | Smaller text and padding (not applied to the cards layout). |
 | `@tableLayout` | `'fixed' \| 'auto'` | `'fixed'` | `'fixed'` (columns share the width, text wraps or truncates) or `'auto'` (columns fit their content). |
-| `@responsive` | `boolean` | `true` | On small screens, rows become cards. |
+| `@responsive` | `boolean` | `true`; `false` never collapses (same as `@responsiveBreakpoint={{false}}`) | Rows become cards below `@responsiveBreakpoint`. |
+| `@responsiveBreakpoint` | `TableResponsiveBreakpoint` | `'m'` (upstream) | Named theme breakpoint below which rows become cards; `true` always renders cards, `false` never. Takes precedence over `@responsive`. |
+| `@hasBackground` | `boolean` | `true` | The table's plain background. |
+| `@scrollableInline` | `boolean` |  | Lets the table grow wider than its container and scroll inline. Use with `@tableLayout="auto"`. Upstream beta. |
 
 | Block | Description |
 | --- | --- |
@@ -90,7 +96,8 @@ The `<thead>` of an `EuiTable`, with its row of `EuiTableHeaderCell`s.
 ### EuiTableHeaderCell
 
 A column header of an `EuiTable`. With `@onSort` it is a button that
-shows the sort direction (`@isSorted`, `@isSortAscending`).
+shows the sort direction (`@isSorted`, `@isSortAscending`), or a
+"sortable" icon while the column is not sorted.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -100,9 +107,11 @@ shows the sort direction (`@isSorted`, `@isSortAscending`).
 | `@isSortAscending` | `boolean` |  | Ascending order (arrow up); descending otherwise. |
 | `@readOnly` | `boolean` |  | Shows the sort state without the button. |
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
 | `@description` | `string` |  | More about the column, in its title and for screen readers. |
 | `@scope` | `string` | `'col'` | `scope` of the `<th>`. |
-| `@mobileOptions` | `TableMobileOptions` |  | `{ show, only }` on small screens. |
+| `@mobileOptions` | `TableMobileOptions` |  | `{ show, only }` for the cards layout. |
 
 | Block | Description |
 | --- | --- |
@@ -114,7 +123,9 @@ A header cell holding a checkbox, e.g. "select all rows".
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@width` | `number \| string` |  | Width, e.g. `32` (px). |
+| `@width` | `number \| string` | the theme's checkbox column width | Width, e.g. `32` (px). |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `32` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `32` (px). |
 | `@scope` | `string` | `'col'` | `scope` of the `<th>`. |
 
 | Block | Description |
@@ -123,7 +134,9 @@ A header cell holding a checkbox, e.g. "select all rows".
 
 ### EuiTableHeaderButton
 
-A button in a header cell, e.g. a column that opens a menu.
+A button in a header cell, e.g. a column that opens a menu. Upstream
+removed this component; it uses the header sort button's styles
+(full width, primary underline on hover and focus).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -150,8 +163,9 @@ A row of an `EuiTable` body.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@isSelected` | `boolean` |  | Highlights the row as selected. |
-| `@isSelectable` | `boolean` |  | The row has a selection checkbox. |
-| `@hasActions` | `boolean` |  | The row has an actions cell (with `@hasActions` on the cell). |
+| `@isSelectable` | `boolean` |  | The row's selection checkbox is enabled. Also reserves the cards layout's checkbox column unless `@hasSelection` is given. |
+| `@hasSelection` | `boolean` | `@isSelectable` | The table has a checkbox column (upstream): reserves room for it in the cards layout and lines expanded rows up with the second column. |
+| `@hasActions` | `boolean \| 'custom'` |  | The row has an actions cell (with `@hasActions` on the cell): shows hover-only actions while the row is hovered; `true` reserves the cards layout's right column. |
 | `@isExpandable` | `boolean` |  | The row can expand (it has an expander cell). |
 | `@isExpandedRow` | `boolean` |  | The row is the expanded content of the previous row. |
 | `@onClick` | `(event: Event) => void` |  | Makes the row clickable (also with Enter and Space). |
@@ -167,24 +181,28 @@ A cell of an `EuiTableRow`.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@align` | `TableAlignment` | `'left'` | `'left'`, `'right'` (numbers) or `'center'`. |
-| `@truncateText` | `boolean` |  | Cuts long text with an ellipsis instead of wrapping it. |
+| `@truncateText` | `boolean` |  | `true` cuts long text with an ellipsis; otherwise long words break (upstream default). |
 | `@textOnly` | `boolean` | `true` | The content is only text (wrapped in a span that truncates or wraps). Set `false` for components. |
 | `@setScopeRow` | `boolean` |  | Renders a `<th scope="row">`: the row's header. |
-| `@showOnHover` | `boolean` |  | Shows the content only while the row is hovered. |
-| `@hasActions` | `boolean` |  | The cell holds the row's actions. |
+| `@showOnHover` | `boolean` |  | Shows the content only while the row is hovered or the cell has focus (always shown in the cards layout). Upstream's `euiBasicTableAction-showOnHover`. |
+| `@hasActions` | `boolean \| 'custom'` |  | The cell holds the row's actions (`true`: icon actions in the cards layout's right column; `'custom'`: other content on its own line). |
 | `@isExpander` | `boolean` |  | The cell holds the row's expand button. |
-| `@valign` | `'top' \| 'middle' \| 'bottom'` | `'middle'` | Vertical alignment: `'top'`, `'middle'` or `'bottom'`. |
+| `@valign` | `'top' \| 'middle' \| 'bottom' \| 'baseline'` | `'middle'` | Vertical alignment: `'top'`, `'middle'`, `'bottom'` or `'baseline'`. |
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
-| `@mobileOptions` | `TableMobileOptions` |  | On small screens: `{ show, only, header, enlarge, align, truncateText }`. `header` labels the value in the row's card; the `<:mobile>` block replaces the content there. |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
+| `@mobileOptions` | `TableMobileOptions` |  | In the cards layout: `{ show, only, header, enlarge, align, truncateText, textOnly, width, minWidth, maxWidth }`. `header` labels the value in the row's card; the `<:mobile>` block replaces the content there. |
 
 | Block | Description |
 | --- | --- |
 | default block | The content. |
-| `<:mobile>` | Different content on small screens. |
+| `<:mobile>` | Different content in the cards layout. |
 
 ### EuiTableRowCellCheckbox
 
-A row cell holding a checkbox, e.g. to select the row.
+A row cell holding a checkbox, e.g. to select the row. In the cards
+layout it sits in the card's top left corner (give the row
+`@hasSelection` or `@isSelectable` to reserve room for it).
 
 | Block | Description |
 | --- | --- |
@@ -206,10 +224,12 @@ A cell of an `EuiTableFooter`, e.g. a column's total.
 | --- | --- | --- | --- |
 | `@align` | `TableAlignment` | `'left'` | `'left'`, `'right'` (numbers) or `'center'`. |
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
 
 | Block | Description |
 | --- | --- |
-| default block | The content. |
+| default block | The content (truncated to one line, as upstream). |
 
 ### EuiTablePagination
 
@@ -221,11 +241,15 @@ the page buttons on the right. You keep the page and the page size.
 | `@activePage` | `number` |  | The current page, from `0`. |
 | `@pageCount` | `number` |  | Number of pages. |
 | `@onChangePage` | `(page: number) => void` |  | Called with the clicked page (from `0`). |
-| `@itemsPerPage` | `number` | `50` | Rows per page. |
-| `@itemsPerPageOptions` | `number[]` | `[10, 20, 50, 100]` | Choices of rows per page. |
+| `@itemsPerPage` | `number` | `10` (upstream) | Rows per page. `0` means all rows: the menu reads "Showing all rows" and the pages are hidden. |
+| `@itemsPerPageOptions` | `number[]` | `[10, 25, 50]` (upstream) | Choices of rows per page. `0` is the "Show all rows" choice. |
 | `@onChangeItemsPerPage` | `(itemsPerPage: number) => void` |  | Called with the chosen rows per page. |
-| `@hidePerPageOptions` | `boolean` |  | Hides the "Rows per page" menu. |
-| `@compressed` | `boolean` |  | Smaller page buttons. |
+| `@showPerPageOptions` | `boolean` | `true` | Shows the "Rows per page" menu. |
+| `@compressed` | `boolean` |  | Passed to `EuiPagination`: "page of total" with arrows. |
+| `@responsive` |  |  | Passed to `EuiPagination`: breakpoints at which it is compressed. |
+| `@ariaControls` | `string` |  | Passed to `EuiPagination`: id of the content the pages change. |
+
+Deprecated: `@hidePerPageOptions` (Use `@showPerPageOptions={{false}}`. Hides the menu.).
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<span>`.
 
@@ -233,6 +257,11 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 A bar shown above a responsive `EuiTable` on small screens (where the
 header row is hidden), e.g. with "select all" and `EuiTableSortMobile`.
+Like upstream it renders nothing while the table is not in cards.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@responsiveBreakpoint` | `TableResponsiveBreakpoint` | `'m'` | Same as the table's `@responsiveBreakpoint`: shown below this named theme breakpoint, always with `true`, never with `false`. |
 
 | Block | Description |
 | --- | --- |

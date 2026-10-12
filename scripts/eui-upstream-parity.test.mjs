@@ -166,7 +166,13 @@ const factories = {
   'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
   'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
   'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
-  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles']
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  // resizable-dnd
+  'components/resizable_container/resizable_button.styles.js': ['euiResizableButtonStyles'],
+  'components/resizable_container/resizable_collapse_button.styles.js': ['euiResizableCollapseButtonStyles'],
+  'components/resizable_container/resizable_panel.styles.js': ['euiResizablePanelContentStyles'],
+  'components/drag_and_drop/draggable.styles.js': ['euiDraggableStyles', 'euiDraggableItemStyles'],
+  'components/drag_and_drop/droppable.styles.js': ['euiDroppableStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -971,4 +977,19 @@ test('flyout constants and inline style composition match upstream', () => {
         );
 });
 
-
+test('resizable container and panel slots match upstream static styles', () => {
+  const container = require(
+    resolve(eui, 'lib/components/resizable_container/resizable_container.styles.js')
+  );
+  const panel = require(
+    resolve(eui, 'lib/components/resizable_container/resizable_panel.styles.js')
+  );
+  assert.deepEqual(
+    normalize(styles.euiResizableContainerStyles),
+    normalize(container.euiResizableContainerStyles)
+  );
+  assert.deepEqual(
+    normalize(styles.euiResizablePanelStyles),
+    normalize(panel.euiResizablePanelStyles)
+  );
+});

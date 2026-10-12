@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
@@ -14,6 +14,9 @@ import {
   sizesOnly
 } from '../-private/resizable.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass } from '../utils/eui/styles.ts';
+import { euiResizableContainerStyles } from '../utils/eui/styles.generated.ts';
 import EuiResizableButton from './eui-resizable-container/button.gts';
 import EuiResizablePanel from './eui-resizable-container/panel.gts';
 
@@ -21,6 +24,9 @@ import type { PanelState, ResizerState } from '../-private/resizable.ts';
 import type { EuiResizableButtonSignature } from './eui-resizable-container/button';
 import type { EuiResizablePanelSignature } from './eui-resizable-container/panel';
 import type { ComponentLike } from '@glint/template';
+
+/** What started a resize: dragging a button, or its arrow keys. */
+export type ResizeTrigger = 'pointer' | 'key';
 
 export interface ToggleOptions {
   /** Which way the panel collapses: toward the `'left'` or the `'right'`. */
@@ -43,6 +49,16 @@ export interface EuiResizableContainerSignature {
     onPanelWidthChange?: (sizes: Record<string, number>) => void;
     /** Called when a panel is collapsed or expanded. */
     onToggleCollapsed?: (panelId: string, options: ToggleOptions) => void;
+    /**
+     * Called when a resize starts: `'pointer'` when a button is pressed,
+     * `'key'` when an arrow key goes down on a focused button.
+     */
+    onResizeStart?: (trigger: ResizeTrigger) => void;
+    /**
+     * Called when that resize ends: the pointer is released (or leaves the
+     * container), the arrow key is released, or the button loses focus.
+     */
+    onResizeEnd?: () => void;
   };
   Blocks: {
     default: [
@@ -71,6 +87,9 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
   @tracked isDragging = false;
 
   currentResizerPos = -1;
+  // the resize reported to @onResizeStart, until @onResizeEnd
+  resizeTrigger: ResizeTrigger | null = null;
+  resizeKeyDirection: 'forward' | 'backward' | null = null;
   prevPanelId: string | null = null;
   nextPanelId: string | null = null;
   containerSize = 1;
@@ -80,8 +99,17 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
     return (this.args.direction ?? 'horizontal') === 'horizontal';
   }
 
+  @cached
   get classes(): string {
-    return `euiResizableContainer euiResizableContainer--${this.isHorizontal ? 'horizontal' : 'vertical'}`;
+    const context = getEuiThemeContext(this);
+    const styles = euiResizableContainerStyles;
+
+    return `euiResizableContainer ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiResizableContainer,
+      this.isHorizontal ? styles.horizontal : styles.vertical
+    )}`;
   }
 
   measure(): void {
@@ -94,6 +122,29 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
 
   changed(): void {
     this.args.onPanelWidthChange?.(sizesOnly(this.panels));
+  }
+
+  resizeStart(trigger: ResizeTrigger, keyDirection: 'forward' | 'backward' | null = null): void {
+    if (this.resizeTrigger) this.resizeEnd();
+
+    this.resizeTrigger = trigger;
+    this.resizeKeyDirection = keyDirection;
+    this.args.onResizeStart?.(trigger);
+  }
+
+  resizeEnd(): void {
+    if (!this.resizeTrigger) return;
+
+    this.resizeTrigger = null;
+    this.resizeKeyDirection = null;
+    this.args.onResizeEnd?.();
+  }
+
+  keyDirection(key: string): 'forward' | 'backward' | null {
+    if (this.isHorizontal ? key === 'ArrowLeft' : key === 'ArrowUp') return 'backward';
+    if (this.isHorizontal ? key === 'ArrowRight' : key === 'ArrowDown') return 'forward';
+
+    return null;
   }
 
   /* registration ---------------------------------------------------------- */
@@ -156,6 +207,7 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
 
     if (!prevPanel || !nextPanel) return;
 
+    this.resizeStart('pointer');
     this.isDragging = true;
     this.currentResizerPos = getPointerPosition(event, this.isHorizontal);
     this.prevPanelId = prevPanel.id;
@@ -175,6 +227,7 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
 
   @action
   onMouseUp(): void {
+    if (this.resizeTrigger === 'pointer') this.resizeEnd();
     this.isDragging = false;
     this.currentResizerPos = -1;
     this.prevPanelId = null;
@@ -184,19 +237,22 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
   @action
   onResizerKeyDown(event: KeyboardEvent): void {
     const button = event.currentTarget as HTMLElement;
-    const { key } = event;
-    const forward = key === 'ArrowDown' || key === 'ArrowRight';
-    const backward = key === 'ArrowUp' || key === 'ArrowLeft';
-    const matchesDirection = this.isHorizontal
-      ? key === 'ArrowLeft' || key === 'ArrowRight'
-      : key === 'ArrowUp' || key === 'ArrowDown';
+    const direction = this.keyDirection(event.key);
     const prevPanelId = button.previousElementSibling?.id;
     const nextPanelId = button.nextElementSibling?.id;
 
-    if (!(forward || backward) || !matchesDirection || !prevPanelId || !nextPanelId) return;
+    if (!direction || !prevPanelId || !nextPanelId) return;
 
+    if (!event.repeat) this.resizeStart('key', direction);
     event.preventDefault();
-    this.resize(prevPanelId, nextPanelId, forward ? 10 : -10);
+    this.resize(prevPanelId, nextPanelId, direction === 'forward' ? 10 : -10);
+  }
+
+  @action
+  onResizerKeyUp(event: KeyboardEvent): void {
+    if (this.resizeTrigger === 'key' && this.resizeKeyDirection === this.keyDirection(event.key)) {
+      this.resizeEnd();
+    }
   }
 
   @action
@@ -211,6 +267,7 @@ export default class EuiResizableContainer extends Component<EuiResizableContain
 
   @action
   onResizerBlur(): void {
+    if (this.resizeTrigger === 'key') this.resizeEnd();
     this.resizers = Object.fromEntries(
       Object.values(this.resizers).map((resizer) => [resizer.id, { ...resizer, isFocused: false }])
     );

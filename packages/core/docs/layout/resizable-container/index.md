@@ -59,6 +59,8 @@ collapsible (`@mode="collapsible"` next to a `@mode="main"` one).
 | `@direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | `'horizontal'` (side by side) or `'vertical'` (stacked). |
 | `@onPanelWidthChange` | `(sizes: Record<string, number>) => void` |  | Called with every panel's size (`{ [panelId]: percent }`) after a change. |
 | `@onToggleCollapsed` |  |  | Called when a panel is collapsed or expanded. |
+| `@onResizeStart` | `(trigger: ResizeTrigger) => void` |  | Called when a resize starts: `'pointer'` when a button is pressed, `'key'` when an arrow key goes down on a focused button. |
+| `@onResizeEnd` | `() => void` |  | Called when that resize ends: the pointer is released (or leaves the container), the arrow key is released, or the button loses focus. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
@@ -78,7 +80,8 @@ percent of the container.
 | `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding inside the panel: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@wrapperPadding` | `'none' \| 's' \| 'm' \| 'l'` | `'none'` | Padding around the panel: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@color` |  | `'transparent'` | Background, any `EuiPanel` color. |
-| `@hasShadow` | `boolean` |  | Adds a shadow. |
+| `@hasShadow` | `boolean` | `false` | Adds a shadow (when there is no border). |
+| `@hasBorder` | `boolean` | `false` | Adds a border, like `EuiPanel`'s (whose own default is `true`). |
 | `@borderRadius` |  | `'none'` | `'none'` or `'m'` rounded corners. |
 
 | Block | Description |
@@ -96,7 +99,10 @@ use the arrow keys.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the button. |
-| `@disabled` | `boolean` |  | Disables resizing at this button. |
+| `@disabled` | `boolean` |  | Disables resizing at this button (a disabled button is hidden, as upstream). |
+| `@indicator` | `'handle' \| 'border'` | `'handle'` | The resize indicator: `'handle'` (two short grab lines that grow into one line on hover and focus) or `'border'` (a full-length 1px line). |
+| `@alignIndicator` | `'center' \| 'start' \| 'end'` | `'center'` | Where the `'handle'` indicator sits along the button: `'center'`, `'start'` or `'end'`. |
+| `@accountForScrollbars` | `'before' \| 'after' \| 'both'` |  | The button overlaps its neighbours by half its size on both sides by default, so it takes no room. When a panel shows a scrollbar next to it, `'before'`, `'after'` or `'both'` keep it from covering it. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 

@@ -316,7 +316,13 @@ const entries = {
   'global_styling/mixins/_button': ['getEuiButtonColorValues', 'getEuiFilledButtonColorValues'],
   'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles'],
   // new-refresh-flyout
-  'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles']
+  'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles'],
+  // new-tables (EuiSearchBar, EuiBasicTable, EuiInMemoryTable)
+  'components/search_bar/search_bar.styles.js': ['euiSearchBar__searchHolder', 'euiSearchBar__filtersHolder'],
+  'components/basic_table/basic_table.styles.js': ['euiBasicTableBodyLoading', 'euiBasicTableWrapperPanelledStyles', 'safariLoadingWorkaround'],
+  'components/basic_table/pagination_bar.styles.js': ['euiBasicTablePaginationBarStyles'],
+  'components/basic_table/panel.styles.js': ['euiBasicTablePanelStyles'],
+  'components/basic_table/use_panel_props.js': ['EUI_BASIC_TABLE_PANEL_CLASS_NAME']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

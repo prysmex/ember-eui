@@ -7,6 +7,7 @@ import EuiAvatar from './components/eui-avatar.gts';
 import EuiBadge from './components/eui-badge.gts';
 import EuiBadgeGroup from './components/eui-badge-group.gts';
 import EuiBanner from './components/eui-banner.gts';
+import EuiBasicTable from './components/eui-basic-table.gts';
 import EuiBeacon from './components/eui-beacon.gts';
 import EuiBetaBadge from './components/eui-beta-badge.gts';
 import EuiBottomBar from './components/eui-bottom-bar.gts';
@@ -108,6 +109,7 @@ import EuiIllustration from './components/eui-illustration.gts';
 import EuiImage from './components/eui-image.gts';
 import EuiInlineEditText from './components/eui-inline-edit-text.gts';
 import EuiInlineEditTitle from './components/eui-inline-edit-title.gts';
+import EuiInMemoryTable from './components/eui-in-memory-table.gts';
 import EuiInputPopover from './components/eui-input-popover.gts';
 import EuiKeyPadMenu from './components/eui-key-pad-menu.gts';
 import EuiKeyPadMenuItem from './components/eui-key-pad-menu-item.gts';
@@ -174,6 +176,8 @@ import EuiResizableContainer from './components/eui-resizable-container.gts';
 import EuiSaturation from './components/eui-saturation.gts';
 import EuiScreenReaderLive from './components/eui-screen-reader-live.gts';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only.gts';
+import EuiSearchBar from './components/eui-search-bar.gts';
+import EuiSearchBarFilters from './components/eui-search-bar-filters.gts';
 import EuiSelect from './components/eui-select.gts';
 import EuiSelectable from './components/eui-selectable.gts';
 import EuiSelectableList from './components/eui-selectable-list.gts';
@@ -260,6 +264,7 @@ export {
   EuiBadge,
   EuiBadgeGroup,
   EuiBanner,
+  EuiBasicTable,
   EuiBeacon,
   EuiBetaBadge,
   EuiBottomBar,
@@ -361,6 +366,7 @@ export {
   EuiImage,
   EuiInlineEditText,
   EuiInlineEditTitle,
+  EuiInMemoryTable,
   EuiInputPopover,
   EuiKeyPadMenu,
   EuiKeyPadMenuItem,
@@ -427,6 +433,8 @@ export {
   EuiSaturation,
   EuiScreenReaderLive,
   EuiScreenReaderOnly,
+  EuiSearchBar,
+  EuiSearchBarFilters,
   EuiSelect,
   EuiSelectable,
   EuiSelectableList,

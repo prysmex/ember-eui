@@ -39,8 +39,10 @@ module('Integration | Component | eui-card-select / checkable-card', function (h
 
     assert.dom('input#card-radio[type="radio"]').isChecked();
     assert.dom('label[for="card-radio"]').hasText('Radio card');
-    assert.dom('.euiCheckableCard-isChecked input#card-radio').exists();
+    // Upstream has no checked/disabled modifier classes; the states are
+    // measured in eui-cards-test.gts.
+    assert.dom('.euiCheckableCard input#card-radio').exists();
     assert.dom('input#card-check[type="checkbox"]').isDisabled();
-    assert.dom('label[for="card-check"]').hasClass('euiCheckableCard__label-isDisabled');
+    assert.dom('label[for="card-check"]').hasClass('euiCheckableCard__label');
   });
 });

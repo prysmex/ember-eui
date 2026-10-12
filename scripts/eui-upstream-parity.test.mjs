@@ -166,7 +166,12 @@ const factories = {
   'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
   'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
   'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
-  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles']
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  // cards (padding-dependent card factories have their own test below)
+  'components/card/card.styles.js': ['euiCardTextStyles'],
+  'components/card/card_select/card_select.styles.js': ['euiCardSelectStyles'],
+  'components/card/checkable_card/checkable_card.styles.js': ['euiCheckableCardStyles'],
+  'components/panel/split_panel/split_panel.styles.js': ['euiSplitPanelInnerStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -970,5 +975,43 @@ test('flyout constants and inline style composition match upstream', () => {
           `${size}/${maxWidth}/${zIndex}`
         );
 });
+
+test('card factories match upstream for every padding size in 12 theme configurations', () => {
+  const reference = require(resolve(eui, 'lib/components/card/card.styles.js'));
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, border: { radius: { panel: '20px' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        };
+        for (const padding of ['none', 'xs', 's', 'm', 'l', 'xl'])
+          for (const name of ['euiCardStyles', 'euiCardBetaBadgeStyles'])
+            assert.deepEqual(
+              normalize(styles[name](context, padding)),
+              normalize(reference[name](context, padding)),
+              `${name}/${padding}/${colorMode}/${highContrastMode}`
+            );
+      }
+});
+
+test('split panel outer slots match upstream static styles', () => {
+  const reference = require(resolve(eui, 'lib/components/panel/split_panel/split_panel.styles.js'));
+  assert.deepEqual(
+    normalize(styles.euiSplitPanelOuterStyles),
+    normalize(reference.euiSplitPanelOuterStyles)
+  );
+});
+
 
 

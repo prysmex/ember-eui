@@ -181,7 +181,12 @@ const entries = {
   'components/context_menu/context_menu.styles.js': ['euiContextMenuStyles', 'euiContextMenuVariables'],
   'components/context_menu/context_menu_item.styles.js': ['euiContextMenuItemStyles'],
   'components/context_menu/context_menu_panel.styles.js': ['euiContextMenuPanelStyles'],
-  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles']
+  'components/context_menu/context_menu_panel_title.styles.js': ['euiContextMenuPanelTitleStyles'],
+  // cards
+  'components/card/card.styles.js': ['euiCardStyles', 'euiCardTextStyles', 'euiCardBetaBadgeStyles'],
+  'components/card/card_select/card_select.styles.js': ['euiCardSelectStyles'],
+  'components/card/checkable_card/checkable_card.styles.js': ['euiCheckableCardStyles'],
+  'components/panel/split_panel/split_panel.styles.js': ['euiSplitPanelOuterStyles', 'euiSplitPanelInnerStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

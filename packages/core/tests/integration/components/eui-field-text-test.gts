@@ -31,7 +31,14 @@ module('Integration | Component | eui-field-text / number / password', function 
       </template>
     );
 
-    assert.dom('input.a').hasClass('euiFieldText--withIcon').hasClass('euiFieldText--fullWidth').hasClass('euiFieldText--compressed').hasClass('euiFieldText--isLoading').hasAttribute('readonly');
+    // Legacy modifier classes are gone; check structure and upstream styles.
+    assert.dom('input.a').hasAttribute('readonly').hasAttribute('aria-invalid', 'true');
+    const a = document.querySelector('input.a')!;
+    const layout = a.closest('.euiFormControlLayout')!;
+    assert.dom(layout.querySelector('.euiFormControlLayoutCustomIcon')).exists('icon');
+    assert.dom(layout.querySelector('.euiBorealisLoadingSpinner')).exists('loading');
+    assert.strictEqual(getComputedStyle(a).maxWidth, '100%', 'full width');
+    assert.strictEqual(getComputedStyle(a).paddingTop, '8px', 'compressed');
     assert.false((document.querySelector('input.a') as HTMLInputElement).validity.valid);
     assert.dom('input.b').isDisabled();
     assert.strictEqual(document.querySelector('input.b')!.parentElement!.classList.contains('euiFormControlLayout__childrenWrapper'), false, 'no layout wrapper');
@@ -47,7 +54,7 @@ module('Integration | Component | eui-field-text / number / password', function 
       </template>
     );
 
-    assert.dom('input').hasClass('euiFieldText--inGroup');
+    assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout--group');
     assert.dom('.pre').hasText('@');
     assert.dom('.post').hasText('.com');
   });
@@ -55,13 +62,15 @@ module('Integration | Component | eui-field-text / number / password', function 
   test('EuiFieldNumber: min, max, step and value', async function (assert) {
     await render(<template><EuiFieldNumber @value={{5}} @min={{0}} @max={{10}} @step={{1}} @icon="number" /></template>);
 
-    assert.dom('input.euiFieldNumber[type="number"]').hasValue('5').hasAttribute('min', '0').hasAttribute('max', '10').hasAttribute('step', '1').hasClass('euiFieldNumber--withIcon');
+    assert.dom('input.euiFieldNumber[type="number"]').hasValue('5').hasAttribute('min', '0').hasAttribute('max', '10').hasAttribute('step', '1');
+    assert.dom('.euiFormControlLayout .euiFormControlLayoutCustomIcon').exists('icon');
   });
 
   test('EuiFieldPassword: the dual type toggles visibility', async function (assert) {
     await render(<template><EuiFieldPassword @value="secret" /></template>);
 
-    assert.dom('input.euiFieldPassword').hasAttribute('type', 'password').hasClass('euiFieldPassword--withToggle');
+    assert.dom('input.euiFieldPassword').hasAttribute('type', 'password');
+    assert.dom('.euiFormControlLayout__append .euiButtonIcon').exists('toggle');
 
     await click('.euiButtonIcon');
     assert.dom('input.euiFieldPassword').hasAttribute('type', 'text');

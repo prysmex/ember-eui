@@ -54,19 +54,23 @@ match them.
 | `@useGroup` | `boolean` | `true` | Styles the control as a group with its `<:prepend>` / `<:append>` content. |
 | `@disabled` | `boolean` |  | Disabled styling. |
 | `@isDisabled` | `boolean` |  | Same as `@disabled`. |
+| `@isInvalid` | `boolean` |  | Shows the danger warning icon on the right. |
+| `@isDropdown` | `boolean` |  | Shows a dropdown arrow on the right, as EuiSelect does. Hidden while disabled or read-only. |
 | `@icon` |  |  | Icon inside the control, anything `EuiIcon`'s `@type` accepts. |
 | `@iconSide` |  | `'left'` | Side of `@icon`: `'left'` or `'right'`. |
+| `@iconsPosition` | `'absolute' \| 'static'` | `'absolute'` | `'absolute'` overlays the icons on the control, `'static'` lays them out beside it. |
 | `@clear` |  |  | Shows a clear ("x") button calling this function. |
+| `@clearLabel` | `string` | "Clear input" | Accessible label of the clear button. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
 
 Deprecated: `@inputId` (Has no effect.).
 
 | Block | Description |
 | --- | --- |
-| `<:prepend>` | Content before the control; yields the class to put on it. |
+| `<:prepend>` | Content before the control. It is wrapped in a `.euiFormControlLayout__prepend` element; yields that class name. |
 | `<:field>` | The control (e.g. an `<input>`); same as the default block. |
 | default block | The control. |
-| `<:append>` | Content after the control; yields the class to put on it. |
+| `<:append>` | Content after the control. It is wrapped in a `.euiFormControlLayout__append` element; yields that class name. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

@@ -11,8 +11,7 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
   setupRenderingTest(hooks);
 
   test('it wraps the field with icons, loading and clear', async function (assert) {
-    let cleared = 0;
-    const clear = () => cleared++;
+    const clear = () => {};
 
     await render(
       <template>
@@ -22,12 +21,33 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout--fullWidth').hasClass('euiFormControlLayout--compressed').hasClass('euiFormControlLayout--readOnly').hasClass('euiFormControlLayout--isDisabled');
+    // Legacy `--fullWidth`/`--compressed` modifiers are gone (computed
+    // styles instead); the state classes are upstream's `-readOnly`/`-isDisabled`.
+    assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout-readOnly').hasClass('euiFormControlLayout-isDisabled');
+    const layout = document.querySelector('.euiFormControlLayout')!;
+    assert.strictEqual(getComputedStyle(layout).maxWidth, '100%', 'full width');
+    assert.strictEqual(getComputedStyle(layout).height, '32px', 'compressed');
     assert.dom('.euiFormControlLayout__childrenWrapper input.field').exists();
-    assert.dom('.euiFormControlLayoutIcons:not(.euiFormControlLayoutIcons--right) .euiFormControlLayoutCustomIcon').exists('left icon');
-    assert.dom('.euiFormControlLayoutIcons--right .euiBorealisLoadingSpinner').exists();
+    // One icon group per side, start side first (no `--right` modifier).
+    const [left, right] = document.querySelectorAll('.euiFormControlLayoutIcons');
+    assert.dom(left!.querySelector('.euiFormControlLayoutCustomIcon')).exists('left icon');
+    assert.dom(right!.querySelector('.euiBorealisLoadingSpinner')).exists();
 
-    await click('.euiFormControlLayoutIcons--right .euiFormControlLayoutClearButton');
+    // Upstream disables the clear button while the layout is disabled.
+    assert.dom(right!.querySelector('.euiFormControlLayoutClearButton')).isDisabled();
+  });
+
+  test('the clear button calls @clear', async function (assert) {
+    let cleared = 0;
+    const clear = () => cleared++;
+
+    await render(
+      <template>
+        <EuiFormControlLayout @clear={{clear}}><input /></EuiFormControlLayout>
+      </template>
+    );
+
+    await click('.euiFormControlLayoutClearButton');
     assert.strictEqual(cleared, 1);
   });
 
@@ -45,7 +65,10 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
     assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout--group');
     assert.dom('.pre').hasClass('euiFormControlLayout__prepend');
     assert.dom('.post').hasClass('euiFormControlLayout__append');
-    assert.dom('.euiFormControlLayoutIcons--right .euiFormControlLayoutCustomIcon').exists();
+    // Upstream wraps each side in its own styled `__prepend` / `__append` div.
+    assert.dom('.euiFormControlLayout > div.euiFormControlLayout__prepend > .pre').exists();
+    assert.dom('.euiFormControlLayout > div.euiFormControlLayout__append > .post').exists();
+    assert.dom('.euiFormControlLayoutIcons .euiFormControlLayoutCustomIcon').exists();
   });
 
   test('EuiFormControlLayoutDelimited renders start, delimiter and end controls', async function (assert) {
@@ -59,7 +82,8 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
     );
 
     assert.dom('.euiFormControlLayoutDelimited input.start').hasClass('euiFormControlLayoutDelimited__input');
-    assert.dom('.euiFormControlLayoutDelimited__delimeter').hasText('→');
+    // Upstream spelling (`__delimiter`); the misspelled legacy class is gone.
+    assert.dom('.euiFormControlLayoutDelimited__delimiter').hasText('→');
     assert.dom('input.end').hasClass('euiFormControlLayoutDelimited__input');
   });
 
@@ -74,7 +98,7 @@ module('Integration | Component | eui-form-control-layout', function (hooks) {
       </template>
     );
 
-    assert.dom('button.euiFormControlLayoutCustomIcon--clickable svg.euiFormControlLayoutCustomIcon__icon').exists();
+    assert.dom('button.euiFormControlLayoutCustomIcon svg.euiFormControlLayoutCustomIcon__icon').exists();
     await click('button.euiFormControlLayoutCustomIcon');
     assert.strictEqual(clicks, 1);
     assert.dom('button.euiFormControlLayoutClearButton').hasAttribute('aria-label', 'Clear input');

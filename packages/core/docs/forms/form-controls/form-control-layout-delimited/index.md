@@ -48,16 +48,21 @@ range ("0 → 100") or start and end dates.
 | `@compressed` |  |  | Shorter control, for dense forms. |
 | `@readOnly` |  |  | Read-only styling. |
 | `@disabled` |  |  | Disabled styling. |
+| `@isDisabled` |  |  | Same as `@disabled`. |
+| `@isInvalid` | `boolean` |  | Invalid styling: a danger underline/border, a danger delimiter and the warning icon (not while disabled or read-only). |
 | `@delimiter` | `string` | `'→'` | Text between the two controls. |
-| `@useGroup` | `boolean` | `true` | Styles it as a group with `<:prepend>` / `<:append>`. |
+
+Deprecated: `@useGroup` (Has no effect: the delimited layout is always a group.).
 
 | Block | Description |
 | --- | --- |
 | `<:prepend>` | Content before the controls; yields the class to put on it. |
-| `<:startControl>` | The first control, e.g. an `EuiFieldNumber @controlOnly={{true}}`; yields the class to put on it. |
+| `<:startControl>` | The first control, e.g. an `EuiFieldNumber @controlOnly={{true}}`; yields the class to put on it (it carries the delimited input styles). |
 | `<:delimiter>` | Custom delimiter content, instead of `@delimiter`. |
 | `<:endControl>` | The second control; yields the class to put on it. |
 | `<:append>` | Content after the controls; yields the class to put on it. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
 </EuiText>
 <!-- api:end -->

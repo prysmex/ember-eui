@@ -71,6 +71,50 @@
       "sha256": "1f236bad4ac395827192d0b4842ec9b2a2ff8095489562e2a91ecfac62a0dc33"
     },
     {
+      "path": "@elastic/eui/es/components/form/field_number/field_number.styles.js",
+      "sha256": "6522824b3a17cbbeb0aaf93c63c7e69328a7b2745c5cdfac527c55d29da73a08"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/field_password/field_password.styles.js",
+      "sha256": "8f36e41d5747c379a4050bc24ecfb826fdb1c5c5818167cc2e6a4748dcf30c27"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/field_search/field_search.styles.js",
+      "sha256": "ca9119e842812b1472903a2fd9d773c6effe6df2e5d76b18e8472e1d9e1d961f"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/field_text/field_text.styles.js",
+      "sha256": "2e4327e67b17a715817f44db205a45bf8df2d89eb7040c42893838fefc51c643"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_control_layout/form_control_layout_clear_button.styles.js",
+      "sha256": "87c8ae3da5cc2458d3eee7a3967bab009c8869afcd70b80a570f477b81371b96"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_control_layout/form_control_layout_delimited.styles.js",
+      "sha256": "453668508b13744446ad76e19920f70ec6b209255fc9cfaa94874803791be4dc"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_control_layout/form_control_layout_icons.styles.js",
+      "sha256": "91100c3049521071599f5c27d68c7635eca696cbb0ea83840d852c1df4ba5abd"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_control_layout/form_control_layout.styles.js",
+      "sha256": "eda7f101e26716d265ef28f880444f808f84276124a11ffc2ccc13985c8c3b66"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form.styles.js",
+      "sha256": "9f603baf9de93cdbee9742e9e2e8cfa50cf14df216e2bdad56b1c6b034d9b47c"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/select/select.styles.js",
+      "sha256": "572bd872bfdd33b2ef7b7e9d6b18e870c4c76d838fa1c4ff7ae60bf9ca44b001"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/text_area/text_area.styles.js",
+      "sha256": "9c4adaa5d2015f65c637c19a98e6161b9e068f22a0d17b093efdb6d3d726a44a"
+    },
+    {
       "path": "@elastic/eui/es/components/horizontal_rule/horizontal_rule.styles.js",
       "sha256": "b8161495ca1fe5639c9ede467e3334f3403482716713e1d0891cd66295c80d1e"
     },

@@ -48,14 +48,14 @@ Generated from the components' TypeScript signatures by
 | `@onKeyUp` | `(e: KeyboardEvent) => void` |  | Called on keyup, before `@onSearch`; call `event.preventDefault()` to skip the search. |
 | `@onSearch` (required) | `(value: string) => void` |  | Called with the text when the user presses Enter or clears the field, and on every keystroke with `@incremental`. |
 | `@fullWidth` | `boolean` |  | Stretches the input to its container's width. |
-| `@compressed` | `boolean` |  | Shorter input, for dense forms. |
+| `@compressed` | `boolean` |  | Shorter input (32px instead of 40px), for dense forms. |
 | `@isLoading` | `boolean` |  | Shows a spinner in the input. |
 | `@isClearable` | `boolean` | `true` | Shows a clear button while the field has text. |
 | `@disabled` | `boolean` |  | Disables the input. |
 | `@readOnly` | `boolean` |  | Makes the input read-only (and hides the clear button). |
 | `@placeholder` | `string` |  | Placeholder text. |
 | `@id` | `string` | a random id | Id of the input, e.g. to match an `EuiFormRow`'s label. |
-| `@isInvalid` | `boolean` |  | Shows the invalid state and marks the input invalid for native form validation. |
+| `@isInvalid` | `boolean` |  | Shows the invalid state (danger border and warning icon), sets `aria-invalid` and marks the input invalid for native form validation. |
 | `@isDisabled` | `boolean` |  | Hides the clear button; use `@disabled` to disable the input. |
 
 | Block | Description |

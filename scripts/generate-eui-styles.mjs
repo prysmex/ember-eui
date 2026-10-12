@@ -79,7 +79,39 @@ const entries = {
   'global_styling/mixins/_button.js': [
     'euiButtonDisplaysColors',
     'euiButtonInteractionStyles'
-  ]
+  ],
+  // form controls
+  'components/form/form.styles.js': [
+    'euiFormVariables',
+    'euiFormControlStyles'
+  ],
+  'components/form/field_text/field_text.styles.js': ['euiFieldTextStyles'],
+  'components/form/field_number/field_number.styles.js': [
+    'euiFieldNumberStyles'
+  ],
+  'components/form/field_password/field_password.styles.js': [
+    'euiFieldPasswordStyles'
+  ],
+  'components/form/field_search/field_search.styles.js': [
+    'euiFieldSearchStyles'
+  ],
+  'components/form/text_area/text_area.styles.js': ['euiTextAreaStyles'],
+  'components/form/select/select.styles.js': ['euiSelectStyles'],
+  'components/form/form_control_layout/form_control_layout.styles.js': [
+    'euiFormControlLayoutStyles',
+    'euiFormControlLayoutSideNodeStyles'
+  ],
+  'components/form/form_control_layout/form_control_layout_icons.styles.js': [
+    'euiFormControlLayoutIconsStyles'
+  ],
+  'components/form/form_control_layout/form_control_layout_clear_button.styles.js':
+    ['EuiFormControlLayoutClearButtonStyles'],
+  'components/form/form_control_layout/form_control_layout_delimited.styles.js':
+    [
+      'euiFormControlLayoutDelimitedStyles',
+      'euiFormControlLayoutDelimited__delimiter',
+      'euiFormControlLayoutDelimited__input'
+    ]
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

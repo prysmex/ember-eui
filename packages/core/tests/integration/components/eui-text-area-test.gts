@@ -14,7 +14,8 @@ module('Integration | Component | eui-text-area', function (hooks) {
 
     await render(<template><EuiTextArea @value="Hello" {{on "input" onInput}} /></template>);
 
-    assert.dom('textarea.euiTextArea').hasValue('Hello').hasAttribute('rows', '6').hasClass('euiTextArea--resizeVertical');
+    assert.dom('textarea.euiTextArea').hasValue('Hello').hasAttribute('rows', '6');
+    assert.strictEqual(getComputedStyle(document.querySelector('textarea')!).resize, 'vertical');
 
     await fillIn('textarea', 'World');
     assert.deepEqual(values, ['World']);
@@ -28,7 +29,12 @@ module('Integration | Component | eui-text-area', function (hooks) {
       </template>
     );
 
-    assert.dom('textarea.a').hasAttribute('rows', '3').hasClass('euiTextArea--resizeNone').hasClass('euiTextArea--compressed').hasClass('euiTextArea--fullWidth').hasAttribute('readonly');
+    assert.dom('textarea.a').hasAttribute('rows', '3').hasAttribute('readonly');
+    // Legacy modifier classes are gone; check the upstream styles instead.
+    const a = getComputedStyle(document.querySelector('textarea.a')!);
+    assert.strictEqual(a.resize, 'none');
+    assert.strictEqual(a.paddingTop, '8px', 'compressed');
+    assert.strictEqual(a.maxWidth, '100%', 'full width');
     assert.false((document.querySelector('textarea.a') as HTMLTextAreaElement).validity.valid);
     assert.dom('textarea.b').hasAttribute('rows', '2').isDisabled();
   });

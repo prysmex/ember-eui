@@ -165,6 +165,8 @@ import EuiResizableContainer from './components/eui-resizable-container.gts';
 import EuiSaturation from './components/eui-saturation.gts';
 import EuiScreenReaderLive from './components/eui-screen-reader-live.gts';
 import EuiScreenReaderOnly from './components/eui-screen-reader-only.gts';
+import EuiSearchBar from './components/eui-search-bar.gts';
+import EuiSearchBarFilters from './components/eui-search-bar-filters.gts';
 import EuiSelect from './components/eui-select.gts';
 import EuiSelectable from './components/eui-selectable.gts';
 import EuiSelectableList from './components/eui-selectable-list.gts';
@@ -406,6 +408,8 @@ export {
   EuiSaturation,
   EuiScreenReaderLive,
   EuiScreenReaderOnly,
+  EuiSearchBar,
+  EuiSearchBarFilters,
   EuiSelect,
   EuiSelectable,
   EuiSelectableList,

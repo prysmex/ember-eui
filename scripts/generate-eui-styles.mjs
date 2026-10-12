@@ -259,16 +259,25 @@ const entries = {
   'components/color_picker/color_palette_display/color_palette_display.styles.js': ['euiColorPaletteDisplayStyles'],
   'components/color_picker/color_palette_display/color_palette_display_fixed.styles.js': ['euiColorPaletteDisplayFixed__bleedArea'],
   // color picker: range pieces EuiColorStops composes (shared with the range family; union names on merge)
-  'components/form/range/range.styles.js': ['euiRangeVariables', 'euiRangeThumbStyle', 'euiRangeThumbFocus'],
+  'components/form/range/range.styles.js': ['euiRangeVariables', 'euiRangeThumbStyle', 'euiRangeThumbFocus', 'euiRangeStyles'],
   'components/form/range/range_wrapper.styles.js': ['euiRangeWrapperStyles'],
   'components/form/range/range_track.styles.js': ['euiRangeTrackStyles'],
-  'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles'],
+  'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles', 'euiRangeHighlightLevelsWrapperStyles', 'euiRangeHighlightLevelsStyles'],
   'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles'],
   // code-block
   'components/code/code_syntax.styles.js': ['euiCodeSyntaxVariables', 'euiCodeTextColors'],
   'components/code/code_block.styles.js': ['euiCodeBlockStyles', 'euiCodeBlockPreStyles', 'euiCodeBlockCodeStyles'],
   'components/code/code_block_controls.styles.js': ['euiCodeBlockControlsStyles'],
   'components/code/code_block_annotations.style.js': ['euiCodeBlockAnnotationsStyles'],
+  'components/form/range/dual_range.styles.js': ['euiDualRangeStyles'],
+  'components/form/range/range_draggable.styles.js': ['euiRangeDraggableStyles', 'euiRangeDraggableInnerStyles'],
+  'components/form/range/range_input.styles.js': ['euiRangeInputStyles'],
+  'components/form/range/range_label.styles.js': ['euiRangeLabelStyles'],
+  'components/form/range/range_levels.styles.js': ['euiRangeLevelsStyles', 'euiRangeLevelStyles'],
+  'components/form/range/range_levels_colors.js': ['euiRangeLevelColor', 'getLevelColor', 'isNamedLevelColor'],
+  'components/form/range/range_slider.styles.js': ['euiRangeSliderStyles'],
+  'components/form/range/range_ticks.styles.js': ['euiRangeTicksStyles', 'euiRangeTickStyles'],
+  'components/form/range/range_tooltip.styles.js': ['euiRangeTooltipStyles', 'euiRangeTooltipValueStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

@@ -1,24 +1,33 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { fn } from '@ember/helper';
+import { cached, tracked } from '@glimmer/tracking';
+import { concat, fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { later } from '@ember/runloop';
+import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import onKey from 'ember-keyboard/modifiers/on-key';
-import { and, eq, not, or } from 'ember-truth-helpers';
+import { modifier } from 'ember-modifier';
+import { and, eq, not } from 'ember-truth-helpers';
 
 import argOrDefault, {
   argOrDefaultDecorator
 } from '../helpers/arg-or-default.ts';
-import castTo from '../helpers/cast-to.ts';
-import simpleStyle from '../modifiers/simple-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { calculateThumbPosition, logicalStyle } from '../utils/eui/range.ts';
+import {
+  euiDualRangeStyles,
+  euiRangeDraggableInnerStyles,
+  euiRangeDraggableStyles,
+  euiRangeLevelColor,
+  euiRangeStyles,
+  getLevelColor
+} from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { keys } from '../utils/keys.ts';
 import { isWithinRange } from '../utils/number/index.ts';
-import { EUI_THUMB_SIZE } from '../utils/range/index.ts';
 import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited.gts';
 import EuiInputPopover from './eui-input-popover.gts';
 import EuiRangeHighlight from './eui-range-highlight.gts';
@@ -29,6 +38,7 @@ import EuiRangeThumb from './eui-range-thumb.gts';
 import EuiRangeTrack from './eui-range-track.gts';
 import EuiRangeWrapper from './eui-range-wrapper.gts';
 
+import type EuiI18n from '../services/eui-i18n';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 import type { EuiRangeArgs } from './eui-range';
 import type {
@@ -36,6 +46,7 @@ import type {
   EuiRangeInputSignature
 } from './eui-range-input';
 import type { EuiRangeLevel } from './eui-range-levels';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { EuiRangeTick } from './eui-range-ticks';
 
 export type ValueMember = number | string;
@@ -121,6 +132,15 @@ export interface EuiDualRangeArgs {
   id?: string;
   /** Smaller slider, for dense forms. Defaults to `false`. */
   compressed?: boolean;
+  /**
+   * Makes the highlighted range draggable (moves both values at once), with
+   * its own `role="slider"` for the keyboard. Defaults to `false`.
+   */
+  isDraggable?: boolean;
+  /**
+   * Shows a spinner in the delimited input (`@showInput="inputWithPopover"`).
+   */
+  isLoading?: boolean;
   /** Highlights the selected range on the track. Defaults to `true`. */
   showRange?: boolean;
   /** Shows tick marks, every `@step` (or `@tickInterval`). Defaults to `false`. */
@@ -152,6 +172,108 @@ export interface EuiDualRangeSignature {
   };
 }
 
+/**
+ * One number input of EuiDualRange (`@side` min or max), wired to the
+ * range's handlers. `@class` is the delimited layout's input class.
+ */
+const DualRangeInput: TemplateOnlyComponent<{
+  Element: HTMLInputElement;
+  Args: {
+    range: EuiDualRangeComponent;
+    side: 'min' | 'max';
+    class?: string;
+  };
+}> = <template>
+  {{#let (eq @side "min") as |isMin|}}
+    <EuiRangeInput
+      class={{@class}}
+      @side={{@side}}
+      @min={{if isMin @range.min @range.upperMin}}
+      @max={{if isMin @range.lowerMax @range.max}}
+      @step={{@range.step}}
+      @value={{if isMin @range.lowerValue @range.upperValue}}
+      @disabled={{@range.args.disabled}}
+      @compressed={{@range.compressed}}
+      @name={{concat @range.args.name (if isMin "-minValue" "-maxValue")}}
+      @readOnly={{@range.args.readOnly}}
+      @autoSize={{not @range.showInputOnly}}
+      @fullWidth={{and @range.showInputOnly @range.fullWidth}}
+      @isInvalid={{@range.args.isInvalid}}
+      @isPrependProvided={{false}}
+      @isAppendProvided={{false}}
+      @controlOnly={{@range.showInputOnly}}
+      aria-label={{@range.args.ariaLabel}}
+      aria-describedby={{@range.args.ariaDescribedby}}
+      ...attributes
+      {{on
+        "mousedown"
+        (if
+          @range.showInputOnly (fn @range.setPreventPopoverClose true) (optional)
+        )
+      }}
+      {{on "keydown" @range.handleInputKeyDown}}
+      {{on
+        "focus"
+        (if
+          @range.canShowDropdown
+          @range.onInputFocus
+          (optional @range.args.onFocus)
+        )
+      }}
+      {{on
+        "blur"
+        (if
+          @range.canShowDropdown @range.onInputBlur (optional @range.args.onBlur)
+        )
+      }}
+      {{on
+        "input"
+        (if
+          isMin @range.handleLowerInputChange @range.handleUpperInputChange
+        )
+      }}
+    />
+  {{/let}}
+</template>;
+
+const borderBox = { boxSizing: 'border-box' } as const;
+
+/** Mouse drag on the draggable range: calls `onChange(x, isFirstInteraction)`. */
+const mouseMove = modifier(
+  (
+    element: HTMLElement,
+    _: unknown[],
+    { onChange }: { onChange: (x: number, isFirst: boolean) => void }
+  ) => {
+    let cleanup: (() => void) | undefined;
+    const onMouseDown = (event: MouseEvent) => {
+      onChange(event.clientX, true);
+      const onMove = (e: MouseEvent) => onChange(e.clientX, false);
+      const onUp = () => cleanup?.();
+      cleanup = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        cleanup = undefined;
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    };
+    const onTouch = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) onChange(touch.clientX, event.type === 'touchstart');
+    };
+    element.addEventListener('mousedown', onMouseDown);
+    element.addEventListener('touchstart', onTouch);
+    element.addEventListener('touchmove', onTouch);
+    return () => {
+      cleanup?.();
+      element.removeEventListener('mousedown', onMouseDown);
+      element.removeEventListener('touchstart', onTouch);
+      element.removeEventListener('touchmove', onTouch);
+    };
+  }
+);
+
 export default class EuiDualRangeComponent extends Component<EuiDualRangeSignature> {
   // Defaults
   @argOrDefaultDecorator(0) min!: number;
@@ -165,28 +287,25 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
   @argOrDefaultDecorator(false) showTicks!: boolean;
   @argOrDefaultDecorator([]) levels!: EuiRangeLevel[];
 
+  @service declare euiI18n: EuiI18n;
+
   //State
   @tracked id: string = this.args.id || guidFor({});
-  @tracked hasFocus = false;
-  @tracked rangeSliderRefAvailable = false;
   @tracked isPopoverOpen = false;
-  @tracked rangeWidth: number | undefined;
-  @tracked isVisible = true;
   ///
 
   preventPopoverClose = false;
   rangeSliderRef: HTMLInputElement | null = null;
+  leftPosition = 0;
+  dragAcc = 0;
 
   @action
   didInsertRangeSlider(ref: HTMLInputElement | null): void {
     this.rangeSliderRef = ref;
+  }
 
-    this.rangeSliderRefAvailable = !!ref;
-    this.rangeWidth = ref ? ref.clientWidth : undefined;
-
-    if (this.rangeSliderRef?.clientWidth && !this.isVisible) {
-      this.isVisible = true;
-    }
+  get context() {
+    return getEuiThemeContext(this);
   }
 
   get lowerValue(): ValueMember {
@@ -207,6 +326,24 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
 
   get isValid(): boolean {
     return this.lowerValueIsValid && this.upperValueIsValid;
+  }
+
+  get lowerNumber(): number {
+    return Number(this.lowerValue);
+  }
+
+  get upperNumber(): number {
+    return Number(this.upperValue);
+  }
+
+  /** Upper bound of the lower thumb/input (`@max` while the upper value is empty). */
+  get lowerMax(): number {
+    return this.upperValue === '' ? this.max : Number(this.upperValue);
+  }
+
+  /** Lower bound of the upper thumb/input (`@min` while the lower value is empty). */
+  get upperMin(): number {
+    return this.lowerValue === '' ? this.min : Number(this.lowerValue);
   }
 
   @action
@@ -424,31 +561,127 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     this._handleOnChange(this.lowerValue, upper, event);
   }
 
+  /** Arrow keys on the draggable range move both values by a step. */
   @action
-  calculateThumbPositionStyle(value: number, width?: number): { left: string } {
-    // Calculate the left position based on value
-    const decimal = (value - this.min) / (this.max - this.min);
-    // Must be between 0-100%
-    let valuePosition = decimal <= 1 ? decimal : 1;
+  handleDraggableKeyDown(event: KeyboardEvent): void {
+    if (event.key === keys.TAB) return;
+    const lower = this._handleKeyDown(this.lowerValue, event);
+    const upper = this._handleKeyDown(this.upperValue, event);
 
-    valuePosition = valuePosition >= 0 ? valuePosition : 0;
+    if (lower >= Number(this.upperValue) || lower < this.min) return;
+    if (upper <= Number(this.lowerValue) || upper > this.max) return;
+    this._handleOnChange(lower, upper, event);
+  }
 
-    const trackWidth =
-      this.args.showInput === 'inputWithPopover' && !!width
-        ? width
-        : this.rangeSliderRef?.clientWidth;
+  getNearestStep(value: number): number {
+    const { min, max, step } = this;
+    const steps = (max - min) / step;
+    const approx = Math.round(((value - min) * steps) / (max - min)) / steps;
+    const bound = Math.min(Math.max(approx, 0), 1);
+    const nearest = bound * (max - min) + min;
+    return (Number(nearest.toPrecision(10)) * 100) / 100;
+  }
 
-    let thumbToTrackRatio = 0;
-
-    if (trackWidth) {
-      thumbToTrackRatio = EUI_THUMB_SIZE / trackWidth;
-    } else {
-      thumbToTrackRatio = EUI_THUMB_SIZE / 1;
+  /** Upstream `handleDrag`: moves both values by the dragged distance. */
+  @action
+  handleDrag(x: number, isFirstInteraction: boolean): void {
+    if (this.args.disabled) return;
+    if (isFirstInteraction) {
+      this.leftPosition = x;
+      this.dragAcc = 0;
     }
+    const { min, max } = this;
+    const lowerValue = Number(this.lowerValue);
+    const upperValue = Number(this.upperValue);
+    const delta = this.leftPosition - x;
+    this.leftPosition = x;
+    this.dragAcc = this.dragAcc + delta;
+    const rangeWidth = this.rangeSliderRef?.clientWidth ?? 0;
+    if (!rangeWidth) return;
+    const percentageOfArea = this.dragAcc / rangeWidth;
+    const percentageOfRange = percentageOfArea * (max - min);
+    const newLower = this.getNearestStep(lowerValue - percentageOfRange);
+    const newUpper = this.getNearestStep(upperValue - percentageOfRange);
+    const noMovement = newLower === lowerValue;
+    const isMin = min === lowerValue && min === newLower;
+    const isMax = max === upperValue && max === newUpper;
+    const isOutOfRange = newLower < min || newUpper > max;
+    if (noMovement || isMin || isMax || isOutOfRange) return;
+    this._handleOnChange(newLower, newUpper, new Event('drag'));
+    this.dragAcc = 0;
+  }
 
-    const trackPositionScale = (1 - thumbToTrackRatio) * 100;
+  /** Thumb start position in % of the track (`0` until the track is measured). */
+  thumbPosition = (value: number, trackWidth: number): string =>
+    trackWidth
+      ? `${calculateThumbPosition(value, this.min, this.max, trackWidth)}%`
+      : '0';
 
-    return { left: `${valuePosition * trackPositionScale}%` };
+  thumbColor(value: ValueMember): string | undefined {
+    const color = getLevelColor(this.levels ?? [], Number(value));
+    return color ? euiRangeLevelColor(color, this.context.upstream) : undefined;
+  }
+
+  lowerThumbStyle = (trackWidth: number) =>
+    logicalStyle({
+      left: this.thumbPosition(this.lowerNumber || this.min, trackWidth),
+      '--euiRangeThumbColor': this.thumbColor(this.lowerValue)
+    });
+
+  upperThumbStyle = (trackWidth: number) =>
+    logicalStyle({
+      left: this.thumbPosition(this.upperNumber || this.max, trackWidth),
+      '--euiRangeThumbColor': this.thumbColor(this.upperValue)
+    });
+
+  draggableStyle = (trackWidth: number) =>
+    logicalStyle({
+      left: this.thumbPosition(this.lowerNumber || this.min, trackWidth),
+      right: `calc(100% - ${this.thumbPosition(
+        this.upperNumber || this.max,
+        trackWidth
+      )} - ${this.context.upstream.euiTheme.size.base})`
+    });
+
+  @cached
+  get styles() {
+    const context = this.context;
+    const dual = useEuiBorealisStyles(context, euiDualRangeStyles);
+    const range = useEuiBorealisStyles(context, euiRangeStyles);
+    const draggable = useEuiBorealisStyles(context, euiRangeDraggableStyles);
+    const inner = useEuiBorealisStyles(context, euiRangeDraggableInnerStyles);
+    const { disabled } = this.args;
+    const slim = this.showTicks || !!this.args.ticks;
+    return {
+      rootCss: dual.euiDualRange,
+      sliderCss: dual.euiDualRange__slider,
+      spacer: slim
+        ? `euiRange__slimHorizontalSpacer ${euiClass(context, range.euiRange__slimHorizontalSpacer)}`
+        : `euiRange__horizontalSpacer ${euiClass(context, range.euiRange__horizontalSpacer)}`,
+      draggable: `euiRangeDraggable ${euiClass(
+        context,
+        borderBox,
+        draggable.euiRangeDraggable,
+        this.showTicks && draggable.hasTicks,
+        disabled && draggable.disabled
+      )}`,
+      draggableInner: `euiRangeDraggable__inner ${euiClass(
+        context,
+        inner.euiRangeDraggable__inner,
+        disabled ? draggable.disabled : inner.enabled
+      )}`
+    };
+  }
+
+  get draggableValueText(): string {
+    return `${this.lowerValue}, ${this.upperValue}`;
+  }
+
+  get screenReaderInstructions(): string {
+    return this.euiI18n.lookupToken(
+      'euiDualRange.sliderScreenReaderInstructions',
+      'You are in a custom range slider. Use the Up and Down arrow keys to change the minimum value. Press Tab to interact with the maximum value.'
+    );
   }
 
   @action
@@ -456,41 +689,14 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     this.preventPopoverClose = value;
   }
 
-  get calculateLowerValueThumbPositionStyle(): { left: string } {
-    return this.calculateThumbPositionStyle(
-      Number(this.lowerValue) || this.min,
-      this.rangeWidth
-    );
-  }
-
-  get calculateUpperValueThumbPositionStyle(): { left: string } {
-    return this.calculateThumbPositionStyle(
-      Number(this.upperValue) || this.max,
-      this.rangeWidth
-    );
-  }
-
-  @action
-  toggleHasFocus(): void {
-    this.hasFocus = !this.hasFocus;
-  }
-
   @action
   onThumbFocus(e: FocusEvent): void {
-    if (this.args.onFocus) {
-      this.args.onFocus(e);
-    }
-
-    this.hasFocus = true;
+    this.args.onFocus?.(e);
   }
 
   @action
   onThumbBlur(e: FocusEvent): void {
-    if (this.args.onBlur) {
-      this.args.onBlur(e);
-    }
-
-    this.hasFocus = false;
+    this.args.onBlur?.(e);
   }
 
   @action
@@ -534,10 +740,9 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     this.isPopoverOpen = false;
   }
 
+  /** @deprecated The track measures itself; kept for callers. */
   @action
-  onResize(width?: number): void {
-    this.rangeWidth = width;
-  }
+  onResize(): void {}
 
   get digitTolerance(): number {
     return Math.max(String(this.min).length, String(this.max).length);
@@ -549,6 +754,15 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
 
   get canShowDropdown(): boolean {
     return this.showInputOnly && !this.args.readOnly && !this.args.disabled;
+  }
+
+  /** Thumb `aria-label`/`aria-describedby` (the inputs carry them in a popover). */
+  get thumbAriaLabel(): string | undefined {
+    return this.showInputOnly ? undefined : this.args.ariaLabel;
+  }
+
+  get thumbAriaDescribedby(): string | undefined {
+    return this.showInputOnly ? undefined : this.args.ariaDescribedby;
   }
 
   willDestroy() {
@@ -567,128 +781,104 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     }}
       {{#if this.showInputOnly}}
         <EuiInputPopover
-          class="euiRange__popover"
+          class="euiDualRange__popover"
           @fullWidth={{this.fullWidth}}
           @isOpen={{this.isPopoverOpen}}
           @closePopover={{this.closePopover}}
           @disableFocusTrap={{true}}
-          @onPanelResize={{this.onResize}}
+          @popoverScreenReaderText={{this.screenReaderInstructions}}
         >
           <:input>
-            <EuiFormControlLayoutDelimited
-              @fullWidth={{this.fullWidth}}
-              @compressed={{this.compressed}}
-              @readOnly={{@readOnly}}
-              @disabled={{@disabled}}
-              @useGroup={{or hasPrepend hasAppend}}
-            >
-              <:prepend as |prependClasses|>
-                {{yield prependClasses to="prepend"}}
-              </:prepend>
-              <:startControl as |classes|>
-                <EuiRangeInput
-                  class={{classes}}
-                  @digitTolerance={{this.digitTolerance}}
-                  @side="min"
-                  @min={{this.min}}
-                  {{!@glint-expect-error}}
-                  @max={{castTo this.upperValue to="number"}}
-                  @step={{this.step}}
-                  @value={{this.lowerValue}}
-                  @disabled={{@disabled}}
-                  @compressed={{this.compressed}}
-                  @onChange={{this.handleLowerInputChange}}
-                  @name="{{@name}}-minValue"
-                  @readOnly={{@readOnly}}
-                  @autoSize={{false}}
-                  @fullWidth={{this.fullWidth}}
-                  @isInvalid={{@isInvalid}}
-                  @isPrependProvided={{hasAppend}}
-                  @isAppendProvided={{hasPrepend}}
-                  @controlOnly={{true}}
-                  @disable={{@disable}}
-                  ...attributes
-                  {{on "mousedown" (fn this.setPreventPopoverClose true)}}
-                  {{onKey "_all" this.handleInputKeyDown}}
-                  {{on
-                    "focus"
-                    (if
-                      this.canShowDropdown this.onInputFocus (optional @onFocus)
-                    )
-                  }}
-                  {{on
-                    "blur"
-                    (if
-                      this.canShowDropdown this.onInputBlur (optional @onBlur)
-                    )
-                  }}
-                  {{on "input" this.handleLowerInputChange}}
-                >
-                  <:prepend as |classes|>
-                    {{yield classes to="prepend"}}
-                  </:prepend>
-                  <:append as |classes|>
-                    {{yield classes to="append"}}
-                  </:append>
-                </EuiRangeInput>
-              </:startControl>
-              <:endControl as |classes|>
-                <EuiRangeInput
-                  class={{classes}}
-                  @digitTolerance={{this.digitTolerance}}
-                  @side="max"
-                  {{!@glint-expect-error}}
-                  @min={{castTo this.lowerValue to="number"}}
-                  @max={{this.max}}
-                  @step={{this.step}}
-                  @value={{this.upperValue}}
-                  @disabled={{@disabled}}
-                  @compressed={{this.compressed}}
-                  @name="{{@name}}-maxValue"
-                  @readOnly={{@readOnly}}
-                  @autoSize={{false}}
-                  @fullWidth={{this.fullWidth}}
-                  @isInvalid={{@isInvalid}}
-                  @isPrependProvided={{hasAppend}}
-                  @isAppendProvided={{hasPrepend}}
-                  @controlOnly={{true}}
-                  @disable={{@disable}}
-                  ...attributes
-                  {{on "mousedown" (fn this.setPreventPopoverClose true)}}
-                  {{onKey "_all" this.handleInputKeyDown}}
-                  {{on
-                    "focus"
-                    (if
-                      this.canShowDropdown this.onInputFocus (optional @onFocus)
-                    )
-                  }}
-                  {{on
-                    "blur"
-                    (if
-                      this.canShowDropdown this.onInputBlur (optional @onBlur)
-                    )
-                  }}
-                  {{on "input" this.handleUpperInputChange}}
-                >
-                  <:prepend as |classes|>
-                    {{yield classes to="prepend"}}
-                  </:prepend>
-                  <:append as |classes|>
-                    {{yield classes to="append"}}
-                  </:append>
-                </EuiRangeInput>
-              </:endControl>
-              <:append as |appendClasses|>
-                {{yield appendClasses to="append"}}
-              </:append>
-            </EuiFormControlLayoutDelimited>
+            {{! Delimited renders a side wrapper for every block it is given }}
+            {{#if (and hasPrepend hasAppend)}}
+              <EuiFormControlLayoutDelimited
+                @fullWidth={{this.fullWidth}}
+                @compressed={{this.compressed}}
+                @readOnly={{@readOnly}}
+                @disabled={{@disabled}}
+                @isLoading={{@isLoading}}
+                @isInvalid={{@isInvalid}}
+              >
+                <:prepend as |prependClasses|>
+                  {{yield prependClasses to="prepend"}}
+                </:prepend>
+                <:startControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="min" @class={{classes}} ...attributes />
+                </:startControl>
+                <:endControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="max" @class={{classes}} ...attributes />
+                </:endControl>
+                <:append as |appendClasses|>
+                  {{yield appendClasses to="append"}}
+                </:append>
+              </EuiFormControlLayoutDelimited>
+            {{else if hasPrepend}}
+              <EuiFormControlLayoutDelimited
+                @fullWidth={{this.fullWidth}}
+                @compressed={{this.compressed}}
+                @readOnly={{@readOnly}}
+                @disabled={{@disabled}}
+                @isLoading={{@isLoading}}
+                @isInvalid={{@isInvalid}}
+              >
+                <:prepend as |prependClasses|>
+                  {{yield prependClasses to="prepend"}}
+                </:prepend>
+                <:startControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="min" @class={{classes}} ...attributes />
+                </:startControl>
+                <:endControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="max" @class={{classes}} ...attributes />
+                </:endControl>
+              </EuiFormControlLayoutDelimited>
+            {{else if hasAppend}}
+              <EuiFormControlLayoutDelimited
+                @fullWidth={{this.fullWidth}}
+                @compressed={{this.compressed}}
+                @readOnly={{@readOnly}}
+                @disabled={{@disabled}}
+                @isLoading={{@isLoading}}
+                @isInvalid={{@isInvalid}}
+              >
+                <:startControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="min" @class={{classes}} ...attributes />
+                </:startControl>
+                <:endControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="max" @class={{classes}} ...attributes />
+                </:endControl>
+                <:append as |appendClasses|>
+                  {{yield appendClasses to="append"}}
+                </:append>
+              </EuiFormControlLayoutDelimited>
+            {{else}}
+              <EuiFormControlLayoutDelimited
+                @fullWidth={{this.fullWidth}}
+                @compressed={{this.compressed}}
+                @readOnly={{@readOnly}}
+                @disabled={{@disabled}}
+                @isLoading={{@isLoading}}
+                @isInvalid={{@isInvalid}}
+              >
+                <:startControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="min" @class={{classes}} ...attributes />
+                </:startControl>
+                <:endControl as |classes|>
+                  <DualRangeInput @range={{this}} @side="max" @class={{classes}} ...attributes />
+                </:endControl>
+              </EuiFormControlLayoutDelimited>
+            {{/if}}
           </:input>
           <:content>
             <EuiRangeWrapper
               class="euiDualRange"
+              @css={{this.styles.rootCss}}
               @fullWidth={{this.fullWidth}}
               @compressed={{this.compressed}}
             >
+              {{#if (and this.showInput (not this.showInputOnly))}}
+                <DualRangeInput @range={{this}} @side="min" ...attributes />
+                <div class={{this.styles.spacer}}></div>
+              {{/if}}
               {{#if this.showLabels}}
                 <EuiRangeLabel @side="min" @disabled={{@disabled}}>
                   {{#if hasMinBlock}}
@@ -699,48 +889,33 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
                 </EuiRangeLabel>
               {{/if}}
               <EuiRangeTrack
-                aria-hidden={{if (eq this.showInput true) "true" "false"}}
+                aria-hidden={{if (eq this.showInput true) "true"}}
                 @compressed={{this.compressed}}
                 @disabled={{@disabled}}
                 @max={{this.max}}
                 @min={{this.min}}
                 @step={{this.step}}
                 @showTicks={{this.showTicks}}
+                @showRange={{this.showRange}}
                 @tickInterval={{@tickInterval}}
                 @ticks={{@ticks}}
                 @levels={{this.levels}}
                 @onChange={{this.handleSliderChange}}
                 @value={{@value}}
+                as |trackWidth|
               >
-                {{#if (and this.showRange this.isValid)}}
-                  <EuiRangeHighlight
-                    @compressed={{this.compressed}}
-                    @hasFocus={{this.hasFocus}}
-                    @showTicks={{this.showTicks}}
-                    {{!@glint-expect-error}}
-                    @min={{castTo this.min to="number"}}
-                    {{!@glint-expect-error}}
-                    @max={{castTo this.max to="number"}}
-                    {{!@glint-expect-error}}
-                    @lowerValue={{castTo this.lowerValue to="number"}}
-                    {{!@glint-expect-error}}
-                    @upperValue={{castTo this.upperValue to="number"}}
-                  />
-                {{/if}}
                 <EuiRangeSlider
                   class="euiDualRange__slider"
                   aria-hidden="true"
+                  tabindex="-1"
+                  @css={{this.styles.sliderCss}}
                   @id={{this.id}}
                   @name={{@name}}
                   @min={{this.min}}
                   @max={{this.max}}
                   @step={{this.step}}
                   @disabled={{@disabled}}
-                  @compressed={{this.compressed}}
-                  @onChange={{this.handleSliderChange}}
                   @showTicks={{this.showTicks}}
-                  @hasFocus={{this.hasFocus}}
-                  tabindex="-1"
                   @showRange={{this.showRange}}
                   ...attributes
                   {{didInsert this.didInsertRangeSlider}}
@@ -749,38 +924,66 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
                   {{on "blur" (optional @onBlur)}}
                   {{on "input" this.handleSliderChange}}
                 />
-                {{#if this.rangeSliderRefAvailable}}
-                  <EuiRangeThumb
+                {{#if (and @isDraggable this.isValid)}}
+                  <div
+                    class={{this.styles.draggable}}
+                    role="slider"
+                    aria-valuemin={{this.min}}
+                    aria-valuemax={{this.max}}
+                    aria-valuenow={{this.lowerNumber}}
+                    aria-valuetext={{this.draggableValueText}}
+                    aria-disabled={{if @disabled "true" "false"}}
+                    aria-label={{this.thumbAriaLabel}}
+                    aria-describedby={{this.thumbAriaDescribedby}}
+                    tabindex={{if @disabled "-1" "0"}}
+                    style={{this.draggableStyle trackWidth}}
+                    {{on "focus" this.onThumbFocus}}
+                    {{on "blur" this.onThumbBlur}}
+                    {{on "keydown" this.handleDraggableKeyDown}}
+                  >
+                    <div
+                      class={{this.styles.draggableInner}}
+                      {{mouseMove onChange=this.handleDrag}}
+                    ></div>
+                  </div>
+                {{/if}}
+                <EuiRangeThumb
+                  @min={{this.min}}
+                  @max={{this.upperNumber}}
+                  @value={{this.lowerValue}}
+                  @disabled={{@disabled}}
+                  @showTicks={{this.showTicks}}
+                  @showInput={{if this.showInput true false}}
+                  aria-describedby={{this.thumbAriaDescribedby}}
+                  aria-label={{this.thumbAriaLabel}}
+                  style={{this.lowerThumbStyle trackWidth}}
+                  {{on "focus" this.onThumbFocus}}
+                  {{on "blur" this.onThumbBlur}}
+                  {{on "keydown" this.handleLowerKeyDown}}
+                />
+                <EuiRangeThumb
+                  @min={{this.lowerNumber}}
+                  @max={{this.max}}
+                  @value={{this.upperValue}}
+                  @disabled={{@disabled}}
+                  @showTicks={{this.showTicks}}
+                  @showInput={{if this.showInput true false}}
+                  aria-describedby={{this.thumbAriaDescribedby}}
+                  aria-label={{this.thumbAriaLabel}}
+                  style={{this.upperThumbStyle trackWidth}}
+                  {{on "focus" this.onThumbFocus}}
+                  {{on "blur" this.onThumbBlur}}
+                  {{on "keydown" this.handleUpperKeyDown}}
+                />
+                {{#if (and this.showRange this.isValid)}}
+                  <EuiRangeHighlight
+                    @showTicks={{this.showTicks}}
                     @min={{this.min}}
-                    {{!@glint-expect-error}}
-                    @max={{castTo this.upperValue to="number"}}
-                    {{!@glint-expect-error}}
-                    @value={{this.lowerValue}}
-                    @disabled={{@disabled}}
-                    @showTicks={{this.showTicks}}
-                    @showInput={{not this.showInput}}
-                    aria-describedby={{@ariaDescribedby}}
-                    aria-label={{@ariaLabel}}
-                    {{simpleStyle this.calculateLowerValueThumbPositionStyle}}
-                    {{on "focus" this.onThumbFocus}}
-                    {{on "blur" this.onThumbBlur}}
-                    {{onKey "_all" this.handleLowerKeyDown}}
-                  />
-                  <EuiRangeThumb
-                    {{!@glint-expect-error}}
-                    @min={{castTo this.lowerValue to="number"}}
                     @max={{this.max}}
-                    {{!@glint-expect-error}}
-                    @value={{this.upperValue}}
-                    @disabled={{@disabled}}
-                    @showTicks={{this.showTicks}}
-                    @showInput={{not this.showInput}}
-                    aria-describedby={{@ariaDescribedby}}
-                    aria-label={{@ariaLabel}}
-                    {{simpleStyle this.calculateUpperValueThumbPositionStyle}}
-                    {{on "focus" this.onThumbFocus}}
-                    {{on "blur" this.onThumbBlur}}
-                    {{onKey "_all" this.handleUpperKeyDown}}
+                    @lowerValue={{this.lowerNumber}}
+                    @upperValue={{this.upperNumber}}
+                    @levels={{this.levels}}
+                    @trackWidth={{trackWidth}}
                   />
                 {{/if}}
               </EuiRangeTrack>
@@ -793,42 +996,23 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
                   {{/if}}
                 </EuiRangeLabel>
               {{/if}}
+              {{#if (and this.showInput (not this.showInputOnly))}}
+                <div class={{this.styles.spacer}}></div>
+                <DualRangeInput @range={{this}} @side="max" ...attributes />
+              {{/if}}
             </EuiRangeWrapper>
           </:content>
         </EuiInputPopover>
       {{else}}
         <EuiRangeWrapper
           class="euiDualRange"
+          @css={{this.styles.rootCss}}
           @fullWidth={{this.fullWidth}}
           @compressed={{this.compressed}}
         >
-          {{#if this.showInput}}
-            <EuiRangeInput
-              @digitTolerance={{this.digitTolerance}}
-              @side="min"
-              @min={{this.min}}
-              {{!@glint-expect-error}}
-              @max={{castTo this.upperValue to="number"}}
-              @step={{this.step}}
-              @value={{this.lowerValue}}
-              @disabled={{@disabled}}
-              @compressed={{this.compressed}}
-              @onChange={{this.handleLowerInputChange}}
-              @name="{{@name}}-minValue"
-              @readOnly={{@readOnly}}
-              @fullWidth={{this.fullWidth}}
-              @isInvalid={{@isInvalid}}
-              @isPrependProvided={{false}}
-              @isAppendProvided={{false}}
-              @controlOnly={{true}}
-              @disable={{@disable}}
-              ...attributes
-              {{onKey "_all" this.handleInputKeyDown}}
-              {{on "focus" (optional @onFocus)}}
-              {{on "blur" (optional @onBlur)}}
-              {{on "input" this.handleLowerInputChange}}
-            />
-            <div class="euiRange__horizontalSpacer"></div>
+          {{#if (and this.showInput (not this.showInputOnly))}}
+            <DualRangeInput @range={{this}} @side="min" ...attributes />
+            <div class={{this.styles.spacer}}></div>
           {{/if}}
           {{#if this.showLabels}}
             <EuiRangeLabel @side="min" @disabled={{@disabled}}>
@@ -840,48 +1024,33 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
             </EuiRangeLabel>
           {{/if}}
           <EuiRangeTrack
-            aria-hidden={{if (eq this.showInput true) "true" "false"}}
+            aria-hidden={{if (eq this.showInput true) "true"}}
             @compressed={{this.compressed}}
             @disabled={{@disabled}}
             @max={{this.max}}
             @min={{this.min}}
             @step={{this.step}}
             @showTicks={{this.showTicks}}
+            @showRange={{this.showRange}}
             @tickInterval={{@tickInterval}}
             @ticks={{@ticks}}
             @levels={{this.levels}}
             @onChange={{this.handleSliderChange}}
             @value={{@value}}
+            as |trackWidth|
           >
-            {{#if (and this.showRange this.isValid)}}
-              <EuiRangeHighlight
-                @compressed={{this.compressed}}
-                @hasFocus={{this.hasFocus}}
-                @showTicks={{this.showTicks}}
-                {{!@glint-expect-error}}
-                @min={{castTo this.min to="number"}}
-                {{!@glint-expect-error}}
-                @max={{castTo this.max to="number"}}
-                {{!@glint-expect-error}}
-                @lowerValue={{castTo this.lowerValue to="number"}}
-                {{!@glint-expect-error}}
-                @upperValue={{castTo this.upperValue to="number"}}
-              />
-            {{/if}}
             <EuiRangeSlider
               class="euiDualRange__slider"
               aria-hidden="true"
+              tabindex="-1"
+              @css={{this.styles.sliderCss}}
               @id={{this.id}}
               @name={{@name}}
               @min={{this.min}}
               @max={{this.max}}
               @step={{this.step}}
               @disabled={{@disabled}}
-              @compressed={{this.compressed}}
-              @onChange={{this.handleSliderChange}}
               @showTicks={{this.showTicks}}
-              @hasFocus={{this.hasFocus}}
-              tabindex="-1"
               @showRange={{this.showRange}}
               ...attributes
               {{didInsert this.didInsertRangeSlider}}
@@ -890,39 +1059,66 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
               {{on "blur" (optional @onBlur)}}
               {{on "input" this.handleSliderChange}}
             />
-            {{#if this.rangeSliderRefAvailable}}
-              <EuiRangeThumb
+            {{#if (and @isDraggable this.isValid)}}
+              <div
+                class={{this.styles.draggable}}
+                role="slider"
+                aria-valuemin={{this.min}}
+                aria-valuemax={{this.max}}
+                aria-valuenow={{this.lowerNumber}}
+                aria-valuetext={{this.draggableValueText}}
+                aria-disabled={{if @disabled "true" "false"}}
+                aria-label={{this.thumbAriaLabel}}
+                aria-describedby={{this.thumbAriaDescribedby}}
+                tabindex={{if @disabled "-1" "0"}}
+                style={{this.draggableStyle trackWidth}}
+                {{on "focus" this.onThumbFocus}}
+                {{on "blur" this.onThumbBlur}}
+                {{on "keydown" this.handleDraggableKeyDown}}
+              >
+                <div
+                  class={{this.styles.draggableInner}}
+                  {{mouseMove onChange=this.handleDrag}}
+                ></div>
+              </div>
+            {{/if}}
+            <EuiRangeThumb
+              @min={{this.min}}
+              @max={{this.upperNumber}}
+              @value={{this.lowerValue}}
+              @disabled={{@disabled}}
+              @showTicks={{this.showTicks}}
+              @showInput={{if this.showInput true false}}
+              aria-describedby={{this.thumbAriaDescribedby}}
+              aria-label={{this.thumbAriaLabel}}
+              style={{this.lowerThumbStyle trackWidth}}
+              {{on "focus" this.onThumbFocus}}
+              {{on "blur" this.onThumbBlur}}
+              {{on "keydown" this.handleLowerKeyDown}}
+            />
+            <EuiRangeThumb
+              @min={{this.lowerNumber}}
+              @max={{this.max}}
+              @value={{this.upperValue}}
+              @disabled={{@disabled}}
+              @showTicks={{this.showTicks}}
+              @showInput={{if this.showInput true false}}
+              aria-describedby={{this.thumbAriaDescribedby}}
+              aria-label={{this.thumbAriaLabel}}
+              style={{this.upperThumbStyle trackWidth}}
+              {{on "focus" this.onThumbFocus}}
+              {{on "blur" this.onThumbBlur}}
+              {{on "keydown" this.handleUpperKeyDown}}
+            />
+            {{#if (and this.showRange this.isValid)}}
+              <EuiRangeHighlight
+                @showTicks={{this.showTicks}}
                 @min={{this.min}}
-                {{!@glint-expect-error}}
-                @max={{castTo this.upperValue to="number"}}
-                {{!@glint-expect-error}}
-                @value={{this.lowerValue}}
-                @disabled={{@disabled}}
-                @showTicks={{this.showTicks}}
-                @showInput={{not this.showInput}}
-                aria-describedby={{@ariaDescribedby}}
-                aria-label={{@ariaLabel}}
-                {{simpleStyle this.calculateLowerValueThumbPositionStyle}}
-                {{on "focus" this.onThumbFocus}}
-                {{on "blur" this.onThumbBlur}}
-                {{!@glint-expect-error}}
-                {{on "click" this.handleLowerKeyDown}}
-              />
-              <EuiRangeThumb
-                {{!@glint-expect-error}}
-                @min={{castTo this.lowerValue to="number"}}
                 @max={{this.max}}
-                {{!@glint-expect-error}}
-                @value={{this.upperValue}}
-                @disabled={{@disabled}}
-                @showTicks={{this.showTicks}}
-                @showInput={{not this.showInput}}
-                aria-describedby={{@ariaDescribedby}}
-                aria-label={{@ariaLabel}}
-                {{simpleStyle this.calculateUpperValueThumbPositionStyle}}
-                {{on "focus" this.onThumbFocus}}
-                {{on "blur" this.onThumbBlur}}
-                {{on "keydown" this.handleUpperKeyDown}}
+                @lowerValue={{this.lowerNumber}}
+                @upperValue={{this.upperNumber}}
+                @levels={{this.levels}}
+                @trackWidth={{trackWidth}}
               />
             {{/if}}
           </EuiRangeTrack>
@@ -935,33 +1131,9 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
               {{/if}}
             </EuiRangeLabel>
           {{/if}}
-          {{#if this.showInput}}
-            <div class="euiRange__horizontalSpacer"></div>
-            {{! maxinput }}
-            <EuiRangeInput
-              @digitTolerance={{this.digitTolerance}}
-              @side="max"
-              {{!@glint-expect-error}}
-              @min={{castTo this.lowerValue to="number"}}
-              @max={{this.max}}
-              @step={{this.step}}
-              @value={{this.upperValue}}
-              @disabled={{@disabled}}
-              @compressed={{this.compressed}}
-              @name="{{@name}}-maxValue"
-              @readOnly={{@readOnly}}
-              @fullWidth={{this.fullWidth}}
-              @isInvalid={{@isInvalid}}
-              @controlOnly={{this.showInputOnly}}
-              @isPrependProvided={{false}}
-              @isAppendProvided={{false}}
-              @disable={{@disable}}
-              ...attributes
-              {{onKey "_all" this.handleInputKeyDown}}
-              {{on "focus" (optional @onFocus)}}
-              {{on "blur" (optional @onBlur)}}
-              {{on "input" this.handleUpperInputChange}}
-            />
+          {{#if (and this.showInput (not this.showInputOnly))}}
+            <div class={{this.styles.spacer}}></div>
+            <DualRangeInput @range={{this}} @side="max" ...attributes />
           {{/if}}
         </EuiRangeWrapper>
       {{/if}}

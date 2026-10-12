@@ -1,52 +1,79 @@
-import castTo from '../helpers/cast-to.ts';
-import classNames from '../helpers/class-names.ts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { buttonReset } from '../utils/eui/form-controls.ts';
+import { euiRangeThumbStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 
-/** @private A draggable thumb of EuiDualRange. */
+import type { EuiCss } from '../utils/eui/styles.ts';
+
+/** @private A draggable thumb of EuiDualRange (and EuiColorStops). */
 export interface EuiRangeThumbSignature {
   Element: HTMLButtonElement;
   Args: {
-    /** Lowest value. */
+    /** Lowest value (`aria-valuemin`). */
     min?: number;
-    /** Highest value. */
+    /** Highest value (`aria-valuemax`). */
     max?: number;
-    /** The value. */
-    value?: number;
-    /** Disabled styling. */
+    /** The value (`aria-valuenow`). */
+    value?: number | string;
+    /** Disables the thumb (`aria-disabled`, not focusable). */
     disabled?: boolean;
-    /** `tabindex` of the control. */
+    /** `tabindex` of the thumb. Defaults to `0`. */
     tabIndex?: number;
-    /** Leaves room for ticks under the track. */
+    /** Positions the thumb on a thumb-height track (room for ticks). */
     showTicks?: boolean;
+    /**
+     * The range shows number inputs: the thumb is then not focusable, as
+     * upstream (the inputs are the keyboard controls).
+     */
+    showInput?: boolean;
+    /** @private Styles composed last into the thumb's class (upstream `css`). */
+    css?: EuiCss;
   };
 }
 
-const EuiRangeThumb: TemplateOnlyComponent<EuiRangeThumbSignature> = <template>
-  {{! template-lint-disable }}
-  <button
-    type="button"
-    class={{classNames
-      "euiRangeThumb"
-      (if @showTicks "euiRangeThumb--hasTicks")
-    }}
-    aria-valuemin={{@min}}
-    aria-valuemax={{@max}}
-    aria-valuenow={{castTo @value to="number"}}
-    aria-disabled={{if @disabled "true"}}
-    tabindex={{if @disabled -1 (if @tabIndex @tabIndex 0)}}
-    ...attributes
-  >
-    <div
+/**
+ * Upstream `EuiRangeThumb` (the button variant): an absolutely positioned
+ * `role="slider"` circle. Position it with an inline `inset-inline-start`.
+ */
+export default class EuiRangeThumb extends Component<EuiRangeThumbSignature> {
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiRangeThumbStyles);
+    return `euiRangeThumb ${euiClass(
+      context,
+      buttonReset,
+      styles.euiRangeThumb,
+      this.args.showTicks && styles.hasTicks,
+      this.args.css
+    )}`;
+  }
+
+  get valueNow(): number {
+    return Number(this.args.value);
+  }
+
+  get tabindex(): number {
+    return this.args.showInput || this.args.disabled
+      ? -1
+      : this.args.tabIndex || 0;
+  }
+
+  <template>
+    <button
+      type="button"
       role="slider"
+      class={{this.classes}}
       aria-valuemin={{@min}}
       aria-valuemax={{@max}}
-      aria-valuenow={{castTo @value to="number"}}
+      aria-valuenow={{this.valueNow}}
       aria-disabled={{if @disabled "true"}}
-      tabindex={{if @disabled -1 (if @tabIndex 0)}}
-    ></div>
-  </button>
-  {{! template-lint-enable }}
-</template>;
-
-export default EuiRangeThumb;
+      disabled={{@disabled}}
+      tabindex={{this.tabindex}}
+      ...attributes
+    ></button>
+  </template>
+}

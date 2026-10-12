@@ -231,16 +231,24 @@ const factories = {
   'components/color_picker/saturation.styles.js': ['euiSaturationStyles'],
   'components/color_picker/color_palette_display/color_palette_display.styles.js': ['euiColorPaletteDisplayStyles'],
   // color picker: range pieces composed by EuiColorStops
-  'components/form/range/range.styles.js': ['euiRangeVariables', 'euiRangeThumbStyle', 'euiRangeThumbFocus'],
+  'components/form/range/range.styles.js': ['euiRangeVariables', 'euiRangeThumbStyle', 'euiRangeThumbFocus', 'euiRangeStyles'],
   'components/form/range/range_wrapper.styles.js': ['euiRangeWrapperStyles'],
   'components/form/range/range_track.styles.js': ['euiRangeTrackStyles'],
-  'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles'],
+  'components/form/range/range_highlight.styles.js': ['euiRangeHighlightStyles', 'euiRangeHighlightProgressStyles', 'euiRangeHighlightLevelsWrapperStyles', 'euiRangeHighlightLevelsStyles'],
   'components/form/range/range_thumb.styles.js': ['euiRangeThumbStyles'],
   // code-block
   'components/code/code_syntax.styles.js': ['euiCodeSyntaxVariables', 'euiCodeTextColors'],
   'components/code/code_block.styles.js': ['euiCodeBlockStyles', 'euiCodeBlockPreStyles', 'euiCodeBlockCodeStyles'],
   'components/code/code_block_controls.styles.js': ['euiCodeBlockControlsStyles'],
-  'components/code/code_block_annotations.style.js': ['euiCodeBlockAnnotationsStyles']
+  'components/code/code_block_annotations.style.js': ['euiCodeBlockAnnotationsStyles'],
+  'components/form/range/dual_range.styles.js': ['euiDualRangeStyles'],
+  'components/form/range/range_draggable.styles.js': ['euiRangeDraggableStyles', 'euiRangeDraggableInnerStyles'],
+  'components/form/range/range_input.styles.js': ['euiRangeInputStyles'],
+  'components/form/range/range_label.styles.js': ['euiRangeLabelStyles'],
+  'components/form/range/range_levels.styles.js': ['euiRangeLevelsStyles', 'euiRangeLevelStyles'],
+  'components/form/range/range_slider.styles.js': ['euiRangeSliderStyles'],
+  'components/form/range/range_ticks.styles.js': ['euiRangeTicksStyles', 'euiRangeTickStyles'],
+  'components/form/range/range_tooltip.styles.js': ['euiRangeTooltipStyles', 'euiRangeTooltipValueStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1460,4 +1468,28 @@ test('hand-ported code block line styles match upstream @emotion/css registratio
     }
   }
 });
+
+test('range level color helpers match upstream for named, custom and missing levels', () => {
+  const reference = require(resolve(eui, 'lib/components/form/range/range_levels_colors.js'));
+  const levels = [
+    { min: 0, max: 20, color: 'danger' },
+    { min: 20, max: 50, color: '#123456' },
+    { min: 60, max: 100, color: 'success' }
+  ];
+  for (const value of [-1, 0, 10, 20, 35, 55, 60, 100, 101])
+    assert.equal(styles.getLevelColor(levels, value), reference.getLevelColor(levels, value), String(value));
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred']) {
+      const context = {
+        colorMode,
+        highContrastMode,
+        euiTheme: getComputed(EuiThemeBorealis, buildTheme({}, 'parity'), colorMode, highContrastMode)
+      };
+      for (const color of ['primary', 'success', 'warning', 'danger', '#abcdef', 'rebeccapurple']) {
+        assert.equal(styles.isNamedLevelColor(color), reference.isNamedLevelColor(color));
+        assert.equal(styles.euiRangeLevelColor(color, context), reference.euiRangeLevelColor(color, context));
+      }
+    }
+});
+
 

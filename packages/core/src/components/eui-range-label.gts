@@ -1,16 +1,17 @@
-import { concat } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiRangeLabelStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 
 /** @private A min/max label of EuiRange / EuiDualRange (`@showLabels`). */
 export interface EuiRangeLabelSignature {
+  Element: HTMLLabelElement;
   Args: {
-    /** Which end it is for: `'min'` or `'max'`. */
+    /** Which end it is for: `'min'` or `'max'`. Defaults to `'max'`. */
     side?: 'min' | 'max';
-    /** Disabled styling. */
+    /** Disabled styling (half opacity). */
     disabled?: boolean;
   };
   Blocks: {
@@ -18,16 +19,21 @@ export interface EuiRangeLabelSignature {
   };
 }
 
-const EuiRangeLabel: TemplateOnlyComponent<EuiRangeLabelSignature> = <template>
-  <label
-    class={{classNames
-      "euiRangeLabel"
-      (concat "euiRangeLabel--" (argOrDefault @side "max"))
-      (if @disabled "euiRangeLabel--isDisabled")
-    }}
-  >
-    {{yield}}
-  </label>
-</template>;
+/** Upstream `EuiRangeLabel`: `xs` text with an `s` gap towards the track. */
+export default class EuiRangeLabel extends Component<EuiRangeLabelSignature> {
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiRangeLabelStyles);
+    return `euiRangeLabel ${euiClass(
+      context,
+      styles.euiRangeLabel,
+      styles[this.args.side ?? 'max'],
+      this.args.disabled && styles.isDisabled
+    )}`;
+  }
 
-export default EuiRangeLabel;
+  <template>
+    <label class={{this.classes}} ...attributes>{{yield}}</label>
+  </template>
+}

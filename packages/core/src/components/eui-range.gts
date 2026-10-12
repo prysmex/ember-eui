@@ -1,10 +1,11 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import { later } from '@ember/runloop';
+import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { and, eq, not } from 'ember-truth-helpers';
@@ -12,8 +13,13 @@ import { and, eq, not } from 'ember-truth-helpers';
 import argOrDefault, {
   argOrDefaultDecorator
 } from '../helpers/arg-or-default.ts';
-import castTo from '../helpers/cast-to.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { rangeAriaValueText } from '../utils/eui/range.ts';
+import {
+  euiRangeStyles,
+  getLevelColor
+} from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { isWithinRange } from '../utils/number/index.ts';
 import EuiInputPopover from './eui-input-popover.gts';
 import EuiRangeHighlight from './eui-range-highlight.gts';
@@ -24,6 +30,7 @@ import EuiRangeTooltip from './eui-range-tooltip.gts';
 import EuiRangeTrack from './eui-range-track.gts';
 import EuiRangeWrapper from './eui-range-wrapper.gts';
 
+import type EuiI18n from '../services/eui-i18n';
 import type { EuiRangeLevel } from './eui-range-levels';
 import type { EuiRangeTick } from './eui-range-ticks';
 
@@ -121,7 +128,10 @@ export interface EuiRangeArgs {
   isInvalid?: boolean;
   /** `name` of the inputs, for forms. */
   name?: string;
-  /** Shows a spinner in the number input. Defaults to `false`. */
+  /**
+   * Shows a spinner in the number input (`@showInput="inputWithPopover"`).
+   * Defaults to `false`.
+   */
   isLoading?: boolean;
 }
 
@@ -169,6 +179,8 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
   @argOrDefaultDecorator(false) showValue!: boolean;
   @argOrDefaultDecorator([]) levels!: EuiRangeLevel[];
 
+  @service declare euiI18n: EuiI18n;
+
   preventPopoverClose = false;
 
   //State
@@ -205,11 +217,54 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
     return this.showInputOnly && !this.args.readOnly && !this.args.disabled;
   }
 
+  get numberValue(): number {
+    return Number(this.args.value);
+  }
+
   get showRangeTooltip(): boolean {
     return (
       this.showValue &&
       !!String(this.args.value).length &&
       this.args.value !== undefined
+    );
+  }
+
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  /** Upstream root styles (`euiRange` + `hasInput`) composed into the wrapper. */
+  @cached
+  get rootCss() {
+    const styles = useEuiBorealisStyles(this.context, euiRangeStyles);
+    return [styles.euiRange, this.showInput && styles.hasInput];
+  }
+
+  /** `euiRange__slimHorizontalSpacer` with ticks, else `euiRange__horizontalSpacer`. */
+  @cached
+  get spacerClass(): string {
+    const styles = useEuiBorealisStyles(this.context, euiRangeStyles);
+    const slim = this.showTicks || !!this.args.ticks;
+    return slim
+      ? `euiRange__slimHorizontalSpacer ${euiClass(this.context, styles.euiRange__slimHorizontalSpacer)}`
+      : `euiRange__horizontalSpacer ${euiClass(this.context, styles.euiRange__horizontalSpacer)}`;
+  }
+
+  /** The level color the value falls into, for the thumb. */
+  get thumbColor(): string | undefined {
+    return getLevelColor(this.levels ?? [], Number(this.args.value));
+  }
+
+  get ariaValueText(): string | undefined {
+    return this.args.ticks
+      ? rangeAriaValueText(this.args.ticks, this.args.value)
+      : undefined;
+  }
+
+  get screenReaderInstructions(): string {
+    return this.euiI18n.lookupToken(
+      'euiRange.sliderScreenReaderInstructions',
+      'You are in a custom range slider. Use the Up and Down arrow keys to change the value.'
     );
   }
 
@@ -287,13 +342,13 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
           @isOpen={{this.isPopoverOpen}}
           @closePopover={{this.closePopover}}
           @disableFocusTrap={{true}}
+          @popoverScreenReaderText={{this.screenReaderInstructions}}
         >
           <:input>
             <EuiRangeInput
               id={{this.id}}
               @min={{this.min}}
               @max={{this.max}}
-              @digitTolerance={{this.digitTolerance}}
               @readOnly={{@readOnly}}
               @step={{this.step}}
               @value={{@value}}
@@ -307,14 +362,8 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
               @isPrependProvided={{hasPrepend}}
               @isAppendProvided={{hasAppend}}
               ...attributes
-              {{on
-                "focus"
-                (if this.canShowDropdown this.onInputFocus (optional @onFocus))
-              }}
-              {{on
-                "blur"
-                (if this.canShowDropdown this.onInputBlur (optional @onBlur))
-              }}
+              {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
+              {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
               {{on "input" this.handleOnChange}}
             >
               <:prepend as |classes|>
@@ -327,10 +376,8 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
           </:input>
           <:content>
             <EuiRangeWrapper
-              class={{classNames
-                "euiRange"
-                (if this.showInput "euiRange--hasInput")
-              }}
+              class="euiRange"
+              @css={{this.rootCss}}
               @fullWidth={{@fullWidth}}
               @compressed={{@compressed}}
             >
@@ -344,36 +391,24 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                 </EuiRangeLabel>
               {{/if}}
               <EuiRangeTrack
-                aria-hidden={{if (eq this.showInput true) "true"}}
+                aria-hidden={{if this.showInput "true"}}
                 @disabled={{@disabled}}
                 @compressed={{@compressed}}
                 @max={{this.max}}
                 @min={{this.min}}
                 @step={{this.step}}
                 @showTicks={{this.showTicks}}
+                @showRange={{this.showRange}}
                 @tickInterval={{@tickInterval}}
                 @ticks={{@ticks}}
                 @levels={{this.levels}}
                 @onChange={{this.handleOnChange}}
                 @value={{@value}}
+                as |trackWidth|
               >
-                {{#if (and this.showRange this.isValid)}}
-                  <EuiRangeHighlight
-                    @compressed={{@compressed}}
-                    @showTicks={{this.showTicks}}
-                    {{!@glint-expect-error}}
-                    @min={{castTo this.min to="number"}}
-                    {{!@glint-expect-error}}
-                    @max={{castTo this.max to="number"}}
-                    {{!@glint-expect-error}}
-                    @lowerValue={{castTo this.min to="number"}}
-                    {{!@glint-expect-error}}
-                    @upperValue={{castTo @value to="number"}}
-                  />
-                {{/if}}
                 <EuiRangeSlider
-                  aria-hidden={{if (eq this.showInput true) "true"}}
-                  tabindex={{if (eq this.showInput true) "-1"}}
+                  aria-hidden={{if this.showInput "true"}}
+                  tabindex={{if this.showInput "-1"}}
                   @id={{if this.showInput undefined this.id}}
                   @name={{@name}}
                   @min={{this.min}}
@@ -381,58 +416,38 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                   @step={{this.step}}
                   @value={{@value}}
                   @disabled={{@disabled}}
-                  @compressed={{@compressed}}
                   @showTicks={{this.showTicks}}
                   @showRange={{this.showRange}}
+                  @thumbColor={{this.thumbColor}}
+                  @ariaValueText={{this.ariaValueText}}
                   ...attributes
-                  {{on
-                    "mousedown"
-                    (if
-                      this.showInputOnly
-                      (fn this.setPreventPopoverClose true)
-                      (optional)
-                    )
-                  }}
-                  {{on
-                    "focus"
-                    (if (eq this.showInput true) (optional) (optional @onFocus))
-                  }}
-                  {{on
-                    "blur"
-                    (if this.showInputOnly this.onInputBlur (optional @onBlur))
-                  }}
+                  {{on "mousedown" (if this.showInputOnly (fn this.setPreventPopoverClose true) (optional))}}
+                  {{on "focus" (if (eq this.showInput true) (optional) (optional @onFocus))}}
+                  {{on "blur" (if this.showInputOnly this.onInputBlur (optional @onBlur))}}
                   {{on "input" this.handleOnChange}}
                 />
+                {{#if (and this.showRange this.isValid)}}
+                  <EuiRangeHighlight
+                    @showTicks={{this.showTicks}}
+                    @min={{this.min}}
+                    @max={{this.max}}
+                    @lowerValue={{this.min}}
+                    @upperValue={{this.numberValue}}
+                    @levels={{this.levels}}
+                    @trackWidth={{trackWidth}}
+                  />
+                {{/if}}
                 {{#if this.showRangeTooltip}}
                   <EuiRangeTooltip
-                    @compressed={{@compressed}}
                     @value={{@value}}
                     @max={{this.max}}
                     @min={{this.min}}
                     @name={{@name}}
                     @showTicks={{this.showTicks}}
                   >
-                    <:valuePrepend>
-                      {{#if hasValuePrependBlock}}
-                        {{yield to="valuePrepend"}}
-                      {{else}}
-                        {{@valuePrepend}}
-                      {{/if}}
-                    </:valuePrepend>
-                    <:value>
-                      {{#if hasValueBlock}}
-                        {{yield to="value"}}
-                      {{else}}
-                        {{@value}}
-                      {{/if}}
-                    </:value>
-                    <:valueAppend>
-                      {{#if hasValueAppendBlock}}
-                        {{yield to="valueAppend"}}
-                      {{else}}
-                        {{@valueAppend}}
-                      {{/if}}
-                    </:valueAppend>
+                    <:valuePrepend>{{~#if hasValuePrependBlock~}}{{yield to="valuePrepend"}}{{~else~}}{{@valuePrepend}}{{~/if~}}</:valuePrepend>
+                    <:value>{{~#if hasValueBlock~}}{{yield to="value"}}{{~else~}}{{@value}}{{~/if~}}</:value>
+                    <:valueAppend>{{~#if hasValueAppendBlock~}}{{yield to="valueAppend"}}{{~else~}}{{@valueAppend}}{{~/if~}}</:valueAppend>
                   </EuiRangeTooltip>
                 {{/if}}
               </EuiRangeTrack>
@@ -446,60 +461,43 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
                 </EuiRangeLabel>
               {{/if}}
               {{#if (and this.showInput (not this.showInputOnly))}}
-                <div class="euiRange__horizontalSpacer"></div>
-                {{#if this.showInput}}
-                  <EuiRangeInput
-                    id={{this.id}}
-                    @min={{this.min}}
-                    @max={{this.max}}
-                    @digitTolerance={{this.digitTolerance}}
-                    @readOnly={{@readOnly}}
-                    @step={{this.step}}
-                    @value={{@value}}
-                    @disabled={{@disabled}}
-                    @compressed={{@compressed}}
-                    @name={{@name}}
-                    @fullWidth={{and this.showInputOnly this.fullWidth}}
-                    @isLoading={{and this.showInputOnly @isLoading}}
-                    @isInvalid={{@isInvalid}}
-                    @autoSize={{not this.showInputOnly}}
-                    @isPrependProvided={{hasPrepend}}
-                    @isAppendProvided={{hasAppend}}
-                    ...attributes
-                    {{on
-                      "focus"
-                      (if
-                        this.canShowDropdown
-                        this.onInputFocus
-                        (optional @onFocus)
-                      )
-                    }}
-                    {{on
-                      "blur"
-                      (if
-                        this.canShowDropdown this.onInputBlur (optional @onBlur)
-                      )
-                    }}
-                    {{on "input" this.handleOnChange}}
-                  >
-                    <:prepend as |classes|>
-                      {{yield classes to="prepend"}}
-                    </:prepend>
-                    <:append as |classes|>
-                      {{yield classes to="append"}}
-                    </:append>
-                  </EuiRangeInput>
-                {{/if}}
+                <div class={{this.spacerClass}}></div>
+                <EuiRangeInput
+                  id={{this.id}}
+                  @min={{this.min}}
+                  @max={{this.max}}
+                  @readOnly={{@readOnly}}
+                  @step={{this.step}}
+                  @value={{@value}}
+                  @disabled={{@disabled}}
+                  @compressed={{@compressed}}
+                  @name={{@name}}
+                  @fullWidth={{and this.showInputOnly this.fullWidth}}
+                  @isLoading={{and this.showInputOnly @isLoading}}
+                  @isInvalid={{@isInvalid}}
+                  @autoSize={{not this.showInputOnly}}
+                  @isPrependProvided={{hasPrepend}}
+                  @isAppendProvided={{hasAppend}}
+                  ...attributes
+                  {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
+                  {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
+                  {{on "input" this.handleOnChange}}
+                >
+                  <:prepend as |classes|>
+                    {{yield classes to="prepend"}}
+                  </:prepend>
+                  <:append as |classes|>
+                    {{yield classes to="append"}}
+                  </:append>
+                </EuiRangeInput>
               {{/if}}
             </EuiRangeWrapper>
           </:content>
         </EuiInputPopover>
       {{else}}
         <EuiRangeWrapper
-          class={{classNames
-            "euiRange"
-            (if this.showInput "euiRange--hasInput")
-          }}
+          class="euiRange"
+          @css={{this.rootCss}}
           @fullWidth={{@fullWidth}}
           @compressed={{@compressed}}
         >
@@ -513,36 +511,24 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
             </EuiRangeLabel>
           {{/if}}
           <EuiRangeTrack
-            aria-hidden={{if (eq this.showInput true) "true"}}
+            aria-hidden={{if this.showInput "true"}}
             @disabled={{@disabled}}
             @compressed={{@compressed}}
             @max={{this.max}}
             @min={{this.min}}
             @step={{this.step}}
             @showTicks={{this.showTicks}}
+            @showRange={{this.showRange}}
             @tickInterval={{@tickInterval}}
             @ticks={{@ticks}}
             @levels={{this.levels}}
             @onChange={{this.handleOnChange}}
             @value={{@value}}
+            as |trackWidth|
           >
-            {{#if (and this.showRange this.isValid)}}
-              <EuiRangeHighlight
-                @compressed={{@compressed}}
-                @showTicks={{this.showTicks}}
-                {{!@glint-expect-error}}
-                @min={{castTo this.min to="number"}}
-                {{!@glint-expect-error}}
-                @max={{castTo this.max to="number"}}
-                {{!@glint-expect-error}}
-                @lowerValue={{castTo this.min to="number"}}
-                {{!@glint-expect-error}}
-                @upperValue={{castTo @value to="number"}}
-              />
-            {{/if}}
             <EuiRangeSlider
-              aria-hidden={{if (eq this.showInput true) "true"}}
-              tabindex={{if (eq this.showInput true) "-1"}}
+              aria-hidden={{if this.showInput "true"}}
+              tabindex={{if this.showInput "-1"}}
               @id={{if this.showInput undefined this.id}}
               @name={{@name}}
               @min={{this.min}}
@@ -550,56 +536,38 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
               @step={{this.step}}
               @value={{@value}}
               @disabled={{@disabled}}
-              @compressed={{@compressed}}
               @showTicks={{this.showTicks}}
               @showRange={{this.showRange}}
+              @thumbColor={{this.thumbColor}}
+              @ariaValueText={{this.ariaValueText}}
               ...attributes
-              {{on
-                "mousedown"
-                (if
-                  this.showInputOnly (fn this.setPreventPopover true) (optional)
-                )
-              }}
-              {{on
-                "focus"
-                (if (eq this.showInput true) (optional) (optional @onFocus))
-              }}
-              {{on
-                "blur"
-                (if this.showInputOnly this.onInputBlur (optional @onBlur))
-              }}
+              {{on "mousedown" (if this.showInputOnly (fn this.setPreventPopoverClose true) (optional))}}
+              {{on "focus" (if (eq this.showInput true) (optional) (optional @onFocus))}}
+              {{on "blur" (if this.showInputOnly this.onInputBlur (optional @onBlur))}}
               {{on "input" this.handleOnChange}}
             />
+            {{#if (and this.showRange this.isValid)}}
+              <EuiRangeHighlight
+                @showTicks={{this.showTicks}}
+                @min={{this.min}}
+                @max={{this.max}}
+                @lowerValue={{this.min}}
+                @upperValue={{this.numberValue}}
+                @levels={{this.levels}}
+                @trackWidth={{trackWidth}}
+              />
+            {{/if}}
             {{#if this.showRangeTooltip}}
               <EuiRangeTooltip
-                @compressed={{@compressed}}
                 @value={{@value}}
                 @max={{this.max}}
                 @min={{this.min}}
                 @name={{@name}}
                 @showTicks={{this.showTicks}}
               >
-                <:valuePrepend>
-                  {{#if hasValuePrependBlock}}
-                    {{yield to="valuePrepend"}}
-                  {{else}}
-                    {{@valuePrepend}}
-                  {{/if}}
-                </:valuePrepend>
-                <:value>
-                  {{#if hasValueBlock}}
-                    {{yield to="value"}}
-                  {{else}}
-                    {{@value}}
-                  {{/if}}
-                </:value>
-                <:valueAppend>
-                  {{#if hasValueAppendBlock}}
-                    {{yield to="valueAppend"}}
-                  {{else}}
-                    {{@valueAppend}}
-                  {{/if}}
-                </:valueAppend>
+                <:valuePrepend>{{~#if hasValuePrependBlock~}}{{yield to="valuePrepend"}}{{~else~}}{{@valuePrepend}}{{~/if~}}</:valuePrepend>
+                <:value>{{~#if hasValueBlock~}}{{yield to="value"}}{{~else~}}{{@value}}{{~/if~}}</:value>
+                <:valueAppend>{{~#if hasValueAppendBlock~}}{{yield to="valueAppend"}}{{~else~}}{{@valueAppend}}{{~/if~}}</:valueAppend>
               </EuiRangeTooltip>
             {{/if}}
           </EuiRangeTrack>
@@ -613,46 +581,35 @@ export default class EuiRangeComponent extends Component<EuiRangeSignature> {
             </EuiRangeLabel>
           {{/if}}
           {{#if (and this.showInput (not this.showInputOnly))}}
-            <div class="euiRange__horizontalSpacer"></div>
-            {{#if this.showInput}}
-              <EuiRangeInput
-                id={{this.id}}
-                @min={{this.min}}
-                @max={{this.max}}
-                @digitTolerance={{this.digitTolerance}}
-                @readOnly={{@readOnly}}
-                @step={{this.step}}
-                @value={{@value}}
-                @disabled={{@disabled}}
-                @compressed={{@compressed}}
-                @name={{@name}}
-                @fullWidth={{and this.showInputOnly this.fullWidth}}
-                @isLoading={{and this.showInputOnly @isLoading}}
-                @isInvalid={{@isInvalid}}
-                @autoSize={{not this.showInputOnly}}
-                @isPrependProvided={{hasPrepend}}
-                @isAppendProvided={{hasAppend}}
-                ...attributes
-                {{on
-                  "focus"
-                  (if
-                    this.canShowDropdown this.onInputFocus (optional @onFocus)
-                  )
-                }}
-                {{on
-                  "blur"
-                  (if this.canShowDropdown this.onInputBlur (optional @onBlur))
-                }}
-                {{on "input" this.handleOnChange}}
-              >
-                <:prepend as |classes|>
-                  {{yield classes to="prepend"}}
-                </:prepend>
-                <:append as |classes|>
-                  {{yield classes to="append"}}
-                </:append>
-              </EuiRangeInput>
-            {{/if}}
+            <div class={{this.spacerClass}}></div>
+            <EuiRangeInput
+              id={{this.id}}
+              @min={{this.min}}
+              @max={{this.max}}
+              @readOnly={{@readOnly}}
+              @step={{this.step}}
+              @value={{@value}}
+              @disabled={{@disabled}}
+              @compressed={{@compressed}}
+              @name={{@name}}
+              @fullWidth={{and this.showInputOnly this.fullWidth}}
+              @isLoading={{and this.showInputOnly @isLoading}}
+              @isInvalid={{@isInvalid}}
+              @autoSize={{not this.showInputOnly}}
+              @isPrependProvided={{hasPrepend}}
+              @isAppendProvided={{hasAppend}}
+              ...attributes
+              {{on "focus" (if this.canShowDropdown this.onInputFocus (optional @onFocus))}}
+              {{on "blur" (if this.canShowDropdown this.onInputBlur (optional @onBlur))}}
+              {{on "input" this.handleOnChange}}
+            >
+              <:prepend as |classes|>
+                {{yield classes to="prepend"}}
+              </:prepend>
+              <:append as |classes|>
+                {{yield classes to="append"}}
+              </:append>
+            </EuiRangeInput>
           {{/if}}
         </EuiRangeWrapper>
       {{/if}}

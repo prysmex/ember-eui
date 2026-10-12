@@ -131,6 +131,22 @@
       "sha256": "0a1e020df394c10fa8e3eee7e64b173c0b9e3f4570ce65c5e0537aa48b8112e3"
     },
     {
+      "path": "@elastic/eui/es/components/combo_box/combo_box_input/combo_box_input.styles.js",
+      "sha256": "af18ea629cf4e8a456c6820ee464516993bb98f4937475830c30578173eae8e2"
+    },
+    {
+      "path": "@elastic/eui/es/components/combo_box/combo_box_input/combo_box_pill.styles.js",
+      "sha256": "fc1c72504542b0c3ced2024370adf3f4300dd818689e698946561cc52bb3b479"
+    },
+    {
+      "path": "@elastic/eui/es/components/combo_box/combo_box_options_list/combo_box_options_list.styles.js",
+      "sha256": "78ce59c1777022f9b415ba8967f0b534fc32a0f48a75230551d6d29206adc7d5"
+    },
+    {
+      "path": "@elastic/eui/es/components/combo_box/combo_box.styles.js",
+      "sha256": "b5d9168fe9619fbd560593be0c52ecdbd1ef0e29a26a3bf987b9bfd104cce506"
+    },
+    {
       "path": "@elastic/eui/es/components/comment_list/comment_event.styles.js",
       "sha256": "048793f39e80e9a4322fb503c32321d7bd2fb75bc376c99783c043ab2cfed469"
     },

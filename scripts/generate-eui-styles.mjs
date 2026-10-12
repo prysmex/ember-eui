@@ -219,7 +219,12 @@ const entries = {
   'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles'],
   // selectable and suggest
   'components/selectable/selectable.styles.js': ['euiSelectableStyles'],
-  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles']
+  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles'],
+  // combo box
+  'components/combo_box/combo_box.styles.js': ['euiComboBoxStyles'],
+  'components/combo_box/combo_box_input/combo_box_input.styles.js': ['euiComboBoxInputStyles'],
+  'components/combo_box/combo_box_input/combo_box_pill.styles.js': ['euiComboBoxPillStyles'],
+  'components/combo_box/combo_box_options_list/combo_box_options_list.styles.js': ['euiComboBoxOptionListStyles', 'LIST_MAX_HEIGHT']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

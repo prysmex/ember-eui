@@ -28,7 +28,7 @@ export interface EuiConfig {
 const DEFAULT_CONFIG: EuiConfig = {
   'euiIcon.useSvg': true,
   euiIconUseSvg: true,
-  euiComboBoxOptionsHeight: 33
+  euiComboBoxOptionsHeight: 29
 };
 
 export default class EuiConfigService extends Service {

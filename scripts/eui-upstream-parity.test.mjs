@@ -202,7 +202,11 @@ const factories = {
   // super select
   'components/form/super_select/super_select.styles.js': ['euiSuperSelectStyles', 'euiSuperSelectControlStyles'],
   // selectable and suggest
-  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles']
+  'components/selectable/selectable_message/selectable_message.styles.js': ['euiSelectableMessageStyles'],
+  // combo box (euiComboBoxStyles is static, tested below)
+  'components/combo_box/combo_box_input/combo_box_input.styles.js': ['euiComboBoxInputStyles'],
+  'components/combo_box/combo_box_input/combo_box_pill.styles.js': ['euiComboBoxPillStyles'],
+  'components/combo_box/combo_box_options_list/combo_box_options_list.styles.js': ['euiComboBoxOptionListStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1167,6 +1171,12 @@ function themeMatrix() {
   return contexts;
 }
 
-
-
+test('combo box root slots and list height match upstream static values', () => {
+  const root = require(resolve(eui, 'lib/components/combo_box/combo_box.styles.js'));
+  const list = require(
+    resolve(eui, 'lib/components/combo_box/combo_box_options_list/combo_box_options_list.styles.js')
+  );
+  assert.deepEqual(normalize(styles.euiComboBoxStyles), normalize(root.euiComboBoxStyles));
+  assert.equal(styles.LIST_MAX_HEIGHT, list.LIST_MAX_HEIGHT);
+});
 

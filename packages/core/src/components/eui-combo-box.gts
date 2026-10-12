@@ -15,6 +15,23 @@ import { and, not } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  comboBoxBoxReset,
+  comboBoxOptionLabel
+} from '../utils/eui/combo-box.ts';
+import {
+  euiBackgroundColor,
+  euiBorderColor,
+  euiComboBoxStyles,
+  euiFormVariables,
+  euiPaddingSize,
+  euiPanelStyles,
+  euiPopoverPanelStyles,
+  euiScreenReaderOnly
+} from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import EuiHighlight from './eui-highlight.gts';
 import EuiComboBoxCreateOption from './eui-combo-box/create-option.gts';
 import EuiComboBoxGroup from './eui-combo-box/group.gts';
 import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message.gts';
@@ -199,8 +216,11 @@ export interface EuiComboBoxSignature {
   };
   Blocks: {
     /**
-     * Renders each option, with its index: `as |option|` →
-     * `{{option.label}}`. Strings can be rendered as they are.
+     * Renders each option (in the list and in the pills), with its index:
+     * `as |option|` → `{{option.label}}`. Strings can be rendered as they
+     * are. Optional: without a block, options show their text (strings, or
+     * `@searchField` / `label` of objects), with the search text highlighted
+     * in the list like upstream.
      */
     default: [any, number, Select];
   };
@@ -221,6 +241,12 @@ export const toPlainArray = <T,>(collection: T[] | Sliceable<T>): T[] => {
     return collection;
   }
 };
+
+/**
+ * z-index of the options list: above EUI's modals (8000), flyouts and their
+ * overlay masks, as before (ember-basic-dropdown reads it from a variable).
+ */
+export const COMBO_BOX_LIST_Z_INDEX = 99999;
 
 export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature> {
   @service declare euiI18n: EuiI18n;
@@ -266,6 +292,94 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   get alwaysShowCreateOption() {
     return this.args.onCreateOption && this.args.alwaysShowCreateOption;
   }
+
+  /**
+   * Upstream `euiComboBoxStyles` on the root (power-select's trigger):
+   * relative, full width up to the form width (or 100% with `@fullWidth`).
+   */
+  @cached
+  get rootClass(): string {
+    const context = getEuiThemeContext(this);
+    const form = useEuiBorealisStyles(context, euiFormVariables);
+
+    return euiClass(
+      context,
+      comboBoxBoxReset,
+      euiComboBoxStyles.euiComboBox,
+      this.args.fullWidth
+        ? euiComboBoxStyles.fullWidth
+        : { maxInlineSize: form.maxWidth }
+    );
+  }
+
+  /**
+   * The options list panel (ember-basic-dropdown's content): upstream
+   * `EuiInputPopover` (`panelPaddingSize="s"`, attached to the input), i.e.
+   * an `EuiPanel` (plain, radius m) composed with the popover panel styles
+   * in one class. The attached shadow follows the side the list opened on.
+   */
+  @cached
+  get panelClass(): string {
+    const context = getEuiThemeContext(this);
+    const upstream = context.upstream;
+    const panel = useEuiBorealisStyles(context, euiPanelStyles);
+    const popover = useEuiBorealisStyles(context, euiPopoverPanelStyles);
+    const colorMode = upstream.colorMode === 'DARK' ? 'dark' : 'light';
+
+    return euiClass(
+      context,
+      // no React global reset; the portal also leaves the provider's color
+      // wrapper, so the panel sets the theme's text color itself
+      {
+        boxSizing: 'border-box',
+        color: upstream.euiTheme.colors.textParagraph,
+        textAlign: 'start',
+        '--ember-basic-dropdown-content-z-index': String(
+          COMBO_BOX_LIST_Z_INDEX
+        ),
+        '--ember-basic-dropdown-content-background-color':
+          'var(--euiPopoverBackgroundColor)'
+      },
+      panel.euiPanel,
+      panel.grow,
+      panel.radius.m,
+      { padding: euiPaddingSize(upstream, 's') ?? 0 },
+      { backgroundColor: euiBackgroundColor(upstream, 'plain') },
+      upstream.highContrastMode && {
+        border: upstream.euiTheme.border.thin,
+        borderColor: euiBorderColor(upstream, 'plain')
+      },
+      popover.euiPopover__panel,
+      popover[colorMode],
+      popover.isOpen,
+      popover.isAttached.isAttached,
+      popover.isAttached.bottom,
+      { '&.ember-basic-dropdown-content--above': popover.isAttached.top },
+      // ember-power-select's result count announcement
+      `& .ember-power-select-visually-hidden{${euiScreenReaderOnly()}}`
+    );
+  }
+
+  get dropdownClass(): string {
+    return [
+      'euiPanel euiPanel--plain euiPopover__panel',
+      this.panelClass,
+      this.args.dropdownClass
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  /** Search text for the default option renderer's highlighting. */
+  get highlightSearch(): string {
+    return (this.select?.searchText ?? '').trim();
+  }
+
+  labelFor = (option: unknown) =>
+    comboBoxOptionLabel(option, this.args.searchField);
+
+  /** Options rows yield their index; pills yield the select API. */
+  isOptionRow = (index: unknown) => typeof index === 'number';
 
   <template>
     {{! @glint-nocheck: not typesafe yet }}
@@ -359,13 +473,14 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         EuiComboBoxOptions
         rowHeight=@rowHeight
         class=@optionsClass
+        singleSelection=(if @singleSelection true false)
+        searchField=@searchField
       }}
       @extra={{@extra}}
       @groupComponent={{component EuiComboBoxGroup}}
       @triggerClass={{classNames
         "euiComboBox"
-        (if @compressed "euiComboBox--compressed")
-        (if @fullWidth "euiComboBox--fullWidth")
+        this.rootClass
         (if @isDisabled "euiComboBox-isDisabled")
         (if @isInvalid "euiComboBox-isInvalid")
         (if this.select.isOpen "euiComboBox-isOpen")
@@ -381,17 +496,29 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         )
         (component EuiComboBoxNoMatchesMessage)
       }}
-      @dropdownClass="euiComboBoxOptionsList euiPanel euiPanel--borderRadiusMedium euiPanel--noShadow euiPanel--plain euiPopover__panel-isAttached euiPopover__panel euiPopover__panel-noArrow euiPopover__panel--bottom euiPopover__panel-isOpen {{@dropdownClass}}"
+      @dropdownClass={{this.dropdownClass}}
       as |option i|
     >
-      {{yield option i}}
+      {{#if (has-block)}}
+        {{yield option i}}
+      {{else if (this.isOptionRow i)}}
+        <EuiHighlight
+          @text={{this.labelFor option}}
+          @search={{this.highlightSearch}}
+        />
+      {{else}}
+        {{this.labelFor option}}
+      {{/if}}
     </PowerSelect>
   </template>
 
   //This is to allow scrolling between virtualized groups
   @cached
   get opts() {
-    return this.results.reduce((acc, curr) => {
+    // `@options` may still be a promise (ember-power-select shows loading)
+    const results = Array.isArray(this.results) ? this.results : [];
+
+    return results.reduce((acc, curr) => {
       if (emberPowerSelectIsGroup(curr)) {
         acc.push(curr, ...curr.options);
       } else {
@@ -447,7 +574,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   @action
   scrollTo(option: any, select: { results: []; uniqueId: string }): void {
     const optionsList = document.querySelector(
-      `[aria-controls="ember-power-select-trigger-${select.uniqueId}"]`
+      `[data-combo-box-list="${select.uniqueId}"]`
     ) as HTMLElement;
 
     if (!optionsList) {

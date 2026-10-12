@@ -31,6 +31,10 @@
       "sha256": "cf389fe3358050e6ffd0153b7d75b8a596800d0a203e1349c8f19bfac2749eca"
     },
     {
+      "path": "@elastic/eui/es/components/bottom_bar/bottom_bar.styles.js",
+      "sha256": "3e1c617d95efec4141dc2052dc96d6308c42cc9353b8cf687209763224d2cff9"
+    },
+    {
       "path": "@elastic/eui/es/components/button/button_display/_button_display_content.styles.js",
       "sha256": "d47b90cddb0181b983e80c69f912f53a2dafe51d063e43ff8c56d329ba239cca"
     },
@@ -177,6 +181,42 @@
     {
       "path": "@elastic/eui/es/components/loading/loading_spinner.styles.js",
       "sha256": "8c3fc9f9fbc3bc8b61abd1e06992e8dd82e0c53d7783d003be321a23b891581b"
+    },
+    {
+      "path": "@elastic/eui/es/components/page_template/inner/page_inner.styles.js",
+      "sha256": "7cbe3e8cb901b0a71f6734d829f70fc0742c5bd1d7dec56408303eea209bfd0f"
+    },
+    {
+      "path": "@elastic/eui/es/components/page_template/outer/page_outer.styles.js",
+      "sha256": "d78154c7b75162244f598f568ffdad291050e753173776ff9bc4e6213f457343"
+    },
+    {
+      "path": "@elastic/eui/es/components/page/_restrict_width.js",
+      "sha256": "72ccb53304bede1961e76c4f3ab670ff5e1ff19191e0c16d7aec814bf143f350"
+    },
+    {
+      "path": "@elastic/eui/es/components/page/page_body/page_body.styles.js",
+      "sha256": "7b6876fa63f639daab9b84d2b206fd2b59b13264be7de4ba03337d9160b39fb4"
+    },
+    {
+      "path": "@elastic/eui/es/components/page/page_header/page_header_content.styles.js",
+      "sha256": "ac9ea44b3a9f7c3e27e607bd531b67ecb2e4295625693fb4cb8bb62f09113379"
+    },
+    {
+      "path": "@elastic/eui/es/components/page/page_header/page_header.styles.js",
+      "sha256": "ba690aecfe0c4cc2ed307cabf8830af0a92359bfc85c58a1e32284c2871a5f2d"
+    },
+    {
+      "path": "@elastic/eui/es/components/page/page_section/page_section.styles.js",
+      "sha256": "1aa521178ef8b8058d23e79896ac3bb771957c01d79c3efdacdf4a33a5a7fb88"
+    },
+    {
+      "path": "@elastic/eui/es/components/page/page_sidebar/page_sidebar.styles.js",
+      "sha256": "99152d240da58d2dc3917ce605f1f09fa789ebc87cef30b2f45909a4950c914c"
+    },
+    {
+      "path": "@elastic/eui/es/components/page/page.styles.js",
+      "sha256": "e589b8b1cf2b9d6fb4f43ee561f4baa0d7081e87b3a39d125dff9035e7b330a6"
     },
     {
       "path": "@elastic/eui/es/components/panel/panel.styles.js",

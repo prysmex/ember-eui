@@ -128,7 +128,7 @@ bottom bar, arranged by `@template`.
 | `@minHeight` | `number \| string` | `460` | Minimum height of the page, in px or any CSS height. |
 | `@restrictWidth` | `boolean \| number \| string` | `true` | Max width of the header and content: `true` for EUI's default, a number in px or any CSS width. |
 | `@grow` | `boolean` | `true` | Fills the window's height. |
-| `@paddingSize` |  | `'l'` | Padding of the page's sections: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'l'` | Padding of the page's sections: `'none'`, `'s'`, `'m'` or `'l'`. |
 
 Deprecated: `@bottomBar` (Has no effect, use the `<:bottomBar>` block.); `@hasPageHeader` (Has no effect.); `@hasPageContent` (Has no effect.); `@hasPageContentBody` (Has no effect.).
 
@@ -148,10 +148,11 @@ The outermost layout of a page: holds an optional `EuiPageSideBar` and an `EuiPa
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for the bundled Amsterdam theme's default (1200px), a number in px, or any CSS width. |
-| `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding around the page: `'none'`, `'s'`, `'m'` or `'l'`. |
-| `@grow` | `boolean` | `true` | Fills the window's height. |
-| `@direction` | `'row' \| 'column'` | `'row'` | `'row'` puts an `EuiPageSideBar` beside the body, `'column'` stacks them. |
+| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the page, centered: `true` for EUI's default (1200px), a number in px, or any CSS width. |
+| `@paddingSize` | `EuiPagePaddingSize` | `'none'` | Padding around the page: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@grow` | `boolean` | `true` | Grows to fill its flex parent (`flex-grow: 1`). |
+| `@direction` | `'row' \| 'column'` | `'row'` | `'row'` puts an `EuiPageSideBar` beside the body from the theme's `m` breakpoint up and stacks them below it; `'column'` always stacks them. |
+| `@color` | `string` | `'transparent'` | Background: `'transparent'`, `'plain'`, `'subdued'`, `'highlighted'`, `'accent'`, `'accentSecondary'`, `'primary'`, `'success'`, `'warning'` or `'danger'`. |
 | `@style` | `Record<string, string>` |  | Inline styles, merged with the max width. |
 
 | Block | Description |
@@ -166,8 +167,11 @@ The side column of an EuiPage, e.g. with an `EuiSideNav`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@sticky` | `boolean` |  | Keeps the side bar in view while the page scrolls. |
-| `@paddingSize` |  | `'l'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@sticky` | `boolean \| { offset?: number }` |  | Keeps the side bar in view (and scrollable) while the page scrolls, except on `@responsive` breakpoints. `true` offsets it by the `--euiFixedHeadersOffset` CSS variable (fixed headers); pass `{ offset: 48 }` for a pixel offset. |
+| `@paddingSize` | `EuiPagePaddingSize` | `'none'`, as upstream (formerly `'l'`) | Padding: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@minWidth` | `number \| string` | `248` | Minimum width, in px or any CSS width. |
+| `@responsive` | `EuiPageBreakpoint[] \| false` | `['xs', 's']` | Theme breakpoints where the side bar takes the full width and is never sticky (an `EuiPage` stacks it above the body there). `false` keeps the desktop layout everywhere. |
+| `@hasEmbellish` | `boolean` |  | Adds upstream's subtle diagonal background embellishment. |
 
 | Block | Description |
 | --- | --- |
@@ -181,14 +185,14 @@ The main column of an EuiPage: header, content and so on.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for the bundled Amsterdam theme's default (1200px), a number in px, or any CSS width. |
+| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the body, centered: `true` for EUI's default (1200px), a number in px, or any CSS width. |
 | `@tagName` | `string` | `'div'` | Tag of the body (without `@panelled`). |
 | `@borderRadius` |  | `'none'` | Border radius of the panel: `'none'` or `'m'`. |
-| `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'l'` when `@panelled`, `'none'` otherwise | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
-| `@panelled` | `boolean` |  | Renders the body as an `EuiPanel` (white background with padding). |
-| `@color` | `'subdued' \| 'transparent'` |  | Panel background: `'subdued'` or `'transparent'`. |
-| `@hasBorder` | `boolean` |  | Adds a border to the panel. |
-| `@hasShadow` | `boolean` |  | Adds a shadow to the panel. |
+| `@paddingSize` |  | `'none'`, as upstream, also when `@panelled` (formerly `'l'` when panelled) | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@panelled` | `boolean` |  | Renders the body as an `EuiPanel` (plain background, border). |
+| `@color` |  |  | Panel background (with `@panelled`), any `EuiPanel` color. |
+| `@hasBorder` | `boolean` | EuiPanel's (`true`) | Panel border (with `@panelled`). |
+| `@hasShadow` | `boolean` | EuiPanel's (`false`) | Panel shadow (with `@panelled`). |
 | `@style` | `Record<string, string>` |  | Inline styles, merged with the max width. |
 
 | Block | Description |
@@ -219,12 +223,13 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 ### EuiPageContentBody
 
-The content of an EuiPageContent.
+The content of an EuiPageContent. Styled as upstream's
+`EuiPageSection` content (`euiPageSection__content`).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content: `true` for the bundled Amsterdam theme's default (1200px), a number in px, or any CSS width. |
-| `@paddingSize` |  |  | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@restrictWidth` | `boolean \| number \| string` | `false` (no limit) | Max width of the content, centered: `true` for EUI's default (1200px), a number in px, or any CSS width. |
+| `@paddingSize` | `EuiPagePaddingSize` | `'none'` | Padding on every side: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
 | `@style` | `{ [key: string]: string; }` |  | Inline styles, merged with the max width. |
 
 | Block | Description |

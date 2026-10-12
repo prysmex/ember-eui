@@ -18,6 +18,15 @@ Applies to every migration wave. Your worktree branch starts from the current `f
 - Other families are migrating concurrently, including **EuiIcon**. Outside the icon family, render `EuiIcon` as-is: do not add new local icon sizing/styling and do not assert icon pixel sizes; assert presence/semantics. Existing local icon scoping in already-migrated components stays until the icon family lands.
 - Behavior-only components (no upstream styles, e.g. portals, i18n, delays): audit upstream, keep behavior, add/confirm tests, and mark the row `Migrated` with "No styles upstream" in the notes.
 
+## Performance rules (required)
+
+Style work must not repeat on every render:
+
+- **Always get factory output through `useEuiBorealisStyles(context, factory)`.** It memoizes each factory's result per resolved theme object (a WeakMap keyed by `context.upstream`, which is itself `@cached`), like upstream's `useEuiMemoizedStyles`. Never call a theme-taking factory directly in a getter (`euiFooStyles(context.upstream)` re-runs the whole upstream factory each time). Static style objects (e.g. `euiFlexItemStyles`) can be used directly.
+- **Mark class/style getters `@cached`** (from `@glimmer/tracking`) so `euiClass` serialization and hashing only re-run when a tracked input (args, provider context) changes. Glimmer class components are fine; template-only components can't memoize, so prefer a class with cached getters when a component computes styles.
+- Helpers that take extra arguments (e.g. `getBadgeColors(context, color)`) are cheap per call but should still live in a `@cached` getter.
+- Do not build per-instance objects for static styles; hoist constants to module scope.
+
 ## Rules
 
 - Work only in your assigned worktree and branch. Do not touch other families' components, providers/shared utilities (`utils/emotion/*`, `utils/eui/theme.ts`, `utils/eui/styles.ts`, `eui-emotion-provider.gts`), the site/showcase, or already-migrated components (report needed changes instead). Never stage `.vscode/settings.json` or the `node_modules` symlinks. Do not push.

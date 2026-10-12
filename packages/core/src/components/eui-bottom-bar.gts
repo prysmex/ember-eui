@@ -1,20 +1,26 @@
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { htmlSafe } from '@ember/template';
 
 import { modifier } from 'ember-modifier';
 import set from 'ember-set-helper/helpers/set';
+import style from 'ember-style-modifier/modifiers/style';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
 import screenReaderOnly from '../modifiers/screen-reader-only.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiScreenReaderOnlyCss } from '../utils/eui/page-layout.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiBottomBarStyles } from '../utils/eui/styles.generated.ts';
+import EuiEmotionProvider from './eui-emotion-provider.gts';
 import EuiPortal from './eui-portal.gts';
+
+import type { EuiThemeContext } from '../utils/emotion/context.ts';
 
 export interface EuiButtomBarArgs {
   /**
-   * With `@position="fixed"`, pads the bottom of `<body>` by the bar's height
-   * so it does not cover the end of the page. Defaults to `true`.
+   * With `@position="fixed"` (in a portal), pads the bottom of `<body>` by
+   * the bar's height so it does not cover the end of the page, and sets
+   * the `--euiBottomBarOffset` CSS variable on `<html>`. Defaults to `true`.
    */
   affordForDisplacement?: boolean;
   /**
@@ -22,14 +28,15 @@ export interface EuiButtomBarArgs {
    */
   bodyClassName?: string;
   /**
-   * `'fixed'` renders the bar in a portal, fixed to the bottom of the
-   * window. `'sticky'` keeps it at the bottom of its scrolling container,
+   * `'fixed'` fixes the bar to the bottom of the window (in a portal).
+   * `'sticky'` keeps it at the bottom of its scrolling container,
    * `'static'` renders it in place. Defaults to `'fixed'`.
    */
   position?: 'fixed' | 'static' | 'sticky';
   /**
-   * @deprecated Has no effect: the bar uses a portal when `@position` is
-   * `'fixed'`.
+   * With `@position="fixed"`, renders the bar in a portal at the end of
+   * `<body>`. `false` renders a fixed bar in place (and skips the body
+   * displacement). Other positions never use a portal. Defaults to `true`.
    */
   usePortal?: boolean;
   /**
@@ -39,28 +46,28 @@ export interface EuiButtomBarArgs {
   paddingSize?: 'none' | 's' | 'm' | 'l';
   /**
    * Accessible name of the bar's region landmark (announced to screen
-   * readers). Defaults to "Page level controls". With `@position="fixed"`,
-   * screen readers are also told the bar appeared at the end of the page.
+   * readers). Defaults to "Page level controls". With a portal, screen
+   * readers are also told the bar appeared at the end of the page.
    */
   landmarkHeading?: string;
   /**
-   * Distance from the top in px (only for `'sticky'` / `'static'`).
-   * Defaults to `0`.
+   * Distance from the top, in px or any CSS length (`'sticky'` /
+   * `'static'`). Defaults to none, so a sticky bar sticks to the bottom.
    */
-  top?: number;
+  top?: number | string;
   /**
-   * Distance from the right edge in px. Defaults to `0`.
+   * Distance from the right edge, in px or any CSS length. Defaults to `0`.
    */
-  right?: number;
+  right?: number | string;
   /**
-   * Distance from the left edge in px, e.g. the width of a side nav.
-   * Defaults to `0`.
+   * Distance from the left edge, in px or any CSS length, e.g. the width
+   * of a side nav. Defaults to `0`.
    */
-  left?: number;
+  left?: number | string;
   /**
-   * Distance from the bottom in px. Defaults to `0`.
+   * Distance from the bottom, in px or any CSS length. Defaults to `0`.
    */
-  bottom?: number;
+  bottom?: number | string;
 }
 
 const updateDisplacementModifier = modifier(function (
@@ -68,18 +75,22 @@ const updateDisplacementModifier = modifier(function (
   _pos: unknown[],
   {
     affordForDisplacement,
-    usePortal,
     bodyClassName,
     dimensions
   }: {
     affordForDisplacement: boolean;
-    usePortal: boolean;
     bodyClassName?: string;
     dimensions?: { height: number };
   }
 ) {
-  if (affordForDisplacement && usePortal && dimensions) {
+  const displaces = affordForDisplacement && dimensions;
+  if (displaces) {
     document.body.style.paddingBottom = `${dimensions.height}px`;
+    // EUI doesn't use this variable, but it is useful for consumers.
+    document.documentElement.style.setProperty(
+      '--euiBottomBarOffset',
+      `${dimensions.height}px`
+    );
   }
 
   if (bodyClassName) {
@@ -87,8 +98,9 @@ const updateDisplacementModifier = modifier(function (
   }
 
   return () => {
-    if (affordForDisplacement && usePortal) {
+    if (displaces) {
       document.body.style.paddingBottom = '';
+      document.documentElement.style.removeProperty('--euiBottomBarOffset');
     }
 
     if (bodyClassName) {
@@ -106,83 +118,96 @@ export interface EuiBottomBarSignature {
   };
 }
 
+function length(value: number | string | undefined) {
+  return typeof value === 'number' ? `${value}px` : value;
+}
+
+/**
+ * Upstream `EuiBottomBar` (`euiBottomBarStyles`). Like upstream, the bar is
+ * always rendered in dark mode (a nested dark provider inheriting the
+ * surrounding overrides and contrast mode).
+ */
 export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBarSignature> {
   @tracked dimensions: { height: number; width: number } | undefined;
 
-  get affordForDisplacement(): boolean {
-    return this.position !== 'fixed'
-      ? false
-      : this.args.affordForDisplacement ?? true;
+  get position(): 'fixed' | 'static' | 'sticky' {
+    return this.args.position ?? 'fixed';
   }
 
   get usePortal(): boolean {
-    return this.position !== 'fixed' ? false : true;
+    return this.position === 'fixed' && this.args.usePortal !== false;
   }
 
-  get position(): string {
-    return this.args.position || 'fixed';
+  get affordForDisplacement(): boolean {
+    return this.usePortal && (this.args.affordForDisplacement ?? true);
   }
 
-  get top(): number {
-    return this.args.top ? this.args.top : 0;
+  get landmarkHeading() {
+    return this.args.landmarkHeading ?? 'Page level controls';
   }
 
-  get right(): number {
-    return this.args.right ? this.args.right : 0;
+  get inlineStyle() {
+    return {
+      left: length(this.args.left ?? 0),
+      right: length(this.args.right ?? 0),
+      bottom: length(this.args.bottom ?? 0),
+      top: length(this.args.top)
+    };
   }
 
-  get left(): number {
-    return this.args.left ? this.args.left : 0;
-  }
+  /** Classes from the bar's own (dark) theme context. */
+  barClasses = (context: EuiThemeContext) => {
+    const styles = useEuiBorealisStyles(context, euiBottomBarStyles);
+    // Same order as upstream's `cssStyles`.
+    return euiClass(
+      context,
+      {
+        boxSizing: 'border-box',
+        display: 'block',
+        margin: 0,
+        // Upstream clones the dark provider's color onto the bar.
+        color: context.upstream.euiTheme.colors.textParagraph
+      },
+      styles.euiBottomBar,
+      styles[this.position],
+      styles[this.args.paddingSize ?? 'm'],
+      { '& > .euiBottomBar__heading': euiScreenReaderOnlyCss }
+    );
+  };
 
-  get bottom(): number {
-    return this.args.bottom ? this.args.bottom : 0;
-  }
-
-  get bottomBarStyles(): ReturnType<typeof htmlSafe> {
-    if (this.position === 'fixed') {
-      return htmlSafe(
-        `left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`
-      );
-    } else {
-      return htmlSafe(
-        `top:${this.top}px;left:${this.left}px;right:${this.right}px;bottom:${this.bottom}px`
-      );
-    }
+  get screenReaderOnlyClass() {
+    return euiClass(getEuiThemeContext(this), euiScreenReaderOnlyCss);
   }
 
   <template>
     {{#if this.usePortal}}
       <EuiPortal>
-        <section
-          style={{this.bottomBarStyles}}
-          {{resizeObserver onResize=(set this "dimensions")}}
-          class={{classNames
-            componentName="EuiBottomBar"
-            paddingSize=(argOrDefault @paddingSize "m")
-            positionType=(argOrDefault this.position "fixed")
-          }}
-          {{updateDisplacementModifier
-            affordForDisplacement=this.affordForDisplacement
-            usePortal=this.usePortal
-            dimensions=this.dimensions
-            bodyClassName=@bodyClassName
-          }}
-          aria-label={{if
-            @landmarkHeading
-            @landmarkHeading
-            "Page level controls"
-          }}
-          ...attributes
+        <EuiEmotionProvider
+          @colorMode="dark"
+          @wrapper={{false}}
+          @globalStyles={{false}}
+          as |provider|
         >
-          <div {{screenReaderOnly}}>
-            <h2>
-              {{if @landmarkHeading @landmarkHeading "Page level controls"}}
-            </h2>
-          </div>
-          {{yield}}
-        </section>
-        <div {{screenReaderOnly}}>
+          <section
+            aria-label={{this.landmarkHeading}}
+            class="euiBottomBar euiBottomBar--{{this.position}}
+              {{this.barClasses provider.context}}"
+            {{style this.inlineStyle}}
+            {{resizeObserver onResize=(set this "dimensions")}}
+            {{updateDisplacementModifier
+              affordForDisplacement=this.affordForDisplacement
+              dimensions=this.dimensions
+              bodyClassName=@bodyClassName
+            }}
+            ...attributes
+          >
+            <div class="euiBottomBar__heading" {{screenReaderOnly}}>
+              <h2>{{this.landmarkHeading}}</h2>
+            </div>
+            {{yield}}
+          </section>
+        </EuiEmotionProvider>
+        <div class={{this.screenReaderOnlyClass}} {{screenReaderOnly}}>
           <p aria-live="assertive">
             {{#if @landmarkHeading}}
               There is a new region landmark called
@@ -196,34 +221,31 @@ export default class EuiBottomBarComponent extends GlimmerComponent<EuiBottomBar
         </div>
       </EuiPortal>
     {{else}}
-      <section
-        style={{this.bottomBarStyles}}
-        {{resizeObserver onResize=(set this "dimensions")}}
-        class={{classNames
-          componentName="EuiBottomBar"
-          paddingSize=(argOrDefault @paddingSize "m")
-          positionType=(argOrDefault this.position "fixed")
-        }}
-        aria-label={{if
-          @landmarkHeading
-          @landmarkHeading
-          "Page level controls"
-        }}
-        {{updateDisplacementModifier
-          affordForDisplacement=this.affordForDisplacement
-          usePortal=this.usePortal
-          dimensions=this.dimensions
-          bodyClassName=@bodyClassName
-        }}
-        ...attributes
+      <EuiEmotionProvider
+        @colorMode="dark"
+        @wrapper={{false}}
+        @globalStyles={{false}}
+        as |provider|
       >
-        <div {{screenReaderOnly}}>
-          <h2>
-            {{if @landmarkHeading @landmarkHeading "Page level controls"}}
-          </h2>
-        </div>
-        {{yield}}
-      </section>
+        <section
+          aria-label={{this.landmarkHeading}}
+          class="euiBottomBar euiBottomBar--{{this.position}}
+            {{this.barClasses provider.context}}"
+          {{style this.inlineStyle}}
+          {{resizeObserver onResize=(set this "dimensions")}}
+          {{updateDisplacementModifier
+            affordForDisplacement=this.affordForDisplacement
+            dimensions=this.dimensions
+            bodyClassName=@bodyClassName
+          }}
+          ...attributes
+        >
+          <div class="euiBottomBar__heading" {{screenReaderOnly}}>
+            <h2>{{this.landmarkHeading}}</h2>
+          </div>
+          {{yield}}
+        </section>
+      </EuiEmotionProvider>
     {{/if}}
   </template>
 }

@@ -215,6 +215,10 @@ import EuiTextAlign from './components/eui-text-align.gts';
 import EuiTextArea from './components/eui-text-area.gts';
 import EuiTextColor from './components/eui-text-color.gts';
 import EuiTextDiff from './components/eui-text-diff.gts';
+import EuiTimeline from './components/eui-timeline.gts';
+import EuiTimelineItem from './components/eui-timeline-item.gts';
+import EuiTimelineItemEvent from './components/eui-timeline-item-event.gts';
+import EuiTimelineItemIcon from './components/eui-timeline-item-icon.gts';
 import EuiTitle from './components/eui-title.gts';
 import EuiToast from './components/eui-toast.gts';
 import EuiToken from './components/eui-token.gts';
@@ -445,6 +449,10 @@ export {
   EuiTextArea,
   EuiTextColor,
   EuiTextDiff,
+  EuiTimeline,
+  EuiTimelineItem,
+  EuiTimelineItemEvent,
+  EuiTimelineItemIcon,
   EuiTitle,
   EuiToast,
   EuiToken,

@@ -1,13 +1,16 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
 import { eq } from 'ember-truth-helpers';
 
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { euiPaddingSize } from '../../../utils/eui/styles.generated.ts';
+import { euiClass } from '../../../utils/eui/styles.ts';
 import EuiButton from '../../eui-button.gts';
 import EuiI18n from '../../eui-i18n.gts';
 import EuiText from '../../eui-text.gts';
-
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private The "Now" tab of the date popover. */
 export interface NowTabSignature {
@@ -19,13 +22,20 @@ export interface NowTabSignature {
   };
 }
 
-const EuiSuperDatePickerDatePopoverNowTab: TemplateOnlyComponent<NowTabSignature> =
+export default class EuiSuperDatePickerDatePopoverNowTab extends Component<NowTabSignature> {
+  /** Upstream pads the text with `useEuiPaddingCSS().m`. */
+  @cached
+  get paddingClass() {
+    const context = getEuiThemeContext(this);
+    return euiClass(context, {
+      boxSizing: 'border-box',
+      padding: euiPaddingSize(context.upstream, 'm')
+    });
+  }
+
   <template>
-    <EuiText
-      class="euiDatePopoverContent__padded--large"
-      @size="s"
-      @color="subdued"
-    >
+    <div class="euiDatePopoverContent__now {{this.paddingClass}}">
+    <EuiText @size="s" @color="subdued">
       <p>
         <EuiI18n
           @token="euiDatePopoverContent.nowTabContent"
@@ -38,6 +48,7 @@ const EuiSuperDatePickerDatePopoverNowTab: TemplateOnlyComponent<NowTabSignature
         </EuiI18n>
       </p>
       <EuiButton
+        data-test-subj="superDatePickerNowButton"
         @fullWidth={{true}}
         @size="s"
         @fill={{true}}
@@ -66,6 +77,6 @@ const EuiSuperDatePickerDatePopoverNowTab: TemplateOnlyComponent<NowTabSignature
         {{/if}}
       </EuiButton>
     </EuiText>
-  </template>;
-
-export default EuiSuperDatePickerDatePopoverNowTab;
+    </div>
+  </template>
+}

@@ -79,7 +79,8 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     );
 
     assert.dom('.euiSuperUpdateButton').doesNotExist();
-    assert.dom('.euiSuperDatePicker__flexWrapper').hasClass('euiSuperDatePicker__flexWrapper--noUpdateButton');
+    // the legacy `__flexWrapper--noUpdateButton` modifier became upstream's narrower restricted width (30 × base)
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiSuperDatePicker')!).width, '480px');
     assert.dom('.euiDatePopoverButton--start').isDisabled();
   });
 

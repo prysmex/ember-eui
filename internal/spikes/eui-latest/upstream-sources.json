@@ -155,6 +155,38 @@
       "sha256": "9eed405ae70856c03885b7006492c1c96f25119e977548ba412c1a3d3b12ab40"
     },
     {
+      "path": "@elastic/eui/es/components/date_picker/date_picker_range.styles.js",
+      "sha256": "2ec57a14745db8b8241795b3a925ab7265fe2636a530bda2932d288b454bdefc"
+    },
+    {
+      "path": "@elastic/eui/es/components/date_picker/date_picker.styles.js",
+      "sha256": "44306fee2aa289f91e92273c4ce5ddf9e7f7c7ac54fa648defea8adb4bbaecfc"
+    },
+    {
+      "path": "@elastic/eui/es/components/date_picker/super_date_picker/date_popover/absolute_tab.styles.js",
+      "sha256": "d84bdee400dbe4f38e5a0bbfcabd96f735ceac427da65bfbead5a45512cd5baf"
+    },
+    {
+      "path": "@elastic/eui/es/components/date_picker/super_date_picker/date_popover/date_popover_button.styles.js",
+      "sha256": "005e4cdc5a2dd271f4d2afe7214d1aad480739b9bc95c5bb9622b3a04784ac41"
+    },
+    {
+      "path": "@elastic/eui/es/components/date_picker/super_date_picker/date_popover/date_popover_content.styles.js",
+      "sha256": "dd07b5f81030fd63b476bfe639d085e4c7d743c535dbbdcac372d802923657ea"
+    },
+    {
+      "path": "@elastic/eui/es/components/date_picker/super_date_picker/quick_select_popover/quick_select_panel.styles.js",
+      "sha256": "c441fb51db2ac256770d1fa0cc3bc17e0961688e9bca4ddf26da9d52e800d9c1"
+    },
+    {
+      "path": "@elastic/eui/es/components/date_picker/super_date_picker/quick_select_popover/quick_select_popover.styles.js",
+      "sha256": "af841c7a5f4459e0812952ed4c0f653d8e84acaedab73809d014ad91856bd199"
+    },
+    {
+      "path": "@elastic/eui/es/components/date_picker/super_date_picker/super_date_picker.styles.js",
+      "sha256": "ddb8d98379abcee833f7f693757c6ca7f20a8e8c9d8ac7126c8e293a65a04b3e"
+    },
+    {
       "path": "@elastic/eui/es/components/description_list/description_list_description.styles.js",
       "sha256": "91dbcfa6063dbdfb2e06492f82d743d74a2382e0464b74df57a892961cfa1d88"
     },
@@ -241,6 +273,10 @@
     {
       "path": "@elastic/eui/es/components/form/field_text/field_text.styles.js",
       "sha256": "2e4327e67b17a715817f44db205a45bf8df2d89eb7040c42893838fefc51c643"
+    },
+    {
+      "path": "@elastic/eui/es/components/form/form_control_layout/append_prepend/form_append_prepend.styles.js",
+      "sha256": "4ff33cbbdc1df3e8badb86cab04da7544984603ea570b790dbee285509b743d3"
     },
     {
       "path": "@elastic/eui/es/components/form/form_control_layout/form_control_layout_clear_button.styles.js",

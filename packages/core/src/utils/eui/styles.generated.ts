@@ -28,8 +28,8 @@ var highContrastModeStyles = function highContrastModeStyles2(euiThemeContext, o
   }
   return defaultStyles.trim();
 };
-var preventForcedColors = function preventForcedColors2(_ref111) {
-  var highContrastMode = _ref111.highContrastMode;
+var preventForcedColors = function preventForcedColors2(_ref117) {
+  var highContrastMode = _ref117.highContrastMode;
   return highContrastMode === "forced" ? "forced-color-adjust: none;" : "";
 };
 
@@ -360,8 +360,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
       break;
   }
   var borderRadiusCSS = [];
-  Object.entries(borderRadiusMap).forEach(function(_ref111) {
-    var _ref239 = _slicedToArray2(_ref111, 2), property = _ref239[0], value2 = _ref239[1];
+  Object.entries(borderRadiusMap).forEach(function(_ref117) {
+    var _ref239 = _slicedToArray2(_ref117, 2), property = _ref239[0], value2 = _ref239[1];
     if (value2) {
       if (ignoreZeroes && value2 !== "0" && value2 !== "0px" || !ignoreZeroes) {
         borderRadiusCSS.push("".concat(property, ": ").concat(value2, ";"));
@@ -375,8 +375,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
 import { mathWithUnits } from "@elastic/eui-theme-common";
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/functions/typography.js
-function euiFontSizeFromScale(scale, _ref111) {
-  var base = _ref111.base, font = _ref111.font;
+function euiFontSizeFromScale(scale, _ref117) {
+  var base = _ref117.base, font = _ref117.font;
   var _ref239 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref239.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref239.customScale;
   if (unit === "em") {
     return "".concat(font.scale[scale], "em");
@@ -616,8 +616,8 @@ var SEVERITY_COLORS = ["neutral", "risk"];
 var BUTTON_COLORS = ["text", "accent", "accentSecondary", "primary", "success", "warning", "danger"];
 var EXTENDED_BUTTON_COLORS = [].concat(BUTTON_COLORS, SEVERITY_COLORS);
 var BUTTON_DISPLAYS = ["base", "fill", "empty"];
-var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref111, color, variant) {
-  var euiTheme = _ref111.euiTheme, highContrastMode = _ref111.highContrastMode;
+var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref117, color, variant) {
+  var euiTheme = _ref117.euiTheme, highContrastMode = _ref117.highContrastMode;
   var backgroundTokenBase = variant === "base" ? "background" : "background".concat(variant.charAt(0).toUpperCase() + variant.slice(1));
   var textTokenBase = variant === "filled" ? "textColorFilled" : "textColor";
   var backgroundTokenName = getTokenName(backgroundTokenBase, color);
@@ -823,8 +823,8 @@ function _arrayLikeToArray5(r, a) {
   return n;
 }
 var BACKGROUND_COLORS = ["transparent", "plain", "subdued", "highlighted", "accent", "accentSecondary", "primary", "success", "warning", "danger"].concat(_toConsumableArray2(SEVERITY_COLORS));
-var euiBackgroundColor = function euiBackgroundColor2(_ref111, color) {
-  var euiTheme = _ref111.euiTheme;
+var euiBackgroundColor = function euiBackgroundColor2(_ref117, color) {
+  var euiTheme = _ref117.euiTheme;
   var _ref239 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref239.method;
   if (color === "transparent") return "transparent";
   if (method === "transparent") {
@@ -907,8 +907,8 @@ function hexToRgb(hex) {
 }
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_helpers.js
-var euiScrollBarStyles = function euiScrollBarStyles2(_ref111) {
-  var _ref$euiTheme = _ref111.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
+var euiScrollBarStyles = function euiScrollBarStyles2(_ref117) {
+  var _ref$euiTheme = _ref117.euiTheme, colors = _ref$euiTheme.colors, size = _ref$euiTheme.size;
   var _ref239 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _thumbColor = _ref239.thumbColor, _ref2$trackColor = _ref239.trackColor, trackColor = _ref2$trackColor === void 0 ? "transparent" : _ref2$trackColor, _ref2$width = _ref239.width, width = _ref2$width === void 0 ? "thin" : _ref2$width, _size = _ref239.size, _corner = _ref239.corner;
   var thumbColor = _thumbColor || transparentize(colors.darkShade, 0.5);
   var scrollBarSize = _size || size.base;
@@ -966,8 +966,8 @@ var euiFullHeight = function euiFullHeight2() {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_padding.js
-var euiPaddingSize = function euiPaddingSize2(_ref111, size) {
-  var euiTheme = _ref111.euiTheme;
+var euiPaddingSize = function euiPaddingSize2(_ref117, size) {
+  var euiTheme = _ref117.euiTheme;
   switch (size) {
     case "none":
       return null;
@@ -979,8 +979,8 @@ var euiPaddingSize = function euiPaddingSize2(_ref111, size) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_states.js
-var euiOutline = function euiOutline2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiOutline = function euiOutline2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   var offset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "center";
   var color = arguments.length > 2 ? arguments[2] : void 0;
   var outlineWidth = euiTheme.focus.width;
@@ -1004,8 +1004,8 @@ var euiFocusRing = function euiFocusRing2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_typography.js
-var euiFontSize = function euiFontSize2(_ref111, scale, options) {
-  var euiTheme = _ref111.euiTheme;
+var euiFontSize = function euiFontSize2(_ref117, scale, options) {
+  var euiTheme = _ref117.euiTheme;
   return {
     fontSize: euiFontSizeFromScale(scale, euiTheme, options),
     lineHeight: euiLineHeightFromBaseline(scale, euiTheme, options)
@@ -1078,8 +1078,8 @@ var sortMapBySmallToLargeValues = function sortMapBySmallToLargeValues2(breakpoi
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_responsive.js
-var euiBreakpoint = function euiBreakpoint2(_ref111, sizes) {
-  var euiTheme = _ref111.euiTheme;
+var euiBreakpoint = function euiBreakpoint2(_ref117, sizes) {
+  var euiTheme = _ref117.euiTheme;
   var orderedBreakpoints = Object.keys(sortMapBySmallToLargeValues(euiTheme.breakpoint));
   var orderedSizes = sizes.sort(function(a, b) {
     return orderedBreakpoints.indexOf(a) - orderedBreakpoints.indexOf(b);
@@ -1249,8 +1249,8 @@ var spinnerSizes = {
   xl: "xl",
   xxl: "xxl"
 };
-var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref111: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
-  var euiTheme = _ref111.euiTheme, highContrastMode = _ref111.highContrastMode;
+var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref117: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
+  var euiTheme = _ref117.euiTheme, highContrastMode = _ref117.highContrastMode;
   var colors = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
   var _colors$border = colors.border, border = _colors$border === void 0 ? euiTheme.components.loadingSpinnerBorder : _colors$border, _colors$highlight = colors.highlight, highlight = _colors$highlight === void 0 ? euiTheme.components.loadingSpinnerHighlight : _colors$highlight;
   if (highContrastMode === "forced") {
@@ -1456,8 +1456,8 @@ var euiTitleStyles = function euiTitleStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/code/code_syntax.styles.js
-var euiCodeTextColors = function euiCodeTextColors2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiCodeTextColors = function euiCodeTextColors2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     backgroundColor: euiTheme.components.codeBackground,
     color: euiTheme.components.codeColor
@@ -1777,8 +1777,8 @@ var getBadgeColors = function getBadgeColors2(euiThemeContext, backgroundColor) 
     color
   };
 };
-var getTextColor = function getTextColor2(_ref111, bgColor) {
-  var euiTheme = _ref111.euiTheme;
+var getTextColor = function getTextColor2(_ref117, bgColor) {
+  var euiTheme = _ref117.euiTheme;
   var textColor = isColorDark.apply(void 0, _toConsumableArray3(chroma4(bgColor).rgb())) ? euiTheme.colors.textGhost : euiTheme.colors.textInk;
   return textColor;
 };
@@ -1952,8 +1952,8 @@ var euiBadgeStyles = function euiBadgeStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/badge/badge_group/badge_group.styles.js
-var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiBadgeGroupStyles = function euiBadgeGroupStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiBadgeGroup: /* @__PURE__ */ css("display:inline-flex;flex-wrap:wrap;", logicalCSS("max-width", "100%"), ".euiBadge+.euiBadge{", logicalCSS("margin-left", 0), ";};label:euiBadgeGroup;"),
     // Gutter sizes
@@ -2548,8 +2548,8 @@ function _toPrimitive4(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
-var euiFormMaxWidth = function euiFormMaxWidth2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiFormMaxWidth = function euiFormMaxWidth2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return euiTheme.components.forms.maxWidth;
 };
 var euiFormPlaceholderStyles = function euiFormPlaceholderStyles2(euiThemeContext, color) {
@@ -2674,6 +2674,9 @@ var euiFormControlDefaultShadow = function euiFormControlDefaultShadow2(euiTheme
   return "\n    ".concat(withBorder ? border : "", "\n    ").concat(withBackgroundColor ? backgroundColor : "", "\n    ").concat(withBackground ? backgroundGradient : "", "\n  ");
 };
 var hoverSelector = '&:hover:not(:disabled, :focus, input[readonly], [class*="readOnly"])';
+var disableFormControlHoverStyles = function disableFormControlHoverStyles2() {
+  return "\n  ".concat(hoverSelector, " {\n    outline: none;\n  }\n");
+};
 var euiFormControlHoverStyles = function euiFormControlHoverStyles2(euiThemeContext) {
   var euiTheme = euiThemeContext.euiTheme, highContrastMode = euiThemeContext.highContrastMode;
   var form = euiFormVariables(euiThemeContext);
@@ -3184,8 +3187,8 @@ var euiCallOutStyles = function euiCallOutStyles2(euiThemeContext) {
     actions: /* @__PURE__ */ css("display:flex;gap:", euiTheme.size.s, ";&:where([data-size='s'] &){", logicalCSS("margin-left", euiTheme.size.l), ";}&:where([data-size='m'] &){", logicalCSS("margin-left", euiTheme.size.xl), ";}&:where([data-layout='superNarrow'] &){flex-wrap:wrap;*:has(.euiCallOutAction),.euiCallOutAction{inline-size:100%;}}&:where([data-layout='wide'] &){", logicalCSS("margin-left", "0"), " align-self:center;flex-shrink:0;flex-direction:row-reverse;};label:actions;")
   };
 };
-var euiCallOutHeaderStyles = function euiCallOutHeaderStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiCallOutHeaderStyles = function euiCallOutHeaderStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiCallOutHeader: /* @__PURE__ */ css("font-weight:", euiTheme.font.weight.bold, ";", logicalCSS(
       "margin-bottom",
@@ -3365,8 +3368,8 @@ var euiStatStyles = function euiStatStyles2() {
     right: /* @__PURE__ */ css(logicalTextAlignCSS("right"), " align-items:flex-end;;label:right;")
   };
 };
-var euiStatTitleStyles = function euiStatTitleStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiStatTitleStyles = function euiStatTitleStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiStat__title: /* @__PURE__ */ css(";label:euiStat__title;"),
     // Colors
@@ -3998,8 +4001,8 @@ var euiPageSidebarStyles = function euiPageSidebarStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/page/page_header/page_header.styles.js
-var euiPageHeaderStyles = function euiPageHeaderStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiPageHeaderStyles = function euiPageHeaderStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiPageHeader: /* @__PURE__ */ css(logicalCSS("width", "100%"), logicalCSS("min-width", "0"), " display:flex;flex-direction:column;flex-shrink:0;;label:euiPageHeader;"),
     border: /* @__PURE__ */ css(logicalCSS("border-bottom", euiTheme.border.thin), ";;label:border;")
@@ -4353,8 +4356,8 @@ var euiProgressValueTextStyles = function euiProgressValueTextStyles2(_ref318) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/skeleton/utils.js
-var euiSkeletonGradientAnimation = function euiSkeletonGradientAnimation2(_ref111) {
-  var euiTheme = _ref111.euiTheme, highContrastMode = _ref111.highContrastMode;
+var euiSkeletonGradientAnimation = function euiSkeletonGradientAnimation2(_ref117) {
+  var euiTheme = _ref117.euiTheme, highContrastMode = _ref117.highContrastMode;
   var _ref239 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, _ref2$slideSize = _ref239.slideSize, slideSize = _ref2$slideSize === void 0 ? "-53%" : _ref2$slideSize, _ref2$gradientSize = _ref239.gradientSize, gradientSize = _ref2$gradientSize === void 0 ? "220%" : _ref2$gradientSize;
   var gradientStartStop = euiTheme.colors.backgroundBaseSkeletonEdge;
   var gradientMiddle = highContrastMode ? euiTheme.components.skeletonBackgroundSkeletonMiddleHighContrast : euiTheme.colors.backgroundBaseSkeletonMiddle;
@@ -4457,8 +4460,8 @@ var loadingPadding = {
   l: "xs",
   xl: "s"
 };
-var euiLoadingLogoStyles = function euiLoadingLogoStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiLoadingLogoStyles = function euiLoadingLogoStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiLoadingLogo: /* @__PURE__ */ css("position:relative;display:inline-block;", euiCanAnimate, "{&::before,&::after{position:absolute;content:'';inline-size:90%;inset-inline-start:5%;border-radius:50%;opacity:0.2;z-index:1;}&::before{box-shadow:0 0 ", euiTheme.size.s, " ", euiTheme.colors.fullShade, ";animation:1s ", loadingPulsateAndFade, " ", euiTheme.animation.resistance, " infinite;}&::after{background-color:", euiTheme.colors.fullShade, ";animation:1s ", loadingPulsate, " ", euiTheme.animation.resistance, " infinite;}};label:euiLoadingLogo;"),
     euiLoadingLogo__icon: /* @__PURE__ */ css("display:inline-block;", euiCanAnimate, "{animation:1s ", loadingBounce, " ", euiTheme.animation.resistance, " infinite;};label:euiLoadingLogo__icon;"),
@@ -5208,8 +5211,8 @@ var euiBreadcrumbContentStyles = function euiBreadcrumbContentStyles2(euiThemeCo
     }
   };
 };
-var euiBreadcrumbPopoverStyles = function euiBreadcrumbPopoverStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiBreadcrumbPopoverStyles = function euiBreadcrumbPopoverStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiBreadcrumb__popoverButton: /* @__PURE__ */ css("max-inline-size:100%;display:inline-flex;align-items:center;gap:", euiTheme.size.xs, ";;label:euiBreadcrumb__popoverButton;"),
     euiBreadcrumb__popoverTruncation: /* @__PURE__ */ css(";label:euiBreadcrumb__popoverTruncation;"),
@@ -5708,8 +5711,8 @@ var euiPinnableListGroupItemExtraActionStyles = function euiPinnableListGroupIte
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/key_pad_menu/key_pad_menu.styles.js
-var euiKeyPadMenuVariables = function euiKeyPadMenuVariables2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiKeyPadMenuVariables = function euiKeyPadMenuVariables2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiKeyPadMenuSize: mathWithUnits(euiTheme.size.base, function(x) {
       return x * 6;
@@ -6111,16 +6114,16 @@ var euiHeaderAlertStyles = function euiHeaderAlertStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/header/header_breadcrumbs/header_breadcrumbs.styles.js
-var euiHeaderBreadcrumbsStyles = function euiHeaderBreadcrumbsStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiHeaderBreadcrumbsStyles = function euiHeaderBreadcrumbsStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiHeaderBreadcrumbs: /* @__PURE__ */ css(euiTextTruncate(), " align-items:center;display:flex;flex-grow:1;", logicalCSS("margin-horizontal", euiTheme.size.s), ";;label:euiHeaderBreadcrumbs;")
   };
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/collapsible_nav/collapsible_nav.styles.js
-var euiCollapsibleNavStyles = function euiCollapsibleNavStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiCollapsibleNavStyles = function euiCollapsibleNavStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiCollapsibleNav: /* @__PURE__ */ css(";label:euiCollapsibleNav;"),
     // The majority of styles extend from EuiFlyout
@@ -6131,8 +6134,8 @@ var euiCollapsibleNavStyles = function euiCollapsibleNavStyles2(_ref111) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/collapsible_nav/collapsible_nav_group/collapsible_nav_group.styles.js
-var euiCollapsibleNavGroupStyles = function euiCollapsibleNavGroupStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiCollapsibleNavGroupStyles = function euiCollapsibleNavGroupStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiCollapsibleNavGroup: /* @__PURE__ */ css("&:not(:first-child){", logicalCSS("border-top", euiTheme.border.thin), ";};label:euiCollapsibleNavGroup;"),
     // Background colors
@@ -6615,8 +6618,8 @@ var euiPopoverPanelStyles = function euiPopoverPanelStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/services/popover/popover_arrow.styles.js
-var _popoverArrowStyles = function _popoverArrowStyles2(_ref111, arrowSize) {
-  var euiTheme = _ref111.euiTheme, colorMode = _ref111.colorMode, highContrastMode = _ref111.highContrastMode;
+var _popoverArrowStyles = function _popoverArrowStyles2(_ref117, arrowSize) {
+  var euiTheme = _ref117.euiTheme, colorMode = _ref117.colorMode, highContrastMode = _ref117.highContrastMode;
   var hasBorder = colorMode === "DARK";
   var arrowOffset = mathWithUnits([
     arrowSize,
@@ -6776,8 +6779,8 @@ var euiToolTipAnchorStyles = function euiToolTipAnchorStyles2() {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/context_menu/context_menu.styles.js
-var euiContextMenuVariables = function euiContextMenuVariables2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiContextMenuVariables = function euiContextMenuVariables2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     panelWidth: mathWithUnits(euiTheme.size.base, function(x) {
       return x * 16;
@@ -7116,8 +7119,8 @@ var euiSplitPanelInnerStyles = function euiSplitPanelInnerStyles2(euiThemeContex
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/accordion/accordion.styles.js
-var euiAccordionStyles = function euiAccordionStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiAccordionStyles = function euiAccordionStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     euiAccordion: /* @__PURE__ */ css(";label:euiAccordion;"),
     // Borders
@@ -7341,8 +7344,8 @@ var euiGlobalToastListItemStyles = function euiGlobalToastListItemStyles2(_ref31
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/notification_icon/notification_icon.styles.js
 import { mathWithUnits as mathWithUnits5 } from "@elastic/eui-theme-common";
-var euiNotificationIconStyles = function euiNotificationIconStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiNotificationIconStyles = function euiNotificationIconStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   var sizeL = mathWithUnits5(euiTheme.size.base, function(x) {
     return x * 1.25;
   });
@@ -7410,8 +7413,8 @@ var euiCommentEventBodyStyles = function euiCommentEventBodyStyles2(_ref318) {
 var _gutterSizeAdjustment = function _gutterSizeAdjustment2(gutterSize) {
   return "\n    gap: ".concat(gutterSize, ";\n\n    // The vertical line height needs to be adjusted with the gutter size\n    [class*='euiTimelineItem-']:not(:last-child) > [class*='euiTimelineItemIcon-']::before {\n      ").concat(logicalCSS("height", "calc(100% + ".concat(gutterSize, ")")), ";\n    }\n  ");
 };
-var timelineVerticalLine = function timelineVerticalLine2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var timelineVerticalLine = function timelineVerticalLine2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return "  \n    [class*='euiTimelineItem-'] > [class*='euiTimelineItemIcon-']::before {\n      content: '';\n      position: absolute;\n      ".concat(logicalCSS("top", 0), ";\n      ").concat(logicalCSS("border-left", euiTheme.border.thick), ";\n    }\n\n    > [class*='euiTimelineItem-center']:first-child > [class*='euiTimelineItemIcon-']::before {\n      ").concat(logicalCSS("top", "50%"), ";\n    }\n  \n    > [class*='euiTimelineItem-center']:last-child:not(:only-child) > [class*='euiTimelineItemIcon-']::before {\n      ").concat(logicalCSS("height", "50%"), ";\n    }\n  ");
 };
 var euiTimelineStyles = function euiTimelineStyles2(euiThemeContext) {
@@ -7555,8 +7558,8 @@ var euiTreeViewItemStyles = function euiTreeViewItemStyles2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/text_diff/text_diff.styles.js
-var euiTextDiffStyles = function euiTextDiffStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiTextDiffStyles = function euiTextDiffStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     // Base
     euiTextDiff: /* @__PURE__ */ css("del{color:", euiTheme.colors.textDanger, ";}ins{color:", euiTheme.colors.textSuccess, ";};label:euiTextDiff;")
@@ -7642,8 +7645,8 @@ var euiExpressionIconStyles = function euiExpressionIconStyles2(_ref318) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/tour/_tour_footer.styles.js
-var _tourFooterBgColor = function _tourFooterBgColor2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var _tourFooterBgColor = function _tourFooterBgColor2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return euiTheme.components.tourFooterBackground;
 };
 var euiTourFooterStyles = function euiTourFooterStyles2(euiThemeContext) {
@@ -7661,8 +7664,8 @@ var euiTourStyles = function euiTourStyles2(euiThemeContext) {
     euiTour: /* @__PURE__ */ css("[data-popover-arrow='top']{background-color:", _tourFooterBgColor(euiThemeContext), ";};label:euiTour;")
   };
 };
-var euiTourBeaconStyles = function euiTourBeaconStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiTourBeaconStyles = function euiTourBeaconStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   var beaconSize = euiTheme.size.m;
   var beaconOffset = mathWithUnits(beaconSize, function(x) {
     return x / -2;
@@ -7680,14 +7683,239 @@ var euiTourBeaconStyles = function euiTourBeaconStyles2(_ref111) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/tour/_tour_header.styles.js
-var euiTourHeaderStyles = function euiTourHeaderStyles2(_ref111) {
-  var euiTheme = _ref111.euiTheme;
+var euiTourHeaderStyles = function euiTourHeaderStyles2(_ref117) {
+  var euiTheme = _ref117.euiTheme;
   return {
     // Base
     euiTourHeader: /* @__PURE__ */ css(logicalCSS("border-bottom", "none"), logicalCSS("margin-bottom", euiTheme.size.s), ";;label:euiTourHeader;"),
     // Elements
     euiTourHeader__title: /* @__PURE__ */ css(logicalCSS("margin-top", 0), ";;label:euiTourHeader__title;"),
     euiTourHeader__subtitle: /* @__PURE__ */ css("color:", euiTheme.colors.textSubdued, ";padding-block-end:", euiTheme.size.xs, ";;label:euiTourHeader__subtitle;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/date_picker.styles.js
+import { euiShadowMedium as euiShadowMedium2 } from "@elastic/eui-theme-common";
+var _ref111 = true ? {
+  name: "1gj9wh1-euiDatePicker",
+  styles: "display:block;label:euiDatePicker;"
+} : {
+  name: "1gj9wh1-euiDatePicker",
+  styles: "display:block;label:euiDatePicker;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiDatePickerStyles = function euiDatePickerStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return {
+    euiDatePicker: _ref111,
+    inline: {
+      inline: /* @__PURE__ */ css(".euiFormControlLayout{", logicalCSS("height", "auto"), " ", logicalCSS("width", "fit-content"), " border:none;padding:0;&::after{display:none;}}.euiFormControlLayout__childrenWrapper{flex-direction:column;}.euiFormControlLayoutIcons{justify-content:center;", logicalCSS("padding-bottom", euiTheme.size.s), ";};label:inline;"),
+      // Skip css`` to avoid generating an Emotion className
+      noShadow: "\n        .euiFormControlLayout {\n          background-color: transparent;\n        }\n      ",
+      shadow: /* @__PURE__ */ css(".euiFormControlLayout{background-color:", euiTheme.colors.emptyShade, ";", euiShadowMedium2(euiThemeContext, {
+        borderAllInHighContrastMode: true
+      }), ";};label:shadow;"),
+      // Needs to come before shadow CSS so that it doesn't override their background-colors
+      invalid: /* @__PURE__ */ css(".euiFormControlLayout{", euiFormControlDefaultShadow(euiThemeContext, {
+        withBorder: false
+      }), " ", euiFormControlInvalidStyles(euiThemeContext), ";};label:invalid;"),
+      // Should come after shadow CSS to override their background-colors
+      disabled: /* @__PURE__ */ css(".euiFormControlLayout{", euiFormControlDisabledStyles(euiThemeContext), ";};label:disabled;"),
+      readOnly: /* @__PURE__ */ css(".euiFormControlLayout{", euiFormControlReadOnlyStyles(euiThemeContext), ";};label:readOnly;")
+    },
+    inGroup: /* @__PURE__ */ css(".euiFormControlLayout__childrenWrapper{.euiPopover,.react-datepicker__input-container{", logicalCSS("height", "100%"), ";}};label:inGroup;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/date_picker_range.styles.js
+import { euiShadowMedium as euiShadowMedium3 } from "@elastic/eui-theme-common";
+var euiDatePickerRangeStyles = function euiDatePickerRangeStyles2() {
+  return {
+    euiDatePickerRange: /* @__PURE__ */ css(".euiPopover,.react-datepicker__input-container,.euiDatePicker{", logicalCSS("height", "100%"), ";}.euiPopover{flex:1;};label:euiDatePickerRange;")
+  };
+};
+var _ref113 = true ? {
+  name: "bicgs9-noShadow",
+  styles: "background-color:transparent;label:noShadow;"
+} : {
+  name: "bicgs9-noShadow",
+  styles: "background-color:transparent;label:noShadow;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiDatePickerRangeInlineStyles = function euiDatePickerRangeInlineStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var containerQuery = function containerQuery2(datePickerWidth) {
+    var delimiterWidth = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 16;
+    return "\n    display: block;\n    container-type: inline-size;\n\n    .euiFormControlLayout__childrenWrapper {\n      /* Use static px widths for now, since render behavior comes from a third party library */\n      @container (max-width: ".concat(datePickerWidth * 2 + delimiterWidth, "px) {\n        /* Unset grid display */\n        display: block !important;\n\n        /* Center and point the default delimiter arrow downwards */\n        .euiFormControlLayoutDelimited__delimiter .euiIcon {\n          transform: rotate(90deg);\n          margin-inline: auto;\n        }\n      }\n    }");
+  };
+  return {
+    euiDatePickerRangeInline: /* @__PURE__ */ css(".euiFormControlLayoutDelimited{", logicalCSS("height", "auto"), " ", logicalCSS("width", "fit-content"), " ", logicalCSS("max-width", "100%"), " border:none;padding:0;.euiFormControlLayout__childrenWrapper{display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:auto;align-items:stretch;background-color:transparent;}.euiFormControlLayoutIcons{justify-content:center;grid-column:1/span 3;", logicalCSS("height", "auto"), " ", logicalCSS("padding-bottom", euiTheme.size.s), ";}&::after{display:none;}}.react-datepicker{position:relative;};label:euiDatePickerRangeInline;"),
+    responsive: /* @__PURE__ */ css(containerQuery(268), ";;label:responsive;"),
+    responsiveWithTimeSelect: /* @__PURE__ */ css(containerQuery(374), ";;label:responsiveWithTimeSelect;"),
+    shadow: /* @__PURE__ */ css(".euiFormControlLayoutDelimited{", euiShadowMedium3(euiThemeContext, {
+      borderAllInHighContrastMode: true
+    }), disableFormControlHoverStyles(), " .euiFormControlLayout__childrenWrapper{box-shadow:none;", disableFormControlHoverStyles(), ";}};label:shadow;"),
+    // Applied directly to EuiFormControlLayout so we can check if `disabled`
+    // and allow the disabled background-color to take precedence
+    formLayout: {
+      noShadow: _ref113,
+      shadow: /* @__PURE__ */ css("background-color:", euiTheme.colors.emptyShade, ";;label:shadow;")
+    }
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/super_date_picker/super_date_picker.styles.js
+var _ref114 = true ? {
+  name: "1e4qgxg-euiSuperDatePicker__range",
+  styles: "flex-grow:1;overflow:hidden;label:euiSuperDatePicker__range;"
+} : {
+  name: "1e4qgxg-euiSuperDatePicker__range",
+  styles: "flex-grow:1;overflow:hidden;label:euiSuperDatePicker__range;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiSuperDatePickerStyles = function euiSuperDatePickerStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var forms = euiFormVariables(euiThemeContext);
+  var inputWidth = euiTheme.base * 30;
+  var buttonWidth = euiTheme.base * 7;
+  var gap = euiTheme.size.s;
+  var restrictedWidth = mathWithUnits(gap, function(gap2) {
+    return inputWidth + gap2 + buttonWidth;
+  });
+  var minFormWidth = parseFloat(forms.maxWidth) / 2;
+  var autoMinWidth = mathWithUnits(gap, function(gap2) {
+    return minFormWidth + gap2 + buttonWidth;
+  });
+  var needsUpdatingTextColor = euiTheme.colors.textSuccess;
+  return {
+    euiSuperDatePicker: /* @__PURE__ */ css("display:flex;gap:", gap, ";", logicalCSS("max-width", "100%"), " ", euiMaxBreakpoint(euiThemeContext, "m"), "{", logicalCSS("width", "100%"), ";};label:euiSuperDatePicker;"),
+    widths: {
+      restricted: /* @__PURE__ */ css(logicalCSS("width", restrictedWidth), ";;label:restricted;"),
+      full: /* @__PURE__ */ css(logicalCSS("width", "100%"), ";;label:full;"),
+      auto: /* @__PURE__ */ css("display:inline-flex;", logicalCSS("min-width", "min(".concat(autoMinWidth, ", 100%)")), " ", logicalCSS("width", "auto"), ";;label:auto;")
+    },
+    // Special rendering cases that override all permutations of the above widths
+    noUpdateButton: {
+      // Skipping css`` and using the `label` key instead to reduce repeat Emotion generated classNames
+      restricted: "\n        label: noUpdateButton;\n        ".concat(logicalCSS("width", "".concat(inputWidth, "px")), ";\n      "),
+      auto: "\n        label: noUpdateButton;\n        ".concat(logicalCSS("min-width", "min(".concat(minFormWidth, "px, 100%)")), ";\n      "),
+      full: "\n        label: noUpdateButton;\n      "
+    },
+    isAutoRefreshOnly: {
+      // display: block over flex is required to have the nested .euiPopover wrap expand to the wrapper width
+      restricted: "\n        label: isAutoRefreshOnly;\n        display: block;\n        ".concat(logicalCSS("width", forms.maxWidth), "\n      "),
+      auto: "\n        label: isAutoRefreshOnly;\n      ",
+      full: "\n        label: isAutoRefreshOnly;\n        display: block;\n      "
+    },
+    // isQuickSelectOnly forces `width` to be `auto`
+    isQuickSelectOnly: /* @__PURE__ */ css(logicalCSS("min-width", 0), ".euiFormControlLayout__prepend{", logicalCSS("max-width", "none"), ";}.euiFormControlLayoutDelimited__delimiter:first-child{", logicalCSS("padding-horizontal", 0), ";};label:isQuickSelectOnly;"),
+    euiSuperDatePicker__range: _ref114,
+    euiSuperDatePicker__rangeInput: /* @__PURE__ */ css("flex-grow:1;", logicalCSS("width", "auto"), " overflow:hidden;;label:euiSuperDatePicker__rangeInput;"),
+    euiSuperDatePicker__prettyDurationTooltip: /* @__PURE__ */ css(logicalCSS("max-width", "min(58ch, 90vw)"), ";;label:euiSuperDatePicker__prettyDurationTooltip;"),
+    // Form states
+    states: {
+      euiSuperDatePicker__formControlLayout: /* @__PURE__ */ css(".euiFormControlLayout__childrenWrapper{", highContrastModeStyles(euiThemeContext, {
+        none: "\n              box-shadow: none;\n            ",
+        preferred: "border: none;"
+      }), ".euiDatePopoverButton:not(.euiDatePopoverButton-isSelected):hover{outline:none;}.euiPopover{border-radius:", forms.controlBorderRadius, ";.euiToolTipAnchor{border-radius:inherit;}}.euiDatePopoverButton{background-color:transparent;border-radius:inherit;}};label:euiSuperDatePicker__formControlLayout;"),
+      default: /* @__PURE__ */ css(".euiFormControlLayout__childrenWrapper{color:", forms.textColor, ";background-color:", forms.backgroundColor, ";}.euiDatePopoverButton{--euiFormControlStateHoverColor:", forms.borderHovered, ";box-shadow:none;}.euiDatePopoverButton:focus,.euiPopover-isOpen .euiDatePopoverButton{", euiFormControlFocusStyles(euiThemeContext), ";};label:default;"),
+      disabled: /* @__PURE__ */ css(".euiFormControlLayout__childrenWrapper{", euiFormControlDisabledStyles(euiThemeContext), ";};label:disabled;"),
+      invalid: /* @__PURE__ */ css(".euiFormControlLayout__childrenWrapper{color:", euiTheme.colors.textDanger, ";&:has(.euiPopover-isOpen, .euiDatePopoverButton:focus){--euiFormControlStateColor:transparent;--euiFormControlStateHoverColor:transparent;}&:not(:has(.euiPopover-isOpen, .euiDatePopoverButton:focus)){", euiFormControlInvalidStyles(euiThemeContext), ";}.euiDatePopoverButton:focus,.euiPopover-isOpen .euiDatePopoverButton{", euiFormControlFocusStyles(euiThemeContext), ";}};label:invalid;"),
+      needsUpdating: /* @__PURE__ */ css(".euiFormControlLayout__childrenWrapper{--euiFormControlStateColor:", euiTheme.colors.success, ";--euiFormControlStateHoverColor:", euiTheme.colors.success, ";--euiFormControlStateWidth:", euiTheme.border.width.thin, ";color:", needsUpdatingTextColor, ";", euiFormControlHighlightBorderStyles, " &:has(.euiPopover-isOpen, .euiDatePopoverButton:focus){--euiFormControlStateColor:transparent;--euiFormControlStateHoverColor:transparent;}&:has(.euiPopover-isOpen),&:focus-within{--euiFormControlStateColor:", forms.borderColor, ";--euiFormControlStateHoverColor:", forms.borderHovered, ";}}.euiFormControlLayoutDelimited__delimiter{color:inherit;}.euiDatePopoverButton{", euiFormControlDefaultShadow(euiThemeContext, {
+        withBorder: false,
+        withBackgroundColor: false
+      }), " background-color:inherit;box-shadow:none;}.euiDatePopoverButton:focus,.euiPopover-isOpen .euiDatePopoverButton{", euiFormControlFocusStyles(euiThemeContext), ";};label:needsUpdating;")
+    }
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/super_date_picker/date_popover/date_popover_button.styles.js
+var _ref115 = true ? {
+  name: "170kc3d-now",
+  styles: "flex-grow:0.5!important;label:now;"
+} : {
+  name: "170kc3d-now",
+  styles: "flex-grow:0.5!important;label:now;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiDatePopoverButtonStyles = function euiDatePopoverButtonStyles2(euiThemeContext) {
+  return {
+    euiDatePopoverButton: /* @__PURE__ */ css(_buttonStyles(euiThemeContext), ";;label:euiDatePopoverButton;"),
+    now: _ref115,
+    tooltipAnchor: /* @__PURE__ */ css(logicalCSS("height", "100%"), " ", logicalCSS("width", "100%"), ";;label:tooltipAnchor;")
+  };
+};
+var _buttonStyles = function _buttonStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return /* @__PURE__ */ css(euiFormControlHoverStyles(euiThemeContext), " ", logicalCSS("height", "100%"), " ", logicalCSS("width", "100%"), " ", logicalCSS("padding-horizontal", euiTheme.size.s), " font-size:", euiFontSize(euiThemeContext, "s").fontSize, ";white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:inherit;background-color:inherit;&:disabled{cursor:not-allowed;}");
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/super_date_picker/date_popover/date_popover_content.styles.js
+var euiDatePopoverContentStyles = function euiDatePopoverContentStyles2(euiThemeContext) {
+  var _euiFormVariables = euiFormVariables(euiThemeContext), maxWidth = _euiFormVariables.maxWidth;
+  return {
+    euiDatePopoverContent: /* @__PURE__ */ css("&,& .react-datepicker{", logicalCSS("width", maxWidth), " ", logicalCSS("max-width", "100%"), " ", euiMaxBreakpoint(euiThemeContext, "s"), "{", logicalCSS("width", "284px"), ";}};label:euiDatePopoverContent;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/super_date_picker/date_popover/absolute_tab.styles.js
+var _ref116 = true ? {
+  name: "1oht9b5-euiAbsoluteTabDateForm__submit",
+  styles: "flex-shrink:0;label:euiAbsoluteTabDateForm__submit;"
+} : {
+  name: "1oht9b5-euiAbsoluteTabDateForm__submit",
+  styles: "flex-shrink:0;label:euiAbsoluteTabDateForm__submit;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiAbsoluteTabDateFormStyles = function euiAbsoluteTabDateFormStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return {
+    euiAbsoluteTabDateForm: /* @__PURE__ */ css(logicalCSS("padding-horizontal", euiTheme.size.s), " ", logicalCSS("padding-bottom", euiTheme.size.s), ";;label:euiAbsoluteTabDateForm;"),
+    euiAbsoluteTabDateForm__submit: _ref116,
+    euiAbsoluteTabDateForm__row: /* @__PURE__ */ css("flex-grow:1;.euiFormRow__text{", logicalCSS("margin-right", mathWithUnits([euiTheme.size.xl, euiTheme.size.s], function(submitButtonSize, gapSize) {
+      return -1 * (submitButtonSize + gapSize);
+    })), ";};label:euiAbsoluteTabDateForm__row;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/super_date_picker/quick_select_popover/quick_select_panel.styles.js
+var euiQuickSelectPanelStyles = function euiQuickSelectPanelStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return {
+    euiQuickSelectPanel: /* @__PURE__ */ css("&:not(:first-child){", logicalCSS("border-top", euiTheme.border.thin), " ", logicalCSS("padding-top", euiTheme.size.m), " ", logicalCSS("margin-top", euiTheme.size.m), ";};label:euiQuickSelectPanel;"),
+    euiQuickSelectPanel__title: /* @__PURE__ */ css("float:left;", logicalCSS("margin-bottom", euiTheme.size.m), ";;label:euiQuickSelectPanel__title;"),
+    euiQuickSelectPanel__section: /* @__PURE__ */ css("clear:both;", logicalCSS("margin-top", euiTheme.size.s), " ", logicalCSS("max-height", mathWithUnits(euiTheme.size.m, function(x) {
+      return x * 12;
+    })), " overflow:hidden;", logicalCSSWithFallback("overflow-y", "auto"), " ", euiScrollBarStyles(euiThemeContext), " ", euiFontSize(euiThemeContext, "s"), ";;label:euiQuickSelectPanel__section;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/date_picker/super_date_picker/quick_select_popover/quick_select_popover.styles.js
+var euiQuickSelectPopoverStyles = function euiQuickSelectPopoverStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var formMaxWidth = euiFormMaxWidth(euiThemeContext);
+  return {
+    euiQuickSelectPopover: /* @__PURE__ */ css(logicalCSS("width", formMaxWidth), " ", logicalCSS("max-width", "100%"), ";;label:euiQuickSelectPopover;"),
+    euiQuickSelectPopoverButton: /* @__PURE__ */ css(logicalCSS("border-top-right-radius", 0), " ", logicalCSS("border-bottom-right-radius", 0), ".euiIcon{", logicalCSS("width", euiTheme.size.base), ";};label:euiQuickSelectPopoverButton;"),
+    euiQuickSelectPopoverButton__content: /* @__PURE__ */ css("gap:", euiTheme.size.xs, ";;label:euiQuickSelectPopoverButton__content;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/form/form_control_layout/append_prepend/form_append_prepend.styles.js
+var euiFormAppendPrependStyles = function euiFormAppendPrependStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var form = euiFormVariables(euiThemeContext);
+  var appendPrepend = appendPrependSelector;
+  var buttons = buttonSelector;
+  var text = textSelector;
+  var buttonStyles3 = euiButtonDisplaysColors(euiThemeContext);
+  return {
+    side: /* @__PURE__ */ css("position:relative;display:flex;align-items:center;gap:", euiTheme.size.s, ";block-size:100%;max-inline-size:100%;border-radius:", form.controlLayoutInnerBorderRadius, ";&:focus-visible{outline:none;};label:side;"),
+    uncompressed: /* @__PURE__ */ css("&:not(:has(> ", buttons, ":first-child, > *:first-child ", buttons, ")){", logicalCSS("padding-left", euiTheme.size.s), ";}&:not(:has(> ", buttons, ":last-child, > *:last-child ", buttons, ")){", logicalCSS("padding-right", euiTheme.size.s), ";};label:uncompressed;"),
+    compressed: /* @__PURE__ */ css("&:not(:has(> ", buttons, ":first-child, > *:first-child ", buttons, ")){", logicalCSS("padding-left", euiTheme.size.xs), ";}&:not(:has(> ", buttons, ":last-child, > *:last-child ", buttons, ")){", logicalCSS("padding-right", euiTheme.size.xs), ";};label:compressed;"),
+    wrapper: /* @__PURE__ */ css("position:relative;max-inline-size:100%;&:has(", appendPrepend, ":focus-visible){&::after{", euiFormControlFocusStyles(euiThemeContext), " content:'';position:absolute;inset:-", euiTheme.size.xs, ";border-radius:", form.controlLayoutBorderRadius, ";pointer-events:none;}};label:wrapper;"),
+    isInteractive: /* @__PURE__ */ css(buttonStyles3.empty.primary, ";background-color:", form.backgroundColor, ";*{cursor:pointer;}", text, "{color:currentColor;cursor:pointer;};label:isInteractive;"),
+    disabled: /* @__PURE__ */ css("color:", form.textColorDisabled, ";.euiFormLabel,.euiNotificationBadge{color:", form.textColorDisabled, ";};label:disabled;")
   };
 };
 export {
@@ -7702,6 +7930,7 @@ export {
   TOKEN_MAP,
   _tourFooterBgColor,
   composeFlyoutInlineStyles,
+  euiAbsoluteTabDateFormStyles,
   euiAccordionArrowStyles,
   euiAccordionButtonStyles,
   euiAccordionChildWrapperStyles,
@@ -7722,14 +7951,18 @@ export {
   euiBreadcrumbStyles,
   euiBreadcrumbsListStyles,
   euiBreakpoint,
+  euiButtonColor,
   euiButtonDisplayContentStyles,
   euiButtonDisplayStyles,
   euiButtonDisplaysColors,
+  euiButtonEmptyColor,
   euiButtonEmptyStyles,
+  euiButtonFillColor,
   euiButtonIconStyles,
   euiButtonInteractionStyles,
   euiCallOutHeaderStyles,
   euiCallOutStyles,
+  euiCanAnimate,
   euiCardBetaBadgeStyles,
   euiCardSelectStyles,
   euiCardStyles,
@@ -7749,6 +7982,11 @@ export {
   euiContextMenuPanelTitleStyles,
   euiContextMenuStyles,
   euiContextMenuVariables,
+  euiDatePickerRangeInlineStyles,
+  euiDatePickerRangeStyles,
+  euiDatePickerStyles,
+  euiDatePopoverButtonStyles,
+  euiDatePopoverContentStyles,
   euiDescribedFormGroupStyles,
   euiDescriptionListDescriptionStyles,
   euiDescriptionListStyles,
@@ -7772,6 +8010,8 @@ export {
   euiFlyoutStyles,
   euiFocusRing,
   euiFontSize,
+  euiFormAppendPrependStyles,
+  euiFormControlDefaultShadow,
   euiFormControlLayoutDelimitedStyles,
   euiFormControlLayoutDelimited__delimiter,
   euiFormControlLayoutDelimited__input,
@@ -7779,6 +8019,7 @@ export {
   euiFormControlLayoutSideNodeStyles,
   euiFormControlLayoutStyles,
   euiFormControlStyles,
+  euiFormControlText,
   euiFormErrorTextStyles,
   euiFormHelpTextStyles,
   euiFormLabelAppendStyles,
@@ -7853,6 +8094,8 @@ export {
   euiProgressLabelStyles,
   euiProgressStyles,
   euiProgressValueTextStyles,
+  euiQuickSelectPanelStyles,
+  euiQuickSelectPopoverStyles,
   euiRadioGroupStyles,
   euiRadioStyles,
   euiScreenReaderOnly,
@@ -7881,6 +8124,7 @@ export {
   euiStepVariables,
   euiStepsHorizontalStyles,
   euiSubStepsStyles,
+  euiSuperDatePickerStyles,
   euiSwitchStyles,
   euiTabContentStyles,
   euiTabStyles,
@@ -7920,6 +8164,7 @@ export {
   logicalCSS,
   logicalSizeCSS,
   makeHighContrastColor,
+  mathWithUnits,
   resetStyles,
   setStyleForRestrictedPageWidth,
   shade,

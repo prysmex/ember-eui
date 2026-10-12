@@ -17,17 +17,20 @@ module('Integration | Component | eui-date-picker-range', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiDatePickerRange').hasClass('euiDatePickerRange--fullWidth');
-    assert.dom('input:first-child').hasClass('euiDatePickerRange__start').hasClass('euiDatePicker');
-    assert.dom('input:last-child').hasClass('euiDatePickerRange__end');
-    assert.dom('.euiDatePickerRange__delimeter').hasText('→');
+    // --fullWidth was a legacy modifier: the delimited layout now takes the full width
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiDatePickerRange .euiFormControlLayout')!).maxWidth, '100%');
+    assert.dom('input[aria-label="Start date"]').hasClass('euiDatePickerRange__start').hasClass('euiDatePicker').hasClass('euiFormControlLayoutDelimited__input');
+    assert.dom('input[aria-label="End date"]').hasClass('euiDatePickerRange__end');
+    // upstream delimiter class (was the misspelled legacy `__delimeter`)
+    assert.dom('.euiFormControlLayoutDelimited__delimiter').hasText('→');
   });
 
   test('the default block replaces the layout', async function (assert) {
     await render(<template><EuiDatePickerRange @readOnly={{true}}><span class="custom">x</span></EuiDatePickerRange></template>);
 
-    assert.dom('.euiDatePickerRange').hasClass('euiDatePickerRange--readOnly');
-    assert.dom('.custom').exists();
-    assert.dom('.euiDatePickerRange__delimeter').doesNotExist();
+    // the default block replaces the delimited layout that @readOnly styles
+    assert.dom('.euiDatePickerRange .custom').exists();
+    assert.dom('.euiFormControlLayoutDelimited').doesNotExist();
+    assert.dom('.euiFormControlLayoutDelimited__delimiter').doesNotExist();
   });
 });

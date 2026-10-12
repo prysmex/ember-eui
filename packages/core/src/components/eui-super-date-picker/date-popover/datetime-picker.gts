@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { helper } from '@ember/component/helper';
 import { concat, fn } from '@ember/helper';
 import { on } from '@ember/modifier';
@@ -10,9 +10,12 @@ import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
 import { and, eq, not } from 'ember-truth-helpers';
 import moment from 'moment';
 
-import EuiFlexItem from '../../eui-flex-item.gts';
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { euiReactDatePickerStyles } from '../../../utils/eui/date-pickers.ts';
+import { euiDatePickerStyles } from '../../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
+import EuiButtonIcon from '../../eui-button-icon.gts';
 import EuiFormControlLayout from '../../eui-form-control-layout.gts';
-import EuiIcon from '../../eui-icon.gts';
 import EuiSelect from '../../eui-select.gts';
 
 const isSameDayHelper = helper(function ([year, month, day, selectedDate]: [
@@ -37,7 +40,7 @@ interface DatetimePickerArgs {
   selected?: moment.Moment | null;
   /** Called with the new value. */
   onChange: (value: string | Date | moment.Moment, e: Event) => void;
-  /** Classes for the icon. */
+  /** @deprecated Has no effect: the month buttons are `EuiButtonIcon`s. */
   iconClasses?: string;
   /** moment format of absolute dates. */
   dateFormat?: string;
@@ -108,6 +111,45 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     this.offset = this.monthMoment.clone().startOf('month').day();
 
     this.today = moment();
+  }
+
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  /**
+   * Upstream `EuiDatePicker inline shadow={false}`: a block wrapper whose
+   * form control layout loses its frame and stacks the calendar.
+   */
+  @cached
+  get rootClass() {
+    const styles = useEuiBorealisStyles(this.context, euiDatePickerStyles);
+    return euiClass(
+      this.context,
+      { boxSizing: 'border-box' },
+      styles.euiDatePicker,
+      styles.inline.inline,
+      styles.inline.noShadow
+    );
+  }
+
+  /** Upstream's react-datepicker styles, applied to the same markup. */
+  @cached
+  get calendarClass() {
+    const styles = useEuiBorealisStyles(
+      this.context,
+      euiReactDatePickerStyles
+    );
+    return euiClass(
+      this.context,
+      // React's global reset: no list markers/spacing, border-box
+      {
+        boxSizing: 'border-box',
+        '& :where(*, *::before, *::after)': { boxSizing: 'border-box' },
+        '& :where(ul)': { margin: 0, padding: 0, listStyle: 'none' }
+      },
+      styles.euiReactDatePicker
+    );
   }
 
   get monthNames() {
@@ -254,28 +296,25 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
   }
 
   <template>
-    <div class="euiDatePicker euiDatePicker--inline">
+    <div class="euiDatePicker {{this.rootClass}}">
       <EuiFormControlLayout>
-        <div class="react-datepicker">
-          <button
-            type="button"
+        <div class="react-datepicker {{this.calendarClass}}">
+          <EuiButtonIcon
             class="react-datepicker__navigation react-datepicker__navigation--previous"
             aria-label="Previous month"
+            @iconType="sortLeft"
+            @size="s"
+            @color="text"
             {{on "click" this.decreaseMonth}}
-          >
-            <EuiIcon @iconClasses="euiButtonIcon__icon" @type="arrowLeft" />
-          </button>
-          <button
-            type="button"
+          />
+          <EuiButtonIcon
             class="react-datepicker__navigation react-datepicker__navigation--next"
             aria-label="Next month"
+            @iconType="sortRight"
+            @size="s"
+            @color="text"
             {{on "click" this.increaseMonth}}
-          >
-            <EuiIcon
-              @iconClasses="euiButtonIcon__icon {{@iconClasses}}"
-              @type="arrowRight"
-            />
-          </button>
+          />
           <div class="react-datepicker__month-container">
             <div class="react-datepicker__header">
               <div
@@ -284,38 +323,26 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
                 <div
                   class="react-datepicker__month-dropdown-container react-datepicker__month-dropdown-container--scroll"
                 >
-                  {{!template-lint-disable}}
-                  <div
-                    class="react-datepicker__month-read-view"
-                    style="padding: 0;"
-                  >
-                    <EuiFlexItem @grow={{1}}>
-                      <EuiSelect
-                        @compressed={{true}}
-                        @value={{this.month}}
-                        @options={{this.monthNames}}
-                        {{on "change" (pick "target.value" this.setMonth)}}
-                      />
-                    </EuiFlexItem>
-                  </div>
+                  <EuiSelect
+                    @compressed={{true}}
+                    @fullWidth={{true}}
+                    aria-label="Month"
+                    @value={{this.month}}
+                    @options={{this.monthNames}}
+                    {{on "change" (pick "target.value" this.setMonth)}}
+                  />
                 </div>
                 <div
                   class="react-datepicker__year-dropdown-container react-datepicker__year-dropdown-container--scroll"
                 >
-                  {{!template-lint-disable}}
-                  <div
-                    class="react-datepicker__year-read-view"
-                    style="padding: 0;"
-                  >
-                    <EuiFlexItem @grow={{1}}>
-                      <EuiSelect
-                        @compressed={{true}}
-                        @value={{this.year}}
-                        @options={{this.years}}
-                        {{on "change" (pick "target.value" this.setYear)}}
-                      />
-                    </EuiFlexItem>
-                  </div>
+                  <EuiSelect
+                    @compressed={{true}}
+                    @fullWidth={{true}}
+                    aria-label="Year"
+                    @value={{this.year}}
+                    @options={{this.years}}
+                    {{on "change" (pick "target.value" this.setYear)}}
+                  />
                 </div>
               </div>
               <div class="react-datepicker__day-names">

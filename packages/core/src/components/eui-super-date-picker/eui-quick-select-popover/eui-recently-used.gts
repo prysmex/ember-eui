@@ -1,15 +1,16 @@
+import Component from '@glimmer/component';
 import { fn, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { service } from '@ember/service';
 
-import randomId from '../../../-private/random-id.ts';
+import { randomId } from '../../../-private/random-id.ts';
 import EuiFlexGrid from '../../eui-flex-grid.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
-import EuiI18n from '../../eui-i18n.gts';
 import EuiLink from '../../eui-link.gts';
-import EuiTitle from '../../eui-title.gts';
+import EuiQuickSelectPanel from './eui-quick-select-panel.gts';
 
+import type EuiI18n from '../../../services/eui-i18n';
 import type { DurationRange } from '../types/global';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private The "Recently used" list of the quick select popover. */
 export interface EuiRecentlyUsedSignature {
@@ -21,49 +22,58 @@ export interface EuiRecentlyUsedSignature {
   };
 }
 
-const EuiRecentlyUsed: TemplateOnlyComponent<EuiRecentlyUsedSignature> =
-  <template>
-    {{#let (randomId) as |legendId|}}
-      <fieldset>
-        <EuiTitle id={{legendId}} @tagName="legend" @size="xxxs">
-          <EuiI18n
-            @token="euiRecentlyUsed.legend"
-            @default="Recently used date ranges"
-            as |Token|
-          >
-            <Token as |value|>
-              {{value}}
-            </Token>
-          </EuiI18n>
-        </EuiTitle>
-        <div class="euiQuickSelectPopover__section">
-          <EuiFlexGrid
-            aria-labelledby={{legendId}}
-            @gutterSize="s"
-            @columns={{2}}
-            @direction="column"
-            @responsive={{false}}
-            @tagName="ul"
-          >
-            {{#each @recentlyUsedRanges as |range|}}
-              <EuiFlexItem
-                class="euiQuickSelectPopover__sectionItem"
-                @tagName="li"
-              >
-                <EuiLink
-                  {{on
-                    "click"
-                    (fn @applyTime (hash start=range.start end=range.end))
-                  }}
-                >
-                  {{range.label}}
-                </EuiLink>
-              </EuiFlexItem>
-            {{/each}}
-          </EuiFlexGrid>
-        </div>
-      </fieldset>
-    {{/let}}
-  </template>;
+export default class EuiRecentlyUsed extends Component<EuiRecentlyUsedSignature> {
+  @service declare euiI18n: EuiI18n;
 
-export default EuiRecentlyUsed;
+  legendId = randomId();
+
+  get title() {
+    return this.euiI18n.lookupToken(
+      'euiRecentlyUsed.legend',
+      'Recently used date ranges'
+    );
+  }
+
+  get ranges() {
+    return this.args.recentlyUsedRanges ?? [];
+  }
+
+  label = (range: DurationRange) =>
+    range.label ?? `${range.start} → ${range.end}`;
+
+  <template>
+    {{! upstream renders nothing without ranges }}
+    {{#if this.ranges.length}}
+      <EuiQuickSelectPanel
+        @tagName="fieldset"
+        @title={{this.title}}
+        @titleId={{this.legendId}}
+      >
+        <EuiFlexGrid
+          aria-labelledby={{this.legendId}}
+          @gutterSize="s"
+          @columns={{1}}
+          @direction="column"
+          @responsive={{false}}
+          @tagName="ul"
+        >
+          {{#each this.ranges as |range|}}
+            <EuiFlexItem
+              class="euiQuickSelectPopover__sectionItem"
+              @tagName="li"
+            >
+              <EuiLink
+                {{on
+                  "click"
+                  (fn @applyTime (hash start=range.start end=range.end))
+                }}
+              >
+                {{this.label range}}
+              </EuiLink>
+            </EuiFlexItem>
+          {{/each}}
+        </EuiFlexGrid>
+      </EuiQuickSelectPanel>
+    {{/if}}
+  </template>
+}

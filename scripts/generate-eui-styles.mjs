@@ -207,7 +207,23 @@ const entries = {
   'components/expression/expression.styles.js': ['euiExpressionStyles', 'euiExpressionDescriptionStyles', 'euiExpressionValueStyles', 'euiExpressionIconStyles'],
   'components/tour/tour.styles.js': ['euiTourStyles', 'euiTourBeaconStyles'],
   'components/tour/_tour_header.styles.js': ['euiTourHeaderStyles'],
-  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor']
+  'components/tour/_tour_footer.styles.js': ['euiTourFooterStyles', '_tourFooterBgColor'],
+  // date pickers
+  'components/date_picker/date_picker.styles.js': ['euiDatePickerStyles'],
+  'components/date_picker/date_picker_range.styles.js': ['euiDatePickerRangeStyles', 'euiDatePickerRangeInlineStyles'],
+  'components/date_picker/super_date_picker/super_date_picker.styles.js': ['euiSuperDatePickerStyles'],
+  'components/date_picker/super_date_picker/date_popover/date_popover_button.styles.js': ['euiDatePopoverButtonStyles'],
+  'components/date_picker/super_date_picker/date_popover/date_popover_content.styles.js': ['euiDatePopoverContentStyles'],
+  'components/date_picker/super_date_picker/date_popover/absolute_tab.styles.js': ['euiAbsoluteTabDateFormStyles'],
+  'components/date_picker/super_date_picker/quick_select_popover/quick_select_panel.styles.js': ['euiQuickSelectPanelStyles'],
+  'components/date_picker/super_date_picker/quick_select_popover/quick_select_popover.styles.js': ['euiQuickSelectPopoverStyles'],
+  'components/form/form_control_layout/append_prepend/form_append_prepend.styles.js': ['euiFormAppendPrependStyles'],
+  // Helpers for the hand-ported `euiReactDatePickerStyles` (utils/eui/date-pickers.ts),
+  // which upstream builds with vanilla `@emotion/css` and cannot be extracted.
+  // `global_styling/index.js` is the pure barrel (global styles removed by the adapter);
+  // the extension-less form.styles key avoids editing the form-controls entry above.
+  'global_styling/index.js': ['euiButtonColor', 'euiButtonEmptyColor', 'euiButtonFillColor', 'euiCanAnimate', 'mathWithUnits'],
+  'components/form/form.styles': ['euiFormControlText', 'euiFormControlDefaultShadow']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

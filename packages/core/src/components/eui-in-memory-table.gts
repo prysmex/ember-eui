@@ -610,6 +610,7 @@ export default class EuiInMemoryTable<T extends object = any> extends Component<
         responsiveBreakpoint=@responsiveBreakpoint
         hasBackground=@hasBackground
         scrollableInline=@scrollableInline
+        css=@css
         hasExpandedRowBlock=(has-block "expandedRow")
         hasNoItemsBlock=(has-block "noItemsMessage")
       )

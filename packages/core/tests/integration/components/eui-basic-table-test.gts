@@ -66,15 +66,16 @@ module('Integration | Component | Borealis basic table', function (hooks) {
       { name: 'Badge', component: CityBadge },
       { name: 'Initial', render: (user: User) => user.name[0], align: 'center' }
     ];
+    const rootCss = { marginTop: '7px' };
     await render(
       <template>
         <EuiEmotionProvider>
-          <EuiBasicTable @items={{users}} @columns={{columns}} @rowHeader="name" class="caller" data-test-subj="users" />
+          <EuiBasicTable @items={{users}} @columns={{columns}} @rowHeader="name" @css={{rootCss}} class="caller" data-test-subj="users" />
         </EuiEmotionProvider>
       </template>
     );
 
-    assert.dom('div.euiBasicTable.caller').hasAttribute('data-test-subj', 'users');
+    assert.dom('div.euiBasicTable.caller').hasAttribute('data-test-subj', 'users').hasStyle({ marginTop: '7px' }, '@css');
     assert.dom('table.euiTable').hasAttribute('id');
     assert.deepEqual(texts('thead th .eui-textTruncate'), ['Name', 'Age', 'Online', 'Joined', 'City', 'Badge', 'Initial']);
     assert.dom('thead th:nth-child(2)').hasAttribute('data-test-subj', 'tableHeaderCell_age_1');

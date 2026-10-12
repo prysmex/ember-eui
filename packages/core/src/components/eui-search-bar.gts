@@ -19,6 +19,7 @@ import EuiToolTip from './eui-tool-tip.gts';
 
 import type Owner from '@ember/owner';
 import type { SearchFilterConfig } from '../-private/search-bar.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiFlexGroupSignature } from './eui-flex-group.gts';
 import type {
   EuiSearchBoxHint,
@@ -101,6 +102,8 @@ export interface EuiSearchBarSignature {
      * `true`.
      */
     showErrorTooltip?: boolean;
+    /** Styles composed last into the root flex group's class. */
+    css?: EuiCss;
     /** @private Whether the caller's `<:toolsLeft>` block exists (when forwarding it). */
     hasToolsLeftBlock?: boolean;
     /** @private Whether the caller's `<:toolsRight>` block exists (when forwarding it). */
@@ -296,6 +299,7 @@ export default class EuiSearchBar extends Component<EuiSearchBarSignature> {
       @gutterSize="s"
       @alignItems="center"
       @wrap={{true}}
+      @css={{@css}}
       ...attributes
     >
       {{#if (flag @hasToolsLeftBlock (has-block "toolsLeft"))}}

@@ -77,6 +77,7 @@ import type {
   TableResponsiveBreakpoint
 } from '../-private/table.ts';
 import type EuiI18n from '../services/eui-i18n';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiTableSortMobileItemOption } from './eui-table-sort-mobile.gts';
 
 export type {
@@ -168,6 +169,8 @@ export interface EuiBasicTableSignature<T extends object> {
     hasBackground?: boolean;
     /** Lets the table scroll inline (upstream beta). */
     scrollableInline?: boolean;
+    /** Styles composed last into the root `<div>`'s class (upstream `css`). */
+    css?: EuiCss;
     /** @private Whether the caller's `<:expandedRow>` block exists (when forwarding it). */
     hasExpandedRowBlock?: boolean;
     /** @private Whether the caller's `<:noItemsMessage>` block exists (when forwarding it). */
@@ -892,6 +895,7 @@ export default class EuiBasicTable<T extends object = any> extends Component<
   get classes() {
     const context = getEuiThemeContext(this);
     return {
+      root: this.args.css ? euiClass(context, this.args.css) : undefined,
       caption: euiClass(context, euiTableCaptionStyles, euiScreenReaderOnlyCss()),
       body: this.args.loading
         ? euiClass(context, useEuiBorealisStyles(context, euiBasicTableBodyLoading))
@@ -907,7 +911,7 @@ export default class EuiBasicTable<T extends object = any> extends Component<
 
   <template>
     <div
-      class="euiBasicTable {{if @loading 'euiBasicTable-loading'}}"
+      class="euiBasicTable {{if @loading 'euiBasicTable-loading'}} {{this.classes.root}}"
       {{this.syncSelection this.selectionState}}
       ...attributes
     >

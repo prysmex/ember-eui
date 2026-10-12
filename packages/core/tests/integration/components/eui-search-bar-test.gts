@@ -47,10 +47,11 @@ module('Integration | Component | Borealis search bar', function (hooks) {
 
   test('renders the upstream layout, field semantics and holder styles', async function (assert) {
     const filters: SearchFilterConfig[] = [{ type: 'is', field: 'open', name: 'Open' }];
+    const rootCss = { marginTop: '7px' };
     await render(
       <template>
         <EuiEmotionProvider>
-          <EuiSearchBar @defaultQuery="is:open status:done" @filters={{filters}} class="caller">
+          <EuiSearchBar @defaultQuery="is:open status:done" @filters={{filters}} @css={{rootCss}} class="caller">
             <:toolsLeft><button type="button" data-tool-left>Left</button></:toolsLeft>
             <:toolsRight><button type="button" data-tool-right>Right</button></:toolsRight>
           </EuiSearchBar>
@@ -58,7 +59,7 @@ module('Integration | Component | Borealis search bar', function (hooks) {
       </template>
     );
 
-    assert.dom('.caller.euiFlexGroup').exists('attributes go to the flex group');
+    assert.dom('.caller.euiFlexGroup').exists('attributes go to the flex group').hasStyle({ marginTop: '7px' }, '@css');
     const items = [...el('.caller').children];
     assert.strictEqual(items.length, 4, 'tools, search holder, filters and tools');
     assert.dom(items[0]).containsText('Left');

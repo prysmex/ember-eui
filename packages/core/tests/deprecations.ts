@@ -14,9 +14,11 @@ registerDeprecationHandler((message, options, next) => {
     throw new Error(`Uses an API removed in ember-source ${options.until}: ${message}`);
   }
 
-  // Components EUI removed upstream are deprecated on purpose (until 16.0.0);
-  // their own tests assert these with a handler registered after this one.
-  if (String(options?.id ?? '').endsWith('.removed-upstream')) return;
+  // Components EUI removed upstream, and exports unused since the Borealis
+  // migration, are deprecated on purpose (until the next major); their own tests
+  // assert these with a handler registered after this one.
+  const id = String(options?.id ?? '');
+  if (id.endsWith('.removed-upstream') || id.endsWith('.unused-after-borealis')) return;
 
   next(message, options);
 });

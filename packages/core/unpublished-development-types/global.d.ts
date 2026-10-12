@@ -1,25 +1,3 @@
-interface PropertyMapping {
-  [size: string]: string | null;
-}
-
-interface ComponentProperty {
-  [property: string]: PropertyMapping;
-}
-
-interface ComponentMapping {
-  base: string;
-  properties: ComponentProperty;
-  inlineStyles?(styles: Record<string, unknown>): Record<string, unknown>;
-}
-
-interface Styling {
-  [i: string]: string | null;
-}
-
-interface Mapping {
-  [componentName: string]: ComponentMapping;
-}
-
 interface HSV {
   h: number;
   s: number;

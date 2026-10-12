@@ -266,6 +266,11 @@ const factories = {
   'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles'],
   // control bar and file picker
   'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles'],
+  // new-skeleton
+  'components/skeleton/skeleton_title.styles.js': ['euiSkeletonTitleStyles'],
+  'components/skeleton/skeleton_circle.styles.js': ['euiSkeletonCircleStyles'],
+  'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
+  'components/illustration/illustration.styles.js': ['euiIllustrationStyles'],
   // page-a11y
   'components/banner/banner.styles.js': ['euiBannerStyles']
 };
@@ -1579,7 +1584,6 @@ test('table static slots and container helper match upstream', () => {
   for (const args of [['normal', 'EuiTable', true], ['inline-size', 'x'], ['normal', undefined, false]])
     assert.deepEqual(normalize(styles.euiContainerCSS(...args)), normalize(container.euiContainerCSS(...args)), JSON.stringify(args));
 });
-
 
 
 

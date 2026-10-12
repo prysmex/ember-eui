@@ -6,6 +6,7 @@ import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
 import { setTesting } from '@embroider/macros';
 import EuiConfigService from '@ember-eui/core/services/eui-config';
+import EuiEmotionService from '@ember-eui/core/services/eui-emotion';
 import EuiI18nService from '@ember-eui/core/services/eui-i18n';
 import EuiToasterService from '@ember-eui/core/services/eui-toaster';
 import { setConfig as setBasicDropdownConfig } from 'ember-basic-dropdown/config';
@@ -35,6 +36,8 @@ class TestApp extends EmberApp {
     './router': Router,
     './config/environment': { default: config },
     './services/eui-config': EuiConfigService,
+    // default Borealis theme for components rendered outside an EuiProvider
+    './services/eui-emotion': EuiEmotionService,
     './services/eui-i18n': EuiI18nService,
     './services/eui-toaster': EuiToasterService,
     './services/keyboard': KeyboardService

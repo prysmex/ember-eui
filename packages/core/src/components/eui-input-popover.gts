@@ -178,6 +178,8 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
       <EuiPopover
         class="euiInputPopover"
         @rootCss={{this.rootCss}}
+        @css={{@css}}
+        @panelCss={{@panelCss}}
         @offset={{this.offset}}
         @repositionToCrossAxis={{this.repositionToCrossAxis}}
         @ownFocus={{false}}

@@ -49,6 +49,7 @@ Generated from the components' TypeScript signatures by
 | --- | --- | --- | --- |
 | `@color` | `string` | `'primary'` | `'primary'`, `'accent'`, `'success'`, `'warning'`, `'danger'`, `'ghost'` (for dark backgrounds) or `'text'`. |
 | `@contentClasses` | `string` |  | Classes for the element wrapping the icon and text. |
+| `@contentCss` | `EuiCss` |  | Extra styles composed last into the class of the element wrapping the icon and text (upstream's `contentProps.css`). |
 | `@disabled` | `boolean` |  | Same as `@isDisabled`. |
 | `@fill` | `boolean` | `false` (light background) | Solid background, for the primary action of a page or form. |
 | `@fullWidth` | `boolean` |  | Stretches the button to its container's width. |
@@ -65,6 +66,7 @@ Generated from the components' TypeScript signatures by
 | `@type` | `string` | `'button'` | `type` of the `<button>`, e.g. `'submit'` in a form. |
 | `@element` | `string` | `'a'` with `@href`, `'button'` otherwise | Tag to render, e.g. `'label'` for a file input trigger. |
 | `@isDisabled` | `boolean` |  | Disables the button and greys it out. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@useComponent` (Not needed: a component passed as `@iconType` is rendered.); `@useSvg` (Has no effect, see `EuiIcon`.).
 
@@ -87,6 +89,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@iconClasses` | `string` |  | Extra classes for the icon. |
 | `@textClasses` | `string` |  | Classes for the element wrapping the text. |
 | `@contentClasses` | `string` |  | Classes for the element wrapping the icon and text. |
+| `@contentCss` | `EuiCss` |  | Extra styles composed last into the class of the element wrapping the icon and text (upstream's `contentProps.css`). |
 | `@flush` | `'left' \| 'right' \| 'both'` |  | Removes the padding on `'left'`, `'right'` or `'both'` sides, to align the text with content above or below it. |
 | `@href` | `string` |  | Renders an `<a>` link instead of a `<button>` (a disabled or loading button stays a `<button>`). |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
@@ -94,6 +97,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@type` | `string` | `'button'` | `type` of the `<button>`, e.g. `'submit'`. |
 | `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed` to `"true"` / `"false"`. Leave it undefined for regular buttons. |
 | `@disabled` | `boolean` |  | Same as `@isDisabled`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@useSvg` (Has no effect, see `EuiIcon`.); `@useComponent` (Not needed: a component passed as `@iconType` is rendered.).
 

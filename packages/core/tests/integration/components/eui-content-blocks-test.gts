@@ -416,20 +416,17 @@ module('Integration | Component | Borealis content blocks', function (hooks) {
       light.size.base
     );
     const buttonCss = getComputedStyle(button);
-    // The positioned box is a wrapper around the button (see the handoff).
+    // The button itself is positioned, through EuiButtonIcon's `@css`.
     // Offsets, not client rects: the test container is scaled.
     const ltrRoot = el(this.element, '[data-ltr]');
-    const wrap = button.parentElement!;
-    assert.strictEqual(wrap.offsetParent, ltrRoot, 'positioned against the callout');
-    assert.strictEqual(getComputedStyle(wrap).position, 'absolute');
-    assert.strictEqual(wrap.offsetWidth, button.offsetWidth, 'wrapper shrink-wraps the button');
-    assert.strictEqual(wrap.offsetHeight, button.offsetHeight);
+    assert.strictEqual(button.offsetParent, ltrRoot, 'positioned against the callout');
+    assert.strictEqual(buttonCss.position, 'absolute');
     assert.strictEqual(
-      ltrRoot.clientWidth - (wrap.offsetLeft + wrap.offsetWidth),
+      ltrRoot.clientWidth - (button.offsetLeft + button.offsetWidth),
       px(light.size.s),
       'top-right corner in LTR'
     );
-    assert.strictEqual(wrap.offsetTop, px(light.size.s));
+    assert.strictEqual(button.offsetTop, px(light.size.s));
     assert.strictEqual(
       buttonCss.color,
       rgb(light.colors.textWarning),
@@ -441,7 +438,7 @@ module('Integration | Component | Borealis content blocks', function (hooks) {
     const scale = rtlRootRect.width / rtlRoot.offsetWidth;
     assert.strictEqual(
       Math.round(
-        (el(this.element, '[data-rtl] button').parentElement!.getBoundingClientRect().left -
+        (el(this.element, '[data-rtl] button').getBoundingClientRect().left -
           rtlRootRect.left) /
           scale -
           rtlRoot.clientLeft
@@ -464,18 +461,17 @@ module('Integration | Component | Borealis content blocks', function (hooks) {
       titled.map((node) =>
         node.matches('.euiCallOutHeader__title')
           ? 'title'
-          : node.querySelector('button')
+          : node.matches('button')
             ? 'button'
             : 'body'
       ),
       ['title', 'button', 'body']
     );
     const untitled = Array.from(
-      el(this.element, '[data-untitled] button').parentElement!.parentElement!
-        .children
+      el(this.element, '[data-untitled] button').parentElement!.children
     );
     assert.deepEqual(
-      untitled.map((node) => (node.querySelector('button') ? 'button' : 'body')),
+      untitled.map((node) => (node.matches('button') ? 'button' : 'body')),
       ['body', 'button']
     );
     assert

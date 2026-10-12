@@ -43,6 +43,7 @@ feature a tour points at.
 | --- | --- | --- | --- |
 | `@size` | `number` | `12` | Diameter of the center dot in px. |
 | `@color` | `EuiBeaconColor` | `'success'` | `'subdued'`, `'primary'`, `'success'`, `'accent'`, `'danger'` or `'warning'`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

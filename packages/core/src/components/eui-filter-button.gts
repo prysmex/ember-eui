@@ -7,6 +7,7 @@ import { filterGroupContext } from '../-private/eui-filter-group-context.ts';
 import { _compressedButtonFocusColors } from '../utils/eui/buttons-misc.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiButtonDisplayContentStyles,
   euiButtonDisplayStyles,
@@ -199,7 +200,6 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
       context,
       _compressedButtonFocusColors
     );
-    const child = useEuiBorealisStyles(context, euiFilterButtonChildStyles);
     const { isToggle, isSelected, isDisabled, hasActiveFilters } = this.args;
     const color = this.color;
     const colorKey = isDisabled ? 'disabled' : color;
@@ -244,15 +244,17 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
         this.group.display !== 'highlighted' &&
         color === 'text' &&
         styles.isSelected,
-      !isToggle && !isDisabled && focusColors[color],
-      // EuiNotificationBadge has no `@css` yet: upstream's badge slots are
-      // scoped to this button instead of adding a second class to the badge.
-      {
-        '& .euiFilterButton__notification': [
-          child.notification.euiFilterButton__notification,
-          isDisabled && child.notification.disabled
-        ]
-      }
+      !isToggle && !isDisabled && focusColors[color]
+    ];
+  }
+
+  /** Upstream's `css` on the EuiNotificationBadge. */
+  @cached
+  get badgeCss(): EuiCss {
+    const child = useEuiBorealisStyles(this.context, euiFilterButtonChildStyles);
+    return [
+      child.notification.euiFilterButton__notification,
+      this.args.isDisabled && child.notification.disabled
     ];
   }
 
@@ -369,6 +371,7 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
                 >
                   <EuiNotificationBadge
                     class="euiFilterButton__notification"
+                    @css={{this.badgeCss}}
                     @size="m"
                     @color={{this.badgeColor}}
                     role="marquee"
@@ -378,6 +381,7 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
               {{else}}
                 <EuiNotificationBadge
                   class="euiFilterButton__notification"
+                  @css={{this.badgeCss}}
                   @size="m"
                   @color={{this.badgeColor}}
                   role="marquee"

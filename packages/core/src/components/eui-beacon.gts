@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiBeaconStyles } from '../utils/eui/styles.generated.ts';
 
 import type { SerializedStyles } from '@emotion/serialize';
@@ -32,6 +33,11 @@ export interface EuiBeaconSignature {
      * `'warning'`. Defaults to `'success'`.
      */
     color?: EuiBeaconColor;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
 }
 
@@ -58,7 +64,8 @@ export default class EuiBeacon extends Component<EuiBeaconSignature> {
           ? color
           : 'success'
       ],
-      { blockSize: size, inlineSize: size }
+      { blockSize: size, inlineSize: size },
+      this.args.css
     )}`;
   }
 

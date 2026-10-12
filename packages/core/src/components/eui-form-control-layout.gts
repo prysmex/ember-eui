@@ -10,10 +10,11 @@ import {
   euiFormControlLayoutStyles
 } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
 
 import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons';
-import type { CSSInterpolation } from '@emotion/css/create-instance';
+import type { EuiIconSignature } from './eui-icon';
 
 /**
  * The wrapper EUI's inputs use for icons, the clear button, the loading
@@ -68,10 +69,23 @@ export interface EuiFormControlLayoutSignature {
     isAppendProvided?: boolean;
     /** @private Group styling without the `--group` class (EuiFormControlLayoutDelimited). */
     isDelimited?: boolean;
-    /** @private Extra styles composed last onto the root class. */
-    css?: CSSInterpolation[];
+    /**
+     * Color of `@icon`, anything `EuiIcon`'s `@color` accepts (upstream's
+     * `icon.color`).
+     */
+    iconColor?: EuiIconSignature['Args']['color'];
+    /**
+     * Extra styles composed last into `@icon`'s EuiIcon class (upstream's
+     * `icon.css`).
+     */
+    iconCss?: EuiCss;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** @private Extra styles composed last onto the children wrapper. */
-    wrapperCss?: CSSInterpolation[];
+    wrapperCss?: EuiCss;
   };
   Blocks: {
     /**
@@ -162,7 +176,7 @@ export default class EuiFormControlLayout extends Component<EuiFormControlLayout
             (this.isDisabled || this.args.readOnly) && styles.group.disabled
           ]
         : []),
-      ...(this.args.css ?? [])
+      this.args.css
     );
     return [
       'euiFormControlLayout',
@@ -182,7 +196,7 @@ export default class EuiFormControlLayout extends Component<EuiFormControlLayout
       context,
       styles.children.euiFormControlLayout__childrenWrapper,
       isGroup && styles.children.inGroup,
-      ...(this.args.wrapperCss ?? [])
+      this.args.wrapperCss
     );
   };
 
@@ -224,6 +238,8 @@ export default class EuiFormControlLayout extends Component<EuiFormControlLayout
             <EuiFormControlLayoutIcons
               @side="left"
               @icon={{@icon}}
+              @iconColor={{@iconColor}}
+              @iconCss={{@iconCss}}
               @iconsPosition={{@iconsPosition}}
               @compressed={{@compressed}}
               @isDisabled={{this.isDisabled}}
@@ -238,6 +254,8 @@ export default class EuiFormControlLayout extends Component<EuiFormControlLayout
             <EuiFormControlLayoutIcons
               @side="right"
               @icon={{this.rightIcon}}
+              @iconColor={{@iconColor}}
+              @iconCss={{@iconCss}}
               @iconsPosition={{@iconsPosition}}
               @compressed={{@compressed}}
               @clear={{@clear}}

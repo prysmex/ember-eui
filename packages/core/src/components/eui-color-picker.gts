@@ -18,12 +18,12 @@ import {
   RGB_JOIN,
   VISUALIZATION_COLORS
 } from '../-private/color.ts';
-import cssStyle from '../-private/css-style.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { boxReset, listReset } from '../utils/eui/color-picker.ts';
 import { euiColorPickerStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiColorPickerSwatch from './eui-color-picker-swatch.gts';
 import EuiFieldText from './eui-field-text.gts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
@@ -37,7 +37,6 @@ import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { HSV, RGBA } from '../-private/color.ts';
-import type { CSSInterpolation } from '@emotion/css/create-instance';
 import type Owner from '@ember/owner';
 
 export interface EuiColorPickerOutput {
@@ -251,29 +250,19 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
   }
 
   /**
-   * Composed last into the field's EuiFormControlLayout class (upstream
-   * passes `icon={{ color, css }}`): the left icon takes the chosen color
-   * (`subdued` for the empty `stopSlash` icon), and the swatch icon's
+   * Upstream's `icon={{ color, css }}`: the field icon takes the chosen
+   * color (`subdued` for the empty `stopSlash` icon), and the swatch icon's
    * stroke uses the swatch border color.
    */
-  @cached
-  get layoutCss(): CSSInterpolation[] {
-    const context = getEuiThemeContext(this);
-    const styles = useEuiBorealisStyles(context, euiColorPickerStyles);
-
-    return [
-      {
-        '& > .euiFormControlLayout__childrenWrapper > .euiFormControlLayoutIcons:first-child': {
-          color: `var(--euiColorPickerIconColor, ${context.upstream.euiTheme.colors.textSubdued})`
-        }
-      },
-      styles.euiColorPicker__swatchInputIcon
-    ];
+  get iconColor(): string {
+    return cssColor(this.chromaColor) ?? 'subdued';
   }
 
   @cached
-  get layoutStyle() {
-    return cssStyle({ '--euiColorPickerIconColor': cssColor(this.chromaColor) });
+  get iconCss(): EuiCss {
+    const context = getEuiThemeContext(this);
+    return useEuiBorealisStyles(context, euiColorPickerStyles)
+      .euiColorPicker__swatchInputIcon;
   }
 
   get panelClasses(): string {
@@ -520,7 +509,6 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
             {{yield this.toggle to="button"}}
           {{else}}
               <EuiFormControlLayout
-                style={{this.layoutStyle}}
                 @icon={{if this.chromaColor "swatchInput" "stopSlash"}}
                 @clear={{if this.canClear this.clear}}
                 @readOnly={{@readOnly}}
@@ -531,7 +519,8 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
                 @isDropdown={{true}}
                 @isPrependProvided={{has-block "prepend"}}
                 @isAppendProvided={{has-block "append"}}
-                @css={{this.layoutCss}}
+                @iconColor={{this.iconColor}}
+                @iconCss={{this.iconCss}}
                 {{on "keydown" this.onLayoutKeyDown}}
               >
                 <:prepend as |className|>{{yield className this.id to="prepend"}}</:prepend>

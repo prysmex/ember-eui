@@ -10,8 +10,8 @@ import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import { isWithinMinBreakpoint } from '../utils/breakpoint.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { composedOver } from '../utils/eui/page-layout.ts';
-import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiCollapsibleNavStyles } from '../utils/eui/styles.generated.ts';
 import EuiFlyout from './eui-flyout.gts';
 
@@ -163,14 +163,12 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
     return this.navIsDocked ? 'push' : 'overlay';
   }
 
+  /** Composed into EuiFlyout's own class through `@css`, as upstream. */
   @cached
-  get classes(): string {
+  get flyoutCss(): EuiCss {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiCollapsibleNavStyles);
-    return euiClass(
-      context,
-      composedOver(styles.euiCollapsibleNav, styles[this.flyoutType])
-    );
+    return [styles.euiCollapsibleNav, styles[this.flyoutType]];
   }
 
   get isDocked() {
@@ -254,7 +252,8 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
       {{#if (or @isOpen this.navIsDocked)}}
         <EuiFlyout
           id={{flyoutID}}
-          class="euiCollapsibleNav {{this.classes}}"
+          class="euiCollapsibleNav"
+          @css={{this.flyoutCss}}
           @as={{this.as}}
           @size={{this.size}}
           @side={{this.side}}

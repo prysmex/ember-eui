@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiFormLabelStyles } from '../utils/eui/styles.generated.ts';
 
 import type { CSSObject } from '@emotion/css/create-instance';
@@ -44,6 +45,11 @@ export interface EuiFormLabelSignature {
     for?: string;
     /** The label text, before the block content. */
     label?: string;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The label text. */
@@ -63,7 +69,8 @@ export default class EuiFormLabel extends Component<EuiFormLabelSignature> {
       euiFormLabelReset(context.upstream),
       styles.euiFormLabel,
       isDisabled ? undefined : styles.notDisabled,
-      isInvalid ? styles.invalid : undefined
+      isInvalid ? styles.invalid : undefined,
+      this.args.css
     );
     // Upstream state classes, kept for callers and tests.
     return [

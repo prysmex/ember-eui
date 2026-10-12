@@ -4,7 +4,8 @@ import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
-import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
+import { useEuiBorealisStyles } from '../../utils/eui/styles.ts';
+import type { EuiCss } from '../../utils/eui/styles.ts';
 import { euiPaginationButtonStyles } from '../../utils/eui/styles.generated.ts';
 import EuiButtonIcon from '../eui-button-icon.gts';
 
@@ -63,10 +64,11 @@ export default class EuiPaginationArrowButton extends Component<EuiPaginationArr
   }
 
   @cached
-  get classes(): string {
+  /** Upstream's `css` on EuiButtonIcon. */
+  get css(): EuiCss {
     const context = getEuiThemeContext(this);
-    const styles = useEuiBorealisStyles(context, euiPaginationButtonStyles);
-    return `euiPaginationArrowButton ${euiClass(context, styles.euiPaginationButton)}`;
+    return useEuiBorealisStyles(context, euiPaginationButtonStyles)
+      .euiPaginationButton;
   }
 
   onClick = (event: MouseEvent) => {
@@ -77,7 +79,8 @@ export default class EuiPaginationArrowButton extends Component<EuiPaginationArr
 
   <template>
     <EuiButtonIcon
-      class={{this.classes}}
+      class="euiPaginationArrowButton"
+      @css={{this.css}}
       @color="text"
       @iconType={{this.iconType}}
       @isDisabled={{@disabled}}

@@ -36,6 +36,7 @@ Styles plain HTML content (`<p>`, `<ul>`, `<h3>`, `<code>`…) with EUI's typogr
 | `@size` | `'xs' \| 's' \| 'm' \| 'relative'` | `'s'` | `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). |
 | `@textAlign` | `EuiTextAlignment` |  | `'left'`, `'center'` or `'right'` (logical, so they flip in RTL). |
 | `@color` | `EuiTextColorValue` |  | Any EuiTextColor value: a named color such as `'subdued'` or `'danger'`, or a CSS color. Inherits when omitted. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

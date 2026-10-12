@@ -8,6 +8,7 @@ import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { logicalStyle } from '../utils/eui/range.ts';
 import { euiFormVariables } from '../utils/eui/styles.generated.ts';
 import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiFieldNumber from './eui-field-number.gts';
 
 import type { EuiFieldNumberArgs, EuiFieldNumberSignature } from './eui-field-number';
@@ -48,9 +49,11 @@ export interface EuiRangeInputSignature {
 }
 
 /**
- * Upstream `EuiRangeInput`: an EuiFieldNumber sized to its value. Upstream's
- * `euiRangeInput` styles (`min-inline-size`, and the auto width) are applied
- * inline, because EuiFieldNumber has no `@css` yet.
+ * Upstream `EuiRangeInput`: an EuiFieldNumber sized to its value. The auto
+ * width is inline (as upstream); the `min-inline-size` of upstream's
+ * `euiRangeInput` goes through EuiFieldNumber's `@css`. (Its
+ * `inline-size: auto` is left out: without `@autoSize` the input keeps the
+ * field's own width, as before.)
  */
 export default class EuiRangeInput extends Component<EuiRangeInputSignature> {
   get numberValue(): number | string | undefined {
@@ -77,7 +80,13 @@ export default class EuiRangeInput extends Component<EuiRangeInputSignature> {
       // Guesstimated stepper width (a little wider in Firefox than in Chrome)
       width = `calc(${padding} + ${inputCharWidth}ch + 2em + ${invalidIconWidth}px)`;
     }
-    return logicalStyle({ minWidth: `${euiTheme.base * 3.5}px`, width });
+    return logicalStyle({ width });
+  }
+
+  @cached
+  get css(): EuiCss {
+    const { euiTheme } = getEuiThemeContext(this).upstream;
+    return [{ minInlineSize: `${euiTheme.base * 3.5}px` }, this.args.css];
   }
 
   <template>
@@ -103,6 +112,7 @@ export default class EuiRangeInput extends Component<EuiRangeInputSignature> {
         @isPrependProvided={{hasPrepend}}
         @isAppendProvided={{hasAppend}}
         @isInvalid={{@isInvalid}}
+        @css={{this.css}}
         ...attributes
       >
         <:prepend as |classes|>

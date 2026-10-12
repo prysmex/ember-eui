@@ -8,6 +8,7 @@ import {
   euiFormControlLayoutCustomIconStyles as styles
 } from '../utils/eui/form-controls.ts';
 import { euiClass } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type { CommonArgs } from './common.ts';
@@ -22,6 +23,8 @@ export type EuiFormControlLayoutCustomIconArgs = CommonArgs & {
   size?: EuiIconSignature['Args']['size'];
   /** Color of the icon, anything `EuiIcon`'s `@color` accepts. */
   color?: EuiIconSignature['Args']['color'];
+  /** Extra styles composed last into the EuiIcon's class (its `@css`). */
+  iconCss?: EuiCss;
   /** Disables the `@onClick` button. */
   disabled?: boolean;
   /** @deprecated Has no effect. */
@@ -61,6 +64,7 @@ export default class EuiFormControlLayoutCustomIcon extends Component<EuiFormCon
           @type={{@type}}
           @size={{@size}}
           @color={{@color}}
+          @css={{@iconCss}}
           aria-hidden="true"
         />
       </button>
@@ -74,6 +78,7 @@ export default class EuiFormControlLayoutCustomIcon extends Component<EuiFormCon
           @type={{@type}}
           @size={{@size}}
           @color={{@color}}
+          @css={{@iconCss}}
           aria-hidden="true"
         />
       </span>

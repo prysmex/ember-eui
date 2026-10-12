@@ -19,6 +19,7 @@ import {
   reactInlineStyle
 } from '../utils/eui/modal-flyout.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   composeFlyoutInlineStyles,
   euiFlyoutCloseButtonStyles,
@@ -162,6 +163,11 @@ export type EuiFlyoutArgs = {
     returnFocusOnDeactivate?: boolean;
     preventScroll?: boolean;
   };
+  /**
+   * Extra styles composed last into this component's class (like upstream's
+   * `css` prop). Prefer this to an extra class when styling it from a parent.
+   */
+  css?: EuiCss;
 };
 
 export const SIZES = FLYOUT_SIZES as unknown as readonly [
@@ -323,7 +329,8 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
       isPushed ? styles.push.push : styles.overlay.overlay,
       isPushed ? styles.push[side] : styles.overlay[side],
       this.hasAnimation ? undefined : styles.noAnimation,
-      styles[side]
+      styles[side],
+      this.args.css
     )}`;
   }
 
@@ -368,10 +375,8 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
   /**
    * Upstream's close button `css`: positioning (`euiFlyout__closeButton`,
    * `outsideSide`) plus the look (`inside`: transparent background;
-   * `outside`: XL shadow, no animation). Migrated children must not get a
-   * second Emotion class, so until EuiButtonIcon's `@css` lands here the
-   * positioning goes on a wrapper (`euiFlyout__closeButtonWrapper`) and
-   * `closeButtonLookCss` is not applied yet; switch both to `@css` at merge.
+   * `outside`: XL shadow, no animation), composed into EuiButtonIcon's own
+   * class through `@css` (`closeButtonCss`).
    */
   @cached
   get closeButtonPositionCss() {
@@ -393,13 +398,8 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
   }
 
   @cached
-  get closeButtonWrapperClass() {
-    return `euiFlyout__closeButtonWrapper ${euiClass(
-      getEuiThemeContext(this),
-      // sized like the button, so `left`+`right` resolve as on upstream's button
-      { display: 'flex', inlineSize: 'max-content' },
-      ...this.closeButtonPositionCss
-    )}`;
+  get closeButtonCss() {
+    return [...this.closeButtonPositionCss, this.closeButtonLookCss];
   }
 
   @cached
@@ -530,21 +530,20 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
           {{windowKeydown this.onKeyDown}}
         >
           {{#if this.showCloseButton}}
-            <span class={{this.closeButtonWrapperClass}}>
-              <EuiButtonIcon
-                @display={{if
-                  (eq this.closeButtonPosition "outside")
-                  "fill"
-                  "empty"
-                }}
-                @iconType="cross"
-                @color="text"
-                aria-label={{this.closeLabel}}
-                data-test-subj="euiFlyoutCloseButton"
-                class={{this.closeButtonClass}}
-                {{on "click" this.onCloseButtonClick}}
-              />
-            </span>
+            <EuiButtonIcon
+              @display={{if
+                (eq this.closeButtonPosition "outside")
+                "fill"
+                "empty"
+              }}
+              @iconType="cross"
+              @color="text"
+              @css={{this.closeButtonCss}}
+              aria-label={{this.closeLabel}}
+              data-test-subj="euiFlyoutCloseButton"
+              class={{this.closeButtonClass}}
+              {{on "click" this.onCloseButtonClick}}
+            />
           {{/if}}
           <div class={{this.contentClass}} data-test-subj="euiFlyoutContent">
             {{yield}}
@@ -573,21 +572,20 @@ export default class EuiFlyoutComponent extends Component<EuiFlyoutSignature> {
               class={{this.descriptionClass}}
             >{{this.description}}</p>
             {{#if this.showCloseButton}}
-              <span class={{this.closeButtonWrapperClass}}>
-                <EuiButtonIcon
-                  @display={{if
-                    (eq this.closeButtonPosition "outside")
-                    "fill"
-                    "empty"
-                  }}
-                  @iconType="cross"
-                  @color="text"
-                  aria-label={{this.closeLabel}}
-                  data-test-subj="euiFlyoutCloseButton"
-                  class={{this.closeButtonClass}}
-                  {{on "click" this.onCloseButtonClick}}
-                />
-              </span>
+              <EuiButtonIcon
+                @display={{if
+                  (eq this.closeButtonPosition "outside")
+                  "fill"
+                  "empty"
+                }}
+                @iconType="cross"
+                @color="text"
+                @css={{this.closeButtonCss}}
+                aria-label={{this.closeLabel}}
+                data-test-subj="euiFlyoutCloseButton"
+                class={{this.closeButtonClass}}
+                {{on "click" this.onCloseButtonClick}}
+              />
             {{/if}}
             <div class={{this.contentClass}} data-test-subj="euiFlyoutContent">
               {{yield}}

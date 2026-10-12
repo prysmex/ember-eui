@@ -8,6 +8,7 @@ import { isValidHex } from '../helpers/is-valid-hex.ts';
 import { toInitials } from '../helpers/to-initials.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiAvatarStyles } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 
@@ -101,6 +102,11 @@ export interface EuiAvatarSignature {
     initialsLength?: 1 | 2;
     /** Same as `@initialsLength` (the former name). */
     initialLength?: 1 | 2;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
 }
 
@@ -208,7 +214,8 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
       color === 'subdued' && styles['subdued'],
       isDisabled && styles['isDisabled'],
       avatarStyle,
-      highContrastBorder
+      highContrastBorder,
+      this.args.css
     )}`;
   }
 

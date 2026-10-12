@@ -6,8 +6,8 @@ import { modifier } from 'ember-modifier';
 import { or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { composedOver } from '../utils/eui/page-layout.ts';
-import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiModalStyles } from '../utils/eui/styles.generated.ts';
 import EuiButton from './eui-button.gts';
 import EuiButtonEmpty from './eui-button-empty.gts';
@@ -83,11 +83,11 @@ export default class EuiConfirmModal extends Component<EuiConfirmModalSignature>
     return () => (this.confirmButton = undefined);
   });
 
+  /** Upstream's `css` on EuiModal. */
   @cached
-  get confirmationClass() {
+  get confirmationCss(): EuiCss {
     const context = getEuiThemeContext(this);
-    const styles = useEuiBorealisStyles(context, euiModalStyles);
-    return euiClass(context, composedOver(styles.confirmation));
+    return useEuiBorealisStyles(context, euiModalStyles).confirmation;
   }
 
   get buttonColor() {
@@ -107,7 +107,8 @@ export default class EuiConfirmModal extends Component<EuiConfirmModalSignature>
 
   <template>
     <EuiModal
-      class="euiModal--confirmation {{this.confirmationClass}}"
+      class="euiModal--confirmation"
+      @css={{this.confirmationCss}}
       role="alertdialog"
       @onClose={{@onCancel}}
       @maxWidth={{@maxWidth}}

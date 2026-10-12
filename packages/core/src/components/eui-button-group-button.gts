@@ -9,6 +9,7 @@ import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiButtonGroupButtonStyles } from '../utils/eui/buttons-misc.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiButtonDisplayStyles,
   euiButtonDisplaysColors,
@@ -230,16 +231,20 @@ export default class EuiButtonGroupButton extends Component<EuiButtonGroupButton
       : group.text.euiButtonGroupButton__text;
   }
 
-  @cached
   get toolTipAnchorClass() {
-    const group = useEuiBorealisStyles(this.context, euiButtonGroupButtonStyles);
     return [
       'euiButtonGroup__tooltipWrapper',
-      this.args.isSelected && 'euiButtonGroup__tooltipWrapper-isSelected',
-      euiClass(this.context, group.tooltipWrapper)
+      this.args.isSelected && 'euiButtonGroup__tooltipWrapper-isSelected'
     ]
       .filter(Boolean)
       .join(' ');
+  }
+
+  /** Upstream's `anchorProps.css` on the tooltip anchor. */
+  @cached
+  get toolTipAnchorCss(): EuiCss {
+    return useEuiBorealisStyles(this.context, euiButtonGroupButtonStyles)
+      .tooltipWrapper;
   }
 
   onClick = () => {
@@ -254,6 +259,7 @@ export default class EuiButtonGroupButton extends Component<EuiButtonGroupButton
         @title={{@toolTipProps.title}}
         @delay={{@toolTipProps.delay}}
         @anchorClassName={{this.toolTipAnchorClass}}
+        @anchorCss={{this.toolTipAnchorCss}}
       >
         <GroupButtonElement @button={{this}} ...attributes />
       </EuiToolTip>

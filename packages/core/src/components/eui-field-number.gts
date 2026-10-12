@@ -12,6 +12,7 @@ import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { formControlReset } from '../utils/eui/form-controls.ts';
 import { euiFieldNumberStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
 
 import type { CommonArgs } from './common.ts';
@@ -96,6 +97,11 @@ export type EuiFieldNumberArgs = CommonArgs & {
 
   /** Shows a clear ("x") button calling this function; empty the value there. */
   clear?: EuiFormControlLayoutSignature['Args']['clear'];
+  /**
+   * Extra styles composed last into the input's class (like upstream's
+   * `css` prop). Prefer this to an extra class when styling it from a parent.
+   */
+  css?: EuiCss;
 };
 
 export interface EuiFieldNumberSignature {
@@ -130,7 +136,8 @@ export default class EuiFieldNumber extends Component<EuiFieldNumberSignature> {
       compressed ? styles.compressed : styles.uncompressed,
       fullWidth ? styles.fullWidth : styles.formWidth,
       !controlOnly && inGroup && styles.inGroup,
-      controlOnly && styles.controlOnly
+      controlOnly && styles.controlOnly,
+      this.args.css
     )}`;
   };
 

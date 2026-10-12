@@ -87,17 +87,6 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
   }
 
   /**
-   * EuiBadge has no `@css` yet, so the pill styles go in an extra class with
-   * doubled specificity (`&&`), which wins over the badge's own class
-   * whatever the insertion order. Switch to `@css={{this.pillCss}}` once
-   * EuiBadge takes it.
-   */
-  @cached
-  get pillClass(): string {
-    return euiClass(getEuiThemeContext(this), { '&&': this.pillCss });
-  }
-
-  /**
    * Plain text single selection: upstream shows it as the input's text, so
    * it uses the form control text (size, color) and truncates.
    */
@@ -123,7 +112,8 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
   <template>
     {{#if @onClose}}
       <EuiBadge
-        class="euiComboBoxPill {{this.pillClass}}"
+        class="euiComboBoxPill"
+        @css={{this.pillCss}}
         data-test-subj="euiComboBoxPill"
         @closeButtonProps={{hash
           tabIndex=-1
@@ -146,7 +136,8 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
       </span>
     {{else}}
       <EuiBadge
-        class="euiComboBoxPill {{this.pillClass}}"
+        class="euiComboBoxPill"
+        @css={{this.pillCss}}
         data-test-subj="euiComboBoxPill"
         @color={{this.color}}
         @closeButtonProps={{hash dataSelectedIconIndex=@dataSelectedIconIndex}}

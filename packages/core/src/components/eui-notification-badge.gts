@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiNotificationBadgeStyles } from '../utils/eui/styles.generated.ts';
 
 /** A small count badge, e.g. unread notifications on a header button. */
@@ -13,6 +14,11 @@ export interface EuiNotificationBadgeSignature {
     size?: 's' | 'm';
     /** `'accent'`, `'subdued'` or `'success'`. Defaults to `'accent'`. */
     color?: 'accent' | 'subdued' | 'success';
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The count, e.g. `3`. */
@@ -34,7 +40,8 @@ export default class EuiNotificationBadge extends Component<EuiNotificationBadge
       },
       styles.euiNotificationBadge,
       styles[this.args.size ?? 's'],
-      styles[this.args.color ?? 'accent']
+      styles[this.args.color ?? 'accent'],
+      this.args.css
     );
   }
 

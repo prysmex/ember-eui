@@ -38,6 +38,7 @@ A divider line between sections.
 | --- | --- | --- | --- |
 | `@margin` | `'none' \| 'xs' \| 's' \| 'm' \| 'l' \| 'xl' \| 'xxl'` | `'m'` | Space above and below: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'`, `'xl'` or `'xxl'`. |
 | `@size` | `'full' \| 'half' \| 'quarter'` | `'full'` | Width: `'full'`, `'half'` or `'quarter'`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<hr>`.
 

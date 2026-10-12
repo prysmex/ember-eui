@@ -224,16 +224,7 @@ class EuiCommentItem extends Component<CommentItemSignature> {
 
   @cached
   get headerDataClass(): string {
-    return euiClass(
-      this.context,
-      this.headerStyles.euiCommentEvent__headerData,
-      // Upstream's `css` on the event avatar (EuiAvatar takes no `@css`):
-      // a child rule instead of a second class on the avatar.
-      {
-        '& > .euiCommentEvent__headerEventIcon': this.headerStyles
-          .euiCommentEvent__headerEventIcon
-      }
-    );
+    return euiClass(this.context, this.headerStyles.euiCommentEvent__headerData);
   }
 
   @cached
@@ -325,6 +316,7 @@ class EuiCommentItem extends Component<CommentItemSignature> {
                       {{#if @eventIcon}}
                         <EuiAvatar
                           class="euiCommentEvent__headerEventIcon"
+                          @css={{this.headerStyles.euiCommentEvent__headerEventIcon}}
                           @size="s"
                           @iconType={{@eventIcon}}
                           @name={{if @eventIconAriaLabel @eventIconAriaLabel ""}}

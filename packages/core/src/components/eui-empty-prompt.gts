@@ -2,8 +2,8 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiPanelSurfaceCss } from '../utils/eui/content-blocks.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiEmptyPromptStyles,
   euiFlexGroupStyles
@@ -11,6 +11,7 @@ import {
 import { euiFlexRootReset } from './eui-flex-item.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiIcon from './eui-icon.gts';
+import EuiPanel from './eui-panel.gts';
 import EuiSpacer from './eui-spacer.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
@@ -120,24 +121,18 @@ export default class EuiEmptyPrompt extends Component<EuiEmptyPromptSignature> {
     return this.args.color ?? 'transparent';
   }
 
+  get panelColor(): EuiPanelSignature['Args']['color'] {
+    return this.color as EuiPanelSignature['Args']['color'];
+  }
+
   get hasBorder(): boolean {
     return this.args.hasBorder ?? this.color === 'plain';
   }
 
+  /** Upstream: an EuiPanel with the prompt's styles as its `css`. */
   @cached
-  get classes() {
-    // Same order as upstream: EuiPanel's styles, then the prompt's `css`.
-    return euiClass(
-      this.context,
-      euiPanelSurfaceCss(this.context, {
-        color: this.color,
-        hasBorder: this.hasBorder,
-        borderRadius: 'm',
-        grow: false
-      }),
-      this.styles.euiEmptyPrompt,
-      this.styles[this.layout]
-    );
+  get panelCss(): EuiCss {
+    return [this.styles.euiEmptyPrompt, this.styles[this.layout]];
   }
 
   @cached
@@ -212,7 +207,17 @@ export default class EuiEmptyPrompt extends Component<EuiEmptyPromptSignature> {
   }
 
   <template>
-    <div class="euiEmptyPrompt {{this.classes}}" ...attributes>
+    <EuiPanel
+      class="euiEmptyPrompt"
+      @color={{this.panelColor}}
+      @hasBorder={{this.hasBorder}}
+      @hasShadow={{false}}
+      @paddingSize="none"
+      @borderRadius="m"
+      @grow={{false}}
+      @css={{this.panelCss}}
+      ...attributes
+    >
       <div class="euiEmptyPrompt__main {{this.mainClass}}">
         {{#if (has-block "icon")}}
           <div class="euiEmptyPrompt__icon {{this.iconClass}}">{{yield
@@ -266,6 +271,6 @@ export default class EuiEmptyPrompt extends Component<EuiEmptyPromptSignature> {
           {{@footer}}
         </div>
       {{/if}}
-    </div>
+    </EuiPanel>
   </template>
 }

@@ -178,6 +178,11 @@ type AccordionArgs = {
   triggerClassName?: string;
   /** @deprecated Has no effect, use `@childClassName`. */
   childContentClassName?: string;
+  /**
+   * Extra styles composed last into this component's class (like upstream's
+   * `css` prop). Prefer this to an extra class when styling it from a parent.
+   */
+  css?: EuiCss;
 };
 
 export interface EuiAccordionSignature {
@@ -299,7 +304,8 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
       this.context,
       styles.euiAccordion,
       borders !== 'none' && styles.borders.borders,
-      borders !== 'none' && styles.borders[borders]
+      borders !== 'none' && styles.borders[borders],
+      this.args.css
     );
   }
 
@@ -382,15 +388,14 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
       this.context,
       styles.euiAccordion__children,
       this.isLoading && styles.isLoading,
-      padding !== 'none' && styles[padding],
-      // Upstream's `css` on the loading spinner (EuiLoadingSpinner takes no
-      // `@css`): a child rule rather than a second class on the spinner.
-      this.showLoadingMessage && {
-        '& > .euiAccordion__spinner': {
-          marginInlineEnd: this.context.upstream.euiTheme.size.xs
-        }
-      }
+      padding !== 'none' && styles[padding]
     );
+  }
+
+  /** Upstream's `css` on the loading message's spinner. */
+  @cached
+  get spinnerCss(): EuiCss {
+    return { marginInlineEnd: this.context.upstream.euiTheme.size.xs };
   }
 
   /** Upstream's inline `blockSize`: the measured content height when open. */
@@ -530,7 +535,10 @@ export default class EuiAccordionComponent extends Component<EuiAccordionSignatu
             {{this.observeHeight this.onResize}}
           >
             {{#if this.showLoadingMessage}}
-              <EuiLoadingSpinner class="euiAccordion__spinner" />
+              <EuiLoadingSpinner
+                class="euiAccordion__spinner"
+                @css={{this.spinnerCss}}
+              />
               <EuiText @size="s"><p>{{this.loadingMessage}}</p></EuiText>
             {{else}}
               {{yield to="content"}}

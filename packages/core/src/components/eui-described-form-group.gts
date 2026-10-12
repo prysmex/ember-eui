@@ -7,6 +7,7 @@ import { euiFormFullWidth } from '../-private/eui-form-context.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiDescribedFormGroupStyles } from '../utils/eui/styles.generated.ts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
@@ -122,28 +123,17 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
     );
   }
 
-  @cached
-  get descriptionColumnClasses(): string {
-    return euiClass(
-      getEuiThemeContext(this),
-      this.styles.euiDescribedFormGroup__descriptionColumn
-    );
+  // Upstream's `css` on the EuiFlexItem / EuiText children.
+  get descriptionColumnCss(): EuiCss {
+    return this.styles.euiDescribedFormGroup__descriptionColumn;
   }
 
-  @cached
-  get descriptionClasses(): string {
-    return euiClass(
-      getEuiThemeContext(this),
-      this.styles.euiDescribedFormGroup__description
-    );
+  get descriptionCss(): EuiCss {
+    return this.styles.euiDescribedFormGroup__description;
   }
 
-  @cached
-  get fieldsClasses(): string {
-    return euiClass(
-      getEuiThemeContext(this),
-      this.styles.euiDescribedFormGroup__fields
-    );
+  get fieldsCss(): EuiCss {
+    return this.styles.euiDescribedFormGroup__fields;
   }
 
   get descriptionGrow(): EuiFlexItemGrow {
@@ -174,9 +164,9 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
       >
         <EuiFlexItem
           class="euiDescribedFormGroup__descriptionColumn
-            {{this.descriptionColumnClasses}}
             {{@descriptionFlexItemProps.class}}"
           @grow={{this.descriptionGrow}}
+          @css={{this.descriptionColumnCss}}
         >
           {{#if (has-block "title")}}
             <EuiTitle
@@ -190,8 +180,8 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
           {{/if}}
           {{#if (has-block "description")}}
             <EuiText
-              class="euiDescribedFormGroup__description
-                {{this.descriptionClasses}}"
+              class="euiDescribedFormGroup__description"
+              @css={{this.descriptionCss}}
               @size="s"
               @color="subdued"
             >
@@ -200,10 +190,9 @@ export default class EuiDescribedFormGroup extends Component<EuiDescribedFormGro
           {{/if}}
         </EuiFlexItem>
         <EuiFlexItem
-          class="euiDescribedFormGroup__fields
-            {{this.fieldsClasses}}
-            {{@fieldFlexItemProps.class}}"
+          class="euiDescribedFormGroup__fields {{@fieldFlexItemProps.class}}"
           @grow={{this.fieldGrow}}
+          @css={{this.fieldsCss}}
         >
           {{yield}}
         </EuiFlexItem>

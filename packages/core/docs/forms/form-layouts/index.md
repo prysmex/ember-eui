@@ -157,6 +157,7 @@ The label of a control; EuiFormRow renders it from `@label`.
 | `@type` | `'legend' \| 'label'` | `'label'` | `'label'` renders a `<label>`, `'legend'` a `<legend>` (for fieldsets). |
 | `@for` | `string` |  | Id of the control it labels. |
 | `@label` | `string` |  | The label text, before the block content. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

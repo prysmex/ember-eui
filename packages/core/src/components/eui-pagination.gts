@@ -9,6 +9,7 @@ import onWindowResize from '../-private/window-resize.ts';
 import { getBreakpoint } from '../utils/breakpoint.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiPaginationStyles,
   euiScreenReaderOnly
@@ -285,13 +286,10 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
 
   // Read lazily where EuiText splats it, so it is inserted after EuiText's own class.
   @cached
-  get compressedTextClass(): string {
+  get compressedTextCss(): EuiCss {
     const context = getEuiThemeContext(this);
-    const styles = useEuiBorealisStyles(context, euiPaginationStyles);
-    return `euiPagination__compressedText ${euiClass(
-      context,
-      styles.euiPagination__compressedText
-    )}`;
+    return useEuiBorealisStyles(context, euiPaginationStyles)
+      .euiPagination__compressedText;
   }
 
   @cached
@@ -340,7 +338,11 @@ export default class EuiPaginationComponent extends Component<EuiPaginationSigna
         @props={{this.prevPageButtonProps}}
       />
       {{#if this.compressed}}
-        <EuiText @size="s" class={{this.compressedTextClass}}>
+        <EuiText
+          @size="s"
+          class="euiPagination__compressedText"
+          @css={{this.compressedTextCss}}
+        >
           {{#each this.compressedParts as |part|}}
             {{#if part.number}}<span>{{part.text}}</span>{{else}}{{part.text}}{{/if}}
           {{/each}}

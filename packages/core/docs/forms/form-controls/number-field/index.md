@@ -56,6 +56,7 @@ Generated from the components' TypeScript signatures by
 | `@controlOnly` | `boolean` |  | Completely removes form control layout wrapper and ignores icon, prepend, and append. Best used inside EuiFormControlLayoutDelimited. |
 | `@compressed` | `boolean` |  | Shorter input (32px instead of 40px), for dense forms. |
 | `@clear` |  |  | Shows a clear ("x") button calling this function; empty the value there. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the input's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@prepend` (Has no effect, use the `<:prepend>` block.); `@append` (Has no effect, use the `<:append>` block.).
 

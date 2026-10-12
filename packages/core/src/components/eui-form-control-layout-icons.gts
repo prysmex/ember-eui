@@ -25,6 +25,10 @@ export interface EuiFormControlLayoutIconsArgs {
   iconsPosition?: 'absolute' | 'static';
   /** The icon, see EuiFormControlLayout's `@icon`. */
   icon?: EuiFormControlLayoutCustomIconSignature['Args']['type'];
+  /** Color of `@icon`. */
+  iconColor?: EuiFormControlLayoutCustomIconSignature['Args']['color'];
+  /** Extra styles composed last into `@icon`'s EuiIcon class. */
+  iconCss?: EuiFormControlLayoutCustomIconSignature['Args']['iconCss'];
   /** @deprecated Use `@side`. */
   iconSide?: (typeof ICON_SIDES)[number];
   /** Shows a clear button calling this function. */
@@ -110,6 +114,8 @@ export default class EuiFormControlLayoutIcons extends Component<EuiFormControlL
         <EuiFormControlLayoutCustomIcon
           @size="m"
           @type={{@icon}}
+          @color={{@iconColor}}
+          @iconCss={{@iconCss}}
           @disabled={{@isDisabled}}
         />
       {{/if}}

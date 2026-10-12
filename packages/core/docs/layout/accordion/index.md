@@ -78,6 +78,7 @@ Generated from the components' TypeScript signatures by
 | `@isDisabled` | `boolean` | `false` | Disables the trigger and the arrow (greyed out, not clickable). |
 | `@childClassName` | `string` |  | Class for the element wrapping the content (`.euiAccordion__children`). |
 | `@triggerClassName` | `string` |  | Class for the row holding the arrow, trigger and extra action. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@isOpen` (Has no effect, use `@initialIsOpen` or `@forceState`.); `@childContentClassName` (Has no effect, use `@childClassName`.).
 

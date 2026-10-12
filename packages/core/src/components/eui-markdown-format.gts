@@ -17,12 +17,12 @@ import {
 } from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
 import { toDOM } from '../utils/markdown/plugins/to-dom.ts';
 import { TEXT_COLORS, euiTextColorCss } from './eui-text-color.gts';
+import { euiTextReset } from './eui-text.gts';
 
 import type {
   EuiMarkdownAstNodePosition,
   RehypeNode
 } from '../utils/markdown/markdown-types';
-import type { EuiBorealisContext } from '../utils/eui/theme.ts';
 import type { EuiTextColorValue } from './eui-text-color.gts';
 import type { EuiTextSignature } from './eui-text.gts';
 import type { CSSObject } from '@emotion/css/create-instance';
@@ -33,31 +33,10 @@ export type Replacer = (
   str: string
 ) => void;
 
-/**
- * The parts of React EUI's global reset that EuiText content relies on,
- * scoped to descendants (same as EuiText's own reset). `:where()` keeps them
- * below every upstream rule.
- */
-function euiMarkdownTextReset({ euiTheme }: EuiBorealisContext): CSSObject {
-  return {
-    boxSizing: 'border-box',
-    margin: 0,
-    fontFamily: euiTheme.font.family,
-    '& :where(*, *::before, *::after)': { boxSizing: 'border-box' },
-    '& :where(h1, h2, h3, h4, h5, h6, p, blockquote, pre, dl, dt, dd, ol, ul, li, figure)':
-      { margin: 0, padding: 0 },
-    '& :where(h1, h2, h3, h4, h5, h6, p)': {
-      fontFamily: 'inherit',
-      fontWeight: 'inherit',
-      fontSize: 'inherit'
-    },
-    '& :where(code, pre, kbd, samp)': { fontFamily: euiTheme.font.familyCode },
-    '& :where(strong)': { fontWeight: euiTheme.font.weight.bold },
-    '& :where(em)': { fontStyle: 'italic' },
-    '& :where(blockquote, q)': { quotes: 'none' },
-    '& :where(table)': { borderCollapse: 'collapse', borderSpacing: 0 }
-  };
-}
+/** React's global table reset, which EuiText's scoped reset leaves out. */
+const TABLE_RESET: CSSObject = {
+  '& :where(table)': { borderCollapse: 'collapse', borderSpacing: 0 }
+};
 
 /**
  * Ember-only structure: plugin components render inside `<span|div
@@ -197,7 +176,8 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
 
     return euiClass(
       context,
-      euiMarkdownTextReset(context.upstream),
+      euiTextReset(context.upstream),
+      TABLE_RESET,
       text.euiText,
       text[size],
       euiTextColorCss(context, color),

@@ -39,6 +39,7 @@ Generated from the components' TypeScript signatures by
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@rel` | `string` |  | `rel` of the `@href` link. `noreferrer` (and `noopener` for `_blank`) is always added. |
 | `@closeButtonProps` |  |  | Extra props for the `@iconOnClick` button. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@iconUseSvg` (Has no effect, see `EuiIcon`.).
 
@@ -65,6 +66,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@rel` | `string` |  | `rel` of the `@href` link. `noreferrer` (and `noopener` for `_blank`) is always added. |
 | `@onClick` | `(event: MouseEvent) => void` |  | Makes the badge a button calling this function. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |
@@ -92,6 +94,7 @@ A small count badge, e.g. unread notifications on a header button.
 | --- | --- | --- | --- |
 | `@size` | `'s' \| 'm'` | `'s'` | `'s'` or `'m'`. |
 | `@color` | `'accent' \| 'subdued' \| 'success'` | `'accent'` | `'accent'`, `'subdued'` or `'success'`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

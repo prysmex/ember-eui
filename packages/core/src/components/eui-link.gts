@@ -4,6 +4,7 @@ import { cached } from '@glimmer/tracking';
 import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiLinkStyles } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 
@@ -108,6 +109,11 @@ export interface EuiLinkSignature {
     target?: string;
     /** `type` of the button (without `@href`). Defaults to `'button'`. */
     type?: string;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The link's text. */
@@ -172,7 +178,13 @@ export default class EuiLink extends Component<EuiLinkSignature> {
       : isLinkColor(color)
         ? styles[color]
         : undefined;
-    return `euiLink ${euiClass(context, reset, styles.euiLink, colorStyles)}`;
+    return `euiLink ${euiClass(
+      context,
+      reset,
+      styles.euiLink,
+      colorStyles,
+      this.args.css
+    )}`;
   }
 
   <template>

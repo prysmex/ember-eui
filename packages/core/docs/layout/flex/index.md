@@ -63,6 +63,7 @@ Generated from the components' TypeScript signatures by
 | `@wrap` | `boolean` | `false` | Lets items wrap onto several lines. |
 | `@responsive` | `boolean` | `true` | Below the theme's `m` breakpoint (767px in Borealis), wraps the group and makes every direct `EuiFlexItem` full width. Set `false` for rows that must stay on one line (e.g. icon + text). Column directions are never affected. |
 | `@tagName` | `'div' \| 'span'` | `'div'` | `'div'` or `'span'` (inside text). |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |
@@ -76,6 +77,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | --- | --- | --- | --- |
 | `@grow` | `EuiFlexItemGrow` |  | How the item grows: `true` (default) takes an equal share of the space, `false` (or `0`) only takes its content's width, `1`–`10` take that many shares. |
 | `@tagName` | `string` | `'div'` | Tag of the item. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

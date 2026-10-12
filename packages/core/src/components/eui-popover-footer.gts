@@ -4,6 +4,7 @@ import { cached } from '@glimmer/tracking';
 import { euiPopoverPanelPadding } from '../-private/eui-popover-panel-context.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiPaddingSize,
   euiPopoverFooterStyles
@@ -20,6 +21,11 @@ export interface EuiPopoverFooterSignature {
      * EuiPopover's `@panelPaddingSize`.
      */
     paddingSize?: EuiPopoverPanelPaddingSize;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** E.g. a full width button. */
@@ -46,7 +52,8 @@ export default class EuiPopoverFooter extends Component<EuiPopoverFooterSignatur
       context,
       styles.euiPopoverFooter,
       styles.panelPaddingSizes[panelPadding],
-      padding && { padding }
+      padding && { padding },
+      this.args.css
     )}`;
   }
 

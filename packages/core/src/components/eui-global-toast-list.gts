@@ -63,9 +63,6 @@ export const TOAST_FADE_OUT_MS = 250;
 /** Upstream `CLEAR_ALL_TOASTS_THRESHOLD_DEFAULT`. */
 export const CLEAR_ALL_TOASTS_THRESHOLD_DEFAULT = 3;
 
-/** The notification badge is positioned through a wrapper (no `@css`). */
-const BADGE_WRAPPER = { display: 'inline-flex' } as const;
-
 /**
  * Renders the toasts of the `euiToaster` service. Place it once in the
  * application template, then show toasts from anywhere:
@@ -147,28 +144,27 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
     return [this.itemStyles.euiGlobalToastListItem, this.itemStyles.dismissed];
   }
 
+  /** Upstream: the list item styles plus the dismiss button's, on EuiButton. */
   @cached
-  get clearAllClass(): string {
-    return euiClass(
-      this.context,
+  get clearAllCss(): EuiCss {
+    return [
       this.itemStyles.euiGlobalToastListItem,
       this.styles.euiGlobalToastListDismissButton
-    );
+    ];
   }
 
+  /** Upstream's `css` on the count EuiNotificationBadge. */
   @cached
-  get badgeClass(): string {
+  get badgeCss(): EuiCss {
     const badge = this.styles.notificationBadge;
     const toasts = this.euiToaster.toasts;
     const dismissed = this.toastIdToDismissedMap;
     const firstDismissed = toasts[0] ? dismissed[toasts[0].id] : false;
     const allDismissed = toasts.every((toast) => dismissed[toast.id]);
-    return euiClass(
-      this.context,
-      BADGE_WRAPPER,
+    return [
       badge.notificationBadge,
       (firstDismissed || allDismissed) && badge.hasFadeOut
-    );
+    ];
   }
 
   itemCssFor = (id: string): EuiCss =>
@@ -439,15 +435,13 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
     >{{#if this.hasContent~}}
         <div class={{this.contentClass}}>
           {{#if this.showBadge}}
-            <span
-              class="euiGlobalToastList__countBadge {{this.badgeClass}}"
+            <EuiNotificationBadge
+              class="euiGlobalToastList__countBadge"
               data-test-subj="euiGlobalToastListNotificationBadge"
-            >
-              <EuiNotificationBadge
-                @size="m"
-                @color="subdued"
-              >{{this.toasts.length}}</EuiNotificationBadge>
-            </span>
+              @size="m"
+              @color="subdued"
+              @css={{this.badgeCss}}
+            >{{this.toasts.length}}</EuiNotificationBadge>
           {{/if}}
           {{#each this.toasts key="id" as |toast|}}
             <EuiToast
@@ -467,16 +461,16 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
             />
           {{/each}}
           {{#if this.showClearAll}}
-            <div class="euiGlobalToastListItem {{this.clearAllClass}}">
-              <EuiButton
-                @fullWidth={{true}}
-                @size="s"
-                @color="text"
-                aria-label={{this.clearAllLabel}}
-                data-test-subj="euiClearAllToastsButton"
-                {{on "click" this.clearAll}}
-              >{{this.clearAllText}}</EuiButton>
-            </div>
+            <EuiButton
+              class="euiGlobalToastListItem"
+              @fullWidth={{true}}
+              @size="s"
+              @color="text"
+              @css={{this.clearAllCss}}
+              aria-label={{this.clearAllLabel}}
+              data-test-subj="euiClearAllToastsButton"
+              {{on "click" this.clearAll}}
+            >{{this.clearAllText}}</EuiButton>
           {{/if}}
         </div>
       {{~/if}}</div>

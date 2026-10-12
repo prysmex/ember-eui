@@ -8,6 +8,7 @@ import type Owner from '@ember/owner';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiToolTipStyles } from '../utils/eui/styles.generated.ts';
 
 import type { CommonArgs } from './common.ts';
@@ -23,6 +24,8 @@ type EuiTooltipPopoverArgs = CommonArgs & {
   hasTitle?: boolean;
   /** Position the tooltip ended up in (`data-position`, upstream). */
   calculatedPosition?: 'top' | 'right' | 'bottom' | 'left';
+  /** Extra styles composed last into the tooltip's class. */
+  css?: EuiCss;
 };
 
 /** @private The floating part of EuiToolTip. */
@@ -76,7 +79,8 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignat
     return `euiToolTipPopover ${euiClass(
       context,
       styles.euiToolTip,
-      position && styles[position]
+      position && styles[position],
+      this.args.css
     )}`;
   }
 

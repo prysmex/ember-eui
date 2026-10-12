@@ -631,7 +631,7 @@ module('Integration | Component | Borealis feedback', function (hooks) {
     const toast = el(list, '.euiToast');
     assert.strictEqual(getComputedStyle(toast).getPropertyValue('--euiToastAnimationMs').trim(), '30ms', 'countdown matches the lifetime');
     await waitUntil(() => getComputedStyle(toast).transitionProperty.includes('opacity'), { timeout: 2000 });
-    assert.dom(el(list, '[data-test-subj="euiGlobalToastListNotificationBadge"] .euiNotificationBadge')).hasText('1');
+    assert.dom(el(list, '[data-test-subj="euiGlobalToastListNotificationBadge"].euiNotificationBadge')).hasText('1');
     await waitUntil(() => toaster.toasts.length === 0, { timeout: 2000 });
     await settled();
     assert.deepEqual(dismissed, ['short'], 'dismissed once after the fade');
@@ -667,7 +667,8 @@ module('Integration | Component | Borealis feedback', function (hooks) {
     await triggerEvent(list, 'mouseenter');
     const clear = el(list, '[data-test-subj="euiClearAllToastsButton"]');
     assert.dom(clear).hasText('Clear all').hasAttribute('aria-label', 'Clear all toast notifications');
-    assert.strictEqual(getComputedStyle(clear.parentElement!).position, 'sticky');
+    assert.strictEqual(getComputedStyle(clear).position, 'sticky', 'the button itself is the sticky list item');
+    assert.dom(clear).hasClass('euiGlobalToastListItem').hasClass('euiButton');
     assert.dom(el(list, '[data-test-subj="euiGlobalToastListNotificationBadge"]')).hasText('3');
     assert.strictEqual(style(list, '[data-test-subj="euiGlobalToastListNotificationBadge"]').position, 'absolute');
     await click(clear);

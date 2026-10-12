@@ -72,6 +72,7 @@ destructive confirmations.
 | `@shouldSelfFocus` | `boolean` | `true` | Focuses the modal itself when it opens. |
 | `@isFocusTrapPaused` | `boolean` |  | Pauses the focus trap, e.g. while a nested popover has focus. |
 | `@focusTrapOptions` |  |  | Options for the focus trap (focus-trap library), e.g. `{ initialFocus: '#name' }` to focus a field when it opens. Outside clicks reach the mask and Escape is left to the modal by default. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

@@ -1,7 +1,7 @@
 # New components: EuiTimeline family
 
 Branch `feat/eui-latest`. Target EUI 123.1.0 / Borealis 8.1.0. Status:
-**In progress** until the Chromium suite can run in the current environment.
+**Migrated**.
 
 ## Components and API
 
@@ -47,13 +47,14 @@ the block. A custom React element icon maps to the `<:icon>` named block.
 - Core Rollup build (including declarations and package exports): pass.
 - Vite browser-test build: pass (3153 modules).
 - API docs generation/check: pass (99 pages; one updated).
-- Existing extracted factory parity: pending final rerun after docs only.
-- Browser execution: blocked because the prior Linux Chromium cache is gone;
-  downloading Playwright Chromium requires sandbox approval for
-  `cdn.playwright.dev`.
+- Existing extracted factory parity: 309/309.
+- Focused Chromium 141 timeline suite: 6/6.
+- Full core Chromium 141 suite: 1134/1134.
+- Site checks: Node 8/8, acceptance 17/17 and development build pass. The four
+  added docs entries required updating the navigation count from 100 to 104;
+  the catalog route test takes about 45s on ARM, so the site now uses core's
+  existing 120s Testem browser-disconnect timeout.
 
-## Next step
-
-After browser access is restored, run the six focused tests, then the full core
-suite. If clean, change the four inventory rows to Migrated, record the final
-counts here, and run the site acceptance/build checks.
+The RTL override test now checks the connector at logical inline-start
+(`border-right` in RTL), rather than incorrectly inspecting its physical left
+edge. No component implementation change was needed.

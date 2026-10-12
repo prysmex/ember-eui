@@ -88,8 +88,16 @@ module('Integration | Component | eui-button', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiButtonContent').hasClass('euiButtonContent--iconRight');
+    // Latest-only: no `--iconRight` modifier class; check the icon is placed
+    // after the text instead.
     assert.dom('.euiButtonContent svg.euiButtonContent__icon').exists();
+    const icon = document
+      .querySelector('.euiButtonContent__icon')!
+      .getBoundingClientRect();
+    const text = document
+      .querySelector('.euiButton__text')!
+      .getBoundingClientRect();
+    assert.true(icon.left >= text.right - 0.5, 'icon is after the text');
   });
 
   test('native state transitions preserve attributes, events and toggle semantics', async function (assert) {

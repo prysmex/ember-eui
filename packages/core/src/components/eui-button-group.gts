@@ -1,16 +1,17 @@
-import { get } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import { and, eq } from 'ember-truth-helpers';
-import { notEq } from 'ember-truth-helpers';
-
-import randomId from '../-private/random-id.ts';
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { randomId } from '../-private/random-id.ts';
 import screenReaderOnly from '../modifiers/screen-reader-only.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiButtonGroupButtonsStyles,
+  euiButtonGroupStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiButtonGroupButton from './eui-button-group-button.gts';
 
 import type { EuiButtonGroupButtonSignature } from './eui-button-group-button';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface Option {
   /** Disables this option. Defaults to the group's `@isDisabled`. */
@@ -44,6 +45,10 @@ export interface Option {
   className?: string;
   /** Accessible label of the option's button. */
   'aria-label'?: string;
+  /** Tooltip text shown on hover and focus of the option. */
+  toolTipContent?: EuiButtonGroupButtonSignature['Args']['toolTipContent'];
+  /** `EuiToolTip` `position`, `title` and `delay` for `toolTipContent`. */
+  toolTipProps?: EuiButtonGroupButtonSignature['Args']['toolTipProps'];
 }
 
 export interface EuiButtonGroupSignature {
@@ -55,10 +60,22 @@ export interface EuiButtonGroupSignature {
      */
     buttonSize?: 's' | 'm' | 'compressed';
     /**
-     * Color of the selected buttons: `'primary'`, `'text'`, `'ghost'`,
-     * `'success'`, `'warning'` or `'danger'`. Defaults to `'text'`.
+     * Color of the selected buttons: `'text'`, `'primary'`, `'accent'`,
+     * `'accentSecondary'`, `'success'`, `'warning'`, `'danger'`,
+     * `'neutral'` or `'risk'`. `'ghost'` is still accepted and renders as
+     * `'text'` (latest EUI dropped it). Defaults to `'text'`.
      */
-    color?: 'primary' | 'text' | 'ghost' | 'success' | 'warning' | 'danger';
+    color?:
+      | 'text'
+      | 'primary'
+      | 'accent'
+      | 'accentSecondary'
+      | 'success'
+      | 'warning'
+      | 'danger'
+      | 'neutral'
+      | 'risk'
+      | 'ghost';
     /** Stretches the group, and its buttons evenly, to its container's width. */
     isFullWidth?: boolean;
     /** Disables every option. */
@@ -99,76 +116,116 @@ export interface EuiButtonGroupSignature {
   };
 }
 
-export const EuiButtonGroup: TemplateOnlyComponent<EuiButtonGroupSignature> =
+/** A group of toggle buttons: one selected option, or several. */
+export default class EuiButtonGroup extends Component<EuiButtonGroupSignature> {
+  defaultName = randomId();
+
+  get context() {
+    return getEuiThemeContext(this);
+  }
+  get buttonSize() {
+    return this.args.buttonSize ?? 's';
+  }
+  get size(): 's' | 'm' {
+    return this.buttonSize === 'm' ? 'm' : 's';
+  }
+  get color() {
+    const color = this.args.color ?? 'text';
+    // Compressed ghost groups were always text; latest EUI has no ghost.
+    return color === 'ghost' ? 'text' : color;
+  }
+  get typeIsSingle() {
+    return (this.args.type ?? 'single') === 'single';
+  }
+  get name() {
+    return this.args.name ?? this.defaultName;
+  }
+
+  @cached
+  get classes() {
+    const context = this.context;
+    return [
+      'euiButtonGroup',
+      this.args.isDisabled && 'euiButtonGroup-isDisabled',
+      this.args.className,
+      euiClass(
+        context,
+        // React's global reset for <fieldset>.
+        {
+          boxSizing: 'border-box',
+          margin: 0,
+          padding: 0,
+          border: 'none',
+          minInlineSize: 'auto'
+        },
+        euiButtonGroupStyles.euiButtonGroup,
+        this.args.isFullWidth && euiButtonGroupStyles.fullWidth
+      )
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get buttonsClasses() {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiButtonGroupButtonsStyles);
+    return `euiButtonGroup__buttons ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiButtonGroup__buttons,
+      this.args.isFullWidth && styles.fullWidth,
+      styles.size[this.size]
+    )}`;
+  }
+
+  isSelected = (option: Option): boolean | undefined =>
+    this.typeIsSingle
+      ? option.id === this.args.idSelected
+      : this.args.idToSelectedMap?.[option.id];
+
+  optionDisabled = (option: Option): boolean | undefined =>
+    option.isDisabled !== undefined ? option.isDisabled : this.args.isDisabled;
+
   <template>
-    {{#let
-      (argOrDefault @buttonSize "s")
-      (argOrDefault @color "text")
-      (argOrDefault @isFullWidth false)
-      (argOrDefault @isDisabled false)
-      (argOrDefault @type "single")
-      as |buttonSize color isFullWidth isDisabled type|
-    }}
-      {{#let
-        (if (and (eq buttonSize "compressed") (eq color "ghost")) "text" color)
-        (eq type "single")
-        as |resolvedColor typeIsSingle|
-      }}
+    <fieldset
+      class={{this.classes}}
+      disabled={{@isDisabled}}
+      ...attributes
+    >
+      <legend {{screenReaderOnly}}>{{@legend}}</legend>
+      <div class={{this.buttonsClasses}}>
+        {{#each @options as |option|}}
+          <EuiButtonGroupButton
+            @name={{this.name}}
+            @isDisabled={{this.optionDisabled option}}
+            @element={{if this.typeIsSingle "label" "button"}}
+            @isSelected={{this.isSelected option}}
+            @color={{this.color}}
+            @size={{this.buttonSize}}
+            @isIconOnly={{@isIconOnly}}
+            @onChange={{@onChange}}
+            @iconType={{option.iconType}}
+            @value={{option.value}}
+            @label={{option.label}}
+            @id={{option.id}}
+            @isLoading={{option.isLoading}}
+            @iconSide={{option.iconSide}}
+            @iconSize={{option.iconSize}}
+            @textClasses={{option.textClasses}}
+            @contentClasses={{option.contentClasses}}
+            @iconClasses={{option.iconClasses}}
+            @type={{option.type}}
+            @toolTipContent={{option.toolTipContent}}
+            @toolTipProps={{option.toolTipProps}}
+            class={{option.className}}
+            aria-label={{option.aria-label}}
+          />
+        {{/each}}
+      </div>
+    </fieldset>
+  </template>
+}
 
-        <fieldset
-          class={{classNames
-            "euiButtonGroup"
-            (if isFullWidth "euiButtonGroup--fullWidth")
-            (if isDisabled "euiButtonGroup--isDisabled")
-            @className
-            componentName="EuiButtonGroup"
-            size=(argOrDefault buttonSize "s")
-            color=resolvedColor
-          }}
-          disabled={{isDisabled}}
-          ...attributes
-        >
-          <legend {{screenReaderOnly}}>{{@legend}}</legend>
-          <div class="euiButtonGroup__buttons">
-            {{#let (argOrDefault @name (randomId)) as |name|}}
-              {{#each @options as |option|}}
-                <EuiButtonGroupButton
-                  @name={{name}}
-                  @isDisabled={{if
-                    (notEq option.isDisabled undefined)
-                    option.isDisabled
-                    isDisabled
-                  }}
-                  @element={{if typeIsSingle "label" "button"}}
-                  @isSelected={{if
-                    typeIsSingle
-                    (eq option.id @idSelected)
-                    (get @idToSelectedMap option.id)
-                  }}
-                  @color={{resolvedColor}}
-                  @size={{buttonSize}}
-                  @isIconOnly={{@isIconOnly}}
-                  @onChange={{@onChange}}
-                  @iconType={{option.iconType}}
-                  @value={{option.value}}
-                  @label={{option.label}}
-                  @id={{option.id}}
-                  @isLoading={{option.isLoading}}
-                  @iconSide={{option.iconSide}}
-                  @iconSize={{option.iconSize}}
-                  @textClasses={{option.textClasses}}
-                  @contentClasses={{option.contentClasses}}
-                  @iconClasses={{option.iconClasses}}
-                  @type={{option.type}}
-                  class={{option.className}}
-                  aria-label={{option.aria-label}}
-                />
-              {{/each}}
-            {{/let}}
-          </div>
-        </fieldset>
-      {{/let}}
-    {{/let}}
-  </template>;
-
-export default EuiButtonGroup;
+/** Named export kept for compatibility. */
+export { EuiButtonGroup };

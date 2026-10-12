@@ -58,13 +58,13 @@ const entries = {
   'components/call_out/call_out.styles.js': ['euiCallOutStyles', 'euiCallOutHeaderStyles'],
   'components/empty_prompt/empty_prompt.styles.js': ['euiEmptyPromptStyles'],
   'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles'],
-  'global_styling/mixins/_states.js': ['euiFocusRing'],
+  'global_styling/mixins/_states.js': ['euiFocusRing', 'euiOutline'],
   'global_styling/reset/reset.js': ['resetStyles'],
   'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight', 'euiYScrollWithShadows'],
   'services/color/manipulation.js': ['transparentize', 'tint', 'shade'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
-  'global_styling/mixins/_button.js': ['euiButtonDisplaysColors', 'euiButtonInteractionStyles'],
+  'global_styling/mixins/_button.js': ['euiButtonDisplaysColors', 'euiButtonInteractionStyles', 'BUTTON_COLORS', 'euiButtonSizeMap'],
   // forms-layout
   'components/form/form_row/form_row.styles.js': ['euiFormRowStyles'],
   'components/form/form_label/form_label.styles.js': ['euiFormLabelStyles'],
@@ -107,7 +107,7 @@ const entries = {
   'components/loading/loading_elastic.styles.js': ['euiLoadingElasticStyles'],
   'components/loading/loading_logo.styles.js': ['euiLoadingLogoStyles'],
   'global_styling/utility/animations.js': ['euiAnimFadeIn'],
-  'global_styling/functions/high_contrast.js': ['highContrastModeStyles'],
+  'global_styling/functions/high_contrast.js': ['highContrastModeStyles', 'preventForcedColors'],
   'global_styling/functions/logicals.js': ['logicalCSS', 'logicalSizeCSS'],
   'components/code/code.styles.js': ['euiCodeStyles'],
   'components/image/image.styles.js': ['euiImageStyles'],
@@ -224,7 +224,17 @@ const entries = {
   'components/combo_box/combo_box.styles.js': ['euiComboBoxStyles'],
   'components/combo_box/combo_box_input/combo_box_input.styles.js': ['euiComboBoxInputStyles'],
   'components/combo_box/combo_box_input/combo_box_pill.styles.js': ['euiComboBoxPillStyles'],
-  'components/combo_box/combo_box_options_list/combo_box_options_list.styles.js': ['euiComboBoxOptionListStyles', 'LIST_MAX_HEIGHT']
+  'components/combo_box/combo_box_options_list/combo_box_options_list.styles.js': ['euiComboBoxOptionListStyles', 'LIST_MAX_HEIGHT'],
+  // buttons-misc
+  'components/button/button_group/button_group.styles.js': ['euiButtonGroupStyles', 'euiButtonGroupButtonsStyles'],
+  // button_group_button.styles.js imports the React accessibility barrel: hand port in utils/eui/buttons-misc.ts
+  'global_styling/functions/typography.js': ['euiTextShift'],
+  'global_styling/utility/selectors.js': ['euiDisabledSelector'],
+  'components/facet/facet_button.styles.js': ['euiFacetButtonStyles', 'euiFacetButtonTextStyles', 'euiFacetButton__disabled'],
+  'components/facet/facet_group.styles.js': ['euiFacetGroupStyles'],
+  'components/filter_group/filter_button.styles.js': ['euiFilterButtonDisplay', 'euiFilterButtonStyles', 'euiFilterButtonWrapperStyles', 'euiFilterButtonChildStyles'],
+  'components/filter_group/filter_group.styles.js': ['euiFilterGroupStyles'],
+  'components/filter_group/filter_select_item.styles.js': ['euiFilterSelectItemStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

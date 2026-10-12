@@ -1,10 +1,20 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiButtonDisplayContentStyles,
+  euiButtonDisplayStyles,
+  euiFacetButton__disabled,
+  euiFacetButtonStyles,
+  euiFacetButtonTextStyles,
+  euiFocusRing
+} from '../utils/eui/styles.generated.ts';
 import EuiInnerText from './eui-inner-text.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiNotificationBadge from './eui-notification-badge.gts';
-
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /**
  * A button to filter by one value (a facet), usually with the number of
@@ -33,47 +43,103 @@ export interface EuiFacetButtonSignature {
   };
 }
 
-function badgeColor(isSelected?: boolean, isDisabled?: boolean): 'subdued' | 'accent' {
-  return !isSelected || isDisabled ? 'subdued' : 'accent';
+/** Upstream applies `euiFacetButton__disabled` to the icon and the quantity. */
+const DISABLED_CHILDREN = {
+  '&:disabled :is(.euiFacetButton__icon, .euiFacetButton__quantity)':
+    euiFacetButton__disabled
+};
+
+export default class EuiFacetButton extends Component<EuiFacetButtonSignature> {
+  get context() {
+    return getEuiThemeContext(this);
+  }
+  get isDisabled() {
+    return Boolean(this.args.isDisabled || this.args.isLoading);
+  }
+  get hasQuantity() {
+    return typeof this.args.quantity === 'number';
+  }
+  get badgeColor(): 'subdued' | 'accent' {
+    return !this.args.isSelected || this.isDisabled ? 'subdued' : 'accent';
+  }
+
+  @cached
+  get classes() {
+    const context = this.context;
+    const theme = context.upstream.euiTheme;
+    const display = useEuiBorealisStyles(context, euiButtonDisplayStyles);
+    const styles = useEuiBorealisStyles(context, euiFacetButtonStyles);
+    return `euiFacetButton ${euiClass(
+      context,
+      // React's global `button` reset, scoped.
+      {
+        boxSizing: 'border-box',
+        margin: 0,
+        padding: 0,
+        border: 'none',
+        background: 'none',
+        color: 'inherit',
+        fontFamily: theme.font.family,
+        textDecoration: 'none'
+      },
+      `&:focus { ${euiFocusRing(context.upstream)} }`,
+      display.euiButtonDisplay,
+      display.s,
+      this.isDisabled && display.isDisabled,
+      styles.euiFacetButton,
+      DISABLED_CHILDREN
+    )}`;
+  }
+
+  @cached
+  get contentClasses() {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiButtonDisplayContentStyles);
+    return `euiFacetButton__content ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiButtonDisplayContent
+    )}`;
+  }
+
+  @cached
+  get textClasses() {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiFacetButtonTextStyles);
+    return `euiFacetButton__text ${euiClass(
+      context,
+      styles.euiFacetButton__text,
+      styles[this.args.isSelected ? 'isSelected' : 'unSelected']
+    )}`;
+  }
+
+  <template>
+    <EuiInnerText as |ref innerText|>
+      <button
+        type="button"
+        class={{this.classes}}
+        disabled={{this.isDisabled}}
+        title={{innerText}}
+        ...attributes
+      >
+        <span class={{this.contentClasses}}>
+          {{yield to="icon"}}
+          <span
+            class={{this.textClasses}}
+            data-text={{innerText}}
+            {{didInsert ref}}
+          >{{yield}}</span>
+          {{#if @isLoading}}
+            <EuiLoadingSpinner class="euiFacetButton__spinner" @size="m" />
+          {{else if this.hasQuantity}}
+            <EuiNotificationBadge
+              class="euiFacetButton__quantity"
+              @size="m"
+              @color={{this.badgeColor}}
+            >{{@quantity}}</EuiNotificationBadge>
+          {{/if}}
+        </span>
+      </button>
+    </EuiInnerText>
+  </template>
 }
-
-function isNumber(value: unknown): value is number {
-  return typeof value === 'number';
-}
-
-const EuiFacetButton: TemplateOnlyComponent<EuiFacetButtonSignature> = <template>
-  <EuiInnerText as |ref innerText|>
-    <button
-      type="button"
-      class="euiFacetButton
-        {{if @isSelected 'euiFacetButton--isSelected' 'euiFacetButton--unSelected'}}"
-      disabled={{if (or2 @isLoading @isDisabled) true}}
-      title={{innerText}}
-      ...attributes
-    >
-      <span class="euiFacetButton__content">
-        {{yield to="icon"}}
-        <span
-          class="euiFacetButton__text"
-          data-text={{innerText}}
-          {{didInsert ref}}
-        >{{yield}}</span>
-        {{#if @isLoading}}
-          <EuiLoadingSpinner class="euiFacetButton__spinner" @size="m" />
-        {{else if (isNumber @quantity)}}
-          <EuiNotificationBadge
-            class="euiFacetButton__quantity"
-            @size="m"
-            @color={{badgeColor @isSelected (or2 @isLoading @isDisabled)}}
-          >{{@quantity}}</EuiNotificationBadge>
-        {{/if}}
-      </span>
-    </button>
-  </EuiInnerText>
-</template>;
-
-function or2(a?: boolean, b?: boolean): boolean {
-  return Boolean(a || b);
-}
-
-export default EuiFacetButton;

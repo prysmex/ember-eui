@@ -1,13 +1,9 @@
-import EuiFlexGroup from './eui-flex-group.gts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
-
-const GUTTERS = {
-  none: 'euiFacetGroup--gutterNone',
-  s: 'euiFacetGroup--gutterSmall',
-  m: 'euiFacetGroup--gutterMedium',
-  l: 'euiFacetGroup--gutterLarge'
-};
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiFacetGroupStyles } from '../utils/eui/styles.generated.ts';
 
 /** Lays out `EuiFacetButton`s in a column or in wrapping rows. */
 export interface EuiFacetGroupSignature {
@@ -27,24 +23,23 @@ export interface EuiFacetGroupSignature {
   };
 }
 
-function classes(layout: string = 'vertical', gutterSize: keyof typeof GUTTERS = 'm'): string {
-  return `euiFacetGroup euiFacetGroup--${layout} ${GUTTERS[gutterSize]}`;
+export default class EuiFacetGroup extends Component<EuiFacetGroupSignature> {
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFacetGroupStyles);
+    const layout = this.args.layout === 'horizontal' ? 'horizontal' : 'vertical';
+    const gutters = styles.gutterSizes[layout];
+    return `euiFacetGroup ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiFacetGroup,
+      gutters[this.args.gutterSize ?? 'm'] ?? gutters.m,
+      styles[layout]
+    )}`;
+  }
+
+  <template>
+    <div class={{this.classes}} ...attributes>{{yield}}</div>
+  </template>
 }
-
-function isHorizontal(layout?: string): boolean {
-  return layout === 'horizontal';
-}
-
-const EuiFacetGroup: TemplateOnlyComponent<EuiFacetGroupSignature> = <template>
-  <EuiFlexGroup
-    class={{classes @layout @gutterSize}}
-    @direction={{if (isHorizontal @layout) "row" "column"}}
-    @wrap={{isHorizontal @layout}}
-    @gutterSize="none"
-    ...attributes
-  >
-    {{yield}}
-  </EuiFlexGroup>
-</template>;
-
-export default EuiFacetGroup;

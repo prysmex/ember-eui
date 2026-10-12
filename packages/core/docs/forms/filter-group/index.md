@@ -55,6 +55,9 @@ to a search field, e.g. "On / Off" toggles and a "Status" popover.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@fullWidth` | `boolean` |  | Takes the container's full width instead of its content's. |
+| `@compressed` | `boolean` |  | Smaller buttons and radius, e.g. next to a compressed search field. |
+| `@display` | `'regular' \| 'highlighted'` | `'regular'` | `'regular'` or `'highlighted'` (selected `@isToggle` buttons are filled). |
+| `@showDividers` | `boolean` | `true` | Dividers between the buttons. |
 
 | Block | Description |
 | --- | --- |
@@ -73,7 +76,9 @@ active filters.
 | `@iconType` |  |  | Icon, e.g. `'arrowDown'` for a button opening a popover. |
 | `@iconSide` | `'left' \| 'right'` | `'right'` | `'left'` or `'right'` of the text. |
 | `@color` |  | `'text'` | Text color, any `EuiButtonEmpty` color. |
-| `@isSelected` | `boolean` |  | Pressed look, e.g. while its popover is open or a toggle is on. |
+| `@badgeColor` | `'accent' \| 'success'` | `'accent'` | Color of the badge while `@hasActiveFilters`: `'accent'` or `'success'`. |
+| `@isSelected` | `boolean` |  | Pressed look, e.g. while its popover is open or a toggle is on. Sets `aria-expanded` on popover anchors (`@iconType="arrowDown"` or `"chevronSingleDown"`), `aria-pressed` otherwise. |
+| `@isToggle` | `boolean` |  | Renders an on/off toggle (upstream `isToggle`): a small `EuiButton` look, highlighted while `@isSelected`. |
 | `@hasActiveFilters` | `boolean` |  | Bold text and an accent badge: some of its filters are applied. |
 | `@numFilters` | `number` |  | Number of available filters, shown in a badge. |
 | `@numActiveFilters` | `number` |  | Number of applied filters, shown instead of `@numFilters` when above 0. |
@@ -85,7 +90,7 @@ active filters.
 
 | Block | Description |
 | --- | --- |
-| default block | The button text. |
+| default block | The button text. Leave it out for an icon-only button. |
 
 ### EuiFilterSelectItem
 
@@ -95,9 +100,10 @@ button with a check mark when `@checked="on"`, or a cross when `"off"`
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@checked` | `'on' \| 'off'` |  | `'on'` (check mark, included), `'off'` (cross, excluded) or nothing (not applied). |
-| `@isFocused` | `boolean` |  | Highlights it, e.g. while moving through the list with the keyboard. |
+| `@checked` | `'on' \| 'off'` |  | `'on'` (check mark, included; sets `aria-selected="true"`), `'off'` (cross, excluded) or nothing (not applied). |
+| `@isFocused` | `boolean` |  | Highlights it, e.g. while moving through the list with the keyboard, and scrolls it into view when it becomes focused. |
 | `@showIcons` | `boolean` | `true` | Shows the check mark / cross column. |
+| `@truncateContent` | `boolean` | `true` | Truncates a long label with an ellipsis. |
 | `@disabled` | `boolean` |  | Disables the option. |
 
 | Block | Description |

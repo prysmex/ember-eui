@@ -1,0 +1,119 @@
+# Emotion spike — feat/emotion
+
+## Objective and baseline
+
+Evaluate Emotion as an Ember-native styling foundation for ember-eui and as a way to reduce the cost of following modern Elastic UI. This is an opt-in experiment, not a migration of the existing component catalog. The spike is based on master after two separate commits: the Ember/Ember CLI 7.3 upgrade and the native element-helper replacement (minimum consumer Ember 7.1, Node 20.19). Those changes belong to master and are not part of the Emotion spike diff.
+
+Our current components map arguments to EUI classes and load prebuilt light/dark theme files. Modern upstream EUI uses Emotion, React theme/cache providers, and styling hooks. `@emotion/css` is framework independent; `@emotion/react` providers/hooks cannot run directly in Ember.
+
+## Architectural decisions
+
+- Use `@emotion/css/create-instance`, with no React dependency or React hook emulation.
+- An owner-scoped `eui-emotion` service supplies the root context and a lazily created style cache. Never store a mutable theme/cache in a module singleton.
+- `EuiEmotionProvider` yields an explicit context, resolved theme, and contextual `Button`. It produces no wrapper or global reset. `@parent` connects nested contexts; nesting in markup alone cannot establish implicit Ember context.
+- A context resolves its parent, color mode, token overrides, and Emotion instance through reactive getters. Provider arguments and tracked service settings remain reactive. Switching themes must update existing components.
+- `useEuiTheme(context)` and `useEuiStyles(context, factory)` are ordinary functions called from Ember getters. Their reads participate in autotracking; they have no React hook ordering/lifecycle rules.
+- Share the parent's style cache by default. An explicit cache instance supports separate insertion containers, cache keys, and CSP nonces. The creator owns the cache; components/providers must not flush a shared cache on destruction.
+- Preserve the existing `EuiButton`. Port an experimental `EuiEmotionButton`, also available as the provider's yielded `Button`, without legacy EUI class names or CSS dependencies.
+- Keep scope small: hand-authored tokens and button styling inspired by EUI, not a claim of pixel parity or direct reuse of the current Borealis theme. Do not copy licensed upstream implementation code into this spike.
+
+## MVP API
+
+```gts
+import EuiEmotionProvider from '@ember-eui/core/components/eui-emotion-provider';
+
+<template>
+  <EuiEmotionProvider @colorMode="dark" as |eui|>
+    <eui.Button @fill={{true}}>Save</eui.Button>
+    <EuiEmotionProvider @parent={{eui.context}} @colorMode="light" as |nested|>
+      <nested.Button @color="danger">Delete</nested.Button>
+    </EuiEmotionProvider>
+  </EuiEmotionProvider>
+</template>
+```
+
+Custom components accept a context and use the exported utility functions in getters. Standalone experimental buttons fall back to the owner service. The service exposes tracked `colorMode` and `overrides` for app-wide settings. The provider accepts `@colorMode`, `@overrides`, `@parent`, and `@cache`.
+
+Supported button MVP: primary/success/warning/danger/text colors; small/medium sizes; filled/outlined; full width; disabled and loading; selected state; native button type; enabled href/target links; yielded content; forwarded attributes and event modifiers. Icons, arbitrary element tags, legacy private class-prefix/content APIs, and exact upstream visual parity are deferred.
+
+## Custom component integration
+
+```ts
+import { useEuiTheme, useEuiStyles } from '@ember-eui/core/utils/emotion/context';
+
+// `context` is supplied as an argument from the provider's yielded context.
+get theme() {
+  return useEuiTheme(this.args.context);
+}
+
+get styles() {
+  return useEuiStyles(this.args.context, (theme) => ({
+    color: theme.colors.text,
+    backgroundColor: theme.colors.background,
+    padding: theme.spacing * 2,
+  }));
+}
+```
+
+Apply `class={{this.styles}}` in the template. Read these functions inside a reactive getter, rather than saving resolved tokens in the constructor. Replace tracked override objects instead of mutating nested fields in place. Utilities are deliberately explicit about context, so a consuming component can also be rendered in a portal with the same context.
+
+For a separate insertion target or CSP nonce, call `createEuiEmotionCache({ key: 'my-app', container, nonce })` and pass the returned Emotion instance as `@cache`. The argument is the whole instance (`css`, `keyframes`, `cache`, etc.), not a raw `@emotion/cache` object. Cache keys must meet Emotion's lowercase-key requirements. The creator must flush its instance when its lifetime ends. The owner service flushes only its internally created instance when the Ember owner is destroyed.
+
+## File map
+
+- `packages/core/src/utils/emotion/theme.ts`: mode, tokens, typed overrides, pure token merge.
+- `packages/core/src/utils/emotion/context.ts`: lazy cache factory, context inheritance, styling/theme utilities, owned-cache disposal.
+- `packages/core/src/services/eui-emotion.ts`: tracked owner defaults and cleanup.
+- `packages/core/src/components/eui-emotion-provider.gts`: wrapperless provider and contextual component currying.
+- `packages/core/src/components/eui-emotion-button.gts`: first standalone component port.
+- `packages/core/tests/integration/components/eui-emotion-test.gts`: focused runtime and lifecycle coverage.
+- `site/app/components/emotion-spike.gts` and `site/app/templates/emotion-spike.gts`: interactive demo.
+
+## Implementation phases and acceptance criteria
+
+1. **Foundation:** typed light/dark tokens, nested context resolution, owner service, cache factory, and reactive style/theme utilities. Merge token overrides without mutating parent/default tokens. Cache construction remains lazy and browser/SSR import-safe.
+2. **Provider:** wrapperless contextual API with explicit inheritance and per-subtree mode/overrides/cache. Siblings do not affect each other. Provider lifetime does not flush shared styles.
+3. **Button:** consume the foundation, generate styles for the supported states, retain native semantics and focus visibility, use reduced-motion-aware loading animation, and avoid legacy CSS selectors. Disabled/loading href buttons render disabled native buttons.
+4. **Demo:** a documentation-site route at `/emotion-spike` with side-by-side light/dark examples, nested branding overrides, theme switching, variants, and a click counter. Keep demo implementation details out of its user-facing controls.
+5. **Verification:** build package JS/declarations and production site; type-check site and lint changed files; run integration tests for theme reactivity, inheritance/isolation, cache insertion/deduplication, and button semantics. Check computed styles without loading legacy theme CSS. Run the core suite after adding focused tests.
+6. **Assessment:** record actual outcomes below, identify adoption blockers, and recommend either broader Emotion porting or static CSS/CSS variables. No broad dependency upgrades or catalog migration in this spike.
+
+## Testing and evaluation matrix
+
+| Area | Required evidence | Follow-up before production |
+| --- | --- | --- |
+| Reactivity | mode and token changes restyle mounted buttons | system color-scheme listener and high-contrast mode |
+| Isolation | nested overrides and modes do not change siblings | portal/wormhole context propagation conventions |
+| Cache | explicit container, stable classes, deduplication | multiple apps, CSP integration in a real host |
+| Semantics | links, disabled/loading, type, click, aria-selected state | full keyboard/a11y audit, icon parity |
+| Styling | computed light/dark colors without legacy CSS | screenshots, contrast audit, browser matrix |
+| Delivery | build/declarations/site types pass | bundle/runtime comparison against CSS variables |
+| SSR | no eager global DOM/cache state | FastBoot style extraction and hydration validation |
+| Upstream reuse | separation of token/style logic from Ember UI | port one actual upstream style factory and count required edits |
+
+## Known boundaries and agent handoff
+
+Do not silently change existing EuiButton or global themes. Do not import `@emotion/react`. Do not flush owner/shared caches in provider destruction. Explicit context inheritance is part of this MVP's public contract; document any proposal for implicit context before implementing it. Token merging must remain pure. Keep every supported button state independent of legacy CSS.
+
+SSR/FastBoot output and hydration are not production-ready merely because imports are safe. Cache extraction, request isolation, style ordering relative to app overrides, CSP, and the effect of generated class names on downstream customization require further work. Emotion handles nested/media selectors, prefixes, and class hashing, but we still own Ember context propagation and theme APIs.
+
+Suggested next agent tasks after review: (a) upstream style-factory reuse experiment; (b) CSS-variables baseline with identical button behavior; (c) bundle/style-insertion measurement; (d) FastBoot and portal design. Do not begin the remaining catalog migration until these results justify it.
+
+## Verification results
+
+- `pnpm --filter @ember-eui/core build`: passes JS and declaration generation.
+- `pnpm build:site`: passes all five package builds and the production site build.
+- `pnpm --filter site lint:types`: passes.
+- ESLint on the new foundation/provider/button/tests and the demo/router: passes.
+- `pnpm --filter @ember-eui/core test`: **556 tests pass**, including seven focused Emotion tests. Browser tests used Chromium 149 with the normal Testem configuration and a local Chrome executable shim.
+- Real-browser check at `/emotion-spike`: no page errors; click counter increments; theme switching works; keyboard focus outline is visible. Captured [light](emotion-light.png) and [dark](emotion-dark.png) screenshots.
+- The focused computed-style tests render the Emotion buttons without loading the legacy EUI theme stylesheet. The site deliberately retains legacy CSS for the surrounding documentation layout.
+- Nested mode/override changes remain reactive; sibling contexts stay independent; equivalent styles reuse generated classes; a supplied cache supports a custom container and nonce; destruction only flushes an internally owned cache.
+
+## Initial assessment and next decision
+
+The MVP demonstrates that framework-independent Emotion integrates with Ember autotracking and contextual components without React. An explicit-context provider is workable, but consumers must pass context into nested providers and custom components. This is an API tradeoff to evaluate with real app code.
+
+The port is intentionally a supported subset of EuiButton and uses our small hand-authored token set. It does not establish pixel parity with current EUI/Borealis or prove that upstream React styling factories can be reused without significant changes. No incremental bundle-cost or runtime-insertion benchmark has been completed; successful builds are not performance evidence.
+
+Recommendation: keep this branch experimental. Next, port one actual upstream style factory (subject to its applicable license), build the same button with CSS variables, and compare source maintenance, bundle size, theme switching, and style insertion. Evaluate FastBoot extraction/hydration and portal context propagation before widening adoption. Existing components and theme files remain available throughout the experiment.

@@ -1,15 +1,17 @@
-import { concat } from '@ember/helper';
-import { fn } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+import { concat, fn } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { guidFor } from '@ember/object/internals';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
-import { and } from 'ember-truth-helpers';
+import { and, eq, not } from 'ember-truth-helpers';
 
-import randomId from '../-private/random-id.ts';
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
 import useState from '../helpers/use-state.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiBadge from './eui-badge.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiIcon from './eui-icon.gts';
@@ -17,14 +19,15 @@ import EuiPopover from './eui-popover.gts';
 
 import type { EuiBadgeSignature } from './eui-badge';
 import type { EuiIconSignature } from './eui-icon';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private The source, time and menu row of an EuiNotificationEvent. */
-export interface EuiNotificationEventSignature {
+export interface EuiNotificationEventMetaSignature {
   Element: HTMLDivElement;
   Args: {
     /** Id of the event. */
     id?: string;
+    /** The event's title, for the context menu button's label. */
+    eventName?: string;
     /** When it happened. */
     time?: string;
     /** Kind of event, shown in a badge. */
@@ -50,27 +53,68 @@ export interface EuiNotificationEventSignature {
   };
 }
 
-const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature> =
+/** @deprecated Use `EuiNotificationEventMetaSignature`. */
+export type EuiNotificationEventSignature = EuiNotificationEventMetaSignature;
+
+export default class EuiNotificationEventMeta extends Component<EuiNotificationEventMetaSignature> {
+  popoverId = `euiNotificationEventMeta${guidFor(this)}`;
+
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  @cached
+  get styles() {
+    return useEuiBorealisStyles(this.context, euiNotificationEventStyles);
+  }
+
+  @cached
+  get sectionClass(): string {
+    return euiClass(this.context, this.styles.metaSection);
+  }
+
+  @cached
+  get timeClass(): string {
+    return euiClass(this.context, this.styles.metaTime);
+  }
+
+  @cached
+  get contextMenuClass(): string {
+    return euiClass(this.context, this.styles.metaContextMenu);
+  }
+
+  get iconCss() {
+    return this.styles.metaIcon;
+  }
+
+  metaClass = (hasContextMenu: boolean): string =>
+    euiClass(
+      this.context,
+      this.styles.meta,
+      hasContextMenu && this.styles.metaHasContextMenu
+    );
+
+  get contextMenuLabel(): string {
+    return `Menu for ${this.args.eventName ?? ''}`.trim();
+  }
+
   <template>
     {{#let
-      (and (argOrDefault @hasDefaultBlock true) (has-block))
+      (and (not (eq @hasDefaultBlock false)) (has-block))
       as |hasDefaultBlock|
     }}
       <div
-        class={{classNames
-          "euiNotificationEventMeta"
-          (if hasDefaultBlock "euiNotificationEventMeta--hasContextMenu")
-        }}
+        class="euiNotificationEventMeta {{this.metaClass hasDefaultBlock}}"
         ...attributes
       >
-        <div class="euiNotificationEventMeta__section">
-
+        <div class="euiNotificationEventMeta__section {{this.sectionClass}}">
           {{#if @iconType}}
             <EuiIcon
               @iconClasses="euiNotificationEventMeta__icon"
               @type={{@iconType}}
               @color={{@iconColor}}
               @aria-label={{@iconAriaLabel}}
+              @css={{this.iconCss}}
             />
           {{/if}}
 
@@ -87,21 +131,19 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
               {{/if}}
             </EuiBadge>
           {{/if}}
-
         </div>
 
-        <div class="euiNotificationEventMeta__section">
-          <span class="euiNotificationEventMeta__time">{{@time}}</span>
+        <div class="euiNotificationEventMeta__section {{this.sectionClass}}">
+          <span class="euiNotificationEventMeta__time {{this.timeClass}}">{{@time}}</span>
         </div>
 
         {{#if hasDefaultBlock}}
-          {{#let
-            (randomId) (useState false)
-            as |randomPopoverId isPopoverOpen|
-          }}
-            <div class="euiNotificationEventMeta__contextMenuWrapper">
+          {{#let (useState false) as |isPopoverOpen|}}
+            <div
+              class="euiNotificationEventMeta__contextMenuWrapper {{this.contextMenuClass}}"
+            >
               <EuiPopover
-                id={{randomPopoverId}}
+                id={{this.popoverId}}
                 @ownFocus={{true}}
                 @repositionOnScroll={{true}}
                 @isOpen={{isPopoverOpen.value}}
@@ -109,11 +151,10 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
                 @anchorPosition="leftUp"
                 @closePopover={{fn isPopoverOpen.setState false}}
               >
-
                 <:button>
                   <EuiButtonIcon
-                    {{! aria-label={contextMenuButton} }}
-                    aria-controls={{randomPopoverId}}
+                    aria-label={{this.contextMenuLabel}}
+                    aria-controls={{this.popoverId}}
                     aria-expanded={{if isPopoverOpen.value "true" "false"}}
                     aria-haspopup="true"
                     @iconType="boxesVertical"
@@ -145,14 +186,11 @@ const EuiNotificationEvent: TemplateOnlyComponent<EuiNotificationEventSignature>
                     {{yield}}
                   </div>
                 </:content>
-
               </EuiPopover>
             </div>
           {{/let}}
         {{/if}}
-
       </div>
     {{/let}}
-  </template>;
-
-export default EuiNotificationEvent;
+  </template>
+}

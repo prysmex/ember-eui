@@ -139,7 +139,20 @@ const entries = {
   'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
   'components/steps/step_horizontal.styles.js': ['euiStepHorizontalStyles', 'euiStepHorizontalNumberStyles', 'euiStepHorizontalTitleStyles'],
   'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
-  'global_styling/mixins/_typography.js': ['euiTextTruncate']
+  'global_styling/mixins/_typography.js': ['euiTextTruncate'],
+  // feedback
+  'components/accordion/accordion.styles.js': ['euiAccordionStyles'],
+  'components/accordion/accordion_children/accordion_children.styles.js': ['euiAccordionChildrenStyles', 'euiAccordionChildWrapperStyles'],
+  'components/accordion/accordion_trigger/accordion_arrow.styles.js': ['euiAccordionArrowStyles'],
+  'components/accordion/accordion_trigger/accordion_button.styles.js': ['euiAccordionButtonStyles'],
+  'components/toast/toast.styles.js': ['euiToastStyles', 'euiToastHeaderStyles'],
+  'components/toast/global_toast_list.styles.js': ['euiGlobalToastListStyles', 'euiGlobalToastListItemStyles'],
+  'components/notification_icon/notification_icon.styles.js': ['euiNotificationIconStyles'],
+  'components/comment_list/comment_event.styles.js': ['euiCommentEventStyles', 'euiCommentEventHeaderStyles', 'euiCommentEventBodyStyles'],
+  'components/timeline/timeline.styles.js': ['euiTimelineStyles'],
+  'components/timeline/timeline_item.styles.js': ['euiTimelineItemStyles'],
+  'components/timeline/timeline_item_event.styles.js': ['euiTimelineItemEventStyles'],
+  'components/timeline/timeline_item_icon.styles.js': ['euiTimelineItemIconStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

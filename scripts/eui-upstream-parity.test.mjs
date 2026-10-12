@@ -122,7 +122,20 @@ const factories = {
   // content-blocks
   'components/call_out/call_out.styles.js': ['euiCallOutStyles', 'euiCallOutHeaderStyles'],
   'components/empty_prompt/empty_prompt.styles.js': ['euiEmptyPromptStyles'],
-  'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles']
+  'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles'],
+  // feedback
+  'components/accordion/accordion.styles.js': ['euiAccordionStyles'],
+  'components/accordion/accordion_children/accordion_children.styles.js': ['euiAccordionChildrenStyles', 'euiAccordionChildWrapperStyles'],
+  'components/accordion/accordion_trigger/accordion_arrow.styles.js': ['euiAccordionArrowStyles'],
+  'components/accordion/accordion_trigger/accordion_button.styles.js': ['euiAccordionButtonStyles'],
+  'components/toast/toast.styles.js': ['euiToastStyles', 'euiToastHeaderStyles'],
+  'components/toast/global_toast_list.styles.js': ['euiGlobalToastListStyles', 'euiGlobalToastListItemStyles'],
+  'components/notification_icon/notification_icon.styles.js': ['euiNotificationIconStyles'],
+  'components/comment_list/comment_event.styles.js': ['euiCommentEventStyles', 'euiCommentEventHeaderStyles', 'euiCommentEventBodyStyles'],
+  'components/timeline/timeline.styles.js': ['euiTimelineStyles'],
+  'components/timeline/timeline_item.styles.js': ['euiTimelineItemStyles'],
+  'components/timeline/timeline_item_event.styles.js': ['euiTimelineItemEventStyles'],
+  'components/timeline/timeline_item_icon.styles.js': ['euiTimelineItemIconStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

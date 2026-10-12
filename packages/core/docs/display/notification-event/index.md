@@ -52,7 +52,7 @@ source, time, messages, read state and actions.
 | --- | --- | --- | --- |
 | `@id` | `string` |  | Id of the event, for its read button/icon. |
 | `@tagName` | `string` | `'article'` | Tag of the event. |
-| `@isRead` | `boolean` |  | Read state. When a boolean, shows a read indicator (a button with `@onRead`, otherwise an icon); leave it undefined to show none. |
+| `@isRead` | `boolean` |  | Read state. When a boolean, shows a read indicator (a button with `@onRead`, otherwise an icon) and makes unread titles bold; leave it undefined to show none. |
 | `@href` | `string` |  | Makes the title a link. |
 | `@onClickTitle` | `(event: MouseEvent) => void` |  | Makes the title a button calling this function. |
 | `@onRead` | `(event: MouseEvent) => void` |  | Called by the read button; toggle `@isRead` here. |

@@ -1,11 +1,13 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { concat } from '@ember/helper';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiNotificationEventStyles } from '../utils/eui/notification-event.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type { EuiIconSignature } from './eui-icon';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private Dot showing an EuiNotificationEvent's read state. */
 export interface EuiNotificationEventReadIconSignature {
@@ -15,23 +17,26 @@ export interface EuiNotificationEventReadIconSignature {
     id?: string;
     /** The event's title, for the accessible label. */
     eventName?: string;
-    /** Read state. */
+    /** Read state: unread is a filled dot, read a hollow one. */
     isRead?: boolean;
     /** Color of the dot. Defaults to `'primary'`. */
     readIconColor?: EuiIconSignature['Args']['color'];
   };
 }
 
-const EuiNotificationEventReadIcon: TemplateOnlyComponent<EuiNotificationEventReadIconSignature> =
+export default class EuiNotificationEventReadIcon extends Component<EuiNotificationEventReadIconSignature> {
+  /** Read styles composed into EuiIcon's own class (`@css`). */
+  @cached
+  get iconCss() {
+    if (!this.args.isRead) return undefined;
+    const context = getEuiThemeContext(this);
+    return useEuiBorealisStyles(context, euiNotificationEventStyles)
+      .readIconIsRead;
+  }
+
   <template>
     {{! ToDo: title and aria-label translations }}
-    <div
-      class={{classNames
-        "euiNotificationEventReadIcon"
-        (if @isRead "euiNotificationEventReadIcon--isRead")
-      }}
-      ...attributes
-    >
+    <div class="euiNotificationEventReadIcon" ...attributes>
       <EuiIcon
         @type="dot"
         @aria-label={{if
@@ -39,12 +44,12 @@ const EuiNotificationEventReadIcon: TemplateOnlyComponent<EuiNotificationEventRe
           (concat @eventName " is read")
           (concat @eventName " is unread")
         }}
+        @color={{if @readIconColor @readIconColor "primary"}}
+        @css={{this.iconCss}}
         title={{if @isRead "Read" "Unread"}}
-        @color={{argOrDefault @readIconColor "primary"}}
         data-test-subj={{concat @id "-notificationEventReadIcon"}}
         id={{@id}}
       />
     </div>
-  </template>;
-
-export default EuiNotificationEventReadIcon;
+  </template>
+}

@@ -40,7 +40,8 @@ module('Integration | Component | eui-notification-event', function (hooks) {
     assert.dom('.euiNotificationEventMeta__badge').containsText('Alert').containsText('Critical').hasClass('euiBadge');
     assert.dom('.euiNotificationEventMeta__icon').hasAttribute('aria-label', 'Alert icon').doesNotHaveAttribute('aria-hidden');
     assert.dom('.euiNotificationEventMeta__time').hasText('1 min ago');
-    assert.dom('.euiNotificationEventMeta').hasClass('euiNotificationEventMeta--hasContextMenu');
+    // the context menu modifier class is gone: assert the menu itself
+    assert.dom('.euiNotificationEventMeta .euiNotificationEventMeta__contextMenuWrapper .euiButtonIcon').exists();
     assert.dom('button.euiNotificationEvent__title h2').hasText('CPU usage above 90%');
     assert.dom('article').hasAttribute('aria-labelledby', document.querySelector('.euiNotificationEvent__title')!.id);
     assert.dom('.euiNotificationEventMessages > .euiText p').hasText('First message');
@@ -61,15 +62,17 @@ module('Integration | Component | eui-notification-event', function (hooks) {
       </template>
     );
 
-    assert.dom('.with-button').hasClass('euiNotificationEvent--withReadState');
+    // the --withReadState modifier class is gone: the read indicator renders
+    assert.dom('.with-button .euiNotificationEvent__readButton').exists();
     assert.dom('.with-button .euiNotificationEventReadButton').hasAttribute('aria-label', 'Mark Unread with button as read').hasAttribute('title', 'Unread');
     await click('.with-button .euiNotificationEventReadButton');
     assert.deepEqual(read, [true]);
 
-    assert.dom('.with-icon .euiNotificationEventReadIcon').hasClass('euiNotificationEventReadIcon--isRead');
+    // read state: no modifier class, the title attribute (styles in eui-feedback-test)
+    assert.dom('.with-icon .euiNotificationEventReadIcon svg').hasAttribute('title', 'Read');
     assert.dom('.with-icon .euiNotificationEventReadIcon svg').hasAttribute('aria-label', 'Read icon is read');
     assert.dom('.with-icon .euiNotificationEventReadIcon svg').doesNotHaveAttribute('aria-hidden');
-    assert.dom('.with-icon .euiNotificationEvent__title').hasClass('euiNotificationEvent__title--isRead');
+    assert.strictEqual(getComputedStyle(document.querySelector('.with-icon .euiNotificationEvent__title')!).fontWeight, '400', 'read titles are regular weight');
   });
 
   test('the context menu opens from the meta button', async function (assert) {

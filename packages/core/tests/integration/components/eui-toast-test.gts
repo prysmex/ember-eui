@@ -14,8 +14,9 @@ module('Integration | Component | eui-toast', function (hooks) {
 
     assert.dom('.euiToast').hasClass('euiToast--success');
     assert.dom('.euiToastHeader__title').hasText('Saved');
-    assert.dom('.euiToastHeader').hasClass('euiToastHeader--withBody');
-    assert.dom('.euiToastHeader svg.euiToastHeader__icon').exists();
+    // upstream has no header wrapper/modifier: the body follows the title
+    assert.dom('[data-test-subj="euiToastBody"] .euiToast__text').hasText('All good');
+    assert.dom('svg[data-icon-type="check"]').hasAttribute('aria-hidden', 'true');
     assert.dom('.euiToast').containsText('All good');
   });
 
@@ -25,7 +26,7 @@ module('Integration | Component | eui-toast', function (hooks) {
 
     await render(<template><EuiToast @title="Bye" @onClose={{onClose}} /></template>);
 
-    await click('.euiToast__closeButton');
+    await click('[data-test-subj="toastCloseButton"]');
     assert.strictEqual(closed, 1);
   });
 });

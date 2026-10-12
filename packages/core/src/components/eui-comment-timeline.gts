@@ -1,57 +1,45 @@
-import { eq, not,or } from 'ember-truth-helpers';
+import EuiAvatar from './eui-avatar.gts';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import EuiIcon from './eui-icon.gts';
-
-import type { commentTimelineTypeMapping } from '../utils/css-mappings/eui-comment-timeline-icon.ts';
+import type { EuiIconSignature } from './eui-icon';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-/** @private The icon column of an EuiComment. */
+/**
+ * @private The avatar on an EuiComment's timeline: upstream's
+ * `EuiCommentTimeline` (a subdued `EuiAvatar` with an icon, `user` by
+ * default) or custom content.
+ */
 export interface EuiCommentTimelineSignature {
   Element: HTMLDivElement;
   Args: {
-    /** Icon on the timeline. Defaults to `'user'` (`'dot'` for updates). */
-    timelineIcon?: string;
-    /** `'regular'` or `'update'`, see `EuiComment`. Defaults to `'regular'`. */
-    type?: keyof typeof commentTimelineTypeMapping;
+    /** Icon of the avatar. Defaults to `'user'`. */
+    timelineIcon?: EuiIconSignature['Args']['type'];
+    /** Accessible name of the avatar (its `aria-label`/`title`). */
+    timelineAvatarAriaLabel?: string;
+    /**
+     * @deprecated Has no effect: upstream shows the same avatar for regular
+     * and update comments.
+     */
+    type?: 'regular' | 'update';
   };
   Blocks: {
-    /** Custom content instead of the icon, e.g. an `EuiAvatar`. */
+    /** Custom content instead of the avatar, e.g. an `EuiAvatar`. */
     timelineIcon: [];
   };
 }
 
 const EuiCommentTimeline: TemplateOnlyComponent<EuiCommentTimelineSignature> =
   <template>
-    <div class="euiCommentTimeline" ...attributes>
-      <div class="euiCommentTimeline__content">
-        <div
-          class={{classNames
-            (if
-              (or @timelineIcon (not (has-block "timelineIcon")))
-              "euiCommentTimeline__icon--default"
-            )
-            componentName="EuiCommentTimelineIcon"
-            type=(argOrDefault @type "regular")
-          }}
-        >
-          {{#if @timelineIcon}}
-            <EuiIcon
-              @size={{if (eq @type "update") "m" "l"}}
-              @type={{@timelineIcon}}
-            />
-          {{else if (has-block "timelineIcon")}}
-            {{yield to="timelineIcon"}}
-          {{else}}
-            <EuiIcon
-              @type={{if (eq @type "update") "dot" "user"}}
-              @size={{if (eq @type "update") "m" "l"}}
-            />
-          {{/if}}
-        </div>
-      </div>
-    </div>
+    {{#if (has-block "timelineIcon")}}
+      {{yield to="timelineIcon"}}
+    {{else}}
+      <EuiAvatar
+        class="euiCommentAvatar"
+        @name={{if @timelineAvatarAriaLabel @timelineAvatarAriaLabel ""}}
+        @iconType={{if @timelineIcon @timelineIcon "user"}}
+        @color="subdued"
+        ...attributes
+      />
+    {{/if}}
   </template>;
 
 export default EuiCommentTimeline;

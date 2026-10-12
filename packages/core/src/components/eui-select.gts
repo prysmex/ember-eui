@@ -102,6 +102,7 @@ export default class EuiSelect extends Component<EuiSelectSignature> {
         as |classes hasNoInitialSelection|
       }}
         <EuiFormControlLayout
+          @inputId={{inputId}}
           @clear={{@clear}}
           @isDropdown={{true}}
           @fullWidth={{@fullWidth}}

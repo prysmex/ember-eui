@@ -144,6 +144,7 @@ export default class EuiFieldPassword extends Component<EuiFieldPasswordSignatur
         as |classes|
       }}
         <EuiFormControlLayout
+          @inputId={{inputId}}
           @icon="lock"
           @clear={{@clear}}
           @fullWidth={{@fullWidth}}

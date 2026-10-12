@@ -1,17 +1,12 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
-import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
-import { buttonReset } from '../../utils/eui/form-controls.ts';
-import {
-  euiFormAppendPrependStyles,
-  euiQuickSelectPopoverStyles
-} from '../../utils/eui/styles.generated.ts';
+import { euiQuickSelectPopoverStyles } from '../../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
-import EuiIcon from '../eui-icon.gts';
+import EuiFormPrepend from '../eui-form-prepend.gts';
 import EuiPopover from '../eui-popover.gts';
 import EuiRefreshInterval from '../eui-refresh-interval.gts';
 import EuiToolTip from '../eui-tool-tip.gts';
@@ -104,33 +99,6 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
     );
   }
 
-  /** Upstream `EuiFormPrepend` wrapper (focus ring around the button). */
-  @cached
-  get wrapperClass() {
-    const styles = useEuiBorealisStyles(
-      this.context,
-      euiFormAppendPrependStyles
-    );
-    return euiClass(this.context, { boxSizing: 'border-box' }, styles.wrapper);
-  }
-
-  /** Upstream `EuiFormPrepend element="button"`. */
-  @cached
-  get buttonClass() {
-    const context = this.context;
-    const styles = useEuiBorealisStyles(context, euiFormAppendPrependStyles);
-    const isDisabled = Boolean(this.args.isDisabled);
-    return `euiFormPrepend euiQuickSelectPopover__button ${euiClass(
-      context,
-      buttonReset,
-      { fontFamily: context.upstream.euiTheme.font.family },
-      styles.side,
-      this.args.compressed ? styles.compressed : styles.uncompressed,
-      !isDisabled && styles.isInteractive,
-      isDisabled && styles.disabled
-    )}`;
-  }
-
   @cached
   get contentClass() {
     const styles = useEuiBorealisStyles(
@@ -156,19 +124,17 @@ export default class EuiQuickSelectPopover extends Component<EuiQuickSelectPopov
           @content={{this.buttonLabel}}
           @disableScreenReaderOutput={{true}}
         >
-          <div class={{this.wrapperClass}}>
-            <button
-              type="button"
-              class={{this.buttonClass}}
-              aria-label={{this.buttonLabel}}
-              data-test-subj="superDatePickerToggleQuickMenuButton"
-              disabled={{@isDisabled}}
-              {{on "click" this.toggle}}
-            >
-              <EuiIcon @type="calendar" />
-              <EuiIcon @type="chevronSingleDown" />
-            </button>
-          </div>
+          <EuiFormPrepend
+            @element="button"
+            @compressed={{@compressed}}
+            @isDisabled={{@isDisabled}}
+            @iconLeft="calendar"
+            @iconRight="chevronSingleDown"
+            @onClick={{this.toggle}}
+            class="euiQuickSelectPopover__button"
+            aria-label={{this.buttonLabel}}
+            data-test-subj="superDatePickerToggleQuickMenuButton"
+          />
         </EuiToolTip>
       </:button>
 

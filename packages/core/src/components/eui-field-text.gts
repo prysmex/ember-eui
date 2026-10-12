@@ -104,6 +104,7 @@ export default class EuiFieldText extends Component<EuiFieldTextSignature> {
           />
         {{else}}
           <EuiFormControlLayout
+            @inputId={{inputId}}
             @icon={{@icon}}
             @clear={{@clear}}
             @fullWidth={{@fullWidth}}

@@ -296,7 +296,16 @@ const entries = {
   'components/table/const.js': ['EUI_TABLE_CSS_CONTAINER_NAME'],
   'global_styling/mixins/_container_query.js': ['euiContainerCSS'],
   // control bar and file picker (EuiControlBar has no upstream styles after EUI 91.3.1)
-  'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles']
+  'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles'],
+  // new-inline-split (EuiInlineEdit*, EuiSplitButton, EuiFormControlButton, EuiFormAppend/Prepend)
+  'components/inline_edit/inline_edit_form.styles.js': ['euiInlineEditReadModeStyles'],
+  'components/inline_edit/inline_edit_text.styles.js': ['euiInlineEditTextStyles'],
+  'components/inline_edit/inline_edit_title.styles.js': ['euiInlineEditTitleStyles'],
+  'components/skeleton/skeleton_rectangle.styles.js': ['euiSkeletonRectangleStyles'],
+  'components/button/split_button/split_button.styles.js': ['euiSplitButtonStyles', 'euiSplitButtonActionStyles', 'euiSplitButtonDividerStyles'],
+  // extension-less key so the existing `_button.js` entry is not edited (union on merge)
+  'global_styling/mixins/_button': ['getEuiButtonColorValues', 'getEuiFilledButtonColorValues'],
+  'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

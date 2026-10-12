@@ -1,4 +1,7 @@
 import Component from '@glimmer/component';
+import { provide } from 'ember-provide-consume-context';
+
+import { EUI_FORM_CONTROL_LAYOUT_CONTEXT } from '../-private/eui-form-control-layout-context.ts';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
@@ -13,6 +16,7 @@ import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
 
+import type { EuiFormControlLayoutContext } from '../-private/eui-form-control-layout-context.ts';
 import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons';
 import type { EuiIconSignature } from './eui-icon';
 
@@ -61,7 +65,10 @@ export interface EuiFormControlLayoutSignature {
     clearLabel?: string;
     /** Shows a spinner. */
     isLoading?: boolean;
-    /** @deprecated Has no effect. */
+    /**
+     * Id of the control. `EuiFormPrepend` / `EuiFormAppend` labels in the
+     * `<:prepend>` / `<:append>` blocks point to it (upstream `inputId`).
+     */
     inputId?: string;
     /** @private Render the `<:prepend>` block. Defaults to `true`. */
     isPrependProvided?: boolean;
@@ -106,6 +113,35 @@ export interface EuiFormControlLayoutSignature {
 }
 
 export default class EuiFormControlLayout extends Component<EuiFormControlLayoutSignature> {
+  /**
+   * Upstream `EuiFormControlLayoutContext`: EuiFormAppend, EuiFormPrepend and
+   * EuiFormControlButton inherit these (no DOM is rendered for it).
+   */
+  @provide(EUI_FORM_CONTROL_LAYOUT_CONTEXT)
+  get formControlLayoutContext(): EuiFormControlLayoutContext {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const layout = this;
+    return {
+      get compressed() {
+        return layout.compressed;
+      },
+      get inputId() {
+        return layout.args.inputId;
+      },
+      get isDisabled() {
+        return layout.isDisabled;
+      },
+      get isInvalid() {
+        return layout.args.isInvalid;
+      },
+      get isLoading() {
+        return layout.args.isLoading;
+      },
+      get readOnly() {
+        return layout.args.readOnly;
+      }
+    };
+  }
   get context() {
     return getEuiThemeContext(this);
   }

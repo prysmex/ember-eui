@@ -359,6 +359,10 @@
       "sha256": "2e4327e67b17a715817f44db205a45bf8df2d89eb7040c42893838fefc51c643"
     },
     {
+      "path": "@elastic/eui/es/components/form/file_picker/file_picker.styles.js",
+      "sha256": "37fb33931d208a2471dcbf4e3a72afc79c3b2a7e56b587f2ad0d9fefea7a8ae9"
+    },
+    {
       "path": "@elastic/eui/es/components/form/form_control_layout/append_prepend/form_append_prepend.styles.js",
       "sha256": "4ff33cbbdc1df3e8badb86cab04da7544984603ea570b790dbee285509b743d3"
     },

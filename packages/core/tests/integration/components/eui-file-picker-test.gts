@@ -25,7 +25,7 @@ module('Integration | Component | eui-file-picker', function (hooks) {
     assert.strictEqual(received.length, 1);
     assert.strictEqual(received[0]!.length, 2);
     assert.dom('.euiFilePicker__promptText').hasText('2 files selected');
-    assert.dom('.euiFilePicker').hasClass('euiFilePicker--hasFiles');
+    assert.dom('.euiFilePicker').hasClass('euiFilePicker-hasFiles');
   });
 
   test('the clear button removes the selection', async function (assert) {
@@ -40,7 +40,7 @@ module('Integration | Component | eui-file-picker', function (hooks) {
     await click('.euiFilePicker__clearButton');
 
     assert.dom('.euiFilePicker__promptText').hasText('Pick files');
-    assert.dom('.euiFilePicker').doesNotHaveClass('euiFilePicker--hasFiles');
+    assert.dom('.euiFilePicker').doesNotHaveClass('euiFilePicker-hasFiles');
   });
 
   test('states and display', async function (assert) {
@@ -48,7 +48,12 @@ module('Integration | Component | eui-file-picker', function (hooks) {
       <template><EuiFilePicker @compressed={{true}} @fullWidth={{true}} @isInvalid={{true}} @isLoading={{true}} @disabled={{true}} @display="large" /></template>
     );
 
-    assert.dom('.euiFilePicker').hasClass('euiFilePicker--compressed').hasClass('euiFilePicker--fullWidth').hasClass('euiFilePicker--isInvalid').hasClass('euiFilePicker--isLoading').hasClass('euiFilePicker--large');
+    // Upstream state classes; compressed/fullWidth/large are computed styles now.
+    assert.dom('.euiFilePicker').hasClass('euiFilePicker-isInvalid').hasClass('euiFilePicker-isLoading');
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiFilePicker')!).maxWidth, '100%');
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiFilePicker__prompt')!).display, 'flex');
+    assert.dom('.euiFilePicker__prompt .euiProgress').exists();
     assert.dom('input[type="file"]').isDisabled();
+    assert.dom('input[type="file"]').hasAria('invalid', 'true');
   });
 });

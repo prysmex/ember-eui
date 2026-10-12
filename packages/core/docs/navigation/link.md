@@ -18,8 +18,9 @@ title: Link
 ```
 
 `@target="_blank"` adds an external link icon and a note for screen
-readers that it opens a new tab. `@color` changes the color (`primary`,
-`subdued`, `success`, `accent`, `danger`, `warning`, `ghost`, `text`).
+readers that it opens a new tab. Links always get `rel="noreferrer"`, plus
+`noopener` for `_blank`. `@color` changes the color (`text`, the default,
+`primary`, `subdued`, `success`, `accent`, `danger`, `warning`, `ghost`).
 
 </EuiText>
 
@@ -42,10 +43,11 @@ link (add `{{on "click" …}}`).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@color` | `string` | `'primary'` | `'primary'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`, `'warning'`, `'ghost'` or `'text'`. |
-| `@disabled` | `boolean` |  | Disables the link. |
+| `@color` | `EuiLinkColor \| (string & {})` | `'text'` (paragraph color that turns primary on hover and focus), as upstream | `'primary'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`, `'warning'`, `'ghost'` or `'text'`. |
+| `@disabled` | `boolean` |  | Disables the link. A disabled link with `@href` renders as a disabled `<button>`, because anchors cannot be disabled. |
 | `@external` | `boolean` | `true` for `@target="_blank"` | Shows the external link icon. |
-| `@href` | `string` |  | Where it links to; without it the link is a button. |
+| `@href` | `string` |  | Where it links to; without it the link is a button. A `javascript:` URL renders a disabled button instead. |
+| `@rel` | `string` |  | `rel` of the link. `noreferrer` is always added, and `noopener` too for `@target="_blank"`. |
 | `@target` | `string` |  | `target` of the link. `'_blank'` also adds the external icon and a screen reader note that it opens a new tab. |
 | `@type` | `string` | `'button'` | `type` of the button (without `@href`). |
 

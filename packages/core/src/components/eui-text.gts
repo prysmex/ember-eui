@@ -1,14 +1,38 @@
-import { and, not } from 'ember-truth-helpers';
+import Component from '@glimmer/component';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiTextStyles } from '../utils/eui/styles.generated.ts';
+import { euiTextAlignCss } from './eui-text-align.gts';
+import { euiTextColorCss } from './eui-text-color.gts';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import EuiTextAlign from './eui-text-align.gts';
-import EuiTextColor from './eui-text-color.gts';
+import type { CSSObject } from '@emotion/css/create-instance';
+import type { EuiBorealisContext } from '../utils/eui/theme.ts';
+import type { EuiTextAlignment } from './eui-text-align.gts';
+import type { EuiTextColorValue } from './eui-text-color.gts';
 
-import type { sizeMapping } from '../utils/css-mappings/eui-text.ts';
-import type { alignMapping } from '../utils/css-mappings/eui-text-align.ts';
-import type { colorMapping } from '../utils/css-mappings/eui-text-color.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+/**
+ * The parts of React EUI's global reset that EuiText content relies on,
+ * scoped to descendants. `:where()` keeps them below every upstream rule.
+ */
+function euiTextReset({ euiTheme }: EuiBorealisContext): CSSObject {
+  return {
+    boxSizing: 'border-box',
+    margin: 0,
+    fontFamily: euiTheme.font.family,
+    '& :where(*, *::before, *::after)': { boxSizing: 'border-box' },
+    '& :where(h1, h2, h3, h4, h5, h6, p, blockquote, pre, dl, dt, dd, ol, ul, li, figure)':
+      { margin: 0, padding: 0 },
+    '& :where(h1, h2, h3, h4, h5, h6, p)': {
+      fontFamily: 'inherit',
+      fontWeight: 'inherit',
+      fontSize: 'inherit'
+    },
+    '& :where(code, pre, kbd, samp)': { fontFamily: euiTheme.font.familyCode },
+    '& :where(strong)': { fontWeight: euiTheme.font.weight.bold },
+    '& :where(em)': { fontStyle: 'italic' },
+    '& :where(blockquote, q)': { quotes: 'none' }
+  };
+}
 
 /** Styles plain HTML content (`<p>`, `<ul>`, `<h3>`, `<code>`…) with EUI's typography. */
 export interface EuiTextSignature {
@@ -19,15 +43,15 @@ export interface EuiTextSignature {
      * at a readable width. Defaults to `true`.
      */
     grow?: boolean;
-    /** `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). Defaults to `'m'`. */
-    size?: keyof typeof sizeMapping;
-    /** `'left'`, `'center'` or `'right'`. */
-    textAlign?: keyof typeof alignMapping;
+    /** `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). Defaults to `'s'`. */
+    size?: 'xs' | 's' | 'm' | 'relative';
+    /** `'left'`, `'center'` or `'right'` (logical, so they flip in RTL). */
+    textAlign?: EuiTextAlignment;
     /**
-     * `'default'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`,
-     * `'warning'`, `'ghost'` or `'primary'`.
+     * Any EuiTextColor value: a named color such as `'subdued'` or
+     * `'danger'`, or a CSS color. Inherits when omitted.
      */
-    color?: keyof typeof colorMapping;
+    color?: EuiTextColorValue;
   };
   Blocks: {
     /** HTML content (paragraphs, lists, headings, code…), styled by EuiText. */
@@ -35,41 +59,24 @@ export interface EuiTextSignature {
   };
 }
 
-const EuiTextComponent: TemplateOnlyComponent<EuiTextSignature> = <template>
-  <div
-    class={{classNames
-      (unless (argOrDefault @grow true) "euiText--constrainedWidth")
-      componentName="EuiText"
-      size=(argOrDefault @size "m")
-    }}
-    ...attributes
-  >
-    {{#if (and @textAlign @color)}}
-      {{#let (component EuiTextAlign) as |Align|}}
-        {{#let (component EuiTextColor) as |Color|}}
-          <Align @textAlign={{@textAlign}}>
-            <Color @color={{@color}} @tagName="div">
-              {{yield}}
-            </Color>
-          </Align>
-        {{/let}}
-      {{/let}}
-    {{else if (and @textAlign (not @color))}}
-      {{#let (component EuiTextAlign) as |Align|}}
-        <Align @textAlign={{@textAlign}}>
-          {{yield}}
-        </Align>
-      {{/let}}
-    {{else if (and (not @textAlign) @color)}}
-      {{#let (component EuiTextColor) as |Color|}}
-        <Color @color={{@color}} @tagName="div">
-          {{yield}}
-        </Color>
-      {{/let}}
-    {{else}}
-      {{yield}}
-    {{/if}}
-  </div>
-</template>;
+export default class EuiText extends Component<EuiTextSignature> {
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiTextStyles);
+    const { color, textAlign } = this.args;
+    // Same order as upstream's cloned element: text, then color, then align.
+    return euiClass(
+      context,
+      euiTextReset(context.upstream),
+      styles.euiText,
+      this.args.grow === false ? styles.constrainedWidth : undefined,
+      styles[this.args.size ?? 's'],
+      color ? euiTextColorCss(context, color) : undefined,
+      textAlign ? euiTextAlignCss(textAlign) : undefined
+    );
+  }
 
-export default EuiTextComponent;
+  <template>
+    <div class="euiText {{this.classes}}" ...attributes>{{yield}}</div>
+  </template>
+}

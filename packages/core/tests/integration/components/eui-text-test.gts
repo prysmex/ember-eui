@@ -9,30 +9,53 @@ import EuiTextColor from '#src/components/eui-text-color.gts';
 module('Integration | Component | eui-text', function (hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders with size and grow', async function (assert) {
-    await render(<template><EuiText @size="s" @grow={{false}}><p>Hello</p></EuiText></template>);
+  test('it renders a div with its content and forwarded attributes', async function (assert) {
+    await render(
+      <template>
+        <EuiText @size="s" @grow={{false}} data-test-text>
+          <p>Hello</p>
+        </EuiText>
+      </template>
+    );
 
-    assert.dom('.euiText').hasClass('euiText--small').hasClass('euiText--constrainedWidth');
-    assert.dom('.euiText p').hasText('Hello');
+    assert.dom('div.euiText[data-test-text]').exists({ count: 1 });
+    assert.dom('.euiText > p').hasText('Hello');
+    assert
+      .dom('.euiText')
+      .doesNotHaveClass('euiText--small')
+      .doesNotHaveClass('euiText--constrainedWidth');
   });
 
-  test('@textAlign and @color wrap the content', async function (assert) {
-    await render(<template><EuiText @textAlign="center" @color="danger">Alert</EuiText></template>);
+  test('@textAlign and @color compose on one element without wrappers', async function (assert) {
+    await render(
+      <template>
+        <EuiText @textAlign="center" @color="danger" data-test-text>Alert</EuiText>
+      </template>
+    );
 
-    assert.dom('.euiText .euiTextAlign--center div.euiTextColor--danger').hasText('Alert');
+    assert.dom('div.euiText[data-test-text]').hasText('Alert');
+    assert.dom('.euiText *').doesNotExist('no nested align/color wrappers');
+    assert.dom('.euiTextAlign').doesNotExist();
+    assert.dom('.euiTextColor').doesNotExist();
   });
 
   test('EuiTextColor and EuiTextAlign on their own', async function (assert) {
     await render(
       <template>
-        <EuiTextColor @color="subdued">span</EuiTextColor>
-        <EuiTextColor @color="accent" @tagName="div">div</EuiTextColor>
-        <EuiTextAlign @textAlign="right">right</EuiTextAlign>
+        <EuiTextColor @color="subdued" data-test-span>span</EuiTextColor>
+        <EuiTextColor @color="accent" @tagName="div" data-test-div>div</EuiTextColor>
+        <EuiTextColor @color="danger" @tagName="p" data-test-p>p</EuiTextColor>
+        <EuiTextAlign @textAlign="right" data-test-align>right</EuiTextAlign>
+        <EuiTextAlign @tagName="span" data-test-align-span>inline</EuiTextAlign>
       </template>
     );
 
-    assert.dom('span.euiTextColor--subdued').hasText('span');
-    assert.dom('div.euiTextColor--accent').hasText('div');
-    assert.dom('.euiTextAlign--right').hasText('right');
+    assert.dom('span.euiTextColor[data-test-span]').hasText('span');
+    assert.dom('div.euiTextColor[data-test-div]').hasText('div');
+    assert.dom('p.euiTextColor[data-test-p]').hasText('p');
+    assert.dom('div.euiTextAlign[data-test-align]').hasText('right');
+    assert.dom('span.euiTextAlign[data-test-align-span]').hasText('inline');
+    assert.dom('.euiTextColor--subdued').doesNotExist();
+    assert.dom('.euiTextAlign--right').doesNotExist();
   });
 });

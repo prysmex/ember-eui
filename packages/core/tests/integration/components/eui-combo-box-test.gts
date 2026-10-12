@@ -452,8 +452,11 @@ module('Integration | Component | eui-combo-box', function (hooks) {
 
     hooks.beforeEach(function () {
       style = document.createElement('style');
-      // EUI's prose styles, which also reach lists inside components
+      // EUI's prose styles, which also reach lists inside components. The
+      // input wrap's own box/font (from the theme CSS) is what EuiText's
+      // zero-specificity reset must not override.
       style.textContent = `${emberEuiCss}
+        .euiComboBox .euiComboBox__inputWrap { padding: 4px 40px 4px 8px; font: 14px sans-serif; }
         .euiText ul { list-style: disc; margin-left: 24px; }`;
       document.head.append(style);
     });

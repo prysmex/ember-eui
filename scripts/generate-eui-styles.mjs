@@ -41,6 +41,10 @@ const entries = {
   'components/button/button_display/_button_display_content.styles.js': [
     'euiButtonDisplayContentStyles'
   ],
+  'components/text/text.styles.js': ['euiTextStyles'],
+  'components/text/text_color.styles.js': ['euiTextColorStyles'],
+  'components/text/text_align.styles.js': ['euiTextAlignStyles'],
+  'components/title/title.styles.js': ['euiTitleStyles'],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],

@@ -12,6 +12,10 @@ Branch: `feat/eui-latest`, based on `feat/emotion`. No catalog-wide completion c
 - User clarified latest-only styling is the target. Removed specificity wrappers and legacy variant classes/coexistence tests. Panel defaults border=true/shadow=false, rule margin=m. Rewrote handoff docs to reflect this direction.
 - Added standalone `/docs/eui-latest` showcase: native providers, sibling light/dark, nested token overrides, contrast/loading/action controls. Legacy docs stylesheet is disabled while it is active and restored on exit.
 
+## 2026-10-12
+
+- Text family (EuiText/Title/TextColor/TextAlign) migrated to extracted factories; generator now extracts 17 factories. Full core suite 609/609 in Chromium 130, parity 17/17, types/lint/API docs/core build pass. See [text-handoff.md](text-handoff.md).
+
 ## Current resume point
 
 Latest-only full core tests and core rebuild are in progress. Previous runs are superseded by latest-only changes. Root must finish full tests, site acceptance/build, type/lint checks and browser smoke, then update component status and exact counts. Do not stage `.vscode/settings.json`.

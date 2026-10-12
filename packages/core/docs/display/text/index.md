@@ -33,9 +33,9 @@ Styles plain HTML content (`<p>`, `<ul>`, `<h3>`, `<code>`…) with EUI's typogr
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@grow` | `boolean` | `true` | `true` lets text span the container's full width; `false` caps lines at a readable width. |
-| `@size` |  | `'m'` | `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). |
-| `@textAlign` |  |  | `'left'`, `'center'` or `'right'`. |
-| `@color` |  |  | `'default'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`, `'warning'`, `'ghost'` or `'primary'`. |
+| `@size` | `'xs' \| 's' \| 'm' \| 'relative'` | `'s'` | `'xs'`, `'s'`, `'m'` or `'relative'` (inherits). |
+| `@textAlign` | `EuiTextAlignment` |  | `'left'`, `'center'` or `'right'` (logical, so they flip in RTL). |
+| `@color` | `EuiTextColorValue` |  | Any EuiTextColor value: a named color such as `'subdued'` or `'danger'`, or a CSS color. Inherits when omitted. |
 
 | Block | Description |
 | --- | --- |
@@ -49,14 +49,14 @@ Colors its text content.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@color` | `string` | `'default'` | `'default'`, `'subdued'`, `'success'`, `'accent'`, `'danger'`, `'warning'`, `'ghost'` or `'primary'`. |
-| `@tagName` | `string` | `'span'` | `'span'` (inline) or `'div'`. |
+| `@color` | `EuiTextColorValue` | `'default'` | `'default'`, `'subdued'`, `'success'`, `'accent'`, `'accentSecondary'`, `'danger'`, `'warning'`, `'ghost'`, `'inherit'`, `'primary'`, or any CSS color value. |
+| `@tagName` | `'span' \| 'div' \| 'p'` | `'span'` | `'span'` (inline), `'div'` or `'p'`. |
 
 | Block | Description |
 | --- | --- |
 | default block | The content. |
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<span>`.
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>` / `<div>` / `<p>`.
 
 ### EuiTextAlign
 
@@ -64,13 +64,14 @@ Aligns its text content.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@textAlign` | `'left' \| 'center' \| 'right'` | `'left'` | `'left'`, `'center'` or `'right'`. |
+| `@textAlign` | `EuiTextAlignment` | `'left'` | `'left'`, `'center'` or `'right'`. Left and right are logical: they map to `start`/`end`, so they flip in RTL. |
+| `@tagName` | `'div' \| 'span' \| 'p'` | `'div'` | `'div'`, `'span'` or `'p'`. |
 
 | Block | Description |
 | --- | --- |
 | default block | The content. |
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<span>` / `<p>`.
 
 </EuiText>
 <!-- api:end -->

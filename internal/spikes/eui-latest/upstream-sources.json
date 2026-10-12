@@ -19,12 +19,20 @@
       "sha256": "9ca0838d55f9c3da97fbb9b240c7395f41af0125a6aaf52feb7187f392a0a96b"
     },
     {
+      "path": "@elastic/eui/es/components/code/code_syntax.styles.js",
+      "sha256": "dc198bf65eef50a9ac8d2ef2bde3c1cd952e118a647442f497906f7352a107eb"
+    },
+    {
       "path": "@elastic/eui/es/components/common.js",
       "sha256": "b94d98693be5c8cf22392a939bc65a658deeceac235733b6e149a2ce93ecf05c"
     },
     {
       "path": "@elastic/eui/es/components/horizontal_rule/horizontal_rule.styles.js",
       "sha256": "b8161495ca1fe5639c9ede467e3334f3403482716713e1d0891cd66295c80d1e"
+    },
+    {
+      "path": "@elastic/eui/es/components/link/link.styles.js",
+      "sha256": "8aa83c637a20849c7d56cbe907a0998c6fb4bf4a868ea6d8a5d0f20f3a067dd7"
     },
     {
       "path": "@elastic/eui/es/components/loading/loading_spinner.styles.js",
@@ -37,6 +45,22 @@
     {
       "path": "@elastic/eui/es/components/spacer/spacer.styles.js",
       "sha256": "e6eaf9292456bce230fff4cbb55d2d1e7a3ac0f78988eb9482a6b714831358ae"
+    },
+    {
+      "path": "@elastic/eui/es/components/text/text_align.styles.js",
+      "sha256": "2d36a52e32ce2e3e8ee2702274748aa0b8b6248af329084338aae4e7edee3b11"
+    },
+    {
+      "path": "@elastic/eui/es/components/text/text_color.styles.js",
+      "sha256": "1e63505d787c31f930c48eabbcd28fcef2749f07fbe6e130f1b899e8912fada9"
+    },
+    {
+      "path": "@elastic/eui/es/components/text/text.styles.js",
+      "sha256": "60b7889ab176ed915e47d0c48cc6901003b5a941cceb962dd152cebaebedd1b4"
+    },
+    {
+      "path": "@elastic/eui/es/components/title/title.styles.js",
+      "sha256": "1a0b0afccb7cd7f591bfabc2394aceafa09cad049b43ef11c4255747eb9b7008"
     },
     {
       "path": "@elastic/eui/es/global_styling/functions/high_contrast.js",

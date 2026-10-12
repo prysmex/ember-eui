@@ -43,7 +43,10 @@ const factories = {
     'euiButtonDisplayContentStyles'
   ],
   'global_styling/mixins/_button.js': ['euiButtonDisplaysColors'],
-  'global_styling/mixins/_states.js': ['euiFocusRing']
+  'global_styling/mixins/_states.js': ['euiFocusRing'],
+  'components/text/text.styles.js': ['euiTextStyles'],
+  'components/text/text_color.styles.js': ['euiTextColorStyles'],
+  'components/title/title.styles.js': ['euiTitleStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -172,4 +175,50 @@ test('button interactions match upstream fill and overlay in every mode and cont
           reference.euiButtonInteractionStyles(context, colors, kind)
         );
     }
+});
+
+test('text alignment slots match upstream static styles', () => {
+  const reference = require(
+    resolve(eui, 'lib/components/text/text_align.styles.js')
+  );
+  assert.deepEqual(
+    normalize(styles.euiTextAlignStyles),
+    normalize(reference.euiTextAlignStyles)
+  );
+});
+
+test('typography factories match upstream with text token and font overrides', () => {
+  const modifications = {
+    font: { title: { weight: 'medium', letterSpacing: '0.02em' }, scale: { m: 1.1 } },
+    size: { m: '14px' },
+    colors: {
+      LIGHT: { textParagraph: '#202020', textHeading: '#101010', textSubdued: '#555555' },
+      DARK: { textParagraph: '#eeeeee', textHeading: '#ffffff', textSubdued: '#aaaaaa' }
+    }
+  };
+  for (const [path, name] of [
+    ['components/text/text.styles.js', 'euiTextStyles'],
+    ['components/text/text_color.styles.js', 'euiTextColorStyles'],
+    ['components/title/title.styles.js', 'euiTitleStyles']
+  ]) {
+    const reference = require(resolve(eui, 'lib', path));
+    for (const colorMode of ['LIGHT', 'DARK']) {
+      const context = {
+        colorMode,
+        highContrastMode: false,
+        modifications,
+        euiTheme: getComputed(
+          EuiThemeBorealis,
+          buildTheme(modifications, 'parity'),
+          colorMode,
+          false
+        )
+      };
+      assert.deepEqual(
+        normalize(styles[name](context)),
+        normalize(reference[name](context)),
+        `${name}/${colorMode}`
+      );
+    }
+  }
 });

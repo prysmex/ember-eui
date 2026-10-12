@@ -3045,8 +3045,8 @@ var highContrastModeStyles = function highContrastModeStyles2(euiThemeContext, o
   }
   return defaultStyles.trim();
 };
-var preventForcedColors = function preventForcedColors2(_ref4) {
-  var highContrastMode = _ref4.highContrastMode;
+var preventForcedColors = function preventForcedColors2(_ref6) {
+  var highContrastMode = _ref6.highContrastMode;
   return highContrastMode === "forced" ? "forced-color-adjust: none;" : "";
 };
 
@@ -3310,8 +3310,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
       break;
   }
   var borderRadiusCSS = [];
-  Object.entries(borderRadiusMap).forEach(function(_ref4) {
-    var _ref23 = _slicedToArray(_ref4, 2), property = _ref23[0], value2 = _ref23[1];
+  Object.entries(borderRadiusMap).forEach(function(_ref6) {
+    var _ref23 = _slicedToArray(_ref6, 2), property = _ref23[0], value2 = _ref23[1];
     if (value2) {
       if (ignoreZeroes && value2 !== "0" && value2 !== "0px" || !ignoreZeroes) {
         borderRadiusCSS.push("".concat(property, ": ").concat(value2, ";"));
@@ -3325,8 +3325,8 @@ var logicalBorderRadiusCSS = function logicalBorderRadiusCSS2(value) {
 import { mathWithUnits } from "@elastic/eui-theme-common";
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/functions/typography.js
-function euiFontSizeFromScale(scale, _ref4) {
-  var base = _ref4.base, font = _ref4.font;
+function euiFontSizeFromScale(scale, _ref6) {
+  var base = _ref6.base, font = _ref6.font;
   var _ref23 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref2$unit = _ref23.unit, unit = _ref2$unit === void 0 ? font.defaultUnits : _ref2$unit, customScale = _ref23.customScale;
   if (unit === "em") {
     return "".concat(font.scale[scale], "em");
@@ -3338,7 +3338,7 @@ function euiFontSizeFromScale(scale, _ref4) {
 }
 function euiLineHeightFromBaseline(scale, _ref32) {
   var base = _ref32.base, font = _ref32.font;
-  var _ref4 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref4$unit = _ref4.unit, unit = _ref4$unit === void 0 ? font.defaultUnits : _ref4$unit, customScale = _ref4.customScale;
+  var _ref42 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, _ref4$unit = _ref42.unit, unit = _ref4$unit === void 0 ? font.defaultUnits : _ref4$unit, customScale = _ref42.customScale;
   var baseline = font.baseline, lineHeightMultiplier = font.lineHeightMultiplier;
   var numerator = base * font.scale[scale];
   if (customScale) numerator *= font.scale[customScale];
@@ -3510,8 +3510,8 @@ var SEVERITY_COLORS = ["neutral", "risk"];
 var BUTTON_COLORS = ["text", "accent", "accentSecondary", "primary", "success", "warning", "danger"];
 var EXTENDED_BUTTON_COLORS = [].concat(BUTTON_COLORS, SEVERITY_COLORS);
 var BUTTON_DISPLAYS = ["base", "fill", "empty"];
-var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref4, color, variant) {
-  var euiTheme = _ref4.euiTheme, highContrastMode = _ref4.highContrastMode;
+var getButtonVariantTokenValues = function getButtonVariantTokenValues2(_ref6, color, variant) {
+  var euiTheme = _ref6.euiTheme, highContrastMode = _ref6.highContrastMode;
   var backgroundTokenBase = variant === "base" ? "background" : "background".concat(variant.charAt(0).toUpperCase() + variant.slice(1));
   var textTokenBase = variant === "filled" ? "textColorFilled" : "textColor";
   var backgroundTokenName = getTokenName(backgroundTokenBase, color);
@@ -3717,8 +3717,8 @@ function _arrayLikeToArray3(r, a) {
   return n;
 }
 var BACKGROUND_COLORS = ["transparent", "plain", "subdued", "highlighted", "accent", "accentSecondary", "primary", "success", "warning", "danger"].concat(_toConsumableArray2(SEVERITY_COLORS));
-var euiBackgroundColor = function euiBackgroundColor2(_ref4, color) {
-  var euiTheme = _ref4.euiTheme;
+var euiBackgroundColor = function euiBackgroundColor2(_ref6, color) {
+  var euiTheme = _ref6.euiTheme;
   var _ref23 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, method = _ref23.method;
   if (color === "transparent") return "transparent";
   if (method === "transparent") {
@@ -3729,8 +3729,8 @@ var euiBackgroundColor = function euiBackgroundColor2(_ref4, color) {
     return euiTheme.colors[_tokenName];
   }
 };
-var euiBorderColor = function euiBorderColor2(_ref4, color) {
-  var euiTheme = _ref4.euiTheme;
+var euiBorderColor = function euiBorderColor2(_ref42, color) {
+  var euiTheme = _ref42.euiTheme;
   switch (color) {
     case "transparent":
       return euiTheme.border.color;
@@ -3742,8 +3742,8 @@ var euiBorderColor = function euiBorderColor2(_ref4, color) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_padding.js
-var euiPaddingSize = function euiPaddingSize2(_ref4, size) {
-  var euiTheme = _ref4.euiTheme;
+var euiPaddingSize = function euiPaddingSize2(_ref6, size) {
+  var euiTheme = _ref6.euiTheme;
   switch (size) {
     case "none":
       return null;
@@ -3755,8 +3755,8 @@ var euiPaddingSize = function euiPaddingSize2(_ref4, size) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_states.js
-var euiOutline = function euiOutline2(_ref4) {
-  var euiTheme = _ref4.euiTheme;
+var euiOutline = function euiOutline2(_ref6) {
+  var euiTheme = _ref6.euiTheme;
   var offset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "center";
   var color = arguments.length > 2 ? arguments[2] : void 0;
   var outlineWidth = euiTheme.focus.width;
@@ -3780,12 +3780,15 @@ var euiFocusRing = function euiFocusRing2(euiThemeContext) {
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/global_styling/mixins/_typography.js
-var euiFontSize = function euiFontSize2(_ref4, scale, options) {
-  var euiTheme = _ref4.euiTheme;
+var euiFontSize = function euiFontSize2(_ref6, scale, options) {
+  var euiTheme = _ref6.euiTheme;
   return {
     fontSize: euiFontSizeFromScale(scale, euiTheme, options),
     lineHeight: euiLineHeightFromBaseline(scale, euiTheme, options)
   };
+};
+var euiTextBreakWord = function euiTextBreakWord2() {
+  return "\n  overflow-wrap: break-word !important; // makes sure the long string will wrap and not bust out of the container\n  word-break: break-word;\n";
 };
 
 // node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/spacer/spacer.styles.js
@@ -3899,8 +3902,8 @@ var spinnerSizes = {
   xl: "xl",
   xxl: "xxl"
 };
-var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref4: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
-  var euiTheme = _ref4.euiTheme, highContrastMode = _ref4.highContrastMode;
+var euiSpinnerBorderColorsCSS = function euiSpinnerBorderColorsCSS2(_ref6: EuiBorealisContext, _colors?: { border?: string; highlight?: string }) {
+  var euiTheme = _ref6.euiTheme, highContrastMode = _ref6.highContrastMode;
   var colors = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
   var _colors$border = colors.border, border = _colors$border === void 0 ? euiTheme.components.loadingSpinnerBorder : _colors$border, _colors$highlight = colors.highlight, highlight = _colors$highlight === void 0 ? euiTheme.components.loadingSpinnerHighlight : _colors$highlight;
   if (highContrastMode === "forced") {
@@ -3980,6 +3983,216 @@ var euiButtonDisplayContentStyles = function euiButtonDisplayContentStyles2(euiT
     }
   };
 };
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/link/link.styles.js
+var euiLinkCSS = function euiLinkCSS2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  return "\n    font-weight: ".concat(euiTheme.font.weight.medium, ";\n    ").concat(logicalTextAlignCSS("left"), "\n    color: ").concat(euiTheme.colors.textParagraph, `;
+    text-decoration: underline dotted;
+    /* use a fallback as "from-font" isn't fully supported by all last major versions yet */
+    text-decoration-thickness: `).concat(euiTheme.border.width.thin, ";\n    text-decoration-thickness: from-font;\n\n    &:hover,\n    &:focus {\n      text-decoration: underline solid;\n    }\n\n    &:focus {\n      ").concat(euiFocusRing(euiThemeContext, "outset"), "\n      text-decoration-thickness: ").concat(euiTheme.border.width.thick, ";\n    }\n  ");
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/title/title.styles.js
+function _typeof3(o) {
+  "@babel/helpers - typeof";
+  return _typeof3 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+    return typeof o2;
+  } : function(o2) {
+    return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+  }, _typeof3(o);
+}
+function ownKeys2(e, r) {
+  var t = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(e);
+    r && (o = o.filter(function(r2) {
+      return Object.getOwnPropertyDescriptor(e, r2).enumerable;
+    })), t.push.apply(t, o);
+  }
+  return t;
+}
+function _objectSpread2(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {};
+    r % 2 ? ownKeys2(Object(t), true).forEach(function(r2) {
+      _defineProperty2(e, r2, t[r2]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys2(Object(t)).forEach(function(r2) {
+      Object.defineProperty(e, r2, Object.getOwnPropertyDescriptor(t, r2));
+    });
+  }
+  return e;
+}
+function _defineProperty2(e, r, t) {
+  return (r = _toPropertyKey2(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: true, configurable: true, writable: true }) : e[r] = t, e;
+}
+function _toPropertyKey2(t) {
+  var i = _toPrimitive2(t, "string");
+  return "symbol" == _typeof3(i) ? i : i + "";
+}
+function _toPrimitive2(t, r) {
+  if ("object" != _typeof3(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof3(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+var euiTitle = function euiTitle2(euiThemeContext) {
+  var scale = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "m";
+  var options = arguments.length > 2 ? arguments[2] : void 0;
+  var euiTheme = euiThemeContext.euiTheme;
+  var titleScaleToFontSizeScaleMap = {
+    xxxs: "xs",
+    xxs: "s",
+    xs: "m",
+    s: "l",
+    m: "xl",
+    l: "xxl"
+  };
+  return _objectSpread2(_objectSpread2({}, euiFontSize(euiThemeContext, titleScaleToFontSizeScaleMap[scale], options)), {}, {
+    fontWeight: euiTheme.font.weight[euiTheme.font.title.weight],
+    color: euiTheme.colors.textHeading,
+    letterSpacing: euiTheme.font.title.letterSpacing
+  });
+};
+var _ref4 = true ? {
+  name: "1x2qsb1-uppercase",
+  styles: "text-transform:uppercase;label:uppercase;"
+} : {
+  name: "1x2qsb1-uppercase",
+  styles: "text-transform:uppercase;label:uppercase;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiTitleStyles = function euiTitleStyles2(euiThemeContext) {
+  return {
+    euiTitle: /* @__PURE__ */ css(euiTextBreakWord(), " &+&{", logicalCSS("margin-top", euiThemeContext.euiTheme.size.l), ";};label:euiTitle;"),
+    uppercase: _ref4,
+    // Sizes
+    xxxs: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xxxs"), ";;label:xxxs;"),
+    xxs: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xxs"), ";;label:xxs;"),
+    xs: /* @__PURE__ */ css(euiTitle(euiThemeContext, "xs"), ";;label:xs;"),
+    s: /* @__PURE__ */ css(euiTitle(euiThemeContext, "s"), ";;label:s;"),
+    m: /* @__PURE__ */ css(euiTitle(euiThemeContext, "m"), ";;label:m;"),
+    l: /* @__PURE__ */ css(euiTitle(euiThemeContext, "l"), ";;label:l;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/code/code_syntax.styles.js
+var euiCodeTextColors = function euiCodeTextColors2(_ref6) {
+  var euiTheme = _ref6.euiTheme;
+  return {
+    backgroundColor: euiTheme.components.codeBackground,
+    color: euiTheme.components.codeColor
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/text/text.styles.js
+var euiTextConstrainedMaxWidth = "max(64ch, 75%)";
+var euiText = function euiText2(euiTheme) {
+  var inheritColor = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+  return {
+    color: inheritColor ? "inherit" : euiTheme.colors.textParagraph,
+    fontWeight: euiTheme.font.weight.regular
+  };
+};
+var euiScaleText = function euiScaleText2(euiThemeContext, options) {
+  var _euiFontSize = euiFontSize(euiThemeContext, "m", options), fontSize = _euiFontSize.fontSize, lineHeight = _euiFontSize.lineHeight;
+  var euiTheme = euiThemeContext.euiTheme;
+  var unit = options.unit, _customScale = options.customScale;
+  var lineHeightSize = unit === "em" ? "".concat(lineHeight, "em") : lineHeight;
+  var headings = {
+    h1: euiTitle(euiThemeContext, "l", options),
+    h2: euiTitle(euiThemeContext, "m", options),
+    h3: euiTitle(euiThemeContext, "s", options),
+    h4: euiTitle(euiThemeContext, "xs", options),
+    h5: euiTitle(euiThemeContext, "xxs", options),
+    h6: euiTitle(euiThemeContext, "xxxs", options)
+  };
+  var customScale = _customScale === "xxxs" ? "xxs" : _customScale || "m";
+  var marginSize = euiTheme.size[customScale];
+  var headingMarginTop = mathWithUnits(marginSize, function(x) {
+    return x * 2;
+  });
+  var headingMarginBottom = marginSize;
+  var blockQuoteBorderWidth = mathWithUnits(fontSize, function(x) {
+    return x / 4;
+  });
+  return "\n    font-size: ".concat(fontSize, ";\n    line-height: ").concat(lineHeight, ";\n\n    h1 {\n      font-size: ").concat(headings.h1.fontSize, ";\n      line-height: ").concat(headings.h1.lineHeight, ";\n    }\n    h1:not(:last-child) {\n      ").concat(logicalCSS("margin-bottom", headingMarginBottom), "\n    }\n\n    h2 {\n      font-size: ").concat(headings.h2.fontSize, ";\n      line-height: ").concat(headings.h2.lineHeight, ";\n\n      &:not(:first-child) {\n        ").concat(logicalCSS("margin-top", headingMarginTop), "\n      }\n\n      &:not(:last-child) {\n        ").concat(logicalCSS("margin-bottom", headingMarginBottom), "\n      }\n    }\n\n    h3 {\n      font-size: ").concat(headings.h3.fontSize, ";\n      line-height: ").concat(headings.h3.lineHeight, ";\n\n      &:not(:first-child) {\n        ").concat(logicalCSS("margin-top", headingMarginTop), "\n      }\n\n      &:not(:last-child) {\n        ").concat(logicalCSS("margin-bottom", headingMarginBottom), "\n      }\n    }\n\n    h4 {\n      font-size: ").concat(headings.h4.fontSize, ";\n      line-height: ").concat(headings.h4.lineHeight, ";\n\n      &:not(:first-child) {\n        ").concat(logicalCSS("margin-top", headingMarginTop), "\n      }\n\n      &:not(:last-child) {\n        ").concat(logicalCSS("margin-bottom", headingMarginBottom), "\n      }\n    }\n\n    h5 {\n      font-size: ").concat(headings.h5.fontSize, ";\n      line-height: ").concat(headings.h5.lineHeight, ";\n\n      &:not(:first-child) {\n        ").concat(logicalCSS("margin-top", headingMarginTop), "\n      }\n\n      &:not(:last-child) {\n        ").concat(logicalCSS("margin-bottom", headingMarginBottom), "\n      }\n    }\n\n    h6 {\n      font-size: ").concat(headings.h6.fontSize, ";\n      line-height: ").concat(headings.h6.lineHeight, ";\n\n      &:not(:first-child) {\n        ").concat(logicalCSS("margin-top", headingMarginTop), "\n      }\n\n      &:not(:last-child) {\n        ").concat(logicalCSS("margin-bottom", headingMarginBottom), "\n      }\n    }\n\n    p,\n    dl,\n    blockquote,\n    pre,\n    > ul,\n    > ol {\n      ").concat(logicalCSS("margin-bottom", lineHeightSize), "\n    }\n\n    ul,\n    ol {\n      ").concat(logicalCSS("margin-left", lineHeightSize), "\n    }\n\n    /* The styles of the nested ordered lists follow the style of GitHub\n       which is commonly used in Markdown or MDX formatting. */\n    ol ol,\n    ul ol {\n      list-style-type: lower-roman;\n    }\n\n    ul ul ol,\n    ul ol ol,\n    ol ul ol,\n    ol ol ol {\n      list-style-type: lower-alpha;\n    }\n  \n    blockquote {\n      font-size: ").concat(fontSize, ";\n      ").concat(logicalShorthandCSS("padding", "0 ".concat(fontSize)), "\n      ").concat(logicalCSS("border-left-width", blockQuoteBorderWidth), "\n      ").concat(logicalCSS("margin-bottom", fontSize), "\n    }\n\n    dd + dt {\n      ").concat(logicalCSS("margin-top", fontSize), "\n    }\n\n    dt,\n    .eui-definitionListReverse dd {\n      font-size: ").concat(fontSize, ";\n      line-height: ").concat(lineHeight, ";\n    }\n\n    .eui-definitionListReverse dt {\n      font-size: ").concat(euiFontSize(euiThemeContext, "xs", options).fontSize, ";\n      color: ").concat(euiTheme.colors.textParagraph, ";\n    }\n\n    small {\n      font-size: ").concat(euiFontSize(euiThemeContext, "s", options).fontSize, ";\n    }\n\n    pre:not(.euiCodeBlock__pre) {\n      padding: ").concat(lineHeightSize, ";\n    }\n\n    code:not(.euiCode):not(.euiCodeBlock__code)  {\n      font-size: .9em; /* 90% of parent font size */\n    }\n    ").concat(highContrastModeStyles(euiThemeContext, {
+    // For EuiCodeBlocks, set the margin on the wrapper instead of on the <pre>
+    // so that high contrast mode borders render as expected
+    preferred: "\n        .euiCodeBlock {\n          ".concat(logicalCSS("margin-bottom", lineHeightSize), "\n\n          pre {\n            ").concat(logicalCSS("margin-bottom", 0), "\n          }\n        }\n      ")
+  }), "\n    ").concat(
+    // when textSize is 'm', the 'kbd' element gets a line between the text and the border-bottom
+    _customScale === "m" ? "\n    kbd {\n      ".concat(logicalCSS("padding-bottom", euiTheme.size.xs), "\n      /* Ensures the shape still looks like a square when only one character */\n      ").concat(logicalCSS("min-width", euiTheme.size.l), "\n      ").concat(logicalTextAlignCSS("center"), "\n    }\n    \n    kbd::after {\n      content: '';\n      ").concat(logicalCSS("border-bottom", "".concat(euiTheme.border.width.thin, " solid ").concat(euiTheme.colors.textParagraph)), "\n      position: absolute;\n      ").concat(logicalCSS("bottom", euiTheme.size.xxs), "\n      ").concat(logicalCSS("left", 0), "\n      ").concat(logicalCSS("width", "100%"), "\n    }") : "",
+    "\n  "
+  );
+};
+var euiTextStyles = function euiTextStyles2(euiThemeContext) {
+  var euiTheme = euiThemeContext.euiTheme;
+  var codeColors = euiCodeTextColors(euiThemeContext);
+  return {
+    euiText: /* @__PURE__ */ css(euiText(euiTheme, true), "clear:both;a:not([class]){", euiLinkCSS(euiThemeContext), ";}ul{list-style:disc;}ol{list-style:decimal;}blockquote{border-inline-start-color:", euiTheme.border.color, ";border-inline-start-style:solid;}blockquote:not(.euiMarkdownFormat__blockquote){color:", euiTheme.colors.textSubdued, ";}h1{", euiTitle(euiThemeContext, "l"), ";}h2{", euiTitle(euiThemeContext, "m"), ";}h3{", euiTitle(euiThemeContext, "s"), ";}h4,dt{", euiTitle(euiThemeContext, "xs"), ";}h5{", euiTitle(euiThemeContext, "xxs"), ";}h6{", euiTitle(euiThemeContext, "xxxs"), ";}h1,h2,h3,h4,h5,h6,dt{color:inherit;}pre:not(.euiCodeBlock > pre){white-space:pre-wrap;background-color:", codeColors.backgroundColor, ";color:", codeColors.color, ";", highContrastModeStyles(euiThemeContext, {
+      preferred: "border: ".concat(euiTheme.border.thin)
+    }), ";}pre:not(.euiCodeBlock__pre),pre:not(.euiCodeBlock__pre) code{display:block;}>:last-child{", logicalCSS("margin-bottom", "0 !important"), ";}kbd{position:relative;display:inline-block;", logicalCSS("padding-vertical", euiTheme.size.xxs), " ", logicalCSS("padding-horizontal", euiTheme.size.xs), " line-height:1;border:", euiTheme.border.width.thin, " solid ", euiTheme.colors.textParagraph, ";border-radius:", mathWithUnits(euiTheme.border.radius.inline, function(x) {
+      return x / 2;
+    }), ";", highContrastModeStyles(euiThemeContext, {
+      // Fixes an odd border issue in Windows high contrast themes
+      forced: "\n            overflow: hidden;\n            vertical-align: middle;\n          "
+    }), ";};label:euiText;"),
+    constrainedWidth: /* @__PURE__ */ css(logicalCSS("max-width", euiTextConstrainedMaxWidth), ";;label:constrainedWidth;"),
+    // Sizes
+    m: /* @__PURE__ */ css(euiScaleText(euiThemeContext, {
+      customScale: "m"
+    }), ";;label:m;"),
+    s: /* @__PURE__ */ css(euiScaleText(euiThemeContext, {
+      customScale: "s"
+    }), ";;label:s;"),
+    xs: /* @__PURE__ */ css(euiScaleText(euiThemeContext, {
+      customScale: "xs"
+    }), ";;label:xs;"),
+    relative: /* @__PURE__ */ css(euiScaleText(euiThemeContext, {
+      unit: "em"
+    }), ";;label:relative;")
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/text/text_color.styles.js
+var _ref5 = true ? {
+  name: "uacjc5-inherit",
+  styles: "color:inherit;label:inherit;"
+} : {
+  name: "uacjc5-inherit",
+  styles: "color:inherit;label:inherit;",
+  toString: _EMOTION_STRINGIFIED_CSS_ERROR__
+};
+var euiTextColorStyles = function euiTextColorStyles2(_ref23) {
+  var euiTheme = _ref23.euiTheme;
+  return {
+    euiTextColor: /* @__PURE__ */ css(";label:euiTextColor;"),
+    default: /* @__PURE__ */ css("color:", euiTheme.colors.textParagraph, ";;label:default;"),
+    subdued: /* @__PURE__ */ css("color:", euiTheme.colors.textSubdued, ";;label:subdued;"),
+    success: /* @__PURE__ */ css("color:", euiTheme.colors.textSuccess, ";;label:success;"),
+    accent: /* @__PURE__ */ css("color:", euiTheme.colors.textAccent, ";;label:accent;"),
+    accentSecondary: /* @__PURE__ */ css("color:", euiTheme.colors.textAccentSecondary, ";;label:accentSecondary;"),
+    danger: /* @__PURE__ */ css("color:", euiTheme.colors.textDanger, ";;label:danger;"),
+    warning: /* @__PURE__ */ css("color:", euiTheme.colors.textWarning, ";;label:warning;"),
+    ghost: /* @__PURE__ */ css("color:", euiTheme.colors.textGhost, "!important;;label:ghost;"),
+    inherit: _ref5,
+    customColor: /* @__PURE__ */ css(";label:customColor;")
+    // Handled by `style` tag - this is just here for a className hook
+  };
+};
+
+// node_modules/.pnpm/@elastic+eui@123.1.0_@elastic+datemath@5.0.3_moment@2.30.1__@elastic+eui-theme-borealis_eff11a1fd9c06fcfc57496e1b63168f2/node_modules/@elastic/eui/es/components/text/text_align.styles.js
+var euiTextAlignStyles = {
+  euiTextAlign: /* @__PURE__ */ css(";label:euiTextAlign;"),
+  left: /* @__PURE__ */ css(logicalTextAlignCSS("left"), ";;label:left;"),
+  right: /* @__PURE__ */ css(logicalTextAlignCSS("right"), ";;label:right;"),
+  center: /* @__PURE__ */ css(logicalTextAlignCSS("center"), ";;label:center;")
+};
 export {
   euiBackgroundColor,
   euiBorderColor,
@@ -3993,7 +4206,11 @@ export {
   euiPaddingSize,
   euiPanelStyles,
   euiSpacerStyles,
-  euiSpinnerBorderColorsCSS
+  euiSpinnerBorderColorsCSS,
+  euiTextAlignStyles,
+  euiTextColorStyles,
+  euiTextStyles,
+  euiTitleStyles
 };
 /*! Bundled license information:
 

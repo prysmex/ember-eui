@@ -286,7 +286,26 @@ const factories = {
   'components/search_bar/search_bar.styles.js': ['euiSearchBar__searchHolder', 'euiSearchBar__filtersHolder'],
   'components/basic_table/basic_table.styles.js': ['euiBasicTableBodyLoading'],
   'components/basic_table/pagination_bar.styles.js': ['euiBasicTablePaginationBarStyles'],
-  'components/basic_table/panel.styles.js': ['euiBasicTablePanelStyles']
+  'components/basic_table/panel.styles.js': ['euiBasicTablePanelStyles'],
+  // new-data-grid (fullscreen_selector.styles uses vanilla @emotion/css and the toolbar control's
+  // inline styles use a hook: both hand-ported in utils/eui/data-grid.ts)
+  'components/datagrid/data_grid.styles.js': ['euiDataGridVariables', 'euiDataGridStyles'],
+  'components/datagrid/body/data_grid_body.styles.js': ['euiDataGridBodyStyles'],
+  'components/datagrid/utils/scrolling.styles.js': ['euiDataGridScrollBarStyles'],
+  'components/datagrid/body/cell/data_grid_cell.styles.js': ['euiDataGridCellOutlineStyles', 'euiDataGridRowCellStyles'],
+  'components/datagrid/body/cell/data_grid_cell_actions.styles.js': ['euiDataGridCellActionsStyles'],
+  'components/datagrid/body/cell/data_grid_cell_popover.styles.js': ['euiDataGridCellPopoverStyles'],
+  'components/datagrid/body/header/data_grid_header_row.styles.js': ['euiDataGridHeaderStyles'],
+  'components/datagrid/body/header/data_grid_header_cell.styles.js': ['euiDataGridHeaderCellStyles'],
+  'components/datagrid/body/header/data_grid_header_cell_wrapper.styles.js': ['euiDataGridHeaderCellWrapperStyles'],
+  'components/datagrid/body/header/column_resizer.styles.js': ['euiDataGridColumnResizerStyles'],
+  'components/datagrid/body/header/draggable_columns.styles.js': ['euiDataGridDraggableHeaderStyles'],
+  'components/datagrid/body/footer/data_grid_footer.styles.js': ['euiDataGridFooterStyles'],
+  'components/datagrid/controls/data_grid_toolbar.styles.js': ['euiDataGridToolbarStyles'],
+  'components/datagrid/controls/column_selector.styles.js': ['euiDataGridColumnSelectorStyles'],
+  'components/datagrid/controls/column_sorting.styles.js': ['euiDataGridColumnSortingStyles'],
+  'components/datagrid/controls/keyboard_shortcuts.styles.js': ['euiDataGridKeyboardShortcutsStyles'],
+  'components/datagrid/pagination/data_grid_pagination.styles.js': ['euiDataGridPaginationStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -1980,3 +1999,84 @@ test('basic table panelled wrapper, Safari workaround and panel class match upst
       );
 });
 
+// new-data-grid
+test('data grid hand ports match upstream fullscreen, toolbar control and display selector styles', () => {
+  const ported = buildSync({
+    entryPoints: [resolve(root, 'packages/core/src/utils/eui/data-grid.ts')],
+    bundle: true,
+    write: false,
+    format: 'cjs',
+    platform: 'node',
+    external: [
+      '@elastic/eui-theme-common',
+      '@elastic/eui-theme-borealis',
+      '@emotion/serialize',
+      'chroma-js'
+    ]
+  });
+  const portFile = resolve(root, 'packages/core/eui-data-grid-parity.cjs');
+  const portModule = new Module(portFile);
+  portModule.paths = Module._nodeModulePaths(dirname(portFile));
+  portModule._compile(ported.outputFiles[0].text, portFile);
+  const port = portModule.exports;
+  const fullScreen = require(
+    resolve(eui, 'lib/components/datagrid/controls/fullscreen_selector.styles.js')
+  );
+  const { euiFormMaxWidth } = require(resolve(eui, 'lib/components/form/form.styles.js'));
+  const { cache } = require('@emotion/css');
+  const toolbarControl = readFileSync(
+    resolve(eui, 'lib/components/datagrid/controls/data_grid_toolbar_control.js'),
+    'utf8'
+  );
+  const displaySelector = readFileSync(
+    resolve(eui, 'lib/components/datagrid/controls/display_selector.js'),
+    'utf8'
+  );
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(
+            EuiThemeBorealis,
+            buildTheme(modifications, 'parity'),
+            colorMode,
+            highContrastMode
+          )
+        };
+        const label = `${colorMode}/${highContrastMode}/${JSON.stringify(modifications)}`;
+        // Upstream registers @emotion/css classes; compare names and registered styles.
+        const upstream = fullScreen.euiDataGridFullScreenStyles(context);
+        const ours = port.euiDataGridFullScreenStyles(context);
+        for (const key of ['euiDataGrid--fullScreen', 'euiDataGrid__restrictBody']) {
+          assert.strictEqual(upstream[key], `css-${ours[key].name}`, `${key} ${label}`);
+          assert.strictEqual(cache.registered[upstream[key]], ours[key].styles, `${key} ${label}`);
+        }
+        const { euiTheme } = context;
+        assert.strictEqual(
+          port.euiDataGridDisplayPopoverWidth(context),
+          `${parseFloat(euiFormMaxWidth(context)) + parseFloat(euiTheme.size.s) * 2}px`,
+          label
+        );
+        assert.strictEqual(
+          port.euiDataGridToolbarControlStyles(context).interactive.styles,
+          `&:focus,&:hover:not(:disabled){.euiDataGridToolbarControl__badge{background-color:${euiTheme.components.filterButtonBadgeBackgroundHover};}};label:interactiveStyles;`,
+          label
+        );
+      }
+  // inline styles, from upstream's compiled source
+  assert.ok(
+    toolbarControl.includes(
+      '"&:focus,&:hover:not(:disabled){.euiDataGridToolbarControl__badge{background-color:", euiTheme.components.filterButtonBadgeBackgroundHover, ";}};label:interactiveStyles;"'
+    )
+  );
+  const { badge } = port.euiDataGridToolbarControlStyles({ euiTheme: { components: {} } });
+  assert.ok(toolbarControl.includes(`name: "${badge.name}"`) && toolbarControl.includes(`styles: "${badge.styles}"`));
+  const rowHeight = port.euiDataGridRowHeightControlStyles;
+  assert.ok(displaySelector.includes(`name: "${rowHeight.name}"`) && displaySelector.includes(`styles: "${rowHeight.styles}"`));
+});

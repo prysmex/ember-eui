@@ -385,6 +385,10 @@
   "packages/core/docs/tabular/in-memory-table/index.md": [
     "EuiInMemoryTable"
   ],
+  "packages/core/docs/tabular/data-grid/basics/index.md": [
+    "EuiDataGrid",
+    "EuiDataGridToolbarControl"
+  ],
   "packages/core/docs/tabular/table/index.md": [
     "EuiTable",
     "EuiTableHeader",

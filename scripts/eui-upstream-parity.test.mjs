@@ -69,7 +69,27 @@ const factories = {
   ],
   'components/button/button_icon/button_icon.styles.js': [
     'euiButtonIconStyles'
-  ]
+  ],
+  // page layout
+  'components/page/page.styles.js': ['euiPageStyles'],
+  'components/page/page_body/page_body.styles.js': ['euiPageBodyStyles'],
+  'components/page/page_section/page_section.styles.js': [
+    'euiPageSectionStyles',
+    'euiPageSectionContentStyles'
+  ],
+  'components/page/page_sidebar/page_sidebar.styles.js': [
+    'euiPageSidebarStyles'
+  ],
+  'components/page/page_header/page_header.styles.js': [
+    'euiPageHeaderStyles'
+  ],
+  'components/page/page_header/page_header_content.styles.js': [
+    'euiPageHeaderContentStyles'
+  ],
+  'components/page_template/inner/page_inner.styles.js': [
+    'euiPageInnerStyles'
+  ],
+  'components/bottom_bar/bottom_bar.styles.js': ['euiBottomBarStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -356,4 +376,65 @@ test('global styles port matches upstream EuiGlobalStyles in every mode and cont
   } finally {
     Module._load = originalLoad;
   }
+});
+
+// page layout
+test('page outer slots match upstream static styles', () => {
+  const reference = require(
+    resolve(eui, 'lib/components/page_template/outer/page_outer.styles.js')
+  );
+  assert.deepEqual(
+    normalize(styles.euiPageOuterStyles),
+    normalize(reference.euiPageOuterStyles)
+  );
+});
+
+test('page width, breakpoint and scroll helpers match upstream', () => {
+  const width = require(resolve(eui, 'lib/components/page/_restrict_width.js'));
+  const responsive = require(
+    resolve(eui, 'lib/global_styling/mixins/_responsive.js')
+  );
+  const helpers = require(resolve(eui, 'lib/global_styling/mixins/_helpers.js'));
+  assert.strictEqual(styles.PAGE_MAX_WIDTH, width.PAGE_MAX_WIDTH);
+  for (const restrict of [true, false, 600, '40rem', 0])
+    for (const style of [undefined, { color: 'red', maxWidth: '1px' }])
+      assert.deepEqual(
+        styles.setStyleForRestrictedPageWidth(restrict, style),
+        width.setStyleForRestrictedPageWidth(restrict, style)
+      );
+  for (const modifications of [{}, { breakpoint: { m: 900, l: 1300 } }])
+    for (const colorMode of ['LIGHT', 'DARK']) {
+      const context = {
+        colorMode,
+        highContrastMode: false,
+        modifications,
+        euiTheme: getComputed(
+          EuiThemeBorealis,
+          buildTheme(modifications, 'parity'),
+          colorMode,
+          false
+        )
+      };
+      for (const size of ['xs', 's', 'm', 'l', 'xl']) {
+        assert.strictEqual(
+          styles.euiMinBreakpoint(context, size),
+          responsive.euiMinBreakpoint(context, size)
+        );
+        assert.strictEqual(
+          styles.euiMaxBreakpoint(context, size),
+          responsive.euiMaxBreakpoint(context, size)
+        );
+      }
+      for (const sizes of [['xs', 's'], ['m', 'l', 'xl'], ['s'], ['xl'], ['l', 'm']])
+        assert.strictEqual(
+          styles.euiBreakpoint(context, [...sizes]),
+          responsive.euiBreakpoint(context, [...sizes])
+        );
+      for (const options of [undefined, { height: 'auto' }])
+        assert.strictEqual(
+          styles.euiYScroll(context, options),
+          helpers.euiYScroll(context, options)
+        );
+      assert.strictEqual(styles.euiFullHeight(), helpers.euiFullHeight());
+    }
 });

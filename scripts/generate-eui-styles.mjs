@@ -72,13 +72,50 @@ const entries = {
   ],
   'global_styling/mixins/_states.js': ['euiFocusRing'],
   'global_styling/reset/reset.js': ['resetStyles'],
-  'global_styling/mixins/_helpers.js': ['euiScrollBarStyles'],
+  'global_styling/mixins/_helpers.js': [
+    'euiScrollBarStyles',
+    // page layout
+    'euiYScroll',
+    'euiFullHeight'
+  ],
   'services/color/manipulation.js': ['transparentize'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],
   'global_styling/mixins/_button.js': [
     'euiButtonDisplaysColors',
     'euiButtonInteractionStyles'
+  ],
+  // page layout
+  'components/page/page.styles.js': ['euiPageStyles'],
+  'components/page/_restrict_width.js': [
+    'PAGE_MAX_WIDTH',
+    'setStyleForRestrictedPageWidth'
+  ],
+  'components/page/page_body/page_body.styles.js': ['euiPageBodyStyles'],
+  'components/page/page_section/page_section.styles.js': [
+    'euiPageSectionStyles',
+    'euiPageSectionContentStyles'
+  ],
+  'components/page/page_sidebar/page_sidebar.styles.js': [
+    'euiPageSidebarStyles'
+  ],
+  'components/page/page_header/page_header.styles.js': [
+    'euiPageHeaderStyles'
+  ],
+  'components/page/page_header/page_header_content.styles.js': [
+    'euiPageHeaderContentStyles'
+  ],
+  'components/page_template/outer/page_outer.styles.js': [
+    'euiPageOuterStyles'
+  ],
+  'components/page_template/inner/page_inner.styles.js': [
+    'euiPageInnerStyles'
+  ],
+  'components/bottom_bar/bottom_bar.styles.js': ['euiBottomBarStyles'],
+  'global_styling/mixins/_responsive.js': [
+    'euiBreakpoint',
+    'euiMinBreakpoint',
+    'euiMaxBreakpoint'
   ]
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}

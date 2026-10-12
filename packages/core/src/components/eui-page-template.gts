@@ -10,6 +10,9 @@ import argOrDefault, {
 import classNames from '../helpers/class-names.ts';
 import inlineStyles from '../helpers/inline-styles.ts';
 import useIsWithinBreakpoints from '../modifiers/use-is-within-breakpoints.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass } from '../utils/eui/styles.ts';
+import { euiFullHeight, euiYScroll } from '../utils/eui/styles.generated.ts';
 import EuiBottomBar from './eui-bottom-bar.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
@@ -97,7 +100,7 @@ export type EuiPageTemplateProps = {
   /** Fills the window's height. Defaults to `true`. */
   grow?: boolean;
   /** Padding of the page's sections: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'l'`. */
-  paddingSize?: EuiPageSideBarSignature['Args']['paddingSize'];
+  paddingSize?: 'none' | 's' | 'm' | 'l';
   /** @private Render the `<:pageSideBar>` block. Defaults to `true`. */
   hasPageSideBarBlock?: boolean;
   /** @private Render the `<:pageHeaderPageTitle>` block. Defaults to `true`. */
@@ -176,12 +179,41 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
     return `euiPageTemplate ${this.fullHeightClass}`;
   }
 
+  /**
+   * Upstream's `eui-fullHeight` utility class. Upstream EuiProvider injects
+   * the utility classes globally; here the class name stays as a hook and
+   * the rule comes from the extracted `euiFullHeight` mixin.
+   */
+  get fullHeightUtility() {
+    return `eui-fullHeight ${euiClass(getEuiThemeContext(this), euiFullHeight() as string)}`;
+  }
+
+  /** Upstream's `eui-yScroll` utility class (`euiYScroll` mixin). */
+  get yScrollUtility() {
+    const context = getEuiThemeContext(this);
+    return `eui-yScroll ${euiClass(context, euiYScroll(context.upstream) as string)}`;
+  }
+
+  /** Upstream `_EuiPageBottomBar`: hides wide flex margins, never shrinks. */
+  get bottomBarClass() {
+    return [
+      euiClass(getEuiThemeContext(this), { overflow: 'hidden', flexShrink: 0 }),
+      this.args.bottomBarProps?.className
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
   get fullHeightClass() {
-    return this.fullHeight && this.canFullHeight ? 'eui-fullHeight ' : '';
+    return this.fullHeight && this.canFullHeight
+      ? `${this.fullHeightUtility} `
+      : '';
   }
 
   get yScrollClass() {
-    return this.fullHeight && this.canFullHeight ? 'eui-yScroll ' : '';
+    return this.fullHeight && this.canFullHeight
+      ? `${this.yScrollUtility} `
+      : '';
   }
 
   get canFullHeight() {
@@ -363,16 +395,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
-                        class="eui-fullHeight"
+                        class={{this.fullHeightUtility}}
                         @gutterSize="none"
                         @direction="column"
                         @responsive={{false}}
                       >
                         <EuiFlexItem
                           class={{classNames
-                            (if (eq this.fullHeight true) "eui-yScroll")
+                            (if (eq this.fullHeight true) this.yScrollUtility)
                             (if
-                              (eq this.fullHeight "noscroll") "eui-fullHeight"
+                              (eq this.fullHeight "noscroll") this.fullHeightUtility
                             )
                           }}
                           @grow={{true}}
@@ -493,16 +525,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     >
                       {{#if (and this.canFullHeight this.fullHeight)}}
                         <EuiFlexGroup
-                          class="eui-fullHeight"
+                          class={{this.fullHeightUtility}}
                           @gutterSize="none"
                           @direction="column"
                           @responsive={{false}}
                         >
                           <EuiFlexItem
                             class={{classNames
-                              (if (eq this.fullHeight true) "eui-yScroll")
+                              (if (eq this.fullHeight true) this.yScrollUtility)
                               (if
-                                (eq this.fullHeight "noscroll") "eui-fullHeight"
+                                (eq this.fullHeight "noscroll") this.fullHeightUtility
                               )
                             }}
                             @grow={{true}}
@@ -632,16 +664,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
-                        class="eui-fullHeight"
+                        class={{this.fullHeightUtility}}
                         @gutterSize="none"
                         @direction="column"
                         @responsive={{false}}
                       >
                         <EuiFlexItem
                           class={{classNames
-                            (if (eq this.fullHeight true) "eui-yScroll")
+                            (if (eq this.fullHeight true) this.yScrollUtility)
                             (if
-                              (eq this.fullHeight "noscroll") "eui-fullHeight"
+                              (eq this.fullHeight "noscroll") this.fullHeightUtility
                             )
                           }}
                           @grow={{true}}
@@ -770,16 +802,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     >
                       {{#if (and this.canFullHeight this.fullHeight)}}
                         <EuiFlexGroup
-                          class="eui-fullHeight"
+                          class={{this.fullHeightUtility}}
                           @gutterSize="none"
                           @direction="column"
                           @responsive={{false}}
                         >
                           <EuiFlexItem
                             class={{classNames
-                              (if (eq this.fullHeight true) "eui-yScroll")
+                              (if (eq this.fullHeight true) this.yScrollUtility)
                               (if
-                                (eq this.fullHeight "noscroll") "eui-fullHeight"
+                                (eq this.fullHeight "noscroll") this.fullHeightUtility
                               )
                             }}
                             @grow={{true}}
@@ -907,16 +939,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
-                        class="eui-fullHeight"
+                        class={{this.fullHeightUtility}}
                         @gutterSize="none"
                         @direction="column"
                         @responsive={{false}}
                       >
                         <EuiFlexItem
                           class={{classNames
-                            (if (eq this.fullHeight true) "eui-yScroll")
+                            (if (eq this.fullHeight true) this.yScrollUtility)
                             (if
-                              (eq this.fullHeight "noscroll") "eui-fullHeight"
+                              (eq this.fullHeight "noscroll") this.fullHeightUtility
                             )
                           }}
                           @grow={{true}}
@@ -1033,16 +1065,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
-                        class="eui-fullHeight"
+                        class={{this.fullHeightUtility}}
                         @gutterSize="none"
                         @direction="column"
                         @responsive={{false}}
                       >
                         <EuiFlexItem
                           class={{classNames
-                            (if (eq this.fullHeight true) "eui-yScroll")
+                            (if (eq this.fullHeight true) this.yScrollUtility)
                             (if
-                              (eq this.fullHeight "noscroll") "eui-fullHeight"
+                              (eq this.fullHeight "noscroll") this.fullHeightUtility
                             )
                           }}
                           @grow={{true}}
@@ -1182,16 +1214,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                     >
                       {{#if (and this.canFullHeight this.fullHeight)}}
                         <EuiFlexGroup
-                          class="eui-fullHeight"
+                          class={{this.fullHeightUtility}}
                           @gutterSize="none"
                           @direction="column"
                           @responsive={{false}}
                         >
                           <EuiFlexItem
                             class={{classNames
-                              (if (eq this.fullHeight true) "eui-yScroll")
+                              (if (eq this.fullHeight true) this.yScrollUtility)
                               (if
-                                (eq this.fullHeight "noscroll") "eui-fullHeight"
+                                (eq this.fullHeight "noscroll") this.fullHeightUtility
                               )
                             }}
                             @grow={{true}}
@@ -1207,7 +1239,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 </EuiPageBody>
                 {{#if hasBottomBarBlock}}
                   <EuiBottomBar
-                    class={{@bottomBarProps.className}}
+                    class={{this.bottomBarClass}}
                     @paddingSize={{argOrDefault
                       @bottomBarProps.paddingSize
                       paddingSize
@@ -1344,16 +1376,16 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                   >
                     {{#if (and this.canFullHeight this.fullHeight)}}
                       <EuiFlexGroup
-                        class="eui-fullHeight"
+                        class={{this.fullHeightUtility}}
                         @gutterSize="none"
                         @direction="column"
                         @responsive={{false}}
                       >
                         <EuiFlexItem
                           class={{classNames
-                            (if (eq this.fullHeight true) "eui-yScroll")
+                            (if (eq this.fullHeight true) this.yScrollUtility)
                             (if
-                              (eq this.fullHeight "noscroll") "eui-fullHeight"
+                              (eq this.fullHeight "noscroll") this.fullHeightUtility
                             )
                           }}
                           @grow={{true}}
@@ -1368,7 +1400,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
                 </EuiPageContent>
                 {{#if hasBottomBarBlock}}
                   <EuiBottomBar
-                    class={{@bottomBarProps.className}}
+                    class={{this.bottomBarClass}}
                     @paddingSize={{argOrDefault
                       @bottomBarProps.paddingSize
                       paddingSize

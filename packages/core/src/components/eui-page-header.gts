@@ -1,17 +1,24 @@
-import { concat } from '@ember/helper';
+import Component from '@glimmer/component';
 
 import style from 'ember-style-modifier/modifiers/style';
-import { and,eq, not, or } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  euiPageBoxSizing,
+  euiPagePadding
+} from '../utils/eui/page-layout.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiBackgroundColor,
+  euiPageHeaderStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiPageHeaderContent from './eui-page-header-content.gts';
 
-import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body.ts';
+import type { EuiPagePaddingSize } from '../utils/eui/page-layout.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiPageHeaderContentSignature } from './eui-page-header-content';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /**
  * The top of a page: breadcrumbs, title (with icon), description, tabs and
@@ -20,23 +27,39 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiPageHeaderSignature {
   Element: Element;
   Args: {
-    /** Padding around the header: `'none'`, `'s'`, `'m'` or `'l'`. */
-    paddingSize?: keyof typeof paddingSizeMapping;
-    /** Adds a border below the header. */
-    bottomBorder?: boolean;
     /**
-     * Max width of the header: `true` for EUI's default, a number in px or
-     * any CSS width. Defaults to `false` (full width).
+     * Padding: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. Inline
+     * padding goes on the header, block padding on its content (see
+     * `@bottomBorder`). Defaults to `'none'`.
      */
-    restrictWidth?: boolean | 'full' | number | string;
+    paddingSize?: EuiPagePaddingSize;
+    /**
+     * Adds a border below the content (`true`, within the max width) or
+     * across the whole header (`'extended'`). With no padding, a `true`
+     * border also gets an `l` bottom padding, as upstream. Title + tabs
+     * headers get the border unless this is `false`.
+     */
+    bottomBorder?: boolean | 'extended';
+    /**
+     * Max width of the header's content, centered: `true` for EUI's
+     * default (1200px), a number in px or any CSS width. The header itself
+     * stays full width. Defaults to `false`.
+     */
+    restrictWidth?: boolean | number | string;
+    /**
+     * Background: `'transparent'`, `'plain'`, `'subdued'`, … (EuiPanel
+     * colors). Defaults to `'transparent'`.
+     */
+    color?: string;
     /**
      * Vertical alignment of the title and the right side items: `'top'`,
-     * `'bottom'`, `'center'` or `'stretch'`. Defaults to `'center'`.
+     * `'bottom'`, `'center'` or `'stretch'`. Defaults to stretching the
+     * items (centered for a header with only a default block).
      */
     alignItems?: EuiPageHeaderContentSignature['Args']['alignItems'];
     /**
-     * Stacks the right side items under the title on small screens;
-     * `'reverse'` puts them above it. Defaults to `true`.
+     * Stacks the right side items under the title below the theme's `m`
+     * breakpoint; `'reverse'` puts them above it. Defaults to `true`.
      */
     responsive?: boolean | 'reverse';
     /** Icon before the title, e.g. the app's logo. */
@@ -73,7 +96,7 @@ export interface EuiPageHeaderSignature {
     /** @private Render the `<:rightSideItems>` block. Defaults to `true`. */
     hasRightSideItemsBlock?: boolean;
 
-    /** Inline styles, merged with the max width. */
+    /** Inline styles of the header (the max width goes on its content). */
     style?: {
       [key: string]: string;
     };
@@ -93,103 +116,85 @@ export interface EuiPageHeaderSignature {
   };
 }
 
-const EuiPageHeader: TemplateOnlyComponent<EuiPageHeaderSignature> = <template>
-  {{#let
-    (euiPageRestrictWidth (argOrDefault @restrictWidth false) @style)
-    (argOrDefault @responsive true)
-    (and (argOrDefault @hasDefaultBlock true) (has-block "default"))
-    (or
-      (and (argOrDefault @hasDescriptionBlock true) (has-block "description"))
-      @description
-    )
-    (or
-      (and (argOrDefault @hasPageTitleBlock true) (has-block "pageTitle"))
-      @pageTitle
-    )
-    (or
+/** Upstream `EuiPageHeader` (`euiPageHeaderStyles`) on the Borealis theme. */
+export default class EuiPageHeader extends Component<EuiPageHeaderSignature> {
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const upstream = context.upstream;
+    const styles = useEuiBorealisStyles(context, euiPageHeaderStyles);
+    // Same order as upstream's `cssStyles`.
+    return euiClass(
+      context,
+      euiPageBoxSizing,
+      styles.euiPageHeader,
+      euiPagePadding(upstream, this.args.paddingSize ?? 'none', 'horizontal'),
+      this.args.bottomBorder === 'extended' && styles.border,
+      {
+        backgroundColor: euiBackgroundColor(
+          upstream,
+          this.args.color ?? 'transparent'
+        )
+      }
+    );
+  }
+
+  get inlineStyle() {
+    return this.args.style ?? {};
+  }
+
+  <template>
+    {{#let
+      (argOrDefault @responsive true)
+      (and (argOrDefault @hasDefaultBlock true) (has-block "default"))
+      (or
+        (and (argOrDefault @hasDescriptionBlock true) (has-block "description"))
+        @description
+      )
+      (or
+        (and (argOrDefault @hasPageTitleBlock true) (has-block "pageTitle"))
+        @pageTitle
+      )
       (and
         (argOrDefault @hasRightSideItemsBlock true) (has-block "rightSideItems")
       )
-      @rightSideItems
-    )
-    as |styling responsive hasDefaultBlock hasDescriptionBlock hasPageTitleBlock hasRightSideItemsBlock|
-  }}
-    {{#let
-      (classNames
-        (if
-          styling.widthClassName
-          (concat "euiPageHeader--" styling.widthClassName)
-        )
-        (if @bottomBorder "euiPageHeader--bottomBorder")
-        (if responsive "euiPageHeader--responsive")
-        (if (eq responsive "reverse") "euiPageHeader--responsiveReverse")
-        (if (and hasPageTitleBlock @tabs) "euiPageHeader--tabsAtBottom")
-        (if
-          (and
-            @tabs
-            (not hasPageTitleBlock)
-            (not hasRightSideItemsBlock)
-            (not hasDescriptionBlock)
-            (not hasDefaultBlock)
-          )
-          "euiPageHeader--onlyTabs"
-        )
-        (if
-          @alignItems
-          (concat "euiPageHeader--" @alignItems)
-          "euiPageHeader--center"
-        )
-        componentName="EuiPageHeader"
-        paddingSize=@paddingSize
-      )
-      as |classes|
+      as |responsive hasDefaultBlock hasDescriptionBlock hasPageTitleBlock hasRightSideItemsBlock|
     }}
-      {{#if
-        (and
-          (not @tabs)
-          (not hasPageTitleBlock)
-          (not hasDescriptionBlock)
-          (not hasRightSideItemsBlock)
-        )
-      }}
-        <header class={{classes}} {{style styling.newStyle}} ...attributes>
-          {{yield to="default"}}
-        </header>
-      {{else}}
-        {{!template-lint-disable}}
-        <header class={{classes}} {{style styling.newStyle}} ...attributes>
-          <EuiPageHeaderContent
-            @alignItems={{@alignItems}}
-            @responsive={{responsive}}
-            @pageTitle={{@pageTitle}}
-            @pageTitleProps={{@pageTitleProps}}
-            @iconType={{@iconType}}
-            @breadcrumbs={{@breadcrumbs}}
-            @tabs={{@tabs}}
-            @description={{@description}}
-            @restrictWidth={{@restrictWidth}}
-            @hasDescriptionBlock={{not (not hasDescriptionBlock)}}
-            @hasPageTitleBlock={{not (not hasPageTitleBlock)}}
-            @hasRightSideItemsBlock={{not (not hasRightSideItemsBlock)}}
-            @hasDefaultBlock={{not (not hasDefaultBlock)}}
-          >
-            <:pageTitle>
-              {{yield to="pageTitle"}}
-            </:pageTitle>
-            <:rightSideItems as |item|>
-              {{yield item to="rightSideItems"}}
-            </:rightSideItems>
-            <:description>
-              {{yield to="description"}}
-            </:description>
-            <:default>
-              {{yield to="default"}}
-            </:default>
-          </EuiPageHeaderContent>
-        </header>
-      {{/if}}
+      <header
+        class="euiPageHeader {{this.classes}}"
+        {{style this.inlineStyle}}
+        ...attributes
+      >
+        <EuiPageHeaderContent
+          @alignItems={{@alignItems}}
+          @responsive={{responsive}}
+          @paddingSize={{@paddingSize}}
+          @bottomBorder={{if (eq @bottomBorder "extended") false @bottomBorder}}
+          @pageTitle={{@pageTitle}}
+          @pageTitleProps={{@pageTitleProps}}
+          @iconType={{@iconType}}
+          @breadcrumbs={{@breadcrumbs}}
+          @tabs={{@tabs}}
+          @description={{@description}}
+          @restrictWidth={{@restrictWidth}}
+          @hasDescriptionBlock={{not (not hasDescriptionBlock)}}
+          @hasPageTitleBlock={{not (not hasPageTitleBlock)}}
+          @hasRightSideItemsBlock={{not (not hasRightSideItemsBlock)}}
+          @hasDefaultBlock={{not (not hasDefaultBlock)}}
+        >
+          <:pageTitle>
+            {{yield to="pageTitle"}}
+          </:pageTitle>
+          <:rightSideItems as |item|>
+            {{yield item to="rightSideItems"}}
+          </:rightSideItems>
+          <:description>
+            {{yield to="description"}}
+          </:description>
+          <:default>
+            {{yield to="default"}}
+          </:default>
+        </EuiPageHeaderContent>
+      </header>
     {{/let}}
-  {{/let}}
-</template>;
-
-export default EuiPageHeader;
+  </template>
+}

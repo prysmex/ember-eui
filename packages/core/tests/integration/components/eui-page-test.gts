@@ -50,15 +50,16 @@ module('Integration | Component | eui-page', function (hooks) {
       </template>
     );
 
-    assert
-      .dom('.euiPage')
-      .hasClass('euiPage--grow')
-      .hasClass('euiPage--restrictWidth-default')
-      .hasClass('euiPage--paddingLarge')
-      .hasClass('euiPage--column');
+    // Legacy modifier classes are gone; check the computed latest styles.
+    assert.dom('.euiPage').hasStyle({
+      flexGrow: '1',
+      maxWidth: '1200px',
+      padding: '24px',
+      flexDirection: 'column'
+    });
     assert
       .dom('.euiPageSideBar')
-      .hasClass('euiPageSideBar--sticky')
+      .hasStyle({ position: 'sticky', padding: '16px' })
       .hasText('Side');
     assert.dom('.euiPageBody[data-eui-panel]').exists('panelled body');
     assert
@@ -68,12 +69,11 @@ module('Integration | Component | eui-page', function (hooks) {
       .hasClass('euiPageContent--horizontalCenter');
     assert
       .dom('.euiPageContentHeader')
-      .hasClass('euiPageContentHeader--responsive');
+      .hasStyle({ display: 'flex', justifyContent: 'space-between' });
     assert.dom('.euiPageContentHeaderSection').hasText('Header');
     assert
       .dom('.euiPageContentBody')
-      .hasClass('euiPage--restrictWidth-custom')
-      .hasStyle({ maxWidth: '600px' })
+      .hasStyle({ maxWidth: '600px', padding: '8px' })
       .hasText('Body');
   });
 
@@ -86,8 +86,8 @@ module('Integration | Component | eui-page', function (hooks) {
       </template>
     );
 
-    assert.dom('.page').doesNotHaveClass('euiPage--');
-    assert.dom('.body').doesNotHaveClass('euiPage--');
+    assert.dom('.page').hasStyle({ maxWidth: '100%' });
+    assert.dom('.body').hasStyle({ maxWidth: 'none' });
   });
 
   test('EuiPageHeader: title, icon, description, tabs and right side items', async function (assert) {
@@ -108,9 +108,8 @@ module('Integration | Component | eui-page', function (hooks) {
     );
 
     assert
-      .dom('.euiPageHeader')
-      .hasClass('euiPageHeader--bottomBorder')
-      .hasClass('euiPageHeader--responsive');
+      .dom('.euiPageHeader > .euiPageHeaderContent')
+      .hasStyle({ borderBottomStyle: 'solid', borderBottomWidth: '1px' });
     assert.dom('.euiPageHeader h1.euiTitle').containsText('Dashboard');
     assert.dom('.euiPageHeader h1 svg.euiIcon').exists();
     assert.dom('.euiPageHeader').containsText('Overview');

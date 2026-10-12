@@ -83,6 +83,12 @@
   "packages/core/docs/display/text-diff/index.md": [
     "EuiTextDiff"
   ],
+  "packages/core/docs/display/timeline/index.md": [
+    "EuiTimeline",
+    "EuiTimelineItem",
+    "EuiTimelineItemEvent",
+    "EuiTimelineItemIcon"
+  ],
   "packages/core/docs/display/text/index.md": [
     "EuiText",
     "EuiTextColor",

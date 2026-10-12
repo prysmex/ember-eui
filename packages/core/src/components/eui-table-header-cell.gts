@@ -1,10 +1,24 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
-
-import { alignClasses, widthStyle } from '../-private/table.ts';
+import {
+  BOX_SIZING,
+  CELL_RESET,
+  buttonReset,
+  cellContentStyles,
+  tableContext,
+  widthStyle
+} from '../-private/table.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiTableCellContentStyles,
+  euiTableHeaderFooterCellStyles,
+  euiTextTruncate
+} from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiInnerText from './eui-inner-text.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
@@ -14,7 +28,8 @@ import type { TableAlignment, TableMobileOptions } from '../-private/table.ts';
 
 /**
  * A column header of an `EuiTable`. With `@onSort` it is a button that
- * shows the sort direction (`@isSorted`, `@isSortAscending`).
+ * shows the sort direction (`@isSorted`, `@isSortAscending`), or a
+ * "sortable" icon while the column is not sorted.
  */
 export interface EuiTableHeaderCellSignature {
   Element: HTMLTableCellElement;
@@ -31,11 +46,15 @@ export interface EuiTableHeaderCellSignature {
     readOnly?: boolean;
     /** Width, e.g. `100` (px) or `'20%'`. */
     width?: number | string;
+    /** Min width, e.g. `100` (px). */
+    minWidth?: number | string;
+    /** Max width, e.g. `'30%'`. */
+    maxWidth?: number | string;
     /** More about the column, in its title and for screen readers. */
     description?: string;
     /** `scope` of the `<th>`. Defaults to `'col'`. */
     scope?: string;
-    /** `{ show, only }` on small screens. */
+    /** `{ show, only }` for the cards layout. */
     mobileOptions?: TableMobileOptions;
   };
   Blocks: {
@@ -44,72 +63,135 @@ export interface EuiTableHeaderCellSignature {
   };
 }
 
+const TRUNCATE = euiTextTruncate();
+
 export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSignature> {
   @service declare euiI18n: EuiI18n;
 
-  get classes(): string {
+  /** Upstream renders nothing for cells hidden in the current layout. */
+  get isRendered(): boolean {
     const mobile = this.args.mobileOptions ?? {};
-
-    return [
-      'euiTableHeaderCell',
-      mobile.only && 'euiTableHeaderCell--hideForDesktop',
-      mobile.show === false && 'euiTableHeaderCell--hideForMobile'
-    ]
-      .filter(Boolean)
-      .join(' ');
+    return tableContext(this).isResponsive
+      ? mobile.show !== false
+      : !mobile.only;
   }
 
-  get contentClasses(): string {
-    return ['euiTableCellContent', alignClasses(this.args.align)].filter(Boolean).join(' ');
+  get canSort(): boolean {
+    return Boolean(this.args.onSort && !this.args.readOnly);
+  }
+
+  /** Upstream: the sorted direction, `none` if sortable, else no attribute. */
+  get ariaSort(): string | undefined {
+    if (this.args.isSorted) {
+      return this.args.isSortAscending ? 'ascending' : 'descending';
+    }
+    return this.canSort ? 'none' : undefined;
   }
 
   get isSortable(): boolean {
     return Boolean(this.args.onSort || this.args.isSorted);
   }
 
-  get ariaSort(): string | undefined {
-    if (!this.isSortable) return undefined;
-    if (!this.args.isSorted) return 'none';
+  @cached
+  get style() {
+    return widthStyle(this.args.width, this.args.minWidth, this.args.maxWidth);
+  }
 
-    return this.args.isSortAscending ? 'ascending' : 'descending';
+  @cached
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiTableHeaderFooterCellStyles);
+    const content = useEuiBorealisStyles(context, euiTableCellContentStyles);
+    return {
+      cell: euiClass(context, CELL_RESET, styles.euiTableHeaderCell),
+      button: euiClass(
+        context,
+        buttonReset(context.upstream),
+        styles.euiTableHeaderCell__button
+      ),
+      content: euiClass(
+        context,
+        BOX_SIZING,
+        ...cellContentStyles(content, {
+          align: this.args.align,
+          // upstream passes `null`: neither truncates nor breaks words
+          truncateText: null,
+          isResponsive: tableContext(this).isResponsive
+        }),
+        styles.euiTableHeaderCell__content
+      ),
+      text: euiClass(context, TRUNCATE)
+    };
   }
 
   title = (innerText: string): string =>
     this.args.description
-      ? this.euiI18n.lookupToken('euiTableHeaderCell.titleTextWithDesc', '{innerText}; {description}', {
-          innerText,
-          description: this.args.description
-        })
+      ? this.euiI18n.lookupToken(
+          'euiTableHeaderCell.titleTextWithDesc',
+          '{innerText}; {description}',
+          { innerText, description: this.args.description }
+        )
       : innerText;
 
   <template>
-    {{#let (element (if (has-block) "th" "td")) as |Cell|}}
-      <Cell
-        class={{this.classes}}
-        scope={{if (has-block) (if @scope @scope "col")}}
-        role="columnheader"
-        aria-sort={{this.ariaSort}}
-        aria-live={{if this.isSortable "polite"}}
-        style={{widthStyle @width}}
-        ...attributes
-      >
-        {{#if (and2 @onSort (not2 @readOnly))}}
-          <button
-            type="button"
-            class="euiTableHeaderButton {{if @isSorted 'euiTableHeaderButton-isSorted'}}"
-            data-test-subj="tableHeaderSortButton"
-            {{on "click" (sortHandler @onSort)}}
-          >
-            <span class={{this.contentClasses}}>
+    {{#if this.isRendered}}
+      {{#let (element (if (has-block) "th" "td")) as |Cell|}}
+        <Cell
+          class="euiTableHeaderCell {{this.styles.cell}}"
+          scope={{if (has-block) (if @scope @scope "col")}}
+          role="columnheader"
+          aria-sort={{this.ariaSort}}
+          aria-live={{if this.isSortable "polite"}}
+          style={{this.style}}
+          ...attributes
+        >
+          {{#if this.canSort}}
+            <button
+              type="button"
+              class="euiTableHeaderButton
+                {{if @isSorted 'euiTableHeaderButton-isSorted'}}
+                {{this.styles.button}}"
+              data-test-subj="tableHeaderSortButton"
+              {{on "click" (sortHandler @onSort)}}
+            >
+              <span class="euiTableCellContent {{this.styles.content}}">
+                <EuiInnerText as |ref innerText|>
+                  <span
+                    class="eui-textTruncate {{this.styles.text}}"
+                    title={{this.title innerText}}
+                    {{didInsert ref}}
+                  >{{yield}}</span>
+                </EuiInnerText>
+                {{#if @description}}
+                  <EuiScreenReaderOnly><span>{{@description}}</span></EuiScreenReaderOnly>
+                {{/if}}
+                {{#if @isSorted}}
+                  <EuiIcon
+                    class="euiTableSortIcon"
+                    @type={{if @isSortAscending "sortUp" "sortDown"}}
+                    @size="m"
+                  />
+                {{else}}
+                  <EuiIcon
+                    class="euiTableSortIcon euiTableSortIcon--sortable"
+                    @type="sortable"
+                    @size="m"
+                    @color="subdued"
+                  />
+                {{/if}}
+              </span>
+            </button>
+          {{else}}
+            <div class="euiTableCellContent {{this.styles.content}}">
               <EuiInnerText as |ref innerText|>
                 <span
-                  class="euiTableCellContent__text"
+                  class="eui-textTruncate {{this.styles.text}}"
                   title={{this.title innerText}}
                   {{didInsert ref}}
                 >{{yield}}</span>
               </EuiInnerText>
               {{#if @description}}
-                <EuiScreenReaderOnly>{{@description}}</EuiScreenReaderOnly>
+                <EuiScreenReaderOnly><span>{{@description}}</span></EuiScreenReaderOnly>
               {{/if}}
               {{#if @isSorted}}
                 <EuiIcon
@@ -118,42 +200,16 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
                   @size="m"
                 />
               {{/if}}
-            </span>
-          </button>
-        {{else}}
-          <span class={{this.contentClasses}}>
-            <EuiInnerText as |ref innerText|>
-              <span
-                class="euiTableCellContent__text"
-                title={{this.title innerText}}
-                {{didInsert ref}}
-              >{{yield}}</span>
-            </EuiInnerText>
-            {{#if @description}}
-              <EuiScreenReaderOnly>{{@description}}</EuiScreenReaderOnly>
-            {{/if}}
-            {{#if (and2 this.isSortable @isSorted)}}
-              <EuiIcon
-                class="euiTableSortIcon"
-                @type={{if @isSortAscending "sortUp" "sortDown"}}
-                @size="m"
-              />
-            {{/if}}
-          </span>
-        {{/if}}
-      </Cell>
-    {{/let}}
+            </div>
+          {{/if}}
+        </Cell>
+      {{/let}}
+    {{/if}}
   </template>
 }
 
-function sortHandler(onSort?: (event: MouseEvent) => void): (event: MouseEvent) => void {
+function sortHandler(
+  onSort?: (event: MouseEvent) => void
+): (event: MouseEvent) => void {
   return (event) => onSort?.(event);
-}
-
-function and2(a: unknown, b: unknown): boolean {
-  return Boolean(a && b);
-}
-
-function not2(a: unknown): boolean {
-  return !a;
 }

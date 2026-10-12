@@ -234,7 +234,16 @@ const entries = {
   'components/facet/facet_group.styles.js': ['euiFacetGroupStyles'],
   'components/filter_group/filter_button.styles.js': ['euiFilterButtonDisplay', 'euiFilterButtonStyles', 'euiFilterButtonWrapperStyles', 'euiFilterButtonChildStyles'],
   'components/filter_group/filter_group.styles.js': ['euiFilterGroupStyles'],
-  'components/filter_group/filter_select_item.styles.js': ['euiFilterSelectItemStyles']
+  'components/filter_group/filter_select_item.styles.js': ['euiFilterSelectItemStyles'],
+  // table
+  'components/table/table.styles.js': ['euiTableVariables', 'euiTableStyles', 'euiTableCaptionStyles'],
+  'components/table/table_cells_shared.styles.js': ['euiTableHeaderFooterCellStyles', 'euiTableCellCheckboxStyles'],
+  'components/table/_table_cell_content.styles.js': ['euiTableCellContentStyles'],
+  'components/table/table_row.styles.js': ['euiTableRowStyles'],
+  'components/table/table_row_cell.styles.js': ['euiTableRowCellStyles'],
+  'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles'],
+  'components/table/const.js': ['EUI_TABLE_CSS_CONTAINER_NAME'],
+  'global_styling/mixins/_container_query.js': ['euiContainerCSS']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

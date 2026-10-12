@@ -631,6 +631,34 @@
       "sha256": "c5910b872b4c2ed833e6aff2d9a5ca00f196d77605b9fff2f556690318483ba5"
     },
     {
+      "path": "@elastic/eui/es/components/table/_table_cell_content.styles.js",
+      "sha256": "50a39050f9800f00bcc7e5c61c7994541c22c63fb65234fcc34a8175ce36e39d"
+    },
+    {
+      "path": "@elastic/eui/es/components/table/const.js",
+      "sha256": "437cf4e1bc9c5aec5ac5c0d9981292cd23c64bb471e8199704241c0755ae9be6"
+    },
+    {
+      "path": "@elastic/eui/es/components/table/mobile/table_header_mobile.styles.js",
+      "sha256": "31650cfd62245db0755e99e84c5aa3a24a04a6804d889090a898416722c45c4b"
+    },
+    {
+      "path": "@elastic/eui/es/components/table/table_cells_shared.styles.js",
+      "sha256": "734af1c1fa8deb33ef2e662293b5c7f7b9f45b8791c930e7c8a986680c12bffa"
+    },
+    {
+      "path": "@elastic/eui/es/components/table/table_row_cell.styles.js",
+      "sha256": "7d2ca66852ef2aff64e8b6aaa4a8ec74a5e261ccc7b57a9700245bb9a7096ddf"
+    },
+    {
+      "path": "@elastic/eui/es/components/table/table_row.styles.js",
+      "sha256": "4397e15659cf905b70d330718521bd78709869ef937cfb88a860138508f9fa8c"
+    },
+    {
+      "path": "@elastic/eui/es/components/table/table.styles.js",
+      "sha256": "29ea4bb1c96bad569dd10ec373ad327a48ee14fc30e0e425c327987ea41df499"
+    },
+    {
       "path": "@elastic/eui/es/components/tabs/tab.styles.js",
       "sha256": "0027cb1cc269b6d6000641b87bb0457983fdaae3fa1a7684d2961d44f4429d58"
     },
@@ -737,6 +765,10 @@
     {
       "path": "@elastic/eui/es/global_styling/functions/size.js",
       "sha256": "04fdfa1f729ae785e9df1bed31273e2682cf4ca5cb21f2c264dc8ba03f9975d4"
+    },
+    {
+      "path": "@elastic/eui/es/global_styling/functions/supports.js",
+      "sha256": "d893499be56ce68d6ac9b5f1588e6be5f6eb1bd058e36bd3cd4318bd20029191"
     },
     {
       "path": "@elastic/eui/es/global_styling/functions/typography.js",

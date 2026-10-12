@@ -185,6 +185,7 @@
     "ember-keyboard": "^9.0.4",
     "ember-math-helpers": "^5.0.0",
     "ember-modifier": "^4.2.0",
+    "ember-provide-consume-context": "0.10.0",
     "ember-set-helper": "^3.1.0",
     "ember-style-modifier": "^4.4.0",
     "ember-truth-helpers": "^5.0.0",

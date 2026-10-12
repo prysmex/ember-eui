@@ -42,6 +42,12 @@ class TestApp extends EmberApp {
   };
 }
 
+// The strict resolver registers modules but does not run ember-load-initializers.
+TestApp.initializer({
+  name: 'emotion-context-glimmer-hooks',
+  ...addonAppModules['./initializers/glimmer-overrides']
+});
+
 Router.map(function () {});
 
 export function start() {

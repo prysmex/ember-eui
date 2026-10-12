@@ -1,8 +1,7 @@
 import Component from '@glimmer/component';
-import { service } from '@ember/service';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { useEuiStyles } from '../utils/emotion/context.ts';
 
-import type EuiEmotionService from '../services/eui-emotion.ts';
 import type { EuiThemeContext } from '../utils/emotion/context.ts';
 
 export interface EuiEmotionButtonSignature {
@@ -26,11 +25,17 @@ export interface EuiEmotionButtonSignature {
 
 /** Opt-in button port. All styling is Emotion-owned, with no legacy EUI CSS. */
 export default class EuiEmotionButton extends Component<EuiEmotionButtonSignature> {
-  @service('eui-emotion') declare defaults: EuiEmotionService;
-
-  get context() { return this.args.context ?? this.defaults.context; }
-  get isDisabled() { return Boolean(this.args.disabled || this.args.isDisabled || this.args.isLoading); }
-  get isLink() { return Boolean(this.args.href && !this.isDisabled); }
+  get context() {
+    return this.args.context ?? getEuiThemeContext(this);
+  }
+  get isDisabled() {
+    return Boolean(
+      this.args.disabled || this.args.isDisabled || this.args.isLoading
+    );
+  }
+  get isLink() {
+    return Boolean(this.args.href && !this.isDisabled);
+  }
 
   get styles() {
     return useEuiStyles(this.context, (theme) => {
@@ -41,7 +46,7 @@ export default class EuiEmotionButton extends Component<EuiEmotionButtonSignatur
         success: theme.colors.onSuccess,
         warning: theme.colors.onWarning,
         danger: theme.colors.onDanger,
-        text: theme.colors.background,
+        text: theme.colors.background
       }[color];
       return {
         label: 'eui-spike-button',
@@ -61,20 +66,34 @@ export default class EuiEmotionButton extends Component<EuiEmotionButtonSignatur
         lineHeight: 1.5,
         textDecoration: 'none',
         cursor: this.isDisabled ? 'not-allowed' : 'pointer',
-        color: this.isDisabled ? theme.colors.disabled : this.args.fill ? contrast : foreground,
-        backgroundColor: this.args.fill && !this.isDisabled ? foreground : theme.colors.background,
+        color: this.isDisabled
+          ? theme.colors.disabled
+          : this.args.fill
+            ? contrast
+            : foreground,
+        backgroundColor:
+          this.args.fill && !this.isDisabled
+            ? foreground
+            : theme.colors.background,
         opacity: this.isDisabled ? 0.65 : 1,
         transition: 'filter 120ms ease',
         '&:hover': this.isDisabled ? {} : { filter: 'brightness(0.92)' },
-        '&:focus-visible': { outline: `2px solid ${theme.colors.focus}`, outlineOffset: 3 },
-        '&[aria-pressed="true"]': { boxShadow: `inset 0 0 0 1px ${foreground}` },
-        '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+        '&:focus-visible': {
+          outline: `2px solid ${theme.colors.focus}`,
+          outlineOffset: 3
+        },
+        '&[aria-pressed="true"]': {
+          boxShadow: `inset 0 0 0 1px ${foreground}`
+        },
+        '@media (prefers-reduced-motion: reduce)': { transition: 'none' }
       };
     });
   }
 
   get spinnerStyles() {
-    const spin = this.context.cache.keyframes({ to: { transform: 'rotate(360deg)' } });
+    const spin = this.context.cache.keyframes({
+      to: { transform: 'rotate(360deg)' }
+    });
     return this.context.cache.css({
       display: 'inline-block',
       width: 14,
@@ -83,7 +102,7 @@ export default class EuiEmotionButton extends Component<EuiEmotionButtonSignatur
       borderRightColor: 'transparent',
       borderRadius: '50%',
       animation: `${spin} 700ms linear infinite`,
-      '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
+      '@media (prefers-reduced-motion: reduce)': { animation: 'none' }
     });
   }
 
@@ -101,7 +120,10 @@ export default class EuiEmotionButton extends Component<EuiEmotionButtonSignatur
         aria-pressed={{if @isSelected "true" null}}
         ...attributes
       >
-        {{#if @isLoading}}<span class={{this.spinnerStyles}} aria-hidden="true"></span>{{/if}}
+        {{#if @isLoading}}<span
+            class={{this.spinnerStyles}}
+            aria-hidden="true"
+          ></span>{{/if}}
         {{yield}}
       </button>
     {{/if}}

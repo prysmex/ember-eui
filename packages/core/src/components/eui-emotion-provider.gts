@@ -1,12 +1,19 @@
 import Component from '@glimmer/component';
-import { service } from '@ember/service';
+import { provide } from 'ember-provide-consume-context';
+import {
+  EUI_EMOTION_CONTEXT,
+  getEuiThemeContext
+} from '../utils/emotion/consume.ts';
 import { hash } from '@ember/helper';
 import { EuiThemeContext } from '../utils/emotion/context.ts';
 import EuiEmotionButton from './eui-emotion-button.gts';
 
-import type EuiEmotionService from '../services/eui-emotion.ts';
 import type { EuiEmotionCache } from '../utils/emotion/context.ts';
-import type { EuiColorMode, EuiEmotionTheme, EuiThemeOverrides } from '../utils/emotion/theme.ts';
+import type {
+  EuiColorMode,
+  EuiEmotionTheme,
+  EuiThemeOverrides
+} from '../utils/emotion/theme.ts';
 import type { EuiEmotionButtonSignature } from './eui-emotion-button.gts';
 import type { ComponentLike } from '@glint/template';
 
@@ -18,28 +25,35 @@ export interface EuiEmotionProviderSignature {
     cache?: EuiEmotionCache;
   };
   Blocks: {
-    default: [{
-      context: EuiThemeContext;
-      theme: EuiEmotionTheme;
-      Button: ComponentLike<EuiEmotionButtonSignature>;
-    }];
+    default: [
+      {
+        context: EuiThemeContext;
+        theme: EuiEmotionTheme;
+        Button: ComponentLike<EuiEmotionButtonSignature>;
+      }
+    ];
   };
 }
 
-/** Wrapperless, explicit subtree context for the Emotion spike. */
+/** Wrapperless provider; descendants consume the nearest theme automatically. */
 export default class EuiEmotionProvider extends Component<EuiEmotionProviderSignature> {
-  @service('eui-emotion') declare defaults: EuiEmotionService;
-
-  readonly context = new EuiThemeContext(
+  private readonly themeContext = new EuiThemeContext(
     () => this.args,
-    () => this.args.parent ?? this.defaults.context,
+    () => this.args.parent ?? getEuiThemeContext(this)
   );
 
+  @provide(EUI_EMOTION_CONTEXT)
+  get context() {
+    return this.themeContext;
+  }
+
   <template>
-    {{yield (hash
-      context=this.context
-      theme=this.context.theme
-      Button=(component EuiEmotionButton context=this.context)
-    )}}
+    {{yield
+      (hash
+        context=this.context
+        theme=this.context.theme
+        Button=(component EuiEmotionButton context=this.context)
+      )
+    }}
   </template>
 }

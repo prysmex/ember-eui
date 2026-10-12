@@ -36,6 +36,11 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui" @
 <strong>Getting started</strong>
 </EuiLink>
 </EuiFlexItem>
+<EuiFlexItem @grow={{false}}>
+<EuiLink @href="/docs/emotion">
+<strong>Emotion showcase</strong>
+</EuiLink>
+</EuiFlexItem>
 </EuiFlexGroup>
 </EuiFlexItem>
 

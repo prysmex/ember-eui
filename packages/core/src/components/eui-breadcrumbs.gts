@@ -4,22 +4,30 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { throttle } from '@ember/runloop';
+import { service } from '@ember/service';
 import type Owner from '@ember/owner';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
-import sub from 'ember-math-helpers/helpers/sub';
-import { modifier } from 'ember-modifier';
-import { and, eq, not } from 'ember-truth-helpers';
 
-import classNames from '../helpers/class-names.ts';
+import onWindowResize from '../-private/window-resize.ts';
 import useState from '../helpers/use-state.ts';
 import { getBreakpoint } from '../utils/breakpoint.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiBreadcrumbContentStyles,
+  euiBreadcrumbPopoverStyles,
+  euiBreadcrumbsListStyles,
+  euiBreadcrumbStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiInnerText from './eui-inner-text.gts';
 import EuiLink from './eui-link.gts';
 import EuiPopover from './eui-popover.gts';
 
+import type EuiI18nService from '../services/eui-i18n.ts';
 import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
+import type { CSSInterpolation } from '@emotion/css/create-instance';
 
 export type EuiBreadcrumbResponsiveMaxCount = {
   /**
@@ -44,6 +52,8 @@ export type EuiBreadcrumb = {
    * Makes the breadcrumb a link.
    */
   href?: string;
+  /** `rel` of a link breadcrumb (`noreferrer` is always added). */
+  rel?: string;
   /**
    * Makes the breadcrumb clickable, e.g. to transition with the router.
    */
@@ -54,91 +64,77 @@ export type EuiBreadcrumb = {
    */
   className?: string;
   /**
-   * Force a max-width on the breadcrumb text
+   * Overrides `@truncate` for this breadcrumb: `true` limits its text to
+   * 160px with an ellipsis, `false` never truncates it.
    */
   truncate?: boolean;
 
   /**
-   * Set internally on the "…" item holding collapsed breadcrumbs.
-   */
-  ellipsis?: boolean;
-
-  /**
-   * `EuiLink` color of a clickable breadcrumb. Defaults to `'subdued'`, and
-   * `'text'` for the last one.
+   * `EuiLink` color of a clickable breadcrumb. Defaults to `'subdued'`
+   * (upstream; it used to be `'text'` for the last one).
    */
   color?: string;
 
+  /** @deprecated Ignored. It used to mark the internal "…" item. */
+  ellipsis?: boolean;
+
   /**
-   * Set internally; the last breadcrumb gets `aria-current="page"`.
+   * @deprecated Ignored. The last breadcrumb gets `aria-current="page"`;
+   * see `@lastBreadcrumbIsCurrentPage`.
    */
   'aria-current'?: string;
 };
 
-const onWindowResizeModifier = modifier(
-  (
-    _ele: HTMLElement,
-    _pos,
-    {
-      functionToCallOnWindowResize
-    }: { functionToCallOnWindowResize: () => void }
-  ) => {
-    window.addEventListener('resize', functionToCallOnWindowResize);
+export type EuiBreadcrumbsType = 'page' | 'application';
 
-    return () => {
-      window.removeEventListener('resize', functionToCallOnWindowResize);
-    };
-  }
-);
+type Item = {
+  breadcrumb?: EuiBreadcrumb;
+  overflow?: EuiBreadcrumb[];
+  isFirst: boolean;
+  isLast: boolean;
+  isOnly: boolean;
+};
 
-const limitedBreadcrumbs = (max: number, breadcrumbs: EuiBreadcrumb[]) => {
-  const breadcrumbsAtStart = [];
-  const breadcrumbsAtEnd = [];
+const LIST_RESET = {
+  boxSizing: 'border-box',
+  margin: 0,
+  padding: 0,
+  listStyle: 'none'
+} as const;
+const ITEM_RESET = { boxSizing: 'border-box', margin: 0, padding: 0 } as const;
+
+/**
+ * Upstream `limitBreadcrumbs`: keeps `max` breadcrumbs (biased to the end)
+ * and collapses the rest into one item.
+ */
+function limitBreadcrumbs(breadcrumbs: EuiBreadcrumb[], max: number) {
+  const atStart: EuiBreadcrumb[] = [];
+  const atEnd: EuiBreadcrumb[] = [];
   const limit = Math.min(max, breadcrumbs.length);
   const start = Math.floor(limit / 2);
-  const overflowBreadcrumbs = breadcrumbs.slice(
-    start,
-    start + breadcrumbs.length - limit
-  );
-
-  if (
-    overflowBreadcrumbs.length &&
-    overflowBreadcrumbs[overflowBreadcrumbs.length - 1]
-  ) {
-    overflowBreadcrumbs[overflowBreadcrumbs.length - 1]!['aria-current'] =
-      'false';
-  }
+  const overflow = breadcrumbs.slice(start, start + breadcrumbs.length - limit);
 
   for (let i = 0; i < limit; i++) {
-    // We'll alternate with displaying breadcrumbs at the end and at the start, but be biased
-    // towards breadcrumbs the end so that if max is an odd number, we'll have one more
-    // breadcrumb visible at the end than at the beginning.
     const isEven = i % 2 === 0;
-
-    // We're picking breadcrumbs from the front AND the back, so we treat each iteration as a
-    // half-iteration.
     const normalizedIndex = Math.floor(i * 0.5);
-    const indexOfBreadcrumb = isEven
+    const index = isEven
       ? breadcrumbs.length - 1 - normalizedIndex
       : normalizedIndex;
-    const breadcrumb = breadcrumbs[indexOfBreadcrumb];
+    const breadcrumb = breadcrumbs[index]!;
 
-    if (isEven && breadcrumb) {
-      breadcrumbsAtEnd.unshift(breadcrumb);
-    } else if (breadcrumb) {
-      breadcrumbsAtStart.push(breadcrumb);
+    if (isEven) {
+      atEnd.unshift(breadcrumb);
+    } else {
+      atStart.push(breadcrumb);
     }
   }
 
-  if (max < breadcrumbs.length) {
-    breadcrumbsAtStart.push({ ellipsis: true } as EuiBreadcrumb);
-  }
-
-  return {
-    breadcrumbs: [...breadcrumbsAtStart, ...breadcrumbsAtEnd],
-    overflowBreadcrumbs
-  };
-};
+  return [
+    ...atStart.map((breadcrumb) => ({ breadcrumb })),
+    { overflow },
+    ...atEnd.map((breadcrumb) => ({ breadcrumb }))
+  ];
+}
 
 interface EuiBreadcrumbsComponentArgs {
   /**
@@ -147,14 +143,14 @@ interface EuiBreadcrumbsComponentArgs {
    * 1 breadcrumb on extra small screens, 2 on small, 4 on medium); pass an
    * object with any of the `xs`, `s`, `m`, `l`, `xl` keys for your own
    * limits (a missing key falls back to `@max`). Never shows more than
-   * `@max`. Defaults to off.
+   * `@max`. Defaults to `true`, as upstream; `false` turns it off.
    */
   responsive?: boolean | EuiBreadcrumbResponsiveMaxCount;
 
   /**
-   * Forces all breadcrumbs to single line and
-   * truncates each breadcrumb to a particular width,
-   * except for the last item. Defaults to `true`.
+   * Forces all breadcrumbs to a single line and truncates each breadcrumb
+   * to 160px, except the last one, which fills the remaining space.
+   * Defaults to `true`.
    */
   truncate?: boolean;
 
@@ -166,13 +162,27 @@ interface EuiBreadcrumbsComponentArgs {
   max?: number | null;
 
   /**
+   * `'page'` (default) separates breadcrumbs with slashes; `'application'`
+   * renders them as connected arrow-shaped chips, for the top of an app.
+   */
+  type?: EuiBreadcrumbsType;
+
+  /**
+   * Marks the last breadcrumb as the current page (`aria-current="page"`).
+   * Defaults to `true`.
+   */
+  lastBreadcrumbIsCurrentPage?: boolean;
+
+  /**
    * The breadcrumbs, from the root to the current page:
    * `[{ text: 'Home', href: '/' }, { text: 'Users', onClick: … }, { text: 'Jane' }]`.
-   * The last one is the current page.
    */
   breadcrumbs: EuiBreadcrumb[];
 }
 
+/**
+ * A `<nav aria-label="Breadcrumbs">` trail of links to the current page.
+ */
 export interface EuiBreadcrumbsSignature {
   Element: HTMLElement;
   Args: EuiBreadcrumbsComponentArgs;
@@ -180,7 +190,8 @@ export interface EuiBreadcrumbsSignature {
 }
 
 export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
-  @tracked currentBreakpoint;
+  @service declare euiI18n: EuiI18nService;
+  @tracked currentBreakpoint: EuiBreakpointSize | undefined;
 
   constructor(owner: Owner, args: EuiBreadcrumbsComponentArgs) {
     super(owner, args);
@@ -189,171 +200,348 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
     );
   }
 
-  functionToCallOnWindowResize = () => {
-    throttle(() => {
-      const newBreakpoint = getBreakpoint(window.innerWidth);
-
-      if (newBreakpoint !== this.currentBreakpoint) {
-        this.currentBreakpoint = newBreakpoint;
-      }
-    }, 50);
+  updateBreakpoint = () => {
+    const breakpoint = getBreakpoint(window.innerWidth);
+    if (breakpoint !== this.currentBreakpoint) {
+      this.currentBreakpoint = breakpoint;
+    }
   };
 
-  get responsiveObject() {
-    return typeof this.args.responsive === 'object'
-      ? this.args.responsive
-      : responsiveDefault;
+  onResize = () => {
+    throttle(this, this.updateBreakpoint, 50);
+  };
+
+  get ariaLabel(): string {
+    return this.euiI18n.lookupToken('euiBreadcrumbs.nav.ariaLabel', 'Breadcrumbs');
   }
 
-  get max() {
-    if (this.args.max === null) {
-      return null;
-    }
-
-    return this.args.max ?? 5;
+  get collapsedLabel(): string {
+    return this.euiI18n.lookupToken(
+      'euiBreadcrumb.collapsedBadge.ariaLabel',
+      'See collapsed breadcrumbs'
+    );
   }
 
-  get truncate() {
+  get type(): EuiBreadcrumbsType {
+    return this.args.type ?? 'page';
+  }
+
+  get lastBreadcrumbIsCurrentPage(): boolean {
+    return this.args.lastBreadcrumbIsCurrentPage ?? true;
+  }
+
+  get truncate(): boolean {
     return this.args.truncate ?? true;
   }
 
-  get calculatedMax(): EuiBreadcrumbsComponentArgs['max'] {
-    // The max property collapses any breadcrumbs past the max quantity.
-    // This is the same behavior we want for responsiveness.
-    // So calculate the max value based on the combination of `max` and `responsive`
-    let calculatedMax: EuiBreadcrumbsComponentArgs['max'] = this.max;
+  get max(): number | null {
+    return this.args.max === null ? null : (this.args.max ?? 5);
+  }
 
-    // Set the calculated max to the number associated with the currentBreakpoint key if it exists
-    if (
-      this.args.responsive &&
-      this.responsiveObject[this.currentBreakpoint as EuiBreakpointSize]
-    ) {
-      calculatedMax =
-        this.responsiveObject[this.currentBreakpoint as EuiBreakpointSize];
+  /** Upstream `useResponsiveMax`. */
+  get responsiveMax(): number | null {
+    const responsive = this.args.responsive ?? true;
+    const responsiveObject =
+      typeof responsive === 'object' ? responsive : responsiveDefault;
+    const max = this.max;
+    let responsiveMax = max;
+    const breakpoint = this.currentBreakpoint;
+
+    if (responsive && breakpoint && responsiveObject[breakpoint]) {
+      responsiveMax = responsiveObject[breakpoint]!;
     }
 
-    // Final check is to make sure max is used over a larger breakpoint value
-    if (this.max && calculatedMax) {
-      calculatedMax = this.max < calculatedMax ? this.max : calculatedMax;
+    if (max && responsiveMax) {
+      responsiveMax = max < responsiveMax ? max : responsiveMax;
     }
 
-    return calculatedMax;
+    return responsiveMax;
   }
 
   @cached
-  get limitedBreadcrumbs() {
-    const calculatedMax = this.calculatedMax;
+  get listClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiBreadcrumbsListStyles);
+    return `euiBreadcrumbs__list ${euiClass(
+      context,
+      // Scoped stand-in for React's global list reset.
+      LIST_RESET,
+      styles.euiBreadcrumbs__list,
+      this.truncate && styles.isTruncated
+    )}`;
+  }
 
-    return calculatedMax
-      ? limitedBreadcrumbs(calculatedMax, this.args.breadcrumbs)
-      : {
-          breadcrumbs: this.args.breadcrumbs,
-          overflowBreadcrumbs: [] as EuiBreadcrumb[]
-        };
+  @cached
+  get items(): Item[] {
+    const { breadcrumbs } = this.args;
+    const max = this.responsiveMax;
+    const visible: { breadcrumb?: EuiBreadcrumb; overflow?: EuiBreadcrumb[] }[] =
+      max && breadcrumbs.length > max
+        ? limitBreadcrumbs(breadcrumbs, max)
+        : breadcrumbs.map((breadcrumb) => ({ breadcrumb }));
+
+    return visible.map(({ breadcrumb, overflow }, index) => ({
+      breadcrumb,
+      overflow,
+      isFirst: index === 0,
+      isLast: index === visible.length - 1,
+      isOnly: visible.length === 1
+    }));
   }
 
   <template>
     <nav
-      {{onWindowResizeModifier
-        functionToCallOnWindowResize=this.functionToCallOnWindowResize
-      }}
-      class={{classNames
-        "euiBreadcrumbs"
-        (if this.truncate "euiBreadcrumbs--truncate")
-      }}
+      aria-label={{this.ariaLabel}}
+      class="euiBreadcrumbs"
+      {{onWindowResize this.onResize}}
       ...attributes
     >
-      <ol class="euiBreadcrumbs__list">
-
-        {{#each this.limitedBreadcrumbs.breadcrumbs as |breadcrumb index|}}
-
-          {{#if breadcrumb.ellipsis}}
-            {{#let (useState false) as |popOverState|}}
-              <li class="euiBreadcrumb euiBreadcrumb--collapsed">
-                <EuiPopover
-                  @isOpen={{popOverState.value}}
-                  @closePopover={{fn popOverState.setState false}}
-                >
-                  <:button>
-                    <EuiLink
-                      class="euiBreadcrumb__content"
-                      @color="subdued"
-                      aria-label="See collapsed breadcrumbs"
-                      title="See collapsed breadcrumbs"
-                      {{on "click" (fn popOverState.setState true)}}
-                    >
-                      &hellip;<EuiIcon @type="arrowDown" @size="s" />
-                    </EuiLink>
-                  </:button>
-                  <:content>
-                    <EuiBreadcrumbs
-                      class="euiBreadcrumbs__inPopover"
-                      @breadcrumbs={{this.limitedBreadcrumbs.overflowBreadcrumbs}}
-                      @responsive={{false}}
-                      @truncate={{false}}
-                      @max={{0}}
-                    />
-                  </:content>
-                </EuiPopover>
-
-              </li>
-
-            {{/let}}
-          {{else}}
-            <EuiInnerText as |setInnerTextRef innerText|>
-              {{#let
-                (eq index (sub this.limitedBreadcrumbs.breadcrumbs.length 1))
-                (if (eq innerText "") undefined innerText)
-                as |isLastBreadcrumb title|
-              }}
-                <li
-                  class={{classNames
-                    "euiBreadcrumb"
-                    (if isLastBreadcrumb "euiBreadcrumb--last")
-                    (if breadcrumb.truncate "euiBreadcrumb--truncate")
-                  }}
-                >
-                  {{#if (and (not breadcrumb.href) (not breadcrumb.onClick))}}
-                    <span
-                      {{didInsert setInnerTextRef}}
-                      title={{title}}
-                      class={{classNames
-                        "euiBreadcrumb__content"
-                        breadcrumb.className
-                      }}
-                      aria-current={{if isLastBreadcrumb "page" undefined}}
-                    >
-                      {{breadcrumb.text}}
-                    </span>
-                  {{else}}
-                    <EuiLink
-                      {{didInsert setInnerTextRef}}
-                      @color={{if
-                        breadcrumb.color
-                        breadcrumb.color
-                        (if isLastBreadcrumb "text" "subdued")
-                      }}
-                      @href={{breadcrumb.href}}
-                      title={{title}}
-                      class={{classNames
-                        "euiBreadcrumb__content"
-                        breadcrumb.className
-                      }}
-                      {{on "click" (optional breadcrumb.onClick)}}
-                      aria-current={{if isLastBreadcrumb "page" undefined}}
-                    >
-                      {{breadcrumb.text}}
-                    </EuiLink>
-                  {{/if}}
-
-                </li>
-              {{/let}}
-            </EuiInnerText>
-          {{/if}}
-
+      <ol class={{this.listClasses}}>
+        {{#each this.items as |item|}}
+          <BreadcrumbItem
+            @item={{item}}
+            @type={{this.type}}
+            @truncate={{this.truncate}}
+            @lastBreadcrumbIsCurrentPage={{this.lastBreadcrumbIsCurrentPage}}
+            @collapsedLabel={{this.collapsedLabel}}
+          />
         {{/each}}
-
       </ol>
     </nav>
+  </template>
+}
+
+interface BreadcrumbItemSignature {
+  Args: {
+    item: Item;
+    type: EuiBreadcrumbsType;
+    truncate: boolean;
+    lastBreadcrumbIsCurrentPage: boolean;
+    collapsedLabel: string;
+  };
+}
+
+/**
+ * One breadcrumb (or the collapsed "…" item). Its classes are computed in
+ * its own cached getters, so they are serialized when EuiLink splats them,
+ * after EuiLink's own class (Emotion insertion order, like upstream `css`).
+ */
+class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
+  get isCollapsed(): boolean {
+    return Boolean(this.args.item.overflow);
+  }
+
+  get breadcrumb(): EuiBreadcrumb | undefined {
+    return this.args.item.breadcrumb;
+  }
+
+  get itemTruncate(): boolean {
+    return this.isCollapsed
+      ? this.args.truncate
+      : (this.breadcrumb!.truncate ?? this.args.truncate);
+  }
+
+  get truncateLast(): boolean {
+    return (
+      !this.isCollapsed &&
+      this.args.item.isLast &&
+      this.args.truncate &&
+      this.breadcrumb!.truncate == null
+    );
+  }
+
+  get isInteractive(): boolean {
+    return (
+      !this.isCollapsed &&
+      Boolean(this.breadcrumb!.href || this.breadcrumb!.onClick)
+    );
+  }
+
+  get ariaCurrent(): 'page' | undefined {
+    const { item, lastBreadcrumbIsCurrentPage } = this.args;
+    return !this.isCollapsed && item.isLast && lastBreadcrumbIsCurrentPage
+      ? 'page'
+      : undefined;
+  }
+
+  get linkColor(): string {
+    return this.breadcrumb?.color ?? 'subdued';
+  }
+
+  @cached
+  get liClass(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiBreadcrumbStyles);
+    return `euiBreadcrumb ${euiClass(
+      context,
+      ITEM_RESET,
+      styles.euiBreadcrumb,
+      styles[this.args.type],
+      this.itemTruncate && styles.isTruncated,
+      this.isCollapsed && styles.isCollapsed
+    )}`;
+  }
+
+  @cached
+  get contentCss(): CSSInterpolation[] {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiBreadcrumbContentStyles);
+    const { type, item } = this.args;
+    const isApplication = type === 'application';
+    const css: CSSInterpolation[] = [styles.euiBreadcrumb__content, styles[type]];
+    if (isApplication) {
+      css.push(
+        item.isOnly
+          ? styles.applicationStyles.onlyChild
+          : item.isFirst
+            ? styles.applicationStyles.firstChild
+            : item.isLast
+              ? styles.applicationStyles.lastChild
+              : styles.applicationStyles.intermediateChild
+      );
+    }
+    return css;
+  }
+
+  @cached
+  get truncationCss(): CSSInterpolation[] {
+    // The collapsed item never truncates (upstream `truncate: false`).
+    if (this.isCollapsed) return [];
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiBreadcrumbContentStyles);
+    return [
+      this.itemTruncate && !this.truncateLast && styles.isTruncated,
+      this.truncateLast && styles.isTruncatedLast
+    ];
+  }
+
+  @cached
+  get interactionCss(): CSSInterpolation {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiBreadcrumbContentStyles);
+    return (this.isInteractive || this.isCollapsed) &&
+      this.args.type !== 'application'
+      ? styles.isInteractive
+      : undefined;
+  }
+
+  @cached
+  get contentClass(): string {
+    const context = getEuiThemeContext(this);
+    const popoverStyles = useEuiBorealisStyles(
+      context,
+      euiBreadcrumbPopoverStyles
+    );
+    return [
+      'euiBreadcrumb__content',
+      this.breadcrumb?.className,
+      this.isCollapsed
+        ? euiClass(
+            context,
+            popoverStyles.euiBreadcrumb__popoverButton,
+            ...this.contentCss,
+            this.interactionCss
+          )
+        : euiClass(
+            context,
+            ...this.contentCss,
+            ...this.truncationCss,
+            this.interactionCss
+          )
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get truncationClass(): string {
+    const context = getEuiThemeContext(this);
+    const popoverStyles = useEuiBorealisStyles(
+      context,
+      euiBreadcrumbPopoverStyles
+    );
+    return euiClass(
+      context,
+      popoverStyles.euiBreadcrumb__popoverTruncation,
+      ...this.truncationCss
+    );
+  }
+
+  @cached
+  get popoverClass(): string {
+    const context = getEuiThemeContext(this);
+    const popoverStyles = useEuiBorealisStyles(
+      context,
+      euiBreadcrumbPopoverStyles
+    );
+    return euiClass(
+      context,
+      popoverStyles.popoverWrapper.euiBreadcrumb__popoverWrapper,
+      !this.args.item.isLast && popoverStyles.popoverWrapper[this.args.type]
+    );
+  }
+
+  <template>
+    {{#if @item.overflow}}
+      {{#let (useState false) as |popover|}}
+        <li class={{this.liClass}} data-test-subj="euiBreadcrumb">
+          <EuiPopover
+            class={{this.popoverClass}}
+            @isOpen={{popover.value}}
+            @closePopover={{fn popover.setState false}}
+          >
+            <:button>
+              <EuiLink
+                class={{this.contentClass}}
+                @color="subdued"
+                aria-label={{@collapsedLabel}}
+                title={{@collapsedLabel}}
+                {{on "click" (fn popover.setState (if popover.value false true))}}
+              >
+                <span class={{this.truncationClass}}>&hellip;</span>
+                <EuiIcon @type="arrowDown" @size="s" />
+              </EuiLink>
+            </:button>
+            <:content>
+              <EuiBreadcrumbs
+                @breadcrumbs={{@item.overflow}}
+                @lastBreadcrumbIsCurrentPage={{false}}
+                @responsive={{false}}
+                @truncate={{false}}
+                @max={{0}}
+              />
+            </:content>
+          </EuiPopover>
+        </li>
+      {{/let}}
+    {{else if this.breadcrumb}}
+      <li class={{this.liClass}} data-test-subj="euiBreadcrumb">
+        <EuiInnerText as |setInnerTextRef innerText|>
+          {{#if this.isInteractive}}
+            <EuiLink
+              {{didInsert setInnerTextRef}}
+              @color={{this.linkColor}}
+              @href={{this.breadcrumb.href}}
+              @rel={{this.breadcrumb.rel}}
+              title={{if innerText innerText}}
+              class={{this.contentClass}}
+              aria-current={{this.ariaCurrent}}
+              {{on "click" (optional this.breadcrumb.onClick)}}
+            >
+              {{this.breadcrumb.text}}
+            </EuiLink>
+          {{else}}
+            <span
+              {{didInsert setInnerTextRef}}
+              title={{if innerText innerText}}
+              class={{this.contentClass}}
+              aria-current={{this.ariaCurrent}}
+            >
+              {{this.breadcrumb.text}}
+            </span>
+          {{/if}}
+        </EuiInnerText>
+      </li>
+    {{/if}}
   </template>
 }

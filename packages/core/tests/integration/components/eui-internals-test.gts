@@ -47,9 +47,10 @@ module('Integration | Component | building blocks', function (hooks) {
 
     assert.dom('.number .euiStepNumber__number').hasText('3').hasAttribute('aria-hidden', 'true');
     assert.dom('.number').containsText('Step 3');
-    assert.dom('.complete').hasClass('euiStepNumber--complete');
-    assert.dom('.complete svg.euiStepNumber__icon').exists();
-    assert.dom('.hollow').hasClass('euiStepNumber-isHollow');
+    // Legacy status classes are gone; the status shows as icon/label and Borealis colors.
+    assert.dom('.complete svg.euiStepNumber__icon').exists().hasAttribute('aria-label', 'Step 1 is complete');
+    assert.dom('.hollow').includesText('Step 2 is incomplete', '@isHollow is the incomplete status');
+    assert.strictEqual(getComputedStyle(document.querySelector('.hollow')!).backgroundColor, 'rgba(0, 0, 0, 0)', 'hollow');
   });
 
   test('EuiPaginationButton: 1-based label, active page', async function (assert) {
@@ -63,7 +64,9 @@ module('Integration | Component | building blocks', function (hooks) {
     );
 
     assert.dom('.first').hasText('1').hasAttribute('aria-label', 'Page 1 of 5');
-    assert.dom('.active').hasClass('euiPaginationButton-isActive').hasAttribute('aria-current', 'true').isDisabled();
+    // Upstream: aria-current="page" and no legacy `-isActive` class.
+    assert.dom('.active').hasClass('euiPaginationButton').hasAttribute('aria-current', 'page').isDisabled();
+    assert.dom('.first').doesNotHaveAttribute('aria-current');
   });
 
   test('EuiPageHeaderContent: breadcrumbs, title and right side items', async function (assert) {

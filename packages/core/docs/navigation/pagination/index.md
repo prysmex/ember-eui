@@ -47,8 +47,9 @@ Page numbers with previous/next buttons, for paged lists and tables.
 | `@pageCount` | `number` | `1` | The total number of pages. |
 | `@activePage` | `number` | `0` | The current page using a zero based index. So if you set the activePage to 1, it will activate the second page. |
 | `@onPageClick` | `PageClickHandler` |  | Called with the clicked page's zero based index; update `@activePage` here. |
-| `@compressed` | `boolean` |  | If true, will only show next/prev arrows instead of page numbers. |
-| `@aria-controls` | `string` |  | If passed in, passes value through to each button to set aria-controls (the id of the content the pages change). |
+| `@compressed` | `boolean` |  | Shows "page of total" text with first/previous/next/last arrows instead of page numbers. |
+| `@responsive` | `false \| EuiBreakpointSize[]` | `['xs', 's']`, as upstream; `false` turns this off | Breakpoints at which it is automatically `compressed`. |
+| `@aria-controls` | `string` |  | If passed in, passes value through to each button to set aria-controls (the id of the content the pages change); the buttons then link to it. |
 | `@ariaControls` | `string` |  | Same as `'aria-controls'`. |
 
 </EuiText>

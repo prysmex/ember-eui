@@ -16,8 +16,9 @@ module('Integration | Component | eui-pagination', function (hooks) {
     assert.dom('nav.euiPagination').exists();
     assert.dom('.euiPaginationButton').exists({ count: 6 });
     // uses the `add` / `sub` helpers: last range is (lastPageInRange + 1) .. (pageCount - 1)
+    // Upstream ellipsis items are `li.euiPagination__item[aria-label]` (no legacy placeholder class).
     assert
-      .dom('li.euiPaginationButton-isPlaceholder')
+      .dom('li.euiPagination__item[aria-label]')
       .hasAttribute('aria-label', /^Skipping pages \d+ to 19$/);
   });
 
@@ -35,12 +36,12 @@ module('Integration | Component | eui-pagination', function (hooks) {
       </template>
     );
 
-    // button labels come from `add @pageIndex 1` / `add @activePage 2`
+    // Upstream arrow labels no longer include the page number ("Next page").
     await click('button[aria-label="Page 3 of 5"]');
-    await click('button[aria-label="Next page, 2"]');
+    await click('button[aria-label="Next page"]');
 
     assert.deepEqual(clicked, [2, 1]);
-    assert.dom('[aria-current="true"]').hasText('1', 'ignored callbacks leave the controlled page unchanged');
+    assert.dom('[aria-current="page"]').hasText('1', 'ignored callbacks leave the controlled page unchanged');
   });
 
   test('owner updates synchronize the active page, navigation and page-count boundaries', async function (assert) {
@@ -59,13 +60,13 @@ module('Integration | Component | eui-pagination', function (hooks) {
     assert.dom('[aria-label="Previous page"]').isDisabled();
     await click('[aria-label="Page 3 of 5"]');
     assert.deepEqual(state.clicked, [2]);
-    assert.dom('[aria-current="true"]').hasText('3');
-    assert.dom('[aria-label="Next page, 4"]').isNotDisabled();
-    assert.dom('[aria-label="Previous page, 2"]').isNotDisabled();
+    assert.dom('[aria-current="page"]').hasText('3');
+    assert.dom('[aria-label="Next page"]').isNotDisabled();
+    assert.dom('[aria-label="Previous page"]').isNotDisabled();
 
     state.activePage = 4;
     await rerender();
-    assert.dom('[aria-current="true"]').hasText('5');
+    assert.dom('[aria-current="page"]').hasText('5');
     assert.dom('[aria-label="Next page"]').isDisabled();
 
     state.activePage = 0;

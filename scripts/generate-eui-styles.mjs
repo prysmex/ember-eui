@@ -118,7 +118,21 @@ const entries = {
   'components/health/health.styles.js': ['euiHealthStyles'],
   'components/token/token_map.js': ['TOKEN_MAP', 'TOKEN_COLOR_TO_ICON_COLOR_MAP'],
   'services/color/is_color_dark.js': ['isColorDark'],
-  'services/color/hex_to_rgb.js': ['hexToRgb']
+  'services/color/hex_to_rgb.js': ['hexToRgb'],
+  // navigation
+  'components/tabs/tabs.styles.js': ['euiTabsStyles'],
+  'components/tabs/tab.styles.js': ['euiTabStyles', 'euiTabContentStyles'],
+  'components/breadcrumbs/breadcrumbs.styles.js': ['euiBreadcrumbsListStyles'],
+  'components/breadcrumbs/breadcrumb.styles.js': ['euiBreadcrumbStyles'],
+  'components/breadcrumbs/_breadcrumb_content.styles.js': ['euiBreadcrumbContentStyles', 'euiBreadcrumbPopoverStyles'],
+  'components/pagination/pagination.styles.js': ['euiPaginationStyles'],
+  'components/pagination/pagination_button.styles.js': ['euiPaginationButtonStyles'],
+  'components/steps/step.styles.js': ['euiStepVariables', 'euiStepStyles', 'euiStepContentStyles', 'euiStepTitleStyles'],
+  'components/steps/step_number.styles.js': ['euiStepNumberStyles', 'euiStepNumberContentStyles'],
+  'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
+  'components/steps/step_horizontal.styles.js': ['euiStepHorizontalStyles', 'euiStepHorizontalNumberStyles', 'euiStepHorizontalTitleStyles'],
+  'components/steps/sub_steps.styles.js': ['euiSubStepsStyles'],
+  'global_styling/mixins/_typography.js': ['euiTextTruncate']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

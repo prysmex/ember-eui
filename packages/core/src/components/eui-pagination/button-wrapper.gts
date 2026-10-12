@@ -6,12 +6,13 @@ import { eq } from 'ember-truth-helpers';
 import argOrDefault from '../../helpers/arg-or-default.ts';
 import EuiPaginationButton from '../eui-pagination-button.gts';
 
+import type { SafeClickHandler } from '../eui-pagination.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** @private Renders one EuiPaginationButton (in an `<li>`). */
 export interface EuiPaginationButtonWrapperSignature {
   Args: {
-    /** Wraps the button in an `<li>`. Defaults to `true`. */
+    /** Wraps the button in an `<li class="euiPagination__item">`. Defaults to `true`. */
     inList?: boolean;
     /** Zero based index of the page. */
     pageIndex: number;
@@ -20,7 +21,7 @@ export interface EuiPaginationButtonWrapperSignature {
       pageCount?: number;
       activePage?: number;
       ariaControls?: string;
-      safeClick: (page: number) => void;
+      safeClick: SafeClickHandler;
     };
   };
 }
@@ -28,13 +29,12 @@ export interface EuiPaginationButtonWrapperSignature {
 const ButtonWrapper: TemplateOnlyComponent<EuiPaginationButtonWrapperSignature> =
   <template>
     {{#if (argOrDefault @inList true)}}
-      <li>
+      <li class="euiPagination__item">
         <EuiPaginationButton
           @isActive={{eq @pageIndex @props.activePage}}
           @totalPages={{@props.pageCount}}
           @pageIndex={{@pageIndex}}
-          aria-controls={{@props.ariaControls}}
-          @hideOnMobile={{true}}
+          @ariaControls={{@props.ariaControls}}
           {{on "click" (fn @props.safeClick @pageIndex)}}
         />
       </li>
@@ -43,8 +43,7 @@ const ButtonWrapper: TemplateOnlyComponent<EuiPaginationButtonWrapperSignature> 
         @isActive={{eq @pageIndex @props.activePage}}
         @totalPages={{@props.pageCount}}
         @pageIndex={{@pageIndex}}
-        aria-controls={{@props.ariaControls}}
-        @hideOnMobile={{true}}
+        @ariaControls={{@props.ariaControls}}
         {{on "click" (fn @props.safeClick @pageIndex)}}
       />
     {{/if}}

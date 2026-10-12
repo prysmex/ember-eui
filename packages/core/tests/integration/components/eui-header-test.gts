@@ -118,7 +118,9 @@ module('Integration | Component | eui-header', function (hooks) {
 
     await render(<template><EuiHeaderBreadcrumbs @breadcrumbs={{crumbs}} /></template>);
 
-    assert.dom('nav.euiHeaderBreadcrumbs').hasClass('euiBreadcrumbs--truncate');
+    // The legacy `euiBreadcrumbs--truncate` class is gone; truncation keeps the list on one line.
+    assert.dom('nav.euiHeaderBreadcrumbs').hasClass('euiBreadcrumbs');
+    assert.strictEqual(getComputedStyle(document.querySelector('nav.euiHeaderBreadcrumbs ol')!).flexWrap, 'nowrap');
   });
 
   test('EuiHeaderAlert renders its blocks', async function (assert) {

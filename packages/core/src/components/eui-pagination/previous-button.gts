@@ -1,25 +1,25 @@
-import { fn, hash } from '@ember/helper';
-import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 import sub from 'ember-math-helpers/helpers/sub';
-import { eq } from 'ember-truth-helpers';
 
-import EuiButtonIcon from '../eui-button-icon.gts';
-import EuiI18n from '../eui-i18n.gts';
+import ArrowButton from './arrow-button.gts';
 
-import type { EuiButtonIconSignature } from '../eui-button-icon';
-import type { SafeClickHandler } from '../eui-pagination';
+import type { EuiPaginationArrowButtonSignature } from './arrow-button.gts';
+import type { SafeClickHandler } from '../eui-pagination.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-/** @private The "previous page" button of EuiPagination. */
+/** @private The "previous page" button of EuiPagination (labelled "Previous page"). */
 export interface EuiPaginationPreviousButtonSignature {
-  Element: EuiButtonIconSignature['Element'];
+  Element: EuiPaginationArrowButtonSignature['Element'];
   Args: {
     /** Zero based index of the current page. */
     activePage: number;
     /** Goes to a page (ignores out of range pages). */
     safeClick: SafeClickHandler;
-    /** Extra props for the button: `{ disabled, aria-controls, href }`. */
+    /**
+     * `{ disabled, aria-controls }`. An enabled button with `aria-controls`
+     * links to `#<aria-controls>`. `href` is ignored (derived, as upstream).
+     */
     props?: {
       disabled?: boolean;
       'aria-controls'?: string;
@@ -30,37 +30,13 @@ export interface EuiPaginationPreviousButtonSignature {
 
 const PreviousButton: TemplateOnlyComponent<EuiPaginationPreviousButtonSignature> =
   <template>
-    <EuiI18n
-      @token="euiPagination.previousPage"
-      @default="Previous page, {page}"
-      @values={{hash page=@activePage}}
-      as |Token|
-    >
-      <Token as |previousPage|>
-        <EuiI18n
-          @token="euiPagination.disabledPreviousPage"
-          @default="Previous page"
-          as |InnerToken|
-        >
-          <InnerToken as |disabledPreviousPage|>
-            <EuiButtonIcon
-              {{on "click" (fn @safeClick (sub @activePage 1))}}
-              @iconType="arrowLeft"
-              @color="text"
-              aria-label={{if
-                (eq @activePage 0)
-                disabledPreviousPage
-                previousPage
-              }}
-              aria-controls={{if @props.aria-controls @props.aria-controls}}
-              href={{if @props.href @props.href}}
-              disabled={{eq @props.disabled true}}
-              ...attributes
-            />
-          </InnerToken>
-        </EuiI18n>
-      </Token>
-    </EuiI18n>
+    <ArrowButton
+      @type="previous"
+      @disabled={{@props.disabled}}
+      @ariaControls={{@props.aria-controls}}
+      @onClick={{fn @safeClick (sub @activePage 1)}}
+      ...attributes
+    />
   </template>;
 
 export default PreviousButton;

@@ -105,7 +105,20 @@ const factories = {
   'components/icon/icon.styles.js': ['euiIconStyles'],
   'components/avatar/avatar.styles.js': ['euiAvatarStyles'],
   'components/beacon/beacon.styles.js': ['euiBeaconStyles'],
-  'components/health/health.styles.js': ['euiHealthStyles']
+  'components/health/health.styles.js': ['euiHealthStyles'],
+  // navigation
+  'components/tabs/tabs.styles.js': ['euiTabsStyles'],
+  'components/tabs/tab.styles.js': ['euiTabStyles', 'euiTabContentStyles'],
+  'components/breadcrumbs/breadcrumbs.styles.js': ['euiBreadcrumbsListStyles'],
+  'components/breadcrumbs/breadcrumb.styles.js': ['euiBreadcrumbStyles'],
+  'components/breadcrumbs/_breadcrumb_content.styles.js': ['euiBreadcrumbContentStyles', 'euiBreadcrumbPopoverStyles'],
+  'components/pagination/pagination.styles.js': ['euiPaginationStyles'],
+  'components/pagination/pagination_button.styles.js': ['euiPaginationButtonStyles'],
+  'components/steps/step.styles.js': ['euiStepStyles', 'euiStepContentStyles', 'euiStepTitleStyles'],
+  'components/steps/step_number.styles.js': ['euiStepNumberStyles', 'euiStepNumberContentStyles'],
+  'components/steps/steps_horizontal.styles.js': ['euiStepsHorizontalStyles'],
+  'components/steps/step_horizontal.styles.js': ['euiStepHorizontalStyles', 'euiStepHorizontalNumberStyles', 'euiStepHorizontalTitleStyles'],
+  'components/steps/sub_steps.styles.js': ['euiSubStepsStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -194,6 +207,39 @@ test('pure color and padding helpers match upstream for all migrated variants', 
       );
     }
   }
+});
+
+test('navigation helpers match upstream (step variables, screen reader only, text truncate)', () => {
+  const { euiStepVariables } = require(
+    resolve(eui, 'lib/components/steps/step.styles.js')
+  );
+  const { euiScreenReaderOnly } = require(
+    resolve(
+      eui,
+      'lib/components/accessibility/screen_reader_only/screen_reader_only.styles.js'
+    )
+  );
+  const { euiTextTruncate } = require(
+    resolve(eui, 'lib/global_styling/mixins/_typography.js')
+  );
+  for (const modifications of [{}, { base: 20 }]) {
+    const euiTheme = getComputed(
+      EuiThemeBorealis,
+      buildTheme(modifications, 'parity'),
+      'LIGHT'
+    );
+    assert.deepEqual(
+      styles.euiStepVariables(euiTheme),
+      euiStepVariables(euiTheme)
+    );
+  }
+  for (const showOnFocus of [undefined, false, true])
+    assert.equal(
+      styles.euiScreenReaderOnly(showOnFocus),
+      euiScreenReaderOnly(showOnFocus)
+    );
+  for (const args of [[], ['160px'], ['none'], ['100%', 'nowrap']])
+    assert.equal(styles.euiTextTruncate(...args), euiTextTruncate(...args));
 });
 
 test('generated artifact has no React or upstream hook execution paths', () => {

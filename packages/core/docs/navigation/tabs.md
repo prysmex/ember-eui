@@ -48,8 +48,8 @@ A row of `EuiTab`s; you track the selected one. See also EuiTabbedContent.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@display` |  | `'default'` | `'default'`, or `'condensed'` (tighter, no bottom border). |
-| `@size` |  | `'m'` | `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@display` | `'default' \| 'condensed'` | `'default'` | `'default'`, or `'condensed'`: an Ember alias kept for compatibility that only turns the bottom border off (upstream removed the condensed display). |
+| `@size` | `EuiTabsSize \| 'xl'` | `'m'` | `'s'`, `'m'` or `'l'`; affects the gap and the tabs' font size and line height. `'xl'` is accepted as an alias of `'l'` (upstream has no `xl`). |
 | `@expand` | `boolean` | `false` | Evenly stretches the tabs to fill the width. |
 | `@bottomBorder` | `boolean` | `true` (not for `'condensed'`) | Border under the tabs. |
 | `@className` | `string` |  | Extra class(es). |
@@ -62,13 +62,17 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 ### EuiTab
 
-One tab of an EuiTabs. Add `{{on "click" …}}` to select it.
+One tab of an EuiTabs. Add `{{on "click" …}}` to select it. Only the
+selected tab is in the tab order (`tabindex="0"`, others `-1`), as
+upstream; EuiTabs moves focus between tabs with the arrow keys.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the tab. |
-| `@href` | `string` |  | Makes the tab a link, e.g. to a route. |
-| `@isSelected` | `boolean` |  | Marks the tab as selected (`aria-selected`). |
+| `@href` | `string` |  | Makes the tab a link, e.g. to a route. A `javascript:` URL disables the tab instead (upstream `validateHref`). |
+| `@target` | `string` |  | `target` of a link tab. |
+| `@rel` | `string` |  | `rel` of a link tab; `noreferrer` is always added (upstream). |
+| `@isSelected` | `boolean` |  | Marks the tab as selected (`aria-selected`, tab stop). |
 | `@disabled` | `boolean` |  | Disables the tab. |
 
 | Block | Description |

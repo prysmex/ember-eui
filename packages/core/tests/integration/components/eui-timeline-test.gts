@@ -222,9 +222,9 @@ module('Integration | Component | Borealis timeline', function (hooks) {
     await settled();
     assert.strictEqual(css(scopedIcon).marginLeft, '20px', 'size override reaches icon spacing');
     assert.strictEqual(
-      css(scopedIcon, '::before').borderLeftColor,
+      css(scopedIcon, '::before').borderRightColor,
       'rgb(18, 52, 86)',
-      'border override reaches the timeline connector'
+      'border override reaches the RTL timeline connector at inline-start'
     );
     assert.strictEqual(
       css('[data-dark] .euiTimelineItemIcon', '::before').borderLeftColor,

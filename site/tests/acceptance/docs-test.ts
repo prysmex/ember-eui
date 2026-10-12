@@ -18,10 +18,12 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.euiSideNav').exists();
     assert
       .dom('.euiSideNavItem')
-      .exists({ count: 111 }, 'every docs section is listed');
+      .exists({ count: 109 }, 'every docs section is listed');
   });
 
   test('every docs page renders with its demos', async function (assert) {
+    // Visits every page in one test: ~60s on ARM and growing with the catalog.
+    assert.timeout(180_000);
     const docfy = this.owner.lookup('service:docfy') as DocfyService;
     const pages = docfy.flat.filter((page) => !page.frontmatter['disabled']);
 

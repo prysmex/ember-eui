@@ -6,6 +6,17 @@ title: Control bar
 <EuiPageHeader @pageTitle="Control bar"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Deprecated" @color="warning" @iconType="warning">
+  <p>
+    Elastic UI removed <strong>EuiControlBar</strong> upstream (its last release was EUI 91.3.1).
+    It is deprecated since 14.2.0 (deprecation id <code>ember-eui.eui-control-bar.removed-upstream</code>)
+    and will be removed in the next major version. Use <strong>EuiBottomBar</strong>, or compose a bar
+    with <strong>EuiFlexGroup</strong> and <strong>EuiTabs</strong>.
+  </p>
+</EuiCallOut>
+
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiControlBar` is a dark bar of controls at the bottom of the window or
@@ -58,7 +69,7 @@ breadcrumbs and tabs that open a content area above it.
 | `@leftOffset` | `number \| string` | `0` | Space on the left, e.g. for a side navigation. |
 | `@rightOffset` | `number \| string` | `0` | Space on the right. |
 | `@maxHeight` | `number \| string` |  | Maximum height of the bar with its content. |
-| `@showOnMobile` | `boolean` |  | Keeps the bar on small screens (hidden there by default). |
+| `@showOnMobile` | `boolean` |  | Keeps the bar on small screens (hidden below the `m` breakpoint by default). |
 | `@bodyClassName` | `string` |  | Class added to `<body>` while a fixed bar is shown. |
 | `@landmarkHeading` | `string` | "Page level controls" | Accessible name of the bar's region. |
 

@@ -263,7 +263,9 @@ const factories = {
   'components/table/_table_cell_content.styles.js': ['euiTableCellContentStyles'],
   'components/table/table_row.styles.js': ['euiTableRowStyles'],
   'components/table/table_row_cell.styles.js': ['euiTableRowCellStyles'],
-  'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles']
+  'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles'],
+  // control bar and file picker
+  'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);

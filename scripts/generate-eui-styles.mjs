@@ -294,7 +294,9 @@ const entries = {
   'components/table/table_row_cell.styles.js': ['euiTableRowCellStyles'],
   'components/table/mobile/table_header_mobile.styles.js': ['euiTableHeaderMobileStyles'],
   'components/table/const.js': ['EUI_TABLE_CSS_CONTAINER_NAME'],
-  'global_styling/mixins/_container_query.js': ['euiContainerCSS']
+  'global_styling/mixins/_container_query.js': ['euiContainerCSS'],
+  // control bar and file picker (EuiControlBar has no upstream styles after EUI 91.3.1)
+  'components/form/file_picker/file_picker.styles.js': ['euiFilePickerStyles']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

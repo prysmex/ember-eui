@@ -51,7 +51,7 @@ range ("0 → 100") or start and end dates.
 | `@disabled` |  |  | Disabled styling. |
 | `@isDisabled` |  |  | Same as `@disabled`. |
 | `@isInvalid` | `boolean` |  | Invalid styling: a danger underline/border, a danger delimiter and the warning icon (not while disabled or read-only). |
-| `@delimiter` | `string` | `'→'` | Text between the two controls. |
+| `@delimiter` | `string` | upstream's `sortRight` arrow icon, labelled "to" for screen readers (`euiFormControlLayoutDelimited.delimiterLabel`) | Text between the two controls. |
 | `@isPrependProvided` | `boolean` | `true` | Renders the `<:prepend>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `prepend={undefined}`). |
 | `@isAppendProvided` | `boolean` | `true` | Renders the `<:append>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `append={undefined}`). |
 

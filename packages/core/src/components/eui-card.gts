@@ -66,7 +66,9 @@ type EuiCardComponentArgs = {
   rel?: string;
   /**
    * Shows an `EuiBetaBadge` centered on the card's top edge:
-   * `{ label: 'Beta', title?, tooltipContent?, tooltipPosition? }`.
+   * `{ label: 'Beta', title?, tooltipContent?, tooltipPosition? }`, plus
+   * `anchorProps` for the wrapping `<span>` (`className`, `css`, other
+   * keys as attributes).
    */
   betaBadgeProps?: {
     label: string;

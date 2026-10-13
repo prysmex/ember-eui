@@ -34,7 +34,7 @@ Generated from the components' TypeScript signatures by
 | `@footerClassName` | `string` |  | Class that will apply to the card footer section. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@rel` | `string` |  | `rel` of the `@href` link. `noreferrer` is always added, and `noopener` for `target="_blank"`. |
-| `@betaBadgeProps` |  |  | Shows an `EuiBetaBadge` centered on the card's top edge: `{ label: 'Beta', title?, tooltipContent?, tooltipPosition? }`. |
+| `@betaBadgeProps` |  |  | Shows an `EuiBetaBadge` centered on the card's top edge: `{ label: 'Beta', title?, tooltipContent?, tooltipPosition? }`, plus `anchorProps` for the wrapping `<span>` (`className`, `css`, other keys as attributes). |
 | `@description` | `string` |  | Text under the title. Use the `<:description>` block for markup. |
 | `@title` | `string` |  | The title of the card. |
 | `@titleSize` | `'xxxs' \| 'xxs' \| 'xs' \| 's' \| 'm' \| 'l'` | `'s'` | Size of the title, `'s'` or `'xs'` (any `EuiTitle` size). |

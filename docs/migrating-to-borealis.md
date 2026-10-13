@@ -235,6 +235,7 @@ means the previous value was not recorded.
 | `EuiBottomBar` | Default `@top` | `0` | None, so sticky bars stick to the bottom |
 | Page components | `@restrictWidth={{true}}` | A class | Inline `max-width: 1200px` with `margin-inline: auto` |
 | `EuiResizablePanel` | `@hasBorder` | No such argument | `false` (not Panel's new `true`) |
+| `EuiPageTemplate` | `T.BottomBar` position | Rendered where it is placed in the default block | At the end of the main element wherever it is placed (upstream portals it there) |
 
 #### Display
 
@@ -252,6 +253,7 @@ means the previous value was not recorded.
 | `EuiToken` | Presets | Amsterdam vis colors | Borealis' even vis colors (49 presets differ); `tokenRepo` / `tokenSymbol` / `tokenFile` are light squares |
 | `EuiAvatar` | Default background | Amsterdam palette | `colors.vis[name.length % 10]`; initials uppercase for users |
 | `EuiImage` | `@hasShadow` | `true` | `false` |
+| `EuiImage` | Attributes (`class`, `style`, `data-test-subj`…) | On the `<figure>` | On the `<img>` and the full screen `<img>`, as upstream's rest props; the figure takes `@wrapperProps` (other keys become attributes) |
 | `EuiProgress` | `@valueText={{true}}` | `{value}` | `{value}%` |
 | `EuiCallOut` | Title element | `<span>` | `<p>` (an `EuiTitle`) |
 | `EuiCallOut` | `@iconSize` | `m` | `l` (`m` for size `s`) |
@@ -268,6 +270,7 @@ means the previous value was not recorded.
 | `EuiCodeBlock` | `<pre>` `tabindex` | `1` | `-1`, or `0` when it overflows |
 | `EuiCodeBlock` | Copy | Rendered `innerText`, blank lines collapsed; `copyClipboard` icon | The trimmed source with blank lines; `copy` icon; button only when there is text |
 | `EuiTreeView` | `aria-expanded` | On every node | Only on nodes with children |
+| `EuiTabbedContent` | Unknown keys of a tab object | Ignored | Set as attributes of the tab (e.g. `data-test-subj`, `aria-label`) |
 | `EuiExpression` | `@isInvalid` | Whole expression danger | Only the description turns danger |
 
 #### Buttons and links
@@ -327,16 +330,21 @@ means the previous value was not recorded.
 | `EuiComboBox` | Accessibility | Wrapper `role="combobox"`, a tab stop with the label | The input is the combobox (`aria-expanded`, `aria-controls` while open, `aria-haspopup`); the listbox is labelled; screen reader instructions on focus |
 | `EuiComboBox` | Enter badge on the highlighted option | Always | Only with `@onFocusBadge` |
 | `EuiSuperSelect` | Options | `EuiContextMenuItem` buttons | `button.euiSuperSelect__item[role=option]`; arrows no longer wrap; Tab chooses |
+| `EuiSelectable` | Focusing the search field | The first checked (or first) option became current | Nothing is current until a key: arrows start at the top/bottom, other keys and searches pick the first checked option (upstream `onFocus`) |
+| `EuiSelectable` | Unknown `@searchProps` keys | Ignored | Set as attributes of the search `<input>` (upstream spreads them onto EuiFieldSearch) |
 | `EuiRange` | Slider with `@showInput` | `aria-hidden` only for `true` | `aria-hidden`, `tabindex=-1` for any `@showInput`, including `"inputWithPopover"` |
 | `EuiDualRange` | Popover class | `euiRange__popover` | `euiDualRange__popover` |
 | `EuiFilePicker` | Default `@display` | `''` | `default` (clear button or spinner); `"none"` is a deprecated alias |
 | `EuiFilePicker` | Clear button label | "Clear selected files" | "Remove selected files" |
 | `EuiFilePicker` | Prompt icon | `importAction` | `upload` |
+| `EuiFormControlLayoutDelimited` (`EuiDatePickerRange`, `EuiDualRange`, `EuiSuperDatePicker`) | Default delimiter | `→` text | `sortRight` icon labelled "to" (`euiFormControlLayoutDelimited.delimiterLabel`); `@delimiter` still wins |
 | `EuiColorPalettePicker` | Option dividers | Shown | None |
 | `EuiHue` | `@hue={{0}}` | Replaced by 1 | Kept as 0 |
 | `EuiColorStops` | `@stopType="fixed"` | Blended | Holds each color until the next stop; area before the first stop is transparent |
 | `EuiDatePickerRange` | Default `@iconType` | No icon | `true` (calendar icon first; `@iconType={{false}}` for the old look) |
 | `EuiSuperDatePicker` | Root | `EuiFlexGroup .euiSuperDatePicker__flexWrapper` | `div.euiSuperDatePicker`; restricted width 600px (480px without the update button) |
+| `EuiSuperDatePicker` | Start/end date button title | `title` attribute | An `EuiToolTip` (hover/focus); screen readers get it only when invalid or needing an update |
+| `EuiSuperDatePicker` | Time zone display | `div` label; inputs described only while a zone shows | `span` label (`EuiText @component`); the date inputs always point `aria-describedby` at the display id |
 | `EuiSuperUpdateButton` | `@fill` / pending icon | Not stated / `kqlFunction` | `true` / `push` |
 | `EuiRefreshInterval` | Toggle | Start/Stop `EuiButton` | Compressed `EuiSwitch` ("Refresh every"); fields disabled while paused |
 

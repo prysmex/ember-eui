@@ -11,15 +11,23 @@ import type EuiI18n from '../services/eui-i18n';
 import type { WithBoundArgs } from '@glint/template';
 
 interface Args {
-  /** @deprecated Has no effect, use one `EuiI18n` per token. */
+  /**
+   * Looks up several tokens at once (instead of `@token`), with their
+   * texts in `@defaults` at the same positions. The block is yielded once
+   * with an array of the texts (upstream's `tokens`/`defaults`).
+   */
   tokens?: string[];
-  /** @deprecated Has no effect. */
+  /** Texts used when a token of `@tokens` has no translation. */
   defaults?: string[];
   /** Translation key, e.g. `'euiComboBox.noMatchesMessage'`. */
   token?: string;
   /** Text used when the token has no translation; may contain `{placeholders}`. */
   default?: string;
-  /** Values for the `{placeholders}` in the text. */
+  /**
+   * Values for the `{placeholders}` in the text. A value can be text, a
+   * number, or a component (rendered in place of the placeholder, e.g.
+   * `(component EuiLink href="/")`).
+   */
   values?: { [key: string]: any };
   /**
    * Translations for this instance, `{ mapping: { token: 'text' } }`, and
@@ -35,7 +43,12 @@ interface Args {
 export interface EuiI18nSignature {
   Args: Args;
   Blocks: {
-    /** Yields a component rendering the text: `as |Text|` → `<Text />`. */
+    /**
+     * With `@token`, yields a component rendering the text: `as |Text|` →
+     * `<Text />`. It renders component values in place, or yields the text
+     * (a part of it, when the text has component values) to its block.
+     * With `@tokens`, yields once an array with the text of each token.
+     */
     default: [WithBoundArgs<typeof Render, 'token'>];
   };
 }
@@ -43,15 +56,26 @@ export interface EuiI18nSignature {
 export default class EuiI18nComponent extends Component<EuiI18nSignature> {
   @service declare euiI18n: EuiI18n;
 
-  get lookupToken() {
-    const lookupToken = this.euiI18n._lookupToken;
-
-    return lookupToken({
-      token: this.args.token!,
+  lookup(token: string, valueDefault: string) {
+    return this.euiI18n._lookupToken({
+      token,
       i18nMapping: this.args.i18n?.mapping,
-      valueDefault: this.args.default!,
+      valueDefault,
       values: this.args.values
     });
+  }
+
+  get lookupToken() {
+    return this.lookup(this.args.token!, this.args.default!);
+  }
+
+  /** Upstream's `tokens`/`defaults` shape: the text of each token. */
+  get lookupTokens() {
+    const defaults = this.args.defaults ?? [];
+
+    return this.args.tokens!.map((token, index) =>
+      this.lookup(token, defaults[index]!)
+    );
   }
 
   get customComponent(): typeof Render | undefined {
@@ -59,22 +83,28 @@ export default class EuiI18nComponent extends Component<EuiI18nSignature> {
   }
 
   <template>
+    {{#if @tokens}}
+      {{! `@tokens` yields an array instead of the component. }}
+      {{! @glint-expect-error }}
+      {{yield this.lookupTokens}}
+    {{else}}
     {{#let this.lookupToken as |result|}}
       {{#if this.customComponent}}
-        {{#each
+        {{~#each
           (if (notEq (typeOf result) "array") (array result) result)
           as |token|
-        }}
+        ~}}
           {{yield (component this.customComponent token=token)}}
-        {{/each}}
+        {{~/each~}}
       {{else}}
-        {{#each
+        {{~#each
           (if (notEq (typeOf result) "array") (array result) result)
           as |token|
-        }}
+        ~}}
           {{yield (component Render token=token)}}
-        {{/each}}
+        {{~/each~}}
       {{/if}}
     {{/let}}
+    {{/if}}
   </template>
 }

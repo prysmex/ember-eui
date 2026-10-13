@@ -1,6 +1,6 @@
 import type {
   EuiBorealisOverrides,
-  EuiBorealisHighContrastMode
+  EuiHighContrastModeArg
 } from '../utils/eui/theme.ts';
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
@@ -18,6 +18,7 @@ import {
 import { euiGlobalStyles } from '../utils/eui/global-styles.ts';
 import EuiEmotionButton from './eui-emotion-button.gts';
 import { euiClass } from '../utils/eui/styles.ts';
+import { EuiSystemPreferences } from '../utils/emotion/system.ts';
 
 import type { EuiEmotionCache } from '../utils/emotion/context.ts';
 import type { EuiBorealisContext } from '../utils/eui/theme.ts';
@@ -50,9 +51,24 @@ export interface EuiEmotionProviderSignature {
      * the host app owns its global styles. Defaults to `true`.
      */
     globalStyles?: boolean;
+    /**
+     * `"light"` or `"dark"`. Nested providers inherit their parent's. Like
+     * upstream EuiProvider, a root provider (no parent provider) left
+     * undefined follows the OS `prefers-color-scheme` (or the
+     * `eui-emotion` service's `colorMode` when set). An OS-forced high
+     * contrast (`forced-colors: active`) supersedes it.
+     */
     colorMode?: EuiColorMode;
     borealisOverrides?: EuiBorealisOverrides;
-    highContrastMode?: EuiBorealisHighContrastMode;
+    /**
+     * Like upstream: `true` (or `"preferred"`) enables high contrast,
+     * `false` overrides the parent/system preference, `"forced"` forces it.
+     * Undefined inherits; a root provider then follows the OS
+     * (`prefers-contrast: more` → `"preferred"`, Windows
+     * `forced-colors: active` → `"forced"`, which supersedes every app
+     * setting, including `@colorMode`).
+     */
+    highContrastMode?: EuiHighContrastModeArg;
     overrides?: EuiThemeOverrides;
     parent?: EuiThemeContext;
     cache?: EuiEmotionCache;
@@ -72,8 +88,37 @@ export interface EuiEmotionProviderSignature {
 export default class EuiEmotionProvider extends Component<EuiEmotionProviderSignature> {
   private readonly themeContext = new EuiThemeContext(
     () => this.args,
-    () => this.args.parent ?? getEuiThemeContext(this)
+    () =>
+      this.args.parent ??
+      getContext(this, EUI_EMOTION_CONTEXT) ??
+      this.systemContext()
   );
+
+  private system?: EuiSystemPreferences;
+  private rootParent?: EuiThemeContext;
+
+  /**
+   * A root provider's parent: upstream's `EuiSystemDefaultsProvider`. OS
+   * preferences fill what the `eui-emotion` service leaves unset; the
+   * service still supplies overrides and the default cache.
+   */
+  private systemContext(): EuiThemeContext {
+    if (!this.rootParent) {
+      const defaults = getEuiThemeContext(this);
+      const system = (this.system = new EuiSystemPreferences());
+      this.rootParent = new EuiThemeContext(() => {
+        const own = defaults.settings();
+        return {
+          colorMode: own.colorMode ?? system.colorMode,
+          highContrastMode:
+            system.highContrastMode === 'forced'
+              ? 'forced'
+              : (own.highContrastMode ?? system.highContrastMode)
+        };
+      }, () => defaults);
+    }
+    return this.rootParent;
+  }
 
   @provide(EUI_EMOTION_CONTEXT)
   get context() {
@@ -82,13 +127,14 @@ export default class EuiEmotionProvider extends Component<EuiEmotionProviderSign
 
   private globals?: EuiEmotionCache;
 
+  /** The outermost provider: no parent provider and no `@parent`. */
+  get isRoot() {
+    return !this.args.parent && !getContext(this, EUI_EMOTION_CONTEXT);
+  }
+
   /** Only the outermost provider owns global styles, as upstream. */
   get rendersGlobalStyles() {
-    return (
-      this.args.globalStyles !== false &&
-      !this.args.parent &&
-      !getContext(this, EUI_EMOTION_CONTEXT)
-    );
+    return this.args.globalStyles !== false && this.isRoot;
   }
 
   syncGlobalStyles = (
@@ -110,6 +156,7 @@ export default class EuiEmotionProvider extends Component<EuiEmotionProviderSign
   willDestroy() {
     super.willDestroy();
     this.removeGlobalStyles();
+    this.system?.destroy();
   }
 
   @cached

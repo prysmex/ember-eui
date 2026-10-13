@@ -1,6 +1,6 @@
 import type {
   EuiBorealisOverrides,
-  EuiBorealisHighContrastMode
+  EuiHighContrastModeArg
 } from '../utils/eui/theme.ts';
 import Service from '@ember/service';
 import { tracked } from '@glimmer/tracking';
@@ -13,11 +13,17 @@ import type {
   EuiThemeOverrides
 } from '../utils/emotion/theme.ts';
 
-/** Owner-scoped defaults for the experimental Emotion components. */
+/**
+ * Owner-scoped defaults. Components rendered without any provider resolve
+ * `colorMode` (`'light'` when unset) and `highContrastMode` (`false` when
+ * unset) from here. A root `EuiEmotionProvider` whose own args are unset
+ * uses these when set, and otherwise follows the OS preferences
+ * (`prefers-color-scheme`, `prefers-contrast`, `forced-colors`).
+ */
 export default class EuiEmotionService extends Service {
-  @tracked colorMode: EuiColorMode = 'light';
+  @tracked colorMode?: EuiColorMode;
   @tracked borealisOverrides: EuiBorealisOverrides = {};
-  @tracked highContrastMode: EuiBorealisHighContrastMode = false;
+  @tracked highContrastMode?: EuiHighContrastModeArg;
   @tracked overrides: EuiThemeOverrides = {};
 
   readonly context = new EuiThemeContext(() => ({

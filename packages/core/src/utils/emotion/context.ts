@@ -2,7 +2,8 @@ import { cached } from '@glimmer/tracking';
 import { mergeBorealisOverrides, resolveBorealisTheme } from '../eui/theme.ts';
 import type {
   EuiBorealisOverrides,
-  EuiBorealisHighContrastMode
+  EuiBorealisHighContrastMode,
+  EuiHighContrastModeArg
 } from '../eui/theme.ts';
 import createEmotion from '@emotion/css/create-instance';
 import { defaultTheme, mergeTheme } from './theme.ts';
@@ -30,7 +31,7 @@ export function createEuiEmotionCache(
 export interface EuiThemeSettings {
   colorMode?: EuiColorMode;
   borealisOverrides?: EuiBorealisOverrides;
-  highContrastMode?: EuiBorealisHighContrastMode;
+  highContrastMode?: EuiHighContrastModeArg;
   overrides?: EuiThemeOverrides;
   cache?: EuiEmotionCache;
 }
@@ -40,12 +41,20 @@ export class EuiThemeContext {
   private fallbackCache?: EuiEmotionCache;
 
   constructor(
-    private settings: () => EuiThemeSettings,
+    /** The context's own (unresolved) settings; `undefined` inherits. */
+    readonly settings: () => EuiThemeSettings,
     private parent: () => EuiThemeContext | undefined = () => undefined
   ) {}
 
+  /**
+   * As upstream `getColorMode`: an OS-forced high contrast (`'forced'` from
+   * the parent) supersedes the app's color mode, so the parent's (the
+   * system's, at the root) mode wins.
+   */
   get colorMode(): EuiColorMode {
-    return this.settings().colorMode ?? this.parent()?.colorMode ?? 'light';
+    const parent = this.parent();
+    if (parent?.highContrastMode === 'forced') return parent.colorMode;
+    return this.settings().colorMode ?? parent?.colorMode ?? 'light';
   }
 
   get overrides(): EuiThemeOverrides {
@@ -65,12 +74,18 @@ export class EuiThemeContext {
     );
   }
 
+  /**
+   * As upstream EuiThemeProvider: a forced parent always wins, `true` means
+   * `'preferred'`, `false` overrides the parent/system preference, and
+   * `undefined` inherits it.
+   */
   get highContrastMode(): EuiBorealisHighContrastMode {
-    return (
-      this.settings().highContrastMode ??
-      this.parent()?.highContrastMode ??
-      false
-    );
+    const inherited = this.parent()?.highContrastMode ?? false;
+    if (inherited === 'forced') return 'forced';
+    const own = this.settings().highContrastMode;
+    if (own === true) return 'preferred';
+    if (own === undefined) return inherited;
+    return own;
   }
 
   @cached

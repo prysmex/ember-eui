@@ -1,0 +1,271 @@
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { render, settled } from '@ember/test-helpers';
+import { setupRenderingTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { EuiThemeBorealis } from '@elastic/eui-theme-borealis';
+
+import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
+import EuiPanel from '#src/components/eui-panel.gts';
+import { getEuiThemeContext } from '#src/utils/emotion/consume.ts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+import { EuiSystemPreferences } from '#src/utils/emotion/system.ts';
+
+import type { EuiThemeContext } from '#src/utils/emotion/context.ts';
+import type { EuiHighContrastModeArg } from '#src/utils/eui/theme.ts';
+import type EuiEmotionService from '#src/services/eui-emotion.ts';
+
+/** A controllable `window.matchMedia` with change events. */
+class FakeMedia {
+  matches: Record<string, boolean> = {};
+  listeners = new Map<string, Set<(event: MediaQueryListEvent) => void>>();
+  matchMedia = (query: string) => {
+    const listeners = this.listeners;
+    const current = this.matches;
+    return {
+      media: query,
+      get matches() {
+        return current[query] ?? false;
+      },
+      addEventListener(_: string, fn: (event: MediaQueryListEvent) => void) {
+        if (!listeners.has(query)) listeners.set(query, new Set());
+        listeners.get(query)!.add(fn);
+      },
+      removeEventListener(_: string, fn: (event: MediaQueryListEvent) => void) {
+        listeners.get(query)?.delete(fn);
+      }
+    } as unknown as MediaQueryList;
+  };
+  set(query: string, matches: boolean) {
+    this.matches[query] = matches;
+    for (const fn of this.listeners.get(query) ?? [])
+      fn({ matches, media: query } as MediaQueryListEvent);
+  }
+  get listenerCount() {
+    let count = 0;
+    for (const set of this.listeners.values()) count += set.size;
+    return count;
+  }
+}
+
+const DARK = '(prefers-color-scheme: dark)';
+const MORE = '(prefers-contrast: more)';
+const FORCED = '(forced-colors: active)';
+
+function rgb(color: string) {
+  const probe = document.createElement('span');
+  probe.style.color = color;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
+
+function el(selector: string): HTMLElement {
+  const element = document.querySelector<HTMLElement>(selector);
+  if (!element) throw new Error(`Missing ${selector}`);
+  return element;
+}
+
+/** Exposes its nearest context to the test. */
+let captured: Record<string, EuiThemeContext> = {};
+class Capture extends Component<{ Args: { name: string } }> {
+  get capture() {
+    captured[this.args.name] = getEuiThemeContext(this);
+    return '';
+  }
+  <template>{{this.capture}}</template>
+}
+
+module('Integration | Theming | high contrast and system defaults', function (hooks) {
+  setupRenderingTest(hooks);
+
+  let media: FakeMedia;
+  let original: typeof window.matchMedia;
+  hooks.beforeEach(function () {
+    captured = {};
+    media = new FakeMedia();
+    original = window.matchMedia;
+    window.matchMedia = media.matchMedia;
+  });
+  hooks.afterEach(function () {
+    window.matchMedia = original;
+  });
+
+  test('a root provider follows prefers-contrast and prefers-color-scheme live', async function (assert) {
+    media.set(MORE, true);
+    await render(
+      <template>
+        <EuiEmotionProvider><Capture @name="root" /></EuiEmotionProvider>
+      </template>
+    );
+    assert.strictEqual(captured.root!.highContrastMode, 'preferred');
+    assert.strictEqual(captured.root!.colorMode, 'light');
+    assert.strictEqual(captured.root!.upstream.highContrastMode, 'preferred');
+
+    media.set(MORE, false);
+    media.set(DARK, true);
+    await settled();
+    assert.false(captured.root!.highContrastMode);
+    assert.strictEqual(captured.root!.colorMode, 'dark');
+    assert.strictEqual(captured.root!.upstream.colorMode, 'DARK');
+  });
+
+  test('true means preferred, false overrides the system, undefined inherits', async function (assert) {
+    class State {
+      @tracked mode: EuiHighContrastModeArg | undefined = undefined;
+    }
+    const state = new State();
+    media.set(MORE, true);
+    await render(
+      <template>
+        <EuiEmotionProvider @highContrastMode={{state.mode}}>
+          <Capture @name="root" />
+          <EuiEmotionProvider><Capture @name="nested" /></EuiEmotionProvider>
+          <EuiEmotionProvider @highContrastMode={{false}}>
+            <Capture @name="off" />
+          </EuiEmotionProvider>
+        </EuiEmotionProvider>
+      </template>
+    );
+    assert.strictEqual(captured.root!.highContrastMode, 'preferred');
+    assert.strictEqual(captured.nested!.highContrastMode, 'preferred');
+    assert.false(captured.off!.highContrastMode, 'false opts a subtree out');
+
+    state.mode = false;
+    await settled();
+    assert.false(captured.root!.highContrastMode, 'false overrides the OS');
+    assert.false(captured.nested!.highContrastMode);
+
+    media.set(MORE, false);
+    state.mode = true;
+    await settled();
+    assert.strictEqual(captured.root!.highContrastMode, 'preferred');
+    state.mode = 'forced';
+    await settled();
+    assert.strictEqual(captured.root!.highContrastMode, 'forced');
+  });
+
+  test('Windows forced colors supersede app contrast and color mode settings', async function (assert) {
+    media.set(FORCED, true);
+    await render(
+      <template>
+        <EuiEmotionProvider @colorMode="dark" @highContrastMode={{false}}>
+          <Capture @name="root" />
+          <EuiEmotionProvider @colorMode="dark" @highContrastMode={{false}}>
+            <Capture @name="nested" />
+          </EuiEmotionProvider>
+        </EuiEmotionProvider>
+      </template>
+    );
+    for (const name of ['root', 'nested']) {
+      assert.strictEqual(captured[name]!.highContrastMode, 'forced', name);
+      assert.strictEqual(
+        captured[name]!.colorMode,
+        'light',
+        `${name} follows the system color mode`
+      );
+    }
+    media.set(DARK, true);
+    await settled();
+    assert.strictEqual(captured.nested!.colorMode, 'dark');
+    media.set(FORCED, false);
+    await settled();
+    assert.false(captured.root!.highContrastMode);
+    assert.strictEqual(captured.root!.colorMode, 'dark');
+  });
+
+  test('explicit color modes and owner service settings win over the system', async function (assert) {
+    media.set(DARK, true);
+    const service = this.owner.lookup(
+      'service:eui-emotion'
+    ) as EuiEmotionService;
+    await render(
+      <template>
+        <EuiEmotionProvider><Capture @name="root" /></EuiEmotionProvider>
+        <EuiEmotionProvider @colorMode="light">
+          <Capture @name="light" />
+        </EuiEmotionProvider>
+        <Capture @name="standalone" />
+      </template>
+    );
+    assert.strictEqual(captured.root!.colorMode, 'dark');
+    assert.strictEqual(captured.light!.colorMode, 'light');
+    assert.strictEqual(
+      captured.standalone!.colorMode,
+      'light',
+      'components without a provider keep the light default'
+    );
+    service.colorMode = 'light';
+    service.highContrastMode = true;
+    await settled();
+    assert.strictEqual(captured.root!.colorMode, 'light');
+    assert.strictEqual(captured.root!.highContrastMode, 'preferred');
+  });
+
+  test('media listeners are removed when the root provider is torn down', async function (assert) {
+    class State {
+      @tracked show = true;
+    }
+    const state = new State();
+    await render(
+      <template>
+        {{#if state.show}}
+          <EuiEmotionProvider>
+            <EuiEmotionProvider><Capture @name="nested" /></EuiEmotionProvider>
+          </EuiEmotionProvider>
+        {{/if}}
+      </template>
+    );
+    assert.strictEqual(media.listenerCount, 3, 'only the root listens');
+    state.show = false;
+    await settled();
+    assert.strictEqual(media.listenerCount, 0);
+  });
+
+  test('system preferences are safe without matchMedia', function (assert) {
+    window.matchMedia = undefined as unknown as typeof window.matchMedia;
+    const system = new EuiSystemPreferences();
+    assert.strictEqual(system.colorMode, 'light');
+    assert.false(system.highContrastMode);
+    system.destroy();
+  });
+
+  test('high contrast applies upstream border modifications', async function (assert) {
+    for (const mode of ['light', 'dark'] as const) {
+      const theme = resolveBorealisTheme(
+        mode,
+        { colors: { LIGHT: { primary: '#663399' } } },
+        'preferred'
+      ).euiTheme;
+      const plain =
+        mode === 'dark'
+          ? EuiThemeBorealis.root.colors.plainLight
+          : EuiThemeBorealis.root.colors.plainDark;
+      assert.strictEqual(theme.colors.borderBasePlain, plain, mode);
+      assert.strictEqual(theme.border.color, plain);
+      assert.strictEqual(theme.border.thin, `1px solid ${plain}`);
+      assert.strictEqual(
+        theme.colors.borderBaseDanger,
+        resolveBorealisTheme(mode).euiTheme.colors.textDanger
+      );
+      if (mode === 'light')
+        assert.strictEqual(
+          theme.colors.primary.toLowerCase(),
+          '#663399',
+          'consumer color overrides survive high contrast'
+        );
+    }
+    await render(
+      <template>
+        <EuiEmotionProvider @highContrastMode={{true}}>
+          <EuiPanel @hasBorder={{true}} data-panel>Panel</EuiPanel>
+        </EuiEmotionProvider>
+      </template>
+    );
+    assert.strictEqual(
+      getComputedStyle(el('[data-panel]')).borderTopColor,
+      rgb(EuiThemeBorealis.root.colors.plainDark)
+    );
+  });
+});

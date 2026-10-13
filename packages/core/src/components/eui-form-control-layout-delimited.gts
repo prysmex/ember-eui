@@ -56,6 +56,27 @@ export interface EuiFormControlLayoutDelimitedSignature {
      * (`euiFormControlLayoutDelimited.delimiterLabel`).
      */
     delimiter?: string;
+    /**
+     * `'static'` (default) lays the icons out beside the controls,
+     * `'absolute'` overlays them.
+     */
+    iconsPosition?: EuiFormControlLayoutSignature['Args']['iconsPosition'];
+    /**
+     * Shows a dropdown arrow on the right. Hidden while disabled or
+     * read-only.
+     */
+    isDropdown?: EuiFormControlLayoutSignature['Args']['isDropdown'];
+    /**
+     * Id of a control: `EuiFormPrepend` / `EuiFormAppend` labels in the
+     * `<:prepend>` / `<:append>` blocks point to it.
+     */
+    inputId?: EuiFormControlLayoutSignature['Args']['inputId'];
+    /**
+     * Extra props for the `.euiFormControlLayout__childrenWrapper` element
+     * holding the controls: `className`, `id`, `aria-label`,
+     * `data-test-subj` and `css`.
+     */
+    wrapperProps?: EuiFormControlLayoutSignature['Args']['wrapperProps'];
     /** @deprecated Has no effect: the delimited layout is always a group. */
     useGroup?: boolean;
     /**
@@ -137,8 +158,17 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
     return [
       styles.childrenWrapper.delimited,
       this.showInvalidState && styles.childrenWrapper.invalid,
+      // upstream order: the consumer's css before the read-only styles
+      this.args.wrapperProps?.css,
       this.args.readOnly && styles.childrenWrapper.readOnly
     ];
+  }
+  /** `@wrapperProps` without `css`, which `wrapperCss` already composes. */
+  @cached
+  get wrapperProps() {
+    const props = this.args.wrapperProps;
+    if (!props) return undefined;
+    return { ...props, css: undefined };
   }
   /** The class yielded to each control: upstream's cloned input styles. */
   @cached
@@ -168,7 +198,10 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
       class="euiFormControlLayoutDelimited
         {{if this.showInvalidState 'euiFormControlLayoutDelimited--isInvalid'}}"
       @isDelimited={{true}}
-      @iconsPosition="static"
+      @iconsPosition={{if @iconsPosition @iconsPosition "static"}}
+      @isDropdown={{@isDropdown}}
+      @inputId={{@inputId}}
+      @wrapperProps={{this.wrapperProps}}
       @css={{this.rootCss}}
       @wrapperCss={{this.wrapperCss}}
       @icon={{@icon}}

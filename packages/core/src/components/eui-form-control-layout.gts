@@ -19,8 +19,12 @@ import EuiFormControlLayoutIcons, {
 } from './eui-form-control-layout-icons.gts';
 
 import type { EuiFormControlLayoutContext } from '../-private/eui-form-control-layout-context.ts';
+import type { CommonArgs } from './common.ts';
 import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons';
 import type { EuiIconSignature } from './eui-icon';
+
+/** Supported keys of `@wrapperProps`. */
+export type EuiFormControlLayoutWrapperProps = CommonArgs & { css?: EuiCss };
 
 /**
  * The wrapper EUI's inputs use for icons, the clear button, the loading
@@ -107,6 +111,13 @@ export interface EuiFormControlLayoutSignature {
     css?: EuiCss;
     /** @private Extra styles composed last onto the children wrapper. */
     wrapperCss?: EuiCss;
+    /**
+     * Extra props for the `.euiFormControlLayout__childrenWrapper` element
+     * (upstream `wrapperProps`): `className`, `id`, `aria-label`,
+     * `data-test-subj` and `css` (extra styles composed last into its
+     * class).
+     */
+    wrapperProps?: EuiFormControlLayoutWrapperProps;
   };
   Blocks: {
     /**
@@ -246,6 +257,7 @@ export default class EuiFormControlLayout extends Component<EuiFormControlLayout
       context,
       styles.children.euiFormControlLayout__childrenWrapper,
       isGroup && styles.children.inGroup,
+      this.args.wrapperProps?.css,
       this.args.wrapperCss
     );
   };
@@ -281,7 +293,12 @@ export default class EuiFormControlLayout extends Component<EuiFormControlLayout
           </div>
         {{/if}}
         <div
-          class="euiFormControlLayout__childrenWrapper {{this.wrapperClasses isGroup}}"
+          class="euiFormControlLayout__childrenWrapper
+            {{@wrapperProps.className}}
+            {{this.wrapperClasses isGroup}}"
+          id={{@wrapperProps.id}}
+          aria-label={{@wrapperProps.aria-label}}
+          data-test-subj={{@wrapperProps.data-test-subj}}
           style={{this.iconStyle}}
         >
           {{#if this.hasLeftIcon}}

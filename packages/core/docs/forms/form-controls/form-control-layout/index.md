@@ -66,6 +66,7 @@ match them.
 | `@iconColor` |  |  | Color of `@icon`, anything `EuiIcon`'s `@color` accepts (upstream's `icon.color`). |
 | `@iconCss` | `EuiCss` |  | Extra styles composed last into `@icon`'s EuiIcon class (upstream's `icon.css`). |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+| `@wrapperProps` | `EuiFormControlLayoutWrapperProps` |  | Extra props for the `.euiFormControlLayout__childrenWrapper` element (upstream `wrapperProps`): `className`, `id`, `aria-label`, `data-test-subj` and `css` (extra styles composed last into its class). |
 
 | Block | Description |
 | --- | --- |

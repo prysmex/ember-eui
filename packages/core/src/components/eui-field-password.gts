@@ -19,6 +19,27 @@ import EuiFormControlLayout from './eui-form-control-layout.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
+import type { EuiButtonIconSignature } from './eui-button-icon.gts';
+import type { CommonArgs } from './common.ts';
+
+type ButtonIconArgs = EuiButtonIconSignature['Args'];
+
+/** Supported keys of `@dualToggleProps`, spread over the toggle's defaults. */
+export type EuiFieldPasswordDualToggleProps = CommonArgs &
+  Pick<
+    ButtonIconArgs,
+    | 'iconType'
+    | 'iconSize'
+    | 'color'
+    | 'display'
+    | 'size'
+    | 'isDisabled'
+    | 'disabled'
+    | 'css'
+  > & {
+    /** Called after the toggle switched the visibility. */
+    onClick?: (event: MouseEvent) => void;
+  };
 
 export interface EuiFieldPasswordSignature {
   Element: HTMLInputElement;
@@ -58,6 +79,14 @@ export interface EuiFieldPasswordSignature {
     isFakeAppendBlock?: boolean;
     /** Placeholder text. */
     placeholder?: string;
+    /**
+     * Extra props for the `@type="dual"` show/mask button, an
+     * `EuiButtonIcon` (upstream `dualToggleProps`): `iconType`, `iconSize`,
+     * `color`, `display`, `size`, `isDisabled` / `disabled`, `css`, `id`,
+     * `className`, `aria-label` and `data-test-subj` replace the defaults;
+     * `onClick` is called after the toggle.
+     */
+    dualToggleProps?: EuiFieldPasswordDualToggleProps;
   };
   Blocks: {
     /** Content before the input, e.g. an `EuiFormLabel`; yields the class to put on it and the input id. */
@@ -112,9 +141,31 @@ export default class EuiFieldPassword extends Component<EuiFieldPasswordSignatur
   });
 
   @action
-  toggle() {
+  toggle(event: MouseEvent) {
     this.toggledType = this.isVisible ? 'password' : 'text';
     this.inputElement?.focus();
+    this.args.dualToggleProps?.onClick?.(event);
+  }
+
+  get toggleProps(): EuiFieldPasswordDualToggleProps {
+    return this.args.dualToggleProps ?? {};
+  }
+
+  get toggleIconType() {
+    return this.toggleProps.iconType ?? (this.isVisible ? 'eyeSlash' : 'eye');
+  }
+
+  get toggleAriaLabel() {
+    return this.toggleProps['aria-label'] ?? this.toggleLabel;
+  }
+
+  /** Upstream: `disabled={disabled}`, overridden by the toggle props. */
+  get toggleDisabled() {
+    return (
+      this.toggleProps.isDisabled ??
+      this.toggleProps.disabled ??
+      this.args.disabled
+    );
   }
 
   inputClasses = (inGroup: boolean) => {
@@ -180,10 +231,18 @@ export default class EuiFieldPassword extends Component<EuiFieldPasswordSignatur
             {{/if}}
             {{#if (eq this.type "dual")}}
               <EuiButtonIcon
-                @iconType={{if this.isVisible "eyeSlash" "eye"}}
-                @isDisabled={{@disabled}}
-                aria-label={{this.toggleLabel}}
+                @iconType={{this.toggleIconType}}
+                @isDisabled={{this.toggleDisabled}}
+                @iconSize={{this.toggleProps.iconSize}}
+                @color={{this.toggleProps.color}}
+                @display={{this.toggleProps.display}}
+                @size={{this.toggleProps.size}}
+                @css={{this.toggleProps.css}}
+                id={{this.toggleProps.id}}
+                class={{this.toggleProps.className}}
+                aria-label={{this.toggleAriaLabel}}
                 title={{this.toggleLabel}}
+                data-test-subj={{this.toggleProps.data-test-subj}}
                 {{on "click" this.toggle}}
               />
             {{/if}}

@@ -12,9 +12,9 @@ import { modifier } from 'ember-modifier';
  *    - if it has an id (every Eui field renders one), the label's `for`
  *      points to it, so the control is left untouched
  *    - if it has none (e.g. a plain <input>), it gets the row's id
- * 2. The control's `aria-describedby` lists the row's help text and the
- *    errors shown, so screen readers read them with the control. Ids the
- *    control already had (e.g. passed by the app) are kept.
+ * 2. The control's `aria-describedby` lists the row's `@describedByIds`,
+ *    help text and the errors shown, so screen readers read them with the
+ *    control. Ids the control already had (e.g. passed by the app) are kept.
  *
  * Checkboxes, radios and switches are never used: they have their own
  * labels, and pointing the row label at one would make clicking the row
@@ -46,6 +46,12 @@ interface LinkFormRowControlSignature {
        */
       helpText?: unknown;
       errorCount?: number;
+      /**
+       * Ids of other elements describing the control (EuiFormRow's
+       * `@describedByIds`), listed first and kept even when they are not
+       * rendered yet.
+       */
+      describedByIds?: string[];
     };
   };
 }
@@ -94,14 +100,24 @@ function describedByIds(row: HTMLElement): string[] {
   );
 }
 
-/** Sets the ids (those rendered) in the element's aria-describedby. */
-function describe(element: HTMLElement, ids: string[]): void {
+/**
+ * Sets the ids in the element's aria-describedby: the `extra` ones, and
+ * the others once rendered.
+ */
+function describe(
+  element: HTMLElement,
+  ids: string[],
+  extra: string[] = []
+): void {
   const previous = added.get(element) ?? [];
   const own = (element.getAttribute('aria-describedby') ?? '')
     .split(/\s+/)
     .filter((id) => id && !previous.includes(id));
-  const rendered = ids.filter(
-    (id) => !own.includes(id) && element.ownerDocument.getElementById(id)
+  const rendered = [...extra, ...ids].filter(
+    (id, index, all) =>
+      all.indexOf(id) === index &&
+      !own.includes(id) &&
+      (extra.includes(id) || element.ownerDocument.getElementById(id))
   );
   const value = [...own, ...rendered].join(' ');
 
@@ -121,15 +137,16 @@ export default modifier<LinkFormRowControlSignature>(function linkFormRowControl
   // the row id is read so that a new id re-runs the association
   [_rowId],
   // the named args are only read so that changes re-run the modifier
-  { helpText: _helpText, errorCount: _errorCount }
+  { helpText: _helpText, errorCount: _errorCount, describedByIds: extraIds }
 ) {
   const ids = describedByIds(row);
+  const extra = extraIds ?? [];
 
   const initial = associate(row);
   const linked = initial.linked;
   let target = initial.target;
 
-  if (target) describe(target, ids);
+  if (target) describe(target, ids, extra);
 
   const cleanUp = () => {
     if (target) describe(target, []);
@@ -149,7 +166,7 @@ export default modifier<LinkFormRowControlSignature>(function linkFormRowControl
 
     if (next !== target && target) describe(target, []);
     target = next;
-    if (target) describe(target, ids);
+    if (target) describe(target, ids, extra);
   });
 
   observer.observe(fieldWrapper, {

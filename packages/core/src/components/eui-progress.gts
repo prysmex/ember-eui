@@ -8,6 +8,7 @@ import { or } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiBorealisContext } from '../utils/eui/theme.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiProgressDataStyles,
   euiProgressLabelStyles,
@@ -105,6 +106,18 @@ export interface EuiProgressSignature {
     valueText?: string | boolean;
     /** Label above the bar (with `@max`); or use the `<:label>` block. */
     label?: string;
+    /**
+     * Extra props for the label element (upstream `labelProps`):
+     * `className`, `id`, `title`, `data-test-subj`, and `css` (extra
+     * styles composed last into its class).
+     */
+    labelProps?: {
+      className?: string;
+      id?: string;
+      title?: string;
+      'data-test-subj'?: string;
+      css?: EuiCss;
+    };
   };
   Blocks: {
     /** Label above the bar (with `@max`). */
@@ -191,7 +204,13 @@ export default class EuiProgress extends Component<EuiProgressSignature> {
   @cached
   get labelClassNames() {
     const styles = euiProgressLabelStyles;
-    return `euiProgress__label ${euiClass(this.context, styles.euiProgress__label)}`;
+    return [
+      'euiProgress__label',
+      this.args.labelProps?.className,
+      euiClass(this.context, styles.euiProgress__label, this.args.labelProps?.css)
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
 
   @cached
@@ -242,6 +261,9 @@ export default class EuiProgress extends Component<EuiProgressSignature> {
         <div class={{this.dataClasses}}>
           {{#if (or (has-block "label") @label)}}
             <div
+              id={{@labelProps.id}}
+              title={{@labelProps.title}}
+              data-test-subj={{@labelProps.data-test-subj}}
               class={{this.labelClassNames}}
               aria-hidden="true"
               {{observeText this.setLabelText}}

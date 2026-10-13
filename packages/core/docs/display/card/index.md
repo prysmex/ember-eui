@@ -75,6 +75,7 @@ radio or checkbox input.
 | `@hasBorder` | `boolean` | `true` | Border around the card (primary while checked). |
 | `@hasShadow` | `boolean` | `false` | Shadow, only shown without a border. |
 | `@css` | `EuiCss` |  | Extra styles composed last into the card's class. |
+| `@labelProps` |  |  | Extra attributes for the card's `<label>` (upstream `labelProps`): `id`, `title` and `data-test-subj`. As upstream, its class and styles stay the card's own. |
 
 | Block | Description |
 | --- | --- |

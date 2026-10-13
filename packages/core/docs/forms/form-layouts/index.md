@@ -133,6 +133,7 @@ A form control with its label, help text and errors:
 | `@hasChildLabel` | `boolean` | `true` | Link the label to the control. Set `false` when the control has its own label (e.g. a single checkbox). |
 | `@helpText` | `string` |  | Help text under the control (a string, or an array for several lines). The control's `aria-describedby` points to it, so screen readers read it with the control. |
 | `@error` | `string \| string[] \| null` |  | Error message(s) shown under the control while `@isInvalid`; they are added to the control's `aria-describedby` while shown. |
+| `@describedByIds` | `string[]` |  | Ids of other elements describing the control, added first to its `aria-describedby` (before the help text and errors). |
 | `@errorClasses` | `string` |  | Extra classes for each error message. |
 | `@helpTextClasses` | `string` |  | Extra classes for the help text. |
 | `@id` | `string` | a random id | Id of the control; the label points to it. |

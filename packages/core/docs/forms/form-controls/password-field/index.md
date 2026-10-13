@@ -61,6 +61,7 @@ Generated from the components' TypeScript signatures by
 | `@clear` |  |  | Shows a clear ("x") button calling this function; empty the value there. |
 | `@inputRef` | `(element: HTMLInputElement) => void` |  | Called with the `<input>` element once rendered. |
 | `@placeholder` | `string` |  | Placeholder text. |
+| `@dualToggleProps` | `EuiFieldPasswordDualToggleProps` |  | Extra props for the `@type="dual"` show/mask button, an `EuiButtonIcon` (upstream `dualToggleProps`): `iconType`, `iconSize`, `color`, `display`, `size`, `isDisabled` / `disabled`, `css`, `id`, `className`, `aria-label` and `data-test-subj` replace the defaults; `onClick` is called after the toggle. |
 
 | Block | Description |
 | --- | --- |

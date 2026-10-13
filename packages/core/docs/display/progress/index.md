@@ -54,6 +54,7 @@ A progress bar: a value out of `@max`, or an indeterminate loading bar.
 | `@labelClasses` | `string` |  | Classes for the value text. |
 | `@valueText` | `string \| boolean` |  | `true` shows `@value` as a percentage ("70%") above the bar; a string shows that text. For other content use the `<:valueText>` block. |
 | `@label` | `string` |  | Label above the bar (with `@max`); or use the `<:label>` block. |
+| `@labelProps` |  |  | Extra props for the label element (upstream `labelProps`): `className`, `id`, `title`, `data-test-subj`, and `css` (extra styles composed last into its class). |
 
 | Block | Description |
 | --- | --- |

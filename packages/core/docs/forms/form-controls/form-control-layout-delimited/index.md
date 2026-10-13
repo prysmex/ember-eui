@@ -52,6 +52,10 @@ range ("0 → 100") or start and end dates.
 | `@isDisabled` |  |  | Same as `@disabled`. |
 | `@isInvalid` | `boolean` |  | Invalid styling: a danger underline/border, a danger delimiter and the warning icon (not while disabled or read-only). |
 | `@delimiter` | `string` | upstream's `sortRight` arrow icon, labelled "to" for screen readers (`euiFormControlLayoutDelimited.delimiterLabel`) | Text between the two controls. |
+| `@iconsPosition` |  |  | `'static'` (default) lays the icons out beside the controls, `'absolute'` overlays them. |
+| `@isDropdown` |  |  | Shows a dropdown arrow on the right. Hidden while disabled or read-only. |
+| `@inputId` |  |  | Id of a control: `EuiFormPrepend` / `EuiFormAppend` labels in the `<:prepend>` / `<:append>` blocks point to it. |
+| `@wrapperProps` |  |  | Extra props for the `.euiFormControlLayout__childrenWrapper` element holding the controls: `className`, `id`, `aria-label`, `data-test-subj` and `css`. |
 | `@isPrependProvided` | `boolean` | `true` | Renders the `<:prepend>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `prepend={undefined}`). |
 | `@isAppendProvided` | `boolean` | `true` | Renders the `<:append>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `append={undefined}`). |
 

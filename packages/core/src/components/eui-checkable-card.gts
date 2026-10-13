@@ -47,6 +47,16 @@ export interface EuiCheckableCardSignature {
     hasShadow?: boolean;
     /** Extra styles composed last into the card's class. */
     css?: EuiCss;
+    /**
+     * Extra attributes for the card's `<label>` (upstream `labelProps`):
+     * `id`, `title` and `data-test-subj`. As upstream, its class and
+     * styles stay the card's own.
+     */
+    labelProps?: {
+      id?: string;
+      title?: string;
+      'data-test-subj'?: string;
+    };
   };
   Blocks: {
     /** Unused, use `<:label>` and `<:content>`. */
@@ -184,6 +194,9 @@ export default class EuiCheckableCard extends Component<EuiCheckableCardSignatur
       </EuiSplitPanelInner>
       <EuiSplitPanelInner>
         <label
+          id={{@labelProps.id}}
+          title={{@labelProps.title}}
+          data-test-subj={{@labelProps.data-test-subj}}
           class="euiCheckableCard__label {{this.labelClass}}"
           for={{this.id}}
           aria-describedby={{if

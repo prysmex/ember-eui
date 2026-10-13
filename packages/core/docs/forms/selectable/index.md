@@ -35,8 +35,15 @@ the change applied, so keep them in a tracked property.
   `@singleSelection="always"` exactly one.
 - `@searchable` adds a search field; the keyboard (up, down, Enter) works
   from it.
-- `@isLoading`, `@emptyMessage` and `@noMatchesMessage` replace the list
-  with a message.
+- `@isLoading`, `@errorMessage`, `@emptyMessage` and `@noMatchesMessage`
+  replace the list with a message.
+- `@searchProps.value` + `onChange` control the search; `@optionMatcher`
+  changes how options match it.
+- Options can have `toolTipContent`, `hasAriaDisabled`, `textWrap` and
+  `truncationProps`; `@listProps.isVirtualized={{false}}` lets rows fit
+  their content.
+- `@onChange` gets the options, the event and the changed option; options
+  are never mutated, so frozen arrays work.
 - The `<:option>` block renders labels (it yields the option and the
   search); `<:optionPrepend>` / `<:optionAppend>` add content around them.
 - With a block, it yields `{ list, search }` to lay them out yourself.
@@ -66,18 +73,22 @@ change applied.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@options` (required) | `EuiSelectableOption[]` |  | The options: `{ label, checked, disabled, isGroupLabel, prepend, append }`. |
-| `@onChange` | `(options: EuiSelectableOption[]) => void` |  | Called with all options after one is checked or unchecked. |
+| `@onChange` |  |  | Called with all options after one is checked or unchecked (new objects; the given ones are not mutated), the click or keyboard event, and the changed option. |
+| `@onActiveOptionChange` | `(option: EuiSelectableOption \| null) => void` |  | Called with the current option (or `null`) whenever it changes through the keyboard, focus or searching. |
 | `@searchable` | `boolean` |  | Adds a search field that filters the options. |
-| `@searchProps` |  |  | Options of the search field: `{ placeholder, compressed, defaultValue, onSearch(searchValue, matchingOptions) }`. |
+| `@searchProps` |  |  | Options of the search field: `{ placeholder, compressed, isLoading, isClearable, value, defaultValue, onChange(searchValue, matchingOptions), onSearch (same as onChange, not called on render), onKeyDown, onClick, onFocus, onBlur, inputRef, 'data-test-subj' }`. With `value` the search is controlled: update it from `onChange`. `onChange` is also called once after the first render. |
+| `@optionMatcher` | `EuiSelectableOptionMatcher` | the label (or `searchableLabel`) containing the search, ignoring case | Decides whether an option matches the search: `({ option, searchValue, normalizedSearchValue }) => boolean`. |
+| `@selectableScreenReaderText` | `string` |  | Screen reader text read before the keyboard instructions of the search field. |
 | `@singleSelection` | `boolean \| 'always'` | `false` | `true`: one option at most; `'always'`: exactly one (clicking the checked option keeps it); `false`: several, shown with check boxes and `aria-checked`. |
 | `@allowExclusions` | `boolean` |  | Pressing a checked option excludes it (`checked: 'off'`, a cross). |
 | `@isLoading` | `boolean` |  | Shows a loading message instead of the list. |
-| `@isPreFiltered` | `boolean` |  | The options are already filtered (e.g. by a server): the search does not filter. |
+| `@isPreFiltered` | `boolean \| { highlightSearch?: boolean }` |  | The options are already filtered (e.g. by a server): the search does not filter. `{ highlightSearch: false }` also turns off highlighting the search in the labels. |
 | `@height` | `number \| 'full'` |  | Height of the list in px, or `'full'` to fill the container. |
-| `@listProps` |  |  | Options of the list: `{ bordered, paddingSize, showIcons, rowHeight, onFocusBadge }` (`onFocusBadge` defaults to `false`, upstream). |
+| `@listProps` |  |  | Options of the list: `{ bordered, paddingSize, showIcons, rowHeight, onFocusBadge, isVirtualized, textWrap, truncationProps, css }` (`onFocusBadge` defaults to `false`, upstream). See `EuiSelectableList`. |
 | `@loadingMessage` | `string` | "Loading options" | Message while `@isLoading`. |
 | `@noMatchesMessage` | `string` |  | Message when the search matches nothing. |
 | `@emptyMessage` | `string` | "No options available" | Message when there are no options. |
+| `@errorMessage` | `string \| null` |  | Error message shown instead of the list (before any other message) when not `null` / `undefined`. |
 | `@css` | `EuiCss` |  | Styles composed last into the root's class (upstream's `css` prop), e.g. from a template built on EuiSelectable. |
 
 | Block | Description |
@@ -99,14 +110,19 @@ view. Usually rendered for you by `EuiSelectable`.
 | `@searchValue` | `string` |  | The search, highlighted in the labels. |
 | `@activeOptionIndex` | `number` |  | Index (in the visible options) of the keyboard's current option. |
 | `@setActiveOptionIndex` | `(index: number) => void` |  | Called when an option is pressed, to make it the current one. |
-| `@onOptionClick` (required) | `(options: EuiSelectableOption[]) => void` |  | Called with all options after one is checked or unchecked. |
+| `@onOptionClick` (required) |  |  | Called with all options after one is checked or unchecked, the click or keyboard event, and the changed option. |
 | `@singleSelection` | `boolean \| 'always'` |  | `true`: one option at most; `'always'`: exactly one (it cannot be unchecked); `false`: several, with check box indicators. Left undefined, options look single (upstream EuiSelectableList) while the listbox stays multiselectable; `EuiSelectable` passes `false`. |
 | `@allowExclusions` | `boolean` |  | Pressing a checked option excludes it (`checked: 'off'`) first. |
 | `@showIcons` | `boolean` | `true` | Shows the selection indicator column. |
 | `@onFocusBadge` |  | `false` (upstream) | Shows the "return key" badge on the current option: `true`, `false` or `{ text, iconSide }`. |
 | `@bordered` | `boolean` |  | Adds a border around the list. |
 | `@paddingSize` | `'none' \| 's'` | `'none'` | `'s'` pads the list. |
-| `@rowHeight` | `number` | `32` | Height of each option in px. |
+| `@rowHeight` | `number` | `32` | Height of each option in px. Has no effect when `@isVirtualized` is `false`. |
+| `@isVirtualized` | `boolean` |  | `true` (default): every row is `@rowHeight` tall and the list height is computed from it (upstream renders with react-window). `false`: rows fit their content and the list is only as tall as `@height` (when a number), so text can wrap. |
+| `@textWrap` | `'truncate' \| 'wrap'` |  | `'truncate'` (default) or `'wrap'` the labels; an option's own `textWrap` wins. Wrapping only works with `@isVirtualized={{false}}`. |
+| `@truncationProps` | `EuiSelectableTruncationProps` |  | EuiTextTruncate arguments (`truncation`, `truncationOffset`, …) for truncated labels; an option's own `truncationProps` are merged over them. While searching, the match is kept visible instead. |
+| `@isPreFiltered` | `boolean \| { highlightSearch?: boolean }` |  | Every option matches the search (filtered elsewhere); `{ highlightSearch: false }` also turns off the search highlighting. |
+| `@css` | `EuiCss` |  | Styles composed last into the root's class (upstream `css`). |
 | `@height` | `number \| 'full'` |  | Height of the list in px, or `'full'` to fill its container. By default it shows up to 7 options (and half of the next one). |
 | `@listId` | `string` |  | `id` of the `<ul role="listbox">`. |
 | `@makeOptionId` | `(index: number) => string` |  | Id of each option's `<li>`, for `aria-activedescendant`. |
@@ -132,6 +148,10 @@ and optional prepend / append content. Usually rendered for you by
 | --- | --- | --- | --- |
 | `@isFocused` | `boolean` |  | Highlights it as the keyboard's current option. |
 | `@disabled` | `boolean` |  | Disables the option. |
+| `@hasAriaDisabled` | `boolean` |  | With `@disabled`: keeps focus styles, the focus badge and the tooltip (upstream `hasAriaDisabled`); the option still cannot be selected. |
+| `@textWrap` | `'truncate' \| 'wrap'` |  | `'truncate'` (default, CSS ellipsis) or `'wrap'` the label (upstream `textWrap`; EuiSelectable only wraps when not virtualized). |
+| `@toolTipContent` | `string` |  | Tooltip text, shown on hover and while `@isFocused` (upstream). |
+| `@toolTipProps` | `EuiSelectableToolTipProps` |  | EuiToolTip arguments of that tooltip; `position` defaults to `'left'`. |
 | `@checked` | `boolean \| 'on' \| 'off' \| 'mixed'` |  | `'on'` (checked), `'off'` (excluded), `'mixed'` (checked for some) or nothing. `true` is treated as `'on'`. |
 | `@showIcons` | `boolean` | `true` | Shows the selection indicator: a check box for multiple selection, else a check mark / cross / dash. |
 | `@prepend` | `string` |  | Text before the label. Use the `<:prepend>` block for markup. |
@@ -164,11 +184,20 @@ Usually rendered for you by `EuiSelectable` with `@searchable={{true}}`.
 | `@options` (required) | `EuiSelectableOption[]` |  | The options to filter. |
 | `@onChange` (required) |  |  | Called with the matching options and the search. |
 | `@placeholder` | `string` |  | Placeholder of the field. |
-| `@defaultValue` | `string` |  | Initial search. |
-| `@isPreFiltered` | `boolean` |  | Every option matches (they were already filtered, e.g. by a server). |
+| `@value` | `string` |  | The search (controlled, upstream: managed by the parent `EuiSelectable`). Changing it updates the field. |
+| `@defaultValue` | `string` |  | Initial search, when `@value` is not given. |
+| `@isPreFiltered` | `unknown` |  | Every option matches (they were already filtered, e.g. by a server). |
+| `@optionMatcher` | `EuiSelectableOptionMatcher` |  | Decides which options match the search. |
 | `@listId` | `string` |  | `id` of the list, to link the field to it for screen readers. |
 | `@compressed` | `boolean` | `true` (upstream) | Smaller field. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
+| `@isClearable` | `boolean` | `true` | Shows the clear button when there is text. |
+| `@inputRef` | `(input: HTMLInputElement) => void` |  | Called with the `<input>` once rendered (upstream `inputRef`). |
+| `@onKeyDown` | `(event: KeyboardEvent) => void` |  | Called on `keydown` in the field (before EuiSelectable handles it). |
+| `@onClick` | `(event: MouseEvent) => void` |  | Called on `click` in the field. |
+| `@onFocus` | `(event: FocusEvent) => void` |  | Called when the field gets focus. |
+| `@onBlur` | `(event: FocusEvent) => void` |  | Called when the field loses focus. |
+| `@dataTestSubj` | `string` |  | `data-test-subj` of the field. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<input>`.
 

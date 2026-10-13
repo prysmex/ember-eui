@@ -6,9 +6,9 @@ order: 2
 
 <EuiText>
 
-To add a search component to the list, simply add `@searchable`. You can optionally pass in a `@searchProps` object, which configures the actual `EuiFieldSearch` used (`placeholder`, `compressed`, `defaultValue`). In this example, `onSearch` returns a second parameter, enabling you to access the list of filtered items.
+To add a search component to the list, simply add `@searchable`. You can optionally pass in a `@searchProps` object, which configures the actual `EuiFieldSearch` used (`placeholder`, `compressed`, `isLoading`, `value`, `defaultValue`, `data-test-subj`, and the `onChange`, `onKeyDown`, `onClick`, `onFocus` and `onBlur` handlers). `onChange` (and its Ember alias `onSearch`) returns a second parameter, enabling you to access the list of filtered items. Attributes such as `aria-label` go on the yielded `parts.search`.
 
-The search is performed as a string match against the `option.label`.
+**Tip:** the search is performed as a string match against the `option.label` unless a separate `option.searchableLabel` is provided.
 
 </EuiText>
 
@@ -17,11 +17,12 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { EuiSelectable } from '@ember-eui/core/components';
-import { hash } from '@ember/helper';
 
 export default class SelectableSearchableDemo extends Component {
+  searchProps = { 'data-test-subj': 'selectableSearchHere' };
+
   @tracked options = [
-    { label: 'Titan' },
+    { label: 'Titan', 'data-test-subj': 'titanOption' },
     { label: 'Enceladus is disabled', disabled: true },
     { label: 'Mimas', checked: 'on' },
     { label: 'Dione' },
@@ -42,10 +43,14 @@ export default class SelectableSearchableDemo extends Component {
     <EuiSelectable
       aria-label="Searchable example"
       @searchable={{true}}
-      @searchProps={{hash placeholder="Filter options"}}
+      @searchProps={{this.searchProps}}
       @options={{this.options}}
       @onChange={{this.setOptions}}
-    />
+      as |parts|
+    >
+      <parts.search aria-label="Filter options" />
+      <parts.list />
+    </EuiSelectable>
   </template>
 }
 ```

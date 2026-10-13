@@ -1,5 +1,5 @@
 ---
-order: 9
+order: 13
 ---
 
 # Popover with avatars (Ember EUI extra)

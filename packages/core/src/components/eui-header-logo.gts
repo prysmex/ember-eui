@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
+import { htmlSafe } from '@ember/template';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -9,6 +10,7 @@ import {
   euiHeaderLogoStyles,
   euiTitleStyles
 } from '../utils/eui/styles.generated.ts';
+import ElasticLogoFull from './eui-header-logo/elastic-logo-full.gts';
 import EuiIcon from './eui-icon.gts';
 import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 
@@ -34,6 +36,12 @@ export interface EuiHeaderLogoSignature {
     iconTitle?: string;
     /** The logo, anything `EuiIcon`'s `@type` accepts. Defaults to `'logoElastic'`. */
     iconType?: EuiIconSignature['Args']['type'];
+    /**
+     * `'glyph'` (default) is the Elastic glyph (or `@iconType`);
+     * `'horizontal'` is the full Elastic logo with its wordmark, 24px tall.
+     * `@iconTitle` is its accessible name, `'Elastic'` by default.
+     */
+    logoType?: 'glyph' | 'horizontal';
   };
   Blocks: {
     /** The app's name, next to the logo. */
@@ -55,6 +63,19 @@ export default class EuiHeaderLogo extends Component<EuiHeaderLogoSignature> {
 
   get rel() {
     return getSecureRelForTarget(this.args.target, this.args.rel);
+  }
+
+  get isHorizontal() {
+    return this.args.logoType === 'horizontal';
+  }
+
+  /** Upstream: `max-height: euiTheme.size.l; width: auto`. */
+  get logoStyle() {
+    const context = getEuiThemeContext(this);
+
+    return htmlSafe(
+      `max-height: ${context.upstream.euiTheme.size.l}; width: auto;`
+    );
   }
 
   @cached
@@ -91,12 +112,20 @@ export default class EuiHeaderLogo extends Component<EuiHeaderLogoSignature> {
       rel={{this.rel}}
       ...attributes
     >
-      <EuiIcon
-        @aria-label={{@iconTitle}}
-        @iconClasses="euiHeaderLogo__icon"
-        @size="l"
-        @type={{if @iconType @iconType "logoElastic"}}
-      />
+      {{#if this.isHorizontal}}
+        <ElasticLogoFull
+          class="euiHeaderLogo__image"
+          style={{this.logoStyle}}
+          @title={{if @iconTitle @iconTitle "Elastic"}}
+        />
+      {{else}}
+        <EuiIcon
+          @aria-label={{@iconTitle}}
+          @iconClasses="euiHeaderLogo__icon"
+          @size="l"
+          @type={{if @iconType @iconType "logoElastic"}}
+        />
+      {{/if}}
       {{#if (has-block)}}
         <span class="euiHeaderLogo__text {{this.textClasses}}">
           {{yield}}

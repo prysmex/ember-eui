@@ -14,6 +14,7 @@ import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { boxReset, buttonReset } from '../utils/eui/color-picker.ts';
 import { euiSaturationStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import EuiToolTip from './eui-tool-tip.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { HSV } from '../-private/color.ts';
@@ -28,10 +29,7 @@ export interface EuiSaturationSignature {
   Args: {
     /** The color as HSV: `[hue, saturation, value]`. Defaults to `[1, 0, 0]`. */
     color?: HSV;
-    /**
-     * The current color as hex. Upstream shows it in a tooltip over the
-     * indicator, which is not ported; `EuiColorPicker` announces the color.
-     */
+    /** The current color as hex, shown in a tooltip over the indicator. */
     hex?: string;
     /** Prefix of the ids inside. */
     id?: string;
@@ -54,7 +52,7 @@ export default class EuiSaturation extends Component<EuiSaturationSignature> {
       lightness: `euiSaturation__lightness ${euiClass(context, styles.euiSaturation__lightness)}`,
       saturation: `euiSaturation__saturation ${euiClass(context, styles.euiSaturation__saturation)}`,
       // upstream: the EuiToolTip anchor that positions the indicator
-      anchor: euiClass(context, { display: 'block' }, styles.euiSaturation__tooltip),
+      anchor: styles.euiSaturation__tooltip,
       indicator: `euiSaturation__indicator ${euiClass(context, buttonReset, styles.euiSaturation__indicator)}`
     };
   }
@@ -188,9 +186,13 @@ export default class EuiSaturation extends Component<EuiSaturationSignature> {
       <div class={{this.styles.lightness}} {{this.registerBox}}>
         <div class={{this.styles.saturation}}></div>
       </div>
-      <span
-        class={{this.styles.anchor}}
-        style={{cssStyle (hash left=this.indicator.left top=this.indicator.top)}}
+      {{! the indicator is positioned by its tooltip anchor, as upstream }}
+      <EuiToolTip
+        @content={{@hex}}
+        @anchorCss={{this.styles.anchor}}
+        @anchorStyle={{cssStyle (hash left=this.indicator.left top=this.indicator.top)}}
+        @display="block"
+        @disableScreenReaderOutput={{true}}
       >
         <button
           type="button"
@@ -200,7 +202,7 @@ export default class EuiSaturation extends Component<EuiSaturationSignature> {
           aria-label={{this.ariaLabel}}
           aria-describedby="{{@id}}-instructions"
         ></button>
-      </span>
+      </EuiToolTip>
       <span hidden id="{{@id}}-instructions">{{this.instructions}}</span>
     </div>
   </template>

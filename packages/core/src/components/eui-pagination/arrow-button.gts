@@ -8,6 +8,7 @@ import { useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import type { EuiCss } from '../../utils/eui/styles.ts';
 import { euiPaginationButtonStyles } from '../../utils/eui/styles.generated.ts';
 import EuiButtonIcon from '../eui-button-icon.gts';
+import EuiToolTip from '../eui-tool-tip.gts';
 
 import type EuiI18nService from '../../services/eui-i18n.ts';
 import type { EuiButtonIconSignature } from '../eui-button-icon';
@@ -77,18 +78,36 @@ export default class EuiPaginationArrowButton extends Component<EuiPaginationArr
   };
 
   <template>
-    <EuiButtonIcon
-      class="euiPaginationArrowButton"
-      @css={{this.css}}
-      @color="text"
-      @iconType={{this.iconType}}
-      @isDisabled={{@disabled}}
-      @href={{this.href}}
-      aria-label={{this.label}}
-      aria-controls={{this.linkTarget}}
-      data-test-subj="pagination-button-{{@type}}"
-      {{on "click" this.onClick}}
-      ...attributes
-    />
+    {{#if @disabled}}
+      <EuiButtonIcon
+        class="euiPaginationArrowButton"
+        @css={{this.css}}
+        @color="text"
+        @iconType={{this.iconType}}
+        @isDisabled={{true}}
+        @href={{this.href}}
+        aria-label={{this.label}}
+        aria-controls={{this.linkTarget}}
+        data-test-subj="pagination-button-{{@type}}"
+        {{on "click" this.onClick}}
+        ...attributes
+      />
+    {{else}}
+      {{! upstream: the label doubles as a visual tooltip }}
+      <EuiToolTip @content={{this.label}} @disableScreenReaderOutput={{true}}>
+        <EuiButtonIcon
+          class="euiPaginationArrowButton"
+          @css={{this.css}}
+          @color="text"
+          @iconType={{this.iconType}}
+          @href={{this.href}}
+          aria-label={{this.label}}
+          aria-controls={{this.linkTarget}}
+          data-test-subj="pagination-button-{{@type}}"
+          {{on "click" this.onClick}}
+          ...attributes
+        />
+      </EuiToolTip>
+    {{/if}}
   </template>
 }

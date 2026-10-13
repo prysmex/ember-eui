@@ -264,6 +264,9 @@ means the previous value was not recorded.
 | `EuiIcon` | Labelled icon | `role="image"` | `role="img"` (pass the label as `@aria-label`, not as an attribute) |
 | `EuiIcon` | Custom color | Inline `fill` | `color` + `fill: currentColor` through a class; no `color` attribute on the svg |
 | `EuiToken` | Presets | Amsterdam vis colors | Borealis' even vis colors (49 presets differ); `tokenRepo` / `tokenSymbol` / `tokenFile` are light squares |
+| `EuiAvatar` | Name | Native `title` | A visual `EuiToolTip` (the `aria-label` stays), anchored in a `span.euiToolTipAnchor` |
+| `EuiColorPickerSwatch`, `EuiHue`, `EuiSaturation`, `EuiPagination` arrows | Tooltips | None | Visual tooltips (color, hex, "Next page"...) in a `span.euiToolTipAnchor`; `@showToolTip={{false}}` on a swatch turns it off |
+| `EuiTextArea` | Markup | A bare `<textarea>` | Inside an `EuiFormControlLayout` (`div.euiFormControlLayout.euiFormControlLayout--euiTextArea`), as upstream; adds `@icon`, `@isLoading` and `@isClearable` |
 | `EuiAvatar` | Default background | Amsterdam palette | `colors.vis[name.length % 10]`; initials uppercase for users |
 | `EuiImage` | `@hasShadow` | `true` | `false` |
 | `EuiImage` | Attributes (`class`, `style`, `data-test-subj`…) | On the `<figure>` | On the `<img>` and the full screen `<img>`, as upstream's rest props; the figure takes `@wrapperProps` (other keys become attributes) |
@@ -371,6 +374,7 @@ means the previous value was not recorded.
 | Component | Change | Before | Now |
 | --- | --- | --- | --- |
 | `EuiPopover` | Default `@anchorPosition` | `downCenter` | `downLeft` |
+| `EuiPopover` | Initial focus | The first tabbable element of the panel | The panel itself (Tab reaches the first element), as upstream; `@initialFocus` still wins. A panel with `aria-modal` other than `true` also takes focus |
 | `EuiPopover` | Default `@hasArrow` | `true` | `false` |
 | `EuiPopover` | Arrow | 24px | 16px wide; bordered in dark and high contrast |
 | `EuiPopover` | Panel | An `EuiPanel` | A `div.euiPanel.euiPopover__panel`; anchor gets `aria-expanded` / `aria-controls` |
@@ -543,18 +547,19 @@ groups, `@size` on context menus, `EuiPaginationButton @paddingSize` /
 Upstream features that are not ported yet (the Ember API keeps working
 as before):
 
-- **Popover**: initial focus on the panel itself, `panelProps`,
-  `focusTrapProps` and `onPositionChange`.
-- **Combo box**: `inputPopoverProps` and `inputRef`. It keeps
-  ember-power-select; its input sizes with `field-sizing: content`, which
-  Firefox does not support yet, so there the input may wrap below the pills
-  earlier.
-- **Tooltips** on pagination arrows, color picker swatches and the
-  hue/saturation controls; the avatar uses a native `title`.
-- **Forms**: `EuiTextArea` icons, loading state and clear button; the error
-  callout shows only when there are errors.
-- **Header**: `EuiHeaderLogo` `logoType="horizontal"` and
-  `EuiCollapsibleNavBeta`.
+- **Combo box**: `inputPopoverProps` only takes `panelClassName`,
+  `panelPaddingSize`, `panelStyle`, `panelMinWidth`, `panelCss`,
+  `panelProps` (`className`, `css`), `zIndex`, `anchorPosition` (above or
+  below) and `css`; the list is an ember-basic-dropdown panel, not an
+  EuiPopover. It keeps ember-power-select; its input sizes with
+  `field-sizing: content`, which Firefox does not support yet, so there the
+  input may wrap below the pills earlier.
+- **Popover**: `panelProps` takes `className`, `css`, `tabIndex`, `role`,
+  `aria-modal` and `aria-*`, `data-*` and `on<Event>` keys, not EuiPanel's own
+  props (`paddingSize`, `borderRadius`, ...); `focusTrapProps` takes
+  `disabled`, `returnFocus`, `initialFocus`, `onEscapeKey`, `onClickOutside`
+  and `shards`.
+- **Forms**: the error callout shows only when there are errors.
 
 Other things to know:
 

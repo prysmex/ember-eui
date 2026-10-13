@@ -33,12 +33,7 @@ Found by checking the migration guide's Known gaps against the code
 
 | Component | Missing |
 | --- | --- |
-| EuiPopover | initial focus on the panel, `panelProps`, `focusTrapProps`, `onPositionChange` |
-| EuiComboBox | `inputPopoverProps`, `inputRef` |
-| Tooltips | pagination arrows, color picker swatches and hue/saturation controls; EuiAvatar uses a native `title` |
-| EuiTextArea | icons, loading state, clear button |
-| EuiHeaderLogo | `logoType="horizontal"` |
-| EuiCollapsibleNavBeta | not ported |
+| EuiComboBox | `inputPopoverProps` keys that only exist on EuiPopover: `closeOnScroll` (upstream's combo box sets it by default), `repositionOnScroll`, `buffer`, `offset`, `container`, `panelRef`, `popoverRef`, `onPanelResize`, `isLoading`, and attributes for the popover root; the list is an ember-basic-dropdown panel |
 
 ## Decisions
 

@@ -798,7 +798,7 @@ module('Integration | Component | Borealis icon family', function (hooks) {
         style(this.element, '[data-m]').color,
         isColorDark(...hexToRgb(color)) ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)'
       );
-      assert.dom('[data-m]').hasAttribute('role', 'img').hasAttribute('aria-label', 'jane doe').hasAttribute('title', 'jane doe');
+      assert.dom('[data-m]').hasAttribute('role', 'img').hasAttribute('aria-label', 'jane doe').doesNotHaveAttribute('title');
     });
 
     test('named colors, images, icons and disabled', async function (assert) {

@@ -95,6 +95,8 @@ Add `{{on "click" …}}` to handle the choice.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@color` | `string` |  | The color: a hex string or `'r, g, b(, a)'`. |
+| `@showToolTip` | `boolean` | `true` | Shows a tooltip with the color value, as a visual text alternative to the button's label. |
+| `@toolTipProps` | `EuiColorPickerSwatchToolTipProps` |  | Props of the tooltip (upstream `toolTipProps`): `content` (defaults to the color), `position`, `delay`, `title`, `offset`, `id`, `display`, `className`, `css`, `anchorClassName` and `anchorCss`. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 
@@ -106,7 +108,7 @@ Rendered for you by the color picker.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@hue` | `number` | `1` | The hue, 0 to 359. |
-| `@hex` | `string` |  | The current color as hex. Upstream shows it in a tooltip over the thumb, which is not ported; `EuiColorPicker` announces the color. |
+| `@hex` | `string` |  | The current color as hex, shown in a tooltip over the thumb. |
 | `@id` | `string` |  | Prefix of the input's id. |
 | `@onChange` (required) | `(hue: number) => void` |  | Called with the new hue. |
 
@@ -121,7 +123,7 @@ you by the color picker.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@color` | `HSV` | `[1, 0, 0]` | The color as HSV: `[hue, saturation, value]`. |
-| `@hex` | `string` |  | The current color as hex. Upstream shows it in a tooltip over the indicator, which is not ported; `EuiColorPicker` announces the color. |
+| `@hex` | `string` |  | The current color as hex, shown in a tooltip over the indicator. |
 | `@id` | `string` |  | Prefix of the ids inside. |
 | `@onChange` (required) | `(color: HSV) => void` |  | Called with the new `[hue, saturation, value]`. |
 

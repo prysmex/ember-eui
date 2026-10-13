@@ -2,6 +2,7 @@ import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
+import { modifier } from 'ember-modifier';
 import PowerSelectInput from 'ember-power-select/components/power-select/input';
 
 import validatableControl from '../../../modifiers/validatable-control.ts';
@@ -20,6 +21,18 @@ const INPUT_CONTAINER = {
 
 /** @private The search input inside EuiComboBox's trigger. */
 export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
+  /** Upstream `inputRef`: the search input, or `null` when it goes away. */
+  registerInput = modifier((element: HTMLInputElement) => {
+    // @ts-expect-error `inputRef` is passed by EuiComboBoxTrigger
+    const inputRef = this.args.inputRef as
+      | ((element: HTMLInputElement | null) => void)
+      | undefined;
+
+    inputRef?.(element);
+
+    return () => inputRef?.(null);
+  });
+
   /**
    * Shows @placeholder while nothing is selected (power-select 9's own
    * `placeholder` getter uses @searchPlaceholder instead).
@@ -182,6 +195,7 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
         {{on "input" this.handleInput}}
         {{on "keydown" this.handleKeydown}}
         {{on "click" this.handleClick}}
+        {{this.registerInput}}
       />
     </div>
   </template>

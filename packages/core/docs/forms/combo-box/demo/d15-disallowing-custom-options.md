@@ -6,7 +6,7 @@ order: 15
 
 <EuiText>
 
-Leave out the `@onCreateOption` argument to disallow the creation of custom options. Text that matches no option stays in the input when the combo box loses focus, and marks it invalid; `@onSearchChange` tells you whether any option matches, to explain why.
+Leave out the `@onCreateOption` argument to disallow the creation of custom options. Text that matches no option stays in the input when the combo box loses focus, and marks it invalid; `@onSearchChange` tells you whether any option matches, to explain why. `@inputRef` gives you the search `<input>`, to read what was typed when the combo box loses focus.
 
 </EuiText>
 
@@ -37,7 +37,7 @@ export default class ComboBoxNoCustomDemo extends Component {
 
   @tracked selectedOptions = [MOONS[2], MOONS[4]];
   @tracked error;
-  searchValue = '';
+  inputElement = null;
 
   get isInvalid() {
     return this.error !== undefined;
@@ -56,7 +56,6 @@ export default class ComboBoxNoCustomDemo extends Component {
 
   @action
   onSearchChange(value, hasMatchingOptions) {
-    this.searchValue = value;
     this.error =
       value.length === 0 || hasMatchingOptions
         ? undefined
@@ -64,8 +63,13 @@ export default class ComboBoxNoCustomDemo extends Component {
   }
 
   @action
+  setInputRef(element) {
+    this.inputElement = element;
+  }
+
+  @action
   onBlur() {
-    const value = this.searchValue;
+    const value = this.inputElement?.value ?? '';
 
     this.error =
       value.length === 0 ? undefined : `"${value}" is not a valid option`;
@@ -82,6 +86,7 @@ export default class ComboBoxNoCustomDemo extends Component {
         @onChange={{this.onChange}}
         @removeTag={{this.removeTag}}
         @onSearchChange={{this.onSearchChange}}
+        @inputRef={{this.setInputRef}}
         @onBlur={{this.onBlur}}
         @isInvalid={{this.isInvalid}}
         as |option|

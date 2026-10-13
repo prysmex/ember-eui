@@ -68,7 +68,7 @@ control `@isOpen` and close it in `@closePopover`.
 | `@container` | `HTMLElement` |  | Restrict the popover's position within this element |
 | `@display` | `PopoverDisplay` | `'inlineBlock'` | CSS display of the popover's root: `'inlineBlock'`, `'block'` or any CSS `display` value. |
 | `@hasArrow` | `boolean` | `false` (upstream EUI default) | Show an arrow pointing to the anchor. |
-| `@initialFocus` | `FocusTarget \| false` |  | The element to focus when the popover opens: a DOM node, a selector (for `document.querySelector()`) or a function returning a node. It is focused once the panel is positioned and visible (so the page does not scroll to a panel still being placed), also without `@ownFocus`. `false` focuses nothing. |
+| `@initialFocus` | `FocusTarget \| false` |  | The element to focus when the popover opens: a DOM node, a selector (for `document.querySelector()`) or a function returning a node. It is focused once the panel is positioned and visible (so the page does not scroll to a panel still being placed), also without `@ownFocus`. `false` focuses nothing. Without it, `@ownFocus` popovers (and panels with an `aria-modal` other than `true`) focus the panel itself, like upstream; Tab then moves to the first tabbable element. |
 | `@insert` |  |  | Passed directly to EuiPortal for DOM positioning. Both properties are required if prop is specified |
 | `@isOpen` | `boolean` | `false` | Whether the popover is open. Toggle it from the `<:button>` block's button. |
 | `@ownFocus` | `boolean` | `true` | Traps tab focus within the popover contents. |
@@ -76,6 +76,9 @@ control `@isOpen` and close it in `@closePopover`.
 | `@panelPaddingSize` | `PanelPaddingSize` | `'m'` | Padding of the popover: `'none'`, `'s'`, `'m'` or `'l'` (`'xs'` and `'xl'` are discouraged upstream). |
 | `@panelStyle` | `{ [i: string]: string }` |  | Inline styles for the panel (positioning styles win). |
 | `@popoverScreenReaderText` | `string` |  | Extra screen reader text, announced with the panel (with `@ownFocus` it follows the default "You are in a dialog…" instructions). |
+| `@panelProps` | `EuiPopoverPanelProps` |  | Props for the panel (upstream `panelProps`), see {@link EuiPopoverPanelProps}. `tabIndex` wins over `@tabindex`; a `role` or `aria-modal` of its own replaces `dialog` / `true`; an `aria-modal` other than `true` makes the popover focus its panel like `@ownFocus` does. |
+| `@focusTrapProps` | `EuiPopoverFocusTrapProps` |  | Props for the focus trap (upstream `focusTrapProps`), see {@link EuiPopoverFocusTrapProps}. They replace the popover's own values. |
+| `@onPositionChange` | `(position: EuiPopoverPosition) => void` |  | Called with the position the popover ended up in (`'top'`, `'right'`, `'bottom'` or `'left'`) each time it is positioned. |
 | `@panelRef` | `(e: HTMLElement \| null) => unknown` |  | Called with the popover's panel element (`null` when it closes). |
 | `@popoverRef` | `(e: HTMLElement) => unknown` |  | Called with the popover's root element. |
 | `@shouldAccountForOtherPopovers` | `boolean` | `true` | When not `false`, a popover opened from inside another popover positions itself relative to that one. |

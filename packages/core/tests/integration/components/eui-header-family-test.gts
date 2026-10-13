@@ -462,6 +462,28 @@ module('Integration | Component | Borealis header family', function (hooks) {
     phone.remove();
   });
 
+  test('EuiHeaderLogo: logoType="horizontal" renders the full Elastic logo', async function (assert) {
+    await render(
+      <template>
+        <EuiHeaderLogo @href="#" @logoType="horizontal" data-test-h />
+        <EuiHeaderLogo @href="#" @logoType="horizontal" @iconTitle="Home" data-test-t />
+        <EuiHeaderLogo @href="#" data-test-g />
+      </template>
+    );
+
+    assert.dom('[data-test-h] svg.euiHeaderLogo__image').exists();
+    assert.dom('[data-test-h] .euiHeaderLogo__icon').doesNotExist('no glyph');
+    assert.dom('[data-test-h] svg').hasAttribute('viewBox', '0 0 105 36');
+    assert.dom('[data-test-h] svg title').hasText('Elastic', 'default title');
+    assert.dom('[data-test-t] svg title').hasText('Home');
+    const svg = document.querySelector('[data-test-h] svg') as SVGElement;
+    assert.strictEqual(svg.getAttribute('aria-labelledby'), svg.querySelector('title')!.id);
+    assert.strictEqual(svg.style.maxHeight, '24px');
+    assert.strictEqual(svg.style.width, 'auto');
+    assert.dom('[data-test-g] svg.euiHeaderLogo__image').doesNotExist('glyph is the default');
+    assert.dom('[data-test-g] .euiHeaderLogo__icon').exists();
+  });
+
   test('EuiHeaderLogo: upstream box, colors, secure rel, href validation, icon and text', async function (assert) {
     await render(
       <template>

@@ -60,6 +60,36 @@ import type {
 import type { EuiComboBoxNode } from './eui-combo-box/node.gts';
 import type { EuiComboBoxTruncationProps } from './eui-combo-box/option-text.gts';
 import type { EuiTooltipArgs } from './eui-tool-tip';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import type { PopoverAnchorPosition } from './eui-popover';
+
+/**
+ * The part of upstream's `inputPopoverProps` (EuiInputPopover props) that
+ * applies to the options list here: it is an ember-basic-dropdown panel, not
+ * an EuiPopover. `zIndex` replaces the anchor's z-index plus 2000, and
+ * `anchorPosition` picks the side (`up*` above, `down*` below) unless
+ * `@verticalPosition` is set.
+ */
+export interface EuiComboBoxInputPopoverProps {
+  /** Class name of the options list panel. */
+  panelClassName?: string;
+  /** Padding of the panel. Defaults to `'s'`. */
+  panelPaddingSize?: 'none' | 'xs' | 's' | 'm' | 'l' | 'xl';
+  /** Inline styles of the panel, as a camelCase object (an Emotion class). */
+  panelStyle?: Record<string, string | number>;
+  /** Minimum width of the panel, when the input is narrower. */
+  panelMinWidth?: number;
+  /** Extra styles composed last into the panel's class. */
+  panelCss?: EuiCss;
+  /** Upstream `panelProps`: `className` and `css` of the panel. */
+  panelProps?: { className?: string; css?: EuiCss };
+  /** The panel's z-index, instead of the anchor's z-index plus 2000. */
+  zIndex?: number;
+  /** `up*` opens the list above the input, `down*` below it. */
+  anchorPosition?: PopoverAnchorPosition;
+  /** Extra styles composed last into the combo box's root class. */
+  css?: EuiCss;
+}
 
 export type {
   EuiComboBoxNode,
@@ -218,6 +248,16 @@ export interface EuiComboBoxSignature {
     searchPlaceholder?: any;
     /** Extra class for the options list. */
     dropdownClass?: string;
+    /**
+     * Props of the options list's popover (upstream `inputPopoverProps`),
+     * see {@link EuiComboBoxInputPopoverProps}.
+     */
+    inputPopoverProps?: EuiComboBoxInputPopoverProps;
+    /**
+     * Called with the search `<input>` element once rendered, and with
+     * `null` when it is removed.
+     */
+    inputRef?: (element: HTMLInputElement | null) => void;
     /** The selected options (items of `@options`). */
     selectedOptions?: any[];
     /**
@@ -503,7 +543,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       euiComboBoxStyles.euiComboBox,
       this.args.fullWidth
         ? euiComboBoxStyles.fullWidth
-        : { maxInlineSize: form.maxWidth }
+        : { maxInlineSize: form.maxWidth },
+      this.args.inputPopoverProps?.css
     );
   }
 
@@ -520,6 +561,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     const panel = useEuiBorealisStyles(context, euiPanelStyles);
     const popover = useEuiBorealisStyles(context, euiPopoverPanelStyles);
     const colorMode = upstream.colorMode === 'DARK' ? 'dark' : 'light';
+    const popoverProps = this.args.inputPopoverProps;
 
     return euiClass(
       context,
@@ -535,7 +577,10 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       panel.euiPanel,
       panel.grow,
       panel.radius.m,
-      { padding: euiPaddingSize(upstream, 's') ?? 0 },
+      {
+        padding:
+          euiPaddingSize(upstream, this.args.inputPopoverProps?.panelPaddingSize ?? 's') ?? 0
+      },
       { backgroundColor: euiBackgroundColor(upstream, 'plain') },
       upstream.highContrastMode && {
         border: upstream.euiTheme.border.thin,
@@ -548,14 +593,34 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       popover.isAttached.bottom,
       { '&.ember-basic-dropdown-content--above': popover.isAttached.top },
       // ember-power-select's result count announcement
-      `& .ember-power-select-visually-hidden{${euiScreenReaderOnly()}}`
+      `& .ember-power-select-visually-hidden{${euiScreenReaderOnly()}}`,
+      popoverProps?.panelMinWidth != null && {
+        minInlineSize: popoverProps.panelMinWidth
+      },
+      popoverProps?.panelStyle,
+      popoverProps?.panelCss,
+      popoverProps?.panelProps?.css
     );
   }
 
   get listZIndexClass(): string {
     return euiClass(getEuiThemeContext(this), {
-      '--ember-basic-dropdown-content-z-index': String(this.listZIndex)
+      '--ember-basic-dropdown-content-z-index': String(
+        this.args.inputPopoverProps?.zIndex ?? this.listZIndex
+      )
     });
+  }
+
+  /** `@verticalPosition`, else the side `inputPopoverProps.anchorPosition` names. */
+  get verticalPosition(): string | undefined {
+    if (this.args.verticalPosition) return this.args.verticalPosition;
+
+    const anchorPosition = this.args.inputPopoverProps?.anchorPosition;
+
+    if (anchorPosition?.startsWith('up')) return 'above';
+    if (anchorPosition?.startsWith('down')) return 'below';
+
+    return undefined;
   }
 
   get dropdownClass(): string {
@@ -563,6 +628,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       'euiPanel euiPanel--plain euiPopover__panel',
       this.panelClass,
       this.listZIndexClass,
+      this.args.inputPopoverProps?.panelClassName,
+      this.args.inputPopoverProps?.panelProps?.className,
       this.args.dropdownClass
     ]
       .filter(Boolean)
@@ -948,6 +1015,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         append=@append
         noSuggestions=@noSuggestions
         inputTabindex=@tabindex
+        inputRef=@inputRef
         inputRole=@triggerRole
         inputAriaLabel=@ariaLabel
         inputAriaLabelledBy=@ariaLabelledBy
@@ -972,7 +1040,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @destination={{@destination}}
       @preventScroll={{@preventScroll}}
       @renderInPlace={{@renderInPlace}}
-      @verticalPosition={{@verticalPosition}}
+      @verticalPosition={{this.verticalPosition}}
       @disabled={{@isDisabled}}
       @calculatePosition={{@calculatePosition}}
       @eventType={{@eventType}}

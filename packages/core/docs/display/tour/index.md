@@ -104,12 +104,14 @@ the current step, or on its own with `@isStepOpen`.
 | `@zIndex` | `number` | the popover layer | `z-index` of the popover. |
 | `@footerAction` | `ComponentLike \| ComponentLike[]` |  | Replaces the "Skip tour" button in the footer: a component (use `(component …)`), or an array of components for up to two buttons. The `<:footerAction>` block wins when both are given. |
 | `@decoration` | `'beacon' \| 'none'` | `'beacon'` | `'beacon'` (a pulsing dot on the arrow) or `'none'`. |
+| `@css` | `EuiCss` |  | Extra styles composed into the panel's class, after the tour's own (upstream's `css`, which EuiTourStep moves to the panel). |
 
 | Block | Description |
 | --- | --- |
 | default block | The element the step points at (unused with `@anchor`). |
 | `<:content>` | Markup for the step's content, instead of `@content`. |
 | `<:footerAction>` | Replaces the "Skip tour" button, e.g. with "Next" / "Back" buttons. |
+| `<:arrowChildren>` | Content of the popover's arrow, instead of the beacon (upstream `arrowChildren`). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

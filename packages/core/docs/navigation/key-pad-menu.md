@@ -46,7 +46,7 @@ switcher in a header popover.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@checkable` |  |  | Makes the menu a `<fieldset>` of radios or checkboxes (items with `@checkable`): `true`, or `{ legend }` for a visible legend and/or `{ ariaLegend }` for an `aria-label`. |
+| `@checkable` |  |  | Makes the menu a `<fieldset>` of radios or checkboxes (items with `@checkable`): `true`, or `{ legend }` for a visible legend and/or `{ ariaLegend }` for an `aria-label`. `legendProps` (upstream) are for the legend's EuiFormLabel: `className`, `css` and other keys as attributes. |
 
 Deprecated: `@iconType` (Has no effect.).
 
@@ -70,7 +70,8 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@onChange` | `(id: string, value?: string \| Event) => void` |  | Called when a checkable item changes, with its id (and value for radios). Buttons use `{{on "click" …}}`. |
 | `@betaBadgeLabel` | `string` |  | Shows a beta badge with the first letter of this label (full label on hover). |
 | `@betaBadgeIconType` |  |  | Icon in the beta badge instead of the letter. |
-| `@betaBadgeTooltipContent` | `string` |  | Tooltip of the beta badge. |
+| `@betaBadgeTooltipContent` | `string` |  | Content of the tooltip shown with `@betaBadgeLabel` (its title is the label). The tooltip wraps the whole item, like upstream. |
+| `@betaBadgeTooltipProps` |  |  | EuiToolTip args for the item's `@betaBadgeLabel` tooltip (upstream `betaBadgeTooltipProps`), except `title` and `content`, e.g. `(hash position="bottom" anchorProps=(hash data-test-subj="tip"))`. |
 | `@id` | `string` | a random id | Id of the checkable input. |
 | `@target` | `string` |  | `target` of the `@href` link. |
 | `@rel` | `string` |  | `rel` of the link; `noreferrer` (and `noopener` for `_blank`) is added. |

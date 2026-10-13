@@ -60,6 +60,9 @@ bar of colors. Built on `EuiSuperSelect`; each option shows the title
 | `@isLoading` | `boolean` |  | Shows a spinner. |
 | `@disabled` | `boolean` |  | Disables the select. |
 | `@readOnly` | `boolean` |  | Read-only: the list does not open. |
+| `@isOpen` | `boolean` | closed until the user opens it | Controls whether the list is open (upstream `isOpen`, from EuiSuperSelect). |
+| `@itemClassName` | `string` |  | Class for each option in the list (EuiSuperSelect `itemClassName`). |
+| `@popoverProps` |  |  | Props of the list's EuiInputPopover (EuiSuperSelect `popoverProps`), e.g. `(hash panelClassName="…" repositionOnScroll=true)`. |
 
 | Block | Description |
 | --- | --- |

@@ -547,11 +547,10 @@ groups, `@size` on context menus, `EuiPaginationButton @paddingSize` /
 Upstream features that are not ported yet (the Ember API keeps working
 as before):
 
-- **Combo box**: `inputPopoverProps` only takes `panelClassName`,
-  `panelPaddingSize`, `panelStyle`, `panelMinWidth`, `panelCss`,
-  `panelProps` (`className`, `css`), `zIndex`, `anchorPosition` (above or
-  below) and `css`; the list is an ember-basic-dropdown panel, not an
-  EuiPopover. It keeps ember-power-select; its input sizes with
+- **Combo box**: the list is an ember-basic-dropdown panel, not an
+  EuiPopover, so `inputPopoverProps` has no `panelRef`, `popoverRef` or
+  EuiPopover focus props, `repositionOnScroll` is always on and `buffer` /
+  `container` only bound the list horizontally. It keeps ember-power-select; its input sizes with
   `field-sizing: content`, which Firefox does not support yet, so there the
   input may wrap below the pills earlier.
 - **Popover**: `panelProps` takes `className`, `css`, `tabIndex`, `role`,

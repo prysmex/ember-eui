@@ -81,6 +81,7 @@ short and non-essential; it is not reachable on touch screens.
 | `@css` | `EuiCss` |  | Extra styles composed last into the tooltip's class (like upstream's `css` prop). Prefer this to `@className` for styles. |
 | `@anchorCss` | `EuiCss` |  | Extra styles composed last into the anchor wrapper's class (like upstream's `anchorProps.css`). Prefer this to `@anchorClassName` for styles. |
 | `@anchorStyle` | `string \| SafeString` |  | Inline style of the anchor wrapper (upstream's `anchorProps.style`), a style string or a safe string. |
+| `@anchorProps` | `EuiToolTipAnchorProps` |  | Props for the anchor wrapper (upstream `anchorProps`), see {@link EuiToolTipAnchorProps}. |
 
 | Block | Description |
 | --- | --- |
@@ -108,6 +109,10 @@ setting next to its label.
 | `@anchorClassName` | `string` |  | Class for the element wrapping the icon. |
 | `@onMouseOut` | `(event: MouseEvent) => void` |  | Called when the pointer leaves the icon. |
 | `@display` |  |  | Display of the wrapper: `'inlineBlock'` or `'block'`. |
+| `@anchorProps` |  |  | Props for the element wrapping the icon (upstream `anchorProps`), see EuiToolTip's `@anchorProps`. |
+| `@offset` | `number` | `16` | Distance between the icon and the tooltip. |
+| `@repositionOnScroll` | `boolean` | `false` | Repositions the tooltip when the page or a scrollable ancestor scrolls. |
+| `@disableScreenReaderOutput` | `boolean` | `false` | Keeps the tooltip visual only (no `aria-describedby` on the icon), e.g. when `@ariaLabel` already says the same. |
 
 | Block | Description |
 | --- | --- |

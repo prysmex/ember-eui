@@ -73,6 +73,7 @@ and from swatches. You keep the color: `@onChange` gets the new text and
 | `@compressed` | `boolean` |  | Smaller field. |
 | `@fullWidth` | `boolean` |  | Takes the container's full width. |
 | `@disabled` | `boolean` |  | Disables it. |
+| `@popoverZIndex` | `number` | the anchor's z-index + 2000, as in EuiPopover | z-index of the color selector popover. |
 | `@readOnly` | `boolean` |  | Read-only: the popover does not open. |
 | `@isInvalid` | `boolean` |  | Invalid look. |
 | `@id` | `string` |  | `id` of the input. |

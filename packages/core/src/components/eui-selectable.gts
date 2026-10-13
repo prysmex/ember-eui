@@ -7,6 +7,8 @@ import { schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 import { isDestroying, isDestroyed } from '@ember/destroyable';
 
+import { modifier } from 'ember-modifier';
+
 import cssStyle from '../-private/css-style.ts';
 import { randomId } from '../-private/random-id.ts';
 import {
@@ -64,6 +66,10 @@ interface OptionBlocks {
  * filter menu, or in a panel for a "choose fields" list. Options are
  * `{ label, checked }` objects; `@onChange` gets them all back with the
  * change applied.
+ *
+ * As upstream, `aria-label` / `aria-describedby` attributes name the
+ * search and the listbox, not the root (`searchProps` / `listProps` keys of
+ * the same names win).
  */
 export interface EuiSelectableSignature {
   Element: HTMLDivElement;
@@ -113,6 +119,16 @@ export interface EuiSelectableSignature {
       onBlur?: (event: FocusEvent) => void;
       inputRef?: (input: HTMLInputElement) => void;
       'data-test-subj'?: string;
+      /**
+       * Accessible name of the search (upstream `getAccessibleName`): wins
+       * over the root's `aria-label` / `aria-describedby`.
+       */
+      'aria-label'?: string;
+      /**
+       * Describes the search instead of the keyboard instructions; the
+       * message id is appended (upstream).
+       */
+      'aria-describedby'?: string;
       /** Extra class name(s) of the search field. */
       className?: string;
       /** Content before the field: a string (a label) or a component. */
@@ -174,11 +190,18 @@ export interface EuiSelectableSignature {
     height?: number | 'full';
     /**
      * Options of the list: `{ bordered, paddingSize, showIcons, rowHeight,
-     * onFocusBadge, isVirtualized, textWrap, truncationProps, css }`
-     * (`onFocusBadge` defaults to `false`, upstream). See
-     * `EuiSelectableList`.
+     * onFocusBadge, isVirtualized, textWrap, truncationProps, css,
+     * 'aria-label', 'aria-describedby' }` (`onFocusBadge` defaults to
+     * `false`, upstream). See `EuiSelectableList`.
      */
     listProps?: {
+      /** Accessible name of the listbox; wins over the root's. */
+      'aria-label'?: string;
+      /**
+       * Describes the listbox; the instructions id is appended (upstream
+       * `getAccessibleName`).
+       */
+      'aria-describedby'?: string;
       bordered?: boolean;
       paddingSize?: 'none' | 's';
       showIcons?: boolean;
@@ -238,6 +261,91 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
   @tracked isFocused = false;
 
   rootId = `euiSelectable_${randomId()}`;
+
+  /** The root's `aria-label` attribute, moved to the search / listbox. */
+  @tracked attrAriaLabel: string | null = null;
+  /** The root's `aria-describedby` attribute, moved to the search / listbox. */
+  @tracked attrAriaDescribedby: string | null = null;
+
+  /**
+   * Upstream takes `aria-label` / `aria-describedby` out of the root's props
+   * (`getAccessibleName`). Ember passes them as attributes, so they are read
+   * from the root and removed, also when they change.
+   */
+  moveAriaAttributes = modifier((element: HTMLElement) => {
+    const move = () => {
+      if (element.hasAttribute('aria-label')) {
+        this.attrAriaLabel = element.getAttribute('aria-label');
+        element.removeAttribute('aria-label');
+      }
+      if (element.hasAttribute('aria-describedby')) {
+        this.attrAriaDescribedby = element.getAttribute('aria-describedby');
+        element.removeAttribute('aria-describedby');
+      }
+    };
+    schedule('afterRender', () => {
+      if (!isDestroying(this) && !isDestroyed(this)) move();
+    });
+    const observer = new MutationObserver(move);
+    observer.observe(element, {
+      attributeFilter: ['aria-label', 'aria-describedby']
+    });
+    return () => observer.disconnect();
+  });
+
+  /**
+   * Upstream `getAccessibleName`: the part's own `aria-label`, else its
+   * `aria-describedby` (+ `extraId`), else the root's label, else the
+   * root's description (+ `extraId`).
+   */
+  accessibleName(
+    props: { 'aria-label'?: string; 'aria-describedby'?: string } | undefined,
+    extraId: string
+  ): { label?: string; describedby?: string } | undefined {
+    if (props?.['aria-label']) return { label: props['aria-label'] };
+    if (props?.['aria-describedby']) {
+      return { describedby: `${props['aria-describedby']} ${extraId}` };
+    }
+    if (this.attrAriaLabel) return { label: this.attrAriaLabel };
+    if (this.attrAriaDescribedby) {
+      return { describedby: `${this.attrAriaDescribedby} ${extraId}` };
+    }
+    return undefined;
+  }
+
+  /** Upstream `placeholderName`, the fallback name of the search and list. */
+  get placeholderName(): string {
+    return this.euiI18n.lookupToken(
+      'euiSelectable.placeholderName',
+      'Filter options'
+    );
+  }
+
+  @cached
+  get searchAccessibleName(): { label?: string; describedby?: string } {
+    return (
+      this.accessibleName(this.args.searchProps, this.messageId) ?? {
+        label: this.placeholderName
+      }
+    );
+  }
+
+  get searchAriaLabel(): string | undefined {
+    return this.searchAccessibleName.label;
+  }
+
+  /** The instructions, unless a description replaced them (upstream). */
+  get searchAriaDescribedby(): string {
+    return this.searchAccessibleName.describedby ?? this.instructionsId;
+  }
+
+  @cached
+  get listAccessibleName(): { label?: string; describedby?: string } {
+    return (
+      this.accessibleName(this.args.listProps, this.instructionsId) ??
+      (this.args.searchable ? { label: this.placeholderName } : {})
+    );
+  }
   preventOnFocus = false;
 
   constructor(owner: Owner, args: EuiSelectableSignature['Args']) {
@@ -624,6 +732,7 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
       {{on "focusout" this.onBlur}}
       {{on "mousedown" this.onMouseDown}}
       ...attributes
+      {{this.moveAriaAttributes}}
     >
       {{#let
         (if
@@ -640,8 +749,9 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
             isPreFiltered=@isPreFiltered
             optionMatcher=this.optionMatcher
             listId=(if this.message undefined this.listId)
-            ariaDescribedby=this.instructionsId
-            ariaLabel=this.placeholder
+            ariaDescribedby=this.searchAriaDescribedby
+            ariaLabel=this.searchAriaLabel
+            instructionsId=this.instructionsId
             activeDescendant=this.activeDescendant
             instructions=this.screenReaderInstructions
             onKeyDown=@searchProps.onKeyDown
@@ -811,7 +921,8 @@ class SelectableBody extends Component<SelectableBodySignature> {
         @hasOption={{flag @hasOption (has-block "option")}}
         @hasOptionPrepend={{flag @hasOptionPrepend (has-block "optionPrepend")}}
         @hasOptionAppend={{flag @hasOptionAppend (has-block "optionAppend")}}
-        @ariaLabel={{if @searchable this.selectable.placeholder}}
+        @ariaLabel={{this.selectable.listAccessibleName.label}}
+        @ariaDescribedby={{this.selectable.listAccessibleName.describedby}}
         ...attributes
       >
         <:option as |option searchValue|>{{yield option searchValue to="option"}}</:option>

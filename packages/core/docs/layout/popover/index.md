@@ -172,6 +172,7 @@ Also takes the args of `EuiPopover`.
 | Block | Description |
 | --- | --- |
 | default block | The popover's content. |
+| `<:arrowChildren>` | Content on the popover's arrow (e.g. a beacon). |
 
 </EuiText>
 <!-- api:end -->

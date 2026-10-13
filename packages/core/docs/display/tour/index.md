@@ -40,7 +40,9 @@ and `state` has `currentTourStep` and `isTourActive`, e.g. to save the
 progress. The `<:footerAction>` block of a step replaces its "Skip tour"
 button, e.g. with a "Next" button.
 
-`EuiTourStep` also works on its own, opened with `@isStepOpen`. It wraps its default block (the element it points at), unlike upstream it has no `anchor` argument to attach to another DOM element.
+`EuiTourStep` also works on its own, opened with `@isStepOpen`. It wraps its default block (the element it points at), or attaches to an element elsewhere in the page with `@anchor`: a CSS selector, the element, or a function returning it.
+
+Ember EUI has no `useEuiTour` hook: `EuiTour` yields the same state and actions, and you can keep the state in your own component for standalone steps.
 
 ## Guidelines
 
@@ -98,11 +100,14 @@ the current step, or on its own with `@isStepOpen`.
 | `@maxWidth` | `number` | `600` | Maximum width in px. |
 | `@onFinish` | `() => void` |  | Called by the "Skip / End / Close tour" button. |
 | `@closePopover` | `() => void` |  | Called when clicking outside or pressing Escape. |
+| `@anchor` |  |  | Attaches the popover to an element that is already in the page, given as a CSS selector, the element itself or a function returning it, instead of wrapping the default block (which is then not rendered). The popover appears once the element is found. |
+| `@zIndex` | `number` | the popover layer | `z-index` of the popover. |
+| `@footerAction` | `ComponentLike \| ComponentLike[]` |  | Replaces the "Skip tour" button in the footer: a component (use `(component …)`), or an array of components for up to two buttons. The `<:footerAction>` block wins when both are given. |
 | `@decoration` | `'beacon' \| 'none'` | `'beacon'` | `'beacon'` (a pulsing dot on the arrow) or `'none'`. |
 
 | Block | Description |
 | --- | --- |
-| default block | The element the step points at. |
+| default block | The element the step points at (unused with `@anchor`). |
 | `<:content>` | Markup for the step's content, instead of `@content`. |
 | `<:footerAction>` | Replaces the "Skip tour" button, e.g. with "Next" / "Back" buttons. |
 

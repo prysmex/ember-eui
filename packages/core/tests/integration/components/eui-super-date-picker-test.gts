@@ -153,7 +153,8 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     assert.dom('[data-test-subj="superDatePickerRefreshIntervalUnitsSelect"]', document.body).hasValue('m');
 
     await click(document.querySelector('[data-test-subj="superDatePickerToggleRefreshButton"]') as Element);
-    assert.deepEqual(changes, [{ refreshInterval: 120000, isPaused: false }]);
+    // Upstream always reports the units with the interval.
+    assert.deepEqual(changes, [{ refreshInterval: 120000, isPaused: false, intervalUnits: 'm' }]);
   });
 
   test('it calls @onRefresh every @refreshInterval while not paused', async function (assert) {

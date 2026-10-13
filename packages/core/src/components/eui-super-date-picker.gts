@@ -147,8 +147,7 @@ export interface EuiSuperDatePickerArgs {
    * The refresh interval's unit (`'s'`, `'m'` or `'h'`). By default it is
    * rounded up to the largest unit that fits (90 seconds become 2 minutes).
    * To keep the user's unit, store the `intervalUnits` `@onRefreshChange`
-   * receives and pass it back here. Passing this argument (even
-   * `undefined`) adds `intervalUnits` to `@onRefreshChange`'s payload.
+   * receives and pass it back here.
    */
   refreshIntervalUnits?: RefreshUnitsOptions;
   /**
@@ -384,15 +383,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
     return getEuiThemeContext(this);
   }
 
-  /**
-   * `intervalUnits` joins `@onRefreshChange`'s payload (upstream) when the
-   * caller passes `@refreshIntervalUnits`, so existing callers keep their
-   * `{ refreshInterval, isPaused }` payload.
-   */
-  get reportsIntervalUnits() {
-    return 'refreshIntervalUnits' in this.args;
-  }
-
   /** Upstream `renderTimeWindowButtons`: not with `@isAutoRefreshOnly`. */
   get timeWindowConfig(): EuiTimeWindowButtonsConfig | undefined {
     const { showTimeWindowButtons } = this.args;
@@ -436,11 +426,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
     intervalUnits: RefreshUnitsOptions;
   }) => {
     const { refreshInterval, isPaused, intervalUnits } = change;
-    this.args.onRefreshChange?.(
-      this.reportsIntervalUnits
-        ? { refreshInterval, isPaused, intervalUnits }
-        : { refreshInterval, isPaused }
-    );
+    this.args.onRefreshChange?.({ refreshInterval, isPaused, intervalUnits });
   };
 
   /** Upstream forces `auto` width when only the quick select shows. */
@@ -588,11 +574,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
               this.timeOptions.commonDurationRanges
             }}
             @recentlyUsedRanges={{@recentlyUsedRanges}}
-            @applyRefreshInterval={{unless
-              this.reportsIntervalUnits
-              @onRefreshChange
-            }}
-            @onRefreshChange={{if this.reportsIntervalUnits @onRefreshChange}}
+            @onRefreshChange={{@onRefreshChange}}
             @isPaused={{this.isPaused}}
             @refreshInterval={{this.refreshInterval}}
             @refreshMinInterval={{@refreshMinInterval}}

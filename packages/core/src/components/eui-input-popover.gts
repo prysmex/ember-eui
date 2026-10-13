@@ -5,6 +5,7 @@ import { hash } from '@ember/helper';
 import { action } from '@ember/object';
 
 import { focusTrap } from 'ember-focus-trap';
+import { modifier } from 'ember-modifier';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { not } from 'ember-truth-helpers';
 import { tabbable } from 'tabbable';
@@ -23,6 +24,46 @@ import EuiPopover from './eui-popover.gts';
 
 import type { EuiPopoverArgs } from './eui-popover';
 
+/**
+ * Upstream `closeOnScroll`: after a 500ms grace period (scroll events fire
+ * when the panel is appended), closes on a page scroll of an element that
+ * contains the input, ignoring scrolls inside the input or the panel.
+ */
+const closeOnScrollModifier = modifier(
+  (
+    _element: HTMLElement,
+    [enabled, panel, input, close]: [
+      boolean | undefined,
+      HTMLElement | null,
+      HTMLElement | null,
+      (() => void) | undefined
+    ]
+  ) => {
+    if (!enabled || !panel) return;
+
+    const onScroll = (event: Event) => {
+      const target = event.target as Node | null;
+
+      if (!input || !target) return;
+      if (panel.contains(target) || input.contains(target)) return;
+      if (!target.contains(input)) return;
+
+      close?.();
+    };
+    const timeoutId = setTimeout(() => {
+      window.addEventListener('scroll', onScroll, {
+        passive: true,
+        capture: true
+      });
+    }, 500);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll, { capture: true });
+      clearTimeout(timeoutId);
+    };
+  }
+);
+
 export interface EuiInputPopoverArgs
   extends Omit<EuiPopoverArgs, 'button' | 'buttonRef'> {
   /**
@@ -30,6 +71,11 @@ export interface EuiInputPopoverArgs
    * (Tab cycles through the popover, closing after its last element).
    */
   disableFocusTrap?: boolean;
+  /**
+   * Closes the popover when the page (or an element containing the input)
+   * scrolls. Defaults to `false`.
+   */
+  closeOnScroll?: boolean;
   /**
    * Stretches the input (and popover) to its container's width. Otherwise
    * the popover is at most the form max width (upstream). Defaults to
@@ -192,6 +238,22 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
         @display={{this.display}}
         @closePopover={{@closePopover}}
         @isOpen={{@isOpen}}
+        @repositionOnScroll={{@repositionOnScroll}}
+        @panelClassName={{@panelClassName}}
+        @panelStyle={{@panelStyle}}
+        @anchorClassName={{@anchorClassName}}
+        @zIndex={{@zIndex}}
+        @container={{@container}}
+        @buffer={{@buffer}}
+        @insert={{@insert}}
+        @hasArrow={{@hasArrow}}
+        @popoverScreenReaderText={{@popoverScreenReaderText}}
+        @ariaLabel={{@ariaLabel}}
+        @ariaLabelledBy={{@ariaLabelledBy}}
+        @popoverRef={{@popoverRef}}
+        @portalRef={{@portalRef}}
+        @onTrapDeactivation={{@onTrapDeactivation}}
+        @shouldAccountForOtherPopovers={{@shouldAccountForOtherPopovers}}
         ...attributes
       >
         <:button>
@@ -203,6 +265,12 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
           <div
             id={{id}}
             {{onKey "_all" this.onKeyDown}}
+            {{closeOnScrollModifier
+              @closeOnScroll
+              this.panel
+              this.input
+              @closePopover
+            }}
             {{focusTrap
               isActive=(not this.disableFocusTrap)
               focusTrapOptions=(hash

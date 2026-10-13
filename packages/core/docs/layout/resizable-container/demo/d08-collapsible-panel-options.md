@@ -6,7 +6,7 @@ order: 8
 
 <EuiText>
   <p>
-    A <strong>Panel</strong> marked as <EuiCode>@mode=&#123;&#123;array 'collapsible'&#125;&#125;</EuiCode> also accepts configuration options for the collapsible button by passing a second item in the array, in the form of <EuiCode>['collapsible', &#123; position: 'top' &#125;]</EuiCode>. Upstream also takes <EuiCode>className</EuiCode> and <EuiCode>data-test-subj</EuiCode> options here; Ember EUI only supports <EuiCode>position</EuiCode>.
+    A <strong>Panel</strong> marked as <EuiCode>@mode=&#123;&#123;array 'collapsible'&#125;&#125;</EuiCode> also accepts configuration options for the collapsible button by passing a second item in the array, in the form of <EuiCode>['collapsible', &#123; position: 'top' &#125;]</EuiCode>. That object also takes <EuiCode>className</EuiCode> and <EuiCode>data-test-subj</EuiCode> for the toggle button (upstream only passes on the test subject, although its types list the class too).
   </p>
 </EuiText>
 
@@ -38,7 +38,10 @@ export default class CollapsibleOptionsDemo extends Component {
     this.itemSelected = item;
   }
 
-  firstMode = ['collapsible', { position: 'top' }];
+  firstMode = [
+    'collapsible',
+    { position: 'top', className: 'docsCollapsibleToggle', 'data-test-subj': 'docsFirstPanelToggle' },
+  ];
   lastMode = ['collapsible', { position: 'bottom' }];
 
   <template>

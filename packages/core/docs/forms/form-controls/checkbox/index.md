@@ -52,6 +52,7 @@ A checkbox: a styled square over a visually hidden native
 | --- | --- | --- | --- |
 | `@checked` | `boolean` |  | Whether it is checked. Update it from `{{on "change" …}}`. |
 | `@disabled` | `boolean` |  | Disables the checkbox. |
+| `@readOnly` | `boolean` |  | Makes the checkbox read-only: it keeps its checked state, shows a default cursor and does not change colours on focus. Native `readonly` does not stop checkboxes from toggling, so clicks are cancelled (what React's controlled input does upstream when the state is not updated). |
 | `@indeterminate` | `boolean` |  | Shows the "partially checked" state, e.g. for a "select all" box. Sets the input's `indeterminate` property. |
 | `@label` | `string` |  | Label next to the checkbox. Use the `<:label>` block for markup. |
 | `@labelProps` | `{ className?: string; }` |  | Props for the `<label>`: `{ className }`. |

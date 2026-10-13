@@ -5,6 +5,7 @@ import { on } from '@ember/modifier';
 import { modifier } from 'ember-modifier';
 import { or } from 'ember-truth-helpers';
 
+import argOrDefault from '../helpers/arg-or-default.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -28,6 +29,18 @@ export interface EuiConfirmModalSignature {
   Args: {
     /** Title of the modal (an `<h1>`). Use the `<:title>` block for markup. */
     title?: string;
+    /**
+     * Attributes of the title element (upstream `titleProps`, which is
+     * spread onto it): `className`, `id` and `data-test-subj` (replacing
+     * the default `confirmModalTitleText`).
+     */
+    titleProps?: {
+      className?: string;
+      id?: string;
+      'data-test-subj'?: string;
+    };
+    /** Focus trap options, as `EuiModal`'s `@focusTrapProps` (`returnFocus`). */
+    focusTrapProps?: EuiModalSignature['Args']['focusTrapProps'];
     /** The question or explanation (a `<p>`), e.g. "This can't be undone.". */
     message?: string;
     /** Text of the cancel button. Required: there is no default text. */
@@ -120,11 +133,19 @@ export default class EuiConfirmModal extends Component<EuiConfirmModalSignature>
       @onClose={{@onCancel}}
       @maxWidth={{@maxWidth}}
       @initialFocus={{this.initialFocus}}
+      @focusTrapProps={{@focusTrapProps}}
       ...attributes
     >
       {{#if (or @title (has-block "title"))}}
         <EuiModalHeader>
-          <EuiModalHeaderTitle data-test-subj="confirmModalTitleText">
+          <EuiModalHeaderTitle
+            class={{@titleProps.className}}
+            id={{@titleProps.id}}
+            data-test-subj={{argOrDefault
+              @titleProps.data-test-subj
+              "confirmModalTitleText"
+            }}
+          >
             {{#if @title}}<h1>{{@title}}</h1>{{/if}}
             {{yield to="title"}}
           </EuiModalHeaderTitle>

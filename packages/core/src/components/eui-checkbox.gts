@@ -21,6 +21,16 @@ import EuiIcon from './eui-icon.gts';
 import type { CSSObject } from '@emotion/css/create-instance';
 import type { EuiBorealisContext } from '../utils/eui/theme.ts';
 
+const cancelWhenReadOnly = modifier(function cancelWhenReadOnly(
+  element: HTMLInputElement,
+  [readOnly]: [boolean?]
+) {
+  if (!readOnly) return;
+  const cancel = (event: Event) => event.preventDefault();
+  element.addEventListener('click', cancel);
+  return () => element.removeEventListener('click', cancel);
+});
+
 const indeterminateModifier = modifier(function invalidateIndeterminate(
   element: HTMLInputElement,
   [indeterminate]: [boolean?]
@@ -69,6 +79,14 @@ export interface EuiCheckboxSignature {
     checked?: boolean;
     /** Disables the checkbox. */
     disabled?: boolean;
+    /**
+     * Makes the checkbox read-only: it keeps its checked state, shows a
+     * default cursor and does not change colours on focus. Native
+     * `readonly` does not stop checkboxes from toggling, so clicks are
+     * cancelled (what React's controlled input does upstream when the state
+     * is not updated).
+     */
+    readOnly?: boolean;
     /**
      * Shows the "partially checked" state, e.g. for a "select all" box. Sets
      * the input's `indeterminate` property.
@@ -127,12 +145,13 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
 
     return {
       root: euiClass(context, reset, styles.euiCheckbox, this.args.css),
-      square: (hasLabel: unknown) =>
+      square: (hasLabel: unknown, readOnly: unknown) =>
         euiClass(
           context,
           reset,
           styles.input.euiCheckbox__square,
-          hasLabel ? styles.input.hasLabel : undefined
+          hasLabel ? styles.input.hasLabel : undefined,
+          readOnly ? styles.input.readOnly : undefined
         ),
       control: euiClass(
         context,
@@ -165,13 +184,16 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
         euiCheckableInputReset,
         styles.input.euiCheckbox__input
       ),
-      label: euiClass(
-        context,
-        reset,
-        styles.label.euiCheckbox__label,
-        styles.label.enabled,
-        { [LABEL_DISABLED]: styles.label.disabled }
-      )
+      label: (readOnly: unknown) =>
+        euiClass(
+          context,
+          reset,
+          styles.label.euiCheckbox__label,
+          styles.label.enabled,
+          { [LABEL_DISABLED]: styles.label.disabled },
+          // After the enabled cursor so it wins
+          readOnly ? styles.label.readOnly : undefined
+        )
     };
   }
 
@@ -191,7 +213,7 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
         }}
       >
         <div
-          class="euiCheckbox__square {{styles.square (or hasLabelBlock @label)}}"
+          class="euiCheckbox__square {{styles.square (or hasLabelBlock @label) @readOnly}}"
         >
           <span class="euiCheckboxControl {{styles.control}}">
             <EuiIcon
@@ -215,8 +237,10 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
             id={{id}}
             checked={{@checked}}
             disabled={{@disabled}}
+            readonly={{@readOnly}}
             name={{@name}}
             ...attributes
+            {{cancelWhenReadOnly @readOnly}}
             {{indeterminateModifier @indeterminate}}
             {{didInsert (optional @inputRef)}}
           />
@@ -225,7 +249,7 @@ export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
           <label
             class={{classNames
               "euiCheckbox__label"
-              styles.label
+              (styles.label @readOnly)
               @labelProps.className
             }}
             for={{id}}

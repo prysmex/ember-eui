@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
-import { schedule } from '@ember/runloop';
 
 import { modifier } from 'ember-modifier';
 
@@ -85,27 +84,16 @@ const onIf = modifier(
   }
 );
 
-/**
- * Shows a controlled `@value` in the field after the render: EuiFieldSearch
- * keeps its own text and only updates it from input events (updating it
- * from a changed `@value` during the render breaks its clear button when
- * the value becomes empty), so an `input` event carries the new text.
- */
-const syncValue = modifier((input: HTMLInputElement, [value]: [string | undefined]) => {
-  if (value === undefined || input.value === value) return;
-
-  schedule('afterRender', () => {
-    if (!input.isConnected || input.value === value) return;
-    input.value = value;
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-});
-
 export default class EuiSelectableSearch extends Component<EuiSelectableSearchSignature> {
   lastValue = this.args.value ?? this.args.defaultValue ?? '';
 
-  /** The field's initial text; later `@value` changes go through `syncValue`. */
+  /** The field's text without `@value`: the initial one. */
   initialValue = this.lastValue;
+
+  /** A controlled `@value` is the field's `@value`; it follows its changes. */
+  get fieldValue(): string {
+    return this.args.value ?? this.initialValue;
+  }
 
   /** The search as last reported, or as controlled by `@value`. */
   get currentValue(): string {
@@ -138,7 +126,7 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
     <EuiFieldSearch
       class="euiSelectableSearch"
       @placeholder={{@placeholder}}
-      @value={{this.initialValue}}
+      @value={{this.fieldValue}}
       @incremental={{true}}
       @fullWidth={{true}}
       @compressed={{if (isFalse @compressed) false true}}
@@ -158,7 +146,6 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
       data-test-subj={{@dataTestSubj}}
       ...attributes
       {{on "input" this.onInput}}
-      {{syncValue @value}}
       {{onIf "keydown" @onKeyDown}}
       {{onIf "click" @onClick}}
       {{onIf "focus" @onFocus}}

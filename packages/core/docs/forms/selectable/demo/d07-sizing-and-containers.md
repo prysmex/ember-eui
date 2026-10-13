@@ -224,6 +224,7 @@ export default class SelectableSizingDemo extends Component {
       <EuiInputPopover
         @closePopover={{this.closeInputPopover}}
         @disableFocusTrap={{true}}
+        @closeOnScroll={{true}}
         @isOpen={{this.isInputPopoverOpen}}
         @panelPaddingSize="none"
       >

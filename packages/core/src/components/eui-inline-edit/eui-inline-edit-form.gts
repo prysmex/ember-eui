@@ -7,6 +7,8 @@ import { service } from '@ember/service';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
+import argOrDefault from '../../helpers/arg-or-default.ts';
+import { not } from 'ember-truth-helpers';
 import { randomId } from '../../-private/random-id.ts';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import {
@@ -19,10 +21,13 @@ import EuiButtonIcon from '../eui-button-icon.gts';
 import EuiFieldText from '../eui-field-text.gts';
 import EuiFlexGroup from '../eui-flex-group.gts';
 import EuiFlexItem from '../eui-flex-item.gts';
+import EuiFormLabel from '../eui-form-label.gts';
 import EuiFormRow from '../eui-form-row.gts';
 import EuiSkeletonLoading from '../eui-skeleton-loading.gts';
 import EuiSkeletonRectangle from '../eui-skeleton-rectangle.gts';
 
+import type { ComponentLike } from '@glint/template';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type Owner from '@ember/owner';
 import type EuiI18n from '../../services/eui-i18n';
 import type { EuiCss } from '../../utils/eui/styles.ts';
@@ -77,9 +82,13 @@ export interface EuiInlineEditCommonArgs {
   /**
    * Upstream `readModeProps` for the read mode `EuiButtonEmpty`. Supported:
    * `onClick` (called after edit mode opens), `buttonRef`, `title`,
-   * `aria-describedby` (added to the instructions) and `data-test-subj`.
+   * `aria-describedby` (added to the instructions), `data-test-subj`,
+   * `color` (any `EuiButtonEmpty` color, defaults to `'text'`) and
+   * `iconSide` (`'left'` or `'right'`, defaults to `'right'`).
    */
   readModeProps?: {
+    color?: string;
+    iconSide?: 'left' | 'right';
     onClick?: (event: MouseEvent) => void;
     buttonRef?: (element: HTMLElement) => void;
     title?: string;
@@ -92,7 +101,8 @@ export interface EuiInlineEditCommonArgs {
    *   `data-test-subj`
    * - `inputProps`: `onChange`, `onKeyDown` (called after the inline edit's
    *   own handling), `inputRef`, `aria-describedby`, `name`, `maxLength`,
-   *   `data-test-subj`
+   *   `data-test-subj`, `readOnly`, `prepend` and `append` (text, shown in
+   *   an `EuiFormLabel`, or a component)
    * - `saveButtonProps` / `cancelButtonProps`: see `EuiInlineEditButtonProps`
    */
   editModeProps?: {
@@ -108,6 +118,9 @@ export interface EuiInlineEditCommonArgs {
       'aria-describedby'?: string;
       name?: string;
       maxLength?: number;
+      readOnly?: boolean;
+      prepend?: string | ComponentLike;
+      append?: string | ComponentLike;
       'data-test-subj'?: string;
     };
     saveButtonProps?: EuiInlineEditButtonProps;
@@ -136,6 +149,33 @@ export const MEDIUM_SIZE_FORM: EuiInlineEditSizes = {
   compressed: false,
   buttonSize: 'm'
 };
+
+/** A string `prepend`/`append` is a label (upstream), anything else a component. */
+const SideContent = <template>
+  {{#if (isString @content)}}
+    <EuiFormLabel class={{@class}} @for={{@inputId}}>{{asText @content}}</EuiFormLabel>
+  {{else if @content}}
+    {{#let (asComponent @content) as |Content|}}<Content />{{/let}}
+  {{/if}}
+</template> as TemplateOnlyComponent<{
+  Args: {
+    content?: string | ComponentLike;
+    class?: string;
+    inputId?: string;
+  };
+}>;
+
+function isString(value: unknown): boolean {
+  return typeof value === 'string';
+}
+
+function asText(value: unknown): string {
+  return String(value);
+}
+
+function asComponent(value: unknown): ComponentLike {
+  return value as ComponentLike;
+}
 
 export interface EuiInlineEditFormSignature {
   Element: HTMLDivElement;
@@ -394,6 +434,9 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
                 @compressed={{@sizes.compressed}}
                 @isInvalid={{@isInvalid}}
                 @isLoading={{@isLoading}}
+                @readOnly={{this.inputProps.readOnly}}
+                @isFakePrependBlock={{not this.inputProps.prepend}}
+                @isFakeAppendBlock={{not this.inputProps.append}}
                 @inputRef={{this.inputInserted}}
                 aria-label={{@inputAriaLabel}}
                 placeholder={{if @placeholder @placeholder}}
@@ -407,7 +450,22 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
                 aria-describedby={{this.editModeAriaDescribedBy}}
                 {{on "input" this.onInput}}
                 {{on "keydown" this.onKeyDown}}
-              />
+              >
+                <:prepend as |classes inputId|>
+                  <SideContent
+                    @content={{this.inputProps.prepend}}
+                    @class={{classes}}
+                    @inputId={{inputId}}
+                  />
+                </:prepend>
+                <:append as |classes inputId|>
+                  <SideContent
+                    @content={{this.inputProps.append}}
+                    @class={{classes}}
+                    @inputId={{inputId}}
+                  />
+                </:append>
+              </EuiFieldText>
             </EuiFormRow>
             <span id={{this.editModeDescribedById}} hidden>
               {{this.inputKeyboardInstructions}}
@@ -510,9 +568,9 @@ export default class EuiInlineEditForm extends Component<EuiInlineEditFormSignat
         </EuiFlexGroup>
       {{else}}
         <EuiButtonEmpty
-          @color="text"
+          @color={{argOrDefault this.readModeProps.color "text"}}
           @iconType={{unless @isReadOnly "pencil"}}
-          @iconSide="right"
+          @iconSide={{argOrDefault this.readModeProps.iconSide "right"}}
           @flush="both"
           @iconSize={{@sizes.iconSize}}
           @size={{@sizes.buttonSize}}

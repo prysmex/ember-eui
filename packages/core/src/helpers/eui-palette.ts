@@ -10,9 +10,14 @@ import {
   euiPaletteForStatus,
   euiPaletteForTemperature,
   euiPaletteGray,
+  euiPaletteGreen,
   euiPaletteNegative,
+  euiPaletteOrange,
   euiPalettePositive,
-  euiPaletteWarm
+  euiPaletteRed,
+  euiPaletteSkyBlue,
+  euiPaletteWarm,
+  euiPaletteYellow
 } from '../utils/color/eui_palettes.ts';
 
 import type { EuiPalette } from '../utils/color/eui_palettes.ts';
@@ -29,7 +34,12 @@ export const PALETTES = {
   euiPalettePositive,
   euiPaletteCool,
   euiPaletteWarm,
-  euiPaletteGray
+  euiPaletteGray,
+  euiPaletteRed,
+  euiPaletteGreen,
+  euiPaletteSkyBlue,
+  euiPaletteYellow,
+  euiPaletteOrange
 };
 
 export type palette_keys = keyof typeof PALETTES;

@@ -26,6 +26,11 @@ export default class ModalConfirmComponent extends Component {
   @tracked isModalVisible = false;
   @tracked isDestroyModalVisible = false;
 
+  // `@titleProps` puts attributes on the title element: here the id that
+  // `aria-labelledby` points at.
+  titleProps = { id: 'confirmModalTitle' };
+  destroyTitleProps = { id: 'destroyModalTitle' };
+
   @action
   showModal() {
     this.isModalVisible = true;
@@ -61,7 +66,9 @@ export default class ModalConfirmComponent extends Component {
   {{#if this.isModalVisible}}
     <EuiConfirmModal
       style="width: 600px"
+      aria-labelledby="confirmModalTitle"
       @title="Update subscription to Platinum?"
+      @titleProps={{this.titleProps}}
       @onCancel={{this.closeModal}}
       @onConfirm={{this.closeModal}}
       @cancelButtonText="Cancel"
@@ -78,7 +85,9 @@ export default class ModalConfirmComponent extends Component {
 
   {{#if this.isDestroyModalVisible}}
     <EuiConfirmModal
+      aria-labelledby="destroyModalTitle"
       @title="Discard dashboard changes?"
+      @titleProps={{this.destroyTitleProps}}
       @onCancel={{this.closeDestroyModal}}
       @onConfirm={{this.closeDestroyModal}}
       @cancelButtonText="Keep editing"

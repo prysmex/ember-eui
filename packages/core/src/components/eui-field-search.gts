@@ -5,7 +5,6 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
 import { and, not, or } from 'ember-truth-helpers';
 
@@ -105,9 +104,45 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
   lastSearched: string | null = null;
 
   @tracked inputElement: HTMLInputElement | null = null;
-  @tracked value: string | undefined =
-    this.args.value ||
-    (this.args.defaultValue ? `${this.args.defaultValue}` : '');
+
+  /**
+   * The text the user typed (or the clear button emptied). It is shown
+   * until `@value` changes, then the new `@value` wins: the field follows a
+   * controlled value without writing tracked state from a modifier during
+   * the render (which broke the clear button's `{{on "click" @clear}}` when
+   * the value became empty). `argVersion` counts the `@value` changes seen
+   * (plain fields: bumping it while reading is idempotent).
+   */
+  @tracked typed: string | undefined;
+  argVersion = 0;
+  seenArg: string | undefined = this.args.value;
+  typedAtVersion = 0;
+
+  get value(): string {
+    this.syncArgVersion();
+
+    if (this.typed !== undefined && this.typedAtVersion === this.argVersion) {
+      return this.typed;
+    }
+
+    return (
+      this.args.value ||
+      (this.args.defaultValue ? `${this.args.defaultValue}` : '')
+    );
+  }
+
+  syncArgVersion(): void {
+    if (this.args.value !== this.seenArg) {
+      this.seenArg = this.args.value;
+      this.argVersion++;
+    }
+  }
+
+  setTyped(value: string): void {
+    this.syncArgVersion();
+    this.typedAtVersion = this.argVersion;
+    this.typed = value;
+  }
 
   @argOrDefaultDecorator(false) incremental = false;
 
@@ -116,12 +151,12 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     const value = (e.target as HTMLInputElement).value;
 
     if (this.value !== value) {
-      this.value = value;
+      this.setTyped(value);
     }
 
     if (this.lastSearched === value) return;
     this.lastSearched = value;
-    this.args.onSearch?.(this.value);
+    this.args.onSearch?.(value);
   }
 
   @action
@@ -130,7 +165,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     onSearch: (value: string) => void,
     e: KeyboardEvent
   ): void {
-    this.value = (e.target as HTMLInputElement).value;
+    this.setTyped((e.target as HTMLInputElement).value);
 
     if (this.args.onKeyUp) {
       this.args.onKeyUp(e);
@@ -152,13 +187,8 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
   /** Keeps the text current for the clear button (e.g. after a paste). */
   @action
   trackValue(e: Event): void {
-    this.value = (e.target as HTMLInputElement).value;
+    this.setTyped((e.target as HTMLInputElement).value);
     this.lastSearched = null;
-  }
-
-  @action
-  didUpdateValue() {
-    this.value = this.args.value;
   }
 
   @action
@@ -199,7 +229,7 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
       this.inputElement.dispatchEvent(new Event('change'));
     }
 
-    this.value = '';
+    this.setTyped('');
 
     if (this.args.onSearch && this.incremental) {
       this.args.onSearch('');
@@ -288,7 +318,6 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
               {{on "search" this.setValue}}
               {{on "change" this.setValue}}
               {{didInsert this.didInsertInput}}
-              {{didUpdate this.didUpdateValue @value}}
               {{validatableControl @isInvalid}}
             />
           </:field>

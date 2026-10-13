@@ -67,6 +67,7 @@ need that; for plain text options `EuiSelect` is simpler and native.
 | `@itemClassName` | `string` |  | Extra classes for each option. |
 | `@name` | `string` |  | `name` of the hidden input, for forms. |
 | `@id` | `string` |  | `id` of the hidden input. Pass the same `@id` to the `EuiFormRow` so its label also labels the control. |
+| `@popoverProps` |  |  | Props of the underlying `EuiInputPopover` (upstream `popoverProps`), e.g. `repositionOnScroll` inside scrollable containers, `panelStyle` or `panelClassName`. `isOpen` is not accepted (use the top level `@isOpen`); `fullWidth` and `disableFocusTrap` are managed by the select. Its `className` is added to `euiSuperSelect`. |
 | `@onFocus` | `() => void` |  | Called when the list opens. |
 | `@onBlur` | `() => void` |  | Called when the list closes. |
 

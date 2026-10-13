@@ -12,6 +12,8 @@ order: 11
     for the content, <EuiCode>@borders="horizontal"</EuiCode> for top and bottom
     borders, and <EuiCode>@buttonProps</EuiCode> (e.g.
     <EuiCode>paddingSize</EuiCode>) for the trigger button.
+    The extra action only appears on hover or focus through a theme function
+    passed to its <EuiCode>@css</EuiCode>.
   </p>
   <p>
     We also recommend creating a fieldset/legend combination for better
@@ -27,8 +29,26 @@ import Component from '@glimmer/component';
 import { hash } from '@ember/helper';
 import { EuiAccordion, EuiButtonIcon, EuiFieldPassword, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiIcon, EuiSpacer, EuiText, EuiTextArea, EuiTextColor, EuiTitle, EuiToolTip } from '@ember-eui/core/components';
 
+// Custom trigger button CSS
+const buttonCss = {
+  '&:hover': { textDecoration: 'none' },
+};
+
+// Custom CSS to make the extra action only appear on hover or focus. Useful
+// if there are multiple accordions in a row, to reduce visual overwhelm. A
+// theme function: `@css` resolves it against the nearest theme.
+const extraActionCss = ({ euiTheme }) => ({
+  opacity: 0,
+  '&:focus, .euiAccordion:hover &': { opacity: 1 },
+  '@media (prefers-reduced-motion: no-preference)': {
+    transition: `opacity ${euiTheme.animation.normal} ${euiTheme.animation.resistance}`,
+  },
+});
+
 export default class AccordionFormsComponent extends Component {
   accordions = ['formAccordion-first', 'formAccordion-second'];
+  buttonCss = buttonCss;
+  extraActionCss = extraActionCss;
 
   <template>
   {{#each this.accordions as |accordion|}}
@@ -36,7 +56,7 @@ export default class AccordionFormsComponent extends Component {
       @id={{accordion}}
       @element="fieldset"
       @borders="horizontal"
-      @buttonProps={{hash paddingSize="m"}}
+      @buttonProps={{hash paddingSize="m" css=this.buttonCss}}
       @extraAction={{true}}
       @paddingSize="l"
     >
@@ -96,6 +116,7 @@ export default class AccordionFormsComponent extends Component {
           <EuiButtonIcon
             @iconType="cross"
             @color="danger"
+            @css={{this.extraActionCss}}
             aria-label="Delete"
           />
         </EuiToolTip>

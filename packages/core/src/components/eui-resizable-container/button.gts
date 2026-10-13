@@ -44,8 +44,16 @@ export interface EuiResizableButtonSignature {
      * it, `'before'`, `'after'` or `'both'` keep it from covering it.
      */
     accountForScrollbars?: 'before' | 'after' | 'both';
+    /**
+     * Standalone use (outside an `EuiResizableContainer`): `true` for a
+     * horizontal (x-axis) resizer, otherwise vertical. Inside a container
+     * its direction is used. Attach your own `{{on "mousedown" …}}`,
+     * `{{on "touchstart" …}}` and `{{on "keydown" …}}` modifiers (upstream's
+     * `onMouseDown`, `onTouchStart` and `onKeyDown` props).
+     */
+    isHorizontal?: boolean;
     /** @private The container, set by `EuiResizableContainer`. */
-    container: EuiResizableContainer;
+    container?: EuiResizableContainer;
   };
 }
 
@@ -74,19 +82,27 @@ export default class EuiResizableButton extends Component<EuiResizableButtonSign
     return this.args.id ?? this.ownId;
   }
 
-  get container(): EuiResizableContainer {
+  get container(): EuiResizableContainer | undefined {
     return this.args.container;
   }
 
+  get isHorizontal(): boolean {
+    return this.container
+      ? this.container.isHorizontal
+      : Boolean(this.args.isHorizontal);
+  }
+
   get isDisabled(): boolean {
-    return Boolean(this.args.disabled || this.container.resizers[this.id]?.isDisabled);
+    return Boolean(
+      this.args.disabled || this.container?.resizers[this.id]?.isDisabled
+    );
   }
 
   @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiResizableButtonStyles);
-    const direction = this.container.isHorizontal ? 'horizontal' : 'vertical';
+    const direction = this.isHorizontal ? 'horizontal' : 'vertical';
     const indicator = this.args.indicator ?? 'handle';
 
     return `euiResizableButton ${euiClass(
@@ -102,7 +118,7 @@ export default class EuiResizableButton extends Component<EuiResizableButtonSign
   }
 
   get label(): string {
-    return this.container.isHorizontal
+    return this.isHorizontal
       ? this.euiI18n.lookupToken(
           'euiResizableButton.horizontalResizerAriaLabel',
           'Press the left or right arrow keys to adjust panels size'
@@ -120,18 +136,42 @@ export default class EuiResizableButton extends Component<EuiResizableButtonSign
 
   @action
   onFocus(): void {
-    this.container.onResizerFocus(this.id);
+    this.container?.onResizerFocus(this.id);
+  }
+
+  @action
+  onBlur(): void {
+    this.container?.onResizerBlur();
+  }
+
+  @action
+  onMouseDown(event: MouseEvent | TouchEvent): void {
+    this.container?.onResizerMouseDown(event);
+  }
+
+  @action
+  onKeyDown(event: KeyboardEvent): void {
+    this.container?.onResizerKeyDown(event);
+  }
+
+  @action
+  onKeyUp(event: KeyboardEvent): void {
+    this.container?.onResizerKeyUp(event);
   }
 
   register = modifier(() => {
+    const container = this.container;
+
+    if (!container) return;
+
     const id = this.id;
 
     // after rendering: registering updates the container's state
     schedule('afterRender', () =>
-      this.container.registerResizer({ id, isFocused: false, isDisabled: this.args.disabled ?? false })
+      container.registerResizer({ id, isFocused: false, isDisabled: this.args.disabled ?? false })
     );
 
-    return () => schedule('afterRender', () => this.container.deregisterResizer(id));
+    return () => schedule('afterRender', () => container.deregisterResizer(id));
   });
 
   <template>
@@ -145,11 +185,11 @@ export default class EuiResizableButton extends Component<EuiResizableButtonSign
       {{this.register}}
       {{on "click" this.focusSelf}}
       {{on "focus" this.onFocus}}
-      {{on "blur" this.container.onResizerBlur}}
-      {{on "mousedown" this.container.onResizerMouseDown}}
-      {{on "touchstart" this.container.onResizerMouseDown}}
-      {{on "keydown" this.container.onResizerKeyDown}}
-      {{on "keyup" this.container.onResizerKeyUp}}
+      {{on "blur" this.onBlur}}
+      {{on "mousedown" this.onMouseDown}}
+      {{on "touchstart" this.onMouseDown}}
+      {{on "keydown" this.onKeyDown}}
+      {{on "keyup" this.onKeyUp}}
       ...attributes
     ></button>
   </template>

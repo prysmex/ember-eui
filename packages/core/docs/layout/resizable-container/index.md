@@ -31,6 +31,10 @@ or `'200px'`) stops a panel from getting smaller.
   from elsewhere.
 - For controlled sizes, set `@size` on the panels and update it from
   `@onPanelWidthChange`, which gets `{ [panelId]: percent }`.
+- `EuiResizableButton` also works on its own, outside a container: pass
+  `@isHorizontal` and attach your own `{{on "mousedown"}}`,
+  `{{on "touchstart"}}` and `{{on "keydown"}}` modifiers (see "Custom resize
+  logic").
 
 </EuiText>
 
@@ -76,7 +80,7 @@ percent of the container.
 | `@size` | `number` |  | Controlled size in percent (update it from `@onPanelWidthChange`). |
 | `@minSize` | `string` | `'0px'` | Smallest size, e.g. `'20%'` or `'200px'`. |
 | `@scrollable` | `boolean` | `true` | Scrolls its content when it overflows. |
-| `@mode` | `Mode` |  | `'collapsible'` (with a toggle button, next to a `'main'` panel), `'main'`, or `['collapsible', { position }]` to place the toggle (`'top'`, `'middle'`, `'bottom'`). |
+| `@mode` | `Mode` |  | `'collapsible'` (with a toggle button, next to a `'main'` panel), `'main'`, or `['collapsible', { position, className, 'data-test-subj' }]` to place the toggle (`'top'`, `'middle'`, `'bottom'`) and to give it a class and a `data-test-subj`. |
 | `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding inside the panel: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@wrapperPadding` | `'none' \| 's' \| 'm' \| 'l'` | `'none'` | Padding around the panel: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@color` |  | `'transparent'` | Background, any `EuiPanel` color. |
@@ -103,6 +107,7 @@ use the arrow keys.
 | `@indicator` | `'handle' \| 'border'` | `'handle'` | The resize indicator: `'handle'` (two short grab lines that grow into one line on hover and focus) or `'border'` (a full-length 1px line). |
 | `@alignIndicator` | `'center' \| 'start' \| 'end'` | `'center'` | Where the `'handle'` indicator sits along the button: `'center'`, `'start'` or `'end'`. |
 | `@accountForScrollbars` | `'before' \| 'after' \| 'both'` |  | The button overlaps its neighbours by half its size on both sides by default, so it takes no room. When a panel shows a scrollbar next to it, `'before'`, `'after'` or `'both'` keep it from covering it. |
+| `@isHorizontal` | `boolean` |  | Standalone use (outside an `EuiResizableContainer`): `true` for a horizontal (x-axis) resizer, otherwise vertical. Inside a container its direction is used. Attach your own `{{on "mousedown" …}}`, `{{on "touchstart" …}}` and `{{on "keydown" …}}` modifiers (upstream's `onMouseDown`, `onTouchStart` and `onKeyDown` props). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 

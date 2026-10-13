@@ -7,6 +7,7 @@ import { service } from '@ember/service';
 
 import { modifier } from 'ember-modifier';
 
+import argOrDefault from '../helpers/arg-or-default.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
@@ -20,6 +21,7 @@ import EuiInputPopover from './eui-input-popover.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 import EuiSuperSelectControl from './eui-super-select-control.gts';
 
+import type { EuiInputPopoverArgs } from './eui-input-popover';
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiBorealisContext } from '../utils/eui/theme.ts';
@@ -108,6 +110,16 @@ export interface EuiSuperSelectSignature {
      * so its label also labels the control.
      */
     id?: string;
+    /**
+     * Props of the underlying `EuiInputPopover` (upstream `popoverProps`),
+     * e.g. `repositionOnScroll` inside scrollable containers, `panelStyle`
+     * or `panelClassName`. `isOpen` is not accepted (use the top level
+     * `@isOpen`); `fullWidth` and `disableFocusTrap` are managed by the
+     * select. Its `className` is added to `euiSuperSelect`.
+     */
+    popoverProps?: Partial<Omit<EuiInputPopoverArgs, 'isOpen'>> & {
+      className?: string;
+    };
     /** Called when the list opens. */
     onFocus?: () => void;
     /** Called when the list closes. */
@@ -401,10 +413,36 @@ export default class EuiSuperSelect extends Component<EuiSuperSelectSignature> {
 
   <template>
     <EuiInputPopover
-      class="euiSuperSelect"
+      class="euiSuperSelect {{@popoverProps.className}}"
       @isOpen={{this.isOpen}}
       @closePopover={{this.closePopover}}
-      @panelPaddingSize="none"
+      @panelPaddingSize={{argOrDefault @popoverProps.panelPaddingSize "none"}}
+      @anchorPosition={{@popoverProps.anchorPosition}}
+      @attachToAnchor={{@popoverProps.attachToAnchor}}
+      @display={{@popoverProps.display}}
+      @offset={{@popoverProps.offset}}
+      @repositionToCrossAxis={{@popoverProps.repositionToCrossAxis}}
+      @closeOnScroll={{@popoverProps.closeOnScroll}}
+      @panelMinWidth={{@popoverProps.panelMinWidth}}
+      @onPanelResize={{@popoverProps.onPanelResize}}
+      @css={{@popoverProps.css}}
+      @panelCss={{@popoverProps.panelCss}}
+      @repositionOnScroll={{@popoverProps.repositionOnScroll}}
+      @panelClassName={{@popoverProps.panelClassName}}
+      @panelStyle={{@popoverProps.panelStyle}}
+      @anchorClassName={{@popoverProps.anchorClassName}}
+      @zIndex={{@popoverProps.zIndex}}
+      @container={{@popoverProps.container}}
+      @buffer={{@popoverProps.buffer}}
+      @insert={{@popoverProps.insert}}
+      @hasArrow={{@popoverProps.hasArrow}}
+      @popoverScreenReaderText={{@popoverProps.popoverScreenReaderText}}
+      @ariaLabel={{@popoverProps.ariaLabel}}
+      @ariaLabelledBy={{@popoverProps.ariaLabelledBy}}
+      @popoverRef={{@popoverProps.popoverRef}}
+      @portalRef={{@popoverProps.portalRef}}
+      @onTrapDeactivation={{@popoverProps.onTrapDeactivation}}
+      @shouldAccountForOtherPopovers={{@popoverProps.shouldAccountForOtherPopovers}}
       @fullWidth={{@fullWidth}}
       @disableFocusTrap={{true}}
       @initialFocus={{this.initialFocus}}

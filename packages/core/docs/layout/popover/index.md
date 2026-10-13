@@ -143,6 +143,7 @@ picker. Takes EuiPopover's args (`@isOpen`, `@closePopover`, …).
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@disableFocusTrap` | `boolean` | `false` (Tab cycles through the popover, closing after its last element) | Lets focus leave the popover; Tab then closes it. |
+| `@closeOnScroll` | `boolean` | `false` | Closes the popover when the page (or an element containing the input) scrolls. |
 | `@fullWidth` | `boolean` | `false` | Stretches the input (and popover) to its container's width. Otherwise the popover is at most the form max width (upstream). |
 | `@panelMinWidth` | `number` | `0` | Minimum width of the panel, when the input is narrower. |
 | `@onPanelResize` | `(width?: number) => void` |  | Called with the popover's new width when the input resizes. |

@@ -192,7 +192,12 @@ export interface EuiSelectableTemplateSitewideSignature {
      * The results are already filtered (e.g. by a server), so the search
      * does not filter them again. Defaults to `false`.
      */
-    isPreFiltered?: boolean;
+    isPreFiltered?: EuiSelectableSignature['Args']['isPreFiltered'];
+    /**
+     * Styles composed last into the selectable's class (upstream's `css`,
+     * part of the rest props spread onto `EuiSelectable`).
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /**
@@ -316,6 +321,12 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
   }
 
   /** `@searchProps` over the defaults; the handlers of `@onSearch` joined. */
+  /** Upstream's root styles, then the caller's `@css`. */
+  @cached
+  get rootCss(): EuiCss {
+    return this.args.css ? [this.styles.root, this.args.css] : this.styles.root;
+  }
+
   @cached
   get searchProps(): NonNullable<EuiSelectableTemplateSitewideSignature['Args']['searchProps']> {
     const searchProps = this.args.searchProps ?? {};
@@ -493,7 +504,7 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
       @isLoading={{@isLoading}}
       @isPreFiltered={{@isPreFiltered}}
       @searchProps={{this.searchProps}}
-      @css={{this.styles.root}}
+      @css={{this.rootCss}}
       @listProps={{this.listProps}}
       @onActiveOptionChange={{@onActiveOptionChange}}
       @optionMatcher={{@optionMatcher}}

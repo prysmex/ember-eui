@@ -436,6 +436,11 @@ module('Borealis selectable and suggest', function (hooks) {
     const s = el(root, '.search');
     const input = el(s, 'input');
     await focus(input);
+    // upstream: focusing the search makes no option current
+    assert.dom('.euiSelectableListItem-isFocused', s).doesNotExist('focusing the search picks nothing');
+    assert.dom(input).doesNotHaveAria('activedescendant');
+    await triggerKeyEvent(input, 'keydown', 'ArrowDown');
+    assert.dom(option(s, 'Apple')).hasClass('euiSelectableListItem-isFocused', 'the first arrow starts at the top');
     await triggerKeyEvent(input, 'keydown', 'ArrowDown');
     const active = el(s, '.euiSelectableListItem-isFocused');
     assert.dom(input).hasAria('activedescendant', active.id);

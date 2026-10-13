@@ -10,6 +10,8 @@ Buttons within a button group will automatically display a default browser toolt
 
 To instead display an `EuiToolTip` around your button(s), pass the `toolTipContent` property. You can also use `toolTipProps` to customize tooltip placement, title, and any other argument that `EuiToolTip` accepts.
 
+**Beta: showing tooltips on a disabled `EuiButtonGroup`.** If you need disabled buttons to show tooltips, add `@hasAriaDisabled={{true}}` to switch from the native to the custom disabled behavior, which keeps the buttons focusable (see "Disabled and focusable" above).
+
 </EuiText>
 
 ```gjs component
@@ -57,6 +59,16 @@ export default class DemoComponent extends Component {
         @options={{this.toggleButtons}}
         @idSelected={{this.toggleIdSelected}}
         @isDisabled={{this.disableButton}}
+        @onChange={{this.onChange}}
+      />
+    </EuiFormRow>
+    <EuiFormRow @label="With custom disabled behavior and tooltips" @fullWidth={{true}}>
+      <EuiButtonGroup
+        @legend="This is a group with tooltips"
+        @options={{this.toggleButtons}}
+        @idSelected={{this.toggleIdSelected}}
+        @isDisabled={{this.disableButton}}
+        @hasAriaDisabled={{true}}
         @onChange={{this.onChange}}
       />
     </EuiFormRow>

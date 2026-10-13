@@ -1,5 +1,6 @@
 import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
+import { modifier } from 'ember-modifier';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
@@ -124,6 +125,29 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
   get hasGroups(): boolean {
     return this.flattened.rows.some((row) => row.position === 0);
   }
+
+  /**
+   * ember-power-select attaches its mouse/touch handlers to the first list
+   * element only. Ours is replaced while `@search` loads (the list gives way
+   * to the loading message), so the new list had no handlers and clicking an
+   * option did nothing. Attach to every list element and detach on teardown.
+   */
+  setupHandlers = modifier((element: Element) => {
+    // ember-power-select's handler methods are private in its types
+    const base = this as unknown as {
+      _listElement?: Element;
+      _addHandlers(element: Element): void;
+      _removeHandlers(element: Element): void;
+    };
+
+    base._listElement = element;
+    base._addHandlers(element);
+
+    return () => {
+      base._removeHandlers(element);
+      if (base._listElement === element) base._listElement = undefined;
+    };
+  });
 
   _optionFromIndex(index: string) {
     const parts = index.split('.');

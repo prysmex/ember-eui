@@ -36,8 +36,7 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiInputPopover | `closeOnScroll` (selectable input popover demo leaves it out) |
 | EuiInlineEdit* | `readModeProps` color/iconSide, `inputProps` prepend/readOnly |
 | EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |
-| EuiSuperDatePicker | `updateButtonProps`, `customQuickSelectPanels`, `customQuickSelectRender`, `refreshIntervalUnits`, `showTimeWindowButtons`, `timeZoneDisplayProps`, `minDate`/`maxDate` |
-| EuiDatePickerRange | `inline`, `shadow` |
+| EuiSuperDatePicker | not in the audit, still missing: `isDisabled={ display }`, the pretty duration display (`showPrettyDuration`), `quickSelectButtonProps`, the auto refresh append button, `updateButtonProps` tooltip/`responsive` (see super-date-picker-handoff.md) |
 | EuiDatePicker | no calendar picker in core (flatpickr/pikaday packages) |
 
 ## Tables and data grid

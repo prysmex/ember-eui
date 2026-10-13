@@ -28,7 +28,10 @@ import EuiSwitch from '../../eui-switch.gts';
 import { INVALID_DATE, toRelativeStringFromParts } from '../utils/index.ts';
 import { parseRelativeParts } from '../utils/index.ts';
 
+import EuiTimeZoneDisplay from './eui-time-zone-display.gts';
+
 import type EuiI18n from '../../../services/eui-i18n';
+import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
 import type { TimeOptions } from '../utils/time-options.ts';
 import type { LocaleSpecifier } from 'moment';
 
@@ -49,6 +52,8 @@ interface RelativeTabArgs {
   labelPrefix: string;
   /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
+  /** Shows the time zone under the form (see `EuiTimeZoneDisplay`). */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
 }
 
 /** @private The "Relative" tab of the date popover. */
@@ -67,6 +72,7 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
 
   labelId = randomId();
   descriptionId = randomId();
+  timeZoneDescriptionId = randomId();
 
   /** Upstream pads the form with `useEuiPaddingCSS().s`. */
   @cached
@@ -211,6 +217,10 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
         @compressed={{true}}
         @value={{this.formattedValue}}
         @readOnly={{true}}
+        aria-describedby={{if
+          @timeZoneDisplayProps.timeZone
+          this.timeZoneDescriptionId
+        }}
       >
         <:prepend as |classes|>
           <EuiFormLabel id={{this.labelId}} class={{classes}}>
@@ -222,6 +232,12 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
         <p id={{this.descriptionId}}>{{this.description}}</p>
       </EuiScreenReaderOnly>
     </EuiForm>
+    <EuiTimeZoneDisplay
+      @id={{this.timeZoneDescriptionId}}
+      @timeZone={{@timeZoneDisplayProps.timeZone}}
+      @date={{@timeZoneDisplayProps.date}}
+      @customRender={{@timeZoneDisplayProps.customRender}}
+    />
     <EuiPopoverFooter @paddingSize="s">
       <EuiSwitch
         data-test-subj="superDatePickerRelativeDateRoundSwitch"

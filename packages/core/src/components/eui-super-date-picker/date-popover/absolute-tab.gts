@@ -17,7 +17,9 @@ import EuiFormLabel from '../../eui-form-label.gts';
 import EuiFormRow from '../../eui-form-row.gts';
 import EuiI18n from '../../eui-i18n.gts';
 import DatetimePicker from './datetime-picker.gts';
+import EuiTimeZoneDisplay from './eui-time-zone-display.gts';
 
+import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
 import type { LocaleSpecifier, Moment } from 'moment';
 
 interface AbsoluteTabArgs {
@@ -39,6 +41,12 @@ interface AbsoluteTabArgs {
   labelPrefix: string;
   /** UTC offset in minutes. */
   utcOffset?: number;
+  /** Earliest selectable day of the calendar. */
+  minDate?: Moment;
+  /** Latest selectable day of the calendar. */
+  maxDate?: Moment;
+  /** Shows the time zone under the form (see `EuiTimeZoneDisplay`). */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
 }
 
 /** @private The "Absolute" tab of the date popover. */
@@ -70,6 +78,7 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
   }
 
   labelId = randomId();
+  timeZoneDescriptionId = randomId();
 
   /** Upstream `euiAbsoluteTabDateForm`: the text input under the calendar. */
   @cached
@@ -139,6 +148,8 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
         @onChange={{this.handleChange}}
         @dateFormat={{@dateFormat}}
         @selected={{this.valueAsMoment}}
+        @minDate={{@minDate}}
+        @maxDate={{@maxDate}}
       />
       <EuiI18n
         @token="euiAbsoluteTab.dateFormatError"
@@ -156,6 +167,10 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
               >
                 <EuiFieldText
                   aria-labelledby={{this.labelId}}
+                  aria-describedby={{if
+                    @timeZoneDisplayProps.timeZone
+                    this.timeZoneDescriptionId
+                  }}
                   data-test-subj="superDatePickerAbsoluteDateInput"
                   @isInvalid={{this.isTextInvalid}}
                   @value={{this.textInputValue}}
@@ -174,6 +189,12 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
           </div>
         </Token>
       </EuiI18n>
+      <EuiTimeZoneDisplay
+        @id={{this.timeZoneDescriptionId}}
+        @timeZone={{@timeZoneDisplayProps.timeZone}}
+        @date={{@timeZoneDisplayProps.date}}
+        @customRender={{@timeZoneDisplayProps.customRender}}
+      />
     </div>
   </template>
 }

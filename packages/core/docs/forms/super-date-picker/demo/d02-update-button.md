@@ -8,11 +8,11 @@ order: 2
 
 When `@start` and `@end` change from interactions with **Quick select**, **Commonly used**, or **Recently used date ranges**, `@onTimeChange` will be immediately invoked. This is because these interactions set both `@start` and `@end` at the same time and are considered to be a complete change.
 
-When `@start` and `@end` change from interactions with the **Absolute**, **Relative**, and **Now** tabs, `@onTimeChange` will **not** be invoked. In these cases, `@onTimeChange` will be invoked when the user clicks the **Update** button. This is because the user may be changing the start and end time one after the other and the change is not complete until both are applied.
+When `@start` and `@end` change from interactions with the **Absolute**, **Relative**, and **Now** tabs, `@onTimeChange` will **not** be invoked. In these cases, `@onTimeChange` will be invoked when the user clicks the **Update** button. This gives users the ability to set both `@start` and `@end` before triggering `@onTimeChange`. Set `@showUpdateButton={{false}}` to immediately invoke `@onTimeChange` for all `@start` and `@end` changes.
 
 ### More configurations
 
-Instead of hiding completely, you can reduce the footprint of the update button to just an icon with `@showUpdateButton="iconOnly"`.
+Instead of hiding completely, you can reduce the footprint of the update button to just an icon with `@showUpdateButton="iconOnly"`. You can further configure the button using `@updateButtonProps`, like setting the `fill` to `false`.
 
 </EuiText>
 
@@ -31,9 +31,18 @@ import {
 export default class UpdateButtonDemo extends Component {
   @tracked showUpdateButton = true;
   @tracked showIconOnly = false;
+  @tracked showFill = true;
   @tracked isLoading = false;
   @tracked start = 'now-30m';
   @tracked end = 'now';
+
+  get updateButtonProps() {
+    return { fill: this.showFill };
+  }
+
+  get updateButtonHidden() {
+    return !this.showUpdateButton;
+  }
 
   get showUpdateButtonValue() {
     return this.showUpdateButton && this.showIconOnly ? 'iconOnly' : this.showUpdateButton;
@@ -67,6 +76,11 @@ export default class UpdateButtonDemo extends Component {
   }
 
   @action
+  toggleShowFill() {
+    this.showFill = !this.showFill;
+  }
+
+  @action
   toggleShowIconOnly() {
     this.showIconOnly = !this.showIconOnly;
   }
@@ -78,6 +92,14 @@ export default class UpdateButtonDemo extends Component {
           @label="Show update button"
           @onChange={{this.toggleShowApplyButton}}
           @checked={{this.showUpdateButton}}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSwitch
+          @label="Fill"
+          @onChange={{this.toggleShowFill}}
+          @checked={{this.showFill}}
+          @disabled={{this.updateButtonHidden}}
         />
       </EuiFlexItem>
       <EuiFlexItem @grow={{false}}>
@@ -97,6 +119,7 @@ export default class UpdateButtonDemo extends Component {
       @onTimeChange={{this.onTimeChange}}
       @onRefresh={{this.onRefresh}}
       @showUpdateButton={{this.showUpdateButtonValue}}
+      @updateButtonProps={{this.updateButtonProps}}
     />
     <EuiSpacer />
   </template>

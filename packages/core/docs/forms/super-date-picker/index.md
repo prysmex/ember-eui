@@ -59,6 +59,7 @@ Generated from the components' TypeScript signatures by
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@commonlyUsedRanges` | `DurationRange[]` | EUI's list (Today, This week, Last 15 minutes, …) | Ranges listed as "Commonly used" in the quick select popover: `[{ start: 'now/d', end: 'now/d', label: 'Today' }, …]`. |
+| `@customQuickSelectPanels` | `QuickSelectPanel[]` |  | Extra panels at the end of the quick select popover: `[{ title: 'My panel', content: MyPanel }]`. `content` is a component, rendered with `@applyTime`; call it with `{ start, end }` to apply a range (as a quick selection) and close the popover. |
 | `@dateFormat` | `string` | `'MMM D, YYYY @ HH:mm:ss.SSS'` | moment format for absolute dates. |
 | `@isAutoRefreshOnly` | `boolean` | `false` | Set isAutoRefreshOnly to true to limit the component to only display auto refresh content. |
 | `@isDisabled` | `boolean` | `false` | Disables the picker. |
@@ -72,12 +73,25 @@ Generated from the components' TypeScript signatures by
 | `@onTimeChange` (required) |  |  | Callback for when the time changes. |
 | `@recentlyUsedRanges` | `DurationRange[]` |  | Ranges listed as "Recently used" in the quick select popover (their `label`, or "start → end"). |
 | `@refreshInterval` | `Milliseconds` | `1000` | Refresh interval in milliseconds. |
+| `@refreshMinInterval` | `Milliseconds` | `0` | Minimum refresh interval in milliseconds: the refresh interval fields don't go below it. |
+| `@refreshIntervalUnits` | `RefreshUnitsOptions` |  | The refresh interval's unit (`'s'`, `'m'` or `'h'`). By default it is rounded up to the largest unit that fits (90 seconds become 2 minutes). To keep the user's unit, store the `intervalUnits` `@onRefreshChange` receives and pass it back here. Passing this argument (even `undefined`) adds `intervalUnits` to `@onRefreshChange`'s payload. |
 | `@start` | `ShortDate` | `'now-15m'` | Start of the range, as date math (`'now-15m'`, `'now/d'`) or an ISO date. |
 | `@end` | `ShortDate` | `'now'` | End of the range, like `@start`. |
+| `@minDate` | `Moment` |  | Earliest selectable date (a moment): earlier days are disabled in the calendar and a start before it makes the range invalid. |
+| `@maxDate` | `Moment` |  | Latest selectable date (a moment): later days are disabled in the calendar and an end after it makes the range invalid. |
 | `@timeFormat` | `string` | `'HH:mm'` | moment format for times in the date picker. |
 | `@utcOffset` | `number` |  | UTC offset in minutes for absolute dates, e.g. `-300`. |
 | `@showUpdateButton` | `boolean \| 'iconOnly'` | `true` | Set showUpdateButton to false to immediately invoke onTimeChange for all start and end changes; `'iconOnly'` shows a compact button. |
 | `@isQuickSelectOnly` | `boolean` |  | Hides the actual input reducing to just the quick select button. |
+| `@updateButtonProps` | `EuiSuperUpdateButtonProps` |  | Arguments for the update button: `{ fill, color, size, iconType, iconOnly, className, children, minWidth, 'data-test-subj' }` (`children` is a custom label). They win over the picker's own, e.g. `{ fill: false }`. |
+| `@showTimeWindowButtons` | `boolean \| EuiTimeWindowButtonsConfig` |  | Shows a button group next to the control to shift the time window back and forward and to zoom it out. `true`, or a configuration `{ showZoomOut, showZoomIn, showShiftArrows, zoomFactor }` (zoom in is off by default; `zoomFactor` defaults to `0.5`, also as `'50%'`). |
+| `@timeZoneDisplayProps` | `EuiTimeZoneDisplayProps` |  | Shows time zone information in the start/end popovers: `{ timeZone: 'America/Los_Angeles' }` (any IANA name, `'Browser'` or `'UTC'`), plus an optional reference `date` and a `customRender` component (`@nameDisplay`, `@utcOffset`, `@timeZoneName`). Informational only: dates are not converted. |
+| `@canRoundRelativeUnits` | `boolean` | `true` | By default relative values are rounded to the largest unit that fits (90 minutes show as "~ 2 hours ago"). `false` keeps the user's units. |
+| `@onFocus` | `(event: FocusEvent) => void` |  | Called when the start or end date button gets focus. |
+
+| Block | Description |
+| --- | --- |
+| `<:customQuickSelectRender>` | Replaces the quick select popover's content (upstream `customQuickSelectRender`). Yields the default panels as components (`quickSelect`, `commonlyUsedRanges`, `recentlyUsedRanges`, `refreshInterval`, `customQuickSelectPanels`) to re-order, omit or mix with your own content. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

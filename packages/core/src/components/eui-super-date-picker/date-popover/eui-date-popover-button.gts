@@ -19,6 +19,8 @@ import EuiDatePopoverContent from './eui-date-popover-content.gts';
 import type EuiI18n from '../../../services/eui-i18n';
 import type { EuiCss } from '../../../utils/eui/styles.ts';
 import type { EuiDatePopoverContentSignature } from './eui-date-popover-content';
+import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
+import type { Moment } from 'moment';
 
 interface EuiDatePopoverButtonArgs {
   /** Extra class(es). */
@@ -51,6 +53,16 @@ interface EuiDatePopoverButtonArgs {
   timeOptions?: EuiDatePopoverContentSignature['Args']['timeOptions'];
   /** Called with the new value. */
   onChange: EuiDatePopoverContentSignature['Args']['onChange'];
+  /** Earliest selectable day of the absolute tab's calendar. */
+  minDate?: Moment;
+  /** Latest selectable day of the absolute tab's calendar. */
+  maxDate?: Moment;
+  /** `false` keeps relative units as typed. Defaults to `true`. */
+  canRoundRelativeUnits?: boolean;
+  /** Shows the time zone in the absolute and relative tabs. */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
+  /** Called when the button gets focus (upstream `buttonProps.onFocus`). */
+  onFocus?: (event: FocusEvent) => void;
   /**
    * Extra styles for the popover root (upstream passes the super date
    * picker's range input styles this way).
@@ -92,9 +104,12 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
       this.dateFormat,
       roundUp,
       locale,
-      this.euiI18n
+      this.euiI18n,
+      this.args.canRoundRelativeUnits ?? true
     );
   }
+
+  onFocus = (event: FocusEvent) => this.args.onFocus?.(event);
 
   get timeOptions() {
     return this.args.timeOptions || useI18nTimeOptions(this.euiI18n);
@@ -208,6 +223,7 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
             data-test-subj="superDatePicker{{this.position}}DatePopoverButton"
             ...attributes
             {{on "click" (set this "isOpen" (not this.isOpen))}}
+            {{on "focus" this.onFocus}}
           >
             {{this.formattedValue}}
           </button>
@@ -225,6 +241,10 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
           @utcOffset={{@utcOffset}}
           @timeOptions={{this.timeOptions}}
           @onChange={{@onChange}}
+          @minDate={{@minDate}}
+          @maxDate={{@maxDate}}
+          @canRoundRelativeUnits={{@canRoundRelativeUnits}}
+          @timeZoneDisplayProps={{@timeZoneDisplayProps}}
         />
       </:content>
     </EuiPopover>

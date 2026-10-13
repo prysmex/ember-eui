@@ -77,7 +77,8 @@ application template, then show toasts from anywhere:
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@dismissToast` |  |  | Called when a toast is dismissed (its close button or its time ran out, after the fade out), before it is removed from the `euiToaster` service. "Clear all" calls it for every toast. |
+| `@toasts` | `EuiGlobalToast[]` |  | The toasts to show, as data (upstream's `toasts`). Without it, the list shows the toasts of the `euiToaster` service. The list never changes this array: remove a toast from it in `@dismissToast`. |
+| `@dismissToast` |  |  | Called when a toast is dismissed (its close button or its time ran out, after the fade out). With `@toasts`, remove the toast from the array here; without it, the toast is then removed from the `euiToaster` service. "Clear all" calls it for every toast. |
 | `@toastLifeTimeMs` (required) | `number` |  | How long toasts stay, in ms, unless a toast sets its own `toastLifeTimeMs`. Hovering or focusing the list pauses the timers. Each toast's highlight bar counts this time down. |
 | `@side` | `EuiToastSide` | `'right'` | Which side of the browser window the toasts appear on: `'right'` or `'left'`. Below the `m` breakpoint the list spans the window. |
 | `@showClearAllButtonAt` | `number \| false` | `3` | Shows a "Clear all" button once there are at least this many toasts; `0` (or `false`) hides it. |
@@ -94,7 +95,8 @@ EuiGlobalToastList rather than rendered directly.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@title` | `string` |  | The title of the toast. |
-| `@body` | `string \| EuiRenderNodeType` |  | The body of the toast (markdown with `useMarkdownFormat`); upstream calls it `text`. Text, or a component for rich content (a template-only component or `(component Foo arg=…)`), e.g. from the `euiToaster` service, which cannot pass blocks. Markdown needs text. |
+| `@body` | `string \| EuiRenderNodeType` |  | The body of the toast (markdown with `useMarkdownFormat`), also accepted as upstream's `text`. Text, or a component for rich content (a template-only component or `(component Foo arg=…)`), e.g. from the `euiToaster` service, which cannot pass blocks. Markdown needs text. |
+| `@text` | `string \| EuiRenderNodeType` |  | Same as `body`, under upstream's name; `body` wins when both are set. |
 | `@color` | `EuiToastColor \| 'none'` | `'primary'` | `'primary'`, `'success'`, `'warning'` or `'danger'`: the highlight bar and default icon. `'none'` (Ember only) renders a neutral toast without a highlight or default icon. |
 | `@iconType` |  |  | Icon before the content, e.g. `'check'` or `'warning'`, colored like the highlight. Without it, a notification icon matching `@color` is shown. |
 | `@onClose` | `() => void` |  | Shows a dismiss (cross) button calling this function. |

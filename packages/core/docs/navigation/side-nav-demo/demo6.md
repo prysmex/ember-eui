@@ -92,7 +92,7 @@ export default class DemoComponent extends Component {
     <EuiSideNav
       @mobileTitle='Mobile Title'
       @heading='Title'
-      @isOpenMobile={{true}}
+      @isOpenOnMobile={{true}}
       @items={{this.sideNavItems}}
       @selectedItem={{this.selectedItem}}
       @truncate={{true}}
@@ -101,7 +101,7 @@ export default class DemoComponent extends Component {
 
     <EuiSpacer />
     <EuiSideNav
-      @isOpenMobile={{true}}
+      @isOpenOnMobile={{true}}
       @items={{this.sideNavItems}}
       @selectedItem={{this.selectedItem}}
       @truncate={{true}}

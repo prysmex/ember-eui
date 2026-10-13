@@ -45,6 +45,7 @@ A list of `EuiListGroupItem`s, e.g. navigation links in a side bar.
 | `@maxWidth` | `boolean \| string \| number` | `true` | Limits the list's width: `true` for upstream's default (the form max width, 400px), `false` for none, or any CSS width (numbers are pixels). |
 | `@listItems` | `EuiListGroupListItem[]` |  | Items to display, as objects of `EuiListGroupItem` args. When there are any, they are rendered instead of the block's content. |
 | `@showToolTips` | `boolean` |  | Shows a tooltip on all items (an item's own `showToolTip` wins). |
+| `@ariaLabelledby` | `string` |  | Id of the element labelling the list (its `aria-labelledby`). |
 | `@bordered` | `boolean` |  | Adds a rounded border around the list. |
 | `@color` | `string` | `'text'` | Default `@color` of the items in the block: `'text'`, `'primary'` or `'subdued'`. An item's own `@color` wins. |
 | `@wrapText` | `boolean` |  | Default `wrapText` of the `@listItems`. As upstream, it does not reach the `EuiListGroupItem`s of the block (set their own `@wrapText`). |
@@ -65,6 +66,10 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@prependClass` (required) | `string` |  |  |
 | `@textClass` (required) | `string` |  |  |
 | `@iconType` |  |  |  |
+| `@iconProps` | `EuiListGroupItemIconProps` |  |  |
+| `@iconCss` | `EuiCss` |  |  |
+| `@icon` | `ComponentLike<{ Element: Element }>` |  |  |
+| `@iconClass` | `string` |  |  |
 | `@title` | `string` |  |  |
 | `@showExternal` (required) | `boolean` |  |  |
 | `@newTab` (required) | `boolean` |  |  |
@@ -88,6 +93,8 @@ the `pinned` flags; `@onPinClick` is called with the clicked item.
 | `@maxWidth` |  | `true` | Limits the list's width: `true` for EUI's default (400px), `false` for none, or a CSS width. |
 | `@color` | `EuiListGroupItemColor` | `'text'` | Color of the items: `'text'`, `'primary'` or `'subdued'`. |
 | `@wrapText` | `boolean` |  | Wraps long item text instead of truncating it. |
+| `@showToolTips` | `boolean` |  | Shows a tooltip with the label on every item. |
+| `@ariaLabelledby` | `string` |  | Id of the element labelling the list (its `aria-labelledby`). |
 
 Deprecated: `@flush` (Has no effect: latest EUI lists have no padding.); `@gutterSize` (Has no effect: latest EUI lists have no item gutters.); `@size` (Has no effect: latest EUI list items have one size.).
 

@@ -7,13 +7,15 @@ import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiPinnableListGroupItemExtraActionStyles } from '../utils/eui/styles.generated.ts';
 import EuiListGroup from './eui-list-group.gts';
 import EuiListGroupItem from './eui-list-group-item.gts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiListGroupSignature } from './eui-list-group';
 import type {
   EuiListGroupItemColor,
-  EuiListGroupItemExtraActionProps
+  EuiListGroupItemExtraActionProps,
+  EuiListGroupItemSignature
 } from './eui-list-group-item';
 import type { CSSInterpolation } from '@emotion/css/create-instance';
 import type { ComponentLike } from '@glint/template';
@@ -41,6 +43,24 @@ export interface EuiPinnableListGroupItem {
   wrapText?: boolean;
   /** Class for the item. */
   className?: string;
+  /** `rel` of the link. */
+  rel?: string;
+  /** Shows the external link icon; defaults to `true` for `_blank`. */
+  external?: boolean;
+  /** Custom icon component, see `EuiListGroupItem`'s `@icon`. */
+  icon?: EuiListGroupItemSignature['Args']['icon'];
+  /** Args of the icon, see `EuiListGroupItem`'s `@iconProps`. */
+  iconProps?: EuiListGroupItemSignature['Args']['iconProps'];
+  /** Keeps a disabled item focusable with `aria-disabled`. */
+  hasAriaDisabled?: boolean;
+  /** Color of the item; defaults to the list's `@color`. */
+  color?: EuiListGroupItemSignature['Args']['color'];
+  /** Shows a tooltip; defaults to the list's `@showToolTips`. */
+  showToolTip?: boolean;
+  /** Text of the tooltip; defaults to the label. */
+  toolTipText?: string;
+  /** `EuiToolTip` args for the tooltip. */
+  toolTipProps?: EuiListGroupItemSignature['Args']['toolTipProps'];
   /**
    * The item's own extra action; when set, no pin button is added (as
    * upstream).
@@ -82,8 +102,37 @@ export interface EuiPinnableListGroupSignature {
     color?: EuiListGroupItemColor;
     /** Wraps long item text instead of truncating it. */
     wrapText?: boolean;
+    /** Shows a tooltip with the label on every item. */
+    showToolTips?: boolean;
+    /** Id of the element labelling the list (its `aria-labelledby`). */
+    ariaLabelledby?: string;
   };
 }
+
+/** Item keys that are `EuiListGroupItem` args (the rest become attributes). */
+const ITEM_ARGS = [
+  'label',
+  'href',
+  'onClick',
+  'iconType',
+  'icon',
+  'iconProps',
+  'isActive',
+  'isDisabled',
+  'hasAriaDisabled',
+  'pinned',
+  'pinnable',
+  'target',
+  'rel',
+  'external',
+  'wrapText',
+  'extraAction',
+  'color',
+  'showToolTip',
+  'toolTipText',
+  'toolTipProps',
+  'size'
+] as const;
 
 export default class EuiPinnableListGroup extends Component<EuiPinnableListGroupSignature> {
   @service declare euiI18n: EuiI18n;
@@ -153,6 +202,8 @@ export default class EuiPinnableListGroup extends Component<EuiPinnableListGroup
       @maxWidth={{@maxWidth}}
       @color={{@color}}
       @wrapText={{@wrapText}}
+      @showToolTips={{@showToolTips}}
+      @ariaLabelledby={{@ariaLabelledby}}
       ...attributes
     >
       {{#each @listItems as |item|}}
@@ -161,12 +212,22 @@ export default class EuiPinnableListGroup extends Component<EuiPinnableListGroup
           @label={{item.label}}
           @href={{item.href}}
           @target={{item.target}}
+          @rel={{item.rel}}
+          @external={{item.external}}
           @onClick={{item.onClick}}
           @iconType={{item.iconType}}
+          @icon={{item.icon}}
+          @iconProps={{item.iconProps}}
           @isActive={{item.isActive}}
           @isDisabled={{item.isDisabled}}
+          @hasAriaDisabled={{item.hasAriaDisabled}}
           @wrapText={{this.itemWrapText item}}
           @extraAction={{this.extraAction item}}
+          @color={{item.color}}
+          @showToolTip={{item.showToolTip}}
+          @toolTipText={{item.toolTipText}}
+          @toolTipProps={{item.toolTipProps}}
+          {{spreadAttributes item ITEM_ARGS}}
         />
       {{/each}}
     </EuiListGroup>

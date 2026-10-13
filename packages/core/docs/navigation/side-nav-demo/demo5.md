@@ -71,7 +71,7 @@ export default class DemoComponent extends Component {
       aria-label="Emphasized side nav example"
       @mobileTitle="Navigate within $APP_NAME"
       @toggleOpenOnMobile={{this.toggleOpenOnMobile}}
-      @isOpenMobile={{this.isSideNavOpenOnMobile}}
+      @isOpenOnMobile={{this.isSideNavOpenOnMobile}}
       @items={{this.sideNav}}
       style="width: 192px; overflow: hidden"
     />

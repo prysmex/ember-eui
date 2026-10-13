@@ -108,8 +108,18 @@ export interface EuiSideNavSignature {
      * Defaults to `['xs', 's']`; pass `[]` to never collapse.
      */
     mobileBreakpoints?: EuiHideForSignature['Args']['sizes'];
-    /** Whether the collapsed (mobile) nav is open. */
+    /**
+     * Whether the collapsed (mobile) nav is open; flip it in
+     * `@toggleOpenOnMobile`.
+     */
+    isOpenOnMobile?: boolean;
+    /** @deprecated Use `@isOpenOnMobile` (upstream's name). */
     isOpenMobile?: boolean;
+    /**
+     * Truncates the names of all items to one line (`false` wraps them). An
+     * item's own `truncate` wins. Items truncate by default.
+     */
+    truncate?: boolean;
     /** Called by the mobile toggle button with the new open state. */
     toggleOpenOnMobile?: (isOpen: boolean) => void;
     /** Heading above the items (and the toggle text on mobile). */
@@ -182,8 +192,12 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
     return Boolean(this.args.headingProps?.screenReaderOnly);
   }
 
+  get isOpenOnMobile(): boolean {
+    return Boolean(this.args.isOpenOnMobile ?? this.args.isOpenMobile);
+  }
+
   get classes(): string {
-    return this.args.isOpenMobile
+    return this.isOpenOnMobile
       ? 'euiSideNav euiSideNav-isOpenMobile'
       : 'euiSideNav';
   }
@@ -223,7 +237,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
       this.context,
       { boxSizing: 'border-box' },
       content.euiSideNav__mobileContent,
-      this.args.isOpenMobile ? content.open : content.hidden
+      this.isOpenOnMobile ? content.open : content.hidden
     )}`;
   }
 
@@ -270,11 +284,11 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                 @iconType="apps"
                 @iconSide="right"
                 aria-controls={{this.contentId}}
-                aria-expanded={{if @isOpenMobile "true" "false"}}
+                aria-expanded={{if this.isOpenOnMobile "true" "false"}}
                 aria-label={{this.mobileToggleAriaLabel}}
                 {{on
                   "click"
-                  (fn (optional @toggleOpenOnMobile) (not @isOpenMobile))
+                  (fn (optional @toggleOpenOnMobile) (not this.isOpenOnMobile))
                 }}
               >
                 {{#unless this.headingScreenReaderOnly}}
@@ -305,6 +319,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                   @depth={{0}}
                   @disabled={{item.disabled}}
                   @truncate={{item.truncate}}
+                  @navTruncate={{@truncate}}
                   @emphasize={{item.emphasize}}
                   @buttonClassName={{item.buttonClassName}}
                   @childrenOnly={{false}}
@@ -368,6 +383,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                 @depth={{0}}
                 @disabled={{item.disabled}}
                 @truncate={{item.truncate}}
+                @navTruncate={{@truncate}}
                 @emphasize={{item.emphasize}}
                 @buttonClassName={{item.buttonClassName}}
                 @childrenOnly={{false}}

@@ -53,8 +53,10 @@ export interface EuiSideNavItemSignature {
     renderItem?: EuiSideNavRenderItem;
     /** Disables the item. */
     disabled?: boolean;
-    /** Truncates a long name. Defaults to `true`. */
+    /** Truncates a long name. Defaults to `@navTruncate`, else `true`. */
     truncate?: boolean;
+    /** The side nav's `@truncate`, passed down to children. */
+    navTruncate?: boolean;
     /** Bolder style with a background band. */
     emphasize?: boolean;
     /** Class for the item's button or link. */
@@ -231,7 +233,7 @@ export default class EuiSideNavItem extends Component<EuiSideNavItemSignature> {
   }
 
   get truncate(): boolean {
-    return this.args.truncate ?? true;
+    return this.args.truncate ?? this.args.navTruncate ?? true;
   }
 
   @cached
@@ -363,6 +365,7 @@ export default class EuiSideNavItem extends Component<EuiSideNavItemSignature> {
               @depth={{add this.depth 1}}
               @disabled={{item.disabled}}
               @truncate={{item.truncate}}
+              @navTruncate={{@navTruncate}}
               @emphasize={{item.emphasize}}
               @buttonClassName={{item.buttonClassName}}
               @childrenOnly={{this.isChildrenOnly item}}

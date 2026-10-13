@@ -3,6 +3,7 @@ import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
 import cssStyle from '../-private/css-style.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
@@ -13,7 +14,27 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 
+import type { CssProperties } from '../-private/css-style.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import type { CSSInterpolation } from '@emotion/css/create-instance';
+
+/**
+ * Upstream `descriptionProps` / `valueProps`: props of the description or
+ * value `<span>`.
+ */
+export interface EuiExpressionPartProps {
+  /** Extra class of the span. */
+  className?: string;
+  /** Styles composed last into the span's class (upstream `css`). */
+  css?: EuiCss;
+  /** Inline styles, as an object (`{ fontStyle: 'italic' }`). */
+  style?: CssProperties;
+  /** Other keys (`id`, `aria-*`, `data-*`, …) become attributes of the span. */
+  [attribute: string]: unknown;
+}
+
+/** Keys of a part's props that are not attributes. */
+const PART_ARGS = ['style'] as const;
 
 export const EXPRESSION_COLORS = [
   'subdued',
@@ -71,6 +92,13 @@ export interface EuiExpressionSignature {
     descriptionWidth?: number | string;
     /** `'break-word'` or `'truncate'` long values. Defaults to `'break-word'`. */
     textWrap?: 'break-word' | 'truncate';
+    /**
+     * Props of the description `<span>` (upstream `descriptionProps`):
+     * `className`, `css`, `style` (an object) and any attribute.
+     */
+    descriptionProps?: EuiExpressionPartProps;
+    /** Props of the value `<span>` (upstream `valueProps`), see `@descriptionProps`. */
+    valueProps?: EuiExpressionPartProps;
   };
   Blocks: {
     /** Markup for the description, instead of `@description`. */
@@ -125,13 +153,18 @@ export default class EuiExpression extends Component<EuiExpressionSignature> {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiExpressionDescriptionStyles);
 
-    return `euiExpression__description ${euiClass(
+    const props = this.args.descriptionProps;
+
+    return `euiExpression__description${
+      props?.className ? ` ${props.className}` : ''
+    } ${euiClass(
       context,
       styles.euiExpression__description,
       this.args.isInvalid ? styles.danger : styles[this.color],
       (this.args.uppercase ?? true) && styles.isUppercase,
       this.isTruncate && styles.truncate,
-      this.isColumns && styles.columns
+      this.isColumns && styles.columns,
+      props?.css
     )}`;
   }
 
@@ -140,11 +173,16 @@ export default class EuiExpression extends Component<EuiExpressionSignature> {
     const context = getEuiThemeContext(this);
     const styles = euiExpressionValueStyles;
 
-    return `euiExpression__value ${euiClass(
+    const props = this.args.valueProps;
+
+    return `euiExpression__value${
+      props?.className ? ` ${props.className}` : ''
+    } ${euiClass(
       context,
       styles.euiExpression__value,
       this.isTruncate && styles.truncate,
-      this.isColumns && styles.columns
+      this.isColumns && styles.columns,
+      props?.css
     )}`;
   }
 
@@ -157,10 +195,21 @@ export default class EuiExpression extends Component<EuiExpressionSignature> {
     return [styles.euiExpression__icon, this.isColumns && styles.columns];
   }
 
+  /** Upstream: the columns width, then `descriptionProps.style`. */
   get descriptionStyle() {
-    return this.isColumns
-      ? cssStyle({ flexBasis: this.args.descriptionWidth ?? '20%' })
-      : undefined;
+    const custom = this.args.descriptionProps?.style;
+    if (!this.isColumns && !custom) return undefined;
+    return cssStyle({
+      ...(this.isColumns
+        ? { flexBasis: this.args.descriptionWidth ?? '20%' }
+        : {}),
+      ...custom
+    });
+  }
+
+  get valueStyle() {
+    const custom = this.args.valueProps?.style;
+    return custom ? cssStyle(custom) : undefined;
   }
 
   <template>
@@ -174,6 +223,7 @@ export default class EuiExpression extends Component<EuiExpressionSignature> {
         <span
           class={{this.descriptionClasses}}
           style={{this.descriptionStyle}}
+          {{spreadAttributes @descriptionProps PART_ARGS}}
         >
           {{~#if (has-block "description")~}}
             {{yield to="description"}}
@@ -182,9 +232,17 @@ export default class EuiExpression extends Component<EuiExpressionSignature> {
           {{~/if~}}
         </span>
         {{#if (has-block "value")}}
-          <span class={{this.valueClasses}}>{{yield to="value"}}</span>
+          <span
+            class={{this.valueClasses}}
+            style={{this.valueStyle}}
+            {{spreadAttributes @valueProps PART_ARGS}}
+          >{{yield to="value"}}</span>
         {{else if @value}}
-          <span class={{this.valueClasses}}>{{@value}}</span>
+          <span
+            class={{this.valueClasses}}
+            style={{this.valueStyle}}
+            {{spreadAttributes @valueProps PART_ARGS}}
+          >{{@value}}</span>
         {{/if}}
         {{#if @isInvalid}}
           <EuiIcon

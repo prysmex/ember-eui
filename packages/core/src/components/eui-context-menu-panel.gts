@@ -11,6 +11,7 @@ import { tabbable } from 'tabbable';
 
 import type Owner from '@ember/owner';
 
+import EuiContextMenuEntry from '../-private/eui-context-menu-entry.gts';
 import { randomId } from '../-private/random-id.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -22,6 +23,7 @@ import {
 import EuiButtonIcon from './eui-button-icon.gts';
 
 import type EuiI18n from '../services/eui-i18n.ts';
+import type { EuiContextMenuPanelItem } from './eui-context-menu.gts';
 
 type TransitionType = 'in' | 'out';
 type TransitionDirection = 'next' | 'previous';
@@ -44,6 +46,14 @@ export interface EuiContextMenuPanelSignature {
   Args: {
     /** Title above the items. */
     title?: string;
+    /**
+     * The items as data (upstream's `items`), like a panel's `items` in
+     * `EuiContextMenu`: `{ name, icon, onClick, href, … }`, separators
+     * (`{ isSeparator: true }`) and `{ renderItem }` entries. The list gets
+     * `role="menu"` and the items `role="menuitem"`. When there are any,
+     * they are rendered instead of the block's content.
+     */
+    items?: EuiContextMenuPanelItem[];
     /**
      * Makes the title a "back" button calling this function, e.g. to
      * return to the previous panel.
@@ -133,6 +143,22 @@ export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSi
       text: `euiContextMenuPanelTitle__text ${euiClass(context, HEADING_RESET, styles.text)}`
     };
   }
+
+  /** Upstream `isMenu`: a panel with `items` is a menu. */
+  get isMenu(): boolean {
+    return Boolean(this.args.isMenu || this.args.items?.length);
+  }
+
+  /** `@items` entries only call their own `onClick` (no sub-panels here). */
+  onItemClick = (
+    item: EuiContextMenuPanelItem,
+    _index: number,
+    event: MouseEvent
+  ): void => {
+    if ('onClick' in item && typeof item.onClick === 'function') {
+      item.onClick(event);
+    }
+  };
 
   get backButtonLabel(): string {
     return this.euiI18n.lookupToken(
@@ -345,12 +371,22 @@ export default class EuiContextMenuPanel extends Component<EuiContextMenuPanelSi
       {{/if}}
       <div
         class="euiContextMenuPanel__list"
-        role={{if @isMenu "menu"}}
-        aria-labelledby={{if (and @isMenu @title) this.titleId}}
+        role={{if this.isMenu "menu"}}
+        aria-labelledby={{if (and this.isMenu @title) this.titleId}}
         {{this.registerContent}}
       >
         <div {{resizeObserver onResize=this.onResize}}>
-          {{yield}}
+          {{#if @items.length}}
+            {{#each @items as |item index|}}
+              <EuiContextMenuEntry
+                @item={{item}}
+                @index={{index}}
+                @onItemClick={{this.onItemClick}}
+              />
+            {{/each}}
+          {{else}}
+            {{yield}}
+          {{/if}}
         </div>
       </div>
     </div>

@@ -28,10 +28,23 @@ import type { EuiCss } from '../utils/eui/styles.ts';
 
 export type EuiToastSide = 'left' | 'right';
 
+/** One entry of `@toasts` (upstream `Toast`): EuiToast's args plus an id. */
+export interface EuiGlobalToast extends EuiToastProps {
+  /** Unique id of the toast. */
+  id: string;
+}
+
 type GlobalToastListArgs = {
   /**
+   * The toasts to show, as data (upstream's `toasts`). Without it, the list
+   * shows the toasts of the `euiToaster` service. The list never changes
+   * this array: remove a toast from it in `@dismissToast`.
+   */
+  toasts?: EuiGlobalToast[];
+  /**
    * Called when a toast is dismissed (its close button or its time ran
-   * out, after the fade out), before it is removed from the `euiToaster`
+   * out, after the fade out). With `@toasts`, remove the toast from the
+   * array here; without it, the toast is then removed from the `euiToaster`
    * service. "Clear all" calls it for every toast.
    */
   dismissToast?: (this: EuiGlobalToastList, toast: EuiToastProps) => void;
@@ -157,7 +170,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   @cached
   get badgeCss(): EuiCss {
     const badge = this.styles.notificationBadge;
-    const toasts = this.euiToaster.toasts;
+    const toasts = this.toasts;
     const dismissed = this.toastIdToDismissedMap;
     const firstDismissed = toasts[0] ? dismissed[toasts[0].id] : false;
     const allDismissed = toasts.every((toast) => dismissed[toast.id]);
@@ -173,8 +186,14 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   lifeTimeFor = (toast: EuiToastPropsWithId): number | undefined =>
     toast.toastLifeTimeMs ?? this.args.toastLifeTimeMs;
 
+  /** `@toasts` when given, else the `euiToaster` service's toasts. */
   get toasts(): EuiToastPropsWithId[] {
-    return this.euiToaster.toasts;
+    return this.args.toasts ?? this.euiToaster.toasts;
+  }
+
+  /** Removes a dismissed toast from the service (`@toasts` belong to the caller). */
+  removeToast(toast: EuiToastPropsWithId): void {
+    if (!this.args.toasts) this.euiToaster.remove(toast);
   }
 
   get showClearAll(): boolean {
@@ -329,7 +348,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
   }
 
   scheduleAllToastsForDismissal(): void {
-    this.euiToaster.toasts.forEach((toast) => {
+    this.toasts.forEach((toast) => {
       if (!this.toastIdToTimerMap[toast.id]) {
         this.scheduleToastForDismissal(toast);
       }
@@ -363,7 +382,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
           const dismissed = { ...this.toastIdToDismissedMap };
           delete dismissed[toast.id];
           this.toastIdToDismissedMap = dismissed;
-          this.euiToaster.remove(toast);
+          this.removeToast(toast);
         }
       }, TOAST_FADE_OUT_MS)
     );
@@ -381,7 +400,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
       this.args.dismissToast?.apply(this, [toast]);
       this.toastIdToTimerMap[toast.id]?.clear();
       delete this.toastIdToTimerMap[toast.id];
-      this.euiToaster.remove(toast);
+      this.removeToast(toast);
     }
     this.toastIdToDismissedMap = {};
     this.args.onClearAllToasts?.();
@@ -451,6 +470,7 @@ export default class EuiGlobalToastList extends Component<EuiGlobalToastListItem
               @title={{toast.title}}
               @useMarkdownFormat={{toast.useMarkdownFormat}}
               @body={{toast.body}}
+              @text={{toast.text}}
               @color={{toast.color}}
               @iconType={{toast.iconType}}
               @actionProps={{toast.actionProps}}

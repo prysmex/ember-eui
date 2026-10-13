@@ -74,6 +74,7 @@ and actions, e.g. when a list has no items yet or a page failed to load.
 | `@paddingSize` | `PaddingSize` | `'l'` | Padding around the content: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@color` |  | `'transparent'` | Background, any `EuiPanel` color (`'plain'`, `'subdued'`, `'danger'`, …). |
 | `@hasBorder` | `boolean` | `true` for `'plain'`, `false` otherwise | Adds a border around the prompt. |
+| `@hasShadow` | `boolean` | `false` | Adds a shadow to the panel (upstream EuiPanel's `hasShadow`), only shown on a `'plain'` panel without a border. |
 | `@iconType` |  |  | Large icon above the title, e.g. `'magnify'` or `'logoKibana'`. |
 | `@iconColor` |  | `@color` when it is a named icon color (e.g | Color of the icon. `'danger'`), or `'subdued'`. |
 | `@title` | `string` |  | Title, e.g. "No dashboards yet". |

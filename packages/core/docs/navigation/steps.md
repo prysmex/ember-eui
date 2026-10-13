@@ -50,10 +50,12 @@ A vertical list of numbered steps (`EuiStep`), e.g. setup instructions.
 | `@firstStepNumber` | `number` | `1` | The number the first step starts from; the following steps count up from it. A step with its own `@step` keeps that number. |
 | `@headingElement` | `EuiStepHeadingElement` | `'p'` | Tag of the steps' titles, e.g. `'h3'`. A step's own `@headingElement` wins. |
 | `@titleSize` | `EuiStepTitleSize` | `'s'` | Title size of the steps: `'xxs'`, `'xs'`, `'s'` or `'m'`. A step's own `@titleSize` wins. |
+| `@steps` | `EuiContainedStep[]` |  | The steps as data (upstream's `steps`): one `EuiStep` is rendered per entry, numbered from `@firstStepNumber`. A step's content is its `children` text, or the `<:step>` block. Without it, the default block's `EuiStep`s are rendered. |
 
 | Block | Description |
 | --- | --- |
 | default block | The `EuiStep`s, numbered automatically by their order. |
+| `<:step>` | With `@steps`: the content of each step (upstream's `children` node), yielded the step and its index. Wins over `children`. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
@@ -92,6 +94,7 @@ A horizontal progress of steps (`EuiStepHorizontal`), e.g. a wizard's header.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@size` | `EuiStepsHorizontalSize` | `'m'` | Size of the steps' numbers and connecting lines: `'xs'` (16px dot), `'s'` (24px) or `'m'` (32px). |
+| `@steps` | `EuiStepsHorizontalStep[]` |  | The steps as data (upstream's `steps`): one `EuiStepHorizontal` per entry, numbered by position. Without it, the block's `EuiStepHorizontal`s are rendered. |
 
 | Block | Description |
 | --- | --- |

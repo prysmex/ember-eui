@@ -8,7 +8,9 @@ import { modifier } from 'ember-modifier';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 
+import euiDisabledElement from '../-private/eui-disabled-element.ts';
 import EuiMaybeToolTip from '../-private/eui-maybe-tool-tip.gts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import { listGroupContext } from '../-private/eui-list-context.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -66,6 +68,26 @@ export interface EuiListGroupItemExtraActionProps {
   'data-test-subj'?: string;
 }
 
+/**
+ * Upstream `iconProps` (EuiIcon props without `type`) for the `@iconType`
+ * icon, or the `css`/`className` of the `@icon` component.
+ */
+export interface EuiListGroupItemIconProps {
+  /** Defaults to `'inherit'` (the item's color). */
+  color?: EuiIconSignature['Args']['color'];
+  size?: EuiIconSignature['Args']['size'];
+  title?: string;
+  titleId?: string;
+  /** Styles composed into the icon's class (upstream `css`). */
+  css?: EuiCss;
+  className?: string;
+  /** Other keys (`aria-*`, `data-*`, …) become attributes of the icon. */
+  [attribute: string]: unknown;
+}
+
+/** Keys of `@iconProps` that are EuiIcon args, not attributes. */
+const ICON_ARGS = ['color', 'size', 'title', 'titleId', 'type'] as const;
+
 export interface EuiListGroupItemSignature {
   Element:
     | HTMLLIElement
@@ -87,10 +109,28 @@ export interface EuiListGroupItemSignature {
     label?: string;
     /** Icon before the text; anything `EuiIcon`'s `@type` accepts. */
     iconType?: EuiIconSignature['Args']['type'];
+    /**
+     * Args for the `@iconType` icon (upstream `iconProps`): `color`
+     * (defaults to `'inherit'`), `size`, `title`, `css`, `className` and
+     * any attribute. With `@icon`, only `css` applies, as upstream.
+     */
+    iconProps?: EuiListGroupItemIconProps;
+    /**
+     * Custom icon (upstream's `icon` node): a component, e.g.
+     * `(component EuiAvatar name="Jane" size="s")`, rendered with the
+     * `euiListGroupItem__icon` class. `@iconType` wins when both are set.
+     */
+    icon?: ComponentLike<{ Element: Element }>;
     /** Highlights the item and sets `aria-current`, e.g. the current page. */
     isActive?: boolean;
     /** Disables the item. A disabled link renders a disabled `<button>`. */
     isDisabled?: boolean;
+    /**
+     * With `@isDisabled`, a link or button item stays focusable and gets
+     * `aria-disabled` instead of `disabled` (e.g. so its tooltip still
+     * shows); clicks and key presses are blocked.
+     */
+    hasAriaDisabled?: boolean;
     /**
      * Wraps long text instead of truncating it. Defaults to `false`. (The
      * list's `@wrapText` reaches only its `@listItems`, as upstream.)
@@ -176,6 +216,10 @@ interface ContentSignature {
     prependClass: string;
     textClass: string;
     iconType?: EuiIconSignature['Args']['type'];
+    iconProps?: EuiListGroupItemIconProps;
+    iconCss?: EuiCss;
+    icon?: ComponentLike<{ Element: Element }>;
+    iconClass?: string;
     title?: string;
     showExternal: boolean;
     newTab: boolean;
@@ -199,10 +243,19 @@ const Content: TemplateOnlyComponent<ContentSignature> = <template>
     {{#if @iconType}}
       <span class={{@prependClass}}>
         <EuiIcon
-          class="euiListGroupItem__icon"
+          class="euiListGroupItem__icon {{@iconProps.className}}"
           @type={{@iconType}}
-          @color="inherit"
+          @color={{if @iconProps.color @iconProps.color "inherit"}}
+          @size={{@iconProps.size}}
+          @title={{@iconProps.title}}
+          @titleId={{@iconProps.titleId}}
+          @css={{@iconCss}}
+          {{spreadAttributes @iconProps ICON_ARGS}}
         />
+      </span>
+    {{else if @icon}}
+      <span class={{@prependClass}}>
+        <@icon class={{@iconClass}} />
       </span>
     {{/if}}
     <span class={{@textClass}} title={{@title}} {{textRef @textRef}}>
@@ -283,6 +336,35 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
 
   get isActive(): boolean {
     return Boolean(this.args.isActive);
+  }
+
+  get hasAriaDisabled(): boolean {
+    return Boolean(this.args.hasAriaDisabled);
+  }
+
+  /** Native `disabled`, unless `@hasAriaDisabled` swaps it for `aria-disabled`. */
+  get nativeDisabled(): boolean | undefined {
+    return this.hasAriaDisabled ? undefined : this.isDisabled;
+  }
+
+  get buttonAriaDisabled(): 'true' | undefined {
+    return this.hasAriaDisabled && this.isDisabled ? 'true' : undefined;
+  }
+
+  get iconCss(): EuiCss {
+    return this.args.iconProps?.css;
+  }
+
+  /** Classes of an `@icon` component: upstream clones `css` and the class onto it. */
+  @cached
+  get iconClass(): string {
+    const css = this.args.iconProps?.css;
+    return [
+      'euiListGroupItem__icon',
+      css ? euiClass(this.context, css) : undefined
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
 
   /** `a` for enabled links, `button` for actions and disabled links, else `li`. */
@@ -437,10 +519,13 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
     ];
   }
 
-  /** Upstream `isInteractive`/`isSelected`, skipped while disabled. */
+  /**
+   * Upstream `isInteractive`/`isSelected`, skipped while disabled unless
+   * `@hasAriaDisabled` (upstream `canHaveInteractiveStyles`).
+   */
   @cached
   get interactiveStyles(): CSSInterpolation[] {
-    if (this.isDisabled) return [];
+    if (this.isDisabled && !this.hasAriaDisabled) return [];
     return [
       this.isInteractive && this.layout.isInteractive,
       this.isActive && this.layout.isSelected
@@ -484,7 +569,15 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
     const context = this.context;
     const layout = this.layout;
     const own = this.isInteractive
-      ? [layout.euiListItemLayout__action]
+      ? [
+          layout.euiListItemLayout__action,
+          // upstream: custom disabled buttons with a tooltip ignore the pointer
+          this.isButton &&
+            this.isDisabled &&
+            this.hasAriaDisabled &&
+            this.showToolTip &&
+            layout.buttonIsDisabled
+        ]
       : [...this.interactiveStyles, ...this.itemStyles];
     const kind = this.isInteractive
       ? 'euiListGroupItem__button'
@@ -594,6 +687,10 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
                   @prependClass={{this.prependClass}}
                   @textClass={{this.textClass}}
                   @iconType={{@iconType}}
+                  @iconProps={{@iconProps}}
+                  @iconCss={{this.iconCss}}
+                  @icon={{@icon}}
+                  @iconClass={{this.iconClass}}
                   @title={{this.title innerText hasBlock}}
                   @textRef={{this.textRef setTextRef hasBlock}}
                   @showExternal={{this.showExternal}}
@@ -608,8 +705,10 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
               <button
                 class={{this.elementClass}}
                 type="button"
-                disabled={{this.isDisabled}}
+                disabled={{this.nativeDisabled}}
+                aria-disabled={{this.buttonAriaDisabled}}
                 aria-current={{this.ariaCurrent}}
+                {{euiDisabledElement this.isDisabled @hasAriaDisabled}}
                 {{on "click" (optional @onClick)}}
                 ...attributes
               >
@@ -618,6 +717,10 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
                   @prependClass={{this.prependClass}}
                   @textClass={{this.textClass}}
                   @iconType={{@iconType}}
+                  @iconProps={{@iconProps}}
+                  @iconCss={{this.iconCss}}
+                  @icon={{@icon}}
+                  @iconClass={{this.iconClass}}
                   @title={{this.title innerText hasBlock}}
                   @textRef={{this.textRef setTextRef hasBlock}}
                   @showExternal={{false}}
@@ -662,6 +765,10 @@ export default class EuiListGroupItem extends Component<EuiListGroupItemSignatur
               @prependClass={{this.prependClass}}
               @textClass={{this.textClass}}
               @iconType={{@iconType}}
+              @iconProps={{@iconProps}}
+              @iconCss={{this.iconCss}}
+              @icon={{@icon}}
+              @iconClass={{this.iconClass}}
               @title={{this.title innerText hasBlock}}
               @textRef={{this.textRef setTextRef hasBlock}}
               @showExternal={{false}}

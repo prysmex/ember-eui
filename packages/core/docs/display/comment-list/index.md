@@ -48,15 +48,23 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@hasBody` (required) | `boolean` |  |  |
-| `@hasEventElements` (required) | `unknown` |  | Truthy when the header has more than a username (upstream). |
-| `@hasTimelineIcon` (required) | `boolean` |  |  |
-| `@hasUsername` (required) | `boolean` |  |  |
-| `@hasEvent` (required) | `boolean` |  |  |
-| `@hasTimestamp` (required) | `boolean` |  |  |
-| `@hasActions` (required) | `boolean` |  |  |
+| `@timelineIcon` |  | `'user'` | Icon of the timeline avatar (upstream `timelineAvatar` as a string). Use the `<:timelineIcon>` block for custom content such as `<EuiAvatar @name="Jane" />`. |
+| `@timelineAvatarAriaLabel` | `string` |  | Accessible name of the default timeline avatar. |
+| `@eventColor` | `EuiCommentEventColor` | `'highlighted'` for regular comments and `'transparent'` for updates | Background of the header panel: `'highlighted'`, `'subdued'`, `'transparent'`, `'plain'`, `'accent'`, `'primary'`, `'success'`, `'warning'` or `'danger'`. Regular comments also get a border of this color (`'subdued'` for highlighted). |
+| `@eventIcon` |  |  | Icon in a small avatar before the username, e.g. `'pencil'`. |
+| `@eventIconAriaLabel` | `string` |  | Accessible name of `@eventIcon`; without it the icon is decorative. |
+| `@verticalAlign` | `'top' \| 'center'` | `'top'` with a `<:body>`, else `'center'` | Vertical alignment of the avatar with the event: `'top'` or `'center'`. |
 
-Also takes the args of `EuiComment`.
+Deprecated: `@type` (Has no effect: like upstream, the type follows the blocks. A comment with a `<:body>` and header content is `regular` (a bordered `<figure>`), one without a body is a compact `update`, and one with only a body is `custom` (no header).).
+
+| Block | Description |
+| --- | --- |
+| `<:timelineIcon>` | Custom timeline content, e.g. `<EuiAvatar @name="Jane" />`. |
+| `<:username>` | Who wrote it. |
+| `<:event>` | What happened, e.g. "added a comment" or "closed the issue". |
+| `<:timestamp>` | When, e.g. "on Jan 1st, 2024"; wrapped in `<time>`. |
+| `<:actions>` | Actions at the end of the header, e.g. an `EuiButtonIcon`. |
+| `<:body>` | The comment's content. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<li>`.
 

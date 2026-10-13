@@ -83,6 +83,7 @@ enough.
 | `@panels` (required) | `EuiContextMenuPanelDescriptor[]` |  | Every panel, flat: an item's `panel` is the id of the panel it opens. |
 | `@initialPanelId` (required) | `PanelId` |  | Id of the panel shown first. |
 | `@height` | `number \| string` | the height of the shown panel | Fixes the menu's height (a number of px or any CSS height) instead of fitting the panel; the items of a panel then scroll. |
+| `@onPanelChange` | `(change: EuiContextMenuPanelChange) => void` |  | Called when another panel is shown (an item opened it, or the back button or arrow left returned to it) with `{ panelId, direction }`. |
 
 Deprecated: `@size` (Has no effect: latest EUI has a single item size.).
 
@@ -102,6 +103,7 @@ renders these panels for you.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@title` | `string` |  | Title above the items. |
+| `@items` | `EuiContextMenuPanelItem[]` |  | The items as data (upstream's `items`), like a panel's `items` in `EuiContextMenu`: `{ name, icon, onClick, href, … }`, separators (`{ isSeparator: true }`) and `{ renderItem }` entries. The list gets `role="menu"` and the items `role="menuitem"`. When there are any, they are rendered instead of the block's content. |
 | `@onClose` | `() => void` |  | Makes the title a "back" button calling this function, e.g. to return to the previous panel. |
 | `@hasFocus` | `boolean` |  | Moves focus into the panel once rendered: to the item at `@initialFocusedItemIndex`, else to its first focusable element when it has no items, else to the panel itself. |
 | `@initialFocusedItemIndex` | `number` |  | Index of the item to focus with `@hasFocus`; `-1` focuses the panel. |
@@ -124,6 +126,9 @@ An action in a menu, usually inside an `EuiContextMenuPanel` in an
 | `@disabled` | `boolean` |  | Disables the item. |
 | `@href` | `string` |  | Renders the item as a link. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
+| `@rel` | `string` |  | `rel` of the `@href` link; `noreferrer` (and `noopener` for `'_blank'`) is added, as upstream. |
+| `@external` | `boolean` | `true` when `@target` is `'_blank'` | Shows the external link icon after the text of an `@href` link. |
+| `@hasAriaDisabled` | `boolean` |  | With `@disabled`, keeps the item focusable and sets `aria-disabled` instead of `disabled` (e.g. so its tooltip still shows); clicks and key presses are blocked. |
 | `@isLoading` | `boolean` |  | Shows a spinner instead of the icon. |
 | `@icon` |  |  | Icon before the text: an icon type name for `EuiIcon` (pass `'empty'` to align items without an icon with the others), or a component rendered as is, with the item's icon class and styles (e.g. `(component EuiIcon type="check" color="success" size="l")`). |
 | `@iconClasses` | `string` |  | Extra classes for the icon. |

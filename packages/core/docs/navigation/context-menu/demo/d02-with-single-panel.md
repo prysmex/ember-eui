@@ -10,6 +10,8 @@ Use **EuiContextMenuPanel** for simple, non-nested context menus. The below pagi
 
 The selected context menu item should receive the `aria-current="true"` attribute, which tells screen readers which item is selected.
 
+As upstream, the panel takes its items as data with `@items` (the same entries as an **EuiContextMenu** panel's `items`; keys that are not item args, like `aria-current`, become attributes). The list then gets `role="menu"` and each item `role="menuitem"`. You can also render **EuiContextMenuItem**s in its block.
+
 </EuiText>
 
 <EuiSpacer />
@@ -19,15 +21,23 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { fn } from '@ember/helper';
-import { eq } from 'ember-truth-helpers';
-import { EuiButtonEmpty, EuiContextMenuItem, EuiContextMenuPanel, EuiPopover } from '@ember-eui/core/components';
+import { EuiButtonEmpty, EuiContextMenuPanel, EuiPopover } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   @tracked isPopoverOpen = false;
   @tracked rowSize = 50;
 
   sizes = [10, 20, 50, 100];
+
+  get items() {
+    return this.sizes.map((size) => ({
+      key: `${size} rows`,
+      name: `${size} rows`,
+      icon: size === this.rowSize ? 'check' : 'empty',
+      'aria-current': size === this.rowSize ? 'true' : undefined,
+      onClick: () => this.setRowSize(size)
+    }));
+  }
 
   @action
   onButtonClick() {
@@ -63,17 +73,7 @@ export default class DemoComponent extends Component {
         </EuiButtonEmpty>
       </:button>
       <:content>
-        <EuiContextMenuPanel @size="s">
-          {{#each this.sizes as |size|}}
-            <EuiContextMenuItem
-              @icon={{if (eq size this.rowSize) "check" "empty"}}
-              aria-current={{if (eq size this.rowSize) "true"}}
-              {{on "click" (fn this.setRowSize size)}}
-            >
-              {{size}} rows
-            </EuiContextMenuItem>
-          {{/each}}
-        </EuiContextMenuPanel>
+        <EuiContextMenuPanel @items={{this.items}} />
       </:content>
     </EuiPopover>
   </template>

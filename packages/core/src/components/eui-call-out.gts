@@ -28,6 +28,7 @@ import EuiTitle from './eui-title.gts';
 import EuiMaybeToolTip from '../-private/eui-maybe-tool-tip.gts';
 import EuiMaybePopover from '../-private/eui-maybe-popover.gts';
 import EuiRenderNode from '../-private/eui-render-node.gts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiIconSignature } from './eui-icon';
@@ -38,6 +39,40 @@ import type { EuiWithPopoverProps } from '../-private/eui-maybe-popover.gts';
 import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 
 export type EuiCallOutColor = 'primary' | 'success' | 'warning' | 'danger';
+
+/**
+ * Upstream `dismissButtonProps`: extra props of the dismiss
+ * `EuiButtonIcon`. `iconType`, `color`, `size` and `onClick` are fixed by
+ * the callout, as upstream.
+ */
+export interface EuiCallOutDismissButtonProps {
+  /** Extra class of the button. */
+  className?: string;
+  /** Styles composed after the dismiss button's own (upstream `css`). */
+  css?: EuiCss;
+  'aria-label'?: string;
+  'data-test-subj'?: string;
+  isDisabled?: boolean;
+  hasAriaDisabled?: boolean;
+  display?: 'empty' | 'base' | 'fill';
+  iconSize?: EuiIconSignature['Args']['size'];
+  /** Other keys (`id`, `title`, `data-*`, …) become attributes of the button. */
+  [attribute: string]: unknown;
+}
+
+/** `dismissButtonProps` keys that are args or handled by the template. */
+const DISMISS_ARGS = [
+  'aria-label',
+  'data-test-subj',
+  'isDisabled',
+  'hasAriaDisabled',
+  'display',
+  'iconSize',
+  'iconType',
+  'color',
+  'size',
+  'onClick'
+] as const;
 export type EuiCallOutSize = 's' | 'm';
 
 /**
@@ -164,6 +199,11 @@ export interface EuiCallOutSignature {
     /** Accessible label of the dismiss button. Defaults to "Dismiss this callout" (i18n token `euiCallOut.dismissAriaLabel`). */
     dismissButtonAriaLabel?: string;
     /**
+     * Extra props of the dismiss button (upstream `dismissButtonProps`), e.g.
+     * `{ 'data-test-subj': 'closeTip' }`, see `EuiCallOutDismissButtonProps`.
+     */
+    dismissButtonProps?: EuiCallOutDismissButtonProps;
+    /**
      * Announces the title, text and body to screen readers when the callout
      * is inserted (through `EuiLiveAnnouncer`). Use it only when the callout
      * is feedback to a user action, not on page load. Defaults to `false`.
@@ -266,7 +306,15 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
   /** Upstream's `css` on the dismiss EuiButtonIcon. */
   @cached
   get dismissCss(): EuiCss {
-    return this.styles.dismissButton.euiCallOut__dismissButton;
+    return [
+      this.styles.dismissButton.euiCallOut__dismissButton,
+      this.args.dismissButtonProps?.css
+    ];
+  }
+
+  get dismissTestSubj(): string {
+    const own = this.args.dismissButtonProps?.['data-test-subj'];
+    return own ?? 'euiDismissCalloutButton';
   }
 
   get titleSize(): EuiTitleSignature['Args']['size'] {
@@ -301,6 +349,7 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
 
   get dismissLabel(): string {
     return (
+      this.args.dismissButtonProps?.['aria-label'] ??
       this.args.dismissButtonAriaLabel ??
       this.euiI18n.lookupToken(
         'euiCallOut.dismissAriaLabel',
@@ -360,12 +409,18 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
               {{! After the title, so screen reader users know what it dismisses. }}
               {{#if @onDismiss}}
                 <EuiButtonIcon
-                  data-test-subj="euiDismissCalloutButton"
+                  class={{@dismissButtonProps.className}}
+                  data-test-subj={{this.dismissTestSubj}}
                   aria-label={{this.dismissLabel}}
                   @iconType="cross"
                   @color={{this.color}}
                   @size="xs"
+                  @isDisabled={{@dismissButtonProps.isDisabled}}
+                  @hasAriaDisabled={{@dismissButtonProps.hasAriaDisabled}}
+                  @display={{@dismissButtonProps.display}}
+                  @iconSize={{@dismissButtonProps.iconSize}}
                   @css={{this.dismissCss}}
+                  {{spreadAttributes @dismissButtonProps DISMISS_ARGS}}
                   {{on "click" @onDismiss}}
                 />
               {{/if}}
@@ -393,12 +448,18 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
             {{#unless (or @title (has-block "title"))}}
               {{#if @onDismiss}}
                 <EuiButtonIcon
-                  data-test-subj="euiDismissCalloutButton"
+                  class={{@dismissButtonProps.className}}
+                  data-test-subj={{this.dismissTestSubj}}
                   aria-label={{this.dismissLabel}}
                   @iconType="cross"
                   @color={{this.color}}
                   @size="xs"
+                  @isDisabled={{@dismissButtonProps.isDisabled}}
+                  @hasAriaDisabled={{@dismissButtonProps.hasAriaDisabled}}
+                  @display={{@dismissButtonProps.display}}
+                  @iconSize={{@dismissButtonProps.iconSize}}
                   @css={{this.dismissCss}}
+                  {{spreadAttributes @dismissButtonProps DISMISS_ARGS}}
                   {{on "click" @onDismiss}}
                 />
               {{/if}}

@@ -64,7 +64,7 @@ export default class DemoComponent extends Component {
     <EuiSideNav
       @heading="Nav heading"
       @toggleOpenOnMobile={{this.toggleOpenOnMobile}}
-      @isOpenMobile={{this.isSideNavOpenOnMobile}}
+      @isOpenOnMobile={{this.isSideNavOpenOnMobile}}
       style="width: 192px"
       @items={{this.sideNav}}
     />

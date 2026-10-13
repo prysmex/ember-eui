@@ -46,12 +46,16 @@ export interface IEuiToast {
   /** The title of the toast. */
   title?: string;
   /**
-   * The body of the toast (markdown with `useMarkdownFormat`); upstream
-   * calls it `text`. Text, or a component for rich content (a template-only
+   * The body of the toast (markdown with `useMarkdownFormat`), also
+   * accepted as upstream's `text`. Text, or a component for rich content (a template-only
    * component or `(component Foo arg=…)`), e.g. from the `euiToaster`
    * service, which cannot pass blocks. Markdown needs text.
    */
   body?: string | EuiRenderNodeType;
+  /**
+   * Same as `body`, under upstream's name; `body` wins when both are set.
+   */
+  text?: string | EuiRenderNodeType;
   /**
    * `'primary'`, `'success'`, `'warning'` or `'danger'`: the highlight bar
    * and default icon. `'none'` (Ember only) renders a neutral toast without
@@ -243,9 +247,14 @@ export default class EuiToast extends Component<EuiToastSignature> {
     return this.color === 'none' ? 'text' : this.color;
   }
 
-  /** `@body` as text, for markdown. */
+  /** `@body`, else upstream's `@text`. */
+  get body(): string | EuiRenderNodeType | undefined {
+    return this.args.body ?? this.args.text;
+  }
+
+  /** The body as text, for markdown. */
   get bodyText(): string {
-    return isTextNode(this.args.body) ? String(this.args.body) : '';
+    return isTextNode(this.body) ? String(this.body) : '';
   }
 
   get dismissLabel(): string {
@@ -306,10 +315,10 @@ export default class EuiToast extends Component<EuiToastSignature> {
                 {{on "click" this.onDismiss}}
               />
             {{/if}}
-            {{#if (or @body (has-block))}}
+            {{#if (or this.body (has-block))}}
               <div class={{this.textClass}} data-test-subj="euiToastBody">
-                {{#if @body}}
-                  {{#if (and @useMarkdownFormat (isText @body))}}
+                {{#if this.body}}
+                  {{#if (and @useMarkdownFormat (isText this.body))}}
                     <div class="euiToast__text" data-test-subj="euiToastText">
                       <EuiMarkdownFormat @textSize="s" @value={{this.bodyText}} />
                     </div>
@@ -319,7 +328,7 @@ export default class EuiToast extends Component<EuiToastSignature> {
                       @size="s"
                       @color="default"
                       data-test-subj="euiToastText"
-                    ><EuiRenderNode @value={{@body}} /></EuiText>
+                    ><EuiRenderNode @value={{this.body}} /></EuiText>
                   {{/if}}
                 {{/if}}
                 {{#if (has-block)}}

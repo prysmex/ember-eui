@@ -47,6 +47,21 @@ export class EuiThemeContext {
   ) {}
 
   /**
+   * Set on the contexts that are not providers: the `eui-emotion` service's
+   * defaults and a root provider's system (OS) defaults.
+   */
+  isSystem = false;
+
+  /**
+   * The outermost provider's context (upstream's global theme), or this
+   * context when no provider is rendered.
+   */
+  get root(): EuiThemeContext {
+    const parent = this.parent();
+    return !parent || parent.isSystem ? this : parent.root;
+  }
+
+  /**
    * As upstream `getColorMode`: an OS-forced high contrast (`'forced'` from
    * the parent) supersedes the app's color mode, so the parent's (the
    * system's, at the root) mode wins.

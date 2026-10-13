@@ -228,23 +228,6 @@ const DEFAULT_POPOVER_WIDTH = 600;
 
 const oppositeOf = (mode: EuiColorMode): EuiColorMode => (mode === 'dark' ? 'light' : 'dark');
 
-/**
- * The outermost provider's context (upstream: the global theme). The chain
- * ends with the system defaults and the service's, which are not providers.
- */
-function globalContext(context: EuiThemeContext): EuiThemeContext {
-  const chain: EuiThemeContext[] = [];
-
-  for (
-    let current: EuiThemeContext | undefined = context;
-    current;
-    current = (current as unknown as { parent?: () => EuiThemeContext | undefined }).parent?.()
-  ) {
-    chain.push(current);
-  }
-
-  return chain.length >= 3 ? chain[chain.length - 3]! : chain[0]!;
-}
 
 /** `{{yield}}`s inside a provider of `@colorMode`, or as is without one. */
 const ModeProvider = <template>
@@ -414,7 +397,7 @@ export default class EuiSelectableTemplateSitewide extends Component<EuiSelectab
 
     if (mode === 'light' || mode === 'dark') return mode;
     if (mode === 'inverse') return oppositeOf(this.currentColorMode);
-    if (mode === 'global') return globalContext(this.themeContext).colorMode;
+    if (mode === 'global') return this.themeContext.root.colorMode;
 
     return this.currentColorMode;
   }

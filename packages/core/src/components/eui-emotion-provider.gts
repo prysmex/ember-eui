@@ -117,6 +117,7 @@ export default class EuiEmotionProvider extends Component<EuiEmotionProviderSign
               : (own.highContrastMode ?? system.highContrastMode)
         };
       }, () => defaults);
+      this.rootParent.isSystem = true;
     }
     return this.rootParent;
   }

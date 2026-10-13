@@ -35,6 +35,8 @@ export default class EuiEmotionService extends Service {
 
   constructor(owner?: Owner) {
     super(owner);
+    // not a provider: `EuiThemeContext#root` skips it
+    this.context.isSystem = true;
     registerDestructor(this, () => this.context.destroy());
   }
 }

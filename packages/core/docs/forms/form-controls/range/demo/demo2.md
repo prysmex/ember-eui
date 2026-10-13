@@ -39,24 +39,50 @@ order: 2
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { EuiDualRange } from '@ember-eui/core/components';
+import {
+  EuiDualRange,
+  EuiSpacer,
+  EuiTitle,
+} from '@ember-eui/core/components';
 
-export default class 2Demo extends Component {
-  @tracked value = ['', ''];
+export default class Range2Demo extends Component {
+  @tracked dualValue = ['100', '150'];
+  @tracked dualValue2 = ['40', '60'];
+
   @action
-  onChange(values) {
-    this.value = values;
+  onDualChange(value) {
+    this.dualValue = value;
+  }
+
+  @action
+  onDualChange2(value) {
+    this.dualValue2 = value;
   }
 
   <template>
     <EuiDualRange
-      @value={{this.value}}
-      @min={{-100}}
-      @max={{200}}
+      @min={{0}}
+      @max={{300}}
       @step={{10}}
-      @onChange={{this.onChange}}
+      @value={{this.dualValue}}
+      @onChange={{this.onDualChange}}
       @showLabels={{true}}
-      aria-label='An example of EuiDualRange'
+      aria-label="An example of EuiDualRange"
+    />
+    <EuiSpacer @size="xl" />
+    <EuiTitle @size="xxs">
+      <h3>Draggable highlight area</h3>
+    </EuiTitle>
+    <EuiSpacer @size="l" />
+    <EuiDualRange
+      @min={{0}}
+      @max={{100}}
+      @step={{1}}
+      @value={{this.dualValue2}}
+      @onChange={{this.onDualChange2}}
+      @showLabels={{true}}
+      @isDraggable={{true}}
+      aria-label="An example of EuiDualRange with isDraggable='true'"
     />
   </template>
 }

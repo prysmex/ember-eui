@@ -1,5 +1,5 @@
 ---
-order: 3
+order: 5
 ---
 
 # Loading, compressed and full width

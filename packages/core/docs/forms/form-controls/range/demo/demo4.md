@@ -21,7 +21,7 @@ import { EuiRange, EuiSpacer, EuiTitle, EuiDualRange } from '@ember-eui/core/com
 import { set } from 'ember-set-helper';
 import { array, hash } from '@ember/helper';
 
-export default class 4Demo extends Component {
+export default class Range4Demo extends Component {
   @tracked value = '20';
   @tracked dualValue = [20, 100];
 

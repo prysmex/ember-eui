@@ -6,8 +6,13 @@ order: 1
 
 <EuiText>
 
-Type a color or pick one. `isValid` is false while the text is not a
-color: the row shows an error then.
+Color input component allowing for multiple methods of entry and selection.
+
+Direct text entry will match hexadecimal (hex) and RGB(a) colors, and output will return both hex and RGBa values. Spatial selection involves HSV manipulation, which is converted to hex.
+
+Swatches allow consumers to predefine preferred or suggested choices. The swatches must also be entered in hex or RGBa format.
+
+You keep the color: `@onChange` gets the text as typed or picked, and `{ hex, rgba, isValid }`.
 
 </EuiText>
 
@@ -15,32 +20,30 @@ color: the row shows an error then.
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-import { EuiFormRow, EuiColorPicker, EuiSpacer, EuiBadge } from '@ember-eui/core/components';
+import { EuiColorPicker, EuiFormRow } from '@ember-eui/core/components';
 
 export default class ColorPickerDemo extends Component {
   @tracked color = '#D36086';
-  @tracked isInvalid = false;
+  @tracked colorErrors = null;
 
   @action
   setColor(text, { isValid }) {
     this.color = text;
-    this.isInvalid = Boolean(text) && !isValid;
+    this.colorErrors = isValid || text === '' ? null : 'Enter a valid color';
   }
 
   <template>
     <EuiFormRow
       @label="Pick a color"
-      @isInvalid={{this.isInvalid}}
-      @error="Not a valid color"
+      @isInvalid={{this.colorErrors}}
+      @error={{this.colorErrors}}
     >
       <EuiColorPicker
-        @color={{this.color}}
         @onChange={{this.setColor}}
-        @isInvalid={{this.isInvalid}}
+        @color={{this.color}}
+        @isInvalid={{this.colorErrors}}
       />
     </EuiFormRow>
-    <EuiSpacer />
-    <EuiBadge @color={{if this.isInvalid "hollow" this.color}}>{{this.color}}</EuiBadge>
   </template>
 }
 ```

@@ -44,8 +44,8 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { EuiRange, EuiSpacer } from '@ember-eui/core/components';
 
-export default class 1Demo extends Component {
-  @tracked value = 170;
+export default class Range1Demo extends Component {
+  @tracked value = 120;
   @action
   onChange(e) {
     this.value = e.target.value;
@@ -55,7 +55,7 @@ export default class 1Demo extends Component {
     <EuiRange
       @min={{100}}
       @max={{200}}
-      @step={{0.5}}
+      @step={{0.05}}
       @value={{this.value}}
       @onChange={{this.onChange}}
       @showLabels={{true}}
@@ -80,7 +80,7 @@ export default class 1Demo extends Component {
       @showLabels={{true}}
       @showValue={{true}}
       @showRange={{true}}
-      @valuePrepend='100 -'
+      @valuePrepend="100 - "
       aria-label='An example of EuiRange with valuePrepend prop'
     >
       <:min as |minVal|>

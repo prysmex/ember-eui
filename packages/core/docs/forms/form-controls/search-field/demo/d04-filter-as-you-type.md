@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 4
 ---
 
-# Filter as you type
+# Filter as you type (Ember EUI extra)
 
 <EuiText>
 

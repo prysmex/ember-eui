@@ -19,7 +19,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { EuiRange, EuiSpacer, EuiDualRange } from '@ember-eui/core/components';
 
-export default class 3Demo extends Component {
+export default class Range3Demo extends Component {
   @tracked value = '20';
   @tracked valueDual = [20, 100];
 

@@ -17,7 +17,7 @@ import { action } from '@ember/object';
 import { EuiRange, EuiSpacer, EuiDualRange } from '@ember-eui/core/components';
 import { set } from 'ember-set-helper';
 
-export default class 6Demo extends Component {
+export default class Range6Demo extends Component {
   @tracked value = '20';
   @action
   onChange(e) {

@@ -6,6 +6,7 @@ import cssStyle from './css-style.ts';
 import type { CSSInterpolation, CSSObject } from '@emotion/css/create-instance';
 import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 import type { EuiBorealisContext } from '../utils/eui/theme.ts';
+import type { EuiTableNode } from './table-node.gts';
 
 export type TableAlignment = 'left' | 'right' | 'center';
 
@@ -19,20 +20,29 @@ export type TableResponsiveBreakpoint = EuiBreakpointSize | boolean;
 /** Upstream `DEFAULT_TABLE_BREAKPOINT`. */
 export const DEFAULT_TABLE_BREAKPOINT: EuiBreakpointSize = 'm';
 
+/**
+ * Truncation of a cell's text: `true` on one line, `{ lines }` clamped to
+ * that many lines (upstream `truncateText`).
+ */
+export type TableTruncateText = boolean | { lines: number };
+
 /** Options of a cell on small screens (the table becomes cards). */
 export interface TableMobileOptions {
   /** Shows the cell on small screens. Defaults to `true`. */
   show?: boolean;
   /** Shows the cell only on small screens. */
   only?: boolean;
-  /** Label of the cell on small screens (a row cell). */
-  header?: string;
+  /**
+   * Label of the cell on small screens (a row cell): text, an `htmlSafe`
+   * string or a component; `false` shows none.
+   */
+  header?: EuiTableNode | boolean;
   /** Bigger text on small screens (a row cell). */
   enlarge?: boolean;
   /** Alignment on small screens (a row cell). Defaults to `'left'`. */
   align?: TableAlignment;
-  /** Truncates the text on small screens (a row cell). */
-  truncateText?: boolean;
+  /** Truncates the text on small screens (a row cell): `true` or `{ lines }`. */
+  truncateText?: TableTruncateText;
   /** Wraps the content in a text span on small screens (a row cell). */
   textOnly?: boolean;
   /** Width of the cell in the card, e.g. `'100%'` (a row cell). */
@@ -52,6 +62,13 @@ export interface EuiTableContext {
   readonly isResponsive: boolean;
   /** The table has its plain background (`@hasBackground`). */
   readonly hasBackground: boolean;
+  /**
+   * The row of the sticky header (`@stickyHeader`, desktop layout only)
+   * where header cells render their copies (upstream's column store).
+   */
+  readonly stickyHeaderRow?: HTMLTableRowElement;
+  /** Keeps the sticky header copies in the order of the header cells. */
+  registerStickyHeaderCell?(cell: StickyHeaderCellSync): () => void;
 }
 
 export const EUI_TABLE_CONTEXT = '@ember-eui/core/table' as const;
@@ -61,6 +78,70 @@ declare module 'ember-provide-consume-context/context-registry' {
     [EUI_TABLE_CONTEXT]: EuiTableContext;
   }
 }
+
+/**
+ * A header cell and its copy in the sticky header. Upstream registers the
+ * column in the table's store and syncs the copy's width from a
+ * `ResizeObserver` on the original cell.
+ */
+export class StickyHeaderCellSync {
+  original?: HTMLElement;
+  copy?: HTMLElement;
+  /** Last content-box width of the original cell. */
+  width?: number;
+
+  applyWidth(): void {
+    if (this.copy && this.width !== undefined)
+      this.copy.style.width = `${this.width}px`;
+  }
+}
+
+/**
+ * On an original header cell: records the element and, while the sticky
+ * header is shown, observes its width for the copy (upstream
+ * `store.updateColumnWidth`).
+ */
+export const stickyHeaderOriginal = modifier(
+  (
+    element: HTMLElement,
+    [sync, active]: [StickyHeaderCellSync, boolean]
+  ) => {
+    sync.original = element;
+    if (!active || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      sync.width = entry.contentRect.width;
+      sync.applyWidth();
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }
+);
+
+/**
+ * On a header cell's copy in the sticky header: applies the original's
+ * width and keeps the copies ordered like the originals. `style` is only
+ * passed so a new inline style re-applies the synced width.
+ */
+export const stickyHeaderCopy = modifier(
+  (
+    element: HTMLElement,
+    [sync, table]: [StickyHeaderCellSync, EuiTableContext, unknown?]
+  ) => {
+    sync.copy = element;
+    if (sync.width === undefined && sync.original) {
+      // upstream's initial width (`getBoundingClientRect`, called once)
+      sync.width = sync.original.getBoundingClientRect().width;
+    }
+    sync.applyWidth();
+    const unregister = table.registerStickyHeaderCell?.(sync);
+    return () => {
+      unregister?.();
+      if (sync.copy === element) sync.copy = undefined;
+    };
+  }
+);
 
 /** Upstream context defaults outside a table. */
 const DEFAULT_CONTEXT: EuiTableContext = {

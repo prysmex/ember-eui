@@ -1,7 +1,14 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
-import { CELL_RESET, widthStyle } from '../-private/table.ts';
+import {
+  CELL_RESET,
+  StickyHeaderCellSync,
+  stickyHeaderCopy,
+  stickyHeaderOriginal,
+  tableContext,
+  widthStyle
+} from '../-private/table.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiTableCellCheckboxStyles } from '../utils/eui/styles.generated.ts';
@@ -26,6 +33,12 @@ export interface EuiTableHeaderCellCheckboxSignature {
 }
 
 export default class EuiTableHeaderCellCheckbox extends Component<EuiTableHeaderCellCheckboxSignature> {
+  stickySync = new StickyHeaderCellSync();
+
+  get table() {
+    return tableContext(this);
+  }
+
   @cached
   get classes(): string {
     const context = getEuiThemeContext(this);
@@ -44,8 +57,23 @@ export default class EuiTableHeaderCellCheckbox extends Component<EuiTableHeader
       scope={{if @scope @scope "col"}}
       style={{this.style}}
       ...attributes
+      {{stickyHeaderOriginal this.stickySync (isPresent this.table.stickyHeaderRow)}}
     >
       <div class="euiTableCellContent">{{yield}}</div>
+      {{#if this.table.stickyHeaderRow}}
+        {{! the copy in the table's sticky header }}
+        {{#in-element this.table.stickyHeaderRow insertBefore=null}}<th
+            class="euiTableHeaderCellCheckbox {{this.classes}}"
+            scope={{if @scope @scope "col"}}
+            style={{this.style}}
+            ...attributes
+            {{stickyHeaderCopy this.stickySync this.table this.style}}
+          ><div class="euiTableCellContent">{{yield}}</div></th>{{/in-element}}
+      {{/if}}
     </th>
   </template>
+}
+
+function isPresent(value: unknown): boolean {
+  return value != null;
 }

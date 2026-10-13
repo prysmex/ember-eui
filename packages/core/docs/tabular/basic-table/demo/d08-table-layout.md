@@ -12,8 +12,9 @@ with the `@tableLayout` argument. Note that setting `@tableLayout` to
 you want to set different column widths while still using `truncateText`,
 set the width of each column with its `width` option.
 
-You can also set the horizontal alignment (`align`) at the column level,
-which affects the cell contents for that entire column.
+You can also set the vertical alignment (`valign`) at the column level,
+which affects the cell contents for that entire column (excluding the
+header and footer), and the horizontal alignment (`align`).
 
 </EuiText>
 
@@ -57,6 +58,8 @@ export default class BasicTableLayout extends Component {
 
   @tracked tableLayout = 'tableLayoutFixed';
   @tracked layoutValue = 'fixed';
+  @tracked vAlign = 'columnVAlignMiddle';
+  @tracked vAlignValue = 'middle';
   @tracked align = 'columnAlignLeft';
   @tracked alignValue = 'left';
 
@@ -64,6 +67,12 @@ export default class BasicTableLayout extends Component {
     { id: 'tableLayoutFixed', label: 'Fixed', value: 'fixed' },
     { id: 'tableLayoutAuto', label: 'Auto', value: 'auto' },
     { id: 'tableLayoutCustom', label: 'Custom', value: 'custom' },
+  ];
+
+  vAlignButtons = [
+    { id: 'columnVAlignTop', label: 'Top', value: 'top' },
+    { id: 'columnVAlignMiddle', label: 'Middle', value: 'middle' },
+    { id: 'columnVAlignBottom', label: 'Bottom', value: 'bottom' },
   ];
 
   alignButtons = [
@@ -79,12 +88,14 @@ export default class BasicTableLayout extends Component {
   get columns() {
     const custom = this.layoutValue === 'custom';
     const align = this.alignValue;
+    const valign = this.vAlignValue;
     return [
       {
         field: 'firstName',
         name: 'First Name',
         truncateText: true,
         align,
+        valign,
         mobileOptions: {
           render: (user) => `${user.firstName} ${user.lastName}`,
           header: false,
@@ -98,20 +109,24 @@ export default class BasicTableLayout extends Component {
         name: 'Last Name',
         truncateText: true,
         align,
+        valign,
         mobileOptions: { show: false },
       },
-      { field: 'github', name: 'Github', component: GithubCell, align },
+      { field: 'github', name: 'Github', component: GithubCell, align, valign },
       {
         field: 'jobTitle',
         name: 'Job title',
         truncateText: true,
         align,
+        valign,
         width: custom ? '100px' : undefined,
       },
       {
         field: 'address',
         name: 'Address',
+        truncateText: { lines: 2 },
         align,
+        valign,
         width: custom ? '20%' : undefined,
       },
     ];
@@ -120,11 +135,11 @@ export default class BasicTableLayout extends Component {
   get callOutText() {
     switch (this.tableLayout) {
       case 'tableLayoutAuto':
-        return 'Job title will not wrap or truncate since tableLayout is set to auto. Address will wrap if necessary';
+        return 'Job title will not wrap or truncate since tableLayout is set to auto. Address will truncate if necessary';
       case 'tableLayoutCustom':
         return 'Job title has a custom column width of 100px. Address has a custom column width of 20%';
       default:
-        return 'Job title has truncateText set to true. Address wraps';
+        return 'Job title has truncateText set to true. Address is set to { lines: 2 }';
     }
   }
 
@@ -132,6 +147,12 @@ export default class BasicTableLayout extends Component {
   onTableLayoutChange(id, value) {
     this.tableLayout = id;
     this.layoutValue = value;
+  }
+
+  @action
+  onVAlignChange(id, value) {
+    this.vAlign = id;
+    this.vAlignValue = value;
   }
 
   @action
@@ -147,6 +168,12 @@ export default class BasicTableLayout extends Component {
         @options={{this.tableLayoutButtons}}
         @idSelected={{this.tableLayout}}
         @onChange={{this.onTableLayoutChange}}
+      />
+      <EuiButtonGroup
+        @legend="Vertical align options"
+        @options={{this.vAlignButtons}}
+        @idSelected={{this.vAlign}}
+        @onChange={{this.onVAlignChange}}
       />
       <EuiButtonGroup
         @legend="Horizontal align options"

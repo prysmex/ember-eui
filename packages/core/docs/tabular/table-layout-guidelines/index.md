@@ -26,8 +26,8 @@ The key points to remember:
 - **All columns must have the width and truncation options set** to best
   fit the content: use the `em` unit for columns with text, and `px` for
   static-size elements like plots.
-- Upstream EUI asks for a sticky actions column (`sticky: true`) as the last
-  column; sticky actions columns are not supported by Ember EUI yet.
+- The actions column, if needed, must use `sticky: true` and be the last
+  column on the table.
 - Column **headers should be concise and never truncated**. Use iconography
   in place of lengthy column titles; add a `nameTooltip` when additional
   context is needed.

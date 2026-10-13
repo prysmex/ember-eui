@@ -27,13 +27,13 @@ arguments:
 Columns are plain objects:
 
 - **Field columns** `{ field, name, dataType, sortable, render, component,
-  align, truncateText, mobileOptions, footer }` show `item[field]`
+  align, valign, truncateText, mobileOptions, footer }` show `item[field]`
   (nested `a.b` paths work). `dataType` (`'string'`, `'number'`,
   `'boolean'`, `'date'`, `'auto'`) picks the default format and alignment;
   `render(value, item)` returns text (or `htmlSafe` HTML) and `component`
   renders an Ember component receiving `@item`, `@value` and `@column`.
 - **Computed columns** `{ name, render(item) | component, sortable(item) }`.
-- **Actions columns** `{ name, actions }`: each action is `{ name,
+- **Actions columns** `{ name, actions, sticky }`: each action is `{ name,
   description, onClick(item, event), href, type: 'icon', icon, color,
   available(item), enabled(item), isPrimary, showOnHover }` or a custom
   `{ component }` receiving `@item` and `@enabled`.
@@ -48,12 +48,14 @@ table sort, page and search the items itself.
 
 React nodes become text, `htmlSafe` strings or components: column
 `render` returns text, `component` renders a component, `footer` is text
-or a function returning text, `name` is text (`nameTooltip` adds an icon
-tip, `description` adds screen-reader-only text). Custom actions are
-components, and expanded rows are rendered by the `<:expandedRow>` block.
-Not supported yet: sticky actions columns (`sticky: true`), the column
-`valign` option, multi-line truncation (`truncateText: { lines }`) and
-`textOnly` in `cellProps`.
+or a function returning text, and `name` (like `mobileOptions.header`) is
+text, an `htmlSafe` string or a component rendered without arguments
+(`nameTooltip` adds an icon tip, `description` adds screen-reader-only
+text). Custom actions are components, and expanded rows are rendered by
+the `<:expandedRow>` block. `@cellProps` may hold `EuiTableRowCell`
+arguments (`textOnly`, `truncateText`, `valign`, `align`, `width`,
+`mobileOptions`, …), which the cell consumes like upstream; the other keys
+become attributes or listeners of the cell.
 
 </EuiText>
 
@@ -83,7 +85,7 @@ that state.
 | `@columns` (required) | `Array<EuiBasicTableColumn<T>>` |  | The columns: field data (`{ field, name, dataType, render, component, sortable, … }`), computed (`{ render \| component, name }`) and actions (`{ actions, name }`). |
 | `@itemId` | `ItemId<T>` |  | How to get a unique id of an item (a key or a function), for selection and expanded rows. |
 | `@itemIdToExpandedRowMap` | `Record<string, unknown>` |  | Expanded rows by item id: a text, or any truthy value rendered by the `<:expandedRow>` block. |
-| `@cellProps` | `EuiTableElementProps \| CellPropsCallback<T>` |  | Attributes of every row cell, or a function of the item and column. |
+| `@cellProps` | `EuiTableElementProps \| CellPropsCallback<T>` |  | Props of every row cell, or a function of the item and column: `EuiTableRowCell` arguments (`align`, `textOnly`, `truncateText`, `valign`, `width`, `mobileOptions`, …) and attributes/listeners for the cell element. |
 | `@rowProps` | `EuiTableElementProps \| RowPropsCallback<T>` |  | Attributes of every row (`onClick` makes rows clickable), or a function of the item. |
 | `@error` | `string` |  | Error message shown instead of the rows. |
 | `@tableCaption` | `string` | "Data table" | Describes the table for screen readers. |
@@ -100,6 +102,8 @@ that state.
 | `@responsiveBreakpoint` | `TableResponsiveBreakpoint` | `'m'` | Breakpoint below which rows become cards (`true` always, `false` never). |
 | `@hasBackground` | `boolean` | `true` | The table's plain background. |
 | `@scrollableInline` | `boolean` |  | Lets the table scroll inline (upstream beta). |
+| `@stickyHeader` | `boolean` |  | Keeps the header at the top of the viewport while scrolling a long table (not in the cards layout). Upstream beta. |
+| `@stickyScrollbar` | `boolean` |  | Shows a horizontal scrollbar sticking to the bottom of the viewport while the table's own one is out of view. Requires `@scrollableInline`. Upstream beta. |
 | `@css` | `EuiCss` |  | Styles composed last into the root `<div>`'s class (upstream `css`). |
 
 | Block | Description |

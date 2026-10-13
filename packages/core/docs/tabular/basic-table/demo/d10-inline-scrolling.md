@@ -22,6 +22,11 @@ Enabling inline scrolling automatically switches `@tableLayout` to `auto`
 because in that configuration the table's width depends on its cell
 widths. See the [table layout guidelines](../table-layout-guidelines).
 
+Keep the actions column visible at any scroll position with `sticky: true`
+(it must be the last column), and consider turning on
+`@stickyScrollbar={{true}}` so long tables can be scrolled without
+reaching their bottom.
+
 </EuiText>
 
 ```gjs component
@@ -86,6 +91,14 @@ export default class BasicTableInlineScrolling extends Component {
       render: (location) => `${location.city}, ${location.country}`,
     },
     { field: 'online', name: 'Online', minWidth: '8em', component: OnlineCell },
+    {
+      name: 'Actions',
+      sticky: true,
+      actions: [
+        { name: 'Edit', description: 'Edit this user', type: 'icon', icon: 'pencil', onClick: () => {} },
+        { name: 'Delete', description: 'Delete this user', type: 'icon', icon: 'trash', color: 'danger', onClick: () => {} },
+      ],
+    },
   ];
 
   <template>
@@ -93,6 +106,7 @@ export default class BasicTableInlineScrolling extends Component {
       @tableCaption="Demo of EuiBasicTable with inline scrolling"
       @responsiveBreakpoint={{false}}
       @scrollableInline={{true}}
+      @stickyScrollbar={{true}}
       @items={{this.users}}
       @columns={{this.columns}}
     />

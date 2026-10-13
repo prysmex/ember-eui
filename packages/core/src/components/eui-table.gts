@@ -1,5 +1,8 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
+import { schedule } from '@ember/runloop';
+
+import { modifier } from 'ember-modifier';
 import { provide } from 'ember-provide-consume-context';
 
 import {
@@ -18,11 +21,17 @@ import {
   euiContainerCSS,
   euiTableStyles
 } from '../utils/eui/styles.generated.ts';
+import EuiTableStickyHeader from './eui-table/sticky-header.gts';
+import EuiTableStickyScrollbar, {
+  StickyScrollbarState
+} from './eui-table/sticky-scrollbar.gts';
 
 import type {
   EuiTableContext,
+  StickyHeaderCellSync,
   TableResponsiveBreakpoint
 } from '../-private/table.ts';
+import type { StickyHeaderHost } from './eui-table/sticky-header.gts';
 
 /**
  * A styled `<table>`, built from `EuiTableHeader`, `EuiTableHeaderCell`,
@@ -31,7 +40,8 @@ import type {
  * (or come from a headless table library).
  *
  * Like upstream, the table is wrapped in a `div.euiTable__wrapper`;
- * attributes go to the `<table>`.
+ * attributes go to the `<table>`. `@stickyHeader` renders a copy of the
+ * header before the wrapper, and `@stickyScrollbar` a scrollbar after it.
  */
 export interface EuiTableSignature {
   Element: HTMLTableElement;
@@ -66,11 +76,36 @@ export interface EuiTableSignature {
      * Use with `@tableLayout="auto"`. Upstream beta.
      */
     scrollableInline?: boolean;
+    /**
+     * Shows a horizontal scrollbar sticking to the bottom of the viewport
+     * while the table's own one is out of view (long tables). Requires
+     * `@scrollableInline`. Upstream beta.
+     */
+    stickyScrollbar?: boolean;
+    /**
+     * Keeps the header at the top of the viewport while the user scrolls
+     * through a long table (not in the cards layout). Offset it with the
+     * `--euiTableStickyHeaderOffsetTop` CSS variable (e.g. below a fixed
+     * header) and layer it with `--euiTableStickyHeaderZIndex`. Upstream
+     * beta.
+     */
+    stickyHeader?: boolean;
   };
   Blocks: {
     /** The header, body and footer. */
     default: [];
   };
+}
+
+/**
+ * The sticky header row of each table, created once: the sticky header
+ * attaches it and header cells render their copies into it.
+ */
+const STICKY_ROWS = new WeakMap<object, HTMLTableRowElement>();
+function stickyRowOf(table: object): HTMLTableRowElement {
+  let row = STICKY_ROWS.get(table);
+  if (!row) STICKY_ROWS.set(table, (row = document.createElement('tr')));
+  return row;
 }
 
 const WRAPPER_CONTAINER = euiContainerCSS(
@@ -81,10 +116,18 @@ const WRAPPER_CONTAINER = euiContainerCSS(
 
 export default class EuiTable
   extends Component<EuiTableSignature>
-  implements EuiTableContext
+  implements EuiTableContext, StickyHeaderHost
 {
   /** Bumped when the breakpoint query starts or stops matching. */
   @tracked private mediaVersion = 0;
+
+  // Elements of the sticky header and scrollbar (DOM refs, not state).
+  tableElement?: HTMLTableElement;
+  stickyContainer?: HTMLElement;
+  stickyTable?: HTMLTableElement;
+  private stickyCells = new Set<StickyHeaderCellSync>();
+  private reorderScheduled = false;
+  stickyScrollbar = new StickyScrollbarState();
 
   @provide(EUI_TABLE_CONTEXT)
   get tableContext(): EuiTableContext {
@@ -120,6 +163,131 @@ export default class EuiTable
     this.mediaVersion++;
   };
 
+  /** Upstream renders the sticky header only outside the cards layout. */
+  get showStickyHeader(): boolean {
+    return Boolean(this.args.stickyHeader) && !this.isResponsive;
+  }
+
+  get showStickyScrollbar(): boolean {
+    return Boolean(this.args.scrollableInline && this.args.stickyScrollbar);
+  }
+
+  get stickyHeaderRow(): HTMLTableRowElement | undefined {
+    if (!this.showStickyHeader || typeof document === 'undefined') {
+      return undefined;
+    }
+    return stickyRowOf(this);
+  }
+
+  private get stickyRow(): HTMLTableRowElement | undefined {
+    return STICKY_ROWS.get(this);
+  }
+
+  registerStickyHeaderCell = (cell: StickyHeaderCellSync): (() => void) => {
+    this.stickyCells.add(cell);
+    this.scheduleStickyReorder();
+    return () => {
+      this.stickyCells.delete(cell);
+    };
+  };
+
+  /**
+   * Copies are appended in render order; put them back in the order of
+   * their header cells after cells are added or moved (upstream renders
+   * the store's columns in order).
+   */
+  scheduleStickyReorder(): void {
+    if (this.reorderScheduled) return;
+    this.reorderScheduled = true;
+    schedule('afterRender', () => {
+      this.reorderScheduled = false;
+      const row = this.stickyRow;
+      if (!row || this.isDestroying || this.isDestroyed) return;
+      const cells = [...this.stickyCells].filter(
+        (cell) => cell.original?.isConnected && cell.copy?.parentNode === row
+      );
+      cells.sort((a, b) =>
+        a.original!.compareDocumentPosition(b.original!) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+          ? -1
+          : 1
+      );
+      cells.forEach((cell, index) => {
+        if (row.children[index] !== cell.copy) {
+          row.insertBefore(cell.copy!, row.children[index] ?? null);
+        }
+      });
+    });
+  }
+
+  /**
+   * On the `<table>`: syncs the sticky header's inline scroll and width
+   * with the table (upstream does it in `EuiTableStickyHeader`), watches
+   * header cells moving, and observes the scrolling wrapper for the
+   * sticky scrollbar.
+   */
+  setupTable = modifier(
+    (
+      table: HTMLTableElement,
+      [scrollableInline, stickyHeader, stickyScrollbar]: [
+        boolean | undefined,
+        boolean,
+        boolean
+      ]
+    ) => {
+      this.tableElement = table;
+      const wrapper = table.parentElement!;
+      const cleanups: Array<() => void> = [];
+
+      if (stickyHeader && typeof MutationObserver !== 'undefined') {
+        // header cells moved by their parent (e.g. reordered columns)
+        const observer = new MutationObserver((records) => {
+          if (
+            records.some((record) =>
+              (record.target as Element).closest?.('thead')
+            )
+          ) {
+            this.scheduleStickyReorder();
+          }
+        });
+        observer.observe(table, { childList: true, subtree: true });
+        cleanups.push(() => observer.disconnect());
+      }
+
+      if (stickyHeader && scrollableInline) {
+        const onScroll = () => {
+          if (this.stickyContainer) {
+            this.stickyContainer.scrollLeft = wrapper.scrollLeft;
+          }
+        };
+        if (this.stickyTable) {
+          this.stickyTable.style.minWidth = `${table.getBoundingClientRect().width}px`;
+        }
+        wrapper.addEventListener('scroll', onScroll, { passive: true });
+        cleanups.push(() => wrapper.removeEventListener('scroll', onScroll));
+        if (typeof ResizeObserver !== 'undefined') {
+          const observer = new ResizeObserver((entries) => {
+            const element = entries[0]?.target;
+            if (element && this.stickyTable) {
+              this.stickyTable.style.minWidth = `${element.clientWidth}px`;
+            }
+          });
+          observer.observe(table);
+          cleanups.push(() => observer.disconnect());
+        }
+      }
+
+      if (stickyScrollbar) {
+        cleanups.push(this.stickyScrollbar.observe(wrapper));
+      }
+
+      return () => {
+        cleanups.forEach((cleanup) => cleanup());
+        if (this.tableElement === table) this.tableElement = undefined;
+      };
+    }
+  );
+
   @cached
   get wrapperClass(): string {
     const context = getEuiThemeContext(this);
@@ -153,6 +321,13 @@ export default class EuiTable
   }
 
   <template>
+    {{#if this.showStickyHeader}}
+      <EuiTableStickyHeader
+        @table={{this}}
+        @compressed={{@compressed}}
+        @scrollableInline={{@scrollableInline}}
+      />
+    {{/if}}
     <div
       class="euiTable__wrapper {{this.wrapperClass}}"
       {{onMediaQueryChange this.query this.onBreakpointChange}}
@@ -161,7 +336,15 @@ export default class EuiTable
         tabindex="-1"
         class="euiTable {{this.tableClass}}"
         ...attributes
+        {{this.setupTable
+          @scrollableInline
+          this.showStickyHeader
+          this.showStickyScrollbar
+        }}
       >{{yield}}</table>
     </div>
+    {{#if this.showStickyScrollbar}}
+      <EuiTableStickyScrollbar @state={{this.stickyScrollbar}} />
+    {{/if}}
   </template>
 }

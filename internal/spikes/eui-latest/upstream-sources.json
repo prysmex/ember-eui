@@ -947,6 +947,14 @@
       "sha256": "31650cfd62245db0755e99e84c5aa3a24a04a6804d889090a898416722c45c4b"
     },
     {
+      "path": "@elastic/eui/es/components/table/sticky_header/sticky_header.styles.js",
+      "sha256": "4adfe67df8eb557d6c1a1f7bf133424c2fda8ddda4b1dcb8c421f8e5d4fa83cf"
+    },
+    {
+      "path": "@elastic/eui/es/components/table/sticky_scrollbar/sticky_scrollbar.styles.js",
+      "sha256": "ae21c708743c5a4c62f470fd1d5055e514b2cdc60b9fae58be831b6b3321f387"
+    },
+    {
       "path": "@elastic/eui/es/components/table/table_cells_shared.styles.js",
       "sha256": "734af1c1fa8deb33ef2e662293b5c7f7b9f45b8791c930e7c8a986680c12bffa"
     },

@@ -22,10 +22,28 @@ import {
   formatText
 } from '../utils/eui/format.ts';
 
-import type { TableAlignment, TableMobileOptions } from './table.ts';
+import type {
+  TableAlignment,
+  TableMobileOptions,
+  TableTruncateText
+} from './table.ts';
+import type { EuiTableNode } from './table-node.gts';
+import type { EuiTableHeaderCellTooltipProps } from '../components/eui-table-header-cell.gts';
+import type { EuiTableStickyCellOptions } from '../utils/eui/table.ts';
 import type { Primitive } from '../utils/eui/sort.ts';
 import type { ComponentLike } from '@glint/template';
 import type { SafeString } from '@ember/template';
+
+export type { EuiTableNode } from './table-node.gts';
+
+/**
+ * A column's display name (upstream `ReactNode`): text, an `htmlSafe`
+ * string or a component rendered without arguments.
+ */
+export type EuiTableColumnName = EuiTableNode;
+
+/** Vertical alignment of a column's cells. */
+export type EuiTableVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 
 /** Text content of a cell, footer or action (upstream React nodes). */
 export type EuiTableContent = string | number | SafeString | null | undefined;
@@ -66,8 +84,12 @@ export interface EuiTableColumnNameTooltipProps {
   content: string;
   /** The icon type to display. Defaults to `'question'`. */
   icon?: string;
-  /** Position of the tooltip. Defaults to `'top'`. */
+  /** Position of the tooltip. Defaults to `'top'` (Ember shortcut for `tooltipProps.position`). */
   position?: 'top' | 'right' | 'bottom' | 'left';
+  /** Props of the icon: `{ className }` (upstream `iconProps`). */
+  iconProps?: EuiTableHeaderCellTooltipProps['iconProps'];
+  /** More tooltip arguments: `{ position, title, delay, anchorClassName }` (upstream `tooltipProps`). */
+  tooltipProps?: EuiTableHeaderCellTooltipProps['tooltipProps'];
 }
 
 /** Args of a cell `component`. */
@@ -110,8 +132,11 @@ interface ColumnBase {
 export interface EuiTableFieldDataColumnType<T> extends ColumnBase {
   /** A field of the item (may be a nested `outer.inner` path). */
   field: keyof T | (string & {});
-  /** The display name of the column. */
-  name: string;
+  /**
+   * The display name of the column: text, an `htmlSafe` string or a
+   * component (rendered without arguments).
+   */
+  name: EuiTableColumnName;
   /** An icon with a tooltip next to the name. */
   nameTooltip?: EuiTableColumnNameTooltipProps;
   /** Rendering hint of the value: alignment and default format. */
@@ -127,8 +152,13 @@ export interface EuiTableFieldDataColumnType<T> extends ColumnBase {
   align?: TableAlignment;
   /** Wraps the content in a text span (word break / truncation). */
   textOnly?: boolean;
-  /** Truncates overflowing text on one line. */
-  truncateText?: boolean;
+  /**
+   * Truncates overflowing text: `true` on one line, `{ lines: n }` to
+   * `n` lines.
+   */
+  truncateText?: TableTruncateText;
+  /** Vertical alignment of the column's cells (not the header or footer). Defaults to `'middle'`. */
+  valign?: EuiTableVerticalAlign;
   /** Cards layout options. */
   mobileOptions?: EuiTableColumnMobileOptions<T>;
   /** Renders the cell as text from the field value and item. */
@@ -146,15 +176,20 @@ export interface EuiTableComputedColumnType<T> extends ColumnBase {
   render?: (item: T) => EuiTableContent;
   /** Renders the cell with a component (`@item`, `@column`). */
   component?: EuiTableCellComponent<T>;
-  /** The display name of the column. */
-  name?: string;
+  /** The display name of the column (text, `htmlSafe` or a component). */
+  name?: EuiTableColumnName;
   /** An icon with a tooltip next to the name. */
   nameTooltip?: EuiTableColumnNameTooltipProps;
   /** Makes the column sortable: returns the value to sort against. */
   sortable?: (item: T) => Primitive;
   readOnly?: boolean;
   align?: TableAlignment;
-  truncateText?: boolean;
+  /** `true` (one line) or `{ lines: n }`. */
+  truncateText?: TableTruncateText;
+  /** Vertical alignment of the column's cells. Defaults to `'middle'`. */
+  valign?: EuiTableVerticalAlign;
+  /** Wraps the content in a text span. */
+  textOnly?: boolean;
   isExpander?: boolean;
   /** Cards layout options. */
   mobileOptions?: EuiTableColumnMobileOptions<T>;
@@ -166,14 +201,20 @@ export interface EuiTableComputedColumnType<T> extends ColumnBase {
 export interface EuiTableActionsColumnType<T extends object> {
   /** {@link DefaultItemAction}s or {@link CustomItemAction}s. */
   actions: Array<Action<T>>;
-  /** The display name of the column. */
-  name?: string;
+  /** The display name of the column (text, `htmlSafe` or a component). */
+  name?: EuiTableColumnName;
   nameTooltip?: EuiTableColumnNameTooltipProps;
   description?: string;
   width?: string;
   minWidth?: string;
   maxWidth?: string;
-  /** Upstream beta; not supported by the Ember table yet. */
+  /**
+   * Keeps the actions column stuck to the end (right) of the table at any
+   * inline scroll position. Only with `@scrollableInline={{true}}`, and
+   * the column must be the last one. With `@hasBackground={{false}}`, set
+   * `--euiTableCellStickyBackgroundColor` to the background behind the
+   * table. Upstream beta.
+   */
   sticky?: boolean;
 }
 
@@ -302,6 +343,60 @@ export interface CriteriaWithPagination<T> extends Criteria<T> {
 
 /** Attributes for a row or cell; `onClick` makes a row clickable. */
 export type EuiTableElementProps = Record<string, unknown>;
+
+/**
+ * `EuiTableRowCell` arguments `@cellProps` may set (upstream spreads
+ * `cellProps` onto `EuiTableRowCell`, which consumes these props instead
+ * of rendering them as attributes).
+ */
+export interface EuiTableCellArgs {
+  align?: TableAlignment;
+  textOnly?: boolean;
+  truncateText?: TableTruncateText;
+  valign?: EuiTableVerticalAlign;
+  isExpander?: boolean;
+  setScopeRow?: boolean;
+  hasActions?: boolean | 'custom';
+  showOnHover?: boolean;
+  width?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  mobileOptions?: TableMobileOptions;
+  sticky?: EuiTableStickyCellOptions;
+}
+
+const CELL_ARG_KEYS: ReadonlyArray<keyof EuiTableCellArgs> = [
+  'align',
+  'textOnly',
+  'truncateText',
+  'valign',
+  'isExpander',
+  'setScopeRow',
+  'hasActions',
+  'showOnHover',
+  'width',
+  'minWidth',
+  'maxWidth',
+  'mobileOptions',
+  'sticky'
+];
+
+/**
+ * Splits cell props into `EuiTableRowCell` arguments and the remaining
+ * DOM attributes/listeners, without changing the caller's object.
+ */
+export function splitCellProps(props: EuiTableElementProps): {
+  args: EuiTableCellArgs;
+  attributes: EuiTableElementProps;
+} {
+  const args: Record<string, unknown> = {};
+  const attributes: EuiTableElementProps = {};
+  for (const [key, value] of Object.entries(props)) {
+    if ((CELL_ARG_KEYS as readonly string[]).includes(key)) args[key] = value;
+    else attributes[key] = value;
+  }
+  return { args: args as EuiTableCellArgs, attributes };
+}
 
 export type RowPropsCallback<T> = (item: T) => EuiTableElementProps;
 export type CellPropsCallback<T extends object> = (

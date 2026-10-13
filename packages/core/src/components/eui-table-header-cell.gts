@@ -7,8 +7,11 @@ import { service } from '@ember/service';
 import {
   BOX_SIZING,
   CELL_RESET,
+  StickyHeaderCellSync,
   buttonReset,
   cellContentStyles,
+  stickyHeaderCopy,
+  stickyHeaderOriginal,
   tableContext,
   widthStyle
 } from '../-private/table.ts';
@@ -19,6 +22,7 @@ import {
   euiTableHeaderFooterCellStyles,
   euiTextTruncate
 } from '../utils/eui/styles.generated.ts';
+import { euiTableStickyCellStyles } from '../utils/eui/table.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiInnerText from './eui-inner-text.gts';
 import EuiIconTip from './eui-icon-tip.gts';
@@ -28,7 +32,13 @@ import EuiToolTip from './eui-tool-tip.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type { EuiIconTipSignature } from './eui-icon-tip';
 import type EuiI18n from '../services/eui-i18n';
-import type { TableAlignment, TableMobileOptions } from '../-private/table.ts';
+import type {
+  EuiTableContext,
+  TableAlignment,
+  TableMobileOptions
+} from '../-private/table.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import type { EuiTableStickyCellOptions } from '../utils/eui/table.ts';
 
 /** An icon with a tooltip next to the column name (upstream `tooltipProps`). */
 export interface EuiTableHeaderCellTooltipProps {
@@ -82,6 +92,12 @@ export interface EuiTableHeaderCellSignature {
      * the icon is plain and the tooltip shows on the whole sort button.
      */
     tooltipProps?: EuiTableHeaderCellTooltipProps;
+    /**
+     * Sticks the cell to a side of the table (`{ side: 'start' | 'end' }`)
+     * while it scrolls inline; only for the first or last column, and not
+     * in the cards layout. Upstream beta.
+     */
+    sticky?: EuiTableStickyCellOptions;
   };
   Blocks: {
     /** The column's name. */
@@ -112,6 +128,22 @@ const TRUNCATE = euiTextTruncate();
 
 export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSignature> {
   @service declare euiI18n: EuiI18n;
+
+  stickySync = new StickyHeaderCellSync();
+
+  get table(): EuiTableContext {
+    return tableContext(this);
+  }
+
+  /** Where the sticky header copy renders (only with `@stickyHeader`). */
+  get stickyHeaderRow(): HTMLTableRowElement | undefined {
+    return this.table.stickyHeaderRow;
+  }
+
+  /** Sticky cells are not applied in the cards layout (upstream). */
+  get stickySide(): 'start' | 'end' | undefined {
+    return this.table.isResponsive ? undefined : this.args.sticky?.side;
+  }
 
   /** Upstream renders nothing for cells hidden in the current layout. */
   get isRendered(): boolean {
@@ -148,7 +180,12 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
     const styles = useEuiBorealisStyles(context, euiTableHeaderFooterCellStyles);
     const content = useEuiBorealisStyles(context, euiTableCellContentStyles);
     return {
-      cell: euiClass(context, CELL_RESET, styles.euiTableHeaderCell),
+      cell: euiClass(
+        context,
+        CELL_RESET,
+        styles.euiTableHeaderCell,
+        ...this.stickyStyles
+      ),
       button: euiClass(
         context,
         buttonReset(context.upstream),
@@ -167,6 +204,16 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
       ),
       text: euiClass(context, TRUNCATE)
     };
+  }
+
+  get stickyStyles(): EuiCss[] {
+    const side = this.stickySide;
+    if (!side) return [];
+    const styles = useEuiBorealisStyles(
+      getEuiThemeContext(this),
+      euiTableStickyCellStyles
+    );
+    return [styles.root, styles.side[side]];
   }
 
   title = (innerText: string): string =>
@@ -188,96 +235,126 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
           aria-sort={{this.ariaSort}}
           aria-live={{if this.isSortable "polite"}}
           style={{this.style}}
+          data-sticky={{this.stickySide}}
           ...attributes
+          {{stickyHeaderOriginal this.stickySync (isPresent this.stickyHeaderRow)}}
         >
-          {{#if this.canSort}}
-            <MaybeTooltip @tooltipProps={{@tooltipProps}}>
-              <button
-                type="button"
-                class="euiTableHeaderButton
-                  {{if @isSorted 'euiTableHeaderButton-isSorted'}}
-                  {{this.styles.button}}"
-                data-test-subj="tableHeaderSortButton"
-                {{on "click" (sortHandler @onSort)}}
-              >
-                <span class="euiTableCellContent {{this.styles.content}}">
-                  <EuiInnerText as |ref innerText|>
-                    <span
-                      class="eui-textTruncate {{this.styles.text}}"
-                      title={{this.title innerText}}
-                      {{didInsert ref}}
-                    >{{yield}}</span>
-                  </EuiInnerText>
-                  {{#if @description}}
-                    <EuiScreenReaderOnly><span>{{@description}}</span></EuiScreenReaderOnly>
-                  {{/if}}
-                  {{#if @tooltipProps}}
-                    <EuiIcon
-                      class="euiTableSortIcon"
-                      @type={{if @tooltipProps.icon @tooltipProps.icon "question"}}
-                      @size="m"
-                      @color="subdued"
-                      @iconClasses={{@tooltipProps.iconProps.className}}
-                    />
-                  {{/if}}
-                  {{#if @isSorted}}
-                    <EuiIcon
-                      class="euiTableSortIcon"
-                      @type={{if @isSortAscending "sortUp" "sortDown"}}
-                      @size="m"
-                    />
-                  {{else}}
-                    <EuiIcon
-                      class="euiTableSortIcon euiTableSortIcon--sortable"
-                      @type="sortable"
-                      @size="m"
-                      @color="subdued"
-                    />
-                  {{/if}}
-                </span>
-              </button>
-
-            </MaybeTooltip>
-          {{else}}
-            <div class="euiTableCellContent {{this.styles.content}}">
-              <EuiInnerText as |ref innerText|>
-                <span
-                  class="eui-textTruncate {{this.styles.text}}"
-                  title={{this.title innerText}}
-                  {{didInsert ref}}
-                >{{yield}}</span>
-              </EuiInnerText>
-              {{#if @description}}
-                <EuiScreenReaderOnly><span>{{@description}}</span></EuiScreenReaderOnly>
-              {{/if}}
-              {{#if @tooltipProps}}
-                <EuiIconTip
-                  @content={{@tooltipProps.content}}
-                  @type={{if @tooltipProps.icon @tooltipProps.icon "question"}}
-                  @position={{@tooltipProps.tooltipProps.position}}
-                  @title={{@tooltipProps.tooltipProps.title}}
-                  @delay={{@tooltipProps.tooltipProps.delay}}
-                  @anchorClassName={{@tooltipProps.tooltipProps.anchorClassName}}
-                  @iconProps={{@tooltipProps.iconProps}}
-                  @size="m"
-                  @color="subdued"
-                  @display="block"
-                />
-              {{/if}}
-              {{#if @isSorted}}
-                <EuiIcon
-                  class="euiTableSortIcon"
-                  @type={{if @isSortAscending "sortUp" "sortDown"}}
-                  @size="m"
-                />
-              {{/if}}
-            </div>
+          <HeaderCellContents @cell={{this}}>{{yield}}</HeaderCellContents>
+          {{#if this.stickyHeaderRow}}
+            {{! the copy in the table's sticky header (upstream renders the
+                registered cell again, with the same props) }}
+            {{#in-element this.stickyHeaderRow insertBefore=null}}<Cell
+                class="euiTableHeaderCell {{this.styles.cell}}"
+                scope={{if (has-block) (if @scope @scope "col")}}
+                role="columnheader"
+                aria-sort={{this.ariaSort}}
+                aria-live={{if this.isSortable "polite"}}
+                style={{this.style}}
+                data-sticky={{this.stickySide}}
+                ...attributes
+                {{stickyHeaderCopy this.stickySync this.table this.style}}
+              ><HeaderCellContents @cell={{this}}>{{yield}}</HeaderCellContents></Cell>{{/in-element}}
           {{/if}}
         </Cell>
       {{/let}}
     {{/if}}
   </template>
 }
+
+function isPresent(value: unknown): boolean {
+  return value != null;
+}
+
+/** The sort button or the plain content (shared by the cell and its sticky copy). */
+const HeaderCellContents: TemplateOnlyComponent<{
+  Args: { cell: EuiTableHeaderCell };
+  Blocks: { default: [] };
+}> = <template>
+  {{#let @cell as |c|}}
+    {{#if c.canSort}}
+      <MaybeTooltip @tooltipProps={{c.args.tooltipProps}}>
+        <button
+          type="button"
+          class="euiTableHeaderButton
+            {{if c.args.isSorted 'euiTableHeaderButton-isSorted'}}
+            {{c.styles.button}}"
+          data-test-subj="tableHeaderSortButton"
+          {{on "click" (sortHandler c.args.onSort)}}
+        >
+          <span class="euiTableCellContent {{c.styles.content}}">
+            <EuiInnerText as |ref innerText|>
+              <span
+                class="eui-textTruncate {{c.styles.text}}"
+                title={{c.title innerText}}
+                {{didInsert ref}}
+              >{{yield}}</span>
+            </EuiInnerText>
+            {{#if c.args.description}}
+              <EuiScreenReaderOnly><span>{{c.args.description}}</span></EuiScreenReaderOnly>
+            {{/if}}
+            {{#if c.args.tooltipProps}}
+              <EuiIcon
+                class="euiTableSortIcon"
+                @type={{if c.args.tooltipProps.icon c.args.tooltipProps.icon "question"}}
+                @size="m"
+                @color="subdued"
+                @iconClasses={{c.args.tooltipProps.iconProps.className}}
+              />
+            {{/if}}
+            {{#if c.args.isSorted}}
+              <EuiIcon
+                class="euiTableSortIcon"
+                @type={{if c.args.isSortAscending "sortUp" "sortDown"}}
+                @size="m"
+              />
+            {{else}}
+              <EuiIcon
+                class="euiTableSortIcon euiTableSortIcon--sortable"
+                @type="sortable"
+                @size="m"
+                @color="subdued"
+              />
+            {{/if}}
+          </span>
+        </button>
+      </MaybeTooltip>
+    {{else}}
+      <div class="euiTableCellContent {{c.styles.content}}">
+        <EuiInnerText as |ref innerText|>
+          <span
+            class="eui-textTruncate {{c.styles.text}}"
+            title={{c.title innerText}}
+            {{didInsert ref}}
+          >{{yield}}</span>
+        </EuiInnerText>
+        {{#if c.args.description}}
+          <EuiScreenReaderOnly><span>{{c.args.description}}</span></EuiScreenReaderOnly>
+        {{/if}}
+        {{#if c.args.tooltipProps}}
+          <EuiIconTip
+            @content={{c.args.tooltipProps.content}}
+            @type={{if c.args.tooltipProps.icon c.args.tooltipProps.icon "question"}}
+            @position={{c.args.tooltipProps.tooltipProps.position}}
+            @title={{c.args.tooltipProps.tooltipProps.title}}
+            @delay={{c.args.tooltipProps.tooltipProps.delay}}
+            @anchorClassName={{c.args.tooltipProps.tooltipProps.anchorClassName}}
+            @iconProps={{c.args.tooltipProps.iconProps}}
+            @size="m"
+            @color="subdued"
+            @display="block"
+          />
+        {{/if}}
+        {{#if c.args.isSorted}}
+          <EuiIcon
+            class="euiTableSortIcon"
+            @type={{if c.args.isSortAscending "sortUp" "sortDown"}}
+            @size="m"
+          />
+        {{/if}}
+      </div>
+    {{/if}}
+  {{/let}}
+</template>;
 
 function sortHandler(
   onSort?: (event: MouseEvent) => void

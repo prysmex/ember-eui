@@ -344,7 +344,12 @@ const entries = {
   'components/datagrid/controls/column_selector.styles.js': ['euiDataGridColumnSelectorStyles'],
   'components/datagrid/controls/column_sorting.styles.js': ['euiDataGridColumnSortingStyles'],
   'components/datagrid/controls/keyboard_shortcuts.styles.js': ['euiDataGridKeyboardShortcutsStyles'],
-  'components/datagrid/pagination/data_grid_pagination.styles.js': ['euiDataGridPaginationStyles']
+  'components/datagrid/pagination/data_grid_pagination.styles.js': ['euiDataGridPaginationStyles'],
+  // tables-gaps (EuiTable stickyHeader/stickyScrollbar, sticky cells; extension-less key so the
+  // existing `_container_query.js` entry is not edited)
+  'components/table/sticky_header/sticky_header.styles.js': ['euiTableStickyHeaderStyles'],
+  'components/table/sticky_scrollbar/sticky_scrollbar.styles.js': ['euiTableStickyScrollbarStyles'],
+  'global_styling/mixins/_container_query': ['euiContainerQuery']
 };
 const hooks = `export function useEuiTheme(){throw new Error('React hooks cannot run in Ember')}
 export function useEuiMemoizedStyles(){throw new Error('React hooks cannot run in Ember')}`;

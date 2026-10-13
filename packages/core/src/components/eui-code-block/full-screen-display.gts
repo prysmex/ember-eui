@@ -5,6 +5,7 @@ import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../../-private/focus-trap-registry.ts';
 
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
@@ -65,6 +66,7 @@ export default class FullScreenDisplay extends Component<FullScreenDisplaySignat
         aria-label={{this.ariaLabel}}
         {{on "keydown" this.onKeyDown}}
         {{focusTrap
+          _createFocusTrap=focusTrapFactory
           isActive=true
           focusTrapOptions=(hash
             clickOutsideDeactivates=true escapeDeactivates=false

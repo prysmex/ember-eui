@@ -8,6 +8,7 @@ import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../-private/focus-trap-registry.ts';
 import { modifier } from 'ember-modifier';
 import { or } from 'ember-truth-helpers';
 
@@ -1154,6 +1155,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     <div
       class={{this.focusWrapClass}}
       {{focusTrap
+          _createFocusTrap=focusTrapFactory
         isActive=this.isFullScreen
         focusTrapOptions=(hash
           clickOutsideDeactivates=true escapeDeactivates=false preventScroll=true

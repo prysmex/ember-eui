@@ -8,6 +8,7 @@ import { next, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../-private/focus-trap-registry.ts';
 import { modifier as functionModifier } from 'ember-modifier';
 import { provide } from 'ember-provide-consume-context';
 import style from 'ember-style-modifier/modifiers/style';
@@ -1788,6 +1789,7 @@ export default class EuiFlyoutComponent
 {{this.registerElement}}
                 {{this.resizeSync this.resizable @size this.referenceWidth}}
                 {{focusTrap
+          _createFocusTrap=focusTrapFactory
                   isActive=(if (eq @isFocusTrapActive false) false true)
                   shouldSelfFocus=(if (eq @shouldSelfFocus false) false true)
                   isPaused=this.isPushed
@@ -1896,6 +1898,7 @@ export default class EuiFlyoutComponent
 {{this.registerElement}}
                   {{this.resizeSync this.resizable @size this.referenceWidth}}
                   {{focusTrap
+          _createFocusTrap=focusTrapFactory
                     isActive=(if (eq @isFocusTrapActive false) false true)
                     shouldSelfFocus=(if (eq @shouldSelfFocus false) false true)
                     isPaused=this.isPushed

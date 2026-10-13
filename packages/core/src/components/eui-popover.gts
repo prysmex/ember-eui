@@ -14,6 +14,11 @@ import type Owner from '@ember/owner';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { focusTrap } from 'ember-focus-trap';
+import { modifier } from 'ember-modifier';
+import {
+  attachToFocusTraps,
+  focusTrapFactory
+} from '../-private/focus-trap-registry.ts';
 import { provide } from 'ember-provide-consume-context';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, not, or } from 'ember-truth-helpers';
@@ -447,6 +452,14 @@ export default class EuiPopoverComponent
   private updateFocusToken: unknown;
   private hasSetInitialFocus: boolean = false;
   @tracked _button: HTMLElement | null = null;
+
+  /**
+   * The portalled panel counts as inside the modal, flyout or popover focus
+   * trap its anchor is in (upstream's react-focus-on follows React portals).
+   */
+  joinFocusTraps = modifier((panel: HTMLElement) =>
+    attachToFocusTraps(this._button, panel)
+  );
   @tracked panel: HTMLElement | null = null;
 
   constructor(owner: Owner, args: EuiPopoverArgs) {
@@ -1084,11 +1097,13 @@ export default class EuiPopoverComponent
             tabindex={{this.tabindex}}
             {{simpleStyle this._popoverStyles}}
             {{didInsert this.registerPanel}}
+            {{this.joinFocusTraps}}
             {{outsideClickDetector onOutsideClick=this.onClickOutside}}
             {{onKey "Escape" this.onEscapeKey}}
             {{! the trap only traps: updateFocus sets the initial focus,
                     once the panel is positioned and visible }}
             {{focusTrap
+          _createFocusTrap=focusTrapFactory
               isActive=(not
                 (or (not this.ownFocus) (not this.isOpenStable) this.isClosing)
               )

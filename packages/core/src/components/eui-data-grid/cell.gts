@@ -9,6 +9,7 @@ import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../../-private/focus-trap-registry.ts';
 import { modifier } from 'ember-modifier';
 import { eq } from 'ember-truth-helpers';
 
@@ -972,6 +973,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
         <div
           data-focus-lock-disabled={{if this.isCellEntered "false" "disabled"}}
           {{focusTrap
+          _createFocusTrap=focusTrapFactory
             isActive=this.isCellEntered
             focusTrapOptions=this.focusTrapOptions
           }}

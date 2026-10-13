@@ -1,6 +1,8 @@
 import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { modifier } from 'ember-modifier';
+
+import { attachToFocusTraps } from '../../-private/focus-trap-registry.ts';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
@@ -143,7 +145,18 @@ export default class EuiComboBoxOptionsComponent extends EmberPowerSelectOptions
     base._listElement = element;
     base._addHandlers(element);
 
+    // the portalled list counts as inside the focus trap (modal, flyout,
+    // popover) the combo box is in
+    const content = element.closest<HTMLElement>('.ember-basic-dropdown-content');
+    const trigger = document.querySelector(
+      `[data-ebd-id="${this.args.select.uniqueId}-trigger"]`
+    );
+    const leaveFocusTraps = content
+      ? attachToFocusTraps(trigger, content)
+      : () => {};
+
     return () => {
+      leaveFocusTraps();
       base._removeHandlers(element);
       if (base._listElement === element) base._listElement = undefined;
     };

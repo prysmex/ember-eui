@@ -8,6 +8,7 @@ import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../../-private/focus-trap-registry.ts';
 import { modifier } from 'ember-modifier';
 
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
@@ -461,7 +462,8 @@ export default class EuiDataGridHeaderCell extends Component<EuiDataGridHeaderCe
       {{#if this.isControlColumn}}<EuiDataGridCopyMarker @grid={{@grid}} @type="no-copy" />{{/if}}
       <div
         data-focus-lock-disabled={{if this.isCellEntered "false" "disabled"}}
-        {{focusTrap isActive=this.isCellEntered focusTrapOptions=this.focusTrapOptions}}
+        {{focusTrap
+          _createFocusTrap=focusTrapFactory isActive=this.isCellEntered focusTrapOptions=this.focusTrapOptions}}
       >
         {{#if @controlColumn}}
           {{#if @controlColumn.headerCellRender}}

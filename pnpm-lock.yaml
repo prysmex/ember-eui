@@ -533,6 +533,9 @@ importers:
       ember-truth-helpers:
         specifier: ^5.0.0
         version: 5.0.0(supports-color@10.2.2)
+      focus-trap:
+        specifier: ^6.9.4
+        version: 6.9.4
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21

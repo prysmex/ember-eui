@@ -6,6 +6,7 @@ import { service } from '@ember/service';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../-private/focus-trap-registry.ts';
 import style from 'ember-style-modifier/modifiers/style';
 import { or } from 'ember-truth-helpers';
 
@@ -368,6 +369,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
           class={{this.fullScreenWrapperClasses}}
           aria-label={{or @caption overlayCaptionText undefined}}
           {{focusTrap
+          _createFocusTrap=focusTrapFactory
             focusTrapOptions=(hash
               clickOutsideDeactivates=true escapeDeactivates=false
             )

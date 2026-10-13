@@ -5,6 +5,7 @@ import { hash } from '@ember/helper';
 import { action } from '@ember/object';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../-private/focus-trap-registry.ts';
 import { modifier } from 'ember-modifier';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { not } from 'ember-truth-helpers';
@@ -272,6 +273,7 @@ export default class EuiInputPopoverComponent extends Component<EuiInputPopoverS
               @closePopover
             }}
             {{focusTrap
+          _createFocusTrap=focusTrapFactory
               isActive=(not this.disableFocusTrap)
               focusTrapOptions=(hash
                 clickOutsideDeactivates=true

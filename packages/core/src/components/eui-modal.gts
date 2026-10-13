@@ -5,6 +5,7 @@ import { guidFor } from '@ember/object/internals';
 import { service } from '@ember/service';
 
 import { focusTrap } from 'ember-focus-trap';
+import { focusTrapFactory } from '../-private/focus-trap-registry.ts';
 import style from 'ember-style-modifier/modifiers/style';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -226,6 +227,7 @@ export default class EuiModal extends Component<EuiModalSignature> {
           titleSelector=".euiModalHeader__title"
         }}
         {{focusTrap
+          _createFocusTrap=focusTrapFactory
           isActive=(if (eq @isFocusTrapActive false) false true)
           shouldSelfFocus=(if (eq @shouldSelfFocus false) false true)
           isPaused=(if @isFocusTrapPaused true false)

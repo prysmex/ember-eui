@@ -275,7 +275,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               onValidityChange=this.onChildValidityChange
               tagName="div"
               formId=(argOrDefault @formId formId)
-              theme=@theme
+              theme=this.theme
               isDisabled=@isDisabled
               fullWidth=@fullWidth
             )
@@ -286,7 +286,7 @@ export default class ValidatedFormComponent extends Component<ValidatedFormSigna
               onValidityChange=this.onChildValidityChange
               tagName="div"
               formId=(argOrDefault @formId formId)
-              theme=@theme
+              theme=this.theme
               isDisabled=@isDisabled
               fullWidth=@fullWidth
             )

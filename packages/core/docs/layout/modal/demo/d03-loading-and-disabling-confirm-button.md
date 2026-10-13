@@ -27,6 +27,8 @@ export default class ModalLoadingConfirmComponent extends Component {
   @tracked isModalVisible = false;
   @tracked value = '';
 
+  titleProps = { id: 'deleteModalTitle' };
+
   timeoutId = null;
 
   get isConfirmDisabled() {
@@ -72,7 +74,9 @@ export default class ModalLoadingConfirmComponent extends Component {
 
   {{#if this.isModalVisible}}
     <EuiConfirmModal
+      aria-labelledby="deleteModalTitle"
       @title="Delete the EUI repo?"
+      @titleProps={{this.titleProps}}
       @onCancel={{this.closeModal}}
       @onConfirm={{this.confirm}}
       @confirmButtonText="Delete"

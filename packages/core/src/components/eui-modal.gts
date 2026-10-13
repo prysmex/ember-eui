@@ -30,6 +30,19 @@ type FocusTarget = string | HTMLElement | (() => HTMLElement);
  * labelled by its `EuiModalHeaderTitle`. Pass `role="alertdialog"` for
  * destructive confirmations.
  */
+/** Upstream `focusTrapProps` of a modal (`EuiFocusTrap`'s `returnFocus`). */
+export interface EuiModalFocusTrapProps {
+  /**
+   * Whether closing returns focus to the element focused before opening:
+   * `false` opts out (return it yourself), a function receives that
+   * element and returns `false` to skip it. Defaults to `true`.
+   */
+  returnFocus?:
+    | boolean
+    | FocusOptions
+    | ((returnTo: Element) => boolean | FocusOptions);
+}
+
 export interface EuiModalSignature {
   Element: HTMLDivElement;
   Args: {
@@ -75,6 +88,8 @@ export interface EuiModalSignature {
       returnFocusOnDeactivate?: boolean;
       preventScroll?: boolean;
     };
+    /** Focus trap options (upstream `focusTrapProps`): `returnFocus`. */
+    focusTrapProps?: EuiModalFocusTrapProps;
     /**
      * Extra styles composed last into this component's class (like upstream's
      * `css` prop). Prefer this to an extra class when styling it from a parent.
@@ -145,7 +160,7 @@ export default class EuiModal extends Component<EuiModalSignature> {
 
   @cached
   get focusTrapOptions() {
-    return {
+    const options = {
       allowOutsideClick: true,
       escapeDeactivates: false,
       ...(this.args.initialFocus
@@ -153,6 +168,19 @@ export default class EuiModal extends Component<EuiModalSignature> {
         : {}),
       ...this.args.focusTrapOptions
     };
+    const returnFocus = this.args.focusTrapProps?.returnFocus;
+
+    if (returnFocus === false) {
+      return { ...options, returnFocusOnDeactivate: false };
+    }
+    if (typeof returnFocus === 'function') {
+      return {
+        ...options,
+        setReturnFocus: (previous: HTMLElement | SVGElement) =>
+          returnFocus(previous) === false ? false : previous
+      };
+    }
+    return options;
   }
 
   get description() {

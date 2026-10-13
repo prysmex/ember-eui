@@ -38,6 +38,43 @@ and update it from the change event, as in the examples below.
 For validation, `@ember-eui/validated-form` and
 `@ember-eui/changeset-form` build on these components.
 
+## Usage
+
+This section documents patterns for form layout, validation and how best to use various components.
+
+### Key principles
+
+- **Help users achieve success.** Use a label (and a description if needed) for each form field. All form fields should be considered required unless stated alongside the label. Show validation parameters in the help text below the input. Validate on blur: the submit button should be active by default, then show errors after click, with specific error messages.
+- **Provide transparency.** A well-formatted layout makes it clear to users how to navigate the form. Form labels and descriptions are equally important as layout and should be specific, concise, and easy to scan.
+- **Maintain a standard layout.** Keep the form divided into two columns, with the descriptions on one side and form fields on the other. Keep inputs in a single column to make groupings clearer, and avoid nesting form rows.
+- **Divide the form into sections.** As a form grows longer, add visual indicators (dividers) to define the sections. Avoid panels within panels, and add more spacing between form groups than between fields within a group.
+
+### Described groups
+
+An `EuiDescribedFormGroup` provides an additional heading along with description text for a single input or set of input fields. It is not intended for every type of form, but typically works best for forms with lengthy descriptions per input, forms with multiple inputs falling under a single heading, and forms with complex nested options (the toggle that hides and shows the row goes beneath the description, and the following fields in the right column).
+
+### Labels
+
+Avoid long labels, but don't sacrifice clarity. Say what the field is in the label, and use help text for additional information (do: label "Version" with help text "Use the `major.minor` format."; don't: label "Numeric version (e.g. `2.*`)").
+
+### Hint text
+
+Place hints and instructions outside a text field so it is always visible to the user. Keep the hint text short, maximum two sentences long, with complete sentences and ending punctuation. Use hint text to:
+
+- Explain **why you are asking a certain question**: "We will only email you if there is a problem with your order."
+- Provide **clarifying details** on what to type: "Enter the full 32-character ID."
+- Tell the user **where to find the information** you're asking for: "Find the Elasticsearch cluster ID on the main administration page of your deployment."
+
+### Placeholder text
+
+Use the placeholder to describe the expected value of the input or to provide a useful example, for instance `+33600000000` for a phone number. Don't start with "for example" or "e.g.", and don't use text that adds no value, such as "Type here". Add placeholder text in addition to field labels and help text, not as a replacement; omit it if it doesn't add value, and keep it short. When space is limited and the UI is very simple, you can use field labels as placeholder text, but this must stay an exception.
+
+In a search bar, be specific about what users can enter: give users a hint at things they might want to search for ("Find apps and content. Ex: Discover") and state the action the user performs (find, search). Don't use an ellipsis ("Search...").
+
+### Validation error text
+
+Validation messages are needed when the user input differs from what the system expects and enforces. Use clear language that helps users understand what they have to do: use a simple, minimalist format for a required field ("Name is required."), tell users what happened and how to fix it, and be as precise as possible to describe the problem.
+
 </EuiText>
 
 <EuiHorizontalRule />

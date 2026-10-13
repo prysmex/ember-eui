@@ -55,6 +55,7 @@ import EuiDragDropContext from './components/eui-drag-drop-context.gts';
 import EuiDraggable from './components/eui-draggable.gts';
 import EuiDroppable from './components/eui-droppable.gts';
 import EuiDualRange from './components/eui-dual-range.gts';
+import EuiEmotionProvider from './components/eui-emotion-provider.gts';
 import EuiEmptyPrompt from './components/eui-empty-prompt.gts';
 import EuiExpression from './components/eui-expression.gts';
 import EuiFacetButton from './components/eui-facet-button.gts';
@@ -111,6 +112,7 @@ import EuiIcon from './components/eui-icon.gts';
 import EuiIconTip from './components/eui-icon-tip.gts';
 import EuiIllustration from './components/eui-illustration.gts';
 import EuiImage from './components/eui-image.gts';
+import EuiInnerText from './components/eui-inner-text.gts';
 import EuiInlineEditText from './components/eui-inline-edit-text.gts';
 import EuiInlineEditTitle from './components/eui-inline-edit-title.gts';
 import EuiInMemoryTable from './components/eui-in-memory-table.gts';
@@ -318,6 +320,7 @@ export {
   EuiDraggable,
   EuiDroppable,
   EuiDualRange,
+  EuiEmotionProvider,
   EuiEmptyPrompt,
   EuiExpression,
   EuiFacetButton,
@@ -374,6 +377,7 @@ export {
   EuiIconTip,
   EuiIllustration,
   EuiImage,
+  EuiInnerText,
   EuiInlineEditText,
   EuiInlineEditTitle,
   EuiInMemoryTable,

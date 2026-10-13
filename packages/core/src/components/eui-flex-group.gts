@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
-import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -29,7 +28,7 @@ export type EuiFlexGroupDirection =
   | 'columnReverse';
 
 export interface EuiFlexGroupSignature {
-  Element: HTMLDivElement | HTMLSpanElement;
+  Element: HTMLElement;
   Args: {
     /**
      * Space between items (CSS `gap`): `'none'`, `'xs'` (4px), `'s'` (8px),
@@ -61,8 +60,11 @@ export interface EuiFlexGroupSignature {
      * never affected. Defaults to `true`.
      */
     responsive?: boolean;
-    /** `'div'` or `'span'` (inside text). Defaults to `'div'`. */
-    tagName?: 'div' | 'span';
+    /**
+     * Any tag name, e.g. `'span'` (inside text), `'section'` or `'ul'`
+     * (upstream's `component`). Defaults to `'div'`.
+     */
+    tagName?: string;
     /**
      * Extra styles composed last into this component's class (like upstream's
      * `css` prop). Prefer this to an extra class when styling it from a parent.
@@ -99,14 +101,11 @@ export default class EuiFlexGroup extends Component<EuiFlexGroupSignature> {
   }
 
   <template>
-    {{#if (eq @tagName "span")}}
-      <span class="euiFlexGroup {{this.classes}}" ...attributes>
+    {{#let (element (if @tagName @tagName "div")) as |Tag|}}
+      {{! @glint-expect-error the tag is not known }}
+      <Tag class="euiFlexGroup {{this.classes}}" ...attributes>
         {{yield}}
-      </span>
-    {{else}}
-      <div class="euiFlexGroup {{this.classes}}" ...attributes>
-        {{yield}}
-      </div>
-    {{/if}}
+      </Tag>
+    {{/let}}
   </template>
 }

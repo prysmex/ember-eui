@@ -89,16 +89,34 @@ export default class HeaderSectionsDemo extends Component {
 
 <EuiText>
 
-`EuiHeader` also has a `@sections` argument that builds the header from data, but unlike upstream its `items` can only be plain text (`{ text }`), not arbitrary nodes. Passing `@sections` ignores the block.
+Alternatively, pass an array of objects to `@sections`, taking `items` (children to wrap in an `EuiHeaderSectionItem`: text, or a component such as a curried `EuiHeaderLogo`) and/or `breadcrumbs`. Each object is wrapped in an `EuiHeaderSection`. `breadcrumbProps` passes `className`, `EuiHeaderBreadcrumbs` arguments and attributes (like `aria-label`) to the breadcrumbs.
+
+For markup in the items, use the `<:sectionItem as |item index|>` block, which renders every item. Passing `@sections` ignores the default block.
 
 </EuiText>
 
 ```gjs component
-import { EuiHeader } from '@ember-eui/core/components';
+import { EuiAvatar, EuiHeader, EuiHeaderLogo, EuiHeaderSectionItemButton, EuiIcon } from '@ember-eui/core/components';
+
+const Logo = <template><EuiHeaderLogo @iconType="logoElastic" @href="#" aria-label="Go to home page" /></template>;
+const Spaces = <template>
+  <EuiHeaderSectionItemButton aria-label="Spaces menu">
+    <EuiAvatar @type="space" @name="Sales Team" @size="s" />
+  </EuiHeaderSectionItemButton>
+</template>;
+const Search = <template>
+  <EuiHeaderSectionItemButton @disabled={{true}} aria-label="Sitewide search">
+    <EuiIcon @type="magnify" @size="m" />
+  </EuiHeaderSectionItemButton>
+</template>;
 
 const sections = [
-  { items: [{ text: 'Home' }, { text: 'Dashboards' }] },
-  { items: [{ text: 'Help' }] },
+  {
+    items: [Logo, Spaces],
+    breadcrumbs: [{ text: 'Management', href: '#' }, { text: 'Users', href: '#' }, { text: 'Create' }],
+    breadcrumbProps: { 'aria-label': 'Header sections breadcrumbs' }
+  },
+  { items: [Search] }
 ];
 
 <template>

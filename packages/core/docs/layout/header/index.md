@@ -65,6 +65,7 @@ The app's top bar: logo, breadcrumbs, links and actions, arranged in
 | Block | Description |
 | --- | --- |
 | default block | `EuiHeaderSection`s (left and right), ignored with `@sections`. |
+| `<:sectionItem>` | With `@sections`: renders each item of a section's `items` (yielded as given) instead of the text or component, e.g. for markup. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

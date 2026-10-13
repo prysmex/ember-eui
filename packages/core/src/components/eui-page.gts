@@ -17,6 +17,7 @@ import {
 } from '../utils/eui/styles.generated.ts';
 
 import type { EuiPagePaddingSize } from '../utils/eui/page-layout.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 /** The outermost layout of a page: holds an optional `EuiPageSideBar` and an `EuiPageBody`. See also EuiPageTemplate. */
 export interface EuiPageSignature {
@@ -48,6 +49,11 @@ export interface EuiPageSignature {
     color?: string;
     /** Inline styles, merged with the max width. */
     style?: Record<string, string>;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** `EuiPageSideBar` and `EuiPageBody`. */
@@ -71,7 +77,8 @@ export default class EuiPage extends Component<EuiPageSignature> {
       { backgroundColor: euiBackgroundColor(upstream, this.args.color ?? 'transparent') },
       (this.args.grow ?? true) && styles.grow,
       euiPagePadding(upstream, this.args.paddingSize ?? 'none'),
-      isRestricted(this.args.restrictWidth) && styles.restrictWidth
+      isRestricted(this.args.restrictWidth) && styles.restrictWidth,
+      this.args.css
     );
   }
 

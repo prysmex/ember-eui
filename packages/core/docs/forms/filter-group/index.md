@@ -54,6 +54,7 @@ to a search field, e.g. "On / Off" toggles and a "Status" popover.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@fullWidth` | `boolean` |  | Takes the container's full width instead of its content's. |
 | `@compressed` | `boolean` |  | Smaller buttons and radius, e.g. next to a compressed search field. |
 | `@display` | `'regular' \| 'highlighted'` | `'regular'` | `'regular'` or `'highlighted'` (selected `@isToggle` buttons are filled). |

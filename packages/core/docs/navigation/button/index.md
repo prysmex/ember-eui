@@ -134,6 +134,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@buttonSize` | `'s' \| 'm' \| 'compressed'` | `'s'` | `'s'`, `'m'`, or `'compressed'` (for forms, e.g. inside an `EuiFormRow` with `@display="rowCompressed"`). |
 | `@color` |  | `'text'` | Color of the selected buttons: `'text'`, `'primary'`, `'accent'`, `'accentSecondary'`, `'success'`, `'warning'`, `'danger'`, `'neutral'` or `'risk'`. `'ghost'` is still accepted and renders as `'text'` (latest EUI dropped it). |
 | `@isFullWidth` | `boolean` |  | Stretches the group, and its buttons evenly, to its container's width. |

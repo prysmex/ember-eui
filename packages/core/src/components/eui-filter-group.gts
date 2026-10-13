@@ -9,6 +9,7 @@ import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import { euiFilterGroupStyles } from '../utils/eui/styles.generated.ts';
 
 import type { EuiFilterGroupContext } from '../-private/eui-filter-group-context.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 /**
  * A bar of `EuiFilterButton`s joined in one bordered group, usually next
@@ -17,6 +18,11 @@ import type { EuiFilterGroupContext } from '../-private/eui-filter-group-context
 export interface EuiFilterGroupSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** Takes the container's full width instead of its content's. */
     fullWidth?: boolean;
     /** Smaller buttons and radius, e.g. next to a compressed search field. */
@@ -63,7 +69,8 @@ export default class EuiFilterGroup
       { boxSizing: 'border-box' },
       styles.euiFilterGroup,
       this.args.fullWidth && styles.fullWidth,
-      this.compressed ? styles.compressed : styles.uncompressed
+      this.compressed ? styles.compressed : styles.uncompressed,
+      this.args.css
     )}`;
   }
 

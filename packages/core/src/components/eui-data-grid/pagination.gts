@@ -79,7 +79,7 @@ export default class EuiDataGridPagination extends Component<EuiDataGridPaginati
         @pageCount={{this.pageCount}}
         @onChangePage={{this.onChangePage}}
         @onChangeItemsPerPage={{@pagination.onChangeItemsPerPage}}
-        aria-label={{this.ariaLabel}}
+        @aria-label={{this.ariaLabel}}
       />
     </div>
   </template>

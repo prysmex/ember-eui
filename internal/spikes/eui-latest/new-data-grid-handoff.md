@@ -94,10 +94,12 @@ half-done code.
   estimates auto rows with the default height).
 - Scoped reset: the grid adds `*:where(& *) { box-sizing: border-box }`
   (zero specificity) because upstream's cell layout relies on the global reset.
-- EuiButtonGroup and EuiDroppable/EuiDraggable have no `@css`: the sort
-  popover's order styles go on the button group's EuiFlexItem `@css`, and the
-  column selector/sorting list styles on a wrapper div (no second Emotion class
-  on migrated children). Coordinator may add `@css` to those components later.
+- `@css` (added to EuiButtonGroup, EuiDroppable, EuiDraggable, EuiFilterGroup
+  and EuiTable on `eui-wave/css-gaps`): the sort popover's order styles go on
+  `EuiButtonGroup @css` and the column selector/sorting list styles on
+  `EuiDroppable @css` / `EuiDraggable @css` like upstream; the former wrapper
+  divs and the order flex item class are gone. The pagination's `aria-label`
+  is `EuiTablePagination @aria-label`.
 - Upstream behavior kept: `minRowHeight` measured for `lineCount` persists when
   switching to a smaller static height; sort pruning of hidden columns happens
   in the toolbar sort control; column widths reset when the visible columns

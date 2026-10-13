@@ -5,7 +5,6 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { next } from '@ember/runloop';
 import { service } from '@ember/service';
-import { htmlSafe } from '@ember/template';
 
 import { modifier } from 'ember-modifier';
 
@@ -23,6 +22,7 @@ import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
   euiBasicTableBodyLoading,
   euiBasicTableWrapperPanelledStyles,
+  safariLoadingWorkaround,
   euiTableCaptionStyles
 } from '../utils/eui/styles.generated.ts';
 import { get } from '../utils/eui/search-bar/predicate.ts';
@@ -35,7 +35,6 @@ import PaginationBar, {
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiDelayRender from './eui-delay-render.gts';
 import EuiIcon from './eui-icon.gts';
-import EuiIconTip from './eui-icon-tip.gts';
 import { euiScreenReaderOnlyCss } from './eui-screen-reader-only.gts';
 import EuiTable from './eui-table.gts';
 import EuiTableBody from './eui-table-body.gts';
@@ -59,7 +58,6 @@ import type {
   EuiBasicTableColumn,
   EuiTableActionsColumnType,
   EuiTableCellComponent,
-  EuiTableColumnNameTooltipProps,
   EuiTableComputedColumnType,
   EuiTableContent,
   EuiTableElementProps,
@@ -76,6 +74,7 @@ import type {
   TableMobileOptions,
   TableResponsiveBreakpoint
 } from '../-private/table.ts';
+import type { EuiTableHeaderCellTooltipProps } from './eui-table-header-cell.gts';
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiTableSortMobileItemOption } from './eui-table-sort-mobile.gts';
@@ -194,7 +193,7 @@ interface SortOptions {
 interface HeaderModel {
   key: string;
   name?: string;
-  nameTooltip?: EuiTableColumnNameTooltipProps;
+  tooltipProps?: EuiTableHeaderCellTooltipProps;
   width?: string;
   minWidth?: string;
   maxWidth?: string;
@@ -256,6 +255,8 @@ interface RowModel<T extends object> {
   cells: CellModel<T>[];
 }
 
+const SAFARI_LOADING_WORKAROUND = safariLoadingWorkaround;
+
 /** Stable panelled factories per breakpoint (memoized by `useEuiBorealisStyles`). */
 const PANELLED = new Map<unknown, ReturnType<typeof euiBasicTableWrapperPanelledStyles>>();
 function panelledFactory(breakpoint: TableResponsiveBreakpoint | undefined) {
@@ -266,8 +267,6 @@ function panelledFactory(breakpoint: TableResponsiveBreakpoint | undefined) {
   }
   return factory;
 }
-
-const SAFARI_LOADING_WORKAROUND = htmlSafe('position: relative;');
 
 export default class EuiBasicTable<T extends object = any> extends Component<
   EuiBasicTableSignature<T>
@@ -477,7 +476,11 @@ export default class EuiBasicTable<T extends object = any> extends Component<
         width,
         minWidth,
         maxWidth,
-        nameTooltip,
+        tooltipProps: nameTooltip && {
+          content: nameTooltip.content,
+          icon: nameTooltip.icon,
+          tooltipProps: { position: nameTooltip.position }
+        },
         description,
         mobileOptions,
         name,
@@ -839,6 +842,15 @@ export default class EuiBasicTable<T extends object = any> extends Component<
     );
   }
 
+  /** Upstream: "Pagination for table: {tableCaption}". */
+  get paginationLabel(): string {
+    return this.euiI18n.lookupToken(
+      'euiBasicTable.tablePagination',
+      'Pagination for table: {tableCaption}',
+      { tableCaption: this.args.tableCaption ?? '' }
+    );
+  }
+
   @cached
   get caption() {
     const { items, pagination, tableCaption } = this.args;
@@ -947,6 +959,7 @@ export default class EuiBasicTable<T extends object = any> extends Component<
           @onPageSizeChange={{this.onPageSizeChange}}
           @onPageChange={{this.onPageChange}}
           @ariaControls={{this.tableId}}
+          @ariaLabel={{this.paginationLabel}}
         />
       {{/if}}
     </div>
@@ -1018,7 +1031,7 @@ class BasicTableContent<T extends object> extends Component<
         @compressed={{t.args.compressed}}
         @hasBackground={{t.args.hasBackground}}
         @scrollableInline={{t.args.scrollableInline}}
-        style={{if t.args.loading SAFARI_LOADING_WORKAROUND}}
+        @css={{if t.args.loading SAFARI_LOADING_WORKAROUND}}
       >
         <caption class="euiTableCaption euiScreenReaderOnly {{t.classes.caption}}">
           <EuiDelayRender>
@@ -1057,6 +1070,7 @@ class BasicTableContent<T extends object> extends Component<
               @minWidth={{header.minWidth}}
               @maxWidth={{header.maxWidth}}
               @description={{header.description}}
+              @tooltipProps={{header.tooltipProps}}
               @mobileOptions={{header.mobileOptions}}
               @align={{header.align}}
               @isSorted={{header.sorting.isSorted}}
@@ -1066,15 +1080,6 @@ class BasicTableContent<T extends object> extends Component<
               data-test-subj={{header.testSubj}}
             >
               {{header.name}}
-              {{#if header.nameTooltip}}
-                <EuiIconTip
-                  @content={{header.nameTooltip.content}}
-                  @type={{if header.nameTooltip.icon header.nameTooltip.icon "question"}}
-                  @position={{if header.nameTooltip.position header.nameTooltip.position "top"}}
-                  @size="m"
-                  @color="subdued"
-                />
-              {{/if}}
             </EuiTableHeaderCell>
           {{/each}}
         </EuiTableHeader>

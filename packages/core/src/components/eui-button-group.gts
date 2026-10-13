@@ -12,6 +12,7 @@ import {
 import EuiButtonGroupButton from './eui-button-group-button.gts';
 
 import type { EuiButtonGroupButtonSignature } from './eui-button-group-button';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 export interface Option {
   /** Disables this option. Defaults to the group's `@isDisabled`. */
@@ -54,6 +55,11 @@ export interface Option {
 export interface EuiButtonGroupSignature {
   Element: HTMLFieldSetElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /**
      * `'s'`, `'m'`, or `'compressed'` (for forms, e.g. inside an
      * `EuiFormRow` with `@display="rowCompressed"`). Defaults to `'s'`.
@@ -159,7 +165,8 @@ export default class EuiButtonGroup extends Component<EuiButtonGroupSignature> {
           minInlineSize: 'auto'
         },
         euiButtonGroupStyles.euiButtonGroup,
-        this.args.isFullWidth && euiButtonGroupStyles.fullWidth
+        this.args.isFullWidth && euiButtonGroupStyles.fullWidth,
+        this.args.css
       )
     ]
       .filter(Boolean)

@@ -65,7 +65,7 @@ Pass the same lists to `EuiMarkdownFormat` where you render the result.
 `getDefaultEuiMarkdownPlugins({ exclude: ['tooltip'] })` returns all three
 lists at once with a default plugin unregistered.
 
-
+</EuiText>
 
 <EuiHorizontalRule />
 

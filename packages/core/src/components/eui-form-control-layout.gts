@@ -14,7 +14,9 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
-import EuiFormControlLayoutIcons from './eui-form-control-layout-icons.gts';
+import EuiFormControlLayoutIcons, {
+  iconSideOf
+} from './eui-form-control-layout-icons.gts';
 
 import type { EuiFormControlLayoutContext } from '../-private/eui-form-control-layout-context.ts';
 import type { EuiFormControlLayoutIconsSignature } from './eui-form-control-layout-icons';
@@ -50,16 +52,28 @@ export interface EuiFormControlLayoutSignature {
      * disabled or read-only.
      */
     isDropdown?: boolean;
-    /** Icon inside the control, anything `EuiIcon`'s `@type` accepts. */
+    /**
+     * Icon inside the control, anything `EuiIcon`'s `@type` accepts, or an
+     * icon shape object (upstream `IconShape`): `{ type, side, color,
+     * onClick, … }`, where `onClick` makes it a button and other keys
+     * (`aria-label`, `data-test-subj`, `tabIndex`, …) are its attributes.
+     */
     icon?: EuiFormControlLayoutIconsSignature['Args']['icon'];
-    /** Side of `@icon`: `'left'` or `'right'`. Defaults to `'left'`. */
+    /**
+     * Side of `@icon`: `'left'` or `'right'`. Defaults to `'left'`. An icon
+     * shape's `side` wins.
+     */
     iconSide?: EuiFormControlLayoutIconsSignature['Args']['side'];
     /**
      * `'absolute'` overlays the icons on the control, `'static'` lays them
      * out beside it. Defaults to `'absolute'`.
      */
     iconsPosition?: 'absolute' | 'static';
-    /** Shows a clear ("x") button calling this function. */
+    /**
+     * Shows a clear ("x") button calling this function, or with these props
+     * (upstream `clear`): `{ onClick, disabled, size, … }`, other keys
+     * (`data-test-subj`, `aria-label`, …) being its attributes.
+     */
     clear?: EuiFormControlLayoutIconsSignature['Args']['clear'];
     /** Accessible label of the clear button. Defaults to "Clear input". */
     clearLabel?: string;
@@ -152,7 +166,7 @@ export default class EuiFormControlLayout extends Component<EuiFormControlLayout
     return Boolean(this.args.compressed);
   }
   get iconSide(): 'left' | 'right' {
-    return this.args.iconSide === 'right' ? 'right' : 'left';
+    return iconSideOf(this.args.icon, this.args.iconSide);
   }
   get hasDropdownIcon() {
     return Boolean(

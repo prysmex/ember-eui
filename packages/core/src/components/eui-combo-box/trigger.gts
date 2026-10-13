@@ -21,7 +21,16 @@ import EuiFormPrepend from '../eui-form-prepend.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
 import EuiComboBoxNode from './node.gts';
 import EuiComboBoxTriggerInput from './trigger/input.gts';
-import { isTextNode } from '../../utils/eui/combo-box.ts';
+import {
+  comboBoxAppendPrependStyles,
+  comboBoxOptionLabel,
+  isTextNode
+} from '../../utils/eui/combo-box.ts';
+
+import type {
+  EuiFormControlLayoutClearProps,
+  EuiFormControlLayoutIconShape
+} from '../eui-form-control-layout-icons.gts';
 
 import type { CSSInterpolation } from '@emotion/css/create-instance';
 
@@ -45,6 +54,10 @@ interface TriggerArgs {
   append?: unknown;
   noSuggestions?: boolean;
   screenReaderInstructions?: string;
+  searchField?: string;
+  allowClear?: boolean;
+  onClear?: (event?: Event) => void;
+  onToggleList?: (event: MouseEvent) => void;
 }
 
 /** Upstream side nodes: one string is an EuiFormPrepend/Append label. */
@@ -52,6 +65,11 @@ const isSingleText = (node: unknown) => !Array.isArray(node) && isTextNode(node)
 
 const nodeList = (node: unknown): unknown[] =>
   Array.isArray(node) ? node : [node];
+
+const optionNode = (option: unknown, key: 'prepend' | 'append') =>
+  option && typeof option === 'object'
+    ? (option as Record<string, unknown>)[key]
+    : undefined;
 
 /**
  * @private EuiComboBox's input with the selected pills. Extends
@@ -88,15 +106,87 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
     return `ember-power-select-trigger-multiple-input-${this.comboArgs.select.uniqueId}`;
   }
 
-  /** Upstream `noIcon={!!noSuggestions}`: no list, no chevron. */
-  get icon(): unknown {
-    if (this.comboArgs.select.disabled || this.comboArgs.noSuggestions) {
-      return undefined;
+  /**
+   * Upstream's toggle button (`comboBoxToggleListButton`): the chevron is a
+   * button opening or closing the list. Upstream `noIcon={!!noSuggestions}`:
+   * no list, no chevron; none while disabled either.
+   */
+  @cached
+  get icon(): EuiFormControlLayoutIconShape | undefined {
+    const { select, noSuggestions, onToggleList } = this.comboArgs;
+
+    if (select.disabled || noSuggestions) return undefined;
+
+    return {
+      // @ts-expect-error `icon` is curried by EuiComboBox
+      type: this.args.icon ?? 'chevronSingleDown',
+      side: 'right',
+      'aria-label': select.isOpen
+        ? 'Close list of options'
+        : 'Open list of options',
+      'data-test-subj': 'comboBoxToggleListButton',
+      tabIndex: -1,
+      onClick: (event: MouseEvent) => onToggleList?.(event)
+    };
+  }
+
+  /** Upstream `clear` props: `comboBoxClearButton`, shown with a selection. */
+  @cached
+  get clearProps(): EuiFormControlLayoutClearProps | undefined {
+    const { allowClear, onClear } = this.comboArgs;
+
+    if (!allowClear || !onClear || !this.hasSelection) return undefined;
+
+    return {
+      'data-test-subj': 'comboBoxClearButton',
+      onClick: (event: MouseEvent) => onClear(event)
+    };
+  }
+
+  /** Plain text selection: the selected option, shown as the input's text. */
+  get plainTextOption(): unknown {
+    return this.asPlainText ? this.comboArgs.select.selected?.[0] : undefined;
+  }
+
+  /** Upstream: the input shows the search text, else the selection's label. */
+  get plainTextValue(): string | undefined {
+    const option = this.plainTextOption;
+
+    if (option === undefined) return undefined;
+
+    return comboBoxOptionLabel(option, this.comboArgs.searchField) ?? '';
+  }
+
+  /** Plain text selection's option prepend/append: upstream `xxs` spacing. */
+  @cached
+  get plainTextSideClasses(): { prepend: string; append: string } {
+    const context = getEuiThemeContext(this);
+    const styles = comboBoxAppendPrependStyles(
+      String(context.upstream.euiTheme.size.xxs)
+    );
+
+    return {
+      prepend: euiClass(context, styles.prepend),
+      append: euiClass(context, styles.append)
+    };
+  }
+
+  /**
+   * The toggle button handles its own clicks: ember-basic-dropdown's
+   * trigger must not toggle the list on the same press, and focus stays in
+   * the input.
+   */
+  keepToggle = (event: Event) => {
+    const target = event.target as Element | null;
+
+    if (!target?.closest?.('[data-test-subj="comboBoxToggleListButton"]')) {
+      return;
     }
 
-    // @ts-expect-error `icon` is curried by EuiComboBox
-    return this.args.icon ?? 'chevronSingleDown';
-  }
+    event.stopPropagation();
+
+    if (event.type === 'mousedown') event.preventDefault();
+  };
 
   /** Upstream `showPlaceholder`: a placeholder, no selection, no search. */
   get showPlaceholder(): boolean {
@@ -194,11 +284,14 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
       @isPrependProvided={{if this.prepend true false}}
       @isAppendProvided={{if this.append true false}}
       @iconSide="right"
+      {{on "mousedown" this.keepToggle capture=true}}
+      {{on "touchstart" this.keepToggle capture=true}}
+      {{on "touchend" this.keepToggle capture=true}}
       @fullWidth={{@fullWidth}}
       @compressed={{@compressed}}
       @readOnly={{@readOnly}}
       @isInvalid={{@isInvalid}}
-      @clear={{if (and @select.selected @allowClear) @onClear}}
+      @clear={{this.clearProps}}
       @isLoading={{@isLoading}}
       @disabled={{@select.disabled}}
       @css={{this.layoutCss}}
@@ -235,10 +328,15 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
           {{on "mousedown" this.chooseOption}}
         >
           {{! template-lint-enable }}
+          {{! upstream: no pill for plain text (the input shows it), and
+            no single selection pill while searching }}
           {{#if
-            (or
-              (and @singleSelection (not @select.searchText))
-              (not @singleSelection)
+            (and
+              (not this.asPlainText)
+              (or
+                (and @singleSelection (not @select.searchText))
+                (not @singleSelection)
+              )
             )
           }}
             {{#each @select.selected as |opt idx|}}
@@ -283,6 +381,20 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
                 </span>
               {{/if}}{{/each}}
           {{/if}}
+          {{#let
+            (optionNode this.plainTextOption "prepend")
+            (optionNode this.plainTextOption "append")
+            as |plainPrepend plainAppend|
+          }}
+          {{#if plainPrepend}}
+            <span
+              class="euiComboBoxPlainTextSelection__prepend
+                {{this.plainTextSideClasses.prepend}}"
+            ><EuiComboBoxNode
+                @node={{plainPrepend}}
+                @option={{this.plainTextOption}}
+              /></span>
+          {{/if}}
           {{#if @searchEnabled}}
             {{#let
               (component
@@ -307,6 +419,9 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
                 onKeydown=@onKeydown
                 onInput=@onInput
                 noSuggestions=@noSuggestions
+                plainTextValue=this.plainTextValue
+                asPlainText=this.asPlainText
+                onPlainTextClick=@onPlainTextClick
               )
               as |InputComponent|
             }}
@@ -327,8 +442,27 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
               {{/let}}
             {{/let}}
           {{else}}
+            {{#if this.asPlainText}}
+              {{#each @select.selected as |opt|}}
+                <EuiComboBoxPill
+                  @option={{opt}}
+                  @searchField={{@searchField}}
+                  @asPlainText={{true}}
+                >{{yield opt @select}}</EuiComboBoxPill>
+              {{/each}}
+            {{/if}}
             <div class="euiComboBox__input {{this.spacerClass}}"></div>
           {{/if}}
+          {{#if plainAppend}}
+            <span
+              class="euiComboBoxPlainTextSelection__append
+                {{this.plainTextSideClasses.append}}"
+            ><EuiComboBoxNode
+                @node={{plainAppend}}
+                @option={{this.plainTextOption}}
+              /></span>
+          {{/if}}
+          {{/let}}
           {{#if @screenReaderInstructions}}
             {{! upstream: read when the input gets focus }}
             <EuiScreenReaderOnly>

@@ -107,6 +107,32 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
     this.args.onBlur?.(event);
   }
 
+  /**
+   * Upstream `searchValue`: plain text single selection shows the search
+   * text, else the selected option's label, as the input's value.
+   */
+  get value(): string {
+    const search = this.args.select.searchText;
+    // @ts-expect-error `plainTextValue` is passed by EuiComboBoxTrigger
+    const plainText = this.args.plainTextValue as string | undefined;
+
+    if (plainText === undefined) return search;
+
+    return search || plainText;
+  }
+
+  /** Upstream re-opens the list on every click of a plain text input. */
+  @action
+  handleClick(event: MouseEvent): void {
+    // @ts-expect-error `onPlainTextClick` is passed by EuiComboBoxTrigger
+    const onClick = this.args.onPlainTextClick as
+      | ((event: MouseEvent) => void)
+      | undefined;
+
+    // @ts-expect-error `asPlainText` is passed by EuiComboBoxTrigger
+    if (this.args.asPlainText) onClick?.(event);
+  }
+
   /** The id of the options list while it is open (upstream `aria-controls`). */
   get ariaControls(): string | undefined {
     return this.args.select.isOpen ? this.args.listboxId : undefined;
@@ -132,7 +158,8 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
         autofocus={{@autoFocus}}
         spellcheck={{false}}
         id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
-        value={{@select.searchText}}
+        data-test-subj="comboBoxSearchInput"
+        value={{this.value}}
         role={{if @role @role "combobox"}}
         aria-autocomplete="list"
         aria-haspopup="listbox"
@@ -154,6 +181,7 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
         {{on "blur" this.handleBlur}}
         {{on "input" this.handleInput}}
         {{on "keydown" this.handleKeydown}}
+        {{on "click" this.handleClick}}
       />
     </div>
   </template>

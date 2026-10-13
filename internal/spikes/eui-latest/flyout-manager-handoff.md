@@ -144,3 +144,75 @@ shared `@historyKey` because without one upstream's demo shows no Back
 button), d16 (historyKey), d17 (container). Index: returnFocus and closing
 reasons. No new top-level page. The EuiFlyout row is removed from
 docs-audit-gaps.md.
+
+## Escape and z-index parity (2026-10-13, branch `eui-wave/combo-flyout-parity`)
+
+Checked against 123.1.0 `flyout.component.tsx` (`shouldCloseOnEscape`,
+`onKeyDown` via `EuiWindowEvent`, `managedFlyoutIndex`,
+`addUnmanagedFlyout` effect), `use_flyout_z_index.ts`,
+`manager/flyout_managed.tsx` (`EuiFlyoutIsManagedProvider`,
+`closeOwnFlyouts`), `manager/context.tsx` and `manager/reducer.ts`.
+
+### Escape
+
+Upstream: every rendered, non-pushed flyout has a window keydown listener.
+Outside a managed context it always closes; inside one it closes unless
+the **latest** session has a child, then only that child closes. A
+backgrounded (hidden) main of an earlier session is still rendered, so
+Escape closes it too (`closeOwnFlyouts` removes only its own session).
+Ported as is: the Ember-only "not active, don't close" check is gone. So
+with sessions A (hidden) and B open and no child, one Escape closes both
+(`onClose` with `'escape'` each); with a child in B, only the child.
+
+### z-index
+
+What upstream does, now matched exactly:
+- standard flyout: `levels.flyout + currentZIndex` read when it renders
+  (`currentZIndexRef`), then `addUnmanagedFlyout` adds 2. A second plain
+  flyout opened over the first stacks **2 levels higher** (1002, mask
+  1000), which is what the previous port already did; flyouts rendered
+  together both read 0. The z-index resets to 0 once all close.
+- each main flyout session adds 3 (`zIndex` = `currentZIndex` before);
+  managed flyouts use the **latest** session's `zIndex` (so a hidden main
+  of an earlier session moves up with it); a child is 1 below its main;
+  masks are 2 below.
+- new: upstream's managed context (`useIsInManagedFlyout`). A flyout nested
+  (at any depth) in a managed flyout, e.g. `@session="never"`, is in the
+  managed context: it takes the latest session's `zIndex`, is not
+  registered as unmanaged (does not bump `currentZIndex`), and follows the
+  managed Escape rules. Ember: `isInManagedContext` = managed level, or the
+  parent's `isInManagedContext` through `EUI_FLYOUT_CONTEXT` (new readonly
+  field on `EuiFlyoutContext`). `currentSession` is now read for any
+  flyout in a managed context (its other users still check `level`).
+
+Not changed: push padding / `shouldPush` / reference width still use
+`level` rather than the managed context, so a pushed standard flyout
+nested in a managed one keeps pushing (upstream withdraws it unless it is
+the active managed flyout). The "Ember differences" entries above about
+Escape on backgrounded sessions and `session="never"` z-index no longer
+apply.
+
+### Changed existing assertions (old → new, upstream reference)
+
+- `eui-flyout-manager-test.gts` "session=\"never\" stays standard inside a
+  managed flyout": z-index `> levels.flyout` → `=== levels.flyout` (the
+  session's `zIndex` 0), plus `unmanagedFlyouts.length === 0`
+  (`managedFlyoutIndex = currentSession.zIndex` when `isInManagedContext`;
+  no `addUnmanagedFlyout` in a managed context).
+
+### New tests
+
+`eui-flyout-upstream-parity-test.gts` (8): Escape closes a hidden earlier
+session's main and the current one; with a child only the child, then
+both mains; standard flyouts all close; pushed does not close; z-index of
+a standard over a standard (+2, masks, currentZIndex 2 → 4 → 0); rendered
+together (both base); sessions +3, hidden main follows the latest
+session, child −1, top-level standard over sessions (+6); nested
+standard flyouts (two levels) in a managed one take the session z-index,
+are untracked, and close on Escape.
+
+### Checks
+
+- Filtered `flyout`: 238/238.
+- Core full suite (combo + flyout + layout changes together): 1788/1788 (a first run hit a 120s browser timeout at test 657 under machine load average ~25; that module passed alone and the rerun passed in full).
+- ember-tsc clean, eslint clean on changed files, parity 356/356.

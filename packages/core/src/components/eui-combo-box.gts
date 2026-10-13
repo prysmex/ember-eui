@@ -127,8 +127,8 @@ export interface EuiComboBoxSignature {
   Args: {
     /**
      * Allows only one selected option (still passed to `@onChange` as a
-     * one-item array). `{ asPlainText: true }` shows the selection as plain
-     * text instead of a pill. Defaults to multiple selection.
+     * one-item array). `{ asPlainText: true }` shows the selection as the
+     * input's text instead of a pill. Defaults to multiple selection.
      */
     singleSelection?:
       | boolean
@@ -942,6 +942,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         inputAriaLabelledBy=@ariaLabelledBy
         inputRequired=@required
         onClear=this.clearSelectedOptions
+        onToggleList=this.onToggleListClick
+        onPlainTextClick=this.onPlainTextClick
         screenReaderInstructions=this.screenReaderInstructions
       }}
       @matcher={{this.matchAll}}
@@ -1393,6 +1395,14 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         return;
 
       case 'Backspace':
+        // upstream: a plain text input edits its text (the selection's
+        // label) as usual, and the selection goes
+        if (this.asPlainText) {
+          this.onPlainTextBackspace(target as HTMLInputElement);
+
+          return;
+        }
+
         // deleting text works as usual (and opens the list)
         if ((target as HTMLInputElement).value?.length) return;
 
@@ -1429,10 +1439,16 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     return index === -1 ? undefined : rows[index];
   }
 
+  /** `@singleSelection` is `{ asPlainText: true }`. */
+  get asPlainText(): boolean {
+    const single = this.args.singleSelection;
+
+    return Boolean(single && typeof single === 'object' && single.asPlainText);
+  }
+
   /**
    * Upstream Backspace in an empty input: removes the last selection (and
-   * reopens single selection's list). Plain text single selection deletes
-   * one character of the selection's text too.
+   * reopens single selection's list).
    */
   @action
   onBackspace(event: KeyboardEvent): void {
@@ -1442,24 +1458,67 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     if (!selected.length || !select) return;
 
     const last = selected[selected.length - 1];
-    const single = this.args.singleSelection;
-    const asPlainText = Boolean(
-      single && typeof single === 'object' && single.asPlainText
-    );
 
     event.preventDefault();
     this.args.onChange(selected.filter((option) => option !== last));
     this.pendingHighlight = undefined;
 
-    if (asPlainText) {
-      const text = comboBoxOptionLabel(last, this.args.searchField).slice(0, -1);
+    if (this.args.singleSelection && !select.isOpen) {
+      select.actions.open?.(event);
+    }
+  }
 
-      select.actions.search(text);
-      this.updateSearchValue(text);
+  /**
+   * Upstream plain text Backspace: the input's text (the selection's label
+   * while nothing is typed) becomes the search text, and the selection is
+   * removed; the key then deletes a character as usual.
+   */
+  onPlainTextBackspace(input: HTMLInputElement): void {
+    const text = input.value ?? '';
+
+    this.select?.actions.search(text);
+    this.updateSearchValue(text);
+
+    const selected = this.selectedOptions;
+
+    if (selected.length) {
+      this.args.onChange(
+        selected.filter((option) => option !== selected[selected.length - 1])
+      );
+      this.pendingHighlight = undefined;
+    }
+  }
+
+  /** Upstream: clicking a plain text input runs the focus handler again. */
+  @action
+  onPlainTextClick(event: MouseEvent): void {
+    this.onFocus(this.select, event as unknown as FocusEvent);
+  }
+
+  /**
+   * Upstream toggle button: `closeList` while open, else
+   * `onOpenListClick` (focus the input and open the list).
+   */
+  @action
+  onToggleListClick(): void {
+    const select = this.select;
+
+    if (!select || this.args.isDisabled) return;
+
+    if (select.isOpen) {
+      select.actions.close?.();
+
+      return;
     }
 
-    if ((single || asPlainText) && !select.isOpen) {
-      select.actions.open?.(event);
+    document
+      .getElementById(
+        `ember-power-select-trigger-multiple-input-${select.uniqueId}`
+      )
+      ?.focus();
+
+    if (!this.select?.isOpen && !this.args.noSuggestions) {
+      this.select?.actions.open?.();
     }
   }
 

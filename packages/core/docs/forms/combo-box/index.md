@@ -50,12 +50,7 @@ The options list renders in a portal: add
 Getting started) or pass `@renderInPlace={{true}}`.
 
 **Ember EUI differences:** upstream React nodes (`prepend`, `append`) are
-text or components here. A plain text single selection
-(`asPlainText`) is shown next to the input rather than as the input's
-value, so typing starts a new search instead of editing the selected
-label (Backspace still removes the selection and one character, like
-upstream). The dropdown arrow is not a separate button: clicking it opens
-the list through the input. With `@sortMatchesBy="startsWith"` and groups,
+text or components here. With `@sortMatchesBy="startsWith"` and groups,
 a group title moved away from all of its options is not shown. While an
 option is highlighted with the arrow keys, typing keeps that option
 highlighted if it still matches (upstream keeps the position instead).
@@ -78,7 +73,7 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@singleSelection` | `\| boolean \| { asPlainText?: boolean; }` | multiple selection | Allows only one selected option (still passed to `@onChange` as a one-item array). `{ asPlainText: true }` shows the selection as plain text instead of a pill. |
+| `@singleSelection` | `\| boolean \| { asPlainText?: boolean; }` | multiple selection | Allows only one selected option (still passed to `@onChange` as a one-item array). `{ asPlainText: true }` shows the selection as the input's text instead of a pill. |
 | `@onCreateOption` | `EuiComboBoxOnCreateOption` |  | Lets the user add the typed text as a new option: shows an "add" option when nothing matches (or always, with `@alwaysShowCreateOption`), and Enter or leaving the combo box adds the text (upstream). Called with the search text and all options (groups flattened); return `false` to reject it. Add the result to `@options` / `@selectedOptions` yourself. Text equal to a selected option is not added again, and text equal to the only matching option selects that option. |
 | `@alwaysShowCreateOption` | `boolean` |  | Shows the "add" option even when some options match. |
 | `@options` (required) | `any[]` |  | The options: strings, or objects with a `label` (or `@searchField`). Groups are `{ groupName: 'Fruits', options: [...] }` (or upstream's `{ label: 'Fruits', options: [...] }`). In multiple selection the selected options are not listed (upstream). A promise is supported (shows `@loadingMessage` while pending). Never changed by the combo box; pass a new array to change the options. |

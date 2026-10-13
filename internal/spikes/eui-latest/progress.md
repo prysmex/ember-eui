@@ -70,7 +70,15 @@ see new-data-grid-handoff.md). Main: core 1267/1267, parity 349/349, site Node
 verified in the sandbox (first request hangs with or without the optimizeDeps
 shim); needs a check on the host.
 
-Follow-ups: EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
+Update 2 (2026-10-13): merged data-grid-grouping, an Ember EUI extension not in
+upstream. EuiDataGrid gains `@rowTree` (nested `children` or flat `parentId`)
+and `@grouping` (group by column values), with treegrid ARIA, arrow-key
+expand/collapse in the toggle cell, and expandRow/collapseRow/expandAll/
+collapseAll on `@registerApi`. 46 marked hooks (`ember-eui extension (row-tree)`)
+in ported files; see data-grid-extensions.md before re-porting upstream. Docs:
+5 pages, 23 demos. Main: core 1302/1302, parity 349/349, site 8/8 + 17/17 (nav 113).
+
+Follow-ups: data grid renderers lack row depth/expanded state; EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
 screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
 slowly (~20s under load); open decision on focusing the form error callout;
 major changeset for 16.0.0 deprecations.

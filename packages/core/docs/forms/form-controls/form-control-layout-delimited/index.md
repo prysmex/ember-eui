@@ -42,6 +42,7 @@ range ("0 → 100") or start and end dates.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@icon` | `string` |  | Icon at the start of the control, anything `EuiIcon`'s `@type` accepts. |
+| `@iconSide` |  | `'left'` | Side of `@icon`: `'left'` or `'right'` (upstream `icon.side`). |
 | `@clear` |  |  | Shows a clear ("x") button calling this function. |
 | `@fullWidth` |  |  | Stretches the control to its container's width. |
 | `@isLoading` |  |  | Shows a spinner. |
@@ -51,6 +52,8 @@ range ("0 → 100") or start and end dates.
 | `@isDisabled` |  |  | Same as `@disabled`. |
 | `@isInvalid` | `boolean` |  | Invalid styling: a danger underline/border, a danger delimiter and the warning icon (not while disabled or read-only). |
 | `@delimiter` | `string` | `'→'` | Text between the two controls. |
+| `@isPrependProvided` | `boolean` | `true` | Renders the `<:prepend>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `prepend={undefined}`). |
+| `@isAppendProvided` | `boolean` | `true` | Renders the `<:append>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `append={undefined}`). |
 
 Deprecated: `@useGroup` (Has no effect: the delimited layout is always a group.).
 

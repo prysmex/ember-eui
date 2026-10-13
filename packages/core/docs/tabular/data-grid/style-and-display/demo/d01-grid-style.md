@@ -35,62 +35,23 @@ it; the snippet below the grid shows the object passed.
 
 </EuiText>
 
-```hbs template
-<EuiSplitPanelOuter @hasBorder={{true}}>
-  <EuiSplitPanelInner @grow={{false}}>
-    <EuiFlexGroup @wrap={{true}} @gutterSize="m">
-      <EuiFlexItem @grow={{false}} style="flex: 0 0 350px; max-width: 100%;">
-        {{#each this.configuration as |config|}}
-          <EuiFormRow @label={{config.label}} @display="columnCompressed">
-            <EuiButtonGroup
-              @isFullWidth={{true}}
-              @buttonSize="compressed"
-              @legend={{config.label}}
-              @options={{config.options}}
-              @idSelected={{config.idSelected}}
-              @onChange={{fn this.select config.key}}
-            />
-          </EuiFormRow>
-        {{/each}}
-      </EuiFlexItem>
-      <EuiFlexItem style="min-width: 0;">
-        <EuiDataGrid
-          aria-label="Data grid with custom gridStyle set"
-          @columns={{this.columns}}
-          @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
-          @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
-          @pagination={{hash
-            pageIndex=this.pageIndex
-            pageSize=this.pageSize
-            onChangeItemsPerPage=this.setPageSize
-            onChangePage=this.setPageIndex
-          }}
-          @rowCount={{this.data.length}}
-          @height="auto"
-          @gridStyle={{this.gridStyle}}
-        >
-          <:cell as |cell|>
-            {{#if (eq cell.columnId "avatar")}}
-              <EuiAvatar @size="s" @name={{get (get this.data cell.rowIndex) "avatar"}} />
-            {{else}}
-              {{get (get this.data cell.rowIndex) cell.columnId}}
-            {{/if}}
-          </:cell>
-          <:footerCell as |cell|>{{get this.footerCellValues cell.columnId}}</:footerCell>
-        </EuiDataGrid>
-      </EuiFlexItem>
-    </EuiFlexGroup>
-  </EuiSplitPanelInner>
-  <EuiSplitPanelInner @color="subdued" @paddingSize="none" @grow={{false}}>
-    <EuiCodeBlock @language="js" @fontSize="m" @paddingSize="m" @isCopyable={{true}}>{{this.snippet}}</EuiCodeBlock>
-  </EuiSplitPanelInner>
-</EuiSplitPanelOuter>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { fn, get, hash } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import {
+  EuiAvatar,
+  EuiButtonGroup,
+  EuiCodeBlock,
+  EuiDataGrid,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiFormRow,
+  EuiSplitPanelInner,
+  EuiSplitPanelOuter,
+} from '@ember-eui/core/components';
 
 const data = [
   ['Kertzmann, Lorenzo', 'Kertzmann, Lorenzo Jr.', '43172691'],
@@ -221,6 +182,58 @@ export default class GridStyleDemo extends Component {
   @action onSort(sortingColumns) {
     this.sortingColumns = sortingColumns;
   }
+
+  <template>
+    <EuiSplitPanelOuter @hasBorder={{true}}>
+      <EuiSplitPanelInner @grow={{false}}>
+        <EuiFlexGroup @wrap={{true}} @gutterSize="m">
+          <EuiFlexItem @grow={{false}} style="flex: 0 0 350px; max-width: 100%;">
+            {{#each this.configuration as |config|}}
+              <EuiFormRow @label={{config.label}} @display="columnCompressed">
+                <EuiButtonGroup
+                  @isFullWidth={{true}}
+                  @buttonSize="compressed"
+                  @legend={{config.label}}
+                  @options={{config.options}}
+                  @idSelected={{config.idSelected}}
+                  @onChange={{fn this.select config.key}}
+                />
+              </EuiFormRow>
+            {{/each}}
+          </EuiFlexItem>
+          <EuiFlexItem style="min-width: 0;">
+            <EuiDataGrid
+              aria-label="Data grid with custom gridStyle set"
+              @columns={{this.columns}}
+              @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
+              @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
+              @pagination={{hash
+                pageIndex=this.pageIndex
+                pageSize=this.pageSize
+                onChangeItemsPerPage=this.setPageSize
+                onChangePage=this.setPageIndex
+              }}
+              @rowCount={{this.data.length}}
+              @height="auto"
+              @gridStyle={{this.gridStyle}}
+            >
+              <:cell as |cell|>
+                {{#if (eq cell.columnId "avatar")}}
+                  <EuiAvatar @size="s" @name={{get (get this.data cell.rowIndex) "avatar"}} />
+                {{else}}
+                  {{get (get this.data cell.rowIndex) cell.columnId}}
+                {{/if}}
+              </:cell>
+              <:footerCell as |cell|>{{get this.footerCellValues cell.columnId}}</:footerCell>
+            </EuiDataGrid>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiSplitPanelInner>
+      <EuiSplitPanelInner @color="subdued" @paddingSize="none" @grow={{false}}>
+        <EuiCodeBlock @language="js" @fontSize="m" @paddingSize="m" @isCopyable={{true}}>{{this.snippet}}</EuiCodeBlock>
+      </EuiSplitPanelInner>
+    </EuiSplitPanelOuter>
+  </template>
 }
 ```
 

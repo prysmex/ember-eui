@@ -19,42 +19,13 @@ estimating them, so it has no such option.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Row height options with auto demo"
-  @columns={{this.columns}}
-  @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
-  @rowCount={{this.rawData.length}}
-  @inMemory={{hash level="sorting"}}
-  @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
-  @pagination={{hash
-    pageIndex=this.pageIndex
-    pageSize=this.pageSize
-    pageSizeOptions=(array 50 250 1000)
-    onChangeItemsPerPage=this.onChangeItemsPerPage
-    onChangePage=this.onChangePage
-  }}
-  @height={{400}}
-  @rowHeightsOptions={{this.rowHeightsOptions}}
->
-  <:cell as |cell|>
-    {{#if (eq cell.columnId "productName")}}
-      <EuiTitle @size="xs">
-        <h3>{{get (get this.rawData cell.rowIndex) cell.columnId}}</h3>
-      </EuiTitle>
-    {{else if (and (eq cell.columnId "productDescription") (eq cell.rowIndex 2))}}
-      <img src="https://picsum.photos/id/9/300/200" alt="Mock product image" class="eui-displayBlock" />
-    {{else}}
-      {{get (get this.rawData cell.rowIndex) cell.columnId}}
-    {{/if}}
-  </:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { array, get, hash } from '@ember/helper';
+import { and, eq } from 'ember-truth-helpers';
+import { EuiDataGrid, EuiTitle } from '@ember-eui/core/components';
 
 const ADJECTIVES = ['Ergonomic', 'Handcrafted', 'Sleek', 'Rustic', 'Licensed', 'Practical', 'Tasty', 'Gorgeous'];
 const MATERIALS = ['Granite', 'Steel', 'Cotton', 'Bronze', 'Wooden', 'Plastic', 'Rubber'];
@@ -114,5 +85,37 @@ export default class AutoRowHeightsDemo extends Component {
   @action setVisibleColumns(visibleColumns) {
     this.visibleColumns = visibleColumns;
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="Row height options with auto demo"
+      @columns={{this.columns}}
+      @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
+      @rowCount={{this.rawData.length}}
+      @inMemory={{hash level="sorting"}}
+      @sorting={{hash columns=this.sortingColumns onSort=this.onSort}}
+      @pagination={{hash
+        pageIndex=this.pageIndex
+        pageSize=this.pageSize
+        pageSizeOptions=(array 50 250 1000)
+        onChangeItemsPerPage=this.onChangeItemsPerPage
+        onChangePage=this.onChangePage
+      }}
+      @height={{400}}
+      @rowHeightsOptions={{this.rowHeightsOptions}}
+    >
+      <:cell as |cell|>
+        {{#if (eq cell.columnId "productName")}}
+          <EuiTitle @size="xs">
+            <h3>{{get (get this.rawData cell.rowIndex) cell.columnId}}</h3>
+          </EuiTitle>
+        {{else if (and (eq cell.columnId "productDescription") (eq cell.rowIndex 2))}}
+          <img src="https://picsum.photos/id/9/300/200" alt="Mock product image" class="eui-displayBlock" />
+        {{else}}
+          {{get (get this.rawData cell.rowIndex) cell.columnId}}
+        {{/if}}
+      </:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

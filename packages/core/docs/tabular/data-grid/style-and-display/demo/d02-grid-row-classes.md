@@ -27,54 +27,14 @@ is passed with the grid's `@css` argument, using the theme from
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Top EUI contributors"
-  @columns={{this.columns}}
-  @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
-  @rowCount={{this.data.length}}
-  @leadingControlColumns={{this.leadingControlColumns}}
-  @gridStyle={{this.gridStyle}}
-  @css={{this.rowStyles}}
->
-  <:cell as |cell|>{{get (get this.data cell.rowIndex) cell.columnId}}</:cell>
-  <:controlHeaderCell>
-    <EuiCheckbox
-      @id="selection-toggle"
-      aria-label="Select all rows"
-      @indeterminate={{this.isIndeterminate}}
-      @checked={{this.hasSelection}}
-      {{on "change" this.toggleAll}}
-    />
-  </:controlHeaderCell>
-  <:controlCell as |cell|>
-    <EuiCheckbox
-      @id={{concat "row-classes-" cell.rowIndex}}
-      aria-label={{concat "Select row " cell.rowIndex ", " (get (get this.data cell.rowIndex) "name")}}
-      @checked={{this.isSelected cell.rowIndex}}
-      {{on "change" (fn this.toggleRow cell.rowIndex)}}
-    />
-  </:controlCell>
-  <:leftControlsAppend>
-    {{#if this.hasSelection}}
-      <EuiButtonEmpty
-        @size="xs"
-        @iconType="chevronSingleDown"
-        @iconSide="right"
-        {{on "click" this.notARealControl}}
-      >
-        {{this.selectedRows.size}} {{if this.hasMany "items" "item"}} selected
-      </EuiButtonEmpty>
-    {{/if}}
-  </:leftControlsAppend>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { getEuiThemeContext } from '@ember-eui/core/utils/emotion/consume';
+import { concat, fn, get, hash } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { EuiButtonEmpty, EuiCheckbox, EuiDataGrid } from '@ember-eui/core/components';
 
 const data = [
   ['Kertzmann, Lorenzo Jr.', 'lorenzo.kertzmann@example.com', 'Port Isom', 'Portugal', '43172691'],
@@ -160,5 +120,48 @@ export default class GridRowClassesDemo extends Component {
     });
     return { rowClasses };
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="Top EUI contributors"
+      @columns={{this.columns}}
+      @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
+      @rowCount={{this.data.length}}
+      @leadingControlColumns={{this.leadingControlColumns}}
+      @gridStyle={{this.gridStyle}}
+      @css={{this.rowStyles}}
+    >
+      <:cell as |cell|>{{get (get this.data cell.rowIndex) cell.columnId}}</:cell>
+      <:controlHeaderCell>
+        <EuiCheckbox
+          @id="selection-toggle"
+          aria-label="Select all rows"
+          @indeterminate={{this.isIndeterminate}}
+          @checked={{this.hasSelection}}
+          {{on "change" this.toggleAll}}
+        />
+      </:controlHeaderCell>
+      <:controlCell as |cell|>
+        <EuiCheckbox
+          @id={{concat "row-classes-" cell.rowIndex}}
+          aria-label={{concat "Select row " cell.rowIndex ", " (get (get this.data cell.rowIndex) "name")}}
+          @checked={{this.isSelected cell.rowIndex}}
+          {{on "change" (fn this.toggleRow cell.rowIndex)}}
+        />
+      </:controlCell>
+      <:leftControlsAppend>
+        {{#if this.hasSelection}}
+          <EuiButtonEmpty
+            @size="xs"
+            @iconType="chevronSingleDown"
+            @iconSide="right"
+            {{on "click" this.notARealControl}}
+          >
+            {{this.selectedRows.size}} {{if this.hasMany "items" "item"}} selected
+          </EuiButtonEmpty>
+        {{/if}}
+      </:leftControlsAppend>
+    </EuiDataGrid>
+  </template>
 }
 ```

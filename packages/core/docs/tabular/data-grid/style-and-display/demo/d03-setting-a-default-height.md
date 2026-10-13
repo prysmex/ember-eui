@@ -20,22 +20,12 @@ property to the actual cell content line height.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Row height options with default height"
-  @columns={{this.columns}}
-  @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
-  @rowCount={{this.rawData.length}}
-  @rowHeightsOptions={{this.rowHeightsOptions}}
->
-  <:cell as |cell|>{{get (get this.rawData cell.rowIndex) cell.columnId}}</:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { get, hash } from '@ember/helper';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 const LOREM = [
   'Vitae cumque aperiam tempora officia.',
@@ -78,5 +68,17 @@ export default class DefaultRowHeightDemo extends Component {
   @action setVisibleColumns(visibleColumns) {
     this.visibleColumns = visibleColumns;
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="Row height options with default height"
+      @columns={{this.columns}}
+      @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
+      @rowCount={{this.rawData.length}}
+      @rowHeightsOptions={{this.rowHeightsOptions}}
+    >
+      <:cell as |cell|>{{get (get this.rawData cell.rowIndex) cell.columnId}}</:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

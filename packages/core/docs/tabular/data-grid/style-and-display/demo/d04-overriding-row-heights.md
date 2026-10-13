@@ -21,28 +21,13 @@ configuration.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="Row height options with fixed heights and overrides"
-  @columns={{this.columns}}
-  @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
-  @rowCount={{this.rawData.length}}
-  @rowHeightsOptions={{this.rowHeightsOptions}}
->
-  <:cell as |cell|>
-    {{#if (eq cell.columnId "productImage")}}
-      <img src={{get (get this.rawData cell.rowIndex) "productImage"}} alt="Mock product image" />
-    {{else}}
-      {{get (get this.rawData cell.rowIndex) cell.columnId}}
-    {{/if}}
-  </:cell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { get, hash } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiDataGrid } from '@ember-eui/core/components';
 
 export default class RowHeightOverridesDemo extends Component {
   rawData = [
@@ -73,5 +58,23 @@ export default class RowHeightOverridesDemo extends Component {
   @action setVisibleColumns(visibleColumns) {
     this.visibleColumns = visibleColumns;
   }
+
+  <template>
+    <EuiDataGrid
+      aria-label="Row height options with fixed heights and overrides"
+      @columns={{this.columns}}
+      @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
+      @rowCount={{this.rawData.length}}
+      @rowHeightsOptions={{this.rowHeightsOptions}}
+    >
+      <:cell as |cell|>
+        {{#if (eq cell.columnId "productImage")}}
+          <img src={{get (get this.rawData cell.rowIndex) "productImage"}} alt="Mock product image" />
+        {{else}}
+          {{get (get this.rawData cell.rowIndex) cell.columnId}}
+        {{/if}}
+      </:cell>
+    </EuiDataGrid>
+  </template>
 }
 ```

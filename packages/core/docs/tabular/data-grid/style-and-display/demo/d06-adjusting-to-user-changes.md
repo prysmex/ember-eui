@@ -17,26 +17,12 @@ page refresh, like the below example does.
 
 </EuiText>
 
-```hbs template
-<EuiDataGrid
-  aria-label="DataGrid demonstrating display selector callbacks"
-  @leadingControlColumns={{this.leadingControlColumns}}
-  @rowHeightsOptions={{this.rowHeightsOptions}}
-  @gridStyle={{this.gridStyle}}
-  @columns={{this.columns}}
-  @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
-  @rowCount={{this.data.length}}
->
-  <:cell as |cell|>{{get (get this.data cell.rowIndex) cell.columnId}}</:cell>
-  <:controlHeaderCell><EuiIcon @type="user" @size={{this.iconSize}} /></:controlHeaderCell>
-  <:controlCell><EuiIcon @type="user" @size={{this.iconSize}} /></:controlCell>
-</EuiDataGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { get, hash } from '@ember/helper';
+import { EuiDataGrid, EuiIcon } from '@ember-eui/core/components';
 
 const data = [
   ['Kertzmann, Lorenzo Jr.', 'lorenzo.kertzmann@example.com', 'Port Isom', 'Portugal', '43172691'],
@@ -106,5 +92,21 @@ export default class DisplaySelectorCallbacksDemo extends Component {
       this.densitySize = updatedStyles.fontSize;
     }
   };
+
+  <template>
+    <EuiDataGrid
+      aria-label="DataGrid demonstrating display selector callbacks"
+      @leadingControlColumns={{this.leadingControlColumns}}
+      @rowHeightsOptions={{this.rowHeightsOptions}}
+      @gridStyle={{this.gridStyle}}
+      @columns={{this.columns}}
+      @columnVisibility={{hash visibleColumns=this.visibleColumns setVisibleColumns=this.setVisibleColumns}}
+      @rowCount={{this.data.length}}
+    >
+      <:cell as |cell|>{{get (get this.data cell.rowIndex) cell.columnId}}</:cell>
+      <:controlHeaderCell><EuiIcon @type="user" @size={{this.iconSize}} /></:controlHeaderCell>
+      <:controlCell><EuiIcon @type="user" @size={{this.iconSize}} /></:controlCell>
+    </EuiDataGrid>
+  </template>
 }
 ```

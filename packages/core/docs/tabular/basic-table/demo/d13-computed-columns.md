@@ -1,29 +1,22 @@
 ---
-order: 1
+order: 13
 ---
 
-# Columns and data types
+# Extra: computed columns, nested fields and HTML
 
 <EuiText>
 
-Field columns format their values by `dataType`; numbers are right
-aligned. `render` returns text, a computed column derives its content from
-the whole item and footers can total the column.
+An Ember EUI example beyond upstream's: a `field` can be a nested path
+(`owner.team`), `render` can return `htmlSafe` markup, a computed column
+(no `field`) derives its content from the whole item with `render(item)`,
+and a function footer totals the column.
 
 </EuiText>
 
-```hbs template
-<EuiBasicTable
-  @tableCaption="Deployments"
-  @items={{this.items}}
-  @columns={{this.columns}}
-  @rowHeader="service"
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
+import { EuiBasicTable } from '@ember-eui/core/components';
 
 export default class BasicTableColumns extends Component {
   items = [
@@ -46,5 +39,14 @@ export default class BasicTableColumns extends Component {
     },
     { name: 'Status', render: (item) => (item.healthy ? 'Serving' : 'Degraded'), nameTooltip: { content: 'Computed from the health check' } },
   ];
+
+  <template>
+    <EuiBasicTable
+      @tableCaption="Deployments"
+      @items={{this.items}}
+      @columns={{this.columns}}
+      @rowHeader="service"
+    />
+  </template>
 }
 ```

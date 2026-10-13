@@ -63,6 +63,7 @@ Generated from the components' TypeScript signatures by
 | `@dateFormat` | `string` | `'MMM D, YYYY @ HH:mm:ss.SSS'` | moment format for absolute dates. |
 | `@isAutoRefreshOnly` | `boolean` | `false` | Set isAutoRefreshOnly to true to limit the component to only display auto refresh content. |
 | `@isDisabled` | `boolean \| { display: string \| ComponentLike }` | `false` | Disables the picker. Pass `{ display }` to also replace the dates with your own content, e.g. `{ display: 'All time' }` (a string or a component), in a disabled button. |
+| `@showPrettyDuration` | `boolean` | `false` | Shows a commonly used or relative range ("Last 15 minutes") as one summary button until it is clicked. Upstream always does this; in Ember EUI it is opt-in. |
 | `@isLoading` | `boolean` |  | Shows the update button's loading state, e.g. while data refreshes. |
 | `@isPaused` | `boolean` | `true` | Whether auto refresh is paused (with `@onRefreshChange`). |
 | `@width` | `'restricted' \| 'full' \| 'auto'` | `'restricted'` | Sets the overall width by adding sensible min and max widths. - `auto`: fits width to internal content / time string. - `restricted`: static width that fits the longest possible time string   (600px with the update button, 480px without). - `full`: expands to 100% of the container. `@isQuickSelectOnly` forces `'auto'`. |

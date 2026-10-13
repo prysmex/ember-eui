@@ -87,7 +87,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   setupRenderingTest(hooks);
 
   test('a relative range shows as one pretty duration button (upstream DOM)', async function (assert) {
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} /></template>);
 
     const layout = el('.euiSuperDatePicker > .euiFormControlLayout');
     assert.dom(layout).hasClass('euiFormControlLayout--group').doesNotHaveClass('euiFormControlLayoutDelimited');
@@ -121,7 +121,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   });
 
   test('the pretty duration tooltip shows the full range in @dateFormat', async function (assert) {
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @start="now-3d" @end="now" @dateFormat="MMM D, YYYY" /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @start="now-3d" @end="now" @dateFormat="MMM D, YYYY" /></template>);
 
     await hover(showDatesButton);
     const start = dateMath.parse('now-3d')!.format('MMM D, YYYY');
@@ -130,7 +130,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   });
 
   test('clicking it shows the range with the start popover open; Escape returns the focus to the start button', async function (assert) {
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} /></template>);
 
     await focus(showDatesButton);
     await click(showDatesButton);
@@ -164,7 +164,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
 
     await render(
       <template>
-        <EuiSuperDatePicker @start={{range.start}} @end={{range.end}} @onTimeChange={{range.onTimeChange}} @customQuickSelectPanels={{panels}} />
+        <EuiSuperDatePicker @showPrettyDuration={{true}} @start={{range.start}} @end={{range.end}} @onTimeChange={{range.onTimeChange}} @customQuickSelectPanels={{panels}} />
       </template>
     );
 
@@ -194,14 +194,14 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   });
 
   test('an absolute range shows the start/end buttons', async function (assert) {
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>);
 
     assert.dom(showDatesButton).doesNotExist();
     assert.dom(subj('superDatePickerstartDatePopoverButton')).exists();
   });
 
   test('@isQuickSelectOnly with a pretty duration: only the quick select (upstream)', async function (assert) {
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @isQuickSelectOnly={{true}} /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @isQuickSelectOnly={{true}} /></template>);
 
     assert.dom(showDatesButton).doesNotExist();
     assert.dom('.euiDatePopoverButton').doesNotExist();
@@ -214,7 +214,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   // ---------------------------------------------------------------- isDisabled
 
   test('@isDisabled={{true}} disables the pretty duration (upstream)', async function (assert) {
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @isDisabled={{true}} /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @isDisabled={{true}} /></template>);
 
     assert.dom(showDatesButton).isDisabled().hasText('Last 15 minutes').hasClass('euiSuperDatePicker__prettyFormat--disabled');
     assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout-isDisabled');
@@ -231,7 +231,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
     await render(
       <template>
         {{! @glint-expect-error: display is a string or a component }}
-        <EuiSuperDatePicker @onTimeChange={{noop}} @isDisabled={{state.isDisabled}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" />
+        <EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @isDisabled={{state.isDisabled}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" />
       </template>
     );
 
@@ -262,7 +262,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
       onClick: (event: MouseEvent) => calls.push(`click:${(event.target as HTMLElement).tagName}`)
     };
 
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @quickSelectButtonProps={{props}} /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @quickSelectButtonProps={{props}} /></template>);
 
     const button = el(subj('myQuickSelect'));
     assert.dom(subj('superDatePickerToggleQuickMenuButton')).doesNotExist('test subject replaced');
@@ -280,7 +280,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   test('@quickSelectButtonProps label and icons', async function (assert) {
     const props = { label: 'Dates', iconLeft: 'clock', iconRight: undefined };
 
-    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @quickSelectButtonProps={{props}} /></template>);
+    await render(<template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @quickSelectButtonProps={{props}} /></template>);
 
     const button = el(subj('superDatePickerToggleQuickMenuButton'));
     assert.dom(button).hasText('Dates').hasAttribute('aria-label', 'Date quick select');
@@ -300,7 +300,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
     await render(
       <template>
         <EuiFieldText data-test-subj="euiFieldText" aria-label="Search" {{on "focus" collapse}} />
-        <EuiSuperDatePicker
+        <EuiSuperDatePicker @showPrettyDuration={{true}}
           @start="2025-01-01T00:00:00.000Z"
           @end="now"
           @onTimeChange={{noop}}
@@ -333,7 +333,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
     const onRefresh = () => {};
 
     await render(
-      <template><EuiSuperDatePicker @onTimeChange={{noop}} @onRefresh={{onRefresh}} @isPaused={{state.isPaused}} @refreshInterval={{60000}} /></template>
+      <template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @onRefresh={{onRefresh}} @isPaused={{state.isPaused}} @refreshInterval={{60000}} /></template>
     );
 
     const append = el('.euiSuperDatePicker .euiFormControlLayout__append');
@@ -358,7 +358,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
 
     await render(
       <template>
-        <EuiSuperDatePicker
+        <EuiSuperDatePicker @showPrettyDuration={{true}}
           @onTimeChange={{noop}}
           @onRefreshChange={{onRefreshChange}}
           @refreshInterval={{3600000}}
@@ -389,7 +389,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
 
     await render(
       <template>
-        <EuiSuperDatePicker @onTimeChange={{noop}} @isPaused={{state.isPaused}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" />
+        <EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @isPaused={{state.isPaused}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" />
       </template>
     );
 
@@ -405,7 +405,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
 
   test('a pending update shows the checkCircle icon on the right (upstream)', async function (assert) {
     await render(
-      <template><EuiSuperDatePicker @onTimeChange={{noop}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>
+      <template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>
     );
 
     assert.dom('.euiFormControlLayoutIcons').doesNotExist('no icon at rest');
@@ -432,7 +432,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   test('the update button tooltip: "Cannot update" while disabled, "Click to apply" after a change', async function (assert) {
     await render(
       <template>
-        <div data-p="invalid"><EuiSuperDatePicker @onTimeChange={{noop}} @start="2024-01-02T00:00:00.000Z" @end="2024-01-01T00:00:00.000Z" /></div>
+        <div data-p="invalid"><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @start="2024-01-02T00:00:00.000Z" @end="2024-01-01T00:00:00.000Z" /></div>
       </template>
     );
 
@@ -444,7 +444,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
 
   test('the "Click to apply" tooltip shows for 2 seconds once the date popover closes (upstream showTooltip)', async function (assert) {
     await render(
-      <template><EuiSuperDatePicker @onTimeChange={{noop}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>
+      <template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>
     );
 
     await click(subj('superDatePickerstartDatePopoverButton'));
@@ -469,12 +469,12 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
       <template>
         <div data-p="responsive">
           {{! @glint-expect-error: breakpoint names }}
-          <EuiSuperDatePicker @onTimeChange={{noop}} @updateButtonProps={{props}} />
+          <EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @updateButtonProps={{props}} />
         </div>
-        <div data-p="default"><EuiSuperDatePicker @onTimeChange={{noop}} /></div>
-        <div data-p="never"><EuiSuperDatePicker @onTimeChange={{noop}} @showUpdateButton="iconOnly" @updateButtonProps={{hash responsive=false}} /></div>
+        <div data-p="default"><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} /></div>
+        <div data-p="never"><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @showUpdateButton="iconOnly" @updateButtonProps={{hash responsive=false}} /></div>
         <div data-p="sizes">
-          <EuiSuperDatePicker @onTimeChange={{noop}} @updateButtonProps={{hash responsive=(array "xs")}} />
+          <EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @updateButtonProps={{hash responsive=(array "xs")}} />
         </div>
       </template>
     );
@@ -500,7 +500,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
   test('@updateButtonProps.showTooltip={{false}} keeps the "Click to apply" tooltip hidden', async function (assert) {
     const props = { showTooltip: false };
     await render(
-      <template><EuiSuperDatePicker @onTimeChange={{noop}} @updateButtonProps={{props}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>
+      <template><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @updateButtonProps={{props}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" /></template>
     );
 
     await click(subj('superDatePickerstartDatePopoverButton'));
@@ -520,9 +520,9 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
     const onRefreshChange = () => {};
     await render(
       <template>
-        <div data-p="both"><EuiSuperDatePicker @onTimeChange={{noop}} @onRefreshChange={{onRefreshChange}} @isQuickSelectOnly={{true}} @isAutoRefreshOnly={{true}} /></div>
-        <div data-p="both-no-change"><EuiSuperDatePicker @onTimeChange={{noop}} @isQuickSelectOnly={{true}} @isAutoRefreshOnly={{true}} @showTimeWindowButtons={{true}} /></div>
-        <div data-p="auto-only"><EuiSuperDatePicker @onTimeChange={{noop}} @onRefreshChange={{onRefreshChange}} @isAutoRefreshOnly={{true}} /></div>
+        <div data-p="both"><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @onRefreshChange={{onRefreshChange}} @isQuickSelectOnly={{true}} @isAutoRefreshOnly={{true}} /></div>
+        <div data-p="both-no-change"><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @isQuickSelectOnly={{true}} @isAutoRefreshOnly={{true}} @showTimeWindowButtons={{true}} /></div>
+        <div data-p="auto-only"><EuiSuperDatePicker @showPrettyDuration={{true}} @onTimeChange={{noop}} @onRefreshChange={{onRefreshChange}} @isAutoRefreshOnly={{true}} /></div>
       </template>
     );
 

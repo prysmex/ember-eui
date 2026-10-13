@@ -102,6 +102,12 @@ export interface EuiSuperDatePickerArgs {
    * (a string or a component), in a disabled button.
    */
   isDisabled?: boolean | { display: string | ComponentLike };
+  /**
+   * Shows a commonly used or relative range ("Last 15 minutes") as one
+   * summary button until it is clicked. Upstream always does this; in Ember
+   * EUI it is opt-in. Defaults to `false`.
+   */
+  showPrettyDuration?: boolean;
   /** Shows the update button's loading state, e.g. while data refreshes. */
   isLoading?: boolean;
   /**
@@ -372,6 +378,9 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
    * minutes") shows as one pretty duration button until it is clicked.
    */
   get showPrettyDurationState(): boolean {
+    // Ember EUI: opt-in (upstream always shows it)
+    if (!this.args.showPrettyDuration) return false;
+
     const override = this.prettyDurationOverride;
 
     if (

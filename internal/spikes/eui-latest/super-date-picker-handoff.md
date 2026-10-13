@@ -205,3 +205,13 @@ This closes the row the first pass left in `docs-audit-gaps.md` (now removed): `
 - `generate-api-docs`: 2 pages; `--check` is clean.
 - Rollup: run; `package.json` is unchanged (no new source files).
 - **Not run**, per the brief: sync-injected, companion suites and the site build. The new demos are **unverified in a site build**.
+
+## Pretty duration is opt-in (user decision, 2026-10-13)
+
+Upstream always shows a commonly used or relative range as the "Last 15
+minutes" summary button. Ember EUI gates it behind `@showPrettyDuration`
+(default `false`), so existing pickers keep showing the start/end dates.
+The pretty-duration tests pass `@showPrettyDuration={{true}}`; the other
+date picker tests are back to their pre-pretty-duration form, keeping only
+the deliberate changes (screen-reader update button labels, "Last 2 days"
+recently used text, focus returning to the start button). Demo d20.

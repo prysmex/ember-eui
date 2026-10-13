@@ -6,8 +6,6 @@ order: 18
 
 <EuiText>
 
-A relative range ("Last 15 minutes") shows as one summary button until it is clicked; clicking it shows the start and end dates with the start popover open.
-
 `@isDisabled` also accepts `{ display }`: the picker is disabled and the dates are replaced by your own content, a string or a component. Upstream's tests use it for an "All time" range, which has no start or end.
 
 </EuiText>

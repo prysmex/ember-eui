@@ -103,20 +103,6 @@ async function openQuickSelect(key: string) {
   await waitUntil(() => document.querySelector('.euiQuickSelectPopover'));
 }
 
-/**
- * Upstream shows a relative range as one "Last 15 minutes" button until it
- * is clicked; like upstream's tests, click it to show the start/end
- * buttons. It opens the start popover: close it and drop the focus.
- */
-async function showDates(key: string) {
-  await click(inside(key, '[data-test-subj="superDatePickerShowDatesButton"]'));
-  await waitUntil(() => document.querySelector('.euiDatePopoverContent'));
-  await click(inside(key, '.euiDatePopoverButton--start'));
-  await waitUntil(() => !document.querySelector('.euiDatePopoverContent'));
-  await settled();
-  (document.activeElement as HTMLElement | null)?.blur();
-}
-
 async function chooseTab(name: string) {
   const tab = [...document.querySelectorAll<HTMLElement>('.euiDatePopoverContent .euiTab')].find(
     (t) => t.textContent!.trim() === name
@@ -138,7 +124,7 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
           <EuiSuperDatePicker @onTimeChange={{noop}} @width="full" @showUpdateButton={{false}} data-p="full-no-button" />
           <EuiSuperDatePicker @onTimeChange={{noop}} @width="auto" data-p="auto" />
           <EuiSuperDatePicker @onTimeChange={{noop}} @width="auto" @showUpdateButton={{false}} data-p="auto-no-button" />
-          <EuiSuperDatePicker @onTimeChange={{noop}} @isQuickSelectOnly={{true}} @width="full" @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" data-p="quick" />
+          <EuiSuperDatePicker @onTimeChange={{noop}} @isQuickSelectOnly={{true}} @width="full" data-p="quick" />
         </div>
       </template>
     );
@@ -147,7 +133,6 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     const button = base * 7;
     const input = base * 30;
     const root = (key: string) => el(`[data-p="${key}"]`);
-    await showDates('restricted');
 
     assert.strictEqual(css(root('restricted')).display, 'flex');
     assert.strictEqual(css(root('restricted')).columnGap, `${gap}px`);
@@ -187,8 +172,6 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
         </EuiEmotionProvider>
       </template>
     );
-    await showDates('m');
-    await showDates('s');
     const layout = el(inside('m', '.euiFormControlLayout'));
     assert.dom(layout).hasClass('euiFormControlLayoutDelimited');
     assert.strictEqual(box(layout).height, 40);
@@ -251,14 +234,13 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     await render(
       <template>
         <EuiEmotionProvider @colorMode="light">
-          <EuiSuperDatePicker @onTimeChange={{noop}} @isDisabled={{true}} @start="2024-01-01T00:00:00.000Z" @end="2024-01-02T00:00:00.000Z" data-p="disabled" />
+          <EuiSuperDatePicker @onTimeChange={{noop}} @isDisabled={{true}} data-p="disabled" />
           <EuiSuperDatePicker @onTimeChange={{noop}} @start="now" @end="now-15m" data-p="invalid" />
           <EuiSuperDatePicker @onTimeChange={{noop}} @isLoading={{true}} data-p="loading" />
           <EuiSuperDatePicker @onTimeChange={{noop}} @isLoading={{true}} @showUpdateButton={{false}} data-p="layout-loading" />
         </EuiEmotionProvider>
       </template>
     );
-    await showDates('invalid');
     // disabled
     const disabledWrapper = css(inside('disabled', '.euiFormControlLayout__childrenWrapper'));
     assert.strictEqual(disabledWrapper.backgroundColor, rgb(forms(light)['backgroundDisabled']!));
@@ -314,7 +296,6 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     assert.strictEqual(css(update).backgroundColor, rgb(fill(lightContext, 'primary').backgroundColor), 'filled primary');
 
     // open the start popover: the selected button gets the focus outline
-    await showDates('a');
     await openStart('a');
     const start = el(inside('a', '.euiDatePopoverButton--start'));
     assert.dom(start).hasClass('euiDatePopoverButton-isSelected').hasAttribute('aria-expanded', 'true');
@@ -658,7 +639,6 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
         <EuiSuperDatePicker @onTimeChange={{noop}} @start="now-15m" @end="now" data-p="a" />
       </template>
     );
-    await showDates('a');
     const focusables = [...el('[data-p="a"]').querySelectorAll<HTMLElement>('button:not([disabled])')];
     assert.deepEqual(
       focusables.map((b) => b.getAttribute('data-test-subj')),
@@ -717,7 +697,6 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
         </div>
       </template>
     );
-    await showDates('a');
     const root = el('[data-p="a"]');
     const layout = el(inside('a', '.euiFormControlLayout'));
     const start = el(inside('a', '.euiDatePopoverButton--start'));
@@ -749,9 +728,8 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
     await settled();
     assert.dom(inside('a', '.euiSuperUpdateButton')).doesNotExist();
 
-    // an absolute range: a relative one would show the pretty duration again (upstream)
-    state.start = '2024-01-02T00:00:00.000Z';
-    state.end = '2024-01-01T00:00:00.000Z';
+    state.start = 'now';
+    state.end = 'now-1h';
     await settled();
     assert.dom(start).hasClass('euiDatePopoverButton-isInvalid');
     assert.strictEqual(css(inside('a', '.euiFormControlLayout__childrenWrapper')).color, rgb(light.colors.textDanger));
@@ -789,8 +767,6 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
         </EuiEmotionProvider>
       </template>
     );
-    await showDates('parent');
-    await showDates('child');
     const wrapper = (key: string) => css(inside(key, '.euiFormControlLayout__childrenWrapper'));
     const delimiter = (key: string) => css(inside(key, '.euiFormControlLayoutDelimited__delimiter'));
     assert.strictEqual(wrapper('parent').backgroundColor, rgb(forms(light)['background']!));
@@ -854,7 +830,6 @@ module('Integration | Component | Borealis date pickers', function (hooks) {
         </EuiEmotionProvider>
       </template>
     );
-    await showDates('rtl');
     // RTL: the quick select sits on the right, the update button on the left
     const quick = box(el(inside('rtl', '.euiFormControlLayout__prepend')));
     const start = box(el(inside('rtl', '.euiDatePopoverButton--start')));

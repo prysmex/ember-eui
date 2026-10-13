@@ -237,3 +237,167 @@ Checks: core suite 1315/1315 (1302 + 13 new in
 `eui-combo-box-upstream-props-test.gts`; existing combo tests unmodified),
 ember-tsc clean, eslint clean on changed files, parity 349/349, rollup
 refreshed package.json app-js (2 new private files).
+
+## Upstream behavior by default (2026-10-13, branch `eui-wave/combo-upstream`)
+
+User decision: "make combo box match upstream behavior, but we can't
+support regressions". Coordinator constraint: no copy of the options and
+no mutation; the list is derived from args on every change.
+
+### How it works now
+
+`EuiComboBox` still uses ember-power-select, but owns the list:
+`powerSelectOptions` is a `@cached` getter over `@options` (or what a
+promised `@options` resolved to), `@selectedOptions` and the tracked
+search text, through a port of upstream `getMatchingOptions`
+(`getMatchingEntries` + `entriesToPowerSelectOptions` in
+`utils/eui/combo-box.ts`). ember-power-select gets `@matcher` = match-all
+so it never filters again. Tracked state is UI only: `select` (open,
+highlight), `searchValue`, `hasFocus` / `inputHasFocus`, and the settled
+value of a promised `@options`. `@search` results go through the same
+matching (pre-filtered, selected removed). Groups are copied (new
+`options` arrays); options and the caller's arrays never are (frozen
+arrays tested).
+
+### Behavior changes (each checked against upstream 123.1.0 source)
+
+1. **Matching** (`matching_options.ts`): case-insensitive substring on the
+   trimmed label and search; no accent folding. `@isCaseSensitive`;
+   `@matcher` kept; new upstream `@optionMatcher`.
+2. **Selected options** are left out of the list in multiple selection
+   (label + `key` equality, case per `@isCaseSensitive`, like
+   `getSelectedOptionForSearchValue`); single selection keeps them
+   (`showPrevSelected`) with the check by label + key; choosing the
+   selected option again keeps it (`onAddOption`).
+3. **Blur** (`onContainerBlur`): leaving with no highlighted option runs
+   `setCustomOptions(true)` for any combo box: the only exact match is
+   selected, else `@onCreateOption` (delimiter split). Text not added
+   stays and marks the combo box invalid (`markAsInvalid`); the trigger no
+   longer clears the search on close.
+4. **Adding**: multiple selection keeps the list open (choice, Enter,
+   custom option) and highlights the next option; single selection closes.
+   `@closeOnSelect` defaults to `!!singleSelection`. Enter without a
+   highlighted option adds the text even if it partially matches.
+5. **Highlight**: nothing on open (`activeOptionIndex = -1`); single
+   selection opened by click highlights its option (`onComboBoxClick`);
+   tooltips show only on hover / arrows; `@highlightOnHover` off.
+6. **`sortMatchesBy="startsWith"`** sorts the flat list, group titles
+   included, and options follow the title before them.
+
+Other differences found and fixed: arrows wrap and ArrowUp starts at the
+end, skipping disabled options and groups; Escape closes and keeps text;
+Tab is prevented while an option is highlighted; Backspace in an empty
+input removes the last pill without opening the list (single selection
+reopens; `asPlainText` also deletes one character); focusing the input
+opens the list; the clear button focuses the input and opens the list;
+no placeholder while searching; upstream empty states ("{searchValue}
+doesn't match any options", "There aren't any options available",
+"You've selected all available options", "{label} has already been
+added"); `@isLoading` shows the spinner in the list; enter badge only
+with new `@onFocusBadge`; upstream `{ label, options }` groups; new
+`@async` and `@onSearchChange(value, hasMatchingOptions)`. Accessibility:
+the input is the combobox (`role`, `aria-expanded`, `aria-controls` while
+open, `aria-haspopup`, `aria-autocomplete`, `aria-required`, label);
+power-select's trigger is `role="presentation"`, `tabindex="-1"`, no
+label (with `@searchEnabled={{false}}` it stays power-select's combobox);
+listbox `aria-label` "Choose from the following options" and
+`aria-multiselectable` only for multiple selection; mousedown in the list
+keeps focus in the input; screen reader instructions (polite live region)
+while the input has focus.
+
+### Changed existing assertions (old → new, upstream reference)
+
+`eui-combo-box-test.gts`:
+- "external options and selection replacements…": `['Cherry','Date']` →
+  `['Date']` (selected not listed; `collectMatchingOption`).
+- "selecting an already selected option removes it" → renamed "selected
+  options are not listed, so they cannot be chosen again": `choose('Apple')`
+  + changes `[['Banana']]` → list is `['Cherry']`, changes `[]` (same).
+
+`eui-combo-box-family-test.gts`:
+- single selection: Banana background `backgroundBaseInteractiveSelect` →
+  `…SelectHover` (opened by click, selected option highlighted;
+  `onComboBoxClick`).
+- options: 4 rows → 3 (Cherry selected, not listed); "first option
+  highlighted on open" (hover background, enter badge) → not focused, no
+  badge without `@onFocusBadge` (`activeOptionIndex -1`, `onFocusBadge`);
+  Cherry selected-style/`aria-selected` assertions removed (not listed);
+  setsize 4 → 3, Durian posinset 4 → 3; `aria-activedescendant` on open
+  = Apple → absent, one extra ArrowDown before the existing ones.
+- without a block: `['Banana','Ananas','Cherry']` → `['Banana','Ananas']`.
+- messages: "No results found" → "zzz doesn't match any options"
+  (`euiComboBoxOptionsList.noMatchingOptions`).
+- provider: `rows()[0]` color textPrimary ("selected") → textParagraph
+  (selected Apple not listed).
+- high contrast: ArrowDown added before the underline check (no
+  highlight on open).
+
+`eui-combo-box-upstream-props-test.gts`:
+- prepend/append: `state.selected = []` before opening (selected options
+  are not listed).
+- tooltips: "shown when the list opens" → absent on open, shown after
+  ArrowDown (`activeOptionIndex -1`).
+
+No other test edits.
+
+### New tests
+
+- Core `eui-combo-box-upstream-behavior-test.gts` (35): ports of
+  `combo_box.test.tsx`, `matching_options.test.ts` and the spec's keyboard
+  cases, plus: replacing `@options` while open / after a selection / with
+  equal new objects / while searching, a promised `@options` replaced by
+  an array, `@search` results without the selection, frozen
+  `@options` / `@selectedOptions` (flat and grouped) never mutated.
+- validated-form: forwarding test and "selected options leave the list,
+  leaving adds the typed text, validity follows".
+- changeset-form: forwarding test and "leaving with typed text adds it,
+  and validates after it is added".
+
+### Companion packages
+
+Both `FieldComboBox`es forward every `EuiComboBox` arg (option keys are
+data), yield `(option, index, searchValue)`, pass `@ariaLabel` as the arg
+(it was an attribute on the wrapper), honor `@autofocus` / `@autoFocus`,
+and render blockless when called without a block (they always passed a
+block, so blockless options rendered empty). changeset-form validates
+again after `@onCreateOption` (blur validated before the created value
+landed); its `singleSelection` type (`isPlainText`) was dropped for
+EuiComboBox's. flatpickr and pikaday don't use EuiComboBox.
+
+### Docs
+
+Combo box page: differences reduced to what is left (below); d15 uses
+`@onSearchChange`, d17 mirrors upstream's `@async` demo, d21 uses
+`@optionMatcher`; d24 "Keeping the list open" (manual remaining-options
+workaround + `@closeOnSelect={{false}}`) removed. Companion docs note the
+new behavior. Release note: `.changeset/combo-box-upstream-behavior.md`
+(core major, forms minor) and 13 `EuiComboBox` rows in
+`docs/migrating-to-borealis.md` (+ Known gaps updated). Note: the pending
+major changesets make the next release 15.0.0, not 16.0.0.
+
+### Remaining differences
+
+- `asPlainText` selection is shown next to the input, not as its value.
+- The chevron is decorative (no `comboBoxToggleListButton`); no
+  `comboBoxClearButton` test subject (EuiFormControlLayout owns it).
+- With `startsWith` and groups, a title left without options isn't
+  rendered (ember-power-select drops empty groups).
+- Typing keeps the highlighted option if it still matches (upstream keeps
+  the index).
+- `@search` results are filtered when they arrive (selection changes
+  while they are shown don't re-filter them).
+- `inputPopoverProps`, `inputRef`, option ids by original index.
+
+### Checks
+
+- Core full suite 1368/1368 (1333 + 35 new), filtered `combo` 88/88.
+- validated-form 25/25 (before 23/23), changeset-form 24/24 (before
+  22/22). Note: the companions' `node_modules` symlink resolves
+  `@ember-eui/core` to the MAIN checkout's `packages/core`, not the
+  worktree or the injected copy, so the "before" counts (and any run with
+  the brief's recipe) test main's core dist. The "after" counts were
+  measured with a temporary worktree-local `node_modules` pointing
+  `@ember-eui/core` at the worktree core (restored afterwards).
+- ember-tsc (core, validated-form, changeset-form), eslint on changed
+  files, parity 349/349, rollup (no package.json change),
+  `generate-api-docs` (combo page regenerated).

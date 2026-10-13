@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, waitFor } from '@ember/test-helpers';
 
 import EuiErrorMessage, {
   euiErrorMessageText
@@ -19,8 +19,10 @@ module('Integration | Component | eui-error-message', function (hooks) {
 
     assert.dom('.euiErrorBoundary').hasClass('mine').hasAttribute('data-test-subj', 'euiErrorBoundary');
     assert.dom('.euiErrorBoundary .euiCodeBlock').exists();
-    assert.dom('.euiErrorBoundary .euiTitle').hasText('Error');
-    assert.dom('.euiErrorBoundary .euiCodeBlock').includesText('Error: boom');
+    await waitFor('.euiErrorBoundary .euiCodeBlock code .euiTitle');
+    assert.dom('.euiErrorBoundary .euiCodeBlock code .euiTitle').hasText('Error', 'the title is inside the code block (upstream)');
+    assert.dom('.euiErrorBoundary .euiCodeBlock code').includesText('Error: boom');
+    assert.dom('.euiErrorBoundary .euiCodeBlock .token').doesNotExist('rich content is not highlighted');
     assert.notStrictEqual(
       getComputedStyle(this.element.querySelector('.euiErrorBoundary')!).backgroundImage,
       'none',
@@ -36,6 +38,7 @@ module('Integration | Component | eui-error-message', function (hooks) {
     assert.strictEqual(euiErrorMessageText('plain'), 'plain', 'non-errors are stringified');
 
     await render(<template><EuiErrorMessage @error={{error}} /></template>);
+    await waitFor('.euiErrorBoundary code .euiTitle');
 
     assert.dom('.euiErrorBoundary .euiCodeBlock').includesText('Error: Could not load').includesText('at loadModel');
   });
@@ -46,6 +49,7 @@ module('Integration | Component | eui-error-message', function (hooks) {
     const css = { paddingBlock: '3px' };
 
     await render(<template><EuiErrorMessage @errorMessage="x" @css={{css}} /></template>);
+    await waitFor('.euiErrorBoundary code .euiTitle');
 
     assert.dom('.euiErrorBoundary .euiTitle').hasText('Fehler');
     assert.strictEqual(getComputedStyle(this.element.querySelector('.euiErrorBoundary')!).paddingTop, '3px');

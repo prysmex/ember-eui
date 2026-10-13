@@ -68,9 +68,8 @@ export default class EuiErrorMessage extends Component<EuiErrorMessageSignature>
 
   <template>
     <div class={{this.classes}} data-test-subj="euiErrorBoundary" ...attributes>
-      {{! upstream puts the title inside the code block; ours highlights text only }}
-      <EuiTitle @size="xs"><p>{{this.title}}</p></EuiTitle>
-      <EuiCodeBlock>{{this.text}}</EuiCodeBlock>
+      {{! the title makes the block rich content, rendered as-is (upstream) }}
+      <EuiCodeBlock><EuiTitle @size="xs"><p>{{this.title}}</p></EuiTitle>{{this.text}}</EuiCodeBlock>
     </div>
   </template>
 }

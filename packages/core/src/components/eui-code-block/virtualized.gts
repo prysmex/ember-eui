@@ -7,9 +7,13 @@ import { concat } from '@ember/helper';
 import { VerticalCollection } from '@html-next/vertical-collection';
 import style from 'ember-style-modifier/modifiers/style';
 
+import EuiRenderNode from '../../-private/eui-render-node.gts';
 import randomId from '../../-private/random-id.ts';
 import { getHtmlContent } from '../../utils/code/utils.ts';
 import EuiAutoSizer from '../eui-auto-sizer.gts';
+import Annotation from './annotation.gts';
+
+import type { EuiRenderNode as EuiRenderNodeType } from '../../-private/eui-render-node.gts';
 
 import type { RefractorNode } from 'refractor/core';
 
@@ -36,19 +40,31 @@ export interface VirtualizedCodeBlockSignature<T> {
     label?: string;
     /** Classes of the screen reader label. */
     labelClass?: string;
+    /**
+     * Line annotations, keyed by line number, rendered into the rows'
+     * annotation placeholders as rows scroll into view (upstream).
+     */
+    annotations?: Record<number, string | EuiRenderNodeType>;
   };
 }
 
 export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
   VirtualizedCodeBlockSignature<T>
 > {
-  getHtmlContent = helper(function ([node, index, rowHeight]: [
+  /**
+   * A row's element, plus its annotation placeholder (and line number) when
+   * the line is annotated, which the template renders the note into.
+   */
+  row = helper(function ([node, index, rowHeight]: [
     RefractorNode,
     number,
     number
   ]) {
     const content = getHtmlContent([node]);
     const span = content.element.firstChild as HTMLElement;
+    const placeholder = span?.querySelector<HTMLElement>(
+      '[data-annotation-line]'
+    );
 
     if (span) {
       // react-window's row styles, logical (upstream `logicalStyles`)
@@ -59,8 +75,15 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
       span.style.insetBlockStart = `${index * rowHeight}px`;
     }
 
-    return span;
+    return {
+      element: span,
+      placeholder,
+      lineNumber: Number(placeholder?.dataset['annotationLine'])
+    };
   });
+
+  annotationFor = (lineNumber: number) =>
+    this.args.annotations?.[lineNumber] ?? '';
 
   get hasFixedHeight() {
     return typeof this.args.overflowHeight === 'number';
@@ -103,11 +126,7 @@ export default class EuiCodeBlockVirtualizedComponent<T> extends Component<
             @staticHeight={{true}}
             @containerSelector={{concat "#" theID}}
             as |opt index|
-          >{{this.getHtmlContent
-              opt
-              index
-              @rowHeight
-            }}</VerticalCollection></pre>
+          >{{#let (this.row opt index @rowHeight) as |row|}}{{row.element}}{{#if row.placeholder}}{{#in-element row.placeholder insertBefore=null}}<Annotation @lineNumber={{row.lineNumber}}><EuiRenderNode @value={{this.annotationFor row.lineNumber}} /></Annotation>{{/in-element}}{{/if}}{{/let}}</VerticalCollection></pre>
       </EuiAutoSizer>
     {{/let}}
   </template>

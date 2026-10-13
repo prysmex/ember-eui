@@ -51,7 +51,7 @@ interface LineNumbersConfig {
    * Notes shown in a popover from a button next to a line number, keyed
    * by line number: `{ 6: 'A special note about this line' }`. A note is
    * text or a component for rich content (a template-only component or
-   * `(component …)`). Not shown when `@isVirtualized`.
+   * `(component …)`).
    */
   annotations?: Record<number, string | EuiRenderNodeType>;
   show?: boolean;
@@ -126,17 +126,97 @@ export type EuiCodeBlockArgs = EuiCodeSharedProps & {
  * numbers and full screen view:
  * `<EuiCodeBlock @language="js" @isCopyable={{true}}>{{this.code}}</EuiCodeBlock>`.
  * `...attributes` go on the `<code>` element.
+ *
+ * Text or rich content. Upstream highlights `children` when it is a string
+ * and renders anything else as-is. Glimmer blocks have no such type, so the
+ * block is rendered into a detached element first and its DOM decides:
+ *
+ * - **Text**: only text nodes, or a single `<pre>`, `<code>` or
+ *   `<pre><code>` wrapper around text (whitespace-only text and comments
+ *   beside the wrapper are ignored). The wrapper's attributes, such as
+ *   `class="language-js"`, are ignored. This is the shape of docfy's fenced
+ *   code and demo snippets and of markdown code. The text is highlighted,
+ *   gets line numbers and can be virtualized. Copy copies that source text.
+ * - **Rich**: any other element (a component such as EuiTitle or EuiLink, an
+ *   icon, a `<span>` or `<b>`, two wrappers, or text beside a wrapper). The
+ *   block is rendered as-is in the visible `<code>`, with no highlighting,
+ *   line numbers, annotations or virtualization. Copy copies the rendered
+ *   text (`innerText`, consecutive blank lines collapsed, as upstream).
+ *   With `@isVirtualized` upstream renders an empty list for non-string
+ *   children; ours renders the content instead.
+ *
+ * Edge cases: markup that has already been highlighted (`<code>` with
+ * `<span class="token">` inside) counts as rich and is shown as given.
+ * Whitespace between tags in your template is rendered too (JSX drops it),
+ * so keep rich blocks tight: `<EuiCodeBlock><b>a</b> b</EuiCodeBlock>`. A
+ * rich block is rendered twice when it first appears (once to detect it,
+ * once visibly), and again in the full screen view, as upstream renders
+ * `children` there too. Content switching between text and rich updates in
+ * place.
  */
 export interface EuiCodeBlockSignature {
   Element: HTMLElement;
   Args: EuiCodeBlockArgs;
   Blocks: {
-    /** The code, as text (e.g. a string from your component). */
+    /**
+     * The code as text (e.g. a string from your component), or rich content
+     * rendered as-is (see above).
+     */
     default: [];
   };
 }
 
-type HighlightResult = { data: RefractorNode[]; element: HTMLElement; text: string };
+const TEXT_WRAPPERS: Record<string, string[]> = {
+  '': ['PRE', 'CODE'],
+  PRE: ['CODE'],
+  CODE: []
+};
+
+function hasText(parent: Element) {
+  return Array.from(parent.childNodes).some(
+    (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()
+  );
+}
+
+/**
+ * Whether the rendered block is rich content (rendered as-is) rather than
+ * text (highlighted): any element other than one `<pre>`, `<code>` or
+ * `<pre><code>` wrapper around text.
+ */
+export function isRichCodeContent(root: Element): boolean {
+  let parent = root;
+  let allowed = TEXT_WRAPPERS[''];
+
+  for (;;) {
+    const elements = parent.children;
+
+    if (elements.length === 0) return false;
+    if (elements.length > 1 || hasText(parent)) return true;
+
+    const wrapper = elements[0]!;
+    if (!allowed!.includes(wrapper.tagName)) return true;
+
+    parent = wrapper;
+    allowed = TEXT_WRAPPERS[wrapper.tagName];
+  }
+}
+
+/** Upstream's copy normalization of the rendered `innerText`. */
+function renderedText(element: HTMLElement) {
+  return (
+    element.innerText
+      .replace(/\r\n|\r|\n/g, '\n')
+      .replace(/^\n/, '')
+      .replace(/\n{2,}/g, '\n') || ''
+  );
+}
+
+type HighlightResult = {
+  data: RefractorNode[];
+  element: HTMLElement;
+  text: string;
+  isRich: boolean;
+};
 
 const highlightTargetModifier = modifier(
   (
@@ -157,6 +237,15 @@ const highlightTargetModifier = modifier(
     }
   ) => {
     const getHighlighted = (): HighlightResult => {
+      if (targetEle && isRichCodeContent(targetEle)) {
+        return {
+          data: [],
+          element: document.createElement('div'),
+          text: '',
+          isRich: true
+        };
+      }
+
       const text = (targetEle?.textContent ? targetEle.textContent : '').trim();
       const data = highlightByLine(
         text,
@@ -165,7 +254,12 @@ const highlightTargetModifier = modifier(
         lineClasses
       );
 
-      return { data, element: getHtmlContent(data).element, text };
+      return {
+        data,
+        element: getHtmlContent(data).element,
+        text,
+        isRich: false
+      };
     };
 
     const observer = new MutationObserver((mutationsList) => {
@@ -185,7 +279,32 @@ const highlightTargetModifier = modifier(
   }
 );
 
-interface AnnotationTarget {
+/**
+ * Watches the visible rich content: reports its rendered text for copy, and
+ * when it has become text again.
+ */
+const richContentModifier = modifier(
+  (
+    element: HTMLElement,
+    _pos: unknown[],
+    { onChange }: { onChange: (isRich: boolean, text: string) => void }
+  ) => {
+    const report = () =>
+      onChange(isRichCodeContent(element), renderedText(element));
+    const observer = new MutationObserver(report);
+
+    report();
+    observer.observe(element, {
+      characterData: true,
+      subtree: true,
+      childList: true
+    });
+
+    return () => observer.disconnect();
+  }
+);
+
+export interface AnnotationTarget {
   element: HTMLElement;
   lineNumber: number;
   content: string | EuiRenderNodeType;
@@ -219,6 +338,10 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
   @tracked isFullScreen = false;
   @tracked data?: HighlightResult;
   @tracked annotationTargets: AnnotationTarget[] = [];
+  // the block is rich content, rendered as-is in the visible <code>
+  @tracked isRich = false;
+  // rendered text of rich content, for copy
+  @tracked richText = '';
 
   constructor(owner: Owner, args: EuiCodeBlockArgs) {
     super(owner, args);
@@ -251,22 +374,20 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
   }
 
   get isVirtualized() {
-    return !!(this.args.isVirtualized && Array.isArray(this.data?.data));
+    return !!(
+      this.args.isVirtualized &&
+      !this.isRich &&
+      Array.isArray(this.data?.data)
+    );
   }
 
   @cached
   get lineNumbersConfig(): LineNumbersFinal {
     const lineNumbers = this.args.lineNumbers ?? false;
     const config = typeof lineNumbers === 'object' ? lineNumbers : {};
-    const final: LineNumbersFinal = lineNumbers
+    return lineNumbers
       ? { start: 1, show: true, ...config }
       : { start: 1, show: false };
-
-    // annotations render Ember components into the lines; the virtualized
-    // list builds its rows from detached nodes, so they are not supported there
-    if (this.args.isVirtualized) delete final.annotations;
-
-    return final;
   }
 
   /** Upstream's `{language} code block:` screen reader label. */
@@ -281,9 +402,18 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
   }
 
   get textToCopy() {
-    // The source text, as upstream copies for virtualized blocks (the
-    // rendered `innerText` would lose blank lines).
+    // Rich content: the rendered text, as upstream. Text: the source, as
+    // upstream copies for virtualized blocks (the rendered `innerText`
+    // would lose blank lines).
+    if (this.isRich) return this.richText;
     return this.data?.text ?? '';
+  }
+
+  /** The annotation notes, for the virtualized rows. */
+  get annotations() {
+    return this.lineNumbersConfig.annotations as
+      | Record<number, string | EuiRenderNodeType>
+      | undefined;
   }
 
   get showCopyButton() {
@@ -527,9 +657,31 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
   }
 
   applyUpdate(result: HighlightResult) {
-    if (this.isDestroying || this.isDestroyed) return;
+    // while rich, the hidden copy is not rendered; the visible one reports
+    if (this.isDestroying || this.isDestroyed || this.isRich) return;
+    if (result.isRich) {
+      this.isRich = true;
+      this.annotationTargets = [];
+      return;
+    }
     this.data = result;
     this.renderCode();
+  }
+
+  @action
+  updateRich(isRich: boolean, text: string) {
+    scheduleOnce('afterRender', this, this.applyRich, isRich, text);
+  }
+
+  applyRich(isRich: boolean, text: string) {
+    if (this.isDestroying || this.isDestroyed || !this.isRich) return;
+    if (isRich) {
+      if (this.richText !== text) this.richText = text;
+      return;
+    }
+    // became text: render the hidden copy again, which highlights it
+    this.isRich = false;
+    this.richText = '';
   }
 
   willDestroy() {
@@ -552,11 +704,11 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
     {{! DO NOT FORMAT AT ALL, PRE TAGS RESPECT WHITESPACE LITERALLY }}
-    {{#if this.codeTarget}}
+    {{#if this.codeTarget}}{{#unless this.isRich}}
       {{#in-element this.codeTarget}}
         {{yield}}
       {{/in-element}}
-    {{/if}}
+    {{/unless}}{{/if}}
     <div
       class={{this.classes}}
       {{style this.overflowHeightStyles}}
@@ -578,6 +730,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
           @labelClass={{this.labelClasses}}
           @language={{this.language}}
           @data={{this.data.data}}
+          @annotations={{this.annotations}}
           @rowHeight={{this.rowHeight}}
           @overflowHeight={{@overflowHeight}}
         />
@@ -593,12 +746,17 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
             onMutation=this.doesOverflow
             observerOptions=(hash subtree=true childList=true)
           }}
-        ><div class={{this.labelClasses}}>{{this.label}}</div><code
+        ><div class={{this.labelClasses}}>{{this.label}}</div>{{#if this.isRich}}<code
+            class={{this.codeClasses}}
+            data-code-language={{this.language}}
+            {{richContentModifier onChange=this.updateRich}}
+            ...attributes
+          >{{yield}}</code>{{else}}<code
             class={{this.codeClasses}}
             data-code-language={{this.language}}
             {{didInsert this.setCode}}
             ...attributes
-          ></code></pre>
+          ></code>{{/if}}</pre>
       {{/if}}
 
       <Controls
@@ -622,17 +780,21 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
               @labelClass={{this.labelClasses}}
               @language={{this.language}}
               @data={{this.data.data}}
+              @annotations={{this.annotations}}
               @rowHeight={{this.fullScreenRowHeight}}
             />
           {{else}}
             <pre
               class={{this.preFullScreenClasses}}
               tabindex="0"
-            ><div class={{this.labelClasses}}>{{this.label}}</div><code
+            ><div class={{this.labelClasses}}>{{this.label}}</div>{{#if this.isRich}}<code
+                class={{this.codeClasses}}
+                data-code-language={{this.language}}
+              >{{yield}}</code>{{else}}<code
                 class={{this.codeClasses}}
                 data-code-language={{this.language}}
                 {{didInsert this.setCodeFullScreen}}
-              ></code></pre>
+              ></code>{{/if}}</pre>
           {{/if}}
           <Controls
             @paddingSize="l"

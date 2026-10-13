@@ -10,12 +10,22 @@ import {
 } from '../-private/table.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiTableCellContentStyles,
   euiTableRowCellStyles
 } from '../utils/eui/styles.generated.ts';
+import { euiTableStickyCellStyles } from '../utils/eui/table.ts';
+import TableNode from '../-private/table-node.gts';
+import EuiTextBlockTruncate from './eui-text-block-truncate.gts';
 
-import type { TableAlignment, TableMobileOptions } from '../-private/table.ts';
+import type {
+  TableAlignment,
+  TableMobileOptions,
+  TableTruncateText
+} from '../-private/table.ts';
+import type { EuiTableStickyCellOptions } from '../utils/eui/table.ts';
+import type { EuiTableNode } from '../-private/table-node.gts';
 import type { CSSObject } from '@emotion/css/create-instance';
 
 /** A cell of an `EuiTableRow`. */
@@ -25,10 +35,11 @@ export interface EuiTableRowCellSignature {
     /** `'left'`, `'right'` (numbers) or `'center'`. Defaults to `'left'`. */
     align?: TableAlignment;
     /**
-     * `true` cuts long text with an ellipsis; otherwise long words break
-     * (upstream default).
+     * `true` cuts long text on one line with an ellipsis; `{ lines: n }`
+     * clamps it to `n` lines. Otherwise long words break (upstream
+     * default).
      */
-    truncateText?: boolean;
+    truncateText?: TableTruncateText;
     /**
      * The content is only text (wrapped in a span that truncates or
      * wraps). Set `false` for components. Defaults to `true`.
@@ -60,6 +71,14 @@ export interface EuiTableRowCellSignature {
     minWidth?: number | string;
     /** Max width, e.g. `'30%'`. */
     maxWidth?: number | string;
+    /**
+     * Sticks the cell to a side of the table (`{ side: 'start' | 'end' }`)
+     * while it scrolls inline; only for the first or last column, and not
+     * in the cards layout. With `@hasBackground={{false}}` on the table,
+     * set `--euiTableCellStickyBackgroundColor` to the background behind
+     * it. Upstream beta.
+     */
+    sticky?: EuiTableStickyCellOptions;
     /**
      * In the cards layout: `{ show, only, header, enlarge, align,
      * truncateText, textOnly, width, minWidth, maxWidth }`. `header`
@@ -103,7 +122,7 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
     return this.args.setScopeRow ? 'th' : 'td';
   }
 
-  get mobileHeader(): string | undefined {
+  get mobileHeader(): EuiTableNode | boolean | undefined {
     return this.isResponsive ? this.mobile.header : undefined;
   }
 
@@ -112,9 +131,21 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
     return this.isResponsive ? (this.mobile.textOnly ?? textOnly) : textOnly;
   }
 
-  get truncateText(): boolean {
+  get truncateText(): TableTruncateText {
     const truncate = this.args.truncateText ?? false;
     return this.isResponsive ? (this.mobile.truncateText ?? truncate) : truncate;
+  }
+
+  /** Lines of a multi-line clamp (`truncateText: { lines }`). */
+  get truncateLines(): number | undefined {
+    const truncate = this.truncateText;
+    return typeof truncate === 'object' && truncate?.lines
+      ? truncate.lines
+      : undefined;
+  }
+
+  get stickySide(): 'start' | 'end' | undefined {
+    return this.isResponsive ? undefined : this.args.sticky?.side;
   }
 
   get hasActionsOrExpander(): boolean | 'custom' {
@@ -123,12 +154,17 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
 
   /** The text span (upstream renders it for text or truncated content). */
   get wrapsContent(): boolean {
-    return this.textOnly || this.truncateText || Boolean(this.args.showOnHover);
+    return (
+      this.textOnly ||
+      this.truncateText === true ||
+      Boolean(this.args.showOnHover)
+    );
   }
 
   get textClass(): string {
     return [
-      (this.textOnly || this.truncateText) && 'euiTableCellContent__text',
+      (this.textOnly || this.truncateText === true || this.truncateLines) &&
+        'euiTableCellContent__text',
       this.args.showOnHover && 'euiBasicTableAction-showOnHover'
     ]
       .filter(Boolean)
@@ -173,7 +209,8 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
         : [
             styles.desktop.desktop,
             hasActions || showOnHover ? styles.desktop.actions : undefined,
-            showOnHover ? SHOW_ON_HOVER : undefined
+            showOnHover ? SHOW_ON_HOVER : undefined,
+            ...this.stickyStyles
           ])
     ];
 
@@ -185,6 +222,16 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
     ]
       .filter(Boolean)
       .join(' ');
+  }
+
+  get stickyStyles(): EuiCss[] {
+    const { sticky } = this.args;
+    if (!sticky) return [];
+    const styles = useEuiBorealisStyles(
+      getEuiThemeContext(this),
+      euiTableStickyCellStyles
+    );
+    return [styles.root, styles.side[sticky.side]];
   }
 
   @cached
@@ -206,7 +253,9 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
       BOX_SIZING,
       ...cellContentStyles(styles, {
         align,
-        truncateText: this.truncateText,
+        // upstream: `true` truncates, `false` breaks words, a clamp neither
+        truncateText:
+          typeof this.truncateText === 'boolean' ? this.truncateText : null,
         hasActions: this.hasActionsOrExpander,
         isResponsive: this.isResponsive
       })
@@ -220,15 +269,30 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
           class={{this.cellClass}}
           scope={{if @setScopeRow "row"}}
           style={{this.style}}
+          data-sticky={{this.stickySide}}
           ...attributes
         >
           {{#if this.mobileHeader}}
             <div
               class="euiTableRowCell__mobileHeader {{this.mobileHeaderClass}}"
-            >{{this.mobileHeader}}</div>
+            ><TableNode @node={{this.mobileHeader}} /></div>
           {{/if}}
           <div class="euiTableCellContent {{this.contentClass}}">
-            {{#if this.wrapsContent}}
+            {{#if this.truncateLines}}
+              <EuiTextBlockTruncate
+                @lines={{this.truncateLines}}
+                @cloneElement={{true}}
+                as |clamp|
+              >
+                <span class={{this.textClass}} {{clamp}}>
+                  {{~#if (useMobileBlock this.isResponsive (has-block "mobile"))~}}
+                    {{yield to="mobile"}}
+                  {{~else~}}
+                    {{yield}}
+                  {{~/if~}}
+                </span>
+              </EuiTextBlockTruncate>
+            {{else if this.wrapsContent}}
               <span class={{this.textClass}}>
                 {{~#if (useMobileBlock this.isResponsive (has-block "mobile"))~}}
                   {{yield to="mobile"}}

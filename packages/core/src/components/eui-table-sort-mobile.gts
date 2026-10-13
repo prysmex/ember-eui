@@ -8,17 +8,19 @@ import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiContextMenuPanel from './eui-context-menu-panel.gts';
 import EuiPopover from './eui-popover.gts';
 import EuiTableSortMobileItem from './eui-table-sort-mobile-item.gts';
+import TableNode from '../-private/table-node.gts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass } from '../utils/eui/styles.ts';
 
 import type EuiI18n from '../services/eui-i18n';
+import type { EuiTableNode } from '../-private/table-node.gts';
 import type { EuiPopoverSignature } from './eui-popover';
 
 export interface EuiTableSortMobileItemOption {
   /** Unique key. */
   key?: string;
-  /** The column's name. */
-  name: string;
+  /** The column's name: text, an `htmlSafe` string or a component. */
+  name: EuiTableNode;
   /** Sorts by this column. */
   onSort?: (event: MouseEvent) => void;
   /** The table is sorted by this column. */
@@ -93,12 +95,19 @@ export default class EuiTableSortMobile extends Component<EuiTableSortMobileSign
                 @onSort={{item.onSort}}
                 @isSorted={{item.isSorted}}
                 @isSortAscending={{item.isSortAscending}}
-                @ariaLabel={{item.name}}
-              >{{item.name}}</EuiTableSortMobileItem>
+                @ariaLabel={{textLabel item.name}}
+              ><TableNode @node={{item.name}} /></EuiTableSortMobileItem>
             {{/each}}
           </EuiContextMenuPanel>
         </:content>
       </EuiPopover>
     </div>
   </template>
+}
+
+/** The item's accessible label: only plain text names (upstream uses the children). */
+function textLabel(name: EuiTableNode): string | undefined {
+  return typeof name === 'string' || typeof name === 'number'
+    ? String(name)
+    : undefined;
 }

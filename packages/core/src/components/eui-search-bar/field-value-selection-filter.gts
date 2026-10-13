@@ -17,8 +17,10 @@ import EuiFilterButton from '../eui-filter-button.gts';
 import EuiPopover from '../eui-popover.gts';
 import EuiPopoverTitle from '../eui-popover-title.gts';
 import EuiSelectable from '../eui-selectable.gts';
+import EuiRenderNode from '../../-private/eui-render-node.gts';
 
 import type Owner from '@ember/owner';
+import type { ComponentLike } from '@glint/template';
 import type {
   FieldValueOptionType,
   FieldValueSelectionFilterConfigType,
@@ -57,7 +59,7 @@ interface LoadedOptions {
 }
 
 interface SelectionOption extends EuiSelectableOption {
-  data: { view: string; value: Value; optionField: string };
+  data: { view: string | ComponentLike; value: Value; optionField: string };
 }
 
 export default class FieldValueSelectionFilter extends Component<FieldValueSelectionFilterSignature> {
@@ -375,7 +377,7 @@ export default class FieldValueSelectionFilter extends Component<FieldValueSelec
               </EuiPopoverTitle>
             {{/if}}
             <parts.list>
-              <:option as |option|>{{viewOf option}}</:option>
+              <:option as |option|><EuiRenderNode @value={{viewOf option}} /></:option>
             </parts.list>
           </:default>
         </EuiSelectable>
@@ -391,6 +393,6 @@ function isLoading(options: LoadedOptions | null, error: string | null): boolean
   return options == null && error == null;
 }
 
-function viewOf(option: EuiSelectableOption): string {
+function viewOf(option: EuiSelectableOption): string | ComponentLike {
   return (option as SelectionOption).data?.view ?? option.label;
 }

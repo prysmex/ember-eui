@@ -15,7 +15,9 @@ import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiButtonIcon from './eui-button-icon.gts';
 import EuiI18n from './eui-i18n.gts';
 import EuiToolTip from './eui-tool-tip.gts';
+import EuiRenderNodeView from '../-private/eui-render-node.gts';
 
+import type { EuiRenderNode } from '../-private/eui-render-node.gts';
 import type MarkdownActions from '../utils/markdown/markdown-actions';
 import type { EuiMarkdownEditorUiPlugin } from '../utils/markdown/markdown-types';
 
@@ -35,6 +37,8 @@ export interface EuiMarkdownEditorToolbarArgs {
   selectedNode: any;
   /** Disables every button, including the preview switch. */
   readOnly?: boolean;
+  /** Replaces the preview/editor switch: text or a component. */
+  right?: EuiRenderNode;
 }
 
 /** @private EuiMarkdownEditor's toolbar. */
@@ -249,7 +253,9 @@ export default class EuiMarkdownEditorToolbarComponent extends Component<EuiMark
         {{/if}}
       </div>
 
-      {{#if this.isPreviewing}}
+      {{#if @right}}
+        <EuiRenderNodeView @value={{@right}} />
+      {{else if this.isPreviewing}}
         <EuiButtonEmpty
           @iconType="code"
           @color="text"

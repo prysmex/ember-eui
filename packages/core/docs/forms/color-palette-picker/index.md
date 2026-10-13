@@ -61,6 +61,11 @@ bar of colors. Built on `EuiSuperSelect`; each option shows the title
 | `@disabled` | `boolean` |  | Disables the select. |
 | `@readOnly` | `boolean` |  | Read-only: the list does not open. |
 
+| Block | Description |
+| --- | --- |
+| `<:prepend>` | Content before the picker (upstream's `prepend`), e.g. a label or an icon; yields the class to put on it. |
+| `<:append>` | Content after the picker (upstream's `append`); yields the class to put on it. |
+
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 
 ### EuiColorPaletteDisplay

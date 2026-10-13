@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
 
-Use `@actionProps` to add up to two actions to a callout. The `primary` action renders as an **EuiButton** and the `secondary` action renders as an **EuiButtonEmpty**. Color and size are automatically matched to the callout and can't be customized. An action takes `children` (its text), `onClick`, `href`, `target`, `iconType`, `isDisabled`, `isLoading`, `className`, `data-test-subj` and `tooltipProps` (the arguments of **EuiToolTip**).
+Use `@actionProps` to add up to two actions to a callout. The `primary` action renders as an **EuiButton** and the `secondary` action renders as an **EuiButtonEmpty**. Color and size are automatically matched to the callout and can't be customized. An action takes `children` (its text), `onClick`, `href`, `target`, `iconType`, `isDisabled`, `isLoading`, `className`, `data-test-subj`, `tooltipProps` (the arguments of **EuiToolTip**) and `popoverProps` (the arguments of **EuiPopover**, plus `children`, its content as text or a component). When both are set, the tooltip sits inside the popover, as upstream.
 
 A secondary action can be provided on its own, but most commonly is paired with a primary action.
 

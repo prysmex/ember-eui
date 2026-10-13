@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
 
-An `EuiSearchBar` can have custom filter dropdowns that control how a user can search. The `field_value_selection` filter's `filterWith` is `'prefix'` (default), `'includes'` or your own function, and `autoSortOptions={{false}}` keeps your option order. A `custom_component` filter is an Ember component receiving `@query` and `@onChange`.
+An `EuiSearchBar` can have custom filter dropdowns that control how a user can search. The `field_value_selection` filter's `filterWith` is `'prefix'` (default), `'includes'` or your own function, and `autoSortOptions={{false}}` keeps your option order. The `view` of an option is the text or the component shown in the list instead of its name (here an **EuiHealth**). A `custom_component` filter is an Ember component receiving `@query` and `@onChange`.
 
 </EuiText>
 
@@ -15,7 +15,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { htmlSafe } from '@ember/template';
-import { EuiBasicTable, EuiButton, EuiCallOut, EuiCodeBlock, EuiFilterButton, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiPopover, EuiSearchBar, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+import { EuiBasicTable, EuiButton, EuiCallOut, EuiCodeBlock, EuiFilterButton, EuiFlexGroup, EuiFlexItem, EuiHealth, EuiPanel, EuiPopover, EuiSearchBar, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
 import { Query } from '@ember-eui/core/components/eui-search-bar';
 import { on } from '@ember/modifier';
 import { not } from 'ember-truth-helpers';
@@ -81,7 +81,16 @@ const schema = {
   },
 };
 
-const TAG_OPTIONS = tags.map((tag) => ({ value: tag.name }));
+// An option's `view` is what the list shows instead of its name: text, or a
+// component (upstream passes a React node).
+const tagView = (tag) =>
+  <template><EuiHealth @color={{tag.color}}>{{tag.name}}</EuiHealth></template>;
+
+const TAG_OPTIONS = tags.map((tag) => ({
+  value: tag.name,
+  name: tag.name,
+  view: tagView(tag),
+}));
 
 const columns = [
   { name: 'Type', field: 'type' },

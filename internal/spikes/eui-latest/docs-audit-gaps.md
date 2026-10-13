@@ -10,9 +10,8 @@ This is the list of those gaps. Effort: S/M/L.
 | Component | Missing prop/feature |
 | --- | --- |
 | EuiTourStep | no `useEuiTour` hook (`EuiTour` yields the same state and actions; deliberately not added) |
-| EuiMarkdownEditor | `toolbarProps`; `getDefaultEuiMarkdownPlugins` exclude only `tooltip` (button stays); no link validator |
-| EuiI18n | multi-token lookup, component-valued interpolation; no `EuiContext` |
-| Illustrations | no live searchable gallery on the site: needs `@elastic/eui-illustrations` as a site devDependency (core takes it as an optional app install, documented; see gaps-utils-handoff.md). TODO once installed |
+| EuiMarkdownEditor | `processingConfig.linkProps`; `markdownFormatProps`; upstream's `remark-parse-no-trim` and intraword-underscore plugin (see gaps-text-handoff.md) |
+| EuiI18n | no `EuiContext` (deliberately not added, see the i18n Context example); `@i18n` has no `mappingFunc` |
 | Color palettes | `euiPaletteColorBlind`, `ForStatus`, `ForTemperature`, `Cool`, `Warm`, `Gray`, `Negative`, `Positive` and `BehindText` return EUI's classic colors, not the Borealis vis colors, and take no `colors` option (only Red/Green/SkyBlue/Yellow/Orange do); `euiPaletteComplimentary` is upstream's `euiPaletteComplementary` (different values: vis colors); no `EUI_VIS_COLOR_STORE`, no `useEuiPalette*` hooks |
 | Utilities | no `useEuiContainerQuery`, no `euiXScroll`/horizontal overflow helper, no standalone `PrettyDuration`/`usePrettyDuration` (see super-date-picker-handoff.md), no EuiErrorBoundary (Glimmer has no equivalent), no global `eui-*` utility classes or `componentDefaults` |
 | EuiFocusTrap | react-focus-on's `as`, `lockProps`, `inert`, `whiteList`, `focusLock`, `allowPinchZoom`, `preventScrollOnFocus` and the `data-focus-guard` sentinels; `EuiProvider componentDefaults` |
@@ -21,7 +20,6 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |
 
 ## Tables and data grid
 

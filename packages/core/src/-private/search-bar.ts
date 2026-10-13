@@ -55,10 +55,12 @@ export interface FieldValueOptionType {
   value: Value;
   name?: string;
   /**
-   * Ember: replaces upstream's `view` (a React node) with plain text shown
-   * instead of the name; use the filter's `<:option>` block for markup.
+   * What the option shows in the list instead of its name (upstream's
+   * `view`, a React node): text, or a component rendered without args
+   * (e.g. a template-only component with a badge or an icon). Searching and
+   * the checked state still use `name`.
    */
-  view?: string;
+  view?: string | ComponentLike;
 }
 
 type OptionsLoader = () => Promise<FieldValueOptionType[]>;

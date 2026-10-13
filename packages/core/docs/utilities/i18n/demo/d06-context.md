@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
 
-Upstream's <strong>EuiContext</strong> sets global internationalization copy for the EUI components inside it. In Ember EUI, add translations globally with the <EuiCode>euiI18n</EuiCode> service (see above), or pass a mapping to a single <strong>EuiI18n</strong> with `@i18n={{hash mapping=...}}`, as in this example: the buttons switch the mapping used by the texts below.
+Upstream's <strong>EuiContext</strong> sets the internationalization copy for the EUI components inside it. Ember EUI has no <strong>EuiContext</strong> on purpose. Every EUI component looks its texts up through the global <EuiCode>euiI18n</EuiCode> service, which has no access to the component tree, so a provider component could only scope the <strong>EuiI18n</strong> instances you write yourself and would silently leave EUI's own components untranslated, the very thing <strong>EuiContext</strong> is for. Per-subtree locales are also rare: apps switch locale as a whole, which is what the service is for (add translations in the application route, as above, or on a locale change). When one place needs a different mapping, pass it to a single <strong>EuiI18n</strong> with <EuiCode>@i18n={{hash mapping=...}}</EuiCode>, as in this example: the buttons switch the mapping used by the texts below.
 
 </EuiText>
 

@@ -26,6 +26,7 @@ import EuiPanel from './eui-panel.gts';
 import EuiText from './eui-text.gts';
 import EuiTitle from './eui-title.gts';
 import EuiMaybeToolTip from '../-private/eui-maybe-tool-tip.gts';
+import EuiMaybePopover from '../-private/eui-maybe-popover.gts';
 import EuiRenderNode from '../-private/eui-render-node.gts';
 
 import type EuiI18n from '../services/eui-i18n';
@@ -33,6 +34,7 @@ import type { EuiIconSignature } from './eui-icon';
 import type { EuiTextSignature } from './eui-text';
 import type { EuiTitleSignature } from './eui-title';
 import type { EuiTooltipArgs } from './eui-tool-tip.gts';
+import type { EuiWithPopoverProps } from '../-private/eui-maybe-popover.gts';
 import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 
 export type EuiCallOutColor = 'primary' | 'success' | 'warning' | 'danger';
@@ -60,6 +62,12 @@ export interface EuiCallOutActionProps {
   'data-test-subj'?: string;
   /** Shows a tooltip on the action: the args of `EuiToolTip`. */
   tooltipProps?: Partial<EuiTooltipArgs>;
+  /**
+   * Opens a popover from the action: the args of `EuiPopover` (`isOpen`,
+   * `closePopover`, ...) and `children`, its content as text or a
+   * component. The tooltip sits inside the popover, as upstream.
+   */
+  popoverProps?: EuiWithPopoverProps;
 }
 
 /**
@@ -400,7 +408,7 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
         {{#if (or @actionProps.primary @actionProps.secondary (has-block "actions"))}}
           <div class={{this.actionsClass}}>
             {{#if @actionProps.primary}}
-              <EuiMaybeToolTip @props={{@actionProps.primary.tooltipProps}}>
+              <EuiMaybePopover @props={{@actionProps.primary.popoverProps}}><EuiMaybeToolTip @props={{@actionProps.primary.tooltipProps}}>
                 <EuiButton
                   class="euiCallOutAction {{@actionProps.primary.className}}"
                   @size="s"
@@ -416,10 +424,10 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
                   data-test-subj={{get @actionProps.primary "data-test-subj"}}
                   {{on "click" (optional @actionProps.primary.onClick)}}
                 ><EuiRenderNode @value={{@actionProps.primary.children}} /></EuiButton>
-              </EuiMaybeToolTip>
+              </EuiMaybeToolTip></EuiMaybePopover>
             {{/if}}
             {{#if @actionProps.secondary}}
-              <EuiMaybeToolTip @props={{@actionProps.secondary.tooltipProps}}>
+              <EuiMaybePopover @props={{@actionProps.secondary.popoverProps}}><EuiMaybeToolTip @props={{@actionProps.secondary.tooltipProps}}>
                 <EuiButtonEmpty
                   class="euiCallOutAction {{@actionProps.secondary.className}}"
                   @size="s"
@@ -435,7 +443,7 @@ export default class EuiCallOut extends Component<EuiCallOutSignature> {
                   data-test-subj={{get @actionProps.secondary "data-test-subj"}}
                   {{on "click" (optional @actionProps.secondary.onClick)}}
                 ><EuiRenderNode @value={{@actionProps.secondary.children}} /></EuiButtonEmpty>
-              </EuiMaybeToolTip>
+              </EuiMaybeToolTip></EuiMaybePopover>
             {{/if}}
             {{yield to="actions"}}
           </div>

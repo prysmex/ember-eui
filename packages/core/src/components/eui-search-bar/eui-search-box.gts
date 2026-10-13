@@ -3,11 +3,18 @@ import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
 
+import { not } from 'ember-truth-helpers';
+
+import EuiRenderNodeView, { isTextNode } from '../../-private/eui-render-node.gts';
 import EuiFieldSearch from '../eui-field-search.gts';
+import EuiFormAppend from '../eui-form-append.gts';
+import EuiFormPrepend from '../eui-form-prepend.gts';
 import EuiInputPopover from '../eui-input-popover.gts';
 
+import type { TOC } from '@ember/component/template-only';
 import type EuiI18n from '../../services/eui-i18n';
 import type { EuiPopoverArgs } from '../eui-popover';
+import type { EuiRenderNode } from '../../-private/eui-render-node.gts';
 
 /** Options of the search field (upstream's `box` prop). */
 export interface EuiSearchBoxOptions {
@@ -38,6 +45,20 @@ export interface EuiSearchBoxOptions {
   /** `data-test-subj` of the `<input>`. */
   'data-test-subj'?: string;
   /**
+   * Content before the field, joined to it: text (a label, as
+   * `EuiFormPrepend @label`) or a component rendered as is (e.g. one using
+   * `EuiFormPrepend` for an icon or a button).
+   */
+  prepend?: EuiRenderNode;
+  /** Content after the field; like `prepend`, with `EuiFormAppend` for text. */
+  append?: EuiRenderNode;
+  /** Called when the field is clicked. */
+  onClick?: (event: MouseEvent) => void;
+  /** Called when the field gets focus (the hint, if any, also opens). */
+  onFocus?: (event: FocusEvent) => void;
+  /** Called when the field loses focus. */
+  onBlur?: (event: FocusEvent) => void;
+  /**
    * The query schema (`{ strict, fields, flags, recognizedFields }`).
    * `EuiInMemoryTable` also accepts `true` to derive it from its columns.
    */
@@ -57,6 +78,23 @@ export type EuiSearchBoxHintPopoverProps = Partial<
     | 'repositionOnScroll'
   > & { fullWidth?: boolean; disableFocusTrap?: boolean }
 >;
+
+/** Text becomes the label of an `EuiFormPrepend`; a component renders as is. */
+const BoxPrepend: TOC<{ Args: { value?: EuiRenderNode } }> = <template>
+  {{#if (isTextNode @value)}}
+    <EuiFormPrepend @label={{asLabel @value}} />
+  {{else}}
+    <EuiRenderNodeView @value={{@value}} />
+  {{/if}}
+</template>;
+
+const BoxAppend: TOC<{ Args: { value?: EuiRenderNode } }> = <template>
+  {{#if (isTextNode @value)}}
+    <EuiFormAppend @label={{asLabel @value}} />
+  {{else}}
+    <EuiRenderNodeView @value={{@value}} />
+  {{/if}}
+</template>;
 
 /** @private Upstream `hint` of EuiSearchBox (wired by EuiSearchBar). */
 export interface EuiSearchBoxHint {
@@ -135,9 +173,21 @@ export default class EuiSearchBox extends Component<EuiSearchBoxSignature> {
   }
 
   @action
-  onFocus(): void {
+  onFocus(event: FocusEvent): void {
     this.args.hint?.setIsVisible(true);
+    this.box.onFocus?.(event);
   }
+
+  @action
+  onBlur(event: FocusEvent): void {
+    this.box.onBlur?.(event);
+  }
+
+  @action
+  onClick(event: MouseEvent): void {
+    this.box.onClick?.(event);
+  }
+
 
   @action
   closeHint(): void {
@@ -182,9 +232,16 @@ export default class EuiSearchBox extends Component<EuiSearchBoxSignature> {
             aria-label={{this.ariaLabel}}
             aria-describedby={{this.describedBy}}
             data-test-subj={{this.testSubj}}
+            @isFakePrependBlock={{not this.box.prepend}}
+            @isFakeAppendBlock={{not this.box.append}}
             {{on "focus" this.onFocus}}
+            {{on "blur" this.onBlur}}
+            {{on "click" this.onClick}}
             ...attributes
-          />
+          >
+            <:prepend><BoxPrepend @value={{this.box.prepend}} /></:prepend>
+            <:append><BoxAppend @value={{this.box.append}} /></:append>
+          </EuiFieldSearch>
         </:input>
         <:content>
           <div id={{@hint.id}} tabindex="-1">{{yield to="hint"}}</div>
@@ -208,10 +265,22 @@ export default class EuiSearchBox extends Component<EuiSearchBoxSignature> {
         aria-label={{this.ariaLabel}}
         aria-describedby={{this.describedBy}}
         data-test-subj={{this.testSubj}}
+        @isFakePrependBlock={{not this.box.prepend}}
+        @isFakeAppendBlock={{not this.box.append}}
+        {{on "focus" this.onFocus}}
+        {{on "blur" this.onBlur}}
+        {{on "click" this.onClick}}
         ...attributes
-      />
+      >
+        <:prepend><BoxPrepend @value={{this.box.prepend}} /></:prepend>
+        <:append><BoxAppend @value={{this.box.append}} /></:append>
+      </EuiFieldSearch>
     {{/if}}
   </template>
+}
+
+function asLabel(value: unknown): string {
+  return String(value);
 }
 
 function isFalse(value: unknown): boolean {

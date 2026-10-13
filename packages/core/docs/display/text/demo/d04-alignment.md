@@ -1,5 +1,5 @@
 ---
-order: 3
+order: 4
 ---
 
 # Alignment
@@ -29,7 +29,7 @@ There are two ways to align text. Either individually by applying <strong>EuiTex
     <p>
       You can also pass alignment to
       <strong>EuiText</strong>
-      directly with a prop
+      directly with a argument
     </p>
   </EuiText>
   <EuiText @textAlign='center' @color='success'>

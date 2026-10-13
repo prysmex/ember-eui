@@ -6,12 +6,26 @@ title: Text
 <EuiPageHeader @pageTitle="Text"/>
 
 <EuiText>
-  <p>
-<strong>EuiText</strong> is a generic catchall wrapper that will apply our standard typography styling and spacing to naked HTML. Because of its forced style it <strong>only accepts raw XHTML</strong> and can not / should not be used to wrap React components (which would break their styling).
 
-EuiText can ensure proper line-length for readability by setting a <EuiCode>max-width</EuiCode> on the entire component. To add the max-width setting, set <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
+<strong>EuiText</strong> is a generic catchall wrapper that will apply our standard typography styling and spacing to naked HTML. Because of its forced styles, it <strong>only accepts raw XHTML</strong>.
 
-  </p>
+</EuiText>
+
+<EuiSpacer />
+
+<EuiCallOut @title="Use direct descendants" @color="warning" @iconType="warning">
+  <ul>
+    <li>All your XHTML elements should be direct descendants of <strong>EuiText</strong>. Avoid wrapping them in a <EuiCode>div</EuiCode> or <EuiCode>span</EuiCode>. This will ensure styles are applied correctly.</li>
+    <li>Avoid nesting Ember components, which would break their styling.</li>
+  </ul>
+</EuiCallOut>
+
+<EuiSpacer />
+
+<EuiText>
+
+<strong>EuiText</strong> can ensure proper line-length for readability by setting a <EuiCode>max-width</EuiCode> on the entire component. To add the max-width setting, set <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
+
 </EuiText>
 
 <EuiHorizontalRule />

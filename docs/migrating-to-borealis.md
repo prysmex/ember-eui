@@ -542,29 +542,16 @@ groups, `@size` on context menus, `EuiPaginationButton @paddingSize` /
 Upstream features that are not ported yet (the Ember API keeps working
 as before):
 
-- **Flyout**: the flyout manager (sessions, child flyouts), `resizable`,
-  the flyout menu and the `container` prop.
 - **Popover**: initial focus on the panel itself, `panelProps`,
-  `focusTrapProps`, `onPositionChange`; input popovers don't close on
-  scroll or reposition when the input resizes.
-- **Tables**: sticky header/scrollbar/cells, header tooltips, multi-line
-  truncation and cell `append`.
+  `focusTrapProps` and `onPositionChange`.
 - **Combo box**: `inputPopoverProps` and `inputRef`. It keeps
-  ember-power-select; its input
-  sizes with `field-sizing: content`, which Firefox does not support yet,
-  so there the input may wrap below the pills earlier.
-- **Selectable**: wrapping/truncation options, option tooltips,
-  `onActiveOptionChange` and the "N results available" live region.
-- **Super date picker**: `showPrettyDuration`, auto-refresh-only rendering,
-  custom quick-select panels, `minDate` / `maxDate` and the update button
-  tooltip.
-- **Tooltips** on collapsed breadcrumbs, pagination
-  arrows, color picker swatches and the hue/saturation controls; the
-  avatar uses a native `title`.
-- **Forms**: `EuiForm`'s `defaultFullWidth` context for nested controls
-  (use `EuiForm @fullWidth` for rows), `EuiTextArea` icons/loading/clear,
-  `EuiCheckbox` `readOnly`; the error callout shows only when there are
-  errors.
+  ember-power-select; its input sizes with `field-sizing: content`, which
+  Firefox does not support yet, so there the input may wrap below the pills
+  earlier.
+- **Tooltips** on pagination arrows, color picker swatches and the
+  hue/saturation controls; the avatar uses a native `title`.
+- **Forms**: `EuiTextArea` icons, loading state and clear button; the error
+  callout shows only when there are errors.
 - **Header**: `EuiHeaderLogo` `logoType="horizontal"` and
   `EuiCollapsibleNavBeta`.
 - **Code block**: annotations are not rendered with `@isVirtualized`.

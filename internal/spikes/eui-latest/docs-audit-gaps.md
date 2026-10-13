@@ -26,6 +26,21 @@ This is the list of those gaps. Effort: S/M/L.
 | Component | Missing prop/feature | Upstream page | Effort | Notes |
 |---|---|---|---|---|
 
+## From the component audit (not in the docs examples)
+
+Found by checking the migration guide's Known gaps against the code
+(2026-10-13); these were never in the docs-example audit above.
+
+| Component | Missing |
+| --- | --- |
+| EuiPopover | initial focus on the panel, `panelProps`, `focusTrapProps`, `onPositionChange` |
+| EuiComboBox | `inputPopoverProps`, `inputRef` |
+| Tooltips | pagination arrows, color picker swatches and hue/saturation controls; EuiAvatar uses a native `title` |
+| EuiTextArea | icons, loading state, clear button |
+| EuiHeaderLogo | `logoType="horizontal"` |
+| EuiCollapsibleNavBeta | not ported |
+| EuiCodeBlock | annotations with `@isVirtualized`; rich (non-text) content is flattened to text where upstream renders it as-is |
+
 ## Decisions
 
 - EuiDatePicker: calendars live in `@ember-eui/flatpickr` and `@ember-eui/pikaday`, not in core.

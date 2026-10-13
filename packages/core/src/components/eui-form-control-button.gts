@@ -8,8 +8,10 @@ import {
   euiTextTruncate
 } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import euiApplyProps, { propsClasses } from '../-private/eui-apply-props.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 
+import type { EuiElementProps } from '../-private/eui-apply-props.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiButtonEmptySignature } from './eui-button-empty';
 
@@ -66,6 +68,18 @@ export interface EuiFormControlButtonSignature {
     target?: string;
     /** `type` of the `<button>`. Defaults to `'button'`. */
     type?: string;
+    /** Beta: renders `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. */
+    hasAriaDisabled?: boolean;
+    /**
+     * Upstream's `contentProps`: `class`/`className`, `css` and HTML
+     * attributes for the element wrapping the icon and text.
+     */
+    contentProps?: EuiElementProps;
+    /**
+     * Upstream's `textProps`: `class`/`className`, `css` and HTML attributes
+     * for the element holding the value or placeholder.
+     */
+    textProps?: EuiElementProps;
     /**
      * Extra styles composed last into the content element's class (upstream
      * `contentProps.css`).
@@ -161,8 +175,13 @@ export default class EuiFormControlButton extends Component<EuiFormControlButton
       euiTextTruncate(),
       styles.textContent,
       !this.args.value && styles.placeholder,
-      this.args.textCss
+      this.args.textCss,
+      this.args.textProps?.css
     )}`;
+  }
+
+  get textClasses() {
+    return [this.textClass, propsClasses(this.args.textProps)].filter(Boolean).join(' ');
   }
 
   <template>
@@ -174,6 +193,8 @@ export default class EuiFormControlButton extends Component<EuiFormControlButton
       @contentCss={{this.contentCss}}
       @isDisabled={{this.isDisabled}}
       @isLoading={{this.isLoading}}
+      @hasAriaDisabled={{@hasAriaDisabled}}
+      @contentProps={{@contentProps}}
       @iconType={{@iconType}}
       @iconSide={{this.iconSide}}
       @iconSize={{@iconSize}}
@@ -183,7 +204,7 @@ export default class EuiFormControlButton extends Component<EuiFormControlButton
       ...attributes
     >
       {{#if this.hasText}}
-        <span class={{this.textClass}}>{{if @value @value @placeholder}}</span>
+        <span class={{this.textClasses}} {{euiApplyProps @textProps}}>{{if @value @value @placeholder}}</span>
       {{/if}}
       {{yield}}
     </EuiButtonEmpty>

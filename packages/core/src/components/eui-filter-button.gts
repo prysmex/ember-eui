@@ -3,6 +3,8 @@ import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { service } from '@ember/service';
 
+import { or } from 'ember-truth-helpers';
+
 import { filterGroupContext } from '../-private/eui-filter-group-context.ts';
 import { _compressedButtonFocusColors } from '../utils/eui/buttons-misc.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -20,6 +22,10 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import EuiEmotionProvider from './eui-emotion-provider.gts';
 import EuiIcon from './eui-icon.gts';
+import euiApplyProps, { propsClasses } from '../-private/eui-apply-props.ts';
+import euiDisabledElement from '../-private/eui-disabled-element.ts';
+import type { EuiElementProps } from '../-private/eui-apply-props.ts';
+import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiInnerText from './eui-inner-text.gts';
 import EuiNotificationBadge from './eui-notification-badge.gts';
 
@@ -92,6 +98,25 @@ export interface EuiFilterButtonSignature {
     noDivider?: boolean;
     /** `type` of the `<button>`. Defaults to `'button'`. */
     type?: string;
+    /**
+     * Beta: with `@isDisabled`, renders `aria-disabled` instead of the native
+     * `disabled`; the button keeps focus while clicks are blocked.
+     */
+    hasAriaDisabled?: boolean;
+    /** Size of the icon. Defaults to `'m'`. */
+    iconSize?: EuiButtonEmptySignature['Args']['iconSize'];
+    /** Replaces the icon with a spinner and disables the button. */
+    isLoading?: boolean;
+    /**
+     * Upstream's `contentProps`: `class`/`className`, `css` and HTML
+     * attributes for the element wrapping the icon, text and badge.
+     */
+    contentProps?: EuiElementProps;
+    /**
+     * Upstream's `textProps`: `class`/`className`, `css` and HTML attributes
+     * for the element wrapping the text.
+     */
+    textProps?: EuiElementProps;
   };
   Blocks: {
     /** The button text. Leave it out for an icon-only button. */
@@ -104,6 +129,30 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
 
   get context() {
     return getEuiThemeContext(this);
+  }
+  /** Disabled, or loading (which disables the button). */
+  get isDisabled(): boolean {
+    return Boolean(this.args.isDisabled || this.args.isLoading);
+  }
+  get disabledAttr() {
+    return this.args.hasAriaDisabled ? undefined : this.isDisabled;
+  }
+  get ariaDisabled() {
+    return this.args.hasAriaDisabled && this.isDisabled ? 'true' : undefined;
+  }
+  /** `textProps.title` wins over the text, as `{...textProps}` does upstream. */
+  titleFor = (innerText: string) => {
+    const title = this.args.textProps?.['title'];
+    return typeof title === 'string' ? title : innerText;
+  };
+  get iconSize() {
+    return this.args.iconSize ?? 'm';
+  }
+  get spinnerSize(): 's' | 'm' | 'l' | 'xl' | 'xxl' {
+    const size = this.iconSize;
+    return size === 's' || size === 'm' || size === 'l' || size === 'xl' || size === 'xxl'
+      ? size
+      : 'm';
   }
   get group() {
     return filterGroupContext(this);
@@ -149,7 +198,7 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
     return this.hasNumFilters || Boolean(this.args.numActiveFilters);
   }
   get badgeColor() {
-    return this.args.isDisabled || !this.args.hasActiveFilters
+    return this.isDisabled || !this.args.hasActiveFilters
       ? 'subdued'
       : (this.args.badgeColor ?? 'accent');
   }
@@ -200,7 +249,8 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
       context,
       _compressedButtonFocusColors
     );
-    const { isToggle, isSelected, isDisabled, hasActiveFilters } = this.args;
+    const { isToggle, isSelected, hasActiveFilters } = this.args;
+    const isDisabled = this.isDisabled;
     const color = this.color;
     const colorKey = isDisabled ? 'disabled' : color;
     // React's global `button` reset, scoped.
@@ -254,7 +304,7 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
     const child = useEuiBorealisStyles(this.context, euiFilterButtonChildStyles);
     return [
       child.notification.euiFilterButton__notification,
-      this.args.isDisabled && child.notification.disabled
+      this.isDisabled && child.notification.disabled
     ];
   }
 
@@ -289,8 +339,9 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
       { boxSizing: 'border-box' },
       display.euiButtonDisplayContent,
       child.content.euiFilterButton__content,
-      this.args.iconType && child.content.hasIcon
-    )}`;
+      this.args.iconType && child.content.hasIcon,
+      this.args.contentProps?.css
+    )} ${propsClasses(this.args.contentProps)}`;
   }
 
   @cached
@@ -300,10 +351,12 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
     return [
       'euiFilterButton__text',
       this.showBadge && 'euiFilterButton__text-hasNotification',
+      propsClasses(this.args.textProps),
       euiClass(
         context,
         child.text.euiFilterButton__text,
-        this.showBadge && child.text.hasNotification
+        this.showBadge && child.text.hasNotification,
+        this.args.textProps?.css
       )
     ]
       .filter(Boolean)
@@ -337,20 +390,30 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
         <button
           class={{if isIconOnly this.buttonIconOnly this.button}}
           type={{this.type}}
-          disabled={{@isDisabled}}
+          disabled={{this.disabledAttr}}
+          aria-disabled={{this.ariaDisabled}}
+          aria-busy={{if @isLoading "true" null}}
+          {{euiDisabledElement this.isDisabled @hasAriaDisabled}}
           aria-pressed={{this.pressed}}
           aria-expanded={{this.expanded}}
           ...attributes
         >
-          <span class={{this.contentClasses}}>
-            {{#if @iconType}}
+          <span class={{this.contentClasses}} {{euiApplyProps @contentProps}}>
+            {{#if (or @iconType @isLoading)}}
               {{#unless this.iconRight}}
-                <EuiIcon
-                  @iconClasses="euiButtonContent__icon"
-                  @type={{@iconType}}
-                  @size="m"
-                  @color="inherit"
-                />
+                {{#if @isLoading}}
+                  <EuiLoadingSpinner
+                    class="euiButtonContent__spinner"
+                    @size={{this.spinnerSize}}
+                  />
+                {{else if @iconType}}
+                  <EuiIcon
+                    @iconClasses="euiButtonContent__icon"
+                    @type={{@iconType}}
+                    @size={{this.iconSize}}
+                    @color="inherit"
+                  />
+                {{/if}}
               {{/unless}}
             {{/if}}
             {{#if (has-block)}}
@@ -358,8 +421,9 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
                 <span
                   class={{this.textClasses}}
                   data-text={{innerText}}
-                  title={{innerText}}
+                  title={{this.titleFor innerText}}
                   {{didInsert ref}}
+                  {{euiApplyProps @textProps}}
                 >{{yield}}</span>
               </EuiInnerText>
             {{/if}}
@@ -389,14 +453,21 @@ export default class EuiFilterButton extends Component<EuiFilterButtonSignature>
                 >{{this.badgeCount}}</EuiNotificationBadge>
               {{/if}}
             {{/if}}
-            {{#if @iconType}}
+            {{#if (or @iconType @isLoading)}}
               {{#if this.iconRight}}
-                <EuiIcon
-                  @iconClasses="euiButtonContent__icon"
-                  @type={{@iconType}}
-                  @size="m"
-                  @color="inherit"
-                />
+                {{#if @isLoading}}
+                  <EuiLoadingSpinner
+                    class="euiButtonContent__spinner"
+                    @size={{this.spinnerSize}}
+                  />
+                {{else if @iconType}}
+                  <EuiIcon
+                    @iconClasses="euiButtonContent__icon"
+                    @type={{@iconType}}
+                    @size={{this.iconSize}}
+                    @color="inherit"
+                  />
+                {{/if}}
               {{/if}}
             {{/if}}
           </span>

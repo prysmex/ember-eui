@@ -7,9 +7,11 @@ import {
   euiButtonDisplayContentStyles,
   euiTextTruncate
 } from '../utils/eui/styles.generated.ts';
+import euiApplyProps from '../-private/eui-apply-props.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 
+import type { EuiElementProps } from '../-private/eui-apply-props.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiLoadingSpinnerSignature } from './eui-loading-spinner';
@@ -33,6 +35,11 @@ export interface EuiButtonContentSignature {
     useComponent?: boolean;
     /** Classes for the element wrapping the text. */
     textClasses?: string;
+    /**
+     * HTML attributes for the element wrapping the text (upstream's
+     * `textProps`); `class`/`className`/`css` are handled by the owner.
+     */
+    textProps?: EuiElementProps | false;
     /**
      * Button size (`'xs'`, `'s'` or `'m'`). When set, the content styles
      * itself with upstream `EuiButtonDisplayContent` styles: a centered flex
@@ -143,6 +150,7 @@ export default class EuiButtonContent extends Component<EuiButtonContentSignatur
       <span
         class={{this.textClasses}}
         data-text={{@textDataText}}
+        {{euiApplyProps @textProps}}
       >{{yield}}</span>
       {{#if this.iconAfter}}
         {{#if @isLoading}}

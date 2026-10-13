@@ -48,6 +48,7 @@ A box grouping content, with background, padding, border and shadow options.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@element` | `'div' \| 'button'` |  | Tag of a panel with `@onClick`. `'div'` (default) renders a `<div role="button" tabindex="0">` that also reacts to Enter and Space; `'button'` renders a native `<button type="button">` like upstream (upstream's own default, kept as `'div'` here so existing panels keep their markup). Ignored without `@onClick`. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@hasShadow` | `boolean` | `false` | Adds a box shadow (plain panels without a border only). |
 | `@hasBorder` | `boolean` | `true` | Adds a border (plain and transparent panels only). |

@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { useEuiBorealisStyles, euiClass } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -16,6 +17,14 @@ import {
 export interface EuiPanelSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Tag of a panel with `@onClick`. `'div'` (default) renders a
+     * `<div role="button" tabindex="0">` that also reacts to Enter and Space;
+     * `'button'` renders a native `<button type="button">` like upstream
+     * (upstream's own default, kept as `'div'` here so existing panels
+     * keep their markup). Ignored without `@onClick`.
+     */
+    element?: 'div' | 'button';
     /**
      * Extra styles composed last into this component's class (like upstream's
      * `css` prop). Prefer this to an extra class when styling it from a parent.
@@ -149,17 +158,30 @@ export default class EuiPanel extends Component<EuiPanelSignature> {
 
   <template>
     {{#if @onClick}}
-      <div
-        role="button"
-        data-eui-panel
-        class={{this.classes}}
-        tabindex="0"
-        {{on "click" @onClick}}
-        {{on "keydown" (fn activateOnKey @onClick)}}
-        ...attributes
-      >
-        {{yield}}
-      </div>
+      {{#if (eq @element "button")}}
+        <button
+          type="button"
+          data-eui-panel
+          class={{this.classes}}
+          {{on "click" @onClick}}
+          {{!@glint-expect-error}}
+          ...attributes
+        >
+          {{yield}}
+        </button>
+      {{else}}
+        <div
+          role="button"
+          data-eui-panel
+          class={{this.classes}}
+          tabindex="0"
+          {{on "click" @onClick}}
+          {{on "keydown" (fn activateOnKey @onClick)}}
+          ...attributes
+        >
+          {{yield}}
+        </div>
+      {{/if}}
     {{else}}
       <div data-eui-panel class={{this.classes}} ...attributes>{{yield}}</div>
     {{/if}}

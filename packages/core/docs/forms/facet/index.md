@@ -50,13 +50,19 @@ matching items. Put several in an `EuiFacetGroup`.
 | `@isSelected` | `boolean` |  | Selected look: bold text and an accent badge. |
 | `@isDisabled` | `boolean` |  | Disables the button. |
 | `@isLoading` | `boolean` |  | Replaces the quantity with a spinner and disables the button. |
+| `@element` | `'a' \| 'button' \| 'span'` |  | Tag to render: `'button'` (default), `'a'` or `'span'`. |
+| `@fullWidth` | `boolean` |  | Stretches the button to its container's width. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: with `@isDisabled`, renders `aria-disabled` instead of the native `disabled`; the button keeps focus while clicks are blocked. |
+| `@minWidth` | `string \| number \| false` |  | Overrides the minimum width: a CSS length or a number of pixels. |
+| `@size` | `'s' \| 'm'` |  | `'s'` (default) or `'m'`. |
+| `@contentProps` | `EuiElementProps` |  | Upstream's `contentProps`: `class`/`className`, `css` and HTML attributes for the element wrapping the icon, text and quantity. |
 
 | Block | Description |
 | --- | --- |
 | default block | The facet's name. |
 | `<:icon>` | An icon or avatar before the name; give it the class `euiFacetButton__icon`, e.g. `<EuiIcon class="euiFacetButton__icon" … />`. |
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<a>` / `<span>`.
 
 ### EuiFacetGroup
 

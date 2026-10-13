@@ -73,6 +73,21 @@ first in the page.
 | `@overrideLinkBehavior` | `boolean` |  | Scrolls to and focuses the destination itself instead of following the `#id` link (e.g. for apps with hash routing). The URL hash does not change. |
 | `@position` | `'static' \| 'fixed' \| 'absolute'` | `'static'` | Where the link shows when focused: `'static'` (in place), `'fixed'` (top left of the viewport) or `'absolute'` (position it yourself). |
 | `@tabIndex` | `number` |  | `tabindex` of the link; a fixed link always gets `0`. |
+| `@color` |  | `'primary'` | EuiButton color. |
+| `@contentProps` |  |  | `class`, `css` and attributes of the content element, see `EuiButton`. |
+| `@textProps` |  |  | `class`, `css` and attributes of the text element, see `EuiButton`. |
+| `@element` |  |  | Tag to render instead of the `<a>`, see `EuiButton`. |
+| `@fill` | `boolean` | `true` | Solid background. |
+| `@fullWidth` | `boolean` |  | Stretches the link to its container's width. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: `aria-disabled` instead of `disabled`, see `EuiButton`. |
+| `@iconSide` |  |  | Side of the icon, see `EuiButton`. |
+| `@iconSize` |  |  | Size of the icon, see `EuiButton`. |
+| `@iconType` |  |  | Icon next to the text, see `EuiButton`. |
+| `@isDisabled` | `boolean` |  | Disables the link. |
+| `@isLoading` | `boolean` |  | Shows a spinner and disables the link. |
+| `@isSelected` | `boolean` |  | Sets `aria-pressed`, see `EuiButton`. |
+| `@minWidth` |  |  | Minimum width, see `EuiButton`. |
+| `@size` |  | `'s'` | `'s'` or `'m'`. |
 
 | Block | Description |
 | --- | --- |

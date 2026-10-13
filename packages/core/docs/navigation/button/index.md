@@ -30,6 +30,16 @@ button, `@isDisabled` greys it out (add `@hasAriaDisabled={{true}}` to keep
 it focusable, e.g. for a tooltip). In forms, use `@type="submit"` on the
 submit button.
 
+`@contentProps` and `@textProps` (upstream's props of the same name) style
+the element wrapping the icon and text, and the text element: a hash with
+`class`, `css` and HTML attributes such as `data-test-subj` or `title`.
+`EuiButton`, `EuiButtonEmpty` and the buttons built on them (`EuiHeaderLink`,
+`EuiSkipLink`, `EuiPaginationButton`, ...) accept them.
+
+```hbs
+<EuiButton @contentProps={{hash class="my-content" data-test-subj="save-content"}} @textProps={{hash title="Save the form"}}>Save</EuiButton>
+```
+
 </EuiText>
 
 <EuiHorizontalRule />
@@ -70,6 +80,8 @@ Generated from the components' TypeScript signatures by
 | `@isDisabled` | `boolean` |  | Disables the button and greys it out. |
 | `@hasAriaDisabled` | `boolean` |  | Beta: with `@isDisabled`, renders `aria-disabled="true"` instead of the native `disabled` attribute. The button keeps focus (e.g. for a tooltip) while clicks, pointer and key events (except Tab and Escape) are blocked. Style it with `[aria-disabled="true"]`, not `:disabled`. |
 | `@id` | `string` |  | `id` of the button. Inside an `EuiButtonGroup` with `@variant="selection"` it identifies the button for `@idSelected`, `@idToSelectedMap` and `@onChange`. |
+| `@contentProps` | `EuiElementProps` |  | Upstream's `contentProps`, for the element wrapping the icon and text: `class`/`className`, `css` and HTML attributes (`data-*`, `aria-*`, `title`, ...). Event handlers are not supported. |
+| `@textProps` | `EuiElementProps` |  | Upstream's `textProps`, for the element wrapping the text, with the same keys as `@contentProps`. `false` is not supported. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@useComponent` (Not needed: a component passed as `@iconType` is rendered.); `@useSvg` (Has no effect, see `EuiIcon`.).
@@ -102,6 +114,8 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@type` | `string` | `'button'` | `type` of the `<button>`, e.g. `'submit'`. |
 | `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed` to `"true"` / `"false"`. Leave it undefined for regular buttons. |
 | `@disabled` | `boolean` |  | Same as `@isDisabled`. |
+| `@contentProps` | `EuiElementProps` |  | Upstream's `contentProps`, for the element wrapping the icon and text: `class`/`className`, `css` and HTML attributes (`data-*`, `aria-*`, `title`, ...). Event handlers are not supported. |
+| `@textProps` | `EuiElementProps` |  | Upstream's `textProps`, for the element wrapping the text, with the same keys as `@contentProps`. `false` is not supported. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@useSvg` (Has no effect, see `EuiIcon`.); `@useComponent` (Not needed: a component passed as `@iconType` is rendered.).

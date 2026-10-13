@@ -66,7 +66,7 @@ closed rows removed from docs-audit-gaps.md.
 
 ## Checks
 
-See the commit messages and the final numbers below.
 
 - `ember-tsc --noEmit`: clean. `eslint` on all changed files: clean.
-- Generator / parity: no style entries added, untouched.
+- Core suite: 1696/1696 (main was 1658; 38 new tests). Filtered family run: 72/72.
+- Generator / parity: no style entries added, untouched. No new public components, so no rollup `package.json` change.

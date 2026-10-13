@@ -11,6 +11,7 @@ import { eq } from 'ember-truth-helpers';
 
 import EuiNode from '../-private/eui-node.gts';
 import randomId from '../-private/random-id.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import type { EuiNodeValue } from '../-private/eui-node.gts';
 import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
@@ -44,7 +45,27 @@ export interface EuiTabbedContentTab {
   content?: ComponentLike;
   /** Disables the tab. */
   disabled?: boolean;
+  /**
+   * Any other key (`data-test-subj`, `aria-label`, `title`…) is set as an
+   * attribute of the tab, as upstream spreads the rest of a tab onto
+   * `EuiTab`. Functions are skipped.
+   */
+  [attribute: string]: unknown;
 }
+
+/** Tab keys that are arguments of EuiTab or EuiTabbedContent, never attributes. */
+const TAB_PROPS = [
+  'id',
+  'name',
+  'prepend',
+  'append',
+  'href',
+  'target',
+  'rel',
+  'content',
+  'disabled',
+  'isSelected'
+];
 
 export type EuiTabbedContentArgs = CommonArgs & {
   /**
@@ -221,6 +242,7 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
               @prepend={{tab.prepend}}
               @append={{tab.append}}
               class={{tab.className}}
+              {{spreadAttributes tab TAB_PROPS}}
               {{on "click" (fn this.onTabClick tab)}}
             >
               <EuiNode @value={{tab.name}} />

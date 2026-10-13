@@ -53,6 +53,11 @@ async function tooltipText() {
   return el('[role="tooltip"]').textContent!.trim();
 }
 
+/** Whether a visible tooltip has this text (the focused date button has its own). */
+function hasTooltip(text: string) {
+  return [...document.querySelectorAll('[role="tooltip"]')].some((tip) => tip.textContent!.trim() === text);
+}
+
 async function hover(selector: string) {
   await triggerEvent(el(selector).closest('.euiToolTipAnchor')!, 'mouseover');
 }
@@ -454,11 +459,13 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
     assert.dom('[role="tooltip"]', document.body).doesNotExist('not while the popover is open');
 
     await triggerKeyEvent(el('.euiDatePopoverContent').closest('.euiPopover__panel')!, 'keydown', 'Escape');
-    assert.strictEqual(await tooltipText(), 'Click to apply');
+    // the focus returns to the start button, whose own tooltip shows too
+    await waitUntil(() => hasTooltip('Click to apply'), { timeout: 2000 });
+    assert.true(hasTooltip('Click to apply'));
     assert.dom('.euiSuperUpdateButton').hasText('Update');
 
-    await waitUntil(() => !document.querySelector('[role="tooltip"]'), { timeout: 3500 });
-    assert.dom('[role="tooltip"]', document.body).doesNotExist('hidden after 2 seconds');
+    await waitUntil(() => !hasTooltip('Click to apply'), { timeout: 3500 });
+    assert.false(hasTooltip('Click to apply'), 'hidden after 2 seconds');
   });
 
   test('@updateButtonProps: showTooltip, toolTipProps and responsive', async function (assert) {
@@ -511,7 +518,7 @@ module('Integration | Component | EuiSuperDatePicker pretty duration', function 
     await waitUntil(() => !document.querySelector('.euiDatePopoverContent'));
     await settled();
     assert.dom('.euiSuperUpdateButton').hasText('Update');
-    assert.dom('[role="tooltip"]', document.body).doesNotExist();
+    assert.false(hasTooltip('Click to apply'));
   });
 
   // ---------------------------------------------------------------- isQuickSelectOnly × isAutoRefreshOnly

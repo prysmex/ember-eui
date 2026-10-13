@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
+import { service } from '@ember/service';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
@@ -10,8 +11,10 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiFormControlLayout from './eui-form-control-layout.gts';
+import EuiIcon from './eui-icon.gts';
 import { euiTextColorCss } from './eui-text-color.gts';
 
+import type EuiI18n from '../services/eui-i18n';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
 
 /**
@@ -47,7 +50,11 @@ export interface EuiFormControlLayoutDelimitedSignature {
      * warning icon (not while disabled or read-only).
      */
     isInvalid?: boolean;
-    /** Text between the two controls. Defaults to `'→'`. */
+    /**
+     * Text between the two controls. Defaults to upstream's `sortRight`
+     * arrow icon, labelled "to" for screen readers
+     * (`euiFormControlLayoutDelimited.delimiterLabel`).
+     */
     delimiter?: string;
     /** @deprecated Has no effect: the delimited layout is always a group. */
     useGroup?: boolean;
@@ -96,8 +103,19 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
   /** A side shows when its block is passed and not switched off. */
   provided = (hasBlock: boolean, isProvided: boolean | undefined) =>
     hasBlock && isProvided !== false;
-  get delimiter() {
-    return this.args.delimiter ?? '→';
+  @service declare euiI18n: EuiI18n;
+
+  /** A given `@delimiter`, even `''` (upstream `delimiter ?? icon`). */
+  get hasDelimiter() {
+    return this.args.delimiter !== undefined && this.args.delimiter !== null;
+  }
+
+  /** Upstream's default delimiter: a `sortRight` icon labelled "to". */
+  get delimiterLabel() {
+    return this.euiI18n.lookupToken(
+      'euiFormControlLayoutDelimited.delimiterLabel',
+      'to'
+    );
   }
   @cached
   get styles() {
@@ -177,8 +195,10 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
         >
           {{#if (has-block "delimiter")}}
             {{yield to="delimiter"}}
+          {{else if this.hasDelimiter}}
+            {{@delimiter}}
           {{else}}
-            {{this.delimiter}}
+            <EuiIcon @type="sortRight" @aria-label={{this.delimiterLabel}} />
           {{/if}}
         </div>
         {{yield this.inputClass to="endControl"}}

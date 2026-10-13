@@ -167,10 +167,7 @@ export default class AbsoluteTab extends Component<AbsoluteTabSignature> {
               >
                 <EuiFieldText
                   aria-labelledby={{this.labelId}}
-                  aria-describedby={{if
-                    @timeZoneDisplayProps.timeZone
-                    this.timeZoneDescriptionId
-                  }}
+                  aria-describedby={{this.timeZoneDescriptionId}}
                   data-test-subj="superDatePickerAbsoluteDateInput"
                   @isInvalid={{this.isTextInvalid}}
                   @value={{this.textInputValue}}

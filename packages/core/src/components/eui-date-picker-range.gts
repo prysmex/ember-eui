@@ -40,7 +40,7 @@ export interface EuiDatePickerRangeSignature {
      * hides it, or any `EuiIcon` type.
      */
     iconType?: boolean | string;
-    /** Text between the inputs. Defaults to `'→'`. */
+    /** Text between the inputs. Defaults to an arrow icon labelled "to". */
     delimiter?: string;
     /**
      * For two calendars displayed in the page (e.g. inline flatpickr or
@@ -50,6 +50,14 @@ export interface EuiDatePickerRangeSignature {
      * to your calendars too.
      */
     inline?: boolean;
+    /**
+     * With `@inline`: tells the range that the calendars show a time list
+     * (react-datepicker's `showTimeSelect`), so they stack below a wider
+     * container (2 × 374px + the delimiter instead of 2 × 268px). Upstream
+     * reads `showTimeSelect` from its start and end controls; blocks can't
+     * be inspected, so pass it here.
+     */
+    showTimeSelect?: boolean;
     /** With `@inline`: a shadow around both calendars. Defaults to `true`. */
     shadow?: boolean;
   };
@@ -107,7 +115,10 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
       context,
       { boxSizing: 'border-box' },
       inline.euiDatePickerRangeInline,
-      inline.responsive,
+      // Upstream: the container query depends on the time list's width.
+      this.args.showTimeSelect
+        ? inline.responsiveWithTimeSelect
+        : inline.responsive,
       this.shadow && inline.shadow,
       formLayout
     )}`;

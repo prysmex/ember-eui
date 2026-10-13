@@ -98,29 +98,21 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
         );
   }
 
+  /** Upstream also labels each tab with the position and its test subject. */
   get tabs(): EuiTabbedContentTab[] {
+    const tab = (id: string, token: string, label: string, testSubj: string) => {
+      const name = this.euiI18n.lookupToken(token, label);
+      return {
+        id,
+        name,
+        'data-test-subj': testSubj,
+        'aria-label': `${this.labelPrefix}: ${name}`
+      };
+    };
     return [
-      {
-        id: 'absolute',
-        name: this.euiI18n.lookupToken(
-          'euiDatePopoverContent.absoluteTabLabel',
-          'Absolute'
-        )
-      },
-      {
-        id: 'relative',
-        name: this.euiI18n.lookupToken(
-          'euiDatePopoverContent.relativeTabLabel',
-          'Relative'
-        )
-      },
-      {
-        id: 'now',
-        name: this.euiI18n.lookupToken(
-          'euiDatePopoverContent.nowTabLabel',
-          'Now'
-        )
-      }
+      tab('absolute', 'euiDatePopoverContent.absoluteTabLabel', 'Absolute', 'superDatePickerAbsoluteTab'),
+      tab('relative', 'euiDatePopoverContent.relativeTabLabel', 'Relative', 'superDatePickerRelativeTab'),
+      tab('now', 'euiDatePopoverContent.nowTabLabel', 'Now', 'superDatePickerNowTab')
     ];
   }
 

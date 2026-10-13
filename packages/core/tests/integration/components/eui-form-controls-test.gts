@@ -1136,7 +1136,7 @@ module('Integration | Component | Borealis form controls', function (hooks) {
     assert.strictEqual(sStyle.textAlign, 'center');
     assert.strictEqual(sStyle.borderTopStyle, 'none');
     const delimiter = el(root, '.euiFormControlLayoutDelimited__delimiter');
-    assert.strictEqual(delimiter.textContent!.trim(), '→');
+    assert.dom(delimiter.querySelector('svg')).hasAttribute('data-icon-type', 'sortRight').hasAria('label', 'to');
     const dStyle = getComputedStyle(delimiter);
     assert.strictEqual(dStyle.display, 'flex');
     assert.strictEqual(dStyle.lineHeight, `${parseFloat(dStyle.fontSize)}px`);

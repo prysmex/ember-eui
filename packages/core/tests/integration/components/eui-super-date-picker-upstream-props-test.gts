@@ -635,7 +635,65 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
     await rerender();
     assert.dom(subj('euiTimeZoneDisplay'), document.body).doesNotExist('no zone');
     await chooseTab('Absolute');
-    assert.dom(subj('superDatePickerAbsoluteDateInput'), document.body).doesNotHaveAttribute('aria-describedby');
+    // upstream always points at the display's id, even without a display
+    const input = el(subj('superDatePickerAbsoluteDateInput'));
+    assert.dom(input).hasAttribute('aria-describedby', /^\S+$/);
+    assert.strictEqual(document.getElementById(input.getAttribute('aria-describedby')!), null, 'no display rendered');
+  });
+
+  test('time zone display: span label, upstream padding and describedby in both tabs', async function (assert) {
+    const props = { timeZone: 'UTC' };
+
+    await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @start="2025-01-15T12:00:00.000Z" @timeZoneDisplayProps={{props}} /></template>);
+    await openStart();
+
+    const display = el(subj('euiTimeZoneDisplay'));
+    // upstream `EuiText component="span"`
+    const label = el('.euiText', display);
+    assert.strictEqual(label.tagName, 'SPAN', 'the label is a span');
+    assert.dom(label).hasText('UTC');
+    // upstream `euiTimeZoneDisplayStyles` through its class, not inline styles
+    const size = parseFloat(lightContext.euiTheme.size.s);
+    const style = getComputedStyle(display);
+    assert.strictEqual(parseFloat(style.paddingInlineStart), size);
+    assert.strictEqual(parseFloat(style.paddingInlineEnd), size);
+    assert.strictEqual(parseFloat(style.paddingBlockEnd), size);
+    assert.strictEqual(parseFloat(style.paddingBlockStart), 0);
+    assert.dom(display).doesNotHaveAttribute('style');
+
+    await chooseTab('Relative');
+    const relative = el(subj('euiTimeZoneDisplay'));
+    const field = el<HTMLInputElement>('.euiDatePopoverContent input[readonly]');
+    assert.dom(field).hasAttribute('aria-describedby', relative.id, 'relative tab: the read-only date is described');
+  });
+
+  test('the date buttons show their title in a tooltip, as upstream', async function (assert) {
+    class State {
+      @tracked start = '2025-01-15T12:00:00.000Z';
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiSuperDatePicker @onTimeChange={{noop}} @start={{state.start}} @end="now" @dateFormat="YYYY-MM-DD" />
+      </template>
+    );
+    const start = el('.euiDatePopoverButton--start');
+    assert.dom(start).doesNotHaveAttribute('title');
+    const anchor = start.closest('.euiToolTipAnchor')!;
+    assert.ok(anchor, 'inside a tooltip anchor');
+    assert.strictEqual(getComputedStyle(anchor).display, 'block', 'display block');
+    assert.strictEqual(anchor.getBoundingClientRect().height, start.getBoundingClientRect().height, 'the anchor fills the cell');
+
+    await hover('.euiDatePopoverButton--start', '2025-01-15');
+    assert.dom('[role="tooltip"]', document.body).hasText('2025-01-15');
+    assert.dom(start).doesNotHaveAttribute('aria-describedby', 'the plain date is not repeated to screen readers');
+    await triggerEvent(anchor, 'mouseout');
+
+    state.start = 'not a date';
+    await rerender();
+    await hover('.euiDatePopoverButton--start', 'Invalid date');
+    assert.dom('[role="tooltip"]', document.body).includesText('Invalid date: ');
+    assert.dom(el('.euiDatePopoverButton--start').closest('.euiToolTipAnchor')!.firstElementChild).hasAttribute('aria-describedby', /\S/, 'invalid: read to screen readers');
   });
 
   test('@timeZoneDisplayProps.customRender gets the name display, offset and zone name', async function (assert) {

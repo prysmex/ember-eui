@@ -2,6 +2,8 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { euiTimeZoneDisplayStyles } from '../../../utils/eui/styles.generated.ts';
+import { useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiFlexGroup from '../../eui-flex-group.gts';
 import EuiIcon from '../../eui-icon.gts';
 import EuiText from '../../eui-text.gts';
@@ -71,7 +73,7 @@ export function useEuiUTCOffsetDisplay(timeZoneName: string, date?: Date) {
 
 const NameDisplay: TOC<{ Args: { label: string } }> = <template>
   <EuiIcon @type="globe" @color="subdued" />
-  <EuiText @color="subdued" @size="s">{{@label}}</EuiText>
+  <EuiText @component="span" @color="subdued" @size="s">{{@label}}</EuiText>
 </template>;
 
 /** @private Time zone information under the date popover tabs. */
@@ -101,8 +103,10 @@ export default class EuiTimeZoneDisplay extends Component<EuiTimeZoneDisplaySign
   /** Upstream `euiTimeZoneDisplayStyles`: `s` padding at the sides and bottom. */
   @cached
   get css() {
-    const { size } = getEuiThemeContext(this).upstream.euiTheme;
-    return { paddingInline: size.s, paddingBlockEnd: size.s };
+    return useEuiBorealisStyles(
+      getEuiThemeContext(this),
+      euiTimeZoneDisplayStyles
+    ).euiTimeZoneDisplay;
   }
 
   <template>

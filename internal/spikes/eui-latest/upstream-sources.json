@@ -323,6 +323,10 @@
       "sha256": "dd07b5f81030fd63b476bfe639d085e4c7d743c535dbbdcac372d802923657ea"
     },
     {
+      "path": "@elastic/eui/es/components/date_picker/super_date_picker/date_popover/timezone_display.styles.js",
+      "sha256": "f47a6fe5c3e2b5d4489cf8c610b76e9c0f285af90f2ce4e611fcb4e09e705df3"
+    },
+    {
       "path": "@elastic/eui/es/components/date_picker/super_date_picker/quick_select_popover/quick_select_panel.styles.js",
       "sha256": "c441fb51db2ac256770d1fa0cc3bc17e0961688e9bca4ddf26da9d52e800d9c1"
     },

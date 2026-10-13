@@ -175,7 +175,7 @@ export interface LineNumbersConfig {
   start: number;
   show: boolean;
   highlight?: string;
-  annotations?: Record<number, string>;
+  annotations?: Record<number, unknown>;
 }
 
 /**
@@ -290,7 +290,7 @@ function wrapLines(
   options: {
     showLineNumbers: boolean;
     highlight?: string;
-    annotations?: Record<number, string>;
+    annotations?: Record<number, unknown>;
   },
   classes: LineClasses = {}
 ) {

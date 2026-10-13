@@ -10,6 +10,7 @@ import type Owner from '@ember/owner';
 import { modifier } from 'ember-modifier';
 import style from 'ember-style-modifier/modifiers/style';
 
+import EuiRenderNode from '../-private/eui-render-node.gts';
 import { highlightLanguage } from '../-private/language-loader.ts';
 import Annotation from '../components/eui-code-block/annotation.gts';
 import Controls from '../components/eui-code-block/controls.gts';
@@ -38,6 +39,7 @@ import type {
   LineClasses,
   LineNumbersConfig as LineNumbersFinal
 } from '../utils/code/utils.ts';
+import type { EuiRenderNode as EuiRenderNodeType } from '../-private/eui-render-node.gts';
 import type { RefractorNode } from 'refractor/core';
 
 interface LineNumbersConfig {
@@ -47,10 +49,11 @@ interface LineNumbersConfig {
   highlight?: string;
   /**
    * Notes shown in a popover from a button next to a line number, keyed
-   * by line number: `{ 6: 'A special note about this line' }`. Not shown
-   * when `@isVirtualized`.
+   * by line number: `{ 6: 'A special note about this line' }`. A note is
+   * text or a component for rich content (a template-only component or
+   * `(component …)`). Not shown when `@isVirtualized`.
    */
-  annotations?: Record<number, string>;
+  annotations?: Record<number, string | EuiRenderNodeType>;
   show?: boolean;
 }
 
@@ -185,7 +188,7 @@ const highlightTargetModifier = modifier(
 interface AnnotationTarget {
   element: HTMLElement;
   lineNumber: number;
-  content: string;
+  content: string | EuiRenderNodeType;
 }
 
 type PaddingKey = 'none' | 's' | 'm' | 'l' | 'xl';
@@ -493,7 +496,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
     if (html === undefined || this.isDestroying || this.isDestroyed) return;
 
     const targets: AnnotationTarget[] = [];
-    const annotations = this.lineNumbersConfig.annotations ?? {};
+    const annotations = (this.lineNumbersConfig.annotations ?? {}) as Record<number, string | EuiRenderNodeType>;
 
     for (const code of [this.code, this.codeFullScreen]) {
       if (!code?.isConnected) continue;
@@ -645,7 +648,7 @@ export default class EuiCodeBlockComponent extends Component<EuiCodeBlockSignatu
     </div>
     {{#each this.annotationTargets as |target|}}
       {{#in-element target.element insertBefore=null}}
-        <Annotation @lineNumber={{target.lineNumber}}>{{target.content}}</Annotation>
+        <Annotation @lineNumber={{target.lineNumber}}><EuiRenderNode @value={{target.content}} /></Annotation>
       {{/in-element}}
     {{/each}}
   </template>

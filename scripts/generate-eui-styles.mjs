@@ -429,6 +429,9 @@ export const keyframes = (...args) => { const value = css(...args); const name =
   ]
 });
 const typedOutput = result.outputFiles[0].text
+  // esbuild's module comments name the install path (pnpm store hash,
+  // checkout location); keep only the package path inside node_modules
+  .replace(/^\/\/ [^\n]*node_modules\/(?=[^\n]*$)/gm, '// ')
   .replace(
     /(function euiSpinnerBorderColorsCSS\d*\()(\w+)(\) \{)/,
     '$1$2: EuiBorealisContext, _colors?: { border?: string; highlight?: string }$3'

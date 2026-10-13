@@ -74,6 +74,16 @@ async function openStart() {
   await waitUntil(() => document.querySelector('.euiDatePopoverContent'));
 }
 
+/**
+ * Upstream shows a relative range as one pretty duration button; clicking
+ * it shows the start/end buttons with the start popover open (upstream's
+ * tests click it the same way).
+ */
+async function showDates() {
+  await click(subj('superDatePickerShowDatesButton'));
+  await waitUntil(() => document.querySelector('.euiDatePopoverContent'));
+}
+
 async function chooseTab(name: string) {
   const tab = [...document.querySelectorAll<HTMLElement>('.euiDatePopoverContent .euiTab')].find(
     (t) => t.textContent!.trim() === name
@@ -123,7 +133,8 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
 
     await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @updateButtonProps={{props}} /></template>);
 
-    assert.dom('.euiSuperUpdateButton').hasAttribute('aria-label', 'Refresh').hasNoText();
+    // upstream: the label is screen reader only
+    assert.dom('.euiSuperUpdateButton .euiScreenReaderOnly').hasText('Refresh');
     assert.strictEqual(el('.euiSuperUpdateButton').getBoundingClientRect().height > 0, true);
   });
 
@@ -304,6 +315,9 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
   test('@isAutoRefreshOnly without @onRefreshChange keeps the range (as before)', async function (assert) {
     await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @isAutoRefreshOnly={{true}} /></template>);
 
+    // the range renders, as its pretty duration (upstream)
+    assert.dom(subj('superDatePickerShowDatesButton')).exists();
+    await showDates();
     assert.dom('.euiDatePopoverButton--start').exists();
   });
 
@@ -611,7 +625,7 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
     const state = new State();
 
     await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @timeZoneDisplayProps={{state.props}} /></template>);
-    await openStart();
+    await showDates();
 
     const browser = new Intl.DateTimeFormat().resolvedOptions().timeZone;
     let isKnownZone = true;
@@ -647,7 +661,7 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
     const props = { timeZone: 'Europe/Helsinki', date: moment('2025-06-21T02:42:00Z'), customRender: Custom };
 
     await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @timeZoneDisplayProps={{props}} /></template>);
-    await openStart();
+    await showDates();
 
     assert.true(el(subj('euiTimeZoneDisplay')).textContent!.includes('Helsinki'));
     assert.dom(subj('utc'), document.body).hasText('UTC+3');
@@ -734,8 +748,8 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
   test('@canRoundRelativeUnits defaults to true and rounds relative units (upstream)', async function (assert) {
     await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @start="now-300m" @end="now" /></template>);
 
+    await showDates();
     assert.dom(subj('superDatePickerstartDatePopoverButton')).hasText('~ 5 hours ago');
-    await openStart();
     await chooseTab('Relative');
     assert.dom(subj('superDatePickerRelativeDateInputNumber'), document.body).hasValue('5');
     assert.dom(subj('superDatePickerRelativeDateInputUnitSelector'), document.body).hasValue('h');
@@ -746,8 +760,8 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
       <template><EuiSuperDatePicker @onTimeChange={{noop}} @start="now-300m" @end="now" @canRoundRelativeUnits={{false}} /></template>
     );
 
+    await showDates();
     assert.dom(subj('superDatePickerstartDatePopoverButton')).hasText('300 minutes ago');
-    await openStart();
     await chooseTab('Relative');
     assert.dom(subj('superDatePickerRelativeDateInputNumber'), document.body).hasValue('300');
     assert.dom(subj('superDatePickerRelativeDateInputUnitSelector'), document.body).hasValue('m');
@@ -764,9 +778,13 @@ module('Integration | Component | EuiSuperDatePicker upstream props', function (
 
     await render(<template><EuiSuperDatePicker @onTimeChange={{noop}} @onFocus={{onFocus}} /></template>);
 
+    // upstream: the pretty duration button calls it too
+    await focus(subj('superDatePickerShowDatesButton'));
+    assert.deepEqual(focused, ['superDatePickerShowDatesButton']);
+    await showDates();
     await focus(subj('superDatePickerstartDatePopoverButton'));
     await focus(subj('superDatePickerendDatePopoverButton'));
-    assert.deepEqual(focused, ['superDatePickerstartDatePopoverButton', 'superDatePickerendDatePopoverButton']);
+    assert.deepEqual(focused.slice(-2), ['superDatePickerstartDatePopoverButton', 'superDatePickerendDatePopoverButton']);
   });
 });
 

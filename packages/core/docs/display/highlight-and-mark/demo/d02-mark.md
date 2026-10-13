@@ -6,16 +6,10 @@ order: 2
 
 <EuiText>
 
-`EuiMark` highlights text you choose, inside any other content.
+Use `EuiMark` to wrap a string in a `mark` element.
 
 </EuiText>
 
 ```hbs template
-<EuiText>
-  <p>
-    Three results matched <EuiMark>deployment</EuiMark>: the
-    <EuiMark>deployment</EuiMark> guide, its checklist and the rollback
-    runbook.
-  </p>
-</EuiText>
+The quick brown fox <EuiMark>jumped over</EuiMark> the lazy dog
 ```

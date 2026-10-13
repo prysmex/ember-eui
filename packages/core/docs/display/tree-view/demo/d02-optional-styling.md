@@ -20,21 +20,23 @@ Lastly, each node can also accept a custom `className` should you need to style 
 import Component from '@glimmer/component';
 import { EuiToken, EuiTreeView } from '@ember-eui/core/components';
 
+const tokenIcon = (token) => <template><EuiToken @iconType={{token}} @size='xs' /></template>;
+
 export default class extends Component {
   items = [
     {
       label: 'transporter',
       id: 'transporter',
-      token: 'tokenObject',
+      icon: tokenIcon('tokenObject'),
       children: [
-        { label: 'service', id: 'service', token: 'tokenString' },
+        { label: 'service', id: 'service', icon: tokenIcon('tokenString') },
         {
           label: 'auth',
           id: 'auth',
-          token: 'tokenObject',
+          icon: tokenIcon('tokenObject'),
           children: [
-            { label: 'user', id: 'user', token: 'tokenVariable' },
-            { label: 'pass', id: 'pass', token: 'tokenVariable' },
+            { label: 'user', id: 'user', icon: tokenIcon('tokenVariable') },
+            { label: 'pass', id: 'pass', icon: tokenIcon('tokenVariable') },
           ],
         },
       ],
@@ -42,31 +44,31 @@ export default class extends Component {
     {
       label: 'getContact',
       id: 'getContact',
-      token: 'tokenFunction',
+      icon: tokenIcon('tokenFunction'),
       children: [
         {
           label: 'render',
           id: 'render',
-          token: 'tokenFunction',
-          children: [{ label: 'title', id: 'title', token: 'tokenString' }],
+          icon: tokenIcon('tokenFunction'),
+          children: [{ label: 'title', id: 'title', icon: tokenIcon('tokenString') }],
         },
       ],
     },
     {
       label: 'postContact',
       id: 'postContact',
-      token: 'tokenFunction',
+      icon: tokenIcon('tokenFunction'),
       children: [
-        { label: 'errors', id: 'errors', token: 'tokenConstant' },
+        { label: 'errors', id: 'errors', icon: tokenIcon('tokenConstant') },
         {
           label: 'A custom class is on this one',
           id: 'customClass',
-          token: 'tokenObject',
+          icon: tokenIcon('tokenObject'),
           className: 'docsTreeViewNode',
         },
       ],
     },
-    { label: 'smokeMonster', id: 'smokeMonster', token: 'tokenMethod' },
+    { label: 'smokeMonster', id: 'smokeMonster', icon: tokenIcon('tokenMethod') },
   ];
 
   <template>
@@ -79,13 +81,7 @@ export default class extends Component {
         @display='compressed'
         @expandByDefault={{true}}
         @showExpansionArrows={{true}}
-        aria-label='Document Outline'
-      >
-        <:label as |node|>
-          <EuiToken @iconType={{node.token}} @size='xs' />
-          {{node.label}}
-        </:label>
-      </EuiTreeView>
+        aria-label='Document Outline' />
     </div>
   </template>
 }

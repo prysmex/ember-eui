@@ -10,9 +10,17 @@ order: 1
 
 <EuiSpacer />
 
+<EuiText>
+
+A node's `icon` and `iconWhenExpanded` take an icon type, or a component for a custom icon such as an **EuiToken** (upstream takes an element), as the nodes with a token do here.
+
+</EuiText>
+
 ```gjs component
 import Component from '@glimmer/component';
 import { EuiToken, EuiTreeView } from '@ember-eui/core/components';
+
+const tokenIcon = (token) => <template><EuiToken @iconType={{token}} /></template>;
 
 export default class extends Component {
   items = [
@@ -37,12 +45,12 @@ export default class extends Component {
             {
               label: 'A Cloud',
               id: 'item_cloud',
-              token: 'tokenConstant',
+              icon: tokenIcon('tokenConstant'),
             },
             {
               label: "I'm a Bug",
               id: 'item_bug',
-              token: 'tokenEnum',
+              icon: tokenIcon('tokenEnum'),
               callback: () => {},
             },
           ],
@@ -56,13 +64,13 @@ export default class extends Component {
             {
               label: 'Another Cloud',
               id: 'item_cloud2',
-              token: 'tokenConstant',
+              icon: tokenIcon('tokenConstant'),
             },
             {
               label:
                 'This one is a really long string that we will check truncates correctly',
               id: 'item_bug2',
-              token: 'tokenEnum',
+              icon: tokenIcon('tokenEnum'),
               callback: () => {},
             },
           ],
@@ -77,14 +85,7 @@ export default class extends Component {
 
   <template>
     <div style='width: 20rem'>
-      <EuiTreeView @items={{this.items}} aria-label='Sample Folder Tree'>
-        <:label as |node|>
-          {{#if node.token}}
-            <EuiToken @iconType={{node.token}} />
-          {{/if}}
-          {{node.label}}
-        </:label>
-      </EuiTreeView>
+      <EuiTreeView @items={{this.items}} aria-label='Sample Folder Tree' />
     </div>
   </template>
 }

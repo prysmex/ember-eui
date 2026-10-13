@@ -99,6 +99,20 @@ isCaseSensitive, sortMatchesBy, noSuggestions, prepend/append, search value in
 the option block (combo-box-handoff.md, incl. behaviour that still differs).
 Main: core 1333/1333, parity 349/349, site 8/8 + 17/17.
 
+Update 5 (2026-10-13): merged combo box upstream behaviour (stateless
+derived list; form packages forward every arg), page template composable
+API (legacy API deprecated; Ember default `@offset` 0 because a fixed
+EuiHeader pads <body>), selectable, super date picker (`intervalUnits`
+always reported), breadcrumb popovers, flyout session management, theming
+(OS colour mode / high contrast, CSS variables, theme-function `@css`,
+`@ember-eui/core/theming`, docs/theming.md). Fixed ResizeObserver loop
+errors in EuiSelectableList / EuiTextTruncate (report in next frame). The
+docs site uses the composable page template. Main: core 1658/1658, parity
+353/353, validated-form 25, changeset-form 24, flatpickr 8, pikaday 7, site
+8/8 + 17/17 (nav 116). Handoffs: combo-box, page-template, selectable,
+super-date-picker, breadcrumbs, flyout-manager, theming. Remaining gaps:
+docs-audit-gaps.md.
+
 Follow-ups: data grid renderers lack row depth/expanded state; EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
 screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
 slowly (~20s under load); open decision on focusing the form error callout;

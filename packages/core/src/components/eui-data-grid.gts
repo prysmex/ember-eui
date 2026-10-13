@@ -209,7 +209,8 @@ export interface EuiDataGridSignature {
     /**
      * Component rendering a cell's value; receives `@rowIndex`, `@colIndex`,
      * `@columnId`, `@isDetails`, `@isExpanded`, `@isExpandable`,
-     * `@setCellProps`, `@schema` and `@cellContext`. Or use the `<:cell>` block.
+     * `@setCellProps`, `@schema`, `@cellContext` and (with `@rowTree` or
+     * `@grouping.rows`) `@row`. Or use the `<:cell>` block.
      */
     renderCellValue?: ComponentLike<EuiDataGridCellValueSignature>;
     /** Extra data passed to every cell renderer as `@cellContext`. */
@@ -1137,12 +1138,20 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     },
     closeCellPopover: () => this.closeCellPopover(),
     scrollTo: (params) => this.body?.scrollTo?.(params),
-    scrollToItem: (params) => this.body?.scrollToItem?.(params),
+    scrollToItem: (params) => this.body?.scrollToItem?.(params)
+  };
+
+  /** API additions with `@rowTree`/`@grouping` (Ember EUI extension). */
+  private readonly treeApi: Partial<EuiDataGridRefProps> = {
     expandRow: (id: string) => this.rowModel?.setRowExpanded(id, true),
     collapseRow: (id: string) => this.rowModel?.setRowExpanded(id, false),
     expandAll: () => this.rowModel?.expandAll(),
     collapseAll: () => this.rowModel?.collapseAll()
   };
+
+  get hasRowModel(): boolean {
+    return !!this.rowModel;
+  }
 
   /** Toggles a tree row or group (closes a popover: rows below it move). */
   @action
@@ -1152,8 +1161,12 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
   }
 
   registerApi = modifier(
-    (_element: HTMLElement, [registerApi]: [EuiDataGridSignature['Args']['registerApi']]) => {
-      if (registerApi) afterRender(this, () => registerApi(this.api));
+    (
+      _element: HTMLElement,
+      [registerApi, hasRowModel]: [EuiDataGridSignature['Args']['registerApi'], boolean]
+    ) => {
+      const api = hasRowModel ? { ...this.api, ...this.treeApi } : this.api;
+      if (registerApi) afterRender(this, () => registerApi(api));
     }
   );
 
@@ -1173,7 +1186,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
         {{on "keydown" this.onGridRootKeyDown}}
         {{this.observeWidth}}
         {{this.restrictBody this.isFullScreen this.restrictBodyClass}}
-        {{this.registerApi @registerApi}}
+        {{this.registerApi @registerApi this.hasRowModel}}
         ...attributes
         {{this.moveAriaAttributes}}
       >

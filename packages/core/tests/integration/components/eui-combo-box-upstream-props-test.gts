@@ -106,6 +106,9 @@ module('Integration | Component | eui-combo-box upstream props', function (hooks
     assert.dom('.eui-textTruncate', iapetus).hasText('Iapetus');
     assert.strictEqual(getComputedStyle(q('.euiComboBoxPill__append', iapetus)).marginLeft, '4px', 'upstream xs margin');
 
+    // upstream: selected options are not listed in multiple selection
+    state.selected = [];
+    await settled();
     await open();
     const [titanRow, iapetusRow, phoebeRow] = rows();
     assert.dom('.euiListItemLayout__prepend [data-icon-type="bell"]', titanRow).exists();
@@ -170,7 +173,10 @@ module('Integration | Component | eui-combo-box upstream props', function (hooks
     assert.dom(disabled).doesNotHaveAttribute('aria-describedby', 'no tooltip on disabled options');
     assert.dom('.euiListItemLayout__text', titan).doesNotHaveAttribute('title', 'no title with a tooltip');
 
-    // the first option is highlighted when the list opens
+    // upstream: nothing is highlighted when the list opens, so no tooltip
+    // until the arrow keys highlight the option
+    assert.notOk(document.getElementById(tooltipId), 'no tooltip on open');
+    await triggerKeyEvent(INPUT, 'keydown', 'ArrowDown');
     await waitUntil(() => document.getElementById(tooltipId), { timeout: 2000 });
     const tooltip = document.getElementById(tooltipId);
     assert.dom(tooltip).hasAttribute('role', 'tooltip').includesText('The largest moon').includesText('Titan facts');

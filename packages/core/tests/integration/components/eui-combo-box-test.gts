@@ -89,7 +89,8 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.dom('.euiComboBoxPill').exists({ count: 1 }).hasText('Cherry');
 
     await open();
-    assert.deepEqual(optionTexts(), ['Cherry', 'Date']);
+    // upstream: selected options are not listed in multiple selection
+    assert.deepEqual(optionTexts(), ['Date']);
     await choose('Date');
     assert.deepEqual(state.changes, [['Cherry', 'Date']]);
     assert.dom('.euiComboBoxPill').exists({ count: 1 }).hasText('Cherry', 'ignored callback does not change the pills');
@@ -194,7 +195,7 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.deepEqual(optionTexts(), ['Banana']);
   });
 
-  test('selecting an already selected option removes it', async function (assert) {
+  test('selected options are not listed, so they cannot be chosen again', async function (assert) {
     const state = new State();
     state.selected = ['Apple', 'Banana'];
 
@@ -212,9 +213,10 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     );
 
     await open();
-    await choose('Apple');
 
-    assert.deepEqual(state.changes, [['Banana']]);
+    // upstream: selected options are not listed in multiple selection
+    assert.deepEqual(optionTexts(), ['Cherry']);
+    assert.deepEqual(state.changes, []);
   });
 
   test('the pill close button removes that option', async function (assert) {

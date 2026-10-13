@@ -6,7 +6,7 @@ order: 17
 
 <EuiText>
 
-Use `@search` to handle searches asynchronously: it receives the typed text and returns the matching options, or a promise of them. Use `@isLoading` to let the user know that something async is happening.
+Use `@onSearchChange` to handle searches asynchronously, and `@async` so the options you load are listed as they are. Use `@isLoading` to let the user know that something async is happening. (`@search`, which returns the matches or a promise of them, is shown in Searching a server.)
 
 </EuiText>
 
@@ -34,24 +34,39 @@ const MOONS = [
 
 export default class ComboBoxAsyncDemo extends Component {
   @tracked allOptions = MOONS;
+  @tracked options = [];
   @tracked selectedOptions = [];
+  @tracked isLoading = false;
+  searchTimeout;
 
-  // Simulate a remotely-executed search.
-  @action
-  onSearch(searchValue) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(
-          this.allOptions.filter((option) =>
-            option.label.toLowerCase().includes(searchValue.toLowerCase())
-          )
-        );
-      }, 1200);
-    });
+  constructor(owner, args) {
+    super(owner, args);
+    // Simulate initial load.
+    this.onSearchChange('');
+  }
+
+  willDestroy() {
+    super.willDestroy();
+    clearTimeout(this.searchTimeout);
   }
 
   @action
-  onCreateOption(searchValue) {
+  onSearchChange(searchValue) {
+    this.isLoading = true;
+    this.options = [];
+    clearTimeout(this.searchTimeout);
+
+    this.searchTimeout = setTimeout(() => {
+      // Simulate a remotely-executed search.
+      this.isLoading = false;
+      this.options = this.allOptions.filter((option) =>
+        option.label.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }, 1200);
+  }
+
+  @action
+  onCreateOption(searchValue, flattenedOptions = []) {
     const normalizedSearchValue = searchValue.trim().toLowerCase();
 
     if (!normalizedSearchValue) {
@@ -62,12 +77,13 @@ export default class ComboBoxAsyncDemo extends Component {
 
     // Create the option if it doesn't exist.
     if (
-      !this.allOptions.some(
+      flattenedOptions.findIndex(
         (option) => option.label.trim().toLowerCase() === normalizedSearchValue
-      )
+      ) === -1
     ) {
       // Simulate creating this option on the server.
       this.allOptions = [...this.allOptions, newOption];
+      this.options = [...this.options, newOption];
     }
 
     // Select the option.
@@ -79,25 +95,18 @@ export default class ComboBoxAsyncDemo extends Component {
     this.selectedOptions = selectedOptions;
   }
 
-  @action
-  removeTag(option) {
-    this.selectedOptions = this.selectedOptions.filter((o) => o !== option);
-  }
-
   <template>
     <EuiComboBox
       @ariaLabel="Accessible screen reader label"
       @placeholder="Search asynchronously"
-      @search={{this.onSearch}}
+      @async={{true}}
+      @options={{this.options}}
       @selectedOptions={{this.selectedOptions}}
-      @searchField="label"
+      @isLoading={{this.isLoading}}
       @onChange={{this.onChange}}
-      @removeTag={{this.removeTag}}
+      @onSearchChange={{this.onSearchChange}}
       @onCreateOption={{this.onCreateOption}}
-      as |option|
-    >
-      {{option.label}}
-    </EuiComboBox>
+    />
   </template>
 }
 ```

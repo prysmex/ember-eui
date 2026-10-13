@@ -1,6 +1,5 @@
 import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
-import { array } from '@ember/helper';
 import { on } from '@ember/modifier';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -19,6 +18,7 @@ import EuiFormControlLayout from '../eui-form-control-layout.gts';
 import EuiFormLabel from '../eui-form-label.gts';
 import EuiFormAppend from '../eui-form-append.gts';
 import EuiFormPrepend from '../eui-form-prepend.gts';
+import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
 import EuiComboBoxNode from './node.gts';
 import EuiComboBoxTriggerInput from './trigger/input.gts';
 import { isTextNode } from '../../utils/eui/combo-box.ts';
@@ -44,6 +44,7 @@ interface TriggerArgs {
   prepend?: unknown;
   append?: unknown;
   noSuggestions?: boolean;
+  screenReaderInstructions?: string;
 }
 
 /** Upstream side nodes: one string is an EuiFormPrepend/Append label. */
@@ -197,10 +198,7 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
       @compressed={{@compressed}}
       @readOnly={{@readOnly}}
       @isInvalid={{@isInvalid}}
-      @clear={{if
-        (and @select.selected @allowClear)
-        (fn @select.actions.select (array))
-      }}
+      @clear={{if (and @select.selected @allowClear) @onClear}}
       @isLoading={{@isLoading}}
       @disabled={{@select.disabled}}
       @css={{this.layoutCss}}
@@ -231,7 +229,8 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
             {{this.wrapClass}}"
           data-test-subj="comboBoxInput"
           ...attributes
-          {{this.openChange @select.isOpen}}
+          {{! no ember-power-select openChange: upstream keeps the search
+            text when the list closes (leftover text marks it invalid) }}
           {{on "touchstart" this.chooseOption}}
           {{on "mousedown" this.chooseOption}}
         >
@@ -290,11 +289,13 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
                 EuiComboBoxTriggerInput
                 select=@select
                 ariaActiveDescendant=@ariaActiveDescendant
-                ariaLabelledBy=@ariaLabelledBy
+                ariaLabelledBy=(or @inputAriaLabelledBy @ariaLabelledBy)
                 ariaDescribedBy=@ariaDescribedBy
-                ariaLabel=@ariaLabel
+                ariaLabel=(or @inputAriaLabel @ariaLabel)
                 listboxId=@listboxId
-                tabindex=@tabindex
+                tabindex=@inputTabindex
+                role=@inputRole
+                required=@inputRequired
                 buildSelection=@buildSelection
                 placeholder=@placeholder
                 placeholderComponent=@placeholderComponent
@@ -305,7 +306,6 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
                 onBlur=@onBlur
                 onKeydown=@onKeydown
                 onInput=@onInput
-                onCreateOption=@onCreateOption
                 noSuggestions=@noSuggestions
               )
               as |InputComponent|
@@ -328,6 +328,15 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
             {{/let}}
           {{else}}
             <div class="euiComboBox__input {{this.spacerClass}}"></div>
+          {{/if}}
+          {{#if @screenReaderInstructions}}
+            {{! upstream: read when the input gets focus }}
+            <EuiScreenReaderOnly>
+              <span
+                aria-live="polite"
+                id="{{@select.uniqueId}}_removeOptionMessage"
+              >{{@screenReaderInstructions}}</span>
+            </EuiScreenReaderOnly>
           {{/if}}
         </div>
       </:field>

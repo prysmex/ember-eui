@@ -31,6 +31,9 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
 
     const selected = this.args.select.selected as unknown[] | undefined;
 
+    // upstream: no placeholder while searching
+    if (this.args.select.searchText) return '';
+
     // @ts-expect-error `placeholder` is passed by EuiComboBoxTrigger
     return !selected || selected.length === 0 ? this.args.placeholder || '' : '';
   }
@@ -74,68 +77,39 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
     return euiClass(context, INPUT_CONTAINER);
   }
 
+  /**
+   * Keys go to EuiComboBox first (through ember-power-select's keydown
+   * handler): it handles Enter, Escape, Tab, the arrows and Backspace
+   * like upstream.
+   */
   @action
   handleKeydown(e: KeyboardEvent): false | void {
     if (e.target === null) return;
 
-    // @ts-expect-error `noSuggestions` is passed by EuiComboBoxTrigger
-    if (this.args.noSuggestions && e.key === 'Enter') {
-      // no list to choose from: Enter adds the typed text (upstream)
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (
-        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
-        this.args.onCreateOption &&
-        this.args.select.searchText.length >= 1
-      ) {
-        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
-        this.args.onCreateOption();
-      }
-
-      return false;
-    }
-
     if (this.args.onKeydown && this.args.onKeydown(e) === false) {
-      if (
-        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
-        this.args.onCreateOption && //if user wants to create an option and
-        e.key === 'Enter' && //presses [Enter] and
-        (this.args.select.options.length === 0 || //If There are no options or
-          this.args.select.results.length === 0) && //Last search made returned no results and
-        this.args.select.searchText.length >= 1 //There's something in the searchText box
-      ) {
-        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
-        this.args.onCreateOption();
-
-        return false;
-      }
-
       e.stopPropagation();
 
       return false;
     }
 
-    if (e.key === 'Backspace') {
-      e.stopPropagation();
-
-      if (!(e.target as HTMLInputElement).value.trim()) {
-        const selected = this.args.select.selected as unknown[];
-        const lastSelection = selected[selected.length - 1];
-
-        if (lastSelection && this.args.buildSelection) {
-          this.args.select.actions.select(
-            this.args.buildSelection(lastSelection, this.args.select),
-            e
-          );
-          this.args.select.actions.search('');
-          this.args.select.actions.open(e);
-        }
-      }
-    } else if (e.key?.length === 1 && /[a-z0-9 ]/i.test(e.key)) {
-      // Keys 0-9, a-z or SPACE
+    if (
+      e.key === 'Backspace' ||
+      (e.key?.length === 1 && /[a-z0-9 ]/i.test(e.key))
+    ) {
+      // Backspace, keys 0-9, a-z or SPACE edit the text
       e.stopPropagation();
     }
+  }
+
+  /** Upstream keeps the typed text on blur (EuiComboBox decides). */
+  @action
+  handleBlur(event: FocusEvent): void {
+    this.args.onBlur?.(event);
+  }
+
+  /** The id of the options list while it is open (upstream `aria-controls`). */
+  get ariaControls(): string | undefined {
+    return this.args.select.isOpen ? this.args.listboxId : undefined;
   }
 
   <template>
@@ -159,7 +133,13 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
         spellcheck={{false}}
         id="ember-power-select-trigger-multiple-input-{{@select.uniqueId}}"
         value={{@select.searchText}}
-        aria-controls={{@listboxId}}
+        role={{if @role @role "combobox"}}
+        aria-autocomplete="list"
+        aria-haspopup="listbox"
+        aria-expanded={{if @select.isOpen "true" "false"}}
+        aria-controls={{this.ariaControls}}
+        {{! @glint-expect-error `required` is passed by EuiComboBoxTrigger }}
+        aria-required={{if @required "true"}}
         aria-activedescendant={{if this.hasActiveOption @ariaActiveDescendant}}
         aria-label={{@ariaLabel}}
         aria-labelledby={{@ariaLabelledBy}}

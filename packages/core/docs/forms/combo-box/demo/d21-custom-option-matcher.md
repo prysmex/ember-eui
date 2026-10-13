@@ -6,9 +6,9 @@ order: 21
 
 <EuiText>
 
-When searching for options, `EuiComboBox` uses a partial equality string matcher by default, displaying all options whose labels include the searched string.
+When searching for options, `EuiComboBox` uses a partial equality string matcher by default, displaying all options whose labels include the searched string and taking the `@isCaseSensitive` argument into account.
 
-In rare cases, you may want to customize this behavior. You can do so by passing a custom matcher function to `@matcher`. It is called with the option and the search text, and returns `-1` for options that should not be visible for the given search string.
+In rare cases, you may want to customize this behavior. You can do so by passing a custom option matcher function to the `@optionMatcher` argument. It receives `{ option, searchValue, normalizedSearchValue, isCaseSensitive }` and returns `true` for options that should be visible for the given search string. (ember-power-select's `@matcher`, `(option, searchText) => -1` for no match, works too.)
 
 </EuiText>
 
@@ -39,8 +39,8 @@ export default class ComboBoxMatcherDemo extends Component {
 
   @tracked selectedOptions = [];
 
-  startsWithMatcher = (option, searchValue) =>
-    option.label.startsWith(searchValue) ? 0 : -1;
+  startsWithMatcher = ({ option, searchValue }) =>
+    option.label.startsWith(searchValue);
 
   @action
   onChange(selectedOptions) {
@@ -61,7 +61,7 @@ export default class ComboBoxMatcherDemo extends Component {
       @onChange={{this.onChange}}
       @removeTag={{this.removeTag}}
       @isClearable={{true}}
-      @matcher={{this.startsWithMatcher}}
+      @optionMatcher={{this.startsWithMatcher}}
       as |option|
     >
       {{option.label}}

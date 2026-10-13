@@ -269,7 +269,8 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.dom(banana!.querySelector('.euiListItemLayout__icon')).hasAttribute('data-icon-type', 'check');
     assert.dom(apple!.querySelector('.euiListItemLayout__icon')).hasAttribute('data-icon-type', 'empty');
     assert.strictEqual(css(banana!).color, rgb(light.colors.textPrimary), 'selected option color');
-    assert.strictEqual(css(banana!).backgroundColor, rgb(light.colors.backgroundBaseInteractiveSelect));
+    // upstream: opening by click highlights the selected option
+    assert.strictEqual(css(banana!).backgroundColor, rgb(light.colors.backgroundBaseInteractiveSelectHover));
     assert.dom(banana).hasAttribute('aria-selected', 'true');
     assert.dom(apple).hasAttribute('aria-selected', 'false');
 
@@ -436,8 +437,9 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
 
     const list = q('[role="listbox"]', panel());
     assert.dom(list).hasAttribute('aria-multiselectable', 'true');
-    const [apple, banana, cherry, durian] = rows();
-    assert.strictEqual(rows().length, 4);
+    // upstream: the selected Cherry is not listed in multiple selection
+    const [apple, banana, durian] = rows();
+    assert.strictEqual(rows().length, 3);
 
     const a = css(apple!);
     assert.strictEqual(box(apple!).height, 29, 'upstream default rowHeight');
@@ -450,28 +452,27 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.strictEqual(css(q('.euiListItemLayout__text', apple!)).textOverflow, 'ellipsis', 'truncates');
     assert.dom(q('.euiListItemLayout__text', apple!)).hasAttribute('title', 'Apple');
 
-    // the first option is highlighted when the list opens
-    assert.strictEqual(a.backgroundColor, rgb(light.colors.backgroundBaseInteractiveHover), 'focused');
-    assert.dom(q('.euiComboBoxOption__enterBadge', apple!)).hasAttribute('aria-hidden', 'true');
-    assert.dom('.euiComboBoxOption__enterBadge [data-icon-type="return"]', panel()).exists({ count: 1 });
+    // upstream: nothing is highlighted when the list opens
+    assert.strictEqual(a.backgroundColor, 'rgba(0, 0, 0, 0)', 'not focused');
+    assert.dom('.euiComboBoxOption__enterBadge', panel()).doesNotExist('no enter badge without @onFocusBadge');
     assert.strictEqual(css(banana!).backgroundColor, 'rgba(0, 0, 0, 0)');
 
-    assert.strictEqual(css(cherry!).color, rgb(light.colors.textPrimary), 'selected');
-    assert.strictEqual(css(cherry!).backgroundColor, rgb(light.colors.backgroundBaseInteractiveSelect));
-    assert.dom(cherry).hasAttribute('aria-selected', 'true');
     assert.dom(apple).hasAttribute('aria-selected', 'false');
 
     assert.strictEqual(css(durian!).color, rgb(light.colors.textDisabled), 'disabled');
     assert.strictEqual(css(durian!).cursor, 'not-allowed');
     assert.dom(durian).hasAttribute('aria-disabled', 'true');
 
-    assert.dom(apple).hasAttribute('aria-setsize', '4').hasAttribute('aria-posinset', '1');
-    assert.dom(durian).hasAttribute('aria-posinset', '4');
+    assert.dom(apple).hasAttribute('aria-setsize', '3').hasAttribute('aria-posinset', '1');
+    assert.dom(durian).hasAttribute('aria-posinset', '3');
     assert.dom('[tabindex]', list).doesNotExist('options are not tab stops; focus stays in the input');
 
     // keyboard: aria-activedescendant follows the highlighted option
     const input = q(INPUT);
+    assert.false(input.hasAttribute('aria-activedescendant'), 'no active option on open (upstream)');
+    await triggerKeyEvent(input, 'keydown', 'ArrowDown');
     assert.strictEqual(input.getAttribute('aria-activedescendant'), apple!.id);
+    assert.strictEqual(css(rows()[0]!).backgroundColor, rgb(light.colors.backgroundBaseInteractiveHover), 'focused');
     await triggerKeyEvent(input, 'keydown', 'ArrowDown');
     assert.strictEqual(input.getAttribute('aria-activedescendant'), rows()[1]!.id);
     assert.strictEqual(css(rows()[1]!).backgroundColor, rgb(light.colors.backgroundBaseInteractiveHover));
@@ -519,7 +520,8 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.dom('.euiComboBoxPill').hasText('Cherry', 'pills show the label');
 
     await open();
-    assert.deepEqual(rows().map((row) => row.textContent!.trim()), ['Banana', 'Ananas', 'Cherry']);
+    // upstream: the selected Cherry is not listed
+    assert.deepEqual(rows().map((row) => row.textContent!.trim()), ['Banana', 'Ananas']);
     await fillIn(INPUT, 'nan');
     
     const banana = rows()[0]!;
@@ -550,7 +552,7 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     await open('[data-c="plain"]');
     await fillIn('[data-c="plain"] ' + INPUT, 'zzz');
     let message = q('.euiComboBoxOptionsList', panel());
-    assert.dom('.euiComboBoxOptionsList__empty', message).hasText('No results found');
+    assert.dom('.euiComboBoxOptionsList__empty', message).hasText("zzz doesn't match any options", 'upstream message');
     assert.strictEqual(css(message).paddingTop, '8px', 'upstream empty state padding');
     assert.strictEqual(css(message).textAlign, 'center');
     assert.strictEqual(css(q('.euiComboBoxOptionsList__empty', message)).fontSize, px(euiFontSize(lightContext, 'xs', undefined).fontSize as string), 'xs text');
@@ -684,7 +686,8 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.strictEqual(css(content).backgroundColor, rgb(dark.components.popoverPanelBackground), 'portaled panel keeps its mode');
     assert.strictEqual(css(content).color, rgb(dark.colors.textParagraph));
     assert.strictEqual(css(rows()[1]!).color, rgb(dark.colors.textParagraph));
-    assert.strictEqual(css(rows()[0]!).color, rgb(dark.colors.textPrimary), 'selected');
+    // upstream: the selected Apple is not listed
+    assert.strictEqual(css(rows()[0]!).color, rgb(dark.colors.textParagraph));
     await triggerKeyEvent('[data-c="parent"] ' + INPUT, 'keydown', 'Escape');
 
     state.overrides = { border: { radius: { control: '4px' } } };
@@ -728,6 +731,8 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.strictEqual(css(wrapOf('[data-c="std"]')).borderTopStyle, 'none', 'standard contrast isolated');
 
     await open('[data-c="hc"]');
+    // upstream: options are focused with the arrow keys, not on open
+    await triggerKeyEvent('[data-c="hc"] ' + INPUT, 'keydown', 'ArrowDown');
     assert.strictEqual(css(rows()[0]!).textDecorationLine, 'underline', 'focused option');
     assert.strictEqual(css(panel()).borderTopStyle, 'solid', 'panel border instead of a shadow');
   });

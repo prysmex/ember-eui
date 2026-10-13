@@ -623,6 +623,7 @@
       "./modifiers/validatable-control.js": "./dist/_app_/modifiers/validatable-control.js",
       "./services/eui-config.js": "./dist/_app_/services/eui-config.js",
       "./services/eui-emotion.js": "./dist/_app_/services/eui-emotion.js",
+      "./services/eui-flyout-manager.js": "./dist/_app_/services/eui-flyout-manager.js",
       "./services/eui-i18n.js": "./dist/_app_/services/eui-i18n.js",
       "./services/eui-toaster.js": "./dist/_app_/services/eui-toaster.js"
     },

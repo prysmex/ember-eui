@@ -5,39 +5,27 @@ order: 2
 # Reverse style
 
 <EuiText>
-	<p>
-	Setting the <EuiCode>@textStyle</EuiCode> arg to <EuiCode>reverse</EuiCode> will reverse the text styles of the <EuiCode>title</EuiCode> and <EuiCode>description</EuiCode> elements so that the description is more prominent. This works best for key/value type content.
-  </p>
-	<p>
-		Adding this property to the <EuiCode>inline</EuiCode> type will not change anything.
-	</p>
+
+Setting the `@textStyle` argument to `reverse` will reverse the text styles of the title and description elements so that the description is more prominent. This works best for key/value type content.
+
+Adding this argument to the `inline` type will not change anything.
 
 </EuiText>
 
-```hbs template
-<EuiDescriptionList
-  @textStyle='reverse'
-  @listItems={{this.favoriteVideoGames}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiDescriptionList } from '@ember-eui/core/components';
 
-export default class extends Component {
-  favoriteVideoGames = [
-    {
-      title: 'Name',
-      description: 'The Elder Scrolls: Morrowind'
-    },
-    {
-      title: 'Game style',
-      description: 'Open-world, fantasy, action role-playing'
-    },
-    {
-      title: 'Release date',
-      description: '2002'
-    }
+export default class DescriptionListReverseDemo extends Component {
+  favoriteVideoGame = [
+    { title: 'Name', description: 'The Elder Scrolls: Morrowind' },
+    { title: 'Game style', description: 'Open-world, fantasy, action role-playing' },
+    { title: 'Release date', description: '2002' },
   ];
+
+  <template>
+    <EuiDescriptionList @textStyle="reverse" @listItems={{this.favoriteVideoGame}} />
+  </template>
 }
 ```
+

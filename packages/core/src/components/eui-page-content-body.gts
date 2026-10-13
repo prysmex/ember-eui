@@ -1,26 +1,38 @@
-import { concat } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  euiPageBoxSizing,
+  euiPagePadding,
+  euiPageRestrictWidthStyle,
+  isRestricted
+} from '../utils/eui/page-layout.ts';
+import { euiClass } from '../utils/eui/styles.ts';
+import { euiPageSectionContentStyles } from '../utils/eui/styles.generated.ts';
 
-import type { paddingSizeMapping } from '../utils/css-mappings/eui-page-content-body.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiPagePaddingSize } from '../utils/eui/page-layout.ts';
 
-/** The content of an EuiPageContent. */
+/**
+ * The content of an EuiPageContent. Styled as upstream's
+ * `EuiPageSection` content (`euiPageSection__content`).
+ */
 export interface EuiPageContentBodySignature {
   Element: HTMLDivElement;
   Args: {
     /**
-     * Max width of the content: `true` for the bundled Amsterdam theme's
-     * default (1200px), a
-     * number in px, or any CSS width. Defaults to `false` (no limit).
+     * Max width of the content, centered: `true` for EUI's default
+     * (1200px), a number in px, or any CSS width. Defaults to `false`
+     * (no limit).
      */
     restrictWidth?: boolean | number | string;
-    /** Padding: `'none'`, `'s'`, `'m'` or `'l'`. */
-    paddingSize?: keyof typeof paddingSizeMapping;
+    /**
+     * Padding on every side: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or
+     * `'xl'`. Defaults to `'none'`.
+     */
+    paddingSize?: EuiPagePaddingSize;
     /** Inline styles, merged with the max width. */
     style?: {
       [key: string]: string;
@@ -32,24 +44,35 @@ export interface EuiPageContentBodySignature {
   };
 }
 
-const EuiPageContentBody: TemplateOnlyComponent<EuiPageContentBodySignature> =
-  <template>
-    {{#let
-      (euiPageRestrictWidth (argOrDefault @restrictWidth false) @style)
-      as |styling|
-    }}
-      <div
-        class={{classNames
-          (if styling.widthClassName (concat "euiPage--" styling.widthClassName))
-          componentName="EuiPageContentBody"
-          paddingSize=@paddingSize
-        }}
-        {{style styling.newStyle}}
-        ...attributes
-      >
-        {{yield}}
-      </div>
-    {{/let}}
-  </template>;
 
-export default EuiPageContentBody;
+/** Theme-independent, so built once. */
+const PAGE_SECTION_CONTENT_STYLES = euiPageSectionContentStyles();
+
+export default class EuiPageContentBody extends Component<EuiPageContentBodySignature> {
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = PAGE_SECTION_CONTENT_STYLES;
+    return euiClass(
+      context,
+      euiPageBoxSizing,
+      styles.euiPageSection__content,
+      euiPagePadding(context.upstream, this.args.paddingSize),
+      isRestricted(this.args.restrictWidth) && styles.restrictWidth
+    );
+  }
+
+  get inlineStyle() {
+    return euiPageRestrictWidthStyle(this.args.restrictWidth, this.args.style);
+  }
+
+  <template>
+    <div
+      class="euiPageContentBody {{this.classes}}"
+      {{style this.inlineStyle}}
+      ...attributes
+    >
+      {{yield}}
+    </div>
+  </template>
+}

@@ -6,6 +6,18 @@ title: Notification Event
 <EuiPageHeader @pageTitle="Notification Event"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Deprecated: removed upstream" @color="warning">
+  <p>
+    Elastic UI removed EuiNotificationEvent and its EuiNotificationEvent* pieces upstream, so they are deprecated since
+    15.0.0 and will be removed in the next major version (16.0.0). They
+    keep working until then and report the
+    <EuiCode>ember-eui.eui-notification-event.removed-upstream</EuiCode> deprecation (and one per sub-component) in
+    development. Compose notifications from <strong>EuiPanel</strong>, <strong>EuiTitle</strong>, <strong>EuiText</strong> and <strong>EuiContextMenu</strong> instead.
+  </p>
+</EuiCallOut>
+
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiNotificationEvent` is one entry of a notifications list (usually in
@@ -52,7 +64,7 @@ source, time, messages, read state and actions.
 | --- | --- | --- | --- |
 | `@id` | `string` |  | Id of the event, for its read button/icon. |
 | `@tagName` | `string` | `'article'` | Tag of the event. |
-| `@isRead` | `boolean` |  | Read state. When a boolean, shows a read indicator (a button with `@onRead`, otherwise an icon); leave it undefined to show none. |
+| `@isRead` | `boolean` |  | Read state. When a boolean, shows a read indicator (a button with `@onRead`, otherwise an icon) and makes unread titles bold; leave it undefined to show none. |
 | `@href` | `string` |  | Makes the title a link. |
 | `@onClickTitle` | `(event: MouseEvent) => void` |  | Makes the title a button calling this function. |
 | `@onRead` | `(event: MouseEvent) => void` |  | Called by the read button; toggle `@isRead` here. |

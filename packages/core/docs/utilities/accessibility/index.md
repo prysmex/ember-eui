@@ -13,6 +13,8 @@ Helpers for content that only screen reader and keyboard users need.
 - **`EuiScreenReaderOnly`** hides its content visually but keeps it for
   screen readers, e.g. the text of an icon-only control or extra context
   in a table. `@showOnFocus` shows it while something in it has focus.
+- **`EuiScreenReaderLive`** and **`EuiLiveAnnouncer`** announce dynamic
+  content such as status changes (see also the Live regions page).
 - **`EuiSkipLink`** is a "Skip to main content" link, hidden until a
   keyboard user tabs to it, so they can jump past the header.
 
@@ -26,7 +28,7 @@ Helpers for content that only screen reader and keyboard users need.
 ```
 
 To hide a single element without a wrapper, the `screenReaderOnly`
-modifier does the same: `<span &#123;&#123;screenReaderOnly}}>…</span>`.
+modifier does the same: `<span {{screenReaderOnly}}>…</span>`.
 
 </EuiText>
 
@@ -66,9 +68,26 @@ first in the page.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@destinationId` (required) | `string` |  | Id of the element to jump to (without `#`), e.g. `'main-content'`. Give that element `tabindex="-1"` if it is not focusable itself. |
-| `@position` | `'static' \| 'fixed' \| 'absolute'` | `'static'` | Where the link shows when focused: `'static'` (in place), `'fixed'` (top left of the viewport) or `'absolute'`. |
+| `@destinationId` (required) | `string` |  | Id of the element to jump to (without `#`), e.g. `'main-content'`. A destination that is not focusable is made focusable (`tabindex="-1"`) while it has focus. |
+| `@fallbackDestination` | `string \| string[]` | `'main'` | Query selector(s) to jump to when no element has `@destinationId`, tried in order. |
+| `@overrideLinkBehavior` | `boolean` |  | Scrolls to and focuses the destination itself instead of following the `#id` link (e.g. for apps with hash routing). The URL hash does not change. |
+| `@position` | `'static' \| 'fixed' \| 'absolute'` | `'static'` | Where the link shows when focused: `'static'` (in place), `'fixed'` (top left of the viewport) or `'absolute'` (position it yourself). |
 | `@tabIndex` | `number` |  | `tabindex` of the link; a fixed link always gets `0`. |
+| `@color` |  | `'primary'` | EuiButton color. |
+| `@contentProps` |  |  | `class`, `css` and attributes of the content element, see `EuiButton`. |
+| `@textProps` |  |  | `class`, `css` and attributes of the text element, see `EuiButton`. |
+| `@element` |  |  | Tag to render instead of the `<a>`, see `EuiButton`. |
+| `@fill` | `boolean` | `true` | Solid background. |
+| `@fullWidth` | `boolean` |  | Stretches the link to its container's width. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: `aria-disabled` instead of `disabled`, see `EuiButton`. |
+| `@iconSide` |  |  | Side of the icon, see `EuiButton`. |
+| `@iconSize` |  |  | Size of the icon, see `EuiButton`. |
+| `@iconType` |  |  | Icon next to the text, see `EuiButton`. |
+| `@isDisabled` | `boolean` |  | Disables the link. |
+| `@isLoading` | `boolean` |  | Shows a spinner and disables the link. |
+| `@isSelected` | `boolean` |  | Sets `aria-pressed`, see `EuiButton`. |
+| `@minWidth` |  |  | Minimum width, see `EuiButton`. |
+| `@size` |  | `'s'` | `'s'` or `'m'`. |
 
 | Block | Description |
 | --- | --- |

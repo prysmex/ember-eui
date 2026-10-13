@@ -15,7 +15,14 @@ module('Integration | Component | eui-spacer', function (hooks) {
       </template>
     );
 
-    assert.dom('.default').hasClass('euiSpacer').hasClass('euiSpacer--l');
-    assert.dom('.small').hasClass('euiSpacer--xs');
+    assert.dom('.default').hasClass('euiBorealisSpacer');
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('.default')!).blockSize,
+      '24px'
+    );
+    assert.strictEqual(
+      getComputedStyle(this.element.querySelector('.small')!).blockSize,
+      '4px'
+    );
   });
 });

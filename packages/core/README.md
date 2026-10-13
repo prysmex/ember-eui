@@ -7,7 +7,7 @@ EUI icons work out of the box: they are bundled with the addon, no build
 configuration is needed (this used to require `ember-svg-jar`).
 
 ```hbs
-<EuiIcon @type="arrowDown" />
+<EuiIcon @type="chevronSingleDown" />
 ```
 
 Each EUI icon is its own chunk, loaded the first time it renders, so apps
@@ -20,7 +20,7 @@ import { preloadIcons } from '@ember-eui/core/utils/preload-icons';
 
 export default class ApplicationRoute extends Route {
   async beforeModel() {
-    await preloadIcons(['arrowDown', 'cross', 'search']);
+    await preloadIcons(['chevronSingleDown', 'cross', 'magnify']);
   }
 }
 ```
@@ -91,4 +91,11 @@ See the [Contributing](CONTRIBUTING.md) guide for details.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE.md).
+This project is licensed under the [MIT License](LICENSE.md), except for the
+parts derived from [Elastic UI (EUI)](https://github.com/elastic/eui) (its
+component styles, icons, ported component logic and documentation examples),
+which remain Copyright Elasticsearch B.V. under the Elastic License 2.0 or the
+Server Side Public License, v 1. See [NOTICE.md](NOTICE.md).
+
+Ember EUI is a community project and is not affiliated with or endorsed by
+Elastic.

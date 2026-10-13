@@ -6,6 +6,11 @@ title: Textarea
 <EuiPageHeader @pageTitle="Textarea"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Wrap your form controls in a form row" @iconType="info" @size="s">
+  <p>Use <code>EuiFormRow</code> to easily and accessibly associate form components with labels, help text and error text. Keep in mind that <code>EuiFormRow</code> controls the <code>id</code> of its wrapped child form component to associate it with the label and help text.</p>
+</EuiCallOut>
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiTextArea` renders a `<textarea>` for multi-line text. `@rows` sets its
@@ -34,19 +39,23 @@ Generated from the components' TypeScript signatures by
 
 ### EuiTextArea
 
-A multi-line text input. Attributes (`placeholder`, `maxlength`…) go to the `<textarea>`.
+A multi-line text input, inside an EuiFormControlLayout like upstream.
+Attributes (`placeholder`, `maxlength`…) go to the `<textarea>`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the textarea. |
 | `@value` | `string` |  | The value. Update it from `{{on "input" …}}`. |
 | `@fullWidth` | `boolean` |  | Stretches the textarea to its container's width. |
-| `@compressed` | `boolean` |  | Smaller textarea, for dense forms. |
+| `@compressed` | `boolean` |  | Tighter padding (8px instead of 12px) and 3 default rows, for dense forms. |
 | `@disabled` | `boolean` |  | Disables the textarea. |
-| `@isInvalid` | `boolean` |  | Shows the invalid state and marks it invalid for native form validation. |
+| `@isInvalid` | `boolean` |  | Shows the invalid state (danger border), sets `aria-invalid` and marks it invalid for native form validation. |
+| `@icon` |  |  | Icon inside the textarea, anything `EuiIcon`'s `@type` accepts. |
+| `@isLoading` | `boolean` |  | Shows a spinner inside the textarea. |
+| `@isClearable` | `boolean` |  | Shows a button that clears the textarea. It empties the value, fires an `input` event (so your `{{on "input"}}` handler sees it) and focuses the textarea. |
 | `@inputRef` | `(element: HTMLTextAreaElement \| null) => void` |  | Called with the `<textarea>` element once rendered. |
-| `@rows` | `number` |  | Visible number of lines. |
-| `@resize` |  | `'vertical'` | Which way the user can resize it: `'vertical'`, `'horizontal'`, `'both'` or `'none'`. |
+| `@rows` | `number` | 6, or 3 when `@compressed` | Visible number of lines. |
+| `@resize` | `EuiTextAreaResize` | `'vertical'` | Which way the user can resize it: `'vertical'`, `'horizontal'`, `'both'` or `'none'`. |
 | `@readOnly` | `boolean` |  | Makes the textarea read-only. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<textarea>`.

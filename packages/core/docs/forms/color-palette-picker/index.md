@@ -45,7 +45,8 @@ Generated from the components' TypeScript signatures by
 ### EuiColorPalettePicker
 
 A select of color palettes (e.g. for charts), showing each palette as a
-bar of colors. Built on `EuiSuperSelect`.
+bar of colors. Built on `EuiSuperSelect`; each option shows the title
+(EuiText `xs`) above the palette, as upstream.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -57,6 +58,16 @@ bar of colors. Built on `EuiSuperSelect`.
 | `@fullWidth` | `boolean` |  | Takes the container's full width. |
 | `@isInvalid` | `boolean` |  | Invalid look. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
+| `@disabled` | `boolean` |  | Disables the select. |
+| `@readOnly` | `boolean` |  | Read-only: the list does not open. |
+| `@isOpen` | `boolean` | closed until the user opens it | Controls whether the list is open (upstream `isOpen`, from EuiSuperSelect). |
+| `@itemClassName` | `string` |  | Class for each option in the list (EuiSuperSelect `itemClassName`). |
+| `@popoverProps` |  |  | Props of the list's EuiInputPopover (EuiSuperSelect `popoverProps`), e.g. `(hash panelClassName="…" repositionOnScroll=true)`. |
+
+| Block | Description |
+| --- | --- |
+| `<:prepend>` | Content before the picker (upstream's `prepend`), e.g. a label or an icon; yields the class to put on it. |
+| `<:append>` | Content after the picker (upstream's `append`); yields the class to put on it. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 

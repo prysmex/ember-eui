@@ -1,10 +1,18 @@
 import Component from '@glimmer/component';
 
 import EuiColorPaletteDisplay from './eui-color-palette-display.gts';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
+import EuiSpacer from './eui-spacer.gts';
 import EuiSuperSelect from './eui-super-select.gts';
+import EuiText from './eui-text.gts';
 
+import type { ComponentLike } from '@glint/template';
 import type { ColorStop } from '../-private/color.ts';
-import type { EuiSuperSelectOption } from './eui-super-select';
+import type {
+  EuiSuperSelectOption,
+  EuiSuperSelectSignature
+} from './eui-super-select';
 
 export interface EuiColorPalettePickerPalette {
   /** The value passed to `@onChange` when chosen. */
@@ -18,11 +26,18 @@ export interface EuiColorPalettePickerPalette {
   type: 'fixed' | 'gradient' | 'text';
   /** The colors or `{ stop, color }` stops (not for `'text'`). */
   palette?: (string | ColorStop)[];
+  /**
+   * Shown to the right of the title in the list (not for `'text'`
+   * options, as upstream): text, or a component (React nodes become
+   * components in Ember), e.g. a badge or a button.
+   */
+  append?: string | ComponentLike;
 }
 
 /**
  * A select of color palettes (e.g. for charts), showing each palette as a
- * bar of colors. Built on `EuiSuperSelect`.
+ * bar of colors. Built on `EuiSuperSelect`; each option shows the title
+ * (EuiText `xs`) above the palette, as upstream.
  */
 export interface EuiColorPalettePickerSignature {
   Element: HTMLButtonElement;
@@ -46,6 +61,31 @@ export interface EuiColorPalettePickerSignature {
     isInvalid?: boolean;
     /** Shows a spinner. */
     isLoading?: boolean;
+    /** Disables the select. */
+    disabled?: boolean;
+    /** Read-only: the list does not open. */
+    readOnly?: boolean;
+    /**
+     * Controls whether the list is open (upstream `isOpen`, from
+     * EuiSuperSelect). Defaults to closed until the user opens it.
+     */
+    isOpen?: boolean;
+    /** Class for each option in the list (EuiSuperSelect `itemClassName`). */
+    itemClassName?: string;
+    /**
+     * Props of the list's EuiInputPopover (EuiSuperSelect `popoverProps`),
+     * e.g. `(hash panelClassName="…" repositionOnScroll=true)`.
+     */
+    popoverProps?: EuiSuperSelectSignature['Args']['popoverProps'];
+  };
+  Blocks: {
+    /**
+     * Content before the picker (upstream's `prepend`), e.g. a label or
+     * an icon; yields the class to put on it.
+     */
+    prepend: [className: string];
+    /** Content after the picker (upstream's `append`); yields the class to put on it. */
+    append: [className: string];
   };
 }
 
@@ -68,13 +108,21 @@ export default class EuiColorPalettePicker extends Component<EuiColorPalettePick
       @options={{this.options}}
       @valueOfSelected={{@valueOfSelected}}
       @onChange={{@onChange}}
-      @hasDividers={{true}}
       @compressed={{@compressed}}
       @fullWidth={{@fullWidth}}
       @isInvalid={{@isInvalid}}
       @isLoading={{@isLoading}}
+      @disabled={{@disabled}}
+      @readOnly={{@readOnly}}
+      @isOpen={{@isOpen}}
+      @itemClassName={{@itemClassName}}
+      @popoverProps={{@popoverProps}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       ...attributes
     >
+      <:prepend as |className|>{{yield className to="prepend"}}</:prepend>
+      <:append as |className|>{{yield className to="append"}}</:append>
       <:inputDisplay as |option|>
         {{#let (paletteOf option) as |palette|}}
           {{#if (this.showTitleOnly palette)}}
@@ -96,7 +144,25 @@ export default class EuiColorPalettePicker extends Component<EuiColorPalettePick
             {{else}}
               {{#if palette.title}}
                 {{! the display's screen reader title names the option }}
-                <div aria-hidden="true" class="euiColorPalettePicker__itemTitle">{{palette.title}}</div>
+                <EuiFlexGroup @responsive={{false}}>
+                  <EuiFlexItem>
+                    <EuiText
+                      aria-hidden="true"
+                      class="euiColorPalettePicker__itemTitle"
+                      @size="xs"
+                    >{{palette.title}}</EuiText>
+                  </EuiFlexItem>
+                  {{#if palette.append}}
+                    <EuiFlexItem @grow={{false}}>
+                      {{#if (isString palette.append)}}
+                        {{asText palette.append}}
+                      {{else}}
+                        {{#let (asComponent palette.append) as |Append|}}<Append />{{/let}}
+                      {{/if}}
+                    </EuiFlexItem>
+                  {{/if}}
+                </EuiFlexGroup>
+                <EuiSpacer @size="xs" />
               {{/if}}
               <EuiColorPaletteDisplay
                 @type={{fixedOrGradient palette.type}}
@@ -125,4 +191,16 @@ function fixedOrGradient(type: string): 'fixed' | 'gradient' {
 
 function isText(type: string): boolean {
   return type === 'text';
+}
+
+function isString(value: unknown): boolean {
+  return typeof value === 'string';
+}
+
+function asText(value: unknown): string {
+  return String(value);
+}
+
+function asComponent(value: unknown): ComponentLike {
+  return value as ComponentLike;
 }

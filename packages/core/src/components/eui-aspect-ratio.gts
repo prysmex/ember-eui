@@ -1,8 +1,8 @@
-import { hash } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import cssStyle from '../-private/css-style.ts';
-
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass } from '../utils/eui/styles.ts';
 
 /**
  * Keeps its content (an iframe, video, image or map) at a fixed aspect
@@ -24,30 +24,32 @@ export interface EuiAspectRatioSignature {
   };
 }
 
-function paddingBottom(height: number, width: number): string {
-  return `${(height / width) * 100}%`;
+/**
+ * Upstream clones its only child and gives it `aspect-ratio`, `height: auto`,
+ * `width: 100%` and `max-width` (logical). Ember cannot clone a block, so the
+ * wrapper takes those styles and its content fills it.
+ */
+export default class EuiAspectRatio extends Component<EuiAspectRatioSignature> {
+  @cached
+  get classes() {
+    const { width, height, maxWidth } = this.args;
+    return `euiAspectRatio ${euiClass(getEuiThemeContext(this), {
+      boxSizing: 'border-box',
+      aspectRatio: `${width} / ${height}`,
+      blockSize: 'auto',
+      inlineSize: '100%',
+      maxInlineSize: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
+      // block, so an inline iframe/img adds no line-box descender space
+      '& > *': {
+        boxSizing: 'border-box',
+        display: 'block',
+        inlineSize: '100%',
+        blockSize: '100%'
+      }
+    })}`;
+  }
+
+  <template>
+    <div class={{this.classes}} ...attributes>{{yield}}</div>
+  </template>
 }
-
-const EuiAspectRatio: TemplateOnlyComponent<EuiAspectRatioSignature> = <template>
-  {{#if @maxWidth}}
-    <div style={{cssStyle (hash maxWidth=@maxWidth)}}>
-      <div
-        class="euiAspectRatio"
-        style={{cssStyle
-          (hash
-            paddingBottom=(paddingBottom @height @width) maxWidth=@maxWidth
-          )
-        }}
-        ...attributes
-      >{{yield}}</div>
-    </div>
-  {{else}}
-    <div
-      class="euiAspectRatio"
-      style={{cssStyle (hash paddingBottom=(paddingBottom @height @width))}}
-      ...attributes
-    >{{yield}}</div>
-  {{/if}}
-</template>;
-
-export default EuiAspectRatio;

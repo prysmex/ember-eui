@@ -6,8 +6,9 @@ import { tracked } from '@glimmer/tracking';
 import EuiAccordion from '#src/components/eui-accordion.gts';
 
 const wrapperHeight = () =>
+  // upstream sets the logical `block-size` inline (was `height`)
   (document.querySelector('.euiAccordion__childWrapper') as HTMLElement).style
-    .height;
+    .blockSize;
 
 module('Integration | Component | eui-accordion', function (hooks) {
   setupRenderingTest(hooks);
@@ -84,7 +85,8 @@ module('Integration | Component | eui-accordion', function (hooks) {
 
     for (const selector of ['.with-id', '.generated']) {
       const button = document.querySelector(`${selector} .euiAccordion__button`) as HTMLElement;
-      const region = document.querySelector(`${selector} [role="region"]`) as HTMLElement;
+      // upstream's content role is `group` (was `region`)
+      const region = document.querySelector(`${selector} [role="group"]`) as HTMLElement;
 
       assert.ok(region.id, `${selector}: the region has an id`);
       assert.strictEqual(button.getAttribute('aria-controls'), region.id);
@@ -93,7 +95,7 @@ module('Integration | Component | eui-accordion', function (hooks) {
       assert.dom(button).doesNotHaveAttribute('aria-labelledby');
     }
 
-    assert.dom('.with-id [role="region"]').hasAttribute('id', 'details');
+    assert.dom('.with-id [role="group"]').hasAttribute('id', 'details');
   });
 
   test('@isLoading shows spinners in place of the content and extra action', async function (assert) {
@@ -117,14 +119,14 @@ module('Integration | Component | eui-accordion', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiLoadingSpinner').exists({ count: 2 });
+    assert.dom('.euiBorealisLoadingSpinner').exists({ count: 2 });
     assert.dom('[data-test-content]').doesNotExist();
     assert.dom('[data-test-extra]').doesNotExist();
 
     state.isLoading = false;
     await rerender();
 
-    assert.dom('.euiLoadingSpinner').doesNotExist();
+    assert.dom('.euiBorealisLoadingSpinner').doesNotExist();
     assert.dom('[data-test-content]').hasText('Ready');
     assert.dom('[data-test-extra]').exists();
   });
@@ -148,12 +150,12 @@ module('Integration | Component | eui-accordion', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiLoadingSpinner').exists({ count: 2 });
+    assert.dom('.euiBorealisLoadingSpinner').exists({ count: 2 });
 
     state.isLoadingMessage = false;
     await rerender();
 
-    assert.dom('.euiLoadingSpinner').exists({ count: 1 });
+    assert.dom('.euiBorealisLoadingSpinner').exists({ count: 1 });
     assert.dom('[data-test-content]').hasText('Ready');
   });
 });

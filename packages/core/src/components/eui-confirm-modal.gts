@@ -1,7 +1,15 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
+import { modifier } from 'ember-modifier';
 import { or } from 'ember-truth-helpers';
 
+import argOrDefault from '../helpers/arg-or-default.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import { euiModalStyles } from '../utils/eui/styles.generated.ts';
 import EuiButton from './eui-button.gts';
 import EuiButtonEmpty from './eui-button-empty.gts';
 import EuiModal from './eui-modal.gts';
@@ -12,14 +20,28 @@ import EuiModalHeaderTitle from './eui-modal-header-title.gts';
 import EuiText from './eui-text.gts';
 
 import type { EuiModalSignature } from './eui-modal';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export const CONFIRM_BUTTON = 'confirm';
+export const CANCEL_BUTTON = 'cancel';
 
 export interface EuiConfirmModalSignature {
   Element: EuiModalSignature['Element'];
   Args: {
-    /** Title of the modal. Use the `<:title>` block for markup. */
+    /** Title of the modal (an `<h1>`). Use the `<:title>` block for markup. */
     title?: string;
-    /** The question or explanation, e.g. "This can't be undone.". */
+    /**
+     * Attributes of the title element (upstream `titleProps`, which is
+     * spread onto it): `className`, `id` and `data-test-subj` (replacing
+     * the default `confirmModalTitleText`).
+     */
+    titleProps?: {
+      className?: string;
+      id?: string;
+      'data-test-subj'?: string;
+    };
+    /** Focus trap options, as `EuiModal`'s `@focusTrapProps` (`returnFocus`). */
+    focusTrapProps?: EuiModalSignature['Args']['focusTrapProps'];
+    /** The question or explanation (a `<p>`), e.g. "This can't be undone.". */
     message?: string;
     /** Text of the cancel button. Required: there is no default text. */
     cancelButtonText?: string;
@@ -30,10 +52,30 @@ export interface EuiConfirmModalSignature {
      * destructive actions. Defaults to `'primary'`.
      */
     buttonColor?: string;
+    /**
+     * The button focused when the modal opens: `'confirm'` or `'cancel'`.
+     * Defaults to the modal itself.
+     */
+    defaultFocusedButton?: 'confirm' | 'cancel';
+    /**
+     * Element to focus when the modal opens, as `EuiModal`'s
+     * `@initialFocus` (a CSS selector, an element or a function returning
+     * one). Wins over `@defaultFocusedButton`.
+     */
+    initialFocus?: EuiModalSignature['Args']['initialFocus'];
     /** Disables the confirm button, e.g. until a checkbox is checked. */
     confirmButtonDisabled?: boolean;
     /** Shows a spinner in the confirm button while the action runs. */
     isLoading?: boolean;
+    /**
+     * Width cap, as `EuiModal`'s `@maxWidth`. Defaults to `true`.
+     */
+    maxWidth?: EuiModalSignature['Args']['maxWidth'];
+    /**
+     * Clicking the mask around the modal calls `@onCancel`. Defaults to
+     * `false`.
+     */
+    outsideClickCloses?: boolean;
     /** Called by the cancel and close buttons and Escape. Close the modal here. */
     onCancel: () => void;
     /** Called by the confirm button. */
@@ -47,18 +89,70 @@ export interface EuiConfirmModalSignature {
   };
 }
 
-const EuiConfirmModal: TemplateOnlyComponent<EuiConfirmModalSignature> =
+/**
+ * A modal asking to confirm or cancel an action, announced as an
+ * `alertdialog`.
+ */
+export default class EuiConfirmModal extends Component<EuiConfirmModalSignature> {
+  cancelButton?: HTMLElement;
+  confirmButton?: HTMLElement;
+
+  registerCancel = modifier((element: HTMLElement) => {
+    this.cancelButton = element;
+    return () => (this.cancelButton = undefined);
+  });
+
+  registerConfirm = modifier((element: HTMLElement) => {
+    this.confirmButton = element;
+    return () => (this.confirmButton = undefined);
+  });
+
+  /** Upstream's `css` on EuiModal. */
+  @cached
+  get confirmationCss(): EuiCss {
+    const context = getEuiThemeContext(this);
+    return useEuiBorealisStyles(context, euiModalStyles).confirmation;
+  }
+
+  get buttonColor() {
+    return this.args.buttonColor ?? 'primary';
+  }
+
+  /** Upstream focuses the button after the focus trap settles. */
+  get initialFocus() {
+    if (this.args.initialFocus) return this.args.initialFocus;
+    const which = this.args.defaultFocusedButton;
+    if (which !== CANCEL_BUTTON && which !== CONFIRM_BUTTON) return undefined;
+    return () => {
+      const button =
+        which === CANCEL_BUTTON ? this.cancelButton : this.confirmButton;
+      return (button ?? this.cancelButton) as HTMLElement;
+    };
+  }
+
   <template>
     <EuiModal
       class="euiModal--confirmation"
+      @css={{this.confirmationCss}}
+      role="alertdialog"
       @onClose={{@onCancel}}
+      @maxWidth={{@maxWidth}}
+      @outsideClickCloses={{@outsideClickCloses}}
+      @initialFocus={{this.initialFocus}}
+      @focusTrapProps={{@focusTrapProps}}
       ...attributes
     >
-
       {{#if (or @title (has-block "title"))}}
         <EuiModalHeader>
-          <EuiModalHeaderTitle>
-            {{@title}}
+          <EuiModalHeaderTitle
+            class={{@titleProps.className}}
+            id={{@titleProps.id}}
+            data-test-subj={{argOrDefault
+              @titleProps.data-test-subj
+              "confirmModalTitleText"
+            }}
+          >
+            {{#if @title}}<h1>{{@title}}</h1>{{/if}}
             {{yield to="title"}}
           </EuiModalHeaderTitle>
         </EuiModalHeader>
@@ -66,29 +160,33 @@ const EuiConfirmModal: TemplateOnlyComponent<EuiConfirmModalSignature> =
 
       {{#if (or @message (has-block))}}
         <EuiModalBody>
-          <EuiText>
-            {{@message}}
+          <EuiText data-test-subj="confirmModalBodyText">
+            {{#if @message}}<p>{{@message}}</p>{{/if}}
             {{yield}}
           </EuiText>
         </EuiModalBody>
       {{/if}}
 
       <EuiModalFooter>
-        <EuiButtonEmpty {{on "click" @onCancel}}>
+        <EuiButtonEmpty
+          data-test-subj="confirmModalCancelButton"
+          {{this.registerCancel}}
+          {{on "click" @onCancel}}
+        >
           {{@cancelButtonText}}
         </EuiButtonEmpty>
         <EuiButton
+          data-test-subj="confirmModalConfirmButton"
           @fill={{true}}
-          @color={{@buttonColor}}
+          @color={{this.buttonColor}}
           @isDisabled={{@confirmButtonDisabled}}
           @isLoading={{@isLoading}}
+          {{this.registerConfirm}}
           {{on "click" @onConfirm}}
         >
           {{@confirmButtonText}}
         </EuiButton>
       </EuiModalFooter>
-
     </EuiModal>
-  </template>;
-
-export default EuiConfirmModal;
+  </template>
+}

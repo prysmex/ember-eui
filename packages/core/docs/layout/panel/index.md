@@ -8,9 +8,9 @@ title: Panel
 
 <EuiText>
 
-`EuiPanel` is a box for grouping content: a white background, padding, a
-rounded border and a shadow by default. Other components (cards,
-popovers, page sections) are built on it.
+`EuiPanel` is a building block for containing content: a background,
+padding and a rounded border by default (flat, no shadow). Other
+components (cards, popovers, page sections) are built on it.
 
 ```hbs
 <EuiPanel @paddingSize="l" @hasBorder={{true}}>
@@ -20,7 +20,7 @@ popovers, page sections) are built on it.
 ```
 
 - `@paddingSize`: `none`, `s`, `m` (default) or `l`.
-- `@hasShadow` (on by default) and `@hasBorder` for plain panels.
+- `@hasBorder` (on by default) and `@hasShadow` (off by default) for plain panels.
 - `@color` for a shaded or colored background (`subdued`, `primary`,
   `success`, `warning`, `danger`, `accent`, `transparent`).
 - `@onClick` makes the whole panel clickable.
@@ -48,10 +48,12 @@ A box grouping content, with background, padding, border and shadow options.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@hasShadow` | `boolean` | `true` | Adds a box shadow (plain panels only). |
-| `@hasBorder` | `boolean` |  | Adds a border (plain and transparent panels only). |
-| `@paddingSize` |  | `'m'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
-| `@borderRadius` |  | `'m'` | `'none'` or `'m'`. |
+| `@element` | `'div' \| 'button'` |  | Tag of a panel with `@onClick`. `'div'` (default) renders a `<div role="button" tabindex="0">` that also reacts to Enter and Space; `'button'` renders a native `<button type="button">` like upstream (upstream's own default, kept as `'div'` here so existing panels keep their markup). Ignored without `@onClick`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+| `@hasShadow` | `boolean` | `false` | Adds a box shadow (plain panels without a border only). |
+| `@hasBorder` | `boolean` | `true` | Adds a border (plain and transparent panels only). |
+| `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@borderRadius` | `'none' \| 'm'` | `'m'` | `'none'` or `'m'`. |
 | `@color` |  | `'plain'` | Background: `'plain'`, `'transparent'`, `'subdued'`, `'accent'`, `'primary'`, `'success'`, `'warning'` or `'danger'`. |
 | `@grow` | `boolean` | `true` | Grows to fill a flex parent's height. |
 | `@onClick` | `(e: MouseEvent) => void` |  | Makes the whole panel clickable (hover styles, `role="button"`, focusable, Enter and Space activate it). |
@@ -70,13 +72,14 @@ A panel split into sections (`EuiSplitPanelInner`) with different colors or padd
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@direction` | `'column' \| 'row'` | `'column'` | `'column'` stacks the sections, `'row'` puts them side by side. |
-| `@responsive` | `Named['sizes']` | `['xs', 's']`; pass `false` to never stack | Screen sizes on which a `'row'` split panel stacks its sections. |
+| `@responsive` | `EuiBreakpointSize[] \| false` | `['xs', 's']`; pass `false` to never stack | Screen sizes on which a `'row'` split panel stacks its sections. |
 | `@grow` | `boolean` | `false` | Grows to fill a flex parent. |
 | `@paddingSize` |  | `'none'` | Padding of the outer panel. |
-| `@hasShadow` |  |  | Adds a shadow. |
-| `@color` |  |  | Background, any `EuiPanel` color. |
-| `@borderRadius` |  |  | Border radius. |
-| `@hasBorder` |  |  | Adds a border. |
+| `@hasShadow` |  | `false` | Adds a shadow (only without a border). |
+| `@color` |  | `'plain'` | Background, any `EuiPanel` color. |
+| `@borderRadius` |  | `'m'` | Border radius. |
+| `@hasBorder` |  | `true` (EuiPanel's default) | Adds a border. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the panel's class (like upstream's `css` prop). |
 
 | Block | Description |
 | --- | --- |
@@ -92,7 +95,9 @@ One section of an EuiSplitPanelOuter, e.g. a header or footer with its own color
 | `@color` |  | `'transparent'` | Background, any `EuiPanel` color. |
 | `@borderRadius` |  | `'none'` | Border radius. |
 | `@hasBorder` |  | `false` | Adds a border. |
-| `@paddingSize` |  |  | Padding, any `EuiPanel` padding size. |
+| `@paddingSize` |  | `'m'` | Padding, any `EuiPanel` padding size. |
+| `@grow` |  | `true` | Grows to share the outer panel's space. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the panel's class (like upstream's `css` prop). |
 
 | Block | Description |
 | --- | --- |

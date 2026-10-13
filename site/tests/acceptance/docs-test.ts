@@ -18,12 +18,16 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.euiSideNav').exists();
     assert
       .dom('.euiSideNavItem')
-      .exists({ count: 98 }, 'every docs section is listed');
+      .exists({ count: 125 }, 'every docs section is listed');
   });
 
   test('every docs page renders with its demos', async function (assert) {
     const docfy = this.owner.lookup('service:docfy') as DocfyService;
     const pages = docfy.flat.filter((page) => !page.frontmatter['disabled']);
+
+    // every page loads its own bundle: ~80s for the catalog on an idle ARM
+    // sandbox, over twice that under load
+    assert.timeout(300_000);
 
     for (const page of pages) {
       await visit(page.url);
@@ -39,7 +43,7 @@ module('Acceptance | docs', function (hooks) {
   test('tables scroll on their own, so narrow screens keep the page width', async function (assert) {
     await visit('/docs/core/docs/forms/combo-box');
 
-    const tables = [...document.querySelectorAll('.euiPageBody table')];
+    const tables = [...document.querySelectorAll('.pageBody table')];
 
     assert.ok(tables.length > 0, 'the API reference has tables');
     assert.deepEqual(
@@ -55,7 +59,7 @@ module('Acceptance | docs', function (hooks) {
     await visit('/docs/core/docs/display/card');
 
     assert.dom('.euiPageHeader').containsText('Card');
-    assert.dom('.docfy-demo .docfy-demo__example').exists({ count: 9 });
+    assert.dom('.docfy-demo .docfy-demo__example').exists({ count: 10 });
     assert.dom('.docfy-demo__snippet').doesNotExist('code is collapsed');
 
     await click('.docfy-demo__snippets__tabs__button');
@@ -64,7 +68,7 @@ module('Acceptance | docs', function (hooks) {
     assert.dom('.docfy-demo .euiCodeBlock').exists();
   });
 
-  test('demo template and component tabs start with source code', async function (assert) {
+  test('a gjs demo tab starts with source code', async function (assert) {
     await visit('/docs/core/docs/navigation/tabs');
 
     const demo = document.querySelector('.docfy-demo')!;
@@ -72,16 +76,15 @@ module('Acceptance | docs', function (hooks) {
       '.docfy-demo__snippets__tabs__button',
     );
 
-    for (const [index, prefix] of ['<EuiTabs>', 'import Component'].entries()) {
-      await click(buttons[index]!);
-      await waitUntil(() => demo.querySelector('.docfy-demo__snippet .token'));
+    assert.strictEqual(buttons.length, 1, 'one gjs tab per demo');
+    await click(buttons[0]!);
+    await waitUntil(() => demo.querySelector('.docfy-demo__snippet .token'));
 
-      const source = demo.querySelector('.docfy-demo__snippet')!.textContent;
-      assert.true(
-        source?.startsWith(prefix),
-        'no Copy label or leading blank lines',
-      );
-    }
+    const source = demo.querySelector('.docfy-demo__snippet')!.textContent;
+    assert.true(
+      source?.startsWith('import '),
+      'no Copy label or leading blank lines',
+    );
   });
 
   test('prose components are auto-imported into strict page templates', async function (assert) {
@@ -121,7 +124,7 @@ module('Acceptance | docs', function (hooks) {
       assert.strictEqual(fields.get('project[template]'), 'node');
       assert.true(
         (
-          fields.get('project[files][app/components/demo.hbs]') as string
+          fields.get('project[files][app/components/demo.gjs]') as string
         ).includes('<EuiCard'),
         'the selected card demo is included',
       );
@@ -141,10 +144,18 @@ module('Acceptance | docs', function (hooks) {
     }
   });
 
-  test('switching theme swaps the EUI stylesheet', async function (assert) {
+  test('switching theme changes the root Borealis mode; no legacy stylesheet', async function (assert) {
     await visit('/docs/introduction');
 
-    assert.strictEqual(themeLink()?.dataset['theme'], 'light');
+    assert.strictEqual(themeLink(), null, 'no legacy theme stylesheet');
+    const background = () =>
+      getComputedStyle(document.documentElement).backgroundColor;
+    const lightBackground = background();
+    assert.strictEqual(
+      getComputedStyle(document.documentElement).fontSize,
+      '14px',
+      'upstream root font size from the global styles',
+    );
 
     await click('.euiHeader .euiButton');
     await waitUntil(() => document.querySelector('.euiContextMenuItem'));
@@ -154,11 +165,9 @@ module('Acceptance | docs', function (hooks) {
 
     await click(dark);
 
-    assert.strictEqual(themeLink()?.dataset['theme'], 'dark');
-    assert.true(
-      themeLink()!.href.includes('eui_theme_dark'),
-      'dark stylesheet',
-    );
+    assert.notStrictEqual(background(), lightBackground, 'dark body color');
+    assert.strictEqual(window.localStorage.getItem('theme'), 'dark');
+    window.localStorage.removeItem('theme');
   });
 
   test("the changelog renders core's CHANGELOG.md", async function (assert) {

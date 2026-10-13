@@ -1,20 +1,34 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { concat, hash } from '@ember/helper';
+import { cached, tracked } from '@glimmer/tracking';
+import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { cancel, later, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 
-import set from 'ember-set-helper/helpers/set';
-import { not } from 'ember-truth-helpers';
+import { modifier } from 'ember-modifier';
 
-import classNames from '../../../helpers/class-names.ts';
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { buttonReset } from '../../../utils/eui/form-controls.ts';
+import { euiDatePopoverButtonStyles } from '../../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiPopover from '../../eui-popover.gts';
+import EuiToolTip from '../../eui-tool-tip.gts';
 import { useFormatTimeString } from '../utils/index.ts';
 import { useI18nTimeOptions } from '../utils/time-options.ts';
 import EuiDatePopoverContent from './eui-date-popover-content.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
+import type { EuiCss } from '../../../utils/eui/styles.ts';
+import type { CommonArgs } from '../../common.ts';
 import type { EuiDatePopoverContentSignature } from './eui-date-popover-content';
+import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
+import type { Moment } from 'moment';
+
+/** Supported keys of `@buttonProps`. */
+export type EuiDatePopoverButtonProps = CommonArgs & {
+  css?: EuiCss;
+  onFocus?: (event: FocusEvent) => void;
+};
 
 interface EuiDatePopoverButtonArgs {
   /** Extra class(es). */
@@ -25,8 +39,19 @@ interface EuiDatePopoverButtonArgs {
   isDisabled?: boolean;
   /** Invalid styling. */
   isInvalid?: boolean;
-  /** Whether the popover is open. */
+  /**
+   * Whether the popover is open, when the parent controls it (with
+   * `@onPopoverToggle`).
+   */
   isOpen?: boolean;
+  /**
+   * Called when the button is clicked. Passing it makes the popover
+   * controlled: `@isOpen` decides whether it is open (upstream
+   * `onPopoverToggle`).
+   */
+  onPopoverToggle?: () => void;
+  /** Called when the controlled popover asks to close (upstream `onPopoverClose`). */
+  onPopoverClose?: () => void;
   /** Highlights that it changed and needs applying. */
   needsUpdating?: boolean;
   /** moment locale. */
@@ -47,7 +72,32 @@ interface EuiDatePopoverButtonArgs {
   timeOptions?: EuiDatePopoverContentSignature['Args']['timeOptions'];
   /** Called with the new value. */
   onChange: EuiDatePopoverContentSignature['Args']['onChange'];
+  /** Earliest selectable day of the absolute tab's calendar. */
+  minDate?: Moment;
+  /** Latest selectable day of the absolute tab's calendar. */
+  maxDate?: Moment;
+  /** `false` keeps relative units as typed. Defaults to `true`. */
+  canRoundRelativeUnits?: boolean;
+  /** Shows the time zone in the absolute and relative tabs. */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
+  /** Called when the button gets focus (upstream `buttonProps.onFocus`). */
+  onFocus?: (event: FocusEvent) => void;
+  /**
+   * Extra props for the `<button>` (upstream `buttonProps`): `className`
+   * (added to its classes), `css` (composed last into its class), `id`,
+   * `aria-label`, `data-test-subj` (replaces the default) and `onFocus`
+   * (called with `@onFocus`).
+   */
+  buttonProps?: EuiDatePopoverButtonProps;
+  /**
+   * Extra styles for the popover root (upstream passes the super date
+   * picker's range input styles this way).
+   */
+  css?: EuiCss;
 }
+
+/** Upstream EuiPopover's `closingTransitionTime`. */
+const CLOSING_TRANSITION_TIME = 250;
 
 /** @private The start or end date button of EuiSuperDatePicker. */
 export interface EuiDatePopoverButtonSignature {
@@ -67,7 +117,80 @@ export interface EuiDatePopoverButtonSignature {
 
 export default class EuiDatePopoverButton extends Component<EuiDatePopoverButtonSignature> {
   @service declare euiI18n: EuiI18n;
-  @tracked isOpen = false;
+  @tracked private uncontrolledIsOpen = false;
+
+  /** Controlled by the parent when it passes `@onPopoverToggle`. */
+  get isOpen(): boolean {
+    return this.args.onPopoverToggle
+      ? Boolean(this.args.isOpen)
+      : this.uncontrolledIsOpen;
+  }
+
+  toggle = () => {
+    if (this.args.onPopoverToggle) {
+      this.args.onPopoverToggle();
+    } else {
+      this.uncontrolledIsOpen = !this.uncontrolledIsOpen;
+    }
+  };
+
+  open = () => {
+    if (!this.isOpen) this.toggle();
+  };
+
+  close = () => {
+    if (this.args.onPopoverToggle) {
+      this.args.onPopoverClose?.();
+    } else {
+      this.uncontrolledIsOpen = false;
+    }
+  };
+
+  private wasOpen = false;
+  private panelId: string | null = null;
+  private strandedFocusTimer?: ReturnType<typeof later>;
+
+  /**
+   * Upstream EuiPopover's `handleStrandedFocus`: once the popover closed, if
+   * the focus could not return (it is left on the body, or in the closing
+   * panel), move it to this button. E.g. the super date picker opens the
+   * start popover on mount from its pretty duration button, which is gone.
+   */
+  returnStrandedFocus = modifier((element: HTMLElement, [isOpen]: [boolean]) => {
+    const wasOpen = this.wasOpen;
+    this.wasOpen = isOpen;
+
+    if (isOpen) {
+      // EuiPopover links the panel once it opens
+      schedule('afterRender', () => {
+        this.panelId = element.getAttribute('aria-controls') ?? this.panelId;
+      });
+      return;
+    }
+
+    if (!wasOpen) return;
+
+    const panelId = element.getAttribute('aria-controls') ?? this.panelId;
+    cancel(this.strandedFocusTimer);
+    this.strandedFocusTimer = later(() => {
+      const active = document.activeElement;
+      const panel = panelId ? document.getElementById(panelId) : null;
+
+      if (
+        !active ||
+        active === document.body ||
+        !active.isConnected ||
+        panel?.contains(active)
+      ) {
+        element.focus({ preventScroll: true });
+      }
+    }, CLOSING_TRANSITION_TIME);
+  });
+
+  willDestroy() {
+    super.willDestroy();
+    cancel(this.strandedFocusTimer);
+  }
 
   get dateFormat() {
     //date with seconds and such
@@ -83,7 +206,20 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
       this.dateFormat,
       roundUp,
       locale,
-      this.euiI18n
+      this.euiI18n,
+      this.args.canRoundRelativeUnits ?? true
+    );
+  }
+
+  onFocus = (event: FocusEvent) => {
+    this.args.buttonProps?.onFocus?.(event);
+    this.args.onFocus?.(event);
+  };
+
+  get testSubj(): string {
+    return (
+      this.args.buttonProps?.['data-test-subj'] ??
+      `superDatePicker${this.position}DatePopoverButton`
     );
   }
 
@@ -99,65 +235,150 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
     return this.args.position ?? 'start';
   }
 
-  <template>
-    {{#let
-      (classNames
-        "euiDatePopoverButton"
-        (concat "euiDatePopoverButton--" @position)
-        (if @compressed "euiDatePopoverButton--compressed")
-        (if this.isOpen "euiDatePopoverButton-isSelected")
-        (if @isInvalid "euiDatePopoverButton-isInvalid")
-        (if @needsUpdating "euiDatePopoverButton-needsUpdating")
-        (if @isDisabled "euiDatePopoverButton-disabled")
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  @cached
+  get styles() {
+    return useEuiBorealisStyles(this.context, euiDatePopoverButtonStyles);
+  }
+
+  /** Upstream state classes plus the button styles. */
+  @cached
+  get classes() {
+    const context = this.context;
+    return [
+      'euiDatePopoverButton',
+      `euiDatePopoverButton--${this.position}`,
+      this.args.compressed && 'euiDatePopoverButton--compressed',
+      this.isOpen && 'euiDatePopoverButton-isSelected',
+      this.args.isInvalid && 'euiDatePopoverButton-isInvalid',
+      this.args.needsUpdating && 'euiDatePopoverButton-needsUpdating',
+      this.args.isDisabled && 'euiDatePopoverButton-disabled',
+      this.args.className,
+      this.args.buttonProps?.className,
+      euiClass(
+        context,
+        buttonReset,
+        {
+          fontFamily: context.upstream.euiTheme.font.family
+        },
+        this.styles.euiDatePopoverButton,
+        this.args.buttonProps?.css
       )
-      as |classes|
-    }}
-      <EuiPopover
-        @isOpen={{this.isOpen}}
-        @closePopover={{set this "isOpen" false}}
-        @anchorPosition={{this.anchorPosition}}
-        @panelPaddingSize="none"
-        @display="block"
-      >
-        <:button>
-          {{#if (has-block "button")}}
-            {{yield
-              (hash
-                classes=classes
-                formattedValue=this.formattedValue
-                open=(set this "isOpen" true)
-                close=(set this "isOpen" false)
-              )
-              to="button"
-            }}
-          {{else}}
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  /** Popover root: the caller's styles, and a narrower "now" (upstream). */
+  @cached
+  get rootCss() {
+    return [this.args.css, this.args.value === 'now' && this.styles.now];
+  }
+
+  /** Upstream's tooltip anchor fills the range cell; so does our anchor. */
+  @cached
+  get anchorClass() {
+    return euiClass(this.context, this.styles.tooltipAnchor);
+  }
+
+  /**
+   * Upstream: the tooltip repeats the date, so screen readers only get it
+   * when it adds something (invalid or needs updating).
+   */
+  get hidesTitleFromScreenReaders() {
+    return !this.args.isInvalid && !this.args.needsUpdating;
+  }
+
+  /** Upstream tooltip: the date, or why it is invalid / needs updating. */
+  get title() {
+    const title = this.formattedValue;
+
+    if (this.args.isInvalid) {
+      return this.euiI18n.lookupToken(
+        'euiDatePopoverButton.invalidTitle',
+        'Invalid date: {title}',
+        { title }
+      );
+    }
+
+    if (this.args.needsUpdating) {
+      return this.euiI18n.lookupToken(
+        'euiDatePopoverButton.outdatedTitle',
+        'Update needed: {title}',
+        { title }
+      );
+    }
+
+    return title;
+  }
+
+  <template>
+    <EuiPopover
+      @isOpen={{this.isOpen}}
+      @closePopover={{this.close}}
+      @anchorPosition={{this.anchorPosition}}
+      @anchorClassName={{this.anchorClass}}
+      @panelPaddingSize="none"
+      @display="block"
+      @rootCss={{this.rootCss}}
+    >
+      <:button>
+        {{#if (has-block "button")}}
+          {{yield
+            (hash
+              classes=this.classes
+              formattedValue=this.formattedValue
+              open=this.open
+              close=this.close
+            )
+            to="button"
+          }}
+        {{else}}
+          {{! Upstream wraps the button in a tooltip showing its title. }}
+          <EuiToolTip
+            @content={{this.title}}
+            @display="block"
+            @disableScreenReaderOutput={{this.hidesTitleFromScreenReaders}}
+            @anchorCss={{this.styles.tooltipAnchor}}
+          >
             <button
               type="button"
-              class={{classes}}
-              title={{this.formattedValue}}
+              class={{this.classes}}
               disabled={{@isDisabled}}
+              id={{@buttonProps.id}}
+              aria-label={{@buttonProps.aria-label}}
+              data-test-subj={{this.testSubj}}
               ...attributes
-              {{on "click" (set this "isOpen" (not this.isOpen))}}
+              {{on "click" this.toggle}}
+              {{on "focus" this.onFocus}}
+              {{this.returnStrandedFocus this.isOpen}}
             >
               {{this.formattedValue}}
             </button>
-          {{/if}}
-        </:button>
+          </EuiToolTip>
+        {{/if}}
+      </:button>
 
-        <:content>
-          <EuiDatePopoverContent
-            @position={{this.position}}
-            @value={{@value}}
-            @roundUp={{@roundUp}}
-            @dateFormat={{this.dateFormat}}
-            @timeFormat={{@timeFormat}}
-            @locale={{@locale}}
-            @utcOffset={{@utcOffset}}
-            @timeOptions={{this.timeOptions}}
-            @onChange={{@onChange}}
-          />
-        </:content>
-      </EuiPopover>
-    {{/let}}
+      <:content>
+        <EuiDatePopoverContent
+          @position={{this.position}}
+          @value={{@value}}
+          @roundUp={{@roundUp}}
+          @dateFormat={{this.dateFormat}}
+          @timeFormat={{@timeFormat}}
+          @locale={{@locale}}
+          @utcOffset={{@utcOffset}}
+          @timeOptions={{this.timeOptions}}
+          @onChange={{@onChange}}
+          @minDate={{@minDate}}
+          @maxDate={{@maxDate}}
+          @canRoundRelativeUnits={{@canRoundRelativeUnits}}
+          @timeZoneDisplayProps={{@timeZoneDisplayProps}}
+        />
+      </:content>
+    </EuiPopover>
   </template>
 }

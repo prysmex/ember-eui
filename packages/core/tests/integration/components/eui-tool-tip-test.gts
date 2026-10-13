@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { tracked } from '@glimmer/tracking';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, triggerEvent, waitUntil } from '@ember/test-helpers';
+import { render, settled, triggerEvent, waitUntil } from '@ember/test-helpers';
 
 import EuiIconTip from '#src/components/eui-icon-tip.gts';
 import EuiToolTip from '#src/components/eui-tool-tip.gts';
@@ -81,5 +81,90 @@ module('Integration | Component | eui-tool-tip', function (hooks) {
     await triggerEvent('.euiToolTipAnchor', 'mouseover');
     await waitUntil(tooltip);
     assert.dom('.euiToolTip', document.body).containsText('Info text');
+  });
+
+  module('@repositionOnScroll', function () {
+    const scrollAndMeasure = async (
+      reposition: boolean | undefined
+    ): Promise<[string, string]> => {
+      await render(
+        <template>
+          <div
+            id="scroller"
+            style="height: 200px; overflow: auto; margin-top: 150px;"
+          >
+            <div style="height: 600px; padding-top: 60px;">
+              <EuiToolTip @content="Scrolled" @repositionOnScroll={{reposition}}>
+                <button type="button" class="anchor">Anchor</button>
+              </EuiToolTip>
+            </div>
+          </div>
+        </template>
+      );
+
+      await triggerEvent('.euiToolTipAnchor', 'mouseover');
+      await waitUntil(tooltip);
+      const el = tooltip() as HTMLElement;
+      await waitUntil(() => el.style.top !== '' && el.style.top !== '-999px');
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      const before = el.style.top;
+
+      const scroller = document.querySelector('#scroller') as HTMLElement;
+      scroller.scrollTop = 30;
+      scroller.dispatchEvent(new Event('scroll'));
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      return [before, (tooltip() as HTMLElement).style.top];
+    };
+
+    test('repositions on scroll when true', async function (assert) {
+      const [before, after] = await scrollAndMeasure(true);
+      assert.notStrictEqual(after, before, 'the tooltip followed the anchor');
+    });
+
+    test('does not reposition on scroll by default or when false', async function (assert) {
+      const [before, after] = await scrollAndMeasure(undefined);
+      assert.strictEqual(after, before, 'default: not repositioned');
+    });
+
+    test('toggling the arg adds and removes the listener', async function (assert) {
+      class State {
+        @tracked reposition = false;
+      }
+      const state = new State();
+      await render(
+        <template>
+          <div id="scroller" style="height: 200px; overflow: auto; margin-top: 150px;">
+            <div style="height: 600px; padding-top: 60px;">
+              <EuiToolTip @content="Toggle" @repositionOnScroll={{state.reposition}}>
+                <button type="button">Anchor</button>
+              </EuiToolTip>
+            </div>
+          </div>
+        </template>
+      );
+      await triggerEvent('.euiToolTipAnchor', 'mouseover');
+      await waitUntil(tooltip);
+      const el = tooltip() as HTMLElement;
+      await waitUntil(() => el.style.top !== '' && el.style.top !== '-999px');
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      const scroller = document.querySelector('#scroller') as HTMLElement;
+
+      state.reposition = true;
+      await settled();
+      const start = el.style.top;
+      scroller.scrollTop = 30;
+      scroller.dispatchEvent(new Event('scroll'));
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const moved = el.style.top;
+      assert.notStrictEqual(moved, start, 'repositions once enabled');
+
+      state.reposition = false;
+      await settled();
+      scroller.scrollTop = 60;
+      scroller.dispatchEvent(new Event('scroll'));
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      assert.strictEqual(el.style.top, moved, 'stops once disabled');
+    });
   });
 });

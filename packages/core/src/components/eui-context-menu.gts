@@ -1,27 +1,63 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { fn, get, hash } from '@ember/helper';
-import { on } from '@ember/modifier';
+import { cached, tracked } from '@glimmer/tracking';
+import { hash } from '@ember/helper';
 import { action } from '@ember/object';
 
 import cssStyle from '../-private/css-style.ts';
-import EuiContextMenuItem from './eui-context-menu-item.gts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiContextMenuStyles } from '../utils/eui/styles.generated.ts';
+import EuiContextMenuEntry from '../-private/eui-context-menu-entry.gts';
 import EuiContextMenuPanel from './eui-context-menu-panel.gts';
-import EuiHorizontalRule from './eui-horizontal-rule.gts';
 
 import type { EuiContextMenuItemSignature } from './eui-context-menu-item';
+import type { EuiHorizontalRuleSignature } from './eui-horizontal-rule';
+import type { ComponentLike } from '@glint/template';
 import type Owner from '@ember/owner';
 
 type PanelId = string | number;
 
+/** What `@onPanelChange` receives. */
+export interface EuiContextMenuPanelChange {
+  /** Id of the panel now shown. */
+  panelId: PanelId;
+  /** `'next'` (opened from an item) or `'previous'` (back). */
+  direction?: Direction;
+}
+
 /** One entry of a panel: an item, or a separator (`{ isSeparator: true }`). */
 export type EuiContextMenuPanelItem =
-  | { isSeparator: true; key?: string }
+  | {
+      /**
+       * A separator line. Takes the `EuiHorizontalRule` args (`margin`,
+       * `size`, `css`; `margin` defaults to `'xs'`), `className` and any
+       * other key as an attribute.
+       */
+      isSeparator: true;
+      key?: string;
+      margin?: EuiHorizontalRuleSignature['Args']['margin'];
+      size?: EuiHorizontalRuleSignature['Args']['size'];
+      css?: EuiHorizontalRuleSignature['Args']['css'];
+      className?: string;
+      [attribute: string]: unknown;
+    }
+  | {
+      /**
+       * Any custom content between the items: a component rendered as is
+       * (upstream's `renderItem` function).
+       */
+      renderItem: ComponentLike<any>;
+      key?: string;
+      isSeparator?: false;
+    }
   | {
       isSeparator?: false;
       /** The item's text. */
       name: string;
-      /** Icon before the text, any `EuiIcon` type. */
+      /**
+       * Icon before the text: any `EuiIcon` type, or a component rendered
+       * as the icon (e.g. an `EuiIcon` curried with a color and size).
+       */
       icon?: EuiContextMenuItemSignature['Args']['icon'];
       /** Id of the panel this item opens (it gets an arrow). */
       panel?: PanelId;
@@ -31,12 +67,34 @@ export type EuiContextMenuPanelItem =
       href?: string;
       /** `target` of the link. */
       target?: string;
+      /** `rel` of the link. */
+      rel?: string;
+      /**
+       * Shows the external link icon; defaults to `true` for
+       * `target: '_blank'`.
+       */
+      external?: boolean;
       /** Disables the item. */
       disabled?: boolean;
+      /** Keeps a disabled item focusable (`aria-disabled`), e.g. for its tooltip. */
+      hasAriaDisabled?: boolean;
       /** Aligns the icon with the `'center'` or the `'top'` of the text. */
       layoutAlign?: EuiContextMenuItemSignature['Args']['layoutAlign'];
+      /** Color of the item: `'text'` (default) or e.g. `'danger'`. */
+      color?: string;
+      /** Tooltip shown on the right of the item. */
+      toolTipContent?: string;
+      /** Title of the item's tooltip. */
+      toolTipTitle?: string;
+      /** More `EuiToolTip` args for the tooltip, see `EuiContextMenuItem`. */
+      toolTipProps?: EuiContextMenuItemSignature['Args']['toolTipProps'];
       /** `data-test-subj` of the item, for tests. */
       'data-test-subj'?: string;
+      /**
+       * Other keys (`aria-current`, `id`, `data-*`, …) become attributes of
+       * the item, as upstream spreads them.
+       */
+      [attribute: string]: unknown;
     };
 
 export interface EuiContextMenuPanelDescriptor {
@@ -68,8 +126,19 @@ export interface EuiContextMenuSignature {
     panels: EuiContextMenuPanelDescriptor[];
     /** Id of the panel shown first. */
     initialPanelId: PanelId;
-    /** `'s'` for smaller items and titles. Defaults to `'m'`. */
+    /** @deprecated Has no effect: latest EUI has a single item size. */
     size?: 's' | 'm';
+    /**
+     * Fixes the menu's height (a number of px or any CSS height) instead of
+     * fitting the panel; the items of a panel then scroll. Defaults to the
+     * height of the shown panel.
+     */
+    height?: number | string;
+    /**
+     * Called when another panel is shown (an item opened it, or the back
+     * button or arrow left returned to it) with `{ panelId, direction }`.
+     */
+    onPanelChange?: (change: EuiContextMenuPanelChange) => void;
   };
   Blocks: {
     /** Content of the panels without `items`; yields the panel. */
@@ -79,15 +148,15 @@ export interface EuiContextMenuSignature {
 
 type Direction = 'next' | 'previous';
 
-function itemSize(size?: 's' | 'm'): 's' | undefined {
-  return size === 's' ? 's' : undefined;
+type PlainItem = Exclude<
+  EuiContextMenuPanelItem,
+  { isSeparator: true } | { renderItem: ComponentLike<any> }
+>;
+
+function isItem(item: EuiContextMenuPanelItem): item is PlainItem {
+  return item.isSeparator !== true && !('renderItem' in item);
 }
 
-function isSeparator(
-  item: EuiContextMenuPanelItem
-): item is { isSeparator: true; key?: string } {
-  return item.isSeparator === true;
-}
 
 export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
   @tracked incomingPanelId: PanelId;
@@ -120,7 +189,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
 
     for (const panel of this.args.panels) {
       for (const item of panel.items ?? []) {
-        if (!isSeparator(item) && item.panel !== undefined) map.set(item.panel, panel.id);
+        if (isItem(item) && item.panel !== undefined) map.set(item.panel, panel.id);
       }
     }
 
@@ -144,12 +213,38 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
     return panel ? [panel] : [];
   }
 
+  /** A fixed `@height` wins over the height of the shown panel. */
+  get menuHeight(): number | string | undefined {
+    return this.args.height ?? this.height;
+  }
+
   get width(): number | string | undefined {
     return this.panelsById.get(this.incomingPanelId)?.width;
   }
 
+  /** Upstream: 256px wide (a panel `width` wins), clipped, animated height. */
+  @cached
   get classes(): string {
-    return this.args.size === 's' ? 'euiContextMenu euiContextMenu--small' : 'euiContextMenu';
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiContextMenuStyles);
+
+    return `euiContextMenu ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiContextMenu,
+      this.args.height !== undefined && styles.fixedHeight
+    )}`;
+  }
+
+  /** Upstream stacks the sliding panels on top of each other. */
+  @cached
+  get panelClasses(): string {
+    const context = getEuiThemeContext(this);
+
+    return `euiContextMenu__panel ${euiClass(context, {
+      position: 'absolute',
+      label: 'euiContextMenu__panel'
+    })}`;
   }
 
   hasPreviousPanel = (panelId: PanelId): boolean => this.previousPanelIds.has(panelId);
@@ -160,6 +255,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
     this.incomingPanelId = panelId;
     this.transitionDirection = direction;
     this.isOutgoingPanelVisible = true;
+    this.args.onPanelChange?.({ panelId, direction });
   }
 
   @action
@@ -167,7 +263,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
     if (itemIndex === undefined) return;
 
     const item = this.panelsById.get(this.incomingPanelId)?.items?.[itemIndex];
-    const nextPanelId = item && !isSeparator(item) ? item.panel : undefined;
+    const nextPanelId = item && isItem(item) ? item.panel : undefined;
 
     if (nextPanelId === undefined) return;
 
@@ -186,7 +282,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
 
     // focus the item that opened the panel we are leaving
     const index = (this.panelsById.get(previousPanelId)?.items ?? []).findIndex(
-      (item) => !isSeparator(item) && item.panel === this.incomingPanelId
+      (item) => isItem(item) && item.panel === this.incomingPanelId
     );
 
     if (index !== -1) this.focusedItemIndex = index;
@@ -196,7 +292,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
 
   @action
   onItemClick(item: EuiContextMenuPanelItem, index: number, event: MouseEvent): void {
-    if (isSeparator(item)) return;
+    if (!isItem(item)) return;
 
     item.onClick?.(event);
 
@@ -224,14 +320,14 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
   <template>
     <div
       class={{this.classes}}
-      style={{cssStyle (hash height=this.height width=this.width)}}
+      style={{cssStyle (hash height=this.menuHeight width=this.width)}}
       ...attributes
     >
       {{#each this.outgoingPanels key="id" as |panel|}}
         <EuiContextMenuPanel
-          class="euiContextMenu__panel"
+          class={{this.panelClasses}}
           @title={{panel.title}}
-          @size={{@size}}
+          @isMenu={{if panel.items true false}}
           @transitionType="out"
           @transitionDirection={{this.transitionDirection}}
           @onTransitionComplete={{this.onOutgoingTransitionComplete}}
@@ -239,20 +335,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
         >
           {{#if panel.items}}
             {{#each panel.items as |item index|}}
-              {{#if item.isSeparator}}
-                <EuiHorizontalRule @margin="none" />
-              {{else}}
-                <EuiContextMenuItem
-                  @icon={{item.icon}}
-                  @hasPanel={{if item.panel true false}}
-                  @href={{item.href}}
-                  @target={{item.target}}
-                  @disabled={{item.disabled}}
-                  @layoutAlign={{item.layoutAlign}}
-                  @size={{itemSize @size}}
-                  {{on "click" (fn this.onItemClick item index)}}
-                >{{item.name}}</EuiContextMenuItem>
-              {{/if}}
+              <EuiContextMenuEntry @item={{item}} @index={{index}} @onItemClick={{this.onItemClick}} />
             {{/each}}
           {{else}}
             {{yield panel to="content"}}
@@ -261,9 +344,9 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
       {{/each}}
       {{#each this.incomingPanels key="id" as |panel|}}
         <EuiContextMenuPanel
-          class="euiContextMenu__panel"
+          class={{this.panelClasses}}
           @title={{panel.title}}
-          @size={{@size}}
+          @isMenu={{if panel.items true false}}
           @onClose={{if
             (this.hasPreviousPanel panel.id)
             this.showPreviousPanel
@@ -282,21 +365,7 @@ export default class EuiContextMenu extends Component<EuiContextMenuSignature> {
         >
           {{#if panel.items}}
             {{#each panel.items as |item index|}}
-              {{#if item.isSeparator}}
-                <EuiHorizontalRule @margin="none" />
-              {{else}}
-                <EuiContextMenuItem
-                  @icon={{item.icon}}
-                  @hasPanel={{if item.panel true false}}
-                  @href={{item.href}}
-                  @target={{item.target}}
-                  @disabled={{item.disabled}}
-                  @layoutAlign={{item.layoutAlign}}
-                  @size={{itemSize @size}}
-                  data-test-subj={{get item "data-test-subj"}}
-                  {{on "click" (fn this.onItemClick item index)}}
-                >{{item.name}}</EuiContextMenuItem>
-              {{/if}}
+              <EuiContextMenuEntry @item={{item}} @index={{index}} @onItemClick={{this.onItemClick}} />
             {{/each}}
           {{else}}
             {{yield panel to="content"}}

@@ -42,9 +42,11 @@ module('Integration | Component | eui-switch', function (hooks) {
   test('@showLabel={{false}} uses the label as aria-label; compressed has no icons', async function (assert) {
     await render(<template><EuiSwitch @label="Hidden" @showLabel={{false}} @checked={{true}} @compressed={{true}} /></template>);
 
-    assert.dom('.euiSwitch').hasClass('euiSwitch--compressed');
+    // Compressed is measured in eui-checkables-test (16px tall); upstream
+    // renders no check/cross icons container for it.
+    assert.dom('.euiSwitch').doesNotHaveClass('euiSwitch--compressed');
     assert.dom('button').hasAttribute('aria-label', 'Hidden').doesNotHaveAttribute('aria-labelledby');
     assert.dom('.euiSwitch__label').doesNotExist();
-    assert.dom('.euiSwitch__icon').doesNotExist();
+    assert.dom('.euiSwitch__icons').doesNotExist();
   });
 });

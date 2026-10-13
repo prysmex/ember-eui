@@ -17,7 +17,9 @@ import { fileURLToPath } from 'node:url';
 
 const ADDONS = [
   // {{on-key}} looks up `service:keyboard`
-  'ember-keyboard'
+  'ember-keyboard',
+  // Context lookup installs its Glimmer hooks through an app initializer.
+  'ember-provide-consume-context'
 ];
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -32,10 +34,14 @@ for (const addon of ADDONS) {
 
   for (const [appPath, file] of Object.entries(pkg['ember-addon']['app-js'])) {
     const source = readFileSync(join(pkgDir, file), 'utf8');
-    const match = source.match(/export\s*\{\s*default\s*\}\s*from\s*["']([^"']+)["']/);
+    const match = source.match(
+      /export\s*\{\s*default\s*\}\s*from\s*["']([^"']+)["']/
+    );
 
     if (!match) {
-      throw new Error(`Unexpected app-js re-export in ${addon}/${file}:\n${source}`);
+      throw new Error(
+        `Unexpected app-js re-export in ${addon}/${file}:\n${source}`
+      );
     }
 
     const name = `m${imports.length}`;

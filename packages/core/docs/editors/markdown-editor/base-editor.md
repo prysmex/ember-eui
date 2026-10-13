@@ -8,9 +8,7 @@ title: Base editor
 
 <EuiText>
 
-`EuiMarkdownEditor` is a markdown textarea with a formatting toolbar, a
-preview tab and interactive task lists; `EuiMarkdownFormat` renders
-markdown with EUI's styles (use it to show saved markdown).
+**EuiMarkdownEditor** provides a markdown authoring experience for the user. The component consists of a toolbar, text area, and a drag-and-drop zone to accept files (if configured to do so). There are two modes: a textarea that keeps track of cursor position, and a rendered preview mode that is powered by `EuiMarkdownFormat`. State is maintained between the two and it is possible to pass changes from the preview area to the textarea and vice versa.
 
 ```hbs
 <EuiMarkdownEditor
@@ -27,16 +25,30 @@ markdown with EUI's styles (use it to show saved markdown).
 GitHub-style markdown plus emoji (`:tada:`), task lists (`- [ ] todo`,
 clickable in the preview) and tooltips (`!{tooltip[text](tooltip)}`).
 
+The Ember EUI docs for the editor, `EuiMarkdownFormat` and the plugins
+live on this page: the examples follow upstream's Editor, Format and
+Plugins pages, followed by Ember EUI extras.
+
 ### Plugins
 
-The editor and the renderer share a pipeline you can extend:
+**EuiMarkdownEditor** and **EuiMarkdownFormat** use the same plugin
+architecture to transform string based syntax into components. Unified JS
+and Remark provide the markdown components, separated into a **parsing**
+and a **processing** layer, and you provide **UI** to the editor to handle
+interactions. In addition to running the full pipeline, the editor uses
+just the parsing configuration to determine the input's validity, provide
+messages back to the application and allow the toolbar buttons to interact
+with existing markdown tags.
 
 | Kind | Arg | Does |
 | --- | --- | --- |
-| UI plugins | `@uiPlugins` | Add toolbar buttons that insert or wrap markdown. |
+| UI plugins | `@uiPlugins` | Toolbar buttons that insert or wrap markdown (defaults to the tooltip button; your list replaces it). |
 | Parsing plugins | `@parsingPluginList` | [remark](https://github.com/remarkjs/remark) plugins that understand new syntax. |
 | Processing plugins | `@processingPluginList` | Plugins that turn the parsed tree into the rendered output, e.g. adding attributes. |
 
+The defaults are remark-parse, code block pre-processing, emoji, line
+breaks, link validation, task list checkboxes and tooltips for parsing; remark-rehype and
+the component renderer for processing; and the tooltip button for the UI.
 Start from the defaults and add yours:
 
 ```js
@@ -50,6 +62,12 @@ const processingPlugins = [...getDefaultEuiMarkdownProcessingPlugins(), [myProce
 ```
 
 Pass the same lists to `EuiMarkdownFormat` where you render the result.
+`getDefaultEuiMarkdownPlugins({ exclude: ['tooltip'] })` returns all three
+lists at once with default plugins unregistered (`'tooltip'`, `'checkbox'`,
+`'emoji'`, `'linkValidator'` and `'lineBreaks'`), and its `parsingConfig`
+overrides the options of the emoji and link validator plugins. `@uiPlugins`
+is the whole list of UI plugins, as upstream: to add yours, spread
+`getDefaultEuiMarkdownUiPlugins()` first.
 
 </EuiText>
 
@@ -74,7 +92,7 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 | --- | --- | --- | --- |
 | `@initialViewMode` | `string` | `'editing'` | Starts in `'editing'` (textarea) or `'viewing'` (preview) mode. |
 | `@editorId` | `string` | a generated id | Id of the editor. |
-| `@uiPlugins` (required) | `EuiMarkdownEditorUiPlugin[]` |  | Toolbar plugins added after the built-in ones (bold, lists, …), e.g. a button inserting a chart. See the markdown editor docs page. |
+| `@uiPlugins` | `EuiMarkdownEditorUiPlugin[]` | `getDefaultEuiMarkdownUiPlugins()` (the tooltip plugin): as upstream, the list you pass replaces the defaults, so add yours to that list (`[...getDefaultEuiMarkdownUiPlugins(), myPlugin]`) to keep them | The UI plugins of the toolbar (a button per plugin after the built-in bold, lists, … buttons) and of the syntax help. |
 | `@parsingPluginList` |  | `getDefaultEuiMarkdownParsingPlugins()`; extend that list to add syntax | remark plugins parsing the markdown. |
 | `@processingPluginList` |  | `getDefaultEuiMarkdownProcessingPlugins()`; extend it to render custom nodes with your components | Plugins turning the parsed markdown into the preview. |
 | `@value` (required) | `string` |  | The markdown text. Update it in `@onChange`. |
@@ -84,29 +102,44 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 | `@maxHeight` | `number \| string` | `500` | Maximum height in px when the textarea grows. |
 | `@autoExpandPreview` | `boolean` | `true` | Grows the preview to fit its content. |
 | `@disabled` | `boolean` |  | Disables the textarea. |
-| `@isInvalid` | `boolean` |  | Marks the textarea invalid for native form validation. |
+| `@isInvalid` | `boolean` |  | Marks the textarea invalid: native validity, `aria-invalid` and the danger state styling. |
+| `@readOnly` | `boolean` |  | Read-only: the textarea is `readonly`, toolbar/footer buttons are disabled, file drops are ignored and preview checkboxes do not toggle. |
+| `@errors` | `EuiMarkdownParseError[]` |  | Errors listed in the footer's error popover (e.g. from `@onParse` messages). Any error also gives the textarea the danger state. |
+| `@dropHandlers` | `EuiMarkdownDropHandler[]` | none | Handlers turning dropped or picked files into markdown: `{ supportedFiles, accepts(type), getFormattingForItem(file) }`. Any handler adds the footer's upload button. |
+| `@showFooter` | `boolean` | `true` | Renders the footer (upload, errors and syntax help). |
+| `@toolbarProps` |  |  | Customizes the toolbar: `className` is added to it, and `right` (text or a component, e.g. a template-only component rendering an `EuiButton`) replaces the preview/editor switch on its right side. |
 | `@ariaLabel` | `string` |  | Accessible label of the textarea. |
 | `@ariaLabelledBy` | `string` |  | Id of the element labelling the textarea (e.g. a form row label). |
 | `@ariaDescribedBy` | `string` |  | Id of the element describing the textarea. |
+| `@markdownFormatProps` |  |  | Further args for the preview's `EuiMarkdownFormat` (upstream's `markdownFormatProps`): `rootClasses`, `textSize`, `color`, `shouldIncludeDefaultRootClasses`, `grow`, `textAlign` and `component`. They win over the `@format…` args. |
 | `@formatRootClasses` |  |  | `@rootClasses` of the preview's EuiMarkdownFormat. |
 | `@formatTextSize` |  |  | `@textSize` of the preview's EuiMarkdownFormat. |
+| `@formatColor` |  |  | `@color` of the preview's EuiMarkdownFormat. |
 | `@formatShouldIncludeDefaultRootClasses` |  |  | `@shouldIncludeDefaultRootClasses` of the preview's EuiMarkdownFormat. |
 
 ### EuiMarkdownFormat
 
 Renders markdown as EUI-styled content (headings, lists, code blocks,
 tables, checkboxes, tooltips and emoji):
-`<EuiMarkdownFormat @value={{this.markdown}} />`.
+`<EuiMarkdownFormat @value={{this.markdown}} />`. Attributes go to the
+root `<div class="euiMarkdownFormat">`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@parsingPluginList` |  | `getDefaultEuiMarkdownParsingPlugins()` | remark parsing plugins. |
 | `@processingPluginList` |  | `getDefaultEuiMarkdownProcessingPlugins()` | Processing plugins. |
 | `@replaceNode` | `Replacer` |  | Called when rendered content edits the markdown, e.g. clicking a task list checkbox (`- [ ] todo`), with the node's position in the source and its new text. Splice it into your value to make checkboxes interactive; EuiMarkdownEditor does this for you. |
+| `@readOnly` | `boolean` |  | Renders interactive plugin content (task list checkboxes) read-only. |
 | `@value` (required) | `string` |  | The markdown to render. |
 | `@rootClasses` | `string \| string[]` |  | Extra class(es) for the root element: a string or an array of strings. |
-| `@textSize` |  | `'m'` | Text size, any `EuiText` size. |
-| `@shouldIncludeDefaultRootClasses` | `boolean` | `true` | Keeps the default `euiMarkdownFormat` classes. |
+| `@textSize` |  | `'m'` | Text size, any `EuiText` size; `'relative'` scales with the parent's font size. |
+| `@color` | `EuiTextColorValue` | `'default'` | Any EuiText color: a named color (`'subdued'`, `'danger'`…) or a CSS color. Also tints blockquote, rule and table borders. |
+| `@shouldIncludeDefaultRootClasses` | `boolean` | `true`; `false` keeps only the markdown-specific styles | Applies EuiText typography (and the `euiText` class) to the content. |
+| `@component` | `'div' \| 'span' \| 'p'` |  | The root element: `'div'` (default), `'span'` or `'p'` (upstream EuiText's `component`). Only `'div'` can hold block content such as headings, lists and tables. |
+| `@grow` | `boolean` |  | `true` (default) lets the text span the container's full width; `false` caps lines at a readable width (EuiText's `grow`). |
+| `@textAlign` | `EuiTextAlignment` |  | `'left'`, `'center'` or `'right'` (logical, so they flip in RTL). |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
 </EuiText>
 <!-- api:end -->

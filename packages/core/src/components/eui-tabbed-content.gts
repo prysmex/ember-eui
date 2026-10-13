@@ -9,7 +9,10 @@ import type Owner from '@ember/owner';
 import findBy from '@nullvoxpopuli/ember-composable-helpers/helpers/find-by';
 import { eq } from 'ember-truth-helpers';
 
+import EuiNode from '../-private/eui-node.gts';
 import randomId from '../-private/random-id.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
+import type { EuiNodeValue } from '../-private/eui-node.gts';
 import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
 
@@ -21,8 +24,20 @@ import type { ComponentLike } from '@glint/template';
 export interface EuiTabbedContentTab {
   /** Unique id. */
   id: string;
-  /** The tab's label. */
-  name: string;
+  /** The tab's label: text or a component. */
+  name: EuiNodeValue;
+  /** Content before the label, e.g. an icon component. */
+  prepend?: EuiNodeValue;
+  /** Content after the label, e.g. a notification badge component. */
+  append?: EuiNodeValue;
+  /** Makes the tab a link (see `EuiTab`). */
+  href?: string;
+  /** `target` of a link tab. */
+  target?: string;
+  /** `rel` of a link tab. */
+  rel?: string;
+  /** Extra classes for the tab. */
+  className?: string;
   /**
    * The panel shown while the tab is selected (a component). Or render
    * panels with the `<:selectedTabContent>` block.
@@ -30,7 +45,27 @@ export interface EuiTabbedContentTab {
   content?: ComponentLike;
   /** Disables the tab. */
   disabled?: boolean;
+  /**
+   * Any other key (`data-test-subj`, `aria-label`, `title`…) is set as an
+   * attribute of the tab, as upstream spreads the rest of a tab onto
+   * `EuiTab`. Functions are skipped.
+   */
+  [attribute: string]: unknown;
 }
+
+/** Tab keys that are arguments of EuiTab or EuiTabbedContent, never attributes. */
+const TAB_PROPS = [
+  'id',
+  'name',
+  'prepend',
+  'append',
+  'href',
+  'target',
+  'rel',
+  'content',
+  'disabled',
+  'isSelected'
+];
 
 export type EuiTabbedContentArgs = CommonArgs & {
   /**
@@ -201,9 +236,16 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
               aria-controls={{rootId}}
               @isSelected={{eq tab.id this.selectedTab.id}}
               @disabled={{tab.disabled}}
+              @href={{tab.href}}
+              @target={{tab.target}}
+              @rel={{tab.rel}}
+              @prepend={{tab.prepend}}
+              @append={{tab.append}}
+              class={{tab.className}}
+              {{spreadAttributes tab TAB_PROPS}}
               {{on "click" (fn this.onTabClick tab)}}
             >
-              {{tab.name}}
+              <EuiNode @value={{tab.name}} />
             </EuiTab>
           {{/each}}
         </EuiTabs>

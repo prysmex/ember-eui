@@ -12,7 +12,10 @@ hex color) change the look, also of the preset `token*` icons.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiToken } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @alignItems="center" @gutterSize="m" @responsive={{false}} @wrap={{true}}>
   <EuiFlexItem @grow={{false}}><EuiToken @iconType="tokenDate" @size="xs" /></EuiFlexItem>
   <EuiFlexItem @grow={{false}}><EuiToken @iconType="tokenDate" @size="s" /></EuiFlexItem>
@@ -23,4 +26,5 @@ hex color) change the look, also of the preset `token*` icons.
   <EuiFlexItem @grow={{false}}><EuiToken @iconType="bolt" @size="l" @color="euiColorVis3" @shape="square" /></EuiFlexItem>
   <EuiFlexItem @grow={{false}}><EuiToken @iconType="heart" @size="l" @color="#FF0000" /></EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

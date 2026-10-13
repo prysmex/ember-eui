@@ -1,23 +1,37 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
+import { concat } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, next, scheduleOnce } from '@ember/runloop';
+import { isHTMLSafe } from '@ember/template';
+import type { SafeString } from '@ember/template';
 
+import { modifier } from 'ember-modifier';
 import style from 'ember-style-modifier/modifiers/style';
-import { and, eq, or } from 'ember-truth-helpers';
+import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
+import cssStyle from '../-private/css-style.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import {
+  euiToolTipAnchorStyles,
+  euiToolTipStyles
+} from '../utils/eui/styles.generated.ts';
 import { keys } from '../utils/keys.ts';
-import { findPopoverPosition } from '../utils/popover/index.ts';
+import { findPopoverPosition, getElementZIndex } from '../utils/popover/index.ts';
 import EuiPortal from './eui-portal.gts';
 import EuiToolTipPopover from './eui-tool-tip-popover.gts';
 
+import type { CssProperties } from '../-private/css-style.ts';
 import type { EuiTooltipPopoverSignature } from './eui-tool-tip-popover';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
@@ -35,10 +49,132 @@ interface ToolTipStyles {
   right?: string | 'auto';
   opacity?: string;
   visibility?: 'hidden';
-  display?: 'inlineBlock';
+  zIndex?: string;
 }
 
-type EuiToolTipDisplay = 'inlineBlock' | 'block';
+type EuiToolTipDisplay = 'inlineBlock' | 'block' | 'flex';
+
+/**
+ * Upstream `anchorProps`, for the `span.euiToolTipAnchor` wrapper.
+ * `className` and `css` are added to its classes, `style` is its inline
+ * style (upstream's object of CSS properties, or a safe string;
+ * `@anchorStyle` wins), `on<Event>` functions (e.g. `onMouseEnter`,
+ * `onMouseLeave`) are added as listeners next to the tooltip's own, and
+ * any other key (`id`, `data-test-subj`, `aria-*`, …) is set as an
+ * attribute.
+ */
+export interface EuiToolTipAnchorProps {
+  className?: string;
+  css?: EuiCss;
+  style?: CssProperties | SafeString | string;
+  [key: string]: unknown;
+}
+
+/** `anchorProps.style` as a `style` attribute value. */
+export function anchorPropsStyle(
+  style: EuiToolTipAnchorProps['style']
+): string | SafeString | undefined {
+  if (!style) return undefined;
+  if (typeof style === 'string' || isHTMLSafe(style)) {
+    return style as string | SafeString;
+  }
+  return cssStyle(style as CssProperties);
+}
+
+const ANCHOR_PROPS_HANDLED = ['className', 'css', 'style'] as const;
+
+/** `on<Event>` functions of `@anchorProps` as listeners (upstream spread). */
+const anchorListeners = modifier(
+  (element: HTMLElement, [props]: [EuiToolTipAnchorProps | undefined]) => {
+    const cleanups: Array<() => void> = [];
+
+    for (const [key, value] of Object.entries(props ?? {})) {
+      if (!/^on[A-Z]/.test(key) || typeof value !== 'function') continue;
+
+      const type = key.slice(2).toLowerCase();
+
+      element.addEventListener(type, value as EventListener);
+      cleanups.push(() =>
+        element.removeEventListener(type, value as EventListener)
+      );
+    }
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }
+);
+
+/** Upstream default distance between the anchor and the tooltip. */
+export const DEFAULT_TOOLTIP_OFFSET = 16;
+
+/** A tooltip shown right after another closes skips the fade in (upstream). */
+const SKIP_ANIMATION_WINDOW = 250;
+
+/**
+ * Upstream `toolTipManager`: one tooltip is visible at a time, and a
+ * tooltip replacing another (or shown right after one closed) appears
+ * without the entry animation.
+ */
+class ToolTipManager {
+  toolTipsToHide = new Set<() => void>();
+  lastHiddenAt: number | null = null;
+
+  registerTooltip(hideCallback: () => void): { skipAnimation: boolean } | null {
+    if (this.toolTipsToHide.has(hideCallback)) return null;
+
+    const hadOpen = this.toolTipsToHide.size > 0;
+    const recentlyClosed =
+      this.lastHiddenAt !== null &&
+      Date.now() - this.lastHiddenAt < SKIP_ANIMATION_WINDOW;
+
+    this.toolTipsToHide.forEach((hide) => hide());
+    this.toolTipsToHide.clear();
+    this.toolTipsToHide.add(hideCallback);
+
+    return { skipAnimation: hadOpen || recentlyClosed };
+  }
+
+  deregisterToolTip(hideCallback: () => void): void {
+    if (this.toolTipsToHide.delete(hideCallback)) this.lastHiddenAt = Date.now();
+  }
+}
+
+export const toolTipManager = new ToolTipManager();
+
+/**
+ * Upstream links the anchor's child to the visible tooltip with
+ * `aria-describedby` (the tooltip id first, existing ids kept). Only the id
+ * added here is removed again.
+ */
+const describedBy = modifier(
+  (
+    anchor: HTMLElement,
+    [target, id, isVisible]: [Element | null | undefined, string, boolean]
+  ) => {
+    const element = target ?? anchor.firstElementChild;
+
+    if (!element || !isVisible) return;
+
+    const current = (element.getAttribute('aria-describedby') ?? '')
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (current.includes(id)) return;
+
+    element.setAttribute('aria-describedby', [id, ...current].join(' '));
+
+    return () => {
+      const remaining = (element.getAttribute('aria-describedby') ?? '')
+        .split(/\s+/)
+        .filter((token) => token && token !== id);
+
+      if (remaining.length) {
+        element.setAttribute('aria-describedby', remaining.join(' '));
+      } else {
+        element.removeAttribute('aria-describedby');
+      }
+    };
+  }
+);
 
 const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // position the tooltip content near the top-left
@@ -50,8 +186,7 @@ const DEFAULT_TOOLTIP_STYLES: ToolTipStyles = {
   // the tooltip before it is positioned
   opacity: '0',
   // prevent accidental mouse interaction while positioning
-  visibility: 'hidden',
-  display: 'inlineBlock'
+  visibility: 'hidden'
 };
 
 export type EuiTooltipArgs = {
@@ -68,9 +203,20 @@ export type EuiTooltipArgs = {
    */
   content?: string;
   /**
-   * Display of the anchor wrapper: `'inlineBlock'` or `'block'`.
+   * Display of the anchor wrapper: `'inlineBlock'`, `'block'` or `'flex'`.
+   * Defaults to `'inlineBlock'`.
    */
   display?: EuiToolTipDisplay;
+  /**
+   * Distance between the anchor and the tooltip. Defaults to `16`.
+   */
+  offset?: number;
+  /**
+   * Keeps the tooltip visual only: the anchor's element is not linked to
+   * it with `aria-describedby`, and Escape does not stop propagating.
+   * Use when the anchor's label already says the same. Defaults to `false`.
+   */
+  disableScreenReaderOutput?: boolean;
   /**
    * Delay before showing: `'regular'` (250ms) or `'long'` (for
    * repeated items). Defaults to `'regular'`.
@@ -97,6 +243,13 @@ export type EuiTooltipArgs = {
    */
   attachTo?: undefined | HTMLElement | string | null;
 
+  /**
+   * Repositions the tooltip when any scrollable ancestor (or the window)
+   * scrolls. Needed for fixed-position anchors or a tooltip inside a
+   * scrollable container. Defaults to `false`.
+   */
+  repositionOnScroll?: boolean;
+
   /** Shows (`true`) or hides (`false`) the tooltip from outside. */
   isShown?: boolean | undefined;
 
@@ -112,6 +265,27 @@ export type EuiTooltipArgs = {
 
   /** Render the title. Defaults to `true`. */
   hasTitle?: boolean;
+  /**
+   * Extra styles composed last into the tooltip's class (like upstream's
+   * `css` prop). Prefer this to `@className` for styles.
+   */
+  css?: EuiCss;
+  /**
+   * Extra styles composed last into the anchor wrapper's class (like
+   * upstream's `anchorProps.css`). Prefer this to `@anchorClassName` for
+   * styles.
+   */
+  anchorCss?: EuiCss;
+  /**
+   * Inline style of the anchor wrapper (upstream's `anchorProps.style`),
+   * a style string or a safe string.
+   */
+  anchorStyle?: string | SafeString;
+  /**
+   * Props for the anchor wrapper (upstream `anchorProps`), see
+   * {@link EuiToolTipAnchorProps}.
+   */
+  anchorProps?: EuiToolTipAnchorProps;
 };
 
 /**
@@ -149,6 +323,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   @tracked calculatedPosition: ToolTipPositions = this.position;
   @tracked toolTipStyles: ToolTipStyles = DEFAULT_TOOLTIP_STYLES;
   @tracked arrowStyles: { left?: string; top?: string } = {};
+  @tracked skipAnimation = false;
   @tracked id: string = this.args.id || guidFor({});
   @tracked _attachTo: undefined | HTMLElement | string | null = null;
 
@@ -179,7 +354,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       this.attachTo.addEventListener('focusin', this.onFocus);
       //@ts-expect-error
       this.attachTo.addEventListener('mouseout', this.onMouseOut);
-      this.attachTo.addEventListener('focusout', this.onBlur);
+      this.attachTo.addEventListener('focusout', this.onAnchorBlur);
       this.positionToolTip();
     }
   }
@@ -191,8 +366,24 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       this.attachTo.removeEventListener('focusin', this.onFocus);
       //@ts-expect-error
       this.attachTo.removeEventListener('mouseout', this.onMouseOut);
-      this.attachTo.removeEventListener('focusout', this.onBlur);
+      this.attachTo.removeEventListener('focusout', this.onAnchorBlur);
     }
+  }
+
+  private listeningToScroll = false;
+
+  /** Adds or removes the capturing scroll listener (`@repositionOnScroll`). */
+  @action
+  syncScrollListener(): void {
+    const wanted = this.args.repositionOnScroll === true;
+
+    if (wanted && !this.listeningToScroll) {
+      window.addEventListener('scroll', this.positionToolTip, true);
+    } else if (!wanted && this.listeningToScroll) {
+      window.removeEventListener('scroll', this.positionToolTip, true);
+    }
+
+    this.listeningToScroll = wanted;
   }
 
   @action
@@ -249,7 +440,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
   showToolTip(): void {
     if (!this.timeoutId && !this.visible) {
       const fn = (): void => {
-        this.visible = true;
+        this.markVisible();
       };
 
       this.timeoutId = later(
@@ -260,6 +451,67 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         delayToMsMap[this.delay]
       );
     }
+  }
+
+  /** Shows the tooltip through the manager (hides any other one). */
+  markVisible(): void {
+    if (this.isDestroying || this.isDestroyed) return;
+
+    const result = toolTipManager.registerTooltip(this.hideToolTip);
+
+    if (result) this.skipAnimation = result.skipAnimation;
+
+    this.visible = true;
+  }
+
+  get anchorDisplay(): EuiToolTipDisplay {
+    return this.args.display ?? 'inlineBlock';
+  }
+
+  /** Upstream `euiToolTipAnchorStyles`: display and disabled children. */
+  @cached
+  get anchorClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiToolTipAnchorStyles);
+
+    return `euiToolTipAnchor ${euiClass(
+      context,
+      styles.euiToolTipAnchor,
+      styles[this.anchorDisplay] ?? styles.inlineBlock,
+      this.args.anchorCss,
+      this.args.anchorProps?.css
+    )}`;
+  }
+
+  get anchorStyle(): string | SafeString | undefined {
+    return this.args.anchorStyle ?? anchorPropsStyle(this.args.anchorProps?.style);
+  }
+
+  get anchorPropsHandled(): readonly string[] {
+    return ANCHOR_PROPS_HANDLED;
+  }
+
+  @cached
+  get arrowClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiToolTipStyles);
+
+    return `euiToolTip__arrow ${euiClass(
+      context,
+      styles.euiToolTip__arrow,
+      styles.arrowPositions[this.calculatedPosition]
+    )}`;
+  }
+
+  get popoverStyles(): ToolTipStyles & { animation?: string } {
+    // inline `animation: none` overrides the fade in (upstream)
+    return this.skipAnimation
+      ? { ...this.toolTipStyles, animation: 'none' }
+      : this.toolTipStyles;
+  }
+
+  get describesAnchor(): boolean {
+    return this.visible && !this.args.disableScreenReaderOutput;
   }
 
   @cached
@@ -287,10 +539,15 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       anchor: this._anchor as HTMLElement,
       popover: this.popover,
       position: requestedPosition,
-      offset: 16, // offset popover 16px from the anchor
+      offset: this.args.offset ?? DEFAULT_TOOLTIP_OFFSET,
+      // upstream: the arrow stays out of the control-radius corners
       arrowConfig: {
         arrowWidth: 12,
-        arrowBuffer: 4
+        arrowBuffer: 4,
+        borderRadius:
+          parseFloat(
+            String(getEuiThemeContext(this).upstream.euiTheme.border.radius.control)
+          ) || undefined
       }
     });
 
@@ -306,7 +563,19 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         : 'auto'
     };
 
-    this.visible = true;
+    // Upstream's tooltip stays at `levels.toast`; an anchor inside a layer
+    // stacked higher (e.g. an options list or popover in a modal) would hide
+    // it, so never stack below the anchor.
+    const { levels } = getEuiThemeContext(this).upstream.euiTheme;
+    const anchorZIndex = getElementZIndex(
+      this._anchor as HTMLElement,
+      this.popover
+    );
+    if (anchorZIndex >= Number(levels.toast)) {
+      toolTipStyles.zIndex = String(anchorZIndex + 1);
+    }
+
+    if (!this.visible) this.markVisible();
     this.calculatedPosition = position;
     this.toolTipStyles = toolTipStyles;
 
@@ -326,13 +595,29 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
 
     this.clearAnimationTimeout();
 
+    toolTipManager.deregisterToolTip(this.hideToolTip);
+
     const fn = (): void => {
-      if (!this.isDestroying || !this.isDestroyed) {
+      if (!this.isDestroying && !this.isDestroyed) {
         this.visible = false;
       }
     };
 
     scheduleOnce('afterRender', this, fn);
+  }
+
+  /** Escape hides the tooltip (upstream). */
+  @action
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key !== keys.ESCAPE) return;
+
+    // a visual-only tooltip does not take the Escape key from the page
+    if (!this.args.disableScreenReaderOutput && this.visible) {
+      event.stopPropagation();
+    }
+
+    this.hasFocus = false;
+    this.hideToolTip();
   }
 
   @action
@@ -360,6 +645,13 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     this.hideToolTip();
   }
 
+  /** The anchor lost focus: hide, then `@onBlur` (upstream). */
+  @action
+  onAnchorBlur(): void {
+    this.onBlur();
+    this.args.onBlur?.();
+  }
+
   @action
   onMouseOut(event: MouseEvent): void {
     // Prevent mousing over children from hiding the tooltip by testing for whether the mouse has
@@ -383,7 +675,10 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     super.willDestroy();
 
     this.clearAnimationTimeout();
+    toolTipManager.deregisterToolTip(this.hideToolTip);
     this.removeAttachToHandlers();
+    window.removeEventListener('scroll', this.positionToolTip, true);
+    this.listeningToScroll = false;
     this.anchor = null;
     this.popover = null;
     this._attachTo = null;
@@ -397,7 +692,10 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       {{#if @attachTo}}
         <span
           {{didInsert this.updateAttachTo}}
+          {{didInsert this.syncScrollListener}}
+          {{didUpdate this.syncScrollListener @repositionOnScroll}}
           {{didUpdate this.updateAttachTo @attachTo}}
+          {{describedBy this.attachTo this.id this.describesAnchor}}
           {{didUpdate
             (if (eq @isShown true) this.onFocus this.onBlur)
             @isShown
@@ -405,17 +703,26 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
           {{didInsert (if (eq @isShown true) this.onFocus this.onBlur)}}
         ></span>
       {{else}}
+        {{! A11y: NVDA merges identical markup into one stop; the id keeps
+            wrappers apart (upstream) }}
         <span
-          role="tooltip"
+          id={{if (not @disableScreenReaderOutput) (concat this.id "-wrapper")}}
           class={{classNames
-            "euiToolTipAnchor"
-            (if (eq @display "block") "euiToolTipAnchor--displayBlock")
+            this.anchorClasses
             @anchorClassName
+            @anchorProps.className
           }}
+          style={{this.anchorStyle}}
+          {{spreadAttributes @anchorProps this.anchorPropsHandled}}
+          {{anchorListeners @anchorProps}}
           {{didInsert this.didInsertAnchor}}
+          {{didInsert this.syncScrollListener}}
+          {{didUpdate this.syncScrollListener @repositionOnScroll}}
+          {{describedBy null this.id this.describesAnchor}}
+          {{on "keydown" this.onKeyDown}}
           {{on "mouseover" this.showToolTip}}
           {{on "focusin" this.onFocus}}
-          {{on "focusout" this.onBlur}}
+          {{on "focusout" this.onAnchorBlur}}
           {{on "mouseout" this.onMouseOut}}
           {{didUpdate
             (if (eq @isShown true) this.onFocus this.onBlur)
@@ -435,14 +742,11 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       }}
         <EuiPortal>
           <EuiToolTipPopover
-            class={{classNames
-              "euiToolTip"
-              @className
-              componentName="EuiToolTip"
-              position=this.calculatedPosition
-            }}
+            class={{classNames "euiToolTip" @className}}
+            @calculatedPosition={{this.calculatedPosition}}
             @positionToolTip={{this.positionToolTip}}
             @popoverRef={{this.setPopoverRef}}
+            @css={{@css}}
             id={{this.id}}
             @hasTitle={{if
               (and (argOrDefault @hasTitle true) (or hasTitleBlock @title))
@@ -450,7 +754,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
             }}
             role="tooltip"
             ...attributes
-            {{style this.toolTipStyles}}
+            {{style this.popoverStyles}}
           >
             <:title>
               {{#if hasTitleBlock}}
@@ -460,7 +764,10 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
               {{/if}}
             </:title>
             <:content>
-              <div class="euiToolTip__arrow" {{style this.arrowStyles}}></div>
+              <div
+                class={{this.arrowClasses}}
+                {{style this.arrowStyles}}
+              ></div>
               <div {{resizeObserver onResize=this.positionToolTip}}>
                 {{#if hasContentBlock}}
                   {{yield to="content"}}

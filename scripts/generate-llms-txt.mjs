@@ -56,7 +56,7 @@ function pages() {
 
     const path = relative(join(root, 'docs'), file).replace(/\.md$/, '');
 
-    result.push({ file, url: `${SITE}/docs/${path}`, section: 'Guides' });
+    result.push({ file, prefix: `${SITE}/docs`, url: `${SITE}/docs/${path}`, section: 'Guides' });
   }
 
   for (const pkg of PACKAGES) {
@@ -71,7 +71,7 @@ function pages() {
         .replace(/\/index\.md$/, '')
         .replace(/\.md$/, '');
 
-      result.push({ file, url: `${SITE}/docs/${pkg}/docs/${path}`, section: pkg });
+      result.push({ file, prefix: `${SITE}/docs/${pkg}`, url: `${SITE}/docs/${pkg}/docs/${path}`, section: pkg });
     }
   }
 
@@ -81,7 +81,10 @@ function pages() {
       const title =
         /@pageTitle="([^"]+)"/.exec(body)?.[1] ?? data.title ?? page.url.split('/').pop();
 
-      return { ...page, title, order: Number(data.order ?? 99), body, demos: demosOf(page.file) };
+      // a `url` frontmatter replaces the path-based URL, as in docfy
+      const url = data.url ? `${page.prefix}/${data.url.replace(/^\//, '')}` : page.url;
+
+      return { ...page, url, title, order: Number(data.order ?? 99), body, demos: demosOf(page.file) };
     })
     .filter((page) => !/^disabled: true/m.test(readFileSync(page.file, 'utf8')))
     .sort((a, b) =>
@@ -236,7 +239,7 @@ function summary(page) {
 
 const RULES = `## Rules for using Ember EUI
 
-- Install \`@ember-eui/core\` with its peer dependencies (\`@ember/string\`, \`ember-basic-dropdown\`, \`ember-concurrency\`, \`ember-focus-trap\`, \`ember-power-select\`, \`moment\`) and import a theme once: \`import '@ember-eui/core/themes/light.css'\` (or \`dark.css\`) and \`import '@ember-eui/core/styles/ember-eui.css'\`.
+- Install \`@ember-eui/core\` with its peer dependencies (\`@ember/string\`, \`ember-basic-dropdown\`, \`ember-concurrency\`, \`ember-focus-trap\`, \`ember-power-select\`, \`moment\`) and import \`@ember-eui/core/styles/ember-eui.css\` once. Components are styled by EUI's Borealis theme at runtime (no theme stylesheet): render one \`<EuiEmotionProvider @colorMode=\"light\">\` (or \`\"dark\"\`) around the whole app, e.g. in \`application.hbs\` (in \`.gjs\`/\`.gts\`: \`import EuiEmotionProvider from '@ember-eui/core/components/eui-emotion-provider';\`); it injects the global styles and components read the theme from the nearest provider. Theme overrides go in \`@borealisOverrides\`; style a component with its \`@css\` argument. Upgrading from the old \`themes/light.css\` setup: ${SITE}/docs/migrating-to-borealis.
 - In \`.gjs\`/\`.gts\`, import components by name: \`import { EuiButton, EuiFormRow } from '@ember-eui/core/components';\`. In classic \`.hbs\` templates they are available without imports.
 - Component options are arguments with \`@\` (\`@iconType="check"\`, \`@size="s"\`). Plain HTML attributes and modifiers (\`class\`, \`aria-label\`, \`placeholder\`, \`{{on "click" …}}\`) go to the component's main element. Writing an argument without \`@\` (\`size="s"\`) silently does nothing.
 - Form controls don't store their value: pass \`@value\` (or \`@checked\`) and update it from the event, e.g. \`{{on "input" this.update}}\` with \`event.target.value\`. \`EuiSwitch\` calls \`@onChange(event)\`; \`EuiComboBox\` calls \`@onChange(selectedOptions)\` with an array.

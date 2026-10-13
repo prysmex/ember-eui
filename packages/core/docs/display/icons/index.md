@@ -9,17 +9,19 @@ manualDemoInsertion: true
 
 <EuiText>
 
-`<EuiIcon>` renders one of EUI's ~470 named icons, an svg component of your
-own, or an image URL. Components with an `@iconType` argument (`EuiButton`,
+`<EuiIcon>` renders one of the ~570 named icons of EUI 123.1.0, an svg
+component of your own, or an image URL. Components with an `@iconType` argument (`EuiButton`,
 `EuiBadge`, `EuiCallOut`, `EuiListGroupItem`, …) render an `EuiIcon` for you
 and accept the same values.
 
 ```hbs
 <EuiIcon @type="bell" />
 <EuiIcon @type="logoElastic" @size="xl" />
-<EuiIcon @type="alert" @color="danger" @title="Error" />
-<EuiButton @iconType="plusInCircle">Add</EuiButton>
+<EuiIcon @type="warning" @color="danger" @title="Error" />
+<EuiButton @iconType="plusCircle">Add</EuiButton>
 ```
+
+Provide a descriptive `@title` based on the icon use, if possible. Without a title the icon is considered purely decorative and defaults to `aria-hidden="true"` (see *Accessibility* below).
 
 ## What `@type` accepts
 
@@ -54,7 +56,31 @@ export default defineConfig({
 
 The full list of arguments is in the *API reference* at the end of the page.
 
+## Renamed icons
+
+The icons are the current upstream (Borealis) set, under upstream's names.
+Names from earlier EUI releases keep working: names upstream renamed render
+the renamed icon (e.g. `arrowDown` → `chevronSingleDown`, `popout` →
+`external`, `questionInCircle` → `question`, `editorBold` → `textBold`), and
+the few without an upstream equivalent keep their previous artwork. Upstream's
+own deprecated names (e.g. `search`, `alert`) render what upstream renders.
+These names are left out of the gallery; prefer the upstream names in new code.
+The full lists are exported next to the icon map:
+
+```js
+import {
+  legacyIconAliases, // { arrowDown: 'chevronSingleDown', … }
+  legacyIconTypes, // legacy names that keep their previous artwork
+  deprecatedIconTypes // upstream deprecations: { search: 'magnify', … }
+} from '@ember-eui/core/utils/css-mappings/eui-icon';
+```
+
+An icon registered in `euiIcon.icons` under the same name as an EUI icon
+wins, so app icons keep rendering when EUI adds icons with their names.
+
 ## All icons
+
+Glyphs, Elastic logos, apps, machine learning icons and tokens. Glyphs are small, monochromatic icons that should use the default `@size="m"`; logos and app icons are drawn for `xl`. Tokens (`EuiToken`) have their own [page](/docs/display/token).
 
 Search by name or filter by category; click an icon to copy its tag.
 
@@ -91,9 +117,10 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@type` (required) | `IconType` |  | `Enum` is any of the named icons listed in the docs, `string` is usually a URL to an SVG file, and `elementType` is any Ember Icon SVG component |
-| `@color` | `IconColor` |  | One of EUI's color palette or a valid CSS color value https://developer.mozilla.org/en-US/docs/Web/CSS/color_value. Note that coloring only works if your SVG is removed of fill attributes. |
-| `@size` | `IconSize` |  | Note that every size other than `original` assumes the provided SVG sits on a square viewbox. |
+| `@color` | `IconColor` |  | One of EUI's named colors (`'default'`, `'primary'`, `'neutral'`, `'success'`, `'accent'`, `'accentSecondary'`, `'warning'`, `'risk'`, `'danger'`, `'text'`, `'subdued'`, `'ghost'`, `'inherit'`) or a valid CSS color value https://developer.mozilla.org/en-US/docs/Web/CSS/color_value. Without a color, the icon uses the inherited text color. Note that coloring only works if your SVG is removed of fill attributes. |
+| `@size` | `IconSize` | `'m'` | `'s'` (12px), `'m'` (16px), `'l'` (24px), `'xl'` (32px), `'xxl'` (40px) or `'original'` (the svg's own width and height). Note that every size other than `original` assumes the provided SVG sits on a square viewbox. |
 | `@title` | `string` |  | Descriptive title for naming the icon based on its use |
 | `@titleId` | `string` |  | A unique identifier for the title element |
 | `@tabIndex` | `unknown` |  |  |

@@ -1,20 +1,24 @@
-import { get } from '@ember/helper';
-import { fn } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+import { fn, get } from '@ember/helper';
 import { on } from '@ember/modifier';
 
 import { or } from 'ember-truth-helpers';
 
 import argOrDefault from '../helpers/arg-or-default.ts';
 import validatableControl from '../modifiers/validatable-control.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiCheckboxGroupStyles } from '../utils/eui/styles.generated.ts';
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiFormFieldset from './eui-form-fieldset.gts';
 
 import type { EuiCheckboxSignature } from './eui-checkbox';
 import type { EuiFormFieldsetSignature } from './eui-form-fieldset';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiCheckboxGroupSignature {
-  Element: HTMLDivElement;
+  /** The group `<div>`, or the `<fieldset>` when `@legend` is set. */
+  Element: HTMLDivElement | HTMLFieldSetElement;
   Args: {
     /**
      * Key of each option holding its id, used with `@idToSelectedMap` and
@@ -35,7 +39,7 @@ export interface EuiCheckboxGroupSignature {
      * `EuiFormRow`.
      */
     legend?: EuiFormFieldsetSignature['Args']['legend'];
-    /** Smaller checkboxes, for dense forms. */
+    /** Removes the spacing between checkbox rows, for dense forms. */
     compressed?: EuiFormFieldsetSignature['Args']['compressed'];
     /**
      * The checkboxes: `[{ id: 'a', label: 'Option A' }, …]` (keys set by
@@ -64,7 +68,19 @@ export interface EuiCheckboxGroupSignature {
   };
 }
 
-const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
+export default class EuiCheckboxGroup extends Component<EuiCheckboxGroupSignature> {
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiCheckboxGroupStyles);
+    return euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiCheckboxGroup,
+      this.args.compressed ? styles.compressed : styles.uncompressed
+    );
+  }
+
   <template>
     {{#let
       (argOrDefault @valueKey "id") (argOrDefault @labelKey "label")
@@ -79,7 +95,12 @@ const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
       />
       {{!template-lint-enable}}
       {{#if @legend}}
-        <EuiFormFieldset @legend={{@legend}} @compressed={{@compressed}}>
+        <EuiFormFieldset
+          class="euiCheckboxGroup {{this.classes}}"
+          @legend={{@legend}}
+          @compressed={{@compressed}}
+          ...attributes
+        >
           {{#each @options key=valueKey as |option|}}
             <EuiCheckbox
               form={{@formId}}
@@ -87,7 +108,6 @@ const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
               {{!@glint-expect-error}}
               @checked={{get @idToSelectedMap (get option valueKey)}}
               @disabled={{or @disabled option.disabled}}
-              @compressed={{@compressed}}
               {{!@glint-expect-error}}
               @label={{get option labelKey}}
               {{on "change" (fn @onChange (get option valueKey))}}
@@ -95,7 +115,7 @@ const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
           {{/each}}
         </EuiFormFieldset>
       {{else}}
-        <div ...attributes>
+        <div class="euiCheckboxGroup {{this.classes}}" ...attributes>
           {{#each @options key=valueKey as |option|}}
             <EuiCheckbox
               form={{@formId}}
@@ -103,7 +123,6 @@ const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
               {{!@glint-expect-error}}
               @checked={{get @idToSelectedMap (get option valueKey)}}
               @disabled={{or @disabled option.disabled}}
-              @compressed={{@compressed}}
               {{!@glint-expect-error}}
               @label={{get option labelKey}}
               {{on "change" (fn @onChange (get option valueKey))}}
@@ -112,6 +131,5 @@ const EuiCheckboxGroup: TemplateOnlyComponent<EuiCheckboxGroupSignature> =
         </div>
       {{/if}}
     {{/let}}
-  </template>;
-
-export default EuiCheckboxGroup;
+  </template>
+}

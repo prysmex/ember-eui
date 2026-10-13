@@ -54,18 +54,24 @@ need that; for plain text options `EuiSelect` is simpler and native.
 | --- | --- | --- | --- |
 | `@options` (required) | `EuiSuperSelectOption<any>[]` |  | The options: `{ value, inputDisplay, dropdownDisplay, disabled }`. Use the `<:inputDisplay>` / `<:dropdownDisplay>` blocks for markup. |
 | `@valueOfSelected` | `unknown` |  | Value of the selected option. |
+| `@placeholder` | `string` |  | Shown in the control while no option is selected. |
 | `@onChange` | `(value: any) => void` |  | Called with the chosen option's value. |
 | `@isOpen` | `boolean` |  | Opens the list (e.g. on first render). |
-| `@isInvalid` | `boolean` |  | Invalid look. |
+| `@isInvalid` | `boolean` |  | Invalid look and the warning icon. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
-| `@hasDividers` | `boolean` |  | Lines between the options, for options with several lines. |
+| `@disabled` | `boolean` |  | Disables the control. |
+| `@readOnly` | `boolean` |  | Read-only: shows the value, the list cannot be opened. |
+| `@hasDividers` | `boolean` |  | Lines between the options, for options with several lines. Ember extension: latest EUI removed it. |
 | `@fullWidth` | `boolean` |  | Takes the container's full width. |
 | `@compressed` | `boolean` |  | Smaller, for dense forms. |
-| `@itemLayoutAlign` |  |  | Aligns the check mark with the `'center'` or the `'top'` of each option. |
+| `@itemClassName` | `string` |  | Extra classes for each option. |
 | `@name` | `string` |  | `name` of the hidden input, for forms. |
-| `@id` | `string` |  | `id` of the hidden input. |
+| `@id` | `string` |  | `id` of the hidden input. Pass the same `@id` to the `EuiFormRow` so its label also labels the control. |
+| `@popoverProps` |  |  | Props of the underlying `EuiInputPopover` (upstream `popoverProps`), e.g. `repositionOnScroll` inside scrollable containers, `panelStyle` or `panelClassName`. `isOpen` is not accepted (use the top level `@isOpen`); `fullWidth` and `disableFocusTrap` are managed by the select. Its `className` is added to `euiSuperSelect`. |
 | `@onFocus` | `() => void` |  | Called when the list opens. |
 | `@onBlur` | `() => void` |  | Called when the list closes. |
+
+Deprecated: `@itemLayoutAlign` (Removed upstream. Aligns the check mark with the `'center'` (default), the `'top'` or the `'bottom'` of each option.).
 
 | Block | Description |
 | --- | --- |
@@ -86,13 +92,18 @@ by `EuiSuperSelect`.
 | --- | --- | --- | --- |
 | `@options` | `EuiSuperSelectOption<unknown>[]` |  | The options, to show the selected one. |
 | `@value` | `unknown` |  | Value of the selected option. |
-| `@id` | `string` |  | `id` of the hidden input. |
+| `@id` | `string` |  | `id` of the hidden input. When an element `<id>-label` exists (the label of an `EuiFormRow` given the same `@id`), the button is labelled by it and by its own value, as upstream. |
 | `@name` | `string` |  | `name` of the hidden input, for forms. |
+| `@placeholder` | `string` |  | Shown while no option is selected. |
 | `@fullWidth` | `boolean` |  | Takes the container's full width. |
 | `@compressed` | `boolean` |  | Smaller, for dense forms. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
-| `@isInvalid` | `boolean` |  | Invalid look. |
-| `@screenReaderId` | `string` |  | Id of the element announcing the selection to screen readers. |
+| `@isInvalid` | `boolean` |  | Invalid look and the warning icon. |
+| `@disabled` | `boolean` |  | Disables the control. |
+| `@readOnly` | `boolean` |  | Read-only: shows the value, cannot be opened. |
+| `@isDropdownOpen` | `boolean` |  | Focus styles while the list is open (set by `EuiSuperSelect`). |
+
+Deprecated: `@screenReaderId` (Has no effect: latest EUI no longer renders a separate screen reader announcement for the control.).
 
 | Block | Description |
 | --- | --- |

@@ -101,7 +101,7 @@ export default loadConfigFromMeta('site');\n`,
     'app/styles/app.css':
       'html { font-size: 14px; }\nbody { font-family: system-ui, sans-serif; }\n',
     'README.md':
-      '# Ember EUI demo\n\nRun `npm install` and `npm start`, then edit app/components/demo.hbs and demo.js.\n',
+      '# Ember EUI demo\n\nRun `npm install` and `npm start`, then edit the demo in app/components/ (demo.gjs).\n',
   };
   for (const path of [
     'index.html',

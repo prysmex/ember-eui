@@ -1,44 +1,65 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
-
-import { and, eq, not, or } from 'ember-truth-helpers';
-
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-
-import type {
-  borderRadiusMapping,
-  colorMapping,
-  paddingSizeMapping
-} from '../utils/css-mappings/eui-panel.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { eq } from 'ember-truth-helpers';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { useEuiBorealisStyles, euiClass } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import {
+  euiPanelStyles,
+  euiBackgroundColor,
+  euiPaddingSize,
+  euiBorderColor
+} from '../utils/eui/styles.generated.ts';
 
 /** A box grouping content, with background, padding, border and shadow options. */
 export interface EuiPanelSignature {
   Element: HTMLDivElement;
   Args: {
     /**
-     * Adds a box shadow (plain panels only). Defaults to `true`.
+     * Tag of a panel with `@onClick`. `'div'` (default) renders a
+     * `<div role="button" tabindex="0">` that also reacts to Enter and Space;
+     * `'button'` renders a native `<button type="button">` like upstream
+     * (upstream's own default, kept as `'div'` here so existing panels
+     * keep their markup). Ignored without `@onClick`.
+     */
+    element?: 'div' | 'button';
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
+    /**
+     * Adds a box shadow (plain panels without a border only). Defaults to `false`.
      */
     hasShadow?: boolean;
     /**
-     * Adds a border (plain and transparent panels only).
+     * Adds a border (plain and transparent panels only). Defaults to `true`.
      */
     hasBorder?: boolean;
     /**
      * Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`.
      */
-    paddingSize?: keyof typeof paddingSizeMapping;
+    paddingSize?: 'none' | 's' | 'm' | 'l';
     /**
      * `'none'` or `'m'`. Defaults to `'m'`.
      */
-    borderRadius?: keyof typeof borderRadiusMapping;
+    borderRadius?: 'none' | 'm';
     /**
      * Background: `'plain'`, `'transparent'`, `'subdued'`, `'accent'`,
      * `'primary'`, `'success'`, `'warning'` or `'danger'`.
      * Defaults to `'plain'`.
      */
-    color?: keyof typeof colorMapping;
+    color?:
+      | 'transparent'
+      | 'plain'
+      | 'subdued'
+      | 'accent'
+      | 'primary'
+      | 'success'
+      | 'warning'
+      | 'danger';
     /**
      * Grows to fill a flex parent's height. Defaults to `true`.
      */
@@ -77,37 +98,82 @@ function activateOnKey(
   }
 }
 
-const EuiPanel: TemplateOnlyComponent<EuiPanelSignature> = <template>
-  {{#let
-    (argOrDefault @hasShadow true)
-    (argOrDefault @color "plain")
-    (argOrDefault @grow true)
-    as |hasShadow color grow|
-  }}
-    {{#let
-      (eq color "plain") (or (eq color "plain") (eq color "transparent"))
-      as |canHaveShadow canHaveBorder|
-    }}
-      {{#if @onClick}}
+/** Borealis surface styles composed directly from the latest upstream factory. */
+export default class EuiPanel extends Component<EuiPanelSignature> {
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const upstream = context.upstream;
+    const styles = useEuiBorealisStyles(context, euiPanelStyles);
+    const color = this.args.color ?? 'plain';
+    const hasBorder = this.args.hasBorder ?? true;
+    const hasShadow = this.args.hasShadow ?? false;
+    const canHaveBorder = color === 'plain' || color === 'transparent';
+    const shadow =
+      !hasBorder &&
+      color === 'plain' &&
+      !upstream.highContrastMode &&
+      hasShadow;
+    const clickable = !!this.args.onClick && (this.args.isClickable ?? true);
+    const padding = this.args.paddingSize ?? 'm';
+    const generated = euiClass(
+      context,
+      {
+        boxSizing: 'border-box',
+        display: 'block',
+        padding: 0,
+        border: 'none',
+        borderRadius: 0,
+        boxShadow: 'none',
+        font: 'inherit',
+        color: upstream.euiTheme.colors.textParagraph,
+        textAlign: 'start'
+      },
+      styles.euiPanel,
+      (this.args.grow ?? true) && styles.grow,
+      styles.radius[this.args.borderRadius ?? 'm'],
+      {
+        padding: euiPaddingSize(upstream, padding) ?? 0,
+        backgroundColor: euiBackgroundColor(upstream, color)
+      },
+      shadow && styles.hasShadow,
+      canHaveBorder && hasBorder && styles.hasBorder,
+      upstream.highContrastMode &&
+        !(color === 'transparent' && !hasBorder) && {
+          border: upstream.euiTheme.border.thin,
+          borderColor: euiBorderColor(upstream, color)
+        },
+      clickable && styles.isClickable,
+      clickable && {
+        cursor: 'pointer',
+        outlineOffset: '2px',
+        '&:focus-visible': {
+          outline: `${upstream.euiTheme.focus.width} solid ${upstream.euiTheme.focus.color}`
+        }
+      },
+      this.args.css
+    );
+    return ['euiPanelBorealis', `euiPanel--${color}`, generated].join(' ');
+  }
+
+  <template>
+    {{#if @onClick}}
+      {{#if (eq @element "button")}}
+        <button
+          type="button"
+          data-eui-panel
+          class={{this.classes}}
+          {{on "click" @onClick}}
+          {{!@glint-expect-error}}
+          ...attributes
+        >
+          {{yield}}
+        </button>
+      {{else}}
         <div
           role="button"
-          class={{classNames
-            (if (argOrDefault @isClickable true) "euiPanel--isClickable")
-            (if (and canHaveShadow (eq hasShadow true)) "euiPanel--hasShadow")
-            (if
-              (or (not canHaveShadow) (eq hasShadow false)) "euiPanel--noShadow"
-            )
-            (if (and canHaveBorder (eq @hasBorder true)) "euiPanel--hasBorder")
-            (if
-              (or (not canHaveBorder) (eq @hasBorder false))
-              "euiPanel--noBorder"
-            )
-            (unless grow "euiPanel--flexGrowZero")
-            componentName="EuiPanel"
-            paddingSize=(argOrDefault @paddingSize "m")
-            borderRadius=(argOrDefault @borderRadius "m")
-            color=color
-          }}
+          data-eui-panel
+          class={{this.classes}}
           tabindex="0"
           {{on "click" @onClick}}
           {{on "keydown" (fn activateOnKey @onClick)}}
@@ -115,31 +181,9 @@ const EuiPanel: TemplateOnlyComponent<EuiPanelSignature> = <template>
         >
           {{yield}}
         </div>
-      {{else}}
-        <div
-          class={{classNames
-            (if (and canHaveShadow (eq hasShadow true)) "euiPanel--hasShadow")
-            (if
-              (or (not canHaveShadow) (eq hasShadow false)) "euiPanel--noShadow"
-            )
-            (if (and canHaveBorder (eq @hasBorder true)) "euiPanel--hasBorder")
-            (if
-              (or (not canHaveBorder) (eq @hasBorder false))
-              "euiPanel--noBorder"
-            )
-            (unless grow "euiPanel--flexGrowZero")
-            componentName="EuiPanel"
-            paddingSize=(argOrDefault @paddingSize "m")
-            borderRadius=(argOrDefault @borderRadius "m")
-            color=color
-          }}
-          ...attributes
-        >
-          {{yield}}
-        </div>
       {{/if}}
-    {{/let}}
-  {{/let}}
-</template>;
-
-export default EuiPanel;
+    {{else}}
+      <div data-eui-panel class={{this.classes}} ...attributes>{{yield}}</div>
+    {{/if}}
+  </template>
+}

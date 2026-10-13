@@ -27,6 +27,8 @@ export interface EuiWrappingPopoverSignature {
   Blocks: {
     /** The popover's content. */
     default: [];
+    /** Content on the popover's arrow (e.g. a beacon). */
+    arrowChildren: [];
   };
 }
 
@@ -84,15 +86,32 @@ export default class EuiWrappingPopover extends Component<EuiWrappingPopoverSign
         @initialFocus={{@initialFocus}}
         @ownFocus={{@ownFocus}}
         @panelClassName={{@panelClassName}}
+        @css={{@css}}
+        @panelCss={{@panelCss}}
         @panelPaddingSize={{@panelPaddingSize}}
         @panelStyle={{@panelStyle}}
         @panelRef={{@panelRef}}
         @popoverRef={{@popoverRef}}
+        @offset={{@offset}}
+        @buffer={{@buffer}}
+        @zIndex={{@zIndex}}
+        @repositionOnScroll={{@repositionOnScroll}}
+        @repositionToCrossAxis={{@repositionToCrossAxis}}
+        @popoverScreenReaderText={{@popoverScreenReaderText}}
+        @ariaLabel={{@ariaLabel}}
+        @ariaLabelledBy={{@ariaLabelledBy}}
+        @panelProps={{@panelProps}}
+        @focusTrapProps={{@focusTrapProps}}
+        @onPositionChange={{@onPositionChange}}
         ...attributes
       >
         <:button>
           <div {{this.setAnchorRef}} class="euiWrappingPopover__anchor" />
         </:button>
+
+        <:arrowChildren>
+          {{yield to="arrowChildren"}}
+        </:arrowChildren>
 
         <:content>
           {{yield}}

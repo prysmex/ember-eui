@@ -2,11 +2,13 @@ import Component from '@glimmer/component';
 import { fn } from '@ember/helper';
 import { action } from '@ember/object';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import EuiSuggestInput from './eui-suggest-input.gts';
 import EuiSuggestItem from './eui-suggest-item.gts';
 
 import type { EuiSuggestStatus } from './eui-suggest-input';
 import type { EuiSuggestItemSignature } from './eui-suggest-item';
+import type Owner from '@ember/owner';
 
 export interface EuiSuggestion {
   /** The suggestion's type: `{ iconType, color }` (`'tint0'`–`'tint10'`). */
@@ -54,6 +56,15 @@ export interface EuiSuggestSignature {
 }
 
 export default class EuiSuggest extends Component<EuiSuggestSignature> {
+  constructor(owner: Owner, args: EuiSuggestSignature['Args']) {
+    super(owner, args);
+    deprecateRemovedUpstream(
+      'eui-suggest',
+      'EuiSuggest',
+      'Use EuiSelectable or EuiComboBox instead, as upstream recommends.'
+    );
+  }
+
   closePopover?: () => void;
 
   @action
@@ -68,7 +79,7 @@ export default class EuiSuggest extends Component<EuiSuggestSignature> {
   }
 
   <template>
-    <div>
+    <div class="euiSuggest">
       {{#if (has-block "append")}}
         <EuiSuggestInput
           @hasSuggestions={{if @suggestions.length true false}}

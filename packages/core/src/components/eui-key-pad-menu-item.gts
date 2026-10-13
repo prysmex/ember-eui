@@ -1,36 +1,40 @@
-import { helper } from '@ember/component/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 
-import { and, eq, not } from 'ember-truth-helpers';
-
-import randomId from '../-private/random-id.ts';
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { randomId } from '../-private/random-id.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiKeyPadMenuItemChildStyles, euiKeyPadMenuItemStyles } from '../utils/eui/lists.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiBetaBadge from './eui-beta-badge.gts';
 import EuiCheckbox from './eui-checkbox.gts';
+import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 import EuiRadio from './eui-radio.gts';
+import EuiMaybeToolTip from '../-private/eui-maybe-tool-tip.gts';
 
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiTooltipArgs } from './eui-tool-tip.gts';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-const charAt = helper(function ([str, num]: [string | undefined, number]) {
-  return str?.charAt?.(num);
-});
-
 export interface EuiKeyPadMenuItemSignature {
-  Element: HTMLButtonElement | HTMLAnchorElement;
+  Element: HTMLButtonElement | HTMLAnchorElement | HTMLLabelElement;
   Args: {
     /**
-     * Makes the item a checkbox (`'label'`) or a radio (`'single'`, share a
-     * `@name`) inside a checkable EuiKeyPadMenu.
+     * Makes the item a `<label>` with a checkbox (`'multi'`, or the legacy
+     * `'label'`) or a radio (`'single'`, share a `@name`) inside a
+     * checkable EuiKeyPadMenu.
      */
-    checkable?: 'label' | 'single';
-    /** Makes the item a link. */
+    checkable?: 'single' | 'multi' | 'label';
+    /** Makes the item a link. A `javascript:` URL disables the item. */
     href?: string;
     /** Disables the item. */
     isDisabled?: boolean;
-    /** Selected (pressed, current page, or checked) state. */
+    /**
+     * Selected state: `aria-pressed` on buttons (omitted when not set),
+     * `aria-current` on links, `checked` on checkable items.
+     */
     isSelected?: boolean;
     /** Text under the icon. */
     label?: string;
@@ -42,17 +46,28 @@ export interface EuiKeyPadMenuItemSignature {
      * Called when a checkable item changes, with its id (and value for
      * radios). Buttons use `{{on "click" …}}`.
      */
-    onChange: (id: string, value?: string | Event) => void;
+    onChange?: (id: string, value?: string | Event) => void;
     /** Shows a beta badge with the first letter of this label (full label on hover). */
     betaBadgeLabel?: string;
     /** Icon in the beta badge instead of the letter. */
     betaBadgeIconType?: EuiIconSignature['Args']['type'];
-    /** Tooltip of the beta badge. */
+    /**
+     * Content of the tooltip shown with `@betaBadgeLabel` (its title is the
+     * label). The tooltip wraps the whole item, like upstream.
+     */
     betaBadgeTooltipContent?: string;
+    /**
+     * EuiToolTip args for the item's `@betaBadgeLabel` tooltip (upstream
+     * `betaBadgeTooltipProps`), except `title` and `content`, e.g.
+     * `(hash position="bottom" anchorProps=(hash data-test-subj="tip"))`.
+     */
+    betaBadgeTooltipProps?: Partial<Omit<EuiTooltipArgs, 'title' | 'content'>>;
     /** Id of the checkable input. Defaults to a random id. */
     id?: string;
     /** `target` of the `@href` link. */
     target?: string;
+    /** `rel` of the link; `noreferrer` (and `noopener` for `_blank`) is added. */
+    rel?: string;
   };
   Blocks: {
     /** The icon, e.g. `<EuiIcon @type="discoverApp" @size="l" />`. */
@@ -60,78 +75,246 @@ export interface EuiKeyPadMenuItemSignature {
   };
 }
 
-const EuiKeyPadMenuItem: TemplateOnlyComponent<EuiKeyPadMenuItemSignature> =
+/** The item's element (`a`, `button` or `label`). */
+const KeyPadMenuItemElement: TemplateOnlyComponent<{
+  Element: EuiKeyPadMenuItemSignature['Element'];
+  Args: { item: EuiKeyPadMenuItem };
+  Blocks: { default: [] };
+}> = <template>
+    {{#if @item.isLink}}
+      <a
+        class={{@item.classes}}
+        href={{@item.args.href}}
+        target={{@item.args.target}}
+        rel={{@item.rel}}
+        aria-current={{if @item.isSelected "true"}}
+        ...attributes
+      >
+        <span class={{@item.innerClass}}>
+          {{#if @item.args.betaBadgeLabel}}
+            <EuiBetaBadge
+              @size="s"
+              @color="subdued"
+              class="euiKeyPadMenuItem__betaBadge"
+              @css={{@item.betaBadgeCss}}
+              @label={{@item.betaBadgeLetter}}
+              @iconType={{@item.args.betaBadgeIconType}}
+              aria-hidden="true"
+            />
+          {{/if}}
+          <span class={{@item.iconClass}}>{{yield}}</span>
+          <span class={{@item.labelClass}}>{{@item.args.label}}</span>
+        </span>
+      </a>
+    {{else if @item.isButton}}
+      <button
+        class={{@item.classes}}
+        type="button"
+        disabled={{@item.isDisabled}}
+        aria-pressed={{@item.ariaPressed}}
+        ...attributes
+      >
+        <span class={{@item.innerClass}}>
+          {{#if @item.args.betaBadgeLabel}}
+            <EuiBetaBadge
+              @size="s"
+              @color="subdued"
+              class="euiKeyPadMenuItem__betaBadge"
+              @css={{@item.betaBadgeCss}}
+              @label={{@item.betaBadgeLetter}}
+              @iconType={{@item.args.betaBadgeIconType}}
+              aria-hidden="true"
+            />
+          {{/if}}
+          <span class={{@item.iconClass}}>{{yield}}</span>
+          <span class={{@item.labelClass}}>{{@item.args.label}}</span>
+        </span>
+      </button>
+    {{else}}
+      <label class={{@item.classes}} for={{@item.itemId}} ...attributes>
+        <span class={{@item.innerClass}}>
+          {{#if @item.isRadio}}
+            <EuiRadio
+              id={{@item.itemId}}
+              @containerClass="euiKeyPadMenuItem__checkableInput"
+              @css={{@item.checkableCss}}
+              @checked={{@item.isSelected}}
+              @disabled={{@item.isDisabled}}
+              @name={{@item.args.name}}
+              value={{@item.args.value}}
+              {{on "change" (fn @item.onChange @item.itemId @item.args.value)}}
+            />
+          {{else}}
+            <EuiCheckbox
+              id={{@item.itemId}}
+              @containerClass="euiKeyPadMenuItem__checkableInput"
+              @css={{@item.checkableCss}}
+              @checked={{@item.isSelected}}
+              @disabled={{@item.isDisabled}}
+              @name={{@item.args.name}}
+              {{on "change" (fn @item.onChange @item.itemId)}}
+            />
+          {{/if}}
+          <span class={{@item.iconClass}}>{{yield}}</span>
+          <span class={{@item.labelClass}}>{{@item.args.label}}</span>
+        </span>
+      </label>
+    {{/if}}
+</template>;
+
+const noop = () => {};
+
+/** Native Ember key pad menu item using the upstream EUI 123 / Borealis styles. */
+export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignature> {
+  generatedId = randomId();
+
+  get context() {
+    return getEuiThemeContext(this);
+  }
+
+  get itemId(): string {
+    return this.args.id ?? this.generatedId;
+  }
+
+  get isDisabled(): boolean {
+    const { href, isDisabled } = this.args;
+    return Boolean(isDisabled || (href && !isValidHref(href)));
+  }
+
+  get isSelected(): boolean {
+    return Boolean(this.args.isSelected);
+  }
+
+  get tagName(): 'a' | 'button' | 'label' {
+    if (this.args.checkable) return 'label';
+    return this.args.href && !this.isDisabled ? 'a' : 'button';
+  }
+
+  get isLink(): boolean {
+    return this.tagName === 'a';
+  }
+
+  get isButton(): boolean {
+    return this.tagName === 'button';
+  }
+
+  get isRadio(): boolean {
+    return this.args.checkable === 'single';
+  }
+
+  get rel(): string | undefined {
+    return this.isLink
+      ? getSecureRelForTarget(this.args.target, this.args.rel)
+      : undefined;
+  }
+
+  get ariaPressed(): string | undefined {
+    const { isSelected } = this.args;
+    return this.isButton && isSelected !== undefined
+      ? String(isSelected)
+      : undefined;
+  }
+
+  get betaBadgeLetter(): string | undefined {
+    return this.args.betaBadgeLabel?.charAt(0);
+  }
+
+  /** Upstream wraps the item in a tooltip titled `@betaBadgeLabel`. */
+  @cached
+  get tooltipProps(): Partial<EuiTooltipArgs> | undefined {
+    const { betaBadgeLabel, betaBadgeTooltipContent, betaBadgeTooltipProps } =
+      this.args;
+
+    if (!betaBadgeLabel) return undefined;
+
+    return {
+      ...betaBadgeTooltipProps,
+      title: betaBadgeLabel,
+      content: betaBadgeTooltipContent
+    };
+  }
+
+  get onChange() {
+    return this.args.onChange ?? noop;
+  }
+
+  @cached
+  get childStyles() {
+    return useEuiBorealisStyles(this.context, euiKeyPadMenuItemChildStyles);
+  }
+
+  @cached
+  get classes(): string {
+    const context = this.context;
+    const theme = context.upstream.euiTheme;
+    const styles = useEuiBorealisStyles(context, euiKeyPadMenuItemStyles);
+    const disabled = this.isDisabled;
+    // Scoped stand-in for React's global button/link reset; upstream after.
+    const reset = {
+      boxSizing: 'border-box' as const,
+      margin: 0,
+      border: 0,
+      background: 'none',
+      fontFamily: theme.font.family,
+      fontSize: 'inherit',
+      textDecoration: 'none'
+    };
+    return `euiKeyPadMenuItem ${euiClass(
+      context,
+      reset,
+      styles.euiKeyPadMenuItem,
+      disabled ? styles.disabled.disabled : styles.enabled,
+      this.isSelected && (disabled ? styles.disabled.selected : styles.selected)
+    )}`;
+  }
+
+  @cached
+  get innerClass(): string {
+    return `euiKeyPadMenuItem__inner ${euiClass(
+      this.context,
+      { boxSizing: 'border-box' },
+      this.childStyles.euiKeyPadMenuItem__inner
+    )}`;
+  }
+
+  @cached
+  get iconClass(): string {
+    return `euiKeyPadMenuItem__icon ${euiClass(
+      this.context,
+      this.childStyles.euiKeyPadMenuItem__icon
+    )}`;
+  }
+
+  @cached
+  get labelClass(): string {
+    return `euiKeyPadMenuItem__label ${euiClass(
+      this.context,
+      this.childStyles.euiKeyPadMenuItem__label
+    )}`;
+  }
+
+  @cached
+  get betaBadgeCss(): EuiCss {
+    return this.childStyles.euiKeyPadMenuItem__betaBadge;
+  }
+
+  @cached
+  get checkableCss(): EuiCss {
+    const styles = this.childStyles;
+    const selected = this.isSelected;
+    const disabled = this.isDisabled;
+    return [
+      styles.euiKeyPadMenuItem__checkableInput,
+      !selected && disabled && styles.hideCheckableInput,
+      !selected && !disabled && styles.showCheckableInputOnInteraction
+    ];
+  }
+
   <template>
-    {{#let
-      (if @checkable "label" (if (and @href (not @isDisabled)) "a" "button"))
-      (argOrDefault @id (randomId))
-      (and @href (not @isDisabled))
-      as |ElementTag itemId useHref|
-    }}
-      {{#let (element ElementTag) as |TagElement|}}
-        <TagElement
-          href={{if useHref @href}}
-          target={{if useHref @target}}
-          aria-current={{if (and useHref @isSelected) "true"}}
-          for={{if @checkable itemId}}
-          disabled={{if (and (not useHref) (not @checkable)) @isDisabled}}
-          type={{if (and (not useHref) (not @checkable)) "button"}}
-          aria-pressed={{if
-            (and (not useHref) (not @checkable))
-            (if @isSelected "true" "false")
-          }}
-          class={{classNames
-            "euiKeyPadMenuItem"
-            (if @betaBadgeLabel "euiKeyPadMenuItem--hasBetaBadge")
-            (if @checkable "euiKeyPadMenuItem--checkable")
-            (if @isDisabled "euiKeyPadMenuItem-isDisabled")
-            (if @isSelected "euiKeyPadMenuItem-isSelected")
-          }}
-          rel={{if useHref "noreferrer"}}
-          {{!@glint-expect-error}}
-          ...attributes
-        >
-          <span class="euiKeyPadMenuItem__inner">
-            {{#if @checkable}}
-              {{#if (eq @checkable "single")}}
-                {{! template-lint-disable no-duplicate-id }}
-                <EuiRadio
-                  id={{itemId}}
-                  @containerClass="euiKeyPadMenuItem__checkableInput"
-                  @checked={{@isSelected}}
-                  @disabled={{@isDisabled}}
-                  @name={{@name}}
-                  value={{@value}}
-                  {{on "change" (fn @onChange itemId @value)}}
-                />
-              {{else}}
-                <EuiCheckbox
-                  id={{itemId}}
-                  @containerClass="euiKeyPadMenuItem__checkableInput"
-                  @checked={{@isSelected}}
-                  @disabled={{@isDisabled}}
-                  @name={{@name}}
-                  {{on "change" (fn @onChange itemId)}}
-                />
-              {{/if}}
-            {{else if @betaBadgeLabel}}
-              <EuiBetaBadge
-                @size="s"
-                @color="subdued"
-                class="euiKeyPadMenuItem__betaBadge"
-                @label={{charAt @betaBadgeLabel 0}}
-                @title={{@betaBadgeLabel}}
-                @iconType={{@betaBadgeIconType}}
-                @tooltipContent={{@betaBadgeTooltipContent}}
-              />
-            {{/if}}
-            <span class="euiKeyPadMenuItem__icon">{{yield}}</span>
-            <span class="euiKeyPadMenuItem__label">{{@label}}</span>
-          </span>
-        </TagElement>
-
-      {{/let}}
-    {{/let}}
-  </template>;
-
-export default EuiKeyPadMenuItem;
+    <EuiMaybeToolTip @props={{this.tooltipProps}}>
+      <KeyPadMenuItemElement @item={{this}} ...attributes>
+        {{yield}}
+      </KeyPadMenuItemElement>
+    </EuiMaybeToolTip>
+  </template>
+}

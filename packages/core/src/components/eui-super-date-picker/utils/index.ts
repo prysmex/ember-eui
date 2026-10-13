@@ -11,7 +11,7 @@ import moment from 'moment';
 
 import type EuiI18n from '../../../services/eui-i18n';
 import type { RelativeParts, ShortDate } from '../types/global';
-import type { LocaleSpecifier } from 'moment';
+import type { LocaleSpecifier, Moment } from 'moment';
 
 /**
  * Reusable format time string util
@@ -47,7 +47,8 @@ export const useFormatTimeString = (
   dateFormat: string,
   roundUp = false,
   locale: LocaleSpecifier = 'en',
-  euiI18nService: EuiI18n
+  euiI18nService: EuiI18n,
+  canRoundRelativeUnits = true
 ): string => {
   const lookupToken = euiI18nService.lookupToken;
 
@@ -75,7 +76,25 @@ export const useFormatTimeString = (
   }
 
   if (moment.isMoment(tryParse)) {
-    return `~ ${tryParse.locale(locale).fromNow()}`;
+    if (canRoundRelativeUnits) {
+      return `~ ${tryParse.locale(locale).fromNow()}`;
+    }
+
+    // Upstream: keep the unit the user typed instead of moment's rounding
+    // (`fromNow()`), using moment's own relative time strings.
+    const { count, unit: _unit } = parseRelativeParts(timeString);
+    const isFuture = _unit.endsWith('+');
+    const unit = isFuture ? _unit.slice(0, -1) : _unit;
+    const relativeUnitKey = (
+      count === 1 ? unit : unit + unit
+    ) as moment.RelativeTimeKey;
+
+    return moment
+      .localeData()
+      .pastFuture(
+        isFuture ? count : count * -1,
+        moment.localeData().relativeTime(count, false, relativeUnitKey, false)
+      );
   }
 
   return timeString;
@@ -161,7 +180,12 @@ export function toRelativeStringFromParts(relativeParts: RelativeParts) {
   return `now${operator}${count}${unit}${round}`;
 }
 
-export function isRangeInvalid(start: ShortDate, end: ShortDate) {
+export function isRangeInvalid(
+  start: ShortDate,
+  end: ShortDate,
+  minDate?: Moment,
+  maxDate?: Moment
+) {
   if (start === 'now' && end === 'now') {
     return true;
   }
@@ -176,7 +200,10 @@ export function isRangeInvalid(start: ShortDate, end: ShortDate) {
     !endMoment.isValid() ||
     !moment(startMoment).isValid() ||
     !moment(endMoment).isValid() ||
-    startMoment.isAfter(endMoment);
+    startMoment.isAfter(endMoment) ||
+    endMoment.isBefore(startMoment) ||
+    (minDate != null && startMoment.isBefore(minDate)) ||
+    (maxDate != null && endMoment.isAfter(maxDate));
 
   return isInvalid;
 }
@@ -191,6 +218,21 @@ export function getDateMode(value: ShortDate) {
   }
 
   return DATE_MODES.ABSOLUTE;
+}
+
+/**
+ * Upstream `isRelativeToNow`: "last …" (relative → now) or "next …"
+ * (now → relative) ranges.
+ */
+export function isRelativeToNow(timeFrom: ShortDate, timeTo: ShortDate) {
+  const fromDateMode = getDateMode(timeFrom);
+  const toDateMode = getDateMode(timeTo);
+  const isLast =
+    fromDateMode === DATE_MODES.RELATIVE && toDateMode === DATE_MODES.NOW;
+  const isNext =
+    fromDateMode === DATE_MODES.NOW && toDateMode === DATE_MODES.RELATIVE;
+
+  return isLast || isNext;
 }
 
 export default useFormatTimeString;

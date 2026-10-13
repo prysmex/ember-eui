@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
@@ -8,16 +9,20 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { modifier } from 'ember-modifier';
 
 import cssStyle from '../-private/css-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiDraggableItemStyles,
+  euiDraggableStyles
+} from '../utils/eui/styles.generated.ts';
 
 import type { DraggableData } from '../-private/drag-drop.ts';
 import type EuiDroppable from './eui-droppable.gts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
-const SPACING = {
-  none: undefined,
-  s: 'euiDraggable--s',
-  m: 'euiDraggable--m',
-  l: 'euiDraggable--l'
-};
+/** Controls a key press inside the item must reach (not lift the item). */
+const INTERACTIVE =
+  'input, button, textarea, select, option, optgroup, video, audio, a[href], [contenteditable]:not([contenteditable="false"])';
 
 /**
  * An item of an `EuiDroppable` list (yielded as `Draggable`). Drag it with
@@ -27,6 +32,11 @@ const SPACING = {
 export interface EuiDraggableSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** Unique id of the item, reported in `onDragEnd`. */
     draggableId: string;
     /** Position of the item in its list. */
@@ -35,9 +45,17 @@ export interface EuiDraggableSignature {
     isDragDisabled?: boolean;
     /**
      * Only a handle drags the item: put the yielded `dragHandle` modifier
-     * on it, e.g. `<EuiIcon @type="grab" {{item.dragHandle}} />`.
+     * on it, e.g. `<EuiIcon @type="dragVertical" {{item.dragHandle}} />`. With
+     * `'custom'` the item itself is not focusable and has no role either:
+     * the handle becomes the focusable `role="button"` that lifts the item
+     * with the keyboard (upstream's fully custom handle).
      */
-    customDragHandle?: boolean;
+    customDragHandle?: boolean | 'custom';
+    /**
+     * The item holds its own controls: it becomes a `role="group"` that is
+     * not focusable itself, and key presses in those controls are theirs.
+     */
+    hasInteractiveChildren?: boolean;
     /** Skips the drop animation, e.g. for items removed on drop. */
     isRemovable?: boolean;
     /** Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'none'`. */
@@ -80,25 +98,63 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
     return Boolean(this.droppable.args.cloneDraggables);
   }
 
-  get classes(): string {
-    return [
-      'euiDraggable',
-      this.isClone && 'euiDraggable--hasClone',
-      this.args.customDragHandle && 'euiDraggable--hasCustomDragHandle',
-      this.isDragging && 'euiDraggable--isDragging',
-      this.args.isRemovable && 'euiDraggable--withoutDropAnimation',
-      SPACING[this.args.spacing ?? 'none']
-    ]
-      .filter(Boolean)
-      .join(' ');
+  get isFullyCustomDragHandle(): boolean {
+    return this.args.customDragHandle === 'custom';
   }
 
+  /** `button` by default, `group` with interactive children, none for a fully custom handle. */
+  get role(): string | undefined {
+    if (this.isFullyCustomDragHandle) return undefined;
+
+    return this.args.hasInteractiveChildren ? 'group' : 'button';
+  }
+
+  /** Whether the item is lifted, on the `role="button"` item only. */
+  get pressed(): string | undefined {
+    if (this.role !== 'button') return undefined;
+
+    return this.isDragging ? 'true' : 'false';
+  }
+
+  get tabindex(): string | undefined {
+    if (this.args.isDragDisabled || this.args.hasInteractiveChildren || this.isFullyCustomDragHandle) {
+      return undefined;
+    }
+
+    return '0';
+  }
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiDraggableStyles);
+
+    return `euiDraggable ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiDraggable,
+      this.isClone && !this.isDragging && styles.hasClone,
+      this.isDragging && styles.isDragging,
+      this.args.isRemovable && styles.isRemovable,
+      styles.spacing[this.args.spacing ?? 'none'],
+      this.args.css
+    )}`;
+  }
+
+  @cached
   get itemClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiDraggableItemStyles);
+
     return [
       'euiDraggable__item',
-      this.args.customDragHandle && 'euiDraggable__item--hasCustomDragHandle',
-      this.args.isDragDisabled && 'euiDraggable__item--isDisabled',
-      this.isDragging && 'euiDraggable__item--isDragging'
+      this.args.isDragDisabled && 'euiDraggable__item-isDisabled',
+      euiClass(
+        context,
+        styles.euiDraggable__item,
+        this.args.isDragDisabled && styles.disabled,
+        this.isDragging && styles.isDragging
+      )
     ]
       .filter(Boolean)
       .join(' ');
@@ -203,6 +259,19 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
   @action
   onKeyDown(event: KeyboardEvent): void {
     if (this.args.isDragDisabled) return;
+
+    // keys typed in the item's own controls are theirs (not the handle's)
+    const target = event.target as Element;
+    const wrapper = event.currentTarget as Element;
+
+    if (
+      target !== wrapper &&
+      !(this.handle && this.handle.contains(target)) &&
+      target.closest(INTERACTIVE) &&
+      wrapper.contains(target.closest(INTERACTIVE))
+    ) {
+      return;
+    }
 
     const drag = this.drag;
     const lifted = drag?.isKeyboard && this.isDragging;
@@ -330,6 +399,13 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
   dragHandle = modifier((handle: HTMLElement) => {
     this.handle = handle;
     handle.setAttribute('data-drag-handle', '');
+
+    // a fully custom handle is what the keyboard lifts
+    if (this.isFullyCustomDragHandle && !this.args.isDragDisabled) {
+      if (!handle.hasAttribute('tabindex')) handle.setAttribute('tabindex', '0');
+      if (!handle.hasAttribute('role')) handle.setAttribute('role', 'button');
+    }
+
     this.connect();
 
     return () => {
@@ -342,10 +418,10 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
       class={{this.classes}}
       data-test-subj="draggable"
       data-draggable-id={{@draggableId}}
-      tabindex={{unless @isDragDisabled "0"}}
-      role="button"
-      aria-roledescription="Draggable item"
-      aria-pressed={{if this.isDragging "true" "false"}}
+      tabindex={{this.tabindex}}
+      role={{this.role}}
+      aria-roledescription={{if this.role "Draggable item"}}
+      aria-pressed={{this.pressed}}
       style={{this.style}}
       {{this.register @isDragDisabled}}
       {{on "keydown" this.onKeyDown}}

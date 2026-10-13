@@ -12,42 +12,14 @@ counts the applied options.
 
 </EuiText>
 
-```hbs template
-<EuiFilterGroup>
-  <EuiPopover
-    @isOpen={{this.isOpen}}
-    @closePopover={{this.close}}
-    @panelPaddingSize="none"
-    @anchorPosition="downCenter"
-  >
-    <:button>
-      <EuiFilterButton
-        @iconType="arrowDown"
-        @isSelected={{this.isOpen}}
-        @hasActiveFilters={{gt this.activeCount 0}}
-        @numFilters={{this.options.length}}
-        @numActiveFilters={{this.activeCount}}
-        {{on "click" this.toggle}}
-      >Composers</EuiFilterButton>
-    </:button>
-    <:content>
-      <div class="euiFilterSelect__items" role="listbox" aria-label="Composers">
-        {{#each this.options as |option|}}
-          <EuiFilterSelectItem
-            @checked={{option.checked}}
-            {{on "click" (fn this.cycle option.name)}}
-          >{{option.name}}</EuiFilterSelectItem>
-        {{/each}}
-      </div>
-    </:content>
-  </EuiPopover>
-</EuiFilterGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFilterGroup, EuiPopover, EuiFilterButton, EuiFilterSelectItem } from '@ember-eui/core/components';
+import { gt } from 'ember-truth-helpers';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 const NEXT = { on: 'off', off: undefined, undefined: 'on' };
 
@@ -83,5 +55,37 @@ export default class FilterPopover extends Component {
         : option,
     );
   }
+
+  <template>
+    <EuiFilterGroup>
+      <EuiPopover
+        @isOpen={{this.isOpen}}
+        @closePopover={{this.close}}
+        @panelPaddingSize="none"
+        @anchorPosition="downCenter"
+      >
+        <:button>
+          <EuiFilterButton
+            @iconType="arrowDown"
+            @isSelected={{this.isOpen}}
+            @hasActiveFilters={{gt this.activeCount 0}}
+            @numFilters={{this.options.length}}
+            @numActiveFilters={{this.activeCount}}
+            {{on "click" this.toggle}}
+          >Composers</EuiFilterButton>
+        </:button>
+        <:content>
+          <div class="euiFilterSelect__items" role="listbox" aria-label="Composers">
+            {{#each this.options as |option|}}
+              <EuiFilterSelectItem
+                @checked={{option.checked}}
+                {{on "click" (fn this.cycle option.name)}}
+              >{{option.name}}</EuiFilterSelectItem>
+            {{/each}}
+          </div>
+        </:content>
+      </EuiPopover>
+    </EuiFilterGroup>
+  </template>
 }
 ```

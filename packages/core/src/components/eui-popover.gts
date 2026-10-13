@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { assert } from '@ember/debug';
 import { hash } from '@ember/helper';
 import { concat } from '@ember/helper';
@@ -7,29 +7,44 @@ import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, scheduleOnce } from '@ember/runloop';
+import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
 import { buildWaiter } from '@ember/test-waiters';
 import type Owner from '@ember/owner';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { focusTrap } from 'ember-focus-trap';
+import { modifier } from 'ember-modifier';
+import {
+  attachToFocusTraps,
+  focusTrapFactory
+} from '../-private/focus-trap-registry.ts';
+import { provide } from 'ember-provide-consume-context';
 import onKey from 'ember-keyboard/modifiers/on-key';
 import { and, not, or } from 'ember-truth-helpers';
-import { tabbable } from 'tabbable';
+import { focusable, tabbable } from 'tabbable';
 
-import randomId from '../-private/random-id.ts';
+import { EUI_POPOVER_PANEL_CONTEXT } from '../-private/eui-popover-panel-context.ts';
+import { randomId as generateId } from '../-private/random-id.ts';
 import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
 import merge from '../helpers/merge.ts';
 import mutationObserver from '../modifiers/mutation-observer.ts';
 import outsideClickDetector from '../modifiers/outside-click-detector.ts';
 import screenReaderOnly from '../modifiers/screen-reader-only.ts';
 import simpleStyle from '../modifiers/simple-style.ts';
 import { cascadingMenuKeys } from '../utils/accesibility/index.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
-  anchorPositionMapping,
-  displayMapping
-} from '../utils/css-mappings/eui-popover.ts';
+  euiBackgroundColor,
+  euiBorderColor,
+  euiPaddingSize,
+  euiPanelStyles,
+  euiPopoverArrowStyles,
+  euiPopoverPanelStyles,
+  euiPopoverStyles
+} from '../utils/eui/styles.generated.ts';
 import {
   findPopoverPosition,
   getElementZIndex
@@ -39,14 +54,21 @@ import {
   getWaitDuration,
   performOnFrame
 } from '../utils/transition.ts';
-import EuiPanel from './eui-panel.gts';
 import EuiPortal from './eui-portal.gts';
 
-import type { paddingSizeMapping } from '../utils/css-mappings/eui-panel.ts';
+import type {
+  EuiPopoverPanelContext,
+  EuiPopoverPanelPaddingSize
+} from '../-private/eui-popover-panel-context.ts';
+import type EuiI18n from '../services/eui-i18n.ts';
 import type { EuiPopoverPosition } from '../utils/popover/types';
 import type { EmberKeyboardEvent } from 'ember-keyboard/modifiers/on-key';
 
-type PanelPaddingSize = keyof typeof paddingSizeMapping;
+/** Panel padding; `xs`/`xl` exist upstream but are discouraged. */
+type PanelPaddingSize = EuiPopoverPanelPaddingSize;
+
+/** `'inlineBlock'`/`'block'`, or any CSS `display` value (upstream). */
+type PopoverDisplay = 'inlineBlock' | 'block' | (string & {});
 
 export type PopoverAnchorPosition =
   | 'upCenter'
@@ -62,6 +84,48 @@ export type PopoverAnchorPosition =
   | 'rightUp'
   | 'rightDown';
 
+/**
+ * Upstream `focusTrapProps` (`EuiFocusTrap` props). They replace the
+ * popover's own values, as upstream spreads them last.
+ */
+export interface EuiPopoverFocusTrapProps {
+  /** Turns the trap off (replaces the popover's own condition). */
+  disabled?: boolean;
+  /**
+   * Whether closing returns focus to the element focused before opening:
+   * `false` opts out, a function receives that element and returns `false`
+   * to skip it. Defaults to `true`.
+   */
+  returnFocus?:
+    | boolean
+    | FocusOptions
+    | ((returnTo: Element) => boolean | FocusOptions);
+  /** The element to focus on activation (replaces `@initialFocus`). */
+  initialFocus?: FocusTarget;
+  /** Called on Escape, instead of closing the popover. */
+  onEscapeKey?: (event: KeyboardEvent) => void;
+  /** Called on a press outside, instead of closing the popover. */
+  onClickOutside?: (event: Event) => void;
+  /** Extra elements that count as part of the popover for the trap. */
+  shards?: HTMLElement[];
+}
+
+/**
+ * Upstream `panelProps` (EuiPanel props, without `style`, `hasShadow`,
+ * `hasBorder` and `color`). `className`, `css`, `tabIndex`, `role` and
+ * `aria-modal` change the panel itself, `on<Event>` keys add listeners and
+ * any other key (`aria-*`, `data-*`, `title`, ...) is set as an attribute.
+ * `id` is not applied: the trigger's `aria-controls` uses the panel's id.
+ */
+export interface EuiPopoverPanelProps {
+  className?: string;
+  css?: EuiCss;
+  tabIndex?: number | string;
+  role?: string;
+  'aria-modal'?: string | boolean;
+  [key: string]: unknown;
+}
+
 export type EuiPopoverArgs = {
   /**
    * Callback to have a reference to the portal element
@@ -76,7 +140,7 @@ export type EuiPopoverArgs = {
    * `'upLeft'`, `'upRight'`, `'downCenter'`, `'downLeft'`, `'downRight'`,
    * `'leftCenter'`, `'leftUp'`, `'leftDown'`, `'rightCenter'`, `'rightUp'`
    * or `'rightDown'`. It flips when there is no room. Defaults to
-   * `'downCenter'`.
+   * `'downLeft'` (upstream EUI default).
    */
   anchorPosition?: PopoverAnchorPosition;
   /**
@@ -102,12 +166,13 @@ export type EuiPopoverArgs = {
    */
   container?: HTMLElement;
   /**
-   * CSS display of the anchor: `'inlineBlock'` or `'block'`.
-   * Defaults to `'inlineBlock'`.
+   * CSS display of the popover's root: `'inlineBlock'`, `'block'` or any
+   * CSS `display` value. Defaults to `'inlineBlock'`.
    */
-  display?: keyof typeof displayMapping;
+  display?: PopoverDisplay;
   /**
-   * Show arrow indicating to originating button. Defaults to `true`.
+   * Show an arrow pointing to the anchor. Defaults to `false` (upstream EUI
+   * default).
    */
   hasArrow?: boolean;
   /**
@@ -115,7 +180,9 @@ export type EuiPopoverArgs = {
    * (for `document.querySelector()`) or a function returning a node. It is
    * focused once the panel is positioned and visible (so the page does not
    * scroll to a panel still being placed), also without `@ownFocus`.
-   * `false` focuses nothing.
+   * `false` focuses nothing. Without it, `@ownFocus` popovers (and panels
+   * with an `aria-modal` other than `true`) focus the panel itself, like
+   * upstream; Tab then moves to the first tabbable element.
    */
   initialFocus?: FocusTarget | false;
   /**
@@ -136,16 +203,40 @@ export type EuiPopoverArgs = {
    */
   ownFocus?: boolean;
   /**
-   * Custom class added to the EuiPanel containing the popover contents
+   * Custom class added to the panel containing the popover contents
    */
   panelClassName?: string;
   /**
-   * Padding of the popover: `'none'`, `'s'`, `'m'` or `'l'`.
-   * Defaults to `'m'`.
+   * Padding of the popover: `'none'`, `'s'`, `'m'` or `'l'` (`'xs'` and
+   * `'xl'` are discouraged upstream). Defaults to `'m'`.
    */
   panelPaddingSize?: PanelPaddingSize;
-  /** @deprecated Has no effect. */
+  /** Inline styles for the panel (positioning styles win). */
   panelStyle?: { [i: string]: string };
+  /**
+   * Extra screen reader text, announced with the panel (with `@ownFocus`
+   * it follows the default "You are in a dialog…" instructions).
+   */
+  popoverScreenReaderText?: string;
+  /**
+   * Props for the panel (upstream `panelProps`), see
+   * {@link EuiPopoverPanelProps}. `tabIndex` wins over `@tabindex`; a
+   * `role` or `aria-modal` of its own replaces `dialog` / `true`; an
+   * `aria-modal` other than `true` makes the popover focus its panel like
+   * `@ownFocus` does.
+   */
+  panelProps?: EuiPopoverPanelProps;
+  /**
+   * Props for the focus trap (upstream `focusTrapProps`), see
+   * {@link EuiPopoverFocusTrapProps}. They replace the popover's own
+   * values.
+   */
+  focusTrapProps?: EuiPopoverFocusTrapProps;
+  /**
+   * Called with the position the popover ended up in (`'top'`, `'right'`,
+   * `'bottom'` or `'left'`) each time it is positioned.
+   */
+  onPositionChange?: (position: EuiPopoverPosition) => void;
   /** Called with the popover's panel element (`null` when it closes). */
   panelRef?: (e: HTMLElement | null) => unknown;
   /** Called with the popover's root element. */
@@ -163,6 +254,26 @@ export type EuiPopoverArgs = {
    */
   repositionOnScroll?: boolean;
   /**
+   * Whether the popover may move to the cross axis (e.g. from below to the
+   * side of the anchor) when there is no room. Defaults to `true`.
+   */
+  repositionToCrossAxis?: boolean;
+  /**
+   * @private Styles composed last into the root's class (e.g.
+   * EuiInputPopover's max width), like upstream's `css` prop.
+   */
+  rootCss?: EuiCss;
+  /**
+   * Extra styles composed last into the root's class (like upstream's `css`
+   * prop). Prefer this to an extra class when styling it from a parent.
+   */
+  css?: EuiCss;
+  /**
+   * Extra styles composed last into the panel's class (like upstream's
+   * `panelProps.css`). Prefer this to `@panelClassName` for styles.
+   */
+  panelCss?: EuiCss;
+  /**
    * By default, popover content inherits the z-index of the anchor
    * component; pass `zIndex` to override
    */
@@ -172,7 +283,8 @@ export type EuiPopoverArgs = {
    */
   onTrapDeactivation?: () => void;
   /**
-   * Distance away from the anchor that the popover will render
+   * Distance away from the anchor that the popover will render. Defaults
+   * to `0` with an arrow and `4` without (upstream).
    */
   offset?: number;
   /**
@@ -273,8 +385,30 @@ export function getPopoverAlignFromAnchorPosition(
   return anchorPositionToPopoverPositionMap['left'];
 }
 
-export const ANCHOR_POSITIONS = Object.keys(anchorPositionMapping);
-export const DISPLAY = Object.keys(displayMapping);
+export const ANCHOR_POSITIONS: PopoverAnchorPosition[] = [
+  'upCenter',
+  'upLeft',
+  'upRight',
+  'downCenter',
+  'downLeft',
+  'downRight',
+  'leftCenter',
+  'leftUp',
+  'leftDown',
+  'rightCenter',
+  'rightUp',
+  'rightDown'
+];
+export const DISPLAY = ['inlineBlock', 'block'];
+
+/** Ember display names mapped to the CSS values upstream takes. */
+const DISPLAY_CSS: Record<string, string> = {
+  inlineBlock: 'inline-block',
+  block: 'block'
+};
+
+/** Upstream `EuiPopover` closing transition time (ms). */
+const CLOSING_TRANSITION_TIME = 250;
 // tests settle once an opening popover has set its focus
 const focusWaiter = buildWaiter('@ember-eui/core:eui-popover-focus');
 
@@ -329,13 +463,33 @@ export interface EuiPopoverSignature {
   };
 }
 
-export default class EuiPopoverComponent extends Component<EuiPopoverSignature> {
+export default class EuiPopoverComponent
+  extends Component<EuiPopoverSignature>
+  implements EuiPopoverPanelContext
+{
+  @service declare euiI18n: EuiI18n;
+
+  /** EuiPopoverTitle/Footer inherit the panel padding (upstream context). */
+  @provide(EUI_POPOVER_PANEL_CONTEXT)
+  get panelContext(): EuiPopoverPanelContext {
+    return this;
+  }
+
+  get paddingSize(): PanelPaddingSize {
+    return this.panelPaddingSize;
+  }
+
+  /** Id of the panel, for the trigger's `aria-controls`. */
+  panelId = generateId();
+  /** Id of the screen reader description. */
+  descriptionId = generateId();
+
   // Defaults
   @argOrDefaultDecorator(false) isOpen!: boolean;
   @argOrDefaultDecorator(true) ownFocus!: boolean;
-  @argOrDefaultDecorator('downCenter') anchorPosition!: PopoverAnchorPosition;
+  @argOrDefaultDecorator('downLeft') anchorPosition!: PopoverAnchorPosition;
   @argOrDefaultDecorator('m') panelPaddingSize!: PanelPaddingSize;
-  @argOrDefaultDecorator(true) hasArrow!: boolean;
+  @argOrDefaultDecorator(false) hasArrow!: boolean;
   @argOrDefaultDecorator('inlineBlock') display!: string;
   @argOrDefaultDecorator(true) shouldSelfFocus!: boolean;
   @argOrDefaultDecorator(false) isFocusTrapPaused!: boolean;
@@ -361,6 +515,14 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   private updateFocusToken: unknown;
   private hasSetInitialFocus: boolean = false;
   @tracked _button: HTMLElement | null = null;
+
+  /**
+   * The portalled panel counts as inside the modal, flyout or popover focus
+   * trap its anchor is in (upstream's react-focus-on follows React portals).
+   */
+  joinFocusTraps = modifier((panel: HTMLElement) =>
+    attachToFocusTraps(this._button, panel)
+  );
   @tracked panel: HTMLElement | null = null;
 
   constructor(owner: Owner, args: EuiPopoverArgs) {
@@ -410,7 +572,12 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       ekEvent?.stopImmediatePropagation();
       event.preventDefault();
       event.stopPropagation();
-      this.closePopover();
+
+      if (this.args.focusTrapProps?.onEscapeKey) {
+        this.args.focusTrapProps.onEscapeKey(event as KeyboardEvent);
+      } else {
+        this.closePopover();
+      }
     }
   }
 
@@ -423,7 +590,9 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
 
   @action
   onClickOutside(event: Event): void {
-    if (this.args.focusTrapOptions?.onClickOutside) {
+    if (this.args.focusTrapProps?.onClickOutside) {
+      this.args.focusTrapProps.onClickOutside(event);
+    } else if (this.args.focusTrapOptions?.onClickOutside) {
       this.args.focusTrapOptions.onClickOutside(event);
     } else {
       // only close the popover if the event source isn't the anchor button
@@ -455,13 +624,15 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       this.updateFocusToken = undefined;
 
       // without @ownFocus, only an explicit @initialFocus moves the focus
-      const hasInitialFocus =
-        this.args.initialFocus !== undefined && this.args.initialFocus !== null;
+      const initialFocus =
+        this.args.focusTrapProps?.initialFocus ?? this.args.initialFocus;
+      const hasInitialFocus = initialFocus !== undefined && initialFocus !== null;
 
       if (
-        !(this.ownFocus || hasInitialFocus) ||
+        !(this.focusesPanel || hasInitialFocus) ||
         !this.panel ||
-        this.args.initialFocus === false
+        initialFocus === false ||
+        this.args.focusTrapProps?.disabled
       ) {
         return;
       }
@@ -477,14 +648,16 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       // Otherwise let's focus the first tabbable item and expedite input from the user.
       let focusTarget;
 
-      if (this.args.initialFocus != null) {
-        focusTarget = getElementFromInitialFocus(this.args.initialFocus);
+      if (initialFocus != null) {
+        focusTarget = getElementFromInitialFocus(initialFocus);
       } else {
-        const tabbableItems = tabbable(this.panel);
+        // upstream: the panel itself, then Tab reaches the first element
+        focusTarget = this.panel;
+      }
 
-        if (tabbableItems.length) {
-          focusTarget = tabbableItems[0];
-        }
+      if (focusTarget == null) {
+        // an `initialFocus` that matches nothing: the first tabbable item
+        focusTarget = tabbable(this.panel)[0];
       }
 
       // there's a race condition between the popover content becoming visible and this function call
@@ -600,6 +773,7 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       this.checkIfPopoverIsInsideAnotherPopover(ele);
     }
 
+    this.updateTriggerAria();
     this.updateFocus();
   }
 
@@ -630,11 +804,61 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
         () => {
           this.isClosing = false;
         },
-        250
+        CLOSING_TRANSITION_TIME
       );
     }
 
+    if (!!this.prevIsOpen !== !!this.args.isOpen) {
+      this.updateTriggerAria();
+    }
+
     this.prevIsOpen = this.args.isOpen;
+  }
+
+  /**
+   * Upstream: the first focusable element of the anchor, when it is a
+   * button (or `role="button"`), gets `aria-expanded`, and `aria-controls`
+   * pointing at the panel while open. Inputs and other elements are left
+   * alone.
+   */
+  getFocusableToggleButton(): HTMLElement | undefined {
+    const anchor = this.args.button ?? this._button;
+
+    if (!anchor) return undefined;
+
+    try {
+      return focusable(anchor, { includeContainer: !!this.args.button })[0] as
+        | HTMLElement
+        | undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  @action
+  updateTriggerAria(): void {
+    const toggleButton = this.getFocusableToggleButton();
+
+    if (!toggleButton) return;
+
+    const tag = toggleButton.tagName.toLowerCase();
+    const role = toggleButton.getAttribute('role')?.toLowerCase();
+
+    if (tag !== 'button' && role !== 'button') return;
+
+    toggleButton.setAttribute('aria-expanded', this.isOpen ? 'true' : 'false');
+
+    if (this.isOpen) {
+      toggleButton.setAttribute('aria-controls', this.panelId);
+    } else {
+      toggleButton.removeAttribute('aria-controls');
+    }
+  }
+
+  /** Upstream repositions an open popover when these args change. */
+  @action
+  didUpdatePlacementArgs(): void {
+    if (this.isOpen) this.positionPopoverFluid();
   }
 
   willDestroy(): void {
@@ -663,6 +887,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   positionPopover(allowEnforcePosition: boolean): void {
     if (this.button == null || this.panel == null) return;
 
+    // upstream: no extra distance by default with an arrow, 4px without
+    const offset = this.args.offset ?? (this.hasArrow ? 0 : 4);
     let position = getPopoverPositionFromAnchorPosition(this.anchorPosition);
     let forcePosition = undefined;
 
@@ -689,15 +915,17 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       align: getPopoverAlignFromAnchorPosition(this.anchorPosition),
       anchor: this.button,
       popover: this.panel,
-      offset:
-        !this.args.attachToAnchor && this.hasArrow
-          ? 16 + (this.args.offset || 0)
-          : 8 + (this.args.offset || 0),
-      arrowConfig: {
-        arrowWidth: 24,
-        arrowBuffer: 10
-      },
+      offset: this.args.attachToAnchor
+        ? offset
+        : this.hasArrow
+          ? 16 + offset
+          : 8 + offset,
+      // upstream Borealis arrow: 16px wide, kept out of the 12px corners
+      arrowConfig: this.hasArrow
+        ? { arrowWidth: 16, arrowBuffer: 10, borderRadius: 12 }
+        : { arrowWidth: 0, arrowBuffer: 0 },
       returnBoundingBox: this.args.attachToAnchor,
+      allowCrossAxis: this.args.repositionToCrossAxis ?? true,
       buffer: this.args.buffer
     });
 
@@ -723,6 +951,8 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
     const arrowStyles = willRenderArrow ? arrow : undefined;
     const arrowPosition = foundPosition;
 
+    this.args.onPositionChange?.(arrowPosition);
+
     this.popoverStyles = popoverStyles;
     this.arrowStyles = arrowStyles;
     this.arrowPosition = arrowPosition;
@@ -745,16 +975,211 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
       ...panelStyle,
       top: `${popoverStyles.top}px`,
       left: `${popoverStyles.left}px`,
-      zIndex: `${popoverStyles.zIndex}`
+      zIndex: `${popoverStyles.zIndex}`,
+      // upstream: reduces the risk of a blurry animation in Chrome 86+
+      willChange: this.isOpenStable ? 'auto' : 'transform, opacity'
     };
   }
 
+  get showArrow(): boolean {
+    return this.hasArrow && !this.args.attachToAnchor;
+  }
+
+  /** Root: upstream `euiPopoverStyles` plus the display. */
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiPopoverStyles);
+    const display = DISPLAY_CSS[this.display] ?? this.display;
+
+    return `euiPopover ${euiClass(
+      context,
+      styles.euiPopover,
+      { display, label: display },
+      this.args.rootCss,
+      this.args.css
+    )}`;
+  }
+
+  /**
+   * The panel: upstream `EuiPopoverPanel`, i.e. an `EuiPanel` (plain, no
+   * shadow or border, padding and radius m) composed with the popover panel
+   * styles in a single class, so no rule order between two classes matters.
+   */
+  @cached
+  get panelClasses(): string {
+    const context = getEuiThemeContext(this);
+    const upstream = context.upstream;
+    const panel = useEuiBorealisStyles(context, euiPanelStyles);
+    const styles = useEuiBorealisStyles(context, euiPopoverPanelStyles);
+    const isOpen = this.isOpening;
+    const position = this.arrowPosition;
+    const colorMode = upstream.colorMode === 'DARK' ? 'dark' : 'light';
+    const generated = euiClass(
+      context,
+      // no React global reset; portaled content also leaves the provider's
+      // color wrapper, so the panel sets the theme's text color itself
+      {
+        boxSizing: 'border-box',
+        color: upstream.euiTheme.colors.textParagraph,
+        textAlign: 'start'
+      },
+      panel.euiPanel,
+      panel.grow,
+      panel.radius.m,
+      { padding: euiPaddingSize(upstream, this.panelPaddingSize) ?? 0 },
+      { backgroundColor: euiBackgroundColor(upstream, 'plain') },
+      upstream.highContrastMode && {
+        border: upstream.euiTheme.border.thin,
+        borderColor: euiBorderColor(upstream, 'plain')
+      },
+      styles.euiPopover__panel,
+      styles[colorMode],
+      isOpen && styles.isOpen,
+      ...(this.args.attachToAnchor
+        ? [styles.isAttached.isAttached, position && styles.isAttached[position]]
+        : [
+            styles.hasTransform.hasTransform,
+            isOpen && position && styles.hasTransform[position]
+          ]),
+      this.args.panelCss,
+      this.args.panelProps?.css
+    );
+
+    return [
+      'euiPanel euiPanel--plain euiPopover__panel',
+      this.panelClassNames,
+      generated
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  @cached
+  get arrowClasses(): { wrapper: string; arrow: string } | undefined {
+    const position = this.arrowPosition;
+
+    if (!position) return undefined;
+
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiPopoverArrowStyles);
+
+    return {
+      wrapper: `euiPopover__arrowWrapper ${euiClass(context, styles.euiPopoverArrowWrapper)}`,
+      arrow: `euiPopover__arrow ${euiClass(context, styles.euiPopoverArrow, styles[position])}`
+    };
+  }
+
+  get screenReaderAnnouncement(): string {
+    return this.euiI18n.lookupToken(
+      'euiPopover.screenReaderAnnouncement',
+      'You are in a dialog. Press Escape, or tap/click outside the dialog to close.'
+    );
+  }
+
+  get hasDescription(): boolean {
+    return this.ownFocus || !!this.args.popoverScreenReaderText;
+  }
+
+  get panelRole(): string | undefined {
+    const props = this.args.panelProps;
+
+    return props && 'role' in props ? (props.role as string) : 'dialog';
+  }
+
+  get panelAriaModal(): string | undefined {
+    const props = this.args.panelProps;
+    const value = props && 'aria-modal' in props ? props['aria-modal'] : 'true';
+
+    return value == null ? undefined : String(value);
+  }
+
+  /** Upstream: `ownFocus`, or a panel that is not a modal dialog. */
+  get focusesPanel(): boolean {
+    return this.ownFocus || this.panelAriaModal !== 'true';
+  }
+
   get tabindex() {
-    if (this.ownFocus) {
-      return this.args.tabindex ?? '0';
+    const own = this.args.panelProps?.tabIndex;
+
+    if (this.focusesPanel) {
+      return own ?? this.args.tabindex ?? '0';
     }
 
-    return '-1';
+    return own ?? '-1';
+  }
+
+  /** The panel's classes: `@panelClassName` and `panelProps.className`. */
+  get panelClassNames(): string {
+    return [this.args.panelClassName, this.args.panelProps?.className]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  /** `panelProps` that are not handled by the template. */
+  applyPanelProps = modifier(
+    (panel: HTMLElement, [props]: [EuiPopoverPanelProps | undefined]) => {
+      const cleanups: Array<() => void> = [];
+      const handled = new Set([
+        'className',
+        'css',
+        'tabIndex',
+        'role',
+        'aria-modal',
+        'id',
+        'style',
+        'hasShadow',
+        'hasBorder',
+        'color'
+      ]);
+
+      for (const [key, value] of Object.entries(props ?? {})) {
+        if (handled.has(key) || value === undefined) continue;
+
+        if (/^on[A-Z]/.test(key) && typeof value === 'function') {
+          const type = key.slice(2).toLowerCase();
+
+          panel.addEventListener(type, value as EventListener);
+          cleanups.push(() =>
+            panel.removeEventListener(type, value as EventListener)
+          );
+        } else if (value === false || value === null) {
+          panel.removeAttribute(key);
+        } else {
+          panel.setAttribute(key, value === true ? '' : String(value as string | number));
+          cleanups.push(() => panel.removeAttribute(key));
+        }
+      }
+
+      return () => cleanups.forEach((cleanup) => cleanup());
+    }
+  );
+
+  /** Upstream `EuiFocusTrap` `returnFocus` as focus-trap options. */
+  get focusTrapReturnFocus(): Record<string, unknown> {
+    const returnFocus = this.args.focusTrapProps?.returnFocus;
+
+    if (returnFocus === false) {
+      return { returnFocusOnDeactivate: false };
+    }
+
+    if (typeof returnFocus === 'function') {
+      return {
+        setReturnFocus: (previous: HTMLElement | SVGElement) =>
+          returnFocus(previous) === false ? false : previous
+      };
+    }
+
+    return {};
+  }
+
+  get isFocusTrapActive(): boolean {
+    const { disabled } = this.args.focusTrapProps ?? {};
+
+    return !(
+      disabled ??
+      (!this.ownFocus || !this.isOpenStable || this.isClosing)
+    );
   }
 
   @action
@@ -794,130 +1219,117 @@ export default class EuiPopoverComponent extends Component<EuiPopoverSignature> 
   }
 
   <template>
-    {{#let
-      (randomId)
-      (classNames
-        (if this.isOpening "euiPopover-isOpen")
-        position=this.anchorPosition
-        display=this.display
-        componentName="EuiPopover"
-      )
-      (classNames
-        "euiPopover__panel"
-        (concat "euiPopover__panel--" this.arrowPosition)
-        (if this.isOpening "euiPopover__panel-isOpen")
-        (if
-          (or (not this.hasArrow) @attachToAnchor) "euiPopover__panel-noArrow"
-        )
-        (if @attachToAnchor "euiPopover__panel-isAttached")
-        @panelClassName
-      )
-      as |descriptionId classes panelClasses|
-    }}
-      <div
-        class={{classes}}
-        {{onKey "_all" this.onKeyDown priority=1}}
-        {{didInsert this.didInsertPopover}}
-        {{didUpdate this.didUpdateIsOpen @isOpen}}
-        {{didUpdate this.didUpdateRepositionOnScroll @repositionOnScroll}}
-        {{didInsert (optional @popoverRef)}}
-        ...attributes
-      >
+    <div
+      class="{{this.classes}} {{if this.isOpening 'euiPopover-isOpen'}}"
+      {{onKey "_all" this.onKeyDown priority=1}}
+      {{didInsert this.didInsertPopover}}
+      {{didUpdate this.didUpdateIsOpen @isOpen}}
+      {{didUpdate this.didUpdateRepositionOnScroll @repositionOnScroll}}
+      {{didUpdate
+        this.didUpdatePlacementArgs
+        @anchorPosition
+        @buffer
+        @offset
+        @panelPaddingSize
+      }}
+      {{didInsert (optional @popoverRef)}}
+      ...attributes
+    >
 
-        {{! button }}
-        {{#if (has-block "button")}}
+      {{! button }}
+      {{#if (has-block "button")}}
+        <div
+          class="euiPopover__anchor {{@anchorClassName}}"
+          {{didInsert this.registerButton}}
+        >
+          {{yield to="button"}}
+        </div>
+      {{/if}}
+
+      {{! content }}
+      {{#if
+        (and
+          (not this.suppressingPopover) (or this.isCurrentlyOpen this.isClosing)
+        )
+      }}
+        <EuiPortal @insert={{this.insert}} @portalRef={{@portalRef}}>
           <div
-            class="euiPopover__anchor {{@anchorClassName}}"
-            {{didInsert this.registerButton}}
-          >
-            {{yield to="button"}}
-          </div>
-        {{/if}}
-        
-        {{! content }}
-        {{#if
-          (and
-            (not this.suppressingPopover)
-            (or this.isCurrentlyOpen this.isClosing)
-          )
-        }}
-          <EuiPortal @insert={{this.insert}} @portalRef={{@portalRef}}>
-            {{#let (randomId) as |panelId|}}
-              <EuiPanel
-                id={{panelId}}
-                class={{panelClasses}}
-                aria-live={{if this.ownFocus "off" "assertive"}}
-                role="dialog"
-                aria-label={{@ariaLabel}}
-                aria-labelledby={{@ariaLabelledBy}}
-                aria-modal="true"
-                aria-describedby={{if this.ownFocus descriptionId}}
-                tabindex={{this.tabindex}}
-                @hasShadow={{false}}
-                @paddingSize={{this.panelPaddingSize}}
-                {{simpleStyle this._popoverStyles}}
-                {{didInsert this.registerPanel}}
-                {{outsideClickDetector onOutsideClick=this.onClickOutside}}
-                {{onKey "Escape" this.onEscapeKey}}
-                {{! the trap only traps: updateFocus sets the initial focus,
+            id={{this.panelId}}
+            class={{this.panelClasses}}
+            data-popover-panel="true"
+            data-popover-open={{if this.isOpening "true"}}
+            aria-live={{if this.focusesPanel "off" "assertive"}}
+            role={{this.panelRole}}
+            aria-label={{@ariaLabel}}
+            aria-labelledby={{@ariaLabelledBy}}
+            aria-modal={{this.panelAriaModal}}
+            aria-describedby={{if this.hasDescription this.descriptionId}}
+            tabindex={{this.tabindex}}
+            {{simpleStyle this._popoverStyles}}
+            {{didInsert this.registerPanel}}
+            {{this.joinFocusTraps}}
+            {{this.applyPanelProps @panelProps}}
+            {{outsideClickDetector onOutsideClick=this.onClickOutside}}
+            {{onKey "Escape" this.onEscapeKey}}
+            {{! the trap only traps: updateFocus sets the initial focus,
                     once the panel is positioned and visible }}
-                {{focusTrap
-                  isActive=(not
-                    (or
-                      (not this.ownFocus) (not this.isOpenStable) this.isClosing
-                    )
-                  )
-                  shouldSelfFocus=this.shouldSelfFocus
-                  isPaused=this.isFocusTrapPaused
-                  focusTrapOptions=(merge
-                    (hash
-                      returnFocusOnDeactivate=this.isOpenStable
-                      initialFocus=false
-                      onDeactivate=(optional @onTrapDeactivation)
-                      preventScroll=true
-                      clickOutsideDeactivates=true
-                      fallbackFocus=(concat "#" panelId)
-                    )
-                    @focusTrapOptions
-                  )
-                }}
-              >
+            {{focusTrap
+          _createFocusTrap=focusTrapFactory
+              isActive=this.isFocusTrapActive
+              shouldSelfFocus=this.shouldSelfFocus
+              isPaused=this.isFocusTrapPaused
+              additionalElements=@focusTrapProps.shards
+              focusTrapOptions=(merge
+                (hash
+                  returnFocusOnDeactivate=this.isOpenStable
+                  initialFocus=false
+                  onDeactivate=(optional @onTrapDeactivation)
+                  preventScroll=true
+                  clickOutsideDeactivates=true
+                  fallbackFocus=(concat "#" this.panelId)
+                )
+                this.focusTrapReturnFocus
+                @focusTrapOptions
+              )
+            }}
+          >
+            {{#if this.showArrow}}
+              {{#if this.arrowClasses}}
                 <div
-                  class={{concat
-                    "euiPopover__panelArrow euiPopover__panelArrow--"
-                    this.arrowPosition
-                  }}
+                  class={{this.arrowClasses.wrapper}}
                   style={{this._arrowStyles}}
                 >
+                  <div
+                    class={{this.arrowClasses.arrow}}
+                    data-popover-arrow={{this.arrowPosition}}
+                  ></div>
                   {{yield to="arrowChildren"}}
                 </div>
-                {{#if this.ownFocus}}
-                  <p id={{descriptionId}} {{screenReaderOnly}}>
-                    You are in a dialog. To close this dialog, hit escape.
-                  </p>
-                {{/if}}
-                <div
-                  {{mutationObserver
-                    onMutation=this.onMutation
-                    observerOptions=(merge
-                      (hash
-                        attributes=true
-                        childList=true
-                        characterData=true
-                        subtree=true
-                      )
-                      @mutationObserverOptions
-                    )
-                  }}
-                >
-                  {{yield to="content"}}
-                </div>
-              </EuiPanel>
-            {{/let}}
-          </EuiPortal>
-        {{/if}}
+              {{/if}}
+            {{/if}}
+            {{#if this.hasDescription}}
+              <p id={{this.descriptionId}} {{screenReaderOnly}}>
+                {{#if this.ownFocus}}{{this.screenReaderAnnouncement}}{{/if}}
+                {{@popoverScreenReaderText}}
+              </p>
+            {{/if}}
+            <div
+              {{mutationObserver
+                onMutation=this.onMutation
+                observerOptions=(merge
+                  (hash
+                    attributes=true childList=true characterData=true subtree=true
+                  )
+                  @mutationObserverOptions
+                )
+              }}
+            >
+              {{yield to="content"}}
+            </div>
+          </div>
+        </EuiPortal>
+      {{/if}}
 
-      </div>
-    {{/let}}
+    </div>
   </template>
 }

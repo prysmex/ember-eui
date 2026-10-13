@@ -5,61 +5,66 @@ order: 3
 # Panel options
 
 <EuiText>
- The <strong>EuiEmptyPrompt</strong> is wrapped by <strong>EuiPanel</strong>. By default, the panel is set to <EuiCode>transparent</EuiCode> but you can customize other panel options like <EuiCode>@color</EuiCode>, <EuiCode>@hasBorder</EuiCode> and <EuiCode>@paddingSize</EuiCode>. Changing the <EuiCode>@color</EuiCode> argument will also attempt to adjust the <EuiCode>@iconColor</EuiCode> and <EuiCode>@footer</EuiCode> color.
+
+The **EuiEmptyPrompt** is wrapped by **EuiPanel**. By default, the panel is set to `transparent` but you can customize other panel options like `@color`, `@hasBorder` and `@paddingSize`. Changing the `@color` argument will also attempt to adjust the `@iconColor` and footer color.
+
+Read the usage guidelines below to better understand when to use certain panel arguments.
+
 </EuiText>
 
-```hbs template
-{{#let (unique-id) as |selectId|}}
-  <EuiFormRow
-    @id={{selectId}}
-  >
-    <EuiSelect
-      @value={{this.panelColor}}
-      @hasNoInitialSelection={{true}}
-      @options={{array
-        (hash value='transparent' text='transparent')
-        (hash value='plain' text='plain')
-        (hash value='subdued' text='subdued')
-        (hash value='accent' text='accent')
-        (hash value='primary' text='primary')
-        (hash value='success' text='success')
-        (hash value='warning' text='warning')
-        (hash value='danger' text='danger')
-      }}
-      @id={{selectId}}
-      {{on 'change' (pick 'target.value' (set this 'panelColor'))}}
-    >
-      <:prepend as |classes|>
-        <EuiFormLabel class={{classes}} for={{selectId}}>
-          Color
-        </EuiFormLabel>
-      </:prepend>
-    </EuiSelect>
-  </EuiFormRow>
-{{/let}}
-<EuiSpacer @size="l" />
-<EuiEmptyPrompt
-  @iconType='securityAnalyticsApp'
-  @color={{this.panelColor}}
-  @title='Start adding cases'
-  @body='There are no cases to display. Add a new case or change your filter
-          settings.'
-  @actions={{array (component 'eui-button-title' title='Add a case')}}
->
-  <:footer>
-    <EuiTitle @size='xxs' @tagName="h3">Want to learn more?</EuiTitle>
-    <EuiLink href='#' target='_blank'>
-      Read documentation
-    </EuiLink>
-  </:footer>
-</EuiEmptyPrompt>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { EuiButton, EuiEmptyPrompt, EuiFormLabel, EuiLink, EuiSelect, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+import { array } from '@ember/helper';
+import { on } from '@ember/modifier';
 
-export default class DemoComponent extends Component {
-  @tracked panelColor = 'accent';
+const ActionButton1 = <template><EuiButton @color="primary">Add a case</EuiButton></template>;
+
+export default class EmptyPromptPanelDemo extends Component {
+  @tracked panelColor = 'transparent';
+
+  colors = [
+    'transparent',
+    'plain',
+    'subdued',
+    'accent',
+    'primary',
+    'success',
+    'warning',
+    'danger',
+  ].map((value) => ({ value, text: value }));
+
+  @action setColor(event) {
+    this.panelColor = event.target.value;
+  }
+
+  <template>
+    <EuiSelect
+      @value={{this.panelColor}}
+      @options={{this.colors}}
+      aria-label="Panel color"
+      {{on "change" this.setColor}}
+    >
+      <:prepend as |classes|>
+        <EuiFormLabel class={{classes}}>Color</EuiFormLabel>
+      </:prepend>
+    </EuiSelect>
+    <EuiSpacer @size="l" />
+    <EuiEmptyPrompt
+      @iconType="securityAnalyticsApp"
+      @title="Start adding cases"
+      @color={{this.panelColor}}
+      @body="Add a new case or change your filter settings."
+      @actions={{array ActionButton1}}
+    >
+      <:footer>
+        <EuiTitle @size="xxs"><h3>Want to learn more?</h3></EuiTitle>
+        <EuiLink @href="#" @target="_blank">Read the docs</EuiLink>
+      </:footer>
+    </EuiEmptyPrompt>
+  </template>
 }
 ```
+

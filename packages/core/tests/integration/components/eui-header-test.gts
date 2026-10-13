@@ -12,6 +12,19 @@ import EuiHeaderLogo from '#src/components/eui-header-logo.gts';
 import EuiHeaderSection from '#src/components/eui-header-section.gts';
 import EuiHeaderSectionItem from '#src/components/eui-header-section-item.gts';
 import EuiHeaderSectionItemButton from '#src/components/eui-header-section-item-button.gts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+
+/** Borealis empty-button text token, normalized to computed `rgb()`. */
+function emptyButtonColor(color: 'Primary' | 'Text') {
+  const tokens = resolveBorealisTheme('light').euiTheme.components
+    .buttons as unknown as Record<string, string>;
+  const probe = document.createElement('span');
+  probe.style.color = tokens[`textColor${color}`]!;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
 
 module('Integration | Component | eui-header', function (hooks) {
   setupRenderingTest(hooks);
@@ -45,20 +58,32 @@ module('Integration | Component | eui-header', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiHeader').hasClass('euiHeader--dark').hasClass('euiHeader--static');
-    assert.dom('.euiHeaderSection--grow').exists();
-    assert.dom('.euiHeaderSection--right').exists();
-    assert.dom('.euiHeaderSectionItem--borderRight a.euiHeaderLogo').hasAttribute('href', '#home');
+    // Latest-only: no modifier classes. Theme/position/grow/side are computed styles.
+    const header = getComputedStyle(this.element.querySelector('.euiHeader')!);
+    const darkBackground = resolveBorealisTheme('light').euiTheme.components.headerDarkBackground;
+    const probe = document.createElement('span');
+    probe.style.color = darkBackground;
+    document.body.appendChild(probe);
+    assert.strictEqual(header.backgroundColor, getComputedStyle(probe).color, 'dark header background');
+    probe.remove();
+    assert.strictEqual(header.position, 'relative', 'static');
+    const sections = this.element.querySelectorAll('.euiHeaderSection');
+    assert.strictEqual(getComputedStyle(sections[0]!).flexGrow, '1', 'grow section');
+    assert.dom('.euiHeaderSectionItem a.euiHeaderLogo').hasAttribute('href', '#home');
     assert.dom('.euiHeaderLogo svg.euiHeaderLogo__icon').hasAttribute('aria-label', 'Home');
     assert.dom('.euiHeaderLogo svg.euiHeaderLogo__icon').doesNotHaveAttribute('aria-hidden');
     assert.dom('.euiHeaderLogo__text').hasText('Brand');
-    assert.dom('.euiHeaderLinks__list').hasClass('euiHeaderLinks__list--gutterS');
-    assert.dom('.active').hasClass('euiHeaderLink-isActive').hasClass('euiButtonEmpty--primary');
-    assert.dom('a.blog').hasClass('euiButtonEmpty--text').hasAttribute('href', '#blog');
-    assert.dom('.euiHeaderSectionItemButton .euiHeaderSectionItemButton__content').hasText('N');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiHeaderLinks__list')!).columnGap, '12px', "gutter 's' gap");
+    assert.dom('.active').hasClass('euiHeaderLink-isActive').hasClass('euiButtonEmpty');
+    assert.dom('a.blog').hasClass('euiButtonEmpty').hasAttribute('href', '#blog');
+    // Inside a dark header, upstream recolors links: ghost text, high-contrast active.
+    assert.notStrictEqual(getComputedStyle(this.element.querySelector('.active')!).color, emptyButtonColor('Primary'));
+    assert.strictEqual(getComputedStyle(this.element.querySelector('a.blog')!).color, 'rgb(255, 255, 255)');
+    // EuiHeaderLinks' (CSS-hidden) menu button is now an EuiHeaderSectionItemButton too, as upstream.
+    assert.dom('[aria-label="News"] .euiHeaderSectionItemButton__content').hasText('N');
     assert.dom('.euiHeaderSectionItemButton__notification--badge').hasText('3');
 
-    await click('.euiHeaderSectionItemButton');
+    await click('[aria-label="News"]');
     assert.strictEqual(clicks, 1);
   });
 
@@ -78,7 +103,7 @@ module('Integration | Component | eui-header', function (hooks) {
 
     await render(<template>{{#if state.show}}<EuiHeader @position="fixed">Fixed</EuiHeader>{{/if}}</template>);
 
-    assert.dom('.euiHeader').hasClass('euiHeader--fixed');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiHeader')!).position, 'fixed');
     assert.dom(document.body).hasClass('euiBody--headerIsFixed');
 
     state.show = false;
@@ -102,7 +127,9 @@ module('Integration | Component | eui-header', function (hooks) {
 
     await render(<template><EuiHeaderBreadcrumbs @breadcrumbs={{crumbs}} /></template>);
 
-    assert.dom('nav.euiHeaderBreadcrumbs').hasClass('euiBreadcrumbs--truncate');
+    // The legacy `euiBreadcrumbs--truncate` class is gone; truncation keeps the list on one line.
+    assert.dom('nav.euiHeaderBreadcrumbs').hasClass('euiBreadcrumbs');
+    assert.strictEqual(getComputedStyle(document.querySelector('nav.euiHeaderBreadcrumbs ol')!).flexWrap, 'nowrap');
   });
 
   test('EuiHeaderAlert renders its blocks', async function (assert) {

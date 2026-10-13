@@ -26,9 +26,11 @@ import remark2Rehype from 'remark-rehype';
 
 import * as MarkdownAddComponents from '../markdown-add-components/index.ts';
 
+import type { EuiMarkdownLinkProps } from '../markdown-add-components/processor.ts';
 import type { Options as Remark2RehypeOptions } from 'mdast-util-to-hast';
 //@ts-ignore
 import type { Handler } from 'mdast-util-to-hast';
+import type { DefaultPluginsConfig } from './plugins.ts';
 import type { PluggableList } from 'unified';
 
 
@@ -46,13 +48,23 @@ export type DefaultEuiMarkdownProcessingPlugins = [
   ...PluggableList // any additional are generic
 ];
 
-// `exclude` is accepted for API parity with EUI but not implemented yet
+// Unlike upstream, `exclude` has nothing to do here: the checkbox and
+// tooltip parsers carry their component in the node, so leaving the parser
+// out (parsing plugins) is enough.
+export type DefaultProcessingPluginsConfig = {
+  /**
+   * Allows customizing all formatted links with any of the args of
+   * `EuiLink`. Useful for, e.g. setting `target: '_blank'` on all links.
+   */
+  linkProps?: EuiMarkdownLinkProps;
+};
+
 export const getDefaultEuiMarkdownProcessingPlugins: any = ({
-  exclude: _exclude
-}: { exclude?: 'tooltip'[] } = {}) => {
+  linkProps
+}: DefaultPluginsConfig & DefaultProcessingPluginsConfig = {}) => {
   const plugins: DefaultEuiMarkdownProcessingPlugins = [
     [remark2Rehype, { allowDangerousHtml: true, unknownHandler }],
-    [MarkdownAddComponents.processor, {}]
+    [MarkdownAddComponents.processor, { linkProps }]
   ];
 
   return plugins;

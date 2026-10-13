@@ -48,18 +48,23 @@ module('Integration | Component | eui-table', function (hooks) {
       </template>
     );
 
-    assert.dom('table.euiTable').hasClass('euiTable--compressed').hasClass('euiTable--auto').hasClass('euiTable--responsive');
+    // Legacy modifier classes (--compressed/--auto/--responsive) are gone: computed styles instead.
+    assert.dom('table.euiTable').hasStyle({ tableLayout: 'auto' });
+    assert.dom('.euiTable__wrapper > table.euiTable').exists('upstream wrapper div');
     assert.dom('thead tr th').exists({ count: 3 });
     assert.dom('th.euiTableHeaderCellCheckbox').hasAttribute('scope', 'col').hasStyle({ width: '32px' });
     assert.dom('th.euiTableHeaderCell').hasAttribute('scope', 'col').hasAttribute('role', 'columnheader');
     assert.dom('th.euiTableHeaderCell:nth-child(2)').hasAttribute('style', 'width: 40%');
-    assert.dom('th.euiTableHeaderCell:nth-child(3) .euiTableCellContent').hasClass('euiTableCellContent--alignRight');
-    assert.dom('th.euiTableHeaderCell:nth-child(3) .euiTableCellContent__text').hasAttribute('title', 'Amount; In euros');
+    // --alignRight class -> computed flex alignment; header text span is upstream's eui-textTruncate.
+    assert.dom('th.euiTableHeaderCell:nth-child(3) .euiTableCellContent').hasStyle({ justifyContent: 'flex-end' });
+    assert.dom('th.euiTableHeaderCell:nth-child(3) .eui-textTruncate').hasAttribute('title', 'Amount; In euros');
     assert.dom('tr.euiTableRow').hasClass('euiTableRow-isSelected').hasClass('euiTableRow-isSelectable');
     assert.dom('th.euiTableRowCell').hasAttribute('scope', 'row');
-    assert.dom('th.euiTableRowCell .euiTableRowCell__mobileHeader').hasText('Name');
-    assert.dom('td.euiTableRowCell:last-child .euiTableCellContent').hasClass('euiTableCellContent--truncateText');
-    assert.dom('td.euiTableRowCell').hasClass('euiTableRowCell--middle');
+    // Upstream renders the mobile header only in the cards layout (was hidden by legacy CSS).
+    assert.dom('th.euiTableRowCell .euiTableRowCell__mobileHeader').doesNotExist();
+    // --truncateText / --middle classes -> computed truncation and vertical alignment.
+    assert.dom('td.euiTableRowCell:last-child .euiTableCellContent').hasStyle({ whiteSpace: 'nowrap' });
+    assert.dom('td.euiTableRowCell').hasStyle({ verticalAlign: 'middle' });
     assert.dom('tfoot tr td.euiTableFooterCell').exists({ count: 3 });
   });
 
@@ -83,7 +88,8 @@ module('Integration | Component | eui-table', function (hooks) {
     assert.dom('.sorted button.euiTableHeaderButton').hasClass('euiTableHeaderButton-isSorted');
     assert.dom('.sorted .euiTableSortIcon').exists();
     assert.dom('.unsorted').hasAria('sort', 'none');
-    assert.dom('.unsorted .euiTableSortIcon').doesNotExist();
+    // Upstream shows a subdued "sortable" icon on sortable, unsorted columns.
+    assert.dom('.unsorted .euiTableSortIcon').hasClass('euiTableSortIcon--sortable');
     assert.dom('.readonly').hasAria('sort', 'descending');
     assert.dom('.readonly button').doesNotExist('read-only headers are not buttons');
 
@@ -109,9 +115,11 @@ module('Integration | Component | eui-table', function (hooks) {
     );
 
     assert.dom('tr').hasClass('euiTableRow-isClickable').hasClass('euiTableRow-hasActions').hasAttribute('tabindex', '0');
-    assert.dom('td:first-child .euiTableCellContent').hasClass('euiTableCellContent--overflowingContent');
+    // --overflowingContent class -> textOnly=false renders the content without the text span.
+    assert.dom('td:first-child .euiTableCellContent > button').exists();
     assert.dom('td:last-child').hasClass('euiTableRowCell--hasActions');
-    assert.dom('td:last-child .euiTableCellContent__hoverItem').exists();
+    // __hoverItem -> upstream's euiBasicTableAction-showOnHover.
+    assert.dom('td:last-child .euiBasicTableAction-showOnHover').exists();
 
     await click('tr');
     await triggerKeyEvent('tr', 'keyup', 'Enter');
@@ -128,7 +136,8 @@ module('Integration | Component | eui-table', function (hooks) {
     await render(
       <template>
         <EuiTableHeaderButton @iconType="arrowDown">Columns</EuiTableHeaderButton>
-        <EuiTableHeaderMobile><EuiTableSortMobile @items={{items}} /></EuiTableHeaderMobile>
+        {{! upstream renders the mobile header only in the cards layout }}
+        <EuiTableHeaderMobile @responsiveBreakpoint={{true}}><EuiTableSortMobile @items={{items}} /></EuiTableHeaderMobile>
       </template>
     );
 
@@ -182,12 +191,13 @@ module('Integration | Component | eui-table', function (hooks) {
 
     await click('.euiPagination [aria-label^="Next"]');
     assert.deepEqual(pages, [1]);
-    assert.dom('[aria-current="true"]').hasText('2');
+    // Upstream EuiPagination marks the active page with aria-current="page" (was "true").
+    assert.dom('[aria-current="page"]').hasText('2');
 
     state.page = 4;
     state.size = 10;
     await rerender();
-    assert.dom('[aria-current="true"]').hasText('5');
+    assert.dom('[aria-current="page"]').hasText('5');
     assert.dom('[aria-label="Next page"]').isDisabled();
     assert.dom('[data-test-subj="tablePaginationPopoverButton"]').hasText('Rows per page: 10');
     assert.deepEqual(sizes, [50]);

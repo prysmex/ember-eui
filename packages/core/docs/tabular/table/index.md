@@ -1,5 +1,6 @@
 ---
 title: Table
+order: 3
 ---
 
 <EuiSpacer/>
@@ -8,10 +9,24 @@ title: Table
 
 <EuiText>
 
-`EuiTable` and its parts render EUI's table markup and styles: they only
-produce HTML. Sorting, selection, filtering and pagination are yours to
-compute, in the component or with a headless table library; these
-components show the result.
+If you need more custom behavior than either
+[EuiBasicTable](../basic-table) or [EuiInMemoryTable](../in-memory-table)
+allow, you can construct your own table from EUI's low-level building
+blocks, like `EuiTableHeader` and `EuiTableRowCell`. They render EUI's
+table markup and styles; there are several important caveats to keep in
+mind:
+
+- **Selection and filtering**: custom tables must completely handle their
+  own selection and filtering (and sorting and pagination), in the
+  component or with a headless table library.
+- **Mobile headers**: pass a `mobileOptions.header` equivalent to the
+  column header to each `EuiTableRowCell`, so the mobile (cards) layout
+  uses it to label each cell. To add mobile support for selection and
+  sorting, wrap them in `EuiTableHeaderMobile` and use `EuiTableSortMobile`
+  for sorting. See the demo below.
+- **Cell text behavior**: set `@truncateText={{true}}` on cells to enforce
+  a single line and truncate their contents, or `@textOnly={{false}}` when
+  the contents must be a direct descendant of the cell (components).
 
 ```hbs
 <EuiTable>
@@ -22,8 +37,8 @@ components show the result.
   <EuiTableBody>
     {{#each this.rows as |row|}}
       <EuiTableRow>
-        <EuiTableRowCell>{{row.name}}</EuiTableRowCell>
-        <EuiTableRowCell @align="right">{{row.size}}</EuiTableRowCell>
+        <EuiTableRowCell @mobileOptions={{hash header="Name"}}>{{row.name}}</EuiTableRowCell>
+        <EuiTableRowCell @align="right" @mobileOptions={{hash header="Size"}}>{{row.size}}</EuiTableRowCell>
       </EuiTableRow>
     {{/each}}
   </EuiTableBody>
@@ -33,16 +48,50 @@ components show the result.
 - **Header**: `EuiTableHeaderCell` sorts with `@onSort`, `@isSorted` and
   `@isSortAscending`; `EuiTableHeaderCellCheckbox` holds a "select all"
   checkbox; `EuiTableHeaderButton` is a plain button for a header.
-- **Rows**: `EuiTableRow` (`@isSelected`, `@onClick`, `@hasActions`),
-  `EuiTableRowCell` (`@align`, `@truncateText`, `@textOnly={{false}}` for
-  components, `@showOnHover` for actions) and `EuiTableRowCellCheckbox`.
+- **Rows**: `EuiTableRow` (`@isSelected`, `@hasSelection`, `@onClick`,
+  `@hasActions`, `@isExpandedRow`), `EuiTableRowCell` (`@align`,
+  `@valign`, `@truncateText`, `@textOnly`, `@showOnHover`,
+  `@mobileOptions`) and `EuiTableRowCellCheckbox`.
 - **Footer**: `EuiTableFooter` with `EuiTableFooterCell`s.
 - **Pagination**: `EuiTablePagination` shows the pages and a "Rows per
   page" menu.
-- **Small screens**: a responsive table turns rows into cards; cells take
-  `@mobileOptions` (`{ header, show, only, enlarge }`), and
-  `EuiTableHeaderMobile` with `EuiTableSortMobile` replaces the header
-  row there.
+- **Layout**: `EuiTable` takes `@tableLayout`, `@compressed`,
+  `@responsiveBreakpoint`, `@scrollableInline`, `@stickyHeader` and
+  `@stickyScrollbar`. Cells take `@sticky={{hash side="end"}}` to stay at
+  a side while the table scrolls inline.
+
+### Ember differences
+
+The sticky header copies each header cell into a hidden table above the
+table, like upstream; the copies are rendered from the same blocks (so a
+header cell's content renders twice) and stay in the cells' order. Note
+that upstream scrolls inline with `overflow-inline`, which some browsers
+(e.g. Chromium 130) do not support yet; there the table overflows its
+container instead of scrolling, in React EUI too.
+
+### Page size defaults
+
+Upstream sets app-wide page size defaults with `EuiProvider`'s
+`componentDefaults`. In Ember they live in the `euiConfig` service, under
+the same keys. `EuiTablePagination` and every table and grid built on it
+(`EuiBasicTable`, `EuiInMemoryTable`, `EuiDataGrid`) use them when their
+own arguments leave a value out:
+
+```js
+// e.g. in your application route or an instance initializer
+this.euiConfig.updateConfig({
+  componentDefaults: {
+    EuiTablePagination: {
+      itemsPerPage: 25,
+      itemsPerPageOptions: [25, 50, 100],
+      showPerPageOptions: true
+    }
+  }
+});
+```
+
+`updateConfig` merges arrays by index into the values set before, so set
+`itemsPerPageOptions` in a single call (or use `setConfig`).
 
 </EuiText>
 
@@ -65,11 +114,21 @@ A styled `<table>`, built from `EuiTableHeader`, `EuiTableHeaderCell`,
 only render the markup: sorting, selection and pagination stay yours
 (or come from a headless table library).
 
+Like upstream, the table is wrapped in a `div.euiTable__wrapper`;
+attributes go to the `<table>`. `@stickyHeader` renders a copy of the
+header before the wrapper, and `@stickyScrollbar` a scrollbar after it.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@compressed` | `boolean` |  | Smaller text and padding. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the `<table>`'s class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+| `@compressed` | `boolean` |  | Smaller text and padding (not applied to the cards layout). |
 | `@tableLayout` | `'fixed' \| 'auto'` | `'fixed'` | `'fixed'` (columns share the width, text wraps or truncates) or `'auto'` (columns fit their content). |
-| `@responsive` | `boolean` | `true` | On small screens, rows become cards. |
+| `@responsive` | `boolean` | `true`; `false` never collapses (same as `@responsiveBreakpoint={{false}}`) | Rows become cards below `@responsiveBreakpoint`. |
+| `@responsiveBreakpoint` | `TableResponsiveBreakpoint` | `'m'` (upstream) | Named theme breakpoint below which rows become cards; `true` always renders cards, `false` never. Takes precedence over `@responsive`. |
+| `@hasBackground` | `boolean` | `true` | The table's plain background. |
+| `@scrollableInline` | `boolean` |  | Lets the table grow wider than its container and scroll inline. Use with `@tableLayout="auto"`. Upstream beta. |
+| `@stickyScrollbar` | `boolean` |  | Shows a horizontal scrollbar sticking to the bottom of the viewport while the table's own one is out of view (long tables). Requires `@scrollableInline`. Upstream beta. |
+| `@stickyHeader` | `boolean` |  | Keeps the header at the top of the viewport while the user scrolls through a long table (not in the cards layout). Offset it with the `--euiTableStickyHeaderOffsetTop` CSS variable (e.g. below a fixed header) and layer it with `--euiTableStickyHeaderZIndex`. Upstream beta. |
 
 | Block | Description |
 | --- | --- |
@@ -90,7 +149,8 @@ The `<thead>` of an `EuiTable`, with its row of `EuiTableHeaderCell`s.
 ### EuiTableHeaderCell
 
 A column header of an `EuiTable`. With `@onSort` it is a button that
-shows the sort direction (`@isSorted`, `@isSortAscending`).
+shows the sort direction (`@isSorted`, `@isSortAscending`), or a
+"sortable" icon while the column is not sorted.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -100,13 +160,18 @@ shows the sort direction (`@isSorted`, `@isSortAscending`).
 | `@isSortAscending` | `boolean` |  | Ascending order (arrow up); descending otherwise. |
 | `@readOnly` | `boolean` |  | Shows the sort state without the button. |
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
 | `@description` | `string` |  | More about the column, in its title and for screen readers. |
 | `@scope` | `string` | `'col'` | `scope` of the `<th>`. |
-| `@mobileOptions` | `TableMobileOptions` |  | `{ show, only }` on small screens. |
+| `@mobileOptions` | `TableMobileOptions` |  | `{ show, only }` for the cards layout. |
+| `@tooltipProps` | `EuiTableHeaderCellTooltipProps` |  | Adds an icon with a tooltip next to the name. In a sortable header the icon is plain and the tooltip shows on the whole sort button. |
+| `@sticky` | `EuiTableStickyCellOptions` |  | Sticks the cell to a side of the table (`{ side: 'start' \| 'end' }`) while it scrolls inline; only for the first or last column, and not in the cards layout. Upstream beta. |
 
 | Block | Description |
 | --- | --- |
 | default block | The column's name. |
+| `<:append>` | Content after the cell's content (upstream `append`), e.g. the hidden tabular copy markers of `EuiBasicTable`. |
 
 ### EuiTableHeaderCellCheckbox
 
@@ -114,16 +179,21 @@ A header cell holding a checkbox, e.g. "select all rows".
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@width` | `number \| string` |  | Width, e.g. `32` (px). |
+| `@width` | `number \| string` | the theme's checkbox column width | Width, e.g. `32` (px). |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `32` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `32` (px). |
 | `@scope` | `string` | `'col'` | `scope` of the `<th>`. |
 
 | Block | Description |
 | --- | --- |
 | default block | The checkbox. |
+| `<:append>` | Content after the cell's content (upstream `append`). |
 
 ### EuiTableHeaderButton
 
-A button in a header cell, e.g. a column that opens a menu.
+A button in a header cell, e.g. a column that opens a menu. Upstream
+removed this component; it uses the header sort button's styles
+(full width, primary underline on hover and focus).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -150,8 +220,9 @@ A row of an `EuiTable` body.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@isSelected` | `boolean` |  | Highlights the row as selected. |
-| `@isSelectable` | `boolean` |  | The row has a selection checkbox. |
-| `@hasActions` | `boolean` |  | The row has an actions cell (with `@hasActions` on the cell). |
+| `@isSelectable` | `boolean` |  | The row's selection checkbox is enabled. Also reserves the cards layout's checkbox column unless `@hasSelection` is given. |
+| `@hasSelection` | `boolean` | `@isSelectable` | The table has a checkbox column (upstream): reserves room for it in the cards layout and lines expanded rows up with the second column. |
+| `@hasActions` | `boolean \| 'custom'` |  | The row has an actions cell (with `@hasActions` on the cell): shows hover-only actions while the row is hovered; `true` reserves the cards layout's right column. |
 | `@isExpandable` | `boolean` |  | The row can expand (it has an expander cell). |
 | `@isExpandedRow` | `boolean` |  | The row is the expanded content of the previous row. |
 | `@onClick` | `(event: Event) => void` |  | Makes the row clickable (also with Enter and Space). |
@@ -167,28 +238,36 @@ A cell of an `EuiTableRow`.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@align` | `TableAlignment` | `'left'` | `'left'`, `'right'` (numbers) or `'center'`. |
-| `@truncateText` | `boolean` |  | Cuts long text with an ellipsis instead of wrapping it. |
+| `@truncateText` | `TableTruncateText` |  | `true` cuts long text on one line with an ellipsis; `{ lines: n }` clamps it to `n` lines. Otherwise long words break (upstream default). |
 | `@textOnly` | `boolean` | `true` | The content is only text (wrapped in a span that truncates or wraps). Set `false` for components. |
 | `@setScopeRow` | `boolean` |  | Renders a `<th scope="row">`: the row's header. |
-| `@showOnHover` | `boolean` |  | Shows the content only while the row is hovered. |
-| `@hasActions` | `boolean` |  | The cell holds the row's actions. |
+| `@showOnHover` | `boolean` |  | Shows the content only while the row is hovered or the cell has focus (always shown in the cards layout). Upstream's `euiBasicTableAction-showOnHover`. |
+| `@hasActions` | `boolean \| 'custom'` |  | The cell holds the row's actions (`true`: icon actions in the cards layout's right column; `'custom'`: other content on its own line). |
 | `@isExpander` | `boolean` |  | The cell holds the row's expand button. |
-| `@valign` | `'top' \| 'middle' \| 'bottom'` | `'middle'` | Vertical alignment: `'top'`, `'middle'` or `'bottom'`. |
+| `@valign` | `'top' \| 'middle' \| 'bottom' \| 'baseline'` | `'middle'` | Vertical alignment: `'top'`, `'middle'`, `'bottom'` or `'baseline'`. |
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
-| `@mobileOptions` | `TableMobileOptions` |  | On small screens: `{ show, only, header, enlarge, align, truncateText }`. `header` labels the value in the row's card; the `<:mobile>` block replaces the content there. |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
+| `@sticky` | `EuiTableStickyCellOptions` |  | Sticks the cell to a side of the table (`{ side: 'start' \| 'end' }`) while it scrolls inline; only for the first or last column, and not in the cards layout. With `@hasBackground={{false}}` on the table, set `--euiTableCellStickyBackgroundColor` to the background behind it. Upstream beta. |
+| `@mobileOptions` | `TableMobileOptions` |  | In the cards layout: `{ show, only, header, enlarge, align, truncateText, textOnly, width, minWidth, maxWidth }`. `header` labels the value in the row's card; the `<:mobile>` block replaces the content there. |
+| `@style` | `EuiTableRowCellStyle` |  | Inline styles merged under the cell's own width styles (upstream's `style` prop). A `style` attribute replaces them instead. |
 
 | Block | Description |
 | --- | --- |
 | default block | The content. |
-| `<:mobile>` | Different content on small screens. |
+| `<:mobile>` | Different content in the cards layout. |
+| `<:append>` | Content after the cell's content wrapper (upstream `append`), e.g. the hidden tabular copy markers of `EuiBasicTable`. |
 
 ### EuiTableRowCellCheckbox
 
-A row cell holding a checkbox, e.g. to select the row.
+A row cell holding a checkbox, e.g. to select the row. In the cards
+layout it sits in the card's top left corner (give the row
+`@hasSelection` or `@isSelectable` to reserve room for it).
 
 | Block | Description |
 | --- | --- |
 | default block | The checkbox. |
+| `<:append>` | Content after the cell's content (upstream `append`). |
 
 ### EuiTableFooter
 
@@ -206,10 +285,13 @@ A cell of an `EuiTableFooter`, e.g. a column's total.
 | --- | --- | --- | --- |
 | `@align` | `TableAlignment` | `'left'` | `'left'`, `'right'` (numbers) or `'center'`. |
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
+| `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
+| `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
+| `@sticky` | `EuiTableStickyCellOptions` |  | Sticks the cell to a side of the table (`{ side: 'start' \| 'end' }`) while it scrolls inline; only for the first or last column, and not in the cards layout. Upstream beta. |
 
 | Block | Description |
 | --- | --- |
-| default block | The content. |
+| default block | The content (truncated to one line, as upstream). |
 
 ### EuiTablePagination
 
@@ -221,11 +303,17 @@ the page buttons on the right. You keep the page and the page size.
 | `@activePage` | `number` |  | The current page, from `0`. |
 | `@pageCount` | `number` |  | Number of pages. |
 | `@onChangePage` | `(page: number) => void` |  | Called with the clicked page (from `0`). |
-| `@itemsPerPage` | `number` | `50` | Rows per page. |
-| `@itemsPerPageOptions` | `number[]` | `[10, 20, 50, 100]` | Choices of rows per page. |
+| `@itemsPerPage` | `number` | `10` (upstream), or the app's `componentDefaults.EuiTablePagination` in `euiConfig` | Rows per page. `0` means all rows: the menu reads "Showing all rows" and the pages are hidden. |
+| `@itemsPerPageOptions` | `number[]` | `[10, 25, 50]` (upstream), or the app's `componentDefaults.EuiTablePagination` | Choices of rows per page. `0` is the "Show all rows" choice. |
 | `@onChangeItemsPerPage` | `(itemsPerPage: number) => void` |  | Called with the chosen rows per page. |
-| `@hidePerPageOptions` | `boolean` |  | Hides the "Rows per page" menu. |
-| `@compressed` | `boolean` |  | Smaller page buttons. |
+| `@showPerPageOptions` | `boolean` | `true`, or the app's `componentDefaults.EuiTablePagination` | Shows the "Rows per page" menu. |
+| `@compressed` | `boolean` |  | Passed to `EuiPagination`: "page of total" with arrows. |
+| `@responsive` |  |  | Passed to `EuiPagination`: breakpoints at which it is compressed. |
+| `@ariaControls` | `string` |  | Passed to `EuiPagination`: id of the content the pages change. |
+| `@aria-label` | `string` |  | Accessible name of the pagination navigation (upstream `aria-label`), e.g. "Pagination for table: Users". |
+| `@aria-labelledby` | `string` |  | Id of the element naming the pagination navigation. |
+
+Deprecated: `@hidePerPageOptions` (Use `@showPerPageOptions={{false}}`. Hides the menu.).
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<span>`.
 
@@ -233,6 +321,11 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 
 A bar shown above a responsive `EuiTable` on small screens (where the
 header row is hidden), e.g. with "select all" and `EuiTableSortMobile`.
+Like upstream it renders nothing while the table is not in cards.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@responsiveBreakpoint` | `TableResponsiveBreakpoint` | `'m'` | Same as the table's `@responsiveBreakpoint`: shown below this named theme breakpoint, always with `true`, never with `false`. |
 
 | Block | Description |
 | --- | --- |

@@ -17,7 +17,8 @@ module('Integration | Component | eui-description-list', function (hooks) {
   test('it renders @listItems as dt/dd pairs', async function (assert) {
     await render(<template><EuiDescriptionList @listItems={{ITEMS}} /></template>);
 
-    assert.dom('dl.euiDescriptionList').hasClass('euiDescriptionList--row');
+    // Upstream exposes the type as `data-type`, not a modifier class.
+    assert.dom('dl.euiDescriptionList').hasAttribute('data-type', 'row');
     assert.dom('dt.euiDescriptionList__title').exists({ count: 2 });
     assert.dom('dt.euiDescriptionList__title').hasText('Name');
     assert.dom('dd.euiDescriptionList__description').hasText('Jane');
@@ -33,7 +34,10 @@ module('Integration | Component | eui-description-list', function (hooks) {
       </template>
     );
 
-    assert.dom('dl').hasClass('euiDescriptionList--column').hasClass('euiDescriptionList--center').hasClass('euiDescriptionList--reverse').hasClass('euiDescriptionList--compressed');
+    // Legacy modifier classes are gone; column layout and center alignment
+    // are computed styles (reverse/compressed fonts: eui-lists-test).
+    assert.dom('dl').hasAttribute('data-type', 'column').hasStyle({ display: 'grid', textAlign: 'center' });
+    assert.dom('dt').hasStyle({ textAlign: 'end' });
     assert.dom('dt').hasText('Key');
     assert.dom('dd').hasText('Value');
   });

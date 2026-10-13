@@ -8,9 +8,7 @@ title: Auto sizer
 
 <EuiText>
 
-`EuiAutoSizer` measures the space its parent gives it and yields the
-width and height in pixels, for content that needs explicit sizes (e.g.
-virtualized lists or charts). The parent must have a size.
+**EuiAutoSizer** helps components that use virtualized rendering and/or require explicit dimensions to fill all available space in the parent container. It measures the space its parent gives it and yields the width and height in pixels (instead of upstream's render prop function). The parent must have a size.
 
 ```hbs
 <div style="height: 300px;">

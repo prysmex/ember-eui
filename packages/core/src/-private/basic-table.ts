@@ -1,0 +1,625 @@
+/*
+ * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+ * or more contributor license agreements. Licensed under the Elastic License
+ * 2.0 and the Server Side Public License, v 1; you may not use this file except
+ * in compliance with, at your election, the Elastic License 2.0 or the Server
+ * Side Public License, v 1.
+ */
+
+// Column, action, selection, sorting and pagination types of EuiBasicTable
+// and EuiInMemoryTable (upstream EUI 123.1.0 `components/basic_table`
+// `table_types.ts`, `action_types.ts`, `pagination_bar.tsx` and the
+// helpers of `basic_table.tsx`), with Ember render hooks: React nodes
+// become text (`string`, numbers or `htmlSafe` strings) or components.
+
+import GlimmerComponent from '@glimmer/component';
+import { getComponentTemplate } from '@ember/component';
+
+import { modifier } from 'ember-modifier';
+
+import {
+  formatAuto,
+  formatBoolean,
+  formatDate,
+  formatNumber,
+  formatText
+} from '../utils/eui/format.ts';
+
+import type {
+  TableAlignment,
+  TableMobileOptions,
+  TableTruncateText
+} from './table.ts';
+import type { EuiTableNode } from './table-node.gts';
+import type { EuiTableHeaderCellTooltipProps } from '../components/eui-table-header-cell.gts';
+import type { EuiTableStickyCellOptions } from '../utils/eui/table.ts';
+import type { Primitive } from '../utils/eui/sort.ts';
+import type { ComponentLike } from '@glint/template';
+import type { SafeString } from '@ember/template';
+
+export type { EuiTableNode } from './table-node.gts';
+
+/**
+ * A column's display name (upstream `ReactNode`): text, an `htmlSafe`
+ * string or a component rendered without arguments.
+ */
+export type EuiTableColumnName = EuiTableNode;
+
+/** Vertical alignment of a column's cells. */
+export type EuiTableVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
+
+/** Text content of a cell, footer or action (upstream React nodes). */
+export type EuiTableContent = string | number | SafeString | null | undefined;
+
+export type ItemId<T> = string | number | ((item: T) => string);
+export type ItemIdResolved = string | number;
+
+export type EuiTableDataType = 'auto' | 'string' | 'number' | 'boolean' | 'date';
+
+export interface Pagination {
+  /** The current page (zero-based) index. */
+  pageIndex: number;
+  /**
+   * The maximum number of items that can be shown in a single page.
+   * Pass `0` to display the selected "Show all" option and hide the pagination.
+   * Defaults to `10`.
+   */
+  pageSize?: number;
+  /** The total number of items the page is "sliced" of. */
+  totalItemCount: number;
+  /**
+   * Configures the page size dropdown options. Pass `0` as one of the
+   * options to create a "Show all" option. Defaults to `[10, 25, 50]`.
+   */
+  pageSizeOptions?: number[];
+  /** Set to false to hide the page size dropdown. Defaults to `true`. */
+  showPerPageOptions?: boolean;
+}
+
+export interface EuiTableFooterProps<T> {
+  items: T[];
+  pagination?: Pagination;
+}
+
+/** An icon with a tooltip next to a column name. */
+export interface EuiTableColumnNameTooltipProps {
+  /** The main content of the tooltip. */
+  content: string;
+  /** The icon type to display. Defaults to `'question'`. */
+  icon?: string;
+  /** Position of the tooltip. Defaults to `'top'` (Ember shortcut for `tooltipProps.position`). */
+  position?: 'top' | 'right' | 'bottom' | 'left';
+  /** Props of the icon: `{ className }` (upstream `iconProps`). */
+  iconProps?: EuiTableHeaderCellTooltipProps['iconProps'];
+  /** More tooltip arguments: `{ position, title, delay, anchorClassName }` (upstream `tooltipProps`). */
+  tooltipProps?: EuiTableHeaderCellTooltipProps['tooltipProps'];
+}
+
+/** Args of a cell `component`. */
+export interface EuiTableCellComponentArgs<T> {
+  /** The row's item. */
+  item: T;
+  /** The value of the column's `field` (field data columns). */
+  value?: unknown;
+  /** The column. */
+  column: EuiBasicTableColumn<T & object>;
+}
+
+export type EuiTableCellComponent<T> = ComponentLike<{
+  Args: EuiTableCellComponentArgs<T>;
+}>;
+
+/** Cards (mobile) options of a column. */
+export type EuiTableColumnMobileOptions<T> = TableMobileOptions & {
+  /** Text shown instead of the cell content in the cards layout. */
+  render?: (item: T) => EuiTableContent;
+  /** A component shown instead of the cell content in the cards layout. */
+  component?: EuiTableCellComponent<T>;
+};
+
+interface ColumnBase {
+  /** A description of the column (the header's title). */
+  description?: string;
+  /** Requested width, e.g. `'30%'` or `'120px'`. */
+  width?: string;
+  /** Requested min width (with `@tableLayout="auto"`). */
+  minWidth?: string;
+  /** Requested max width (with `@tableLayout="auto"`). */
+  maxWidth?: string;
+  /** Classes of the column's cells. */
+  className?: string;
+  /** `data-test-subj` of the column's cells. */
+  'data-test-subj'?: string;
+  /**
+   * Inline styles of the column's cells: an object of CSS properties (or a
+   * string), under the cells' own width styles.
+   */
+  style?: string | Record<string, string | number | null | undefined>;
+  /** Other `<td>` attributes of the column's cells (upstream `TdHTMLAttributes`). */
+  title?: string;
+  id?: string;
+  lang?: string;
+  dir?: string;
+  role?: string;
+  tabIndex?: number;
+  colSpan?: number;
+  rowSpan?: number;
+  headers?: string;
+  /**
+   * `data-*` and `aria-*` attributes, and `on*` event listeners (e.g.
+   * `onClick`), of the column's cells.
+   */
+  [attribute: `data-${string}` | `aria-${string}` | `on${string}`]: unknown;
+}
+
+export interface EuiTableFieldDataColumnType<T> extends ColumnBase {
+  /** A field of the item (may be a nested `outer.inner` path). */
+  field: keyof T | (string & {});
+  /**
+   * The display name of the column: text, an `htmlSafe` string or a
+   * component (rendered without arguments).
+   */
+  name: EuiTableColumnName;
+  /** An icon with a tooltip next to the name. */
+  nameTooltip?: EuiTableColumnNameTooltipProps;
+  /** Rendering hint of the value: alignment and default format. */
+  dataType?: EuiTableDataType;
+  /**
+   * The user can sort on this column; a function returns the value to sort
+   * against.
+   */
+  sortable?: boolean | ((item: T) => Primitive);
+  /** Shows the sort direction without letting the user change it. */
+  readOnly?: boolean;
+  /** Horizontal alignment. Defaults to `'left'` (`'right'` for numbers). */
+  align?: TableAlignment;
+  /** Wraps the content in a text span (word break / truncation). */
+  textOnly?: boolean;
+  /**
+   * Truncates overflowing text: `true` on one line, `{ lines: n }` to
+   * `n` lines.
+   */
+  truncateText?: TableTruncateText;
+  /** Vertical alignment of the column's cells (not the header or footer). Defaults to `'middle'`. */
+  valign?: EuiTableVerticalAlign;
+  /** Cards layout options. */
+  mobileOptions?: EuiTableColumnMobileOptions<T>;
+  /** Renders the cell as text from the field value and item. */
+  render?: (value: any, item: T) => EuiTableContent;
+  /** Renders the cell with a component (`@item`, `@value`, `@column`). */
+  component?: EuiTableCellComponent<T>;
+  /** Content of the footer below the column. */
+  footer?: EuiTableContent | ((props: EuiTableFooterProps<T>) => EuiTableContent);
+  /** The column holds the expand button of `@itemIdToExpandedRowMap`. */
+  isExpander?: boolean;
+}
+
+export interface EuiTableComputedColumnType<T> extends ColumnBase {
+  /** Renders the cell as text from the item. */
+  render?: (item: T) => EuiTableContent;
+  /** Renders the cell with a component (`@item`, `@column`). */
+  component?: EuiTableCellComponent<T>;
+  /** The display name of the column (text, `htmlSafe` or a component). */
+  name?: EuiTableColumnName;
+  /** An icon with a tooltip next to the name. */
+  nameTooltip?: EuiTableColumnNameTooltipProps;
+  /** Makes the column sortable: returns the value to sort against. */
+  sortable?: (item: T) => Primitive;
+  readOnly?: boolean;
+  align?: TableAlignment;
+  /** `true` (one line) or `{ lines: n }`. */
+  truncateText?: TableTruncateText;
+  /** Vertical alignment of the column's cells. Defaults to `'middle'`. */
+  valign?: EuiTableVerticalAlign;
+  /** Wraps the content in a text span. */
+  textOnly?: boolean;
+  isExpander?: boolean;
+  /** Cards layout options. */
+  mobileOptions?: EuiTableColumnMobileOptions<T>;
+  /** Ember: computed columns have no field. */
+  field?: undefined;
+  footer?: EuiTableContent | ((props: EuiTableFooterProps<T>) => EuiTableContent);
+}
+
+export interface EuiTableActionsColumnType<T extends object> {
+  /** {@link DefaultItemAction}s or {@link CustomItemAction}s. */
+  actions: Array<Action<T>>;
+  /** The display name of the column (text, `htmlSafe` or a component). */
+  name?: EuiTableColumnName;
+  nameTooltip?: EuiTableColumnNameTooltipProps;
+  description?: string;
+  width?: string;
+  minWidth?: string;
+  maxWidth?: string;
+  /**
+   * Keeps the actions column stuck to the end (right) of the table at any
+   * inline scroll position. Only with `@scrollableInline={{true}}`, and
+   * the column must be the last one. With `@hasBackground={{false}}`, set
+   * `--euiTableCellStickyBackgroundColor` to the background behind the
+   * table. Upstream beta.
+   */
+  sticky?: boolean;
+}
+
+export type EuiBasicTableColumn<T extends object> =
+  | EuiTableFieldDataColumnType<T>
+  | EuiTableComputedColumnType<T>
+  | EuiTableActionsColumnType<T>;
+
+type ButtonColor =
+  | 'primary'
+  | 'accent'
+  | 'accentSecondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'text'
+  | 'neutral'
+  | 'risk';
+
+/**
+ * Rich content of a row action's `name` (upstream `ReactNode`): text, an
+ * `htmlSafe` string or a component (rendered with `@item`).
+ */
+export type EuiTableActionName<T> = EuiTableNode | ComponentLike<{ Args: { item: T } }>;
+
+export interface DefaultItemActionBase<T extends object> {
+  /**
+   * The name: the button's content, the screen reader label of an icon
+   * action and the collapsed menu item's content. Text, an `htmlSafe`
+   * string, a component (rendered with `@item`), or a function of the item
+   * returning one of those.
+   */
+  name: EuiTableActionName<T> | ((item: T) => EuiTableActionName<T>);
+  /** Describes the action (the tooltip). */
+  description: string | ((item: T) => string);
+  /** Called with the row's item and the click event. */
+  onClick?: (item: T, event: MouseEvent) => void;
+  href?: string | ((item: T) => string);
+  target?: string;
+  /** Whether the action is shown for the item. */
+  available?: (item: T) => boolean;
+  /** Whether the action is enabled for the item. */
+  enabled?: (item: T) => boolean;
+  'data-test-subj'?: string | ((item: T) => string);
+  /**
+   * With more than 2 actions, up to 2 primary actions show (on hover)
+   * next to the menu of all actions.
+   */
+  isPrimary?: boolean;
+  /** Shows the action only on row hover or keyboard focus. */
+  showOnHover?: boolean;
+}
+
+export interface DefaultItemAction<T extends object>
+  extends DefaultItemActionBase<T> {
+  /** `'button'` (default, an `EuiButtonEmpty`) or `'icon'`. */
+  type?: 'button' | 'icon';
+  /** The icon (required for `type: 'icon'`). */
+  icon?: string | ((item: T) => string);
+  /** Defaults to `'text'`. */
+  color?: ButtonColor | ((item: T) => ButtonColor);
+  render?: undefined;
+  component?: undefined;
+}
+
+export interface CustomItemAction<T> {
+  /**
+   * Renders a custom action: a component receiving `@item` and
+   * `@enabled` (upstream `render(item, enabled)`).
+   */
+  component: ComponentLike<{ Args: { item: T; enabled: boolean } }>;
+  available?: (item: T) => boolean;
+  enabled?: (item: T) => boolean;
+  isPrimary?: boolean;
+  showOnHover?: boolean;
+}
+
+export type Action<T extends object> = DefaultItemAction<T> | CustomItemAction<T>;
+
+export const isCustomItemAction = <T extends object>(
+  action: Action<T>
+): action is CustomItemAction<T> => {
+  return Object.prototype.hasOwnProperty.call(action, 'component');
+};
+
+export const callWithItemIfFunction =
+  <T>(item: T) =>
+  <U>(prop: U | ((item: T) => U)): U =>
+    typeof prop === 'function' ? (prop as (item: T) => U)(item) : prop;
+
+/** Whether a function is a component (a class), not a render function. */
+function isComponentDefinition(value: (...args: never[]) => unknown): boolean {
+  return (
+    getComponentTemplate(value as object) != null ||
+    value.prototype instanceof GlimmerComponent
+  );
+}
+
+/**
+ * Upstream `callWithItemIfFunction(item)(action.name)` for rich names: a
+ * function is called with the item, unless it is a component class.
+ */
+export function resolveItemNode<T>(
+  item: T,
+  value: EuiTableActionName<T> | ((item: T) => EuiTableActionName<T>)
+): EuiTableActionName<T> {
+  if (typeof value === 'function') {
+    const fn = value as (item: T) => EuiTableActionName<T>;
+    if (!isComponentDefinition(fn)) return fn(item);
+  }
+  return value as EuiTableActionName<T>;
+}
+
+export interface EuiTableSortingType<T> {
+  /** The field (or column name) sorted on. */
+  sort?: {
+    field: keyof T;
+    direction: 'asc' | 'desc';
+  };
+  /** Clicking a descending column unsorts it (EuiInMemoryTable). */
+  allowNeutralSort?: boolean;
+  /** Sorting on every field column. */
+  enableAllColumns?: boolean;
+  /** Shows the sort without letting the user change it. */
+  readOnly?: boolean;
+}
+
+export interface EuiTableSelectionType<T> {
+  /** Called whenever the selection changes. Required with `selected`. */
+  onSelectionChange?: (selection: T[]) => void;
+  /** Whether an item is selectable. */
+  selectable?: (item: T) => boolean;
+  /** Tooltip of an item's checkbox (e.g. why it is not selectable). */
+  selectableMessage?: (selectable: boolean, item: T) => string;
+  /** Initially selected items (uncontrolled). Ignored with `selected`. */
+  initialSelected?: T[];
+  /** The selected items (controlled). */
+  selected?: T[];
+}
+
+export interface Criteria<T> {
+  /** The shown page, when the items are a page of a bigger set. */
+  page?: {
+    index: number;
+    size: number;
+  };
+  /** The sort criteria. */
+  sort?: {
+    field: keyof T;
+    direction: 'asc' | 'desc';
+  };
+}
+
+export interface CriteriaWithPagination<T> extends Criteria<T> {
+  page: {
+    index: number;
+    size: number;
+  };
+}
+
+/** Attributes for a row or cell; `onClick` makes a row clickable. */
+export type EuiTableElementProps = Record<string, unknown>;
+
+/**
+ * `EuiTableRowCell` arguments `@cellProps` may set (upstream spreads
+ * `cellProps` onto `EuiTableRowCell`, which consumes these props instead
+ * of rendering them as attributes).
+ */
+export interface EuiTableCellArgs {
+  align?: TableAlignment;
+  textOnly?: boolean;
+  truncateText?: TableTruncateText;
+  valign?: EuiTableVerticalAlign;
+  isExpander?: boolean;
+  setScopeRow?: boolean;
+  hasActions?: boolean | 'custom';
+  showOnHover?: boolean;
+  width?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  mobileOptions?: TableMobileOptions;
+  sticky?: EuiTableStickyCellOptions;
+}
+
+const CELL_ARG_KEYS: ReadonlyArray<keyof EuiTableCellArgs> = [
+  'align',
+  'textOnly',
+  'truncateText',
+  'valign',
+  'isExpander',
+  'setScopeRow',
+  'hasActions',
+  'showOnHover',
+  'width',
+  'minWidth',
+  'maxWidth',
+  'mobileOptions',
+  'sticky'
+];
+
+/**
+ * Column keys that configure the column itself. Upstream spreads the rest of
+ * a field or computed column (`TdHTMLAttributes`, `className`,
+ * `data-test-subj`, …) onto its `EuiTableRowCell`s.
+ */
+const COLUMN_KEYS = new Set<string>([
+  ...CELL_ARG_KEYS,
+  'field',
+  'name',
+  'nameTooltip',
+  'description',
+  'dataType',
+  'sortable',
+  'readOnly',
+  'render',
+  'component',
+  'footer',
+  'actions',
+  'className',
+  'data-test-subj',
+  'style',
+  'css'
+]);
+
+/**
+ * The `<td>` attributes and `on*` listeners of a column's cells: every key
+ * that doesn't configure the column (upstream's `...rest` spread).
+ */
+export function columnCellAttributes(column: object): EuiTableElementProps {
+  let attributes: EuiTableElementProps | undefined;
+  for (const [key, value] of Object.entries(column)) {
+    if (COLUMN_KEYS.has(key)) continue;
+    (attributes ??= {})[key] = value;
+  }
+  return attributes ?? NO_ATTRIBUTES;
+}
+
+const NO_ATTRIBUTES: EuiTableElementProps = Object.freeze({});
+
+/**
+ * Splits cell props into `EuiTableRowCell` arguments and the remaining
+ * DOM attributes/listeners, without changing the caller's object.
+ */
+export function splitCellProps(props: EuiTableElementProps): {
+  args: EuiTableCellArgs;
+  attributes: EuiTableElementProps;
+} {
+  const args: Record<string, unknown> = {};
+  const attributes: EuiTableElementProps = {};
+  for (const [key, value] of Object.entries(props)) {
+    if ((CELL_ARG_KEYS as readonly string[]).includes(key)) args[key] = value;
+    else attributes[key] = value;
+  }
+  return { args: args as EuiTableCellArgs, attributes };
+}
+
+export type RowPropsCallback<T> = (item: T) => EuiTableElementProps;
+export type CellPropsCallback<T extends object> = (
+  item: T,
+  column: EuiBasicTableColumn<T>
+) => EuiTableElementProps;
+
+const dataTypesProfiles: Record<
+  EuiTableDataType,
+  { align: 'left' | 'right'; render: (value: any) => string }
+> = {
+  auto: {
+    align: 'left',
+    render: (value: any) => formatAuto(value)
+  },
+  string: {
+    align: 'left',
+    render: (value: any) => formatText(value) as string
+  },
+  number: {
+    align: 'right',
+    render: (value: number | null) => formatNumber(value)
+  },
+  boolean: {
+    align: 'left',
+    render: (value: boolean) => formatBoolean(value)
+  },
+  date: {
+    align: 'left',
+    render: (value: any) => formatDate(value)
+  }
+};
+
+const DATA_TYPES = Object.keys(dataTypesProfiles);
+
+function profile(dataType: EuiTableDataType = 'auto') {
+  const found = dataTypesProfiles[dataType];
+  if (!found) {
+    throw new Error(
+      `Unknown dataType [${dataType}]. The supported data types are [${DATA_TYPES.join(
+        ', '
+      )}]`
+    );
+  }
+  return found;
+}
+
+export function getRendererForDataType(dataType?: EuiTableDataType) {
+  return profile(dataType).render;
+}
+
+export function getAlignForDataType(dataType?: EuiTableDataType) {
+  return profile(dataType).align;
+}
+
+export function getItemId<T>(item: T, itemId?: ItemId<T>): any {
+  if (itemId) {
+    if (typeof itemId === 'function') {
+      return itemId(item);
+    }
+    return (item as Record<string | number, unknown>)[itemId];
+  }
+  return undefined;
+}
+
+export function getRowProps<T>(
+  item: T,
+  rowProps?: EuiTableElementProps | RowPropsCallback<T>
+): EuiTableElementProps {
+  if (rowProps) {
+    if (typeof rowProps === 'function') {
+      return rowProps(item);
+    }
+    return rowProps;
+  }
+  return {};
+}
+
+export function getCellProps<T extends object>(
+  item: T,
+  column: EuiBasicTableColumn<T>,
+  cellProps?: EuiTableElementProps | CellPropsCallback<T>
+): EuiTableElementProps {
+  if (cellProps) {
+    if (typeof cellProps === 'function') {
+      return cellProps(item, column);
+    }
+    return cellProps;
+  }
+  return {};
+}
+
+/**
+ * Applies upstream's spread props to an element: `on<Event>` functions
+ * become listeners, `className`/`class` add classes and the other
+ * strings/numbers/booleans become attributes (`style` too). Removed when
+ * the props change.
+ */
+export const elementProps = modifier(
+  (element: HTMLElement, [props]: [EuiTableElementProps | undefined]) => {
+    if (!props) return;
+    const cleanups: Array<() => void> = [];
+    for (const [key, value] of Object.entries(props)) {
+      if (value == null || value === false) continue;
+      if (/^on[A-Z]/.test(key) && typeof value === 'function') {
+        const type = key.slice(2).toLowerCase();
+        const listener = value as EventListener;
+        element.addEventListener(type, listener);
+        cleanups.push(() => element.removeEventListener(type, listener));
+      } else if (key === 'className' || key === 'class') {
+        const classes = String(value as string).split(/\s+/).filter(Boolean);
+        element.classList.add(...classes);
+        cleanups.push(() => element.classList.remove(...classes));
+      } else if (
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        value === true
+      ) {
+        const previous = element.getAttribute(key);
+        element.setAttribute(key, value === true ? '' : String(value));
+        cleanups.push(() =>
+          previous == null
+            ? element.removeAttribute(key)
+            : element.setAttribute(key, previous)
+        );
+      }
+    }
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }
+);

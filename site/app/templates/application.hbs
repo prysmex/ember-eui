@@ -1,86 +1,113 @@
-<div id="guide">
-  <EuiHeader @theme="dark" @position="fixed">
-    <EuiHeaderSection @side="left">
-      <EuiHeaderSectionItem @border="right">
-        <EuiHeaderLogo @iconType="/assets/euivector.svg">
-          Ember EUI
-        </EuiHeaderLogo>
-      </EuiHeaderSectionItem>
-      <EuiHeaderSectionItem @border="right">
-        <EuiBadge
-          @href="/docs/package/changelog"
-          @color={{if (eq this.currentVersion "Local") "warning"}}
-        >
-          {{this.currentVersion}}
-        </EuiBadge>
-      </EuiHeaderSectionItem>
-    </EuiHeaderSection>
-    <EuiHeaderSection @side="right">
-      <EuiHeaderSectionItem @border="none">
-        <EuiPopover
-          @isOpen={{this.themePopover}}
-          @closePopover={{set this "themePopover" false}}
-          @panelPaddingSize="none"
-        >
-          <:button>
-            <EuiButton
-              @color="ghost"
-              @iconSide="right"
+<BorealisRoot
+  @colorMode={{this.themeManager.currentTheme.key}}
+  @highContrastMode={{this.themeManager.highContrast}}
+>
+  <div id="guide">
+    <EuiHeader @theme="dark" @position="fixed">
+      <EuiHeaderSection @side="left">
+        <EuiHeaderSectionItem @border="right">
+          <EuiHeaderLogo @iconType="/assets/euivector.svg">
+            Ember EUI
+          </EuiHeaderLogo>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem @border="right">
+          <EuiBadge
+            @href="/docs/package/changelog"
+            @color={{if (eq this.currentVersion "Local") "warning"}}
+          >
+            {{this.currentVersion}}
+          </EuiBadge>
+        </EuiHeaderSectionItem>
+      </EuiHeaderSection>
+      <EuiHeaderSection @side="right">
+        <EuiHeaderSectionItem @border="none">
+          {{! the header is always dark: render the toggle in dark mode }}
+          <EuiEmotionProvider @colorMode="dark" @wrapper={{false}}>
+            <EuiButtonIcon
+              @iconType="contrast"
+              @color="text"
+              @display={{if this.themeManager.highContrast "base" "empty"}}
               @size="s"
-              @iconType="arrowDown"
-              {{on "click" (set this "themePopover" true)}}
-            >
-              {{this.themeManager.currentTheme.name}}
-            </EuiButton>
-          </:button>
-          <:content>
-            <EuiContextMenuPanel>
-              {{#each this.themeManager.themes as |theme|}}
-                <EuiContextMenuItem
-                  @size="s"
-                  @icon={{if
-                    (eq this.themeManager.currentTheme.key theme.key)
-                    "check"
-                    "empty"
-                  }}
-                  {{on "click" (fn this.themeManager.changeTheme theme)}}
-                >
-                  {{theme.name}}
-                </EuiContextMenuItem>
-              {{/each}}
-            </EuiContextMenuPanel>
-          </:content>
-        </EuiPopover>
-      </EuiHeaderSectionItem>
-      <EuiHeaderSectionItem @border="none">
-        <EuiHeaderLogo
-          class="text-white"
-          @iconType="logoGithub"
-          href="https://github.com/prysmex/ember-eui"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-      </EuiHeaderSectionItem>
-    </EuiHeaderSection>
-  </EuiHeader>
-  <EuiPageTemplate
-    @paddingSize="none"
-    @grow={{true}}
-    @pageBodyProps={{hash className="pageBodyShadow"}}
-  >
-    <:pageSideBar>
-      <SideNav
-        @isClearable={{true}}
-        @onSearch={{this.onSearch}}
-        @searchValue={{this.searchValue}}
-        @isOpenMobile={{this.isOpenMobile}}
-        @toggleOpenOnMobile={{set this "isOpenMobile"}}
-        @items={{this.currentSideNavRoutes}}
-        @selectedItem={{this.selectedItem}}
-      />
-    </:pageSideBar>
-    <:default>
-      {{outlet}}
-    </:default>
-  </EuiPageTemplate>
-</div>
+              @isSelected={{if this.themeManager.highContrast true false}}
+              aria-label="High contrast"
+              title={{if
+                this.themeManager.highContrast
+                "High contrast: on"
+                "High contrast: follows the system"
+              }}
+              data-test-high-contrast-toggle
+              {{on "click" this.themeManager.toggleHighContrast}}
+            />
+          </EuiEmotionProvider>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem @border="none">
+          <EuiPopover
+            @isOpen={{this.themePopover}}
+            @closePopover={{set this "themePopover" false}}
+            @panelPaddingSize="none"
+          >
+            <:button>
+              <EuiButton
+                @color="ghost"
+                @iconSide="right"
+                @size="s"
+                @iconType="arrowDown"
+                {{on "click" (set this "themePopover" true)}}
+              >
+                {{this.themeManager.currentTheme.name}}
+              </EuiButton>
+            </:button>
+            <:content>
+              <EuiContextMenuPanel>
+                {{#each this.themeManager.themes as |theme|}}
+                  <EuiContextMenuItem
+                    @size="s"
+                    @icon={{if
+                      (eq this.themeManager.currentTheme.key theme.key)
+                      "check"
+                      "empty"
+                    }}
+                    {{on "click" (fn this.themeManager.changeTheme theme)}}
+                  >
+                    {{theme.name}}
+                  </EuiContextMenuItem>
+                {{/each}}
+              </EuiContextMenuPanel>
+            </:content>
+          </EuiPopover>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem @border="none">
+          <EuiHeaderLogo
+            class="text-white"
+            @iconType="logoGithub"
+            href="https://github.com/prysmex/ember-eui"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+        </EuiHeaderSectionItem>
+      </EuiHeaderSection>
+    </EuiHeader>
+    <EuiPageTemplate
+      @paddingSize="none"
+      @restrictWidth={{false}}
+      @mainProps={{hash className="pageBody"}}
+    >
+      <:sidebar as |T|>
+        <T.Sidebar @sticky={{true}}>
+          <SideNav
+            @isClearable={{true}}
+            @onSearch={{this.onSearch}}
+            @searchValue={{this.searchValue}}
+            @isOpenMobile={{this.isOpenMobile}}
+            @toggleOpenOnMobile={{set this "isOpenMobile"}}
+            @items={{this.currentSideNavRoutes}}
+            @selectedItem={{this.selectedItem}}
+          />
+        </T.Sidebar>
+      </:sidebar>
+      <:default>
+        {{outlet}}
+      </:default>
+    </EuiPageTemplate>
+  </div>
+</BorealisRoot>

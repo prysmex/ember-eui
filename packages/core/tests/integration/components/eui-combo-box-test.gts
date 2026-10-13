@@ -42,7 +42,8 @@ class State {
 
 const TRIGGER = '.ember-power-select-trigger';
 const INPUT = 'input.euiComboBox__input:not(.fake-input-for-html-form-validity)';
-const OPTION = '.euiComboBoxOptionsList button.euiFilterSelectItem';
+// upstream EuiListItemLayout rows (were `button.euiFilterSelectItem`)
+const OPTION = '.euiComboBoxOptionsList .euiComboBoxOption[role="option"]';
 
 // the dropdown renders into #ember-basic-dropdown-wormhole, outside of the
 // test root element, so query the whole document
@@ -88,7 +89,8 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.dom('.euiComboBoxPill').exists({ count: 1 }).hasText('Cherry');
 
     await open();
-    assert.deepEqual(optionTexts(), ['Cherry', 'Date']);
+    // upstream: selected options are not listed in multiple selection
+    assert.deepEqual(optionTexts(), ['Date']);
     await choose('Date');
     assert.deepEqual(state.changes, [['Cherry', 'Date']]);
     assert.dom('.euiComboBoxPill').exists({ count: 1 }).hasText('Cherry', 'ignored callback does not change the pills');
@@ -193,7 +195,7 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     assert.deepEqual(optionTexts(), ['Banana']);
   });
 
-  test('selecting an already selected option removes it', async function (assert) {
+  test('selected options are not listed, so they cannot be chosen again', async function (assert) {
     const state = new State();
     state.selected = ['Apple', 'Banana'];
 
@@ -211,9 +213,10 @@ module('Integration | Component | eui-combo-box', function (hooks) {
     );
 
     await open();
-    await choose('Apple');
 
-    assert.deepEqual(state.changes, [['Banana']]);
+    // upstream: selected options are not listed in multiple selection
+    assert.deepEqual(optionTexts(), ['Cherry']);
+    assert.deepEqual(state.changes, []);
   });
 
   test('the pill close button removes that option', async function (assert) {
@@ -452,7 +455,9 @@ module('Integration | Component | eui-combo-box', function (hooks) {
 
     hooks.beforeEach(function () {
       style = document.createElement('style');
-      // EUI's prose styles, which also reach lists inside components
+      // EUI's prose styles, which also reach lists inside components. The
+      // input wrap carries its own (upstream) box and font now, and is a
+      // <div> like upstream's, so no theme CSS is injected for it.
       style.textContent = `${emberEuiCss}
         .euiText ul { list-style: disc; margin-left: 24px; }`;
       document.head.append(style);
@@ -504,8 +509,9 @@ module('Integration | Component | eui-combo-box', function (hooks) {
 
       const content = document.querySelector('.ember-basic-dropdown-content')!;
 
-      // above EUI's modals (8000) and their overlay mask (6000)
-      assert.true(Number(getComputedStyle(content).zIndex) > 8000);
+      // our z-index (upstream EuiInputPopover: anchor + levels.menu, above
+      // the modal or flyout the combo box is in) wins over the stylesheet
+      assert.true(Number(getComputedStyle(content).zIndex) >= 2000);
     });
 
     test('the announcement of the results is for screen readers only', async function (assert) {

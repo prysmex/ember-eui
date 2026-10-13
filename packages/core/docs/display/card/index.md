@@ -6,9 +6,9 @@ title: Card
 <EuiPageHeader @pageTitle="Card"/>
 <EuiSpacer/>
 <EuiText>
-  <p>
-  <strong>EuiCard</strong>  is a content-oriented component built on top of EuiPanel. Be sure to check out the guidelines for properly nesting panels.
-   </p>
+
+**EuiCard** is a content-oriented component built on top of **EuiPanel**. Be sure to check out the guidelines for properly nesting panels.
+
 </EuiText>
 
 <EuiHorizontalRule/>
@@ -28,33 +28,36 @@ Generated from the components' TypeScript signatures by
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@footer` | `string` |  | Footer text (vertical layout only). Use the `<:footer>` block for markup. |
-| `@selectable` | `EuiCardSelectProps` |  | Adds a "Select" toggle button to the bottom of the card, making the card selectable: `{ onClick, isSelected, isDisabled, color, … }` (see `EuiCardSelectProps`). Clicking anywhere on the card clicks it. |
+| `@selectable` | `EuiCardSelectProps` |  | Adds a "Select" switch button to the bottom of the card, making the card selectable: `{ onClick, isSelected, isDisabled, color, … }` (see `EuiCardSelectProps`). Clicking anywhere on the card clicks it. |
 | `@topClassName` | `string` |  | Class that will apply to the card top section. |
 | `@contentClassName` | `string` |  | Class that will apply to the card content section. |
 | `@footerClassName` | `string` |  | Class that will apply to the card footer section. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
-| `@betaBadgeProps` |  |  | Shows an `EuiBetaBadge` on the card's top edge: `{ label: 'Beta', title?, tooltipContent? }`. |
+| `@rel` | `string` |  | `rel` of the `@href` link. `noreferrer` is always added, and `noopener` for `target="_blank"`. |
+| `@betaBadgeProps` |  |  | Shows an `EuiBetaBadge` centered on the card's top edge: `{ label: 'Beta', title?, tooltipContent?, tooltipPosition? }`, plus `anchorProps` for the wrapping `<span>` (`className`, `css`, other keys as attributes). |
 | `@description` | `string` |  | Text under the title. Use the `<:description>` block for markup. |
 | `@title` | `string` |  | The title of the card. |
-| `@titleSize` |  | `'s'` | Size of the title, any `EuiTitle` size. |
-| `@titleElement` | `string` | `'span'` | Tag wrapping the title, e.g. `'h3'` to include it in the page outline. |
+| `@titleSize` | `'xxxs' \| 'xxs' \| 'xs' \| 's' \| 'm' \| 'l'` | `'s'` | Size of the title, `'s'` or `'xs'` (any `EuiTitle` size). |
+| `@titleElement` |  | `'p'` | Tag of the title, e.g. `'h3'` to include it in the page outline. |
 | `@href` | `string` |  | Makes the title a link; clicking anywhere on the card follows it. |
 | `@onClick` | `(e: MouseEvent) => void` |  | Makes the title a button; clicking anywhere on the card calls it. |
 | `@isDisabled` | `boolean` |  | Disables the card's link or button and greys it out. |
-| `@textAlign` | `'left' \| 'center' \| 'right'` | `'center'` | `'left'`, `'center'` or `'right'`. |
-| `@image` | `string` |  | URL of an image across the top of the card (vertical layout only). |
-| `@icon` | `string` |  | Icon above the title; anything `EuiIcon`'s `@type` accepts. |
-| `@layout` | `'horizontal' \| 'vertical'` | `'vertical'` | `'vertical'` stacks icon, title, description and footer. `'horizontal'` puts the icon next to the text and hides the image and footer. |
-| `@display` |  | a plain panel with a shadow | Background of the card, any `EuiPanel` color (`'plain'`, `'subdued'`, `'transparent'`, `'primary'`, …); also adds a border. |
-| `@paddingSize` |  |  | Padding inside the card, any `EuiPanel` padding size. |
+| `@textAlign` | `'left' \| 'center' \| 'right'` | `'center'` | `'left'`, `'center'` or `'right'` (logical: start/end in RTL). Ignored by the horizontal layout. |
+| `@image` | `string \| EuiRenderNodeType` |  | Image across the top of the card (vertical layout only): a URL, or a component for a custom image (upstream's `ReactElement`), e.g. `(component EuiImage …)` or a template-only component. |
+| `@hasBorder` | `boolean` | `false`; has no effect with `@display` | Uses a border instead of a shadow. |
+| `@icon` |  |  | Icon above the title; anything `EuiIcon`'s `@type` accepts. |
+| `@layout` | `'horizontal' \| 'vertical'` | `'vertical'` | `'vertical'` stacks icon, title, description and footer. `'horizontal'` puts the icon next to the text and ignores the image, footer and text alignment. |
+| `@display` |  |  | Background of the card, any `EuiPanel` color (`'plain'`, `'subdued'`, `'transparent'`, `'primary'`, …). Without it the card is plain with a shadow; with it the card has neither shadow nor border. |
+| `@paddingSize` | `EuiCardPadding` | `'m'` | Padding inside the card: `'none'`, `'s'`, `'m'` or `'l'`. |
 | `@iconSize` |  |  | Size of `@icon`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the card's class (like upstream's `css` prop). |
 
 | Block | Description |
 | --- | --- |
-| `<:icon>` | Custom content above the title instead of `@icon` / `@image`; yields the class to put on it. |
+| `<:icon>` | Custom content above the title instead of `@icon` / `@image`; yields the classes (`euiCard__icon` plus its spacing) to put on it. |
 | `<:title>` | Custom title. Yields a function to register your link or button element (e.g. with `did-insert`) so clicks on the card trigger it. |
 | `<:description>` | Custom description, instead of `@description`. |
-| `<:body>` | Extra content after the description. |
+| `<:body>` | Extra content after the description (upstream `children`). |
 | `<:footer>` | Custom footer, instead of `@footer` (vertical layout only). |
 
 ### EuiCheckableCard
@@ -67,13 +70,17 @@ radio or checkbox input.
 | `@id` | `string` | a random id | Id of the input, linked to the label. |
 | `@label` | `string` |  | The card's label. Use the `<:label>` block for markup. |
 | `@checked` | `boolean` |  | Whether the card's radio or checkbox is checked. |
-| `@disabled` | `boolean` |  | Disables the input and greys the card out. |
+| `@disabled` | `boolean` |  | Disables the input and greys the label out. |
 | `@checkableType` | `'checkbox' \| 'radio'` | `'radio'` | `'radio'` for picking one card of a group (give them the same `name`), `'checkbox'` for independent cards. |
+| `@hasBorder` | `boolean` | `true` | Border around the card (primary while checked). |
+| `@hasShadow` | `boolean` | `false` | Shadow, only shown without a border. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the card's class. |
+| `@labelProps` |  |  | Extra attributes for the card's `<label>` (upstream `labelProps`): `id`, `title` and `data-test-subj`. As upstream, its class and styles stay the card's own. |
 
 | Block | Description |
 | --- | --- |
 | `<:label>` | The label, instead of `@label`. |
-| `<:content>` | Details below the label, linked to the input with `aria-describedby`. |
+| `<:content>` | Details below the label, linked to the input with `aria-describedby`. Clicking it toggles the input unless it contains interactive elements. |
 
 </EuiText>
 <!-- api:end -->

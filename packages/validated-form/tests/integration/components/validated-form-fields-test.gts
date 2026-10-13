@@ -1,7 +1,8 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { array, hash } from '@ember/helper';
-import { click, fillIn, render, waitUntil } from '@ember/test-helpers';
+import { click, fillIn, render, triggerKeyEvent, waitUntil } from '@ember/test-helpers';
+import { tracked } from '@glimmer/tracking';
 
 import ValidatedForm from '#src/components/validated-form.gts';
 
@@ -18,6 +19,38 @@ function recorder() {
   const values: unknown[] = [];
 
   return { values, onChange: (value: unknown) => values.push(value) };
+}
+
+const INPUT = 'input.euiComboBox__input:not(.fake-input-for-html-form-validity)';
+const ROW = '.euiComboBoxOptionsList .euiComboBoxOption[role="option"]';
+const rowTexts = () =>
+  [...document.querySelectorAll(ROW)].map((el) => el.textContent!.trim());
+
+function q(selector: string): HTMLElement {
+  const element = document.querySelector<HTMLElement>(selector);
+  if (!element) throw new Error(`Missing ${selector}`);
+  return element;
+}
+
+class ComboState {
+  @tracked options: string[];
+  @tracked selected: string[];
+  created: string[] = [];
+
+  constructor(options: string[], selected: string[] = []) {
+    this.options = options;
+    this.selected = selected;
+  }
+
+  onChange = (selected: string[]) => {
+    this.selected = selected;
+  };
+
+  onCreateOption = (value: string) => {
+    this.created.push(value);
+    this.options = [...this.options, value];
+    this.selected = [...this.selected, value];
+  };
 }
 
 module('Integration | Component | validated-form fields', function (hooks) {
@@ -119,8 +152,10 @@ module('Integration | Component | validated-form fields', function (hooks) {
     );
 
     await click('input.euiComboBox__input:not(.fake-input-for-html-form-validity)');
-    await waitUntil(() => document.querySelector('.euiComboBoxOptionsList button.euiFilterSelectItem'));
-    const portugal = [...document.querySelectorAll('.euiComboBoxOptionsList button.euiFilterSelectItem')].find(
+    // upstream EuiListItemLayout option rows (were `button.euiFilterSelectItem`)
+    const option = '.euiComboBoxOptionsList .euiComboBoxOption[role="option"]';
+    await waitUntil(() => document.querySelector(option));
+    const portugal = [...document.querySelectorAll(option)].find(
       (el) => el.textContent!.trim() === 'Portugal'
     )!;
     const { triggerEvent } = await import('@ember/test-helpers');
@@ -181,5 +216,88 @@ module('Integration | Component | validated-form fields', function (hooks) {
     await click('button[type="submit"]');
 
     assert.dom('.euiFormErrorText').hasText("This field can't be blank");
+  });
+  test('FieldComboBox forwards the EuiComboBox args', async function (assert) {
+    const state = new ComboState(['Banana', 'apple', 'Cherry']);
+    const fruits = [
+      { label: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor', prepend: 'P', toolTipContent: 'Tip' }
+    ];
+    const none: unknown[] = [];
+    const noop = () => {};
+
+    await render(
+      <template>
+        <ValidatedForm as |Form|>
+          <div data-c="multi">
+            <Form.FieldComboBox @label="Tags" @ariaLabel="Tags" @options={{state.options}} @selectedOptions={{state.selected}} @onChange={{state.onChange}} @onCreateOption={{state.onCreateOption}} @delimiter="," @isCaseSensitive={{true}} @sortMatchesBy="startsWith" @rowHeight="auto" @onFocusBadge={{true}} as |option index search|>
+              <span class="row" data-search={{search}}>{{option}}</span>
+            </Form.FieldComboBox>
+          </div>
+          <div data-c="single">
+            <Form.FieldComboBox @label="Fruit" @options={{fruits}} @selectedOptions={{none}} @searchField="label" @singleSelection={{true}} @prepend="Fruit" @append="!" @truncationProps={{hash truncation="middle"}} @noMatchesMessage="Nothing" @onChange={{noop}} />
+          </div>
+          <div data-c="tags">
+            <Form.FieldComboBox @label="Free" @options={{none}} @selectedOptions={{none}} @noSuggestions={{true}} @onChange={{noop}} />
+          </div>
+        </ValidatedForm>
+      </template>
+    );
+
+    const input = (c: string) => `[data-c="${c}"] ${INPUT}`;
+
+    assert.dom(input('multi')).hasAttribute('aria-label', 'Tags', '@ariaLabel');
+    await click(input('multi'));
+    await fillIn(input('multi'), 'a');
+    assert.deepEqual(rowTexts(), ['apple', 'Banana'], '@isCaseSensitive and @sortMatchesBy');
+    assert.dom(q(ROW)).doesNotHaveAttribute('style', '@rowHeight="auto"');
+    assert.dom('.row', q(ROW)).hasAttribute('data-search', 'a', 'the search value in the block');
+    await triggerKeyEvent(input('multi'), 'keydown', 'ArrowDown');
+    assert.dom('.euiComboBoxOption__enterBadge', q(ROW)).exists('@onFocusBadge');
+    await fillIn(input('multi'), 'kiwi,');
+    assert.deepEqual(state.created, ['kiwi'], '@delimiter');
+    await triggerKeyEvent(input('multi'), 'keydown', 'Escape');
+
+    assert.dom('[data-c="single"] .euiFormControlLayout__prepend').hasText('Fruit', '@prepend');
+    assert.dom('[data-c="single"] .euiFormControlLayout__append').hasText('!', '@append');
+    await click(input('single'));
+    assert.dom('.euiTextTruncate', q(ROW)).exists('@truncationProps');
+    assert.dom('.euiListItemLayout__prepend', q(ROW)).hasText('P', 'option prepend');
+    assert.dom(q(ROW)).hasAttribute('aria-describedby', /tooltip/, 'option tooltip');
+    await fillIn(input('single'), 'zzz');
+    assert.dom('.euiComboBoxOptionsList__empty', document.body).hasText('Nothing', '@noMatchesMessage');
+    await triggerKeyEvent(input('single'), 'keydown', 'Escape');
+
+    assert.dom('[data-c="tags"] [data-icon-type="chevronSingleDown"]').doesNotExist('@noSuggestions');
+  });
+
+  test('FieldComboBox: selected options leave the list, leaving adds the typed text, validity follows', async function (assert) {
+    const state = new ComboState(['Mexico', 'Portugal'], []);
+
+    await render(
+      <template>
+        <ValidatedForm as |Form|>
+          <Form.FieldComboBox @label="Countries" @options={{state.options}} @selectedOptions={{state.selected}} @onChange={{state.onChange}} @onCreateOption={{state.onCreateOption}} @validations={{hash presence=(hash presence=true)}} />
+          <button type="button" id="elsewhere">elsewhere</button>
+        </ValidatedForm>
+      </template>
+    );
+
+    await click(INPUT);
+    await click('#elsewhere');
+    assert.dom('.euiFormErrorText').hasText("This field can't be blank", 'touched and empty');
+
+    await click(INPUT);
+    await triggerKeyEvent(INPUT, 'keydown', 'ArrowDown');
+    await triggerKeyEvent(INPUT, 'keydown', 'Enter');
+    assert.deepEqual(state.selected, ['Mexico']);
+    assert.deepEqual(rowTexts(), ['Portugal'], 'the selected Mexico is not listed');
+    assert.dom('.euiFormErrorText').doesNotExist('valid');
+
+    await fillIn(INPUT, 'Spain');
+    await click('#elsewhere');
+    assert.deepEqual(state.created, ['Spain'], 'leaving adds the typed text');
+    assert.deepEqual(state.selected, ['Mexico', 'Spain']);
+    assert.dom(INPUT).hasValue('');
+    assert.dom('.euiFormErrorText').doesNotExist();
   });
 });

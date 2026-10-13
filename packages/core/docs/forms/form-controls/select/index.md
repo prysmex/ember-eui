@@ -5,6 +5,11 @@ title: Select
 <EuiPageHeader @pageTitle="Select"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Wrap your form controls in a form row" @iconType="info" @size="s">
+  <p>Use <code>EuiFormRow</code> to easily and accessibly associate form components with labels, help text and error text. Keep in mind that <code>EuiFormRow</code> controls the <code>id</code> of its wrapped child form component to associate it with the label and help text.</p>
+</EuiCallOut>
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiSelect` renders a native `<select>` styled like the other fields.
@@ -46,11 +51,11 @@ A native `<select>` styled like EUI's inputs. For search or multiple values use 
 | `@options` (required) |  |  | The options: `[{ value: 'a', text: 'Option A', disabled? }]`. |
 | `@value` | `string \| number` |  | The selected option's `value`. Update it from `{{on "change" …}}`. |
 | `@fullWidth` | `boolean` |  | Stretches the select to its container's width. |
-| `@compressed` | `boolean` |  | Shorter select, for dense forms. |
+| `@compressed` | `boolean` |  | Shorter select (32px instead of 40px), for dense forms. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
 | `@disabled` | `boolean` |  | Disables the select. |
 | `@hasNoInitialSelection` | `boolean` | `false` | Adds an empty first option, selected while `@value` is empty, so no option is preselected. |
-| `@isInvalid` | `boolean` |  | Shows the invalid state and marks it invalid for native form validation. |
+| `@isInvalid` | `boolean` |  | Shows the invalid state (danger border and warning icon), sets `aria-invalid` and marks it invalid for native form validation. |
 | `@clear` | `(v: any) => void` |  | Shows a clear ("x") button calling this function. |
 | `@inputRef` | `(element: HTMLSelectElement) => void` |  | Called with the `<select>` element once rendered. |
 

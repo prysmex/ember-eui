@@ -1,11 +1,17 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { get } from '@ember/object';
 import { service } from '@ember/service';
 import { htmlSafe, isHTMLSafe } from '@ember/template';
 
-import style from 'ember-style-modifier/modifiers/style';
-
+import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
+import { comboBoxBoxReset } from '../../utils/eui/combo-box.ts';
+import {
+  euiComboBoxOptionListStyles,
+  euiListItemLayoutStyles
+} from '../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import EuiBadge from '../eui-badge.gts';
 import EuiText from '../eui-text.gts';
 
@@ -40,16 +46,45 @@ export interface EuiComboBoxCreateOptionSignature {
     onCreateOption: () => void;
     /** Rendered above matching options (`@alwaysShowCreateOption`). */
     alwaysShow?: boolean;
+    /** EuiComboBox's `@delimiter`. */
+    delimiter?: string;
   };
 }
 
 export default class EuiComboBoxCreateOptionComponent extends Component<EuiComboBoxCreateOptionSignature> {
   @service declare euiI18n: EuiI18n;
 
+  /** The list keeps the focus in the input (upstream). */
+  keepFocus = (event: MouseEvent) => event.preventDefault();
+
   _regex = /\{\s*(.*?)\s*\}/g;
 
   get createLabel() {
     return this.euiI18n.lookupToken('euiComboBox.createLabel', 'Create');
+  }
+
+  /**
+   * Upstream: text with the delimiter will be split into several options,
+   * so the message says so instead of offering it as one.
+   */
+  get hasDelimiter(): boolean {
+    const { delimiter, select } = this.args;
+
+    return Boolean(delimiter && (select.searchText ?? '').includes(delimiter));
+  }
+
+  get delimiterMessage(): ReturnType<typeof htmlSafe> {
+    return htmlSafe(
+      unwrap(
+        this.euiI18n.lookupToken(
+          'euiComboBoxOptionsList.delimiterMessage',
+          'Add each item separated by {delimiter}',
+          {
+            delimiter: `<strong>${escapeHtml(this.args.delimiter ?? '')}</strong>`
+          }
+        )
+      )
+    );
   }
 
   get formattedString(): ReturnType<typeof htmlSafe> {
@@ -59,8 +94,11 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
     ) {
       const str = unwrap(this.args.customOptionText);
 
+      const searchText = escapeHtml(this.args.select.searchText ?? '');
+      // `{searchText}` as typed; upstream's `{searchValue}` in bold
       const context = {
-        searchText: escapeHtml(this.args.select.searchText ?? '')
+        searchText,
+        searchValue: `<strong>${searchText}</strong>`
       };
 
       return htmlSafe(
@@ -83,52 +121,73 @@ export default class EuiComboBoxCreateOptionComponent extends Component<EuiCombo
     }
   }
 
-  get extraStyling() {
-    if (this.args.alwaysShow) {
-      return {
-        container: {
-          padding: '4px 12px',
-          cursor: 'pointer'
-        },
-        content: {
-          padding: '0px'
-        }
-      };
-    }
+  /**
+   * Upstream empty state with the "add" text and the enter badge. With
+   * `@alwaysShow` it sits below the options as a row (start aligned, option
+   * padding and hover) instead of the centered empty state.
+   */
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiComboBoxOptionListStyles);
+    const layout = useEuiBorealisStyles(context, euiListItemLayoutStyles);
+    const size = context.upstream.euiTheme.size;
 
-    return {
-      container: {
-        cursor: 'pointer'
-      }
-    };
+    return euiClass(
+      context,
+      comboBoxBoxReset,
+      styles.euiComboBoxOptionList,
+      styles.euiComboBoxOptionsList__empty,
+      { cursor: 'pointer' },
+      this.args.alwaysShow && [
+        {
+          paddingBlock: size.xs,
+          paddingInline: size.s,
+          textAlign: 'start',
+          borderRadius: context.upstream.euiTheme.border.radius.control
+        },
+        layout.isInteractive
+      ]
+    );
   }
 
   <template>
+    {{! template-lint-disable no-invalid-interactive }}
     <div
-      class="euiComboBoxOptionsList__rowWrap"
-      {{style this.extraStyling.container}}
-      {{!template-lint-disable no-invalid-interactive}}
+      class="euiComboBoxOptionsList euiComboBoxOptionsList__rowWrap
+        {{this.classes}}"
+      data-test-subj="comboBoxCreateOption"
+      {{on "mousedown" this.keepFocus}}
       {{on "pointerup" @onCreateOption}}
     >
-      <EuiText
-        class="euiComboBoxOptionsList__empty"
-        @size="xs"
-        {{style this.extraStyling.content}}
-      >
+      <EuiText @size="xs" class="euiComboBoxOptionsList__empty">
         <div class="euiComboBoxOption__contentWrapper">
-          <p class="euiComboBoxOption__emptyStateText">
-            {{this.formattedString}}
-          </p>
+          {{#if this.hasDelimiter}}
+            <p class="euiComboBoxOption__emptyStateText">
+              {{this.delimiterMessage}}
+            </p>
+            <EuiBadge
+              class="euiComboBoxOption__enterBadge"
+              @color="hollow"
+              @iconType="return"
+              aria-hidden="true"
+            />
+          {{else}}
+            <p class="euiComboBoxOption__emptyStateText">
+              {{this.formattedString}}
+            </p>
 
-          <EuiBadge
-            class="euiComboBoxOption__enterBadge"
-            @color="hollow"
-            @iconType={{unless @alwaysShow "returnKey"}}
-          >
-            {{#if @alwaysShow}}
-              {{this.createLabel}}
-            {{/if}}
-          </EuiBadge>
+            <EuiBadge
+              class="euiComboBoxOption__enterBadge"
+              @color="hollow"
+              @iconType={{unless @alwaysShow "return"}}
+              aria-hidden={{unless @alwaysShow "true"}}
+            >
+              {{#if @alwaysShow}}
+                {{this.createLabel}}
+              {{/if}}
+            </EuiBadge>
+          {{/if}}
         </div>
       </EuiText>
     </div>

@@ -1,4 +1,15 @@
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+
+import { provide } from 'ember-provide-consume-context';
+
+import { EUI_FILTER_GROUP_CONTEXT } from '../-private/eui-filter-group-context.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiFilterGroupStyles } from '../utils/eui/styles.generated.ts';
+
+import type { EuiFilterGroupContext } from '../-private/eui-filter-group-context.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 /**
  * A bar of `EuiFilterButton`s joined in one bordered group, usually next
@@ -7,8 +18,22 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiFilterGroupSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** Takes the container's full width instead of its content's. */
     fullWidth?: boolean;
+    /** Smaller buttons and radius, e.g. next to a compressed search field. */
+    compressed?: boolean;
+    /**
+     * `'regular'` or `'highlighted'` (selected `@isToggle` buttons are
+     * filled). Defaults to `'regular'`.
+     */
+    display?: 'regular' | 'highlighted';
+    /** Dividers between the buttons. Defaults to `true`. */
+    showDividers?: boolean;
   };
   Blocks: {
     /** The `EuiFilterButton`s (and popovers anchored on them). */
@@ -16,11 +41,45 @@ export interface EuiFilterGroupSignature {
   };
 }
 
-const EuiFilterGroup: TemplateOnlyComponent<EuiFilterGroupSignature> = <template>
-  <div
-    class="euiFilterGroup {{if @fullWidth 'euiFilterGroup--fullWidth'}}"
-    ...attributes
-  >{{yield}}</div>
-</template>;
+export default class EuiFilterGroup
+  extends Component<EuiFilterGroupSignature>
+  implements EuiFilterGroupContext
+{
+  @provide(EUI_FILTER_GROUP_CONTEXT)
+  get filterGroupContext(): EuiFilterGroupContext {
+    return this;
+  }
 
-export default EuiFilterGroup;
+  get compressed() {
+    return this.args.compressed;
+  }
+  get display() {
+    return this.args.display ?? 'regular';
+  }
+  get showDividers() {
+    return this.args.showDividers ?? true;
+  }
+
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiFilterGroupStyles);
+    return `euiFilterGroup ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiFilterGroup,
+      this.args.fullWidth && styles.fullWidth,
+      this.compressed ? styles.compressed : styles.uncompressed,
+      this.args.css
+    )}`;
+  }
+
+  <template>
+    <div
+      class={{this.classes}}
+      data-display={{this.display}}
+      data-dividers={{if this.showDividers "true"}}
+      ...attributes
+    >{{yield}}</div>
+  </template>
+}

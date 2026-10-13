@@ -1,17 +1,16 @@
-import { fn,hash } from '@ember/helper';
+import Component from '@glimmer/component';
+import { fn, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { service } from '@ember/service';
 
-import randomId from '../../../-private/random-id.ts';
+import { randomId } from '../../../-private/random-id.ts';
 import EuiFlexGrid from '../../eui-flex-grid.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
-import EuiI18n from '../../eui-i18n.gts';
 import EuiLink from '../../eui-link.gts';
-import EuiTitle from '../../eui-title.gts';
+import EuiQuickSelectPanel from './eui-quick-select-panel.gts';
 
-import type {
-  DurationRange
-} from '../types/global';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type EuiI18n from '../../../services/eui-i18n';
+import type { DurationRange } from '../types/global';
 
 /** @private The "Commonly used" list of the quick select popover. */
 export interface EuiCommonlyUsedTimeRangesSignature {
@@ -23,49 +22,51 @@ export interface EuiCommonlyUsedTimeRangesSignature {
   };
 }
 
-const EuiCommonlyUsedTimeRanges: TemplateOnlyComponent<EuiCommonlyUsedTimeRangesSignature> =
-  <template>
-    {{#let (randomId) as |legendId|}}
-      <fieldset>
-        <EuiTitle id={{legendId}} @tagName="legend" @size="xxxs">
-          <EuiI18n
-            @token="euiCommonlyUsedTimeRanges.legend"
-            @default="Commonly used"
-            as |Token|
-          >
-            <Token as |value|>
-              {{value}}
-            </Token>
-          </EuiI18n>
-        </EuiTitle>
-        <div class="euiQuickSelectPopover__section">
-          <EuiFlexGrid
-            aria-labelledby={{legendId}}
-            @gutterSize="s"
-            @columns={{2}}
-            @direction="column"
-            @responsive={{false}}
-            @tagName="ul"
-          >
-            {{#each @commonlyUsedRanges as |range|}}
-              <EuiFlexItem
-                class="euiQuickSelectPopover__sectionItem"
-                @tagName="li"
-              >
-                <EuiLink
-                  {{on
-                    "click"
-                    (fn @applyTime (hash start=range.start end=range.end))
-                  }}
-                >
-                  {{range.label}}
-                </EuiLink>
-              </EuiFlexItem>
-            {{/each}}
-          </EuiFlexGrid>
-        </div>
-      </fieldset>
-    {{/let}}
-  </template>;
+/** Upstream `data-test-subj`: the label with its first space replaced. */
+const testSubj = (label?: string) =>
+  label ? `superDatePickerCommonlyUsed_${label.replace(' ', '_')}` : undefined;
 
-export default EuiCommonlyUsedTimeRanges;
+export default class EuiCommonlyUsedTimeRanges extends Component<EuiCommonlyUsedTimeRangesSignature> {
+  @service declare euiI18n: EuiI18n;
+
+  legendId = randomId();
+  testSubj = testSubj;
+
+  get title() {
+    return this.euiI18n.lookupToken(
+      'euiCommonlyUsedTimeRanges.legend',
+      'Commonly used'
+    );
+  }
+
+  <template>
+    <EuiQuickSelectPanel
+      @tagName="fieldset"
+      @title={{this.title}}
+      @titleId={{this.legendId}}
+    >
+      <EuiFlexGrid
+        aria-labelledby={{this.legendId}}
+        @gutterSize="s"
+        @columns={{2}}
+        @direction="column"
+        @responsive={{false}}
+        @tagName="ul"
+      >
+        {{#each @commonlyUsedRanges as |range|}}
+          <EuiFlexItem
+            class="euiQuickSelectPopover__sectionItem"
+            @tagName="li"
+          >
+            <EuiLink
+              data-test-subj={{this.testSubj range.label}}
+              {{on "click" (fn @applyTime (hash start=range.start end=range.end))}}
+            >
+              {{range.label}}
+            </EuiLink>
+          </EuiFlexItem>
+        {{/each}}
+      </EuiFlexGrid>
+    </EuiQuickSelectPanel>
+  </template>
+}

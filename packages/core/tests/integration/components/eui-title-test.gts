@@ -10,14 +10,22 @@ module('Integration | Component | eui-title', function (hooks) {
   test('it renders an h2 by default', async function (assert) {
     await render(<template><EuiTitle>Title</EuiTitle></template>);
 
-    assert.dom('h2.euiTitle').hasClass('euiTitle--medium').hasText('Title');
+    assert.dom('h2.euiTitle').hasText('Title');
+    assert.dom('.euiTitle').doesNotHaveClass('euiTitle--medium');
   });
 
-  test('@tagName, @size and @textTransform', async function (assert) {
+  test('@tagName, @size, @textTransform and forwarded attributes', async function (assert) {
     await render(
-      <template><EuiTitle @tagName="h1" @size="l" @textTransform="uppercase">Big</EuiTitle></template>
+      <template>
+        <EuiTitle @tagName="h1" @size="l" @textTransform="uppercase" id="big" class="extra">Big</EuiTitle>
+      </template>
     );
 
-    assert.dom('h1.euiTitle').hasClass('euiTitle--large').hasClass('euiTitle--uppercase');
+    assert.dom('h1.euiTitle#big').hasClass('extra').hasText('Big');
+    assert
+      .dom('h1.euiTitle')
+      .doesNotHaveClass('euiTitle--large')
+      .doesNotHaveClass('euiTitle--uppercase');
+    assert.dom('h2').doesNotExist();
   });
 });

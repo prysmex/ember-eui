@@ -6,11 +6,12 @@ title: Stat
 <EuiPageHeader @pageTitle="Stat"/>
 
 <EuiText>
-    <p>
-    <strong>EuiStat</strong> can be used to display prominent text or number values. It consists of <EuiCode>@title</EuiCode> and <EuiCode>@description</EuiCode> elements with several visual styling properties (examples below).
-    </p>
-    </EuiText>
-    <EuiHorizontalRule />
+
+**EuiStat** can be used to display prominent text or number values. It consists of `@title` and `@description` elements with several visual styling arguments (examples below).
+
+</EuiText>
+
+<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />
@@ -28,12 +29,12 @@ A key number with a description, e.g. on a dashboard.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@textAlign` |  | `'left'` | `'left'`, `'center'` or `'right'`. |
+| `@textAlign` | `EuiStatTextAlign` | `'left'` | `'left'`, `'center'` or `'right'` (logical, so left/right flip in RTL). |
 | `@title` | `string` |  | The number or value, e.g. "1,234". Use the `<:title>` block for markup. |
 | `@description` | `string` |  | What it measures, e.g. "Total users". Use the `<:description>` block for markup. |
-| `@titleColor` |  | `'default'` | Color of the title: `'default'`, `'subdued'`, `'primary'`, `'success'`, `'danger'`, `'accent'`, or any CSS color. |
+| `@titleColor` | `EuiStatTitleColor \| string` | `'default'` | Color of the title: `'default'`, `'subdued'`, `'primary'`, `'success'`, `'warning'`, `'danger'`, `'accent'`, or any CSS color. |
 | `@titleSize` |  | `'l'` | Size of the title, any `EuiTitle` size. |
-| `@isLoading` | `boolean` |  | Shows "--" instead of the title, e.g. while it loads. |
+| `@isLoading` | `boolean` |  | Shows "--" instead of the title, pulses it (unless reduced motion is requested) and labels it "Statistic is loading" (i18n token `euiStat.loadingText`). |
 | `@reverse` | `boolean` | `false` | Puts the title above the description. |
 | `@titleElement` | `string` | `'p'` | Tag of the title. |
 | `@descriptionElement` |  | `'p'` | Tag of the description. |

@@ -1,0 +1,18 @@
+EUI icons
+=========
+
+svgs/ (except svgs/legacy/) holds the icon svgs of @elastic/eui 123.1.0
+(es/components/icon/svgs, including tokens/) and its two EuiNotificationIcon
+glyphs (es/components/notification_icon/svgs, copied to svgs/notification/).
+They are synced by scripts/update-eui-icons.mjs.
+
+svgs/legacy/ holds icons from the EUI release previously bundled by
+@ember-eui/core (EUI 41) whose names have no equivalent in EUI 123.1.0; they
+are kept so those icon names keep rendering.
+
+All of these svgs are Copyright Elasticsearch B.V. and/or licensed to
+Elasticsearch B.V. under one or more contributor license agreements, and are
+licensed under, at your election, the Elastic License 2.0 or the Server Side
+Public License, v 1. See ../eui-latest/LICENSE.txt,
+../eui-latest/ELASTIC-LICENSE-2.0.md and ../eui-latest/SSPL-LICENSE.md. The
+MIT license of @ember-eui/core does not apply to them.

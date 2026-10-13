@@ -5,6 +5,12 @@ title: Health
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Health"/>
 
+<EuiText>
+
+The **EuiHealth** component should be used when showing comparative health of listed objects (like servers, HTTP response status codes (as per convenience), nodes, indexes, etc.). Because icons are vague and bulky and color alone does not work, color plus text provides a recognizable, lightweight combo that works in most situations.
+
+</EuiText>
+
 <EuiHorizontalRule />
 <EuiText>
 <p>
@@ -29,7 +35,7 @@ A status: a colored dot followed by text, e.g. "Healthy" or "Down".
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@color` | `string` |  | Color of the dot: `'success'`, `'warning'`, `'danger'`, `'subdued'`, any `EuiIcon` color or a CSS color. |
-| `@textSize` |  | `'m'` | Text size: `'xs'`, `'s'`, `'m'` or `'inherit'`. |
+| `@textSize` | `EuiHealthTextSize` | `'s'` | Text size: `'xs'`, `'s'`, `'m'` or `'inherit'`. |
 
 | Block | Description |
 | --- | --- |

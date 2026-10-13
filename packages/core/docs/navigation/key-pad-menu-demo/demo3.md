@@ -2,53 +2,50 @@
 order: 3
 ---
 
-<EuiText>
-	<p>
-		If the item links to a module that is not GA (beta, lab, etc), you can add a <EuiCode>@betaBadgeLabel</EuiCode> and <EuiCode>@betaBadgeTooltipContent</EuiCode> to the card and it will properly create and position an <a href="/docs/core/docs/navigation/key-pad-menu">EuiBetaBadge</a>.
-  </p>
-
-  <p>
-  Supplying just a label will only show the first letter in the badge but displays the full label to the tooltip. You can also pass an <EuiCode>@iconType</EuiCode> to replace the letter.
-  </p>
-
-</EuiText>
-<EuiSpacer/>
-
 # Beta item
 
-```hbs template
-<EuiKeyPadMenu>
-  <li>
-    <EuiKeyPadMenuItem @label='No beta'>
-      <EuiIcon @type='editorStrike' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
+<EuiText>
 
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Single letter'
-      @betaBadgeTooltipContent='This module is not GA. Please help us by reporting any bugs.'
-      @betaBadgeLabel='Beta'
-    >
-      <EuiIcon @type='editorBold' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Icon'
-      @betaBadgeLabel='External'
-      @betaBadgeTooltipContent='This module is an external app'
-      @betaBadgeIconType='popout'
-    >
-      <EuiIcon @type='editorCodeBlock' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
+If the item links to a module that is not GA (beta, lab, etc), you can add a `@betaBadgeLabel` and `@betaBadgeTooltipContent` to the item and it will properly create and position an **EuiBetaBadge**.
 
+Supplying just a label will only show the first letter in the badge but displays the full label to the tooltip. You can also pass a `@betaBadgeIconType` to replace the letter.
+
+</EuiText>
+
+<EuiSpacer />
+
+```gjs component
+import { EuiIcon, EuiKeyPadMenu, EuiKeyPadMenuItem } from '@ember-eui/core/components';
+
+<template>
+<EuiKeyPadMenu as |Key|>
+  <Key>
+    <EuiKeyPadMenuItem @label="No beta">
+      <EuiIcon @type="textStrike" @size="l" />
+    </EuiKeyPadMenuItem>
+  </Key>
+
+  <Key>
+    <EuiKeyPadMenuItem
+      @label="Icon"
+      @betaBadgeLabel="Beta"
+      @betaBadgeTooltipContent="This module is not GA. Please help us by reporting any bugs."
+      @betaBadgeIconType="beta"
+    >
+      <EuiIcon @type="textBold" @size="l" />
+    </EuiKeyPadMenuItem>
+  </Key>
+
+  <Key>
+    <EuiKeyPadMenuItem
+      @label="Icon"
+      @betaBadgeLabel="External"
+      @betaBadgeTooltipContent="This module is an external app."
+      @betaBadgeIconType="external"
+    >
+      <EuiIcon @type="code" @size="l" />
+    </EuiKeyPadMenuItem>
+  </Key>
 </EuiKeyPadMenu>
-```
-
-```js component
-import Component from '@glimmer/component';
-
-export default class DemoSideNavComponent extends Component {}
+</template>
 ```

@@ -29,4 +29,26 @@ module('Integration | Component | eui-markdown-format', function (hooks) {
     assert.dom('input[type="checkbox"]').exists({ count: 2 });
     assert.dom('input[type="checkbox"]:checked').exists({ count: 1 });
   });
+
+  test('@component picks the root tag; @grow and @textAlign', async function (assert) {
+    const inline = 'Some **bold** text';
+
+    await render(
+      <template>
+        <EuiMarkdownFormat @value={{inline}} data-test-subj="default" />
+        <EuiMarkdownFormat @value={{inline}} @component="span" @grow={{false}} @textAlign="right" data-test-subj="span" />
+      </template>
+    );
+
+    assert.dom('[data-test-subj="default"]').hasTagName('div');
+    assert.dom('[data-test-subj="span"]').hasTagName('span').hasClass('euiMarkdownFormat');
+    assert.dom('[data-test-subj="span"] strong').hasText('bold');
+
+    const grown = getComputedStyle(document.querySelector('[data-test-subj="default"]')!);
+    const constrained = getComputedStyle(document.querySelector('[data-test-subj="span"]')!);
+
+    assert.strictEqual(grown.maxWidth, 'none', 'grows by default');
+    assert.notStrictEqual(constrained.maxWidth, 'none', '@grow={{false}} caps the width');
+    assert.true(['right', 'end'].includes(constrained.textAlign), 'aligned to the end');
+  });
 });

@@ -36,6 +36,11 @@ This project aims to implement <EuiLink @href="https://github.com/elastic/eui" @
 <strong>Getting started</strong>
 </EuiLink>
 </EuiFlexItem>
+<EuiFlexItem @grow={{false}}>
+<EuiLink @href="/docs/migrating-to-borealis">
+<strong>Migrating to Borealis</strong>
+</EuiLink>
+</EuiFlexItem>
 </EuiFlexGroup>
 </EuiFlexItem>
 
@@ -171,6 +176,11 @@ style="overflow-x: auto"
   <div>
   <EuiSpacer @size="xl" />
         <EuiText @size="xs" @textAlign="center" @color="subdued">
+          <p>
+            Component styles, icons and many examples here are derived from EUI,
+            Copyright Elasticsearch B.V. Ember EUI is a community project, not
+            affiliated with or endorsed by Elastic.
+          </p>
           <p>
             EUI is dual-licensed under
             <EuiLink 

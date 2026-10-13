@@ -6,16 +6,19 @@ order: 2
 
 <EuiText>
   The arrow helps indicate the current state of the accordion (open or not) and points to the main triggering button text.
-  If you must hide or change the side in which the arrow appears, use <EuiCode>arrowDisplay: 'right'</EuiCode> or <EuiCode>'none'</EuiCode>
+  If you must hide or change the side in which the arrow appears, use <EuiCode>@arrowDisplay="right"</EuiCode> or <EuiCode>"none"</EuiCode>
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAccordion, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
+
+<template>
 <EuiAccordion @arrowDisplay='right'>
   <:buttonContent>
     This accordion has the arrow on the right
   </:buttonContent>
   <:content>
-    <EuiPanel @color="subdued" @hasShadow={{false}}>
+    <EuiPanel @color="subdued">
       Any content inside of <strong>EuiAccordion</strong> will appear here.
     </EuiPanel>
   </:content>
@@ -26,9 +29,10 @@ order: 2
     This one has it removed entirely
   </:buttonContent>
   <:content>
-    <EuiPanel @color="subdued" @hasShadow={{false}}>
+    <EuiPanel @color="subdued">
       Any content inside of <strong>EuiAccordion</strong> will appear here.
     </EuiPanel>
   </:content>
 </EuiAccordion>
+</template>
 ```

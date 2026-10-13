@@ -1,0 +1,70 @@
+---
+order: 9
+---
+
+# Setting an initial focus
+
+<EuiText>
+  <p>
+    If you want a specific child element of the popover to immediately gain focus when the popover is open, use the <EuiCode>@initialFocus</EuiCode> argument to pass a selector, a DOM node or a function returning one. Without it, a popover with <EuiCode>@ownFocus</EuiCode> focuses the panel itself, and Tab moves on to its first element.
+  </p>
+</EuiText>
+
+<EuiSpacer @size='m' />
+
+<EuiCallOut @title='Accessibility recommendation' @color='primary' @iconType='accessibility'>
+  <p>
+    It can be jarring for keyboard and screen reader users to immediately land on an element with no other context. To alleviate this, ensure that your initial focus target makes sense alone or is the primary goal of the popover.
+  </p>
+</EuiCallOut>
+
+```gjs component
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiButtonEmpty, EuiFieldText, EuiFormRow, EuiPopover, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
+
+export default class PopoverDemo extends Component {
+  @tracked isPopoverOpen = false;
+
+  @action
+  onButtonClick() {
+    this.isPopoverOpen = !this.isPopoverOpen;
+  }
+
+  @action
+  closePopover() {
+    this.isPopoverOpen = false;
+  }
+
+  <template>
+    <EuiPopover
+      @initialFocus='#name'
+      @isOpen={{this.isPopoverOpen}}
+      @closePopover={{this.closePopover}}
+    >
+      <:button>
+        <EuiButtonEmpty
+          @iconType='help'
+          @iconSide='right'
+          {{on 'click' this.onButtonClick}}
+        >
+          Show popover
+        </EuiButtonEmpty>
+      </:button>
+      <:content>
+        <EuiFormRow @label='Enter name' @id='name'>
+          <EuiFieldText @id='name' @compressed={{true}} @name='input' />
+        </EuiFormRow>
+
+        <EuiSpacer />
+
+        <EuiButton @size='s' @fill={{true}}>
+          Submit
+        </EuiButton>
+      </:content>
+    </EuiPopover>
+  </template>
+}
+```

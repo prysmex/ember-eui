@@ -1,26 +1,49 @@
-import { and, eq, not } from 'ember-truth-helpers';
+import { or } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import EuiCommentTimeline from './eui-comment-timeline.gts';
+import { EuiCommentItem } from '../-private/eui-comment-item.gts';
 
-import type { EuiCommentTimelineSignature } from './eui-comment-timeline';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiIconSignature } from './eui-icon';
+import type { EuiPanelSignature } from './eui-panel';
+
+export type EuiCommentEventColor =
+  | NonNullable<EuiPanelSignature['Args']['color']>
+  | 'highlighted';
 
 export interface EuiCommentSignature {
-  Element: HTMLDivElement;
+  Element: HTMLLIElement;
   Args: {
     /**
-     * `'regular'` for a comment with a body in a panel, `'update'` for a
-     * compact one-line event (e.g. "added a tag"). Defaults to `'regular'`.
+     * @deprecated Has no effect: like upstream, the type follows the blocks.
+     * A comment with a `<:body>` and header content is `regular` (a bordered
+     * `<figure>`), one without a body is a compact `update`, and one with
+     * only a body is `custom` (no header).
      */
-    type?: EuiCommentTimelineSignature['Args']['type'];
+    type?: 'regular' | 'update';
     /**
-     * Icon on the timeline, e.g. an `EuiAvatar` alternative. Defaults to a
-     * user icon (`'dot'` for updates). Use the `<:timelineIcon>` block for
-     * custom content such as `<EuiAvatar>`.
+     * Icon of the timeline avatar (upstream `timelineAvatar` as a string).
+     * Defaults to `'user'`. Use the `<:timelineIcon>` block for custom
+     * content such as `<EuiAvatar @name="Jane" />`.
      */
-    timelineIcon?: EuiCommentTimelineSignature['Args']['timelineIcon'];
+    timelineIcon?: EuiIconSignature['Args']['type'];
+    /** Accessible name of the default timeline avatar. */
+    timelineAvatarAriaLabel?: string;
+    /**
+     * Background of the header panel: `'highlighted'`, `'subdued'`,
+     * `'transparent'`, `'plain'`, `'accent'`, `'primary'`, `'success'`,
+     * `'warning'` or `'danger'`. Defaults to `'highlighted'` for regular
+     * comments and `'transparent'` for updates. Regular comments also get a
+     * border of this color (`'subdued'` for highlighted).
+     */
+    eventColor?: EuiCommentEventColor;
+    /** Icon in a small avatar before the username, e.g. `'pencil'`. */
+    eventIcon?: EuiIconSignature['Args']['type'];
+    /** Accessible name of `@eventIcon`; without it the icon is decorative. */
+    eventIconAriaLabel?: string;
+    /**
+     * Vertical alignment of the avatar with the event: `'top'` or
+     * `'center'`. Defaults to `'top'` with a `<:body>`, else `'center'`.
+     */
+    verticalAlign?: 'top' | 'center';
   };
   Blocks: {
     /** Custom timeline content, e.g. `<EuiAvatar @name="Jane" />`. */
@@ -31,96 +54,48 @@ export interface EuiCommentSignature {
     event: [];
     /** When, e.g. "on Jan 1st, 2024"; wrapped in `<time>`. */
     timestamp: [];
-    /** Actions on the right of the header, e.g. an `EuiButtonIcon`. */
+    /** Actions at the end of the header, e.g. an `EuiButtonIcon`. */
     actions: [];
     /** The comment's content. */
     body: [];
   };
 }
 
-const EuiComment: TemplateOnlyComponent<EuiCommentSignature> = <template>
-  <div
-    class={{classNames
-      "euiComment"
-      (if (eq @type "update") "euiComment--update")
-      (if (has-block "body") "euiComment--hasBody")
-    }}
-    ...attributes
-  >
-    {{#if (has-block "timelineIcon")}}
-      <EuiCommentTimeline @type={{@type}}>
-        <:timelineIcon>
-          {{yield to="timelineIcon"}}
-        </:timelineIcon>
-      </EuiCommentTimeline>
-    {{else}}
-      <EuiCommentTimeline @type={{@type}} @timelineIcon={{@timelineIcon}} />
-    {{/if}}
-    {{! Basically the same, just to avoid using dynamic tag we use figure and figcaption instead of divs when it doesn't have body}}
-    {{#if (and (eq @type "update") (not (has-block "body")))}}
-      <figure
-        class={{classNames
-          componentName="EuiCommentEvent"
-          type=(argOrDefault @type "regular")
-        }}
-      >
-        <figcaption class="euiCommentEvent__header">
-          <div class="euiCommentEvent__headerData">
-            <div class="euiCommentEvent__headerUsername">
-              {{yield to="username"}}
-            </div>
-            <div class="euiCommentEvent__headerEvent">
-              {{yield to="event"}}
-            </div>
-            {{#if (has-block "timestamp")}}
-              <div class="euiCommentEvent__headerTimestamp">
-                <time>
-                  {{yield to="timestamp"}}
-                </time>
-              </div>
-            {{/if}}
-          </div>
-          <div class="euiCommentEvent__headerActions">
-            {{yield to="actions"}}
-          </div>
-        </figcaption>
-        <div class="euiCommentEvent__body">
-          {{yield to="body"}}
-        </div>
-      </figure>
-    {{else}}
-      <div
-        class={{classNames
-          componentName="EuiCommentEvent"
-          type=(argOrDefault @type "regular")
-        }}
-      >
-        <div class="euiCommentEvent__header">
-          <div class="euiCommentEvent__headerData">
-            <div class="euiCommentEvent__headerUsername">
-              {{yield to="username"}}
-            </div>
-            <div class="euiCommentEvent__headerEvent">
-              {{yield to="event"}}
-            </div>
-            {{#if (has-block "timestamp")}}
-              <div class="euiCommentEvent__headerTimestamp">
-                <time>
-                  {{yield to="timestamp"}}
-                </time>
-              </div>
-            {{/if}}
-          </div>
-          <div class="euiCommentEvent__headerActions">
-            {{yield to="actions"}}
-          </div>
-        </div>
-        <div class="euiCommentEvent__body">
-          {{yield to="body"}}
-        </div>
-      </div>
-    {{/if}}
-  </div>
-</template>;
+/**
+ * One comment or event on a timeline (upstream `EuiComment`): an avatar,
+ * a header (username, event, timestamp, actions) and an optional body.
+ * Place it in an `EuiCommentList`.
+ */
+const EuiComment: import('@ember/component/template-only').TemplateOnlyComponent<EuiCommentSignature> =
+  <template>
+    <EuiCommentItem
+      @timelineIcon={{@timelineIcon}}
+      @timelineAvatarAriaLabel={{@timelineAvatarAriaLabel}}
+      @eventColor={{@eventColor}}
+      @eventIcon={{@eventIcon}}
+      @eventIconAriaLabel={{@eventIconAriaLabel}}
+      @verticalAlign={{@verticalAlign}}
+      @hasBody={{has-block "body"}}
+      @hasEventElements={{or
+        @eventIcon
+        (has-block "timestamp")
+        (has-block "event")
+        (has-block "actions")
+      }}
+      @hasTimelineIcon={{has-block "timelineIcon"}}
+      @hasUsername={{has-block "username"}}
+      @hasEvent={{has-block "event"}}
+      @hasTimestamp={{has-block "timestamp"}}
+      @hasActions={{has-block "actions"}}
+      ...attributes
+    >
+      <:timelineIcon>{{yield to="timelineIcon"}}</:timelineIcon>
+      <:username>{{yield to="username"}}</:username>
+      <:event>{{yield to="event"}}</:event>
+      <:timestamp>{{yield to="timestamp"}}</:timestamp>
+      <:actions>{{yield to="actions"}}</:actions>
+      <:body>{{yield to="body"}}</:body>
+    </EuiCommentItem>
+  </template>;
 
 export default EuiComment;

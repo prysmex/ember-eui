@@ -66,6 +66,8 @@ Generated from the components' TypeScript signatures by
 | `@closeButtonPosition` | `'outside' \| 'inside'` | `'outside'` | Close button `'outside'` or `'inside'` the flyout (hidden while docked). |
 | `@paddingSize` | `string` | `'none'` | Padding inside the nav, any `EuiFlyout` padding size. |
 | `@onClose` (required) |  |  | Called to close the nav (close button, Escape, outside click). |
+| `@session` | `EuiFlyoutArgs['session']` | `'never'`, as upstream: the nav stays out of managed flyout sessions | Flyout session (EuiFlyout `@session`). |
+| `@focusTrapProps` | `EuiFlyoutArgs['focusTrapProps']` |  | Focus trap options (EuiFlyout `@focusTrapProps`). The toggle button is always added to `shards`, as upstream. |
 
 Deprecated: `@children` (Has no effect, use the `<:content>` block.).
 
@@ -86,12 +88,18 @@ Deprecated: `@children` (Has no effect, use the `<:content>` block.).
 | `@iconSize` |  | `'l'` | Size of the icon. |
 | `@titleTagName` |  | `'h3'` | Same as `@titleElement`, limited to `EuiTitle`'s tags. |
 | `@titleSize` |  | `'xxs'` | Size of the title, any `EuiTitle` size. |
-| `@background` | `string` | `'none'` | Background of the group: `'none'`, `'light'` or `'dark'`. |
+| `@background` | `EuiCollapsibleNavGroupBackground \| (string & {})` | `'none'` | Background of the group: `'none'`, `'light'` or `'dark'`. A dark group renders its content in dark mode (a nested dark provider), as upstream. |
+| `@arrowDisplay` |  | `'right'` | Side of the title the open/close arrow is on, for a collapsible group: `'right'`, `'left'` or `'none'`. |
+| `@paddingSize` |  |  | Padding of a collapsible group's content, see `EuiAccordion`. |
+| `@buttonElement` |  |  | Tag of a collapsible group's title button, see `EuiAccordion`. |
+| `@onToggle` |  |  | Called with the new open state when a collapsible group toggles. |
+| `@iconProps` |  |  | More props for the title's EuiIcon (upstream `iconProps`, without `type` and `size`): `className`, `color`, `css`, `title`, `aria-label` and other keys as attributes. |
 
 | Block | Description |
 | --- | --- |
 | `<:title>` | The group's title; without it the group has no heading. |
 | `<:content>` | The group's links, e.g. an `EuiListGroup`. |
+| `<:extraAction>` | An action next to the title of a collapsible group, e.g. a button icon; yields whether the group is open (see `EuiAccordion`). |
 
 </EuiText>
 <!-- api:end -->

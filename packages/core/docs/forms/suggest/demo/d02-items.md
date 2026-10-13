@@ -12,21 +12,9 @@ takes what it needs.
 
 </EuiText>
 
-```hbs template
-<EuiPanel @paddingSize="none">
-  {{#each this.items as |item|}}
-    <EuiSuggestItem
-      @type={{item.type}}
-      @label={{item.label}}
-      @description={{item.description}}
-      @labelWidth="40"
-    />
-  {{/each}}
-</EuiPanel>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiPanel, EuiSuggestItem } from '@ember-eui/core/components';
 
 const ICONS = ['kqlField', 'kqlValue', 'kqlSelector', 'kqlOperand', 'search', 'clock'];
 
@@ -36,5 +24,18 @@ export default class SuggestItems extends Component {
     label: `Suggestion in tint${i}`,
     description: i % 2 ? 'With a description' : undefined,
   }));
+
+  <template>
+    <EuiPanel @paddingSize="none">
+      {{#each this.items as |item|}}
+        <EuiSuggestItem
+          @type={{item.type}}
+          @label={{item.label}}
+          @description={{item.description}}
+          @labelWidth="40"
+        />
+      {{/each}}
+    </EuiPanel>
+  </template>
 }
 ```

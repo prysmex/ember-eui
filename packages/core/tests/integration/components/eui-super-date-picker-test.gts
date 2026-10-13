@@ -21,8 +21,8 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     await render(<template><EuiSuperDatePicker @start="now-15m" @end="now" @onTimeChange={{noop}} /></template>);
 
     assert.dom('.euiSuperDatePicker .euiQuickSelectPopover__anchor button').exists();
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /minutes ago/);
-    assert.dom('.euiDatePopoverButton--end').hasAttribute('title', 'now');
+    assert.dom('.euiDatePopoverButton--start').hasText(/minutes ago/);
+    assert.dom('.euiDatePopoverButton--end').hasText('now');
     assert.dom('.euiSuperUpdateButton').exists();
   });
 
@@ -79,7 +79,8 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     );
 
     assert.dom('.euiSuperUpdateButton').doesNotExist();
-    assert.dom('.euiSuperDatePicker__flexWrapper').hasClass('euiSuperDatePicker__flexWrapper--noUpdateButton');
+    // the legacy `__flexWrapper--noUpdateButton` modifier became upstream's narrower restricted width (30 × base)
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiSuperDatePicker')!).width, '480px');
     assert.dom('.euiDatePopoverButton--start').isDisabled();
   });
 
@@ -89,11 +90,11 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
 
     await render(<template><EuiSuperDatePicker @start={{range.start}} @end={{range.end}} @onTimeChange={{noop}} /></template>);
 
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /minutes ago/);
+    assert.dom('.euiDatePopoverButton--start').hasText(/minutes ago/);
 
     range.start = 'now-3h';
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /hours ago/);
+    assert.dom('.euiDatePopoverButton--start').hasText(/hours ago/);
 
     range.start = 'now';
     range.end = 'now-1h';
@@ -113,7 +114,7 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
 
     await render(<template><EuiSuperDatePicker @start={{range.start}} @end={{range.end}} @onTimeChange={{noop}} /></template>);
 
-    const initialTitle = document.querySelector('.euiDatePopoverButton--start')!.getAttribute('title');
+    const initialTitle = document.querySelector('.euiDatePopoverButton--start')!.textContent!.trim();
 
     await click('.euiQuickSelectPopover__anchor button');
     await waitUntil(() => document.querySelector('.euiQuickSelectPopover__sectionItem'));
@@ -123,15 +124,15 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     await click(thisWeek);
 
     // the parent ignored onTimeChange: the selection stays visible
-    const selectedTitle = document.querySelector('.euiDatePopoverButton--start')!.getAttribute('title');
+    const selectedTitle = document.querySelector('.euiDatePopoverButton--start')!.textContent!.trim();
     assert.notStrictEqual(selectedTitle, initialTitle, 'shows the quick selection');
 
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', selectedTitle!, 'survives re-renders');
+    assert.dom('.euiDatePopoverButton--start').hasText(selectedTitle!, 'survives re-renders');
 
     range.start = 'now-2h';
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /hours ago/, 'new arguments win');
+    assert.dom('.euiDatePopoverButton--start').hasText(/hours ago/, 'new arguments win');
   });
 
   test('with @onRefreshChange the quick select shows the refresh interval', async function (assert) {
@@ -152,7 +153,8 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     assert.dom('[data-test-subj="superDatePickerRefreshIntervalUnitsSelect"]', document.body).hasValue('m');
 
     await click(document.querySelector('[data-test-subj="superDatePickerToggleRefreshButton"]') as Element);
-    assert.deepEqual(changes, [{ refreshInterval: 120000, isPaused: false }]);
+    // Upstream always reports the units with the interval.
+    assert.deepEqual(changes, [{ refreshInterval: 120000, isPaused: false, intervalUnits: 'm' }]);
   });
 
   test('it calls @onRefresh every @refreshInterval while not paused', async function (assert) {

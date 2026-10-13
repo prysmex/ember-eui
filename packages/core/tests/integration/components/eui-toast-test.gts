@@ -14,8 +14,9 @@ module('Integration | Component | eui-toast', function (hooks) {
 
     assert.dom('.euiToast').hasClass('euiToast--success');
     assert.dom('.euiToastHeader__title').hasText('Saved');
-    assert.dom('.euiToastHeader').hasClass('euiToastHeader--withBody');
-    assert.dom('.euiToastHeader svg.euiToastHeader__icon').exists();
+    // upstream has no header wrapper/modifier: the body follows the title
+    assert.dom('[data-test-subj="euiToastBody"] .euiToast__text').hasText('All good');
+    assert.dom('svg[data-icon-type="check"]').hasAttribute('aria-hidden', 'true');
     assert.dom('.euiToast').containsText('All good');
   });
 
@@ -25,7 +26,27 @@ module('Integration | Component | eui-toast', function (hooks) {
 
     await render(<template><EuiToast @title="Bye" @onClose={{onClose}} /></template>);
 
-    await click('.euiToast__closeButton');
+    await click('[data-test-subj="toastCloseButton"]');
     assert.strictEqual(closed, 1);
+  });
+
+  test('@body can be a component for rich content', async function (assert) {
+    const Rich = <template><span class="rich-body">See <a href="#docs">the docs</a></span></template>;
+    await render(<template><EuiToast @title="Rich" @body={{Rich}} /></template>);
+
+    assert.dom('[data-test-subj="euiToastBody"] .euiToast__text .rich-body a').hasText('the docs');
+  });
+
+  test('a component body ignores @useMarkdownFormat, a string body still renders markdown', async function (assert) {
+    const Rich = <template><span class="rich-body">**not markdown**</span></template>;
+    await render(
+      <template>
+        <EuiToast @title="A" @body={{Rich}} @useMarkdownFormat={{true}} data-test-subj="a" />
+        <EuiToast @title="B" @body="**bold**" @useMarkdownFormat={{true}} data-test-subj="b" />
+      </template>
+    );
+
+    assert.dom('[data-test-subj="a"] .rich-body').hasText('**not markdown**');
+    assert.dom('[data-test-subj="b"] strong').hasText('bold');
   });
 });

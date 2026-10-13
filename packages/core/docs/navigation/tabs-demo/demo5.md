@@ -5,82 +5,81 @@ order: 5
 # Controlled tabbed content
 
 <EuiText>
-<p>You can also use the <code class="euiCode" data-code-language="text">selectedTab</code> and <code class="euiCode" data-code-language="text">onTabClick</code> arguments to take complete control over tab selection. This can be useful if you want to change tabs based on user interaction with another part of the UI.</p>
+
+You can also use the `@selectedTab` and `@onTabClick` arguments to take complete control over tab selection. This can be useful if you want to change tabs based on user interaction with another part of the UI.
+
 </EuiText>
 
-```hbs template
-<EuiButton
-  @color='primary'
-  {{on 'click' this.cycleTabs}}
-  @iconType='arrowRight'
-  @iconSide='right'
->
-  Cycle through tabs
-</EuiButton>
-Outer selected tab:
-{{this.selectedTab.name}}
-<EuiTabbedContent @tabs={{this.tabs}} @selectedTab={{this.selectedTab}}>
-  <:selectedTabContent as |selected|>
-    <EuiSpacer />
-    <EuiText>
-      {{selected.content}}
-    </EuiText>
-  </:selectedTabContent>
-</EuiTabbedContent>
-
 <EuiSpacer />
-```
 
-```js component
-import Component from '@ember/component';
-import { action } from '@ember/object';
+```gjs component
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { EuiButton, EuiIcon, EuiSpacer, EuiTabbedContent, EuiText } from '@ember-eui/core/components';
 
-export default class DemoTabsComponent extends Component {
-  @tracked selectedTab;
+const HeatmapIcon = <template><EuiIcon @type="chartHeatmap" /></template>;
 
-  constructor() {
-    super(...arguments);
+export default class DemoComponent extends Component {
+  tabs = [
+    {
+      id: 'cobalt',
+      name: 'Cobalt',
+      content: 'Cobalt is a chemical element with symbol Co and atomic number 27. Like nickel, cobalt is found in the Earth’s crust only in chemically combined form, save for small deposits found in alloys of natural meteoric iron. The free element, produced by reductive smelting, is a hard, lustrous, silver-gray metal.'
+    },
+    {
+      id: 'dextrose',
+      name: 'Dextrose',
+      content: 'Intravenous sugar solution, also known as dextrose solution, is a mixture of dextrose (glucose) and water. It is used to treat low blood sugar or water loss without electrolyte loss.'
+    },
+    {
+      id: 'hydrogen',
+      name: 'Hydrogen',
+      prepend: HeatmapIcon,
+      content: 'Hydrogen is a chemical element with symbol H and atomic number 1. With a standard atomic weight of 1.008, hydrogen is the lightest element on the periodic table'
+    },
+    {
+      id: 'monosodium_glutamate',
+      name: 'Monosodium Glutamate',
+      content: 'Monosodium glutamate (MSG, also known as sodium glutamate) is the sodium salt of glutamic acid, one of the most abundant naturally occurring non-essential amino acids. Monosodium glutamate is found naturally in tomatoes, cheese and other foods.'
+    }
+  ];
 
-    this.tabs = [
-      {
-        id: 'cobalt--id',
-        name: 'Cobalt',
-        content:
-          ' Cobalt is a chemical element with symbol Co and atomic number 27. Like nickel, cobalt is found in the Earth&rsquo;s crust only in chemically combined form, save for small deposits found in alloys of natural meteoric iron. The free element, produced by reductive smelting, is a hard, lustrous, silver-gray metal.'
-      },
-      {
-        id: 'dextrose--id',
-        name: 'Dextrose',
-        content:
-          'Intravenous sugar solution, also known as dextrose solution, is a mixture of dextrose (glucose) and water. It is used to treat low blood sugar or water loss without electrolyte loss.'
-      },
-      {
-        id: 'hydrogen--id',
-        name: 'Hydrogen',
-        prepend: 'heatmap',
+  @tracked selectedTab = this.tabs[1];
 
-        content:
-          'Intravenous sugar solution, also known as dextrose solution, is a mixture of dextrose (glucose) and water. It is used to treat low blood sugar or water loss without electrolyte loss.'
-      },
-      {
-        id: 'monosodium_glutammate--id',
-        name: 'Monosodium Glutamate',
-        content:
-          ' Monosodium glutamate (MSG, also known as sodium glutamate) is the sodium salt of glutamic acid, one of the most abundant naturally occurring non-essential amino acids. Monosodium glutamate is found naturally in tomatoes, cheese and other foods.'
-      }
-    ];
-
-    this.selectedTab = this.tabs[0];
+  @action
+  onTabClick(selectedTab) {
+    this.selectedTab = selectedTab;
   }
 
   @action
-  cycleTabs() {
-    const tabs = this.tabs;
-    const selectedTabIndex = tabs.indexOf(this.selectedTab);
+  cycleTab() {
+    const selectedTabIndex = this.tabs.indexOf(this.selectedTab);
     const nextTabIndex =
-      selectedTabIndex < tabs.length - 1 ? selectedTabIndex + 1 : 0;
-    this.selectedTab = tabs[nextTabIndex];
+      selectedTabIndex < this.tabs.length - 1 ? selectedTabIndex + 1 : 0;
+    this.selectedTab = this.tabs[nextTabIndex];
   }
+
+  <template>
+    <EuiButton @iconType="chevronSingleRight" @iconSide="right" {{on "click" this.cycleTab}}>
+      Cycle through the tabs
+    </EuiButton>
+
+    <EuiSpacer @size="m" />
+
+    <EuiTabbedContent
+      @tabs={{this.tabs}}
+      @selectedTab={{this.selectedTab}}
+      @onTabClick={{this.onTabClick}}
+    >
+      <:selectedTabContent as |selected|>
+        <EuiSpacer />
+        <EuiText>
+          <p>{{selected.content}}</p>
+        </EuiText>
+      </:selectedTabContent>
+    </EuiTabbedContent>
+  </template>
 }
 ```

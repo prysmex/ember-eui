@@ -153,15 +153,20 @@ module('Integration | Component | validated-form | nested forms', function (hook
     this.set('disabled', true);
     this.set('noop', () => {});
     await render(<template>
-      <ValidatedForm @isDisabled={{this.disabled}} @fullWidth={{true}} as |parent|>
-        <parent.Form as |child|>
-          <child.FieldText data-input @value="value" @onChange={{this.noop}} />
-        </parent.Form>
-      </ValidatedForm>
+      <div style="width: 640px">
+        <ValidatedForm @isDisabled={{this.disabled}} @fullWidth={{true}} as |parent|>
+          <parent.Form as |child|>
+            <child.FieldText data-input @value="value" @onChange={{this.noop}} />
+          </parent.Form>
+        </ValidatedForm>
+      </div>
     </template>);
 
     assert.dom('[data-input]').isDisabled();
-    assert.dom('[data-input]').hasClass('euiFieldText--fullWidth');
+    // Borealis full width: no 400px form-control max-width, fills the parent
+    const input = this.element.querySelector('[data-input]');
+    assert.strictEqual(getComputedStyle(input).maxWidth, '100%');
+    assert.strictEqual(input.offsetWidth, 640, 'fills the parent');
     this.set('disabled', false);
     await settled();
     assert.dom('[data-input]').isNotDisabled();

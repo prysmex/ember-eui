@@ -8,7 +8,9 @@ title: Resize observer
 
 <EuiText>
 
-The `resize-observer` modifier calls `onResize` with the element's new
+**EuiResizeObserver** is a wrapper around the [Resize Observer API](https://developer.mozilla.org/docs/Web/API/ResizeObserver) which allows watching for changes to the content rectangle of DOM elements. Unlike the mutation observer, it does not take parameters, but it does fire a more efficient and informative callback when resize events occur.
+
+In Ember EUI it is the `resize-observer` modifier (it replaces both the render prop component and the `useResizeObserver` hook). It calls `onResize` with the element's new
 `{ width, height }` whenever its size changes (a
 [ResizeObserver](https://developer.mozilla.org/docs/Web/API/ResizeObserver)).
 

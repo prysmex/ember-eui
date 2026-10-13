@@ -20,7 +20,11 @@ comparing a document's versions.
 By default it compares whole words, which reads best for prose;
 `@granularity="characters"` shows changes inside words (typos, ids).
 It finds the smallest set of changes, so it suits paragraphs rather than
-very long documents.
+very long documents. `@timeout` bounds how many seconds the comparison may take
+(default `0.1`; past it the part that differs is shown as one removal and one
+insertion; `0` waits for the full diff). The component renders the changes inline (the
+equivalent of upstream's `useEuiTextDiff` hook); its block yields the
+changes for custom rendering.
 
 </EuiText>
 
@@ -38,20 +42,9 @@ Generated from the components' TypeScript signatures by
 
 ### EuiTextDiff
 
-Shows the changes between two texts inline: removed text in `<del>`,
-added text in `<ins>`.
-
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@beforeText` (required) | `string` |  | The original text. |
-| `@afterText` (required) | `string` |  | The changed text. |
-| `@granularity` | `'words' \| 'characters'` | `'words'` | Compare whole `'words'` (easier to read) or single `'characters'`. |
-
-| Block | Description |
-| --- | --- |
-| default block | Renders the diff yourself: yields its chunks, `[operation, text]` pairs where the operation is `-1` (removed), `1` (added) or `0`. |
-
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
+| `@tag` (required) |  |  |  |
 
 </EuiText>
 <!-- api:end -->

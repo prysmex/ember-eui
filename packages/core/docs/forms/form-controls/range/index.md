@@ -56,6 +56,7 @@ levels and a value tooltip. For a range of two values use EuiDualRange.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@inputPopoverProps` | `EuiRangeInputPopoverProps` |  | Props of the EuiInputPopover used with `@showInput="inputWithPopover"` (upstream `inputPopoverProps`): EuiInputPopover args except `isOpen`, `closePopover`, `disableFocusTrap`, `ownFocus`, `popoverScreenReaderText` and `fullWidth`, which the range controls. Its `className` is added to the popover root. |
 | `@compressed` | `boolean` | `false` | Smaller slider, for dense forms. |
 | `@readOnly` | `boolean` |  | Makes the number input read-only. |
 | `@fullWidth` | `boolean` | `false` | Stretches the slider to its container's width. |
@@ -80,7 +81,7 @@ levels and a value tooltip. For a range of two values use EuiDualRange.
 | `@disabled` | `boolean` |  | Disables the slider and input. |
 | `@isInvalid` | `boolean` |  | Shows the invalid state. |
 | `@name` | `string` |  | `name` of the inputs, for forms. |
-| `@isLoading` | `boolean` | `false` | Shows a spinner in the number input. |
+| `@isLoading` | `boolean` | `false` | Shows a spinner in the number input (`@showInput="inputWithPopover"`). |
 
 | Block | Description |
 | --- | --- |
@@ -101,6 +102,7 @@ value use EuiRange.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@inputPopoverProps` | `EuiRangeInputPopoverProps` |  | Props of the EuiInputPopover used with `@showInput="inputWithPopover"` (upstream `inputPopoverProps`): EuiInputPopover args except `isOpen`, `closePopover`, `disableFocusTrap`, `ownFocus`, `popoverScreenReaderText` and `fullWidth`, which the range controls. Its `className` is added to the popover root. |
 | `@value` (required) | `[ValueMember, ValueMember]` |  | The selected range, `[lower, upper]`. Update it in `@onChange`. |
 | `@onBlur` | `(event: FocusEvent) => void` |  | Called when a thumb or input loses focus. |
 | `@onFocus` | `(event: FocusEvent) => void` |  | Called when a thumb or input gets focus. |
@@ -120,6 +122,8 @@ value use EuiRange.
 | `@name` | `string` |  | `name` of the inputs; the number inputs get `-minValue` / `-maxValue` suffixes. |
 | `@id` | `string` | a generated id | Id of the slider. |
 | `@compressed` | `boolean` | `false` | Smaller slider, for dense forms. |
+| `@isDraggable` | `boolean` | `false` | Makes the highlighted range draggable (moves both values at once), with its own `role="slider"` for the keyboard. |
+| `@isLoading` | `boolean` |  | Shows a spinner in the delimited input (`@showInput="inputWithPopover"`). |
 | `@showRange` | `boolean` | `true` | Highlights the selected range on the track. |
 | `@showTicks` | `boolean` | `false` | Shows tick marks, every `@step` (or `@tickInterval`). |
 | `@step` | `number` | `1` | Increment between values. |

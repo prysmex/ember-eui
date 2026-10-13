@@ -53,6 +53,8 @@ export default class EuiPortal extends Component<EuiPortalSignature> {
 
     this.portalNode = document.createElement('div');
     this.portalNode.id = `${guidFor({})}-portal`;
+    // upstream marks portal roots so callers can find/skip them
+    this.portalNode.dataset['euiportal'] = 'true';
 
     if (isBlank(this.args.insert)) {
       document.body.appendChild(this.portalNode);

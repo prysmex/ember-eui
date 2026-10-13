@@ -75,7 +75,9 @@ module('Integration | Component | eui-super-select', function (hooks) {
     );
 
     assert.dom('.selected').hasText('Warning!');
-    assert.dom('.euiSuperSelectControl').hasClass('euiSuperSelectControl--fullWidth');
+    // the legacy `euiSuperSelectControl--fullWidth` modifier is gone (latest-only): assert the computed width
+    assert.dom('.euiSuperSelectControl').doesNotHaveClass('euiSuperSelectControl--fullWidth');
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiSuperSelectControl')!).maxWidth, '100%');
 
     await click('button.euiSuperSelectControl');
     await waitUntil(() => document.querySelector('.euiSuperSelect__listbox'));

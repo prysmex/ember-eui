@@ -1,3 +1,5 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
@@ -7,21 +9,68 @@ import { and, not, or } from 'ember-truth-helpers';
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import {
+  euiCheckboxControlStyles,
+  euiCheckboxStyles
+} from '../utils/eui/styles.generated.ts';
+import EuiIcon from './eui-icon.gts';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { CSSObject } from '@emotion/css/create-instance';
+import type { EuiBorealisContext } from '../utils/eui/theme.ts';
+
+const cancelWhenReadOnly = modifier(function cancelWhenReadOnly(
+  element: HTMLInputElement,
+  [readOnly]: [boolean?]
+) {
+  if (!readOnly) return;
+  const cancel = (event: Event) => event.preventDefault();
+  element.addEventListener('click', cancel);
+  return () => element.removeEventListener('click', cancel);
+});
 
 const indeterminateModifier = modifier(function invalidateIndeterminate(
   element: HTMLInputElement,
   [indeterminate]: [boolean?]
 ) {
   if (element) {
-    element.indeterminate = indeterminate!;
+    element.indeterminate = indeterminate ?? false;
   }
 });
 
 /**
- * Attributes and modifiers (`value`, `{{on "change" …}}`) go to the
- * `<input type="checkbox">`.
+ * Native state selectors. Upstream (React, always controlled) picks its
+ * selected/disabled styles from props; Ember checkboxes may be uncontrolled,
+ * so the visual state follows the native `<input>` instead (`:checked`,
+ * `:indeterminate`, `:disabled`). `&` is the element being styled.
+ */
+const SQUARE = '.euiCheckbox__square';
+const INPUT = '> .euiCheckbox__input';
+const SELECTED = `${SQUARE}:has(${INPUT}:checked) &, ${SQUARE}:has(${INPUT}:indeterminate) &`;
+const DISABLED = `${SQUARE}:has(${INPUT}:disabled) &`;
+const DISABLED_SELECTED = `${SQUARE}:has(${INPUT}:disabled:checked) &, ${SQUARE}:has(${INPUT}:disabled:indeterminate) &`;
+const CHECKED_ONLY = `${SQUARE}:has(${INPUT}:checked:not(:indeterminate)) &`;
+const INDETERMINATE = `${SQUARE}:has(${INPUT}:indeterminate) &`;
+const LABEL_DISABLED = `.euiCheckbox:has(> ${SQUARE} ${INPUT}:disabled) &`;
+
+/** Stands in for React's global reset, which Ember apps do not have. */
+export function euiCheckableReset({ euiTheme }: EuiBorealisContext): CSSObject {
+  return { boxSizing: 'border-box', fontFamily: euiTheme.font.family };
+}
+
+/** Upstream's input reset (`margin: 0; padding: 0`) plus border-box sizing. */
+export const euiCheckableInputReset: CSSObject = {
+  boxSizing: 'border-box',
+  margin: 0,
+  padding: 0
+};
+
+/**
+ * A checkbox: a styled square over a visually hidden native
+ * `<input type="checkbox">`. Attributes and modifiers (`value`,
+ * `{{on "change" …}}`) go to the `<input>`.
  */
 export interface EuiCheckboxSignature {
   Element: HTMLInputElement;
@@ -30,11 +79,26 @@ export interface EuiCheckboxSignature {
     checked?: boolean;
     /** Disables the checkbox. */
     disabled?: boolean;
-    /** Shows the "partially checked" state, e.g. for a "select all" box. */
+    /**
+     * Makes the checkbox read-only: it keeps its checked state, shows a
+     * default cursor and does not change colours on focus. Native
+     * `readonly` does not stop checkboxes from toggling, so clicks are
+     * cancelled (what React's controlled input does upstream when the state
+     * is not updated).
+     */
+    readOnly?: boolean;
+    /**
+     * Shows the "partially checked" state, e.g. for a "select all" box. Sets
+     * the input's `indeterminate` property.
+     */
     indeterminate?: boolean;
-    /** @private Styles the checkbox for use next to an icon. */
+    /** @deprecated Has no effect; upstream EUI has no icon variant. */
     icon?: boolean;
-    /** Smaller checkbox, for dense forms. */
+    /**
+     * @deprecated Has no effect on a single checkbox (upstream EUI has no
+     * compressed checkbox). `EuiCheckboxGroup`'s `@compressed` tightens the
+     * spacing between rows.
+     */
     compressed?: boolean;
     /** Label next to the checkbox. Use the `<:label>` block for markup. */
     label?: string;
@@ -57,6 +121,12 @@ export interface EuiCheckboxSignature {
     id?: string;
     /** `name` of the input, for forms. */
     name?: string;
+    /**
+     * Extra styles composed last into the wrapper's class (like upstream's
+     * `css` prop, which lands on the wrapper too). Prefer this to
+     * `@containerClass` when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The label, instead of `@label`. */
@@ -64,39 +134,124 @@ export interface EuiCheckboxSignature {
   };
 }
 
-const EuiCheckbox: TemplateOnlyComponent<EuiCheckboxSignature> = <template>
-  {{#let
-    (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
-    (argOrDefault @id (randomId))
-    as |hasLabelBlock id|
-  }}
+export default class EuiCheckbox extends Component<EuiCheckboxSignature> {
+  @cached
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiCheckboxStyles);
+    const control = useEuiBorealisStyles(context, euiCheckboxControlStyles);
+    const reset = euiCheckableReset(context.upstream);
+    const hidden: CSSObject = { display: 'none' };
+
+    return {
+      root: euiClass(context, reset, styles.euiCheckbox, this.args.css),
+      square: (hasLabel: unknown, readOnly: unknown) =>
+        euiClass(
+          context,
+          reset,
+          styles.input.euiCheckbox__square,
+          hasLabel ? styles.input.hasLabel : undefined,
+          readOnly ? styles.input.readOnly : undefined
+        ),
+      control: euiClass(
+        context,
+        reset,
+        control.euiCheckboxControl,
+        control.enabled.unselected,
+        {
+        [SELECTED]: control.enabled.selected,
+        [DISABLED]: control.disabled.unselected,
+        [DISABLED_SELECTED]: control.disabled.selected
+        }
+      ),
+      // Hidden icons are removed rather than made transparent, so forced
+      // colors (which override `color`) never reveal them (upstream swaps in
+      // its `empty` icon for the same reason).
+      // Composed into EuiIcon's own class via @css, so they win over the
+      // icon's display rule regardless of insertion order.
+      check: [
+        control.icon.euiCheckbox__icon,
+        control.icon.check,
+        { ...hidden, [CHECKED_ONLY]: { display: 'block' } }
+      ] as EuiCss,
+      indeterminate: [
+        control.icon.euiCheckbox__icon,
+        control.icon.indeterminate,
+        { ...hidden, [INDETERMINATE]: { display: 'block' } }
+      ] as EuiCss,
+      input: euiClass(
+        context,
+        euiCheckableInputReset,
+        styles.input.euiCheckbox__input
+      ),
+      label: (readOnly: unknown) =>
+        euiClass(
+          context,
+          reset,
+          styles.label.euiCheckbox__label,
+          styles.label.enabled,
+          { [LABEL_DISABLED]: styles.label.disabled },
+          // After the enabled cursor so it wins
+          readOnly ? styles.label.readOnly : undefined
+        )
+    };
+  }
+
+  <template>
     {{#let
-      (classNames
-        (if @icon "euiCheckbox--withIcon")
-        (if (not (or hasLabelBlock @label)) "euiCheckbox--noLabel")
-        (if @compressed "euiCheckbox--compressed")
-        "euiCheckbox"
-        @className
-        @containerClass
-      )
-      as |classes|
+      (and (has-block "label") (not (argOrDefault @isFakeLabelBlock false)))
+      (argOrDefault @id (randomId))
+      this.styles
+      as |hasLabelBlock id styles|
     }}
-      <div class={{classes}}>
-        <input
-          class="euiCheckbox__input"
-          type="checkbox"
-          id={{id}}
-          checked={{@checked}}
-          disabled={{@disabled}}
-          name={{@name}}
-          ...attributes
-          {{indeterminateModifier @indeterminate}}
-          {{didInsert (optional @inputRef)}}
-        />
-        <div class="euiCheckbox__square"></div>
+      <div
+        class={{classNames
+          "euiCheckbox"
+          styles.root
+          @className
+          @containerClass
+        }}
+      >
+        <div
+          class="euiCheckbox__square {{styles.square (or hasLabelBlock @label) @readOnly}}"
+        >
+          <span class="euiCheckboxControl {{styles.control}}">
+            <EuiIcon
+              @type="check"
+              @size="m"
+              role="presentation"
+              @css={{styles.check}}
+              class="euiCheckbox__icon"
+            />
+            <EuiIcon
+              @type="stopFill"
+              @size="m"
+              role="presentation"
+              @css={{styles.indeterminate}}
+              class="euiCheckbox__icon"
+            />
+          </span>
+          <input
+            class="euiCheckbox__input {{styles.input}}"
+            type="checkbox"
+            id={{id}}
+            checked={{@checked}}
+            disabled={{@disabled}}
+            readonly={{@readOnly}}
+            name={{@name}}
+            ...attributes
+            {{cancelWhenReadOnly @readOnly}}
+            {{indeterminateModifier @indeterminate}}
+            {{didInsert (optional @inputRef)}}
+          />
+        </div>
         {{#if (or hasLabelBlock @label)}}
           <label
-            class={{classNames "euiCheckbox__label" @labelProps.className}}
+            class={{classNames
+              "euiCheckbox__label"
+              (styles.label @readOnly)
+              @labelProps.className
+            }}
             for={{id}}
           >
             {{#if hasLabelBlock}}
@@ -108,7 +263,5 @@ const EuiCheckbox: TemplateOnlyComponent<EuiCheckboxSignature> = <template>
         {{/if}}
       </div>
     {{/let}}
-  {{/let}}
-</template>;
-
-export default EuiCheckbox;
+  </template>
+}

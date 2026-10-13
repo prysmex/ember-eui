@@ -1,9 +1,18 @@
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiHealthStyles } from '../utils/eui/styles.generated.ts';
+import EuiFlexGroup from './eui-flex-group.gts';
+import EuiFlexItem from './eui-flex-item.gts';
 import EuiIcon from './eui-icon.gts';
 
-import type { sizeToClassNameMap } from '../utils/css-mappings/eui-health.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { SerializedStyles } from '@emotion/serialize';
+
+export const TEXT_SIZES = ['xs', 's', 'm', 'inherit'] as const;
+
+export type EuiHealthTextSize = (typeof TEXT_SIZES)[number];
 
 /** A status: a colored dot followed by text, e.g. "Healthy" or "Down". */
 export interface EuiHealthSignature {
@@ -16,9 +25,9 @@ export interface EuiHealthSignature {
     color?: string;
 
     /**
-     * Text size: `'xs'`, `'s'`, `'m'` or `'inherit'`. Defaults to `'m'`.
+     * Text size: `'xs'`, `'s'`, `'m'` or `'inherit'`. Defaults to `'s'`.
      */
-    textSize?: keyof typeof sizeToClassNameMap;
+    textSize?: EuiHealthTextSize;
   };
   Blocks: {
     /** The status text. */
@@ -26,25 +35,38 @@ export interface EuiHealthSignature {
   };
 }
 
-const EuiHealth: TemplateOnlyComponent<EuiHealthSignature> = <template>
-  <div
-    class={{classNames
-      componentName="EuiHealth"
-      textSize=(argOrDefault @textSize "m")
-    }}
-    ...attributes
-  >
-    <div
-      class="euiFlexGroup euiFlexGroup--gutterExtraSmall euiFlexGroup--alignItemsCenter euiFlexGroup--directionRow"
-    >
-      <div class="euiFlexItem euiFlexItem--flexGrowZero">
-        <EuiIcon @type="dot" @color={{@color}} />
-      </div>
-      <div class="euiFlexItem euiFlexItem--flexGrowZero">
-        {{yield}}
-      </div>
-    </div>
-  </div>
-</template>;
+/** Native Ember health status using the upstream EUI 123 / Borealis styles. */
+export default class EuiHealth extends Component<EuiHealthSignature> {
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(
+      context,
+      euiHealthStyles as (
+        ...args: Parameters<typeof euiHealthStyles>
+      ) => Record<string, SerializedStyles>
+    );
+    const size = this.args.textSize;
+    const textSize =
+      size && (TEXT_SIZES as readonly string[]).includes(size) ? size : 's';
 
-export default EuiHealth;
+    return `euiHealth ${euiClass(context, styles['euiHealth'], styles[textSize])}`;
+  }
+
+  <template>
+    <div class={{this.classes}} ...attributes>
+      <EuiFlexGroup
+        @gutterSize="xs"
+        @alignItems="center"
+        @responsive={{false}}
+      >
+        <EuiFlexItem @grow={{false}}>
+          <EuiIcon @type="dot" @color={{@color}} />
+        </EuiFlexItem>
+        <EuiFlexItem @grow={{false}}>
+          {{yield}}
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </div>
+  </template>
+}

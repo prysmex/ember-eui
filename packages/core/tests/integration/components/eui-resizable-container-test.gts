@@ -23,11 +23,12 @@ module('Integration | Component | eui-resizable-container', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiResizableContainer').hasClass('euiResizableContainer--horizontal');
-    assert.dom('#left').hasClass('euiResizablePanel--first');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiResizableContainer')!).flexDirection, 'row');
+    assert.dom('#left').hasAttribute('data-position', 'first');
     assert.strictEqual(this.element.querySelector<HTMLElement>('#left')!.style.width, '30%');
-    assert.dom('#right').hasClass('euiResizablePanel--last');
-    assert.dom('.euiResizableButton').hasClass('euiResizableButton--horizontal').hasAria('label', 'Press left or right to adjust panels size');
+    assert.dom('#right').hasAttribute('data-position', 'last');
+    assert.dom('.euiResizableButton').hasAria('label', 'Press the left or right arrow keys to adjust panels size');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiResizableButton')!).cursor, 'col-resize');
 
     const width = () => this.element.querySelector('#left')!.getBoundingClientRect().width;
     const before = width();
@@ -84,15 +85,14 @@ module('Integration | Component | eui-resizable-container', function (hooks) {
       </template>
     );
 
-    assert.dom('#nav').hasClass('euiResizablePanel--collapsible');
-    assert.dom('#nav .euiResizableToggleButton').hasClass('euiResizableToggleButton--after');
+    assert.dom('#nav > .euiResizableCollapseButton:last-child').exists('the toggle sits after the content');
 
-    await click('#nav .euiResizableToggleButton');
-    assert.dom('#nav').hasClass('euiResizablePanel-isCollapsed');
+    await click('#nav .euiResizableCollapseButton');
+    assert.dom('#nav').hasAttribute('data-collapsed', 'true');
     assert.dom('.euiResizableButton').isDisabled('the resizer next to a collapsed panel is disabled');
 
-    await click('#nav .euiResizableToggleButton');
-    assert.dom('#nav').doesNotHaveClass('euiResizablePanel-isCollapsed');
+    await click('#nav .euiResizableCollapseButton');
+    assert.dom('#nav').doesNotHaveAttribute('data-collapsed');
     assert.strictEqual(this.element.querySelector<HTMLElement>('#nav')!.style.width, '20%', 'back to its size');
   });
 
@@ -109,7 +109,8 @@ module('Integration | Component | eui-resizable-container', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiResizableContainer').hasClass('euiResizableContainer--vertical');
-    assert.dom('.euiResizableButton').hasClass('euiResizableButton--vertical');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiResizableContainer')!).flexDirection, 'column');
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiResizableButton')!).cursor, 'row-resize');
+    assert.dom('.euiResizableButton').hasAria('label', 'Press the up or down arrow keys to adjust panels size');
   });
 });

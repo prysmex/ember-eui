@@ -12,35 +12,13 @@ border, icons and states. Put the yielded class on each control.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Price range">
-  <EuiFormControlLayoutDelimited @icon="currency">
-    <:startControl as |classes|>
-      <EuiFieldNumber
-        @controlOnly={{true}}
-        class={{classes}}
-        @value={{this.min}}
-        aria-label="Minimum price"
-        {{on "input" (fn this.update "min")}}
-      />
-    </:startControl>
-    <:endControl as |classes|>
-      <EuiFieldNumber
-        @controlOnly={{true}}
-        class={{classes}}
-        @value={{this.max}}
-        aria-label="Maximum price"
-        {{on "input" (fn this.update "max")}}
-      />
-    </:endControl>
-  </EuiFormControlLayoutDelimited>
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiFormControlLayoutDelimited, EuiFieldNumber } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
 
 export default class DelimitedFieldsDemo extends Component {
   @tracked min = '10';
@@ -50,5 +28,30 @@ export default class DelimitedFieldsDemo extends Component {
   update(field, event) {
     this[field] = event.target.value;
   }
+
+  <template>
+    <EuiFormRow @label="Price range">
+      <EuiFormControlLayoutDelimited @icon="currency">
+        <:startControl as |classes|>
+          <EuiFieldNumber
+            @controlOnly={{true}}
+            class={{classes}}
+            @value={{this.min}}
+            aria-label="Minimum price"
+            {{on "input" (fn this.update "min")}}
+          />
+        </:startControl>
+        <:endControl as |classes|>
+          <EuiFieldNumber
+            @controlOnly={{true}}
+            class={{classes}}
+            @value={{this.max}}
+            aria-label="Maximum price"
+            {{on "input" (fn this.update "max")}}
+          />
+        </:endControl>
+      </EuiFormControlLayoutDelimited>
+    </EuiFormRow>
+  </template>
 }
 ```

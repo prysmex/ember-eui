@@ -6,32 +6,58 @@ order: 2
 
 <EuiText>
 
-Saving takes 100ms, but the message stays for at least a second so it
-can be read.
+<strong>EuiDelayHide</strong> is a component for conditionally toggling the visibility of a child component. It will ensure that the child is visible for at least 1000ms (default). This avoids UI glitches that are common with loading spinners and other elements that are rendered conditionally and potentially for a short amount of time.
 
 </EuiText>
 
-```hbs template
-<EuiButton {{on "click" this.save}}>Save</EuiButton>
 <EuiSpacer />
-<EuiDelayHide @hide={{not this.isSaving}} @minimumDuration={{1000}}>
-  <EuiCallOut @title="Saving…" @iconType="clock" @size="s" />
-</EuiDelayHide>
-```
 
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiCheckbox, EuiDelayHide, EuiFieldNumber, EuiFlexItem, EuiFormRow, EuiLoadingSpinner } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
-export default class DelayHideDemo extends Component {
-  @tracked isSaving = false;
+export default class DelayHide extends Component {
+  @tracked minimumDuration = 3000;
+  @tracked hide = false;
 
   @action
-  async save() {
-    this.isSaving = true;
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    this.isSaving = false;
+  onChangeMinimumDuration(event) {
+    this.minimumDuration = parseInt(event.target.value, 10);
   }
+
+  @action
+  onChangeHide(event) {
+    this.hide = event.target.checked;
+  }
+
+  <template>
+    <EuiFlexItem>
+      <EuiFormRow>
+        <EuiCheckbox
+          @id='delay-hide-checkbox'
+          @checked={{this.hide}}
+          @label='Hide child'
+          {{on 'change' this.onChangeHide}}
+        />
+      </EuiFormRow>
+      <EuiFormRow @label='Minimum duration'>
+        <EuiFieldNumber
+          @value={{this.minimumDuration}}
+          {{on 'input' this.onChangeMinimumDuration}}
+        />
+      </EuiFormRow>
+      <EuiFormRow @label='Child to render'>
+        <div>
+          <EuiDelayHide @hide={{this.hide}} @minimumDuration={{this.minimumDuration}}>
+            <EuiLoadingSpinner @size='m' />
+          </EuiDelayHide>
+        </div>
+      </EuiFormRow>
+    </EuiFlexItem>
+  </template>
 }
 ```
+

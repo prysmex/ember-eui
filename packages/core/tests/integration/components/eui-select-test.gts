@@ -41,7 +41,12 @@ module('Integration | Component | eui-select', function (hooks) {
       <template><EuiSelect @options={{OPTIONS}} @fullWidth={{true}} @compressed={{true}} @isLoading={{true}} @disabled={{true}} @isInvalid={{true}} /></template>
     );
 
-    assert.dom('select').hasClass('euiSelect--fullWidth').hasClass('euiSelect--compressed').hasClass('euiSelect--isLoading').isDisabled();
+    // Legacy modifier classes are gone; check the upstream styles instead.
+    const select = (this.element as HTMLElement).querySelector('select')!;
+    assert.dom(select).isDisabled().hasAttribute('aria-invalid', 'true');
+    assert.strictEqual(getComputedStyle(select).maxWidth, '100%', 'full width');
+    assert.strictEqual(getComputedStyle(select).lineHeight, '32px', 'compressed');
+    assert.dom('.euiFormControlLayout .euiBorealisLoadingSpinner').exists('loading');
     assert.false((this.element as HTMLElement).querySelector('select')!.validity.valid, 'invalid');
   });
 
@@ -55,7 +60,8 @@ module('Integration | Component | eui-select', function (hooks) {
       </template>
     );
 
-    assert.dom('select').hasClass('euiSelect--inGroup');
+    assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout--group');
+    assert.strictEqual(getComputedStyle((this.element as HTMLElement).querySelector('select')!).boxShadow, 'none', 'in-group select has no own border');
     assert.dom('.pre').hasText('Pre');
     assert.dom('.post').hasText('Post');
   });

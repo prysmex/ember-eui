@@ -11,18 +11,11 @@ closed. Screen readers are told a new region appeared.
 
 </EuiText>
 
-```hbs template
-<EuiButton {{on "click" this.toggle}}>
-  {{if this.isShown "Hide" "Show"}} the control bar
-</EuiButton>
-{{#if this.isShown}}
-  <EuiControlBar @controls={{this.controls}} @landmarkHeading="Demo controls" />
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiControlBar } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
 export default class FixedControlBar extends Component {
@@ -47,5 +40,14 @@ export default class FixedControlBar extends Component {
   toggle() {
     this.isShown = !this.isShown;
   }
+
+  <template>
+    <EuiButton {{on "click" this.toggle}}>
+      {{if this.isShown "Hide" "Show"}} the control bar
+    </EuiButton>
+    {{#if this.isShown}}
+      <EuiControlBar @controls={{this.controls}} @landmarkHeading="Demo controls" />
+    {{/if}}
+  </template>
 }
 ```

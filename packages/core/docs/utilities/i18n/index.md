@@ -8,6 +8,14 @@ title: i18n
 
 <EuiText>
 
+Translations for EUI components can be provided globally in an application through the `euiI18n` service. All available tokens (also called ids) are listed in upstream EUI's [i18ntokens.json](https://github.com/elastic/eui/blob/main/packages/eui/i18ntokens.json).
+
+While developing an EUI component, any text that is included by default must be translatable, and `EuiI18n` is the proper way to do this.
+
+<EuiCallOut @title="These utilities are mostly internal" @color="warning" @size="s">
+  <p>The purpose of these utilities is to allow internationalizing EUI components. This is not a full-fledged solution for internationalizing your app.</p>
+</EuiCallOut>
+
 EUI components ship English texts ("No results found", "Loading
 options...", "Close this dialog", …). Translate them by adding your
 strings to the `euiI18n` service, e.g. in the application route; nested
@@ -35,6 +43,10 @@ export default class ApplicationRoute extends Route {
 A translation can contain `{placeholders}` that components fill in. To
 translate your own strings the same way, use `EuiI18n` (or
 `this.euiI18n.lookupToken(token, defaultText, values)` in JavaScript).
+
+`EuiI18n` also looks up several tokens at once (`@tokens` and `@defaults`
+yield one array of texts) and accepts components as `@values`. There is no
+`EuiContext`: see the Context example for why.
 
 `EuiI18nNumber` formats numbers for the reader (`1234567` as "1,234,567")
 with the service's `formatNumber`, which uses English by default. Replace
@@ -66,16 +78,16 @@ page) and yields a component rendering it.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@tokens` | `string[]` |  | Looks up several tokens at once (instead of `@token`), with their texts in `@defaults` at the same positions. The block is yielded once with an array of the texts (upstream's `tokens`/`defaults`). |
+| `@defaults` | `string[]` |  | Texts used when a token of `@tokens` has no translation. |
 | `@token` | `string` |  | Translation key, e.g. `'euiComboBox.noMatchesMessage'`. |
 | `@default` | `string` |  | Text used when the token has no translation; may contain `{placeholders}`. |
-| `@values` | `{ [key: string]: any }` |  | Values for the `{placeholders}` in the text. |
+| `@values` | `{ [key: string]: any }` |  | Values for the `{placeholders}` in the text. A value can be text, a number, or a component (rendered in place of the placeholder, e.g. `(component EuiLink href="/")`). |
 | `@i18n` |  |  | Translations for this instance, `{ mapping: { token: 'text' } }`, and an optional component to render the text with. |
-
-Deprecated: `@tokens` (Has no effect, use one `EuiI18n` per token.); `@defaults` (Has no effect.).
 
 | Block | Description |
 | --- | --- |
-| default block | Yields a component rendering the text: `as \|Text\|` → `<Text />`. |
+| default block | With `@token`, yields a component rendering the text: `as \|Text\|` → `<Text />`. It renders component values in place, or yields the text (a part of it, when the text has component values) to its block. With `@tokens`, yields once an array with the text of each token. |
 
 ### EuiI18nNumber
 

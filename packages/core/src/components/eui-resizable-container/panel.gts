@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { schedule } from '@ember/runloop';
@@ -8,16 +9,33 @@ import { modifier } from 'ember-modifier';
 
 import cssStyle from '../../-private/css-style.ts';
 import { randomId } from '../../-private/random-id.ts';
-import { PANEL_PADDING } from '../../-private/resizable.ts';
+import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
+import {
+  euiPaddingSize,
+  euiResizablePanelContentStyles,
+  euiResizablePanelStyles
+} from '../../utils/eui/styles.generated.ts';
 import EuiPanel from '../eui-panel.gts';
 import EuiResizableCollapseButton from './collapse-button.gts';
 
 import type EuiI18n from '../../services/eui-i18n';
 import type { PanelModeType, PanelPosition } from '../../-private/resizable.ts';
 import type EuiResizableContainer from '../eui-resizable-container.gts';
+import type { EuiCss } from '../../utils/eui/styles.ts';
 import type { EuiPanelSignature } from '../eui-panel';
 
-type Mode = PanelModeType | [PanelModeType, { position?: 'top' | 'middle' | 'bottom' | 'left' | 'right' }];
+/** Upstream `ToggleOptions`: where the toggle sits and attributes for it. */
+export interface EuiResizablePanelToggleOptions {
+  /** Where the toggle button sits along the edge. Defaults to `'middle'`. */
+  position?: 'top' | 'middle' | 'bottom' | 'left' | 'right';
+  /** Extra class of the toggle button. */
+  className?: string;
+  /** `data-test-subj` of the toggle button. */
+  'data-test-subj'?: string;
+}
+
+type Mode = PanelModeType | [PanelModeType, EuiResizablePanelToggleOptions];
 
 /**
  * A panel of an `EuiResizableContainer` (yielded as `Panel`), sized in
@@ -38,8 +56,9 @@ export interface EuiResizablePanelSignature {
     scrollable?: boolean;
     /**
      * `'collapsible'` (with a toggle button, next to a `'main'` panel),
-     * `'main'`, or `['collapsible', { position }]` to place the toggle
-     * (`'top'`, `'middle'`, `'bottom'`).
+     * `'main'`, or `['collapsible', { position, className, 'data-test-subj' }]`
+     * to place the toggle (`'top'`, `'middle'`, `'bottom'`) and to give it
+     * a class and a `data-test-subj`.
      */
     mode?: Mode;
     /** Padding inside the panel: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`. */
@@ -48,8 +67,10 @@ export interface EuiResizablePanelSignature {
     wrapperPadding?: 'none' | 's' | 'm' | 'l';
     /** Background, any `EuiPanel` color. Defaults to `'transparent'`. */
     color?: EuiPanelSignature['Args']['color'];
-    /** Adds a shadow. */
+    /** Adds a shadow (when there is no border). Defaults to `false`. */
     hasShadow?: boolean;
+    /** Adds a border, like `EuiPanel`'s (whose own default is `true`). Defaults to `false`. */
+    hasBorder?: boolean;
     /** `'none'` or `'m'` rounded corners. Defaults to `'none'`. */
     borderRadius?: EuiPanelSignature['Args']['borderRadius'];
     /** @private The container, set by `EuiResizableContainer`. */
@@ -60,13 +81,6 @@ export interface EuiResizablePanelSignature {
     default: [];
   };
 }
-
-const WRAPPER_PADDING = {
-  none: undefined,
-  s: 'euiResizablePanel--paddingSmall',
-  m: 'euiResizablePanel--paddingMedium',
-  l: 'euiResizablePanel--paddingLarge'
-};
 
 export default class EuiResizablePanel extends Component<EuiResizablePanelSignature> {
   @service declare euiI18n: EuiI18n;
@@ -97,7 +111,19 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
   get togglePosition(): 'top' | 'middle' | 'bottom' | 'left' | 'right' {
     const mode = this.args.mode;
 
-    return (Array.isArray(mode) ? mode[1].position : undefined) ?? 'middle';
+    return (Array.isArray(mode) ? mode[1]?.position : undefined) ?? 'middle';
+  }
+
+  get toggleClassName(): string | undefined {
+    const mode = this.args.mode;
+
+    return Array.isArray(mode) ? mode[1]?.className : undefined;
+  }
+
+  get toggleTestSubj(): string | undefined {
+    const mode = this.args.mode;
+
+    return Array.isArray(mode) ? mode[1]?.['data-test-subj'] : undefined;
   }
 
   get isCollapsible(): boolean {
@@ -125,22 +151,41 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
     });
   }
 
+  @cached
   get classes(): string {
-    return [
-      'euiResizablePanel',
-      WRAPPER_PADDING[this.args.wrapperPadding ?? 'none'],
-      this.isCollapsible && 'euiResizablePanel--collapsible',
-      this.isCollapsed && 'euiResizablePanel-isCollapsed',
-      `euiResizablePanel--${this.position}`
-    ]
-      .filter(Boolean)
-      .join(' ');
+    const context = getEuiThemeContext(this);
+    const styles = euiResizablePanelStyles;
+
+    return `euiResizablePanel ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiResizablePanel,
+      this.isCollapsed && styles.collapsed,
+      { padding: euiPaddingSize(context.upstream, this.args.wrapperPadding ?? 'none') ?? undefined }
+    )}`;
   }
 
-  get contentClasses(): string {
-    return this.args.scrollable === false
-      ? 'euiResizablePanel__content'
-      : 'euiResizablePanel__content euiResizablePanel__content--scrollable';
+  /** Composed into the content `EuiPanel`'s own class. */
+  @cached
+  get contentCss(): EuiCss {
+    const styles = useEuiBorealisStyles(getEuiThemeContext(this), euiResizablePanelContentStyles);
+    const axis = this.container.isHorizontal ? styles.horizontal : styles.vertical;
+
+    return [
+      styles.euiResizablePanel__content,
+      this.args.scrollable !== false && styles.scrollable,
+      this.isCollapsed && styles.collapsedChildren,
+      this.isCollapsed && !this.isCollapsible && axis.collapsed,
+      this.isCollapsible && axis.hasCollapsibleButton
+    ];
+  }
+
+  /** Twice the content padding, the smallest the panel can get. */
+  @cached
+  get paddingSizes(): string {
+    const padding = euiPaddingSize(getEuiThemeContext(this).upstream, this.args.paddingSize ?? 'm') ?? '0px';
+
+    return `${parseFloat(padding) * 2}px`;
   }
 
   /** Which way a middle panel collapses: toward its main neighbour. */
@@ -207,7 +252,7 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
 
     const id = this.id;
     const initSize = size ?? this.args.initialSize ?? 0;
-    const padding = `${PANEL_PADDING[this.args.paddingSize ?? 'm'] * 2}px`;
+    const padding = this.paddingSizes;
     const horizontal = this.container.isHorizontal;
 
     schedule('afterRender', () => {
@@ -243,6 +288,8 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
       id={{this.id}}
       class={{this.classes}}
       style={{this.style}}
+      data-collapsed={{if this.isCollapsed "true"}}
+      data-position={{this.position}}
       {{this.register @size @minSize @mode}}
     >
       {{#if this.hasVisibleToggle}}
@@ -250,6 +297,8 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
           {{#if (isBefore toggle)}}
             <EuiResizableCollapseButton
               aria-label={{this.toggleLabel}}
+              class={{this.toggleClassName}}
+              data-test-subj={{this.toggleTestSubj}}
               @externalPosition="before"
               @direction={{if this.container.isHorizontal "horizontal" "vertical"}}
               @internalPosition={{this.togglePosition}}
@@ -261,8 +310,10 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
         {{/let}}
       {{/if}}
       <EuiPanel
-        class={{this.contentClasses}}
+        class="euiResizablePanel__content"
+        @css={{this.contentCss}}
         @hasShadow={{if @hasShadow true false}}
+        @hasBorder={{if @hasBorder true false}}
         @borderRadius={{if @borderRadius @borderRadius "none"}}
         @color={{if @color @color "transparent"}}
         @paddingSize={{if this.isCollapsed "none" (if @paddingSize @paddingSize "m")}}
@@ -275,6 +326,8 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
           {{#if (isAfter toggle)}}
             <EuiResizableCollapseButton
               aria-label={{this.toggleLabel}}
+              class={{this.toggleClassName}}
+              data-test-subj={{this.toggleTestSubj}}
               @externalPosition="after"
               @direction={{if this.container.isHorizontal "horizontal" "vertical"}}
               @internalPosition={{this.togglePosition}}

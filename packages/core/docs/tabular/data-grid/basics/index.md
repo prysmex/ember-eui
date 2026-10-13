@@ -1,0 +1,177 @@
+---
+title: Data grid
+order: 1
+---
+
+<EuiSpacer/>
+<EuiPageHeader @pageTitle="Data grid"/>
+<EuiSpacer @size="l" />
+
+<EuiText>
+
+**EuiDataGrid** is for displaying large amounts of tabular data. It is a
+better choice over [EUI tables](/docs/core/docs/tabular/basic-table) when
+there are many columns, the data in those columns is fairly uniform, and
+when schemas and sorting are important for comparison. Although it is
+similar to traditional spreadsheet software, EuiDataGrid's current strengths
+are in rendering rather than creating content.
+
+## Core concepts
+
+- The grid allows you to optionally define an
+  [in memory level](/docs/core/docs/tabular/data-grid/in-memory) to have the
+  grid automatically handle updating your columns. Depending upon the level
+  chosen, you may need to manage the content order separately from the grid.
+- [Schemas](/docs/core/docs/tabular/data-grid/schema-and-columns) allow you
+  to tailor the render and sort methods for each column. The component ships
+  with a few automatic schema detection and types, but you can also pass in
+  custom ones.
+- Unlike tables, the data grid **forces truncation**. To display more
+  content you can customize
+  [popovers](/docs/core/docs/tabular/data-grid/cells-and-popovers) to display
+  more content and actions into popovers.
+- [Grid styling](/docs/core/docs/tabular/data-grid/style-and-display) can be
+  controlled by the engineer, but augmented by user preference depending upon
+  the features you enable.
+- [Control columns](/docs/core/docs/tabular/data-grid/schema-and-columns)
+  allow you to add repeatable actions and controls like checkboxes or
+  buttons to your grid.
+- The [toolbar](/docs/core/docs/tabular/data-grid/toolbar) offers the user
+  ways to manipulate the display and order of the data.
+
+## Rendering cells in Ember
+
+Describe the columns with `@columns`, give the number of rows with
+`@rowCount` and render each cell, either with the `<:cell>` block or with a
+`@renderCellValue` component (upstream's `renderCellValue`). The grid only
+asks for the cells that are on screen, so the data can live anywhere (an
+array, a store, a server).
+
+```hbs
+<EuiDataGrid
+  aria-label="People"
+  @columns={{this.columns}}
+  @rowCount={{this.people.length}}
+>
+  <:cell as |cell|>
+    {{get (get this.people cell.rowIndex) cell.columnId}}
+  </:cell>
+</EuiDataGrid>
+```
+
+Each cell receives `rowIndex` (the row in your data, even when the grid
+is sorted or paginated), `colIndex`, `columnId`, `schema`, `isDetails`
+(`true` inside the expansion popover), `isExpanded`, `isExpandable`,
+`cellContext` and `setCellProps`, which lets a cell set its own `className`,
+`style`, `isExpandable` or attributes. Upstream's other render props are
+components or named blocks too: control columns use `<:controlHeaderCell>`,
+`<:controlCell>` and `<:controlFooterCell>` (or `headerCellRender`,
+`rowCellRender` and `footerCellRender` components), and upstream's `ref` is
+the `@registerApi` callback (see
+[ref methods](/docs/core/docs/tabular/data-grid/ref-methods)).
+
+The grid follows upstream EUI's accessibility model: a single cell is
+tabbable, arrows/Home/End/Page Up/Page Down/Ctrl+Home/Ctrl+End move between
+cells, Enter or F2 opens a cell's details and Escape closes them. Name the
+grid with `aria-label` or `aria-labelledby`.
+
+## Top level arguments
+
+The API reference below lists every top level **EuiDataGrid** argument.
+The other data grid pages document the lower level configurations
+(columns, cells and popovers, toolbar, styles, row heights, sorting,
+pagination and virtualization).
+
+</EuiText>
+
+<EuiHorizontalRule />
+
+<!-- api:start -->
+<EuiSpacer @size="xl" />
+
+<EuiText>
+
+## API reference
+
+Generated from the components' TypeScript signatures by
+`scripts/generate-api-docs.mjs`.
+
+### EuiDataGrid
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@columns` (required) | `EuiDataGridColumn[]` |  | Column definitions (`id`, `displayAsText`, `schema`, `initialWidth`, `actions`, `cellActions`, …). |
+| `@columnVisibility` | `EuiDataGridColumnVisibility` |  | Controlled column order/visibility. Optional in Ember: without it the grid keeps its own state, starting with every column visible. |
+| `@rowCount` | `number` |  | Number of rows in the data (not needed with `@rowTree` or `@grouping.rows`). |
+| `@rowTree` | `EuiDataGridRowTree` |  | Ember EUI extension: nested rows. The rows array (nested through each row's `children`, or flat with `parentId`), or options `{ rows, getChildren, getParentId, getRowId, hasChildren, expandedRowIds, defaultExpandedRowIds, onExpandedChange, toggleColumnId }`. |
+| `@grouping` | `EuiDataGridGrouping` |  | Ember EUI extension: groups rows by column values (`{ groupBy, getValue, rows, expandedGroupIds, defaultExpandedGroupIds, onExpandedChange, renderGroupCell, toggleColumnId }`). |
+| `@renderCellValue` |  |  | Component rendering a cell's value; receives `@rowIndex`, `@colIndex`, `@columnId`, `@isDetails`, `@isExpanded`, `@isExpandable`, `@setCellProps`, `@schema`, `@cellContext` and (with `@rowTree` or `@grouping.rows`) `@row`. Or use the `<:cell>` block. |
+| `@cellContext` | `Record<string, unknown>` |  | Extra data passed to every cell renderer as `@cellContext`. |
+| `@renderCellPopover` |  |  | Component rendering the expansion popover (its default block renders the cell value with `@isDetails`); or use the `<:cellPopover>` block. |
+| `@renderFooterCellValue` |  |  | Component rendering footer cells; or use the `<:footerCell>` block. |
+| `@renderCustomGridBody` |  |  | Escape hatch replacing the virtualized body: a component receiving `@Cell`, `@visibleColumns`, `@visibleRowData`, `@setCustomGridBodyProps`, `@gridWidth`, `@headerRow` and `@footerRow`; or use the `<:customGridBody>` block. Give cell content with `@renderCellValue` or the `Cell`'s own block. |
+| `@renderCustomToolbar` |  |  | Custom toolbar layout: a component receiving the toolbar controls (`@hasRoomForGridControls`, `@columnControl`, `@columnSortingControl`, `@keyboardShortcutsControl`, `@displayControl`, `@fullScreenControl`, `@additionalControls`); or use the `<:customToolbar>` block. |
+| `@leadingControlColumns` | `EuiDataGridControlColumn[]` |  | Columns before the data columns (e.g. row selection). |
+| `@trailingControlColumns` | `EuiDataGridControlColumn[]` |  | Columns after the data columns (e.g. row actions). |
+| `@schemaDetectors` | `EuiDataGridSchemaDetector[]` |  | Extra schema detectors, appended to the defaults. |
+| `@gridStyle` | `EuiDataGridStyle` |  | Borders, header/footer styles, stripes, row hover, density. |
+| `@rowHeightsOptions` | `EuiDataGridRowHeightsOptions` |  | Default and per-row heights (`'auto'`, a number, `{ lineCount }` or `{ height }`). |
+| `@toolbarVisibility` | `boolean \| EuiDataGridToolBarVisibilityOptions` | `true` | `false` hides the toolbar, or an object toggling each control. |
+| `@headerVisibility` | `boolean` | `true` | `false` hides the header row. |
+| `@pagination` | `EuiDataGridPaginationProps` |  | Pagination state and callbacks; rendered with `EuiTablePagination`. |
+| `@sorting` | `EuiDataGridSorting` |  | Sorted columns and `onSort`. |
+| `@inMemory` | `EuiDataGridInMemory` |  | Let the grid read rendered values to detect schemas and sort in memory. |
+| `@onColumnResize` |  |  | Called after a column is resized. |
+| `@minSizeForControls` | `number` | 479 | Below this width only the right toolbar controls show. |
+| `@height` | `string \| number` |  | Grid height (CSS length or px number). Without it the grid grows with its rows. |
+| `@width` | `string \| number` |  | Grid width (CSS length or px number). |
+| `@virtualizationOptions` | `EuiDataGridVirtualizationOptions` |  | Overscan counts and render/scroll callbacks of the virtualized body. |
+| `@onFullScreenChange` | `(isFullScreen: boolean) => void` |  | Called when fullscreen mode is entered or left. |
+| `@registerApi` | `(api: EuiDataGridRefProps) => void` |  | Called after render with the grid's imperative API (upstream's `ref`): `setIsFullScreen`, `setFocusedCell`, `openCellPopover`, `closeCellPopover`, `scrollTo` and `scrollToItem`. |
+| `@ariaLabel` | `string` |  | Accessible name of the grid (same as the `aria-label` attribute). |
+| `@ariaLabelledBy` | `string` |  | Id(s) labelling the grid (same as the `aria-labelledby` attribute). |
+| `@css` | `EuiCss` |  | Extra styles composed last into the grid class. |
+
+| Block | Description |
+| --- | --- |
+| `<:cell>` | Cell content when `@renderCellValue` is not given. |
+| `<:cellPopover>` | Expansion popover content when `@renderCellPopover` is not given. |
+| `<:footerCell>` | Footer cell content when `@renderFooterCellValue` is not given. |
+| `<:controlHeaderCell>` | Header of a control column without `headerCellRender`. |
+| `<:controlCell>` | Body cell of a control column without `rowCellRender`. |
+| `<:controlFooterCell>` | Footer cell of a control column without `footerCellRender`. |
+| `<:leftControlsPrepend>` | Toolbar controls before the column/sort controls. |
+| `<:leftControlsAppend>` | Toolbar controls after the column/sort controls. |
+| `<:rightControls>` | Toolbar controls before the right icon buttons. |
+| `<:customToolbar>` | Custom toolbar (like `@renderCustomToolbar`), yielding the toolbar controls. |
+| `<:customGridBody>` | Custom grid body (like `@renderCustomGridBody`). |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+### EuiDataGridToolbarControl
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@iconType` |  |  | Icon before the label. |
+| `@badgeContent` | `string \| number` |  | Count shown in a badge after the label (e.g. `5` or `'3/10'`). |
+| `@isDisabled` | `boolean` |  | Disables the button. |
+| `@color` |  | `'text'` | EuiButtonEmpty color. |
+| `@contentProps` |  |  | `class`, `css` and attributes of the content element, see `EuiButtonEmpty`. |
+| `@textProps` | `EuiElementProps` |  | `class`/`className`, `css` and attributes of the label element, which always has `euiDataGridToolbarControl__text` and truncates. |
+| `@flush` |  |  | Pulls the button to an edge, see `EuiButtonEmpty`. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. |
+| `@iconSide` |  |  | Side of the icon, see `EuiButtonEmpty`. |
+| `@iconSize` |  |  | Size of the icon, see `EuiButtonEmpty`. |
+| `@isLoading` | `boolean` |  | Shows a spinner and disables the button. |
+| `@isSelected` | `boolean` |  | Sets `aria-pressed`, see `EuiButtonEmpty`. |
+| `@size` |  | `'xs'` | `'xs'`, `'s'` or `'m'`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the button class. |
+
+| Block | Description |
+| --- | --- |
+| default block | The control's label. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<a>`.
+
+</EuiText>
+<!-- api:end -->

@@ -11,16 +11,19 @@ module('Integration | Component | eui-link', function (hooks) {
   test('with @href it renders an anchor', async function (assert) {
     await render(<template><EuiLink @href="#docs" @color="subdued">Docs</EuiLink></template>);
 
-    assert.dom('a.euiLink').hasAttribute('href', '#docs').hasClass('euiLink--subdued').hasText('Docs');
+    assert.dom('a.euiLink').hasAttribute('href', '#docs').hasAttribute('rel', 'noreferrer').hasText('Docs');
   });
 
   test('target _blank shows the external icon and a screen reader hint', async function (assert) {
     await render(<template><EuiLink @href="https://example.com" @target="_blank">Out</EuiLink></template>);
 
     assert.dom('a.euiLink').hasAttribute('target', '_blank');
-    assert.dom('a.euiLink svg.euiIcon').hasAttribute('aria-label', 'External link');
-    assert.dom('a.euiLink svg.euiIcon').doesNotHaveAttribute('aria-hidden');
-    assert.dom('a.euiLink').containsText('opens in a new tab or window');
+    assert.dom('a.euiLink').hasAttribute('rel', 'noopener noreferrer');
+    // Upstream: the icon is decorative (EuiLink passes role="presentation";
+    // latest EuiIcon no longer adds aria-hidden) and the screen reader text names it.
+    assert.dom('a.euiLink svg.euiIcon').hasAttribute('role', 'presentation');
+    assert.dom('a.euiLink svg.euiIcon').doesNotHaveAttribute('aria-label');
+    assert.dom('a.euiLink').containsText('(external, opens in a new tab or window)');
   });
 
   test('@external={{false}} hides the external icon', async function (assert) {
@@ -40,7 +43,7 @@ module('Integration | Component | eui-link', function (hooks) {
       </template>
     );
 
-    assert.dom('button.button-link').hasAttribute('type', 'button').hasClass('euiLink--primary');
+    assert.dom('button.button-link').hasAttribute('type', 'button').hasClass('euiLink');
     await click('button.button-link');
     assert.strictEqual(clicks, 1);
     assert.dom('button.disabled').isDisabled();
@@ -50,6 +53,6 @@ module('Integration | Component | eui-link', function (hooks) {
     await render(<template><EuiLink @href="#here" @disabled={{true}} class="off">Off</EuiLink></template>);
 
     assert.dom('a').doesNotExist();
-    assert.dom('button.off').isDisabled().hasClass('euiLink-disabled');
+    assert.dom('button.off').isDisabled().hasClass('euiLink');
   });
 });

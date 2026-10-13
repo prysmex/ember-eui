@@ -20,7 +20,8 @@ module('Integration | Component | eui-screen-reader-only', function (hooks) {
       </template>
     );
 
-    assert.dom('.sr').hasClass('euiScreenReaderOnly--showOnFocus').doesNotHaveClass('euiScreenReaderOnly');
+    // Upstream label class replaces the legacy `--showOnFocus` modifier.
+    assert.dom('.sr').hasClass('euiScreenReaderOnly-showOnFocus').doesNotHaveClass('euiScreenReaderOnly');
     assert.dom('.sr a').exists();
   });
 });

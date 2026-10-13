@@ -40,15 +40,16 @@ A file input styled as a drop zone. Attributes such as `accept` go to the
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the file input. |
 | `@name` | `string` |  | `name` of the file input, for forms. |
-| `@initialPromptText` | `Component \| string \| null` | "Select or drag and drop a file" | The content that appears in the dropzone if no file is attached. |
+| `@initialPromptText` | `Component \| string \| null` | "Select or drag and drop a file" (`euiFilePicker.promptText`) | The content that appears in the dropzone if no file is attached. |
 | `@onChange` | `(files: FileList \| null) => void` |  | Called with the selected files (a `FileList`) when they change, including when they are removed (an empty list). |
 | `@compressed` | `boolean` |  | Reduces the size to a typical (compressed) input |
-| `@display` | `EuiFilePickerDisplay` |  | Size or type of display; `default` for normal height, similar to other controls; `large` for taller size |
+| `@display` | `EuiFilePickerDisplay` | `default` | Size or type of display; `default` for normal height, similar to other controls; `large` for taller size. |
 | `@fullWidth` | `boolean` |  | Stretches the picker to its container's width. |
-| `@isInvalid` | `boolean` |  | Shows the invalid state and marks the input invalid for native form validation. |
-| `@isLoading` | `boolean` |  | Shows a spinner. |
+| `@isInvalid` | `boolean` |  | Shows the invalid state (danger border and warning icon), sets `aria-invalid` and marks the input invalid for native form validation. |
+| `@isLoading` | `boolean` |  | Shows a spinner (`default`) or a progress bar (`large`). |
 | `@disabled` | `boolean` |  | Disables the picker. |
 | `@multiple` | `boolean` |  | Allows selecting several files. |
+| `@files` | `File[] \| null` |  | Files to show as selected (their name, or "N files selected"), e.g. to keep the prompt when a multi-step form re-renders the picker. Browsers don't let the file input itself be set: keep the files in your state. A new array replaces whatever the user picked since. |
 | `@ref` |  |  | Called with the component instance, e.g. to call its `removeFiles()` action and reset the picker. |
 
 Deprecated: `@class` (Has no effect, use `class=`.).

@@ -1,13 +1,18 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { assert } from '@ember/debug';
-import { hash } from '@ember/helper';
-import { action } from '@ember/object';
-import didInsert from '@ember/render-modifiers/modifiers/did-insert';
-import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 
-import classNames from '../helpers/class-names.ts';
-import inlineStyles from '../helpers/inline-styles.ts';
-import simpleStyle from '../modifiers/simple-style.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { levelPosition, logicalStyle } from '../utils/eui/range.ts';
+import {
+  euiRangeLevelsStyles,
+  euiRangeLevelStyles,
+  isNamedLevelColor
+} from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+
+import type { EuiCss } from '../utils/eui/styles.ts';
+import type { SafeString } from '@ember/template';
 
 export type EuiRangeLevelColor = 'primary' | 'success' | 'warning' | 'danger';
 
@@ -27,8 +32,13 @@ export interface EuiRangeLevel {
   min: number;
   /** End of the interval. */
   max: number;
-  /** `'primary'`, `'success'`, `'warning'` or `'danger'`. */
-  color: EuiRangeLevelColor;
+  /**
+   * `'primary'`, `'success'`, `'warning'`, `'danger'` (theme colors) or any
+   * CSS color.
+   */
+  color: EuiRangeLevelColor | (string & {});
+  /** Extra classes for the level's `<span>`. */
+  className?: string;
 }
 
 export type EuiRangeLevelsArgs = {
@@ -38,12 +48,16 @@ export type EuiRangeLevelsArgs = {
   max: number;
   /** Lowest value. */
   min: number;
-  /** Leaves room for ticks under the track. */
+  /** Positions the levels on a thumb-height track (room for ticks). */
   showTicks?: boolean;
-  /** Compressed (smaller) styling. */
+  /** Stripes the levels, so a highlighted range stands out. */
+  showRange?: boolean;
+  /** @deprecated Has no effect (upstream has no compressed levels). */
   compressed?: boolean;
   /** Width of the track in px. */
   trackWidth?: number;
+  /** @private Styles composed last into the root's class (upstream `css`). */
+  css?: EuiCss;
 };
 
 /** @private Renders the `@levels` of EuiRange / EuiDualRange. */
@@ -53,52 +67,71 @@ export interface EuiRangeLevelsSignature {
   Blocks: { default: [] };
 }
 
-export default class EuiRangeLevelsComponent extends Component<EuiRangeLevelsSignature> {
-  @action
-  validateLevels(): void {
-    const { min, max } = this.args;
+interface RenderedLevel {
+  classes: string;
+  style: SafeString | undefined;
+}
 
-    this.args.levels?.forEach?.((level) => {
-      if (level.min < min) {
-        assert(
-          `The level min of ${level.min} is lower than the min value of ${min}.`,
-          true
-        );
-      }
+export default class EuiRangeLevels extends Component<EuiRangeLevelsSignature> {
+  get context() {
+    return getEuiThemeContext(this);
+  }
 
-      if (level.max > max) {
-        assert(
-          `The level max of ${level.max} is higher than the max value of ${max}.`,
-          true
-        );
-      }
+  @cached
+  get classes(): string {
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiRangeLevelsStyles);
+    return `euiRangeLevels ${euiClass(
+      context,
+      styles.euiRangeLevels,
+      this.args.showTicks && styles.hasTicks,
+      this.args.showRange && styles.hasRange,
+      this.args.css
+    )}`;
+  }
+
+  @cached
+  get levels(): RenderedLevel[] {
+    const { min, max, trackWidth = 0 } = this.args;
+    const context = this.context;
+    const styles = useEuiBorealisStyles(context, euiRangeLevelStyles);
+    return (this.args.levels ?? []).map((level) => {
+      assert(
+        `The level min of ${level.min} is lower than the min value of ${min}.`,
+        !(level.min < min)
+      );
+      assert(
+        `The level max of ${level.max} is higher than the max value of ${max}.`,
+        !(level.max > max)
+      );
+      const named = isNamedLevelColor(level.color);
+      const position = levelPosition(level, min, max, trackWidth);
+      return {
+        classes: [
+          'euiRangeLevel',
+          level.className,
+          euiClass(
+            context,
+            styles.euiRangeLevel,
+            named
+              ? styles[level.color as EuiRangeLevelColor]
+              : styles.customColor
+          )
+        ]
+          .filter(Boolean)
+          .join(' '),
+        style: logicalStyle({
+          ...position,
+          backgroundColor: named ? undefined : level.color
+        })
+      };
     });
   }
 
   <template>
-    <div
-      class={{classNames
-        "euiRangeLevels"
-        (if @showTicks "euiRangeLevels--hasTicks")
-        (if @compressed "euiRangeLevels--compressed")
-      }}
-      {{didInsert this.validateLevels}}
-      {{didUpdate this.validateLevels @levels}}
-      {{didUpdate this.validateLevels @min}}
-      {{didUpdate this.validateLevels @max}}
-    >
-      {{#each @levels as |level|}}
-        <span
-          class="euiRangeLevel euiRangeLevel--{{level.color}}"
-          {{simpleStyle
-            (inlineStyles
-              componentName="EuiRangeLevels"
-              componentArgs=(hash
-                level=level max=@max min=@min trackWidth=@trackWidth
-              )
-            )
-          }}
-        ></span>
+    <div class={{this.classes}} ...attributes>
+      {{#each this.levels as |level|}}
+        <span class={{level.classes}} style={{level.style}}></span>
       {{/each}}
     </div>
   </template>

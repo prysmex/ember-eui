@@ -8,6 +8,8 @@ title: Tour
 
 <EuiText>
 
+The tour components provided by EUI allow for a flexible and customizable way to showcase items on a page in an ordered manner by augmenting existing elements on the page without altering functionality.
+
 A tour walks users through a page step by step: each step is a popover
 with a pulsing beacon next to the element it explains, a title, text, the
 progress, and a button to skip or end the tour.
@@ -38,7 +40,18 @@ and `state` has `currentTourStep` and `isTourActive`, e.g. to save the
 progress. The `<:footerAction>` block of a step replaces its "Skip tour"
 button, e.g. with a "Next" button.
 
-`EuiTourStep` also works on its own, opened with `@isStepOpen`.
+`EuiTourStep` also works on its own, opened with `@isStepOpen`. It wraps its default block (the element it points at), or attaches to an element elsewhere in the page with `@anchor`: a CSS selector, the element, or a function returning it.
+
+Ember EUI has no `useEuiTour` hook: `EuiTour` yields the same state and actions, and you can keep the state in your own component for standalone steps.
+
+## Guidelines
+
+- Use tours when you want users to learn about specific UI elements and how interacting with them will help them achieve a goal. To help users perform an action without step by step guidance, use an empty prompt instead.
+- Tours can feel intrusive. Good scenarios are new users seeing an interface for the first time, novice users gaining proficiency, and existing users being onboarded when new features or redesigns are released. Consider asking users if they want the tour instead of just showing it.
+- Provide concise yet valuable information: keep each step short, and link to documentation for more.
+- Explain why the actions you want users to perform are useful.
+- Keep the tone conversational and friendly, and work alongside a writer.
+- Allow users to end and restart the tour at any time.
 
 </EuiText>
 
@@ -87,13 +100,18 @@ the current step, or on its own with `@isStepOpen`.
 | `@maxWidth` | `number` | `600` | Maximum width in px. |
 | `@onFinish` | `() => void` |  | Called by the "Skip / End / Close tour" button. |
 | `@closePopover` | `() => void` |  | Called when clicking outside or pressing Escape. |
+| `@anchor` |  |  | Attaches the popover to an element that is already in the page, given as a CSS selector, the element itself or a function returning it, instead of wrapping the default block (which is then not rendered). The popover appears once the element is found. |
+| `@zIndex` | `number` | the popover layer | `z-index` of the popover. |
+| `@footerAction` | `ComponentLike \| ComponentLike[]` |  | Replaces the "Skip tour" button in the footer: a component (use `(component …)`), or an array of components for up to two buttons. The `<:footerAction>` block wins when both are given. |
 | `@decoration` | `'beacon' \| 'none'` | `'beacon'` | `'beacon'` (a pulsing dot on the arrow) or `'none'`. |
+| `@css` | `EuiCss` |  | Extra styles composed into the panel's class, after the tour's own (upstream's `css`, which EuiTourStep moves to the panel). |
 
 | Block | Description |
 | --- | --- |
-| default block | The element the step points at. |
+| default block | The element the step points at (unused with `@anchor`). |
 | `<:content>` | Markup for the step's content, instead of `@content`. |
 | `<:footerAction>` | Replaces the "Skip tour" button, e.g. with "Next" / "Back" buttons. |
+| `<:arrowChildren>` | Content of the popover's arrow, instead of the beacon (upstream `arrowChildren`). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

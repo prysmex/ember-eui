@@ -11,26 +11,11 @@ A gradient from 0 to 100. The bar below previews the result with
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Heat map colors" @isInvalid={{this.isInvalid}} @error="A stop is incomplete">
-  <EuiColorStops
-    @label="Heat map colors"
-    @colorStops={{this.stops}}
-    @onChange={{this.setStops}}
-    @min={{0}}
-    @max={{100}}
-  />
-</EuiFormRow>
-<EuiSpacer @size="s" />
-<div style="max-width: 400px;">
-  <EuiColorPaletteDisplay @palette={{this.stops}} @type="gradient" />
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiColorStops, EuiSpacer, EuiColorPaletteDisplay } from '@ember-eui/core/components';
 
 export default class ColorStopsDemo extends Component {
   @tracked stops = [
@@ -45,5 +30,21 @@ export default class ColorStopsDemo extends Component {
     this.stops = stops;
     this.isInvalid = isInvalid;
   }
+
+  <template>
+    <EuiFormRow @label="Heat map colors" @isInvalid={{this.isInvalid}} @error="A stop is incomplete">
+      <EuiColorStops
+        @label="Heat map colors"
+        @colorStops={{this.stops}}
+        @onChange={{this.setStops}}
+        @min={{0}}
+        @max={{100}}
+      />
+    </EuiFormRow>
+    <EuiSpacer @size="s" />
+    <div style="max-width: 400px;">
+      <EuiColorPaletteDisplay @palette={{this.stops}} @type="gradient" />
+    </div>
+  </template>
 }
 ```

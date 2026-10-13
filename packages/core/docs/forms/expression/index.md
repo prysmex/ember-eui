@@ -53,6 +53,8 @@ button, usually opening a popover to edit the value.
 | `@display` | `'inline' \| 'columns'` | `'inline'` | `'inline'` (in a sentence) or `'columns'` (description and value in two columns, to stack several). |
 | `@descriptionWidth` | `number \| string` | `'20%'` | Width of the description in columns display. |
 | `@textWrap` | `'break-word' \| 'truncate'` | `'break-word'` | `'break-word'` or `'truncate'` long values. |
+| `@descriptionProps` | `EuiExpressionPartProps` |  | Props of the description `<span>` (upstream `descriptionProps`): `className`, `css`, `style` (an object) and any attribute. |
+| `@valueProps` | `EuiExpressionPartProps` |  | Props of the value `<span>` (upstream `valueProps`), see `@descriptionProps`. |
 
 | Block | Description |
 | --- | --- |

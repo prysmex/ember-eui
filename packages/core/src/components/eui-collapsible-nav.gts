@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { throttle } from '@ember/runloop';
 
@@ -9,10 +9,14 @@ import { and, not, or } from 'ember-truth-helpers';
 import randomId from '../-private/random-id.ts';
 import argOrDefault from '../helpers/arg-or-default.ts';
 import { isWithinMinBreakpoint } from '../utils/breakpoint.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import { euiCollapsibleNavStyles } from '../utils/eui/styles.generated.ts';
 import EuiFlyout from './eui-flyout.gts';
 
-import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
-import type { EuiFlyoutSignature } from './eui-flyout';
+import type { EuiBreakpointSize, EuiBreakpoints } from '../utils/breakpoint.ts';
+import type { EuiFlyoutArgs, EuiFlyoutSignature } from './eui-flyout';
 import type { ModifierLike } from '@glint/template';
 
 export type EuiCollapsibleNavArgs = {
@@ -63,14 +67,51 @@ export type EuiCollapsibleNavArgs = {
   paddingSize?: string;
   /** Called to close the nav (close button, Escape, outside click). */
   onClose: EuiFlyoutSignature['Args']['onClose'];
-};
+  /**
+   * Flyout session (EuiFlyout `@session`). Defaults to `'never'`, as
+   * upstream: the nav stays out of managed flyout sessions.
+   */
+  session?: EuiFlyoutArgs['session'];
+  /**
+   * Focus trap options (EuiFlyout `@focusTrapProps`). The toggle button
+   * is always added to `shards`, as upstream.
+   */
+  focusTrapProps?: EuiFlyoutArgs['focusTrapProps'];
+} & Pick<
+  EuiFlyoutArgs,
+  | 'closeButtonProps'
+  | 'container'
+  | 'flyoutMenuDisplayMode'
+  | 'flyoutMenuProps'
+  | 'hasAnimation'
+  | 'hasChildBackground'
+  | 'historyKey'
+  | 'includeFixedHeadersInFocusTrap'
+  | 'includeSelectorInFocusTrap'
+  | 'maskProps'
+  | 'maxWidth'
+  | 'minWidth'
+  | 'onActive'
+  | 'onResize'
+  | 'pushAnimation'
+  | 'resizable'
+>;
 
 const triggerHandlersModifier = modBuilder(
   (
     element: Element,
     _pos,
-    { flyoutID, isOpen }: { flyoutID: string; isOpen: boolean }
+    {
+      flyoutID,
+      isOpen,
+      register
+    }: {
+      flyoutID: string;
+      isOpen: boolean;
+      register?: (element: HTMLElement | null) => void;
+    }
   ) => {
+    register?.(element as HTMLElement);
     element.setAttribute('aria-controls', flyoutID);
     element.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     element.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
@@ -83,6 +124,7 @@ const triggerHandlersModifier = modBuilder(
     element.addEventListener('mouseup', fn, true);
 
     return () => {
+      register?.(null);
       element.removeEventListener('touchend', fn);
       element.removeEventListener('mouseup', fn, true);
     };
@@ -131,11 +173,41 @@ export interface EuiCollapsibleNavSignature {
     content: [];
   };
 }
+/**
+ * Upstream `EuiCollapsibleNav` (the flyout-based nav, not
+ * `EuiCollapsibleNavBeta`): an `EuiFlyout` with `euiCollapsibleNavStyles`
+ * composed over it (`push` while docked, `overlay` with
+ * `levels.navigation` z-index otherwise). Docking follows the nearest
+ * theme's breakpoints, like upstream `useIsWithinMinBreakpoint`.
+ */
 export default class EuiCollapsibleNavComponent extends Component<EuiCollapsibleNavSignature> {
-  @tracked windowIsLargeEnoughToPush = isWithinMinBreakpoint(
-    typeof window === 'undefined' ? -Infinity : window.innerWidth,
-    this.dockedBreakpoint
-  );
+  @tracked windowWidth =
+    typeof window === 'undefined' ? -Infinity : window.innerWidth;
+
+  get windowIsLargeEnoughToPush(): boolean {
+    return isWithinMinBreakpoint(
+      this.windowWidth,
+      this.dockedBreakpoint,
+      this.breakpoints
+    );
+  }
+
+  get breakpoints(): EuiBreakpoints {
+    return getEuiThemeContext(this).upstream.euiTheme
+      .breakpoint as EuiBreakpoints;
+  }
+
+  get flyoutType(): 'push' | 'overlay' {
+    return this.navIsDocked ? 'push' : 'overlay';
+  }
+
+  /** Composed into EuiFlyout's own class through `@css`, as upstream. */
+  @cached
+  get flyoutCss(): EuiCss {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiCollapsibleNavStyles);
+    return [styles.euiCollapsibleNav, styles[this.flyoutType]];
+  }
 
   get isDocked() {
     return this.args.isDocked ?? false;
@@ -189,15 +261,36 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
     return this.args.paddingSize ?? 'none';
   }
 
+  /** The toggle button, a focus trap shard (upstream `buttonRef`). */
+  buttonElement: HTMLElement | null = null;
+
+  registerButton = (element: HTMLElement | null): void => {
+    this.buttonElement = element;
+  };
+
+  /** Read when the flyout's focus trap is created, after the button. */
+  get focusTrapProps(): EuiFlyoutArgs['focusTrapProps'] {
+    const own = this.args.focusTrapProps;
+    const button = this.buttonElement;
+
+    return {
+      ...own,
+      shards: [...(button ? [button] : []), ...(own?.shards ?? [])]
+    };
+  }
+
+  get session(): EuiFlyoutArgs['session'] {
+    return this.args.session ?? 'never';
+  }
+
   @action
   functionToCallOnWindowResize() {
-    throttle(() => {
-      if (isWithinMinBreakpoint(window.innerWidth, this.dockedBreakpoint)) {
-        this.windowIsLargeEnoughToPush = true;
-      } else {
-        this.windowIsLargeEnoughToPush = false;
-      }
-    }, 50);
+    throttle(this, this.measureWindow, 50);
+  }
+
+  measureWindow() {
+    if (this.isDestroying || this.isDestroyed) return;
+    this.windowWidth = window.innerWidth;
   }
 
   <template>
@@ -211,7 +304,12 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
 
       {{#if (not (and this.navIsDocked (not this.showButtonIfDocked)))}}
         {{yield
-          (modifier triggerHandlersModifier isOpen=@isOpen flyoutID=flyoutID)
+          (modifier
+            triggerHandlersModifier
+            isOpen=@isOpen
+            flyoutID=flyoutID
+            register=this.registerButton
+          )
           to="button"
         }}
       {{/if}}
@@ -220,6 +318,7 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
         <EuiFlyout
           id={{flyoutID}}
           class="euiCollapsibleNav"
+          @css={{this.flyoutCss}}
           @as={{this.as}}
           @size={{this.size}}
           @side={{this.side}}
@@ -228,10 +327,28 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
           @outsideClickCloses={{this.outsideClickCloses}}
           @closeButtonPosition={{this.closeButtonPosition}}
           @paddingSize={{this.paddingSize}}
-          @type={{if this.navIsDocked "push" "overlay"}}
+          @type={{this.flyoutType}}
           @hideCloseButton={{this.navIsDocked}}
           @pushMinBreakpoint={{this.dockedBreakpoint}}
           @onClose={{@onClose}}
+          @session={{this.session}}
+          @focusTrapProps={{this.focusTrapProps}}
+          @closeButtonProps={{@closeButtonProps}}
+          @container={{@container}}
+          @flyoutMenuDisplayMode={{@flyoutMenuDisplayMode}}
+          @flyoutMenuProps={{@flyoutMenuProps}}
+          @hasAnimation={{@hasAnimation}}
+          @hasChildBackground={{@hasChildBackground}}
+          @historyKey={{@historyKey}}
+          @includeFixedHeadersInFocusTrap={{@includeFixedHeadersInFocusTrap}}
+          @includeSelectorInFocusTrap={{@includeSelectorInFocusTrap}}
+          @maskProps={{@maskProps}}
+          @maxWidth={{@maxWidth}}
+          @minWidth={{@minWidth}}
+          @onActive={{@onActive}}
+          @onResize={{@onResize}}
+          @pushAnimation={{@pushAnimation}}
+          @resizable={{@resizable}}
           ...attributes
         >
           {{yield to="content"}}

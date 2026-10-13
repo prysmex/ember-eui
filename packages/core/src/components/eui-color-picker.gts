@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { fn, hash } from '@ember/helper';
+import { cached, tracked } from '@glimmer/tracking';
+import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import { next } from '@ember/runloop';
@@ -15,19 +15,25 @@ import {
   HSV_FALLBACK,
   parseColor,
   RGB_FALLBACK,
-  RGB_JOIN,
-  VISUALIZATION_COLORS
+  RGB_JOIN
 } from '../-private/color.ts';
-import cssStyle from '../-private/css-style.ts';
 import { randomId } from '../-private/random-id.ts';
+import { useEuiPaletteColorBlind } from '../utils/color/eui_palettes.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { boxReset, listReset } from '../utils/eui/color-picker.ts';
+import { euiColorPickerStyles } from '../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiColorPickerSwatch from './eui-color-picker-swatch.gts';
 import EuiFieldText from './eui-field-text.gts';
+import EuiFormControlLayout from './eui-form-control-layout.gts';
+import EuiFormLabel from './eui-form-label.gts';
 import EuiFormRow from './eui-form-row.gts';
 import EuiHue from './eui-hue.gts';
 import EuiPopover from './eui-popover.gts';
 import EuiRange from './eui-range.gts';
 import EuiSaturation from './eui-saturation.gts';
-import EuiSpacer from './eui-spacer.gts';
+import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { HSV, RGBA } from '../-private/color.ts';
@@ -84,6 +90,11 @@ export interface EuiColorPickerSignature {
     fullWidth?: boolean;
     /** Disables it. */
     disabled?: boolean;
+    /**
+     * z-index of the color selector popover. Defaults to the anchor's
+     * z-index + 2000, as in EuiPopover.
+     */
+    popoverZIndex?: number;
     /** Read-only: the popover does not open. */
     readOnly?: boolean;
     /** Invalid look. */
@@ -125,6 +136,8 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
   @tracked alphaInput?: string;
 
   ownId = `euiColorPicker_${randomId()}`;
+  openLabelId = `${this.ownId}-openLabel`;
+  closeLabelId = `${this.ownId}-closeLabel`;
   prevColor: string | null;
   input?: HTMLInputElement;
   saturation?: HTMLElement;
@@ -205,41 +218,94 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
   }
 
   get swatches(): string[] {
-    return this.args.swatches ?? VISUALIZATION_COLORS;
+    return (
+      this.args.swatches ??
+      useEuiPaletteColorBlind(getEuiThemeContext(this).upstream)
+    );
   }
 
   get canClear(): boolean {
     return Boolean(this.args.isClearable && this.args.color && !this.args.readOnly && !this.args.disabled);
   }
 
+  /** The popover / inline root: upstream `euiColorPickerStyles.euiColorPicker`. */
+  @cached
+  get rootClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorPickerStyles);
+
+    return `euiColorPicker ${euiClass(context, boxReset, styles.euiColorPicker)}`;
+  }
+
+  @cached
+  get swatchesClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorPickerStyles);
+
+    return `euiColorPicker__swatches ${euiClass(context, listReset, styles.euiColorPicker__swatches)}`;
+  }
+
+  @cached
+  get alphaRangeClasses(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiColorPickerStyles);
+
+    // upstream puts these on the EuiRange root; here they sit on a wrapper
+    // around it, so the direct-child rule is restated from the range wrapper
+    return `euiColorPicker__alphaRange ${euiClass(context, styles.euiColorPicker__alphaRange, {
+      '.euiRangeWrapper > .euiFormControlLayout': { flexShrink: 0 }
+    })}`;
+  }
+
+  /**
+   * Upstream's `icon={{ color, css }}`: the field icon takes the chosen
+   * color (`subdued` for the empty `stopSlash` icon), and the swatch icon's
+   * stroke uses the swatch border color.
+   */
+  get iconColor(): string {
+    return cssColor(this.chromaColor) ?? 'subdued';
+  }
+
+  @cached
+  get iconCss(): EuiCss {
+    const context = getEuiThemeContext(this);
+    return useEuiBorealisStyles(context, euiColorPickerStyles)
+      .euiColorPicker__swatchInputIcon;
+  }
+
   get panelClasses(): string {
-    return [
-      'euiColorPicker__popoverPanel',
-      this.mode === 'picker' &&
-        this.secondaryInputDisplay !== 'bottom' &&
-        'euiColorPicker__popoverPanel--pickerOnly'
-    ]
-      .filter(Boolean)
-      .join(' ');
+    return 'euiColorPicker__popoverPanel';
+  }
+
+  get hexLabel(): string {
+    return this.chromaColor ? this.chromaColor.hex().toUpperCase() : '';
+  }
+
+  get secondaryInputCompressed(): boolean {
+    return this.args.display === 'inline' ? Boolean(this.args.compressed) : true;
   }
 
   get labels(): {
     popover: string;
     color: string;
+    selected: string;
     error: string;
     alpha: string;
     open: string;
     closed: string;
+    select: string;
   } {
     const t = (token: string, text: string) => this.euiI18n.lookupToken(`euiColorPicker.${token}`, text);
 
     return {
       popover: t('popoverLabel', 'Color selection dialog'),
       color: t('colorLabel', 'Color value'),
+      selected: t('selectedColorLabel', 'Selected color'),
       error: t('colorErrorMessage', 'Invalid color value'),
       alpha: t('alphaLabel', 'Alpha channel (opacity) value'),
       open: t('openLabel', 'Press the escape key to close the popover'),
-      closed: t('closeLabel', 'Press the down key to open a popover containing color options')
+      closed: t('closeLabel', 'Press the down key to open a popover containing color options'),
+      select: t('ariaLabel', 'Select a color')
     };
   }
 
@@ -423,13 +489,12 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
 
   <template>
     {{#if (isInline @display)}}
-      <div class="euiColorPicker" ...attributes>
+      <div class={{this.rootClasses}} ...attributes>
         <Composite
           @picker={{this}}
           @isInvalid={{@isInvalid}}
           @disabled={{@disabled}}
           @readOnly={{@readOnly}}
-          @compressed={{@compressed}}
           @showAlpha={{@showAlpha}}
         />
       </div>
@@ -446,75 +511,80 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
         @ownFocus={{false}}
         @initialFocus={{false}}
         @ariaLabel={{this.labels.popover}}
+        @zIndex={{@popoverZIndex}}
       >
         <:button>
           {{#if (has-block "button")}}
             {{yield this.toggle to="button"}}
           {{else}}
-            {{! the chosen color reaches the swatch icon through currentColor }}
-            <div
-              style={{cssStyle (hash color=(cssColor this.chromaColor))}}
-              {{on "keydown" this.onLayoutKeyDown}}
-            >
-              {{#if (or2 (has-block "prepend") (has-block "append"))}}
-                <EuiFieldText
-                  class="euiColorPicker__input euiColorPicker__input--inGroup"
-                  id={{this.id}}
-                  autocomplete="off"
-                  aria-label={{if this.isColorSelectorShown this.labels.open this.labels.closed}}
-                  @value={{this.inputValue}}
-                  @placeholder={{this.placeholder}}
-                  @icon={{if this.chromaColor "swatchInput" "stopSlash"}}
-                  @clear={{if this.canClear this.clear}}
-                  @isInvalid={{@isInvalid}}
-                  @compressed={{@compressed}}
-                  @disabled={{@disabled}}
-                  @readOnly={{@readOnly}}
-                  @fullWidth={{@fullWidth}}
-                  @inputRef={{this.registerInput}}
-                  {{on "click" this.onInputClick}}
-                  {{on "keydown" this.onInputKeyDown}}
-                  {{on "blur" this.onInputBlur}}
-                  {{on "input" this.onColorInput}}
-                >
-                  <:prepend as |className inputId|>{{yield className inputId to="prepend"}}</:prepend>
-                  <:append as |className inputId|>{{yield className inputId to="append"}}</:append>
-                </EuiFieldText>
-              {{else}}
-                <EuiFieldText
-                  class="euiColorPicker__input"
-                  id={{this.id}}
-                  autocomplete="off"
-                  aria-label={{if this.isColorSelectorShown this.labels.open this.labels.closed}}
-                  @value={{this.inputValue}}
-                  @placeholder={{this.placeholder}}
-                  @icon={{if this.chromaColor "swatchInput" "stopSlash"}}
-                  @clear={{if this.canClear this.clear}}
-                  @isInvalid={{@isInvalid}}
-                  @compressed={{@compressed}}
-                  @disabled={{@disabled}}
-                  @readOnly={{@readOnly}}
-                  @fullWidth={{@fullWidth}}
-                  @inputRef={{this.registerInput}}
-                  {{on "click" this.onInputClick}}
-                  {{on "keydown" this.onInputKeyDown}}
-                  {{on "blur" this.onInputBlur}}
-                  {{on "input" this.onColorInput}}
-                />
-              {{/if}}
-            </div>
+              <EuiFormControlLayout
+                @icon={{if this.chromaColor "swatchInput" "stopSlash"}}
+                @clear={{if this.canClear this.clear}}
+                @readOnly={{@readOnly}}
+                @fullWidth={{@fullWidth}}
+                @compressed={{@compressed}}
+                @isInvalid={{@isInvalid}}
+                @isDisabled={{@disabled}}
+                @isDropdown={{true}}
+                @isPrependProvided={{has-block "prepend"}}
+                @isAppendProvided={{has-block "append"}}
+                @iconColor={{this.iconColor}}
+                @iconCss={{this.iconCss}}
+                {{on "keydown" this.onLayoutKeyDown}}
+              >
+                <:prepend as |className|>{{yield className this.id to="prepend"}}</:prepend>
+                <:field>
+                  <EuiFieldText
+                    class="euiColorPicker__input"
+                    data-test-subj="euiColorPickerAnchor"
+                    id={{this.id}}
+                    autocomplete="off"
+                    aria-label={{unless @id this.labels.select}}
+                    aria-describedby={{if this.isColorSelectorShown this.openLabelId this.closeLabelId}}
+                    @controlOnly={{true}}
+                    @value={{this.inputValue}}
+                    @placeholder={{this.placeholder}}
+                    @isInvalid={{@isInvalid}}
+                    @compressed={{@compressed}}
+                    @disabled={{@disabled}}
+                    @readOnly={{@readOnly}}
+                    @fullWidth={{@fullWidth}}
+                    @inputRef={{this.registerInput}}
+                    {{on "click" this.onInputClick}}
+                    {{on "keydown" this.onInputKeyDown}}
+                    {{on "blur" this.onInputBlur}}
+                    {{on "input" this.onColorInput}}
+                  />
+                  <EuiScreenReaderOnly>
+                    <span>
+                      <span
+                        id={{this.openLabelId}}
+                        aria-hidden={{if this.isColorSelectorShown "false" "true"}}
+                      >{{this.labels.open}}</span>
+                      <span
+                        id={{this.closeLabelId}}
+                        aria-hidden={{if this.isColorSelectorShown "true" "false"}}
+                      >{{this.labels.closed}}</span>
+                    </span>
+                  </EuiScreenReaderOnly>
+                </:field>
+                <:append as |className|>{{yield className this.id to="append"}}</:append>
+              </EuiFormControlLayout>
           {{/if}}
         </:button>
         <:content>
-          <div class="euiColorPicker" data-test-subj="euiColorPickerPopover" ...attributes>
+          <div
+            class={{this.rootClasses}}
+            data-test-subj="euiColorPickerPopover"
+            ...attributes
+          >
             <Composite
-          @picker={{this}}
-          @isInvalid={{@isInvalid}}
-          @disabled={{@disabled}}
-          @readOnly={{@readOnly}}
-          @compressed={{@compressed}}
-          @showAlpha={{@showAlpha}}
-        />
+              @picker={{this}}
+              @isInvalid={{@isInvalid}}
+              @disabled={{@disabled}}
+              @readOnly={{@readOnly}}
+              @showAlpha={{@showAlpha}}
+            />
           </div>
         </:content>
       </EuiPopover>
@@ -528,12 +598,14 @@ interface CompositeSignature {
     isInvalid?: boolean;
     disabled?: boolean;
     readOnly?: boolean;
-    compressed?: boolean;
     showAlpha?: boolean;
   };
 }
 
-/** The saturation square, hue slider, swatches and secondary input. */
+/**
+ * The saturation square, hue slider, swatches and secondary input: the
+ * flex column children of the root (upstream spaces them with `gap`).
+ */
 class Composite extends Component<CompositeSignature> {
   get picker(): EuiColorPicker {
     return this.args.picker;
@@ -546,31 +618,32 @@ class Composite extends Component<CompositeSignature> {
         @isInvalid={{@isInvalid}}
         @disabled={{@disabled}}
         @readOnly={{@readOnly}}
-        @compressed={{@compressed}}
       />
-      <EuiSpacer @size="s" />
     {{/if}}
     {{#if this.picker.showPicker}}
-      <div {{on "keydown" this.picker.onPickerKeyDown}}>
-        <EuiSaturation
-          @id={{this.picker.id}}
-          @color={{this.picker.usableHsv}}
-          @hex={{this.picker.hex}}
-          @onChange={{this.picker.onSaturationChange}}
-          {{this.picker.registerSaturation}}
-        />
-        <EuiHue
-          @id={{this.picker.id}}
-          @hue={{hueOf this.picker.usableHsv}}
-          @hex={{this.picker.hex}}
-          @onChange={{this.picker.onHueChange}}
-        />
-      </div>
+      <EuiSaturation
+        @id={{this.picker.id}}
+        @color={{this.picker.usableHsv}}
+        @hex={{this.picker.hex}}
+        @onChange={{this.picker.onSaturationChange}}
+        {{this.picker.registerSaturation}}
+        {{on "keydown" this.picker.onPickerKeyDown}}
+      />
+      <EuiHue
+        @id={{this.picker.id}}
+        @hue={{hueOf this.picker.usableHsv}}
+        @hex={{this.picker.hex}}
+        @onChange={{this.picker.onHueChange}}
+        {{on "keydown" this.picker.onPickerKeyDown}}
+      />
+      <EuiScreenReaderOnly>
+        <p aria-live="polite" aria-atomic="true">{{this.picker.labels.selected}}: {{this.picker.hexLabel}}</p>
+      </EuiScreenReaderOnly>
     {{/if}}
     {{#if this.picker.showSwatches}}
-      <ul class="euiColorPicker__swatches">
+      <ul class={{this.picker.swatchesClasses}}>
         {{#each this.picker.swatches as |swatch index|}}
-          <li class="euiColorPicker__swatch-item">
+          <li>
             <EuiColorPickerSwatch
               class="euiColorPicker__swatchSelect"
               @color={{swatch}}
@@ -582,30 +655,28 @@ class Composite extends Component<CompositeSignature> {
       </ul>
     {{/if}}
     {{#if (eq2 this.picker.secondaryInputDisplay "bottom")}}
-      {{#if (notEq2 this.picker.mode "picker")}}
-        <EuiSpacer @size="s" />
-      {{/if}}
       <SecondaryInput
         @picker={{this.picker}}
         @isInvalid={{@isInvalid}}
         @disabled={{@disabled}}
         @readOnly={{@readOnly}}
-        @compressed={{@compressed}}
       />
     {{/if}}
     {{#if @showAlpha}}
-      <EuiSpacer @size="s" />
-      <EuiRange
-        class="euiColorPicker__alphaRange"
-        data-test-subj="euiColorPickerAlpha"
-        aria-label={{this.picker.labels.alpha}}
-        @compressed={{true}}
-        @showInput={{true}}
-        @min={{0}}
-        @max={{100}}
-        @value={{this.picker.alphaRangeValue}}
-        @onChange={{this.picker.onAlphaChange}}
-      />
+      <div class={{this.picker.alphaRangeClasses}}>
+        <EuiRange
+          data-test-subj="euiColorPickerAlpha"
+          aria-label={{this.picker.labels.alpha}}
+          @compressed={{true}}
+          @showInput={{true}}
+          @min={{0}}
+          @max={{100}}
+          @value={{this.picker.alphaRangeValue}}
+          @onChange={{this.picker.onAlphaChange}}
+        >
+          <:append><EuiFormLabel>%</EuiFormLabel></:append>
+        </EuiRange>
+      </div>
     {{/if}}
   </template>
 }
@@ -616,7 +687,6 @@ interface SecondaryInputSignature {
     isInvalid?: boolean;
     disabled?: boolean;
     readOnly?: boolean;
-    compressed?: boolean;
   };
 }
 
@@ -627,7 +697,6 @@ class SecondaryInput extends Component<SecondaryInputSignature> {
 
   <template>
     <EuiFormRow
-      @display="rowCompressed"
       @isInvalid={{@isInvalid}}
       @error={{if @isInvalid this.picker.labels.error}}
     >
@@ -635,7 +704,7 @@ class SecondaryInput extends Component<SecondaryInputSignature> {
         data-test-subj="euiColorPickerInput_{{this.picker.secondaryInputDisplay}}"
         autocomplete="off"
         aria-label={{this.picker.labels.color}}
-        @compressed={{true}}
+        @compressed={{this.picker.secondaryInputCompressed}}
         @value={{this.picker.inputValue}}
         @placeholder={{this.picker.placeholder}}
         @clear={{if this.picker.canClear this.picker.clear}}
@@ -660,14 +729,6 @@ function cssColor(color: ReturnType<typeof getChromaColor>): string | undefined 
   return color ? color.css() : undefined;
 }
 
-function or2(a: unknown, b: unknown): boolean {
-  return Boolean(a || b);
-}
-
 function eq2(a: unknown, b: unknown): boolean {
   return a === b;
-}
-
-function notEq2(a: unknown, b: unknown): boolean {
-  return a !== b;
 }

@@ -55,7 +55,12 @@ show on each field as soon as it is validated; `@initialValidation`
 validates everything on render.
 
 `FieldComboBox` needs `@onChange`: set the changeset value yourself there
-(e.g. to store ids instead of objects); the field validates it.
+(e.g. to store ids instead of objects); the field validates it. It takes
+every `EuiComboBox` argument and behaves like it: selected options leave
+the list, and leaving the field with typed text adds it through
+`@onCreateOption` (set the changeset value there too). The field
+validates again after `@onCreateOption`. Its block gets the option, its
+index and the search text.
 
 </EuiText>
 

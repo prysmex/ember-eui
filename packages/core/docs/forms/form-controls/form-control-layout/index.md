@@ -54,19 +54,26 @@ match them.
 | `@useGroup` | `boolean` | `true` | Styles the control as a group with its `<:prepend>` / `<:append>` content. |
 | `@disabled` | `boolean` |  | Disabled styling. |
 | `@isDisabled` | `boolean` |  | Same as `@disabled`. |
-| `@icon` |  |  | Icon inside the control, anything `EuiIcon`'s `@type` accepts. |
-| `@iconSide` |  | `'left'` | Side of `@icon`: `'left'` or `'right'`. |
-| `@clear` |  |  | Shows a clear ("x") button calling this function. |
+| `@isInvalid` | `boolean` |  | Shows the danger warning icon on the right. |
+| `@isDropdown` | `boolean` |  | Shows a dropdown arrow on the right, as EuiSelect does. Hidden while disabled or read-only. |
+| `@icon` |  |  | Icon inside the control, anything `EuiIcon`'s `@type` accepts, or an icon shape object (upstream `IconShape`): `{ type, side, color, onClick, … }`, where `onClick` makes it a button and other keys (`aria-label`, `data-test-subj`, `tabIndex`, …) are its attributes. |
+| `@iconSide` |  | `'left'` | Side of `@icon`: `'left'` or `'right'`. An icon shape's `side` wins. |
+| `@iconsPosition` | `'absolute' \| 'static'` | `'absolute'` | `'absolute'` overlays the icons on the control, `'static'` lays them out beside it. |
+| `@clear` |  |  | Shows a clear ("x") button calling this function, or with these props (upstream `clear`): `{ onClick, disabled, size, … }`, other keys (`data-test-subj`, `aria-label`, …) being its attributes. |
+| `@clearLabel` | `string` | "Clear input" | Accessible label of the clear button. |
 | `@isLoading` | `boolean` |  | Shows a spinner. |
-
-Deprecated: `@inputId` (Has no effect.).
+| `@inputId` | `string` |  | Id of the control. `EuiFormPrepend` / `EuiFormAppend` labels in the `<:prepend>` / `<:append>` blocks point to it (upstream `inputId`). |
+| `@iconColor` |  |  | Color of `@icon`, anything `EuiIcon`'s `@color` accepts (upstream's `icon.color`). |
+| `@iconCss` | `EuiCss` |  | Extra styles composed last into `@icon`'s EuiIcon class (upstream's `icon.css`). |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+| `@wrapperProps` | `EuiFormControlLayoutWrapperProps` |  | Extra props for the `.euiFormControlLayout__childrenWrapper` element (upstream `wrapperProps`): `className`, `id`, `aria-label`, `data-test-subj` and `css` (extra styles composed last into its class). |
 
 | Block | Description |
 | --- | --- |
-| `<:prepend>` | Content before the control; yields the class to put on it. |
+| `<:prepend>` | Content before the control. It is wrapped in a `.euiFormControlLayout__prepend` element; yields that class name. |
 | `<:field>` | The control (e.g. an `<input>`); same as the default block. |
 | default block | The control. |
-| `<:append>` | Content after the control; yields the class to put on it. |
+| `<:append>` | Content after the control. It is wrapped in a `.euiFormControlLayout__append` element; yields that class name. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

@@ -27,7 +27,7 @@ export interface EuiIconTipSignature {
     iconProps?: {
       className?: string;
     };
-    /** The icon. Defaults to `'questionInCircle'`. */
+    /** The icon. Defaults to `'question'`. */
     type?: string;
     /** Color of the icon, any `EuiIcon` color. */
     color?: string;
@@ -41,6 +41,23 @@ export interface EuiIconTipSignature {
     onMouseOut?: (event: MouseEvent) => void;
     /** Display of the wrapper: `'inlineBlock'` or `'block'`. */
     display?: EuiToolTipSignature['Args']['display'];
+    /**
+     * Props for the element wrapping the icon (upstream `anchorProps`), see
+     * EuiToolTip's `@anchorProps`.
+     */
+    anchorProps?: EuiToolTipSignature['Args']['anchorProps'];
+    /** Distance between the icon and the tooltip. Defaults to `16`. */
+    offset?: number;
+    /**
+     * Repositions the tooltip when the page or a scrollable ancestor
+     * scrolls. Defaults to `false`.
+     */
+    repositionOnScroll?: boolean;
+    /**
+     * Keeps the tooltip visual only (no `aria-describedby` on the icon),
+     * e.g. when `@ariaLabel` already says the same. Defaults to `false`.
+     */
+    disableScreenReaderOutput?: boolean;
   };
   Blocks: {
     /** The tooltip's content, instead of `@content`. */
@@ -62,13 +79,17 @@ const EuiIconTip: TemplateOnlyComponent<EuiIconTipSignature> = <template>
       @anchorClassName={{@anchorClassName}}
       @onMouseOut={{@onMouseOut}}
       @display={{@display}}
+      @anchorProps={{@anchorProps}}
+      @offset={{@offset}}
+      @repositionOnScroll={{@repositionOnScroll}}
+      @disableScreenReaderOutput={{@disableScreenReaderOutput}}
       ...attributes
     >
       <:anchor>
         <EuiIcon
           tabindex="0"
           @iconClasses={{@iconProps.className}}
-          @type={{argOrDefault @type "questionInCircle"}}
+          @type={{argOrDefault @type "question"}}
           @color={{@color}}
           @size={{@size}}
           @aria-label={{argOrDefault @ariaLabel "Info"}}

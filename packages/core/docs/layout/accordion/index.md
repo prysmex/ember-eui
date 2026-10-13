@@ -57,24 +57,30 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@id` | `string` | a random id | Id of the collapsible content region; the trigger's `aria-controls` points to it. |
+| `@id` | `string` | a generated id | Id of the collapsible content region; the trigger's `aria-controls` points to it. |
 | `@element` | `'div' \| 'fieldset'` | `'div'` | Element wrapping the accordion. With `'fieldset'` the trigger renders as a `<legend>`, for accordions that group form controls. |
+| `@role` | `string` | `'group'` (upstream); pass `'region'` for landmark-worthy sections | ARIA role of the content region. |
 | `@buttonClassName` | `string` |  | Class that will apply to the trigger for the accordion. |
-| `@buttonProps` | `CommonArgs` |  | Extra props for the trigger: `id` (defaults to a generated id) and `className`. |
-| `@arrowProps` | `{ className?: string; }` |  | Extra props to pass to the EuiButtonIcon containing the arrow. |
+| `@buttonProps` |  |  | Extra props for the trigger: `id` (defaults to a generated id), `className`, `data-test-subj`, `paddingSize` (`'s'`, `'m'` or `'l'`) to pad the trigger (not on the arrow's side), and `css`: extra styles composed last into the trigger's class (upstream `buttonProps.css`). |
+| `@buttonElement` | `TriggerElement` |  | Element of the trigger: `'button'` (default) or `'div'`, e.g. when the trigger content holds interactive elements. A non-button trigger makes the arrow the focusable control. Always `'legend'` when `@element="fieldset"`. |
+| `@arrowProps` | `{ className?: string; css?: EuiCss; }` |  | Extra props for the arrow's EuiButtonIcon: `className` and `css`. |
 | `@buttonContentClassName` | `string` |  | Class that will apply to the trigger content for the accordion. |
-| `@extraAction` | `Component \| boolean` |  | Set to `true` to render the `<:extraAction>` block, right aligned next to the trigger (e.g. a delete button). The block is ignored without it. |
+| `@buttonContent` | `string` |  | Text content of the trigger. Use the `<:buttonContent>` block for markup; the block wins when both are given. |
+| `@extraAction` | `boolean` |  | Set to `true` to render the `<:extraAction>` block, right aligned next to the trigger (e.g. a delete button). The block is ignored without it. |
 | `@initialIsOpen` | `boolean` | `false` | The accordion will start in the open state. |
 | `@onToggle` | `(isOpen: boolean) => void` |  | Called with the new open state (`true` = open) when the trigger or arrow is clicked. With `@forceState`, use it to update the state you control. |
 | `@paddingSize` | `EuiAccordionPaddingSize` | `'none'` | Padding around the content: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@borders` | `EuiAccordionBorders` | `'none'` | Borders around the accordion: `'none'`, `'horizontal'` (top and bottom) or `'all'`. Adjacent bordered accordions share one border. |
 | `@arrowDisplay` | `'left' \| 'right' \| 'none'` | `'left'` | Placement of the arrow indicator, or `'none'` to hide it (only possible when the trigger is a button). |
 | `@forceState` | `'closed' \| 'open'` |  | Controls the open state from outside: `'open'` or `'closed'`. Clicking the trigger then only calls `@onToggle`; update `@forceState` there. |
 | `@isLoading` | `boolean` | `false` | Shows a loading spinner in place of the `<:extraAction>` block. |
-| `@isLoadingMessage` | `boolean \| Component` | `false` (the content stays visible) | While `@isLoading`, replace the content with a spinner and a message: `true` for "Loading...", or a string for your own message. |
-| `@childClassName` | `string` |  | Class for the element wrapping the content. |
+| `@isLoadingMessage` | `boolean \| string` | `false` (the content stays visible) | While `@isLoading`, replace the content with a spinner and a message: `true` for "Loading" (i18n token `euiAccordionChildrenLoading.message`), or a string for your own message. |
+| `@isDisabled` | `boolean` | `false` | Disables the trigger and the arrow (greyed out, not clickable). |
+| `@childClassName` | `string` |  | Class for the element wrapping the content (`.euiAccordion__children`). |
 | `@triggerClassName` | `string` |  | Class for the row holding the arrow, trigger and extra action. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
-Deprecated: `@buttonElement` (Has no effect: the trigger is a `<button>`, or a `<legend>` when `@element="fieldset"`.); `@buttonContent` (Has no effect, use the `<:buttonContent>` block for the trigger's content.); `@isOpen` (Has no effect, use `@initialIsOpen` or `@forceState`.); `@childContentClassName` (Has no effect, use `@childClassName`.).
+Deprecated: `@isOpen` (Has no effect, use `@initialIsOpen` or `@forceState`.); `@childContentClassName` (Has no effect, use `@childClassName`.).
 
 | Block | Description |
 | --- | --- |

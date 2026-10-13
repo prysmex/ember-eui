@@ -1,13 +1,13 @@
 import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
+import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import EuiButtonEmpty from './eui-button-empty.gts';
+import EuiButton from './eui-button.gts';
 
-import type { EuiButtonEmptySignature } from './eui-button-empty';
+import type EuiI18n from '../services/eui-i18n';
+import type { EuiButtonSignature } from './eui-button';
 
 export type EuiCardSelectProps = {
   /**
@@ -20,20 +20,23 @@ export type EuiCardSelectProps = {
   /** Id of the button (EuiCard sets one). */
   buttonId?: string;
   /**
-   * `EuiButtonEmpty` color. Defaults to `'success'` when selected, `'text'`
+   * `EuiButton` color. Defaults to `'success'` when selected, `'text'`
    * otherwise.
    */
-  color?: EuiButtonEmptySignature['Args']['color'];
+  color?: EuiButtonSignature['Args']['color'];
   /** Shows a spinner in the button. */
-  isLoading?: EuiButtonEmptySignature['Args']['isLoading'];
+  isLoading?: EuiButtonSignature['Args']['isLoading'];
   /** Makes the button a link. */
-  href?: EuiButtonEmptySignature['Args']['href'];
+  href?: EuiButtonSignature['Args']['href'];
   /** Side of the check icon. */
-  iconSide?: EuiButtonEmptySignature['Args']['iconSide'];
-  /** Removes the button's padding on `'left'`, `'right'` or `'both'` sides. */
-  flush?: EuiButtonEmptySignature['Args']['flush'];
+  iconSide?: EuiButtonSignature['Args']['iconSide'];
+  /**
+   * @deprecated Has no effect: upstream's card select is a full-width
+   * EuiButton, which has no flush option.
+   */
+  flush?: 'left' | 'right' | 'both';
   /** `type` of the button. */
-  type?: EuiButtonEmptySignature['Args']['type'];
+  type?: EuiButtonSignature['Args']['type'];
   /** Called when the button (or the whole card, in EuiCard) is clicked; toggle `isSelected` here. */
   onClick?: (e: MouseEvent) => void;
 };
@@ -56,33 +59,49 @@ export function euiCardSelectableColor(
 }
 
 export interface EuiCardSelectSignature {
-  Element: EuiButtonEmptySignature['Element'];
+  Element: EuiButtonSignature['Element'];
   Args: EuiCardSelectProps;
   Blocks: {
+    /** Custom text, instead of "Select" / "Selected" / "Unavailable". */
     default: [];
   };
 }
 
+/**
+ * Upstream `EuiCardSelect` (EUI 123.1.0): a full-width `m` EuiButton with
+ * `role="switch"`. Texts use the i18n tokens `euiCardSelect.select`,
+ * `euiCardSelect.selected` and `euiCardSelect.unavailable`.
+ */
 export default class EuiCardSelectComponent extends Component<EuiCardSelectSignature> {
-  get selectColorClass() {
-    return `euiCardSelect--${euiCardSelectableColor(
-      this.args.color,
-      this.args.isSelected
-    )}`;
+  @service declare euiI18n: EuiI18n;
+
+  get color(): string {
+    return euiCardSelectableColor(this.args.color, this.args.isSelected);
+  }
+
+  get text(): string {
+    if (this.args.isSelected)
+      return this.euiI18n.lookupToken('euiCardSelect.selected', 'Selected');
+    if (this.args.isDisabled)
+      return this.euiI18n.lookupToken(
+        'euiCardSelect.unavailable',
+        'Unavailable'
+      );
+    return this.euiI18n.lookupToken('euiCardSelect.select', 'Select');
   }
 
   <template>
-    <EuiButtonEmpty
-      class={{classNames this.selectColorClass componentName="EuiCardSelect"}}
+    <EuiButton
+      class="euiCardSelect"
       id={{@buttonId}}
-      @color={{argOrDefault @color "text"}}
-      @size="xs"
+      @color={{this.color}}
+      @size="m"
+      @fullWidth={{true}}
       @isDisabled={{@isDisabled}}
       @iconType={{if @isSelected "check" undefined}}
       @isLoading={{@isLoading}}
       @href={{@href}}
       @iconSide={{@iconSide}}
-      @flush={{@flush}}
       @type={{@type}}
       role="switch"
       aria-checked={{if @isSelected "true" "false"}}
@@ -91,13 +110,9 @@ export default class EuiCardSelectComponent extends Component<EuiCardSelectSigna
     >
       {{#if (has-block)}}
         {{yield}}
-      {{else if @isSelected}}
-        Selected
-      {{else if @isDisabled}}
-        Unavailable
       {{else}}
-        Select
+        {{this.text}}
       {{/if}}
-    </EuiButtonEmpty>
+    </EuiButton>
   </template>
 }

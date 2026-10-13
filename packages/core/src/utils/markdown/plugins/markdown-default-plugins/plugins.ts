@@ -12,18 +12,51 @@ import {
 } from './processing-plugins.ts';
 import { getDefaultEuiMarkdownUiPlugins } from './ui-plugins.ts';
 
-import type { DefaultEuiMarkdownParsingPlugins } from './parsing-plugins.ts';
-import type { DefaultEuiMarkdownProcessingPlugins } from './processing-plugins.ts';
+import type { DefaultEuiMarkdownParsingPlugins, DefaultParsingPluginsConfig } from './parsing-plugins.ts';
+import type { DefaultEuiMarkdownProcessingPlugins, DefaultProcessingPluginsConfig } from './processing-plugins.ts';
 import type { DefaultEuiMarkdownUiPlugins } from './ui-plugins.ts';
 
+/**
+ * The default plugins that can be unregistered with `exclude`. Excluding a
+ * plugin leaves its syntax unparsed and, for `tooltip`, removes its toolbar
+ * button and help text.
+ */
+export type ExcludableDefaultPlugins =
+  | 'emoji'
+  | 'lineBreaks'
+  | 'linkValidator'
+  | 'checkbox'
+  | 'tooltip';
+
+export type DefaultPluginsConfig =
+  | undefined
+  | { exclude?: ExcludableDefaultPlugins[] };
+
 export const getDefaultEuiMarkdownPlugins = (
-  config: undefined | { exclude?: 'tooltip'[] }
+  config: DefaultPluginsConfig & {
+    /** Overrides the configuration of the default parsing plugins. */
+    parsingConfig?: DefaultParsingPluginsConfig;
+    /** Overrides the configuration of the default processing plugins (`linkProps`). */
+    processingConfig?: DefaultProcessingPluginsConfig;
+    /** No customizations are supported yet (as upstream). */
+    uiConfig?: {};
+  } = {}
 ): {
   parsingPlugins: DefaultEuiMarkdownParsingPlugins;
   processingPlugins: DefaultEuiMarkdownProcessingPlugins;
   uiPlugins: DefaultEuiMarkdownUiPlugins;
-} => ({
-  parsingPlugins: getDefaultEuiMarkdownParsingPlugins(config),
-  processingPlugins: getDefaultEuiMarkdownProcessingPlugins(config),
-  uiPlugins: getDefaultEuiMarkdownUiPlugins(config)
-});
+} => {
+  const { exclude, parsingConfig, processingConfig, uiConfig } = config ?? {};
+
+  return {
+    parsingPlugins: getDefaultEuiMarkdownParsingPlugins({
+      exclude,
+      ...parsingConfig
+    }),
+    processingPlugins: getDefaultEuiMarkdownProcessingPlugins({
+      exclude,
+      ...processingConfig
+    }),
+    uiPlugins: getDefaultEuiMarkdownUiPlugins({ exclude, ...uiConfig })
+  };
+};

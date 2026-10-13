@@ -6,20 +6,16 @@ title: Aspect ratio
 <EuiPageHeader @pageTitle="Aspect ratio"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @color="warning" @title="Embed support" @size="s">
+  <p>In some cases, aspect ratio sizing may not be supported by the embed. This component will only work with ones that do, like YouTube.</p>
+</EuiCallOut>
+<EuiSpacer />
+
 <EuiText>
 
-`EuiAspectRatio` keeps one child (an `<iframe>`, `<video>`, image or map)
-at a fixed ratio while it takes the available width: `@width={{16}}
-@height={{9}}` for widescreen video, `1` and `1` for a square.
+**EuiAspectRatio** provides a way to responsively resize a single block level child element to a specified ratio. This is useful for things like YouTube iframes or other embeds that initially have a fixed size. If you need something similar for images, take a look at CSS's [object-fit property](https://www.w3schools.com/css/css3_object-fit.asp).
 
-```hbs
-<EuiAspectRatio @width={{16}} @height={{9}}>
-  <iframe title="Product demo" src="https://www.youtube.com/embed/…"></iframe>
-</EuiAspectRatio>
-```
-
-The child is stretched to fill the box, so it should not set its own
-size. `@maxWidth` limits how wide it grows.
+Pass `@width` and `@height` for the ratio, and `@maxWidth` to limit how wide it grows.
 
 </EuiText>
 

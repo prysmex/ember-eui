@@ -1,19 +1,55 @@
+import Component from '@glimmer/component';
 import { concat } from '@ember/helper';
 
-import { and, or } from 'ember-truth-helpers';
+import { and, eq } from 'ember-truth-helpers';
 
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import randomId from '../-private/random-id.ts';
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import {
+  euiCollapsibleNavGroupStyles,
+  euiTitleStyles
+} from '../utils/eui/styles.generated.ts';
 import EuiAccordion from './eui-accordion.gts';
+import EuiEmotionProvider from './eui-emotion-provider.gts';
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiIcon from './eui-icon.gts';
 
+import type { EuiThemeContext } from '../utils/emotion/context.ts';
 import type { EuiAccordionSignature } from './eui-accordion';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiTitleSignature } from './eui-title';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+export type EuiCollapsibleNavGroupBackground = 'none' | 'light' | 'dark';
+
+/**
+ * EuiAccordion args a collapsible group passes on (upstream spreads the
+ * accordion props). `buttonClassName` replaces
+ * `euiCollapsibleNavGroup__heading` and `buttonContent` replaces the
+ * title row, as upstream.
+ */
+export type EuiCollapsibleNavGroupAccordionArgs = Pick<
+  EuiAccordionSignature['Args'],
+  | 'arrowProps'
+  | 'borders'
+  | 'buttonClassName'
+  | 'buttonContent'
+  | 'buttonContentClassName'
+  | 'buttonProps'
+  | 'element'
+  | 'forceState'
+  | 'isDisabled'
+  | 'isLoading'
+  | 'isLoadingMessage'
+  | 'role'
+  | 'childClassName'
+  | 'triggerClassName'
+>;
+
+/** `iconProps` keys that are EuiIcon args, not attributes. */
+const ICON_ARGS = ['color', 'title', 'titleId', 'useSvg', 'onIconLoad', 'iconClasses'];
 
 export interface EuiCollapsibleNavGroupSignature {
   Element: EuiAccordionSignature['Element'];
@@ -38,11 +74,32 @@ export interface EuiCollapsibleNavGroupSignature {
     /** Size of the title, any `EuiTitle` size. Defaults to `'xxs'`. */
     titleSize?: EuiTitleSignature['Args']['size'];
     /**
-     * Background of the group: `'none'`, `'light'` or `'dark'`.
-     * Defaults to `'none'`.
+     * Background of the group: `'none'`, `'light'` or `'dark'`. A dark
+     * group renders its content in dark mode (a nested dark provider), as
+     * upstream. Defaults to `'none'`.
      */
-    background?: string;
-  };
+    background?: EuiCollapsibleNavGroupBackground | (string & {});
+    /**
+     * Side of the title the open/close arrow is on, for a collapsible group:
+     * `'right'`, `'left'` or `'none'`. Defaults to `'right'`.
+     */
+    arrowDisplay?: EuiAccordionSignature['Args']['arrowDisplay'];
+    /** Padding of a collapsible group's content, see `EuiAccordion`. */
+    paddingSize?: EuiAccordionSignature['Args']['paddingSize'];
+    /** Tag of a collapsible group's title button, see `EuiAccordion`. */
+    buttonElement?: EuiAccordionSignature['Args']['buttonElement'];
+    /** Called with the new open state when a collapsible group toggles. */
+    onToggle?: EuiAccordionSignature['Args']['onToggle'];
+    /**
+     * More props for the title's EuiIcon (upstream `iconProps`, without
+     * `type` and `size`): `className`, `color`, `css`, `title`,
+     * `aria-label` and other keys as attributes.
+     */
+    iconProps?: Omit<Partial<EuiIconSignature['Args']>, 'type' | 'size'> & {
+      className?: string;
+      [key: string]: unknown;
+    };
+  } & EuiCollapsibleNavGroupAccordionArgs;
   Blocks: {
     /** Unused, use `<:title>` and `<:content>`. */
     default: [];
@@ -50,118 +107,243 @@ export interface EuiCollapsibleNavGroupSignature {
     title: [];
     /** The group's links, e.g. an `EuiListGroup`. */
     content: [];
+    /**
+     * An action next to the title of a collapsible group, e.g. a button
+     * icon; yields whether the group is open (see `EuiAccordion`).
+     */
+    extraAction: EuiAccordionSignature['Blocks']['extraAction'];
   };
 }
 
-const EuiCollapsibleNavGroup: TemplateOnlyComponent<EuiCollapsibleNavGroupSignature> =
+/**
+ * Upstream `EuiCollapsibleNavGroup` (`euiCollapsibleNavGroupStyles`). Like
+ * upstream, a `'dark'` group sits in a dark theme provider whose paragraph
+ * color goes on the group itself (no wrapper element).
+ */
+export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavGroupSignature> {
+  get background(): EuiCollapsibleNavGroupBackground {
+    const { background } = this.args;
+    return background === 'light' || background === 'dark'
+      ? (background as EuiCollapsibleNavGroupBackground)
+      : 'none';
+  }
+
+  get colorMode() {
+    return this.background === 'dark' ? 'dark' : undefined;
+  }
+
+  get iconArgs(): readonly string[] {
+    return ICON_ARGS;
+  }
+
+  get iconClasses(): string | undefined {
+    const { className, iconClasses } = this.args.iconProps ?? {};
+    return [iconClasses, className].filter(Boolean).join(' ') || undefined;
+  }
+
+  get titleElement() {
+    return this.args.titleElement ?? this.args.titleTagName ?? 'h3';
+  }
+
+  /**
+   * Classes from the group's own theme context (dark for a dark group).
+   * Called from the template, so Glimmer only re-runs it when the context
+   * or the args it reads change.
+   */
+  classesFor = (context: EuiThemeContext) => {
+    const styles = useEuiBorealisStyles(context, euiCollapsibleNavGroupStyles);
+    const title = useEuiBorealisStyles(context, euiTitleStyles);
+    const { childrenWrapper } = styles;
+    // Upstream's `css` on EuiAccordion (or the plain div).
+    const rootCss: EuiCss = [
+      { boxSizing: 'border-box' },
+      styles.euiCollapsibleNavGroup,
+      this.args.isCollapsible ? styles.isCollapsible : styles.notCollapsible,
+      styles[this.background],
+      // Upstream's dark provider clones its paragraph color onto the group.
+      this.background === 'dark' && {
+        color: context.upstream.euiTheme.colors.textParagraph
+      }
+    ];
+    return {
+      rootCss,
+      root: euiClass(context, rootCss),
+      children: euiClass(
+        context,
+        { boxSizing: 'border-box' },
+        childrenWrapper.euiCollapsibleNavGroup__children
+      ),
+      childrenWithHeading: euiClass(
+        context,
+        { boxSizing: 'border-box' },
+        childrenWrapper.euiCollapsibleNavGroup__children,
+        childrenWrapper.withHeading
+      ),
+      title: euiClass(
+        context,
+        // React's global reset for headings.
+        {
+          boxSizing: 'border-box',
+          margin: 0,
+          padding: 0,
+          fontFamily: context.upstream.euiTheme.font.family
+        },
+        title.euiTitle,
+        title[this.args.titleSize ?? 'xxs']
+      )
+    };
+  };
+
   <template>
     {{#let
-      (argOrDefault @id (randomId)) (or @titleElement @titleTagName "h3")
-      as |groupID titleElement|
+      (if @id @id (randomId)) (element this.titleElement)
+      as |groupID TitleElement|
     }}
       {{#let (concat groupID "__title") as |titleID|}}
-        {{#if (and @isCollapsible (has-block "title"))}}
-          <EuiAccordion
-            id={{groupID}}
-            class={{classNames
-              (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
-              componentName="EuiCollapsibleNavGroup"
-              backgroundColor=(argOrDefault @background "none")
-            }}
-            @buttonClassName="euiCollapsibleNavGroup__heading"
-            @initialIsOpen={{argOrDefault @initialIsOpen true}}
-            @arrowDisplay="right"
-            ...attributes
-          >
-            <:buttonContent>
-              <EuiFlexGroup
-                @gutterSize="m"
-                @alignItems="center"
-                @responsive={{false}}
+        <EuiEmotionProvider
+          @colorMode={{this.colorMode}}
+          @wrapper={{false}}
+          @globalStyles={{false}}
+          as |provider|
+        >
+          {{#let (this.classesFor provider.context) as |classes|}}
+            {{#if (and @isCollapsible (has-block "title"))}}
+              <EuiAccordion
+                id={{groupID}}
+                class="euiCollapsibleNavGroup"
+                @css={{classes.rootCss}}
+                @buttonClassName={{if
+                  @buttonClassName
+                  @buttonClassName
+                  "euiCollapsibleNavGroup__heading"
+                }}
+                @arrowProps={{@arrowProps}}
+                @borders={{@borders}}
+                @buttonContentClassName={{@buttonContentClassName}}
+                @buttonProps={{@buttonProps}}
+                @element={{@element}}
+                @forceState={{@forceState}}
+                @isDisabled={{@isDisabled}}
+                @isLoading={{@isLoading}}
+                @isLoadingMessage={{@isLoadingMessage}}
+                @role={{@role}}
+                @childClassName={{@childClassName}}
+                @triggerClassName={{@triggerClassName}}
+                @initialIsOpen={{if
+                  (eq @initialIsOpen undefined)
+                  true
+                  @initialIsOpen
+                }}
+                @arrowDisplay={{if @arrowDisplay @arrowDisplay "right"}}
+                @paddingSize={{@paddingSize}}
+                @buttonElement={{@buttonElement}}
+                @onToggle={{@onToggle}}
+                @extraAction={{has-block "extraAction"}}
+                ...attributes
               >
-                {{#if @iconType}}
-                  <EuiFlexItem @grow={{false}}>
-                    <EuiIcon
-                      @type={{@iconType}}
-                      @size={{argOrDefault @iconSize "l"}}
-                    />
-                  </EuiFlexItem>
-                {{/if}}
-                <EuiFlexItem>
-                  {{#let (element titleElement) as |TitleElement|}}
-                    <TitleElement
-                      id={{titleID}}
-                      class={{classNames
-                        "euiCollapsibleNavGroup__title"
-                        componentName="EuiTitle"
-                        size=(argOrDefault @titleSize "xxs")
-                      }}
+                <:buttonContent>
+                  {{#if @buttonContent}}
+                    {{@buttonContent}}
+                  {{else}}
+                    <EuiFlexGroup
+                      @gutterSize="m"
+                      @alignItems="center"
+                      @responsive={{false}}
                     >
-                      {{yield to="title"}}
-                    </TitleElement>
-                  {{/let}}
-                </EuiFlexItem>
-              </EuiFlexGroup>
-            </:buttonContent>
-            <:content>
-              {{#if (has-block "content")}}
-                <div class="euiCollapsibleNavGroup__children">
-                  {{yield to="content"}}
-                </div>
-              {{/if}}
-            </:content>
-          </EuiAccordion>
-        {{else}}
-          <div
-            id={{groupID}}
-            class={{classNames
-              (if (has-block "title") "euiCollapsibleNavGroup--withHeading")
-              componentName="EuiCollapsibleNavGroup"
-              backgroundColor=(argOrDefault @background "none")
-            }}
-            ...attributes
-          >
-            {{#if (has-block "title")}}
-              <div class="euiCollapsibleNavGroup__heading">
-                <EuiFlexGroup
-                  @gutterSize="m"
-                  @alignItems="center"
-                  @responsive={{false}}
-                >
-                  {{#if @iconType}}
-                    <EuiFlexItem @grow={{false}}>
-                      <EuiIcon
-                        @type={{@iconType}}
-                        @size={{argOrDefault @iconSize "l"}}
-                      />
-                    </EuiFlexItem>
+                      {{#if @iconType}}
+                        <EuiFlexItem @grow={{false}}>
+                          <EuiIcon
+                            @type={{@iconType}}
+                            @size={{if @iconSize @iconSize "l"}}
+                            @color={{@iconProps.color}}
+                            @css={{@iconProps.css}}
+                            @title={{@iconProps.title}}
+                            @iconClasses={{this.iconClasses}}
+                            {{spreadAttributes @iconProps this.iconArgs}}
+                          />
+                        </EuiFlexItem>
+                      {{/if}}
+                      <EuiFlexItem>
+                        <TitleElement
+                          id={{titleID}}
+                          class="euiTitle euiCollapsibleNavGroup__title
+                            {{classes.title}}"
+                        >
+                          {{yield to="title"}}
+                        </TitleElement>
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
                   {{/if}}
-                  <EuiFlexItem>
-                    {{#let (element titleElement) as |TitleElement|}}
-                      <TitleElement
-                        id={{titleID}}
-                        class={{classNames
-                          "euiCollapsibleNavGroup__title"
-                          componentName="EuiTitle"
-                          size=(argOrDefault @titleSize "xxs")
-                        }}
-                      >
-                        {{yield to="title"}}
-                      </TitleElement>
-                    {{/let}}
-                  </EuiFlexItem>
-                </EuiFlexGroup>
+                </:buttonContent>
+                <:extraAction as |isOpen|>
+                  {{yield isOpen to="extraAction"}}
+                </:extraAction>
+                <:content>
+                  {{#if (has-block "content")}}
+                    <div
+                      class="euiCollapsibleNavGroup__children
+                        {{classes.childrenWithHeading}}"
+                    >
+                      {{yield to="content"}}
+                    </div>
+                  {{/if}}
+                </:content>
+              </EuiAccordion>
+            {{else}}
+              <div
+                id={{groupID}}
+                class="euiCollapsibleNavGroup {{classes.root}}"
+                ...attributes
+              >
+                {{#if (has-block "title")}}
+                  <div class="euiCollapsibleNavGroup__heading">
+                    <EuiFlexGroup
+                      @gutterSize="m"
+                      @alignItems="center"
+                      @responsive={{false}}
+                    >
+                      {{#if @iconType}}
+                        <EuiFlexItem @grow={{false}}>
+                          <EuiIcon
+                            @type={{@iconType}}
+                            @size={{if @iconSize @iconSize "l"}}
+                            @color={{@iconProps.color}}
+                            @css={{@iconProps.css}}
+                            @title={{@iconProps.title}}
+                            @iconClasses={{this.iconClasses}}
+                            {{spreadAttributes @iconProps this.iconArgs}}
+                          />
+                        </EuiFlexItem>
+                      {{/if}}
+                      <EuiFlexItem>
+                        <TitleElement
+                          id={{titleID}}
+                          class="euiTitle euiCollapsibleNavGroup__title
+                            {{classes.title}}"
+                        >
+                          {{yield to="title"}}
+                        </TitleElement>
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </div>
+                {{/if}}
+                {{#if (has-block "content")}}
+                  <div
+                    class="euiCollapsibleNavGroup__children
+                      {{if
+                        (has-block 'title')
+                        classes.childrenWithHeading
+                        classes.children
+                      }}"
+                  >
+                    {{yield to="content"}}
+                  </div>
+                {{/if}}
               </div>
             {{/if}}
-            {{#if (has-block "content")}}
-              <div class="euiCollapsibleNavGroup__children">
-                {{yield to="content"}}
-              </div>
-            {{/if}}
-          </div>
-        {{/if}}
+          {{/let}}
+        </EuiEmotionProvider>
       {{/let}}
     {{/let}}
-  </template>;
-
-export default EuiCollapsibleNavGroup;
+  </template>
+}

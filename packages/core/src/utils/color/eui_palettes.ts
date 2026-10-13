@@ -17,19 +17,15 @@
  * under the License.
  */
 
-/**
- * Color blind palette with text is meant for use when text is applied on top of the color.
- * It increases the brightness of the color to give the text more contrast.
- */
-
 import chroma from 'chroma-js';
+import type { _EuiThemeVisColors } from '@elastic/eui-theme-common';
 
+import { resolveBorealisTheme } from '../eui/theme.ts';
 import { colorPalette } from './color_palette.ts';
 
 export type EuiPalette = string[];
 
-/* tslint:disable */
-const flatten = (arr: any[]) => [].concat(...arr);
+const flatten = (arr: string[][]): string[] => ([] as string[]).concat(...arr);
 
 const euiPalette = function (
   colors: string[],
@@ -40,16 +36,37 @@ const euiPalette = function (
   // This function also trims the first color so white/black is never a color
   if (!diverge && steps > 1) {
     const palette = colorPalette(colors, steps + 1);
-
     palette.shift();
-
     return palette;
   }
 
   return colorPalette(colors, steps, diverge, categorical);
 };
 
-export interface EuiPaletteColorBlindProps {
+let defaultVisColors: EuiPaletteVisColors | undefined;
+
+/** The given vis colors, or the Borealis (light mode) ones: upstream's default store. */
+function visColorsOf(colors?: EuiPaletteVisColors): EuiPaletteVisColors {
+  if (colors) return colors;
+  defaultVisColors ??= resolveBorealisTheme('light').euiTheme.colors
+    .vis as EuiPaletteVisColors;
+  return defaultVisColors;
+}
+
+export type EuiPaletteVisColors = _EuiThemeVisColors;
+
+export type EuiPaletteCommonProps = {
+  /**
+   * Defines the default set of colors the palette uses.
+   * Ember EUI has no global vis color store: this defaults to the Borealis
+   * (light mode) vis colors. Pass the current theme's `euiTheme.colors.vis`
+   * (or use the `useEuiPalette*` functions) to follow the color mode and
+   * high contrast.
+   */
+  colors?: EuiPaletteVisColors;
+};
+
+export type EuiPaletteRotationProps = {
   /**
    * How many variations of the series is needed
    */
@@ -71,28 +88,37 @@ export interface EuiPaletteColorBlindProps {
    * Defaults to a number close to green.
    */
   sortShift?: string;
-}
+};
 
+export type EuiPaletteColorBlindProps = EuiPaletteCommonProps &
+  EuiPaletteRotationProps;
+
+/**
+ * Theme-aware version: `useEuiPaletteColorBlind(context)`.
+ */
 export const euiPaletteColorBlind = ({
   rotations = 1,
   order = 'append',
   direction = 'lighter',
   sortBy = 'default',
-  sortShift = '-100'
+  sortShift = '-100',
+  colors,
 }: EuiPaletteColorBlindProps = {}): EuiPalette => {
-  let colors: string[] = [];
+  let _colors: string[] = [];
+
+  const visColors = visColorsOf(colors);
 
   let base = [
-    '#54B399', // 0 green
-    '#6092C0', // 1 blue
-    '#D36086', // 2 dark pink
-    '#9170B8', // 3 purple
-    '#CA8EAE', // 4 light pink
-    '#D6BF57', // 5 yellow
-    '#B9A888', // 6 tan
-    '#DA8B45', // 7 orange
-    '#AA6556', // 8 brown
-    '#E7664C' // 9 red
+    visColors.euiColorVis0,
+    visColors.euiColorVis1,
+    visColors.euiColorVis2,
+    visColors.euiColorVis3,
+    visColors.euiColorVis4,
+    visColors.euiColorVis5,
+    visColors.euiColorVis6,
+    visColors.euiColorVis7,
+    visColors.euiColorVis8,
+    visColors.euiColorVis9,
   ];
 
   if (sortBy === 'natural') {
@@ -109,167 +135,397 @@ export const euiPaletteColorBlind = ({
     const palettes = base.map((color) => {
       // Create the darkest and lightest versions of each color using black and white
       const palette = colorPalette(['black', color, 'white'], 5, false, true);
-
       // Then removing the extremes
       palette.pop();
       palette.shift();
 
       switch (direction) {
         case 'lighter':
-          return colorPalette(
-            [palette[1]!, palette[2]!],
-            rotations,
-            false,
-            true
-          );
+          return colorPalette([palette[1]!, palette[2]!], rotations, false, true);
         case 'darker':
-          return colorPalette(
-            [palette[1]!, palette[0]!],
-            rotations,
-            false,
-            true
-          );
+          return colorPalette([palette[1]!, palette[0]!], rotations, false, true);
         case 'both':
           return colorPalette(palette, rotations, false, true);
       }
     });
 
     if (order === 'group') {
-      colors = flatten(palettes);
+      _colors = flatten(palettes);
     } else {
       for (let i = 0; i < rotations; i++) {
-        const rotation = palettes.map((palette) => palette[i]) as string[];
-
-        colors.push(...rotation);
+        const rotation = palettes.map((palette) => palette[i]!);
+        _colors.push(...rotation);
       }
     }
   } else {
-    colors = base;
+    _colors = base;
   }
 
-  return colors;
+  return _colors;
 };
 
+/**
+ * Theme-aware version: `useEuiPaletteColorBlindBehindText(context)`.
+ *
+ * Color blind palette with text is meant for use when text is applied on top of the color.
+ * Like upstream's Borealis, it returns the same colors as `euiPaletteColorBlind`.
+ */
 export const euiPaletteColorBlindBehindText = (
   paletteProps: EuiPaletteColorBlindProps = {}
 ) => {
-  const originalPalette = euiPaletteColorBlind(paletteProps);
-  const newPalette = originalPalette.map((color) =>
-    chroma(color).brighten(0.5).hex()
-  );
-
-  return newPalette;
+  return euiPaletteColorBlind(paletteProps);
 };
 
-export const euiPaletteForLightBackground = function (): EuiPalette {
-  return ['#006BB4', '#017D73', '#F5A700', '#BD271E', '#DD0A73'];
-};
+/**
+ * Theme-aware version: `useEuiPaletteForStatus(context)`.
+ */
+export const euiPaletteForStatus = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
 
-export const euiPaletteForDarkBackground = function (): EuiPalette {
-  return ['#1BA9F5', '#7DE2D1', '#F990C0', '#F66', '#FFCE7A'];
-};
-
-const positiveColor: HEX = '#209280';
-const negativeColor: HEX = '#CC5642';
-const lightNegativeColor: HEX = euiPaletteColorBlind()[9]!;
-const coolArray: HEX[] = [euiPaletteColorBlind()[1]!, '#6092C0'];
-const warmArray: HEX[] = [euiPaletteColorBlind()[7]!, euiPaletteColorBlind()[9]!];
-
-export const euiPaletteForStatus = function (steps: number): EuiPalette {
   if (steps === 1) {
-    return [euiPaletteColorBlind()[0]!];
+    return [visColors.euiColorVisSuccess0];
   }
-
   if (steps <= 3) {
     return euiPalette(
       [
-        euiPaletteColorBlind()[0]!,
-        euiPaletteColorBlind()[5]!,
-        lightNegativeColor
+        visColors.euiColorVisSuccess0,
+        visColors.euiColorVisWarning1,
+        visColors.euiColorVisDanger0,
       ],
       steps,
       true
     );
   }
-
   return euiPalette(
     [
-      positiveColor,
-      euiPaletteColorBlind()[0]!,
-      euiPaletteColorBlind()[5]!,
-      lightNegativeColor,
-      negativeColor
+      visColors.euiColorVisSuccess0,
+      visColors.euiColorVisSuccess1,
+      visColors.euiColorVisWarning1,
+      visColors.euiColorVisDanger1,
+      visColors.euiColorVisDanger0,
     ],
     steps,
     true
   );
 };
 
-export const euiPaletteForTemperature = function (steps: number): EuiPalette {
-  const cools = colorPalette([...coolArray.slice().reverse(), '#EBEFF5'], 3);
-  const warms = colorPalette(['#F4F3DB', ...warmArray], 3);
+/**
+ * Theme-aware version: `useEuiPaletteForTemperature(context)`.
+ */
+export const euiPaletteForTemperature = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
 
   if (steps === 1) {
-    return [cools[0]!];
+    return [visColors.euiColorVisCool2];
   } else if (steps <= 3) {
-    return euiPalette([cools[0]!, lightNegativeColor], steps, true);
+    return euiPalette(
+      [visColors.euiColorVisCool2, visColors.euiColorVisWarm2],
+      steps,
+      true
+    );
   }
 
-  return euiPalette([...cools, ...warms], steps, true);
+  const cools = colorPalette(
+    [
+      visColors.euiColorVisCool2,
+      visColors.euiColorVisCool1,
+      visColors.euiColorVisCool0,
+    ],
+    3
+  );
+  const warms = colorPalette(
+    [
+      visColors.euiColorVisWarm0,
+      visColors.euiColorVisWarm1,
+      visColors.euiColorVisWarm2,
+    ],
+    3
+  );
+
+  const paletteColors = [...cools, visColors.euiColorVisBase0, ...warms];
+
+  return euiPalette(paletteColors, steps, true);
 };
 
-export const euiPaletteComplimentary = function (steps: number): EuiPalette {
+/**
+ * Theme-aware version: `useEuiPaletteComplementary(context)`.
+ */
+export const euiPaletteComplementary = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
   if (steps === 1) {
-    return [euiPaletteColorBlind()[1]!];
+    return [visColors.euiColorVisComplementary0];
+  }
+
+  const paletteColors = [
+    visColors.euiColorVisComplementary0,
+    visColors.euiColorVisBase0,
+    visColors.euiColorVisComplementary1,
+  ];
+
+  return euiPalette(paletteColors, steps, true);
+};
+
+/**
+ * Theme-aware version: `useEuiPaletteRed(context)`.
+ */
+export const euiPaletteRed = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [visColors.euiColorVisDanger1];
   }
 
   return euiPalette(
-    [euiPaletteColorBlind()[1]!, euiPaletteColorBlind()[7]!],
-    steps,
-    true
+    [visColors.euiColorVisBase0, visColors.euiColorVisDanger0],
+    steps
   );
 };
 
-export const euiPaletteNegative = function (steps: number): EuiPalette {
+/**
+ * Theme-aware version: `useEuiPaletteGreen(context)`.
+ */
+export const euiPaletteGreen = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
   if (steps === 1) {
-    return [lightNegativeColor];
-  }
-
-  return euiPalette(['white', negativeColor], steps);
-};
-
-export const euiPalettePositive = function (steps: number): EuiPalette {
-  if (steps === 1) {
-    return [euiPaletteColorBlind()[0]!];
-  }
-
-  return euiPalette(['white', positiveColor], steps);
-};
-
-export const euiPaletteCool = function (steps: number): EuiPalette {
-  if (steps === 1) {
-    return [coolArray[1]!];
-  }
-
-  return euiPalette(['white', ...coolArray], steps);
-};
-
-export const euiPaletteWarm = function (steps: number): EuiPalette {
-  if (steps === 1) {
-    return [lightNegativeColor];
-  }
-
-  return euiPalette(['#FBFBDC', ...warmArray], steps);
-};
-
-export const euiPaletteGray = function (steps: number): EuiPalette {
-  if (steps === 1) {
-    return ['#98a2b3'];
+    return [visColors.euiColorVisSuccess1];
   }
 
   return euiPalette(
-    ['white', '#d3dae6', '#98a2b3', '#69707d', '#343741'],
+    [visColors.euiColorVisBase0, visColors.euiColorVisSuccess0],
+    steps
+  );
+};
+
+/**
+ * Theme-aware version: `useEuiPaletteSkyBlue(context)`.
+ */
+export const euiPaletteSkyBlue = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [visColors.euiColorVisNeutral1];
+  }
+
+  return euiPalette(
+    [visColors.euiColorVisBase0, visColors.euiColorVisNeutral0],
+    steps
+  );
+};
+
+/**
+ * Theme-aware version: `useEuiPaletteYellow(context)`.
+ */
+export const euiPaletteYellow = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [visColors.euiColorVisWarning1];
+  }
+
+  return euiPalette(
+    [visColors.euiColorVisBase0, visColors.euiColorVisWarning0],
+    steps
+  );
+};
+
+/**
+ * Theme-aware version: `useEuiPaletteOrange(context)`.
+ */
+export const euiPaletteOrange = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [visColors.euiColorVisRisk1];
+  }
+
+  return euiPalette(
+    [visColors.euiColorVisBase0, visColors.euiColorVisRisk0],
+    steps
+  );
+};
+
+/**
+ * Theme-aware version: `useEuiPaletteCool(context)`.
+ */
+export const euiPaletteCool = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [visColors.euiColorVisCool1];
+  }
+
+  return euiPalette(
+    [
+      visColors.euiColorVisCool0,
+      visColors.euiColorVisCool1,
+      visColors.euiColorVisCool2,
+    ],
+    steps
+  );
+};
+
+/**
+ * Theme-aware version: `useEuiPaletteWarm(context)`.
+ */
+export const euiPaletteWarm = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [visColors.euiColorVisWarm2];
+  }
+
+  return euiPalette(
+    [
+      visColors.euiColorVisWarm0,
+      visColors.euiColorVisWarm1,
+      visColors.euiColorVisWarm2,
+    ],
+    steps
+  );
+};
+
+/**
+ * Theme-aware version: `useEuiPaletteGray(context)`.
+ */
+export const euiPaletteGray = function (
+  steps: number,
+  { colors }: EuiPaletteCommonProps = {}
+): EuiPalette {
+  const visColors = visColorsOf(colors);
+
+  if (steps === 1) {
+    return [visColors.euiColorVisGrey1];
+  }
+
+  return euiPalette(
+    [
+      visColors.euiColorVisBase0,
+      visColors.euiColorVisGrey0,
+      visColors.euiColorVisGrey1,
+      visColors.euiColorVisGrey2,
+      visColors.euiColorVisGrey3,
+    ],
     steps,
     false
   );
 };
+
+/**
+ * @deprecated since 15.0.0, removed in 16.0.0. Renamed upstream (spelling):
+ * use `euiPaletteComplementary`.
+ */
+export const euiPaletteComplimentary = euiPaletteComplementary;
+
+/* Legacy (Amsterdam era) palettes: upstream removed these in Borealis. They keep
+   their classic values so existing consumers don't change; prefer the vis-based
+   palettes above. */
+
+const legacyNegativeColor = '#CC5642';
+const legacyPositiveColor = '#209280';
+
+/** @deprecated since 15.0.0, removed in 16.0.0. Use `euiPaletteRed`. */
+export const euiPaletteNegative = function (steps: number): EuiPalette {
+  if (steps === 1) {
+    return ['#E7664C'];
+  }
+
+  return euiPalette(['white', legacyNegativeColor], steps);
+};
+
+/** @deprecated since 15.0.0, removed in 16.0.0. Use `euiPaletteGreen`. */
+export const euiPalettePositive = function (steps: number): EuiPalette {
+  if (steps === 1) {
+    return ['#54B399'];
+  }
+
+  return euiPalette(['white', legacyPositiveColor], steps);
+};
+
+/**
+ * @deprecated since 15.0.0, removed in 16.0.0. Upstream removed it with the
+ * Amsterdam theme: use `euiPaletteColorBlind`.
+ */
+export const euiPaletteForLightBackground = function (): EuiPalette {
+  return ['#006BB4', '#017D73', '#F5A700', '#BD271E', '#DD0A73'];
+};
+
+/**
+ * @deprecated since 15.0.0, removed in 16.0.0. Upstream removed it with the
+ * Amsterdam theme: use `euiPaletteColorBlind`.
+ */
+export const euiPaletteForDarkBackground = function (): EuiPalette {
+  return ['#1BA9F5', '#7DE2D1', '#F990C0', '#F66', '#FFCE7A'];
+};
+
+/* Theme-aware versions (upstream's `useEuiPalette*` hooks). Ember has no hooks and
+   no global vis color store: pass the theme context, e.g.
+   `getEuiThemeContext(this)` from `@ember-eui/core/theming` (or any
+   `{ euiTheme }`), and wrap the call in `@cached` so it recomputes with the
+   color mode and high contrast. */
+
+export interface EuiPaletteThemeContext {
+  euiTheme: { colors: { vis: object } };
+}
+
+const themeColors = (context: EuiPaletteThemeContext): EuiPaletteVisColors =>
+  context.euiTheme.colors.vis as EuiPaletteVisColors;
+
+export const useEuiPaletteColorBlind = (
+  context: EuiPaletteThemeContext,
+  args?: EuiPaletteRotationProps
+) => euiPaletteColorBlind({ ...args, colors: themeColors(context) });
+
+export const useEuiPaletteColorBlindBehindText = (
+  context: EuiPaletteThemeContext,
+  args?: EuiPaletteRotationProps
+) => euiPaletteColorBlindBehindText({ ...args, colors: themeColors(context) });
+
+type StepsPalette = (steps: number, props?: EuiPaletteCommonProps) => EuiPalette;
+
+const withSteps =
+  (fn: StepsPalette) => (context: EuiPaletteThemeContext, steps: number) =>
+    fn(steps, { colors: themeColors(context) });
+
+export const useEuiPaletteForStatus = withSteps(euiPaletteForStatus);
+export const useEuiPaletteForTemperature = withSteps(euiPaletteForTemperature);
+export const useEuiPaletteComplementary = withSteps(euiPaletteComplementary);
+export const useEuiPaletteRed = withSteps(euiPaletteRed);
+export const useEuiPaletteGreen = withSteps(euiPaletteGreen);
+export const useEuiPaletteSkyBlue = withSteps(euiPaletteSkyBlue);
+export const useEuiPaletteYellow = withSteps(euiPaletteYellow);
+export const useEuiPaletteOrange = withSteps(euiPaletteOrange);
+export const useEuiPaletteCool = withSteps(euiPaletteCool);
+export const useEuiPaletteWarm = withSteps(euiPaletteWarm);
+export const useEuiPaletteGray = withSteps(euiPaletteGray);

@@ -1,33 +1,44 @@
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import type { borderSizeMappping } from '../utils/css-mappings/eui-header-section-item.ts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiHeaderSectionItemStyles } from '../utils/eui/styles.generated.ts';
 
 /** One item of an EuiHeaderSection, e.g. a logo, links or a button. */
 export interface EuiHeaderSectionItemSignature {
   Element: HTMLDivElement;
   Args: {
-    /** Divider on the `'left'`, `'right'` or `'none'`. Defaults to `'left'`. */
-    border?: keyof typeof borderSizeMappping;
+    /**
+     * @deprecated Has no effect: latest EUI removed the item dividers
+     * (`'left'`, `'right'`, `'none'`).
+     */
+    border?: 'left' | 'right' | 'none';
   };
   Blocks: {
-    /** The item's content. */
+    /** The item's content. Without a block nothing is rendered, as upstream. */
     default: [];
   };
 }
 
-const EuiHeaderSectionItem: TemplateOnlyComponent<EuiHeaderSectionItemSignature> =
-  <template>
-    <div
-      class={{classNames
-        componentName="EuiHeaderSectionItem"
-        borderSide=(argOrDefault @border "left")
-      }}
-      ...attributes
-    >
-      {{yield}}
-    </div>
-  </template>;
+/** Upstream `EuiHeaderSectionItem` (`euiHeaderSectionItemStyles`). */
+export default class EuiHeaderSectionItem extends Component<EuiHeaderSectionItemSignature> {
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiHeaderSectionItemStyles);
+    return euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiHeaderSectionItem
+    );
+  }
 
-export default EuiHeaderSectionItem;
+  <template>
+    {{#if (has-block)}}
+      <div class="euiHeaderSectionItem {{this.classes}}" ...attributes>
+        {{yield}}
+      </div>
+    {{/if}}
+  </template>
+}

@@ -88,8 +88,11 @@ module('Integration | Component | eui-tree-view', function (hooks) {
       </template>
     );
 
-    assert.dom('ul.euiTreeView').hasClass('euiTreeView--compressed').hasClass('euiTreeView--withArrows');
-    assert.dom('.euiTreeView__wrapper').hasClass('euiText--small');
+    // legacy `--compressed`/`--withArrows` and the `euiText` wrapper are gone:
+    // compressed is measured (upstream button height `size.l`, 24px)
+    assert.dom('.euiTreeView__wrapper').doesNotExist();
+    assert.strictEqual(getComputedStyle(this.element.querySelector('#src')!).height, '24px');
+    assert.dom('#readme .euiTreeView__arrowPlaceholder').exists('leaves keep the arrow space');
     assert.dom('#src .euiTreeView__expansionArrow').exists();
     assert.dom('#readme .euiTreeView__expansionArrow').doesNotExist();
     assert.dom('#src .euiTreeView__iconWrapper .euiIcon').exists();
@@ -97,5 +100,23 @@ module('Integration | Component | eui-tree-view', function (hooks) {
 
     await click('#src');
     assert.dom('#index em').hasText('index.ts', 'nested levels use the label block too');
+  });
+
+  test('icon and iconWhenExpanded can be components (e.g. EuiToken) next to icon types', async function (assert) {
+    const Closed = <template><span class="custom-closed">C</span></template>;
+    const Open = <template><span class="custom-open">O</span></template>;
+    const items: EuiTreeViewNode[] = [
+      { id: 'a', label: 'A', icon: Closed, iconWhenExpanded: Open, children: [{ id: 'a1', label: 'A1', icon: 'document' }] },
+      { id: 'b', label: 'B', icon: 'document' }
+    ];
+    await render(<template><EuiTreeView @items={{items}} aria-label="Custom icons" /></template>);
+
+    assert.dom('.euiTreeView__iconWrapper .custom-closed').exists();
+    assert.dom('.euiTreeView__iconWrapper .custom-open').doesNotExist();
+    assert.dom('.euiTreeView__iconWrapper svg').exists({ count: 1 }, 'string icons still use EuiIcon');
+
+    await click('#a');
+    assert.dom('.euiTreeView__iconWrapper .custom-open').exists();
+    assert.dom('.euiTreeView__iconWrapper .custom-closed').doesNotExist();
   });
 });

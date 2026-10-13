@@ -27,43 +27,86 @@ module('Integration | Component | eui-page', function (hooks) {
     await render(
       <template>
         <EuiPage @paddingSize="l" @direction="column" @restrictWidth={{true}}>
-          <EuiPageSideBar @sticky={{true}} @paddingSize="m">Side</EuiPageSideBar>
+          <EuiPageSideBar
+            @sticky={{true}}
+            @paddingSize="m"
+          >Side</EuiPageSideBar>
           <EuiPageBody @panelled={{true}}>
-            <EuiPageContent @verticalPosition="center" @horizontalPosition="center">
+            <EuiPageContent
+              @verticalPosition="center"
+              @horizontalPosition="center"
+            >
               <EuiPageContentHeader @responsive={{true}}>
-                <EuiPageContentHeaderSection>Header</EuiPageContentHeaderSection>
+                <EuiPageContentHeaderSection
+                >Header</EuiPageContentHeaderSection>
               </EuiPageContentHeader>
-              <EuiPageContentBody @paddingSize="s" @restrictWidth="600px">Body</EuiPageContentBody>
+              <EuiPageContentBody
+                @paddingSize="s"
+                @restrictWidth="600px"
+              >Body</EuiPageContentBody>
             </EuiPageContent>
           </EuiPageBody>
         </EuiPage>
       </template>
     );
 
-    assert.dom('.euiPage').hasClass('euiPage--grow').hasClass('euiPage--restrictWidth-default').hasClass('euiPage--paddingLarge').hasClass('euiPage--column');
-    assert.dom('.euiPageSideBar').hasClass('euiPageSideBar--sticky').hasText('Side');
-    assert.dom('.euiPageBody.euiPanel').exists('panelled body');
-    assert.dom('.euiPageContent').hasAttribute('role', 'main').hasClass('euiPageContent--verticalCenter').hasClass('euiPageContent--horizontalCenter');
-    assert.dom('.euiPageContentHeader').hasClass('euiPageContentHeader--responsive');
+    // Legacy modifier classes are gone; check the computed latest styles.
+    assert.dom('.euiPage').hasStyle({
+      flexGrow: '1',
+      maxWidth: '1200px',
+      padding: '24px',
+      flexDirection: 'column'
+    });
+    assert
+      .dom('.euiPageSideBar')
+      .hasStyle({ position: 'sticky', padding: '16px' })
+      .hasText('Side');
+    assert.dom('.euiPageBody[data-eui-panel]').exists('panelled body');
+    assert
+      .dom('.euiPageContent')
+      .hasAttribute('role', 'main')
+      .hasStyle({ alignSelf: 'center' });
+    const content = getComputedStyle(
+      this.element.querySelector('.euiPageContent')!
+    );
+    assert.strictEqual(
+      content.marginLeft,
+      content.marginRight,
+      'horizontally centered by auto inline margins'
+    );
+    assert
+      .dom('.euiPageContentHeader')
+      .hasStyle({ display: 'flex', justifyContent: 'space-between' });
     assert.dom('.euiPageContentHeaderSection').hasText('Header');
-    assert.dom('.euiPageContentBody').hasClass('euiPage--restrictWidth-custom').hasStyle({ maxWidth: '600px' }).hasText('Body');
+    assert
+      .dom('.euiPageContentBody')
+      .hasStyle({ maxWidth: '600px', padding: '8px' })
+      .hasText('Body');
   });
 
   test('no stray width class without restrictWidth', async function (assert) {
     await render(
       <template>
-        <EuiPage class="page"><EuiPageContentBody class="body">x</EuiPageContentBody></EuiPage>
+        <EuiPage class="page"><EuiPageContentBody
+            class="body"
+          >x</EuiPageContentBody></EuiPage>
       </template>
     );
 
-    assert.dom('.page').doesNotHaveClass('euiPage--');
-    assert.dom('.body').doesNotHaveClass('euiPage--');
+    assert.dom('.page').hasStyle({ maxWidth: '100%' });
+    assert.dom('.body').hasStyle({ maxWidth: 'none' });
   });
 
   test('EuiPageHeader: title, icon, description, tabs and right side items', async function (assert) {
     await render(
       <template>
-        <EuiPageHeader @pageTitle="Dashboard" @iconType="dashboardApp" @description="Overview" @tabs={{TABS}} @bottomBorder={{true}}>
+        <EuiPageHeader
+          @pageTitle="Dashboard"
+          @iconType="dashboardApp"
+          @description="Overview"
+          @tabs={{TABS}}
+          @bottomBorder={{true}}
+        >
           <:rightSideItems as |Item|>
             <Item><EuiButton class="action">New</EuiButton></Item>
           </:rightSideItems>
@@ -71,7 +114,9 @@ module('Integration | Component | eui-page', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiPageHeader').hasClass('euiPageHeader--bottomBorder').hasClass('euiPageHeader--responsive');
+    assert
+      .dom('.euiPageHeader > .euiPageHeaderContent')
+      .hasStyle({ borderBottomStyle: 'solid', borderBottomWidth: '1px' });
     assert.dom('.euiPageHeader h1.euiTitle').containsText('Dashboard');
     assert.dom('.euiPageHeader h1 svg.euiIcon').exists();
     assert.dom('.euiPageHeader').containsText('Overview');
@@ -86,7 +131,11 @@ module('Integration | Component | eui-page', function (hooks) {
   });
 
   test('EuiPageHeaderSection wraps content', async function (assert) {
-    await render(<template><EuiPageHeaderSection>Section</EuiPageHeaderSection></template>);
+    await render(
+      <template>
+        <EuiPageHeaderSection>Section</EuiPageHeaderSection>
+      </template>
+    );
 
     assert.dom('.euiPageHeaderSection').hasText('Section');
   });

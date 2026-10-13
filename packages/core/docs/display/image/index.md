@@ -5,10 +5,21 @@ title: Image
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Image"/>
 
- <EuiSpacer />
-    <EuiText>
-    <p>Use <strong>EuiImage</strong> when you need to place a static image into a page with an optional caption.</p>
-    </EuiText>
+<EuiSpacer />
+<EuiText>
+
+Use **EuiImage** when you need to place a static image into a page with an optional caption.
+
+Attributes you add to `EuiImage` (`class`, `style`, `loading`, `data-test-subj`…) go on the `<img>`, and on the full screen image too, like upstream's rest props. Use `@wrapperProps` for the `<figure>`: `className`, `css`, `style` and any other key as an attribute.
+
+</EuiText>
+
+<EuiSpacer />
+
+<EuiCallOut @title="Writing meaningful image alt text" @color="success" @iconType="accessibility">
+  <p>The examples on this page have alt text written to aid screen reader users, as well as several examples of when <em>not</em> to include alt text. When an image is decorative, or if the image is adequately described by surrounding text, it is better to pass an empty <code>""</code> string instead.</p>
+  <p>When an image is not already sufficiently described, the alt text passed should help non-visual users understand the purpose of the image within the context of the overall page. See <a href="https://webaim.org/techniques/alttext/" target="_blank" rel="noopener noreferrer">WebAIM</a> for a more detailed guide to writing effective alt text.</p>
+</EuiCallOut>
 
   <EuiHorizontalRule />
 
@@ -24,19 +35,30 @@ Generated from the components' TypeScript signatures by
 
 ### EuiImage
 
+An image with an optional caption, shadow and full screen view.
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@alt` (required) | `string` |  | Separate from the caption is a title on the alt tag itself. This one is required for accessibility. |
-| `@size` | `ImageSize \| number \| string` | `'original'` | `'s'` (100px), `'m'` (200px), `'l'` (360px), `'xl'` (600px), `'fullWidth'`, `'original'`, or a number for a max size in px. |
-| `@fullScreenIconColor` | `FullScreenIconColor` |  | Changes the color of the icon that floats above the image when it can be clicked to fullscreen. The default value of `light` is fine unless your image has a white background, in which case you should change it to `dark`. |
-| `@url` (required) | `string` |  | URL of the image. |
-| `@caption` | `string` |  | Provides the visible caption to the image |
-| `@hasShadow` | `boolean` |  | When set to `true` (default) will apply a slight shadow to the image |
-| `@allowFullScreen` | `boolean` |  | When set to `true` will make the image clickable to a larger version |
-| `@float` | `'left' \| 'right' \| 'none'` |  | Floats the image `'left'` or `'right'` of the text around it. |
+| `@alt` (required) | `string` |  | Describes the image for screen reader users (required). Pass an empty string when the image is decorative or described by nearby text. |
+| `@size` | `EuiImageSize \| number \| string` | `'original'` | `'s'` (100px), `'m'` (200px), `'l'` (360px), `'xl'` (600px), `'fullWidth'`, `'original'`, or a custom maximum size: a number (px) or a CSS length such as `'50%'`. |
+| `@fullScreenIconColor` | `'light' \| 'dark'` |  | Color of the icon over a full screen image: `'light'` (default) or `'dark'` (for images with a white background). |
+| `@url` | `string` |  | URL of the image. |
+| `@caption` | `string` |  | A visible caption, also the figure's accessible name. For rich content use the `<:caption>` block instead. |
+| `@width` | `number \| string` |  | The `width` attribute of the image, e.g. for SVGs without a size. |
+| `@wrapperProps` | `EuiImageWrapperProps` |  | Props of the wrapping `<figure>`. |
+| `@hasShadow` | `boolean` | `false`, as upstream | Adds a slight shadow to the image. |
+| `@allowFullScreen` | `boolean` |  | Makes the image clickable to show a larger version over the page. |
+| `@float` | `'left' \| 'right' \| 'none'` |  | Floats the image `'left'` or `'right'` of the text around it (from the `m` breakpoint). |
 | `@margin` | `'none' \| 's' \| 'm' \| 'l' \| 'xl'` |  | Space around the image: `'none'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
-| `@ariaLabel` | `string` |  | Accessible label of the full screen button (`@allowFullScreen`). |
-| `@src` | `string` |  | Same as `@url`. |
+| `@ariaLabel` | `string` |  | Accessible label of the full screen button (`@allowFullScreen`), replacing the instructions. |
+| `@onFullScreen` | `(isFullScreen: boolean) => void` |  | Called with `true` / `false` when the full screen view opens / closes. |
+| `@src` | `string` |  | Same as `@url`; wins when both are given. |
+
+| Block | Description |
+| --- | --- |
+| `<:caption>` | Rich caption (upstream's node `caption`), instead of `@caption`. The figure's accessible name is the caption's text. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<img>`.
 
 </EuiText>
 <!-- api:end -->

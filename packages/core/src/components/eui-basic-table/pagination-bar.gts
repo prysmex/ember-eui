@@ -1,0 +1,133 @@
+import Component from '@glimmer/component';
+import { cached, tracked } from '@glimmer/tracking';
+import { next } from '@ember/runloop';
+
+import { modifier } from 'ember-modifier';
+
+import {
+  DEFAULT_TABLE_BREAKPOINT,
+  isTableResponsive,
+  minBreakpointQuery,
+  onMediaQueryChange
+} from '../../-private/table.ts';
+import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
+import { euiBasicTablePaginationBarStyles } from '../../utils/eui/styles.generated.ts';
+import {
+  EUI_TABLE_PAGINATION_DEFAULTS,
+  euiTablePaginationDefaults
+} from '../../-private/table-pagination-defaults.ts';
+import EuiTablePagination from '../eui-table-pagination.gts';
+
+import type { Pagination } from '../../-private/basic-table.ts';
+import type { TableResponsiveBreakpoint } from '../../-private/table.ts';
+
+/** Upstream `euiTablePaginationDefaults` (without the app's `componentDefaults`). */
+export const PAGINATION_DEFAULTS = EUI_TABLE_PAGINATION_DEFAULTS;
+
+/**
+ * @private The pagination under an `EuiBasicTable` (upstream
+ * `PaginationBar`): an `EuiTablePagination` with the panelled look, which
+ * moves back to the last page when the current one no longer exists.
+ */
+export interface PaginationBarSignature {
+  Element: HTMLDivElement;
+  Args: {
+    pagination: Pagination;
+    panelled?: boolean;
+    responsiveBreakpoint?: TableResponsiveBreakpoint;
+    onPageSizeChange: (size: number) => void;
+    onPageChange: (index: number) => void;
+    /** Id of the table being controlled. */
+    ariaControls?: string;
+    /** Accessible name of the pagination navigation. */
+    ariaLabel?: string;
+  };
+}
+
+export default class PaginationBar extends Component<PaginationBarSignature> {
+  @tracked private mediaVersion = 0;
+
+  /** Upstream `useEuiTablePaginationDefaults()`. */
+  get defaults() {
+    return euiTablePaginationDefaults(this);
+  }
+
+  get pageSize(): number {
+    return this.args.pagination.pageSize ?? this.defaults.itemsPerPage;
+  }
+
+  get pageSizeOptions(): number[] {
+    return this.args.pagination.pageSizeOptions ?? this.defaults.itemsPerPageOptions;
+  }
+
+  get showPerPageOptions(): boolean {
+    return this.args.pagination.showPerPageOptions ?? this.defaults.showPerPageOptions;
+  }
+
+  get pageCount(): number {
+    const { totalItemCount } = this.args.pagination;
+    return this.pageSize ? Math.ceil(totalItemCount / this.pageSize) : 1;
+  }
+
+  get breakpoint(): TableResponsiveBreakpoint {
+    return this.args.responsiveBreakpoint ?? DEFAULT_TABLE_BREAKPOINT;
+  }
+
+  @cached
+  get query(): string | undefined {
+    return minBreakpointQuery(getEuiThemeContext(this).upstream, this.breakpoint);
+  }
+
+  @cached
+  get isResponsive(): boolean {
+    void this.mediaVersion;
+    return isTableResponsive(this.breakpoint, this.query);
+  }
+
+  onBreakpointChange = (): void => {
+    this.mediaVersion++;
+  };
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiBasicTablePaginationBarStyles);
+    return euiClass(
+      context,
+      styles.root,
+      !this.isResponsive && this.args.panelled ? styles.panelled : undefined
+    );
+  }
+
+  /** Upstream effect: go back to the last page that exists. */
+  keepPageInRange = modifier(
+    (_element: Element, [pageCount, pageIndex]: [number, number]) => {
+      if (pageCount < pageIndex + 1) {
+        next(() => this.args.onPageChange?.(pageCount - 1));
+      }
+    }
+  );
+
+  <template>
+    <div
+      class={{this.classes}}
+      {{onMediaQueryChange this.query this.onBreakpointChange}}
+      {{this.keepPageInRange this.pageCount @pagination.pageIndex}}
+    >
+      <EuiTablePagination
+        @activePage={{@pagination.pageIndex}}
+        @showPerPageOptions={{this.showPerPageOptions}}
+        @itemsPerPage={{this.pageSize}}
+        @itemsPerPageOptions={{this.pageSizeOptions}}
+        @pageCount={{this.pageCount}}
+        @onChangeItemsPerPage={{@onPageSizeChange}}
+        @onChangePage={{@onPageChange}}
+        @ariaControls={{@ariaControls}}
+        @aria-label={{@ariaLabel}}
+      />
+    </div>
+  </template>
+}
+
+

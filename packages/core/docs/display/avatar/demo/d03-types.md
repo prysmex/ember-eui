@@ -5,29 +5,25 @@ order: 3
 # Types
 
 <EuiText>
-  <p>
 
-The avatar <EuiCode>@type</EuiCode>, which primarily defines the shape, is keyworded and can be <EuiCode>"user"</EuiCode> (default) or <EuiCode>"space"</EuiCode> (for workspaces).
+The avatar `@type`, which primarily defines the shape, is a keyword and can be `"user"` (default) or `"space"` (for workspaces).
 
-  </p>
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAvatar, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <div>
-  <EuiAvatar @size='s' @type='space' @name='Kibana' @initialsLength={{2}} />
-  <EuiAvatar
-    @size='m'
-    @type='space'
-    @name='Leonardo Dude'
-    @initialsLength={{1}}
-  />
-  <EuiAvatar @size='l' @type='space' @name='Not provided' @initials='?' />
-  <EuiAvatar
-    @size='xl'
-    @type='space'
-    @name='Engineering Space'
-    @initials='En'
-    @initialsLength={{2}}
-  />
+  <EuiTitle @size="xs"><h3>Spaces</h3></EuiTitle>
+  <EuiSpacer />
+  <EuiAvatar @size="s" @type="space" @name="Kibana" />
+  &emsp;
+  <EuiAvatar @type="space" @name="Leonardo Space" />
+  &emsp;
+  <EuiAvatar @size="l" @type="space" @name="Default" />
+  &emsp;
+  <EuiAvatar @size="xl" @type="space" @name="Engineering Space" />
 </div>
+</template>
 ```

@@ -1,24 +1,28 @@
-import { concat } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
 import style from 'ember-style-modifier/modifiers/style';
-import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import euiPageRestrictWidth from '../helpers/eui-page-restrict-width.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  euiPageBoxSizing,
+  euiPagePadding,
+  euiPageRestrictWidthStyle,
+  isRestricted
+} from '../utils/eui/page-layout.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiPageBodyStyles } from '../utils/eui/styles.generated.ts';
 import EuiPanel from './eui-panel.gts';
 
 import type { EuiPanelSignature } from './eui-panel';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 /** The main column of an EuiPage: header, content and so on. */
 export interface EuiPageBodySignature {
   Element: EuiPanelSignature['Element'];
   Args: {
     /**
-     * Max width of the content: `true` for the bundled Amsterdam theme's
-     * default (1200px), a
-     * number in px, or any CSS width. Defaults to `false` (no limit).
+     * Max width of the body, centered: `true` for EUI's default (1200px),
+     * a number in px, or any CSS width. Defaults to `false` (no limit).
      */
     restrictWidth?: boolean | number | string;
     /** Tag of the body (without `@panelled`). Defaults to `'div'`. */
@@ -26,17 +30,17 @@ export interface EuiPageBodySignature {
     /** Border radius of the panel: `'none'` or `'m'`. Defaults to `'none'`. */
     borderRadius?: EuiPanelSignature['Args']['borderRadius'];
     /**
-     * Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'l'` when
-     * `@panelled`, `'none'` otherwise.
+     * Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'none'`, as
+     * upstream, also when `@panelled` (formerly `'l'` when panelled).
      */
-    paddingSize?: 'none' | 's' | 'm' | 'l';
-    /** Renders the body as an `EuiPanel` (white background with padding). */
+    paddingSize?: EuiPanelSignature['Args']['paddingSize'];
+    /** Renders the body as an `EuiPanel` (plain background, border). */
     panelled?: boolean;
-    /** Panel background: `'subdued'` or `'transparent'`. */
-    color?: 'subdued' | 'transparent';
-    /** Adds a border to the panel. */
+    /** Panel background (with `@panelled`), any `EuiPanel` color. */
+    color?: EuiPanelSignature['Args']['color'];
+    /** Panel border (with `@panelled`). Defaults to EuiPanel's (`true`). */
     hasBorder?: boolean;
-    /** Adds a shadow to the panel. */
+    /** Panel shadow (with `@panelled`). Defaults to EuiPanel's (`false`). */
     hasShadow?: boolean;
     /** Inline styles, merged with the max width. */
     style?: Record<string, string>;
@@ -47,59 +51,72 @@ export interface EuiPageBodySignature {
   };
 }
 
-const EuiPageBody: TemplateOnlyComponent<EuiPageBodySignature> = <template>
-  {{#let
-    (argOrDefault @restrictWidth false)
-    (argOrDefault @tagName "div")
-    (argOrDefault @borderRadius "none")
-    (argOrDefault @paddingSize (if @panelled "l" "none"))
-    as |restrictWidth tagName borderRadius paddingSize|
-  }}
+/** Upstream `EuiPageBody` (`euiPageBodyStyles`) on the Borealis theme. */
 
-    {{#let (euiPageRestrictWidth restrictWidth @style) as |styling|}}
-      {{#if @panelled}}
-        <EuiPanel
-          class={{classNames
-            (if (eq borderRadius "none") "euiPageBody--borderRadiusNone")
-            (if
-              styling.widthClassName
-              (concat "euiPageBody--" styling.widthClassName)
-            )
-            componentName="EuiPageBody"
-            paddingSize=@paddingSize
-          }}
-          @paddingSize={{paddingSize}}
-          @borderRadius={{borderRadius}}
-          @color={{@color}}
-          @hasBorder={{@hasBorder}}
-          @hasShadow={{@hasShadow}}
-          {{style styling.newStyle}}
+/** Theme-independent, so built once. */
+const PAGE_BODY_STYLES = euiPageBodyStyles();
+
+export default class EuiPageBody extends Component<EuiPageBodySignature> {
+  get tagName() {
+    return this.args.tagName ?? 'div';
+  }
+
+  get paddingSize(): NonNullable<EuiPanelSignature['Args']['paddingSize']> {
+    return this.args.paddingSize ?? 'none';
+  }
+
+  /** Upstream passes these as the panel's `css`, after its own styles. */
+  @cached
+  get bodyStyles() {
+    const styles = PAGE_BODY_STYLES;
+    return [
+      styles.euiPageBody,
+      isRestricted(this.args.restrictWidth) && styles.restrictWidth
+    ];
+  }
+
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    useEuiBorealisStyles(context, euiPageBodyStyles);
+    return euiClass(
+      context,
+      euiPageBoxSizing,
+      ...this.bodyStyles,
+      euiPagePadding(context.upstream, this.paddingSize)
+    );
+  }
+
+  get inlineStyle() {
+    return euiPageRestrictWidthStyle(this.args.restrictWidth, this.args.style);
+  }
+
+  <template>
+    {{#if @panelled}}
+      <EuiPanel
+        class="euiPageBody"
+        @css={{this.bodyStyles}}
+        @paddingSize={{this.paddingSize}}
+        @borderRadius={{if @borderRadius @borderRadius "none"}}
+        @color={{@color}}
+        @hasBorder={{@hasBorder}}
+        @hasShadow={{@hasShadow}}
+        {{style this.inlineStyle}}
+        ...attributes
+      >
+        {{yield}}
+      </EuiPanel>
+    {{else}}
+      {{#let (element this.tagName) as |Tag|}}
+        <Tag
+          class="euiPageBody {{this.classes}}"
+          {{style this.inlineStyle}}
+          {{!@glint-expect-error}}
           ...attributes
         >
           {{yield}}
-        </EuiPanel>
-      {{else}}
-        {{#let (element tagName) as |Tag|}}
-          <Tag
-            class={{classNames
-              (if (eq borderRadius "none") "euiPageBody--borderRadiusNone")
-              (if
-                styling.widthClassName
-                (concat "euiPageBody--" styling.widthClassName)
-              )
-              componentName="EuiPageBody"
-              paddingSize=@paddingSize
-            }}
-            {{style styling.newStyle}}
-            {{!@glint-expect-error}}
-            ...attributes
-          >
-            {{yield}}
-          </Tag>
-        {{/let}}
-      {{/if}}
-    {{/let}}
-  {{/let}}
-</template>;
-
-export default EuiPageBody;
+        </Tag>
+      {{/let}}
+    {{/if}}
+  </template>
+}

@@ -30,10 +30,14 @@ module('Integration | Component | eui-flyout', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiOverlayMask .euiFlyout', document.body).exists('ownFocus renders an overlay mask');
-    assert.dom(flyout()).hasAttribute('role', 'dialog').hasClass('euiFlyout--medium').hasClass('euiFlyout--paddingLarge');
-    assert.dom('.euiFlyoutHeader', flyout()).hasClass('euiFlyoutHeader--hasBorder');
-    assert.dom('.euiFlyoutBody__overflow', flyout()).hasClass('euiFlyoutBody__overflow--hasBanner');
+    // Latest EUI renders the mask as a sibling of the (portalled) flyout and
+    // drops the legacy size/padding/border modifier classes: check computed styles.
+    assert.dom('.euiOverlayMask', document.body).exists('ownFocus renders an overlay mask');
+    assert.dom(flyout()).hasAttribute('role', 'dialog');
+    const width = flyout().getBoundingClientRect().width;
+    assert.true(Math.abs(width - Math.max(424, document.documentElement.clientWidth / 2)) <= 1, `default size m (${width})`);
+    assert.dom('.euiFlyoutHeader', flyout()).hasStyle({ paddingTop: '24px', paddingLeft: '24px', borderBottomWidth: '1px' }, 'default padding l, hasBorder');
+    assert.strictEqual(flyout().querySelector('.euiFlyoutBody__overflow')!.firstElementChild!.className.split(' ')[0], 'euiFlyoutBody__banner', 'banner first in the overflow');
     assert.dom('.euiFlyoutBody__banner .banner', flyout()).exists();
     assert.dom('.euiFlyoutBody__overflowContent .body', flyout()).hasText('Body');
     assert.dom('.euiFlyoutFooter .footer', flyout()).hasText('Footer');
@@ -73,7 +77,11 @@ module('Integration | Component | eui-flyout', function (hooks) {
     );
 
     assert.dom('.euiOverlayMask', document.body).doesNotExist();
-    assert.dom(flyout()).hasClass('euiFlyout--small').hasClass('euiFlyout--left').hasClass('euiFlyout--paddingNone');
+    // legacy euiFlyout--small/--left/--paddingNone classes are gone: computed checks
+    for (const animation of flyout().getAnimations()) animation.finish();
+    assert.strictEqual(flyout().getBoundingClientRect().left, 0, 'left side');
+    assert.true(flyout().getBoundingClientRect().width <= 404, 'small');
+    assert.strictEqual(getComputedStyle(flyout()).getPropertyValue('--euiFlyoutBodyPadding').trim(), '0', 'padding none');
     assert.dom('.euiFlyout__closeButton', flyout()).doesNotExist();
   });
 

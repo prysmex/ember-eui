@@ -6,6 +6,20 @@ import { click, render } from '@ember/test-helpers';
 import EuiFilterButton from '#src/components/eui-filter-button.gts';
 import EuiFilterGroup from '#src/components/eui-filter-group.gts';
 import EuiFilterSelectItem from '#src/components/eui-filter-select-item.gts';
+import { euiBadgeColors } from '#src/utils/eui/styles.generated.ts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+
+/** Borealis empty-button text token, normalized to computed `rgb()`. */
+function emptyButtonColor(color: 'Primary' | 'Text') {
+  const tokens = resolveBorealisTheme('light').euiTheme.components
+    .buttons as unknown as Record<string, string>;
+  const probe = document.createElement('span');
+  probe.style.color = tokens[`textColor${color}`]!;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
 
 module('Integration | Component | eui-filter-group', function (hooks) {
   setupRenderingTest(hooks);
@@ -23,14 +37,19 @@ module('Integration | Component | eui-filter-group', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiFilterGroup').hasClass('euiFilterGroup--fullWidth');
+    // Latest-only: full width is `display: flex` instead of a modifier class.
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiFilterGroup')!).display, 'flex');
     assert
       .dom('.on')
       .hasClass('euiFilterButton')
-      .hasClass('euiFilterButton--withNext')
       .hasClass('euiFilterButton-hasActiveFilters')
-      .hasClass('euiButtonEmpty--text');
-    assert.dom('.on .euiFilterButton__textShift').hasText('On').hasAttribute('data-text', 'On').hasAttribute('title', 'On');
+      .hasClass('euiButtonEmpty');
+    // Latest-only EuiButtonEmpty has no color modifier classes: check the style.
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.on')!).color, emptyButtonColor('Text'));
+    // Upstream text wrapper is `euiFilterButton__text` (was `__textShift`).
+    assert.dom('.on .euiFilterButton__text').hasText('On').hasAttribute('data-text', 'On').hasAttribute('title', 'On');
+    // `@withNext` has no class any more: the next wrapper overlaps by the
+    // container padding (measured in eui-buttons-misc-test.gts).
 
     await click('.on');
     assert.strictEqual(clicks, 1);
@@ -45,10 +64,30 @@ module('Integration | Component | eui-filter-group', function (hooks) {
       </template>
     );
 
-    assert.dom('.available').hasClass('euiFilterButton-hasNotification').hasClass('euiFilterButton--hasIcon');
-    assert.dom('.available .euiFilterButton__notification').hasText('12').hasAria('label', '12 available filters').hasClass('euiNotificationBadge--subdued');
-    assert.dom('.active').hasClass('euiFilterButton-isSelected').hasAria('pressed', 'true');
-    assert.dom('.active .euiFilterButton__notification').hasText('2').hasAria('label', '2 active filters').doesNotHaveClass('euiNotificationBadge--subdued');
+    // Upstream has no `--hasIcon` class; the icon is rendered in the content.
+    assert.dom('.available').hasClass('euiFilterButton-hasNotification');
+    assert.dom('.available .euiFilterButton__content > svg.euiIcon').exists();
+    assert.dom('.available .euiFilterButton__notification').hasText('12').hasAria('label', '12 available filters');
+    // Latest-only styles: compare the Borealis badge colors, not legacy classes.
+    const badgeColors = euiBadgeColors(resolveBorealisTheme('light')) as {
+      subdued: { backgroundColor: string };
+      accentText: { backgroundColor: string };
+    };
+    const background = (selector: string) =>
+      getComputedStyle(document.querySelector(selector)!).backgroundColor;
+    assert.strictEqual(
+      background('.available .euiFilterButton__notification'),
+      rgb(badgeColors.subdued.backgroundColor),
+      'available count is subdued'
+    );
+    // A popover anchor (arrowDown) announces expanded, not pressed (upstream).
+    assert.dom('.active').hasClass('euiFilterButton-isSelected').hasAria('expanded', 'true').doesNotHaveAria('pressed');
+    assert.dom('.active .euiFilterButton__notification').hasText('2').hasAria('label', '2 active filters');
+    assert.strictEqual(
+      background('.active .euiFilterButton__notification'),
+      rgb(badgeColors.accentText.backgroundColor),
+      'active count is accent'
+    );
     assert.dom('.none .euiFilterButton__notification').doesNotExist();
   });
 
@@ -67,8 +106,25 @@ module('Integration | Component | eui-filter-group', function (hooks) {
     assert.dom('.on').hasAttribute('role', 'option').hasText('Open');
     assert.dom('.on .euiIcon').exists();
     assert.dom('.off .euiIcon').exists();
-    assert.dom('.none').hasClass('euiFilterSelectItem-isFocused').hasAria('selected', 'true');
+    // Upstream: aria-selected follows `@checked="on"`, not focus; focus is
+    // the focus background (no `-isFocused` class).
+    assert.dom('.on').hasAria('selected', 'true');
+    assert.dom('.none').hasAria('selected', 'false');
+    assert.notStrictEqual(
+      getComputedStyle(document.querySelector('.none')!).backgroundColor,
+      getComputedStyle(document.querySelector('.off')!).backgroundColor
+    );
     assert.dom('.noicons .euiIcon').doesNotExist();
     assert.dom('.noicons').isDisabled();
   });
 });
+
+/** Normalize any CSS color to the browser's computed `rgb()` form. */
+function rgb(color: string) {
+  const probe = document.createElement('span');
+  probe.style.color = color;
+  document.body.appendChild(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}

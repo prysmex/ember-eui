@@ -6,22 +6,14 @@ order: 6
 
 <EuiText>
 	<p>
-		Alternatively, you can change number of breadcrumbs that show per breakpoint by passing a custom responsive object.
+		Ember EUI extension: set <EuiCode @language="json">color</EuiCode> on a breadcrumb object to emphasize it, for example <EuiCode>primary</EuiCode> or <EuiCode>danger</EuiCode>.
   </p>
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @responsive={{hash xs=1 s=3 m=5 xl=6}}
-	@max={{null}}
-  aria-label='An example of custom responsive EuiBreadcrumbs'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBreadcrumbs } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   breadcrumbs = [
@@ -46,5 +38,13 @@ export default class DemoComponent extends Component {
       text: 'Edit',
     }
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @max={{null}}
+      aria-label='An example of EuiBreadcrumbs with colors'
+    />
+  </template>
 }
 ```

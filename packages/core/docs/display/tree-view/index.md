@@ -37,6 +37,14 @@ adds arrows, and `@display="compressed"` makes it smaller.
 
 </EuiText>
 
+<EuiSpacer />
+
+<EuiText>
+
+`EuiTreeView` is not meant to be used as primary navigation; for that we recommend using `EuiSideNav`. It does not accept content directly but requires an array of nodes through `@items`. Each node requires a `label` and a unique `id`. The `icon` accepts any icon type, and `iconWhenExpanded` sets a different icon for the open state. Use the nodes' `children` to nest more nodes. To show an `EuiToken` for a node, pass a component as its `icon` (e.g. `(component EuiToken iconType="tokenString")`), or render every node's icon yourself in the `<:icon as |node isExpanded|>` block (upstream's per-node icon element): it renders inside the icon wrapper of each node that has an `icon` or `iconWhenExpanded`.
+
+</EuiText>
+
 <EuiHorizontalRule />
 
 <!-- api:start -->
@@ -65,6 +73,7 @@ them (right and left). Give it an `aria-label`.
 | Block | Description |
 | --- | --- |
 | `<:label>` | Renders a node's label yourself; yields the node. |
+| `<:icon>` | Renders the icon of each node that has an `icon` (or an `iconWhenExpanded`) yourself, inside its icon wrapper (upstream's per-node icon element). Yields the node and whether it is open. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<ul>`.
 

@@ -6,6 +6,11 @@ title: Number field
 <EuiPageHeader @pageTitle="Number field"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Wrap your form controls in a form row" @iconType="info" @size="s">
+  <p>Use <code>EuiFormRow</code> to easily and accessibly associate form components with labels, help text and error text. Keep in mind that <code>EuiFormRow</code> controls the <code>id</code> of its wrapped child form component to associate it with the label and help text.</p>
+</EuiCallOut>
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiFieldNumber` renders an `<input type="number">`: arrows and the
@@ -43,7 +48,7 @@ Generated from the components' TypeScript signatures by
 | --- | --- | --- | --- |
 | `@id` | `string` | a random id | Id of the input, e.g. to match an `EuiFormRow`'s label. |
 | `@icon` | `IconType` |  | Icon inside the input, anything `EuiIcon`'s `@type` accepts. |
-| `@isInvalid` | `boolean` |  | Shows the invalid state and marks the input invalid for native form validation. |
+| `@isInvalid` | `boolean` |  | Shows the invalid state (danger border and warning icon), sets `aria-invalid` and marks the input invalid for native form validation. A natively invalid value (e.g. above `@max`) also sets `aria-invalid`. |
 | `@fullWidth` | `boolean` |  | Stretches the input to its container's width. |
 | `@isLoading` | `boolean` |  | Shows a spinner in the input. |
 | `@readOnly` | `boolean` |  | Makes the input read-only. |
@@ -51,11 +56,12 @@ Generated from the components' TypeScript signatures by
 | `@max` | `number \| string` |  | Highest allowed value. |
 | `@value` | `number \| string` |  | The value. Update it from `{{on "input" …}}` (the event's value is a string). |
 | `@disabled` | `boolean` |  | Disables the input. |
-| `@step` | `number \| 'any'` |  | Specifies the granularity that the value must adhere to. Accepts a `number` or the string `'any'` for no stepping to allow for any value. Defaults to `1` |
+| `@step` | `number \| 'any'` | `'any'` (upstream), so decimals are not natively invalid | Specifies the granularity that the value must adhere to. Accepts a `number` or the string `'any'` for no stepping to allow for any value. |
 | `@inputRef` | `(ele: Element) => void` |  | Called with the `<input>` element once rendered. |
 | `@controlOnly` | `boolean` |  | Completely removes form control layout wrapper and ignores icon, prepend, and append. Best used inside EuiFormControlLayoutDelimited. |
-| `@compressed` | `boolean` |  | Shorter input, for dense forms. |
+| `@compressed` | `boolean` |  | Shorter input (32px instead of 40px), for dense forms. |
 | `@clear` |  |  | Shows a clear ("x") button calling this function; empty the value there. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the input's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 Deprecated: `@prepend` (Has no effect, use the `<:prepend>` block.); `@append` (Has no effect, use the `<:append>` block.).
 

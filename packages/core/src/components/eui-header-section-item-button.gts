@@ -1,20 +1,28 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import { eq } from 'ember-truth-helpers';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  euiBreakpointsMedia,
+  euiOutsideBreakpointsMedia
+} from '../utils/eui/page-layout.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import {
+  euiHeaderSectionItemButtonStyles,
+  euiMaxBreakpoint
+} from '../utils/eui/styles.generated.ts';
 import EuiButtonEmpty from './eui-button-empty.gts';
-import EuiHideFor from './eui-hide-for.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiNotificationBadge from './eui-notification-badge.gts';
-import EuiShowFor from './eui-show-for.gts';
 
-import type { colorMapping } from '../utils/css-mappings/eui-notification-badge.ts';
-import type { EuiHideForBreakpoints } from './eui-hide-for';
+import type { EuiNotificationBadgeSignature } from './eui-notification-badge';
+import type { EuiButtonEmptySignature } from './eui-button-empty';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 const keyframes: Keyframe[] = [
   { transform: 'rotate(0)', offset: 0, easing: 'ease-in-out' },
@@ -141,17 +149,43 @@ export interface EuiHeaderSectionItemButtonSignature {
     ref?: (api: { euiAnimate: () => void }) => void;
     /** Disables the button. */
     disabled?: boolean;
+    /** Same as `@disabled` (upstream's name, from EuiButtonEmpty). */
+    isDisabled?: boolean;
+    /** EuiButtonEmpty color. Defaults to `'text'`. */
+    color?: EuiButtonEmptySignature['Args']['color'];
+    /** EuiButtonEmpty `contentProps`: class, css and attributes of the content element. */
+    contentProps?: EuiButtonEmptySignature['Args']['contentProps'];
+    /** EuiButtonEmpty `textProps`: class, css and attributes of the text element. */
+    textProps?: EuiButtonEmptySignature['Args']['textProps'];
+    /** Pulls the button to an edge, see `EuiButtonEmpty`. */
+    flush?: EuiButtonEmptySignature['Args']['flush'];
+    /** Beta: `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. */
+    hasAriaDisabled?: boolean;
+    /** Side of the icon, see `EuiButtonEmpty`. */
+    iconSide?: EuiButtonEmptySignature['Args']['iconSide'];
+    /** Size of the icon, see `EuiButtonEmpty`. */
+    iconSize?: EuiButtonEmptySignature['Args']['iconSize'];
+    /** Icon next to the content, see `EuiButtonEmpty`. */
+    iconType?: EuiButtonEmptySignature['Args']['iconType'];
+    /** Shows a spinner and disables the button. */
+    isLoading?: boolean;
+    /** Sets `aria-pressed` for toggle buttons. */
+    isSelected?: boolean;
+    /** `'xs'`, `'s'` or `'m'`, see `EuiButtonEmpty`. */
+    size?: EuiButtonEmptySignature['Args']['size'];
+    /** Extra styles composed last into the button's class. */
+    css?: EuiCss;
     /** Renders a link instead of a button. */
     href?: string;
     /** Called on click. */
     onClick?: (event: MouseEvent) => void;
     /**
-     * `true` shows a dot; a number shows a count badge (a dot on small
-     * screens).
+     * `true` shows a dot; a number shows a count badge, which becomes a dot
+     * below the theme's `m` breakpoint (as upstream; formerly only `xs`).
      */
-    notification?: boolean | number;
-    /** `'accent'` or `'subdued'`. Defaults to `'accent'`. */
-    notificationColor?: keyof typeof colorMapping;
+    notification?: boolean | number | string;
+    /** `'accent'`, `'subdued'` or `'success'`. Defaults to `'accent'`. */
+    notificationColor?: EuiNotificationBadgeSignature['Args']['color'];
   };
   Blocks: {
     /** The button's content, usually an `EuiIcon` or `EuiAvatar`. */
@@ -159,8 +193,14 @@ export interface EuiHeaderSectionItemButtonSignature {
   };
 }
 
-const sizes: EuiHideForBreakpoints[] = ['xs'];
+/** Upstream small-screen check (`useIsWithinMaxBreakpoint('s')`), as CSS. */
+const SMALL_SCREENS = ['xs', 's'] as const;
 
+/**
+ * Upstream `EuiHeaderSectionItemButton` (`euiHeaderSectionItemButtonStyles`
+ * composed over EuiButtonEmpty). Upstream swaps a count badge for a dot on
+ * small screens in JS; here both are rendered and media queries pick one.
+ */
 export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHeaderSectionItemButtonSignature> {
   @tracked buttonRef: HTMLButtonElement | HTMLAnchorElement | undefined;
   @tracked animationTargetRef: HTMLSpanElement | undefined;
@@ -180,24 +220,93 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
 
   willDestroy(): void {
     super.willDestroy();
-    
     this.buttonRef = undefined;
     this.animationTargetRef = undefined;
+  }
+
+  get notificationColor() {
+    return this.args.notificationColor ?? 'accent';
+  }
+
+  /**
+   * Upstream's `css` for the notification dot (EuiIcon) and badge
+   * (EuiNotificationBadge), composed last into their own classes through
+   * `@css`.
+   */
+  @cached
+  get notificationCss() {
+    const context = getEuiThemeContext(this);
+    const { notification } = useEuiBorealisStyles(
+      context,
+      euiHeaderSectionItemButtonStyles
+    );
+    const small = euiBreakpointsMedia(context.upstream, SMALL_SCREENS);
+    const large = euiOutsideBreakpointsMedia(context.upstream, SMALL_SCREENS);
+    const { size } = context.upstream.euiTheme;
+    // Upstream's `dot` shrinks the icon below `s`.
+    const dotSize = {
+      [euiMaxBreakpoint(context.upstream, 's')]: {
+        inlineSize: size.base,
+        blockSize: size.base
+      }
+    };
+    const hidden = (media: string | undefined) =>
+      media ? { [media]: { display: 'none' } } : undefined;
+    const dot = [
+      notification.euiHeaderSectionItemButton__notification,
+      notification.dot,
+      dotSize
+    ];
+    return {
+      dot,
+      // A count: badge on larger screens, dot on small ones.
+      badge: [
+        notification.euiHeaderSectionItemButton__notification,
+        notification.badge,
+        hidden(small)
+      ],
+      smallDot: [...dot, hidden(large)]
+    };
+  }
+
+  @cached
+  get styles() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(
+      context,
+      euiHeaderSectionItemButtonStyles
+    );
+    return {
+      // Upstream's `css` on EuiButtonEmpty.
+      button: [styles.euiHeaderSectionItemButton, this.args.css],
+      content: euiClass(context, styles.euiHeaderSectionItemButton__content)
+    };
   }
 
   <template>
     <EuiButtonEmpty
       class="euiHeaderSectionItemButton"
-      @isDisabled={{@disabled}}
+      @css={{this.styles.button}}
+      @isDisabled={{if @isDisabled @isDisabled @disabled}}
       @href={{@href}}
-      @color="text"
+      @color={{if @color @color "text"}}
+      @contentProps={{@contentProps}}
+      @textProps={{@textProps}}
+      @flush={{@flush}}
+      @hasAriaDisabled={{@hasAriaDisabled}}
+      @iconSide={{@iconSide}}
+      @iconSize={{@iconSize}}
+      @iconType={{@iconType}}
+      @isLoading={{@isLoading}}
+      @isSelected={{@isSelected}}
+      @size={{@size}}
       {{didInsert this.setButtonRef}}
       {{on "click" (optional @onClick)}}
       ...attributes
     >
       <span
         {{didInsert this.setAnimationTargetRef}}
-        class="euiHeaderSectionItemButton__content"
+        class="euiHeaderSectionItemButton__content {{this.styles.content}}"
       >
         {{yield}}
       </span>
@@ -205,27 +314,26 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
         {{#if (eq @notification true)}}
           <EuiIcon
             @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
-            @color={{argOrDefault @notificationColor "accent"}}
+            @css={{this.notificationCss.dot}}
+            @color={{this.notificationColor}}
             @type="dot"
             @size="l"
           />
-        {{else if @notification}}
-          <EuiHideFor @sizes={{sizes}}>
-            <EuiNotificationBadge
-              class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge"
-              @color={{argOrDefault @notificationColor "accent"}}
-            >
-              {{@notification}}
-            </EuiNotificationBadge>
-          </EuiHideFor>
-          <EuiShowFor @sizes={{sizes}}>
-            <EuiIcon
-              @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
-              @color={{argOrDefault @notificationColor "accent"}}
-              @type="dot"
-              @size="l"
-            />
-          </EuiShowFor>
+        {{else}}
+          <EuiNotificationBadge
+            class="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--badge"
+            @css={{this.notificationCss.badge}}
+            @color={{this.notificationColor}}
+          >
+            {{@notification}}
+          </EuiNotificationBadge>
+          <EuiIcon
+            @iconClasses="euiHeaderSectionItemButton__notification euiHeaderSectionItemButton__notification--dot"
+            @css={{this.notificationCss.smallDot}}
+            @color={{this.notificationColor}}
+            @type="dot"
+            @size="l"
+          />
         {{/if}}
       {{/if}}
     </EuiButtonEmpty>

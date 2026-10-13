@@ -1,3 +1,5 @@
+import type { ComponentLike } from '@glint/template';
+
 export interface DurationRange {
   end: ShortDate;
   label?: string;
@@ -28,9 +30,14 @@ export interface RelativeOption {
 
 export type TimeUnitAllId = TimeUnitId | TimeUnitFromNowId;
 
+/** Units of the refresh interval: seconds, minutes or hours. */
+export type RefreshUnitsOptions = 's' | 'm' | 'h';
+
 export type OnRefreshChangeArgs = {
   isPaused: boolean;
   refreshInterval: number;
+  /** The unit the user picked (upstream `OnRefreshChangeProps`). */
+  intervalUnits?: RefreshUnitsOptions;
 };
 
 export type ApplyRefreshInterval = (args: OnRefreshChangeArgs) => void;
@@ -42,6 +49,16 @@ interface ApplyTimeArgs extends DurationRange {
   quickSelect?: QuickSelect;
 }
 export type ApplyTime = (args: ApplyTimeArgs) => void;
+
+/**
+ * A custom panel of the quick select popover (upstream `QuickSelectPanel`):
+ * `content` is a component, rendered with `@applyTime` (call it with
+ * `{ start, end }` to apply a range and close the popover).
+ */
+export interface QuickSelectPanel {
+  title: string;
+  content: ComponentLike<{ Args: { applyTime: ApplyTime } }>;
+}
 
 export interface QuickSelect {
   timeTense: string;

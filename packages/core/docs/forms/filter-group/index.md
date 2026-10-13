@@ -54,7 +54,11 @@ to a search field, e.g. "On / Off" toggles and a "Status" popover.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@fullWidth` | `boolean` |  | Takes the container's full width instead of its content's. |
+| `@compressed` | `boolean` |  | Smaller buttons and radius, e.g. next to a compressed search field. |
+| `@display` | `'regular' \| 'highlighted'` | `'regular'` | `'regular'` or `'highlighted'` (selected `@isToggle` buttons are filled). |
+| `@showDividers` | `boolean` | `true` | Dividers between the buttons. |
 
 | Block | Description |
 | --- | --- |
@@ -70,10 +74,12 @@ active filters.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@iconType` |  |  | Icon, e.g. `'arrowDown'` for a button opening a popover. |
+| `@iconType` |  |  | Icon, e.g. `'chevronSingleDown'` for a button opening a popover. |
 | `@iconSide` | `'left' \| 'right'` | `'right'` | `'left'` or `'right'` of the text. |
 | `@color` |  | `'text'` | Text color, any `EuiButtonEmpty` color. |
-| `@isSelected` | `boolean` |  | Pressed look, e.g. while its popover is open or a toggle is on. |
+| `@badgeColor` | `'accent' \| 'success'` | `'accent'` | Color of the badge while `@hasActiveFilters`: `'accent'` or `'success'`. |
+| `@isSelected` | `boolean` |  | Pressed look, e.g. while its popover is open or a toggle is on. Sets `aria-expanded` on popover anchors (`@iconType="chevronSingleDown"` or its legacy alias `"arrowDown"`), `aria-pressed` otherwise. |
+| `@isToggle` | `boolean` |  | Renders an on/off toggle (upstream `isToggle`): a small `EuiButton` look, highlighted while `@isSelected`. |
 | `@hasActiveFilters` | `boolean` |  | Bold text and an accent badge: some of its filters are applied. |
 | `@numFilters` | `number` |  | Number of available filters, shown in a badge. |
 | `@numActiveFilters` | `number` |  | Number of applied filters, shown instead of `@numFilters` when above 0. |
@@ -82,27 +88,27 @@ active filters.
 | `@withNext` | `boolean` |  | Removes the divider after it, to join it with the next button (e.g. "On" and "Off" toggles). |
 | `@noDivider` | `boolean` |  | Same as `@withNext`. |
 | `@type` | `string` | `'button'` | `type` of the `<button>`. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: with `@isDisabled`, renders `aria-disabled` instead of the native `disabled`; the button keeps focus while clicks are blocked. |
+| `@iconSize` |  | `'m'` | Size of the icon. |
+| `@isLoading` | `boolean` |  | Replaces the icon with a spinner and disables the button. |
+| `@contentProps` | `EuiElementProps` |  | Upstream's `contentProps`: `class`/`className`, `css` and HTML attributes for the element wrapping the icon, text and badge. |
+| `@textProps` | `EuiElementProps` |  | Upstream's `textProps`: `class`/`className`, `css` and HTML attributes for the element wrapping the text. |
 
 | Block | Description |
 | --- | --- |
-| default block | The button text. |
+| default block | The button text. Leave it out for an icon-only button. |
 
 ### EuiFilterSelectItem
 
-One option in a filter popover (opened from an `EuiFilterButton`): a
-button with a check mark when `@checked="on"`, or a cross when `"off"`
-(excluded).
-
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@checked` | `'on' \| 'off'` |  | `'on'` (check mark, included), `'off'` (cross, excluded) or nothing (not applied). |
-| `@isFocused` | `boolean` |  | Highlights it, e.g. while moving through the list with the keyboard. |
-| `@showIcons` | `boolean` | `true` | Shows the check mark / cross column. |
-| `@disabled` | `boolean` |  | Disables the option. |
-
-| Block | Description |
-| --- | --- |
-| default block | The option's label. |
+| `@classes` (required) | `string` |  |  |
+| `@contentCss` (required) | `EuiCss` |  |  |
+| `@icon` (required) | `string` |  |  |
+| `@showIcons` (required) | `boolean` |  |  |
+| `@checked` | `'on' \| 'off'` |  |  |
+| `@disabled` | `boolean` |  |  |
+| `@isFocused` | `boolean` |  |  |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 

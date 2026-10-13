@@ -1,47 +1,55 @@
-import cssStyle from '../-private/css-style.ts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+
 import { hexToRgb } from '../helpers/hex-to-rgb.ts';
 import { isColorDark } from '../helpers/is-color-dark.ts';
-import { TOKEN_MAP } from '../utils/token-map.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiBorealisContext } from '../utils/eui/theme.ts';
+import { TOKEN_MAP } from '../utils/eui/styles.generated.ts';
+import { euiTokenStyles, TOKEN_COLORS } from '../utils/eui/token.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { CssProperties } from '../-private/css-style.ts';
+import type { CSSObject } from '@emotion/css/create-instance';
+import type { EuiTokenFill } from '../utils/eui/token.ts';
 import type { IconType } from './eui-icon';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
-const SIZES = {
-  xs: 'euiToken--xsmall',
-  s: 'euiToken--small',
-  m: 'euiToken--medium',
-  l: 'euiToken--large'
+export const SIZES = ['xs', 's', 'm', 'l'] as const;
+export const SHAPES = ['circle', 'square', 'rectangle'] as const;
+export const FILLS = ['light', 'dark', 'none'] as const;
+
+/** One stable factory per fill, so styles memoize per resolved theme. */
+const TOKEN_STYLES = Object.fromEntries(
+  FILLS.map((fill) => [
+    fill,
+    (theme: EuiBorealisContext) => euiTokenStyles(theme, fill)
+  ])
+) as Record<(typeof FILLS)[number], (theme: EuiBorealisContext) => ReturnType<typeof euiTokenStyles>>;
+export { TOKEN_COLORS as COLORS };
+
+type TokenSize = (typeof SIZES)[number];
+type TokenShape = (typeof SHAPES)[number];
+
+const TOKEN_DEFAULTS = TOKEN_MAP as Record<
+  string,
+  { shape?: TokenShape; color?: string }
+>;
+
+/**
+ * Icons this addon still ships under their pre-rename names, mapped to the
+ * upstream 123 token they became (so they keep a preset).
+ */
+const TOKEN_ALIASES: Record<string, string> = {
+  tokenDenseVector: 'tokenVectorDense'
 };
 
-const SHAPES = {
-  circle: 'euiToken--circle',
-  square: 'euiToken--square',
-  rectangle: 'euiToken--rectangle'
-};
-
-const FILLS = {
-  none: null,
-  light: 'euiToken--light',
-  dark: 'euiToken--dark'
-};
-
-const COLORS = [
-  'euiColorVis0',
-  'euiColorVis1',
-  'euiColorVis2',
-  'euiColorVis3',
-  'euiColorVis4',
-  'euiColorVis5',
-  'euiColorVis6',
-  'euiColorVis7',
-  'euiColorVis8',
-  'euiColorVis9',
-  'gray'
-] as const;
-
-type TokenSize = keyof typeof SIZES;
+function oneOf<T extends string>(
+  values: readonly T[],
+  value: unknown,
+  fallback: T
+): T {
+  return (values as readonly unknown[]).includes(value) ? (value as T) : fallback;
+}
 
 /**
  * A small icon in a colored shape that tells the type of a value or code
@@ -63,74 +71,94 @@ export interface EuiTokenSignature {
      */
     color?: string;
     /** `'circle'`, `'square'` or `'rectangle'`. Defaults to the token icon's, or `'circle'`. */
-    shape?: 'circle' | 'square' | 'rectangle';
+    shape?: TokenShape;
     /**
      * `'light'` (tinted with a border), `'dark'` (solid) or `'none'`.
-     * Defaults to the token icon's, or `'light'`.
+     * Defaults to `'light'`.
      */
-    fill?: 'light' | 'dark' | 'none';
-    /** `'xs'`, `'s'`, `'m'` or `'l'`. Defaults to `'s'`. */
-    size?: 'xs' | 's' | 'm' | 'l';
+    fill?: EuiTokenFill;
+    /** `'xs'` (8px), `'s'` (16px), `'m'` (24px) or `'l'` (32px). Defaults to `'s'`. */
+    size?: TokenSize;
     /** Title of the icon, read by screen readers, e.g. "String field". */
     title?: string;
+    /** Accessible label of the icon, instead of `@title`. */
+    'aria-label'?: string;
+    /** Id(s) of the element(s) labelling the icon. */
+    'aria-labelledby'?: string;
+    /** Id(s) of the element(s) describing the icon. */
+    'aria-describedby'?: string;
   };
 }
 
-interface Display {
-  classes: string;
-  style: ReturnType<typeof cssStyle>;
-  iconSize: 's' | 'm' | 'l';
-}
-
-function display(
-  iconType: IconType,
-  color: string | undefined,
-  shape: keyof typeof SHAPES | undefined,
-  fill: keyof typeof FILLS | undefined,
-  size: TokenSize = 's'
-): Display {
-  const preset = typeof iconType === 'string' ? TOKEN_MAP[iconType] : undefined;
-  const finalColor = color ?? preset?.color ?? 'gray';
-  const finalShape = shape ?? preset?.shape ?? 'circle';
-  let finalFill = fill ?? preset?.fill ?? 'light';
-  const style: CssProperties = {};
-  let colorClass: string | undefined;
-
-  if ((COLORS as readonly string[]).includes(finalColor)) {
-    colorClass = `euiToken--${finalColor}`;
-  } else if (finalFill === 'none') {
-    style['color'] = finalColor;
-  } else {
-    finalFill = 'dark';
-    style['backgroundColor'] = finalColor;
-    style['color'] = isColorDark(...hexToRgb(finalColor)) ? '#FFFFFF' : '#000000';
+/** Native Ember token using the upstream EUI 123 / Borealis styles. */
+export default class EuiToken extends Component<EuiTokenSignature> {
+  get size(): TokenSize {
+    return oneOf(SIZES, this.args.size, 's');
   }
 
-  // token icons look best one size up at the small size; icons have no xs
-  const isTokenIcon = typeof iconType === 'string' && iconType.startsWith('token');
-  const iconSize = size === 'xs' ? 's' : isTokenIcon && size === 's' ? 'm' : size;
+  /** Icons have no `xs`, and token icons look best one size up at `s`. */
+  get iconSize(): 's' | 'm' | 'l' {
+    const { iconType } = this.args;
+    const size = this.size;
 
-  return {
-    classes: [
-      'euiToken',
-      colorClass,
-      SHAPES[finalShape],
-      FILLS[finalFill],
-      SIZES[size]
-    ]
-      .filter(Boolean)
-      .join(' '),
-    style: cssStyle(style),
-    iconSize
-  };
-}
+    if (size === 'xs') return 's';
+    if (typeof iconType === 'string' && iconType.indexOf('token') === 0 && size === 's') {
+      return 'm';
+    }
 
-const EuiToken: TemplateOnlyComponent<EuiTokenSignature> = <template>
-  {{#let (display @iconType @color @shape @fill @size) as |token|}}
-    <span class={{token.classes}} style={{token.style}} ...attributes>
-      <EuiIcon @type={{@iconType}} @size={{token.iconSize}} @title={{@title}} />
+    return size;
+  }
+
+  @cached
+  get classes(): string {
+    const { iconType } = this.args;
+    const context = getEuiThemeContext(this);
+    const preset =
+      typeof iconType === 'string'
+        ? TOKEN_DEFAULTS[TOKEN_ALIASES[iconType] ?? iconType]
+        : undefined;
+    const color = this.args.color || preset?.color || 'gray';
+    const shape = oneOf(SHAPES, this.args.shape || preset?.shape, 'circle');
+    const fill = oneOf(FILLS, this.args.fill, 'light');
+    // upstream builds the styles for the requested fill, before a custom
+    // color switches the token to `dark`
+    const styles = useEuiBorealisStyles(context, TOKEN_STYLES[fill]);
+    let custom: CSSObject | undefined;
+    let colorStyles = styles[color];
+
+    if (!(TOKEN_COLORS as readonly string[]).includes(color)) {
+      colorStyles = styles['customColor'];
+      // Upstream sets these inline; a class keeps the caller's `style`.
+      custom =
+        fill === 'none'
+          ? { color }
+          : {
+              color: isColorDark(...hexToRgb(color)) ? '#FFFFFF' : '#000000',
+              backgroundColor: color
+            };
+    }
+
+    return `euiToken ${euiClass(
+      context,
+      styles['euiToken'],
+      styles[shape],
+      styles[fill],
+      styles[this.size],
+      colorStyles,
+      custom
+    )}`;
+  }
+
+  <template>
+    <span class={{this.classes}} ...attributes>
+      <EuiIcon
+        @type={{@iconType}}
+        @size={{this.iconSize}}
+        @title={{@title}}
+        @aria-label={{@aria-label}}
+        @aria-labelledby={{@aria-labelledby}}
+        aria-describedby={{@aria-describedby}}
+      />
     </span>
-  {{/let}}
-</template>;
-
-export default EuiToken;
+  </template>
+}

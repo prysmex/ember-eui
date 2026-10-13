@@ -14,6 +14,9 @@
     "EuiBadgeGroup",
     "EuiNotificationBadge"
   ],
+  "packages/core/docs/display/banner/index.md": [
+    "EuiBanner"
+  ],
   "packages/core/docs/display/beacon/index.md": [
     "EuiBeacon"
   ],
@@ -46,6 +49,9 @@
   "packages/core/docs/display/icons/index.md": [
     "EuiIcon"
   ],
+  "packages/core/docs/display/illustration/index.md": [
+    "EuiIllustration"
+  ],
   "packages/core/docs/display/image/index.md": [
     "EuiImage"
   ],
@@ -67,11 +73,28 @@
   "packages/core/docs/display/progress/index.md": [
     "EuiProgress"
   ],
+  "packages/core/docs/display/skeleton/index.md": [
+    "EuiSkeletonText",
+    "EuiSkeletonTitle",
+    "EuiSkeletonCircle",
+    "EuiSkeletonRectangle",
+    "EuiSkeletonLoading"
+  ],
   "packages/core/docs/display/stat-demo/index.md": [
     "EuiStat"
   ],
   "packages/core/docs/display/text-diff/index.md": [
     "EuiTextDiff"
+  ],
+  "packages/core/docs/display/text-truncation/index.md": [
+    "EuiTextTruncate",
+    "EuiTextBlockTruncate"
+  ],
+  "packages/core/docs/display/timeline/index.md": [
+    "EuiTimeline",
+    "EuiTimelineItem",
+    "EuiTimelineItemEvent",
+    "EuiTimelineItemIcon"
   ],
   "packages/core/docs/display/text/index.md": [
     "EuiText",
@@ -148,6 +171,13 @@
   "packages/core/docs/forms/form-controls/file-picker/index.md": [
     "EuiFilePicker"
   ],
+  "packages/core/docs/forms/form-controls/form-append-prepend/index.md": [
+    "EuiFormPrepend",
+    "EuiFormAppend"
+  ],
+  "packages/core/docs/forms/form-controls/form-control-button/index.md": [
+    "EuiFormControlButton"
+  ],
   "packages/core/docs/forms/form-controls/form-control-layout-delimited/index.md": [
     "EuiFormControlLayoutDelimited"
   ],
@@ -197,6 +227,14 @@
     "EuiFormHelpText",
     "EuiFormErrorText"
   ],
+  "packages/core/docs/forms/inline-edit/index.md": [
+    "EuiInlineEditText",
+    "EuiInlineEditTitle"
+  ],
+  "packages/core/docs/forms/search-bar/index.md": [
+    "EuiSearchBar",
+    "EuiSearchBarFilters"
+  ],
   "packages/core/docs/forms/selectable/index.md": [
     "EuiSelectable",
     "EuiSelectableList",
@@ -211,7 +249,9 @@
   ],
   "packages/core/docs/forms/super-date-picker/index.md": [
     "EuiSuperDatePicker",
-    "EuiRefreshInterval"
+    "EuiRefreshInterval",
+    "EuiAutoRefresh",
+    "EuiAutoRefreshButton"
   ],
   "packages/core/docs/forms/super-select/index.md": [
     "EuiSuperSelect",
@@ -240,7 +280,9 @@
     "EuiFlyout",
     "EuiFlyoutHeader",
     "EuiFlyoutBody",
-    "EuiFlyoutFooter"
+    "EuiFlyoutFooter",
+    "EuiFlyoutResizable",
+    "EuiFlyoutMenu"
   ],
   "packages/core/docs/layout/header/index.md": [
     "EuiHeader",
@@ -266,6 +308,10 @@
   ],
   "packages/core/docs/layout/page-header/index.md": [
     "EuiPageHeader"
+  ],
+  "packages/core/docs/layout/page-section/index.md": [
+    "EuiPageSection",
+    "EuiPageSidebar"
   ],
   "packages/core/docs/layout/panel/index.md": [
     "EuiPanel",
@@ -294,7 +340,10 @@
     "EuiButton",
     "EuiButtonEmpty",
     "EuiButtonIcon",
-    "EuiButtonGroup"
+    "EuiButtonGroup",
+    "EuiSplitButton",
+    "EuiSplitButtonActionPrimary",
+    "EuiSplitButtonActionSecondary"
   ],
   "packages/core/docs/navigation/collapsible-nav.md": [
     "EuiCollapsibleNav",
@@ -330,6 +379,17 @@
     "EuiTab",
     "EuiTabbedContent"
   ],
+  "packages/core/docs/tabular/basic-table/index.md": [
+    "EuiBasicTable"
+  ],
+  "packages/core/docs/tabular/in-memory-table/index.md": [
+    "EuiInMemoryTable",
+    "EuiBasicTablePanel"
+  ],
+  "packages/core/docs/tabular/data-grid/basics/index.md": [
+    "EuiDataGrid",
+    "EuiDataGridToolbarControl"
+  ],
   "packages/core/docs/tabular/table/index.md": [
     "EuiTable",
     "EuiTableHeader",
@@ -349,6 +409,9 @@
   ],
   "packages/core/docs/templates/page-template/index.md": [
     "EuiPageTemplate",
+    "EuiPageTemplateSidebar",
+    "EuiPageTemplateEmptyPrompt",
+    "EuiPageTemplateBottomBar",
     "EuiPage",
     "EuiPageSideBar",
     "EuiPageBody",
@@ -376,6 +439,10 @@
     "EuiI18n",
     "EuiI18nNumber"
   ],
+  "packages/core/docs/utilities/live-regions/index.md": [
+    "EuiScreenReaderLive",
+    "EuiLiveAnnouncer"
+  ],
   "packages/core/docs/utilities/overlay-mask.md": [
     "EuiOverlayMask"
   ],
@@ -394,5 +461,26 @@
   ],
   "packages/validated-form/docs/validated-form.md": [
     "ValidatedForm"
+  ],
+  "packages/core/docs/utilities/error-boundary/index.md": [
+    "EuiErrorMessage"
+  ],
+  "packages/core/docs/utilities/focus-trap/index.md": [
+    "EuiFocusTrap"
+  ],
+  "packages/core/docs/utilities/window-event/index.md": [
+    "EuiWindowEvent"
+  ],
+  "packages/core/docs/utilities/inner-text/index.md": [
+    "EuiInnerText"
+  ],
+  "packages/core/docs/utilities/provider/index.md": [
+    "EuiEmotionProvider"
+  ],
+  "packages/core/docs/utilities/container-queries/index.md": [
+    "EuiContainerQuery"
+  ],
+  "packages/core/docs/utilities/pretty-duration/index.md": [
+    "EuiPrettyDuration"
   ]
 }

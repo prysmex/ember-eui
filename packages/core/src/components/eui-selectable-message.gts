@@ -1,6 +1,11 @@
-import EuiText from './eui-text.gts';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
+import { euiSelectableMessageStyles } from '../utils/eui/styles.generated.ts';
+import EuiText from './eui-text.gts';
 
 /**
  * A message shown by `EuiSelectable` instead of its list: while loading,
@@ -18,15 +23,23 @@ export interface EuiSelectableMessageSignature {
   };
 }
 
-const EuiSelectableMessage: TemplateOnlyComponent<EuiSelectableMessageSignature> =
+/** Upstream: `<EuiText color="subdued" size="xs" css={message}>`. */
+export default class EuiSelectableMessage extends Component<EuiSelectableMessageSignature> {
+  @cached
+  get css(): EuiCss {
+    const context = getEuiThemeContext(this);
+    const message = useEuiBorealisStyles(context, euiSelectableMessageStyles);
+    return [message.euiSelectableMessage, this.args.bordered && message.bordered];
+  }
+
   <template>
     <EuiText
-      class="euiSelectableMessage
-        {{if @bordered 'euiSelectableMessage--bordered'}}"
+      class="euiSelectableMessage"
+      data-test-subj="euiSelectableMessage"
       @color="subdued"
       @size="xs"
+      @css={{this.css}}
       ...attributes
     >{{yield}}</EuiText>
-  </template>;
-
-export default EuiSelectableMessage;
+  </template>
+}

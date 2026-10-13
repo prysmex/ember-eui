@@ -6,6 +6,18 @@ title: Suggest
 <EuiPageHeader @pageTitle="Suggest"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Deprecated: removed upstream" @color="warning">
+  <p>
+    Elastic UI removed EuiSuggest, EuiSuggestInput and EuiSuggestItem upstream, so they are deprecated since
+    15.0.0 and will be removed in the next major version (16.0.0). They
+    keep working until then and report the
+    <EuiCode>ember-eui.eui-suggest.removed-upstream</EuiCode> deprecation (and one per sub-component) in
+    development. Use <strong>EuiSelectable</strong> or <strong>EuiComboBox</strong> instead, as upstream recommends.
+  </p>
+</EuiCallOut>
+
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiSuggest` is a text field that suggests values while you type, like a
@@ -75,7 +87,7 @@ optional description. With `@onClick` it is a button.
 | `@description` | `string` |  | More about it, after the label. |
 | `@labelDisplay` | `'fixed' \| 'expand'` | `'fixed'` (`'expand'` without a description) | `'fixed'` keeps the label at `@labelWidth`; `'expand'` lets it take the space it needs. |
 | `@labelWidth` |  | `'50'` | Width of the label in percent, `'20'` to `'90'` by tens. |
-| `@descriptionDisplay` | `'truncate' \| 'wrap'` | `'truncate'` | `'truncate'` or `'wrap'` a long description. |
+| `@descriptionDisplay` | `'truncate' \| 'wrap'` | `'truncate'` | `'truncate'` (label and description, with `title`s) or `'wrap'` long text. |
 | `@onClick` | `(event: MouseEvent) => void` |  | Makes it a button. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<div>`.

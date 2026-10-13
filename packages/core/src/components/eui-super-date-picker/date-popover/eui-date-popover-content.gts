@@ -1,10 +1,13 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { helper } from '@ember/component/helper';
 import { service } from '@ember/service';
 
 import { eq } from 'ember-truth-helpers';
 
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { euiDatePopoverContentStyles } from '../../../utils/eui/styles.generated.ts';
+import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiTabbedContent from '../../eui-tabbed-content.gts';
 import { getDateMode, toAbsoluteString } from '../utils/index.ts';
 import { useI18nTimeOptions } from '../utils/time-options.ts';
@@ -18,7 +21,8 @@ import type { TimeOptions } from '../utils/time-options.ts';
 import type { AbsoluteTabSignature } from './absolute-tab';
 import type { NowTabSignature } from './now-tab';
 import type { RelativeTabSignature } from './relative-tab';
-import type { LocaleSpecifier } from 'moment';
+import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
+import type { LocaleSpecifier, Moment } from 'moment';
 
 interface EuiDatePopoverContentArgs {
   /** The date (date math or ISO date). */
@@ -42,13 +46,25 @@ interface EuiDatePopoverContentArgs {
   utcOffset?: number;
   /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
+  /** Earliest selectable day of the absolute tab's calendar. */
+  minDate?: Moment;
+  /** Latest selectable day of the absolute tab's calendar. */
+  maxDate?: Moment;
+  /**
+   * `false` keeps relative values as typed in the relative tab (upstream
+   * rounds them through an absolute date). Defaults to `true`.
+   */
+  canRoundRelativeUnits?: boolean;
+  /** Shows the time zone in the absolute and relative tabs. */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
 }
 
-const toAbsoluteStringHelper = helper(function ([value, roundUp]: [
-  string,
-  boolean
-]) {
-  return toAbsoluteString(value, roundUp);
+const toAbsoluteStringHelper = helper(function ([
+  value,
+  roundUp,
+  canRoundRelativeUnits = true
+]: [string, boolean, boolean?]) {
+  return canRoundRelativeUnits ? toAbsoluteString(value, roundUp) : value;
 });
 
 /** @private The tabs (absolute, relative, now) of the date popover. */
@@ -82,29 +98,21 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
         );
   }
 
+  /** Upstream also labels each tab with the position and its test subject. */
   get tabs(): EuiTabbedContentTab[] {
+    const tab = (id: string, token: string, label: string, testSubj: string) => {
+      const name = this.euiI18n.lookupToken(token, label);
+      return {
+        id,
+        name,
+        'data-test-subj': testSubj,
+        'aria-label': `${this.labelPrefix}: ${name}`
+      };
+    };
     return [
-      {
-        id: 'absolute',
-        name: this.euiI18n.lookupToken(
-          'euiDatePopoverContent.absoluteTabLabel',
-          'Absolute'
-        )
-      },
-      {
-        id: 'relative',
-        name: this.euiI18n.lookupToken(
-          'euiDatePopoverContent.relativeTabLabel',
-          'Relative'
-        )
-      },
-      {
-        id: 'now',
-        name: this.euiI18n.lookupToken(
-          'euiDatePopoverContent.nowTabLabel',
-          'Now'
-        )
-      }
+      tab('absolute', 'euiDatePopoverContent.absoluteTabLabel', 'Absolute', 'superDatePickerAbsoluteTab'),
+      tab('relative', 'euiDatePopoverContent.relativeTabLabel', 'Relative', 'superDatePickerRelativeTab'),
+      tab('now', 'euiDatePopoverContent.nowTabLabel', 'Now', 'superDatePickerNowTab')
     ];
   }
 
@@ -112,8 +120,24 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
     return this.tabs.find((tab) => tab.id === getDateMode(this.args.value));
   }
 
+  /** Upstream: the form width (400px), narrower below the `s` breakpoint. */
+  @cached
+  get className() {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiDatePopoverContentStyles);
+    return `euiDatePopoverContent ${euiClass(
+      context,
+      { boxSizing: 'border-box' },
+      styles.euiDatePopoverContent
+    )}`;
+  }
+
   get roundUp() {
     return this.args.roundUp ?? false;
+  }
+
+  get canRoundRelativeUnits() {
+    return this.args.canRoundRelativeUnits ?? true;
   }
 
   get timeOptions() {
@@ -122,7 +146,7 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
 
   <template>
     <EuiTabbedContent
-      @className="euiDatePopoverContent"
+      @className={{this.className}}
       @tabs={{this.tabs}}
       @initialSelectedTab={{this.initialSelectedTab}}
       @autoFocus="selected"
@@ -132,7 +156,11 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
       <:selectedTabContent as |selected|>
         {{#if (eq selected.id "relative")}}
           <RelativeTab
-            @value={{this.toAbsoluteStringHelper @value this.roundUp}}
+            @value={{this.toAbsoluteStringHelper
+              @value
+              this.roundUp
+              this.canRoundRelativeUnits
+            }}
             @onChange={{@onChange}}
             @labelPrefix={{this.labelPrefix}}
             @roundUp={{this.roundUp}}
@@ -140,6 +168,7 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
             @locale={{@locale}}
             @position={{@position}}
             @timeOptions={{this.timeOptions}}
+            @timeZoneDisplayProps={{@timeZoneDisplayProps}}
           />
         {{else if (eq selected.id "now")}}
           <NowTab @position={{@position}} @onChange={{@onChange}} />
@@ -152,6 +181,9 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
             @position={{@position}}
             @onChange={{@onChange}}
             @labelPrefix={{this.labelPrefix}}
+            @minDate={{@minDate}}
+            @maxDate={{@maxDate}}
+            @timeZoneDisplayProps={{@timeZoneDisplayProps}}
           />
         {{/if}}
       </:selectedTabContent>

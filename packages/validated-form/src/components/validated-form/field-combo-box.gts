@@ -8,7 +8,7 @@ import { argOrDefault } from '@ember-eui/core/helpers';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import queue from '@nullvoxpopuli/ember-composable-helpers/helpers/queue';
-import { not } from 'ember-truth-helpers';
+import { not, or } from 'ember-truth-helpers';
 
 import randomId from '../../-private/random-id.ts';
 import ValidatedFormFieldBase from './field-base.gts';
@@ -34,7 +34,7 @@ export interface FieldComboBoxSignature {
       formId?: string;
       /** Accessible label of the control. */
       ariaLabel?: string;
-      /** Focuses the control on render. */
+      /** Focuses the control on render (same as `@autoFocus`). */
       autofocus?: boolean;
       /** Called with the selected options. */
       onChange?: (options: any[]) => void;
@@ -88,45 +88,94 @@ export default class ValidatedFormFieldComboBox extends ValidatedFormFieldBase<F
           {{yield to="label"}}
         </:label>
         <:field>
-          <EuiComboBox
-            class={{@fieldClasses}}
-            @onChange={{this.handleChange}}
-            @dropdownClass={{@dropdownClass}}
-            @placeholder={{@placeholder}}
-            @options={{this.options}}
-            @singleSelection={{@singleSelection}}
-            @selectedOptions={{@selectedOptions}}
-            @searchEnabled={{argOrDefault @searchEnabled true}}
-            @placeholderComponent={{@placeholderComponent}}
-            @searchMessageComponent={{@searchMessageComponent}}
-            @loadingMessage={{@loadingMessage}}
-            @beforeOptionsComponent={{@beforeOptionsComponent}}
-            @afterOptionsComponent={{@afterOptionsComponent}}
-            @searchField={{@searchField}}
-            @searchMessage={{@searchMessage}}
-            @search={{@search}}
-            aria-label={{@ariaLabel}}
-            @isInvalid={{this.isInvalidAndTouched}}
-            @isClearable={{@isClearable}}
-            @fullWidth={{@fullWidth}}
-            @isLoading={{@isLoading}}
-            @readOnly={{@readOnly}}
-            @compressed={{@compressed}}
-            @onCreateOption={{@onCreateOption}}
-            @matchTriggerWidth={{@matchTriggerWidth}}
-            @customOptionText={{@customOptionText}}
-            @onBlur={{queue (fn this.setIsTouched true) (optional @onBlur)}}
-            @onFocus={{@onFocus}}
-            @onClose={{@onClose}}
-            @onOpen={{@onOpen}}
-            @isDisabled={{@isDisabled}}
-            @renderInPlace={{@renderInPlace}}
-            @extra={{@extra}}
-            ...attributes
-            as |opt index select|
-          >
-            {{yield opt index select}}
-          </EuiComboBox>
+          {{#let
+            (component
+              EuiComboBox
+              onChange=this.handleChange
+              options=this.options
+              singleSelection=@singleSelection
+              selectedOptions=@selectedOptions
+              searchEnabled=(argOrDefault @searchEnabled true)
+              searchField=@searchField
+              search=@search
+              searchMessage=@searchMessage
+              searchMessageComponent=@searchMessageComponent
+              searchPlaceholder=@searchPlaceholder
+              placeholder=@placeholder
+              placeholderComponent=@placeholderComponent
+              loadingMessage=@loadingMessage
+              noMatchesMessage=@noMatchesMessage
+              noMatchesMessageComponent=@noMatchesMessageComponent
+              beforeOptionsComponent=@beforeOptionsComponent
+              afterOptionsComponent=@afterOptionsComponent
+              selectedItemComponent=@selectedItemComponent
+              dropdownClass=@dropdownClass
+              optionsClass=@optionsClass
+              onCreateOption=@onCreateOption
+              alwaysShowCreateOption=@alwaysShowCreateOption
+              customOptionText=@customOptionText
+              delimiter=@delimiter
+              isCaseSensitive=@isCaseSensitive
+              sortMatchesBy=@sortMatchesBy
+              matcher=@matcher
+              optionMatcher=@optionMatcher
+              typeAheadOptionMatcher=@typeAheadOptionMatcher
+              async=@async
+              onSearchChange=@onSearchChange
+              noSuggestions=@noSuggestions
+              truncationProps=@truncationProps
+              rowHeight=@rowHeight
+              onFocusBadge=@onFocusBadge
+              prepend=@prepend
+              append=@append
+              triggerIcon=@triggerIcon
+              isInvalid=this.isInvalidAndTouched
+              isClearable=@isClearable
+              isLoading=@isLoading
+              isDisabled=@isDisabled
+              readOnly=@readOnly
+              fullWidth=@fullWidth
+              compressed=@compressed
+              closeOnSelect=@closeOnSelect
+              autoFocus=(or @autoFocus @autofocus)
+              initiallyOpen=@initiallyOpen
+              defaultHighlighted=@defaultHighlighted
+              matchTriggerWidth=@matchTriggerWidth
+              renderInPlace=@renderInPlace
+              horizontalPosition=@horizontalPosition
+              verticalPosition=@verticalPosition
+              destination=@destination
+              preventScroll=@preventScroll
+              calculatePosition=@calculatePosition
+              eventType=@eventType
+              tabindex=@tabindex
+              ariaLabel=@ariaLabel
+              ariaLabelledBy=@ariaLabelledBy
+              required=@required
+              triggerRole=@triggerRole
+              title=@title
+              triggerId=@triggerId
+              removeTag=@removeTag
+              onInput=@onInput
+              onKeydown=@onKeydown
+              registerApi=@registerApi
+              onBlur=(queue (fn this.setIsTouched true) (optional @onBlur))
+              onFocus=@onFocus
+              onClose=@onClose
+              onOpen=@onOpen
+              extra=@extra
+            )
+            as |ComboBox|
+          }}
+            {{#if (has-block)}}
+              <ComboBox class={{@fieldClasses}} ...attributes as |opt index search|>
+                {{yield opt index search}}
+              </ComboBox>
+            {{else}}
+              {{! without a block, EuiComboBox renders the option labels }}
+              <ComboBox class={{@fieldClasses}} ...attributes />
+            {{/if}}
+          {{/let}}
         </:field>
         <:helpText as |helpText|>
           {{yield helpText to="helpText"}}

@@ -7,12 +7,72 @@ import { tracked } from '@glimmer/tracking';
 import EuiPageTemplate, {
   TEMPLATES
 } from '#src/components/eui-page-template.gts';
-import lightTheme from '../../../vendor/eui_theme_light.min.css?raw';
-import darkTheme from '../../../vendor/eui_theme_dark.min.css?raw';
+import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
+import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
 const SIDEBARS = [false, true];
 const HEADERS = [false, true];
 const MODES = [false, true, 'noscroll'] as const;
+
+/** A theme color as computed `rgb()`. */
+function rgb(color: string) {
+  const probe = document.createElement('span');
+  probe.style.color = color;
+  document.body.append(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
+
+/**
+ * Copies markup and every stylesheet rule (including Emotion's inserted
+ * rules) into an iframe of the given width, so media queries are evaluated
+ * against a real viewport (see eui-flex-family-test).
+ */
+function inViewport(width: number, html: string) {
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = `position:fixed;top:0;left:0;width:${width}px;height:800px;border:0;visibility:hidden`;
+  document.body.appendChild(iframe);
+  const css = Array.from(document.styleSheets)
+    .map((sheet) => {
+      try {
+        return Array.from(sheet.cssRules)
+          .map((rule) => rule.cssText)
+          .join('\n');
+      } catch {
+        return '';
+      }
+    })
+    .join('\n');
+  const doc = iframe.contentDocument!;
+  doc.open();
+  doc.write(
+    `<!doctype html><html><head><style>${css}</style></head><body style="margin:0">${html}</body></html>`
+  );
+  doc.close();
+  const win = iframe.contentWindow!;
+  const el = (selector: string) => {
+    const element = doc.querySelector(selector);
+    if (!element) throw new Error(`Missing ${selector}`);
+    return element;
+  };
+  return {
+    rect: (selector: string) => el(selector).getBoundingClientRect(),
+    style: (selector: string) => win.getComputedStyle(el(selector)),
+    remove: () => iframe.remove()
+  };
+}
+
+
+/** EuiPageContent panels centered inside the page body (computed, not by class). */
+function centeredContent() {
+  return [...document.querySelectorAll<HTMLElement>('.euiPageContent')].filter(
+    (el) => {
+      const style = getComputedStyle(el);
+      return style.alignSelf === 'center' && style.marginInlineStart !== '0px';
+    }
+  ).length;
+}
 
 module('Integration | Component | eui-page-template', function (hooks) {
   setupRenderingTest(hooks);
@@ -70,7 +130,7 @@ module('Integration | Component | eui-page-template', function (hooks) {
             .dom('.euiPageTemplate')
             .exists({ count: 1 })
             .hasClass('custom-root')
-            .hasClass('euiPage--grow')
+            .hasStyle({ flexGrow: '1' })
             .hasAttribute('data-test-page')
             .hasStyle({ minHeight: '460px' });
           assert
@@ -83,21 +143,22 @@ module('Integration | Component | eui-page-template', function (hooks) {
               { count: 1 },
               'one main landmark, including nested centered content'
             );
-          assert.dom('.euiPageContent--horizontalCenter').exists({
-            count:
-              template === 'centeredBody' || template === 'centeredContent'
-                ? 1
-                : 0
-          });
+          assert.strictEqual(
+            centeredContent(),
+            template === 'centeredBody' || template === 'centeredContent'
+              ? 1
+              : 0,
+            'centered templates center their content panel'
+          );
           assert.dom('.euiPageHeader').exists({ count: header ? 1 : 0 });
           assert.dom('.euiPageSideBar').exists({ count: sidebar ? 1 : 0 });
           if (header) {
             assert.dom('.euiPageHeader h1').hasText('Title');
             assert.dom('.euiPageHeader').includesText('Description');
             assert.strictEqual(
-              this.element
-                .querySelector('.euiPageHeader')!
-                .classList.contains('euiPageHeader--bottomBorder'),
+              getComputedStyle(
+                this.element.querySelector('.euiPageHeaderContent')!
+              ).borderBottomStyle === 'solid',
               (!sidebar &&
                 (template === 'centeredBody' || template === 'empty')) ||
                 (sidebar && template === 'default'),
@@ -107,24 +168,25 @@ module('Integration | Component | eui-page-template', function (hooks) {
           assert.strictEqual(
             this.element
               .querySelector('.euiPage > .euiPageBody')!
-              .classList.contains('euiPanel'),
+              .hasAttribute('data-eui-panel'),
             sidebar &&
               (template === 'default' || template === 'centeredContent'),
             'only the appropriate sidebar layouts use a panelled body'
           );
           if (template === 'default' && !sidebar) {
             assert.strictEqual(
-              this.element
-                .querySelector('.euiPageContent')!
-                .classList.contains('euiPanel--noBorder'),
-              !header,
+              getComputedStyle(
+                this.element.querySelector('.euiPageContent')!,
+                '::after'
+              ).content !== 'none',
+              header,
               'default content removes its theme border only without a header'
             );
           }
           if (sidebar)
             assert
               .dom('.euiPageSideBar')
-              .hasClass('euiPageSideBar--sticky')
+              .hasStyle({ position: 'sticky' })
               .hasText('Navigation');
           assert
             .dom('.euiBottomBar')
@@ -205,39 +267,59 @@ module('Integration | Component | eui-page-template', function (hooks) {
         assert
           .dom('.euiPage > section.custom-body')
           .exists()
-          .hasClass('euiPageBody--paddingSmall')
-          .doesNotHaveClass('euiPanel')
+          .hasStyle({ padding: '8px' })
+          .doesNotHaveAttribute('data-eui-panel')
           .hasStyle({ maxWidth: '640px', borderTopWidth: '3px' });
         assert
           .dom('.custom-content')
           .exists({ count: 1 })
           .hasClass('euiPanel--plain')
-          .hasClass('euiPanel--hasBorder')
-          .hasClass('euiPanel--hasShadow')
-          .hasClass('euiPanel--borderRadiusMedium')
-          .hasClass('euiPanel--flexGrowZero')
-          .hasClass('euiPanel--paddingSmall')
+          .hasClass('euiPanelBorealis')
+          .hasStyle({ paddingTop: '8px', flexGrow: '0', boxShadow: 'none' })
           .hasAttribute('role', 'article');
+        const surface = this.element.querySelector('.custom-content')!;
+        assert.strictEqual(
+          getComputedStyle(surface, '::after').borderTopWidth,
+          '1px',
+          'latest panel border uses a pseudo element'
+        );
+        assert.strictEqual(
+          getComputedStyle(surface).borderRadius,
+          resolveBorealisTheme('light').euiTheme.border.radius.panel
+        );
         assert
           .dom('.custom-content-body')
           .exists({ count: 1 })
           .hasText('Content')
-          .hasStyle({ maxWidth: '450px', borderTopWidth: '5px' })
-          .hasClass('euiPageContentBody--paddingMedium');
+          .hasStyle({ maxWidth: '450px', borderTopWidth: '5px', padding: '16px' });
+        // Upstream splits header padding: inline on the header, block on its
+        // content (with the `true` bottom border); the max width centers the
+        // content while the header stays full width.
         assert
           .dom('.custom-header')
-          .hasClass('euiPageHeader--paddingSmall')
-          .hasClass('euiPageHeader--responsiveReverse')
-          .hasClass('euiPageHeader--bottom')
-          .hasClass('euiPageHeader--bottomBorder')
-          .hasStyle({ maxWidth: '550px', borderTopWidth: '7px' });
+          .hasStyle({
+            paddingLeft: '8px',
+            paddingRight: '8px',
+            paddingTop: '0px',
+            borderTopWidth: '7px',
+            maxWidth: 'none'
+          });
+        assert.dom('.custom-header > .euiPageHeaderContent').hasStyle({
+          maxWidth: '550px',
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          borderBottomWidth: '1px',
+          borderBottomStyle: 'solid'
+        });
+        assert
+          .dom('.custom-header .euiPageHeaderContent__top')
+          .hasStyle({ alignItems: 'flex-end' });
         assert.dom('.custom-title').hasText('Custom title');
         assert.dom('.euiBreadcrumbs').includesText('Home');
         if (sidebar)
           assert
             .dom('.custom-sidebar')
-            .hasClass('euiPageSideBar--paddingSmall')
-            .doesNotHaveClass('euiPageSideBar--sticky');
+            .hasStyle({ padding: '8px', position: 'static' });
       });
 
       test(`${template}, sidebar=${sidebar}: header blocks and their gates update independently`, async function (assert) {
@@ -350,11 +432,9 @@ module('Integration | Component | eui-page-template', function (hooks) {
         );
         assert
           .dom('.euiPage > .euiPageBody')
-          .hasClass('euiPanel')
-          .hasClass('euiPageBody--restrictWidth-default');
-        assert
-          .dom('.euiPageContentBody')
-          .hasClass('euiPage--restrictWidth-default');
+          .hasAttribute('data-eui-panel')
+          .hasStyle({ maxWidth: '1200px' });
+        assert.dom('.euiPageContentBody').hasStyle({ maxWidth: '1200px' });
         assert.dom('[role="article"]').exists({ count: 1 });
         state.width = 0;
         state.role = null;
@@ -363,13 +443,12 @@ module('Integration | Component | eui-page-template', function (hooks) {
         await rerender();
         assert
           .dom('.euiPage > .euiPageBody')
-          .doesNotHaveClass('euiPanel')
+          .doesNotHaveAttribute('data-eui-panel')
           .hasStyle({ maxWidth: '0px' });
         assert.dom('.euiPageContentBody').hasStyle({ maxWidth: '0px' });
         assert
-          .dom('.euiPageHeader')
-          .hasStyle({ maxWidth: '0px' })
-          .doesNotHaveClass('euiPageHeader--bottomBorder');
+          .dom('.euiPageHeaderContent')
+          .hasStyle({ maxWidth: '0px', borderBottomWidth: '0px' });
         assert.dom('[role="article"]').doesNotExist();
         assert.dom('[role="main"]').doesNotExist();
         const content = this.element
@@ -378,15 +457,18 @@ module('Integration | Component | eui-page-template', function (hooks) {
         assert
           .dom(content)
           .doesNotHaveAttribute('role')
-          .doesNotHaveClass('euiPanel--hasBorder')
-          .doesNotHaveClass('euiPanel--hasShadow');
+          .hasStyle({ boxShadow: 'none', borderTopWidth: '0px' });
+        assert.strictEqual(
+          getComputedStyle(content, '::after').content,
+          'none',
+          'explicit false removes the native panel border'
+        );
         state.width = false;
         await rerender();
         assert
           .dom('.euiPage > .euiPageBody')
-          .hasStyle({ maxWidth: 'none' })
-          .doesNotHaveClass('euiPageBody--restrictWidth-custom');
-        assert.dom('.euiPageHeader').hasStyle({ maxWidth: 'none' });
+          .hasStyle({ maxWidth: '100%' }, 'upstream body max-width');
+        assert.dom('.euiPageHeaderContent').hasStyle({ maxWidth: 'none' });
         assert.dom('.euiPageContentBody').hasStyle({ maxWidth: 'none' });
       });
 
@@ -489,28 +571,25 @@ module('Integration | Component | eui-page-template', function (hooks) {
     await rerender();
     assert
       .dom('.root')
-      .hasStyle({ minHeight: '320px' })
-      .doesNotHaveClass('euiPage--grow');
+      .hasStyle({ minHeight: '320px', flexGrow: '0' });
     assert.dom('.euiPageSideBar').doesNotExist();
     assert
       .dom('.euiPageContentBody')
-      .hasStyle({ maxWidth: '680px' })
-      .hasClass('euiPageContentBody--paddingSmall');
+      .hasStyle({ maxWidth: '680px', padding: '8px' });
     state.template = 'centeredContent';
     state.width = '40rem';
     state.height = '50vh';
     await rerender();
     assert.dom('.root').hasAttribute('style', /min-height: 50vh/);
     assert.dom('.euiPageContentBody').hasAttribute('style', /max-width: 40rem/);
-    assert.dom('.euiPageContent--horizontalCenter').exists({ count: 1 });
+    assert.strictEqual(centeredContent(), 1);
     state.template = 'empty';
     state.width = false;
     await rerender();
-    assert.dom('.euiPageContent--horizontalCenter').doesNotExist();
-    assert.dom('.euiPageBody--restrictWidth-default').doesNotExist();
-    assert
-      .dom('.euiPageContentBody')
-      .doesNotHaveClass('euiPage--restrictWidth-custom');
+    assert.strictEqual(centeredContent(), 0);
+    for (const body of this.element.querySelectorAll('.euiPageBody'))
+      assert.dom(body).hasStyle({ maxWidth: '100%' });
+    assert.dom('.euiPageContentBody').hasStyle({ maxWidth: 'none' });
     assert.dom('[data-test-content]').exists({ count: 1 });
   });
 
@@ -541,7 +620,8 @@ module('Integration | Component | eui-page-template', function (hooks) {
     );
     assert
       .dom('.euiBottomBar', document.body)
-      .hasClass('euiBottomBar--paddingSmall')
+      .hasClass('euiBottomBar--fixed')
+      .hasStyle({ padding: '8px', position: 'fixed' })
       .hasAria('label', 'Save changes')
       .hasStyle({ left: '12px' });
     assert.dom(document.body).hasClass('template-bar-open');
@@ -558,24 +638,15 @@ module('Integration | Component | eui-page-template', function (hooks) {
     assert.strictEqual(document.body.style.paddingBottom, padding);
   });
 
-  module('bundled v41.4.0 Amsterdam CSS', function (hooks) {
-    let style: HTMLStyleElement;
-    hooks.beforeEach(function () {
-      style = document.createElement('style');
-      document.head.append(style);
-    });
-    hooks.afterEach(function () {
-      style.remove();
-    });
-
-    for (const [theme, css] of [
-      ['light', lightTheme],
-      ['dark', darkTheme]
-    ]) {
+  // Formerly "bundled v41.4.0 Amsterdam CSS": the template now composes
+  // latest Borealis styles, so the same layout contract is checked without
+  // any legacy stylesheet (the core harness never loads one).
+  module('latest Borealis layout without legacy CSS', function () {
+    for (const mode of ['light', 'dark'] as const) {
       for (const template of TEMPLATES) {
         for (const sidebar of SIDEBARS) {
-          test(`${theme}: ${template}, sidebar=${sidebar}: computed layout matches the shipped CSS`, async function (assert) {
-            style.textContent = css!;
+          test(`${mode}: ${template}, sidebar=${sidebar}: computed layout`, async function (assert) {
+            const theme = resolveBorealisTheme(mode).euiTheme;
             const state = new (class {
               @tracked header: { pageTitle: string } | undefined = {
                 pageTitle: 'Title'
@@ -583,28 +654,34 @@ module('Integration | Component | eui-page-template', function (hooks) {
             })();
             await render(
               <template>
-                <EuiPageTemplate
-                  @template={{template}}
-                  @hasPageSideBarBlock={{sidebar}}
-                  @pageHeader={{state.header}}
-                >
-                  <:pageSideBar>Side</:pageSideBar>
-                  <:default><p data-test-content>Content</p></:default>
-                </EuiPageTemplate>
+                <EuiEmotionProvider @colorMode={{mode}} @globalStyles={{false}} @wrapper={{false}}>
+                  <EuiPageTemplate
+                    @template={{template}}
+                    @hasPageSideBarBlock={{sidebar}}
+                    @pageHeader={{state.header}}
+                  >
+                    <:pageSideBar>Side</:pageSideBar>
+                    <:default><p data-test-content>Content</p></:default>
+                  </EuiPageTemplate>
+                </EuiEmotionProvider>
               </template>
             );
             assert
               .dom('.euiPageTemplate')
               .hasStyle({ display: 'flex', minHeight: '460px' });
+            // Without a side bar, the centered body and empty layouts restrict
+            // the body; the others restrict the header content and body.
+            const bodyRestricts =
+              (template === 'empty' || template === 'centeredBody') &&
+              !sidebar;
+            assert.dom('.euiPageTemplate > .euiPageBody').hasStyle({
+              maxWidth: bodyRestricts ? '1200px' : '100%'
+            });
             assert.dom('.euiPageContentBody').hasStyle({
               maxWidth: template === 'empty' && !sidebar ? 'none' : '1200px'
             });
-            assert.dom('.euiPageHeader').hasStyle({
-              maxWidth:
-                (template === 'empty' || template === 'centeredBody') &&
-                !sidebar
-                  ? 'none'
-                  : '1200px'
+            assert.dom('.euiPageHeaderContent').hasStyle({
+              maxWidth: bodyRestricts ? 'none' : '1200px'
             });
             const content = this.element
               .querySelector('[data-test-content]')!
@@ -612,62 +689,63 @@ module('Integration | Component | eui-page-template', function (hooks) {
             assert.dom(content).hasStyle({
               padding:
                 template === 'centeredBody' || template === 'centeredContent'
-                  ? '24px'
-                  : '0px'
-            });
-            if (template === 'centeredBody' || template === 'centeredContent')
-              assert
-                .dom(content)
-                .hasStyle({ alignSelf: 'center', flexGrow: '0' });
-            assert.dom(content).hasStyle({
+                  ? theme.size.l
+                  : '0px',
               borderTopWidth: '0px'
             });
+            if (template === 'centeredBody' || template === 'centeredContent')
+              assert.dom(content).hasStyle({ flexGrow: '0' });
             if (template !== 'centeredBody')
-              assert.dom(content).hasStyle({ boxShadow: 'none' });
-            if (template === 'centeredContent')
               assert.dom(content).hasStyle({ boxShadow: 'none' });
             if (template === 'empty')
               assert.dom(content).hasStyle({
                 backgroundColor: 'rgba(0, 0, 0, 0)',
                 boxShadow: 'none'
               });
-            if (sidebar)
+            const panelledBody =
+              sidebar &&
+              (template === 'default' || template === 'centeredContent');
+            if (panelledBody)
               assert
-                .dom('.euiPageSideBar')
-                .hasStyle({ position: 'sticky', padding: '24px' });
-            // Give the rendered markup a real CSS viewport; mocking innerWidth
-            // exercises the modifier but cannot change media queries.
-            const frame = document.createElement('iframe');
-            frame.title = 'Responsive layout test';
-            frame.style.height = '600px';
-            this.element.append(frame);
-            try {
-              const doc = frame.contentDocument!;
-              const themeStyle = doc.createElement('style');
-              themeStyle.textContent = css!;
-              doc.head.append(themeStyle);
-              doc.body.append(
-                this.element.querySelector('.euiPageTemplate')!.cloneNode(true)
+                .dom('.euiPageTemplate > .euiPageBody')
+                .hasStyle({ backgroundColor: rgb(theme.colors.backgroundBasePlain) });
+            if (sidebar)
+              assert.dom('.euiPageSideBar').hasStyle({
+                position: 'sticky',
+                padding: theme.size.l,
+                minWidth: '248px',
+                overflowY: 'auto'
+              });
+            // Give the rendered markup a real CSS viewport: the markup and
+            // every inserted Emotion rule are copied into iframes.
+            for (const width of [375, 767, 768, 1200]) {
+              const frame = inViewport(
+                width,
+                this.element.querySelector('.euiPageTemplate')!.outerHTML
               );
-              for (const width of [375, 767, 768, 1200]) {
-                frame.style.width = `${width}px`;
-                const view = frame.contentWindow!;
-                const page = doc.querySelector('.euiPageTemplate')!;
+              try {
                 assert.strictEqual(
-                  view.getComputedStyle(page).flexDirection,
-                  width < 768 ? 'column' : 'row',
-                  `${width}px: CSS stacks the page below the medium breakpoint`
+                  frame.style('.euiPageTemplate').flexDirection,
+                  width < theme.breakpoint.m ? 'column' : 'row',
+                  `${width}px: the page stacks below the medium breakpoint`
                 );
-                if (sidebar)
+                if (sidebar) {
                   assert.strictEqual(
-                    view.getComputedStyle(doc.querySelector('.euiPageSideBar')!)
-                      .position,
-                    width < 768 ? 'static' : 'sticky',
+                    frame.style('.euiPageSideBar').position,
+                    width < theme.breakpoint.m ? 'static' : 'sticky',
                     `${width}px: sticky sidebar only on medium screens and up`
                   );
+                  assert.strictEqual(
+                    Math.round(frame.rect('.euiPageSideBar').width),
+                    width < theme.breakpoint.m
+                      ? Math.round(frame.rect('.euiPageTemplate').width)
+                      : 248,
+                    `${width}px: the sidebar is full width only when stacked`
+                  );
+                }
+              } finally {
+                frame.remove();
               }
-            } finally {
-              frame.remove();
             }
             state.header = undefined;
             await rerender();
@@ -679,14 +757,14 @@ module('Integration | Component | eui-page-template', function (hooks) {
       }
       for (const template of ['default', 'empty'] as const) {
         for (const sidebar of SIDEBARS) {
-          test(`${theme}: ${template}, sidebar=${sidebar}: full height contains scrolling and switches modes`, async function (assert) {
-            style.textContent = css!;
+          test(`${mode}: ${template}, sidebar=${sidebar}: full height contains scrolling and switches modes`, async function (assert) {
             await resize(1440);
             const state = new (class {
               @tracked mode: boolean | 'noscroll' = true;
             })();
             await render(
               <template>
+                <EuiEmotionProvider @colorMode={{mode}} @globalStyles={{false}} @wrapper={{false}}>
                 <div
                   style="height: 600px; display: flex; flex-direction: column;"
                 >
@@ -705,6 +783,7 @@ module('Integration | Component | eui-page-template', function (hooks) {
                     <:bottomBar>Save</:bottomBar>
                   </EuiPageTemplate>
                 </div>
+                </EuiEmotionProvider>
               </template>
             );
             const scroll = this.element.querySelector(

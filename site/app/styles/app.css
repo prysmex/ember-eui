@@ -77,28 +77,7 @@ body.euiBody--headerIsFixed {
   min-height: calc(100vh - 48px);
 }
 
-@media only screen and (width >= 768px) and (width <= 991px) {
-  .euiBody--headerIsFixed .euiPageSideBar--sticky {
-    max-height: calc(100vh - 48px);
-    top: 48px;
-  }
-}
-
-@media only screen and (width >= 992px) and (width <= 1199px) {
-  .euiBody--headerIsFixed .euiPageSideBar--sticky {
-    max-height: calc(100vh - 48px);
-    top: 48px;
-  }
-}
-
-@media only screen and (width >= 1200px) {
-  .euiBody--headerIsFixed .euiPageSideBar--sticky {
-    max-height: calc(100vh - 48px);
-    top: 48px;
-  }
-}
-
-.pageBodyShadow {
+.pageBody {
   box-shadow:
     rgb(0 0 0 / 8%) 0 0.9px 4px,
     rgb(0 0 0 / 6%) 0 2.6px 8px,
@@ -109,15 +88,15 @@ body.euiBody--headerIsFixed {
 /* Elastic UI docs specific */
 
 /*
-  the page's gutter, which prose and demos share (on the page body, not the
-  panel around it, which gets the same class)
+  the page's gutter, which prose and demos share (on the template's main
+  element)
 */
-.euiPageBody.pageBodyShadow:not(.euiPanel) {
+.pageBody {
   padding-inline: 24px;
 }
 
 @media only screen and (width <= 574px) {
-  .euiPageBody.pageBodyShadow:not(.euiPanel) {
+  .pageBody {
     padding-inline: 16px;
   }
 }
@@ -285,23 +264,6 @@ button {
   font-weight: 600;
 }
 
-/* the copy button of the prose code blocks, placed by docfy's code-block.css */
-.docfy-code-block__copy {
-  z-index: 1;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  color: inherit;
-  opacity: 0.7;
-}
-
-.docfy-code-block__copy:hover,
-.docfy-code-block__copy:focus-visible {
-  text-decoration: underline;
-  opacity: 1;
-}
-
 /* markdown tables (lib/docfy-scroll-tables.mjs) scroll sideways when wide */
 .guideTableScroll {
   max-width: 100%;
@@ -324,7 +286,11 @@ button {
   }
 }
 
-/* a line of code that cannot wrap scrolls in its block, not the page */
-.docfy-code-block pre {
-  overflow-x: auto;
+/* prose code blocks (app/components/docfy-code-block.gjs): spacing like a demo */
+.docsCodeBlock {
+  margin-block: 16px;
+}
+
+.docsCodeBlock__title {
+  margin-block-end: 4px;
 }

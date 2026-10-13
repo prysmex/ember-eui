@@ -13,7 +13,10 @@ import EuiFlexItem from './eui-flex-item.gts';
 import EuiPagination from './eui-pagination.gts';
 import EuiPopover from './eui-popover.gts';
 
+import { euiTablePaginationDefaults } from '../-private/table-pagination-defaults.ts';
+
 import type EuiI18n from '../services/eui-i18n';
+import type { EuiPaginationSignature } from './eui-pagination.gts';
 
 /**
  * The pagination under a table: a "Rows per page" menu on the left and
@@ -28,40 +31,91 @@ export interface EuiTablePaginationSignature {
     pageCount?: number;
     /** Called with the clicked page (from `0`). */
     onChangePage?: (page: number) => void;
-    /** Rows per page. Defaults to `50`. */
+    /**
+     * Rows per page. Defaults to `10` (upstream), or the app's
+     * `componentDefaults.EuiTablePagination` in `euiConfig`. `0` means all
+     * rows: the menu reads "Showing all rows" and the pages are hidden.
+     */
     itemsPerPage?: number;
-    /** Choices of rows per page. Defaults to `[10, 20, 50, 100]`. */
+    /**
+     * Choices of rows per page. Defaults to `[10, 25, 50]` (upstream), or
+     * the app's `componentDefaults.EuiTablePagination`. `0` is the "Show all
+     * rows" choice.
+     */
     itemsPerPageOptions?: number[];
     /** Called with the chosen rows per page. */
     onChangeItemsPerPage?: (itemsPerPage: number) => void;
-    /** Hides the "Rows per page" menu. */
+    /**
+     * Shows the "Rows per page" menu. Defaults to `true`, or the app's
+     * `componentDefaults.EuiTablePagination`.
+     */
+    showPerPageOptions?: boolean;
+    /** @deprecated Use `@showPerPageOptions={{false}}`. Hides the menu. */
     hidePerPageOptions?: boolean;
-    /** Smaller page buttons. */
+    /** Passed to `EuiPagination`: "page of total" with arrows. */
     compressed?: boolean;
+    /** Passed to `EuiPagination`: breakpoints at which it is compressed. */
+    responsive?: EuiPaginationSignature['Args']['responsive'];
+    /** Passed to `EuiPagination`: id of the content the pages change. */
+    ariaControls?: string;
+    /**
+     * Accessible name of the pagination navigation (upstream
+     * `aria-label`), e.g. "Pagination for table: Users".
+     */
+    'aria-label'?: string;
+    /** Id of the element naming the pagination navigation. */
+    'aria-labelledby'?: string;
   };
 }
+
 
 export default class EuiTablePagination extends Component<EuiTablePaginationSignature> {
   @service declare euiI18n: EuiI18n;
 
   @tracked isPopoverOpen = false;
 
+  /** Upstream `euiTablePaginationDefaults` with the app's `componentDefaults`. */
+  get defaults() {
+    return euiTablePaginationDefaults(this);
+  }
+
   get itemsPerPage(): number {
-    return this.args.itemsPerPage ?? 50;
+    return this.args.itemsPerPage ?? this.defaults.itemsPerPage;
   }
 
   get options(): number[] {
-    return this.args.itemsPerPageOptions ?? [10, 20, 50, 100];
+    return this.args.itemsPerPageOptions ?? this.defaults.itemsPerPageOptions;
   }
 
-  get rowsPerPage(): string {
-    return this.euiI18n.lookupToken('euiTablePagination.rowsPerPage', 'Rows per page');
+  get showPerPageOptions(): boolean {
+    if (this.args.showPerPageOptions !== undefined) {
+      return this.args.showPerPageOptions;
+    }
+    if (this.args.hidePerPageOptions) return false;
+    return this.defaults.showPerPageOptions;
+  }
+
+  get showPages(): boolean {
+    return this.itemsPerPage > 0;
+  }
+
+  get buttonLabel(): string {
+    if (this.itemsPerPage === 0) {
+      return this.euiI18n.lookupToken('euiTablePagination.allRows', 'Showing all rows');
+    }
+    const rows = this.euiI18n.lookupToken('euiTablePagination.rowsPerPage', 'Rows per page');
+    return `${rows}: ${this.itemsPerPage}`;
   }
 
   optionLabel = (rows: number): string =>
-    this.euiI18n.lookupToken('euiTablePagination.rowsPerPageOption', '{rowsPerPage} rows', {
-      rowsPerPage: rows
-    });
+    rows === 0
+      ? this.euiI18n.lookupToken(
+          'euiTablePagination.rowsPerPageOptionShowAllRows',
+          'Show all rows'
+        )
+      : this.euiI18n.lookupToken('euiTablePagination.rowsPerPageOption', '{rowsPerPage} rows', {
+          rowsPerPage: rows
+        });
 
   isCurrent = (rows: number): boolean => rows === this.itemsPerPage;
 
@@ -86,10 +140,12 @@ export default class EuiTablePagination extends Component<EuiTablePaginationSign
       @justifyContent="spaceBetween"
       @alignItems="center"
       @responsive={{false}}
+      @wrap={{true}}
+      @gutterSize="s"
       ...attributes
     >
       <EuiFlexItem @grow={{false}}>
-        {{#unless @hidePerPageOptions}}
+        {{#if this.showPerPageOptions}}
           <EuiPopover
             @isOpen={{this.isPopoverOpen}}
             @closePopover={{this.close}}
@@ -100,17 +156,18 @@ export default class EuiTablePagination extends Component<EuiTablePaginationSign
               <EuiButtonEmpty
                 @size="xs"
                 @color="text"
-                @iconType="arrowDown"
+                @iconType="chevronSingleDown"
                 @iconSide="right"
                 data-test-subj="tablePaginationPopoverButton"
                 {{on "click" this.toggle}}
-              >{{this.rowsPerPage}}: {{this.itemsPerPage}}</EuiButtonEmpty>
+              >{{this.buttonLabel}}</EuiButtonEmpty>
             </:button>
             <:content>
-              <EuiContextMenuPanel>
+              <EuiContextMenuPanel data-test-subj="tablePaginationRowOptions">
                 {{#each this.options as |rows|}}
                   <EuiContextMenuItem
                     @icon={{if (this.isCurrent rows) "check" "empty"}}
+                    aria-current={{if (this.isCurrent rows) "true"}}
                     data-test-subj="tablePagination-{{rows}}-rows"
                     {{on "click" (fn this.choose rows)}}
                   >{{this.optionLabel rows}}</EuiContextMenuItem>
@@ -118,15 +175,21 @@ export default class EuiTablePagination extends Component<EuiTablePaginationSign
               </EuiContextMenuPanel>
             </:content>
           </EuiPopover>
-        {{/unless}}
+        {{/if}}
       </EuiFlexItem>
       <EuiFlexItem @grow={{false}}>
-        <EuiPagination
-          @pageCount={{@pageCount}}
-          @activePage={{@activePage}}
-          @onPageClick={{@onChangePage}}
-          @compressed={{@compressed}}
-        />
+        {{#if this.showPages}}
+          <EuiPagination
+            @pageCount={{@pageCount}}
+            @activePage={{@activePage}}
+            @onPageClick={{@onChangePage}}
+            @compressed={{@compressed}}
+            @responsive={{@responsive}}
+            @ariaControls={{@ariaControls}}
+            aria-label={{@aria-label}}
+            aria-labelledby={{@aria-labelledby}}
+          />
+        {{/if}}
       </EuiFlexItem>
     </EuiFlexGroup>
   </template>

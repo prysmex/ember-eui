@@ -11,14 +11,15 @@ title: Bottom bar
 `EuiBottomBar` pins actions to the bottom of the window, e.g. "Save" and
 "Discard" for a form with unsaved changes. By default it is fixed to the
 bottom (rendered in a portal) and pads the page so it doesn't cover the
-content.
+content. `EuiPageTemplate`'s `T.BottomBar` part offers a quick way to apply
+a bottom bar to your page layouts.
 
 ```hbs
 {{#if this.hasChanges}}
   <EuiBottomBar>
     <EuiFlexGroup @justifyContent="flexEnd" @gutterSize="s">
       <EuiFlexItem @grow={{false}}>
-        <EuiButtonEmpty @color="ghost" {{on "click" this.discard}}>Discard</EuiButtonEmpty>
+        <EuiButtonEmpty @color="text" {{on "click" this.discard}}>Discard</EuiButtonEmpty>
       </EuiFlexItem>
       <EuiFlexItem @grow={{false}}>
         <EuiButton @color="success" @fill={{true}} {{on "click" this.save}}>Save</EuiButton>
@@ -28,7 +29,7 @@ content.
 {{/if}}
 ```
 
-The bar is dark: use `@color="ghost"` for buttons on it. `@position`
+The bar is dark: use `@color="text"` for buttons on it. `@position`
 switches to `sticky` (bottom of its scrolling container) or `static`, and
 `@left` / `@right` leave room for a side navigation.
 
@@ -50,17 +51,17 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@affordForDisplacement` | `boolean` | `true` | With `@position="fixed"`, pads the bottom of `<body>` by the bar's height so it does not cover the end of the page. |
+| `@affordForDisplacement` | `boolean` | `true` | With `@position="fixed"` (in a portal), pads the bottom of `<body>` by the bar's height so it does not cover the end of the page, and sets the `--euiBottomBarOffset` CSS variable on `<html>`. |
 | `@bodyClassName` | `string` |  | Class added to `<body>` while the bar is rendered. |
-| `@position` | `'fixed' \| 'static' \| 'sticky'` | `'fixed'` | `'fixed'` renders the bar in a portal, fixed to the bottom of the window. `'sticky'` keeps it at the bottom of its scrolling container, `'static'` renders it in place. |
+| `@position` | `'fixed' \| 'static' \| 'sticky'` | `'fixed'` | `'fixed'` fixes the bar to the bottom of the window (in a portal). `'sticky'` keeps it at the bottom of its scrolling container, `'static'` renders it in place. |
+| `@usePortal` | `boolean` | `true` | With `@position="fixed"`, renders the bar in a portal at the end of `<body>`. `false` renders a fixed bar in place (and skips the body displacement). Other positions never use a portal. |
 | `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'m'` | Padding inside the bar: `'none'`, `'s'`, `'m'` or `'l'`. |
-| `@landmarkHeading` | `string` | "Page level controls" | Accessible name of the bar's region landmark (announced to screen readers). With `@position="fixed"`, screen readers are also told the bar appeared at the end of the page. |
-| `@top` | `number` | `0` | Distance from the top in px (only for `'sticky'` / `'static'`). |
-| `@right` | `number` | `0` | Distance from the right edge in px. |
-| `@left` | `number` | `0` | Distance from the left edge in px, e.g. the width of a side nav. |
-| `@bottom` | `number` | `0` | Distance from the bottom in px. |
-
-Deprecated: `@usePortal` (Has no effect: the bar uses a portal when `@position` is `'fixed'`.).
+| `@landmarkHeading` | `string` | "Page level controls" | Accessible name of the bar's region landmark (announced to screen readers). With a portal, screen readers are also told the bar appeared at the end of the page. |
+| `@top` | `number \| string` | none, so a sticky bar sticks to the bottom | Distance from the top, in px or any CSS length (`'sticky'` / `'static'`). |
+| `@right` | `number \| string` | `0` | Distance from the right edge, in px or any CSS length. |
+| `@left` | `number \| string` | `0` | Distance from the left edge, in px or any CSS length, e.g. the width of a side nav. |
+| `@bottom` | `number \| string` | `0` | Distance from the bottom, in px or any CSS length. |
+| `@css` | `EuiCss` |  | Styles composed last into the bar's class (upstream's `css`). |
 
 | Block | Description |
 | --- | --- |

@@ -23,14 +23,35 @@ export { colorPalette } from './color_palette.ts';
 export {
   euiPaletteColorBlind,
   euiPaletteColorBlindBehindText,
-  euiPaletteComplimentary,
+  euiPaletteComplementary,
   euiPaletteCool,
-  euiPaletteForDarkBackground,
-  euiPaletteForLightBackground,
   euiPaletteForStatus,
   euiPaletteForTemperature,
   euiPaletteGray,
-  euiPaletteNegative,
-  euiPalettePositive,
-  euiPaletteWarm
+  euiPaletteGreen,
+  euiPaletteOrange,
+  euiPaletteRed,
+  euiPaletteSkyBlue,
+  euiPaletteWarm,
+  useEuiPaletteColorBlind,
+  useEuiPaletteColorBlindBehindText,
+  useEuiPaletteComplementary,
+  useEuiPaletteCool,
+  useEuiPaletteForStatus,
+  useEuiPaletteForTemperature,
+  useEuiPaletteGray,
+  useEuiPaletteGreen,
+  useEuiPaletteOrange,
+  useEuiPaletteRed,
+  useEuiPaletteSkyBlue,
+  useEuiPaletteWarm,
+  useEuiPaletteYellow,
+  euiPaletteYellow
 } from './eui_palettes.ts';
+export {
+  euiPaletteComplimentary,
+  euiPaletteForDarkBackground,
+  euiPaletteForLightBackground,
+  euiPaletteNegative,
+  euiPalettePositive
+} from './eui_palettes_deprecated.ts';

@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
@@ -7,18 +8,16 @@ import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-sc
 import { modifier } from 'ember-modifier';
 
 import { isDraggableData } from '../-private/drag-drop.ts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiDroppableStyles } from '../utils/eui/styles.generated.ts';
 import EuiDraggable from './eui-draggable.gts';
+import EuiPanel from './eui-panel.gts';
 
 import type EuiDragDropContext from './eui-drag-drop-context.gts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiDraggableSignature } from './eui-draggable';
 import type { ComponentLike } from '@glint/template';
-
-const SPACING = {
-  none: undefined,
-  s: 'euiDroppable--s',
-  m: 'euiDroppable--m',
-  l: 'euiDroppable--l'
-};
 
 /**
  * A list items can be dragged within and dropped into (yielded as
@@ -28,6 +27,11 @@ const SPACING = {
 export interface EuiDroppableSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** Unique id of the list, reported in `onDragEnd`. */
     droppableId: string;
     /**
@@ -46,9 +50,12 @@ export interface EuiDroppableSignature {
     cloneDraggables?: boolean;
     /** Padding: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'none'`. */
     spacing?: 'none' | 's' | 'm' | 'l';
-    /** Panel look (background, padding, rounded corners). */
+    /**
+     * Renders the list as an `EuiPanel` (plain background, shadow, rounded
+     * corners, no padding of its own: use `@spacing`).
+     */
     withPanel?: boolean;
-    /** Grows to fill its flex container. */
+    /** Grows to fill its flex container. Defaults to `false`. */
     grow?: boolean;
     /**
      * Scrolls the list while an item is dragged near its edges (when the
@@ -106,20 +113,34 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
     );
   }
 
-  get classes(): string {
-    const drag = this.context.drag;
+  /** An item of this list's type is being dragged (and could land here). */
+  get isDraggingType(): boolean {
+    return this.context.drag?.type === this.type && !this.isDropDisabled;
+  }
+
+  /** Upstream's list styles; composed into the panel's own class with `@withPanel`. */
+  @cached
+  get css(): EuiCss {
+    const styles = useEuiBorealisStyles(getEuiThemeContext(this), euiDroppableStyles);
 
     return [
-      'euiDroppable',
-      this.isDropDisabled && 'euiDroppable--isDisabled',
-      this.isDraggingOver && 'euiDroppable--isDraggingOver',
-      drag?.type === this.type && 'euiDroppable--isDraggingType',
-      this.args.withPanel && 'euiDroppable--withPanel',
-      this.args.grow ? 'euiDroppable--grow' : 'euiDroppable--noGrow',
-      SPACING[this.args.spacing ?? 'none']
-    ]
-      .filter(Boolean)
-      .join(' ');
+      { boxSizing: 'border-box' },
+      styles.euiDroppable,
+      this.isDraggingType && styles.isDragging,
+      this.isDraggingOver && styles.isDraggingOver,
+      this.args.grow ? styles.grow : styles.noGrow,
+      styles.spacing[this.args.spacing ?? 'none'],
+      this.args.css
+    ];
+  }
+
+  get stateClass(): string {
+    return this.isDropDisabled ? 'euiDroppable euiDroppable-isDisabled' : 'euiDroppable';
+  }
+
+  @cached
+  get classes(): string {
+    return `${this.stateClass} ${euiClass(getEuiThemeContext(this), this.css)}`;
   }
 
   /** The list's items in order. */
@@ -216,14 +237,30 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
   });
 
   <template>
-    <div
-      class={{this.classes}}
-      data-test-subj="droppable"
-      data-droppable-id={{@droppableId}}
-      {{this.register}}
-      ...attributes
-    >
-      {{yield (hash Draggable=(component EuiDraggable droppable=this))}}
-    </div>
+    {{#if @withPanel}}
+      <EuiPanel
+        class={{this.stateClass}}
+        @hasShadow={{true}}
+        @hasBorder={{false}}
+        @paddingSize="none"
+        @css={{this.css}}
+        data-test-subj="droppable"
+        data-droppable-id={{@droppableId}}
+        {{this.register}}
+        ...attributes
+      >
+        {{yield (hash Draggable=(component EuiDraggable droppable=this))}}
+      </EuiPanel>
+    {{else}}
+      <div
+        class={{this.classes}}
+        data-test-subj="droppable"
+        data-droppable-id={{@droppableId}}
+        {{this.register}}
+        ...attributes
+      >
+        {{yield (hash Draggable=(component EuiDraggable droppable=this))}}
+      </div>
+    {{/if}}
   </template>
 }

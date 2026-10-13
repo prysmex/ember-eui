@@ -1,11 +1,17 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 import type Owner from '@ember/owner';
 
 import dateMath from '@elastic/datemath';
 import pick from '@nullvoxpopuli/ember-composable-helpers/helpers/pick';
+import { service } from '@ember/service';
+
+import { randomId } from '../../../-private/random-id.ts';
+import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
+import { euiPaddingSize } from '../../../utils/eui/styles.generated.ts';
+import { euiClass } from '../../../utils/eui/styles.ts';
 
 import EuiFieldNumber from '../../eui-field-number.gts';
 import EuiFieldText from '../../eui-field-text.gts';
@@ -15,12 +21,17 @@ import EuiForm from '../../eui-form.gts';
 import EuiFormLabel from '../../eui-form-label.gts';
 import EuiFormRow from '../../eui-form-row.gts';
 import EuiPopoverFooter from '../../eui-popover-footer.gts';
+import EuiScreenReaderOnly from '../../eui-screen-reader-only.gts';
 import EuiSelect from '../../eui-select.gts';
 import EuiSpacer from '../../eui-spacer.gts';
 import EuiSwitch from '../../eui-switch.gts';
 import { INVALID_DATE, toRelativeStringFromParts } from '../utils/index.ts';
 import { parseRelativeParts } from '../utils/index.ts';
 
+import EuiTimeZoneDisplay from './eui-time-zone-display.gts';
+
+import type EuiI18n from '../../../services/eui-i18n';
+import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
 import type { TimeOptions } from '../utils/time-options.ts';
 import type { LocaleSpecifier } from 'moment';
 
@@ -41,6 +52,8 @@ interface RelativeTabArgs {
   labelPrefix: string;
   /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
+  /** Shows the time zone under the form (see `EuiTimeZoneDisplay`). */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
 }
 
 /** @private The "Relative" tab of the date popover. */
@@ -54,6 +67,52 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
   @tracked round = false;
 
   roundUnit;
+
+  @service declare euiI18n: EuiI18n;
+
+  labelId = randomId();
+  descriptionId = randomId();
+  timeZoneDescriptionId = randomId();
+
+  /** Upstream pads the form with `useEuiPaddingCSS().s`. */
+  @cached
+  get paddingClass() {
+    const context = getEuiThemeContext(this);
+    return euiClass(context, {
+      boxSizing: 'border-box',
+      padding: euiPaddingSize(context.upstream, 's')
+    });
+  }
+
+  get isInvalid() {
+    return (
+      this.count === undefined ||
+      this.count < 0 ||
+      this.args.value === INVALID_DATE
+    );
+  }
+
+  get numberLabel() {
+    return this.euiI18n.lookupToken(
+      'euiRelativeTab.numberInputLabel',
+      'Time span amount'
+    );
+  }
+
+  get unitLabel() {
+    return this.euiI18n.lookupToken(
+      'euiRelativeTab.unitInputLabel',
+      'Relative time span'
+    );
+  }
+
+  get description() {
+    return this.euiI18n.lookupToken(
+      'euiRelativeTab.fullDescription',
+      'The unit is changeable. Currently set to {unit}.',
+      { unit: this.unit }
+    );
+  }
 
   constructor(owner: Owner, args: RelativeTabArgs) {
     super(owner, args);
@@ -125,14 +184,18 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
   }
 
   <template>
-    <EuiForm class="euiDatePopoverContent__padded">
+    <EuiForm class="euiDatePopoverContent__padded {{this.paddingClass}}">
       <EuiFlexGroup @gutterSize="s" @responsive={{false}}>
         <EuiFlexItem>
-          <EuiFormRow>
+          <EuiFormRow @isInvalid={{this.isInvalid}}>
             <EuiFieldNumber
               @compressed={{true}}
               @value={{this.count}}
               @min="0"
+              @isInvalid={{this.isInvalid}}
+              aria-label={{this.numberLabel}}
+              aria-describedby={{this.descriptionId}}
+              data-test-subj="superDatePickerRelativeDateInputNumber"
               {{on "input" this.onCountChange}}
             />
           </EuiFormRow>
@@ -142,23 +205,39 @@ export default class RelativeTab extends Component<RelativeTabSignature> {
             @compressed={{true}}
             @value={{this.unit}}
             @options={{@timeOptions.relativeOptions}}
+            aria-label={{this.unitLabel}}
+            data-test-subj="superDatePickerRelativeDateInputUnitSelector"
             {{on "change" (pick "target.value" this.onUnitChange)}}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer @size="s" />
       <EuiFieldText
+        aria-labelledby={{this.labelId}}
         @compressed={{true}}
         @value={{this.formattedValue}}
         @readOnly={{true}}
+        aria-describedby={{this.timeZoneDescriptionId}}
       >
-        <:prepend>
-          <EuiFormLabel>{{@labelPrefix}}</EuiFormLabel>
+        <:prepend as |classes|>
+          <EuiFormLabel id={{this.labelId}} class={{classes}}>
+            {{@labelPrefix}}
+          </EuiFormLabel>
         </:prepend>
       </EuiFieldText>
+      <EuiScreenReaderOnly>
+        <p id={{this.descriptionId}}>{{this.description}}</p>
+      </EuiScreenReaderOnly>
     </EuiForm>
+    <EuiTimeZoneDisplay
+      @id={{this.timeZoneDescriptionId}}
+      @timeZone={{@timeZoneDisplayProps.timeZone}}
+      @date={{@timeZoneDisplayProps.date}}
+      @customRender={{@timeZoneDisplayProps.customRender}}
+    />
     <EuiPopoverFooter @paddingSize="s">
       <EuiSwitch
+        data-test-subj="superDatePickerRelativeDateRoundSwitch"
         @label={{this.roundingLabel}}
         @checked={{this.round}}
         @onChange={{pick "target.checked" this.onRoundChange}}

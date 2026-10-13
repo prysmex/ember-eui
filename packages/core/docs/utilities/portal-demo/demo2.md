@@ -2,45 +2,55 @@
 order: 2
 ---
 
-# Inserting next to an element
+# Inserting portals
 
-```hbs template
-<EuiTitle>
-  Inserting portals
-</EuiTitle>
 <EuiText>
-  There is an optional insert prop that can specify the portal's location in the
-  DOM. When used, it is important to consider how the location relates to the
-  component lifecycle, as it could be removed from the DOM by another component
-  update. insert is an object with two key-value pairs: sibling and
-  position.sibling is the HTMLElement to insert the portal next to, and position
-  specifies the portal's relative position, either before or after.
+
+There is an optional <EuiCode>@insert</EuiCode> argument that can specify the portal's location in the DOM. When used, it is important to consider how the location relates to the component lifecycle, as it could be removed from the DOM by another component update.
+
+<EuiCode>@insert</EuiCode> is an object with two key-value pairs: <EuiCode>sibling</EuiCode> and <EuiCode>position</EuiCode>. <EuiCode>sibling</EuiCode> is the HTMLElement to insert the portal next to, and <EuiCode>position</EuiCode> specifies the portal's relative position, either <EuiCode>before</EuiCode> or <EuiCode>after</EuiCode>.
+
 </EuiText>
+
 <EuiSpacer @size='l' />
-<EuiButton
-  {{did-insert (set this 'buttonRef')}}
-  {{on 'click' (set this 'showPortal' (not this.showPortal))}}
->
-  Toggle portal
-</EuiButton>
 
-{{#if this.showPortal}}
-  <EuiPortal @insert={{hash sibling=this.buttonRef position='after'}}>
-    <EuiSpacer />
-    <p>This element is appended immediately after the button.</p>
-  </EuiPortal>
-{{/if}}
-```
-
-```javascript component
-import GlimmerComponent from '@glimmer/component';
+```gjs component
+import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { EuiButton, EuiPortal, EuiSpacer } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 
-export default class OutsideClickDetectorComponentDemo1 extends GlimmerComponent {
-  @tracked buttonRef = false;
+export default class PortalInsertDemo extends Component {
+  @tracked isPortalVisible = false;
+  @tracked buttonRef = null;
 
-  salute() {
-    alert('outside clickd');
+  @action
+  setButtonRef(element) {
+    this.buttonRef = element;
   }
+
+  @action
+  togglePortal() {
+    this.isPortalVisible = !this.isPortalVisible;
+  }
+
+  <template>
+    <div>
+      <EuiButton {{didInsert this.setButtonRef}} {{on 'click' this.togglePortal}}>
+        Toggle portal
+      </EuiButton>
+
+      {{#if this.isPortalVisible}}
+        <EuiPortal @insert={{hash sibling=this.buttonRef position='after'}}>
+          <EuiSpacer />
+          <p>This element is appended immediately after the button.</p>
+        </EuiPortal>
+      {{/if}}
+    </div>
+  </template>
 }
 ```
+

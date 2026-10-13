@@ -14,6 +14,11 @@ const tickLabels = () =>
   [...document.querySelectorAll('.euiRangeTick')].map((el) =>
     el.textContent!.trim()
   );
+/** Upstream marks the selected tick with medium weight (no state class). */
+const selectedTicks = () =>
+  [...document.querySelectorAll('.euiRangeTick')]
+    .filter((el) => getComputedStyle(el).fontWeight !== getComputedStyle(el.parentElement!).fontWeight)
+    .map((el) => el.textContent!.trim());
 const TICKS = [
   { label: 'Min', value: 0 },
   { label: 'Mid', value: 5 },
@@ -49,7 +54,7 @@ module('Integration | Component | eui-range', function (hooks) {
     );
 
     assert.dom('.euiRangeTick').exists({ count: 3 });
-    assert.dom('.euiRangeTick').hasAttribute('style', /left:/);
+    assert.dom('.euiRangeTick').hasAttribute('style', /inset-inline-start:/);
   });
 
   test('showTicks renders a tick for every step', async function (assert) {
@@ -67,12 +72,12 @@ module('Integration | Component | eui-range', function (hooks) {
     );
 
     assert.deepEqual(tickLabels(), ['0', '5', '10']);
-    assert.dom('.euiRangeTick--selected').hasText('5');
+    assert.deepEqual(selectedTicks(), ['5']);
 
     for (const tick of document.querySelectorAll('.euiRangeTick')) {
       const style = tick.getAttribute('style') ?? '';
 
-      assert.true(/left: calc\(/.test(style), `positioned: ${style}`);
+      assert.true(/inset-inline-start: calc\(/.test(style), `positioned: ${style}`);
       assert.false(style.includes('NaN'), 'no NaN position');
     }
   });
@@ -160,10 +165,15 @@ module('Integration | Component | eui-range', function (hooks) {
 
     assert.dom('.euiRangeLabel').exists({ count: 2 });
     assert.dom('.euiRangeLabel:first-child').hasText('0');
-    assert.dom('.euiRangeHighlight .euiRangeHighlight__progress').exists();
-    assert.dom('.euiRangeSlider').hasClass('euiRangeSlider--hasRange');
-    assert.dom('.euiRangeLevels .euiRangeLevel').exists({ count: 2 });
-    assert.dom('.euiRangeLevel:first-child').hasClass('euiRangeLevel--danger');
+    // With levels, upstream's highlight shows the level colors, not a progress bar
+    assert.dom('.euiRangeHighlight .euiRangeHighlight__progress').doesNotExist();
+    assert.dom('.euiRangeHighlight .euiRangeLevels .euiRangeLevel').exists({ count: 2 });
+    assert.dom('.euiRangeTrack > .euiRangeLevels .euiRangeLevel').exists({ count: 2 });
+    assert.notStrictEqual(
+      getComputedStyle(document.querySelector('.euiRangeLevel')!).backgroundColor,
+      getComputedStyle(document.querySelectorAll('.euiRangeLevel')[1]!).backgroundColor,
+      'each level has its own color'
+    );
     assert.dom('.euiRangeTooltip .euiRangeTooltip__value').hasText('6');
   });
 
@@ -175,7 +185,7 @@ module('Integration | Component | eui-range', function (hooks) {
       <template><EuiRange @min={{0}} @max={{10}} @value={{2}} @showInput={{true}} @onChange={{onChange}} /></template>
     );
 
-    assert.dom('.euiRangeWrapper').hasClass('euiRange--hasInput');
+    assert.dom('.euiRangeWrapper.euiRange input.euiRangeInput').exists();
     assert.dom('input.euiRangeInput[type="number"]').hasValue('2');
     assert.dom('input[type="range"]').hasAttribute('aria-hidden', 'true').hasAttribute('tabindex', '-1');
 
@@ -233,8 +243,8 @@ module('Integration | Component | eui-range', function (hooks) {
       </template>
     );
 
-    assert.dom('button.off').hasAria('disabled', 'true');
-    assert.dom('button.off [role="slider"]').hasAria('disabled', 'true');
+    assert.dom('button.off').hasAria('disabled', 'true').hasAttribute('role', 'slider');
+    assert.dom('button.off [role="slider"]').doesNotExist('no nested slider');
     assert.dom('button.on').doesNotHaveAria('disabled');
   });
 
@@ -260,21 +270,21 @@ module('Integration | Component | eui-range', function (hooks) {
     assert.dom('input.euiRangeInput').hasValue('0');
     assert.dom('input[type="range"]').hasValue('0');
     assert.dom('.euiRangeTooltip__value').hasText('0');
-    assert.dom('.euiRangeTick--selected').hasText('0');
+    assert.deepEqual(selectedTicks(), ['0']);
     assert.dom('.euiRangeHighlight__progress').exists('zero is a valid highlighted value');
 
     await fillIn('input.euiRangeInput', '10');
     assert.deepEqual(state.changes, [[10, true]]);
     assert.dom('input[type="range"]').hasValue('10');
     assert.dom('.euiRangeTooltip__value').hasText('10');
-    assert.dom('.euiRangeTick--selected').hasText('10');
+    assert.deepEqual(selectedTicks(), ['10']);
 
     state.max = 20;
     state.value = 15;
     await rerender();
     assert.dom('input[type="range"]').hasAttribute('max', '20').hasValue('15');
     assert.dom('input.euiRangeInput').hasAttribute('max', '20').hasValue('15');
-    assert.dom('.euiRangeTick--selected').hasText('15');
+    assert.deepEqual(selectedTicks(), ['15']);
     assert.deepEqual(tickLabels(), ['0', '5', '10', '15', '20']);
     assert.deepEqual(state.changes, [[10, true]], 'external changes do not emit input callbacks');
   });
@@ -299,7 +309,7 @@ module('Integration | Component | eui-range', function (hooks) {
     assert.dom(inputs[1]).hasValue('10');
     assert.dom(thumbs[0]).hasAttribute('aria-valuenow', '0');
     assert.dom(thumbs[1]).hasAttribute('aria-valuenow', '10');
-    assert.dom(thumbs[0]!.querySelector('[role="slider"]')).hasAttribute('aria-valuenow', '0');
-    assert.dom(thumbs[1]!.querySelector('[role="slider"]')).hasAttribute('aria-valuenow', '10');
+    assert.dom(thumbs[0]).hasAttribute('role', 'slider');
+    assert.dom(thumbs[1]).hasAttribute('role', 'slider');
   });
 });

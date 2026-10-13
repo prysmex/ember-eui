@@ -5,6 +5,11 @@ title: Text field
 <EuiPageHeader @pageTitle="Text field"/>
 <EuiSpacer @size="l" />
 
+<EuiCallOut @title="Wrap your form controls in a form row" @iconType="info" @size="s">
+  <p>Use <code>EuiFormRow</code> to easily and accessibly associate form components with labels, help text and error text. Keep in mind that <code>EuiFormRow</code> controls the <code>id</code> of its wrapped child form component to associate it with the label and help text.</p>
+</EuiCallOut>
+<EuiSpacer @size="l" />
+
 <EuiText>
 
 `EuiFieldText` renders an `<input type="text">` styled for EUI, with
@@ -67,12 +72,12 @@ Generated from the components' TypeScript signatures by
 | `@icon` |  |  | Icon inside the input (left side), anything `EuiIcon`'s `@type` accepts. |
 | `@fullWidth` | `boolean` |  | Stretches the input to its container's width. |
 | `@isLoading` | `boolean` |  | Shows a spinner in the input. |
-| `@compressed` | `boolean` |  | Shorter input, for dense forms. |
+| `@compressed` | `boolean` |  | Shorter input (32px instead of 40px), for dense forms. |
 | `@readOnly` | `boolean` |  | Makes the input read-only. |
 | `@disabled` | `boolean` |  | Disables the input. |
 | `@clear` | `() => void` |  | Shows a clear ("x") button calling this function; empty the value there. |
 | `@controlOnly` | `boolean` |  | Renders just the `<input>`, without the layout (icon, clear button, prepend/append). Best used inside EuiFormControlLayoutDelimited. |
-| `@isInvalid` | `boolean` |  | Shows the invalid state and marks the input invalid for native form validation. |
+| `@isInvalid` | `boolean` |  | Shows the invalid state (danger border and warning icon), sets `aria-invalid` and marks the input invalid for native form validation. |
 | `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the `<input>` element once rendered. |
 
 | Block | Description |

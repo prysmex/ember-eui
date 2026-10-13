@@ -12,23 +12,11 @@ row's label names the group; `@compressed` tightens the spacing.
 
 </EuiText>
 
-```hbs template
-<EuiFormRow @label="Notify" @labelType="legend" @legendType="legend">
-  <EuiCheckboxGroup
-    @options={{this.users}}
-    @valueKey="email"
-    @labelKey="name"
-    @idToSelectedMap={{this.selected}}
-    @compressed={{true}}
-    @onChange={{this.toggle}}
-  />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFormRow, EuiCheckboxGroup } from '@ember-eui/core/components';
 
 export default class CheckboxGroupKeysDemo extends Component {
   users = [
@@ -43,5 +31,18 @@ export default class CheckboxGroupKeysDemo extends Component {
   toggle(email) {
     this.selected = { ...this.selected, [email]: !this.selected[email] };
   }
+
+  <template>
+    <EuiFormRow @label="Notify" @labelType="legend" @legendType="legend">
+      <EuiCheckboxGroup
+        @options={{this.users}}
+        @valueKey="email"
+        @labelKey="name"
+        @idToSelectedMap={{this.selected}}
+        @compressed={{true}}
+        @onChange={{this.toggle}}
+      />
+    </EuiFormRow>
+  </template>
 }
 ```

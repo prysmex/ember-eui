@@ -48,14 +48,14 @@ A group of radios to pick one option.
 | `@options` (required) |  |  | The radios: `[{ id: 'a', label: 'Option A' }, …]` (keys set by `@valueKey` / `@labelKey`); `value`, `disabled` and `className` are optional. |
 | `@name` | `string` | a random name | `name` shared by the radios. |
 | `@legend` | `string` |  | Wraps the radios in an `EuiFormFieldset` with this legend. Use it when the group is not inside an `EuiFormRow`. |
-| `@compressed` | `boolean` |  | Smaller radios, for dense forms. |
+| `@compressed` | `boolean` |  | Removes the spacing between radio rows, for dense forms. |
 | `@disabled` | `boolean` |  | Disables every radio. |
 | `@onChange` (required) | `(id: string, value?: string) => void` |  | Called with the chosen option's id and its `value`. Update `@idSelected` here. |
 | `@valueKey` | `string` | `'id'` | Key of each option holding its id. |
 | `@labelKey` | `string` | `'label'` | Key of each option holding its label. |
 | `@formId` | `string` |  | `form` attribute of the radios, to join a form by id. |
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<fieldset>`.
 
 </EuiText>
 <!-- api:end -->

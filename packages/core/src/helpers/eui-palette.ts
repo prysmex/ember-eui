@@ -3,17 +3,25 @@ import { helper } from '@ember/component/helper';
 import {
   euiPaletteColorBlind,
   euiPaletteColorBlindBehindText,
-  euiPaletteComplimentary,
+  euiPaletteComplementary,
   euiPaletteCool,
-  euiPaletteForDarkBackground,
-  euiPaletteForLightBackground,
   euiPaletteForStatus,
   euiPaletteForTemperature,
   euiPaletteGray,
-  euiPaletteNegative,
-  euiPalettePositive,
-  euiPaletteWarm
+  euiPaletteGreen,
+  euiPaletteOrange,
+  euiPaletteRed,
+  euiPaletteSkyBlue,
+  euiPaletteWarm,
+  euiPaletteYellow
 } from '../utils/color/eui_palettes.ts';
+import {
+  euiPaletteComplimentary,
+  euiPaletteForDarkBackground,
+  euiPaletteForLightBackground,
+  euiPaletteNegative,
+  euiPalettePositive
+} from '../utils/color/eui_palettes_deprecated.ts';
 
 import type { EuiPalette } from '../utils/color/eui_palettes.ts';
 
@@ -24,12 +32,18 @@ export const PALETTES = {
   euiPaletteColorBlindBehindText,
   euiPaletteForStatus,
   euiPaletteForTemperature,
+  euiPaletteComplementary,
   euiPaletteComplimentary,
   euiPaletteNegative,
   euiPalettePositive,
   euiPaletteCool,
   euiPaletteWarm,
-  euiPaletteGray
+  euiPaletteGray,
+  euiPaletteRed,
+  euiPaletteGreen,
+  euiPaletteSkyBlue,
+  euiPaletteYellow,
+  euiPaletteOrange
 };
 
 export type palette_keys = keyof typeof PALETTES;

@@ -16,7 +16,12 @@ import {
   EuiTitle,
 } from '@ember-eui/core/components';
 import { copyToClipboard } from '@ember-eui/core/utils/copy-to-clipboard';
-import { typeToPathMap } from '@ember-eui/core/utils/css-mappings/eui-icon';
+import {
+  deprecatedIconTypes,
+  legacyIconAliases,
+  legacyIconTypes,
+  typeToPathMap,
+} from '@ember-eui/core/utils/css-mappings/eui-icon';
 
 const ELASTIC_LOGOS = new Set([
   'logoElastic',
@@ -107,8 +112,17 @@ function categoryOf(type) {
   return 'glyphs';
 }
 
+// Legacy and deprecated names still render, but are left out (as upstream's
+// docs do); the icons docs page lists where to find them.
+const HIDDEN = new Set([
+  'empty',
+  ...Object.keys(legacyIconAliases),
+  ...legacyIconTypes,
+  ...Object.keys(deprecatedIconTypes),
+]);
+
 const ICONS = Object.keys(typeToPathMap)
-  .filter((type) => type !== 'empty')
+  .filter((type) => !HIDDEN.has(type))
   .sort((a, b) => a.localeCompare(b));
 
 const CATEGORY_OPTIONS = [

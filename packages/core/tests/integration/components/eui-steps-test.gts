@@ -26,9 +26,10 @@ module('Integration | Component | eui-steps', function (hooks) {
     assert.dom('.euiStep:nth-child(1) .euiStep__title').hasText('Install');
     assert.dom('.euiStep:nth-child(1) .euiStepNumber__number').hasText('1');
     assert.dom('.euiStep:nth-child(1) .euiStep__content .euiSubSteps').hasText('sub');
-    assert.dom('.euiStep:nth-child(2) .euiStepNumber').hasClass('euiStepNumber--complete');
-    assert.dom('.euiStep:nth-child(2) .euiStepNumber svg.euiStepNumber__icon').exists();
-    assert.dom('.euiStep:nth-child(3)').hasClass('euiStep-isDisabled').hasClass('euiStep--small');
+    // Legacy status/size classes are gone: assert the icon label and measured size.
+    assert.dom('.euiStep:nth-child(2) .euiStepNumber svg.euiStepNumber__icon').exists().hasAttribute('aria-label', 'Step 2 is complete');
+    assert.dom('.euiStep:nth-child(3) .euiStepNumber').includesText('Step 3 is disabled');
+    assert.strictEqual(getComputedStyle(document.querySelector('.euiStep:nth-child(3) .euiStepNumber')!).width, '24px', 'xs title size');
   });
 
   test('step number statuses', async function (assert) {
@@ -43,10 +44,10 @@ module('Integration | Component | eui-steps', function (hooks) {
       </template>
     );
 
-    assert.dom('.warning .euiStepNumber').hasClass('euiStepNumber--warning');
-    assert.dom('.danger .euiStepNumber').hasClass('euiStepNumber--danger');
+    assert.dom('.warning .euiStepNumber svg').hasAttribute('aria-label', 'Step 1 has warnings');
+    assert.dom('.danger .euiStepNumber svg').hasAttribute('aria-label', 'Step 2 has errors');
     assert.dom('.loading .euiStepNumber__loader').exists();
-    assert.dom('.incomplete .euiStepNumber').hasClass('euiStepNumber-isHollow');
+    assert.strictEqual(getComputedStyle(document.querySelector('.incomplete .euiStepNumber')!).backgroundColor, 'rgba(0, 0, 0, 0)', 'incomplete is hollow');
   });
 
   test('EuiStepsHorizontal renders clickable steps with statuses', async function (assert) {
@@ -65,11 +66,12 @@ module('Integration | Component | eui-steps', function (hooks) {
     );
 
     assert.dom('ol.euiStepsHorizontal li').exists({ count: 4 });
-    assert.dom('li:nth-child(1) button').hasClass('euiStepHorizontal-isComplete');
+    // Legacy state classes are replaced by upstream's `data-step-status`.
+    assert.dom('li:nth-child(1) button').hasAttribute('data-step-status', 'complete');
     assert.dom('li:nth-child(2)').hasAttribute('aria-current', 'step');
-    assert.dom('li:nth-child(2) button').hasClass('euiStepHorizontal-isSelected');
-    assert.dom('li:nth-child(3) button').hasClass('euiStepHorizontal-isIncomplete');
-    assert.dom('li:nth-child(4) button').isDisabled().hasClass('euiStepHorizontal-isDisabled');
+    assert.dom('li:nth-child(2) button').hasAttribute('data-step-status', 'current');
+    assert.dom('li:nth-child(3) button').hasAttribute('data-step-status', 'incomplete');
+    assert.dom('li:nth-child(4) button').isDisabled().hasAttribute('data-step-status', 'disabled');
     assert.dom('li:nth-child(2) .euiStepHorizontal__title').hasText('Now');
 
     await click('li:nth-child(2) button');

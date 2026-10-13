@@ -39,12 +39,24 @@ module('Integration | Component | eui-global-toast-list', function (hooks) {
     toaster.show({ id: 'other', title: 'Other' });
     await waitUntil(() => this.element.querySelectorAll('.euiToast').length === 2);
     await triggerEvent('.euiGlobalToastList', 'mouseenter');
-    await click(this.element.querySelectorAll('.euiToast__closeButton')[0]!);
+    await click(this.element.querySelectorAll('[data-test-subj="toastCloseButton"]')[0]!);
     await waitUntil(() => toaster.toasts.length === 1);
     await settled();
 
     assert.deepEqual(dismissed, ['saved']);
     assert.deepEqual(toaster.toasts.map((toast) => toast.id), ['other']);
     assert.dom('.euiToast').exists({ count: 1 }).containsText('Other');
+  });
+
+  test('the euiToaster service shows a toast with a component body', async function (assert) {
+    const toaster = this.owner.lookup('service:eui-toaster') as EuiToasterService;
+    const Body = <template><button type="button" class="toast-rich">Undo</button></template>;
+
+    await render(<template><EuiGlobalToastList /></template>);
+
+    toaster.show({ title: 'Deleted', body: Body });
+    await settled();
+
+    assert.dom('.euiToast [data-test-subj="euiToastBody"] .toast-rich').hasText('Undo');
   });
 });

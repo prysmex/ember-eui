@@ -1,26 +1,79 @@
-import { hash } from '@ember/helper';
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+import { get } from '@ember/helper';
 
-import style from 'ember-style-modifier/modifiers/style';
-import { and } from 'ember-truth-helpers';
-import { eq,notEq } from 'ember-truth-helpers';
+import { provide } from 'ember-provide-consume-context';
 
-import argOrDefault from '../helpers/arg-or-default.ts';
-import classNames from '../helpers/class-names.ts';
-import inlineStyles from '../helpers/inline-styles.ts';
+import { EUI_LIST_GROUP_CONTEXT } from '../-private/eui-list-context.ts';
+import EuiListGroupItem from './eui-list-group-item.gts';
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import { euiListGroupStyles } from '../utils/eui/styles.generated.ts';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiListGroupItemSignature } from './eui-list-group-item.gts';
+import type { EuiListGroupContext } from '../-private/eui-list-context.ts';
+
+/**
+ * One entry of `@listItems`: the args of `EuiListGroupItem` as an object
+ * (`label`, `href`, `iconType`, `onClick`, `isActive`, `extraAction`,
+ * `showToolTip`, `toolTipText`, `toolTipProps`, …).
+ */
+export interface EuiListGroupListItem {
+  label?: EuiListGroupItemSignature['Args']['label'];
+  href?: EuiListGroupItemSignature['Args']['href'];
+  target?: EuiListGroupItemSignature['Args']['target'];
+  rel?: EuiListGroupItemSignature['Args']['rel'];
+  external?: EuiListGroupItemSignature['Args']['external'];
+  onClick?: EuiListGroupItemSignature['Args']['onClick'];
+  iconType?: EuiListGroupItemSignature['Args']['iconType'];
+  iconProps?: EuiListGroupItemSignature['Args']['iconProps'];
+  icon?: EuiListGroupItemSignature['Args']['icon'];
+  hasAriaDisabled?: EuiListGroupItemSignature['Args']['hasAriaDisabled'];
+  isActive?: EuiListGroupItemSignature['Args']['isActive'];
+  isDisabled?: EuiListGroupItemSignature['Args']['isDisabled'];
+  wrapText?: EuiListGroupItemSignature['Args']['wrapText'];
+  extraAction?: EuiListGroupItemSignature['Args']['extraAction'];
+  color?: EuiListGroupItemSignature['Args']['color'];
+  showToolTip?: EuiListGroupItemSignature['Args']['showToolTip'];
+  toolTipText?: EuiListGroupItemSignature['Args']['toolTipText'];
+  toolTipProps?: EuiListGroupItemSignature['Args']['toolTipProps'];
+  'data-test-subj'?: string;
+}
 
 /** A list of `EuiListGroupItem`s, e.g. navigation links in a side bar. */
 export interface EuiListGroupSignature {
   Element: HTMLUListElement;
   Args: {
-    /** `true` for EUI's default max width, or any CSS width. */
-    maxWidth?: boolean | string;
-    /** Adds a border around the list. */
+    /**
+     * Limits the list's width: `true` for upstream's default (the form max
+     * width, 400px), `false` for none, or any CSS width (numbers are
+     * pixels). Defaults to `true`.
+     */
+    maxWidth?: boolean | string | number;
+    /**
+     * Items to display, as objects of `EuiListGroupItem` args. When there
+     * are any, they are rendered instead of the block's content.
+     */
+    listItems?: EuiListGroupListItem[];
+    /** Shows a tooltip on all items (an item's own `showToolTip` wins). */
+    showToolTips?: boolean;
+    /** Id of the element labelling the list (its `aria-labelledby`). */
+    ariaLabelledby?: string;
+    /** Adds a rounded border around the list. */
     bordered?: boolean;
-    /** Removes the list's padding. */
+    /**
+     * Default `@color` of the items in the block: `'text'`, `'primary'` or
+     * `'subdued'`. An item's own `@color` wins. Defaults to `'text'`.
+     */
+    color?: string;
+    /**
+     * Default `wrapText` of the `@listItems`. As upstream, it does not reach
+     * the `EuiListGroupItem`s of the block (set their own `@wrapText`).
+     */
+    wrapText?: boolean;
+    /** @deprecated Has no effect: latest EUI lists have no padding. */
     flush?: boolean;
-    /** Space between items: `'none'`, `'s'` or `'m'`. Defaults to `'s'`. */
+    /** @deprecated Has no effect: latest EUI lists have no item gutters. */
     gutterSize?: string;
   };
   Blocks: {
@@ -29,31 +82,87 @@ export interface EuiListGroupSignature {
   };
 }
 
-const EuiListGroup: TemplateOnlyComponent<EuiListGroupSignature> = <template>
-  {{#let
-    (if
-      (and @maxWidth (notEq @maxWidth true))
-      (inlineStyles
-        componentName="EuiListGroup" componentArgs=(hash maxWidth=@maxWidth)
-      )
-      (hash)
-    )
-    as |inlineStyles|
-  }}
-    <ul
-      class={{classNames
-        (if (eq @maxWidth true) "euiListGroup-maxWidthDefault")
-        (if @bordered "euiListGroup-bordered")
-        (if @flush "euiListGroup-flush")
-        componentName="EuiListGroup"
-        gutterSize=(argOrDefault @gutterSize "s")
-      }}
-      ...attributes
-      {{style inlineStyles}}
-    >
-      {{yield}}
-    </ul>
-  {{/let}}
-</template>;
+/** Scoped stand-in for React's global list reset; upstream comes after. */
+const RESET = {
+  boxSizing: 'border-box' as const,
+  margin: 0,
+  padding: 0,
+  listStyle: 'none'
+};
 
-export default EuiListGroup;
+/** Native Ember list group using the upstream EUI 123 / Borealis factory. */
+export default class EuiListGroup
+  extends Component<EuiListGroupSignature>
+  implements EuiListGroupContext
+{
+  @provide(EUI_LIST_GROUP_CONTEXT)
+  get listGroupContext(): EuiListGroupContext {
+    return this;
+  }
+
+  get color(): string | undefined {
+    return this.args.color;
+  }
+
+  get showToolTips(): boolean | undefined {
+    return this.args.showToolTips;
+  }
+
+  /** Upstream `wrapText={wrapText}` then `{...item}`: the item's own wins. */
+  itemWrapText = (item: EuiListGroupListItem): boolean | undefined => {
+    return item.wrapText ?? this.args.wrapText;
+  };
+
+  @cached
+  get classes(): string {
+    const context = getEuiThemeContext(this);
+    const styles = useEuiBorealisStyles(context, euiListGroupStyles);
+    const maxWidth = this.args.maxWidth ?? true;
+    return `euiListGroup ${euiClass(
+      context,
+      RESET,
+      styles.euiListGroup,
+      this.args.bordered && styles.bordered,
+      maxWidth === true && styles.maxWidthDefault,
+      // Upstream sets custom widths as an inline logical style.
+      typeof maxWidth === 'string' && { maxInlineSize: maxWidth },
+      typeof maxWidth === 'number' && { maxInlineSize: `${maxWidth}px` }
+    )}`;
+  }
+
+  <template>
+    <ul
+      class={{this.classes}}
+      aria-labelledby={{@ariaLabelledby}}
+      ...attributes
+    >
+      {{#if @listItems.length}}
+        {{#each @listItems as |item|}}
+          <EuiListGroupItem
+            @label={{item.label}}
+            @href={{item.href}}
+            @target={{item.target}}
+            @rel={{item.rel}}
+            @external={{item.external}}
+            @onClick={{item.onClick}}
+            @iconType={{item.iconType}}
+            @iconProps={{item.iconProps}}
+            @icon={{item.icon}}
+            @hasAriaDisabled={{item.hasAriaDisabled}}
+            @isActive={{item.isActive}}
+            @isDisabled={{item.isDisabled}}
+            @wrapText={{this.itemWrapText item}}
+            @extraAction={{item.extraAction}}
+            @color={{item.color}}
+            @showToolTip={{item.showToolTip}}
+            @toolTipText={{item.toolTipText}}
+            @toolTipProps={{item.toolTipProps}}
+            data-test-subj={{get item "data-test-subj"}}
+          />
+        {{/each}}
+      {{else}}
+        {{yield}}
+      {{/if}}
+    </ul>
+  </template>
+}

@@ -18,6 +18,16 @@ class State {
   clear = (value: null) => (this.date = value);
 }
 
+/** Upstream drops the control's inset border inside a prepend/append group. */
+function isInGroup(selector: string) {
+  const input = document.querySelector<HTMLInputElement>(selector)!;
+
+  return (
+    input.closest('.euiFormControlLayout--group') !== null &&
+    getComputedStyle(input).boxShadow === 'none'
+  );
+}
+
 module('Integration | Component | eui-flatpickr', function (hooks) {
   setupRenderingTest(hooks);
 
@@ -91,7 +101,10 @@ module('Integration | Component | eui-flatpickr', function (hooks) {
 
     const input = (this.element as HTMLElement).querySelector('input')!;
 
-    assert.dom(input).isDisabled().hasClass('euiFieldText--fullWidth').hasClass('euiFieldText--compressed');
+    assert.dom(input).isDisabled();
+    // Borealis form control: full width lifts the 400px max-width, compressed is 32px tall
+    assert.strictEqual(getComputedStyle(input).maxWidth, '100%', 'full width');
+    assert.strictEqual(input.offsetHeight, 32, 'compressed');
     assert.false(input.validity.valid);
     assert.dom('.euiFormControlLayoutClearButton').doesNotExist();
   });
@@ -108,8 +121,8 @@ module('Integration | Component | eui-flatpickr', function (hooks) {
       </template>
     );
 
-    assert.dom('input.plain').doesNotHaveClass('euiFieldText--inGroup');
-    assert.dom('input.grouped').hasClass('euiFieldText--inGroup');
+    assert.false(isInGroup('input.plain'), 'plain input is not grouped');
+    assert.true(isInGroup('input.grouped'), 'prepend groups the input');
     assert.dom('.pre').hasText('From');
   });
 

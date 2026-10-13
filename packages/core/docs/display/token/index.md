@@ -45,10 +45,13 @@ symbol, e.g. a field's type (string, number, date) in a list of fields.
 | --- | --- | --- | --- |
 | `@iconType` (required) | `IconType` |  | The icon: one of EUI's `token*` icons (`'tokenString'`, `'tokenNumber'`, `'tokenDate'`, …), which come with their own shape and color, or any other `EuiIcon` type. |
 | `@color` | `string` | the token icon's color, or `'gray'` | `'euiColorVis0'` to `'euiColorVis9'`, `'gray'`, or a hex color (which forces `@fill="dark"` unless `@fill="none"`). |
-| `@shape` | `'circle' \| 'square' \| 'rectangle'` | the token icon's, or `'circle'` | `'circle'`, `'square'` or `'rectangle'`. |
-| `@fill` | `'light' \| 'dark' \| 'none'` | the token icon's, or `'light'` | `'light'` (tinted with a border), `'dark'` (solid) or `'none'`. |
-| `@size` | `'xs' \| 's' \| 'm' \| 'l'` | `'s'` | `'xs'`, `'s'`, `'m'` or `'l'`. |
+| `@shape` | `TokenShape` | the token icon's, or `'circle'` | `'circle'`, `'square'` or `'rectangle'`. |
+| `@fill` | `EuiTokenFill` | `'light'` | `'light'` (tinted with a border), `'dark'` (solid) or `'none'`. |
+| `@size` | `TokenSize` | `'s'` | `'xs'` (8px), `'s'` (16px), `'m'` (24px) or `'l'` (32px). |
 | `@title` | `string` |  | Title of the icon, read by screen readers, e.g. "String field". |
+| `@aria-label` | `string` |  | Accessible label of the icon, instead of `@title`. |
+| `@aria-labelledby` | `string` |  | Id(s) of the element(s) labelling the icon. |
+| `@aria-describedby` | `string` |  | Id(s) of the element(s) describing the icon. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<span>`.
 

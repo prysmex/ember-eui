@@ -2,73 +2,88 @@
 order: 1
 ---
 
-# Highlight a search
+# Highlight
 
 <EuiText>
 
-Type to highlight the matches in each name. Toggle the switches to match
-case or to highlight every match.
+Use `EuiHighlight` to highlight substrings within a string, typically in response to user input.
 
 </EuiText>
 
-```hbs template
-<EuiFieldSearch
-  @placeholder="Search"
-  @value={{this.search}}
-  @incremental={{true}}
-  @onSearch={{this.setSearch}}
-/>
-<EuiSpacer @size="s" />
-<EuiSwitch @label="Match case" @checked={{this.strict}} {{on "change" this.toggleStrict}} />
-<EuiSpacer @size="s" />
-<EuiSwitch @label="Highlight all matches" @checked={{this.highlightAll}} {{on "change" this.toggleAll}} />
-<EuiSpacer />
-<EuiText>
-  <ul>
-    {{#each this.names as |name|}}
-      <li>
-        <EuiHighlight
-          @text={{name}}
-          @search={{this.search}}
-          @strict={{this.strict}}
-          @highlightAll={{this.highlightAll}}
-        />
-      </li>
-    {{/each}}
-  </ul>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFieldSearch, EuiFlexGroup, EuiFormRow, EuiHighlight, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
 
-export default class HighlightDemo extends Component {
-  names = [
-    'Banana bread with banana chips',
-    'Bandana Blue',
-    'Canal banks of Amsterdam',
-    'An annual banquet',
-  ];
+export default class extends Component {
+  @tracked searchInput = 'jumped over';
+  @tracked isHighlightAll = false;
+  @tracked searchMultiple = false;
+  @tracked caseSensitive = false;
 
-  @tracked search = 'an';
-  @tracked strict = false;
-  @tracked highlightAll = false;
-
-  @action
-  setSearch(value) {
-    this.search = value;
+  get searchValues() {
+    return this.searchMultiple && this.isHighlightAll
+      ? this.searchInput.split(' ')
+      : this.searchInput;
   }
 
   @action
-  toggleStrict(event) {
-    this.strict = event.target.checked;
+  setSearchInput(value) {
+    this.searchInput = value;
   }
 
   @action
-  toggleAll(event) {
-    this.highlightAll = event.target.checked;
+  toggleCaseSensitive() {
+    this.caseSensitive = !this.caseSensitive;
   }
+
+  @action
+  toggleHighlightAll() {
+    this.isHighlightAll = !this.isHighlightAll;
+  }
+
+  @action
+  toggleSearchMultiple() {
+    this.searchMultiple = !this.searchMultiple;
+  }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiSwitch
+        @label='Case sensitive'
+        @checked={{this.caseSensitive}}
+        @onChange={{this.toggleCaseSensitive}}
+      />
+      <EuiSwitch
+        @label='Highlight all'
+        @checked={{this.isHighlightAll}}
+        @onChange={{this.toggleHighlightAll}}
+      />
+      {{#if this.isHighlightAll}}
+        <EuiSwitch
+          @label='Search for an array of separate words'
+          @checked={{this.searchMultiple}}
+          @onChange={{this.toggleSearchMultiple}}
+        />
+      {{/if}}
+    </EuiFlexGroup>
+    <EuiSpacer @size='xl' />
+    <EuiFormRow @label='Enter text to highlight substrings within a string'>
+      <EuiFieldSearch
+        @value={{this.searchInput}}
+        @incremental={{true}}
+        @onSearch={{this.setSearchInput}}
+      />
+    </EuiFormRow>
+    <EuiSpacer @size='m' />
+    <EuiHighlight
+      @strict={{this.caseSensitive}}
+      @highlightAll={{this.isHighlightAll}}
+      @search={{this.searchValues}}
+      @text='The quick brown fox jumped over the lazy dog'
+    />
+  </template>
 }
 ```
+

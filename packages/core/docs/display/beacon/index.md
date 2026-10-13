@@ -8,19 +8,14 @@ title: Beacon
 
 <EuiText>
 
-`EuiBeacon` is a pulsing dot that draws the eye to something new or
-something a guided tour points at. Use it sparingly: one on screen at a
-time.
-
-```hbs
-<EuiBeacon />
-<EuiBeacon @size={{20}} />
-```
-
-It is decorative: describe what it points at in the text next to it, or
-with `aria-label` on the element it marks.
+Use the `EuiBeacon` component to draw visual attention to a specific location or element. It is decorative: describe what it points at in the text next to it, or with `aria-label` on the element it marks.
 
 </EuiText>
+<EuiSpacer />
+<EuiCallOut @color="success" @size="s" @title="Use with EuiTour">
+  <p>It is strongly encouraged to use <strong>EuiBeacon</strong> in conjunction with <strong>EuiTour</strong>. Standalone, the beacon is a visual cue that may lack context.</p>
+</EuiCallOut>
+<EuiSpacer />
 
 <EuiHorizontalRule />
 
@@ -42,6 +37,8 @@ feature a tour points at.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@size` | `number` | `12` | Diameter of the center dot in px. |
+| `@color` | `EuiBeaconColor` | `'success'` | `'subdued'`, `'primary'`, `'success'`, `'accent'`, `'danger'` or `'warning'`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

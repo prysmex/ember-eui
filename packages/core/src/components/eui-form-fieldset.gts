@@ -1,9 +1,24 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { or } from 'ember-truth-helpers';
-
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass } from '../utils/eui/styles.ts';
 import EuiFormLegend from './eui-form-legend.gts';
 
+import type { CSSObject } from '@emotion/css/create-instance';
 import type { EuiFormLegendSignature } from './eui-form-legend';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+
+/**
+ * Upstream fieldsets have no styles of their own; React's global reset
+ * removes the browser's border, padding, margin and min-content width.
+ */
+export const euiFieldsetReset: CSSObject = {
+  boxSizing: 'border-box',
+  margin: 0,
+  padding: 0,
+  border: 'none',
+  minInlineSize: 'auto'
+};
 
 /** Groups related controls (e.g. radios) under a legend. */
 export interface EuiFormFieldsetSignature {
@@ -11,7 +26,7 @@ export interface EuiFormFieldsetSignature {
   Args: {
     /** The legend describing the group. Use the `<:legend>` block for markup. */
     legend?: string;
-    /** Smaller legend, for compressed forms. */
+    /** Smaller space under the legend, for compressed forms. */
     compressed?: boolean;
     /**
      * `'hidden'` keeps the legend for screen readers only.
@@ -29,9 +44,14 @@ export interface EuiFormFieldsetSignature {
   };
 }
 
-const EuiFormFieldset: TemplateOnlyComponent<EuiFormFieldsetSignature> =
+export default class EuiFormFieldset extends Component<EuiFormFieldsetSignature> {
+  @cached
+  get classes() {
+    return euiClass(getEuiThemeContext(this), euiFieldsetReset);
+  }
+
   <template>
-    <fieldset ...attributes>
+    <fieldset class={{this.classes}} ...attributes>
       {{#if (or @legend (has-block "legend"))}}
         <EuiFormLegend @compressed={{@compressed}} @display={{@display}}>
           {{#if (has-block "legend")}}
@@ -47,6 +67,5 @@ const EuiFormFieldset: TemplateOnlyComponent<EuiFormFieldsetSignature> =
         {{yield}}
       {{/if}}
     </fieldset>
-  </template>;
-
-export default EuiFormFieldset;
+  </template>
+}

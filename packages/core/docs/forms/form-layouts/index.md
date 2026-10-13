@@ -38,6 +38,43 @@ and update it from the change event, as in the examples below.
 For validation, `@ember-eui/validated-form` and
 `@ember-eui/changeset-form` build on these components.
 
+## Usage
+
+This section documents patterns for form layout, validation and how best to use various components.
+
+### Key principles
+
+- **Help users achieve success.** Use a label (and a description if needed) for each form field. All form fields should be considered required unless stated alongside the label. Show validation parameters in the help text below the input. Validate on blur: the submit button should be active by default, then show errors after click, with specific error messages.
+- **Provide transparency.** A well-formatted layout makes it clear to users how to navigate the form. Form labels and descriptions are equally important as layout and should be specific, concise, and easy to scan.
+- **Maintain a standard layout.** Keep the form divided into two columns, with the descriptions on one side and form fields on the other. Keep inputs in a single column to make groupings clearer, and avoid nesting form rows.
+- **Divide the form into sections.** As a form grows longer, add visual indicators (dividers) to define the sections. Avoid panels within panels, and add more spacing between form groups than between fields within a group.
+
+### Described groups
+
+An `EuiDescribedFormGroup` provides an additional heading along with description text for a single input or set of input fields. It is not intended for every type of form, but typically works best for forms with lengthy descriptions per input, forms with multiple inputs falling under a single heading, and forms with complex nested options (the toggle that hides and shows the row goes beneath the description, and the following fields in the right column).
+
+### Labels
+
+Avoid long labels, but don't sacrifice clarity. Say what the field is in the label, and use help text for additional information (do: label "Version" with help text "Use the `major.minor` format."; don't: label "Numeric version (e.g. `2.*`)").
+
+### Hint text
+
+Place hints and instructions outside a text field so it is always visible to the user. Keep the hint text short, maximum two sentences long, with complete sentences and ending punctuation. Use hint text to:
+
+- Explain **why you are asking a certain question**: "We will only email you if there is a problem with your order."
+- Provide **clarifying details** on what to type: "Enter the full 32-character ID."
+- Tell the user **where to find the information** you're asking for: "Find the Elasticsearch cluster ID on the main administration page of your deployment."
+
+### Placeholder text
+
+Use the placeholder to describe the expected value of the input or to provide a useful example, for instance `+33600000000` for a phone number. Don't start with "for example" or "e.g.", and don't use text that adds no value, such as "Type here". Add placeholder text in addition to field labels and help text, not as a replacement; omit it if it doesn't add value, and keep it short. When space is limited and the UI is very simple, you can use field labels as placeholder text, but this must stay an exception.
+
+In a search bar, be specific about what users can enter: give users a hint at things they might want to search for ("Find apps and content. Ex: Discover") and state the action the user performs (find, search). Don't use an ellipsis ("Search...").
+
+### Validation error text
+
+Validation messages are needed when the user input differs from what the system expects and enforces. Use clear language that helps users understand what they have to do: use a simple, minimalist format for a required field ("Name is required."), tell users what happened and how to fix it, and be as precise as possible to describe the problem.
+
 </EuiText>
 
 <EuiHorizontalRule />
@@ -54,7 +91,9 @@ Generated from the components' TypeScript signatures by
 
 ### EuiForm
 
-Wraps a form's rows and shows its errors in a callout. For validation
+Wraps a form's rows and shows its errors in a callout. When the callout
+appears (the form becomes invalid) it receives focus, so screen reader
+and keyboard users land on the errors. For validation
 built on it see `@ember-eui/changeset-form` and
 `@ember-eui/validated-form`.
 
@@ -63,8 +102,9 @@ built on it see `@ember-eui/changeset-form` and
 | `@errorTitle` | `string` | "Please correct the fields" | Title of the errors callout. |
 | `@invalidCallout` | `'above' \| 'none'` | `'above'` | `'above'` shows `@error` in a callout above the form while `@isInvalid`; `'none'` hides it. |
 | `@error` | `string \| string[]` |  | The form's errors, listed in the callout: an array of messages, or a single message with `@array={{true}}`. |
-| `@isInvalid` | `boolean` |  | Shows the errors callout (with `@error`). |
+| `@isInvalid` | `boolean` |  | Shows the errors callout (with `@error`). The callout is focused when it appears. |
 | `@array` | `boolean` |  | Treats a single string `@error` as a one-item list. |
+| `@fullWidth` | `boolean` | `false` | Default `@fullWidth` of every EuiFormRow and EuiDescribedFormGroup inside the form (their own `@fullWidth` wins). |
 | `@tagName` | `'form' \| 'div'` | `'div'` | `'form'` renders a `<form>` (add `{{on "submit" …}}`); `'div'` for forms without native submission. |
 
 | Block | Description |
@@ -83,20 +123,21 @@ A form control with its label, help text and errors:
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@label` | `string` |  | The control's label. It is linked to the first text-like control in the row automatically (no need to pass ids around). |
-| `@labelAppend` | `string` |  | Text at the end of the label line, e.g. "Optional". Use the `<:labelAppend>` block for markup such as a help link. |
+| `@labelAppend` | `string` |  | Text at the end of the label line, e.g. "Optional" (small subdued text). Use the `<:labelAppend>` block for markup such as a help link. |
 | `@labelType` | `'label' \| 'legend'` | `'label'` | `'label'` renders a `<label>`; `'legend'` a `<legend>`, for rows whose control is a group (radios, checkboxes). |
 | `@legendType` | `'legend' \| 'fieldset'` | a `<div>` | `'legend'` renders the row as a `<fieldset>` (use it with `@labelType="legend"` for groups). |
-| `@fullWidth` | `boolean` |  | Lets the row (and its control) take the container's full width. |
+| `@fullWidth` | `boolean` | the enclosing EuiForm's `@fullWidth`, else `false` | Lets the row (and its control) take the container's full width instead of the theme's form max width (400px in Borealis). |
 | `@isInvalid` | `boolean` |  | Shows `@error` under the control and styles the label as invalid. |
-| `@isDisabled` | `boolean` |  | Disables the label's focus styling. |
+| `@isDisabled` | `boolean` |  | Disables the label's focus state and pointer cursor (pass `@disabled` to the control itself). |
 | `@hasEmptyLabelSpace` | `boolean` |  | Adds space above the control as if it had a label, to align it with labelled rows next to it (e.g. a button in an `EuiFlexGroup` of rows). |
 | `@hasChildLabel` | `boolean` | `true` | Link the label to the control. Set `false` when the control has its own label (e.g. a single checkbox). |
 | `@helpText` | `string` |  | Help text under the control (a string, or an array for several lines). The control's `aria-describedby` points to it, so screen readers read it with the control. |
 | `@error` | `string \| string[] \| null` |  | Error message(s) shown under the control while `@isInvalid`; they are added to the control's `aria-describedby` while shown. |
+| `@describedByIds` | `string[]` |  | Ids of other elements describing the control, added first to its `aria-describedby` (before the help text and errors). |
 | `@errorClasses` | `string` |  | Extra classes for each error message. |
 | `@helpTextClasses` | `string` |  | Extra classes for the help text. |
 | `@id` | `string` | a random id | Id of the control; the label points to it. |
-| `@display` |  | `'row'` | Layout: `'row'` (label above), `'rowCompressed'`, `'columnCompressed'` (label beside, for dense forms), `'columnCompressedSwitch'` (for an `EuiSwitch`), or `'center'` / `'centerCompressed'` (vertically centers a control without a label, e.g. a button next to rows). |
+| `@display` | `EuiFormRowDisplay` | `'row'` | Layout: `'row'` (label above), `'columnCompressed'` (label beside, for dense forms; also used for switches), or `'center'` / `'centerCompressed'` (vertically centers content shorter than a control, e.g. a switch or text next to rows). `'rowCompressed'` and `'columnCompressedSwitch'` are kept as aliases of `'row'` and `'columnCompressed'`. |
 
 Deprecated: `@extra` (Has no effect.).
 
@@ -106,7 +147,7 @@ Deprecated: `@extra` (Has no effect.).
 | `<:label>` | Custom label content, instead of `@label`; yields `@label`. |
 | `<:field>` | The control; same as the default block. |
 | `<:errors>` | Renders each error (while `@isInvalid`); yields the error. |
-| `<:helpText>` | Custom help text, instead of `@helpText`. |
+| `<:helpText>` | Custom help text, instead of `@helpText`; yields `@helpText`. |
 | `<:labelAppend>` | Content at the end of the label line, e.g. a help link. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<fieldset>`.
@@ -118,7 +159,7 @@ Groups related controls (e.g. radios) under a legend.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@legend` | `string` |  | The legend describing the group. Use the `<:legend>` block for markup. |
-| `@compressed` | `boolean` |  | Smaller legend, for compressed forms. |
+| `@compressed` | `boolean` |  | Smaller space under the legend, for compressed forms. |
 | `@display` |  | `'visible'` | `'hidden'` keeps the legend for screen readers only. |
 
 | Block | Description |
@@ -136,7 +177,7 @@ The legend of an EuiFormFieldset.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@display` | `'hidden' \| 'visible'` | `'visible'` | `'hidden'` keeps it for screen readers only. |
-| `@compressed` | `boolean` |  | Smaller legend, for compressed forms. |
+| `@compressed` | `boolean` |  | Smaller space under the legend, for compressed forms. |
 
 | Block | Description |
 | --- | --- |
@@ -150,11 +191,13 @@ The label of a control; EuiFormRow renders it from `@label`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@isFocused` | `boolean` |  | Focused styling (the control has focus). |
-| `@isInvalid` | `boolean` |  | Invalid styling. |
+| `@isFocused` | `boolean` |  | The control has focus. Adds the `euiFormLabel-isFocused` class; the latest theme no longer recolors focused labels. |
+| `@isInvalid` | `boolean` |  | Invalid styling (danger text color). |
+| `@isDisabled` | `boolean` |  | Disabled: drops the pointer cursor of a `for` label. |
 | `@type` | `'legend' \| 'label'` | `'label'` | `'label'` renders a `<label>`, `'legend'` a `<legend>` (for fieldsets). |
 | `@for` | `string` |  | Id of the control it labels. |
 | `@label` | `string` |  | The label text, before the block content. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

@@ -8,7 +8,7 @@ title: Title
 
 <EuiText>
 
-`EuiTitle` renders a heading styled with EUI's type scale. Its tag and
+**EuiTitle** styles the page, section, and content headings we use in Kibana. Unlike **EuiText** it is margin neutral and more suitable for general layout design. It renders a heading styled with EUI's type scale. Its tag and
 its size are independent: choose the tag (`@tagName`, `h2` by default)
 for the page's outline, and the size (`@size`, `m` by default) for how
 it looks.
@@ -43,14 +43,15 @@ A heading styled with EUI's type scale:
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@tagName` |  | `'h2'` | The heading tag EuiTitle renders: `'h1'`–`'h6'`, `'p'` or `'legend'`. Put the text directly inside EuiTitle; do not wrap it in another heading. |
-| `@size` |  | `'m'` | `'xxxs'`, `'xxs'`, `'xs'`, `'s'`, `'m'` or `'l'`. Size is independent of the tag: pick the tag for the page outline and the size for the look. |
-| `@textTransform` |  |  | `'uppercase'` for all caps. |
+| `@size` | `'xxxs' \| 'xxs' \| 'xs' \| 's' \| 'm' \| 'l'` | `'m'` | `'xxxs'`, `'xxs'`, `'xs'`, `'s'`, `'m'` or `'l'`. Size is independent of the tag: pick the tag for the page outline and the size for the look. |
+| `@textTransform` | `'uppercase'` |  | `'uppercase'` for all caps. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |
 | default block | The title's text. |
 
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<h1…h6>`.
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<h1…h6>` / `<p>` / `<legend>`.
 
 </EuiText>
 <!-- api:end -->

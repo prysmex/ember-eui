@@ -1,10 +1,18 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import {
+  buttonReset,
+  euiFormControlLayoutCustomIconStyles as styles
+} from '../utils/eui/form-controls.ts';
+import { euiClass } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import EuiIcon from './eui-icon.gts';
 
 import type { CommonArgs } from './common.ts';
 import type { EuiIconSignature } from './eui-icon.gts';
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export type EuiFormControlLayoutCustomIconArgs = CommonArgs & {
   /** Makes the icon a button calling this function. */
@@ -13,6 +21,12 @@ export type EuiFormControlLayoutCustomIconArgs = CommonArgs & {
   type: EuiIconSignature['Args']['type'];
   /** Size of the icon. */
   size?: EuiIconSignature['Args']['size'];
+  /** Color of the icon, anything `EuiIcon`'s `@color` accepts. */
+  color?: EuiIconSignature['Args']['color'];
+  /** Extra styles composed last into the EuiIcon's class (its `@css`). */
+  iconCss?: EuiCss;
+  /** Disables the `@onClick` button. */
+  disabled?: boolean;
   /** @deprecated Has no effect. */
   iconRef?: string | ((el: HTMLButtonElement | HTMLSpanElement | null) => void);
 };
@@ -23,12 +37,25 @@ export interface EuiFormControlLayoutCustomIconSignature {
   Args: EuiFormControlLayoutCustomIconArgs;
 }
 
-const EuiFormControlLayoutCustomIcon: TemplateOnlyComponent<EuiFormControlLayoutCustomIconSignature> =
+export default class EuiFormControlLayoutCustomIcon extends Component<EuiFormControlLayoutCustomIconSignature> {
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    const clickable = Boolean(this.args.onClick);
+    return euiClass(
+      context,
+      clickable && buttonReset,
+      styles.euiFormControlLayoutCustomIcon,
+      clickable ? styles.clickable : styles.unclickable
+    );
+  }
+
   <template>
     {{#if @onClick}}
       <button
         type="button"
-        class="euiFormControlLayoutCustomIcon euiFormControlLayoutCustomIcon--clickable"
+        class="euiFormControlLayoutCustomIcon {{this.classes}}"
+        disabled={{@disabled}}
         ...attributes
         {{on "click" @onClick}}
       >
@@ -36,19 +63,25 @@ const EuiFormControlLayoutCustomIcon: TemplateOnlyComponent<EuiFormControlLayout
           @iconClasses="euiFormControlLayoutCustomIcon__icon"
           @type={{@type}}
           @size={{@size}}
+          @color={{@color}}
+          @css={{@iconCss}}
           aria-hidden="true"
         />
       </button>
     {{else}}
-      <span class="euiFormControlLayoutCustomIcon" ...attributes>
+      <span
+        class="euiFormControlLayoutCustomIcon {{this.classes}}"
+        ...attributes
+      >
         <EuiIcon
           @iconClasses="euiFormControlLayoutCustomIcon__icon"
           @type={{@type}}
           @size={{@size}}
+          @color={{@color}}
+          @css={{@iconCss}}
           aria-hidden="true"
         />
       </span>
     {{/if}}
-  </template>;
-
-export default EuiFormControlLayoutCustomIcon;
+  </template>
+}

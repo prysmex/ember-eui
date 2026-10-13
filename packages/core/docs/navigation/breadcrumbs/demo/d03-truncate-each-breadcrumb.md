@@ -6,23 +6,16 @@ order: 3
 
 <EuiText>
 	<p>
-		<strong>EuiBreadcrumbs</strong> will truncate the full set by default, forcing it to a single line and setting a max width on all items except for the last. You can turn this off by setting <EuiCode @language="jsx">@truncate=&#123;&#123;false&#125;&#125;</EuiCode>.
+		<strong>EuiBreadcrumbs</strong> will truncate the full set by default, forcing it to a single line and setting a max width on all items except for the last. You can turn this off by setting <code>@truncate=\{{false}}</code>.
   </p>
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @truncate={{true}}
-  aria-label='An example of EuiBreadcrumbs with truncate prop'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBreadcrumbs } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',
@@ -57,5 +50,13 @@ export default class DemoSideNavComponent extends Component {
       text: 'Nebulosa subspecies is also a real mouthful, especially for creatures without mouths'
     }
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @truncate={{true}}
+      aria-label='An example of EuiBreadcrumbs with truncate prop'
+    />
+  </template>
 }
 ```

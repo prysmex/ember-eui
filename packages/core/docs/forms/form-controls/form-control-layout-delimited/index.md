@@ -42,22 +42,34 @@ range ("0 → 100") or start and end dates.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@icon` | `string` |  | Icon at the start of the control, anything `EuiIcon`'s `@type` accepts. |
+| `@iconSide` |  | `'left'` | Side of `@icon`: `'left'` or `'right'` (upstream `icon.side`). |
 | `@clear` |  |  | Shows a clear ("x") button calling this function. |
 | `@fullWidth` |  |  | Stretches the control to its container's width. |
 | `@isLoading` |  |  | Shows a spinner. |
 | `@compressed` |  |  | Shorter control, for dense forms. |
 | `@readOnly` |  |  | Read-only styling. |
 | `@disabled` |  |  | Disabled styling. |
-| `@delimiter` | `string` | `'→'` | Text between the two controls. |
-| `@useGroup` | `boolean` | `true` | Styles it as a group with `<:prepend>` / `<:append>`. |
+| `@isDisabled` |  |  | Same as `@disabled`. |
+| `@isInvalid` | `boolean` |  | Invalid styling: a danger underline/border, a danger delimiter and the warning icon (not while disabled or read-only). |
+| `@delimiter` | `string` | upstream's `sortRight` arrow icon, labelled "to" for screen readers (`euiFormControlLayoutDelimited.delimiterLabel`) | Text between the two controls. |
+| `@iconsPosition` |  |  | `'static'` (default) lays the icons out beside the controls, `'absolute'` overlays them. |
+| `@isDropdown` |  |  | Shows a dropdown arrow on the right. Hidden while disabled or read-only. |
+| `@inputId` |  |  | Id of a control: `EuiFormPrepend` / `EuiFormAppend` labels in the `<:prepend>` / `<:append>` blocks point to it. |
+| `@wrapperProps` |  |  | Extra props for the `.euiFormControlLayout__childrenWrapper` element holding the controls: `className`, `id`, `aria-label`, `data-test-subj` and `css`. |
+| `@isPrependProvided` | `boolean` | `true` | Renders the `<:prepend>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `prepend={undefined}`). |
+| `@isAppendProvided` | `boolean` | `true` | Renders the `<:append>` block. Lets a wrapper that always passes the block hide it without remounting the layout (upstream passes `append={undefined}`). |
+
+Deprecated: `@useGroup` (Has no effect: the delimited layout is always a group.).
 
 | Block | Description |
 | --- | --- |
 | `<:prepend>` | Content before the controls; yields the class to put on it. |
-| `<:startControl>` | The first control, e.g. an `EuiFieldNumber @controlOnly={{true}}`; yields the class to put on it. |
+| `<:startControl>` | The first control, e.g. an `EuiFieldNumber @controlOnly={{true}}`; yields the class to put on it (it carries the delimited input styles). |
 | `<:delimiter>` | Custom delimiter content, instead of `@delimiter`. |
 | `<:endControl>` | The second control; yields the class to put on it. |
 | `<:append>` | Content after the controls; yields the class to put on it. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
 </EuiText>
 <!-- api:end -->

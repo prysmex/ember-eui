@@ -18,7 +18,10 @@ register it.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiIcon } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize="l" @alignItems="center" @responsive={{false}}>
   <EuiFlexItem @grow={{false}}>
     <EuiIcon @type="/assets/euivector.svg" @size="xl" @title="Ember EUI" />
@@ -31,4 +34,5 @@ register it.
     />
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

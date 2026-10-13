@@ -10,11 +10,10 @@ module('Integration | Component | eui-expression', function (hooks) {
   test('it renders a description and a value', async function (assert) {
     await render(<template><EuiExpression @description="when" @value="avg()" /></template>);
 
-    assert
-      .dom('span.euiExpression')
-      .hasClass('euiExpression--success')
-      .hasClass('euiExpression-isUppercase')
-      .doesNotHaveClass('euiExpression-isClickable');
+    // legacy modifier classes replaced by computed styles
+    assert.dom('span.euiExpression').doesNotHaveAttribute('type');
+    assert.dom('.euiExpression__description').hasStyle({ textTransform: 'uppercase' });
+    assert.strictEqual(getComputedStyle(this.element.querySelector('.euiExpression')!).cursor, 'auto', 'not clickable');
     assert.dom('.euiExpression__description').hasText('when');
     assert.dom('.euiExpression__value').hasText('avg()');
   });
@@ -25,7 +24,7 @@ module('Integration | Component | eui-expression', function (hooks) {
 
     await render(<template><EuiExpression @description="is above" @value="100" @onClick={{onClick}} @isActive={{true}} /></template>);
 
-    assert.dom('button.euiExpression').hasClass('euiExpression-isClickable').hasClass('euiExpression-isActive');
+    assert.dom('button.euiExpression').hasAttribute('type', 'button').hasStyle({ cursor: 'pointer', borderBottomStyle: 'solid' });
     await click('button.euiExpression');
     assert.strictEqual(clicks, 1);
   });
@@ -33,7 +32,9 @@ module('Integration | Component | eui-expression', function (hooks) {
   test('@isInvalid shows danger with an alert icon', async function (assert) {
     await render(<template><EuiExpression @description="when" @value="?" @color="primary" @isInvalid={{true}} /></template>);
 
-    assert.dom('.euiExpression').hasClass('euiExpression--danger').doesNotHaveClass('euiExpression--primary');
+    const description = getComputedStyle(this.element.querySelector('.euiExpression__description')!).color;
+    const value = getComputedStyle(this.element.querySelector('.euiExpression__value')!).color;
+    assert.notStrictEqual(description, value, 'the description takes the danger color');
     assert.dom('.euiExpression__icon').exists();
   });
 
@@ -47,7 +48,8 @@ module('Integration | Component | eui-expression', function (hooks) {
       </template>
     );
 
-    assert.dom('.euiExpression').hasClass('euiExpression--columns').doesNotHaveClass('euiExpression-isUppercase');
+    assert.dom('.euiExpression').hasStyle({ display: 'flex' });
+    assert.dom('.euiExpression__description').hasStyle({ textTransform: 'none' });
     assert.dom('.euiExpression__description').hasStyle({ flexBasis: '100px' });
     assert.dom('.euiExpression__description em').hasText('from');
     assert.dom('.euiExpression__value strong').hasText('logs-*');

@@ -53,7 +53,7 @@ Dragging near an edge scrolls: the window (turn it off with
 `@autoScrollWindow={{false}}` on the context), a list that scrolls itself
 (`@autoScroll={{false}}` on the droppable turns it off), and any other
 container you give the yielded modifier, e.g. a board of lists:
-`<div class="board" &#123;&#123;dnd.autoScroll}}>`. Moving an item with the
+`<div class="board" {{dnd.autoScroll}}>`. Moving an item with the
 keyboard keeps it in view.
 
 </EuiText>
@@ -95,14 +95,15 @@ items.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@droppableId` (required) | `string` |  | Unique id of the list, reported in `onDragEnd`. |
 | `@type` | `string` | `'EUI_DEFAULT'` | Items can only move between lists of the same type. |
 | `@direction` | `'vertical' \| 'horizontal'` | `'vertical'` | `'vertical'` or `'horizontal'` list. |
 | `@isDropDisabled` | `boolean` |  | Nothing can be dropped here. |
 | `@cloneDraggables` | `boolean` |  | Items dragged from here are copies: the list keeps its items (and nothing can be dropped here). |
 | `@spacing` | `'none' \| 's' \| 'm' \| 'l'` | `'none'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
-| `@withPanel` | `boolean` |  | Panel look (background, padding, rounded corners). |
-| `@grow` | `boolean` |  | Grows to fill its flex container. |
+| `@withPanel` | `boolean` |  | Renders the list as an `EuiPanel` (plain background, shadow, rounded corners, no padding of its own: use `@spacing`). |
+| `@grow` | `boolean` | `false` | Grows to fill its flex container. |
 | `@autoScroll` | `boolean` | `true` | Scrolls the list while an item is dragged near its edges (when the list itself scrolls, e.g. with a max height). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
@@ -115,10 +116,12 @@ move it and Space again to drop it (Escape cancels).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@draggableId` (required) | `string` |  | Unique id of the item, reported in `onDragEnd`. |
 | `@index` (required) | `number` |  | Position of the item in its list. |
 | `@isDragDisabled` | `boolean` |  | The item cannot be dragged. |
-| `@customDragHandle` | `boolean` |  | Only a handle drags the item: put the yielded `dragHandle` modifier on it, e.g. `<EuiIcon @type="grab" {{item.dragHandle}} />`. |
+| `@customDragHandle` | `boolean \| 'custom'` |  | Only a handle drags the item: put the yielded `dragHandle` modifier on it, e.g. `<EuiIcon @type="dragVertical" {{item.dragHandle}} />`. With `'custom'` the item itself is not focusable and has no role either: the handle becomes the focusable `role="button"` that lifts the item with the keyboard (upstream's fully custom handle). |
+| `@hasInteractiveChildren` | `boolean` |  | The item holds its own controls: it becomes a `role="group"` that is not focusable itself, and key presses in those controls are theirs. |
 | `@isRemovable` | `boolean` |  | Skips the drop animation, e.g. for items removed on drop. |
 | `@spacing` | `'none' \| 's' \| 'm' \| 'l'` | `'none'` | Padding: `'none'`, `'s'`, `'m'` or `'l'`. |
 

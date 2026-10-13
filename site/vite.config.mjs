@@ -7,6 +7,8 @@ import { babel } from '@rollup/plugin-babel';
 import docfy from '@docfy/ember-vite';
 import svgJar from '@svg-jar/plugin/vite';
 
+import docfyConfig from './docfy.config.mjs';
+
 const root = dirname(fileURLToPath(import.meta.url));
 const GENERATED_PAGES = resolve(root, 'app/templates/docs');
 const DOCFY_OVERRIDES = resolve(root, 'app/docfy-overrides.js');
@@ -28,9 +30,71 @@ function siteDocfyComponents() {
   };
 }
 
+/**
+ * @docfy/ember-vite (0.14.2) still registers its virtual-module rule as an
+ * `optimizeDeps.esbuildOptions` plugin, which Vite 8 ignores and warns about
+ * (the dependency optimizer is Rolldown now). Move the rule to
+ * `optimizeDeps.rolldownOptions`. Runs after docfy's `config` hook: both are
+ * `enforce: 'pre'` and this one comes later in `plugins`.
+ */
+function docfyRolldownOptimizeDeps() {
+  return {
+    name: 'site-docfy-rolldown-optimize-deps',
+    enforce: 'pre',
+    config(config) {
+      const optimizeDeps = config.optimizeDeps;
+      if (!optimizeDeps?.esbuildOptions) return;
+      const esbuildPlugins = optimizeDeps.esbuildOptions.plugins ?? [];
+      optimizeDeps.esbuildOptions.plugins = esbuildPlugins.filter(
+        (plugin) => plugin.name !== 'docfy-virtual-modules',
+      );
+      if (
+        optimizeDeps.esbuildOptions.plugins.length === 0 &&
+        Object.keys(optimizeDeps.esbuildOptions).length === 1
+      ) {
+        delete optimizeDeps.esbuildOptions;
+      }
+      optimizeDeps.rolldownOptions ??= {};
+      optimizeDeps.rolldownOptions.plugins ??= [];
+      optimizeDeps.rolldownOptions.plugins.push({
+        name: 'docfy-virtual-modules',
+        resolveId(id) {
+          if (/^@docfy\/ember\/.*:virtual$/.test(id)) {
+            return { id, external: true };
+          }
+        },
+      });
+    },
+  };
+}
+
+/**
+ * @docfy/ember-vite (0.14.2) pushes its own plugins into the docfy config's
+ * arrays on every `buildStart`. Node caches docfy.config.mjs, so when Vite
+ * restarts the dev server in-process (e.g. after vite.config.mjs changes) the
+ * plugins are added again and every demo is processed twice: duplicate
+ * imports ("already declared") and empty template-only demos. Hand docfy
+ * fresh arrays each time this config is evaluated.
+ */
+function freshDocfyConfig() {
+  return Object.fromEntries(
+    Object.entries(docfyConfig).map(([key, value]) => [
+      key,
+      Array.isArray(value) ? [...value] : value,
+    ]),
+  );
+}
+
 export default defineConfig({
   plugins: [
-    docfy({ root }),
+    docfy({
+      root,
+      config: freshDocfyConfig(),
+      staticExport: {
+        enabled: true,
+      },
+    }),
+    docfyRolldownOptimizeDeps(),
     siteDocfyComponents(),
     classicEmberSupport(),
     ember(),

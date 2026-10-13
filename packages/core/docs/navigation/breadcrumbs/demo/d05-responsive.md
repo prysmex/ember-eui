@@ -6,38 +6,17 @@ order: 5
 
 <EuiText>
 	<p>
-		<strong>EuiBreadcrumbs</strong> are <EuiCode>@responsive</EuiCode> by default and will collapse breadcrumbs on narrower screens. Setting <EuiCode @language="json">@responsive=&#123;&#123;false&#125;&#125;</EuiCode> will keep all breadcrumbs visible at all screens sizes.
+		<strong>EuiBreadcrumbs</strong> are <EuiCode>@responsive</EuiCode> by default and will collapse breadcrumbs on narrower screens. Setting <code>@responsive=\{{false}}</code> will keep all breadcrumbs visible at all screens sizes.
   </p>
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @max={{null}}
-  @responsive={{false}}
-  aria-label='An example of non-responsive EuiBreadcrumbs'
-/>
-
-<EuiText>
-	<p>
-		Alternatively, you can change number of breadcrumbs that show per breakpoint by passing a custom responsive object.
-  </p>
-</EuiText>
-
-
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @responsive={{hash xs=1 s=3 m=5 xl=6}}
-	@max={{null}}
-  aria-label='An example of custom responsive EuiBreadcrumbs'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { hash } from '@ember/helper';
+import { EuiBreadcrumbs, EuiSpacer, EuiText } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',
@@ -71,5 +50,30 @@ export default class DemoSideNavComponent extends Component {
       text: 'Nebulosa subspecies'
     }
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @max={{null}}
+      @responsive={{false}}
+      aria-label='An example of non-responsive EuiBreadcrumbs'
+    />
+
+    <EuiSpacer />
+
+    <EuiText>
+    	<p>
+    		Alternatively, you can change number of breadcrumbs that show per breakpoint by passing a custom responsive object.
+      </p>
+    </EuiText>
+
+
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @responsive={{hash xs=1 s=3 m=5 xl=6}}
+    	@max={{null}}
+      aria-label='An example of custom responsive EuiBreadcrumbs'
+    />
+  </template>
 }
 ```

@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
+import { deprecateRemovedUpstream } from '../-private/removed-upstream.ts';
 import EuiFieldText from './eui-field-text.gts';
 import EuiIcon from './eui-icon.gts';
 import EuiInputPopover from './eui-input-popover.gts';
@@ -10,7 +11,7 @@ import EuiToolTip from './eui-tool-tip.gts';
 
 const STATUS = {
   unsaved: { icon: 'dot', color: 'accent', tooltip: 'Changes have not been saved.' },
-  saved: { icon: 'checkInCircleFilled', color: 'success', tooltip: 'Saved.' }
+  saved: { icon: 'checkCircleFill', color: 'success', tooltip: 'Saved.' }
 } as const;
 
 export type EuiSuggestStatus = 'unchanged' | 'unsaved' | 'saved' | 'loading';
@@ -52,6 +53,11 @@ export default class EuiSuggestInput extends Component<EuiSuggestInputSignature>
 
   constructor(...args: ConstructorParameters<typeof Component<EuiSuggestInputSignature>>) {
     super(...args);
+    deprecateRemovedUpstream(
+      'eui-suggest-input',
+      'EuiSuggestInput',
+      'Use EuiSelectable or EuiComboBox instead, as upstream recommends.'
+    );
     this.args.registerClose?.(this.closePopover);
   }
 

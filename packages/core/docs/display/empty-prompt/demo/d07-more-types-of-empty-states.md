@@ -5,152 +5,115 @@ order: 7
 # More types of empty states
 
 <EuiText>
- <strong>EuiEmptyPrompt</strong> can be used for more than just empty pages. The following example showcases different types of empty states that you can create with the <strong>EuiEmptyPrompt</strong>. For a full list see the usage guidelines.
+
+**EuiEmptyPrompt** can be used for more than just **empty** pages. The following example showcases different types of empty states that you can create with the **EuiEmptyPrompt**. For a full list see the usage guidelines below.
+
 </EuiText>
 
-```hbs template
-{{#let (unique-id) as |selectId|}}
-  <EuiFormRow
-    @id={{selectId}}
-  >
-    <EuiSelect
-      @value={{this.exampleValue}}
-      @hasNoInitialSelection={{true}}
-      @options={{array
-        (hash value='page not found' text='Page not found')
-        (hash value='no permission' text='No permission')
-        (hash value='license upgrade' text='License Upgrade')
-        (hash value='complex' text='Complex')
-      }}
-      @id={{selectId}}
-      {{on 'change' (pick 'target.value' (set this 'exampleValue'))}}
-    >
-      <:prepend as |classes|>
-        <EuiFormLabel class={{classes}} for={{selectId}}>
-          Examples
-        </EuiFormLabel>
-      </:prepend>
-    </EuiSelect>
-  </EuiFormRow>
-{{/let}}
-<EuiSpacer @size="xl"/>
-{{#if (eq this.exampleValue 'page not found')}}
-  <EuiEmptyPrompt
-    @title='Page not found'
-    @layout='vertical'
-    @body='The page you are looking for might have been removed or temporarily
-        unavailable.'
-    @actions={{array
-      (component 'eui-button-title' title='Go Home')
-      (component
-        'eui-button-title' title='Go Back' iconType='arrowLeft' flush='left'
-      )
-    }}
-  >
-    <:icon>
-      <EuiImage @size='fullWidth' @src={{this.illustration}} alt='' />
-    </:icon>
-  </EuiEmptyPrompt>
-{{else if (eq this.exampleValue 'no permission')}}
-  <EuiEmptyPrompt
-    @iconType='lock'
-    @color='subdued'
-    @title='Contact your administrator for access'
-    @body='To view cases in this space, you need additional privileges.'
-  />
-{{else if (eq this.exampleValue 'license upgrade')}}
-  <EuiEmptyPrompt
-    @iconType='logoKibana'
-    @title='Do more with Kibana!'
-    @layout='vertical'
-    @hasBorder={{true}}
-    @body='Start a free trial or upgrade your license to use anomaly detection.'
-    @actions={{array
-      (component 'eui-button-title' title='Update')
-      (component 'eui-button-title' title='start a free trial' color='warning')
-    }}
-  >
-    <:footer>
-      <EuiTitle @size='xxs' @tagName="h3">Want to learn more?</EuiTitle>
-      <EuiLink href='#' target='_blank'>
-        Read documentation
-      </EuiLink>
-    </:footer>
-  </EuiEmptyPrompt>
-{{else}}
-  <EuiEmptyPrompt
-    @title='Get started by adding your data'
-    @layout='horizontal'
-    @color='plain'
-    @actions={{array
-      (component 'eui-button-title' title='Add your data')
-      (component
-        'eui-button-title' title='Try sample data' color='warning'
-      )
-    }}
-  >
-    <:icon>
-      <EuiImage @size='fullWidth' @src={{this.illustration}} alt='' />
-    </:icon>
-    <:body>
-      <p>
-        To start working with your data, use one of our many ingest options.
-        Collect data from an app or service, or upload a file.
-      </p>
-      <p>
-        If you&apos;re not ready to use your own data, add a sample data set.
-      </p>
-    </:body>
-    <:footer>
-      <EuiFlexGroup class="eui-textLeft">
-        <EuiFlexItem @grow={{false}}>
-          <EuiTitle @size="xxs" @tagName="h3">Want to learn more?</EuiTitle>
-          <span>
-            <EuiButtonEmpty
-              href="#"
-              @iconType="popout"
-              @iconSide="right"
-              @iconSize="s"
-              @flush="both"
-              @size="s"
-            >
-              Read documentation
-            </EuiButtonEmpty>
-          </span>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiTitle @size="xxs" @tagName="h3">Pretty sure you have data?</EuiTitle>
-          <span>
-            <EuiButtonEmpty
-              onClick={{this.onClick}}
-              @iconType="refresh"
-              @iconSide="right"
-              @iconSize="s"
-              @flush="both"
-              @size="s"
-            >
-              Check for new data
-            </EuiButtonEmpty>
-          </span>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </:footer>
-  </EuiEmptyPrompt>
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiButtonEmpty, EuiEmptyPrompt, EuiFormLabel, EuiImage, EuiLink, EuiSelect, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+import { array } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { eq } from 'ember-truth-helpers';
 
-export default class DemoComponent extends Component {
-  @tracked illustration = 'https://source.unsplash.com/64x64/?cat';
-  @tracked exampleValue = 'page not found';
+const ActionButton1 = <template><EuiButton @color="primary">Home</EuiButton></template>;
+const ActionButton2 = <template><EuiButtonEmpty @color="primary" @iconType="arrowLeft" @flush="both">Go back</EuiButtonEmpty></template>;
+const ActionButton3 = <template><EuiButton @color="primary">Home</EuiButton></template>;
+const ActionButton4 = <template><EuiButtonEmpty @color="primary" @iconType="arrowLeft" @flush="both">Go back</EuiButtonEmpty></template>;
+const ActionButton5 = <template><EuiButton @color="primary">Upgrade</EuiButton></template>;
+const ActionButton6 = <template><EuiButtonEmpty>Start a free trial</EuiButtonEmpty></template>;
 
-  @action
-  onClick(e){
-    e.preventDefault();
+const svg =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240">' +
+  '<rect width="400" height="240" rx="16" fill="#E6F1FA"/>' +
+  '<circle cx="110" cy="90" r="50" fill="#BFDBFF"/>' +
+  '<circle cx="300" cy="150" r="30" fill="#0B64DD"/>' +
+  '<text x="200" y="215" font-size="32" text-anchor="middle" fill="#1750BA">404</text></svg>';
+
+export default class EmptyPromptTypesDemo extends Component {
+  @tracked selected = 'errorPages';
+
+  illustration = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+
+  types = [
+    { value: 'errorPages', text: 'Page not found' },
+    { value: 'noPrivileges', text: 'No permission' },
+    { value: 'licenseUpgrade', text: 'License upgrade' },
+  ];
+
+  @action setType(event) {
+    this.selected = event.target.value;
   }
+
+  <template>
+    <EuiSelect
+      @value={{this.selected}}
+      @options={{this.types}}
+      aria-label="Empty prompt examples"
+      {{on "change" this.setType}}
+    >
+      <:prepend as |classes|>
+        <EuiFormLabel class={{classes}}>Examples</EuiFormLabel>
+      </:prepend>
+    </EuiSelect>
+    <EuiSpacer @size="l" />
+    {{#if (eq this.selected "errorPages")}}
+      <EuiEmptyPrompt
+        @color="subdued"
+        @layout="vertical"
+        @title="Page not found"
+        @body="We can't find the page you're looking for. It might have been removed, renamed, or it didn't exist in the first place."
+        @actions={{array
+          ActionButton1
+          ActionButton2
+        }}
+      >
+        <:icon>
+          <EuiImage
+            @size="fullWidth"
+            @src={{this.illustration}}
+            alt="An outer space illustration. In the background is a large moon and two planets. In the foreground is an astronaut floating in space and the numbers '404'."
+          />
+        </:icon>
+      </EuiEmptyPrompt>
+    {{else if (eq this.selected "noPrivileges")}}
+      <EuiEmptyPrompt
+        @color="subdued"
+        @layout="vertical"
+        @title="Access denied"
+        @body="Sorry to rain on your parade, but you don't have permissions to access this page."
+        @actions={{array
+          ActionButton3
+          ActionButton4
+        }}
+      >
+        <:icon>
+          <EuiImage @size="fullWidth" @src={{this.illustration}} alt="" />
+        </:icon>
+      </EuiEmptyPrompt>
+    {{else}}
+      <EuiEmptyPrompt
+        @color="subdued"
+        @iconType="logoKibana"
+        @title="Do more with Kibana!"
+        @layout="vertical"
+        @hasBorder={{true}}
+        @body="Start a free trial or upgrade your license to use anomaly detection."
+        @actions={{array
+          ActionButton5
+          ActionButton6
+        }}
+      >
+        <:footer>
+          <EuiTitle @size="xxs"><h3>Want to learn more?</h3></EuiTitle>
+          <EuiLink @href="#" @target="_blank">Read the docs</EuiLink>
+        </:footer>
+      </EuiEmptyPrompt>
+    {{/if}}
+  </template>
 }
 ```
+

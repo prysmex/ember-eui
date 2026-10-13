@@ -1,18 +1,15 @@
+import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
+import { service } from '@ember/service';
+
+import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { euiClass } from '../utils/eui/styles.ts';
+import { euiLoadingElasticStyles } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 
-import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type EuiI18n from '../services/eui-i18n.ts';
 
-const SIZES = {
-  m: 'euiLoadingElastic--medium',
-  l: 'euiLoadingElastic--large',
-  xl: 'euiLoadingElastic--xLarge',
-  xxl: 'euiLoadingElastic--xxLarge'
-};
-
-/**
- * The Elastic logo, animated, for a full page or app that is loading.
- * Give it an `aria-label` (e.g. "Loading").
- */
+/** The Elastic logo, animated, for a full page or app that is loading. */
 export interface EuiLoadingElasticSignature {
   Element: HTMLSpanElement;
   Args: {
@@ -21,15 +18,30 @@ export interface EuiLoadingElasticSignature {
   };
 }
 
-function sizeClass(size: keyof typeof SIZES = 'm'): string {
-  return SIZES[size];
-}
+export default class EuiLoadingElastic extends Component<EuiLoadingElasticSignature> {
+  @service declare euiI18n: EuiI18n;
 
-const EuiLoadingElastic: TemplateOnlyComponent<EuiLoadingElasticSignature> =
+  get label() {
+    return this.euiI18n.lookupToken('euiLoadingStrings.ariaLabel', 'Loading');
+  }
+
+  @cached
+  get classes() {
+    const styles = euiLoadingElasticStyles;
+    return `euiLoadingElastic ${euiClass(
+      getEuiThemeContext(this),
+      styles.euiLoadingElastic
+    )}`;
+  }
+
   <template>
-    <span class="euiLoadingElastic {{sizeClass @size}}" ...attributes>
+    <span
+      class={{this.classes}}
+      role="progressbar"
+      aria-label={{this.label}}
+      ...attributes
+    >
       <EuiIcon @type="logoElastic" @size={{if @size @size "m"}} />
     </span>
-  </template>;
-
-export default EuiLoadingElastic;
+  </template>
+}

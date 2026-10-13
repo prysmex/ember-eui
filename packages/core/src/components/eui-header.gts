@@ -3,6 +3,8 @@ import { cached } from '@glimmer/tracking';
 
 import { modifier } from 'ember-modifier';
 
+import EuiNode from '../-private/eui-node.gts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import {
@@ -13,6 +15,7 @@ import EuiHeaderBreadcrumbs from './eui-header-breadcrumbs.gts';
 import EuiHeaderSection from './eui-header-section.gts';
 import EuiHeaderSectionItem from './eui-header-section-item.gts';
 
+import type { EuiNodeValue } from '../-private/eui-node.gts';
 import type { EuiHeaderBreadcrumbsSignature } from './eui-header-breadcrumbs';
 import type { EuiHeaderSectionItemSignature } from './eui-header-section-item';
 
@@ -72,13 +75,33 @@ const fixedHeaderModifier = modifier(function fixedHeader(
   };
 });
 
+const BREADCRUMB_ARGS = [
+  'max',
+  'truncate',
+  'type',
+  'responsive',
+  'css',
+  'lastBreadcrumbIsCurrentPage'
+] as const;
+
 export type EuiHeaderSections = {
-  /** Wrapped in one `EuiHeaderSection`, each in an `EuiHeaderSectionItem`. */
-  items?: {
-    text: string;
-  }[];
+  /**
+   * Wrapped in one `EuiHeaderSection`, each in an `EuiHeaderSectionItem`.
+   * An item is text, a component (e.g. `EuiHeaderLogo` curried with its
+   * args) or, as before, `{ text }`. For markup, render the items with the
+   * `<:sectionItem>` block instead.
+   */
+  items?: (EuiNodeValue | { text: string })[];
   /** Rendered as `EuiHeaderBreadcrumbs` after the section. */
   breadcrumbs?: EuiHeaderBreadcrumbsSignature['Args']['breadcrumbs'];
+  /**
+   * Other props for the `EuiHeaderBreadcrumbs` of this section: `className`,
+   * its args (`max`, `truncate`, `type`, `responsive`, `css`,
+   * `lastBreadcrumbIsCurrentPage`) and any other key as an attribute.
+   */
+  breadcrumbProps?: Partial<
+    Omit<EuiHeaderBreadcrumbsSignature['Args'], 'breadcrumbs'>
+  > & { className?: string; [attribute: string]: unknown };
   /** @deprecated Has no effect: latest EUI removed section item borders. */
   border?: EuiHeaderSectionItemSignature['Args']['border'];
 }[];
@@ -114,11 +137,24 @@ export interface EuiHeaderSignature {
   Blocks: {
     /** `EuiHeaderSection`s (left and right), ignored with `@sections`. */
     default: [];
+    /**
+     * With `@sections`: renders each item of a section's `items` (yielded as
+     * given) instead of the text or component, e.g. for markup.
+     */
+    sectionItem: [item: unknown, index: number];
   };
 }
 
 /** Upstream `EuiHeader` (`euiHeaderStyles`). */
 export default class EuiHeader extends Component<EuiHeaderSignature> {
+  breadcrumbArgs = BREADCRUMB_ARGS;
+
+  /** The content of an item: `{ text }` (as before), text or a component. */
+  content = (item: unknown): EuiNodeValue =>
+    item && typeof item === 'object' && 'text' in item
+      ? (item as { text: string }).text
+      : (item as EuiNodeValue);
+
   get position(): 'static' | 'fixed' {
     return this.args.position === 'fixed' ? 'fixed' : 'static';
   }
@@ -156,13 +192,29 @@ export default class EuiHeader extends Component<EuiHeaderSignature> {
         {{#each @sections as |section|}}
           {{#if section.items}}
             <EuiHeaderSection>
-              {{#each section.items as |item|}}
-                <EuiHeaderSectionItem>{{item.text}}</EuiHeaderSectionItem>
+              {{#each section.items as |item index|}}
+                <EuiHeaderSectionItem>
+                  {{#if (has-block "sectionItem")}}
+                    {{yield item index to="sectionItem"}}
+                  {{else}}
+                    <EuiNode @value={{this.content item}} />
+                  {{/if}}
+                </EuiHeaderSectionItem>
               {{/each}}
             </EuiHeaderSection>
           {{/if}}
           {{#if section.breadcrumbs}}
-            <EuiHeaderBreadcrumbs @breadcrumbs={{section.breadcrumbs}} />
+            <EuiHeaderBreadcrumbs
+              @breadcrumbs={{section.breadcrumbs}}
+              @max={{section.breadcrumbProps.max}}
+              @truncate={{section.breadcrumbProps.truncate}}
+              @type={{section.breadcrumbProps.type}}
+              @responsive={{section.breadcrumbProps.responsive}}
+              @css={{section.breadcrumbProps.css}}
+              @lastBreadcrumbIsCurrentPage={{section.breadcrumbProps.lastBreadcrumbIsCurrentPage}}
+              class={{section.breadcrumbProps.className}}
+              {{spreadAttributes section.breadcrumbProps this.breadcrumbArgs}}
+            />
           {{/if}}
         {{/each}}
       {{else}}

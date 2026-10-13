@@ -17,7 +17,7 @@ Below are a few established patterns to use.
 ```gjs component
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { EuiButton, EuiCollapsibleNavGroup, EuiLink, EuiListGroup, EuiPinnableListGroup, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { EuiButton, EuiButtonIcon, EuiCollapsibleNavGroup, EuiLink, EuiListGroup, EuiPinnableListGroup, EuiSpacer, EuiText, EuiToolTip } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   deploymentsList = [
@@ -102,8 +102,14 @@ export default class DemoComponent extends Component {
       @iconType="logoSecurity"
       @isCollapsible={{true}}
       @initialIsOpen={{true}}
+      @arrowDisplay="none"
     >
       <:title>Elastic Security</:title>
+      <:extraAction>
+        <EuiToolTip @content="Hide and never show again" @disableScreenReaderOutput={{true}}>
+          <EuiButtonIcon @iconType="cross" aria-label="Hide and never show again" />
+        </EuiToolTip>
+      </:extraAction>
       <:content>
         <EuiText @size="s" @color="subdued" style="padding: 0 8px 8px">
           <p>

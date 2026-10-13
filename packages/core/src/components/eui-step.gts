@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
-import { cached } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
+import { modifier } from 'ember-modifier';
 
+import { euiStepsContext } from '../-private/eui-steps-context.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -16,13 +18,18 @@ import type { EuiStepStatus } from './eui-step-number.gts';
 
 const BOX_SIZING = { boxSizing: 'border-box' } as const;
 
+export type EuiStepHeadingElement = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+
 export type EuiStepTitleSize = 'xxs' | 'xs' | 's' | 'm';
 
 /** One step of an EuiSteps list. */
 export interface EuiStepSignature {
   Element: HTMLDivElement;
   Args: {
-    /** The step's number, shown in its circle. Defaults to `1` (upstream). */
+    /**
+     * The step's number, shown in its circle. Inside an `EuiSteps` it
+     * defaults to the step's position (from `@firstStepNumber`), otherwise `1`.
+     */
     step?: number;
     /** The step's title. */
     title: string;
@@ -39,7 +46,7 @@ export interface EuiStepSignature {
      */
     titleSize?: EuiStepTitleSize;
     /** Tag of the title, e.g. `'h3'`. Defaults to `'p'`. */
-    headingElement?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+    headingElement?: EuiStepHeadingElement;
   };
   Blocks: {
     /** The step's instructions, e.g. text, code blocks or EuiSubSteps. */
@@ -48,12 +55,46 @@ export interface EuiStepSignature {
 }
 
 export default class EuiStep extends Component<EuiStepSignature> {
+  /** Position among the sibling steps of the parent `EuiSteps` (UI state). */
+  @tracked position = 0;
+
+  get stepsContext() {
+    return euiStepsContext(this);
+  }
+
+  /** Counts the preceding sibling steps, and follows steps added or removed. */
+  trackPosition = modifier((element: Element) => {
+    const parent = element.parentElement;
+    if (!parent) return;
+    const update = () => {
+      let index = 0;
+      for (const child of Array.from(parent.children)) {
+        if (child === element) break;
+        if (child.classList.contains('euiStep')) index++;
+      }
+      this.position = index;
+    };
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(parent, { childList: true });
+    return () => observer.disconnect();
+  });
+
   get step(): number {
-    return this.args.step ?? 1;
+    return (
+      this.args.step ??
+      (this.stepsContext
+        ? this.stepsContext.firstStepNumber + this.position
+        : 1)
+    );
   }
 
   get titleSize(): EuiStepTitleSize {
-    return this.args.titleSize ?? 's';
+    return this.args.titleSize ?? this.stepsContext?.titleSize ?? 's';
+  }
+
+  get headingElement(): EuiStepHeadingElement {
+    return this.args.headingElement ?? this.stepsContext?.headingElement ?? 'p';
   }
 
   get numberSize() {
@@ -107,7 +148,7 @@ export default class EuiStep extends Component<EuiStepSignature> {
   }
 
   <template>
-    <div class={{this.classes}} ...attributes>
+    <div class={{this.classes}} {{this.trackPosition}} ...attributes>
       <div class={{this.titleWrapperClasses}}>
         <EuiStepNumber
           @number={{this.step}}
@@ -116,7 +157,7 @@ export default class EuiStep extends Component<EuiStepSignature> {
         />
         <EuiTitle
           @size={{this.euiTitleSize}}
-          @tagName={{if @headingElement @headingElement "p"}}
+          @tagName={{this.headingElement}}
           class="euiStep__title"
           @css={{this.titleCss}}
         >

@@ -78,8 +78,28 @@ export interface EuiPageHeaderSignature {
     /** The page's title (an `<h1>`). Use the `<:pageTitle>` block for markup. */
     pageTitle?: string;
 
-    /** Props for the title: `{ className }`. */
+    /**
+     * Props for the title: `className`, `textTransform`, `css` and any other
+     * key as an attribute of the `<h1>` (`aria-label`, `data-test-subj`).
+     */
     pageTitleProps?: EuiPageHeaderContentSignature['Args']['pageTitleProps'];
+    /**
+     * Props for the icon: `className`, `size`, `color`, `title`, `titleId`,
+     * `css` and any other key as an attribute.
+     */
+    iconProps?: EuiPageHeaderContentSignature['Args']['iconProps'];
+    /** Props for the tabs: `className`, `display` and any attribute. */
+    tabsProps?: EuiPageHeaderContentSignature['Args']['tabsProps'];
+    /**
+     * Props for the breadcrumbs: `className`, `EuiBreadcrumbs` args and any
+     * attribute.
+     */
+    breadcrumbProps?: EuiPageHeaderContentSignature['Args']['breadcrumbProps'];
+    /**
+     * Props for the right side items group: `className`, `EuiFlexGroup`
+     * args and any attribute.
+     */
+    rightSideGroupProps?: EuiPageHeaderContentSignature['Args']['rightSideGroupProps'];
 
     /**
      * @deprecated Has no effect on its own: put the items in the
@@ -173,6 +193,10 @@ export default class EuiPageHeader extends Component<EuiPageHeaderSignature> {
           @bottomBorder={{if (eq @bottomBorder "extended") false @bottomBorder}}
           @pageTitle={{@pageTitle}}
           @pageTitleProps={{@pageTitleProps}}
+          @iconProps={{@iconProps}}
+          @tabsProps={{@tabsProps}}
+          @breadcrumbProps={{@breadcrumbProps}}
+          @rightSideGroupProps={{@rightSideGroupProps}}
           @iconType={{@iconType}}
           @breadcrumbs={{@breadcrumbs}}
           @tabs={{@tabs}}

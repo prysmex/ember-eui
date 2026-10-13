@@ -51,6 +51,17 @@ export interface EuiCollapsibleNavGroupSignature {
      * upstream. Defaults to `'none'`.
      */
     background?: EuiCollapsibleNavGroupBackground | (string & {});
+    /**
+     * Side of the title the open/close arrow is on, for a collapsible group:
+     * `'right'`, `'left'` or `'none'`. Defaults to `'right'`.
+     */
+    arrowDisplay?: EuiAccordionSignature['Args']['arrowDisplay'];
+    /** Padding of a collapsible group's content, see `EuiAccordion`. */
+    paddingSize?: EuiAccordionSignature['Args']['paddingSize'];
+    /** Tag of a collapsible group's title button, see `EuiAccordion`. */
+    buttonElement?: EuiAccordionSignature['Args']['buttonElement'];
+    /** Called with the new open state when a collapsible group toggles. */
+    onToggle?: EuiAccordionSignature['Args']['onToggle'];
   };
   Blocks: {
     /** Unused, use `<:title>` and `<:content>`. */
@@ -59,6 +70,11 @@ export interface EuiCollapsibleNavGroupSignature {
     title: [];
     /** The group's links, e.g. an `EuiListGroup`. */
     content: [];
+    /**
+     * An action next to the title of a collapsible group, e.g. a button
+     * icon; yields whether the group is open (see `EuiAccordion`).
+     */
+    extraAction: EuiAccordionSignature['Blocks']['extraAction'];
   };
 }
 
@@ -156,7 +172,11 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
                   true
                   @initialIsOpen
                 }}
-                @arrowDisplay="right"
+                @arrowDisplay={{if @arrowDisplay @arrowDisplay "right"}}
+                @paddingSize={{@paddingSize}}
+                @buttonElement={{@buttonElement}}
+                @onToggle={{@onToggle}}
+                @extraAction={{has-block "extraAction"}}
                 ...attributes
               >
                 <:buttonContent>
@@ -184,6 +204,9 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
                     </EuiFlexItem>
                   </EuiFlexGroup>
                 </:buttonContent>
+                <:extraAction as |isOpen|>
+                  {{yield isOpen to="extraAction"}}
+                </:extraAction>
                 <:content>
                   {{#if (has-block "content")}}
                     <div

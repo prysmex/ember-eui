@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
+import EuiNode from '../-private/eui-node.gts';
 import { euiTabsContext } from '../-private/eui-tabs-context.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -13,6 +14,7 @@ import {
 import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 
 import type { CSSObject } from '@emotion/css/create-instance';
+import type { EuiNodeValue } from '../-private/eui-node.gts';
 
 // `eui-textTruncate` is a legacy utility class; upstream's mixin replaces it.
 const TEXT_TRUNCATE = euiTextTruncate();
@@ -29,6 +31,13 @@ export type IEuiTab = {
   target?: string;
   /** `rel` of a link tab; `noreferrer` is always added (upstream). */
   rel?: string;
+  /**
+   * Content before the label (text or a component), for when a block is not
+   * an option, e.g. in data. Otherwise use `<:prepend>`.
+   */
+  prepend?: EuiNodeValue;
+  /** Content after the label (text or a component). Otherwise use `<:append>`. */
+  append?: EuiNodeValue;
   /** Marks the tab as selected (`aria-selected`, tab stop). */
   isSelected?: boolean;
   /** Disables the tab. */
@@ -146,6 +155,10 @@ export default class EuiTab extends Component<EuiTabSignature> {
           <span class="euiTab__prepend">
             {{yield to="prepend"}}
           </span>
+        {{else if @prepend}}
+          <span class="euiTab__prepend">
+            <EuiNode @value={{@prepend}} />
+          </span>
         {{/if}}
 
         <span class={{this.contentClasses}}>
@@ -155,6 +168,10 @@ export default class EuiTab extends Component<EuiTabSignature> {
         {{#if (has-block "append")}}
           <span class="euiTab__append">
             {{yield to="append"}}
+          </span>
+        {{else if @append}}
+          <span class="euiTab__append">
+            <EuiNode @value={{@append}} />
           </span>
         {{/if}}
       </a>
@@ -173,6 +190,10 @@ export default class EuiTab extends Component<EuiTabSignature> {
           <span class="euiTab__prepend">
             {{yield to="prepend"}}
           </span>
+        {{else if @prepend}}
+          <span class="euiTab__prepend">
+            <EuiNode @value={{@prepend}} />
+          </span>
         {{/if}}
 
         <span class={{this.contentClasses}}>
@@ -182,6 +203,10 @@ export default class EuiTab extends Component<EuiTabSignature> {
         {{#if (has-block "append")}}
           <span class="euiTab__append">
             {{yield to="append"}}
+          </span>
+        {{else if @append}}
+          <span class="euiTab__append">
+            <EuiNode @value={{@append}} />
           </span>
         {{/if}}
       </button>

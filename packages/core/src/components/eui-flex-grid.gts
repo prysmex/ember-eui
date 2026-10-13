@@ -4,6 +4,7 @@ import { modifier } from 'ember-modifier';
 import { eq } from 'ember-truth-helpers';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiFlexGridStyles } from '../utils/eui/styles.generated.ts';
 import { euiFlexRootReset } from './eui-flex-item.gts';
 
@@ -102,6 +103,11 @@ export interface EuiFlexGridSignature {
      * in one column. Defaults to `true`.
      */
     responsive?: boolean;
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
   };
   Blocks: {
     /** The `EuiFlexItem`s, laid out in a grid. */
@@ -142,7 +148,8 @@ export default class EuiFlexGrid extends Component<EuiFlexGridSignature> {
         : styles.columnCount[
             String(this.columns) as keyof typeof styles.columnCount
           ],
-      responsive && this.columns !== 0 ? styles.responsive : undefined
+      responsive && this.columns !== 0 ? styles.responsive : undefined,
+      this.args.css
     );
   }
 

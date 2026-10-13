@@ -63,7 +63,11 @@ actions on the right.
 | `@tabs` | `any[]` |  | Tabs under the title (or as the title, without `@pageTitle`): `[{ label: 'Overview', isSelected: true, onClick }, …]`, also taking `id`, `href` and `disabled`. |
 | `@description` | `string` |  | Text under the title. Use the `<:description>` block for markup. |
 | `@pageTitle` | `string` |  | The page's title (an `<h1>`). Use the `<:pageTitle>` block for markup. |
-| `@pageTitleProps` |  |  | Props for the title: `{ className }`. |
+| `@pageTitleProps` |  |  | Props for the title: `className`, `textTransform`, `css` and any other key as an attribute of the `<h1>` (`aria-label`, `data-test-subj`). |
+| `@iconProps` |  |  | Props for the icon: `className`, `size`, `color`, `title`, `titleId`, `css` and any other key as an attribute. |
+| `@tabsProps` |  |  | Props for the tabs: `className`, `display` and any attribute. |
+| `@breadcrumbProps` |  |  | Props for the breadcrumbs: `className`, `EuiBreadcrumbs` args and any attribute. |
+| `@rightSideGroupProps` |  |  | Props for the right side items group: `className`, `EuiFlexGroup` args and any attribute. |
 | `@style` | `{ [key: string]: string; }` |  | Inline styles of the header (the max width goes on its content). |
 
 Deprecated: `@rightSideItems` (Has no effect on its own: put the items in the `<:rightSideItems>` block.); `@default` (Has no effect, use the `<:default>` block.).

@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import type { CSSObject } from '@emotion/css/create-instance';
 import { on } from '@ember/modifier';
+import { modifier } from 'ember-modifier';
 import { resolveButtonCommonProps } from '../-private/eui-button-context.ts';
 import EuiButtonGroupItem from '../-private/eui-button-group-item.gts';
 import euiDisabledElement from '../-private/eui-disabled-element.ts';
@@ -17,6 +18,14 @@ import {
 import EuiButtonContent from './eui-button-content.gts';
 import type { EuiButtonContentSignature } from './eui-button-content';
 import type { EuiButtonContext } from '../-private/eui-button-context.ts';
+
+/** Sets `min-inline-size` inline, like upstream's `style={{ minInlineSize }}`. */
+const minInlineSize = modifier((element: Element, [value]: [string | number | false | undefined]) => {
+  const target = element as HTMLElement;
+  if (!value) return;
+  target.style.minInlineSize = typeof value === 'number' ? `${value}px` : value;
+  return () => target.style.removeProperty('min-inline-size');
+});
 
 export interface EuiButtonSignature {
   /** A button, a link (with `@href`) or what `@element` names, e.g. a label. */
@@ -67,6 +76,11 @@ export interface EuiButtonSignature {
     isSelected?: boolean;
     /** `'s'` or `'m'`. Defaults to `'m'`. */
     size?: string;
+    /**
+     * Overrides the minimum width (inline `min-inline-size`): a CSS length
+     * or a number of pixels. Upstream has no minimum by default.
+     */
+    minWidth?: string | number | false;
     /** `target` of the `@href` link, e.g. `'_blank'`. */
     target?: string;
     /** Classes for the element wrapping the text. */
@@ -119,6 +133,7 @@ export interface EuiButtonSignature {
 
 /** Native Ember button using the upstream EUI 123 / Borealis factories. */
 export default class EuiButton extends Component<EuiButtonSignature> {
+  minInlineSize = minInlineSize;
   get context() {
     return getEuiThemeContext(this);
   }
@@ -268,6 +283,7 @@ export default class EuiButton extends Component<EuiButtonSignature> {
           aria-pressed={{this.pressed}}
           type={{this.type}}
           {{euiDisabledElement this.isDisabled this.hasAriaDisabled}}
+          {{this.minInlineSize @minWidth}}
           {{on "click" this.onClick}}
           {{!@glint-expect-error}}
           ...attributes

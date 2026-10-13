@@ -72,6 +72,8 @@ upstream; EuiTabs moves focus between tabs with the arrow keys.
 | `@href` | `string` |  | Makes the tab a link, e.g. to a route. A `javascript:` URL disables the tab instead (upstream `validateHref`). |
 | `@target` | `string` |  | `target` of a link tab. |
 | `@rel` | `string` |  | `rel` of a link tab; `noreferrer` is always added (upstream). |
+| `@prepend` | `EuiNodeValue` |  | Content before the label (text or a component), for when a block is not an option, e.g. in data. Otherwise use `<:prepend>`. |
+| `@append` | `EuiNodeValue` |  | Content after the label (text or a component). Otherwise use `<:append>`. |
 | `@isSelected` | `boolean` |  | Marks the tab as selected (`aria-selected`, tab stop). |
 | `@disabled` | `boolean` |  | Disables the tab. |
 

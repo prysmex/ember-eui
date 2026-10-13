@@ -16,6 +16,7 @@ import {
   euiPageRestrictWidthStyle,
   euiScreenReaderOnlyCss
 } from '../utils/eui/page-layout.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import {
@@ -36,6 +37,9 @@ import EuiTitle from './eui-title.gts';
 import type { EuiPagePaddingSize } from '../utils/eui/page-layout.ts';
 import type { EuiButtomBarArgs } from './eui-bottom-bar';
 import type { EuiBreadcrumbsSignature } from './eui-breadcrumbs';
+import type { EuiTabsSignature } from './eui-tabs';
+import type { EuiTitleSignature } from './eui-title';
+import type { EuiFlexGroupSignature } from './eui-flex-group';
 import type { EuiFlexGroupAlignItems } from './eui-flex-group';
 import type { EuiIconSignature } from './eui-icon';
 import type { IEuiTab } from './eui-tab';
@@ -115,20 +119,32 @@ export type EuiPageHeaderContentProps = {
   /** Breadcrumbs above the title. */
   breadcrumbs?: EuiBreadcrumbsSignature['Args']['breadcrumbs'];
 
-  /** Props for the breadcrumbs: `{ className }`. */
-  breadcrumbProps?: {
+  /**
+   * Props for the breadcrumbs: `className`, the `EuiBreadcrumbs` args
+   * (`responsive`, `truncate`, `max`, `type`, `lastBreadcrumbIsCurrentPage`,
+   * `css`) and any other key as an attribute (`aria-label`, `data-test-subj`).
+   */
+  breadcrumbProps?: Partial<
+    Omit<EuiBreadcrumbsSignature['Args'], 'breadcrumbs'>
+  > & { className?: string; [attribute: string]: unknown };
+
+  /**
+   * Props for the right side items group: `className`, the `EuiFlexGroup`
+   * args (`gutterSize`, `alignItems`, `justifyContent`, `direction`, `wrap`,
+   * `responsive`, `css`) and any other key as an attribute.
+   */
+  rightSideGroupProps?: Partial<EuiFlexGroupSignature['Args']> & {
     className?: string;
+    [attribute: string]: unknown;
   };
 
-  /** Props for the right side items group: `{ className }`. */
-  rightSideGroupProps?: {
-    className?: string;
-  };
-
-  /** Props for the title: `{ className }`. */
-  pageTitleProps?: {
-    className?: string;
-  };
+  /**
+   * Props for the title: `className`, `textTransform`, `css` and any other
+   * key as an attribute (they land on the `<h1>`).
+   */
+  pageTitleProps?: Partial<
+    Pick<EuiTitleSignature['Args'], 'textTransform' | 'css'>
+  > & { className?: string; [attribute: string]: unknown };
 
   /** Icon before the title. */
   iconType?: EuiIconSignature['Args']['type'];
@@ -136,9 +152,22 @@ export type EuiPageHeaderContentProps = {
   /** Text under the title. */
   description?: string;
 
-  /** Props for the icon: `{ className }`. */
-  iconProps?: {
+  /**
+   * Props for the icon: `className`, the `EuiIcon` args (`size`, `color`,
+   * `title`, `titleId`, `css`) and any other key as an attribute.
+   */
+  iconProps?: Partial<Omit<EuiIconSignature['Args'], 'type'>> & {
     className?: string;
+    [attribute: string]: unknown;
+  };
+
+  /**
+   * Props for the tabs: `className`, `display` and any other key as an
+   * attribute (`aria-label`, `data-test-subj`).
+   */
+  tabsProps?: Partial<Pick<EuiTabsSignature['Args'], 'display'>> & {
+    className?: string;
+    [attribute: string]: unknown;
   };
 
   /** Tabs, see EuiPageHeader's `@tabs`. */
@@ -175,8 +204,36 @@ const ALIGN_ITEMS: Record<string, EuiFlexGroupAlignItems> = {
   stretch: 'stretch'
 };
 
-const HeaderTabs: TOC<{ Args: { tabs: Tab[] } }> = <template>
-  <EuiTabs @size="m" @bottomBorder={{false}}>
+const BREADCRUMB_ARGS = [
+  'responsive',
+  'truncate',
+  'max',
+  'type',
+  'lastBreadcrumbIsCurrentPage'
+] as const;
+const TABS_ARGS = ['display'] as const;
+const TITLE_ARGS = ['textTransform'] as const;
+const ICON_ARGS = ['size', 'color', 'title', 'titleId'] as const;
+const GROUP_ARGS = [
+  'gutterSize',
+  'alignItems',
+  'justifyContent',
+  'direction',
+  'wrap',
+  'responsive',
+  'tagName'
+] as const;
+
+const HeaderTabs: TOC<{
+  Args: { tabs: Tab[]; tabsProps?: EuiPageHeaderContentProps['tabsProps'] };
+}> = <template>
+  <EuiTabs
+    @display={{@tabsProps.display}}
+    @size="m"
+    @bottomBorder={{false}}
+    class={{@tabsProps.className}}
+    {{spreadAttributes @tabsProps TABS_ARGS}}
+  >
     {{#each @tabs as |tab|}}
       <EuiTab
         @id={{tab.id}}
@@ -294,8 +351,20 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
       { '& > .euiFlexItem': this.styles.euiPageHeaderContent__rightSideItem },
       this.args.responsive === 'reverse' && {
         [euiMaxBreakpoint(upstream, 'm') as string]: { order: -1 }
-      }
+      },
+      this.args.rightSideGroupProps?.css
     ];
+  }
+
+  breadcrumbArgs = BREADCRUMB_ARGS;
+  titleArgs = TITLE_ARGS;
+  iconArgs = ICON_ARGS;
+  groupArgs = GROUP_ARGS;
+
+  /** Upstream's `iconProps.css` composed after the title icon styles. */
+  @cached
+  get iconCss(): EuiCss {
+    return [this.titleIconCss, this.args.iconProps?.css];
   }
 
   /** Upstream's `iconProps.css`, composed into EuiIcon's own class. */
@@ -351,7 +420,14 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
             {{#if @breadcrumbs}}
               <EuiBreadcrumbs
                 @breadcrumbs={{@breadcrumbs}}
+                @responsive={{@breadcrumbProps.responsive}}
+                @truncate={{@breadcrumbProps.truncate}}
+                @max={{@breadcrumbProps.max}}
+                @type={{@breadcrumbProps.type}}
+                @lastBreadcrumbIsCurrentPage={{@breadcrumbProps.lastBreadcrumbIsCurrentPage}}
+                @css={{@breadcrumbProps.css}}
                 class={{@breadcrumbProps.className}}
+                {{spreadAttributes @breadcrumbProps this.breadcrumbArgs}}
               />
               <EuiSpacer @size="s" />
             {{/if}}
@@ -369,22 +445,29 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
                     {{this.selectedTabLabel}}
                   </h1>
                   {{! @glint-expect-error tabs is set when tabsAsTitle }}
-                  <HeaderTabs @tabs={{@tabs}} />
+                  <HeaderTabs @tabs={{@tabs}} @tabsProps={{@tabsProps}} />
                 {{else if hasPageTitleBlock}}
                   <EuiTitle
                     class={{@pageTitleProps.className}}
                     @size="l"
                     @tagName="h1"
+                    @textTransform={{@pageTitleProps.textTransform}}
+                    @css={{@pageTitleProps.css}}
+                    {{spreadAttributes @pageTitleProps this.titleArgs}}
                   >
                     {{#if @iconType}}
                       <EuiIcon
-                        @size="xl"
+                        @size={{if @iconProps.size @iconProps.size "xl"}}
                         @type={{@iconType}}
+                        @color={{@iconProps.color}}
+                        @title={{@iconProps.title}}
+                        @titleId={{@iconProps.titleId}}
+                        {{spreadAttributes @iconProps this.iconArgs}}
                         @iconClasses={{classNames
                           "euiPageHeaderContent__titleIcon"
                           @iconProps.className
                         }}
-                        @css={{this.titleIconCss}}
+                        @css={{this.iconCss}}
                       />
                     {{/if}}
                     {{@pageTitle}}
@@ -413,14 +496,26 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
               </EuiFlexItem>
               {{#if hasRightSideItemsBlock}}
                 <EuiFlexGroup
-                  @gutterSize="m"
-                  @responsive={{false}}
-                  @wrap={{true}}
+                  @gutterSize={{if
+                    @rightSideGroupProps.gutterSize
+                    @rightSideGroupProps.gutterSize
+                    "m"
+                  }}
+                  @responsive={{argOrDefault
+                    @rightSideGroupProps.responsive
+                    false
+                  }}
+                  @wrap={{argOrDefault @rightSideGroupProps.wrap true}}
+                  @alignItems={{@rightSideGroupProps.alignItems}}
+                  @justifyContent={{@rightSideGroupProps.justifyContent}}
+                  @direction={{@rightSideGroupProps.direction}}
+                  @tagName={{@rightSideGroupProps.tagName}}
                   class={{classNames
                     "euiPageHeaderContent__rightSideItems"
                     @rightSideGroupProps.className
                   }}
                   @css={{this.rightCss}}
+                  {{spreadAttributes @rightSideGroupProps this.groupArgs}}
                 >
                   {{yield
                     (component EuiFlexItem grow=false)
@@ -433,7 +528,7 @@ export default class EuiPageHeaderContent extends Component<EuiPageHeaderContent
               <div class="euiPageHeaderContent__bottom">
                 <EuiSpacer />
                 {{! @glint-expect-error tabs is set when tabsAtBottom }}
-                <HeaderTabs @tabs={{@tabs}} />
+                <HeaderTabs @tabs={{@tabs}} @tabsProps={{@tabsProps}} />
               </div>
             {{/if}}
           {{/if}}

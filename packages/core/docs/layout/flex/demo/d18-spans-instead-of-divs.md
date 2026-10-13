@@ -2,11 +2,11 @@
 order: 18
 ---
 
-# Spans instead of divs
+# Overriding the output element
 
 <EuiText>
 
-Inside elements that only accept inline content (e.g. a `<button>`), pass `@tagName="span"` to both the group and its items.
+Pass `@tagName` to **EuiFlexGroup**, **EuiFlexGrid** and **EuiFlexItem** to render any element (upstream's `component`), e.g. `"p"` or `"ul"`. Inside elements that only accept inline content (e.g. a `<button>`), pass `@tagName="span"` to both the group and its items.
 
 </EuiText>
 

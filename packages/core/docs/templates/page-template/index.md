@@ -218,6 +218,7 @@ The outermost layout of a page: holds an optional `EuiPageSideBar` and an `EuiPa
 | `@direction` | `'row' \| 'column'` | `'row'` | `'row'` puts an `EuiPageSideBar` beside the body from the theme's `m` breakpoint up and stacks them below it; `'column'` always stacks them. |
 | `@color` | `string` | `'transparent'` | Background: `'transparent'`, `'plain'`, `'subdued'`, `'highlighted'`, `'accent'`, `'accentSecondary'`, `'primary'`, `'success'`, `'warning'` or `'danger'`. |
 | `@style` | `Record<string, string>` |  | Inline styles, merged with the max width. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

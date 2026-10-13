@@ -6,6 +6,7 @@ import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 import add from 'ember-math-helpers/helpers/add';
 
 import Button from '../components/eui-side-nav-item/button.gts';
+import nullish from '../helpers/nullish.ts';
 import { isItemOpen, isItemSelected } from '../helpers/is-item-open.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -16,7 +17,8 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 
-import type { Item } from './eui-side-nav';
+import type { Item, EuiSideNavRenderItem } from './eui-side-nav';
+import type { ComponentLike } from '@glint/template';
 
 /** @private One item of an EuiSideNav (rendered from its `@items`). */
 export interface EuiSideNavItemSignature {
@@ -29,8 +31,8 @@ export interface EuiSideNavItemSignature {
     isSelected?: boolean;
     /** Has children. */
     isParent?: boolean;
-    /** Icon before the name. */
-    icon?: string;
+    /** Icon before the name: an icon type, or a component rendered as is. */
+    icon?: string | ComponentLike<any>;
     /** Makes the item a button calling this function. */
     onClick?: () => void;
     /** Makes the item a link. */
@@ -47,8 +49,8 @@ export interface EuiSideNavItemSignature {
     depth?: number;
     /** @deprecated Has no effect; the name is the block content. */
     name?: string;
-    /** @deprecated Has no effect. */
-    renderItem?: unknown;
+    /** Replaces the item's link, button or text, see `Item.renderItem`. */
+    renderItem?: EuiSideNavRenderItem;
     /** Disables the item. */
     disabled?: boolean;
     /** Truncates a long name. Defaults to `true`. */
@@ -271,7 +273,28 @@ export default class EuiSideNavItem extends Component<EuiSideNavItemSignature> {
 
   <template>
     <div class={{this.classes}}>
-      {{#if this.isLink}}
+      {{#if @renderItem}}
+        <@renderItem
+          @href={{this.href}}
+          @target={{@target}}
+          @rel={{@rel}}
+          @onClick={{this.onClick}}
+          @disabled={{@disabled}}
+          class={{this.buttonClasses}}
+        >
+          <Button
+            @icon={{@icon}}
+            @truncate={{this.truncate}}
+            @buttonIconClasses={{@buttonIconClasses}}
+            @caret={{this.hasCaret}}
+            @isOpen={{this.itemIsOpen}}
+            @contentClass={{this.contentClass}}
+            @labelClass={{this.labelClass}}
+          >
+            {{yield}}
+          </Button>
+        </@renderItem>
+      {{else if this.isLink}}
         <a
           class={{this.buttonClasses}}
           href={{this.href}}
@@ -327,7 +350,7 @@ export default class EuiSideNavItem extends Component<EuiSideNavItemSignature> {
           {{#each @items as |item|}}
             <EuiSideNavItem
               @selectedItem={{@selectedItem}}
-              @isOpen={{this.isItemOpen item}}
+              @isOpen={{nullish item.isOpen (this.isItemOpen item)}}
               @isSelected={{this.isItemSelected item}}
               @isParent={{if item.items true false}}
               @icon={{item.icon}}
@@ -343,6 +366,7 @@ export default class EuiSideNavItem extends Component<EuiSideNavItemSignature> {
               @emphasize={{item.emphasize}}
               @buttonClassName={{item.buttonClassName}}
               @childrenOnly={{this.isChildrenOnly item}}
+              @renderItem={{if item.renderItem item.renderItem @renderItem}}
             >
               {{item.name}}
             </EuiSideNavItem>

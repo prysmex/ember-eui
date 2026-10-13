@@ -6,7 +6,7 @@ order: 1
 
 <EuiText>
 
-**EuiSteps** presents procedural content in a numbered outline format. It is best used when presenting instructional content that must be conducted in a particular order. Each **EuiStep** requires a `@title` and its content in the block. Ember EUI has no `firstStepNumber`: pass each step its own `@step` number.
+**EuiSteps** presents procedural content in a numbered outline format. It is best used when presenting instructional content that must be conducted in a particular order. Each **EuiStep** requires a `@title` and its content in the block. Steps are numbered automatically by their order; use `@firstStepNumber` on **EuiSteps** to start from another number (a step's own `@step` still wins).
 
 </EuiText>
 
@@ -17,12 +17,12 @@ import { EuiCode, EuiSpacer, EuiStep, EuiSteps, EuiText } from '@ember-eui/core/
 
 <template>
 <EuiSteps>
-  <EuiStep @step={{1}} @title="Step 1">
+  <EuiStep @title="Step 1">
     <EuiText>
       <p>Do this first</p>
     </EuiText>
   </EuiStep>
-  <EuiStep @step={{2}} @title="Step 2">
+  <EuiStep @title="Step 2">
     <EuiText>
       <p>Then this</p>
     </EuiText>
@@ -31,18 +31,18 @@ import { EuiCode, EuiSpacer, EuiStep, EuiSteps, EuiText } from '@ember-eui/core/
 <EuiSpacer @size="m" />
 <EuiText>
   <p>
-    Set <EuiCode>@step</EuiCode> to continue step numbering after any type of
-    break in the content
+    Set <EuiCode>@firstStepNumber</EuiCode> to continue step numbering after
+    any type of break in the content
   </p>
 </EuiText>
 <EuiSpacer @size="m" />
-<EuiSteps>
-  <EuiStep @step={{3}} @title="Good step">
+<EuiSteps @firstStepNumber={{3}}>
+  <EuiStep @title="Good step">
     <EuiText>
       <p>Do this first</p>
     </EuiText>
   </EuiStep>
-  <EuiStep @step={{4}} @title="Better step">
+  <EuiStep @title="Better step">
     <EuiText>
       <p>Then this</p>
     </EuiText>

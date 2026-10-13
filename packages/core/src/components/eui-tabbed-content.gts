@@ -9,7 +9,9 @@ import type Owner from '@ember/owner';
 import findBy from '@nullvoxpopuli/ember-composable-helpers/helpers/find-by';
 import { eq } from 'ember-truth-helpers';
 
+import EuiNode from '../-private/eui-node.gts';
 import randomId from '../-private/random-id.ts';
+import type { EuiNodeValue } from '../-private/eui-node.gts';
 import EuiTab from './eui-tab.gts';
 import EuiTabs from './eui-tabs.gts';
 
@@ -21,8 +23,20 @@ import type { ComponentLike } from '@glint/template';
 export interface EuiTabbedContentTab {
   /** Unique id. */
   id: string;
-  /** The tab's label. */
-  name: string;
+  /** The tab's label: text or a component. */
+  name: EuiNodeValue;
+  /** Content before the label, e.g. an icon component. */
+  prepend?: EuiNodeValue;
+  /** Content after the label, e.g. a notification badge component. */
+  append?: EuiNodeValue;
+  /** Makes the tab a link (see `EuiTab`). */
+  href?: string;
+  /** `target` of a link tab. */
+  target?: string;
+  /** `rel` of a link tab. */
+  rel?: string;
+  /** Extra classes for the tab. */
+  className?: string;
   /**
    * The panel shown while the tab is selected (a component). Or render
    * panels with the `<:selectedTabContent>` block.
@@ -201,9 +215,15 @@ export default class EuiTabbedContentComponent extends Component<EuiTabbedConten
               aria-controls={{rootId}}
               @isSelected={{eq tab.id this.selectedTab.id}}
               @disabled={{tab.disabled}}
+              @href={{tab.href}}
+              @target={{tab.target}}
+              @rel={{tab.rel}}
+              @prepend={{tab.prepend}}
+              @append={{tab.append}}
+              class={{tab.className}}
               {{on "click" (fn this.onTabClick tab)}}
             >
-              {{tab.name}}
+              <EuiNode @value={{tab.name}} />
             </EuiTab>
           {{/each}}
         </EuiTabs>

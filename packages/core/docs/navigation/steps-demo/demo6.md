@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
 
-You can set a different title size using `@titleSize` on each **EuiStep**. The title size `xs` will automatically generate smaller steps circles.
+You can set a different title size using `@titleSize` on **EuiSteps** (or on a single **EuiStep**, which wins). The title size `xs` will automatically generate smaller steps circles.
 
 The title size `xxs` affects only the size of the accompanying **unnumbered** step indicator, but not the title itself.
 
@@ -43,14 +43,14 @@ export default class DemoComponent extends Component {
       @onChange={{this.sizeOnChange}}
     />
     <EuiSpacer @size="m" />
-    <EuiSteps>
-      <EuiStep @step={{1}} @title="Step 1" @titleSize={{this.titleSize}}>
+    <EuiSteps @titleSize={{this.titleSize}}>
+      <EuiStep @title="Step 1">
         <p>
           Both step title and circle indicators will adjust in size based on the
           <EuiCode>@titleSize</EuiCode> argument
         </p>
       </EuiStep>
-      <EuiStep @step={{2}} @title="Step 2" @titleSize={{this.titleSize}}>
+      <EuiStep @title="Step 2">
         <p>
           Both step title and circle indicators will adjust in size based on the
           <EuiCode>@titleSize</EuiCode> argument

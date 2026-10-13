@@ -72,14 +72,12 @@ Generated from the components' TypeScript signatures by
 | `@direction` | `EuiFlexGroupDirection` | `'row'` | `'row'`, `'rowReverse'`, `'column'` or `'columnReverse'`. |
 | `@wrap` | `boolean` | `false` | Lets items wrap onto several lines. |
 | `@responsive` | `boolean` | `true` | Below the theme's `m` breakpoint (767px in Borealis), wraps the group and makes every direct `EuiFlexItem` full width. Set `false` for rows that must stay on one line (e.g. icon + text). Column directions are never affected. |
-| `@tagName` | `'div' \| 'span'` | `'div'` | `'div'` or `'span'` (inside text). |
+| `@tagName` | `string` | `'div'` | Any tag name, e.g. `'span'` (inside text), `'section'` or `'ul'` (upstream's `component`). |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |
 | default block | The `EuiFlexItem`s. |
-
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>` / `<span>`.
 
 ### EuiFlexItem
 
@@ -103,6 +101,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@gutterSize` | `EuiFlexGridGutterSize` | `'l'` | Space between items (CSS `gap`): `'none'`, `'s'` (8px), `'m'` (16px), `'l'` (24px) or `'xl'` (32px). |
 | `@alignItems` | `EuiFlexGridAlignItems` | `'stretch'` | Cross axis alignment of the items in their cells: `'stretch'`, `'start'`, `'end'`, `'center'` or `'baseline'`. |
 | `@responsive` | `boolean` | `true` | Below the theme's `m` breakpoint (767px in Borealis), stacks the items in one column. |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 
 | Block | Description |
 | --- | --- |

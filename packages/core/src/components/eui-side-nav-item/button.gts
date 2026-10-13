@@ -5,6 +5,7 @@ import EuiIcon from '../eui-icon.gts';
 import EuiInnerText from '../eui-inner-text.gts';
 
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { ComponentLike } from '@glint/template';
 
 /**
  * @private The content of an EuiSideNav item's button or link: icon,
@@ -13,8 +14,8 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 export interface EuiSideNavItemButtonSignature {
   Element: HTMLButtonElement;
   Args: {
-    /** Icon before the text. */
-    icon?: string;
+    /** Icon before the text: an icon type, or a component rendered as is. */
+    icon?: string | ComponentLike<any>;
     /** Shows the accordion caret, for section items with children. */
     caret?: boolean;
     /** Points the caret down (open) instead of right (closed). */
@@ -34,15 +35,21 @@ export interface EuiSideNavItemButtonSignature {
   };
 }
 
+const isString = (value: unknown): boolean => typeof value === 'string';
+
 const EuiSideNavItemButton: TemplateOnlyComponent<EuiSideNavItemButtonSignature> =
   <template>
     <span class="euiSideNavItemButton__content {{@contentClass}}">
       {{#if @icon}}
-        <EuiIcon
-          @type={{@icon}}
-          @size="m"
-          class={{classNames "euiSideNavItemButton__icon" @buttonIconClasses}}
-        />
+        {{#if (isString @icon)}}
+          <EuiIcon
+            @type={{@icon}}
+            @size="m"
+            class={{classNames "euiSideNavItemButton__icon" @buttonIconClasses}}
+          />
+        {{else}}
+          <@icon />
+        {{/if}}
       {{/if}}
 
       <EuiInnerText as |setRef innerText|>

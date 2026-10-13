@@ -12,6 +12,7 @@ import { focusTrap } from 'ember-focus-trap';
 import { focusTrapFactory } from '../../-private/focus-trap-registry.ts';
 import { modifier } from 'ember-modifier';
 import { eq } from 'ember-truth-helpers';
+import { tabbable } from 'tabbable';
 
 import { afterRender, observeResize } from '../../utils/data-grid/scheduling.ts';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
@@ -366,6 +367,17 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   }
 
   private popoverPanel: HTMLElement | null = null;
+
+  /**
+   * The cell popover holds forms and editors: focus goes to its first
+   * tabbable element (EuiPopover itself would focus the panel, as
+   * upstream), the panel when there is none.
+   */
+  popoverInitialFocus = (): HTMLElement | null =>
+    this.popoverPanel
+      ? ((tabbable(this.popoverPanel)[0] as HTMLElement | undefined) ??
+        this.popoverPanel)
+      : null;
 
   @action
   registerPopoverPanel(panel: HTMLElement | null): void {
@@ -1088,6 +1100,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
               @panelCss={{this.popoverPanelCss}}
               @panelStyle={{this.popoverPanelStyle}}
               @panelRef={{this.registerPopoverPanel}}
+              @initialFocus={{this.popoverInitialFocus}}
               @focusTrapOptions={{this.popoverFocusTrapOptions}}
               @zIndex={{this.popoverZIndex}}
             >

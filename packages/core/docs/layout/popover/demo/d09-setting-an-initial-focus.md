@@ -6,7 +6,7 @@ order: 9
 
 <EuiText>
   <p>
-    If you want a specific child element of the popover to immediately gain focus when the popover is open, use the <EuiCode>@initialFocus</EuiCode> argument to pass either a selector or DOM node.
+    If you want a specific child element of the popover to immediately gain focus when the popover is open, use the <EuiCode>@initialFocus</EuiCode> argument to pass a selector, a DOM node or a function returning one. Without it, a popover with <EuiCode>@ownFocus</EuiCode> focuses the panel itself, and Tab moves on to its first element.
   </p>
 </EuiText>
 

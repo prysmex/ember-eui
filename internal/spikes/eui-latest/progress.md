@@ -78,6 +78,18 @@ collapseAll on `@registerApi`. 46 marked hooks (`ember-eui extension (row-tree)`
 in ported files; see data-grid-extensions.md before re-porting upstream. Docs:
 5 pages, 23 demos. Main: core 1302/1302, parity 349/349, site 8/8 + 17/17 (nav 113).
 
+Update 3 (2026-10-13): docs audited against upstream v123.1.0's own docs
+(elastic/eui packages/website, sparse clone) and every demo converted to a
+single ```gjs component``` block (662 demos, incl. companion packages).
+Data grid docs follow upstream's page structure (schema & columns, style &
+display, ref methods, custom body, ...), with the row-tree extension pages after.
+Site build hygiene: `pnpm clean:docfy` before build/start/test (docfy never
+deletes generated files); `freshDocfyConfig()` in site/vite.config.mjs works
+around @docfy/ember-vite re-adding its plugins on in-process Vite restarts
+(duplicate demos, empty StackBlitz manifest). Prose curlies: inline code in
+markdown, `\{{` inside raw HTML. Main: core 1302/1302, site 8/8 + 17/17
+(nav 114). Upstream gaps found by the audit: see docs-audit-gaps.md.
+
 Follow-ups: data grid renderers lack row depth/expanded state; EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
 screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
 slowly (~20s under load); open decision on focusing the form error callout;

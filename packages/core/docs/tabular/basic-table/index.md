@@ -1,5 +1,6 @@
 ---
 title: Basic table
+order: 1
 ---
 
 <EuiSpacer/>
@@ -8,23 +9,19 @@ title: Basic table
 
 <EuiText>
 
-`EuiBasicTable` renders a table from `@items` and `@columns`. It shows
-the sorting, pagination and selection you pass and calls `@onChange` with
-the new `{ page: { index, size }, sort: { field, direction } }` criteria,
-so your component (or a server) decides what the next page holds. Use
-[EuiInMemoryTable](../in-memory-table) to let the table sort, page and
-search the items itself.
+`EuiBasicTable` is a high-level component that provides a consistent way to
+display and manage table data. At its simplest, it requires only two
+arguments:
+
+- `@items`: an array of objects to display in the table, one item per row.
+  The `@columns` decide what data gets shown in each cell. Use `@rowProps`
+  and `@cellProps` to customize rows and cells, with objects or functions
+  that return objects.
+- `@columns`: defines the table columns and how to extract data from each
+  item to display in the cells.
 
 ```hbs
-<EuiBasicTable
-  @items={{this.pageOfItems}}
-  @itemId="id"
-  @columns={{this.columns}}
-  @pagination={{hash pageIndex=this.pageIndex pageSize=5 totalItemCount=this.total}}
-  @sorting={{hash sort=this.sort}}
-  @selection={{hash onSelectionChange=this.onSelectionChange}}
-  @onChange={{this.onTableChange}}
-/>
+<EuiBasicTable @items={{this.users}} @columns={{this.columns}} />
 ```
 
 Columns are plain objects:
@@ -39,22 +36,24 @@ Columns are plain objects:
 - **Actions columns** `{ name, actions }`: each action is `{ name,
   description, onClick(item, event), href, type: 'icon', icon, color,
   available(item), enabled(item), isPrimary, showOnHover }` or a custom
-  `{ component }` receiving `@item` and `@enabled`. With more than two
-  actions they move to an "All actions" menu (primary ones stay inline on
-  hover). Actions are disabled while rows are selected.
+  `{ component }` receiving `@item` and `@enabled`.
 
-`@rowProps` and `@cellProps` (objects or functions of the item) add
-attributes to rows and cells; a row `onClick` makes rows clickable.
-Expanded rows come from `@itemIdToExpandedRowMap` and the
-`<:expandedRow as |item itemId value|>` block.
+`EuiBasicTable` shows the sorting, pagination and selection you pass and
+calls `@onChange` with the new `{ page: { index, size }, sort: { field,
+direction } }` criteria, so your component (or a server) decides what the
+next page holds. Use [EuiInMemoryTable](../in-memory-table) to let the
+table sort, page and search the items itself.
 
 ### Ember differences
 
 React nodes become text, `htmlSafe` strings or components: column
 `render` returns text, `component` renders a component, `footer` is text
 or a function returning text, `name` is text (`nameTooltip` adds an icon
-tip). Custom actions are components. Sticky actions columns and the
-copy-to-clipboard markers of upstream are not supported.
+tip, `description` adds screen-reader-only text). Custom actions are
+components, and expanded rows are rendered by the `<:expandedRow>` block.
+Not supported yet: sticky actions columns (`sticky: true`), the column
+`valign` option, multi-line truncation (`truncateText: { lines }`) and
+`textOnly` in `cellProps`.
 
 </EuiText>
 

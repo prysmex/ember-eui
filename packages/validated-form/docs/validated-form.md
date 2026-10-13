@@ -51,6 +51,12 @@ The yielded fields are `FieldText`, `FieldTextArea`, `FieldNumber`,
 `EuiFormRow`'s args and its control's args. `@onValidityChange` on the
 form tells you when the whole form becomes valid or invalid.
 
+`FieldComboBox` takes every `EuiComboBox` argument and behaves like it:
+selected options leave the list, and leaving the field with typed text
+adds it through `@onCreateOption`; its validity follows
+`@selectedOptions`. Its block gets the option, its index and the search
+text.
+
 </EuiText>
 
 <EuiHorizontalRule />

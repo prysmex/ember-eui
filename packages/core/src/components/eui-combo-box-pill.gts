@@ -117,6 +117,12 @@ export interface EuiComboBoxPill {
      */
     iconOnClickAriaLabel?: string;
 
+    /**
+     * Accessible label of a clickable pill (an option with an `onClick`).
+     * Defaults to "Change", which EuiComboBox passes upstream.
+     */
+    onClickAriaLabel?: string;
+
     /** The selected option this pill shows. */
     option?: unknown;
 
@@ -264,7 +270,7 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
         title={{this.title}}
         @color={{this.color}}
         @onClick={{this.onClick}}
-        @onClickAriaLabel="Change"
+        @onClickAriaLabel={{if @onClickAriaLabel @onClickAriaLabel "Change"}}
         @closeButtonProps={{hash dataSelectedIconIndex=@dataSelectedIconIndex}}
         ...attributes
         {{spreadAttributes this.optionAttributes PILL_RESERVED}}

@@ -312,7 +312,7 @@ module('Integration | Component | Borealis color picker family', function (hooks
     assert.strictEqual(css(list).columnGap, light.size.s);
     assert.strictEqual(css(list).listStyleType, 'none');
     assert.strictEqual(css(list).paddingLeft, '0px');
-    const swatches = Array.from(list.querySelectorAll<HTMLButtonElement>('li > .euiColorPickerSwatch'));
+    const swatches = Array.from(list.querySelectorAll<HTMLButtonElement>('li > .euiToolTipAnchor > .euiColorPickerSwatch'));
     assert.strictEqual(swatches.length, 3);
     const first = swatches[0]!;
     assert.true(first.classList.contains('euiColorPicker__swatchSelect'));

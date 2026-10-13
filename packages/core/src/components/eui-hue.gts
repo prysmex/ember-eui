@@ -9,6 +9,7 @@ import { boxReset, inputReset } from '../utils/eui/color-picker.ts';
 import { euiHueStyles } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
+import EuiToolTip from './eui-tool-tip.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 
@@ -21,10 +22,7 @@ export interface EuiHueSignature {
   Args: {
     /** The hue, 0 to 359. Defaults to `1`. */
     hue?: number;
-    /**
-     * The current color as hex. Upstream shows it in a tooltip over the
-     * thumb, which is not ported; `EuiColorPicker` announces the color.
-     */
+    /** The current color as hex, shown in a tooltip over the thumb. */
     hex?: string;
     /** Prefix of the input's id. */
     id?: string;
@@ -46,13 +44,18 @@ export default class EuiHue extends Component<EuiHueSignature> {
       root: `euiHue ${euiClass(context, boxReset, styles.euiHue)}`,
       // upstream: the EuiToolTip anchor around the range (taller than the
       // track, so the thumb can overflow it)
-      anchor: euiClass(context, { display: 'block' }, styles.euiHue__tooltip),
+      anchor: styles.euiHue__tooltip,
       range: `euiHue__range ${euiClass(context, inputReset, styles.euiHue__range)}`
     };
   }
 
   get hue(): number {
     return this.args.hue ?? 1;
+  }
+
+  /** Upstream: the tooltip sits on the side closer to the thumb. */
+  get tooltipPosition(): 'left' | 'right' {
+    return this.hue < Math.floor(359 / 2) ? 'left' : 'right';
   }
 
   get label(): string {
@@ -75,7 +78,15 @@ export default class EuiHue extends Component<EuiHueSignature> {
   <template>
     <div class={{this.styles.root}}>
       <EuiScreenReaderOnly><label for="{{@id}}-hue">{{this.label}}</label></EuiScreenReaderOnly>
-      <div class={{this.styles.anchor}}>
+      {{! we can only wrap the entire input: the slider thumb is not a
+          standalone element }}
+      <EuiToolTip
+        @content={{@hex}}
+        @anchorCss={{this.styles.anchor}}
+        @display="block"
+        @position={{this.tooltipPosition}}
+        @disableScreenReaderOutput={{true}}
+      >
         <input
           id="{{@id}}-hue"
           class={{this.styles.range}}
@@ -89,7 +100,7 @@ export default class EuiHue extends Component<EuiHueSignature> {
           {{on "input" this.onInput}}
           ...attributes
         />
-      </div>
+      </EuiToolTip>
     </div>
   </template>
 }

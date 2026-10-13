@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { render, triggerEvent, waitUntil } from '@ember/test-helpers';
 
 import EuiAvatar from '#src/components/eui-avatar.gts';
 
@@ -12,7 +12,7 @@ module('Integration | Component | eui-avatar', function (hooks) {
 
     // legacy euiAvatar--m / --user classes are upstream emotion styles now
     assert.dom('.euiAvatar').hasStyle({ width: '32px', borderRadius: '50%' });
-    assert.dom('.euiAvatar').hasAttribute('role', 'img').hasAttribute('aria-label', 'Jane Doe').hasAttribute('title', 'Jane Doe');
+    assert.dom('.euiAvatar').hasAttribute('role', 'img').hasAttribute('aria-label', 'Jane Doe').doesNotHaveAttribute('title'); // was a native title; upstream uses a tooltip
     assert.dom('.euiAvatar span').hasText('JD', 'one initial per word, up to 2');
   });
 
@@ -40,5 +40,18 @@ module('Integration | Component | eui-avatar', function (hooks) {
     await render(<template><EuiAvatar @name="Jane" @isDisabled={{true}} /></template>);
 
     assert.dom('.euiAvatar').hasStyle({ cursor: 'not-allowed' }).hasAttribute('role', 'presentation').doesNotHaveAttribute('aria-label');
+  });
+  test('the name is shown in a visual tooltip, not a native title', async function (assert) {
+    await render(<template><EuiAvatar @name="Jane Doe" @type="space" /><EuiAvatar @isDisabled={{true}} class="noname" /></template>);
+
+    assert.dom('.euiToolTipAnchor .euiAvatar').exists();
+    assert.dom('.euiToolTipAnchor').hasStyle({ borderRadius: '8px' }, 'anchor rounds like a space avatar');
+    assert.dom('.noname').exists();
+    assert.dom('.euiToolTipAnchor .noname').doesNotExist('no name, no tooltip');
+
+    await triggerEvent('.euiToolTipAnchor', 'mouseover');
+    await waitUntil(() => document.querySelector('.euiToolTip'));
+    assert.dom('.euiToolTip', document.body).hasText('Jane Doe');
+    assert.dom('.euiAvatar').doesNotHaveAttribute('aria-describedby', 'screen readers read the aria-label only');
   });
 });

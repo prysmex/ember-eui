@@ -7,6 +7,7 @@ import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, next, scheduleOnce } from '@ember/runloop';
+import type { SafeString } from '@ember/template';
 
 import { modifier } from 'ember-modifier';
 import style from 'ember-style-modifier/modifiers/style';
@@ -222,6 +223,11 @@ export type EuiTooltipArgs = {
    * styles.
    */
   anchorCss?: EuiCss;
+  /**
+   * Inline style of the anchor wrapper (upstream's `anchorProps.style`),
+   * a style string or a safe string.
+   */
+  anchorStyle?: string | SafeString;
 };
 
 /**
@@ -628,6 +634,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         <span
           id={{if (not @disableScreenReaderOutput) (concat this.id "-wrapper")}}
           class={{classNames this.anchorClasses @anchorClassName}}
+          style={{@anchorStyle}}
           {{didInsert this.didInsertAnchor}}
           {{didInsert this.syncScrollListener}}
           {{didUpdate this.syncScrollListener @repositionOnScroll}}

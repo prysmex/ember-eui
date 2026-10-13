@@ -274,7 +274,8 @@ module('Integration | Component | eui-icon', function (hooks) {
       assert.deepEqual(type('[data-co="success"]'), ['checkCircleFill']);
       assert.deepEqual(type('[data-co="warning"]'), ['warningStatic']);
       assert.deepEqual(type('[data-co="danger"]'), ['errorFill']);
-      assert.deepEqual(type('.euiToolTipAnchor'), ['question']);
+      // (the pagination arrows have tooltip anchors too)
+      assert.deepEqual(type('.euiToolTipAnchor:not([data-pagination] .euiToolTipAnchor)'), ['question']);
       assert.deepEqual(type('[data-link]'), ['external']);
       assert.true(type('.euiFormControlLayout:has([data-search])').includes('magnify'));
       assert.true(type('[data-pagination]').includes('chevronSingleLeft'));

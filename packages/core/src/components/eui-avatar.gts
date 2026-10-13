@@ -12,7 +12,9 @@ import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiAvatarStyles } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
+import EuiToolTip from './eui-tool-tip.gts';
 
+import type { TOC } from '@ember/component/template-only';
 import type { CSSObject } from '@emotion/css/create-instance';
 import type { SerializedStyles } from '@emotion/serialize';
 import type { EuiIconSignature } from './eui-icon';
@@ -42,7 +44,7 @@ export interface EuiAvatarSignature {
   Args: {
     /**
      * Full name of the user or space. Used as the accessible label and the
-     * hover title, for the initials and to pick a background color.
+     * tooltip content, for the initials and to pick a background color.
      */
     name?: string;
     /**
@@ -174,6 +176,19 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
     return this.context.upstream.highContrastMode === 'forced';
   }
 
+  /** Upstream `styles.tooltip[type]`: the anchor rounds like the avatar. */
+  @cached
+  get tooltipCss(): EuiCss {
+    const styles = useEuiBorealisStyles(
+      this.context,
+      euiAvatarStyles as unknown as (
+        ...args: Parameters<typeof euiAvatarStyles>
+      ) => AvatarStyles
+    );
+
+    return styles['tooltip']![this.type];
+  }
+
   @cached
   get classes(): string {
     const context = this.context;
@@ -236,26 +251,45 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
   }
 
   <template>
-    <div
-      class={{this.classes}}
-      aria-label={{if @isDisabled undefined @name}}
-      title={{@name}}
-      role={{if @isDisabled "presentation" "img"}}
-      ...attributes
-    >
-      {{#unless @imageUrl}}
-        {{#if @iconType}}
-          <EuiIcon
-            @iconClasses="euiAvatar__icon"
-            @size={{this.iconSize}}
-            @type={{@iconType}}
-            @color={{this.iconColor}}
-            aria-hidden="true"
-          />
-        {{else}}
-          <span aria-hidden="true">{{this.initials}}</span>
-        {{/if}}
-      {{/unless}}
-    </div>
+    {{#if @name}}
+      {{! upstream: the name is a visual tooltip; the avatar already has an
+          aria-label }}
+      <EuiToolTip
+        @content={{@name}}
+        @anchorCss={{this.tooltipCss}}
+        @disableScreenReaderOutput={{true}}
+      >
+        <AvatarNode @avatar={{this}} ...attributes />
+      </EuiToolTip>
+    {{else}}
+      <AvatarNode @avatar={{this}} ...attributes />
+    {{/if}}
   </template>
 }
+
+/** The avatar element, with or without its tooltip anchor. */
+const AvatarNode: TOC<{
+  Element: HTMLDivElement;
+  Args: { avatar: EuiAvatar };
+}> = <template>
+  <div
+    class={{@avatar.classes}}
+    aria-label={{if @avatar.args.isDisabled undefined @avatar.args.name}}
+    role={{if @avatar.args.isDisabled "presentation" "img"}}
+    ...attributes
+  >
+    {{#unless @avatar.args.imageUrl}}
+      {{#if @avatar.args.iconType}}
+        <EuiIcon
+          @iconClasses="euiAvatar__icon"
+          @size={{@avatar.iconSize}}
+          @type={{@avatar.args.iconType}}
+          @color={{@avatar.iconColor}}
+          aria-hidden="true"
+        />
+      {{else}}
+        <span aria-hidden="true">{{@avatar.initials}}</span>
+      {{/if}}
+    {{/unless}}
+  </div>
+</template>;

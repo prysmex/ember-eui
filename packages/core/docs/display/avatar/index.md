@@ -30,7 +30,7 @@ Generated from the components' TypeScript signatures by
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@name` | `string` |  | Full name of the user or space. Used as the accessible label and the hover title, for the initials and to pick a background color. |
+| `@name` | `string` |  | Full name of the user or space. Used as the accessible label and the tooltip content, for the initials and to pick a background color. |
 | `@color` | `string \| null` | one of the theme's visualization colors, picked from `@name`; the text color is chosen for contrast | Background color as a hex value (`'#DA8B45'`), `'plain'` (the page's background color), `'subdued'` (a light gray), or `null` (the default gray). |
 | `@iconColor` | `string \| null` | the text color picked for the background; `null` keeps the icon's own colors (for multi-color logos) | Color of the `@iconType` icon, any `EuiIcon` color. |
 | `@iconSize` |  | `@size` | Size of the `@iconType` icon. |

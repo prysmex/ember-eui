@@ -80,6 +80,7 @@ short and non-essential; it is not reachable on touch screens.
 | `@hasTitle` | `boolean` | `true` | Render the title. |
 | `@css` | `EuiCss` |  | Extra styles composed last into the tooltip's class (like upstream's `css` prop). Prefer this to `@className` for styles. |
 | `@anchorCss` | `EuiCss` |  | Extra styles composed last into the anchor wrapper's class (like upstream's `anchorProps.css`). Prefer this to `@anchorClassName` for styles. |
+| `@anchorStyle` | `string \| SafeString` |  | Inline style of the anchor wrapper (upstream's `anchorProps.style`), a style string or a safe string. |
 
 | Block | Description |
 | --- | --- |

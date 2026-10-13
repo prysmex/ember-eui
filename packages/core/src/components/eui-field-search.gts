@@ -106,17 +106,22 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
   @tracked inputElement: HTMLInputElement | null = null;
 
   /**
-   * The text the user typed (or the clear button emptied), valid while
-   * `@value` is the one it was typed over. A changed `@value` wins, so the
-   * field follows a controlled value without writing tracked state from a
-   * modifier during the render (which broke the clear button's
-   * `{{on "click" @clear}}` when the value became empty).
+   * The text the user typed (or the clear button emptied). It is shown
+   * until `@value` changes, then the new `@value` wins: the field follows a
+   * controlled value without writing tracked state from a modifier during
+   * the render (which broke the clear button's `{{on "click" @clear}}` when
+   * the value became empty). `argVersion` counts the `@value` changes seen
+   * (plain fields: bumping it while reading is idempotent).
    */
   @tracked typed: string | undefined;
-  typedOver: string | undefined = this.args.value;
+  argVersion = 0;
+  seenArg: string | undefined = this.args.value;
+  typedAtVersion = 0;
 
   get value(): string {
-    if (this.typed !== undefined && this.typedOver === this.args.value) {
+    this.syncArgVersion();
+
+    if (this.typed !== undefined && this.typedAtVersion === this.argVersion) {
       return this.typed;
     }
 
@@ -126,8 +131,16 @@ export default class EuiFieldSearch extends Component<EuiFieldSearchSignature> {
     );
   }
 
+  syncArgVersion(): void {
+    if (this.args.value !== this.seenArg) {
+      this.seenArg = this.args.value;
+      this.argVersion++;
+    }
+  }
+
   setTyped(value: string): void {
-    this.typedOver = this.args.value;
+    this.syncArgVersion();
+    this.typedAtVersion = this.argVersion;
     this.typed = value;
   }
 

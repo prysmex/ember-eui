@@ -37,7 +37,6 @@ In the following demo, you can see how to create your own flyout with these acce
     @color='subdued'
     @iconType='logoObservability'
     @iconColor='default'
-    @titleSize='xs'
   >
     <:content>
       <EuiTitle @size='xs'><h2>Observe my data</h2></EuiTitle>

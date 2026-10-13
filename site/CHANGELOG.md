@@ -19,6 +19,11 @@
 - redeploy
 
 ## 14.1.1
+## 8.0.69
+
+### Patch Changes
+
+- bug fix in valdiated form
 
 ## 8.0.68
 

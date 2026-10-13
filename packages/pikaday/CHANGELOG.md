@@ -35,6 +35,13 @@
 ### Major Changes
 
 - VITE
+## 8.0.69
+
+### Patch Changes
+
+- bug fix in valdiated form
+- Updated dependencies
+  - @ember-eui/core@8.0.69
 
 ## 8.0.68
 

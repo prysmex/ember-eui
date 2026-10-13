@@ -20,6 +20,13 @@
 - Add themed nested validated forms with aggregate validity, recursive touched state, outer form association, documentation and regression coverage.
 
 ## 14.1.1
+## 8.0.69
+
+### Patch Changes
+
+- bug fix in valdiated form
+- Updated dependencies
+  - @ember-eui/core@8.0.69
 
 ## 8.0.68
 

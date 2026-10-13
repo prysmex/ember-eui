@@ -16,11 +16,13 @@ import type { RowTreeVisibleRow } from '../../utils/data-grid/row-tree.ts';
 
 /** Ember EUI extension styles (no upstream equivalent). */
 const euiDataGridTreeCellStyles = ({ euiTheme }: EuiBorealisContext) => ({
-  // keeps the 24px button from growing the cell's line box
+  // one line box tall, button centered in it (it overflows evenly instead of
+  // growing the line); `middle` would align to the x-height, a bit low
   toggle: {
     display: 'inline-flex',
-    verticalAlign: 'middle',
-    marginBlock: `calc(${euiTheme.size.xs} * -1)`,
+    alignItems: 'center',
+    blockSize: '1lh',
+    verticalAlign: 'top',
     marginInlineEnd: euiTheme.size.xs,
     label: 'euiDataGridTreeCell__toggle'
   },

@@ -1,8 +1,8 @@
 ---
-order: 3
+order: 23
 ---
 
-# Compressed and column layouts
+# Compressed and column layouts (Ember EUI extra)
 
 <EuiText>
 

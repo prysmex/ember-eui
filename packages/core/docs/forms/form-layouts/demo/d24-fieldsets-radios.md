@@ -1,8 +1,8 @@
 ---
-order: 4
+order: 24
 ---
 
-# Fieldsets
+# Fieldsets with radios (Ember EUI extra)
 
 <EuiText>
 

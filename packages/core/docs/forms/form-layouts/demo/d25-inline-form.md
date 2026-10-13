@@ -1,8 +1,8 @@
 ---
-order: 5
+order: 25
 ---
 
-# Inline forms
+# Inline forms (Ember EUI extra)
 
 <EuiText>
 

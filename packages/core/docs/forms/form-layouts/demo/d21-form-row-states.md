@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 21
 ---
 
-# Form rows
+# Form row with label, help text and errors (Ember EUI extra)
 
 <EuiText>
 

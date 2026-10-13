@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 22
 ---
 
-# A complete form
+# A complete form (Ember EUI extra)
 
 <EuiText>
 

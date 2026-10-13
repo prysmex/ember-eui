@@ -29,6 +29,10 @@
       "types": "./declarations/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./utils/color": {
+      "types": "./declarations/utils/color/index.d.ts",
+      "default": "./dist/utils/color/index.js"
+    },
     "./*": {
       "types": "./declarations/*.d.ts",
       "default": "./dist/*.js"

@@ -29,6 +29,7 @@ import * as MarkdownAddComponents from '../markdown-add-components/index.ts';
 import type { Options as Remark2RehypeOptions } from 'mdast-util-to-hast';
 //@ts-ignore
 import type { Handler } from 'mdast-util-to-hast';
+import type { DefaultPluginsConfig } from './plugins.ts';
 import type { PluggableList } from 'unified';
 
 
@@ -46,10 +47,12 @@ export type DefaultEuiMarkdownProcessingPlugins = [
   ...PluggableList // any additional are generic
 ];
 
-// `exclude` is accepted for API parity with EUI but not implemented yet
-export const getDefaultEuiMarkdownProcessingPlugins: any = ({
-  exclude: _exclude
-}: { exclude?: 'tooltip'[] } = {}) => {
+// Unlike upstream, `exclude` has nothing to do here: the checkbox and
+// tooltip parsers carry their component in the node, so leaving the parser
+// out (parsing plugins) is enough.
+export const getDefaultEuiMarkdownProcessingPlugins: any = (
+  _config: DefaultPluginsConfig = {}
+) => {
   const plugins: DefaultEuiMarkdownProcessingPlugins = [
     [remark2Rehype, { allowDangerousHtml: true, unknownHandler }],
     [MarkdownAddComponents.processor, {}]

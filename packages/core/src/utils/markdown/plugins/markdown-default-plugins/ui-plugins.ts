@@ -9,16 +9,16 @@
 import * as MarkdownTooltip from '../markdown-tooltip/index.ts';
 
 import type { EuiMarkdownEditorUiPlugin } from '../../markdown-types.ts';
+import type { DefaultPluginsConfig } from './plugins.ts';
 
 export type DefaultEuiMarkdownUiPlugins = EuiMarkdownEditorUiPlugin[];
 
 export const getDefaultEuiMarkdownUiPlugins = ({
   exclude
-}: { exclude?: 'tooltip'[] } = {}): DefaultEuiMarkdownUiPlugins => {
-  const excludeSet = new Set(exclude);
-  const uiPlugins = [];
+}: DefaultPluginsConfig = {}): DefaultEuiMarkdownUiPlugins => {
+  const uiPlugins: EuiMarkdownEditorUiPlugin[] = [];
 
-  if (!excludeSet.has('tooltip')) uiPlugins.push(MarkdownTooltip.plugin);
+  if (!exclude?.includes('tooltip')) uiPlugins.push(MarkdownTooltip.plugin);
 
   // @ts-ignore __originatedFromEui is a custom property
   uiPlugins.__originatedFromEui = true;

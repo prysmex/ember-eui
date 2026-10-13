@@ -25,30 +25,68 @@ import breaks from 'remark-breaks';
 import emoji from 'remark-emoji';
 import markdown from 'remark-parse';
 
+import {
+  DEFAULT_OPTIONS as LINK_VALIDATOR_DEFAULTS,
+  euiMarkdownLinkValidator
+} from '../markdown-link-validator.ts';
 import highlight from '../../remark/remark-prismjs.ts';
 import * as MarkdownCheckbox from '../markdown-checkbox/index.ts';
 import * as MarkdownTooltip from '../markdown-tooltip/index.ts';
 
+import type { EuiMarkdownLinkValidatorOptions } from '../markdown-link-validator.ts';
+import type { DefaultPluginsConfig, ExcludableDefaultPlugins } from './plugins.ts';
 import type { PluggableList } from 'unified';
 
 export type DefaultEuiMarkdownParsingPlugins = PluggableList;
 
+export type DefaultParsingPluginsConfig = {
+  /**
+   * Allows enabling emoji rendering for emoticons such as :) and :(
+   * @default { emoticon: false }
+   */
+  emoji?: { emoticon?: boolean };
+  /**
+   * Allows configuring the `allowRelative`, `allowProtocols`, and
+   * `allowDocumentRelative` of {@link EuiMarkdownLinkValidatorOptions}
+   */
+  linkValidator?: EuiMarkdownLinkValidatorOptions;
+};
+
+const DEFAULT_PARSING_PLUGINS: Record<
+  ExcludableDefaultPlugins,
+  DefaultEuiMarkdownParsingPlugins[0]
+> = {
+  emoji: [emoji, { emoticon: false }],
+  lineBreaks: [breaks as any, {}],
+  linkValidator: [euiMarkdownLinkValidator, LINK_VALIDATOR_DEFAULTS],
+  checkbox: [MarkdownCheckbox.parser, {}],
+  tooltip: [MarkdownTooltip.parser, {}]
+};
+
 export const getDefaultEuiMarkdownParsingPlugins = ({
-  exclude
-}: { exclude?: 'tooltip'[] } = {}): DefaultEuiMarkdownParsingPlugins => {
-  const excludeSet = new Set(exclude);
+  exclude,
+  ...parsingConfig
+}: DefaultPluginsConfig &
+  DefaultParsingPluginsConfig = {}): DefaultEuiMarkdownParsingPlugins => {
   const parsingPlugins: PluggableList = [
     [markdown, {}],
-    [highlight, {}],
-    [emoji, { emoticon: false }],
-    //@ts-ignore
-    [breaks, {}],
-    // [markdownLinkValidator, {}],
-    [MarkdownCheckbox.parser, {}]
+    [highlight, {}]
   ];
 
-  if (!excludeSet.has('tooltip'))
-    parsingPlugins.push([MarkdownTooltip.parser, {}]);
+  Object.entries(DEFAULT_PARSING_PLUGINS).forEach(([pluginName, plugin]) => {
+    // Check for plugin exclusions
+    if (!exclude?.includes(pluginName as ExcludableDefaultPlugins)) {
+      // Check for plugin configuration overrides
+      if (pluginName in parsingConfig) {
+        parsingPlugins.push([
+          (plugin as any[])[0],
+          parsingConfig[pluginName as keyof DefaultParsingPluginsConfig]
+        ]);
+      } else {
+        parsingPlugins.push(plugin);
+      }
+    }
+  });
 
   return parsingPlugins;
 };

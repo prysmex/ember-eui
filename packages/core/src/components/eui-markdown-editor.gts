@@ -30,9 +30,9 @@ import {
 } from '../utils/markdown/markdown-modes.ts';
 import {
   defaultParsingPlugins,
-  defaultProcessingPlugins
+  defaultProcessingPlugins,
+  defaultUiPlugins
 } from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
-import * as MarkdownTooltipPlugin from '../utils/markdown/plugins/markdown-tooltip/index.ts';
 import EuiMarkdownEditorDropZone from './eui-markdown-editor-drop-zone.gts';
 import EuiMarkdownEditorTextArea from './eui-markdown-editor-text-area.gts';
 import EuiMarkdownEditorToolbar from './eui-markdown-editor-toolbar.gts';
@@ -49,7 +49,10 @@ import type {
 } from '../utils/markdown/markdown-types';
 import type { CSSObject } from '@emotion/css/create-instance';
 import type { EuiMarkdownEditorTextAreaSignature } from './eui-markdown-editor-text-area';
-import type { EuiMarkdownEditorToolbarSignature } from './eui-markdown-editor-toolbar';
+import type {
+  EuiMarkdownEditorToolbarArgs,
+  EuiMarkdownEditorToolbarSignature
+} from './eui-markdown-editor-toolbar';
 import type { EuiMarkdownFormatSignature } from './eui-markdown-format.gts';
 import type { Processor } from 'unified';
 
@@ -68,10 +71,13 @@ export interface EuiMarkdownEditorArgs {
   /** Id of the editor. Defaults to a generated id. */
   editorId?: string;
   /**
-   * Toolbar plugins added after the built-in ones (bold, lists, …), e.g. a
-   * button inserting a chart. See the markdown editor docs page.
+   * The UI plugins of the toolbar (a button per plugin after the built-in
+   * bold, lists, … buttons) and of the syntax help. Defaults to
+   * `getDefaultEuiMarkdownUiPlugins()` (the tooltip plugin): as upstream,
+   * the list you pass replaces the defaults, so add yours to that list
+   * (`[...getDefaultEuiMarkdownUiPlugins(), myPlugin]`) to keep them.
    */
-  uiPlugins: EuiMarkdownEditorUiPlugin[];
+  uiPlugins?: EuiMarkdownEditorUiPlugin[];
   /**
    * remark plugins parsing the markdown. Defaults to
    * `getDefaultEuiMarkdownParsingPlugins()`; extend that list to add syntax.
@@ -129,6 +135,15 @@ export interface EuiMarkdownEditorArgs {
   dropHandlers?: EuiMarkdownDropHandler[];
   /** Renders the footer (upload, errors and syntax help). Defaults to `true`. */
   showFooter?: boolean;
+  /**
+   * Customizes the toolbar: `className` is added to it, and `right` (text
+   * or a component, e.g. a template-only component rendering an
+   * `EuiButton`) replaces the preview/editor switch on its right side.
+   */
+  toolbarProps?: {
+    className?: string;
+    right?: EuiMarkdownEditorToolbarArgs['right'];
+  };
   /** Accessible label of the textarea. */
   ariaLabel?: string;
   /** Id of the element labelling the textarea (e.g. a form row label). */
@@ -264,18 +279,18 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
   @tracked editorToolbarHeight: number = 0;
   @tracked hasUnacceptedItems = false;
 
-  markdownActions: MarkdownActions;
+  /** Rebuilt when the plugins change (e.g. a default plugin is excluded). */
+  @cached
+  get markdownActions(): MarkdownActions {
+    return new MarkdownActions(this.editorId, this.toolbarPlugins);
+  }
 
   get toolbarPlugins() {
-    return [MarkdownTooltipPlugin.plugin, ...(this.args.uiPlugins || [])];
+    return this.args.uiPlugins ?? defaultUiPlugins;
   }
 
   constructor(owner: Owner, args: EuiMarkdownEditorArgs) {
     super(owner, args);
-    this.markdownActions = new MarkdownActions(
-      this.editorId,
-      this.toolbarPlugins
-    );
     this.currentHeight = this.height;
   }
 
@@ -580,6 +595,8 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
         @viewMode={{this.viewMode}}
         @uiPlugins={{this.toolbarPlugins}}
         @readOnly={{@readOnly}}
+        @right={{@toolbarProps.right}}
+        class={{@toolbarProps.className}}
         {{didInsert this.setEditorToolbarRef}}
       />
       {{#if this.isPreviewing}}

@@ -2,3 +2,4 @@
 // (see vite.config.mjs).
 export * from '@docfy/ember';
 export { default as DocfyDemo } from './components/docfy-demo/index.gjs';
+export { default as DocfyCodeBlock } from './components/docfy-code-block.gjs';

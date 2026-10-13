@@ -9,7 +9,6 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| Utilities | no EuiErrorBoundary (Glimmer has no equivalent) |
 
 ## Forms
 

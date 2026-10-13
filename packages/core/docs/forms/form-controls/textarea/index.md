@@ -39,7 +39,8 @@ Generated from the components' TypeScript signatures by
 
 ### EuiTextArea
 
-A multi-line text input. Attributes (`placeholder`, `maxlength`…) go to the `<textarea>`.
+A multi-line text input, inside an EuiFormControlLayout like upstream.
+Attributes (`placeholder`, `maxlength`…) go to the `<textarea>`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -49,6 +50,9 @@ A multi-line text input. Attributes (`placeholder`, `maxlength`…) go to the `<
 | `@compressed` | `boolean` |  | Tighter padding (8px instead of 12px) and 3 default rows, for dense forms. |
 | `@disabled` | `boolean` |  | Disables the textarea. |
 | `@isInvalid` | `boolean` |  | Shows the invalid state (danger border), sets `aria-invalid` and marks it invalid for native form validation. |
+| `@icon` |  |  | Icon inside the textarea, anything `EuiIcon`'s `@type` accepts. |
+| `@isLoading` | `boolean` |  | Shows a spinner inside the textarea. |
+| `@isClearable` | `boolean` |  | Shows a button that clears the textarea. It empties the value, fires an `input` event (so your `{{on "input"}}` handler sees it) and focuses the textarea. |
 | `@inputRef` | `(element: HTMLTextAreaElement \| null) => void` |  | Called with the `<textarea>` element once rendered. |
 | `@rows` | `number` | 6, or 3 when `@compressed` | Visible number of lines. |
 | `@resize` | `EuiTextAreaResize` | `'vertical'` | Which way the user can resize it: `'vertical'`, `'horizontal'`, `'both'` or `'none'`. |

@@ -1,5 +1,5 @@
 ---
-order: 1
+order: 5
 ---
 
 # A full page with everything
@@ -37,36 +37,9 @@ order: 1
   <EuiCode>@pageContentProps</EuiCode>.
 </EuiText>
 
-```hbs template
-<EuiPageTemplate
-  @grow={{true}}
-  @pageHeader={{hash
-    iconType='logoElastic'
-    pageTitle='Page Title'
-    tabs=this.tabs
-  }}
-  @hasBottomBarBlock={{this.showing}}
->
-  <:pageSideBar>
-    <EuiLoadingContent @lines={{8}} />
-  </:pageSideBar>
-  <:pageHeaderRightSideItems as |Item|>
-    <Item>
-      <EuiButton>
-        Go Full Screen
-      </EuiButton>
-    </Item>
-  </:pageHeaderRightSideItems>
-  <:default>
-    <EuiLoadingContent @lines={{16}} />
-  </:default>
-  <:bottomBar>
-    Bottom bar
-  </:bottomBar>
-</EuiPageTemplate>
-```
-
-```js component
+```gjs component
+import { EuiPageTemplate, EuiLoadingContent, EuiButton } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
@@ -93,5 +66,34 @@ export default class DemoIconComponent extends Component {
     this.selectedTab = val;
     this.showing = !val;
   };
+
+  <template>
+    <EuiPageTemplate
+      @grow={{true}}
+      @pageHeader={{hash
+        iconType='logoElastic'
+        pageTitle='Page Title'
+        tabs=this.tabs
+      }}
+      @hasBottomBarBlock={{this.showing}}
+    >
+      <:pageSideBar>
+        <EuiLoadingContent @lines={{8}} />
+      </:pageSideBar>
+      <:pageHeaderRightSideItems as |Item|>
+        <Item>
+          <EuiButton>
+            Go Full Screen
+          </EuiButton>
+        </Item>
+      </:pageHeaderRightSideItems>
+      <:default>
+        <EuiLoadingContent @lines={{16}} />
+      </:default>
+      <:bottomBar>
+        Bottom bar
+      </:bottomBar>
+    </EuiPageTemplate>
+  </template>
 }
 ```

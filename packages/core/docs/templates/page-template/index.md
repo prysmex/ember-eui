@@ -48,8 +48,7 @@ When embedding the template inside an existing main region, use
 `@pageContentProps={{hash role=null}}`.
 
 The side bar stacks above the content below 768px. Its default sticky behavior
-starts at 768px. The bundled light and dark themes use Elastic EUI 41.4.0
-Amsterdam; `@restrictWidth={{true}}` means a maximum of **1200px**. Use a number
+starts at 768px. `@restrictWidth={{true}}` means a maximum of **1200px**. Use a number
 for pixels, a CSS string such as `"75%"`, or `false` for no width restriction.
 The `empty` layout without a side bar restricts the outer body rather than the
 inner content body.

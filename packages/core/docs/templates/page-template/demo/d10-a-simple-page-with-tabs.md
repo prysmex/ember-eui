@@ -1,5 +1,5 @@
 ---
-order: 6
+order: 10
 ---
 
 # A simple page with tabs
@@ -14,30 +14,9 @@ order: 6
   </:title>
 </EuiCallOut>
 
-```hbs template
-<EuiPageTemplate
-  @grow={{true}}
-  @pageHeader={{hash
-    iconType='logoElastic'
-    pageTitle='Page Title'
-    tabs=this.tabs
-  }}
->
-  <:pageHeaderRightSideItems as |Item|>
-    <Item>
-      <EuiButton>
-        Go to full screen
-      </EuiButton>
-    </Item>
-  </:pageHeaderRightSideItems>
-  <:default>
-    <EuiText><p>Selected section: {{this.selectedTab}}</p></EuiText>
-    <EuiLoadingContent @lines={{16}} />
-  </:default>
-</EuiPageTemplate>
-```
-
-```js component
+```gjs component
+import { EuiPageTemplate, EuiButton, EuiText, EuiLoadingContent } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
@@ -54,5 +33,28 @@ export default class PageTabsDemo extends Component {
   selectTab = (tab) => {
     this.selectedTab = tab;
   };
+
+  <template>
+    <EuiPageTemplate
+      @grow={{true}}
+      @pageHeader={{hash
+        iconType='logoElastic'
+        pageTitle='Page Title'
+        tabs=this.tabs
+      }}
+    >
+      <:pageHeaderRightSideItems as |Item|>
+        <Item>
+          <EuiButton>
+            Go to full screen
+          </EuiButton>
+        </Item>
+      </:pageHeaderRightSideItems>
+      <:default>
+        <EuiText><p>Selected section: {{this.selectedTab}}</p></EuiText>
+        <EuiLoadingContent @lines={{16}} />
+      </:default>
+    </EuiPageTemplate>
+  </template>
 }
 ```

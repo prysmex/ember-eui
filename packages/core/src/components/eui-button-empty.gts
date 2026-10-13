@@ -1,6 +1,9 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import type { CSSObject } from '@emotion/css/create-instance';
+import { resolveButtonCommonProps } from '../-private/eui-button-context.ts';
+import EuiButtonGroupItem from '../-private/eui-button-group-item.gts';
+import euiDisabledElement from '../-private/eui-disabled-element.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -14,6 +17,7 @@ import EuiButtonContent from './eui-button-content.gts';
 
 import type { EuiButtonContentSignature } from './eui-button-content';
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiButtonContext } from '../-private/eui-button-context.ts';
 
 
 export interface EuiButtonEmptySignature {
@@ -61,6 +65,18 @@ export interface EuiButtonEmptySignature {
     target?: string;
     /** Disables the button and greys it out. */
     isDisabled?: boolean;
+    /**
+     * Beta: with `@isDisabled`, renders `aria-disabled="true"` instead of the
+     * native `disabled` attribute. The button keeps focus (e.g. for a
+     * tooltip) while clicks, pointer and key events (except Tab and Escape)
+     * are blocked. Style it with `[aria-disabled="true"]`, not `:disabled`.
+     */
+    hasAriaDisabled?: boolean;
+    /**
+     * @private Props cascaded by a parent `EuiButtonGroup` (curried into
+     * the buttons it yields).
+     */
+    buttonContext?: EuiButtonContext;
     /** @deprecated Has no effect, see `EuiIcon`. */
     useSvg?: boolean;
     /** @deprecated Not needed: a component passed as `@iconType` is rendered. */
@@ -91,10 +107,31 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
   get context() {
     return getEuiThemeContext(this);
   }
+  @cached
+  get common() {
+    const args = this.args;
+    return resolveButtonCommonProps({
+      context: args.buttonContext,
+      size: args.size,
+      color: args.color,
+      isDisabled: args.isDisabled,
+      disabled: args.disabled,
+      isLoading: args.isLoading,
+      hasAriaDisabled: args.hasAriaDisabled
+    });
+  }
   get isDisabled() {
-    return Boolean(
-      this.args.isLoading || this.args.isDisabled || this.args.disabled
-    );
+    return this.common.isDisabled;
+  }
+  get hasAriaDisabled() {
+    return this.common.hasAriaDisabled;
+  }
+  /** Native `disabled`, unless `@hasAriaDisabled` swaps it for `aria-disabled`. */
+  get disabledAttr() {
+    return this.hasAriaDisabled ? undefined : this.isDisabled;
+  }
+  get ariaDisabled() {
+    return this.hasAriaDisabled && this.isDisabled ? 'true' : undefined;
   }
   get tagName() {
     return this.args.href && !this.isDisabled ? 'a' : 'button';
@@ -114,7 +151,7 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
       : undefined;
   }
   get size(): 'xs' | 's' | 'm' {
-    const size = this.args.size;
+    const size = this.common.size;
     return size === 'xs' || size === 's' ? size : 'm';
   }
   get iconSize() {
@@ -128,8 +165,8 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
     const colors = useEuiBorealisStyles(context, euiButtonDisplaysColors)[
       'empty'
     ]!;
-    const color =
-      this.args.color === 'ghost' ? 'text' : (this.args.color ?? 'primary');
+    const color = this.common.color;
+    const colorName = color === 'ghost' ? 'text' : (color ?? 'primary');
     const flush = this.args.flush;
     // A scoped equivalent of the React global reset. Deliberately no global injection.
     const reset: CSSObject = {
@@ -147,7 +184,7 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
       `&:focus { ${euiFocusRing(context.upstream)} }`,
       styles.euiButtonEmpty,
       styles[this.size],
-      colors[this.isDisabled ? 'disabled' : color] ?? colors['primary'],
+      colors[this.isDisabled ? 'disabled' : colorName] ?? colors['primary'],
       flush && styles.flush,
       flush && styles[flush],
       this.isDisabled && styles.isDisabled,
@@ -198,29 +235,33 @@ export default class EuiButtonEmpty extends Component<EuiButtonEmptySignature> {
   }
 
   <template>
-    {{#let (element this.tagName) as |Element|}}
-      <Element
-        class={{this.classes}}
-        disabled={{this.isDisabled}}
-        href={{this.href}}
-        target={{this.target}}
-        aria-busy={{if @isLoading "true" null}}
-        aria-pressed={{this.pressed}}
-        type={{this.type}}
-        ...attributes
-      >
-        <EuiButtonContent
-          class={{this.contentClasses}}
-          @isLoading={{@isLoading}}
-          @iconType={{@iconType}}
-          @iconSide={{@iconSide}}
-          @iconSize={{this.iconSize}}
-          @iconClasses={{@iconClasses}}
-          @useSvg={{@useSvg}}
-          @useComponent={{@useComponent}}
-          @textClasses={{this.textClasses}}
-        >{{yield}}</EuiButtonContent>
-      </Element>
-    {{/let}}
+    <EuiButtonGroupItem @wrap={{@buttonContext.wrapInItem}}>
+      {{#let (element this.tagName) as |Element|}}
+        <Element
+          class={{this.classes}}
+          disabled={{this.disabledAttr}}
+          aria-disabled={{this.ariaDisabled}}
+          href={{this.href}}
+          target={{this.target}}
+          aria-busy={{if @isLoading "true" null}}
+          aria-pressed={{this.pressed}}
+          type={{this.type}}
+          {{euiDisabledElement this.isDisabled this.hasAriaDisabled}}
+          ...attributes
+        >
+          <EuiButtonContent
+            class={{this.contentClasses}}
+            @isLoading={{@isLoading}}
+            @iconType={{@iconType}}
+            @iconSide={{@iconSide}}
+            @iconSize={{this.iconSize}}
+            @iconClasses={{@iconClasses}}
+            @useSvg={{@useSvg}}
+            @useComponent={{@useComponent}}
+            @textClasses={{this.textClasses}}
+          >{{yield}}</EuiButtonContent>
+        </Element>
+      {{/let}}
+    </EuiButtonGroupItem>
   </template>
 }

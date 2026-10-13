@@ -1,6 +1,10 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 import type { CSSObject } from '@emotion/css/create-instance';
+import { on } from '@ember/modifier';
+import { resolveButtonCommonProps } from '../-private/eui-button-context.ts';
+import EuiButtonGroupItem from '../-private/eui-button-group-item.gts';
+import euiDisabledElement from '../-private/eui-disabled-element.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -12,6 +16,7 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import EuiButtonContent from './eui-button-content.gts';
 import type { EuiButtonContentSignature } from './eui-button-content';
+import type { EuiButtonContext } from '../-private/eui-button-context.ts';
 
 export interface EuiButtonSignature {
   /** A button, a link (with `@href`) or what `@element` names, e.g. a label. */
@@ -83,6 +88,24 @@ export interface EuiButtonSignature {
     /** Disables the button and greys it out. */
     isDisabled?: boolean;
     /**
+     * Beta: with `@isDisabled`, renders `aria-disabled="true"` instead of the
+     * native `disabled` attribute. The button keeps focus (e.g. for a
+     * tooltip) while clicks, pointer and key events (except Tab and Escape)
+     * are blocked. Style it with `[aria-disabled="true"]`, not `:disabled`.
+     */
+    hasAriaDisabled?: boolean;
+    /**
+     * `id` of the button. Inside an `EuiButtonGroup` with
+     * `@variant="selection"` it identifies the button for `@idSelected`,
+     * `@idToSelectedMap` and `@onChange`.
+     */
+    id?: string;
+    /**
+     * @private Props cascaded by a parent `EuiButtonGroup` (curried into
+     * the buttons it yields).
+     */
+    buttonContext?: EuiButtonContext;
+    /**
      * Extra styles composed last into this component's class (like upstream's
      * `css` prop). Prefer this to an extra class when styling it from a parent.
      */
@@ -99,10 +122,35 @@ export default class EuiButton extends Component<EuiButtonSignature> {
   get context() {
     return getEuiThemeContext(this);
   }
+  @cached
+  get common() {
+    const args = this.args;
+    return resolveButtonCommonProps({
+      context: args.buttonContext,
+      size: args.size,
+      color: args.color,
+      isDisabled: args.isDisabled,
+      disabled: args.disabled,
+      isLoading: args.isLoading,
+      hasAriaDisabled: args.hasAriaDisabled,
+      fullWidth: args.fullWidth,
+      fill: args.fill,
+      id: args.id,
+      isSelected: args.isSelected
+    });
+  }
   get isDisabled() {
-    return Boolean(
-      this.args.isLoading || this.args.isDisabled || this.args.disabled
-    );
+    return this.common.isDisabled;
+  }
+  get hasAriaDisabled() {
+    return this.common.hasAriaDisabled;
+  }
+  /** Native `disabled`, unless `@hasAriaDisabled` swaps it for `aria-disabled`. */
+  get disabledAttr() {
+    return this.hasAriaDisabled ? undefined : this.isDisabled;
+  }
+  get ariaDisabled() {
+    return this.hasAriaDisabled && this.isDisabled ? 'true' : undefined;
   }
   get tagName() {
     return (
@@ -118,13 +166,16 @@ export default class EuiButton extends Component<EuiButtonSignature> {
     return this.tagName === 'button' ? (this.args.type ?? 'button') : undefined;
   }
   get pressed() {
-    return this.args.isSelected === undefined
-      ? undefined
-      : String(this.args.isSelected);
+    const isSelected = this.common.isSelected;
+    return isSelected === undefined ? undefined : String(isSelected);
   }
   get size(): 's' | 'm' {
-    return this.args.size === 's' ? 's' : 'm';
+    return this.common.size === 's' ? 's' : 'm';
   }
+  /** Runs a selection group's `onSelect` before the button's own handlers. */
+  onClick = () => {
+    this.common.onSelect?.();
+  };
   @cached
   get classes() {
     const base = this.args.baseClassName ?? 'euiButton';
@@ -132,9 +183,10 @@ export default class EuiButton extends Component<EuiButtonSignature> {
     const theme = context.upstream.euiTheme;
     const display = useEuiBorealisStyles(context, euiButtonDisplayStyles);
     const colors = useEuiBorealisStyles(context, euiButtonDisplaysColors);
+    const common = this.common;
     const color =
-      this.args.color === 'ghost' ? 'text' : (this.args.color ?? 'primary');
-    const colorStyles = colors[this.args.fill ? 'fill' : 'base']!;
+      common.color === 'ghost' ? 'text' : (common.color ?? 'primary');
+    const colorStyles = colors[common.fill ? 'fill' : 'base']!;
     // A scoped equivalent of the React global reset. Deliberately no global injection.
     const reset: CSSObject = {
       boxSizing: 'border-box',
@@ -150,7 +202,7 @@ export default class EuiButton extends Component<EuiButtonSignature> {
       `&:focus { ${euiFocusRing(context.upstream)} }`,
       display.euiButtonDisplay,
       display[this.size],
-      this.args.fullWidth && display.fullWidth,
+      common.fullWidth && display.fullWidth,
       this.isDisabled && display.isDisabled,
       colorStyles[this.isDisabled ? 'disabled' : color] ??
         colorStyles['primary'],
@@ -203,30 +255,36 @@ export default class EuiButton extends Component<EuiButtonSignature> {
   }
 
   <template>
-    {{#let (element this.tagName) as |Element|}}
-      <Element
-        class={{this.classes}}
-        disabled={{this.isDisabled}}
-        href={{this.href}}
-        target={{@target}}
-        aria-busy={{if @isLoading "true" null}}
-        aria-pressed={{this.pressed}}
-        type={{this.type}}
-        {{!@glint-expect-error}}
-        ...attributes
-      >
-        <EuiButtonContent
-          class={{this.contentClasses}}
-          @isLoading={{@isLoading}}
-          @iconType={{@iconType}}
-          @iconSize={{@iconSize}}
-          @iconSide={{@iconSide}}
-          @iconClasses={{@iconClasses}}
-          @useSvg={{@useSvg}}
-          @useComponent={{@useComponent}}
-          @textClasses={{this.textClasses}}
-        >{{yield}}</EuiButtonContent>
-      </Element>
-    {{/let}}
+    <EuiButtonGroupItem @wrap={{@buttonContext.wrapInItem}}>
+      {{#let (element this.tagName) as |Element|}}
+        <Element
+          class={{this.classes}}
+          id={{@id}}
+          disabled={{this.disabledAttr}}
+          aria-disabled={{this.ariaDisabled}}
+          href={{this.href}}
+          target={{@target}}
+          aria-busy={{if @isLoading "true" null}}
+          aria-pressed={{this.pressed}}
+          type={{this.type}}
+          {{euiDisabledElement this.isDisabled this.hasAriaDisabled}}
+          {{on "click" this.onClick}}
+          {{!@glint-expect-error}}
+          ...attributes
+        >
+          <EuiButtonContent
+            class={{this.contentClasses}}
+            @isLoading={{@isLoading}}
+            @iconType={{@iconType}}
+            @iconSize={{@iconSize}}
+            @iconSide={{@iconSide}}
+            @iconClasses={{@iconClasses}}
+            @useSvg={{@useSvg}}
+            @useComponent={{@useComponent}}
+            @textClasses={{this.textClasses}}
+          >{{yield}}</EuiButtonContent>
+        </Element>
+      {{/let}}
+    </EuiButtonGroupItem>
   </template>
 }

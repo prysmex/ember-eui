@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 5
 ---
 
-# Loading and a popover button
+# Loading and a popover button (Ember EUI extra)
 
 <EuiText>
 
@@ -13,22 +13,9 @@ second after each change of the search.
 
 </EuiText>
 
-```hbs template
-<EuiSelectableTemplateSitewide
-  @options={{this.options}}
-  @isLoading={{this.isLoading}}
-  @isPreFiltered={{true}}
-  @onSearch={{this.search}}
-  @popoverWidth={{400}}
->
-  <:popoverButton as |toggle|>
-    <EuiButtonIcon @iconType="search" @display="base" aria-label="Search" {{on "click" toggle}} />
-  </:popoverButton>
-  <:popoverTitle>Search the docs</:popoverTitle>
-</EuiSelectableTemplateSitewide>
-```
-
-```js component
+```gjs component
+import { EuiSelectableTemplateSitewide, EuiButtonIcon } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -48,5 +35,20 @@ export default class SitewideLoading extends Component {
     ).map((label) => ({ label, icon: { type: 'document' } }));
     this.isLoading = false;
   }
+
+  <template>
+    <EuiSelectableTemplateSitewide
+      @options={{this.options}}
+      @isLoading={{this.isLoading}}
+      @isPreFiltered={{true}}
+      @onSearch={{this.search}}
+      @popoverWidth={{400}}
+    >
+      <:popoverButton as |toggle|>
+        <EuiButtonIcon @iconType="search" @display="base" aria-label="Search" {{on "click" toggle}} />
+      </:popoverButton>
+      <:popoverTitle>Search the docs</:popoverTitle>
+    </EuiSelectableTemplateSitewide>
+  </template>
 }
 ```

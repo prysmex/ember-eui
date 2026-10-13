@@ -10,8 +10,16 @@ export function words(text: string): string[] {
 /**
  * Diffs two lists of tokens (characters or words) with Myers' algorithm
  * and returns the text of consecutive tokens with the same operation.
+ *
+ * `timeout` (seconds, `0` for none) bounds the search like diff-match-patch's
+ * `Diff_Timeout`: past it, the part that differs is reported as one removal
+ * followed by one insertion instead of the minimal diff.
  */
-export function diffTokens(before: string[], after: string[]): DiffChunk[] {
+export function diffTokens(
+  before: string[],
+  after: string[],
+  timeout = 0
+): DiffChunk[] {
   // common prefix and suffix need no search
   let start = 0;
   while (start < before.length && start < after.length && before[start] === after[start]) {
@@ -37,7 +45,7 @@ export function diffTokens(before: string[], after: string[]): DiffChunk[] {
   };
 
   before.slice(0, start).forEach((token) => push(0, token));
-  myers(before.slice(start, endBefore), after.slice(start, endAfter)).forEach(([op, token]) =>
+  myers(before.slice(start, endBefore), after.slice(start, endAfter), timeout).forEach(([op, token]) =>
     push(op, token)
   );
   before.slice(endBefore).forEach((token) => push(0, token));
@@ -45,7 +53,7 @@ export function diffTokens(before: string[], after: string[]): DiffChunk[] {
   return chunks;
 }
 
-function myers(a: string[], b: string[]): DiffChunk[] {
+function myers(a: string[], b: string[], timeout: number): DiffChunk[] {
   const n = a.length;
   const m = b.length;
 
@@ -59,8 +67,16 @@ function myers(a: string[], b: string[]): DiffChunk[] {
   const trace: Int32Array[] = [];
 
   let found = -1;
+  const deadline = timeout > 0 ? performance.now() + timeout * 1000 : 0;
 
   for (let d = 0; d <= max && found < 0; d++) {
+    if (deadline && performance.now() > deadline) {
+      return [
+        ...a.map((token): DiffChunk => [-1, token]),
+        ...b.map((token): DiffChunk => [1, token])
+      ];
+    }
+
     trace.push(v.slice(offset - d - 1, offset + d + 2));
 
     for (let k = -d; k <= d; k += 2) {

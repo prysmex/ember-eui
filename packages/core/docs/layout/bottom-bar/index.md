@@ -11,8 +11,8 @@ title: Bottom bar
 `EuiBottomBar` pins actions to the bottom of the window, e.g. "Save" and
 "Discard" for a form with unsaved changes. By default it is fixed to the
 bottom (rendered in a portal) and pads the page so it doesn't cover the
-content. `EuiPageTemplate` offers a quick way to apply a bottom bar to your
-page layouts.
+content. `EuiPageTemplate`'s `T.BottomBar` part offers a quick way to apply
+a bottom bar to your page layouts.
 
 ```hbs
 {{#if this.hasChanges}}
@@ -61,6 +61,7 @@ Generated from the components' TypeScript signatures by
 | `@right` | `number \| string` | `0` | Distance from the right edge, in px or any CSS length. |
 | `@left` | `number \| string` | `0` | Distance from the left edge, in px or any CSS length, e.g. the width of a side nav. |
 | `@bottom` | `number \| string` | `0` | Distance from the bottom, in px or any CSS length. |
+| `@css` | `EuiCss` |  | Styles composed last into the bar's class (upstream's `css`). |
 
 | Block | Description |
 | --- | --- |

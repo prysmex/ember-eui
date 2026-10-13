@@ -8,92 +8,73 @@ title: Page template
 
 <EuiText>
 
-`EuiPageTemplate` builds a whole page layout in one component: an
-optional side bar, a page header, the content, and an optional bottom
-bar. Pick the arrangement with `@template`:
-
-| `@template` | Layout |
-| --- | --- |
-| `default` | Header and content in a panel next to the side bar. |
-| `centeredBody` | The content panel centered in the page, for a single focused task. |
-| `centeredContent` | Content centered inside the body, e.g. an empty prompt. |
-| `empty` | No panels, for fully custom content. |
+`EuiPageTemplate` is a composable component for creating the different
+types of page layout patterns described in these docs. It is somewhat
+opinionated, but still has the ability to customize most of the inner
+components directly on their instance. See the
+[page template guidelines](/docs/core/docs/templates/page-template-guidelines)
+for when to use which layout.
 
 ```hbs
-<EuiPageTemplate
-  @pageHeader={{hash pageTitle="Users" iconType="users"}}
-  @restrictWidth={{true}}
->
-  <:pageSideBar><EuiSideNav @items={{this.nav}} /></:pageSideBar>
-  <:pageHeaderRightSideItems as |Item|>
-    <Item><EuiButton @fill={{true}}>Invite user</EuiButton></Item>
-  </:pageHeaderRightSideItems>
-  <:default>…the page's content…</:default>
+<EuiPageTemplate @panelled={{true}} @restrictWidth={{true}}>
+  <:sidebar as |T|>
+    <T.Sidebar @sticky={{true}}><EuiSideNav @items={{this.nav}} /></T.Sidebar>
+  </:sidebar>
+  <:default as |T|>
+    <T.Header @pageTitle="Users" @iconType="users">
+      <:rightSideItems as |Item|>
+        <Item><EuiButton @fill={{true}}>Invite user</EuiButton></Item>
+      </:rightSideItems>
+    </T.Header>
+    <T.Section>…the page's content…</T.Section>
+    <T.BottomBar>…save and cancel…</T.BottomBar>
+  </:default>
 </EuiPageTemplate>
 ```
 
-`@pageHeader` takes `EuiPageHeader`'s options; the `<:pageHeader…>`
-blocks fill its parts. The same layouts can be built by hand from
-`EuiPage`, `EuiPageSideBar`, `EuiPageBody`, `EuiPageContent` and
-`EuiPageContentBody`. The live examples below cover each template with and
-without a side bar.
+Without a sidebar, yield the parts straight from the template:
+`<EuiPageTemplate as |T|> <T.Header …/> <T.Section>…</T.Section> </EuiPageTemplate>`.
 
-### Optional sections and layout defaults
+### What the parts inherit
 
-Omit `<:pageSideBar>` for the layout without a side bar. Omit `@pageHeader` and
-all `<:pageHeader…>` blocks to render no header. Put the page's content directly
-in `<:default>`: the template creates the content containers and one `main`
-landmark. Adding another `EuiPageContent` inside it would add another landmark.
-When embedding the template inside an existing main region, use
-`@pageContentProps={{hash role=null}}`.
+| Part | Extends | Inherits from the template |
+| --- | --- | --- |
+| `T.Sidebar` | `EuiPageSidebar` | `@paddingSize`, `@responsive` |
+| `T.Header` | `EuiPageHeader` | `@restrictWidth`, `@paddingSize`, `@bottomBorder` (default `true` with a sidebar, `'extended'` without), color (`'plain'`, or `'transparent'` when `@panelled={{false}}`) |
+| `T.Section` | `EuiPageSection` | `@restrictWidth`, `@paddingSize`, color (as the header), `@grow={{true}}` |
+| `T.EmptyPrompt` | `EuiEmptyPrompt` in a centered `EuiPageSection` | `@panelled` (`true` when the content is panelled), `@grow={{true}}` |
+| `T.BottomBar` | `EuiBottomBar` (sticky) around an `EuiPageSection` | `@restrictWidth`, `@paddingSize` |
 
-The side bar stacks above the content below 768px. Its default sticky behavior
-starts at 768px. `@restrictWidth={{true}}` means a maximum of **1200px**. Use a number
-for pixels, a CSS string such as `"75%"`, or `false` for no width restriction.
-The `empty` layout without a side bar restricts the outer body rather than the
-inner content body.
+Args you pass to a part override what it inherits. Use the plain
+components (e.g. `EuiPageSection`) in the template when you deliberately
+don't want the settings to apply.
 
-### Customizing the inner components
+### How the template differs in Ember
 
+- Upstream finds its `EuiPageTemplate.Sidebar` children and renders them
+  outside the main element. Ember components can't inspect their
+  children, so sidebars go in the `<:sidebar as |T|>` block, which is
+  rendered before the main element. Each rendered `T.Sidebar` registers
+  with the template, so a conditional sidebar (`{{#if}}` inside the
+  block) panels and borders the content like upstream.
+- The main element is upstream's `<main>` (`@component` changes its tag,
+  `@mainProps` its `id`, `className`, `css`, `style`, `role`, labels and
+  `data-test-subj`). Responsive stacking and border placement use CSS
+  media queries over the `@responsive` breakpoints instead of measuring
+  the window.
+- `T.BottomBar` renders where you put it (upstream moves it to the end of
+  the main element): render it last.
+- `T.EmptyPrompt`'s default block is the prompt's body; its title,
+  actions, icon and footer are named blocks (`<:title>`, `<:actions as
+  |Item|>`, `<:icon>`, `<:footer>`).
+
+### Legacy API
+
+The older `@template` API (with `@pageHeader`, `@pageSideBarProps`,
 `@pageBodyProps`, `@pageContentProps`, `@pageContentBodyProps`,
-`@pageSideBarProps`, and `@pageHeader` forward the corresponding component's
-arguments and `className`. Supplied values override the template's defaults,
-including `false`, zero widths, and a `null` content role. Header options include
-breadcrumbs, title props, alignment, padding, width and styles.
-
-```hbs
-<EuiPageTemplate
-  @restrictWidth={{900}}
-  @pageHeader={{hash pageTitle="Users" restrictWidth=720 bottomBorder=false}}
-  @pageSideBarProps={{hash sticky=false paddingSize="s"}}
-  @pageContentProps={{hash hasShadow=false paddingSize="s"}}
-  @pageContentBodyProps={{hash restrictWidth=640 paddingSize="m"}}
->
-  <:pageSideBar>Navigation</:pageSideBar>
-  <:default>User list</:default>
-</EuiPageTemplate>
-```
-
-Use `<:pageHeaderPageTitle>`, `<:pageHeaderDescription>`,
-`<:pageHeaderDefault>` and `<:pageHeaderRightSideItems>` for header markup.
-Prefer a title block or `pageHeader.pageTitle` individually; supplying both can
-render both titles.
-
-### Bottom bars and full height
-
-Only the `default` template renders `<:bottomBar>`. `@bottomBarProps` forwards
-`EuiBottomBar` options, including padding, position and the accessible
-`landmarkHeading`. The default position is `sticky`, or `static` while the
-full-height layout is active. An explicit `position="fixed"` uses a portal and
-can reserve space at the bottom of the document.
-
-`@fullHeight` works on `default` and `empty` at widths of 768px and above.
-The parent must provide a constrained height. `true` makes the content wrapper
-scroll; `"noscroll"` fills the height and clips overflow in that wrapper, so a
-child must provide its own scrolling. Below 768px the template uses normal
-page flow. The minimum height defaults to 460px; override `@minHeight` with a
-number or CSS height, including `0` when the parent's height should control the
-layout. The full-height demo lets you switch between all three modes.
+`@bottomBarProps`, `@fullHeight` and the `<:pageSideBar>`,
+`<:pageHeader…>` and `<:bottomBar>` blocks) was removed upstream. It still
+works and is deprecated until 16.0.0; see the last example.
 
 </EuiText>
 
@@ -111,35 +92,119 @@ Generated from the components' TypeScript signatures by
 
 ### EuiPageTemplate
 
-A whole page layout in one component: side bar, header, content and
-bottom bar, arranged by `@template`.
+A whole page layout. The composable API (upstream's) yields the page's
+parts, which inherit the template's settings:
+
+```hbs
+<EuiPageTemplate @panelled={{true}}>
+  <:sidebar as |T|><T.Sidebar>…</T.Sidebar></:sidebar>
+  <:default as |T|>
+    <T.Header @pageTitle="Users" />
+    <T.Section>…</T.Section>
+    <T.BottomBar>…</T.BottomBar>
+  </:default>
+</EuiPageTemplate>
+```
+
+The legacy API (`@template`, `@pageHeader`, `<:pageSideBar>`, …) is
+deprecated: upstream removed it.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@template` |  | `'default'` | Layout: `'default'` (header and content), `'centeredBody'` (content panel centered in the page), `'centeredContent'` (content centered in the body, e.g. an empty prompt) or `'empty'` (no panels). |
-| `@pageBodyProps` |  |  | Props for the `EuiPageBody`, overriding layout defaults. |
-| `@pageContentProps` |  |  | Props for the `EuiPageContent`: `{ className, hasBorder, hasShadow, color, borderRadius, grow, role }`. |
-| `@pageContentBodyProps` |  |  | Props for the `EuiPageContentBody`, overriding layout defaults. |
-| `@pageHeader` |  |  | The page header, as EuiPageHeader args: `{ pageTitle, iconType, description, tabs, responsive, bottomBorder }`. Use the `<:pageHeader…>` blocks for its title, description and actions. |
-| `@pageSideBarProps` |  |  | Props for the side bar, including `sticky` and `paddingSize`. |
-| `@bottomBarProps` | `NormalProps & EuiButtomBarArgs` |  | Props for the bottom bar; override the layout defaults. |
-| `@fullHeight` | `boolean \| 'noscroll'` | `false` | Stretches the page to the window's height and scrolls the content instead of the page (templates `'default'` and `'empty'`, on medium screens and up). Use `'noscroll'` to fill the height without adding a scrolling wrapper around the content. |
-| `@minHeight` | `number \| string` | `460` | Minimum height of the page, in px or any CSS height. |
-| `@restrictWidth` | `boolean \| number \| string` | `true` | Max width of the header and content: `true` for EUI's default, a number in px or any CSS width. |
-| `@grow` | `boolean` | `true` | Fills the window's height. |
-| `@paddingSize` | `'none' \| 's' \| 'm' \| 'l'` | `'l'` | Padding of the page's sections: `'none'`, `'s'`, `'m'` or `'l'`. |
+| `@restrictWidth` | `boolean \| number \| string` | `true` | Shared by both APIs. Max width of the header and the sections' content: `true` for EUI's default (1200px), a number in px or any CSS width. |
+| `@grow` | `boolean` | `true` | Shared by both APIs. Grows the page to fill its flex parent; with the composable API it also makes the page at least as tall as the window. |
+| `@paddingSize` | `EuiPagePaddingSize` | `'l'` | Shared by both APIs. Padding of the header, sections, sidebar and bottom bar: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'` (`'xs'` and `'xl'` with the composable API only). |
+| `@minHeight` | `number \| string` | `460` | Shared by both APIs. Minimum height of the page, in px or any CSS height. With the composable API and `@grow`, the page is at least `max(minHeight, 100vh)`. |
+| `@panelled` | `boolean` | panelled when there is a sidebar | Composable API. Puts the main content on a plain panel and sections and the header on plain backgrounds; `false` makes them transparent. |
+| `@bottomBorder` | `boolean \| 'extended'` | `true` with a sidebar, `'extended'` without | Composable API. Border under `T.Header`: `true` within the restricted width, `'extended'` across the whole header. |
+| `@contentBorder` | `boolean` | `true` with a sidebar | Composable API. A border separating the main content from the sidebar (on its inline start, or on top when stacked). |
+| `@offset` | `number` | the `--euiFixedHeadersOffset` CSS variable that fixed `EuiHeader`s maintain; pass `0` to ignore them | Composable API. Top padding of the page in px, to clear fixed headers. |
+| `@responsive` | `EuiPageBreakpoint[]` | `['xs', 's']` | Composable API. Theme breakpoints (`'xs'`…`'xl'`) where the sidebar stacks above the content and takes the full width. |
+| `@direction` | `'row' \| 'column'` | `'row'` | Composable API. `'row'` puts the sidebar beside the content (stacking on `@responsive` breakpoints); `'column'` always stacks it. |
+| `@component` | `string` | `'main'` | Composable API. Tag of the main content wrapper. |
+| `@mainProps` | `EuiPageTemplateMainProps` |  | Composable API. Attributes of the main content wrapper: `{ id, className, css, style, role, 'aria-label', 'aria-labelledby', 'data-test-subj' }`. |
+| `@css` | `EuiCss` |  | Composable API. Styles composed last into the page's class (upstream's `css`). |
+| `@template` |  | `'default'` | Legacy API. Layout: `'default'` (header and content), `'centeredBody'` (content panel centered in the page), `'centeredContent'` (content centered in the body, e.g. an empty prompt) or `'empty'` (no panels). |
+| `@pageBodyProps` |  |  | Legacy API. Props for the `EuiPageBody`, overriding layout defaults. |
+| `@pageContentProps` |  |  | Legacy API. Props for the `EuiPageContent`: `{ className, hasBorder, hasShadow, color, borderRadius, grow, role }`. |
+| `@pageContentBodyProps` |  |  | Legacy API. Props for the `EuiPageContentBody`, overriding layout defaults. |
+| `@pageHeader` |  |  | Legacy API. The page header, as EuiPageHeader args: `{ pageTitle, iconType, description, tabs, responsive, bottomBorder }`. Use the `<:pageHeader…>` blocks for its title, description and actions. |
+| `@pageSideBarProps` |  |  | Legacy API. Props for the side bar, including `sticky` and `paddingSize`. |
+| `@bottomBarProps` | `NormalProps & EuiButtomBarArgs` |  | Legacy API. Props for the bottom bar; override the layout defaults. |
+| `@fullHeight` | `boolean \| 'noscroll'` | `false` | Legacy API. Stretches the page to the window's height and scrolls the content instead of the page (templates `'default'` and `'empty'`, on medium screens and up). Use `'noscroll'` to fill the height without adding a scrolling wrapper around the content. |
 
 Deprecated: `@bottomBar` (Has no effect, use the `<:bottomBar>` block.); `@hasPageHeader` (Has no effect.); `@hasPageContent` (Has no effect.); `@hasPageContentBody` (Has no effect.).
 
 | Block | Description |
 | --- | --- |
-| default block | The page's content. |
-| `<:pageSideBar>` | A side bar, e.g. an `EuiSideNav`. |
-| `<:pageHeaderPageTitle>` | The header's title, instead of `pageHeader.pageTitle`. |
-| `<:pageHeaderDefault>` | Extra header content. |
-| `<:pageHeaderDescription>` | The header's description. |
-| `<:pageHeaderRightSideItems>` | Header actions; yields an item to wrap each in, see EuiPageHeader. |
-| `<:bottomBar>` | Content of a bottom bar (EuiBottomBar), e.g. save/cancel buttons. |
+| default block | The page's content. Composable API: yields the parts (`as \|T\|`), to stack `T.Header`, `T.Section`, `T.EmptyPrompt`, `T.BottomBar` or any content in the main element, in order. |
+| `<:sidebar>` | Composable API. Sidebars (`T.Sidebar`, may be conditional), rendered beside the main element. Any rendered `T.Sidebar` panels and borders the content, like upstream. |
+| `<:pageSideBar>` | Legacy API. A side bar, e.g. an `EuiSideNav`. |
+| `<:pageHeaderPageTitle>` | Legacy API. The header's title, instead of `pageHeader.pageTitle`. |
+| `<:pageHeaderDefault>` | Legacy API. Extra header content. |
+| `<:pageHeaderDescription>` | Legacy API. The header's description. |
+| `<:pageHeaderRightSideItems>` | Legacy API. Header actions; yields an item to wrap each in, see EuiPageHeader. |
+| `<:bottomBar>` | Legacy API. Content of a bottom bar (EuiBottomBar), e.g. save/cancel buttons. |
+
+### EuiPageTemplateSidebar
+
+`T.Sidebar` of `EuiPageTemplate` (upstream `EuiPageTemplate.Sidebar`):
+an `EuiPageSidebar` with the template's `@paddingSize` and
+`@responsive`. Render it in the template's `<:sidebar as |T|>` block.
+
+Also takes the args of `EuiPageSidebar`.
+
+### EuiPageTemplateEmptyPrompt
+
+`T.EmptyPrompt` of `EuiPageTemplate` (upstream
+`EuiPageTemplate.EmptyPrompt`): an `EuiEmptyPrompt` centered in a growing
+`EuiPageSection`. The default block is the prompt's body.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@panelled` | `boolean` |  | Shows the prompt as a panel on a plain section: the prompt is `'subdued'` unless `@color` says otherwise. The template sets it when its content is panelled (e.g. with a sidebar). |
+| `@color` | `PromptColor` | `'subdued'` when panelled, `'plain'` otherwise | Color of the prompt (any `EuiEmptyPrompt` color). |
+| `@paddingSize` | `EuiPagePaddingSize` | `'l'` | Padding of the section and the prompt: `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@grow` | `boolean` | `true` | Grows the section to fill the page's height. |
+| `@restrictWidth` | `EuiPageRestrictWidth` | `false` | Max width of the section's content: `true` for EUI's default (1200px), a number in px or any CSS width. |
+| `@alignment` | `EuiPageSectionAlignment` | `'center'` | Alignment of the prompt in the section: `'top'`, `'center'` or `'horizontalCenter'`. |
+| `@layout` | `PromptArgs['layout']` |  | `'vertical'` or `'horizontal'`, see `EuiEmptyPrompt`. |
+| `@iconType` | `PromptArgs['iconType']` |  | Large icon above the title. |
+| `@iconColor` | `PromptArgs['iconColor']` |  | Color of the icon. |
+| `@title` | `PromptArgs['title']` |  | Title text; use the `<:title>` block for a heading. |
+| `@titleSize` | `PromptArgs['titleSize']` | `'m'` | Size of the title. |
+| `@body` | `PromptArgs['body']` |  | Body text, when there is no default block. |
+| `@actions` | `PromptArgs['actions']` |  | Action components, see `EuiEmptyPrompt`. |
+| `@footer` | `PromptArgs['footer']` |  | Footer text; use the `<:footer>` block for markup. |
+| `@hasBorder` | `PromptArgs['hasBorder']` | `true` for a `'plain'` prompt | Adds a border. |
+
+| Block | Description |
+| --- | --- |
+| default block | The prompt's body (upstream's `children`). |
+| `<:icon>` | Custom content instead of the `@iconType` icon. |
+| `<:title>` | The title, inside an `EuiTitle`, e.g. `<h2>No spice</h2>`. |
+| `<:actions>` | Actions; wrap each in the yielded item, see `EuiEmptyPrompt`. |
+| `<:footer>` | The footer, e.g. a link or a button. |
+
+### EuiPageTemplateBottomBar
+
+`T.BottomBar` of `EuiPageTemplate` (upstream
+`EuiPageTemplate.BottomBar`): a sticky `EuiBottomBar` at the end of the
+page's main content, never over the sidebar, with its content aligned to
+the template's `@restrictWidth` and `@paddingSize`.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@paddingSize` | `EuiPagePaddingSize` | the template's `@paddingSize` | Padding of the bar's content (an `EuiPageSection`): `'none'`, `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. |
+| `@restrictWidth` | `EuiPageRestrictWidth` | the template's `@restrictWidth` | Max width of the bar's content, centered. |
+| `@position` |  | `'sticky'` | Where the bar sits, see `EuiBottomBar`; `'sticky'` keeps it at the bottom of the main content. |
+| `@css` | `EuiCss` |  | Styles composed last into the bar's class (upstream's `css`). |
+
+Also takes the args of `EuiBottomBar`.
+
+| Block | Description |
+| --- | --- |
+| default block | The bar's content, e.g. buttons in an `EuiFlexGroup`. |
 
 ### EuiPage
 

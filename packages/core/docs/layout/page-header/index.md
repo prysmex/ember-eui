@@ -28,7 +28,8 @@ the page title (an `<h1>`), a description, tabs, and actions on the right.
 Put each action in the yielded `Item` of the `<:rightSideItems>` block
 (the first one is rightmost). `@tabs` adds tabs under the title (or makes
 the tabs the title, without `@pageTitle`). Inside `EuiPageTemplate`,
-pass the same options as its `@pageHeader`.
+use its `T.Header` part, which takes the same args and inherits the
+template's width, padding and bottom border.
 
 </EuiText>
 

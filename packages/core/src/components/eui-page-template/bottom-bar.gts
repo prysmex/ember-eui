@@ -9,7 +9,7 @@ import type {
   EuiPageRestrictWidth
 } from '../../utils/eui/page-layout.ts';
 import type { EuiCss } from '../../utils/eui/styles.ts';
-import type { EuiButtomBarArgs, EuiBottomBarSignature } from '../eui-bottom-bar';
+import type { EuiBottomBarSignature } from '../eui-bottom-bar';
 
 /** Upstream `_EuiPageBottomBar`: hides wide flex margins, never shrinks. */
 const PAGE_BOTTOM_BAR_CSS = { overflow: 'hidden', flexShrink: 0 };
@@ -22,7 +22,7 @@ const PAGE_BOTTOM_BAR_CSS = { overflow: 'hidden', flexShrink: 0 };
  */
 export interface EuiPageTemplateBottomBarSignature {
   Element: EuiBottomBarSignature['Element'];
-  Args: Omit<EuiButtomBarArgs, 'paddingSize'> & {
+  Args: Omit<EuiBottomBarSignature['Args'], 'paddingSize'> & {
     /**
      * Padding of the bar's content (an `EuiPageSection`): `'none'`,
      * `'xs'`, `'s'`, `'m'`, `'l'` or `'xl'`. Defaults to the template's
@@ -35,10 +35,10 @@ export interface EuiPageTemplateBottomBarSignature {
      */
     restrictWidth?: EuiPageRestrictWidth;
     /**
-     * `'sticky'` (the default) keeps the bar at the bottom of the main
-     * content; see `EuiBottomBar`.
+     * Where the bar sits, see `EuiBottomBar`; `'sticky'` keeps it at the
+     * bottom of the main content. Defaults to `'sticky'`.
      */
-    position?: EuiButtomBarArgs['position'];
+    position?: EuiBottomBarSignature['Args']['position'];
     /** Styles composed last into the bar's class (upstream's `css`). */
     css?: EuiCss;
   };

@@ -85,6 +85,9 @@ and actions, e.g. when a list has no items yet or a page failed to load.
 | Block | Description |
 | --- | --- |
 | `<:icon>` | Custom content instead of the `@iconType` icon, e.g. an `EuiImage`. |
+| `<:title>` | The title, inside an `EuiTitle` of `@titleSize`, instead of `@title`; bring your own heading, e.g. `<h2>No dashboards</h2>`. |
+| `<:body>` | The body, inside a subdued `EuiText`, instead of `@body`. |
+| `<:actions>` | Actions, instead of `@actions`, laid out like them. Wrap each in the yielded item: `<:actions as \|Item\|><Item><EuiButton …/></Item></:actions>`. |
 | `<:content>` | Replaces the title, body and actions with your own content. |
 | `<:footer>` | The footer, instead of `@footer`. |
 

@@ -6,7 +6,7 @@ order: 9
 
 <EuiText>
 
-You can then tie multiple types of empty states together to create a seamless loading to empty or loading to error experience. The following example cycles through the states every few seconds inside an `@template="empty"` page template.
+You can then tie multiple types of empty states together to create a seamless loading to empty or loading to error experience. The following example shows how to incorporate these states with the page template's [`T.EmptyPrompt`](/docs/core/docs/templates/page-template#empty-pages-or-content).
 
 </EuiText>
 
@@ -14,7 +14,7 @@ You can then tie multiple types of empty states together to create a seamless lo
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { registerDestructor } from '@ember/destroyable';
-import { EuiButton, EuiEmptyPrompt, EuiLoadingLogo, EuiPageTemplate, EuiSpacer, EuiText, EuiTitle } from '@ember-eui/core/components';
+import { EuiButton, EuiLoadingLogo, EuiPageTemplate } from '@ember-eui/core/components';
 import { eq } from 'ember-truth-helpers';
 
 const states = ['loading1', 'error', 'loading2', 'empty'];
@@ -33,39 +33,35 @@ export default class EmptyPromptStatesDemo extends Component {
   }
 
   <template>
+    {{! A fixed height avoids jumps on the page as the state changes. }}
     <div style="height: 460px;">
-      <EuiPageTemplate @template="empty" @grow={{false}}>
+      <EuiPageTemplate @grow={{false}} as |T|>
         {{#if (eq this.currentState "error")}}
-          <EuiEmptyPrompt
-            @color="danger"
-            @iconType="error"
-            @title="Unable to load your dashboards"
-            @body="There was an error loading the Dashboard application. Contact your administrator for help."
-          />
+          <T.EmptyPrompt @color="danger" @iconType="error">
+            <:title><h2>Unable to load your dashboards</h2></:title>
+            <:default>
+              <p>
+                There was an error loading the Dashboard application. Contact
+                your administrator for help.
+              </p>
+            </:default>
+          </T.EmptyPrompt>
         {{else if (eq this.currentState "empty")}}
-          <EuiEmptyPrompt
-            @color="plain"
-            @iconType="dashboardApp"
-            @iconColor="default"
-          >
-            <:content>
-              <EuiTitle @size="m"><h2>Dashboards</h2></EuiTitle>
-              <EuiSpacer @size="s" />
-              <EuiText @color="subdued"><p>You don't have any dashboards yet.</p></EuiText>
-              <EuiSpacer @size="l" />
-              <EuiButton @fill={{true}} @iconType="plusCircle">Create new dashboard</EuiButton>
-            </:content>
-          </EuiEmptyPrompt>
+          <T.EmptyPrompt @color="plain" @iconType="dashboardApp" @iconColor="default">
+            <:title><h2>Dashboards</h2></:title>
+            <:default><p>You don't have any dashboards yet.</p></:default>
+            <:actions as |Item|>
+              <Item><EuiButton @fill={{true}} @iconType="plusCircle">Create new dashboard</EuiButton></Item>
+            </:actions>
+          </T.EmptyPrompt>
         {{else}}
-          <EuiEmptyPrompt @color="subdued" @title="Loading Dashboards">
-            <:icon>
-              <EuiLoadingLogo @logo="logoKibana" @size="xl" />
-            </:icon>
-          </EuiEmptyPrompt>
+          <T.EmptyPrompt @color="subdued">
+            <:icon><EuiLoadingLogo @logo="logoKibana" @size="xl" /></:icon>
+            <:title><h2>Loading Dashboards</h2></:title>
+          </T.EmptyPrompt>
         {{/if}}
       </EuiPageTemplate>
     </div>
   </template>
 }
 ```
-

@@ -8,6 +8,8 @@ title: Tour
 
 <EuiText>
 
+The tour components provided by EUI allow for a flexible and customizable way to showcase items on a page in an ordered manner by augmenting existing elements on the page without altering functionality.
+
 A tour walks users through a page step by step: each step is a popover
 with a pulsing beacon next to the element it explains, a title, text, the
 progress, and a button to skip or end the tour.
@@ -38,7 +40,16 @@ and `state` has `currentTourStep` and `isTourActive`, e.g. to save the
 progress. The `<:footerAction>` block of a step replaces its "Skip tour"
 button, e.g. with a "Next" button.
 
-`EuiTourStep` also works on its own, opened with `@isStepOpen`.
+`EuiTourStep` also works on its own, opened with `@isStepOpen`. It wraps its default block (the element it points at), unlike upstream it has no `anchor` argument to attach to another DOM element.
+
+## Guidelines
+
+- Use tours when you want users to learn about specific UI elements and how interacting with them will help them achieve a goal. To help users perform an action without step by step guidance, use an empty prompt instead.
+- Tours can feel intrusive. Good scenarios are new users seeing an interface for the first time, novice users gaining proficiency, and existing users being onboarded when new features or redesigns are released. Consider asking users if they want the tour instead of just showing it.
+- Provide concise yet valuable information: keep each step short, and link to documentation for more.
+- Explain why the actions you want users to perform are useful.
+- Keep the tone conversational and friendly, and work alongside a writer.
+- Allow users to end and restart the tour at any time.
 
 </EuiText>
 

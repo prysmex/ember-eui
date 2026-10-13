@@ -1,5 +1,20 @@
 # @ember-eui/flatpickr
 
+## 15.0.0
+
+### Major Changes
+
+- a749bc4: Require Ember 7.1 and Node.js 20.19 or newer. Upgrade development and testing to Ember and Ember CLI 7.3, and replace ember-element-helper with Ember's native element keyword.
+
+  Dynamic elements no longer receive the helper's automatic `ember-view` class or generated ID. Pass an explicit `id` if needed.
+
+### Patch Changes
+
+- fixes
+- Updated dependencies [a749bc4]
+- Updated dependencies
+  - @ember-eui/core@15.0.0
+
 ## 14.1.4
 
 ### Patch Changes
@@ -35,6 +50,7 @@
 ### Major Changes
 
 - VITE
+
 ## 8.0.69
 
 ### Patch Changes

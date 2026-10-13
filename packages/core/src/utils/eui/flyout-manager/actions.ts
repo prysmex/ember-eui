@@ -1,0 +1,319 @@
+/*
+ * Ported from @elastic/eui 123.1.0 `components/flyout/manager/actions.ts`.
+ * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under
+ * one or more contributor license agreements. Licensed under the Elastic
+ * License 2.0 or the Server Side Public License, v 1; see vendor/eui-latest.
+ */
+import { LEVEL_MAIN } from './const.ts';
+
+import type { EuiFlyoutMenuPagination } from '../../../components/eui-flyout-menu.gts';
+import type {
+  EuiFlyoutActivityStage,
+  EuiFlyoutLevel,
+  EuiFlyoutLayoutMode,
+  IconType
+} from './types.ts';
+
+const PREFIX = 'eui/flyoutManager' as const;
+
+interface BaseAction {
+  type: `${typeof PREFIX}/${string}`;
+}
+
+/** Dispatched when a flyout registers itself with the manager. */
+export const ACTION_ADD = `${PREFIX}/add` as const;
+/** Dispatched to remove a flyout from the manager (usually on close/unmount). */
+export const ACTION_CLOSE = `${PREFIX}/close` as const;
+/** Dispatched to remove all flyouts from the manager. */
+export const ACTION_CLOSE_ALL = `${PREFIX}/closeAll` as const;
+/** Dispatched to set which flyout is currently active within the session. */
+export const ACTION_SET_ACTIVE = `${PREFIX}/setActive` as const;
+/** Dispatched when an active flyout's pixel width changes (for responsive layout). */
+export const ACTION_SET_WIDTH = `${PREFIX}/setWidth` as const;
+/** Dispatched to set a flyout's menu pagination. */
+export const ACTION_SET_PAGINATION = `${PREFIX}/setPagination` as const;
+/** Dispatched to switch layout mode between `side-by-side` and `stacked`. */
+export const ACTION_SET_LAYOUT_MODE = `${PREFIX}/setLayoutMode` as const;
+/** Dispatched to update a flyout's activity stage (e.g., opening -> active). */
+export const ACTION_SET_ACTIVITY_STAGE = `${PREFIX}/setActivityStage` as const;
+/** Dispatched to go back one session (remove current session). */
+export const ACTION_GO_BACK = `${PREFIX}/goBack` as const;
+/** Dispatched to navigate to a specific flyout (remove all sessions after it). */
+export const ACTION_GO_TO_FLYOUT = `${PREFIX}/goToFlyout` as const;
+/** Dispatched to set push padding offset for a side. */
+export const ACTION_SET_PUSH_PADDING = `${PREFIX}/setPushPadding` as const;
+/** Dispatched to set the container element for container-relative flyouts. */
+export const ACTION_SET_CONTAINER_ELEMENT =
+  `${PREFIX}/setContainerElement` as const;
+/** Dispatched to set the reference width used for layout and resize clamping. */
+export const ACTION_SET_REFERENCE_WIDTH =
+  `${PREFIX}/setReferenceWidth` as const;
+export const ACTION_ADD_UNMANAGED_FLYOUT =
+  `${PREFIX}/addUnmanagedFlyout` as const;
+export const ACTION_CLOSE_UNMANAGED_FLYOUT =
+  `${PREFIX}/closeUnmanagedFlyout` as const;
+
+/**
+ * Add a flyout to manager state. The manager will create or update
+ * the current session depending on the `level` provided.
+ */
+export interface AddFlyoutAction extends BaseAction {
+  type: typeof ACTION_ADD;
+  flyoutId: string;
+  title: string;
+  level: EuiFlyoutLevel;
+  size?: string;
+  historyKey?: symbol;
+  iconType?: IconType;
+  minWidth?: number;
+}
+
+/** Remove a flyout from manager state. Also updates the active session. */
+export interface CloseFlyoutAction extends BaseAction {
+  type: typeof ACTION_CLOSE;
+  flyoutId: string;
+}
+
+/** Remove all flyouts from manager state. */
+export interface CloseAllFlyoutsAction extends BaseAction {
+  type: typeof ACTION_CLOSE_ALL;
+}
+
+/** Set the active flyout within the current session (or clear with `null`). */
+export interface SetActiveFlyoutAction extends BaseAction {
+  type: typeof ACTION_SET_ACTIVE;
+  flyoutId: string | null;
+}
+
+/** Update a flyout's measured width in pixels. */
+export interface SetWidthAction extends BaseAction {
+  type: typeof ACTION_SET_WIDTH;
+  flyoutId: string;
+  width: number;
+}
+
+/** Set the manager pagination value for a flyout. */
+export interface SetPaginationAction extends BaseAction {
+  type: typeof ACTION_SET_PAGINATION;
+  flyoutId: string;
+  pagination: EuiFlyoutMenuPagination | undefined;
+}
+
+/** Change how flyouts are arranged: `side-by-side` or `stacked`. */
+export interface SetLayoutModeAction extends BaseAction {
+  type: typeof ACTION_SET_LAYOUT_MODE;
+  layoutMode: EuiFlyoutLayoutMode;
+}
+
+/** Set a specific flyout's activity stage. */
+export interface SetActivityStageAction extends BaseAction {
+  type: typeof ACTION_SET_ACTIVITY_STAGE;
+  flyoutId: string;
+  activityStage: EuiFlyoutActivityStage;
+}
+
+/** Go back one session (remove current session from stack). */
+export interface GoBackAction extends BaseAction {
+  type: typeof ACTION_GO_BACK;
+}
+
+/** Navigate to a specific flyout (remove all sessions after it, or pop to child in history). */
+export interface GoToFlyoutAction extends BaseAction {
+  type: typeof ACTION_GO_TO_FLYOUT;
+  flyoutId: string;
+  /** When 'child', find flyout in current session's childHistory and pop to it. When 'main' or omitted, find session by mainFlyoutId. */
+  level?: EuiFlyoutLevel;
+}
+
+/** Set push padding offset for a specific side. */
+export interface SetPushPaddingAction extends BaseAction {
+  type: typeof ACTION_SET_PUSH_PADDING;
+  side: 'left' | 'right';
+  width: number;
+}
+
+export interface AddUnmanagedFlyoutAction extends BaseAction {
+  type: typeof ACTION_ADD_UNMANAGED_FLYOUT;
+  flyoutId: string;
+}
+
+export interface CloseUnmanagedFlyoutAction extends BaseAction {
+  type: typeof ACTION_CLOSE_UNMANAGED_FLYOUT;
+  flyoutId: string;
+}
+
+/** Set the container element for container-relative positioning. */
+export interface SetContainerElementAction extends BaseAction {
+  type: typeof ACTION_SET_CONTAINER_ELEMENT;
+  element: HTMLElement | null;
+}
+
+/** Set the reference width for layout and resize clamping. */
+export interface SetReferenceWidthAction extends BaseAction {
+  type: typeof ACTION_SET_REFERENCE_WIDTH;
+  width: number;
+}
+
+/** Union of all flyout manager actions. */
+export type Action =
+  | AddFlyoutAction
+  | CloseFlyoutAction
+  | CloseAllFlyoutsAction
+  | SetActiveFlyoutAction
+  | SetWidthAction
+  | SetPaginationAction
+  | SetLayoutModeAction
+  | SetActivityStageAction
+  | GoBackAction
+  | GoToFlyoutAction
+  | SetPushPaddingAction
+  | AddUnmanagedFlyoutAction
+  | CloseUnmanagedFlyoutAction
+  | SetContainerElementAction
+  | SetReferenceWidthAction;
+
+/**
+ * Register a flyout with the manager.
+ * - `title` is used for the flyout menu.
+ * - `level` determines whether the flyout is `main` or `child`.
+ * - Optional `size` is the named EUI size (e.g. `s`, `m`, `l`).
+ * - Optional `historyKey` (Symbol) scopes history; only flyouts with the same reference share Back/history. Omit for a unique group per session.
+ * - Optional `iconType` is shown next to the session title in the history menu.
+ */
+export const addFlyout = (
+  flyoutId: string,
+  title: string,
+  level: EuiFlyoutLevel = LEVEL_MAIN,
+  size?: string,
+  historyKey?: symbol,
+  iconType?: IconType,
+  minWidth?: number
+): AddFlyoutAction => ({
+  type: ACTION_ADD,
+  flyoutId,
+  title,
+  level,
+  size,
+  historyKey,
+  iconType,
+  minWidth,
+});
+
+/** Unregister a flyout and update the session accordingly. */
+export const closeFlyout = (flyoutId: string): CloseFlyoutAction => ({
+  type: ACTION_CLOSE,
+  flyoutId,
+});
+
+/** Unregister all flyouts. */
+export const closeAllFlyouts = (): CloseAllFlyoutsAction => ({
+  type: ACTION_CLOSE_ALL,
+});
+
+/** Set or clear the active flyout for the current session. */
+export const setActiveFlyout = (
+  flyoutId: string | null
+): SetActiveFlyoutAction => ({
+  type: ACTION_SET_ACTIVE,
+  flyoutId,
+});
+
+/** Record a flyout's current width in pixels. */
+export const setFlyoutWidth = (
+  flyoutId: string,
+  width: number
+): SetWidthAction => ({
+  type: ACTION_SET_WIDTH,
+  flyoutId,
+  width,
+});
+
+/**
+ * Set (or clear) the menu pagination config for a flyout. When set, this
+ * overrides any pagination passed via `flyoutMenuProps.pagination` on the
+ * flyout itself, allowing reactive updates from a different React root.
+ *
+ * Only works for managed flyouts. Unmanaged flyouts (session={false}) must use
+ * the `flyoutMenuProps.pagination` prop instead.
+ */
+export const setPagination = (
+  flyoutId: string,
+  pagination: EuiFlyoutMenuPagination | undefined
+): SetPaginationAction => ({
+  type: ACTION_SET_PAGINATION,
+  flyoutId,
+  pagination,
+});
+
+/** Switch layout mode between `side-by-side` and `stacked`. */
+export const setLayoutMode = (
+  layoutMode: EuiFlyoutLayoutMode
+): SetLayoutModeAction => ({
+  type: ACTION_SET_LAYOUT_MODE,
+  layoutMode,
+});
+
+/** Update a flyout's activity stage. */
+export const setActivityStage = (
+  flyoutId: string,
+  activityStage: EuiFlyoutActivityStage
+): SetActivityStageAction => ({
+  type: ACTION_SET_ACTIVITY_STAGE,
+  flyoutId,
+  activityStage,
+});
+
+/** Go back one session (remove current session from stack). */
+export const goBack = (): GoBackAction => ({
+  type: ACTION_GO_BACK,
+});
+
+/** Navigate to a specific flyout (remove all sessions after it, or pop to child in history when level === 'child'). */
+export const goToFlyout = (
+  flyoutId: string,
+  level?: EuiFlyoutLevel
+): GoToFlyoutAction => ({
+  type: ACTION_GO_TO_FLYOUT,
+  flyoutId,
+  level,
+});
+
+/** Set push padding offset for a specific side. */
+export const setPushPadding = (
+  side: 'left' | 'right',
+  width: number
+): SetPushPaddingAction => ({
+  type: ACTION_SET_PUSH_PADDING,
+  side,
+  width,
+});
+
+/** Register an unmanaged flyout for z-index positioning purposes */
+export const addUnmanagedFlyout = (
+  flyoutId: string
+): AddUnmanagedFlyoutAction => ({
+  type: ACTION_ADD_UNMANAGED_FLYOUT,
+  flyoutId,
+});
+
+/** Unregister an unmanaged flyout */
+export const closeUnmanagedFlyout = (
+  flyoutId: string
+): CloseUnmanagedFlyoutAction => ({
+  type: ACTION_CLOSE_UNMANAGED_FLYOUT,
+  flyoutId,
+});
+
+/** Set the container element for container-relative flyout positioning. */
+export const setContainerElement = (
+  element: HTMLElement | null
+): SetContainerElementAction => ({
+  type: ACTION_SET_CONTAINER_ELEMENT,
+  element,
+});
+
+/** Set the reference width for layout and resize clamping. */
+export const setReferenceWidth = (width: number): SetReferenceWidthAction => ({
+  type: ACTION_SET_REFERENCE_WIDTH,
+  width,
+});

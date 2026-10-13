@@ -270,6 +270,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@confirmButtonText` | `string` |  | Text of the confirm button, ideally the action ("Delete report"). Required. |
 | `@buttonColor` | `string` | `'primary'` | Color of the confirm button, any `EuiButton` color; `'danger'` for destructive actions. |
 | `@defaultFocusedButton` | `'confirm' \| 'cancel'` | the modal itself | The button focused when the modal opens: `'confirm'` or `'cancel'`. |
+| `@initialFocus` |  |  | Element to focus when the modal opens, as `EuiModal`'s `@initialFocus` (a CSS selector, an element or a function returning one). Wins over `@defaultFocusedButton`. |
 | `@confirmButtonDisabled` | `boolean` |  | Disables the confirm button, e.g. until a checkbox is checked. |
 | `@isLoading` | `boolean` |  | Shows a spinner in the confirm button while the action runs. |
 | `@maxWidth` |  | `true` | Width cap, as `EuiModal`'s `@maxWidth`. |

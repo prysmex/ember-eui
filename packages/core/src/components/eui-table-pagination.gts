@@ -13,6 +13,8 @@ import EuiFlexItem from './eui-flex-item.gts';
 import EuiPagination from './eui-pagination.gts';
 import EuiPopover from './eui-popover.gts';
 
+import { euiTablePaginationDefaults } from '../-private/table-pagination-defaults.ts';
+
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiPaginationSignature } from './eui-pagination.gts';
 
@@ -61,28 +63,31 @@ export interface EuiTablePaginationSignature {
   };
 }
 
-/** Upstream `euiTablePaginationDefaults`. */
-const ITEMS_PER_PAGE = 10;
-const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50];
 
 export default class EuiTablePagination extends Component<EuiTablePaginationSignature> {
   @service declare euiI18n: EuiI18n;
 
   @tracked isPopoverOpen = false;
 
+  /** Upstream `euiTablePaginationDefaults` with the app's `componentDefaults`. */
+  get defaults() {
+    return euiTablePaginationDefaults(this);
+  }
+
   get itemsPerPage(): number {
-    return this.args.itemsPerPage ?? ITEMS_PER_PAGE;
+    return this.args.itemsPerPage ?? this.defaults.itemsPerPage;
   }
 
   get options(): number[] {
-    return this.args.itemsPerPageOptions ?? ITEMS_PER_PAGE_OPTIONS;
+    return this.args.itemsPerPageOptions ?? this.defaults.itemsPerPageOptions;
   }
 
   get showPerPageOptions(): boolean {
     if (this.args.showPerPageOptions !== undefined) {
       return this.args.showPerPageOptions;
     }
-    return !this.args.hidePerPageOptions;
+    if (this.args.hidePerPageOptions) return false;
+    return this.defaults.showPerPageOptions;
   }
 
   get showPages(): boolean {

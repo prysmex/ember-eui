@@ -33,6 +33,7 @@ import EuiDataGridBody from './eui-data-grid/body.gts';
 import EuiDataGridCopyMarker from './eui-data-grid/copy-marker.gts';
 import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
 import { onTabularCopy } from '../utils/data-grid/tabular-copy.ts';
+import { euiTablePaginationDefaults } from '../-private/table-pagination-defaults.ts';
 import EuiDataGridCustomBody from './eui-data-grid/custom-body.gts';
 import type EuiDataGridBodyBase from './eui-data-grid/body-base.ts';
 import EuiDataGridInMemoryRenderer from './eui-data-grid/in-memory-renderer.gts';
@@ -148,7 +149,6 @@ const BOX_SIZING_RESET = {
   '*:where(& *)::after': { boxSizing: 'border-box' }
 } as const;
 
-const PAGINATION_DEFAULTS = { pageSize: 10, pageSizeOptions: [10, 25, 50] };
 const GRID_IS_FULLSCREEN_CLASSNAME = 'euiDataGrid__restrictBody';
 const EMPTY_CONTROL_COLUMNS: EuiDataGridControlColumn[] = [];
 
@@ -480,11 +480,13 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     | undefined {
     const pagination = this.args.pagination;
     if (!pagination) return undefined;
+    // upstream `useEuiTablePaginationDefaults()` (with the app's `componentDefaults`)
+    const defaults = euiTablePaginationDefaults(this);
     // read each field: consumers often pass objects with tracked accessors
     return {
       pageIndex: pagination.pageIndex,
-      pageSize: pagination.pageSize ?? PAGINATION_DEFAULTS.pageSize,
-      pageSizeOptions: pagination.pageSizeOptions ?? PAGINATION_DEFAULTS.pageSizeOptions,
+      pageSize: pagination.pageSize ?? defaults.itemsPerPage,
+      pageSizeOptions: pagination.pageSizeOptions ?? defaults.itemsPerPageOptions,
       onChangePage: pagination.onChangePage,
       onChangeItemsPerPage: pagination.onChangeItemsPerPage
     };

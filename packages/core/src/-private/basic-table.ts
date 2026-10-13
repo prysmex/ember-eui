@@ -12,6 +12,9 @@
 // helpers of `basic_table.tsx`), with Ember render hooks: React nodes
 // become text (`string`, numbers or `htmlSafe` strings) or components.
 
+import GlimmerComponent from '@glimmer/component';
+import { getComponentTemplate } from '@ember/component';
+
 import { modifier } from 'ember-modifier';
 
 import {
@@ -127,6 +130,26 @@ interface ColumnBase {
   className?: string;
   /** `data-test-subj` of the column's cells. */
   'data-test-subj'?: string;
+  /**
+   * Inline styles of the column's cells: an object of CSS properties (or a
+   * string), under the cells' own width styles.
+   */
+  style?: string | Record<string, string | number | null | undefined>;
+  /** Other `<td>` attributes of the column's cells (upstream `TdHTMLAttributes`). */
+  title?: string;
+  id?: string;
+  lang?: string;
+  dir?: string;
+  role?: string;
+  tabIndex?: number;
+  colSpan?: number;
+  rowSpan?: number;
+  headers?: string;
+  /**
+   * `data-*` and `aria-*` attributes, and `on*` event listeners (e.g.
+   * `onClick`), of the column's cells.
+   */
+  [attribute: `data-${string}` | `aria-${string}` | `on${string}`]: unknown;
 }
 
 export interface EuiTableFieldDataColumnType<T> extends ColumnBase {
@@ -234,9 +257,20 @@ type ButtonColor =
   | 'neutral'
   | 'risk';
 
+/**
+ * Rich content of a row action's `name` (upstream `ReactNode`): text, an
+ * `htmlSafe` string or a component (rendered with `@item`).
+ */
+export type EuiTableActionName<T> = EuiTableNode | ComponentLike<{ Args: { item: T } }>;
+
 export interface DefaultItemActionBase<T extends object> {
-  /** The name (the text in the collapsed menu or of a button action). */
-  name: string | ((item: T) => string);
+  /**
+   * The name: the button's content, the screen reader label of an icon
+   * action and the collapsed menu item's content. Text, an `htmlSafe`
+   * string, a component (rendered with `@item`), or a function of the item
+   * returning one of those.
+   */
+  name: EuiTableActionName<T> | ((item: T) => EuiTableActionName<T>);
   /** Describes the action (the tooltip). */
   description: string | ((item: T) => string);
   /** Called with the row's item and the click event. */
@@ -293,6 +327,29 @@ export const callWithItemIfFunction =
   <T>(item: T) =>
   <U>(prop: U | ((item: T) => U)): U =>
     typeof prop === 'function' ? (prop as (item: T) => U)(item) : prop;
+
+/** Whether a function is a component (a class), not a render function. */
+function isComponentDefinition(value: (...args: never[]) => unknown): boolean {
+  return (
+    getComponentTemplate(value as object) != null ||
+    value.prototype instanceof GlimmerComponent
+  );
+}
+
+/**
+ * Upstream `callWithItemIfFunction(item)(action.name)` for rich names: a
+ * function is called with the item, unless it is a component class.
+ */
+export function resolveItemNode<T>(
+  item: T,
+  value: EuiTableActionName<T> | ((item: T) => EuiTableActionName<T>)
+): EuiTableActionName<T> {
+  if (typeof value === 'function') {
+    const fn = value as (item: T) => EuiTableActionName<T>;
+    if (!isComponentDefinition(fn)) return fn(item);
+  }
+  return value as EuiTableActionName<T>;
+}
 
 export interface EuiTableSortingType<T> {
   /** The field (or column name) sorted on. */
@@ -380,6 +437,45 @@ const CELL_ARG_KEYS: ReadonlyArray<keyof EuiTableCellArgs> = [
   'mobileOptions',
   'sticky'
 ];
+
+/**
+ * Column keys that configure the column itself. Upstream spreads the rest of
+ * a field or computed column (`TdHTMLAttributes`, `className`,
+ * `data-test-subj`, …) onto its `EuiTableRowCell`s.
+ */
+const COLUMN_KEYS = new Set<string>([
+  ...CELL_ARG_KEYS,
+  'field',
+  'name',
+  'nameTooltip',
+  'description',
+  'dataType',
+  'sortable',
+  'readOnly',
+  'render',
+  'component',
+  'footer',
+  'actions',
+  'className',
+  'data-test-subj',
+  'style',
+  'css'
+]);
+
+/**
+ * The `<td>` attributes and `on*` listeners of a column's cells: every key
+ * that doesn't configure the column (upstream's `...rest` spread).
+ */
+export function columnCellAttributes(column: object): EuiTableElementProps {
+  let attributes: EuiTableElementProps | undefined;
+  for (const [key, value] of Object.entries(column)) {
+    if (COLUMN_KEYS.has(key)) continue;
+    (attributes ??= {})[key] = value;
+  }
+  return attributes ?? NO_ATTRIBUTES;
+}
+
+const NO_ATTRIBUTES: EuiTableElementProps = Object.freeze({});
 
 /**
  * Splits cell props into `EuiTableRowCell` arguments and the remaining

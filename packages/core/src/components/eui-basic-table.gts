@@ -15,9 +15,13 @@ import {
   getItemId,
   getRendererForDataType,
   getRowProps,
-  splitCellProps
+  splitCellProps,
+  columnCellAttributes
 } from '../-private/basic-table.ts';
 import TableNode from '../-private/table-node.gts';
+import { euiTablePaginationDefaults } from '../-private/table-pagination-defaults.ts';
+import TabularCopyMarker from '../-private/tabular-copy-marker.gts';
+import { onTabularCopy } from '../utils/data-grid/tabular-copy.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -31,13 +35,14 @@ import { get } from '../utils/eui/search-bar/predicate.ts';
 import { SortDirection } from '../utils/eui/sort.ts';
 import CollapsedItemActions from './eui-basic-table/collapsed-item-actions.gts';
 import ExpandedItemActions from './eui-basic-table/expanded-item-actions.gts';
-import PaginationBar, {
-  PAGINATION_DEFAULTS
-} from './eui-basic-table/pagination-bar.gts';
+import PaginationBar from './eui-basic-table/pagination-bar.gts';
 import EuiCheckbox from './eui-checkbox.gts';
 import EuiDelayRender from './eui-delay-render.gts';
 import EuiIcon from './eui-icon.gts';
-import { euiScreenReaderOnlyCss } from './eui-screen-reader-only.gts';
+import {
+  euiScreenReaderOnlyClass,
+  euiScreenReaderOnlyCss
+} from './eui-screen-reader-only.gts';
 import EuiTable from './eui-table.gts';
 import EuiTableBody from './eui-table-body.gts';
 import EuiTableFooter from './eui-table-footer.gts';
@@ -52,6 +57,7 @@ import EuiTableRowCellCheckbox from './eui-table-row-cell-checkbox.gts';
 import EuiTableSortMobile from './eui-table-sort-mobile.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
+import type Owner from '@ember/owner';
 import type {
   Action,
   CellPropsCallback,
@@ -85,6 +91,7 @@ import type { EuiTableHeaderCellTooltipProps } from './eui-table-header-cell.gts
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiTableSortMobileItemOption } from './eui-table-sort-mobile.gts';
+import type { EuiTableRowCellStyle } from './eui-table-row-cell.gts';
 
 export type {
   Action,
@@ -257,6 +264,7 @@ interface CellModel<T extends object> {
   mobileContent?: EuiTableContent;
   mobileComponent?: EuiTableCellComponent<T>;
   hasMobile?: boolean;
+  style?: EuiTableRowCellStyle;
   attributes?: EuiTableElementProps;
   // actions cells
   actions?: Array<Action<T>>;
@@ -319,11 +327,20 @@ export default class EuiBasicTable<T extends object = any> extends Component<
   tableId = `__table${randomId()}`;
   selectAllId = `_selection_column-checkbox${randomId()}`;
 
+  constructor(owner: Owner, args: EuiBasicTableSignature<T>['Args']) {
+    super(owner, args);
+    // tabs/newlines for copied selections (upstream `OverrideCopiedTabularContent`
+    // registers it on the document; static handler: deduped)
+    document.addEventListener('copy', onTabularCopy);
+  }
+
   /** Uncontrolled selection, `null` until the user (or `initialSelected`) sets it. */
   @tracked localSelection: T[] | null = null;
 
   get pageSize(): number {
-    return this.args.pagination?.pageSize ?? PAGINATION_DEFAULTS.itemsPerPage;
+    return (
+      this.args.pagination?.pageSize ?? euiTablePaginationDefaults(this).itemsPerPage
+    );
   }
 
   get isSelectionControlled(): boolean {
@@ -841,12 +858,27 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       key: K,
       fallback: EuiTableCellArgs[K]
     ) => (Object.prototype.hasOwnProperty.call(cellArgs, key) ? cellArgs[key] : fallback);
-    const fromColumn = <K extends 'width' | 'minWidth' | 'maxWidth' | 'truncateText' | 'valign'>(
-      key: K
+    // the column's own cell props come after `cellProps` (upstream spread order)
+    const fromColumn = <
+      K extends
+        | 'width'
+        | 'minWidth'
+        | 'maxWidth'
+        | 'truncateText'
+        | 'valign'
+        | 'setScopeRow'
+        | 'hasActions'
+        | 'showOnHover'
+        | 'sticky'
+    >(
+      key: K,
+      fallback: EuiTableCellArgs[K] = cellArgs[key]
     ) =>
       Object.prototype.hasOwnProperty.call(column, key)
-        ? (fieldColumn as Pick<EuiTableCellArgs, K>)[key]
-        : cellArgs[key];
+        ? (column as Pick<EuiTableCellArgs, K>)[key]
+        : fallback;
+    const { style: cellPropsStyle, ...cellPropsAttributes } = attributes;
+    const columnAttributes = columnCellAttributes(column);
     const mobileComponent = mobileOptions?.component;
     const mobileContent = mobileOptions?.render?.(item);
     return {
@@ -863,13 +895,16 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       textOnly: fromCellProps('textOnly', textOnly || (!render && !component)),
       truncateText: fromColumn('truncateText'),
       valign: fromColumn('valign'),
-      setScopeRow: fromCellProps('setScopeRow', !!field && field === rowHeader),
+      setScopeRow: fromColumn(
+        'setScopeRow',
+        fromCellProps('setScopeRow', !!field && field === rowHeader)
+      ),
       width: fromColumn('width'),
       minWidth: fromColumn('minWidth'),
       maxWidth: fromColumn('maxWidth'),
-      hasActionsArg: cellArgs.hasActions,
-      showOnHover: cellArgs.showOnHover,
-      sticky: cellArgs.sticky,
+      hasActionsArg: fromColumn('hasActions'),
+      showOnHover: fromColumn('showOnHover'),
+      sticky: fromColumn('sticky'),
       mobileOptions: fromCellProps('mobileOptions', {
         ...mobileOptions,
         header: mobileOptions?.header ?? name
@@ -877,9 +912,13 @@ export default class EuiBasicTable<T extends object = any> extends Component<
       mobileContent,
       mobileComponent,
       hasMobile: !!mobileComponent || mobileContent != null,
+      style: (Object.prototype.hasOwnProperty.call(column, 'style')
+        ? fieldColumn.style
+        : cellPropsStyle) as EuiTableRowCellStyle | undefined,
       attributes: {
-        ...attributes,
+        ...cellPropsAttributes,
         // the column's own props come after `cellProps` (upstream)
+        ...columnAttributes,
         className: [attributes['className'], className].filter(Boolean).join(' ') || undefined,
         'data-test-subj': fieldColumn['data-test-subj'] ?? attributes['data-test-subj']
       }
@@ -997,6 +1036,7 @@ export default class EuiBasicTable<T extends object = any> extends Component<
     return {
       root: this.args.css ? euiClass(context, this.args.css) : undefined,
       caption: euiClass(context, euiTableCaptionStyles, euiScreenReaderOnlyCss()),
+      copyMarker: euiScreenReaderOnlyClass(context),
       body: this.args.loading
         ? euiClass(context, useEuiBorealisStyles(context, euiBasicTableBodyLoading))
         : undefined,
@@ -1112,6 +1152,8 @@ class BasicTableContent<T extends object> extends Component<
           <EuiTableSortMobile @items={{t.mobileSortItems}} />
         {{/if}}
       </EuiTableHeaderMobile>
+      {{! upstream OverrideCopiedTabularContent }}
+      <TabularCopyMarker @type="boundary" @class={{t.classes.copyMarker}} />
       <EuiTable
         id={{t.tableId}}
         @tableLayout={{if t.args.tableLayout t.args.tableLayout "fixed"}}
@@ -1124,6 +1166,7 @@ class BasicTableContent<T extends object> extends Component<
         @css={{if t.args.loading SAFARI_LOADING_WORKAROUND}}
       >
         <caption class="euiTableCaption euiScreenReaderOnly {{t.classes.caption}}">
+          <TabularCopyMarker @type="no-copy" @class={{t.classes.copyMarker}} />
           <EuiDelayRender>
             <p>{{t.caption.tableName}}{{#if t.caption.empty}} {{t.caption.empty}}{{/if}},</p>
             {{#if t.args.items.length}}
@@ -1133,10 +1176,12 @@ class BasicTableContent<T extends object> extends Component<
             {{/if}}
             {{#if t.caption.paginationPart}}<p>{{t.caption.paginationPart}}</p>{{/if}}
           </EuiDelayRender>
+          <TabularCopyMarker @type="no-copy" @class={{t.classes.copyMarker}} />
         </caption>
         <EuiTableHeader>
           {{#if t.selectAll}}
             <EuiTableHeaderCellCheckbox>
+              <:default>
               <EuiToolTip
                 @content={{t.selectAll.label}}
                 @display="block"
@@ -1152,9 +1197,11 @@ class BasicTableContent<T extends object> extends Component<
                   {{on "change" t.onSelectAllChange}}
                 />
               </EuiToolTip>
+              </:default>
+              <:append><TabularCopyMarker @type="tab" @class={{t.classes.copyMarker}} /></:append>
             </EuiTableHeaderCellCheckbox>
           {{/if}}
-          {{#each t.headers key="key" as |header|}}
+          {{#each t.headers key="key" as |header index|}}
             <EuiTableHeaderCell
               @width={{header.width}}
               @minWidth={{header.minWidth}}
@@ -1170,7 +1217,11 @@ class BasicTableContent<T extends object> extends Component<
               @sticky={{header.sticky}}
               data-test-subj={{header.testSubj}}
             >
-              <TableNode @node={{header.name}} />
+              <:default><TableNode @node={{header.name}} /></:default>
+              <:append><TabularCopyMarker
+                  @type={{copyMarkerType index t.args.columns.length}}
+                  @class={{t.classes.copyMarker}}
+                /></:append>
             </EuiTableHeaderCell>
           {{/each}}
         </EuiTableHeader>
@@ -1196,6 +1247,7 @@ class BasicTableContent<T extends object> extends Component<
               >
                 {{#if row.checkbox}}
                   <EuiTableRowCellCheckbox>
+                    <:default>
                     <EuiToolTip
                       @content={{row.checkbox.label}}
                       @display="block"
@@ -1210,9 +1262,11 @@ class BasicTableContent<T extends object> extends Component<
                         {{on "change" (fn t.onRowSelectionChange row)}}
                       />
                     </EuiToolTip>
+                    </:default>
+                    <:append><TabularCopyMarker @type="tab" @class={{t.classes.copyMarker}} /></:append>
                   </EuiTableRowCellCheckbox>
                 {{/if}}
-                {{#each row.cells key="key" as |cell|}}
+                {{#each row.cells key="key" as |cell columnIndex|}}
                   {{#if cell.isActions}}
                     <EuiTableRowCell
                       @align="right"
@@ -1220,6 +1274,7 @@ class BasicTableContent<T extends object> extends Component<
                       @hasActions={{cell.hasActions}}
                       @sticky={{cell.sticky}}
                     >
+                      <:default>
                       <ExpandedItemActions
                         @actions={{actionsOrEmpty cell.actions}}
                         @actionsDisabled={{isTrue t.selection.length}}
@@ -1237,6 +1292,11 @@ class BasicTableContent<T extends object> extends Component<
                           />
                         </div>
                       {{/if}}
+                      </:default>
+                      <:append><TabularCopyMarker
+                          @type={{copyMarkerType columnIndex t.args.columns.length}}
+                          @class={{t.classes.copyMarker}}
+                        /></:append>
                     </EuiTableRowCell>
                   {{else if cell.hasMobile}}
                     <EuiTableRowCell
@@ -1253,6 +1313,7 @@ class BasicTableContent<T extends object> extends Component<
                       @showOnHover={{cell.showOnHover}}
                       @sticky={{cell.sticky}}
                       @mobileOptions={{cell.mobileOptions}}
+                      @style={{cell.style}}
                       {{elementProps cell.attributes}}
                     >
                       <:default>
@@ -1269,6 +1330,10 @@ class BasicTableContent<T extends object> extends Component<
                           {{cell.mobileContent}}
                         {{/if}}
                       </:mobile>
+                      <:append><TabularCopyMarker
+                          @type={{copyMarkerType columnIndex t.args.columns.length}}
+                          @class={{t.classes.copyMarker}}
+                        /></:append>
                     </EuiTableRowCell>
                   {{else}}
                     <EuiTableRowCell
@@ -1285,13 +1350,20 @@ class BasicTableContent<T extends object> extends Component<
                       @showOnHover={{cell.showOnHover}}
                       @sticky={{cell.sticky}}
                       @mobileOptions={{cell.mobileOptions}}
+                      @style={{cell.style}}
                       {{elementProps cell.attributes}}
                     >
-                      {{#if cell.component}}
-                        <cell.component @item={{row.item}} @value={{cell.value}} @column={{cell.column}} />
-                      {{else}}
-                        {{cell.content}}
-                      {{/if}}
+                      <:default>
+                        {{#if cell.component}}
+                          <cell.component @item={{row.item}} @value={{cell.value}} @column={{cell.column}} />
+                        {{else}}
+                          {{cell.content}}
+                        {{/if}}
+                      </:default>
+                      <:append><TabularCopyMarker
+                          @type={{copyMarkerType columnIndex t.args.columns.length}}
+                          @class={{t.classes.copyMarker}}
+                        /></:append>
                     </EuiTableRowCell>
                   {{/if}}
                 {{/each}}
@@ -1303,11 +1375,14 @@ class BasicTableContent<T extends object> extends Component<
                   @hasSelection={{if t.args.selection true false}}
                 >
                   <EuiTableRowCell colspan={{row.expandedRowColSpan}} @textOnly={{false}}>
-                    {{#if @hasExpandedRowBlock}}
-                      {{yield row.item row.itemId row.expandedValue to="expandedRow"}}
-                    {{else}}
-                      {{row.expandedText}}
-                    {{/if}}
+                    <:default>
+                      {{#if @hasExpandedRowBlock}}
+                        {{yield row.item row.itemId row.expandedValue to="expandedRow"}}
+                      {{else}}
+                        {{row.expandedText}}
+                      {{/if}}
+                    </:default>
+                    <:append><TabularCopyMarker @type="newline" @class={{t.classes.copyMarker}} /></:append>
                   </EuiTableRowCell>
                 </EuiTableRow>
               {{/if}}
@@ -1332,11 +1407,17 @@ class BasicTableContent<T extends object> extends Component<
           </EuiTableFooter>
         {{/if}}
       </EuiTable>
+      <TabularCopyMarker @type="boundary" @class={{t.classes.copyMarker}} />
     {{/let}}
   </template>
 }
 
 const FULL_WIDTH = { width: '100%' };
+
+/** Upstream `renderCopyChar`: a tab after each cell, a newline after the last. */
+function copyMarkerType(columnIndex: number, columnCount: number): 'tab' | 'newline' {
+  return columnIndex === columnCount - 1 ? 'newline' : 'tab';
+}
 
 function actionsOrEmpty<T extends object>(actions?: Array<Action<T>>): Array<Action<T>> {
   return actions ?? [];

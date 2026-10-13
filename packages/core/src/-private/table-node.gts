@@ -35,18 +35,21 @@ export function isTableComponent(value: unknown): value is ComponentLike {
   );
 }
 
-function asComponent(value: unknown): ComponentLike {
-  return value as ComponentLike;
+function asComponent(value: unknown): ComponentLike<{ Args: { item?: unknown } }> {
+  return value as ComponentLike<{ Args: { item?: unknown } }>;
 }
 
 function asText(value: unknown): string | number | SafeString {
   return value as string | number | SafeString;
 }
 
-/** Renders an {@link EuiTableNode}. */
-const TableNode: TemplateOnlyComponent<{ Args: { node: unknown } }> = <template>
+/**
+ * Renders an {@link EuiTableNode}. A component gets `@item` when one is
+ * given (a row action's `name`).
+ */
+const TableNode: TemplateOnlyComponent<{ Args: { node: unknown; item?: unknown } }> = <template>
   {{~#if (isTableComponent @node)~}}
-    {{~#let (asComponent @node) as |Node|~}}<Node />{{~/let~}}
+    {{~#let (asComponent @node) as |Node|~}}<Node @item={{@item}} />{{~/let~}}
   {{~else if (isTableText @node)~}}
     {{~asText @node~}}
   {{~/if~}}

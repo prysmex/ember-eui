@@ -16,6 +16,8 @@ export interface EuiTableRowCellCheckboxSignature {
   Blocks: {
     /** The checkbox. */
     default: [];
+    /** Content after the cell's content (upstream `append`). */
+    append: [];
   };
 }
 
@@ -35,6 +37,7 @@ export default class EuiTableRowCellCheckbox extends Component<EuiTableRowCellCh
   <template>
     <td class="euiTableRowCellCheckbox {{this.classes}}" ...attributes>
       <div class="euiTableCellContent">{{yield}}</div>
+      {{yield to="append"~}}
     </td>
   </template>
 }

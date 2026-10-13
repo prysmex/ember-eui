@@ -29,6 +29,8 @@ export interface EuiTableHeaderCellCheckboxSignature {
   Blocks: {
     /** The checkbox. */
     default: [];
+    /** Content after the cell's content (upstream `append`). */
+    append: [];
   };
 }
 
@@ -60,6 +62,7 @@ export default class EuiTableHeaderCellCheckbox extends Component<EuiTableHeader
       {{stickyHeaderOriginal this.stickySync (isPresent this.table.stickyHeaderRow)}}
     >
       <div class="euiTableCellContent">{{yield}}</div>
+      {{yield to="append"~}}
       {{#if this.table.stickyHeaderRow}}
         {{! the copy in the table's sticky header }}
         {{#in-element this.table.stickyHeaderRow insertBefore=null}}<th
@@ -68,7 +71,7 @@ export default class EuiTableHeaderCellCheckbox extends Component<EuiTableHeader
             style={{this.style}}
             ...attributes
             {{stickyHeaderCopy this.stickySync this.table this.style}}
-          ><div class="euiTableCellContent">{{yield}}</div></th>{{/in-element}}
+          ><div class="euiTableCellContent">{{yield}}</div>{{yield to="append"}}</th>{{/in-element}}
       {{/if}}
     </th>
   </template>

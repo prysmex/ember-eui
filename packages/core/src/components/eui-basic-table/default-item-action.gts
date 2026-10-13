@@ -2,7 +2,8 @@ import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 
 import { randomId } from '../../-private/random-id.ts';
-import { callWithItemIfFunction } from '../../-private/basic-table.ts';
+import { callWithItemIfFunction, resolveItemNode } from '../../-private/basic-table.ts';
+import TableNode from '../../-private/table-node.gts';
 import EuiButtonEmpty from '../eui-button-empty.gts';
 import EuiButtonIcon from '../eui-button-icon.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
@@ -36,7 +37,7 @@ export default class DefaultItemActionComponent<
     }
     const call = callWithItemIfFunction(item);
     const icon = action.icon ? call(action.icon) : undefined;
-    const name = call(action.name);
+    const name = resolveItemNode(item, action.name);
     const description = call(action.description);
     if (action.type === 'icon' && !icon) {
       throw new Error(`Cannot render item action [${String(action.name)}]. It is configured to render as an icon but no
@@ -48,7 +49,7 @@ export default class DefaultItemActionComponent<
       name,
       description,
       // Avoid screen-readers announcing the same text twice
-      disableScreenReaderOutput: name === description,
+      disableScreenReaderOutput: typeof name === 'string' && name === description,
       href: call(action.href),
       testSubj: call(action['data-test-subj'])
     };
@@ -78,7 +79,10 @@ export default class DefaultItemActionComponent<
         />
       </EuiToolTip>
       {{! SR text outside the tooltip, like upstream }}
-      <EuiScreenReaderOnly><span id={{this.ariaLabelId}}>{{this.resolved.name}}</span></EuiScreenReaderOnly>
+      <EuiScreenReaderOnly><span id={{this.ariaLabelId}}><TableNode
+            @node={{this.resolved.name}}
+            @item={{@item}}
+          /></span></EuiScreenReaderOnly>
     {{else}}
       <EuiToolTip
         @content={{this.resolved.description}}
@@ -95,7 +99,7 @@ export default class DefaultItemActionComponent<
           data-test-subj={{this.resolved.testSubj}}
           {{on "click" this.onClick}}
           ...attributes
-        >{{this.resolved.name}}</EuiButtonEmpty>
+        ><TableNode @node={{this.resolved.name}} @item={{@item}} /></EuiButtonEmpty>
       </EuiToolTip>
     {{/if}}
   </template>

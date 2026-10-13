@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
-import { click, fillIn, findAll, render, settled } from '@ember/test-helpers';
+import { click, fillIn, find, findAll, render, settled } from '@ember/test-helpers';
 
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
 import EuiInMemoryTable from '#src/components/eui-in-memory-table.gts';
@@ -32,8 +32,19 @@ const columns: Array<EuiBasicTableColumn<Repo>> = [
   { name: 'Length', render: (repo: Repo) => repo.name.length, sortable: (repo: Repo) => repo.name.length }
 ];
 
+/**
+ * Text without the hidden tabular copy markers that `EuiBasicTable` adds
+ * after its cells (upstream `tabularCopyMarkers`).
+ */
+function visibleText(element: Element | null): string {
+  if (!element) return '';
+  const clone = element.cloneNode(true) as Element;
+  clone.querySelectorAll('[data-tabular-copy-marker]').forEach((marker) => marker.remove());
+  return clone.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+}
+
 function names(): string[] {
-  return findAll('tbody tr th, tbody tr td:first-child').map((cell) => cell.textContent?.trim() ?? '');
+  return findAll('tbody tr th, tbody tr td:first-child').map((cell) => visibleText(cell));
 }
 
 async function search(text: string) {
@@ -76,7 +87,7 @@ module('Integration | Component | Borealis in-memory table', function (hooks) {
     );
     assert.dom('.euiBasicTable.caller').exists('attributes go to the table');
     assert.deepEqual(names(), ['ember', 'glimmer'], 'first page of 2');
-    assert.dom('caption').hasText('Data table, Showing 2 of 5 data rows. Page 1 of 3.');
+    assert.strictEqual(visibleText(find('caption')), 'Data table, Showing 2 of 5 data rows. Page 1 of 3.');
 
     await click('[data-test-subj="pagination-button-1"]');
     assert.deepEqual(names(), ['eui', 'old-thing']);
@@ -84,7 +95,7 @@ module('Integration | Component | Borealis in-memory table', function (hooks) {
 
     await search('language:ts');
     assert.deepEqual(names(), ['glimmer', 'eui'], 'search resets to the first page');
-    assert.dom('caption').hasText('Data table, Showing 2 of 2 data rows.');
+    assert.strictEqual(visibleText(find('caption')), 'Data table, Showing 2 of 2 data rows.');
 
     await search('');
     await click('thead th:nth-child(2) button');

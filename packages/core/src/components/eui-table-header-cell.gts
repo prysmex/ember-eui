@@ -102,6 +102,11 @@ export interface EuiTableHeaderCellSignature {
   Blocks: {
     /** The column's name. */
     default: [];
+    /**
+     * Content after the cell's content (upstream `append`), e.g. the hidden
+     * tabular copy markers of `EuiBasicTable`.
+     */
+    append: [];
   };
 }
 
@@ -240,6 +245,7 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
           {{stickyHeaderOriginal this.stickySync (isPresent this.stickyHeaderRow)}}
         >
           <HeaderCellContents @cell={{this}}>{{yield}}</HeaderCellContents>
+          {{yield to="append"~}}
           {{#if this.stickyHeaderRow}}
             {{! the copy in the table's sticky header (upstream renders the
                 registered cell again, with the same props) }}
@@ -253,7 +259,9 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
                 data-sticky={{this.stickySide}}
                 ...attributes
                 {{stickyHeaderCopy this.stickySync this.table this.style}}
-              ><HeaderCellContents @cell={{this}}>{{yield}}</HeaderCellContents></Cell>{{/in-element}}
+              ><HeaderCellContents @cell={{this}}>{{yield}}</HeaderCellContents>{{yield
+                  to="append"
+                }}</Cell>{{/in-element}}
           {{/if}}
         </Cell>
       {{/let}}

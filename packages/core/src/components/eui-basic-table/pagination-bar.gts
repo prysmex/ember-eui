@@ -13,17 +13,17 @@ import {
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 import { euiBasicTablePaginationBarStyles } from '../../utils/eui/styles.generated.ts';
+import {
+  EUI_TABLE_PAGINATION_DEFAULTS,
+  euiTablePaginationDefaults
+} from '../../-private/table-pagination-defaults.ts';
 import EuiTablePagination from '../eui-table-pagination.gts';
 
 import type { Pagination } from '../../-private/basic-table.ts';
 import type { TableResponsiveBreakpoint } from '../../-private/table.ts';
 
-/** Upstream `euiTablePaginationDefaults`. */
-export const PAGINATION_DEFAULTS = {
-  itemsPerPage: 10,
-  itemsPerPageOptions: [10, 25, 50],
-  showPerPageOptions: true
-};
+/** Upstream `euiTablePaginationDefaults` (without the app's `componentDefaults`). */
+export const PAGINATION_DEFAULTS = EUI_TABLE_PAGINATION_DEFAULTS;
 
 /**
  * @private The pagination under an `EuiBasicTable` (upstream
@@ -48,8 +48,21 @@ export interface PaginationBarSignature {
 export default class PaginationBar extends Component<PaginationBarSignature> {
   @tracked private mediaVersion = 0;
 
+  /** Upstream `useEuiTablePaginationDefaults()`. */
+  get defaults() {
+    return euiTablePaginationDefaults(this);
+  }
+
   get pageSize(): number {
-    return this.args.pagination.pageSize ?? PAGINATION_DEFAULTS.itemsPerPage;
+    return this.args.pagination.pageSize ?? this.defaults.itemsPerPage;
+  }
+
+  get pageSizeOptions(): number[] {
+    return this.args.pagination.pageSizeOptions ?? this.defaults.itemsPerPageOptions;
+  }
+
+  get showPerPageOptions(): boolean {
+    return this.args.pagination.showPerPageOptions ?? this.defaults.showPerPageOptions;
   }
 
   get pageCount(): number {
@@ -104,13 +117,9 @@ export default class PaginationBar extends Component<PaginationBarSignature> {
     >
       <EuiTablePagination
         @activePage={{@pagination.pageIndex}}
-        @showPerPageOptions={{if (isFalse @pagination.showPerPageOptions) false true}}
+        @showPerPageOptions={{this.showPerPageOptions}}
         @itemsPerPage={{this.pageSize}}
-        @itemsPerPageOptions={{if
-          @pagination.pageSizeOptions
-          @pagination.pageSizeOptions
-          PAGINATION_DEFAULTS.itemsPerPageOptions
-        }}
+        @itemsPerPageOptions={{this.pageSizeOptions}}
         @pageCount={{this.pageCount}}
         @onChangeItemsPerPage={{@onPageSizeChange}}
         @onChangePage={{@onPageChange}}
@@ -121,6 +130,4 @@ export default class PaginationBar extends Component<PaginationBarSignature> {
   </template>
 }
 
-function isFalse(value: unknown): boolean {
-  return value === false;
-}
+

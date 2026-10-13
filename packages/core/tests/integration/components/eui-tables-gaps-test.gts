@@ -54,9 +54,20 @@ function rgb(color: string): string {
   return resolved;
 }
 
+/**
+ * Text without the hidden tabular copy markers that `EuiBasicTable` adds
+ * after its cells (upstream `tabularCopyMarkers`).
+ */
+function visibleText(element: Element | null): string {
+  if (!element) return '';
+  const clone = element.cloneNode(true) as Element;
+  clone.querySelectorAll('[data-tabular-copy-marker]').forEach((marker) => marker.remove());
+  return clone.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+}
+
 function texts(selector: string, root?: Element): string[] {
-  return (root ? [...root.querySelectorAll(selector)] : findAll(selector)).map(
-    (element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? ''
+  return (root ? [...root.querySelectorAll(selector)] : findAll(selector)).map((element) =>
+    visibleText(element)
   );
 }
 
@@ -522,7 +533,7 @@ module('Integration | Component | Borealis tables gaps', function (hooks) {
     await click('.basic [data-test-subj="pagination-button-1"]');
     assert.deepEqual(changes.at(-1)?.page, { index: 1, size: 2 });
     assert.deepEqual(state.selected, []);
-    assert.dom('.basic #row_2_expansion').hasText('Bob details');
+    assert.strictEqual(visibleText(document.querySelector('.basic #row_2_expansion')), 'Bob details');
     assert.dom('.basic tbody tr:first-child td:last-child').hasAttribute('data-sticky', 'end');
     await click('.basic tbody tr:first-child [data-test-subj="euiCollapsedItemActionsButton"]');
     assert.dom('[data-test-subj="three"]', document.body).exists('collapsed actions menu');

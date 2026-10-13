@@ -3,7 +3,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { tracked } from '@glimmer/tracking';
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import { htmlSafe } from '@ember/template';
-import { click, findAll, render, settled, triggerEvent } from '@ember/test-helpers';
+import { click, find, findAll, render, settled, triggerEvent } from '@ember/test-helpers';
 
 import EuiBasicTable from '#src/components/eui-basic-table.gts';
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
@@ -45,8 +45,20 @@ function rgb(color: string): string {
   return resolved;
 }
 
+
+/**
+ * Text without the hidden tabular copy markers that `EuiBasicTable` adds
+ * after its cells (upstream `tabularCopyMarkers`).
+ */
+function visibleText(element: Element | null): string {
+  if (!element) return '';
+  const clone = element.cloneNode(true) as Element;
+  clone.querySelectorAll('[data-tabular-copy-marker]').forEach((marker) => marker.remove());
+  return clone.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+}
+
 function texts(selector: string, root?: Element): string[] {
-  return (root ? [...root.querySelectorAll(selector)] : findAll(selector)).map((element) => element.textContent?.replace(/\s+/g, ' ').trim() ?? '');
+  return (root ? [...root.querySelectorAll(selector)] : findAll(selector)).map((element) => visibleText(element));
 }
 
 const CityBadge: TemplateOnlyComponent<{ Args: EuiTableCellComponentArgs<User> }> = <template>
@@ -103,7 +115,8 @@ module('Integration | Component | Borealis basic table', function (hooks) {
     assert.strictEqual(content(7).justifyContent, 'center');
 
     const caption = document.querySelector('caption.euiTableCaption') as HTMLElement;
-    assert.dom(caption).hasClass('euiScreenReaderOnly').hasText('Data table,');
+    assert.dom(caption).hasClass('euiScreenReaderOnly');
+    assert.strictEqual(visibleText(caption), 'Data table,');
     assert.strictEqual(getComputedStyle(caption).position, 'relative', 'caption styles win over the sr-only position');
     assert.strictEqual(getComputedStyle(caption).clipPath, 'inset(50%)');
   });
@@ -172,7 +185,7 @@ module('Integration | Component | Borealis basic table', function (hooks) {
         </EuiEmotionProvider>
       </template>
     );
-    assert.dom('caption').hasText('Users, Showing 2 of 5 data rows. Page 1 of 3.');
+    assert.strictEqual(visibleText(find('caption')), 'Users, Showing 2 of 5 data rows. Page 1 of 3.');
     const table = document.querySelector('table.euiTable')!;
     assert.dom('.euiPagination').exists();
     assert.dom('[data-test-subj="tablePaginationPopoverButton"]').hasText('Rows per page: 2');
@@ -340,7 +353,7 @@ module('Integration | Component | Borealis basic table', function (hooks) {
       </template>
     );
 
-    assert.dom('.two thead th:last-child').hasText('Actions');
+    assert.strictEqual(visibleText(find('.two thead th:last-child')), 'Actions');
     assert.dom('.two tbody tr:first-child').hasClass('euiTableRow-hasActions');
     assert.dom('.two tbody tr:first-child td:last-child').hasClass('euiTableRowCell--hasActions');
     await click('.two [data-test-subj="edit"]');
@@ -409,7 +422,8 @@ module('Integration | Component | Borealis basic table', function (hooks) {
     );
     assert.dom('tbody tr').exists({ count: 5 }, '3 rows and 2 expanded rows');
     assert.dom('tbody tr:first-child').hasAttribute('aria-owns', 'row_1_expansion').hasClass('euiTableRow-isExpandable');
-    assert.dom('#row_1_expansion').hasClass('euiTableRow-isExpandedRow').hasText('Ann details');
+    assert.dom('#row_1_expansion').hasClass('euiTableRow-isExpandedRow');
+    assert.strictEqual(visibleText(find('#row_1_expansion')), 'Ann details');
     assert.dom('#row_1_expansion td').hasAttribute('colspan', '2', 'checkbox + columns - mobile only columns');
     assert.dom('#row_3_expansion [data-expanded]').hasText('Cid #3');
     assert.dom('[data-test-subj="row-2"]').hasClass('euiTableRow-isClickable');
@@ -442,7 +456,7 @@ module('Integration | Component | Borealis basic table', function (hooks) {
     state.items = [];
     await settled();
     assert.dom('tbody td').hasText('No items found');
-    assert.dom('caption').hasText('Data table (empty), No items found,');
+    assert.strictEqual(visibleText(find('caption')), 'Data table (empty), No items found,');
   });
 
   test('footers, panelled look, cards layout and provider colors', async function (assert) {

@@ -62,6 +62,8 @@ input in the blocks (`EuiPikaday`, `EuiFlatpickr`, or
 | `@isLoading` | `boolean` |  | Shows a spinner. |
 | `@iconType` | `boolean \| string` |  | Icon at the start: `true` (the default) shows `calendar`, `false` hides it, or any `EuiIcon` type. |
 | `@delimiter` | `string` | `'→'` | Text between the inputs. |
+| `@inline` | `boolean` |  | For two calendars displayed in the page (e.g. inline flatpickr or pikaday calendars in the blocks): drops the field frame, the icon and `@fullWidth`/`@compressed`, lays the blocks out side by side and stacks them when the container is too narrow. Pass the inline option to your calendars too. |
+| `@shadow` | `boolean` | `true` | With `@inline`: a shadow around both calendars. |
 
 | Block | Description |
 | --- | --- |

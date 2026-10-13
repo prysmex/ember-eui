@@ -1,5 +1,5 @@
 ---
-order: 13
+order: 17
 ---
 
 # Auto refresh with a timer (Ember EUI extra)

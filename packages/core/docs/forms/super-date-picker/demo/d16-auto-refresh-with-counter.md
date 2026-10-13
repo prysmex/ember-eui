@@ -1,5 +1,5 @@
 ---
-order: 12
+order: 16
 ---
 
 # Auto refresh with a counter (Ember EUI extra)

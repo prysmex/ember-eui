@@ -37,6 +37,14 @@ adds arrows, and `@display="compressed"` makes it smaller.
 
 </EuiText>
 
+<EuiSpacer />
+
+<EuiText>
+
+`EuiTreeView` is not meant to be used as primary navigation; for that we recommend using `EuiSideNav`. It does not accept content directly but requires an array of nodes through `@items`. Each node requires a `label` and a unique `id`. The `icon` accepts any icon type, and `iconWhenExpanded` sets a different icon for the open state. Use the nodes' `children` to nest more nodes. To show an `EuiToken` for a node, render it in the `<:label>` block.
+
+</EuiText>
+
 <EuiHorizontalRule />
 
 <!-- api:start -->

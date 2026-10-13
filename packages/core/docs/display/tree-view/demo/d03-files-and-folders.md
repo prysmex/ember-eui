@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 3
 ---
 
-# Files and folders
+# Files and folders (Ember EUI extension)
 
 <EuiText>
 

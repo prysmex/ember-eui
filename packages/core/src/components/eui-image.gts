@@ -1,10 +1,12 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
-import { hash } from '@ember/helper';
+import { get, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import { focusTrap } from 'ember-focus-trap';
+import style from 'ember-style-modifier/modifiers/style';
 import { or } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -19,6 +21,7 @@ import {
   euiImageWrapperStyles
 } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
+import EuiInnerText from './eui-inner-text.gts';
 import EuiOverlayMask from './eui-overlay-mask.gts';
 import { euiScreenReaderOnlyClass } from './eui-screen-reader-only.gts';
 
@@ -46,6 +49,24 @@ const buttonReset: CSSObject = {
   font: 'inherit'
 };
 
+/**
+ * Upstream's `wrapperProps` for the `<figure>`. Ember has no prop spreading,
+ * so this lists what is supported; `...attributes` also lands on the figure.
+ */
+export interface EuiImageWrapperProps {
+  /** Added to the figure's classes. */
+  className?: string;
+  /** Styles composed last into the figure's class (upstream's `css`). */
+  css?: EuiCss;
+  /** Inline styles of the figure, as an object. */
+  style?: Record<string, string | undefined>;
+  id?: string;
+  role?: string;
+  /** Replaces the figure's accessible name (the caption's text). */
+  'aria-label'?: string;
+  'data-test-subj'?: string;
+}
+
 type ImageArgs = {
   /**
    * Describes the image for screen reader users (required). Pass an empty
@@ -69,8 +90,17 @@ type ImageArgs = {
   /** URL of the image. */
   url?: string;
 
-  /** A visible caption, also the figure's accessible name. */
+  /**
+   * A visible caption, also the figure's accessible name. For rich content
+   * use the `<:caption>` block instead.
+   */
   caption?: string;
+
+  /** The `width` attribute of the image, e.g. for SVGs without a size. */
+  width?: number | string;
+
+  /** Props of the wrapping `<figure>`. */
+  wrapperProps?: EuiImageWrapperProps;
   /** Adds a slight shadow to the image. Defaults to `false`, as upstream. */
   hasShadow?: boolean;
   /** Makes the image clickable to show a larger version over the page. */
@@ -99,6 +129,11 @@ export interface EuiImageSignature {
   Blocks: {
     /** Unused. */
     default: [];
+    /**
+     * Rich caption (upstream's node `caption`), instead of `@caption`. The
+     * figure's accessible name is the caption's text.
+     */
+    caption: [];
   };
 }
 
@@ -151,8 +186,13 @@ export default class EuiImage extends Component<EuiImageSignature> {
       float && float !== 'none' ? styles[float] : undefined,
       margin && margin !== 'none' ? styles[margin] : undefined,
       this.args.allowFullScreen ? styles.allowFullScreen : undefined,
-      this.isFullWidth ? styles.fullWidth : undefined
-    )}`;
+      this.isFullWidth ? styles.fullWidth : undefined,
+      this.args.wrapperProps?.css
+    )}${
+      this.args.wrapperProps?.className
+        ? ` ${this.args.wrapperProps.className}`
+        : ''
+    }`;
   }
 
   @cached
@@ -267,9 +307,14 @@ export default class EuiImage extends Component<EuiImageSignature> {
   };
 
   <template>
+    <EuiInnerText as |captionRef captionText|>
     <figure
       class={{this.wrapperClasses}}
-      aria-label={{@caption}}
+      id={{@wrapperProps.id}}
+      role={{@wrapperProps.role}}
+      data-test-subj={{get @wrapperProps "data-test-subj"}}
+      aria-label={{or (get @wrapperProps "aria-label") @caption captionText undefined}}
+      {{style @wrapperProps.style}}
       ...attributes
     >
       {{#if @allowFullScreen}}
@@ -284,6 +329,7 @@ export default class EuiImage extends Component<EuiImageSignature> {
             class={{this.imageClasses}}
             src={{or @src @url}}
             alt={{@alt}}
+            width={{@width}}
           />
           <span class={{this.openIconClasses}}>
             <span class={{this.screenReaderClasses}}>
@@ -293,21 +339,34 @@ export default class EuiImage extends Component<EuiImageSignature> {
           </span>
         </button>
       {{else}}
-        <img class={{this.imageClasses}} src={{or @src @url}} alt={{@alt}} />
+        <img
+          class={{this.imageClasses}}
+          src={{or @src @url}}
+          alt={{@alt}}
+          width={{@width}}
+        />
       {{/if}}
-      {{#if @caption}}
-        <figcaption class={{this.captionClasses}}>{{@caption}}</figcaption>
+      {{#if (or @caption (has-block "caption"))}}
+        <figcaption class={{this.captionClasses}} {{didInsert captionRef}}>
+          {{#if (has-block "caption")}}
+            {{yield to="caption"}}
+          {{else}}
+            {{@caption}}
+          {{/if}}
+        </figcaption>
       {{/if}}
     </figure>
+    </EuiInnerText>
 
     {{#if this.isFullScreen}}
       <EuiOverlayMask
         data-test-subj="fullScreenOverlayMask"
         @onClick={{this.closeFullScreen}}
       >
+        <EuiInnerText as |overlayCaptionRef overlayCaptionText|>
         <figure
           class={{this.fullScreenWrapperClasses}}
-          aria-label={{@caption}}
+          aria-label={{or @caption overlayCaptionText undefined}}
           {{focusTrap
             focusTrapOptions=(hash
               clickOutsideDeactivates=true escapeDeactivates=false
@@ -328,14 +387,23 @@ export default class EuiImage extends Component<EuiImageSignature> {
               class={{this.fullScreenImageClasses}}
               src={{or @src @url}}
               alt={{@alt}}
+              width={{@width}}
             />
           </button>
-          {{#if @caption}}
-            <figcaption class={{this.overlayCaptionClasses}}>
-              {{@caption}}
+          {{#if (or @caption (has-block "caption"))}}
+            <figcaption
+              class={{this.overlayCaptionClasses}}
+              {{didInsert overlayCaptionRef}}
+            >
+              {{#if (has-block "caption")}}
+                {{yield to="caption"}}
+              {{else}}
+                {{@caption}}
+              {{/if}}
             </figcaption>
           {{/if}}
         </figure>
+        </EuiInnerText>
         <EuiIcon
           class="euiImageButton__icon"
           @css={{this.closeIconCss}}

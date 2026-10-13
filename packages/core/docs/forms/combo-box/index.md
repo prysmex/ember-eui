@@ -40,6 +40,13 @@ features (custom matching, async search, positioning) are available too.
   `prepend` / `append` (text or a component, shown in the list and the
   pill), `toolTipContent` / `toolTipProps`, `truncationProps`, `title`
   and `color` (pill color), like upstream's `EuiComboBoxOptionOption`.
+  As upstream, a selected option's other keys (`data-test-subj`, `id`,
+  `aria-*`, `className`, …) are set on its pill, and an `onClick` makes
+  the pill a "Change" button without a remove button. This applies to
+  plain objects without `@searchField` (other objects are your data).
+- **Toggle button:** pressing the chevron moves focus to it, as upstream:
+  closing the list keeps focus there (arrows reopen and move through it,
+  Escape closes it); opening it focuses the input.
 - **Custom values:** `@onCreateOption` lets users add what they typed
   (`@delimiter` splits pasted lists; `@noSuggestions` hides the list).
 - **Async:** `@async` with `@onSearchChange` (upstream), or `@search`,

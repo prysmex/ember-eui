@@ -26,7 +26,9 @@ that belongs to the same session as the main flyout) either render it in
 the main flyout's block, or set `@session="inherit"` while a main flyout is
 open. A flyout nested in another flyout without `@session` joins the active
 session automatically. `@session="never"`, or a flyout that is not nested,
-keeps the standard behavior.
+keeps the standard behavior. As upstream, a standard flyout nested in a
+managed flyout takes the session's stacking and Escape rules, and a pushed
+one does not pad the page (only the active session's flyouts push).
 
 Managed flyouts work alongside managed and standard flyouts across the
 application. The state lives in the `eui-flyout-manager` service (upstream's

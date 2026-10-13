@@ -258,6 +258,7 @@ means the previous value was not recorded.
 | `EuiBadge` | Icon size | `m` for icon-only badges | Always `s` (12px) |
 | `EuiBadge` | Clickable badge with `@iconType` | Inner `euiBadge__childButton` | The whole badge is the `<button>` / `<a>` (child button only with `@iconOnClick`) |
 | `EuiBadge`, `EuiBetaBadge` | Links | Not stated | `rel` always has `noreferrer` (plus `noopener` for `_blank`) |
+| `EuiBadge` | Attributes with `@iconOnClick` and `@onClick` / `@href` | On the outer `<span>` | On the text `<button>` / `<a>`; `class` and `style` stay on the `<span>` (upstream `...rest`) |
 | `EuiBetaBadge` | Clickable badge with `@tooltipContent` | Rendered twice | Rendered once, inside the tooltip |
 | `EuiIcon` | Unlabelled icon | `aria-hidden="true"` and `role="image"` | `role="presentation"`, no `aria-hidden` |
 | `EuiIcon` | Labelled icon | `role="image"` | `role="img"` (pass the label as `@aria-label`, not as an attribute) |
@@ -341,9 +342,13 @@ means the previous value was not recorded.
 | `EuiComboBox` | Focus | Opened on click or typing | Focusing the input opens the list |
 | `EuiComboBox` | Accessibility | Wrapper `role="combobox"`, a tab stop with the label | The input is the combobox (`aria-expanded`, `aria-controls` while open, `aria-haspopup`); the listbox is labelled; screen reader instructions on focus |
 | `EuiComboBox` | Enter badge on the highlighted option | Always | Only with `@onFocusBadge` |
+| `EuiComboBox` | Pressing the chevron | Decorative icon; focus stayed in the input | `comboBoxToggleListButton` takes focus, as upstream: closing the list leaves focus on it (arrows reopen and move, Escape closes), opening focuses the input; leaving from it closes the list and adds the typed text |
+| `EuiComboBox` | `@onBlur`, focus moving inside the combo box (chevron, clear or pill button) | Called on every input blur | Called only when focus leaves the combo box; moving inside clears the highlighted option (upstream `onContainerBlur`) |
+| `EuiComboBox` | Pills | Only the option's `color` | The option's other keys become attributes of the pill (`data-test-subj`, `id`, `aria-*`, `className`; plain objects without `@searchField`), `title` is the label, and an `onClick` makes a "Change" button pill without the remove button (upstream `renderPills`) |
 | `EuiSuperSelect` | Options | `EuiContextMenuItem` buttons | `button.euiSuperSelect__item[role=option]`; arrows no longer wrap; Tab chooses |
 | `EuiSelectable` | Focusing the search field | The first checked (or first) option became current | Nothing is current until a key: arrows start at the top/bottom, other keys and searches pick the first checked option (upstream `onFocus`) |
 | `EuiSelectable` | Unknown `@searchProps` keys | Ignored | Set as attributes of the search `<input>` (upstream spreads them onto EuiFieldSearch) |
+| `EuiSelectable` | `aria-label` / `aria-describedby` attributes | On the root `<div>`; the search and list were labelled with the placeholder | Moved to the search and the listbox (upstream `getAccessibleName`; `@searchProps` / `@listProps` keys win); the fallback label is "Filter options", not a custom placeholder |
 | `EuiRange` | Slider with `@showInput` | `aria-hidden` only for `true` | `aria-hidden`, `tabindex=-1` for any `@showInput`, including `"inputWithPopover"` |
 | `EuiDualRange` | Popover class | `euiRange__popover` | `euiDualRange__popover` |
 | `EuiFilePicker` | Default `@display` | `''` | `default` (clear button or spinner); `"none"` is a deprecated alias |
@@ -381,6 +386,7 @@ means the previous value was not recorded.
 | `EuiFlyout` | Mask click | Always closes | Closes unless `@outsideClickCloses={{false}}` |
 | `EuiFlyout` | Mask | Parent of the flyout | Sibling of the portalled flyout |
 | `EuiFlyout` | Pushed flyout | Closes on Escape | Ignores Escape; no dialog role unless `@role` |
+| `EuiFlyout` | Pushed standard flyout nested in a managed (session) flyout | n/a (new in 15) | Does not pad the page: only the active session's flyouts push (upstream `shouldPush`) |
 | `EuiSelectable` | Multiple selection | Check marks, `aria-selected` | Checkbox indicators, `aria-checked` |
 | `EuiSelectable` | `listProps.onFocusBadge` | `true` | `false` |
 | `EuiSelectableTemplateSitewide` | Row height / popover padding | 68 / `none` | 52 / `s` |
@@ -404,6 +410,8 @@ means the previous value was not recorded.
 | `EuiSideNav` | Section items with children | Not toggleable | Accordion buttons with `aria-expanded` |
 | `EuiListGroup` | Default `@maxWidth` | Not stated | `true` (400px); `@maxWidth={{false}}` to fill wide containers |
 | `EuiListGroupItem` | Default color | `inherit` | `text` |
+| `EuiListGroup` | `@wrapText` | n/a (new in 15) | Applies to `@listItems` only; items in the block set their own `@wrapText` (upstream) |
+| `EuiListGroupItem` | Block label (`{{yield}}`) | No `title`, no tooltip content | Its text is the `title` when truncated (no wrap, no tooltip) and its content is the tooltip without `@toolTipText` (upstream node `label`) |
 | `EuiKeyPadMenuItem` | `aria-pressed` | Always `"false"` | Omitted unless `@isSelected` is set |
 
 #### Tables
@@ -541,9 +549,8 @@ as before):
   scroll or reposition when the input resizes.
 - **Tables**: sticky header/scrollbar/cells, header tooltips, multi-line
   truncation and cell `append`.
-- **Combo box**: `inputPopoverProps`, `inputRef` and the separate
-  chevron button; a plain text single selection is shown next to the
-  input instead of as its value. It keeps ember-power-select; its input
+- **Combo box**: `inputPopoverProps` and `inputRef`. It keeps
+  ember-power-select; its input
   sizes with `field-sizing: content`, which Firefox does not support yet,
   so there the input may wrap below the pills earlier.
 - **Selectable**: wrapping/truncation options, option tooltips,
@@ -551,7 +558,7 @@ as before):
 - **Super date picker**: `showPrettyDuration`, auto-refresh-only rendering,
   custom quick-select panels, `minDate` / `maxDate` and the update button
   tooltip.
-- **Tooltips** on list group items, collapsed breadcrumbs, pagination
+- **Tooltips** on collapsed breadcrumbs, pagination
   arrows, color picker swatches and the hue/saturation controls; the
   avatar uses a native `title`.
 - **Forms**: `EuiForm`'s `defaultFullWidth` context for nested controls

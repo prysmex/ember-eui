@@ -47,6 +47,12 @@ the change applied, so keep them in a tracked property.
 - The `<:option>` block renders labels (it yields the option and the
   search); `<:optionPrepend>` / `<:optionAppend>` add content around them.
 - With a block, it yields `{ list, search }` to lay them out yourself.
+- As upstream, `aria-label` / `aria-describedby` name the search and the
+  listbox, not the root: `aria-label` labels both; `aria-describedby`
+  describes the search (with the message) and the list (with the
+  keyboard instructions). `@searchProps` / `@listProps` keys of the same
+  names win. Without any, the search and a searchable list are labelled
+  "Filter options".
 
 </EuiText>
 
@@ -70,6 +76,10 @@ filter menu, or in a panel for a "choose fields" list. Options are
 `{ label, checked }` objects; `@onChange` gets them all back with the
 change applied.
 
+As upstream, `aria-label` / `aria-describedby` attributes name the
+search and the listbox, not the root (`searchProps` / `listProps` keys of
+the same names win).
+
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@options` (required) | `EuiSelectableOption[]` |  | The options: `{ label, checked, disabled, isGroupLabel, prepend, append }`. |
@@ -84,7 +94,7 @@ change applied.
 | `@isLoading` | `boolean` |  | Shows a loading message instead of the list. |
 | `@isPreFiltered` | `boolean \| { highlightSearch?: boolean }` |  | The options are already filtered (e.g. by a server): the search does not filter. `{ highlightSearch: false }` also turns off highlighting the search in the labels. |
 | `@height` | `number \| 'full'` |  | Height of the list in px, or `'full'` to fill the container. |
-| `@listProps` |  |  | Options of the list: `{ bordered, paddingSize, showIcons, rowHeight, onFocusBadge, isVirtualized, textWrap, truncationProps, css }` (`onFocusBadge` defaults to `false`, upstream). See `EuiSelectableList`. |
+| `@listProps` |  |  | Options of the list: `{ bordered, paddingSize, showIcons, rowHeight, onFocusBadge, isVirtualized, textWrap, truncationProps, css, 'aria-label', 'aria-describedby' }` (`onFocusBadge` defaults to `false`, upstream). See `EuiSelectableList`. |
 | `@loadingMessage` | `string` | "Loading options" | Message while `@isLoading`. |
 | `@noMatchesMessage` | `string` |  | Message when the search matches nothing. |
 | `@emptyMessage` | `string` | "No options available" | Message when there are no options. |

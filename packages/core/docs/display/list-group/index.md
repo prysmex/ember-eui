@@ -47,7 +47,7 @@ A list of `EuiListGroupItem`s, e.g. navigation links in a side bar.
 | `@showToolTips` | `boolean` |  | Shows a tooltip on all items (an item's own `showToolTip` wins). |
 | `@bordered` | `boolean` |  | Adds a rounded border around the list. |
 | `@color` | `string` | `'text'` | Default `@color` of the items in the block: `'text'`, `'primary'` or `'subdued'`. An item's own `@color` wins. |
-| `@wrapText` | `boolean` |  | Default `@wrapText` of the items in the block. |
+| `@wrapText` | `boolean` |  | Default `wrapText` of the `@listItems`. As upstream, it does not reach the `EuiListGroupItem`s of the block (set their own `@wrapText`). |
 
 Deprecated: `@flush` (Has no effect: latest EUI lists have no padding.); `@gutterSize` (Has no effect: latest EUI lists have no item gutters.).
 
@@ -70,6 +70,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@newTab` (required) | `boolean` |  |  |
 | `@externalIconCss` (required) | `EuiCss` |  |  |
 | `@srOnlyClass` (required) | `string` |  |  |
+| `@textRef` | `(element: HTMLElement) => void` |  | Tracks the label's text (`EuiInnerText`) for its `title`. |
 
 ### EuiPinnableListGroup
 

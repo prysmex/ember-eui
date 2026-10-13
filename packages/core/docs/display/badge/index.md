@@ -55,7 +55,7 @@ Generated from the components' TypeScript signatures by
 | `@fill` | `boolean` | `false` | Named colors only: the stronger, filled variant of the color. |
 | `@iconType` |  |  | Icon shown in the badge, anything `EuiIcon`'s `@type` accepts. |
 | `@iconSide` | `'left' \| 'right'` | `'left'` | Side of the text the icon is on (logical, so it flips in RTL). |
-| `@iconOnClick` | `(event: MouseEvent) => void` |  | Makes the icon a separate button calling this function, e.g. an "x" to remove the badge. Requires `@iconType` and `@iconOnClickAriaLabel`. |
+| `@iconOnClick` | `(event: MouseEvent) => void` |  | Makes the icon a separate button calling this function, e.g. an "x" to remove the badge. Requires `@iconType` and `@iconOnClickAriaLabel`. With `@onClick` or `@href` too, attributes other than `class` and `style` go on the text button or link (upstream `...rest`). |
 | `@iconOnClickAriaLabel` | `string` |  | Accessible label (and hover title) of the `@iconOnClick` button. |
 | `@isDisabled` | `boolean` |  | Disables the badge's buttons and links and greys it out. |
 | `@onClick` | `(event: MouseEvent) => void` |  | Makes the badge (or its text, with `@iconOnClick`) a button calling this function. |

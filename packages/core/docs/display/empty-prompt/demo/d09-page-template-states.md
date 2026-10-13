@@ -25,8 +25,6 @@ You can then tie multiple types of empty states together to create a seamless lo
         @color="plain"
         @iconType="dashboardApp"
         @iconColor="default"
-        @title="Dashboards"
-        @body="You don't have any dashboards yet."
       >
         <:content>
           <EuiTitle @size="m"><h2>Dashboards</h2></EuiTitle>

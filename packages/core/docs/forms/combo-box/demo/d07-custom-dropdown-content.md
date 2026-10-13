@@ -6,7 +6,7 @@ order: 7
 
 <EuiText>
 
-While it is best to stick to the `option.label`, you can render anything in the default block, which is called with the single `option`. This is used for the dropdown options and the selected pills.
+While it is best to stick to the `option.label`, `option.append`, and `option.prepend` keys, you can render anything in the default block, which is called with the single `option` and the `searchValue` to use for highlighting (`as |option index searchValue|`). The block also renders the selected pills, where `searchValue` is empty.
 
 You can use the `value` key of the `option` object to store metadata about the option for use in the block.
 
@@ -23,7 +23,7 @@ import {
   euiPaletteColorBlind,
   euiPaletteColorBlindBehindText,
 } from '@ember-eui/core/utils/color/eui_palettes';
-import { EuiComboBox, EuiHealth } from '@ember-eui/core/components';
+import { EuiComboBox, EuiHealth, EuiHighlight } from '@ember-eui/core/components';
 
 const colors = euiPaletteColorBlindBehindText();
 const visColors = euiPaletteColorBlind();
@@ -56,20 +56,24 @@ export default class ComboBoxCustomContentDemo extends Component {
   }
 
   @action
-  onCreateOption(searchValue) {
+  onCreateOption(searchValue, flattenedOptions = []) {
+    if (!searchValue) {
+      return;
+    }
+
     const normalizedSearchValue = searchValue.trim().toLowerCase();
 
     if (!normalizedSearchValue) {
       return;
     }
 
-    const newOption = { label: searchValue, value: { size: 0 } };
+    const newOption = { value: searchValue, label: searchValue };
 
     // Create the option if it doesn't exist.
     if (
-      !this.options.some(
+      flattenedOptions.findIndex(
         (option) => option.label.trim().toLowerCase() === normalizedSearchValue
-      )
+      ) === -1
     ) {
       this.options = [...this.options, newOption];
     }
@@ -88,12 +92,12 @@ export default class ComboBoxCustomContentDemo extends Component {
       @onChange={{this.onChange}}
       @removeTag={{this.removeTag}}
       @onCreateOption={{this.onCreateOption}}
-      as |option|
+      as |option index searchValue|
     >
       <EuiHealth @color={{option.dotColor}}>
         <span class="eui-textTruncate">
-          {{option.label}}
-          {{#if option.value}}&nbsp;<span>({{option.value.size}})</span>{{/if}}
+          <EuiHighlight @text={{option.label}} @search={{searchValue}} />
+          {{#if option.value.size}}&nbsp;<span>({{option.value.size}})</span>{{/if}}
         </span>
       </EuiHealth>
     </EuiComboBox>

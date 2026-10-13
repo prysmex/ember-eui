@@ -1,5 +1,5 @@
 ---
-order: 18
+order: 25
 ---
 
 # Searching a server (Ember EUI extra)

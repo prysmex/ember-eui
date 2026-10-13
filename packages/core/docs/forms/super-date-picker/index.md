@@ -74,7 +74,7 @@ Generated from the components' TypeScript signatures by
 | `@recentlyUsedRanges` | `DurationRange[]` |  | Ranges listed as "Recently used" in the quick select popover (their `label`, or "start → end"). |
 | `@refreshInterval` | `Milliseconds` | `1000` | Refresh interval in milliseconds. |
 | `@refreshMinInterval` | `Milliseconds` | `0` | Minimum refresh interval in milliseconds: the refresh interval fields don't go below it. |
-| `@refreshIntervalUnits` | `RefreshUnitsOptions` |  | The refresh interval's unit (`'s'`, `'m'` or `'h'`). By default it is rounded up to the largest unit that fits (90 seconds become 2 minutes). To keep the user's unit, store the `intervalUnits` `@onRefreshChange` receives and pass it back here. Passing this argument (even `undefined`) adds `intervalUnits` to `@onRefreshChange`'s payload. |
+| `@refreshIntervalUnits` | `RefreshUnitsOptions` |  | The refresh interval's unit (`'s'`, `'m'` or `'h'`). By default it is rounded up to the largest unit that fits (90 seconds become 2 minutes). To keep the user's unit, store the `intervalUnits` `@onRefreshChange` receives and pass it back here. |
 | `@start` | `ShortDate` | `'now-15m'` | Start of the range, as date math (`'now-15m'`, `'now/d'`) or an ISO date. |
 | `@end` | `ShortDate` | `'now'` | End of the range, like `@start`. |
 | `@minDate` | `Moment` |  | Earliest selectable date (a moment): earlier days are disabled in the calendar and a start before it makes the range invalid. |

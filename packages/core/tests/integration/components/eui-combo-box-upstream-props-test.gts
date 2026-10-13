@@ -500,4 +500,70 @@ module('Integration | Component | eui-combo-box upstream props', function (hooks
     await triggerEvent(q('[data-test-subj="comboBoxCreateOption"]', panel()!), 'pointerup');
     assert.deepEqual(state.created, ['Pilot <b>']);
   });
+  test('inputRef gets the search input, and null when it is removed', async function (assert) {
+    const state = new State([{ label: 'Titan' }]);
+    const refs: Array<HTMLInputElement | null> = [];
+    const inputRef = (element: HTMLInputElement | null) => refs.push(element);
+    const show = new (class {
+      @tracked on = true;
+    })();
+
+    await render(
+      <template>
+        {{#if show.on}}
+          <EuiComboBox @options={{state.options}} @onChange={{noop}} @inputRef={{inputRef}} />
+        {{/if}}
+      </template>
+    );
+
+    assert.strictEqual(refs.length, 1);
+    assert.strictEqual(refs[0], q(INPUT), 'the search input, not the validity input');
+    assert.dom(refs[0]).hasAttribute('data-test-subj', 'comboBoxSearchInput');
+
+    show.on = false;
+    await settled();
+    assert.strictEqual(refs.at(-1), null);
+  });
+
+  test('inputPopoverProps: class, padding, min width, style, css and z-index of the list', async function (assert) {
+    const state = new State([{ label: 'Titan' }]);
+    const inputPopoverProps = {
+      panelClassName: 'my-list',
+      panelPaddingSize: 'l' as const,
+      panelMinWidth: 321,
+      panelStyle: { letterSpacing: '3px' },
+      panelProps: { className: 'from-panel-props' },
+      zIndex: 7777,
+      css: { outlineOffset: '5px' }
+    };
+
+    await render(
+      <template>
+        <EuiComboBox @options={{state.options}} @onChange={{noop}} @inputPopoverProps={{inputPopoverProps}} />
+      </template>
+    );
+    await open();
+
+    const list = panel() as HTMLElement;
+    assert.dom(list).hasClass('my-list').hasClass('from-panel-props').hasClass('euiPopover__panel');
+    assert.dom(list).hasStyle({ paddingTop: '24px', minWidth: '321px', letterSpacing: '3px', zIndex: '7777' });
+    assert.dom('.euiComboBox').hasStyle({ outlineOffset: '5px' });
+  });
+
+  test('inputPopoverProps without a zIndex keeps the anchor z-index plus 2000', async function (assert) {
+    const state = new State([{ label: 'Titan' }]);
+    const inputPopoverProps = { panelClassName: 'x' };
+
+    await render(
+      <template>
+        <EuiComboBox @options={{state.options}} @onChange={{noop}} @inputPopoverProps={{inputPopoverProps}} />
+      </template>
+    );
+    await open();
+
+    assert.dom(panel()).hasClass('x');
+    const zIndex = Number(getComputedStyle(panel()!).zIndex);
+    assert.true(zIndex >= 2000 && zIndex < 9000, 'anchor z-index + 2000');
+    assert.dom(panel()).hasStyle({ paddingTop: '8px' }, 'padding stays s');
+  });
 });

@@ -108,6 +108,8 @@ Generated from the components' TypeScript signatures by
 | `@afterOptionsComponent` | `any` |  | Component rendered below the options. |
 | `@searchPlaceholder` | `any` |  | Placeholder of the search input. |
 | `@dropdownClass` | `string` |  | Extra class for the options list. |
+| `@inputPopoverProps` | `EuiComboBoxInputPopoverProps` |  | Props of the options list's popover (upstream `inputPopoverProps`), see {@link EuiComboBoxInputPopoverProps}. |
+| `@inputRef` | `(element: HTMLInputElement \| null) => void` |  | Called with the search `<input>` element once rendered, and with `null` when it is removed. |
 | `@selectedOptions` | `any[]` |  | The selected options (items of `@options`). |
 | `@onChange` (required) | `(selected: any[]) => void` |  | Called with the new selection (an array, also with `@singleSelection`). Update `@selectedOptions` here. |
 | `@placeholder` | `string` |  | Text shown when nothing is selected. |

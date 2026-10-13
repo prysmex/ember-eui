@@ -55,6 +55,8 @@ interface TriggerArgs {
   noSuggestions?: boolean;
   screenReaderInstructions?: string;
   searchField?: string;
+  /** Called with the search input once rendered, and `null` on removal. */
+  inputRef?: (element: HTMLInputElement | null) => void;
   allowClear?: boolean;
   onClear?: (event?: Event) => void;
   onToggleList?: (event: MouseEvent) => void;
@@ -431,6 +433,7 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
                 ariaLabel=(or @inputAriaLabel @ariaLabel)
                 listboxId=@listboxId
                 tabindex=@inputTabindex
+                inputRef=@inputRef
                 role=@inputRole
                 required=@inputRequired
                 buildSelection=@buildSelection

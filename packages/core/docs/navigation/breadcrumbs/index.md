@@ -52,5 +52,9 @@ A `<nav aria-label="Breadcrumbs">` trail of links to the current page.
 | `@lastBreadcrumbIsCurrentPage` | `boolean` | `true` | Marks the last breadcrumb as the current page (`aria-current="page"`). |
 | `@breadcrumbs` (required) | `EuiBreadcrumb[]` |  | The breadcrumbs, from the root to the current page: `[{ text: 'Home', href: '/' }, { text: 'Users', onClick: … }, { text: 'Jane' }]`. |
 
+| Block | Description |
+| --- | --- |
+| `<:popoverContent>` | Content of the popover of every breadcrumb with `popoverContent: true`; yields the breadcrumb and a `closePopover` function. |
+
 </EuiText>
 <!-- api:end -->

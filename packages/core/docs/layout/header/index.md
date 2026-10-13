@@ -177,7 +177,14 @@ EuiBreadcrumbs styled for the header.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@breadcrumbs` (required) |  |  | The breadcrumbs, see `EuiBreadcrumbs`'s `@breadcrumbs`. |
+| `@max` | `number \| null` |  | Collapses the breadcrumbs past this number into a "…" item. Defaults to `4` (not `5` as in `EuiBreadcrumbs`); `0` or `null` shows all. |
+| `@truncate` | `boolean` | `true`, as upstream | Keeps the breadcrumbs on one line, truncating each. |
+
+Also takes the args of `EuiBreadcrumbs`.
+
+| Block | Description |
+| --- | --- |
+| `<:popoverContent>` | See `EuiBreadcrumbs`' `<:popoverContent>`. |
 
 ### EuiHeaderAlert
 

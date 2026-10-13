@@ -6,9 +6,22 @@ title: CallOut
 <EuiPageHeader @pageTitle="Callout"/>
 
 <EuiSpacer />
-  <EuiText>
-  <p>
-   <strong>EuiCallOut</strong> contains a message directly related to content on the page. This includes general information, success, warning, and error messages.</p><p><strong>Keep these guidelines in mind:</strong></p><ul><li>Minimize the number of callouts per page.</li><li>Stack callouts in the order in which they require users' attention: error, warning, info, and then success.</li><li>Offer only one action per callout and ensure it's an action users can perform quickly.</li><li>If the callout has a permanent spot in the UI, but needs to be less obstructive, set the <EuiCode @language="text">@size</EuiCode> property to <EuiCode @language=="text">s</EuiCode> (small).</li><li>Use an <EuiCode @language="text">icon</EuiCode> argument if it adds context.</li></ul>
+<EuiText>
+
+**EuiCallOut** is used to display important messages directly related to content on the page.
+
+## Guidelines
+
+**Keep these guidelines in mind:**
+
+- Minimize the number of callouts per page.
+- Stack callouts in the order in which they require users' attention: error, warning, info, and then success.
+- Limit callouts to one primary action. Add a secondary action only when a supporting option is needed.
+- If the callout has a permanent spot in the UI, but needs to be less obstructive, set the `@size` argument to `s` (small).
+- Always provide a `@title` for the callout.
+- Prefer `@title` and `@text` for callout content. The default block works for richer content, but `@title` and `@text` should cover most use cases.
+- Use a custom `@iconType` only if it adds context. Ensure it fits the callout's `@color`.
+
 </EuiText>
 
 <EuiHorizontalRule />

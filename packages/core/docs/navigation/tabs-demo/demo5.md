@@ -17,7 +17,9 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { EuiButton, EuiSpacer, EuiTabbedContent, EuiText } from '@ember-eui/core/components';
+import { EuiButton, EuiIcon, EuiSpacer, EuiTabbedContent, EuiText } from '@ember-eui/core/components';
+
+const HeatmapIcon = <template><EuiIcon @type="chartHeatmap" /></template>;
 
 export default class DemoComponent extends Component {
   tabs = [
@@ -34,6 +36,7 @@ export default class DemoComponent extends Component {
     {
       id: 'hydrogen',
       name: 'Hydrogen',
+      prepend: HeatmapIcon,
       content: 'Hydrogen is a chemical element with symbol H and atomic number 1. With a standard atomic weight of 1.008, hydrogen is the lightest element on the periodic table'
     },
     {

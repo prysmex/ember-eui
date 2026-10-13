@@ -12,14 +12,16 @@ Steps guide users through a sequence:
 
 - **`EuiSteps`** lists numbered `EuiStep`s vertically, e.g. setup
   instructions. Each step has a `@title` and its content; `@status`
-  marks it `complete`, `incomplete` or `disabled`.
+  marks it `complete`, `incomplete` or `disabled`. Steps are numbered by
+  their order, from `@firstStepNumber` (default `1`); `@titleSize` and
+  `@headingElement` on `EuiSteps` apply to every step.
 - **`EuiStepsHorizontal`** shows the steps of a wizard as clickable
   `EuiStepHorizontal`s, with the current one `@isSelected`.
 
 ```hbs
 <EuiSteps>
-  <EuiStep @step={{1}} @title="Install the agent" @status="complete">…</EuiStep>
-  <EuiStep @step={{2}} @title="Configure it">…</EuiStep>
+  <EuiStep @title="Install the agent" @status="complete">…</EuiStep>
+  <EuiStep @title="Configure it">…</EuiStep>
 </EuiSteps>
 ```
 
@@ -43,9 +45,15 @@ Generated from the components' TypeScript signatures by
 
 A vertical list of numbered steps (`EuiStep`), e.g. setup instructions.
 
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@firstStepNumber` | `number` | `1` | The number the first step starts from; the following steps count up from it. A step with its own `@step` keeps that number. |
+| `@headingElement` | `EuiStepHeadingElement` | `'p'` | Tag of the steps' titles, e.g. `'h3'`. A step's own `@headingElement` wins. |
+| `@titleSize` | `EuiStepTitleSize` | `'s'` | Title size of the steps: `'xxs'`, `'xs'`, `'s'` or `'m'`. A step's own `@titleSize` wins. |
+
 | Block | Description |
 | --- | --- |
-| default block | The `EuiStep`s. |
+| default block | The `EuiStep`s, numbered automatically by their order. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
@@ -55,11 +63,11 @@ One step of an EuiSteps list.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@step` | `number` | `1` (upstream) | The step's number, shown in its circle. |
+| `@step` | `number` |  | The step's number, shown in its circle. Inside an `EuiSteps` it defaults to the step's position (from `@firstStepNumber`), otherwise `1`. |
 | `@title` (required) | `string` |  | The step's title. |
 | `@status` | `EuiStepStatus` | the number | `'complete'` shows a check, `'warning'`/`'danger'` an icon, `'loading'` a spinner, `'incomplete'` a hollow circle, `'current'` an enlarged ringed circle, and `'disabled'` greys it out. |
 | `@titleSize` | `EuiStepTitleSize` | `'s'` | Size of the title: `'xxs'` (small dot instead of a number), `'xs'`, `'s'` or `'m'`. |
-| `@headingElement` | `'h1' \| 'h2' \| 'h3' \| 'h4' \| 'h5' \| 'h6' \| 'p'` | `'p'` | Tag of the title, e.g. `'h3'`. |
+| `@headingElement` | `EuiStepHeadingElement` | `'p'` | Tag of the title, e.g. `'h3'`. |
 
 | Block | Description |
 | --- | --- |

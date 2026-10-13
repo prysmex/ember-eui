@@ -33,7 +33,16 @@ interface Args {
    * Translations for this instance, `{ mapping: { token: 'text' } }`, and
    * an optional component to render the text with.
    */
-  i18n?: { mapping: { [key: string]: any }; renderComponent?: typeof Render };
+  i18n?: {
+    mapping?: { [key: string]: any };
+    renderComponent?: typeof Render;
+    /**
+     * Transforms each text after the lookup (upstream's `mappingFunc`), e.g.
+     * `(text) => text.toUpperCase()`. Placeholder values that are strings are
+     * mapped too; formatting-function results are mapped as a whole.
+     */
+    mappingFunc?: (text: string) => string;
+  };
 }
 
 /**
@@ -61,7 +70,8 @@ export default class EuiI18nComponent extends Component<EuiI18nSignature> {
       token,
       i18nMapping: this.args.i18n?.mapping,
       valueDefault,
-      values: this.args.values
+      values: this.args.values,
+      i18nMappingFunc: this.args.i18n?.mappingFunc
     });
   }
 

@@ -33,8 +33,57 @@ const small = ({ euiTheme }) => `
 
 A `@css` function receives the theme (`{ euiTheme, colorMode, ... }`), so the query can use tokens.
 
-**Not in Ember EUI:** `useEuiContainerQuery` (querying a container from JavaScript). Upstream recommends keeping layout changes in CSS for performance anyway; when you need the size in JavaScript, use the `resize-observer` modifier.
+### Reading the result in templates and JavaScript
+
+Upstream's `useEuiContainerQuery` hook reports whether a container query matches. Ember EUI has two equivalents, both built on the same `matchContainer` technique as upstream (a `transitionrun` listener on a custom property that the query changes), so they work wherever container queries do:
+
+* **EuiContainerQuery** renders a `<div>` that is the container (`@type` defaults to `'inline-size'`) and yields `true` while `@condition` matches, with an optional `@name` and an `@onChange` callback.
+* The `container-query` modifier (`{{containerQuery "(width > 400px)" name="sidebar" onChange=this.update}}`, import it from `@ember-eui/core/modifiers`) is the lower level piece. The element it is attached to is the one that is queried, so it must be inside a container (an ancestor with `container-type`, e.g. `euiContainerCSS`). `onChange` is called with the result on setup and on each change.
+
+Upstream recommends doing layout changes in CSS (`euiContainerQuery`) and using the hook only when the result is needed in JavaScript.
 
 </EuiText>
 
 <EuiSpacer />
+
+<!-- api:start -->
+<EuiSpacer @size="xl" />
+
+<EuiText>
+
+## API reference
+
+Generated from the components' TypeScript signatures by
+`scripts/generate-api-docs.mjs`.
+
+### EuiContainerQuery
+
+A container that yields whether a CSS container query matches its width
+or height (the Ember counterpart of upstream's `useEuiContainerQuery`):
+
+```hbs
+<EuiContainerQuery @condition="(width > 400px)" as |matches|>
+  {{if matches "Wide" "Narrow"}}
+</EuiContainerQuery>
+```
+
+It renders a `<div>` that establishes the container (`container-type:
+inline-size` by default) and a hidden probe inside it that the query is
+evaluated for. Prefer styling with `euiContainerQuery` in CSS; use this
+when the result is needed in templates or JavaScript.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@condition` (required) | `string` |  | A CSS container condition, e.g. `(min-width: 400px)`. |
+| `@name` | `string` |  | Optional container name, e.g. `sidebar`. |
+| `@type` | `EuiContainerType` | `'inline-size'`; use `'size'` to query the height too (the container then needs a height of its own) | The `container-type` of the container. |
+| `@onChange` | `(matches: boolean) => void` |  | Called with the result on render and whenever it changes. |
+
+| Block | Description |
+| --- | --- |
+| default block | Yields `true` while the container matches the condition. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+</EuiText>
+<!-- api:end -->

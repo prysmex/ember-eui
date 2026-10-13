@@ -49,7 +49,7 @@ export function processStringToChildren(
 ): any[] | string {
   const children: any[] = [];
 
-  let child: Child | undefined = { propName: '' };
+  let child: Child | undefined;
 
   function appendCharToChild(char: string) {
     if (child === undefined) {

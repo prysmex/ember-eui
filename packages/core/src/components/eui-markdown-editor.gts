@@ -150,6 +150,15 @@ export interface EuiMarkdownEditorArgs {
   ariaLabelledBy?: string;
   /** Id of the element describing the textarea. */
   ariaDescribedBy?: string;
+  /**
+   * Further args for the preview's `EuiMarkdownFormat` (upstream's
+   * `markdownFormatProps`): `rootClasses`, `textSize`, `color`,
+   * `shouldIncludeDefaultRootClasses`. They win over the `@format…` args.
+   */
+  markdownFormatProps?: Pick<
+    EuiMarkdownFormatSignature['Args'],
+    'rootClasses' | 'textSize' | 'color' | 'shouldIncludeDefaultRootClasses'
+  >;
   /** `@rootClasses` of the preview's EuiMarkdownFormat. */
   formatRootClasses?: EuiMarkdownFormatSignature['Args']['rootClasses'];
   /** `@textSize` of the preview's EuiMarkdownFormat. */
@@ -313,6 +322,25 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
       editorReset,
       styles.euiMarkdownEditor,
       this.height === 'full' ? styles.fullHeight : undefined
+    );
+  }
+
+  get formatRootClasses() {
+    return this.args.markdownFormatProps?.rootClasses ?? this.args.formatRootClasses;
+  }
+
+  get formatTextSize() {
+    return this.args.markdownFormatProps?.textSize ?? this.args.formatTextSize;
+  }
+
+  get formatColor() {
+    return this.args.markdownFormatProps?.color ?? this.args.formatColor;
+  }
+
+  get formatShouldIncludeDefaultRootClasses() {
+    return (
+      this.args.markdownFormatProps?.shouldIncludeDefaultRootClasses ??
+      this.args.formatShouldIncludeDefaultRootClasses
     );
   }
 
@@ -613,10 +641,10 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
             @value={{@value}}
             @replaceNode={{this.replaceNode}}
             @readOnly={{@readOnly}}
-            @rootClasses={{@formatRootClasses}}
-            @textSize={{@formatTextSize}}
-            @color={{@formatColor}}
-            @shouldIncludeDefaultRootClasses={{@formatShouldIncludeDefaultRootClasses}}
+            @rootClasses={{this.formatRootClasses}}
+            @textSize={{this.formatTextSize}}
+            @color={{this.formatColor}}
+            @shouldIncludeDefaultRootClasses={{this.formatShouldIncludeDefaultRootClasses}}
           />
         </div>
       {{/if}}

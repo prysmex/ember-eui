@@ -60,7 +60,7 @@ const entries = {
   'components/stat/stat.styles.js': ['euiStatStyles', 'euiStatTitleStyles'],
   'global_styling/mixins/_states.js': ['euiFocusRing', 'euiOutline'],
   'global_styling/reset/reset.js': ['resetStyles'],
-  'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight', 'euiYScrollWithShadows'],
+  'global_styling/mixins/_helpers.js': ['euiScrollBarStyles', 'euiYScroll', 'euiFullHeight', 'euiYScrollWithShadows', 'euiXScroll', 'euiXScrollWithShadows'],
   'services/color/manipulation.js': ['transparentize', 'tint', 'shade'],
   'global_styling/mixins/_padding.js': ['euiPaddingSize'],
   'global_styling/mixins/_color.js': ['euiBackgroundColor', 'euiBorderColor'],

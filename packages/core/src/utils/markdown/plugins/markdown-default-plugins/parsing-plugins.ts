@@ -23,12 +23,13 @@
 // Explicit imports here resolve the version mismatch.
 import breaks from 'remark-breaks';
 import emoji from 'remark-emoji';
-import markdown from 'remark-parse';
+import markdown from 'remark-parse-no-trim';
 
 import {
   DEFAULT_OPTIONS as LINK_VALIDATOR_DEFAULTS,
   euiMarkdownLinkValidator
 } from '../markdown-link-validator.ts';
+import intrawordUnderscore from '../../remark/remark-intraword-underscore.ts';
 import highlight from '../../remark/remark-prismjs.ts';
 import * as MarkdownCheckbox from '../markdown-checkbox/index.ts';
 import * as MarkdownTooltip from '../markdown-tooltip/index.ts';
@@ -72,7 +73,8 @@ export const getDefaultEuiMarkdownParsingPlugins = ({
   DefaultParsingPluginsConfig = {}): DefaultEuiMarkdownParsingPlugins => {
   const parsingPlugins: PluggableList = [
     [markdown, {}],
-    [highlight, {}]
+    [highlight, {}],
+    [intrawordUnderscore, {}]
   ];
 
   Object.entries(DEFAULT_PARSING_PLUGINS).forEach(([pluginName, plugin]) => {

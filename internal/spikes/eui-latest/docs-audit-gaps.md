@@ -9,11 +9,7 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiTourStep | no `useEuiTour` hook (`EuiTour` yields the same state and actions; deliberately not added) |
-| EuiMarkdownEditor | `processingConfig.linkProps`; `markdownFormatProps`; upstream's `remark-parse-no-trim` and intraword-underscore plugin (see gaps-text-handoff.md) |
-| EuiI18n | no `EuiContext` (deliberately not added, see the i18n Context example); `@i18n` has no `mappingFunc` |
-| Utilities | no `useEuiContainerQuery`, no `euiXScroll`/horizontal overflow helper, no standalone `PrettyDuration`/`usePrettyDuration` (see super-date-picker-handoff.md), no EuiErrorBoundary (Glimmer has no equivalent), no global `eui-*` utility classes or `componentDefaults` |
-| EuiFocusTrap | react-focus-on's `as`, `lockProps`, `inert`, `whiteList`, `focusLock`, `allowPinchZoom`, `preventScrollOnFocus` and the `data-focus-guard` sentinels; `EuiProvider componentDefaults` |
+| Utilities | no EuiErrorBoundary (Glimmer has no equivalent) |
 
 ## Forms
 
@@ -34,3 +30,8 @@ This is the list of those gaps. Effort: S/M/L.
 ## Decisions
 
 - EuiDatePicker: calendars live in `@ember-eui/flatpickr` and `@ember-eui/pikaday`, not in core.
+- EuiContext (i18n): not added. Every EUI component reads its texts from the global `euiI18n` service, which cannot see the component tree, so a provider could only translate the `<EuiI18n>` instances an app writes. `@i18n={{hash mapping=...}}` scopes one instance; `mappingFunc` is on `@i18n` and on the service. `formatDateTime` and `locale` of upstream's `I18nShape` are not ported.
+- Global `eui-*` utility classes: Emotion styles replace them, so EuiEmotionProvider does not inject them. The declarations are listed on the CSS utility classes page; `euiFullHeight`, `euiXScroll`, `euiYScroll` and the other helpers are in `@ember-eui/core/theming`.
+- EuiProvider `componentDefaults`: Ember has no per-component default props registry; args are set where the component is used.
+- EuiFocusTrap, react-focus-on only options (`as`, `lockProps`, `inert`, `whiteList`, `focusLock`, `allowPinchZoom`, `preventScrollOnFocus`, the `data-focus-guard` sentinels): they configure react-focus-on's DOM and have no counterpart in focus-trap.
+- `useEuiTour`: not added; `EuiTour` yields the same state and actions.

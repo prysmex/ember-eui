@@ -30,9 +30,33 @@ export const visit = (node: RehypeNode, visitor: Visitor) => {
   return node;
 };
 
-export const processor = function MarkdownAddComponents(): (
-  tree: RehypeNode
-) => void {
+/** Args of `EuiLink` (and a click handler) that `linkProps` applies to every link. */
+export interface EuiMarkdownLinkProps {
+  color?: string;
+  disabled?: boolean;
+  external?: boolean;
+  href?: string;
+  rel?: string;
+  target?: string;
+  type?: string;
+  /** Called when a link is clicked. */
+  onClick?: (event: MouseEvent) => void;
+}
+
+export interface MarkdownAddComponentsOptions {
+  /**
+   * Allows customizing all formatted links with any of the args of
+   * `EuiLink` (upstream's `linkProps`), e.g. `{ target: '_blank' }`.
+   * They override the link's own values.
+   */
+  linkProps?: EuiMarkdownLinkProps;
+}
+
+export const processor = function MarkdownAddComponents(
+  options: MarkdownAddComponentsOptions = {}
+): (tree: RehypeNode) => void {
+  const { linkProps } = options ?? {};
+
   return (tree) => {
     visit(tree, (node: RehypeNode) => {
       if (node.tagName === 'component') {
@@ -53,6 +77,7 @@ export const processor = function MarkdownAddComponents(): (
         //@ts-expect-error
         node.properties.componentName = EuiMarkdownFormatMarkdownLink;
         node.properties['inline'] = true;
+        node.properties['linkProps'] = linkProps;
       }
 
       if (node.type === 'element' && node.tagName === 'pre') {

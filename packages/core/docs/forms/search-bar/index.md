@@ -52,8 +52,10 @@ const matches = Query.execute(query, items);
 
 - Tools are the `<:toolsLeft>` and `<:toolsRight>` blocks; the hint's
   content is the `<:hint>` block (or `@hint.content`).
-- Custom filter components are Ember components (`@query`, `@onChange`);
-  option `view`s are text.
+- Custom filter components are Ember components (`@query`, `@onChange`).
+- Where upstream takes a React node, Ember takes text or a component:
+  an option's `view`, and the `box`'s `prepend` and `append` (text becomes
+  a form label, a component renders as is).
 
 </EuiText>
 

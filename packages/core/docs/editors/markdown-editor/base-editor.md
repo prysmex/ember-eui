@@ -42,12 +42,12 @@ with existing markdown tags.
 
 | Kind | Arg | Does |
 | --- | --- | --- |
-| UI plugins | `@uiPlugins` | Add toolbar buttons that insert or wrap markdown. |
+| UI plugins | `@uiPlugins` | Toolbar buttons that insert or wrap markdown (defaults to the tooltip button; your list replaces it). |
 | Parsing plugins | `@parsingPluginList` | [remark](https://github.com/remarkjs/remark) plugins that understand new syntax. |
 | Processing plugins | `@processingPluginList` | Plugins that turn the parsed tree into the rendered output, e.g. adding attributes. |
 
 The defaults are remark-parse, code block pre-processing, emoji, line
-breaks, task list checkboxes and tooltips for parsing; remark-rehype and
+breaks, link validation, task list checkboxes and tooltips for parsing; remark-rehype and
 the component renderer for processing; and the tooltip button for the UI.
 Start from the defaults and add yours:
 
@@ -63,7 +63,11 @@ const processingPlugins = [...getDefaultEuiMarkdownProcessingPlugins(), [myProce
 
 Pass the same lists to `EuiMarkdownFormat` where you render the result.
 `getDefaultEuiMarkdownPlugins({ exclude: ['tooltip'] })` returns all three
-lists at once with a default plugin unregistered.
+lists at once with default plugins unregistered (`'tooltip'`, `'checkbox'`,
+`'emoji'`, `'linkValidator'` and `'lineBreaks'`), and its `parsingConfig`
+overrides the options of the emoji and link validator plugins. `@uiPlugins`
+is the whole list of UI plugins, as upstream: to add yours, spread
+`getDefaultEuiMarkdownUiPlugins()` first.
 
 </EuiText>
 
@@ -88,7 +92,7 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 | --- | --- | --- | --- |
 | `@initialViewMode` | `string` | `'editing'` | Starts in `'editing'` (textarea) or `'viewing'` (preview) mode. |
 | `@editorId` | `string` | a generated id | Id of the editor. |
-| `@uiPlugins` (required) | `EuiMarkdownEditorUiPlugin[]` |  | Toolbar plugins added after the built-in ones (bold, lists, …), e.g. a button inserting a chart. See the markdown editor docs page. |
+| `@uiPlugins` | `EuiMarkdownEditorUiPlugin[]` | `getDefaultEuiMarkdownUiPlugins()` (the tooltip plugin): as upstream, the list you pass replaces the defaults, so add yours to that list (`[...getDefaultEuiMarkdownUiPlugins(), myPlugin]`) to keep them | The UI plugins of the toolbar (a button per plugin after the built-in bold, lists, … buttons) and of the syntax help. |
 | `@parsingPluginList` |  | `getDefaultEuiMarkdownParsingPlugins()`; extend that list to add syntax | remark plugins parsing the markdown. |
 | `@processingPluginList` |  | `getDefaultEuiMarkdownProcessingPlugins()`; extend it to render custom nodes with your components | Plugins turning the parsed markdown into the preview. |
 | `@value` (required) | `string` |  | The markdown text. Update it in `@onChange`. |
@@ -103,6 +107,7 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 | `@errors` | `EuiMarkdownParseError[]` |  | Errors listed in the footer's error popover (e.g. from `@onParse` messages). Any error also gives the textarea the danger state. |
 | `@dropHandlers` | `EuiMarkdownDropHandler[]` | none | Handlers turning dropped or picked files into markdown: `{ supportedFiles, accepts(type), getFormattingForItem(file) }`. Any handler adds the footer's upload button. |
 | `@showFooter` | `boolean` | `true` | Renders the footer (upload, errors and syntax help). |
+| `@toolbarProps` |  |  | Customizes the toolbar: `className` is added to it, and `right` (text or a component, e.g. a template-only component rendering an `EuiButton`) replaces the preview/editor switch on its right side. |
 | `@ariaLabel` | `string` |  | Accessible label of the textarea. |
 | `@ariaLabelledBy` | `string` |  | Id of the element labelling the textarea (e.g. a form row label). |
 | `@ariaDescribedBy` | `string` |  | Id of the element describing the textarea. |

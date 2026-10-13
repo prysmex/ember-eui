@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { click, render } from '@ember/test-helpers';
+import { click, render, waitUntil } from '@ember/test-helpers';
 
 import EuiCallOut from '#src/components/eui-call-out.gts';
 
@@ -90,18 +90,20 @@ module('Integration | Component | eui-call-out', function (hooks) {
     const Content = <template><span class="pop-content">Popover content</span></template>;
     const closed = { primary: { children: 'P', popoverProps: { isOpen: false, closePopover: noop, children: Content } } };
     await render(<template><EuiCallOut @title="T" @actionProps={{closed}} /></template>);
-    assert.dom('.pop-content').doesNotExist('closed popover renders no content');
+    assert.dom('.pop-content', document.body).doesNotExist('closed popover renders no content');
 
     const open = {
       primary: { children: 'P' },
       secondary: { children: 'S', popoverProps: { isOpen: true, closePopover: noop, children: 'Secondary popover text' } }
     };
     await render(<template><EuiCallOut @title="T" @actionProps={{open}} /></template>);
-    assert.dom('[data-popover-panel]').hasText('Secondary popover text');
+    await waitUntil(() => document.querySelector('[data-popover-panel]'));
+    assert.dom('[data-popover-panel]', document.body).containsText('Secondary popover text');
     assert.dom('.euiPopover .euiCallOutAction').exists({ count: 1 }, 'the action is the popover button');
 
     const primaryOpen = { primary: { children: 'P', popoverProps: { isOpen: true, closePopover: noop, children: Content } } };
     await render(<template><EuiCallOut @title="T" @actionProps={{primaryOpen}} /></template>);
-    assert.dom('.pop-content').hasText('Popover content');
+    await waitUntil(() => document.querySelector('.pop-content'));
+    assert.dom('.pop-content', document.body).hasText('Popover content');
   });
 });

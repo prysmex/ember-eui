@@ -18,6 +18,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { EuiMarkdownEditor } from '@ember-eui/core/components';
+import { getDefaultEuiMarkdownUiPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins/index';
 
 const quotePlugin = {
   name: 'quote',
@@ -27,7 +28,8 @@ const quotePlugin = {
 };
 
 export default class ToolbarPluginDemo extends Component {
-  uiPlugins = [quotePlugin];
+  // `@uiPlugins` replaces the default plugins (the tooltip button): add to them.
+  uiPlugins = [...getDefaultEuiMarkdownUiPlugins(), quotePlugin];
 
   @tracked value = 'Select this sentence and press the quote button.';
 

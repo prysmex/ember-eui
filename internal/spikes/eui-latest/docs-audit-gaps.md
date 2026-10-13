@@ -10,8 +10,8 @@ This is the list of those gaps. Effort: S/M/L.
 | Component | Missing prop/feature |
 | --- | --- |
 | EuiTourStep | no `useEuiTour` hook (`EuiTour` yields the same state and actions; deliberately not added) |
-| EuiMarkdownEditor | `toolbarProps`; `getDefaultEuiMarkdownPlugins` exclude only `tooltip` (button stays); no link validator |
-| EuiI18n | multi-token lookup, component-valued interpolation; no `EuiContext` |
+| EuiMarkdownEditor | `processingConfig.linkProps`; `markdownFormatProps`; upstream's `remark-parse-no-trim` and intraword-underscore plugin (see gaps-text-handoff.md) |
+| EuiI18n | no `EuiContext` (deliberately not added, see the i18n Context example); `@i18n` has no `mappingFunc` |
 | Missing components | `EuiFocusTrap`, `EuiWindowEvent` |
 | Illustrations | `@elastic/eui-illustrations` not installed: no catalog/gallery |
 | Not documented | utilities pages: error-boundary, html-id-generator, inner-text, pretty-duration, provider, container-queries, css-utility-classes, color-palettes, scroll |
@@ -20,7 +20,6 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |
 | EuiSuperDatePicker | not in the audit, still missing: `isDisabled={ display }`, the pretty duration display (`showPrettyDuration`), `quickSelectButtonProps`, the auto refresh append button, `updateButtonProps` tooltip/`responsive` (see super-date-picker-handoff.md) |
 | EuiDatePicker | no calendar picker in core (flatpickr/pikaday packages) |
 

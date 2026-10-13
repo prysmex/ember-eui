@@ -77,27 +77,6 @@ body.euiBody--headerIsFixed {
   min-height: calc(100vh - 48px);
 }
 
-@media only screen and (width >= 768px) and (width <= 991px) {
-  .euiBody--headerIsFixed .euiPageSideBar--sticky {
-    max-height: calc(100vh - 48px);
-    top: 48px;
-  }
-}
-
-@media only screen and (width >= 992px) and (width <= 1199px) {
-  .euiBody--headerIsFixed .euiPageSideBar--sticky {
-    max-height: calc(100vh - 48px);
-    top: 48px;
-  }
-}
-
-@media only screen and (width >= 1200px) {
-  .euiBody--headerIsFixed .euiPageSideBar--sticky {
-    max-height: calc(100vh - 48px);
-    top: 48px;
-  }
-}
-
 .pageBody {
   box-shadow:
     rgb(0 0 0 / 8%) 0 0.9px 4px,

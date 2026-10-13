@@ -147,10 +147,8 @@ module('Integration | Component | EuiPageTemplate composable', function (hooks) 
     assert.dom(page).hasAttribute('data-test-subj', 'test subject string');
     assert.strictEqual(page.tagName, 'DIV');
     assert.strictEqual(page.style.getPropertyValue('min-block-size'), 'max(460px, 100vh)');
-    assert.strictEqual(
-      page.style.getPropertyValue('padding-block-start'),
-      'var(--euiFixedHeadersOffset, 0)'
-    );
+    // Ember difference: fixed EuiHeaders already pad <body>, so no default offset.
+    assert.strictEqual(page.style.getPropertyValue('padding-block-start'), '0px');
 
     const outer = getComputedStyle(page);
     assert.strictEqual(outer.display, 'flex');
@@ -367,7 +365,7 @@ module('Integration | Component | EuiPageTemplate composable', function (hooks) 
     await settled();
     document.documentElement.style.setProperty('--euiFixedHeadersOffset', '48px');
     try {
-      assert.strictEqual(getComputedStyle(page).paddingTop, '48px', 'fixed headers offset');
+      assert.strictEqual(getComputedStyle(page).paddingTop, '0px', 'the body, not the page, clears fixed headers');
     } finally {
       document.documentElement.style.removeProperty('--euiFixedHeadersOffset');
     }

@@ -118,7 +118,7 @@ deprecated: upstream removed it.
 | `@panelled` | `boolean` | panelled when there is a sidebar | Composable API. Puts the main content on a plain panel and sections and the header on plain backgrounds; `false` makes them transparent. |
 | `@bottomBorder` | `boolean \| 'extended'` | `true` with a sidebar, `'extended'` without | Composable API. Border under `T.Header`: `true` within the restricted width, `'extended'` across the whole header. |
 | `@contentBorder` | `boolean` | `true` with a sidebar | Composable API. A border separating the main content from the sidebar (on its inline start, or on top when stacked). |
-| `@offset` | `number` | the `--euiFixedHeadersOffset` CSS variable that fixed `EuiHeader`s maintain; pass `0` to ignore them | Composable API. Top padding of the page in px, to clear fixed headers. |
+| `@offset` | `number` |  | Composable API. Top padding of the page in px. Upstream defaults it to the fixed headers' height (`--euiFixedHeadersOffset`); in Ember a fixed `EuiHeader` already pads `<body>` by that height, so the default is no extra padding (upstream's default would leave a header-sized gap). Sticky sidebars still clear fixed headers. |
 | `@responsive` | `EuiPageBreakpoint[]` | `['xs', 's']` | Composable API. Theme breakpoints (`'xs'`…`'xl'`) where the sidebar stacks above the content and takes the full width. |
 | `@direction` | `'row' \| 'column'` | `'row'` | Composable API. `'row'` puts the sidebar beside the content (stacking on `@responsive` breakpoints); `'column'` always stacks it. |
 | `@component` | `string` | `'main'` | Composable API. Tag of the main content wrapper. |

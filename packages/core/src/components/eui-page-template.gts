@@ -130,9 +130,11 @@ export type EuiPageTemplateProps = {
    */
   contentBorder?: boolean;
   /**
-   * Composable API. Top padding of the page in px, to clear fixed
-   * headers. Defaults to the `--euiFixedHeadersOffset` CSS variable that
-   * fixed `EuiHeader`s maintain; pass `0` to ignore them.
+   * Composable API. Top padding of the page in px. Upstream defaults it
+   * to the fixed headers' height (`--euiFixedHeadersOffset`); in Ember a
+   * fixed `EuiHeader` already pads `<body>` by that height, so the default
+   * is no extra padding (upstream's default would leave a header-sized gap).
+   * Sticky sidebars still clear fixed headers.
    */
   offset?: number;
   /**
@@ -371,10 +373,9 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
     const min = typeof minHeight === 'number' ? `${minHeight}px` : minHeight;
     return {
       'min-block-size': (this.args.grow ?? true) ? `max(${min}, 100vh)` : min,
+      // Ember difference: fixed EuiHeaders pad <body> (see `offset`).
       'padding-block-start':
-        offset === undefined || offset === null
-          ? 'var(--euiFixedHeadersOffset, 0)'
-          : `${offset}px`
+        offset === undefined || offset === null ? '0px' : `${offset}px`
     };
   }
 

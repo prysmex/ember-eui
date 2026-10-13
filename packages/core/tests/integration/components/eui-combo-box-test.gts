@@ -509,8 +509,9 @@ module('Integration | Component | eui-combo-box', function (hooks) {
 
       const content = document.querySelector('.ember-basic-dropdown-content')!;
 
-      // above EUI's modals (8000) and their overlay mask (6000)
-      assert.true(Number(getComputedStyle(content).zIndex) > 8000);
+      // our z-index (upstream EuiInputPopover: anchor + levels.menu, above
+      // the modal or flyout the combo box is in) wins over the stylesheet
+      assert.true(Number(getComputedStyle(content).zIndex) >= 2000);
     });
 
     test('the announcement of the results is for screen readers only', async function (assert) {

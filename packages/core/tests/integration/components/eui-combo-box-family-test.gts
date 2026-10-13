@@ -382,7 +382,8 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
     assert.strictEqual(p.borderTopLeftRadius, px(String(light.border.radius.panel)), 'EuiPanel radius m (panel)');
     assert.strictEqual(p.backgroundColor, rgb(light.components.popoverPanelBackground));
     assert.strictEqual(p.color, rgb(light.colors.textParagraph));
-    assert.strictEqual(p.zIndex, '99999', 'above modals (8000) and their masks');
+    // upstream EuiInputPopover: anchor z-index + levels.menu, below tooltips
+    assert.true(Number(p.zIndex) >= 2000 && Number(p.zIndex) < 9000, 'menu level');
     assert.strictEqual(p.position, 'absolute');
     finishAnimations();
     assert.strictEqual(css(content).opacity, '1');

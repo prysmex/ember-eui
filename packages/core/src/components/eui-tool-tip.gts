@@ -23,7 +23,7 @@ import {
   euiToolTipStyles
 } from '../utils/eui/styles.generated.ts';
 import { keys } from '../utils/keys.ts';
-import { findPopoverPosition } from '../utils/popover/index.ts';
+import { findPopoverPosition, getElementZIndex } from '../utils/popover/index.ts';
 import EuiPortal from './eui-portal.gts';
 import EuiToolTipPopover from './eui-tool-tip-popover.gts';
 
@@ -44,6 +44,7 @@ interface ToolTipStyles {
   right?: string | 'auto';
   opacity?: string;
   visibility?: 'hidden';
+  zIndex?: string;
 }
 
 type EuiToolTipDisplay = 'inlineBlock' | 'block' | 'flex';
@@ -465,6 +466,18 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
         ? `${windowWidth - left - this.popover.offsetWidth}px`
         : 'auto'
     };
+
+    // Upstream's tooltip stays at `levels.toast`; an anchor inside a layer
+    // stacked higher (e.g. an options list or popover in a modal) would hide
+    // it, so never stack below the anchor.
+    const { levels } = getEuiThemeContext(this).upstream.euiTheme;
+    const anchorZIndex = getElementZIndex(
+      this._anchor as HTMLElement,
+      this.popover
+    );
+    if (anchorZIndex >= Number(levels.toast)) {
+      toolTipStyles.zIndex = String(anchorZIndex + 1);
+    }
 
     if (!this.visible) this.markVisible();
     this.calculatedPosition = position;

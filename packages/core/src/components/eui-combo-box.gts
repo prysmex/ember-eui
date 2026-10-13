@@ -1,6 +1,7 @@
 import 'ember-basic-dropdown/styles';
 
 import Component from '@glimmer/component';
+import { getElementZIndex } from '../utils/popover/index.ts';
 import { cached, tracked } from '@glimmer/tracking';
 import { isArray } from '@ember/array';
 import { action } from '@ember/object';
@@ -397,10 +398,11 @@ export const toPlainArray = <T,>(collection: T[] | Sliceable<T>): T[] => {
 };
 
 /**
- * z-index of the options list: above EUI's modals (8000), flyouts and their
- * overlay masks, as before (ember-basic-dropdown reads it from a variable).
+ * Upstream `EuiInputPopover`: the options list stacks 2000 (`levels.menu`)
+ * above its anchor's z-index, so it clears modals and flyouts it opens in
+ * while tooltips (`levels.toast`) stay above it on the page.
  */
-export const COMBO_BOX_LIST_Z_INDEX = 99999;
+export const COMBO_BOX_LIST_Z_INDEX_OFFSET = 2000;
 
 export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature> {
   @service declare euiI18n: EuiI18n;
@@ -417,6 +419,9 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
    * resets the highlight, in a loop.
    */
   @tracked searchValue = '';
+
+  /** The options list's z-index, measured from the anchor when it opens. */
+  @tracked listZIndex = COMBO_BOX_LIST_Z_INDEX_OFFSET;
 
   /** The combo box has focus (upstream `hasFocus`). */
   @tracked hasFocus = false;
@@ -513,9 +518,6 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         boxSizing: 'border-box',
         color: upstream.euiTheme.colors.textParagraph,
         textAlign: 'start',
-        '--ember-basic-dropdown-content-z-index': String(
-          COMBO_BOX_LIST_Z_INDEX
-        ),
         '--ember-basic-dropdown-content-background-color':
           'var(--euiPopoverBackgroundColor)'
       },
@@ -539,10 +541,17 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     );
   }
 
+  get listZIndexClass(): string {
+    return euiClass(getEuiThemeContext(this), {
+      '--ember-basic-dropdown-content-z-index': String(this.listZIndex)
+    });
+  }
+
   get dropdownClass(): string {
     return [
       'euiPanel euiPanel--plain euiPopover__panel',
       this.panelClass,
+      this.listZIndexClass,
       this.args.dropdownClass
     ]
       .filter(Boolean)
@@ -1221,6 +1230,13 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     const result = onOpen?.(select, event);
 
     if (result === false) return false;
+
+    const trigger = document.querySelector<HTMLElement>(
+      `[data-ebd-id="${(select as unknown as { uniqueId: string }).uniqueId}-trigger"]`
+    );
+    this.listZIndex =
+      (trigger ? getElementZIndex(trigger, document.body) : 0) +
+      COMBO_BOX_LIST_Z_INDEX_OFFSET;
 
     // upstream `onComboBoxClick`: single selection highlights its option
     const selected = this.selectedOptions[0];

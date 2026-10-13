@@ -4,13 +4,23 @@ order: 1
 
 # Size
 
-```hbs template
-<div class="eui-textCenter">
-  <EuiCode>quarter</EuiCode>
-  <EuiHorizontalRule @size="quarter" />
-  <EuiCode>half</EuiCode>
-  <EuiHorizontalRule @size="half" />
-  <EuiCode>full (default)</EuiCode>
-  <EuiHorizontalRule />
-</div>
+<EuiText>
+
+`EuiHorizontalRule` is a styled `<hr>` element. It can be one of three provided sizes (lengths), by default it will be `full`.
+
+</EuiText>
+
+```gjs component
+import { EuiCode, EuiHorizontalRule } from '@ember-eui/core/components';
+
+<template>
+  <div class="eui-textCenter">
+    <EuiCode>quarter</EuiCode>
+    <EuiHorizontalRule @size="quarter" />
+    <EuiCode>half</EuiCode>
+    <EuiHorizontalRule @size="half" />
+    <EuiCode>full (default)</EuiCode>
+    <EuiHorizontalRule />
+  </div>
+</template>
 ```

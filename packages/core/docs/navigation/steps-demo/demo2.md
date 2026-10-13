@@ -1,105 +1,76 @@
 ---
-order: 4
+order: 2
 ---
 
-# Statuses
+# Horizontal Steps
 
 <EuiText>
-<p>Steps can optionally include <EuiCode>@status</EuiCode> argument that will alter the look of the number prefix. The options are <EuiCode>incomplete</EuiCode>, <EuiCode>complete</EuiCode>, <EuiCode>warning</EuiCode>, <EuiCode>danger</EuiCode>, <EuiCode>@disabled</EuiCode> and <EuiCode>loading</EuiCode>. This is used mostly as a final step when you need to make some sort of final check.</p>
+
+**EuiStepsHorizontal** should be used when forms/setup instructions can and should be split into multiple pages. Each step should correspond to an individual page of form elements, using the `@status` argument to denote the user's progress.
+
+For horizontal steps, the `@status` argument defaults to `"incomplete"` and the default filled styling is reserved for indicating `"current"` status.
+
+Use the `@size` argument to generate smaller step circles.
+
 </EuiText>
 
-```hbs template
-<EuiSteps>
-  <EuiStep @step={{1}} @title='Step 1'>
-    You do this!
-  </EuiStep>
-  <EuiStep @title='Step 2' @status={{this.status}} @step={{2}}>
-    We are fancy buttons just waiting to be pushed!
-    <div>
-      <EuiSpacer />
-      <EuiFlexGroup>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButton @color='danger' {{on 'click' this.setDanger}}>
-            Set Danger
-          </EuiButton>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButton @color='success' {{on 'click' this.setComplete}}>
-            Set Complete
-          </EuiButton>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButton @color='warning' {{on 'click' this.setWarning}}>
-            Set Warning
-          </EuiButton>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButton @color='primary' {{on 'click' this.setLoading}}>
-            Set Loading
-          </EuiButton>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty {{on 'click' this.setDisabled}}>
-            Set Disabled
-          </EuiButtonEmpty>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty {{on 'click' this.setIncomplete}}>
-            Set Incomplete
-          </EuiButtonEmpty>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButtonEmpty {{on 'click' this.reset}}>
-            Reset
-          </EuiButtonEmpty>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </div>
-  </EuiStep>
-</EuiSteps>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButtonGroup, EuiSpacer, EuiStepHorizontal, EuiStepsHorizontal, EuiTitle } from '@ember-eui/core/components';
 
-export default class DemoStepsDemo2Component extends Component {
-  @tracked status = null;
+export default class DemoComponent extends Component {
+  @tracked toggleSize = 'm';
+
+  sizeButtons = [
+    { id: 'xs', label: 'XSmall' },
+    { id: 's', label: 'Small' },
+    { id: 'm', label: 'Medium' }
+  ];
 
   @action
-  setComplete() {
-    this.status = 'complete';
+  sizeOnChange(optionId) {
+    this.toggleSize = optionId;
   }
 
   @action
-  setDanger() {
-    this.status = 'danger';
-  }
+  noop() {}
 
-  @action
-  setWarning() {
-    this.status = 'warning';
-  }
-
-  @action
-  setLoading() {
-    this.status = 'loading';
-  }
-
-  @action
-  setDisabled() {
-    this.status = 'disabled';
-  }
-
-  @action
-  setIncomplete() {
-    this.status = 'incomplete';
-  }
-
-  @action
-  reset() {
-    this.status = null;
-  }
+  <template>
+    <EuiTitle @size="xxs" @tagName="h3">Step Size</EuiTitle>
+    <EuiSpacer @size="s" />
+    <EuiButtonGroup
+      @legend="Horizontal step size toggle"
+      @options={{this.sizeButtons}}
+      @idSelected={{this.toggleSize}}
+      @onChange={{this.sizeOnChange}}
+    />
+    <EuiStepsHorizontal @size={{this.toggleSize}}>
+      <EuiStepHorizontal
+        @title="Completed step 1"
+        @step={{1}}
+        @status="complete"
+        @onStepClick={{this.noop}}
+      />
+      <EuiStepHorizontal
+        @title="Selected step 2"
+        @step={{2}}
+        @status="current"
+        @onStepClick={{this.noop}}
+      />
+      <EuiStepHorizontal
+        @title="Incomplete step 3 which will wrap to the next line"
+        @step={{3}}
+        @onStepClick={{this.noop}}
+      />
+      <EuiStepHorizontal
+        @title="Disabled step 4"
+        @step={{4}}
+        @status="disabled"
+        @onStepClick={{this.noop}}
+      />
+    </EuiStepsHorizontal>
+  </template>
 }
 ```

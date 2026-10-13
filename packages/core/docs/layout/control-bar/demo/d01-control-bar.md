@@ -12,30 +12,10 @@ that opens the content area.
 
 </EuiText>
 
-```hbs template
-<div style="position: relative; height: 320px; overflow: hidden; border: 1px solid #d3dae6; border-radius: 6px;">
-  <EuiText @size="s" style="padding: 16px;">
-    <p>Your document goes here.</p>
-  </EuiText>
-  <EuiControlBar
-    @controls={{this.controls}}
-    @position="absolute"
-    @showContent={{this.showConsole}}
-    @size="s"
-  >
-    <EuiText @size="s" style="padding: 16px;">
-      <pre><code>$ ember test
-ok 1 Chrome - Acceptance | index
-ok 2 Chrome - Integration | nav
-# pass 2</code></pre>
-    </EuiText>
-  </EuiControlBar>
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { EuiControlBar, EuiText } from '@ember-eui/core/components';
 
 export default class ControlBarDemo extends Component {
   @tracked showConsole = false;
@@ -66,5 +46,26 @@ export default class ControlBarDemo extends Component {
       },
     ];
   }
+
+  <template>
+    <div style="position: relative; height: 320px; overflow: hidden; border: 1px solid #d3dae6; border-radius: 6px;">
+      <EuiText @size="s" style="padding: 16px;">
+        <p>Your document goes here.</p>
+      </EuiText>
+      <EuiControlBar
+        @controls={{this.controls}}
+        @position="absolute"
+        @showContent={{this.showConsole}}
+        @size="s"
+      >
+        <EuiText @size="s" style="padding: 16px;">
+          <pre><code>$ ember test
+    ok 1 Chrome - Acceptance | index
+    ok 2 Chrome - Integration | nav
+    # pass 2</code></pre>
+        </EuiText>
+      </EuiControlBar>
+    </div>
+  </template>
 }
 ```

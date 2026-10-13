@@ -3,131 +3,131 @@ order: 3
 ---
 
 # Popover titles and footers
+
 <EuiText>
-  Popovers often need titling. Use the
-  <strong>EuiPopoverTitle</strong>
-  component nested somewhere inside the popover contents.
-  <br /><br />
-  You can also add a similarly styled
-  <strong>EuiPopoverFooter</strong>
-  for smaller captions or call to action buttons.
+  <p>
+    Popovers often need titling. Use the <strong>EuiPopoverTitle</strong> component nested somewhere inside the popover contents.
+  </p>
+  <p>
+    You can also add a similarly styled <strong>EuiPopoverFooter</strong> for smaller captions or call to action buttons.
+  </p>
 </EuiText>
 
-```hbs template
-
-<EuiFlexGroup @gutterSize="l">
-  <!-- example 1 -->
-  <EuiFlexItem @grow={{false}}>
-    <EuiPopover
-      @ownFocus={{true}}
-      @isOpen={{this.pop1}}
-      @closePopover={{set this 'pop1' false}}
-    >
-      <:button>
-        <EuiButton
-          @iconType='arrowDown'
-          @iconSide='right'
-          {{on 'click' (set this 'pop1' true)}}
-        >
-          With title
-        </EuiButton>
-      </:button>
-      <:content>
-        <EuiPopoverTitle>
-          Hello, I’m a popover title
-        </EuiPopoverTitle>
-        <div style='width: 300px;'>
-          <EuiText @size='s'>
-            <p>
-              Selfies migas stumptown hot chicken quinoa wolf green juice, mumblecore tattooed trust fund hammock truffaut taxidermy kogi.
-            </p>
-          </EuiText>
-        </div>
-      </:content>
-    </EuiPopover>
-  </EuiFlexItem>
-
-  <!-- example 2 -->
-  <EuiFlexItem @grow={{false}}>
-    <EuiPopover
-      @ownFocus={{true}}
-      @isOpen={{this.pop2}}
-      @anchorPosition='upCenter'
-      @closePopover={{set this 'pop2' false}}
-    >
-      <:button>
-        <EuiButton
-          @iconType='arrowDown'
-          @iconSide='right'
-          {{on 'click' (set this 'pop2' true)}}
-        >
-          With footer
-        </EuiButton>
-      </:button>
-      <:content>
-        <div style='width: 300px;'>
-          <EuiText @size='s'>
-            <p>
-              Selfies migas stumptown hot chicken quinoa wolf green juice, mumblecore tattooed trust fund hammock truffaut taxidermy kogi.
-            </p>
-          </EuiText>
-        </div>
-        <EuiPopoverFooter>
-          <EuiTextColor @color="subdued">
-            Hello, I’m a small popover footer caption
-          </EuiTextColor>
-        </EuiPopoverFooter>
-      </:content>
-    </EuiPopover>
-  </EuiFlexItem>
-
-  <!-- example 3 -->
-  <EuiFlexItem @grow={{false}}>
-    <EuiPopover
-      @ownFocus={{true}}
-      @isOpen={{this.pop3}}
-      @anchorPosition='upCenter'
-      @closePopover={{set this 'pop3' false}}
-    >
-      <:button>
-        <EuiButton
-          @iconType='arrowDown'
-          @iconSide='right'
-          {{on 'click' (set this 'pop3' true)}}
-        >
-          With Title and footer button
-        </EuiButton>
-      </:button>
-      <:content>
-        <EuiPopoverTitle>
-          Hello, I’m a popover title
-        </EuiPopoverTitle>
-        <div style='width: 300px;'>
-          <EuiText @size='s'>
-            <p>
-              Selfies migas stumptown hot chicken quinoa wolf green juice, mumblecore tattooed trust fund hammock truffaut taxidermy kogi.
-            </p>
-          </EuiText>
-        </div>
-        <EuiPopoverFooter>
-          <EuiButton @fullWidth={{true}}>
-            Manage this thing
-          </EuiButton>
-        </EuiPopoverFooter>
-      </:content>
-    </EuiPopover>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiPopover, EuiPopoverFooter, EuiPopoverTitle, EuiText, EuiTextColor } from '@ember-eui/core/components';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
-export default class PopoverDemo1 extends Component {
-  @tracked pop1 = false;
-  @tracked pop2 = false;
-  @tracked pop3 = false;
+export default class PopoverDemo extends Component {
+  @tracked isPopoverOpen1 = false;
+  @tracked isPopoverOpen2 = false;
+  @tracked isPopoverOpen3 = false;
+  @action
+  toggle(name) {
+    this[name] = !this[name];
+  }
+
+  @action
+  close(name) {
+    this[name] = false;
+  }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem @grow={{false}}>
+        <EuiPopover
+          @isOpen={{this.isPopoverOpen1}}
+          @closePopover={{fn this.close 'isPopoverOpen1'}}
+          @anchorPosition='downCenter'
+        >
+          <:button>
+            <EuiButtonEmpty
+              @iconType='question'
+              @iconSide='right'
+              {{on 'click' (fn this.toggle 'isPopoverOpen1')}}
+            >
+              With title
+            </EuiButtonEmpty>
+          </:button>
+          <:content>
+            <EuiPopoverTitle>Hello, I&rsquo;m a popover title</EuiPopoverTitle>
+            <div style='width: 300px;'>
+              <EuiText @size='s'>
+                <p>
+                  Selfies migas stumptown hot chicken quinoa wolf green juice, mumblecore tattooed trust fund hammock truffaut taxidermy kogi.
+                </p>
+              </EuiText>
+            </div>
+          </:content>
+        </EuiPopover>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiPopover
+          @isOpen={{this.isPopoverOpen2}}
+          @closePopover={{fn this.close 'isPopoverOpen2'}}
+          @anchorPosition='upCenter'
+        >
+          <:button>
+            <EuiButtonEmpty
+              @iconType='question'
+              @iconSide='right'
+              {{on 'click' (fn this.toggle 'isPopoverOpen2')}}
+            >
+              With footer
+            </EuiButtonEmpty>
+          </:button>
+          <:content>
+            <div style='width: 300px;'>
+              <EuiText @size='s'>
+                <p>
+                  Selfies migas stumptown hot chicken quinoa wolf green juice, mumblecore tattooed trust fund hammock truffaut taxidermy kogi.
+                </p>
+              </EuiText>
+            </div>
+            <EuiPopoverFooter>
+              <EuiTextColor @color='subdued'>
+                Hello, I&rsquo;m a small popover footer caption
+              </EuiTextColor>
+            </EuiPopoverFooter>
+          </:content>
+        </EuiPopover>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiPopover
+          @isOpen={{this.isPopoverOpen3}}
+          @closePopover={{fn this.close 'isPopoverOpen3'}}
+          @anchorPosition='upCenter'
+        >
+          <:button>
+            <EuiButtonEmpty
+              @iconType='question'
+              @iconSide='right'
+              {{on 'click' (fn this.toggle 'isPopoverOpen3')}}
+            >
+              With title and footer button
+            </EuiButtonEmpty>
+          </:button>
+          <:content>
+            <EuiPopoverTitle>Hello, I&rsquo;m a popover title</EuiPopoverTitle>
+            <div style='width: 300px;'>
+              <EuiText @size='s'>
+                <p>
+                  Selfies migas stumptown hot chicken quinoa wolf green juice, mumblecore tattooed trust fund hammock truffaut taxidermy kogi.
+                </p>
+              </EuiText>
+            </div>
+            <EuiPopoverFooter>
+              <EuiButton @fullWidth={{true}} @size='s'>
+                Manage this thing
+              </EuiButton>
+            </EuiPopoverFooter>
+          </:content>
+        </EuiPopover>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```

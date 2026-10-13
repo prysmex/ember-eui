@@ -8,7 +8,7 @@ title: Page sections
 
 <EuiText>
 
-Building blocks for custom page layouts, ported from EUI's page components.
+Page layouts are modular and fit together in a precise manner, though certain parts can also be added or removed as needed. EUI provides both the **individual page components** and an over-arching template (`EuiPageTemplate`) for easily creating some pre-defined layouts. These are EUI's page components; the examples cover `EuiPage`, `EuiPageBody`, `EuiPageSidebar`, `EuiPageSection` and `EuiPageHeader` individually, then put them together.
 
 - **`EuiPageSection`** is a full-width band of a page: a header area, a
   colored call to action or the main content. The inline padding sits on

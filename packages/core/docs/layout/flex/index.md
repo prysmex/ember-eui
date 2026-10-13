@@ -10,13 +10,17 @@ title: Flex
 
 Flex components lay out other components without writing CSS:
 
-- **`EuiFlexGroup`** puts its `EuiFlexItem`s in a row (or a column), with a
-  gutter between them. By default items share the width equally and
-  stretch to the same height.
-- **`EuiFlexItem`** is one cell. `@grow={{false}}` makes it only as wide as
-  its content; `@grow={{2}}` takes twice the share.
-- **`EuiFlexGrid`** lays out repeated items (cards, stats) in a grid of 1–4
-  `@columns`.
+## Use cases
+
+- **`EuiFlexGroup`** is useful for single row layouts and for quick alignment
+  of items. By default items share the width equally and stretch to the same
+  height.
+- **`EuiFlexGrid`** should be used for repeated wrapping rows of same-width
+  items, in 1–4 `@columns`.
+- **`EuiFlexItem`** should be used as a direct child of both groups or grids.
+  `@grow={{false}}` makes it only as wide as its content; `@grow={{2}}` takes
+  twice the share. Depending on the layout it can also be omitted if its
+  automatic flex or grow behavior is not desired.
 
 ```hbs
 <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
@@ -32,11 +36,17 @@ above).
 
 <EuiCallOut @title="Coloring and padding exist for examples only" @size="s">
   <p>
-    The examples on this page add padding and a background to every
-    <strong>EuiFlexItem</strong> so you can see them. Flex items have
-    neither by default.
+    Padding and background-color are added to all
+    <strong>EuiFlexItems</strong> on this documentation page for
+    illustrative purposes only. If needed, you must add your own padding
+    through additional components or classes.
   </p>
 </EuiCallOut>
+
+## Shared behavior
+
+The examples below follow the upstream pages: nesting and tag names apply to
+all three components, then come the group, item and grid specific examples.
 
 </EuiText>
 

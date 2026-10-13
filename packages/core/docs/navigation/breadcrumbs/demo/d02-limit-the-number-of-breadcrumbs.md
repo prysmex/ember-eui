@@ -6,24 +6,16 @@ order: 2
 
 <EuiText>
 	<p>
-		Use the <EuiCode>@max</EuiCode> argument to collapse breadcrumbs beyond a certain number. The center breadcrumbs will collpase into a single item allowing the user to navigate these items from within a popover.
+		Use the <EuiCode>@max</EuiCode> argument to collapse breadcrumbs beyond a certain number. The center breadcrumbs will collapse into a single item allowing the user to navigate these items from within a popover.
   </p>
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @max={{4}}
-  @breadcrumbs={{this.breadcrumbs}}
-  @truncate={{false}}
-  aria-label='An example of EuiBreadcrumbs with specifying max prop'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBreadcrumbs } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',
@@ -57,5 +49,14 @@ export default class DemoSideNavComponent extends Component {
       text: 'Nebulosa subspecies',
     },
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @max={{4}}
+      @breadcrumbs={{this.breadcrumbs}}
+      @truncate={{false}}
+      aria-label='An example of EuiBreadcrumbs with specifying max prop'
+    />
+  </template>
 }
 ```

@@ -32,6 +32,35 @@ Render the flyout only while it is open and close it in `@onClose`
 `@outsideClickCloses`). Give the close button a label with
 `@closeButtonAriaLabel`.
 
+
+### Accessing flyout elements
+
+Upstream's `ref` and `scrollContainerRef` props have no Ember counterpart.
+Attach an element modifier to the elements (the flyout takes `...attributes`)
+if you need them. Normally the body's scroll container
+(`.euiFlyoutBody__overflow`) is what scrolls; the outer `.euiFlyout__content`
+scrolls only when the header, body and footer exceed the viewport height.
+
+### Focus management
+
+`EuiFlyout` with `@type="overlay"` manages focus for keyboard navigation and
+accessibility. When it is used, it will automatically:
+
+1. Move focus to the flyout when opened
+2. Trap focus inside the flyout while open
+3. Return focus to the trigger element when closed
+
+Use `@focusTrapOptions` to customize the focus behavior, e.g.
+`@focusTrapOptions={{hash initialFocus="#name"}}`, or
+`@focusTrapOptions={{hash returnFocusOnDeactivate=false}}` to manage returning
+focus yourself.
+
+<EuiCallOut @title="Manually return focus when the trigger element is removed" @color="warning" @iconType="warning" @size="s">
+  If the trigger element is removed from the DOM before the flyout closes,
+  focus will be "lost" to the document body. In this case, manually return
+  focus to an appropriate element.
+</EuiCallOut>
+
 </EuiText>
 
 <EuiHorizontalRule />

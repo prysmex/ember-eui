@@ -8,9 +8,9 @@ title: Panel
 
 <EuiText>
 
-`EuiPanel` is a box for grouping content: a white background, padding, a
-rounded border and a shadow by default. Other components (cards,
-popovers, page sections) are built on it.
+`EuiPanel` is a building block for containing content: a background,
+padding and a rounded border by default (flat, no shadow). Other
+components (cards, popovers, page sections) are built on it.
 
 ```hbs
 <EuiPanel @paddingSize="l" @hasBorder={{true}}>
@@ -20,7 +20,7 @@ popovers, page sections) are built on it.
 ```
 
 - `@paddingSize`: `none`, `s`, `m` (default) or `l`.
-- `@hasShadow` (on by default) and `@hasBorder` for plain panels.
+- `@hasBorder` (on by default) and `@hasShadow` (off by default) for plain panels.
 - `@color` for a shaded or colored background (`subdued`, `primary`,
   `success`, `warning`, `danger`, `accent`, `transparent`).
 - `@onClick` makes the whole panel clickable.

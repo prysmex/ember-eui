@@ -5,53 +5,55 @@ order: 5
 # Dark theme
 
 <EuiText>
-  <p>
-  To make site-wide navigation more prominent, <strong>EuiHeader</strong> supports reversing the colors to dark theme with <EuiCode>@theme="dark"</EuiCode>. However, it only supports a <strong>limited set of children</strong> that will also shift their theme. These components include <strong>EuiHeaderLogo</strong>, <strong>EuiHeaderLink(s)</strong>, <strong>EuiHeaderSectionItemButton</strong> and <strong>EuiSelectableTemplateSitewide</strong>. Any other content may not render correctly without custom configurations.
-  </p>
+
+To make site-wide navigation more prominent, `EuiHeader` supports reversing the colors to dark theme with `@theme="dark"`. However, it only supports a **limited set of children** that will also shift their theme. These components include `EuiHeaderLogo`, `EuiHeaderLink(s)`, `EuiHeaderSectionItemButton` and `EuiSelectableTemplateSitewide`. Any other content may not render correctly without custom configurations.
+
 </EuiText>
 
-```hbs template
-<EuiHeader @theme='dark'>
-  <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem @border='right'>
-      <EuiHeaderLogo>Elastic</EuiHeaderLogo>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderLinks aria-label='App navigation dark theme example'>
-        <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
-        <EuiHeaderLink>Code</EuiHeaderLink>
-        <EuiHeaderLink @iconType='help'> Help</EuiHeaderLink>
-      </EuiHeaderLinks>
-    </EuiHeaderSectionItem>
-
-  </EuiHeaderSection>
-  <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItem @border='left'>
-      <EuiBadge @iconType='arrowDown' @iconSide='right'>
-        Production logs
-      </EuiBadge>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton
-        @notification='2'
-        aria-label='2 Notifications'
-      >
-        <EuiIcon @type='cheer' @size='m' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton aria-label='Account menu'>
-        <EuiAvatar @name='John Username' @size='s' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-
-  </EuiHeaderSection>
-</EuiHeader>
-```
-
-```js component
+```gjs component
+import { EuiHeader, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderLogo, EuiHeaderLinks, EuiHeaderLink, EuiBadge, EuiHeaderSectionItemButton, EuiIcon, EuiAvatar } from '@ember-eui/core/components';
 import Component from '@glimmer/component';
 
-export default class DemoHeaderComponent extends Component {}
+export default class DarkHeaderDemo extends Component {
+
+  <template>
+    <EuiHeader @theme='dark'>
+      <EuiHeaderSection @side='left'>
+        <EuiHeaderSectionItem>
+          <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiHeaderLinks aria-label='App navigation dark theme example'>
+            <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
+            <EuiHeaderLink>Code</EuiHeaderLink>
+            <EuiHeaderLink @iconType='help'> Help</EuiHeaderLink>
+          </EuiHeaderLinks>
+        </EuiHeaderSectionItem>
+
+      </EuiHeaderSection>
+      <EuiHeaderSection @side='right'>
+        <EuiHeaderSectionItem>
+          <EuiBadge @iconType='chevronSingleDown' @iconSide='right'>
+            Production logs
+          </EuiBadge>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton
+            @notification='2'
+            aria-label='2 Notifications'
+          >
+            <EuiIcon @type='popper' @size='m' />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton aria-label='Account menu'>
+            <EuiAvatar @name='John Username' @size='s' />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+
+      </EuiHeaderSection>
+    </EuiHeader>
+  </template>
+}
 ```

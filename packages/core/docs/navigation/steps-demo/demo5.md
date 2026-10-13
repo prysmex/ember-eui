@@ -1,25 +1,78 @@
 ---
-order: 3
+order: 5
 ---
 
-# Heading elements
+# Conveying status
 
 <EuiText>
-<p>To aid with accessibility and hierarchical headings, you can and should pass in a heading element to use for each step title. The example below shows that the logical heading element should be an <EuiCode>h2</EuiCode>and therefore adds <EuiCode>headingElement<span class="token verb keyword">=</span><span class="token conjunction variable">"</span>h2<span class="token conjunction variable">"</span></EuiCode> to the EuiSteps component.</p>
-<p>The style of the title will <strong>not</strong> be affected.</p>
+
+Steps can optionally include a `@status` argument that will alter the look of the number prefix. The options are `incomplete`, `complete`, `warning`, `danger`, `disabled` and `loading`. This is used mostly as a final step when you need to make some sort of final check.
+
 </EuiText>
 
-```hbs template
-<div>
-  <EuiTitle @size='l' @tagName="h1">Heading 1</EuiTitle>
+<EuiSpacer />
 
-  <EuiSpacer @size='xl' />
+```gjs component
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiStep, EuiSteps } from '@ember-eui/core/components';
 
-  <EuiSteps @headingElement='h2'>
-    <EuiStep @step={{1}} @title='Step 1'>
-      <EuiTitle @size='xs' @tagName="h3">Did you notice the step title is inside a Heading 2 element?</EuiTitle>
-    </EuiStep>
+export default class DemoComponent extends Component {
+  @tracked status = 'incomplete';
 
-  </EuiSteps>
-</div>
+  @action
+  setStatus(status) {
+    this.status = status;
+  }
+
+  <template>
+    <EuiSteps>
+      <EuiStep @step={{1}} @title="Normal step">
+        <p>Do this first</p>
+      </EuiStep>
+      <EuiStep
+        @step={{2}}
+        @title="Push the button to complete this final step"
+        @status={{this.status}}
+      >
+        <p>We are fancy buttons just waiting to be pushed!</p>
+        <EuiSpacer />
+        <EuiFlexGroup @gutterSize="s" @alignItems="center" @responsive={{false}} @wrap={{true}}>
+          <EuiFlexItem @grow={{false}}>
+            {{#if (eq this.status "complete")}}
+              <EuiButton {{on "click" (fn this.setStatus "incomplete")}}>Reset</EuiButton>
+            {{else}}
+              <EuiButton {{on "click" (fn this.setStatus "complete")}}>You complete me</EuiButton>
+            {{/if}}
+          </EuiFlexItem>
+          <EuiFlexItem @grow={{false}}>
+            {{#if (eq this.status "warning")}}
+              <EuiButton @color="warning" {{on "click" (fn this.setStatus "incomplete")}}>Reset</EuiButton>
+            {{else}}
+              <EuiButton @color="warning" {{on "click" (fn this.setStatus "warning")}}>Uh oh!</EuiButton>
+            {{/if}}
+          </EuiFlexItem>
+          <EuiFlexItem @grow={{false}}>
+            {{#if (eq this.status "danger")}}
+              <EuiButton @color="danger" {{on "click" (fn this.setStatus "incomplete")}}>Reset</EuiButton>
+            {{else}}
+              <EuiButton @color="danger" {{on "click" (fn this.setStatus "danger")}}>Something terrible</EuiButton>
+            {{/if}}
+          </EuiFlexItem>
+          <EuiFlexItem @grow={{false}}>
+            {{#if (eq this.status "disabled")}}
+              <EuiButton @color="accent" {{on "click" (fn this.setStatus "incomplete")}}>Reset</EuiButton>
+            {{else}}
+              <EuiButton @color="accent" {{on "click" (fn this.setStatus "disabled")}}>Disabled</EuiButton>
+            {{/if}}
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiStep>
+    </EuiSteps>
+  </template>
+}
 ```

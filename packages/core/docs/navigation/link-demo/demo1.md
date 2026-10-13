@@ -6,38 +6,49 @@ order: 1
 
 <EuiText>
 
-A link with `@href`, and a link-styled button without it.
+**EuiLink** is any anchor or button element that is designed to display nicely within a block of text. It also provides more anchor-specific styling onto links and makes sure they are accessible.
 
 </EuiText>
 
-```hbs template
-<EuiText>
-  <p>
-    A simple
-    <EuiLink @href='#'>EuiLink</EuiLink>
-    used within a paragraph of text.
-  </p>
-  <p>
-    This is actually a
-    <EuiLink>button</EuiLink>
-    with an onClick handler.
-  </p>
-  <p>
-    Here is an example of a
-    <EuiLink @href='https://google.com'>
-      link
-    </EuiLink>
-    with both an
-    <EuiCode>href</EuiCode>
-    and an
-    <EuiCode>onClick</EuiCode>
-    handler.
-  </p>
-</EuiText>
-```
+<EuiSpacer />
 
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { EuiCode, EuiLink, EuiText } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {}
+export default class DemoComponent extends Component {
+  @action
+  noop(event) {
+    // keep the demo page where it is
+    event.preventDefault();
+  }
+
+  <template>
+    <EuiText>
+      <p>
+        A simple
+        <EuiLink @href='#/navigation/link'>EuiLink</EuiLink>
+        used within a paragraph of text.
+      </p>
+      <p>
+        This is actually a
+        <EuiLink {{on 'click' this.noop}}>button</EuiLink>
+        with a click handler.
+      </p>
+      <p>
+        Here is an example of a
+        <EuiLink @href='https://github.com/elastic/eui' {{on 'click' this.noop}}>
+          link
+        </EuiLink>
+        with both an
+        <EuiCode>@href</EuiCode>
+        and a
+        <EuiCode>&#123;&#123;on "click"&#125;&#125;</EuiCode>
+        handler.
+      </p>
+    </EuiText>
+  </template>
+}
 ```

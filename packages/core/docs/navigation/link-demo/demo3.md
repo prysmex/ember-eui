@@ -1,5 +1,5 @@
 ---
-order: 1
+order: 3
 ---
 
 # Coloring links
@@ -10,28 +10,12 @@ order: 1
   </p>
 </EuiText>
 
-```hbs template
-<EuiText>
-  <ul>
-    {{#each this.links as |value|}}
-      <li>
-        <EuiLink @color={{if (not-eq value 'disabled') value}} @href='#'>
-          {{value}}
-        </EuiLink>
-      </li>
-
-    {{/each}}
-    <li style="background-color: black">
-      <EuiLink @color='ghost'>Ghost</EuiLink>
-    </li>
-  </ul>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { notEq } from 'ember-truth-helpers';
+import { EuiLink, EuiText } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   links = [
     'primary',
     'subdued',
@@ -41,5 +25,23 @@ export default class DemoSideNavComponent extends Component {
     'danger',
     'text'
   ];
+
+  <template>
+    <EuiText>
+      <ul>
+        {{#each this.links as |value|}}
+          <li>
+            <EuiLink @color={{if (notEq value 'disabled') value}} @href='#'>
+              {{value}}
+            </EuiLink>
+          </li>
+
+        {{/each}}
+        <li style="background: black">
+          <EuiLink @color='ghost'>Ghost</EuiLink>
+        </li>
+      </ul>
+    </EuiText>
+  </template>
 }
 ```

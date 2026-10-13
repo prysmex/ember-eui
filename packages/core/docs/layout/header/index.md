@@ -16,7 +16,7 @@ action buttons (help, notifications, the user menu). It is divided into
 ```hbs
 <EuiHeader @position="fixed">
   <EuiHeaderSection @side="left">
-    <EuiHeaderSectionItem @border="right">
+    <EuiHeaderSectionItem>
       <EuiHeaderLogo @iconType="logoElastic" @href="/">Acme</EuiHeaderLogo>
     </EuiHeaderSectionItem>
     <EuiHeaderSectionItem>

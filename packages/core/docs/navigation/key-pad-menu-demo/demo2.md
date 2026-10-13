@@ -2,100 +2,104 @@
 order: 2
 ---
 
-<EuiText>
-	<p>
-		The <strong>EuiKeyPadMenuItem</strong> component can act both as an anchor as well as a button by specifying <EuiCode>@href</EuiCode> or <EuiCode>onClick</EuiCode> respectively. It requires a text-based <EuiCode>@label</EuiCode> and using the block for declaring the icon. This is the most flexible way for handling the customization of the icon itself.
-  </p>
+# Menu item
 
-  <p>
-  When using the <EuiCode>@isSelected</EuiCode> argument to create a toggle button, you must supply both the <EuiCode>true</EuiCode> and <EuiCode>false</EuiCode> states explicitly to ensure the attribute is added for both states.
-  </p>
+<EuiText>
+
+The **EuiKeyPadMenuItem** component can act both as an anchor as well as a button by specifying `@href` or an `{{on "click"}}` modifier respectively. It requires a text-based `@label` and uses its block for declaring the [icon](/docs/core/docs/display/icons). This is the most flexible way for handling the customization of the icon itself.
+
+When using the `@isSelected` argument to create a toggle button, you must supply both the `true` and `false` states explicitly to ensure the attribute is added for both states.
 
 </EuiText>
 
-# Menu item
+<EuiSpacer />
 
-```hbs template
-<EuiKeyPadMenu>
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Button'
-      @isSelected={{eq this.selectedID this.keypadButtonId__1}}
-      @id={{this.keypadButtonId__1}}
-      {{on 'click' (set this 'selectedID' this.keypadButtonId__1)}}
-    >
-      <EuiIcon @type='grid' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Button'
-      @isSelected={{eq this.selectedID this.keypadButtonId__2}}
-      @id={{this.keypadButtonId__2}}
-      {{on 'click' (set this 'selectedID' this.keypadButtonId__2)}}
-    >
-      <EuiIcon @type='grid' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Disabled'
-      @id={{this.keypadButtonId__3}}
-      @isDisabled={{true}}
-    >
-      <EuiIcon @type='grid' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Link'
-      @isSelected={{eq this.selectedID this.keypadButtonId__4}}
-      @id={{this.keypadButtonId__4}}
-      @href='#'
-      {{on 'click' (set this 'selectedID' this.keypadButtonId__4)}}
-    >
-      <EuiIcon @type='link' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Button'
-      @isSelected={{eq this.selectedID this.keypadButtonId__5}}
-      @id={{this.keypadButtonId__5}}
-      {{on 'click' (set this 'selectedID' this.keypadButtonId__5)}}
-    >
-      <EuiIcon @type='link' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
-  <li>
-    <EuiKeyPadMenuItem
-      @label='Button'
-      @isSelected={{eq this.selectedID this.keypadButtonId__6}}
-      @id={{this.keypadButtonId__6}}
-      {{on 'click' (set this 'selectedID' this.keypadButtonId__6)}}
-    >
-      <EuiIcon @type='link' @size='l' />
-    </EuiKeyPadMenuItem>
-  </li>
-</EuiKeyPadMenu>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
+import { eq } from 'ember-truth-helpers';
+import { EuiIcon, EuiKeyPadMenu, EuiKeyPadMenuItem } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {
-  @tracked selectedID;
-  keypadButtonId__1 = 'keypad1';
-  keypadButtonId__2 = 'keypad2';
-  keypadButtonId__3 = 'keypad3';
-  keypadButtonId__4 = 'keypad4';
-  keypadButtonId__5 = 'keypad5';
-  keypadButtonId__6 = 'keypad6';
+export default class DemoComponent extends Component {
+  keypadButtonId__1 = 'keypadButton-first';
+  keypadButtonId__2 = 'keypadButton-second';
+  keypadButtonId__3 = 'keypadButton-third';
+  keypadButtonId__4 = 'keypadButton-fourth';
+  keypadButtonId__5 = 'keypadButton-fifth';
+  keypadButtonId__6 = 'keypadButton-sixth';
 
-  constructor() {
-    super(...arguments);
-    this.selectedID = this.keypadButtonId__6;
+  @tracked selectedID = this.keypadButtonId__6;
+
+  @action
+  select(id, event) {
+    // the links only demonstrate the style, don't navigate away
+    event.preventDefault();
+    this.selectedID = id;
   }
+
+  <template>
+    <EuiKeyPadMenu as |Key|>
+      <Key>
+        <EuiKeyPadMenuItem
+          @id={{this.keypadButtonId__1}}
+          @label="Button"
+          @isSelected={{eq this.selectedID this.keypadButtonId__1}}
+          {{on "click" (fn this.select this.keypadButtonId__1)}}
+        >
+          <EuiIcon @type="grid" @size="l" />
+        </EuiKeyPadMenuItem>
+      </Key>
+      <Key>
+        <EuiKeyPadMenuItem
+          @id={{this.keypadButtonId__2}}
+          @label="Button"
+          @isSelected={{eq this.selectedID this.keypadButtonId__2}}
+          {{on "click" (fn this.select this.keypadButtonId__2)}}
+        >
+          <EuiIcon @type="grid" @size="l" />
+        </EuiKeyPadMenuItem>
+      </Key>
+      <Key>
+        <EuiKeyPadMenuItem @id={{this.keypadButtonId__3}} @label="Disabled" @isDisabled={{true}}>
+          <EuiIcon @type="grid" @size="l" />
+        </EuiKeyPadMenuItem>
+      </Key>
+      <Key>
+        <EuiKeyPadMenuItem
+          @id={{this.keypadButtonId__4}}
+          @label="Link"
+          @href="#/navigation/key-pad-menu"
+          @isSelected={{eq this.selectedID this.keypadButtonId__4}}
+          {{on "click" (fn this.select this.keypadButtonId__4)}}
+        >
+          <EuiIcon @type="link" @size="l" />
+        </EuiKeyPadMenuItem>
+      </Key>
+      <Key>
+        <EuiKeyPadMenuItem
+          @id={{this.keypadButtonId__5}}
+          @label="Link"
+          @href="#/navigation/key-pad-menu"
+          @isSelected={{eq this.selectedID this.keypadButtonId__5}}
+          {{on "click" (fn this.select this.keypadButtonId__5)}}
+        >
+          <EuiIcon @type="link" @size="l" />
+        </EuiKeyPadMenuItem>
+      </Key>
+      <Key>
+        <EuiKeyPadMenuItem
+          @id={{this.keypadButtonId__6}}
+          @label="Disabled"
+          @isDisabled={{true}}
+          @isSelected={{eq this.selectedID this.keypadButtonId__6}}
+        >
+          <EuiIcon @type="link" @size="l" />
+        </EuiKeyPadMenuItem>
+      </Key>
+    </EuiKeyPadMenu>
+  </template>
 }
 ```

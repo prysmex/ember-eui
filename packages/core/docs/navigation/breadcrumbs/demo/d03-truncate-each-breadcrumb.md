@@ -11,18 +11,11 @@ order: 3
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @truncate={{true}}
-  aria-label='An example of EuiBreadcrumbs with truncate prop'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBreadcrumbs } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',
@@ -57,5 +50,13 @@ export default class DemoSideNavComponent extends Component {
       text: 'Nebulosa subspecies is also a real mouthful, especially for creatures without mouths'
     }
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @truncate={{true}}
+      aria-label='An example of EuiBreadcrumbs with truncate prop'
+    />
+  </template>
 }
 ```

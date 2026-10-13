@@ -2,6 +2,8 @@ import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 
 import EuiDataGridCell from './cell.gts';
+// ember-eui extension (row-tree): treegrid row attributes
+import { rowTreeRowAttributes } from './row-tree-hooks.ts';
 
 import type EuiDataGrid from '../eui-data-grid.gts';
 import type { EuiDataGridSignature } from '../eui-data-grid.gts';
@@ -34,26 +36,16 @@ export default class EuiDataGridRow extends Component<EuiDataGridRowSignature> {
     return [
       'euiDataGridRow',
       this.args.visibleRowIndex % 2 !== 0 && 'euiDataGridRow--striped',
-      this.treeRow?.kind === 'group' && 'euiDataGridRow--group',
+      this.rowTree.className, // ember-eui extension (row-tree): group row class
       extra
     ]
       .filter(Boolean)
       .join(' ');
   }
 
-  /** Tree row (`@rowTree`/`@grouping`, Ember EUI extension) for treegrid ARIA. */
-  get treeRow() {
-    return this.args.grid.treeRowAt(this.args.visibleRowIndex);
-  }
-
-  get ariaLevel(): number | undefined {
-    const row = this.treeRow;
-    return row ? row.depth + 1 : undefined;
-  }
-
-  get ariaExpanded(): string | undefined {
-    const row = this.treeRow;
-    return row?.hasChildren ? String(row.isExpanded) : undefined;
+  // ember-eui extension (row-tree): treegrid ARIA attributes and group class
+  get rowTree() {
+    return rowTreeRowAttributes(this.args.grid, this.args.visibleRowIndex);
   }
 
   get style() {
@@ -71,10 +63,11 @@ export default class EuiDataGridRow extends Component<EuiDataGridRowSignature> {
       style={{this.style}}
       data-grid-row-index={{this.rowIndex}}
       data-grid-visible-row-index={{@visibleRowIndex}}
-      aria-level={{this.ariaLevel}}
-      aria-expanded={{this.ariaExpanded}}
-      aria-setsize={{this.treeRow.setSize}}
-      aria-posinset={{this.treeRow.posInSet}}
+      {{! ember-eui extension (row-tree): treegrid ARIA }}
+      aria-level={{this.rowTree.level}}
+      aria-expanded={{this.rowTree.expanded}}
+      aria-setsize={{this.rowTree.setSize}}
+      aria-posinset={{this.rowTree.posInSet}}
     >
       {{#each @body.renderedColumns key="@identity" as |colIndex|}}
         <EuiDataGridCell

@@ -43,7 +43,7 @@ export default class EuiDataGridInMemoryRenderer extends Component<EuiDataGridIn
       .filter(({ column }) => !skip.includes(column.id));
   }
 
-  /** Row objects with `@rowTree`/`@grouping.rows` (Ember EUI extension). */
+  // ember-eui extension (row-tree): `@row` for renderers
   rowAt = (rowIndex: number): unknown => this.args.grid.rowModel?.rowAt(rowIndex);
 
   get rows(): number[] {
@@ -104,6 +104,7 @@ export default class EuiDataGridInMemoryRenderer extends Component<EuiDataGridIn
                     @isExpanded={{false}}
                     @isDetails={{false}}
                     @cellContext={{@grid.args.cellContext}}
+                    {{! ember-eui extension (row-tree): @row }}
                     @row={{this.rowAt rowIndex}}
                   />
                 {{/let}}

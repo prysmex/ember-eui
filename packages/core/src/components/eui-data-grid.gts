@@ -39,7 +39,9 @@ import EuiDataGridPagination, {
   shouldRenderPagination
 } from './eui-data-grid/pagination.gts';
 import EuiDataGridToolbar from './eui-data-grid/toolbar.gts';
+// ember-eui extension (row-tree): row tree state and hooks
 import EuiDataGridRowModel from './eui-data-grid/row-model.ts';
+import { clampRowTreePageIndex } from './eui-data-grid/row-tree-hooks.ts';
 
 import type Owner from '@ember/owner';
 import type EuiI18n from '../services/eui-i18n.ts';
@@ -68,7 +70,6 @@ import type {
   EuiDataGridVirtualizationOptions
 } from '../utils/data-grid/types.ts';
 import type { ComponentLike } from '@glint/template';
-import type { RowTreeVisibleRow } from '../utils/data-grid/row-tree.ts';
 import type { EuiDataGridCustomBodyProps } from './eui-data-grid/custom-body.gts';
 import type { EuiDataGridDefaultCellPopoverSignature } from './eui-data-grid/default-cell-popover.gts';
 
@@ -179,6 +180,9 @@ export interface EuiDataGridCellPopoverElementProps {
    * fall back to it for some columns: `<@DefaultCellPopover>{{yield}}</@DefaultCellPopover>`.
    */
   DefaultCellPopover: ComponentLike<EuiDataGridDefaultCellPopoverSignature>;
+  // ember-eui extension (row-tree): the popover's row object
+  /** The row object, with `@rowTree` or `@grouping.rows` (Ember EUI extension). */
+  row?: any;
 }
 
 export interface EuiDataGridSignature {
@@ -191,8 +195,10 @@ export interface EuiDataGridSignature {
      * grid keeps its own state, starting with every column visible.
      */
     columnVisibility?: EuiDataGridColumnVisibility;
+    // ember-eui extension (row-tree): optional with @rowTree / @grouping.rows
     /** Number of rows in the data (not needed with `@rowTree` or `@grouping.rows`). */
     rowCount?: number;
+    // ember-eui extension (row-tree): @rowTree and @grouping args
     /**
      * Ember EUI extension: nested rows. The rows array (nested through each
      * row's `children`, or flat with `parentId`), or options
@@ -484,35 +490,34 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     return this.pagination!;
   }
 
-  /**
-   * `@rowTree`/`@grouping` state (Ember EUI extension); null without them,
-   * so the grid works exactly as upstream.
-   */
+  // ember-eui extension (row-tree): tree state; `rowModel` is null without
+  // @rowTree/@grouping, so the grid works exactly as upstream
   readonly rowTreeModel = new EuiDataGridRowModel(this);
 
   get rowModel(): EuiDataGridRowModel | null {
     return this.rowTreeModel.isActive ? this.rowTreeModel : null;
   }
 
-  /** Number of rows the grid shows: `@rowCount`, or the visible tree rows. */
+  // ember-eui extension (row-tree): rows shown: `@rowCount`, or the visible tree rows
   get rowCount(): number {
     return this.rowModel?.visibleRows.length ?? this.args.rowCount ?? 0;
   }
 
-  /** Number of data rows (all tree levels). */
+  // ember-eui extension (row-tree): data rows (all tree levels)
   get dataRowCount(): number {
     return this.rowModel?.dataRowCount ?? this.args.rowCount ?? 0;
   }
 
   get showPagination(): boolean {
     const pagination = this.pagination;
+    // ember-eui extension (row-tree): visible rows instead of @rowCount
     return !!pagination && shouldRenderPagination(this.rowCount, pagination);
   }
 
   @cached
   get visibleRows(): { startRow: number; endRow: number; visibleRowCount: number } {
     const pagination = this.pagination;
-    const rowCount = this.rowCount;
+    const rowCount = this.rowCount; // ember-eui extension (row-tree): visible rows
     const startRow =
       pagination && pagination.pageSize > 0
         ? pagination.pageIndex * pagination.pageSize
@@ -566,9 +571,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     const inMemory = this.args.inMemory;
     if (inMemory?.level === 'enhancements') {
       // only the first page size is guaranteed to be available in memory
-      return this.pagination?.pageSize || this.dataRowCount;
+      return this.pagination?.pageSize || this.dataRowCount; // ember-eui extension (row-tree): all data rows
     }
-    return this.dataRowCount;
+    return this.dataRowCount; // ember-eui extension (row-tree): all data rows
   }
 
   @cached
@@ -603,23 +608,12 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     const unpaginatedRowIndex = isPaginated
       ? visibleRowIndex + startRow
       : visibleRowIndex;
-    if (this.rowModel) {
-      // tree rows: data rows, or negative indexes for group rows
-      return this.rowModel.visibleRows[unpaginatedRowIndex]?.rowIndex ?? unpaginatedRowIndex;
-    }
+    // ember-eui extension (row-tree): tree rows (negative indexes for groups)
+    if (this.rowModel) return this.rowModel.rowIndexAt(unpaginatedRowIndex);
     const sortedRowMap = this.sortedRowMap;
     return unpaginatedRowIndex in sortedRowMap
       ? sortedRowMap[unpaginatedRowIndex]!
       : unpaginatedRowIndex;
-  }
-
-  /** The tree row (`@rowTree`/`@grouping`) at a visible row index, if any. */
-  treeRowAt(visibleRowIndex: number): RowTreeVisibleRow | undefined {
-    const rowModel = this.rowModel;
-    if (!rowModel) return undefined;
-    const startRow = this.visibleRows.startRow;
-    const isPaginated = visibleRowIndex - startRow < 0;
-    return rowModel.visibleRows[isPaginated ? visibleRowIndex + startRow : visibleRowIndex];
   }
 
   /* ---------------------------------------------------------------------- */
@@ -939,7 +933,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
 
   get ariaPageCount(): number {
     return this.pagination?.pageSize
-      ? Math.ceil(this.rowCount / this.pagination.pageSize)
+      ? Math.ceil(this.rowCount / this.pagination.pageSize) // ember-eui extension (row-tree): visible rows
       : 1;
   }
 
@@ -1040,7 +1034,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
       visibleColCount: this.visibleColCount,
       visibleRowCount: this.visibleRows.visibleRowCount,
       visibleRowStartIndex: this.body?.visibleRowStartIndex ?? 0,
-      rowCount: this.rowCount,
+      rowCount: this.rowCount, // ember-eui extension (row-tree): visible rows
       pagination: this.pagination,
       hasFooter: this.hasFooter,
       focusedCell: this.focusedCell,
@@ -1077,7 +1071,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
    * also stops the API from continuing.
    */
   private checkCellExists({ rowIndex, colIndex }: EuiDataGridCellLocationProps): void {
-    const rowCount = this.dataRowCount;
+    const rowCount = this.dataRowCount; // ember-eui extension (row-tree): all data rows
     const colCount = this.visibleColCount;
     if (rowIndex >= rowCount || rowIndex < 0) {
       throw new Error(
@@ -1097,8 +1091,8 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
    */
   private findVisibleRowIndex(rowIndex: number): number {
     const sortedRowMap = this.sortedRowMap;
-    const visibleRowIndex = this.rowModel
-      ? this.findTreeRowIndex(this.rowModel, rowIndex)
+    const visibleRowIndex = this.rowModel // ember-eui extension (row-tree): reveals collapsed rows
+      ? this.rowModel.findVisibleRowIndex(rowIndex)
       : sortedRowMap.length
       ? sortedRowMap.findIndex((mappedIndex) => mappedIndex === rowIndex)
       : rowIndex;
@@ -1107,17 +1101,6 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
       const pageIndex = Math.floor(visibleRowIndex / pagination.pageSize);
       if (pageIndex !== pagination.pageIndex) pagination.onChangePage(pageIndex);
       return visibleRowIndex % pagination.pageSize;
-    }
-    return visibleRowIndex;
-  }
-
-  /** Visible index of a tree data row, expanding its collapsed ancestors. */
-  private findTreeRowIndex(rowModel: EuiDataGridRowModel, rowIndex: number): number {
-    rowModel.reveal(rowIndex);
-    const visibleRowIndex = rowModel.indexOfRowIndex(rowIndex);
-    if (visibleRowIndex === -1) {
-      // controlled expansion the consumer has not applied yet
-      throw new Error(`Row ${rowIndex} is not visible: its parent rows are collapsed.`);
     }
     return visibleRowIndex;
   }
@@ -1142,45 +1125,27 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     scrollToItem: (params) => this.body?.scrollToItem?.(params)
   };
 
-  /** API additions with `@rowTree`/`@grouping` (Ember EUI extension). */
-  private readonly treeApi: Partial<EuiDataGridRefProps> = {
-    expandRow: (id: string) => this.rowModel?.setRowExpanded(id, true),
-    collapseRow: (id: string) => this.rowModel?.setRowExpanded(id, false),
-    expandAll: () => this.rowModel?.expandAll(),
-    collapseAll: () => this.rowModel?.collapseAll()
-  };
-
-  get hasRowModel(): boolean {
-    return !!this.rowModel;
-  }
-
-  /**
-   * With `@rowTree`/`@grouping`, collapsing rows can leave the page index
-   * past the last page: move to the last page.
-   */
-  clampPageIndex = modifier(
-    (_element: HTMLElement, [hasRowModel, rowCount, pageIndex, pageSize]: [boolean, number, number | undefined, number | undefined]) => {
-      if (!hasRowModel || pageIndex == null || !pageSize || rowCount === 0) return;
-      const lastPage = Math.ceil(rowCount / pageSize) - 1;
-      if (pageIndex > lastPage) {
-        afterRender(this, () => this.pagination?.onChangePage(lastPage));
-      }
-    }
-  );
-
-  /** Toggles a tree row or group (closes a popover: rows below it move). */
+  // ember-eui extension (row-tree): toggles a row (closes a popover: rows below it move)
   @action
   toggleRow(row: { id: string; kind: 'row' | 'group'; isExpanded: boolean }): void {
     this.closeCellPopover();
     this.rowModel?.toggle(row);
   }
 
+  // ember-eui extension (row-tree): re-registers the API when the tree state appears
+  get hasRowModel(): boolean {
+    return !!this.rowModel;
+  }
+
+  clampRowTreePageIndex = clampRowTreePageIndex; // ember-eui extension (row-tree): see row-tree-hooks.ts
+
   registerApi = modifier(
     (
       _element: HTMLElement,
       [registerApi, hasRowModel]: [EuiDataGridSignature['Args']['registerApi'], boolean]
     ) => {
-      const api = hasRowModel ? { ...this.api, ...this.treeApi } : this.api;
+      // ember-eui extension (row-tree): expand/collapse API methods
+      const api = hasRowModel ? { ...this.api, ...this.rowTreeModel.api } : this.api;
       if (registerApi) afterRender(this, () => registerApi(api));
     }
   );
@@ -1201,8 +1166,10 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
         {{on "keydown" this.onGridRootKeyDown}}
         {{this.observeWidth}}
         {{this.restrictBody this.isFullScreen this.restrictBodyClass}}
+        {{! ember-eui extension (row-tree): re-register the API with tree methods }}
         {{this.registerApi @registerApi this.hasRowModel}}
-        {{this.clampPageIndex this.hasRowModel this.rowCount this.pagination.pageIndex this.pagination.pageSize}}
+        {{! ember-eui extension (row-tree): page index clamping }}
+        {{this.clampRowTreePageIndex this this.rowCount this.pagination.pageIndex this.pagination.pageSize}}
         ...attributes
         {{this.moveAriaAttributes}}
       >
@@ -1227,6 +1194,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
         <div
           id={{this.gridId}}
           class={{this.contentClass}}
+          {{! ember-eui extension (row-tree): treegrid role, visible row count }}
           role={{if this.rowModel "treegrid" "grid"}}
           aria-rowcount={{this.rowCount}}
           aria-colcount={{this.visibleColCount}}

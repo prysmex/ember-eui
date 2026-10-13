@@ -18,6 +18,7 @@ import type {
 } from '../../utils/data-grid/row-tree.ts';
 import type {
   EuiDataGridGrouping,
+  EuiDataGridRefProps,
   EuiDataGridRowTree,
   EuiDataGridRowTreeOptions,
   EuiDataGridSorting
@@ -178,6 +179,42 @@ export default class EuiDataGridRowModel {
   get toggleColumnId(): string | undefined {
     return this.treeOptions?.toggleColumnId ?? this.grouping?.toggleColumnId;
   }
+
+  /**
+   * The visible row at a grid row index, which is page-relative or absolute
+   * (like `getCorrectRowIndex`): `startRow` is the page's first row.
+   */
+  visibleRowAt(visibleRowIndex: number, startRow: number): RowTreeVisibleRow | undefined {
+    const isPaginated = visibleRowIndex - startRow < 0;
+    return this.visibleRows[isPaginated ? visibleRowIndex + startRow : visibleRowIndex];
+  }
+
+  /** Data row index (negative for groups) of an unpaginated visible row. */
+  rowIndexAt(unpaginatedRowIndex: number): number {
+    return this.visibleRows[unpaginatedRowIndex]?.rowIndex ?? unpaginatedRowIndex;
+  }
+
+  /**
+   * Unpaginated visible index of a data row for the imperative API,
+   * expanding its collapsed ancestors first.
+   */
+  findVisibleRowIndex(rowIndex: number): number {
+    this.reveal(rowIndex);
+    const visibleRowIndex = this.indexOfRowIndex(rowIndex);
+    if (visibleRowIndex === -1) {
+      // controlled expansion the consumer has not applied yet
+      throw new Error(`Row ${rowIndex} is not visible: its parent rows are collapsed.`);
+    }
+    return visibleRowIndex;
+  }
+
+  /** `@registerApi` additions. */
+  readonly api: Partial<EuiDataGridRefProps> = {
+    expandRow: (id: string) => this.setRowExpanded(id, true),
+    collapseRow: (id: string) => this.setRowExpanded(id, false),
+    expandAll: () => this.expandAll(),
+    collapseAll: () => this.collapseAll()
+  };
 
   /** Visible position of a data row index, or -1. */
   indexOfRowIndex(rowIndex: number): number {

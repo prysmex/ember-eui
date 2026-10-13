@@ -1,10 +1,10 @@
 ---
-title: Data grid virtualization
-order: 5
+title: Data grid container constraints
+order: 6
 ---
 
 <EuiSpacer/>
-<EuiPageHeader @pageTitle="Data grid virtualization"/>
+<EuiPageHeader @pageTitle="Data grid container constraints"/>
 <EuiSpacer @size="l" />
 
 <EuiText>

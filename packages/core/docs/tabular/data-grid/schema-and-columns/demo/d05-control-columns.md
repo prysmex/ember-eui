@@ -1,5 +1,5 @@
 ---
-order: 1
+order: 5
 ---
 
 # Row selection and a totals footer

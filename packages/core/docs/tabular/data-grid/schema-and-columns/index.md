@@ -1,10 +1,10 @@
 ---
-title: Data grid schema and sorting
+title: Data grid schema & columns
 order: 2
 ---
 
 <EuiSpacer/>
-<EuiPageHeader @pageTitle="Data grid schema and sorting"/>
+<EuiPageHeader @pageTitle="Data grid schema & columns"/>
 <EuiSpacer @size="l" />
 
 <EuiText>

@@ -1,6 +1,6 @@
 ---
 title: Data grid nested rows and grouping
-order: 8
+order: 10
 ---
 
 <EuiSpacer/>

@@ -1,10 +1,10 @@
 ---
-title: Data grid pagination
-order: 6
+title: Data grid in-memory
+order: 9
 ---
 
 <EuiSpacer/>
-<EuiPageHeader @pageTitle="Data grid pagination"/>
+<EuiPageHeader @pageTitle="Data grid in-memory"/>
 <EuiSpacer @size="l" />
 
 <EuiText>

@@ -1,10 +1,10 @@
 ---
-title: Data grid cells and popovers
-order: 4
+title: Data grid cells & popovers
+order: 3
 ---
 
 <EuiSpacer/>
-<EuiPageHeader @pageTitle="Data grid cells and popovers"/>
+<EuiPageHeader @pageTitle="Data grid cells & popovers"/>
 <EuiSpacer @size="l" />
 
 <EuiText>

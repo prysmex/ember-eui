@@ -1,6 +1,6 @@
 ---
 title: Data grid toolbar
-order: 3
+order: 4
 ---
 
 <EuiSpacer/>

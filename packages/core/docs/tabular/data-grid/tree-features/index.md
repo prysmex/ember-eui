@@ -1,6 +1,6 @@
 ---
 title: Data grid nested rows with other features
-order: 11
+order: 13
 ---
 
 <EuiSpacer/>

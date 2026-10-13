@@ -1,6 +1,6 @@
 ---
 title: Data grid tree expansion
-order: 9
+order: 11
 ---
 
 <EuiSpacer/>

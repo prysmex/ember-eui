@@ -8,19 +8,14 @@ title: Beacon
 
 <EuiText>
 
-`EuiBeacon` is a pulsing dot that draws the eye to something new or
-something a guided tour points at. Use it sparingly: one on screen at a
-time.
-
-```hbs
-<EuiBeacon />
-<EuiBeacon @size={{20}} />
-```
-
-It is decorative: describe what it points at in the text next to it, or
-with `aria-label` on the element it marks.
+Use the `EuiBeacon` component to draw visual attention to a specific location or element. It is decorative: describe what it points at in the text next to it, or with `aria-label` on the element it marks.
 
 </EuiText>
+<EuiSpacer />
+<EuiCallOut @color="success" @size="s" @title="Use with EuiTour">
+  <p>It is strongly encouraged to use <strong>EuiBeacon</strong> in conjunction with <strong>EuiTour</strong>. Standalone, the beacon is a visual cue that may lack context.</p>
+</EuiCallOut>
+<EuiSpacer />
 
 <EuiHorizontalRule />
 

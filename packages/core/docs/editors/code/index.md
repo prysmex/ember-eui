@@ -23,10 +23,19 @@ text).
 
 Pass the code as text (e.g. a string property); it is highlighted as the
 content changes. `EuiCodeBlock` can add a copy button (`@isCopyable`),
-line numbers (optionally highlighted), a max height with a full screen
-button (`@overflowHeight`) and virtualized rendering for very long code
-(`@isVirtualized`). These components display static code; for editing
-code, use a code editor.
+line numbers (optionally highlighted or annotated), a max height with a
+full screen button (`@overflowHeight`) and virtualized rendering for very
+long code (`@isVirtualized`).
+
+JSX-like code (often React) has distinct language syntaxes from base
+JavaScript and TypeScript. For these, use `@language="jsx"` or
+`@language="tsx"`. The `@language` argument can also be omitted to render
+formatted but non-highlighted code.
+
+<strong>EuiCode</strong> and <strong>EuiCodeBlock</strong> are intended to
+render static lines or blocks of code in <strong>read-only</strong>
+contexts. If you need capabilities to edit, or want to print very long
+code (e.g. JSON from an API), use a dedicated code editor such as Monaco.
 
 </EuiText>
 

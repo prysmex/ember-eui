@@ -1,8 +1,8 @@
 ---
-order: 5
+order: 4
 ---
 
-# Overflow height
+# Scrolling
 
 <EuiText>
   <p>
@@ -13,8 +13,6 @@ order: 5
 ```hbs template
 <EuiCodeBlock
   @language='sql'
-  @fontSize='m'
-  @paddingSize='m'
   @overflowHeight={{150}}
 >
   {{this.sqlCode}}
@@ -23,10 +21,8 @@ order: 5
 
 ```javascript component
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 
-export default class EuiMarkdownEditor1 extends Component {
+export default class Scrolling extends Component {
   sqlCode = `-- I'm an example of SQL
 CREATE TABLE "topic" (
   "id" serial NOT NULL PRIMARY KEY,

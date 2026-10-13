@@ -1,8 +1,8 @@
 ---
-order: 6
+order: 5
 ---
 
-# White space
+# Wrapping
 
 <EuiText>
   <p>
@@ -12,17 +12,23 @@ order: 6
 
 ```hbs template
 <EuiCodeBlock
-  @language='ts'
+  @language='jsx'
   @fontSize='m'
   @paddingSize='m'
   @overflowHeight={{300}}
   @isCopyable={{true}}
   @whiteSpace='pre'
 >
-  export default () => (
-  <div>In this example, the whiteSpace property is set to pre. All the
-    whitespaces will be kept as is and the text only wraps when line breaks are
-    in the content.</div>
-  );
+  {{this.code}}
 </EuiCodeBlock>
+```
+
+```javascript component
+import Component from '@glimmer/component';
+
+export default class Wrapping extends Component {
+  code = `export default () => (
+  <div>In this example, the whiteSpace property is set to pre. All the whitespaces will be kept as is and the text only wraps when line breaks are in the content.</div>
+);`;
+}
 ```

@@ -6,8 +6,7 @@ order: 1
 
 <EuiText>
 
-`EuiCode` highlights a snippet inside text. `@transparentBackground`
-removes its background.
+<strong>EuiCode</strong> is for making inline code snippets that can work within or next to bodies of text.
 
 </EuiText>
 
@@ -15,7 +14,7 @@ removes its background.
 <EuiText>
   <p>
     Sometimes you need to emphasize
-    <EuiCode>Code</EuiCode>
+    <EuiCode>code</EuiCode>
     like this.
   </p>
   <p>
@@ -24,36 +23,18 @@ removes its background.
   </p>
   <p>
     Make the background transparent like this
-    <EuiCode @transparentBackground={{true}} @language='html'>
-      {{this.htmlCode}}
-    </EuiCode>
-    .
+    <EuiCode @language='html' @transparentBackground={{true}}>{{this.htmlCode}}</EuiCode>.
   </p>
 </EuiText>
-<EuiTextArea
-  @value={{this.htmlCode}}
-  {{on 'input' (pick 'target.value' (set this 'htmlCode'))}}
-/>
 ```
 
 ```javascript component
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 
-export default class EuiMarkdownEditor1 extends Component {
-  @tracked value = `### hehe
-  - [ ] hola
-  - [ ] hola
-  - [x] hola
-  \`\`\`javascript
-    class Human {}
-  \`\`\`
-  `;
-  @tracked htmlCode = `<!--I'm an example of HTML-->
+export default class InlineCode extends Component {
+  htmlCode = `<!--I'm an example of HTML-->
 <div>
   asdf
-</div>
-`;
+</div>`;
 }
 ```

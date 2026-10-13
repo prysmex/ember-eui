@@ -1,5 +1,5 @@
 ---
-order: 3
+order: 6
 ---
 
 # Line numbers
@@ -24,7 +24,7 @@ order: 3
 ```javascript component
 import Component from '@glimmer/component';
 
-export default class EuiMarkdownEditor1 extends Component {
+export default class LineNumbers extends Component {
   jsonCode = `{
   "id": "1",
   "rawResponse": {

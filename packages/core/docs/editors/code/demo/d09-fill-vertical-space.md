@@ -2,12 +2,11 @@
 order: 9
 ---
 
-# In a flyout
+# Fill vertical space
 
 <EuiText>
 
-Code blocks work inside flyouts and modals too, including the full
-screen view.
+In places like flyouts, you can use <EuiCode>@overflowHeight="100%"</EuiCode> to stretch the code block to fill the space. Just be sure that its parent container is also <EuiCode>height: 100%</EuiCode>.
 
 </EuiText>
 

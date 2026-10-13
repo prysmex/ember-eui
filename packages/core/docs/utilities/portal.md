@@ -8,9 +8,7 @@ title: Portal
 
 <EuiText>
 
-`EuiPortal` renders its content at the end of `<body>` instead of where
-it is written, so it escapes parents with `overflow: hidden` or a
-`z-index`. Modals, flyouts, popovers and toasts use it.
+**EuiPortal** allows you to append its contained children onto the document body. It is useful for moving fixed elements like modals, tooltips or toasts when you are worried about a z-index or overflow conflict, since it escapes parents with `overflow: hidden` or a `z-index`. Modals, flyouts, popovers and toasts use it.
 
 ```hbs
 <EuiPortal>

@@ -67,6 +67,8 @@ export interface EuiDataGridCellValueElementProps {
   isDetails: boolean;
   schema?: string | null;
   cellContext?: Record<string, unknown>;
+  /** The row object, with `@rowTree` or `@grouping.rows` (Ember EUI extension). */
+  row?: any;
 }
 
 export interface EuiDataGridCellValueSignature {
@@ -377,4 +379,91 @@ export interface EuiDataGridRefProps {
   scrollTo?: (params: EuiDataGridScrollToProps) => void;
   /** Scrolls a row and/or column into view (not available with a custom grid body). */
   scrollToItem?: (params: EuiDataGridScrollToItemProps) => void;
+  /**
+   * Ember EUI extension, with `@rowTree`/`@grouping`: expands a row or group
+   * by id. (`setFocusedCell`/`openCellPopover` reveal collapsed rows themselves.)
+   */
+  expandRow?: (id: string) => void;
+  /** Collapses a row or group by id. */
+  collapseRow?: (id: string) => void;
+  /** Expands every row and group. */
+  expandAll?: () => void;
+  /** Collapses every row and group. */
+  collapseAll?: () => void;
+}
+
+/* ------------------------------------------------------------------------ */
+/* Nested rows & row grouping (Ember EUI extension, not in upstream EUI)     */
+/* ------------------------------------------------------------------------ */
+
+/** Options of `@rowTree` (or pass the rows array itself). */
+export interface EuiDataGridRowTreeOptions<T = any> {
+  /**
+   * The rows: nested (a row's `children` array holds its child rows) or flat
+   * (each row's `parentId`/`parent` is another row's `id`). Cell renderers
+   * receive the row as `@row`; `@rowIndex` is the row's index in pre-order
+   * for nested rows and its array index for flat rows.
+   */
+  rows: T[];
+  /** Child rows of a row. Defaults to `row.children` when it is an array. */
+  getChildren?: (row: T) => T[] | null | undefined;
+  /** Parent row id of a row (flat rows). Defaults to `row.parentId ?? row.parent`. */
+  getParentId?: (row: T) => string | number | null | undefined;
+  /** Row id. Defaults to `row.id`, else the row index. */
+  getRowId?: (row: T, rowIndex: number) => string | number | null | undefined;
+  /** Controlled expanded row ids. Without it the grid keeps its own state. */
+  expandedRowIds?: string[];
+  /** Initially expanded row ids (uncontrolled), or `'all'`. */
+  defaultExpandedRowIds?: string[] | 'all';
+  /** Called with the new expanded row ids when a row is toggled. */
+  onExpandedChange?: (expandedRowIds: string[]) => void;
+  /** Column showing the indentation and toggle. Defaults to the first data column. */
+  toggleColumnId?: string;
+}
+
+/** `@rowTree`: the (nested or flat) rows, or options with `rows`. */
+export type EuiDataGridRowTree<T = any> = T[] | EuiDataGridRowTreeOptions<T>;
+
+/** Arguments of `@grouping.renderGroupCell`, rendered in every data cell of a group row. */
+export interface EuiDataGridGroupCellProps {
+  /** Grouped column, value, row count and data row indexes. */
+  group: {
+    columnId: string;
+    value: unknown;
+    count: number;
+    rowIndices: number[];
+  };
+  /** Group id (used in `expandedGroupIds`). */
+  groupId: string;
+  /** The cell's column. */
+  columnId: string;
+  colIndex: number;
+  /** Whether this cell holds the toggle (render the group label here). */
+  isToggleCell: boolean;
+  isExpanded: boolean;
+  /** Nesting level, 0 for outermost groups. */
+  depth: number;
+}
+
+/** Options of `@grouping`. */
+export interface EuiDataGridGrouping<T = any> {
+  /** Column ids to group by, outermost first. */
+  groupBy: string[];
+  /**
+   * Raw value of a cell to group by. Defaults to `row[columnId]` when rows
+   * are known (`rows` here or `@rowTree`).
+   */
+  getValue?: (rowIndex: number, columnId: string, row: T | undefined) => unknown;
+  /** Flat rows (cell renderers receive the row as `@row`). Optional with `getValue`. */
+  rows?: T[];
+  /** Controlled expanded group ids. Without it the grid keeps its own state. */
+  expandedGroupIds?: string[];
+  /** Initially expanded group ids (uncontrolled), or `'all'`. */
+  defaultExpandedGroupIds?: string[] | 'all';
+  /** Called with the new expanded group ids when a group is toggled. */
+  onExpandedChange?: (expandedGroupIds: string[]) => void;
+  /** Component rendering a group row's data cells (default: value and count in the toggle cell). */
+  renderGroupCell?: ComponentLike<{ Args: EuiDataGridGroupCellProps }>;
+  /** Column showing the indentation and toggle. Defaults to the first data column. */
+  toggleColumnId?: string;
 }

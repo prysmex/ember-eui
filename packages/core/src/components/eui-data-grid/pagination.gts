@@ -44,7 +44,7 @@ export default class EuiDataGridPagination extends Component<EuiDataGridPaginati
 
   get pageCount(): number {
     const { pageSize } = this.args.pagination;
-    return pageSize ? Math.ceil(this.args.grid.args.rowCount / pageSize) : 1;
+    return pageSize ? Math.ceil(this.args.grid.rowCount / pageSize) : 1;
   }
 
   get ariaLabel(): string {

@@ -43,6 +43,9 @@ export default class EuiDataGridInMemoryRenderer extends Component<EuiDataGridIn
       .filter(({ column }) => !skip.includes(column.id));
   }
 
+  /** Row objects with `@rowTree`/`@grouping.rows` (Ember EUI extension). */
+  rowAt = (rowIndex: number): unknown => this.args.grid.rowModel?.rowAt(rowIndex);
+
   get rows(): number[] {
     return Array.from({ length: this.args.rowCount }, (_, i) => i);
   }
@@ -101,6 +104,7 @@ export default class EuiDataGridInMemoryRenderer extends Component<EuiDataGridIn
                     @isExpanded={{false}}
                     @isDetails={{false}}
                     @cellContext={{@grid.args.cellContext}}
+                    @row={{this.rowAt rowIndex}}
                   />
                 {{/let}}
               {{else}}
@@ -115,6 +119,7 @@ export default class EuiDataGridInMemoryRenderer extends Component<EuiDataGridIn
                     isExpanded=false
                     isDetails=false
                     cellContext=@grid.args.cellContext
+                    row=(this.rowAt rowIndex)
                   )
                   to="cell"
                 }}

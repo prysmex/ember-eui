@@ -33,6 +33,7 @@ import EuiPopover from '../eui-popover.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
 import EuiDataGridCopyMarker from './copy-marker.gts';
 import EuiDataGridDefaultCellPopover from './default-cell-popover.gts';
+import EuiDataGridTreeCell from './tree-cell.gts';
 import {
   EuiDataGridCellActions,
   EuiDataGridCellPopoverActions
@@ -227,6 +228,30 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     return this.grid.getCorrectRowIndex(this.args.visibleRowIndex);
   }
 
+  /* Nested rows & grouping (Ember EUI extension) ------------------------- */
+
+  /** The tree row with `@rowTree`/`@grouping`, else undefined. */
+  get treeRow() {
+    if (this.args.isFooter) return undefined;
+    return this.grid.treeRowAt(this.args.visibleRowIndex);
+  }
+
+  get isGroupRow(): boolean {
+    return this.treeRow?.kind === 'group';
+  }
+
+  /** The cell with the row's indentation and expand toggle. */
+  get isToggleCell(): boolean {
+    if (!this.treeRow || !this.column) return false;
+    const toggleColumnId = this.grid.rowModel?.toggleColumnId ?? this.grid.columns[0]?.id;
+    return this.columnId === toggleColumnId;
+  }
+
+  /** Row object passed to renderers as `@row` (with `@rowTree` or `@grouping.rows`). */
+  get rowData(): unknown {
+    return this.args.isFooter ? undefined : this.grid.rowModel?.rowAt(this.rowIndex);
+  }
+
   get width(): number | undefined {
     const control = this.controlColumn;
     if (control) return control.width;
@@ -301,7 +326,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
 
   get defaultIsExpandable(): boolean {
     if (this.args.isExpandable !== undefined && !this.args.isFooter) return this.args.isExpandable;
-    if (this.isControlColumn) return false;
+    if (this.isControlColumn || this.isGroupRow) return false;
     if (this.args.isFooter) return true;
     return this.column?.isExpandable ?? true;
   }
@@ -309,7 +334,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   get isExpandable(): boolean {
     // A cell with cell actions must always be expandable, otherwise keyboard
     // and screen reader users can't access them
-    if (this.column?.cellActions?.length) return true;
+    if (this.column?.cellActions?.length && !this.isGroupRow) return true;
     return this.cellProps.isExpandable ?? this.defaultIsExpandable;
   }
 
@@ -499,6 +524,18 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
 
   @action
   onKeyDown(event: KeyboardEvent): void {
+    // tree toggle: Space, or Enter where it doesn't open a popover
+    const treeRow = this.treeRow;
+    if (
+      treeRow?.hasChildren &&
+      this.isToggleCell &&
+      event.target === this.cellElement &&
+      (event.key === keys.SPACE || (event.key === keys.ENTER && !this.isExpandable))
+    ) {
+      event.preventDefault();
+      this.grid.toggleRow(treeRow);
+      return;
+    }
     if (this.isExpandable) {
       if (this.isPopoverOpen) return;
       if (event.key === keys.ENTER || event.key === keys.F2) {
@@ -819,7 +856,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       isExpanded: this.isPopoverOpen,
       isDetails: false,
       schema: this.schema,
-      cellContext: this.grid.args.cellContext
+      cellContext: this.grid.args.cellContext,
+      row: this.rowData
     };
   }
 
@@ -900,7 +938,18 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
           }}
           {{this.measureAutoHeight this.isAutoHeight}}
         >
-          {{#if this.renderer}}
+          {{#if this.treeRow}}
+            <EuiDataGridTreeCell
+              @grid={{@grid}}
+              @row={{this.treeRow}}
+              @columnId={{this.columnId}}
+              @colIndex={{@colIndex}}
+              @isToggleCell={{this.isToggleCell}}
+            />
+          {{/if}}
+          {{#if this.isGroupRow}}
+            {{! group rows: content from the tree cell above }}
+          {{else if this.renderer}}
             {{#let this.renderer as |Renderer|}}
               <Renderer
                 @rowIndex={{this.rowIndex}}
@@ -912,6 +961,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                 @isDetails={{false}}
                 @schema={{this.schema}}
                 @cellContext={{@grid.args.cellContext}}
+                @row={{this.rowData}}
               />
             {{/let}}
           {{else if (eq this.kind "data")}}
@@ -945,7 +995,18 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
             }}
             {{this.measureAutoHeight this.isAutoHeight}}
           >
-            {{#if this.renderer}}
+            {{#if this.treeRow}}
+              <EuiDataGridTreeCell
+                @grid={{@grid}}
+                @row={{this.treeRow}}
+                @columnId={{this.columnId}}
+                @colIndex={{@colIndex}}
+                @isToggleCell={{this.isToggleCell}}
+              />
+            {{/if}}
+            {{#if this.isGroupRow}}
+              {{! group rows: content from the tree cell above }}
+            {{else if this.renderer}}
               {{#let this.renderer as |Renderer|}}
                 <Renderer
                   @rowIndex={{this.rowIndex}}
@@ -957,6 +1018,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                   @isDetails={{false}}
                   @schema={{this.schema}}
                   @cellContext={{@grid.args.cellContext}}
+                  @row={{this.rowData}}
                 />
               {{/let}}
             {{else if (eq this.kind "data")}}
@@ -1061,6 +1123,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                               @isDetails={{true}}
                               @schema={{this.schema}}
                               @cellContext={{@grid.args.cellContext}}
+                              @row={{this.rowData}}
                             />
                           {{/let}}
                         {{/if}}
@@ -1098,6 +1161,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                             @isDetails={{true}}
                             @schema={{this.schema}}
                             @cellContext={{@grid.args.cellContext}}
+                            @row={{this.rowData}}
                           />
                         {{/let}}
                       {{else if (eq this.kind "footer")}}

@@ -93,11 +93,40 @@ function sourceOf(component) {
 const OPEN = { '{': '}', '(': ')', '[': ']', '<': '>' };
 const CLOSE = new Set(['}', ')', ']', '>']);
 
+/**
+ * Index just past a comment or string literal starting at `i`, or -1. Text
+ * in comments and strings (e.g. a `>` in a doc comment) is not code, so it
+ * must not count as brackets.
+ */
+function skipNonCode(text, i) {
+  if (text.startsWith('//', i)) {
+    const end = text.indexOf('\n', i);
+    return end === -1 ? text.length : end;
+  }
+  if (text.startsWith('/*', i)) {
+    const end = text.indexOf('*/', i + 2);
+    return end === -1 ? text.length : end + 2;
+  }
+  const quote = text[i];
+  if (quote === "'" || quote === '"' || quote === '`') {
+    let j = i + 1;
+    while (j < text.length && text[j] !== quote) j += text[j] === '\\' ? 2 : 1;
+    return Math.min(j + 1, text.length);
+  }
+  return -1;
+}
+
 /** Index just past the bracket closing the one at `start`. */
 function closingIndex(text, start) {
   let depth = 0;
 
   for (let i = start; i < text.length; i++) {
+    const skipped = skipNonCode(text, i);
+    if (skipped !== -1) {
+      i = skipped - 1;
+      continue;
+    }
+
     const char = text[i];
 
     if (char === '>' && text[i - 1] === '=') continue; // arrow `=>`
@@ -143,6 +172,7 @@ function members(body) {
   while (i < body.length) {
     if (body.startsWith('/**', i)) {
       const end = body.indexOf('*/', i);
+      if (end === -1) break; // an unclosed comment would loop forever
 
       doc = body.slice(i + 3, end);
       i = end + 2;
@@ -156,7 +186,9 @@ function members(body) {
     }
 
     if (body.startsWith('/*', i)) {
-      i = body.indexOf('*/', i) + 2;
+      const end = body.indexOf('*/', i);
+      if (end === -1) break;
+      i = end + 2;
       continue;
     }
 
@@ -172,6 +204,12 @@ function members(body) {
     let depth = 0;
 
     for (; j < body.length; j++) {
+      const skipped = skipNonCode(body, j);
+      if (skipped !== -1) {
+        j = skipped - 1;
+        continue;
+      }
+
       const char = body[j];
 
       if (char === '>' && body[j - 1] === '=') continue;

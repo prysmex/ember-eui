@@ -1129,6 +1129,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                       </PopoverRenderer>
                     {{/let}}
                   {{else if @hasCellPopoverBlock}}
+                    {{! ember-eui extension (row-tree): `row` in the hash }}
                     {{yield
                       (hash
                         rowIndex=this.rowIndex

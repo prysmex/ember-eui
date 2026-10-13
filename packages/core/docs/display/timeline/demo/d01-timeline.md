@@ -2,32 +2,34 @@
 order: 1
 ---
 
-# Timeline items
+# Timeline
 
 <EuiText>
 
-The default `@gutterSize` is `'xl'`; use `'l'` or `'m'` for denser activity.
-Items align their icon and event at the center by default. Use
-`@verticalAlign="top"` for multi-line content.
+The `EuiTimeline` component standardizes the way a timeline thread is displayed. Render an `EuiTimelineItem` for each event, or pass `@items` for simple text events, and `EuiTimeline` will generate a timeline thread.
 
 </EuiText>
 
 ```hbs template
-<EuiTimeline aria-label="Project activity" @gutterSize="l">
-  <EuiTimelineItem @icon="plus" @iconAriaLabel="Created">
-    Project created
+<EuiTimeline aria-label='Project beta timeline'>
+  <EuiTimelineItem @icon='email' @iconAriaLabel='Invitation'>
+    <EuiText @size='s'>
+      <p>
+        <strong>janet@elastic.co</strong> was invited to the project.
+      </p>
+    </EuiText>
   </EuiTimelineItem>
-  <EuiTimelineItem @verticalAlign="top">
-    <:icon><EuiAvatar @name="Jane Cooper" @size="m" /></:icon>
-    <:default>
-      <EuiText @size="s">
-        <p><strong>Jane Cooper</strong> added a description.</p>
-        <p>The timeline accepts any rich Ember content.</p>
-      </EuiText>
-    </:default>
+  <EuiTimelineItem @icon='pencil' @iconAriaLabel='Edited'>
+    <EuiText @size='s'>
+      <p>
+        The project was renamed to <strong>Revenue Dashboard</strong>.
+      </p>
+    </EuiText>
   </EuiTimelineItem>
-  <EuiTimelineItem @icon="check" @iconAriaLabel="Completed">
-    Review completed
+  <EuiTimelineItem @icon='folder' @iconAriaLabel='Project closed'>
+    <EuiText @size='s'>
+      <p>The project was archived.</p>
+    </EuiText>
   </EuiTimelineItem>
 </EuiTimeline>
 ```

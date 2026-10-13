@@ -8,7 +8,7 @@ title: Title
 
 <EuiText>
 
-`EuiTitle` renders a heading styled with EUI's type scale. Its tag and
+**EuiTitle** styles the page, section, and content headings we use in Kibana. Unlike **EuiText** it is margin neutral and more suitable for general layout design. It renders a heading styled with EUI's type scale. Its tag and
 its size are independent: choose the tag (`@tagName`, `h2` by default)
 for the page's outline, and the size (`@size`, `m` by default) for how
 it looks.

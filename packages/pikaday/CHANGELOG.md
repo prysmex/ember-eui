@@ -1,5 +1,18 @@
 # @ember-eui/pikaday
 
+## 16.0.0
+
+### Major Changes
+
+- Elastic EUI bump
+
+### Patch Changes
+
+- Updated dependencies [9379d61]
+- Updated dependencies [3e2ae08]
+- Updated dependencies
+  - @ember-eui/core@16.0.0
+
 ## 15.0.0
 
 ### Major Changes

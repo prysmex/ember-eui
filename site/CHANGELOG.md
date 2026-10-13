@@ -1,5 +1,11 @@
 # site
 
+## 15.0.0
+
+### Major Changes
+
+- Elastic EUI bump
+
 ## 14.1.5
 
 ### Patch Changes

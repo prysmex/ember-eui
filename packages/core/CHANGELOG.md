@@ -1,5 +1,49 @@
 # @ember-eui/core
 
+## 16.0.0
+
+### Major Changes
+
+- 3e2ae08: `EuiComboBox` now behaves like EUI 123.1.0's by default:
+
+  - Matching ignores case but no longer accents (upstream's matcher); `@isCaseSensitive`, `@matcher` and the new `@optionMatcher` customize it.
+  - In multiple selection the selected options are no longer listed, and the list stays open after a choice (`@closeOnSelect` defaults to `true` only for single selection). Single selection keeps its option listed with a check mark.
+  - Leaving the combo box with typed text adds it (`@onCreateOption`, or the option it names exactly); text that is not added stays in the input and marks the combo box invalid. Enter adds the typed text too when no option is highlighted, even if it partially matches options.
+  - Nothing is highlighted when the list opens (tooltips and `aria-activedescendant` follow the arrow keys); the arrows wrap, Escape keeps the text, Tab is held while an option is highlighted, hovering no longer highlights, and focusing the input opens the list.
+  - `@sortMatchesBy="startsWith"` sorts the whole list like upstream, group titles included.
+  - Upstream empty states ("{searchValue} doesn't match any options", "There aren't any options available", "You've selected all available options", "{label} has already been added"); `@isLoading` shows the spinner in the list too.
+  - The search input is the `combobox` (with `aria-expanded`, `aria-controls`, `aria-haspopup`) and the wrapper is no longer a tab stop; the listbox is labelled "Choose from the following options"; screen reader instructions are read on focus. The enter badge on the highlighted option needs `@onFocusBadge`.
+  - New `@async`, `@onSearchChange`, `@optionMatcher` and `@onFocusBadge`, and upstream's `{ label, options }` groups.
+
+  The validated-form and changeset-form combo box fields forward every `EuiComboBox` argument (and the search text to their block), and the changeset field validates again after a custom option is added.
+
+  See "Migrating to Borealis" for the full list.
+
+- Elastic EUI bump
+
+### Minor Changes
+
+- 9379d61: Style every component with current Elastic UI: EUI 123.1.0 with the Borealis 8.1.0 theme, instead of EUI 41.4's Amsterdam CSS. Components build their styles from upstream EUI's style factories and inject them with Emotion at runtime, so the theme stylesheet (`@ember-eui/core/themes/light.css` / `dark.css`) is no longer needed.
+
+  - Render one `EuiEmotionProvider` around the app. The outermost provider injects upstream's global styles (reset, 14px root font size, body colors, focus ring); `@colorMode` switches light/dark, `@borealisOverrides` takes Borealis token overrides and `@highContrastMode` sets contrast. `@globalStyles={{false}}` and `@wrapper={{false}}` opt out of the global styles and the `euiThemeProvider` span.
+  - Components take an `@css` argument, composed last into their own class (like upstream's `css` prop). Amsterdam modifier classes (`euiButton--primary`, `euiFlexGroup--gutterLarge`, …) are removed; stable root and element classes are kept.
+  - Some defaults follow upstream, e.g. `EuiPanel` has a border and no shadow, `EuiFlexGroup` gutter `m`, `EuiText` size `s`, `EuiLink` color `text` with `rel="noreferrer"`, form rows 400px wide, `EuiTablePagination` 10 rows per page, `EuiPopover` anchored `downLeft` without an arrow, `EuiModal` max width 768px, and `EuiForm` focuses its error callout.
+  - Icons are EUI 123.1.0's set (698 names); every previous name still resolves through legacy aliases. App icons registered in `euiIcon.icons` now win over EUI icons of the same name.
+  - `EuiNotificationEvent`, `EuiSuggest`, `EuiColorStops` and `EuiControlBar` were removed upstream: they keep working but are deprecated until 16.0.0 (`ember-eui.<file>.removed-upstream`).
+  - `EuiPageTemplate` follows upstream's composable API (`<EuiPageTemplate as |T|>` with `T.Header`, `T.Section`, `T.EmptyPrompt`, `T.BottomBar` and `T.Sidebar`, plus `@panelled`, `@bottomBorder`, `@offset`, `@restrictWidth`). The previous `@template` / named-blocks API keeps working but is deprecated until 16.0.0 (`ember-eui.eui-page-template-legacy.removed-upstream`).
+  - Theming: a root `EuiEmotionProvider` without `@colorMode` / `@highContrastMode` follows the OS (`prefers-color-scheme`, `prefers-contrast`, `forced-colors`), as upstream `EuiProvider`. `@highContrastMode` accepts `true`. The root provider publishes the theme's semantic tokens as CSS variables (`--eui-color-text-subdued`, …). `@css` and the other `*Css` args also accept a theme function (`({ euiTheme }) => styles`), and `@ember-eui/core/theming` exports the helpers for styling app components.
+  - New upstream features: EuiFlyout session management (`@session`, Beta upstream) and `@flyoutMenuProps`; EuiButtonGroup child buttons and segmented/selection variants; `hasAriaDisabled` on buttons; per-breadcrumb popovers; EuiSelectable, EuiComboBox and EuiSuperDatePicker props from EUI 123.1.0.
+  - Small behaviour changes to match upstream: `EuiHeaderBreadcrumbs` defaults to `@type="application"`; `EuiSuperDatePicker` `@onRefreshChange` also reports `intervalUnits`.
+  - Smaller upstream alignments: `EuiPageTemplate`'s `T.BottomBar` always ends up at the end of the main content; `EuiImage` attributes go on the `<img>` (**breaking**: use `@wrapperProps` for the `<figure>`); focusing `EuiSelectable`'s search no longer makes an option current; the super date picker's date buttons show their title in a tooltip and the time zone label is a `span`; delimited fields default to a `sortRight` icon labelled "to" instead of `→`; extra keys of `EuiSelectable @searchProps`, `EuiTabbedContent` tabs, `EuiImage @wrapperProps` and `EuiCard` `betaBadgeProps.anchorProps` become attributes. New: `EuiText @component`, `EuiDatePickerRange @showTimeSelect`, `EuiTreeView <:icon>`.
+  - More upstream props across display, navigation, layout, forms and tables (e.g. `EuiBasicTable` column `valign` / multi-line `truncateText` / sticky actions, `EuiTable` `@stickyHeader`, `EuiInMemoryTable` custom panels, `EuiCheckbox` `readOnly`, `EuiSteps` numbering, rich content in list groups, cards, timelines, toasts, tree views and headers). An `EuiStep` without `@step` is now numbered by its position; `EuiToolTip` repositions on scroll only with `@repositionOnScroll`, as upstream.
+  - Last upstream interaction alignments: pressing `EuiComboBox`'s chevron moves focus to it (closing keeps focus there; leaving from it closes the list), `@onBlur` fires only when focus leaves the combo box, and pills get the option's other keys as attributes, its label as `title`, and a "Change" button for options with `onClick`; `EuiSelectable`'s `aria-label` / `aria-describedby` name the search and the listbox instead of the root; `EuiBadge` with `@iconOnClick` and `@onClick`/`@href` puts its attributes (except `class` / `style`) on the text button; `EuiListGroup @wrapText` reaches only `@listItems`, and a list item's block is its tooltip content and `title`; a pushed flyout nested in a managed flyout does not push.
+  - Layering: the `EuiComboBox` list stacks like upstream's input popover (its anchor's z-index + 2000) instead of a fixed 99999, so option tooltips show above it; tooltips never stack below their anchor. Popover panels and combo box lists opened inside a modal, flyout or popover now count as inside its focus trap (inputs in them keep focus).
+  - Color palettes follow upstream 123.1.0: `euiPaletteColorBlind`, `euiPaletteColorBlindBehindText`, `euiPaletteForStatus`, `euiPaletteForTemperature`, `euiPaletteComplementary`, `euiPaletteRed`/`Green`/`SkyBlue`/`Yellow`/`Orange`/`Cool`/`Warm`/`Gray` read the Borealis vis colors (so the default categorical palette is now teal/blue/pink instead of the Amsterdam green/blue/pink set, and the status, temperature, cool, warm and gray gradients change), take upstream's `colors` option, and have theme-aware `useEuiPalette*(context, …)` versions that follow color mode and high contrast. `euiPaletteColorBlindBehindText` is no longer brightened (like upstream). `euiPaletteComplimentary`, `euiPaletteNegative`, `euiPalettePositive`, `euiPaletteForLightBackground` and `euiPaletteForDarkBackground` are deprecated until 16.0.0 (upstream dropped them). `EuiColorPicker`'s default swatches now follow the theme's vis colors.
+  - Upstream props closed after an automated audit of every component: button-like components forward EuiButton/EuiButtonEmpty args (`@contentProps`, `@textProps`, `@isLoading`, …); popover and flyout pass-throughs (`anchorProps`, `popoverProps`, `inputPopoverProps`, `tooltipProps`, EuiTourStep's popover args, EuiCollapsibleNav's flyout args); data-driven `@steps`, `@toasts` and context menu `@items` next to the blocks; and props across forms, date pickers, lists and display components. Behaviour now matching upstream: `EuiComboBox` closes its list on scroll, `EuiFlyout` includes fixed headers in its focus trap, `EuiCollapsibleNav` defaults `@session` to `'never'`, `EuiKeyPadMenuItem`'s beta badge tooltip wraps the item, a disabled `EuiAutoRefreshButton` uses `aria-disabled`, `EuiToolTip @onBlur` fires, and context menu links get a secure `rel` and the external icon for `_blank`.
+  - Every package's `LICENSE.md` now has the MIT text its `package.json` declares; parts derived from EUI keep Elastic's license (see `NOTICE.md`).
+
+  See the "Migrating to Borealis" guide (`/docs/migrating-to-borealis`) for the upgrade steps and the full list of changed defaults.
+
 ## 15.0.0
 
 ### Major Changes

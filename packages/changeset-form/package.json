@@ -1,6 +1,6 @@
 {
   "name": "@ember-eui/changeset-form",
-  "version": "15.0.0",
+  "version": "16.0.0",
   "description": "Ember Eui changeset integration",
   "keywords": [
     "ember-addon",
@@ -62,7 +62,7 @@
     "ember-truth-helpers": "^5.0.0"
   },
   "peerDependencies": {
-    "@ember-eui/core": "^15.0.0",
+    "@ember-eui/core": "^16.0.0",
     "@ember/string": "^4.0.0",
     "ember-source": ">= 7.1.0"
   },

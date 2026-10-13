@@ -29,6 +29,10 @@ import {
 } from './styles.generated.ts';
 
 import type { SerializedStyles } from '@emotion/serialize';
+import {
+  useEuiPaletteColorBlind,
+  useEuiPaletteColorBlindBehindText
+} from '../color/eui_palettes.ts';
 import type { EuiBorealisContext } from './theme.ts';
 
 export type EuiTokenFill = 'light' | 'dark' | 'none';
@@ -60,13 +64,8 @@ function getTokenColor(
   color: number | 'gray'
 ): string | undefined {
   const { euiTheme, colorMode, highContrastMode } = euiThemeContext;
-  const vis = euiTheme.colors.vis as unknown as VisColors;
-  // upstream: euiPaletteColorBlind() / euiPaletteColorBlindBehindText()
-  const visColors = Array.from(
-    { length: 10 },
-    (_, index) => vis[`euiColorVis${index}`] as string
-  );
-  const visColorsBehindText = visColors;
+  const visColors = useEuiPaletteColorBlind(euiThemeContext);
+  const visColorsBehindText = useEuiPaletteColorBlindBehindText(euiThemeContext);
   const isVizColor = typeof color === 'number';
   const iconColor = isVizColor
     ? (visColors[color] as string)

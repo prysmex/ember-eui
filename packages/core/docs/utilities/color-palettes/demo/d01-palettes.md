@@ -2,129 +2,103 @@
 order: 1
 ---
 
-# Palettes
+# Preset qualitative palettes
 
 ```gjs component
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
+import { cached } from '@glimmer/tracking';
+import { on } from '@ember/modifier';
 import { htmlSafe } from '@ember/template';
 import {
+  EuiBadge,
   EuiCode,
+  EuiCopy,
+  EuiFlexGrid,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFormRow,
-  EuiRange,
+  EuiLink,
   EuiSpacer,
   EuiTitle
 } from '@ember-eui/core/components';
+import { getEuiThemeContext } from '@ember-eui/core/theming';
 import {
-  colorPalette,
-  euiPaletteColorBlind,
-  euiPaletteColorBlindBehindText,
-  euiPaletteCool,
-  euiPaletteForStatus,
-  euiPaletteForTemperature,
-  euiPaletteGray,
-  euiPaletteWarm
+  useEuiPaletteColorBlind,
+  useEuiPaletteColorBlindBehindText
 } from '@ember-eui/core/utils/color';
 
-const quantitative = {
-  euiPaletteForStatus,
-  euiPaletteForTemperature,
-  euiPaletteCool,
-  euiPaletteWarm,
-  euiPaletteGray
-};
+export default class QualitativePalettesDemo extends Component {
+  // Theme-aware: recomputed when the color mode or high contrast changes.
+  @cached
+  get palettes() {
+    const context = getEuiThemeContext(this).upstream;
 
-export default class PalettesDemo extends Component {
-  @tracked length = 5;
-
-  qualitative = [
-    { code: 'euiPaletteColorBlind()', palette: euiPaletteColorBlind() },
-    { code: 'euiPaletteColorBlind({ rotations: 2 })', palette: euiPaletteColorBlind({ rotations: 2 }) },
-    {
-      code: "euiPaletteColorBlind({ rotations: 3, order: 'group', direction: 'both' })",
-      palette: euiPaletteColorBlind({ rotations: 3, order: 'group', direction: 'both' })
-    },
-    { code: "euiPaletteColorBlind({ sortBy: 'natural' })", palette: euiPaletteColorBlind({ sortBy: 'natural' }) },
-    { code: "euiPaletteColorBlindBehindText({ sortBy: 'natural' })", palette: euiPaletteColorBlindBehindText({ sortBy: 'natural' }) }
-  ];
-
-  get quantitativeRows() {
-    const steps = Number(this.length);
-    return Object.entries(quantitative).map(([name, fn]) => ({
-      code: `${name}(${steps})`,
-      palette: fn(steps)
-    }));
-  }
-
-  get custom() {
-    const steps = Number(this.length);
-    const [a, b] = euiPaletteColorBlind().slice(3, 5);
     return [
-      { code: `colorPalette(['${a}'], ${steps})`, palette: colorPalette([a], steps) },
-      { code: `colorPalette(['${a}', '${b}'], ${steps}, true)`, palette: colorPalette([a, b], steps, true) }
+      {
+        title: 'Max 10 colors',
+        palette: useEuiPaletteColorBlind(context),
+        code: 'useEuiPaletteColorBlind(context)'
+      },
+      {
+        title: 'More than 10 colors are needed',
+        palette: useEuiPaletteColorBlind(context, { rotations: 2 }),
+        code: 'useEuiPaletteColorBlind(context, { rotations: 2 })'
+      },
+      {
+        title: 'Series may have multiple metrics and so the colors must coordinate but be distinguishable',
+        palette: useEuiPaletteColorBlind(context, { rotations: 3, order: 'group', direction: 'both' }),
+        code: "useEuiPaletteColorBlind(context, { rotations: 3, order: 'group', direction: 'both' })"
+      },
+      {
+        title: "The default sort order is close but not exactly aligned with the color wheel. To sort this better add the 'natural' sort param.",
+        palette: useEuiPaletteColorBlind(context, { sortBy: 'natural' }),
+        code: "useEuiPaletteColorBlind(context, { sortBy: 'natural' })"
+      }
     ];
   }
 
-  @action
-  onLengthChange(event) {
-    this.length = event.target.value;
+  @cached
+  get behindText() {
+    return useEuiPaletteColorBlindBehindText(getEuiThemeContext(this).upstream, { sortBy: 'natural' });
   }
 
-  swatch = (hex) => htmlSafe(`background-color: ${hex}; block-size: 32px; inline-size: 32px;`);
+  swatch = (hex) => htmlSafe(`background-color: ${hex}; block-size: 16px; inline-size: 32px;`);
 
   <template>
     <div>
-      <EuiTitle @size='xs'><h3>Qualitative</h3></EuiTitle>
-      <EuiSpacer @size='s' />
-      {{#each this.qualitative as |row|}}
-        <EuiFlexGroup @alignItems='center' @gutterSize='m'>
-          <EuiFlexItem @grow={{false}}>
-            <EuiFlexGroup @gutterSize='none' @responsive={{false}} @wrap={{true}} style='max-inline-size: 320px'>
-              {{#each row.palette as |hex|}}
-                <div style={{this.swatch hex}} title={{hex}}></div>
+      {{#each this.palettes as |palette|}}
+        <EuiTitle @size='xxs'><h3>{{palette.title}}</h3></EuiTitle>
+        <EuiSpacer @size='s' />
+        <EuiFlexGroup @alignItems='center'>
+          <EuiFlexItem @grow={{false}} style='max-inline-size: 240px'>
+            <EuiFlexGroup @gutterSize='none' @alignItems='flexStart' @responsive={{false}} @wrap={{true}} style='border-radius: 6px; overflow: hidden'>
+              {{#each palette.palette as |hex|}}
+                <EuiFlexItem @grow={{false}}><span title={{hex}} style={{this.swatch hex}}></span></EuiFlexItem>
               {{/each}}
             </EuiFlexGroup>
           </EuiFlexItem>
-          <EuiFlexItem><EuiCode>{{row.code}}</EuiCode></EuiFlexItem>
+          <EuiFlexItem>
+            <EuiCopy @beforeMessage='Click to copy palette config' @textToCopy={{palette.code}} as |copy|>
+              <EuiLink {{on 'click' copy}}><EuiCode>{{palette.code}}</EuiCode></EuiLink>
+            </EuiCopy>
+          </EuiFlexItem>
         </EuiFlexGroup>
-        <EuiSpacer @size='m' />
+        <EuiSpacer @size='xl' />
       {{/each}}
 
-      <EuiTitle @size='xs'><h3>Quantitative and custom</h3></EuiTitle>
+      <EuiTitle @size='xxs'><h3>Behind text variant</h3></EuiTitle>
       <EuiSpacer @size='s' />
-      <EuiFormRow @label='Number of steps' @display='columnCompressed'>
-        <EuiRange @min={{2}} @max={{20}} @compressed={{true}} @showValue={{true}} @value={{this.length}} @onChange={{this.onLengthChange}} />
-      </EuiFormRow>
-      <EuiSpacer />
-      {{#each this.quantitativeRows as |row|}}
-        <EuiFlexGroup @alignItems='center' @gutterSize='m'>
-          <EuiFlexItem @grow={{false}}>
-            <EuiFlexGroup @gutterSize='none' @responsive={{false}}>
-              {{#each row.palette as |hex|}}
-                <div style={{this.swatch hex}} title={{hex}}></div>
-              {{/each}}
-            </EuiFlexGroup>
-          </EuiFlexItem>
-          <EuiFlexItem><EuiCode>{{row.code}}</EuiCode></EuiFlexItem>
-        </EuiFlexGroup>
-        <EuiSpacer @size='s' />
-      {{/each}}
-      {{#each this.custom as |row|}}
-        <EuiFlexGroup @alignItems='center' @gutterSize='m'>
-          <EuiFlexItem @grow={{false}}>
-            <EuiFlexGroup @gutterSize='none' @responsive={{false}}>
-              {{#each row.palette as |hex|}}
-                <div style={{this.swatch hex}} title={{hex}}></div>
-              {{/each}}
-            </EuiFlexGroup>
-          </EuiFlexItem>
-          <EuiFlexItem><EuiCode>{{row.code}}</EuiCode></EuiFlexItem>
-        </EuiFlexGroup>
-        <EuiSpacer @size='s' />
-      {{/each}}
+      <EuiFlexGroup @alignItems='center'>
+        <EuiFlexItem @grow={{false}} style='max-inline-size: 240px'>
+          <EuiFlexGrid @columns={{4}} @gutterSize='s'>
+            {{#each this.behindText as |color|}}
+              <EuiFlexItem @grow={{false}}><span><EuiBadge @color={{color}}>Text</EuiBadge></span></EuiFlexItem>
+            {{/each}}
+          </EuiFlexGrid>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiCode>useEuiPaletteColorBlindBehindText(context, { sortBy: 'natural' })</EuiCode>
+        </EuiFlexItem>
+      </EuiFlexGroup>
     </div>
   </template>
 }

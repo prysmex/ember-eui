@@ -7,6 +7,7 @@ import { isColorDark } from '../helpers/is-color-dark.ts';
 import { isValidHex } from '../helpers/is-valid-hex.ts';
 import { toInitials } from '../helpers/to-initials.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
+import { useEuiPaletteColorBlindBehindText } from '../utils/color/eui_palettes.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiAvatarStyles } from '../utils/eui/styles.generated.ts';
@@ -158,13 +159,10 @@ export default class EuiAvatar extends Component<EuiAvatarSignature> {
       );
     }
 
-    const vis = this.context.upstream.euiTheme.colors.vis as unknown as Record<
-      string,
-      string
-    >;
+    const visColors = useEuiPaletteColorBlindBehindText(this.context.upstream);
     const name = this.args.name ?? '';
     const assignedColor =
-      color || (vis[`euiColorVis${Math.floor(name.length % 10)}`] as string);
+      color || (visColors[Math.floor(name.length % visColors.length)] as string);
     const textColor = isColorDark(...hexToRgb(assignedColor))
       ? '#FFFFFF'
       : '#000000';

@@ -53,7 +53,17 @@ export default class EuiErrorMessage extends Component<EuiErrorMessageSignature>
   get classes(): string {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiErrorBoundaryStyles);
-    return `euiErrorBoundary ${euiClass(context, styles.euiErrorBoundary, this.args.css)}`;
+    return `euiErrorBoundary ${euiClass(
+      context,
+      styles.euiErrorBoundary,
+      // Glimmer keeps the whitespace around component markup (JSX drops it):
+      // collapse it in the code block and keep the error text preformatted
+      {
+        '& .euiCodeBlock__code': { whiteSpace: 'normal' },
+        '& .euiErrorBoundary__text': { display: 'block', whiteSpace: 'pre-wrap' }
+      },
+      this.args.css
+    )}`;
   }
 
   get text(): string | undefined {
@@ -69,7 +79,7 @@ export default class EuiErrorMessage extends Component<EuiErrorMessageSignature>
   <template>
     <div class={{this.classes}} data-test-subj="euiErrorBoundary" ...attributes>
       {{! the title makes the block rich content, rendered as-is (upstream) }}
-      <EuiCodeBlock><EuiTitle @size="xs"><p>{{this.title}}</p></EuiTitle>{{this.text}}</EuiCodeBlock>
+      <EuiCodeBlock><EuiTitle @size="xs"><p>{{this.title}}</p></EuiTitle><span class="euiErrorBoundary__text">{{this.text}}</span></EuiCodeBlock>
     </div>
   </template>
 }

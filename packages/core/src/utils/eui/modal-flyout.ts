@@ -15,15 +15,22 @@ import type { EuiBorealisContext } from './theme.ts';
 
 type Side = 'left' | 'right';
 
+interface Contribution {
+  width: number;
+  /** Managed flyouts also report the offset to the flyout manager. */
+  managed: boolean;
+}
+
 interface SideState {
   base: string;
-  contributions: Map<string, number>;
+  contributions: Map<string, Contribution>;
 }
 
 /**
  * Upstream `euiPushPaddingRegistry`: every pushed flyout contributes its
- * width; the target gets the widest contribution per side and its own
- * inline padding back once the last flyout on that side is gone.
+ * width; the target (`document.body` or the flyout's `container`) gets the
+ * widest contribution per side and its own inline padding back once the
+ * last flyout on that side is gone.
  */
 const registry = new WeakMap<HTMLElement, Record<Side, SideState>>();
 
@@ -46,16 +53,44 @@ const cssVar = (side: Side) =>
     ? '--euiPushFlyoutOffsetInlineStart'
     : '--euiPushFlyoutOffsetInlineEnd';
 
-function apply(target: HTMLElement, side: Side, state: SideState) {
+const maxContribution = (
+  contributions: Map<string, Contribution>,
+  filter: (contribution: Contribution) => boolean = () => true
+) =>
+  Math.max(
+    0,
+    ...Array.from(contributions.values(), (contribution) =>
+      filter(contribution) ? contribution.width : 0
+    )
+  );
+
+function apply(
+  target: HTMLElement,
+  side: Side,
+  state: SideState,
+  hasContainer: boolean,
+  onManagedOffset?: (side: Side, width: number) => void
+) {
   const pushing = state.contributions.size > 0;
-  const total = Math.max(0, ...state.contributions.values());
+  const total = maxContribution(state.contributions);
   target.style[styleKey(side)] = pushing ? `${total}px` : state.base;
-  if (pushing)
-    document.documentElement.style.setProperty(cssVar(side), `${total}px`);
-  else document.documentElement.style.removeProperty(cssVar(side));
+  // Without a container the offset is also a global CSS variable.
+  if (!hasContainer) {
+    if (pushing)
+      document.documentElement.style.setProperty(cssVar(side), `${total}px`);
+    else document.documentElement.style.removeProperty(cssVar(side));
+  }
+  onManagedOffset?.(
+    side,
+    maxContribution(state.contributions, (c) => c.managed)
+  );
 }
 
-/** Pads `<body>` by the pushed flyout's width while it is installed. */
+/**
+ * Pads `<body>` (or `container`) by the pushed flyout's width while it is
+ * installed. Managed flyouts pass `onManagedOffset`, which receives the
+ * widest managed contribution for the flyout manager.
+ */
 export const pushFlyoutPadding = modifier(
   (
     _element: Element,
@@ -64,19 +99,29 @@ export const pushFlyoutPadding = modifier(
       id,
       side,
       width,
-      isPushed
-    }: { id: string; side: Side; width?: number; isPushed: boolean }
+      isPushed,
+      container,
+      onManagedOffset
+    }: {
+      id: string;
+      side: Side;
+      width?: number;
+      isPushed: boolean;
+      container?: HTMLElement | null;
+      onManagedOffset?: (side: Side, width: number) => void;
+    }
   ) => {
     if (!isPushed || width === undefined) return;
-    const target = document.body;
+    const target = container ?? document.body;
+    const hasContainer = container != null;
     const state = sideState(target, side);
     if (state.contributions.size === 0)
       state.base = target.style[styleKey(side)];
-    state.contributions.set(id, width);
-    apply(target, side, state);
+    state.contributions.set(id, { width, managed: Boolean(onManagedOffset) });
+    apply(target, side, state, hasContainer, onManagedOffset);
     return () => {
       state.contributions.delete(id);
-      apply(target, side, state);
+      apply(target, side, state, hasContainer, onManagedOffset);
     };
   }
 );
@@ -97,18 +142,26 @@ export const observeWidth = modifier(
   }
 );
 
-/** Upstream `useEuiFlyoutZIndex` for unmanaged flyouts. */
+/**
+ * Upstream `useEuiFlyoutZIndex`: `managedFlyoutIndex` is the flyout
+ * manager's offset (the session's z-index for managed flyouts, the
+ * manager's z-index when an unmanaged flyout opened); child flyouts sit one
+ * level below their main flyout.
+ */
 export function flyoutZIndex(
   { euiTheme }: EuiBorealisContext,
   headerZindexLocation: 'above' | 'below',
-  isPushed: boolean
+  isPushed: boolean,
+  managedFlyoutIndex = 0,
+  isChildFlyout = false
 ) {
-  const base = Number(
-    !isPushed && headerZindexLocation === 'above'
-      ? euiTheme.levels.mask
-      : euiTheme.levels.flyout
-  );
-  return { flyout: base, mask: base - 2 };
+  const base =
+    Number(
+      !isPushed && headerZindexLocation === 'above'
+        ? euiTheme.levels.mask
+        : euiTheme.levels.flyout
+    ) + managedFlyoutIndex;
+  return { flyout: isChildFlyout ? base - 1 : base, mask: base - 2 };
 }
 
 /**

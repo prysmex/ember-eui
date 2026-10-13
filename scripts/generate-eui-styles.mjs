@@ -317,6 +317,9 @@ const entries = {
   'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles'],
   // new-refresh-flyout
   'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles'],
+  // flyout-manager (EuiFlyout session management)
+  'components/flyout/manager/flyout_managed.styles.js': ['euiManagedFlyoutStyles'],
+  'components/flyout/manager/flyout_main.styles.js': ['euiMainFlyoutStyles'],
   // new-tables (EuiSearchBar, EuiBasicTable, EuiInMemoryTable)
   'components/search_bar/search_bar.styles.js': ['euiSearchBar__searchHolder', 'euiSearchBar__filtersHolder'],
   'components/basic_table/basic_table.styles.js': ['euiBasicTableBodyLoading', 'euiBasicTableWrapperPanelledStyles', 'safariLoadingWorkaround'],

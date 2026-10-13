@@ -12,20 +12,19 @@ order: 10
 
 <EuiText>
   <p>
-    <EuiCode>EuiFlyoutMenu</EuiCode> is the top menu bar of a flyout. In Ember
-    EUI it is a regular component that you place first inside
-    <EuiCode>EuiFlyout</EuiCode> (upstream controls it with the
-    <EuiCode>flyoutMenuProps</EuiCode> prop of <EuiCode>EuiFlyout</EuiCode>).
-    Pass <EuiCode>@hideCloseButton=\{{true}}</EuiCode> to the flyout, so the
-    menu renders the close button.
+    <EuiCode>@flyoutMenuProps</EuiCode> renders a menu bar at the top of the
+    flyout, in place of its close button: the menu has its own close button,
+    which calls the flyout's <EuiCode>@onClose</EuiCode>. It takes the
+    arguments of <EuiCode>EuiFlyoutMenu</EuiCode> as an object, and the flyout
+    is labelled by the menu title (visually hidden by default).
   </p>
   <p>
-    Actions rendered via <EuiCode>@trailingActions</EuiCode> show a tooltip when
+    Actions rendered via <EuiCode>trailingActions</EuiCode> show a tooltip when
     <EuiCode>toolTipContent</EuiCode> is provided, and are placed before the
-    close button. Use <EuiCode>@leadingActions</EuiCode> to render actions at
+    close button. Use <EuiCode>leadingActions</EuiCode> to render actions at
     the start of the menu bar, after any built-in leading controls (pagination,
     or back/history); a divider is shown automatically between the built-in
-    controls and <EuiCode>@leadingActions</EuiCode> when both are present.
+    controls and <EuiCode>leadingActions</EuiCode> when both are present.
   </p>
   <p>
     Each action accepts <EuiCode>iconType</EuiCode>, <EuiCode>ariaLabel</EuiCode>,
@@ -36,9 +35,13 @@ order: 10
     explain why.
   </p>
   <p>
-    The <EuiCode>@customActions</EuiCode> argument is deprecated in favor of
-    <EuiCode>@trailingActions</EuiCode>, which takes precedence if both are
-    supplied.
+    The <EuiCode>customActions</EuiCode> field is deprecated in favor of
+    <EuiCode>trailingActions</EuiCode>, which takes precedence if both are
+    supplied. In managed session flyouts (see Session management below)
+    the flyout manager adds a back button and a history popover to the menu.
+    You can still place <EuiCode>EuiFlyoutMenu</EuiCode> in the flyout's block
+    yourself (see the back button and history example below); without
+    <EuiCode>@onClose</EuiCode> its close button closes the flyout.
   </p>
 </EuiText>
 
@@ -49,7 +52,8 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { EuiButton, EuiFlyout, EuiFlyoutBody, EuiFlyoutFooter, EuiFlyoutMenu } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { EuiButton, EuiFlyout, EuiFlyoutBody, EuiFlyoutFooter } from '@ember-eui/core/components';
 
 export default class FlyoutMenuBasicComponent extends Component {
   @tracked isFlyoutVisible = false;
@@ -83,15 +87,11 @@ export default class FlyoutMenuBasicComponent extends Component {
   {{#if this.isFlyoutVisible}}
     <EuiFlyout
       @onClose={{this.closeFlyout}}
-      @hideCloseButton={{true}}
-      aria-labelledby="menuFlyoutTitle"
+      @flyoutMenuProps={{hash
+        title="My flyout with a menu"
+        trailingActions=this.trailingActions
+      }}
     >
-      <EuiFlyoutMenu
-        @title="My flyout with a menu"
-        @titleId="menuFlyoutTitle"
-        @trailingActions={{this.trailingActions}}
-        @onClose={{this.closeFlyout}}
-      />
       <EuiFlyoutBody>Flyout body</EuiFlyoutBody>
       <EuiFlyoutFooter>Flyout footer</EuiFlyoutFooter>
     </EuiFlyout>

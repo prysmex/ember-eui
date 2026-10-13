@@ -423,6 +423,18 @@
       "sha256": "8005345f4c8e8307bac53bb70cab23d2b3002199d8d040420398b540717ad691"
     },
     {
+      "path": "@elastic/eui/es/components/flyout/manager/const.js",
+      "sha256": "08d11a9a013f62448fa16abbab90ebf100efd601ac21d2cd25057da6bca42ba8"
+    },
+    {
+      "path": "@elastic/eui/es/components/flyout/manager/flyout_main.styles.js",
+      "sha256": "51e69475e2ca164f2914764bc12b4232170b94e3936d83b9558fb470e3ec23cf"
+    },
+    {
+      "path": "@elastic/eui/es/components/flyout/manager/flyout_managed.styles.js",
+      "sha256": "40fecb923160ce5264689c4bca9a482ea9a38f2c6cd121d8aeb0d0ff81c870b0"
+    },
+    {
       "path": "@elastic/eui/es/components/form/checkbox/checkbox_control.styles.js",
       "sha256": "325c4fb973816edabedd25bf5fc5d909cf7999f51f84346eef0bcaf61d2f17ad"
     },

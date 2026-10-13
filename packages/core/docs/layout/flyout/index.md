@@ -55,11 +55,38 @@ Use `@focusTrapOptions` to customize the focus behavior, e.g.
 `@focusTrapOptions={{hash returnFocusOnDeactivate=false}}` to manage returning
 focus yourself.
 
+#### Manual return focus control
+
+Upstream's `focusTrapProps` is supported too: `returnFocus` receives the
+trigger element and returns `true` for the default behavior or `false` to
+skip it (after focusing something else yourself); `returnFocus: false` never
+returns focus. `shards` adds elements that count as part of the flyout.
+
+```js
+returnFocus = (triggerElement) => {
+  if (this.customElement) {
+    this.customElement.focus();
+    return false;
+  }
+  return true;
+};
+```
+
+```hbs
+<EuiFlyout @focusTrapProps={{hash returnFocus=this.returnFocus}} @onClose={{this.close}}>…</EuiFlyout>
+```
+
 <EuiCallOut @title="Manually return focus when the trigger element is removed" @color="warning" @iconType="warning" @size="s">
   If the trigger element is removed from the DOM before the flyout closes,
   focus will be "lost" to the document body. In this case, manually return
-  focus to an appropriate element.
+  focus to an appropriate element using focusTrapProps.returnFocus.
 </EuiCallOut>
+
+### Closing reasons
+
+`@onClose` receives the event and `{ reason }`: `'close-button'`, `'escape'`
+or `'outside-click'`, and for managed flyouts (see Session management below)
+`'navigation-back'` or `'navigation-cascade'`.
 
 </EuiText>
 
@@ -96,7 +123,7 @@ that keep the page context. Render it only while open:
 | `@hideCloseButton` | `boolean` |  | Hides the close button (e.g. when the flyout has its own). |
 | `@closeButtonProps` |  |  | Props for the close button: `{ className, onClick }`. |
 | `@closeButtonAriaLabel` | `string` | "Close this dialog" | Accessible label of the close button. |
-| `@onClose` | `() => void` |  | Called by the close button, Escape, the mask and outside clicks. Stop rendering the flyout here. Without it there is no close button. |
+| `@onClose` |  |  | Called by the close button, Escape, the mask and outside clicks with the event and `{ reason }` (`'close-button'`, `'escape'`, `'outside-click'`; managed flyouts also `'navigation-back'` and `'navigation-cascade'`). Stop rendering the flyout here. Without it there is no close button. |
 | `@maxWidth` | `boolean \| number \| string` | `false` | Caps the width: `true` for the size's max width, `false` for none, or a number in px or any CSS width. |
 | `@maskProps` | `{ headerZindexLocation?: 'above' \| 'below' }` | `'below'` | Options for the mask: `{ headerZindexLocation: 'above' }` puts the flyout and its mask above a fixed `EuiHeader`. |
 | `@type` | `'overlay' \| 'push' \| string` | `'overlay'` | `'overlay'` covers the page; `'push'` pads the page so the flyout sits beside it (on windows at least `@pushMinBreakpoint` wide). |
@@ -108,6 +135,14 @@ that keep the page context. Render it only while open:
 | `@minWidth` | `number` | `0` | Smallest width in px while `@resizable`. |
 | `@onResize` | `(width: number) => void` |  | Called with the new width in px after the user resizes (when a drag ends, and on each keyboard step), while `@resizable`. |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
+| `@session` | `'start' \| 'inherit' \| 'never'` |  | Session management (Beta): `'start'` opens a new flyout session with this flyout as its main flyout; `'inherit'` joins the active session as its child flyout (a standard flyout without one); `'never'` opts out. Unset, a flyout nested in another flyout's block joins the active session as a child, any other flyout is a standard one. |
+| `@historyKey` | `symbol` | a history of its own per session | Scopes the history (Back button and history popover) of `@session="start"` flyouts: only flyouts given the same Symbol share it. |
+| `@onActive` | `() => void` |  | Called when a managed flyout becomes active again, e.g. through history. |
+| `@flyoutMenuProps` | `EuiFlyoutMenuProps` |  | Renders a menu bar at the top of the flyout (title, back button, history, actions, pagination) in place of the close button; its close button closes the flyout. In managed flyouts `title` names the session and the manager adds the back button and history. |
+| `@flyoutMenuDisplayMode` | `EuiFlyoutMenuDisplayMode` | `'auto'` | `'auto'` renders the menu only when it has content (back button, history, actions, pagination or a visible title); `'always'` whenever `@flyoutMenuProps` is set. |
+| `@hasChildBackground` | `boolean` | `false` | A managed child flyout gets the subdued background. |
+| `@container` | `EuiFlyoutContainer` |  | Keeps the flyout (and its mask) within an element's bounds, e.g. an app area next to a side navigation: an element, a getter or a CSS selector. Push flyouts pad it instead of `<body>`, and its width replaces the window's for push breakpoints and resizing. Nested flyouts inherit it. `null` forces the viewport and puts the flyout above fixed headers. |
+| `@focusTrapProps` | `EuiFlyoutFocusTrapProps` |  | Focus trap options (upstream `focusTrapProps`): `returnFocus`, `shards`. |
 
 Deprecated: `@isOpen` (Has no effect: render the flyout only while it is open.); `@isDocked` (Has no effect, see EuiCollapsibleNav; use `@type="push"`.); `@dockedBreakpoint` (Has no effect; use `@pushMinBreakpoint`.); `@showButtonIfDocked` (Has no effect.).
 
@@ -174,7 +209,7 @@ it first inside an `EuiFlyout`. Upstream's `EuiFlyoutMenu`.
 | `@title` | `string` |  | Title of the menu. Hidden from view by default (see `@hideTitle`) but still read by screen readers. |
 | `@titleId` | `string` |  | Id of the title element, e.g. for the flyout's `aria-labelledby`. |
 | `@hideCloseButton` | `boolean` | `false` | Hides the close button. |
-| `@onClose` | `(event: MouseEvent) => void` |  | Called by the close button. Without it the button does nothing. |
+| `@onClose` | `(event: MouseEvent) => void` |  | Called by the close button. Without it, the button closes the `EuiFlyout` the menu is in (upstream `EuiFlyoutMenuContext`). |
 | `@showBackButton` | `boolean` | `false` | Shows a back button. |
 | `@backButtonProps` | `EuiFlyoutMenuBackButtonProps` |  | Options of the back button, such as `onClick`. |
 | `@historyItems` | `EuiFlyoutHistoryItem[]` |  | Entries of the history popover, most recent first: index 0 is where the back button goes. Shown from two entries. |

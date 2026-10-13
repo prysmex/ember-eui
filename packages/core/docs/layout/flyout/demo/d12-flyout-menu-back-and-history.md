@@ -2,11 +2,13 @@
 order: 12
 ---
 
-# Flyout menu with back button and history
+# EuiFlyoutMenu in the flyout's block
 
 <EuiText>
 
-`EuiFlyoutMenu` is a menu bar for the top of a flyout. It can show a back
+`EuiFlyoutMenu` can also be placed first in the flyout's block (pass
+`@hideCloseButton={{true}}` to the flyout), e.g. to drive a back button and
+history yourself without session management. It can show a back
 button, a history popover (from two `@historyItems`, most recent first),
 `@leadingActions` and `@trailingActions` icon buttons, or `@pagination`
 controls with a position counter, followed by the flyout's close button.

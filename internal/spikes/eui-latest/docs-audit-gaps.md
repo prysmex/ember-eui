@@ -53,7 +53,6 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiFlyout | `flyoutMenuProps`/`flyoutMenuDisplayMode`, `container`, child-flyout inheritance, flyout manager / session management, `focusTrapProps.returnFocus` |
 | EuiModal | `focusTrapProps.returnFocus` |
 | EuiSuperSelect | `popoverProps` |
 | EuiConfirmModal | `titleProps` |

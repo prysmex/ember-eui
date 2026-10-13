@@ -5,6 +5,7 @@ import { fn } from '@ember/helper';
 import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import { and, not } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
@@ -18,6 +19,7 @@ import {
   comboBoxOptionLabel
 } from '../utils/eui/combo-box.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import EuiBadge from './eui-badge.gts';
 import EuiComboBoxNode from './eui-combo-box/node.gts';
 
@@ -36,6 +38,33 @@ const optionNode = (option: unknown, key: 'prepend' | 'append') =>
   option && typeof option === 'object'
     ? (option as Record<string, unknown>)[key]
     : undefined;
+
+/**
+ * Keys upstream's `renderPills` takes out of the option (and the pill's own
+ * props); the rest is spread onto the pill's EuiBadge (`{...rest}`).
+ */
+const PILL_RESERVED = [
+  'key',
+  'label',
+  'color',
+  'onClick',
+  'append',
+  'prepend',
+  'truncationProps',
+  'toolTipContent',
+  'toolTipProps',
+  'option',
+  'onClose',
+  'onClickAriaLabel',
+  'children'
+] as const;
+
+/** Upstream-shaped (plain object) options; other objects (models…) are data. */
+function isPlainOption(option: unknown): option is Record<string, unknown> {
+  if (!option || typeof option !== 'object') return false;
+  const proto = Object.getPrototypeOf(option) as unknown;
+  return proto === Object.prototype || proto === null;
+}
 
 const hasSides = (option: unknown) =>
   Boolean(optionNode(option, 'prepend') || optionNode(option, 'append'));
@@ -105,6 +134,40 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
 
   get color(): EuiBadgeSignature['Args']['color'] {
     return this.args.color ?? 'hollow';
+  }
+
+  /**
+   * Upstream `renderPills`: an option with an `onClick` is a clickable pill
+   * ("Change") without the remove button.
+   */
+  get onClick(): ((event: MouseEvent) => void) | undefined {
+    const option = this.args.option;
+    if (!isPlainOption(option) || typeof option['onClick'] !== 'function') {
+      return undefined;
+    }
+    return option['onClick'] as (event: MouseEvent) => void;
+  }
+
+  /**
+   * Upstream `{...rest}`: the option's other keys (`data-test-subj`, `id`,
+   * `aria-*`, …) as attributes of the badge, after the pill's own. Only for
+   * upstream-shaped options: plain objects without `@searchField`.
+   */
+  get optionAttributes(): Record<string, unknown> | undefined {
+    const option = this.args.option;
+    if (this.args.searchField || !isPlainOption(option)) return undefined;
+    return option;
+  }
+
+  /** Upstream `className` of the option, added to the pill's. */
+  get optionClass(): string | undefined {
+    const className = this.optionAttributes?.['className'];
+    return typeof className === 'string' ? className : undefined;
+  }
+
+  /** Upstream `title={children}`: the option's label. */
+  get title(): string | undefined {
+    return comboBoxOptionLabel(this.args.option, this.args.searchField) || undefined;
   }
 
   get removeLabel(): string | undefined {
@@ -193,11 +256,33 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
   }
 
   <template>
-    {{#if @onClose}}
+    {{#if (and this.onClick (not @asPlainText))}}
       <EuiBadge
-        class="euiComboBoxPill"
+        class="euiComboBoxPill {{this.optionClass}}"
         @css={{this.pillCss}}
         data-test-subj="euiComboBoxPill"
+        title={{this.title}}
+        @color={{this.color}}
+        @onClick={{this.onClick}}
+        @onClickAriaLabel="Change"
+        @closeButtonProps={{hash dataSelectedIconIndex=@dataSelectedIconIndex}}
+        ...attributes
+        {{spreadAttributes this.optionAttributes PILL_RESERVED}}
+      >
+        <PillContent
+          @option={{@option}}
+          @prefix="euiComboBoxPill"
+          @prependClass={{this.sideClasses.prepend}}
+          @appendClass={{this.sideClasses.append}}
+          @textClass={{this.textClass}}
+        >{{yield}}</PillContent>
+      </EuiBadge>
+    {{else if @onClose}}
+      <EuiBadge
+        class="euiComboBoxPill {{this.optionClass}}"
+        @css={{this.pillCss}}
+        data-test-subj="euiComboBoxPill"
+        title={{this.title}}
         @closeButtonProps={{hash
           tabIndex=-1
           dataSelectedIconIndex=@dataSelectedIconIndex
@@ -208,6 +293,7 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
         @iconSide="right"
         @iconType="cross"
         ...attributes
+        {{spreadAttributes this.optionAttributes PILL_RESERVED}}
       >
         <PillContent
           @option={{@option}}
@@ -232,12 +318,14 @@ export default class EuiComboBoxPillComponent extends Component<EuiComboBoxPill>
       </span>
     {{else}}
       <EuiBadge
-        class="euiComboBoxPill"
+        class="euiComboBoxPill {{this.optionClass}}"
         @css={{this.pillCss}}
         data-test-subj="euiComboBoxPill"
+        title={{this.title}}
         @color={{this.color}}
         @closeButtonProps={{hash dataSelectedIconIndex=@dataSelectedIconIndex}}
         ...attributes
+        {{spreadAttributes this.optionAttributes PILL_RESERVED}}
       >
         <PillContent
           @option={{@option}}

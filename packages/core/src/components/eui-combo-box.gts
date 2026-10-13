@@ -404,6 +404,17 @@ export const toPlainArray = <T,>(collection: T[] | Sliceable<T>): T[] => {
  */
 export const COMBO_BOX_LIST_Z_INDEX_OFFSET = 2000;
 
+/** The parts of ember-power-select's API the container blur uses. */
+type ContainerBlurApi = Select & {
+  uniqueId?: string;
+  isOpen?: boolean;
+  highlighted?: unknown;
+  actions: {
+    close?: (e?: Event) => void;
+    highlight?: (option: unknown) => void;
+  };
+};
+
 export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature> {
   @service declare euiI18n: EuiI18n;
 
@@ -943,6 +954,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         inputRequired=@required
         onClear=this.clearSelectedOptions
         onToggleList=this.onToggleListClick
+        onToggleBlur=this.onToggleBlur
+        onToggleKeydown=this.onToggleKeydown
         onPlainTextClick=this.onPlainTextClick
         screenReaderInstructions=this.screenReaderInstructions
       }}
@@ -1412,6 +1425,80 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
     }
   }
 
+  /**
+   * Upstream's container `onKeyDown` while the toggle button has focus
+   * (after a click on it): arrows open the list or move through it, Escape
+   * closes it, Tab is held while an option is highlighted. Enter and Space
+   * press the button (its native click). Returns whether the key must not
+   * reach ember-basic-dropdown / ember-power-select's trigger handlers
+   * (which would toggle, choose or type ahead).
+   */
+  @action
+  onToggleKeydown(event: KeyboardEvent): boolean {
+    const api = this.select as
+      | (Select & {
+          isOpen: boolean;
+          highlighted: unknown;
+          results: unknown[];
+          actions: {
+            open: (e?: Event) => void;
+            highlight: (option: unknown) => void;
+            scrollTo: (option: unknown) => void;
+            close: (e?: Event) => void;
+          };
+        })
+      | undefined;
+
+    if (!api || this.args.isDisabled) return true;
+    if (this.args.onKeydown?.(api, event) === false) return true;
+
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowDown': {
+        event.preventDefault();
+
+        if (!api.isOpen) {
+          if (!this.args.noSuggestions) api.actions.open(event);
+
+          return true;
+        }
+
+        const next = this.nextActiveOption(
+          api.results,
+          api.highlighted,
+          event.key === 'ArrowDown' ? 1 : -1
+        );
+
+        if (next !== undefined) {
+          api.actions.highlight(next);
+          api.actions.scrollTo(next);
+        }
+
+        return true;
+      }
+
+      case 'Escape':
+        if (!api.isOpen) return false;
+
+        event.preventDefault();
+        api.actions.close(event);
+
+        return true;
+
+      case 'Tab':
+        if (api.isOpen && api.highlighted !== undefined) {
+          event.preventDefault();
+
+          return true;
+        }
+
+        return false;
+
+      default:
+        return true;
+    }
+  }
+
   /** Upstream `incrementActiveOptionIndex`. */
   nextActiveOption(
     results: unknown[],
@@ -1548,19 +1635,27 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
    */
   @action
   onBlur(select: Select, event: FocusEvent): void {
-    (this.args.onBlur as ((...args: unknown[]) => void) | undefined)?.(
-      select,
-      event
-    );
-
     this.inputHasFocus = false;
+    this.containerBlur((this.select ?? select) as ContainerBlurApi, event);
+  }
 
-    const api = (this.select ?? select) as Select & {
-      uniqueId?: string;
-      isOpen?: boolean;
-      highlighted?: unknown;
-      actions: { close?: (e?: Event) => void };
-    };
+  /**
+   * Upstream `onContainerBlur` for the toggle button, which takes focus when
+   * pressed: leaving the combo box from it closes the list as from the
+   * input.
+   */
+  @action
+  onToggleBlur(event: FocusEvent): void {
+    if (this.select) this.containerBlur(this.select as ContainerBlurApi, event);
+  }
+
+  /**
+   * Upstream `onContainerBlur`: focus moving into the list stays; focus
+   * moving elsewhere in the combo box (the toggle or clear button, a pill's
+   * remove button) clears the active option; leaving calls `@onBlur`,
+   * closes the list and adds the typed text.
+   */
+  containerBlur(api: ContainerBlurApi | undefined, event?: FocusEvent): void {
     const next = event?.relatedTarget as Node | null;
     const list = api?.uniqueId
       ? document.getElementById(`ember-basic-dropdown-content-${api.uniqueId}`)
@@ -1569,7 +1664,18 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       '.euiComboBox'
     );
 
-    if (next && (list?.contains(next) || root?.contains(next))) return;
+    if (next && list?.contains(next)) return;
+
+    if (next && root?.contains(next)) {
+      if (api?.highlighted !== undefined) api.actions.highlight?.(undefined);
+
+      return;
+    }
+
+    (this.args.onBlur as ((...args: unknown[]) => void) | undefined)?.(
+      api,
+      event
+    );
 
     const hasActiveOption = Boolean(
       api?.isOpen && api.highlighted !== undefined

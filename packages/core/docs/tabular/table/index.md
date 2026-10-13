@@ -70,6 +70,7 @@ attributes go to the `<table>`.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into the `<table>`'s class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@compressed` | `boolean` |  | Smaller text and padding (not applied to the cards layout). |
 | `@tableLayout` | `'fixed' \| 'auto'` | `'fixed'` | `'fixed'` (columns share the width, text wraps or truncates) or `'auto'` (columns fit their content). |
 | `@responsive` | `boolean` | `true`; `false` never collapses (same as `@responsiveBreakpoint={{false}}`) | Rows become cards below `@responsiveBreakpoint`. |
@@ -112,6 +113,7 @@ shows the sort direction (`@isSorted`, `@isSortAscending`), or a
 | `@description` | `string` |  | More about the column, in its title and for screen readers. |
 | `@scope` | `string` | `'col'` | `scope` of the `<th>`. |
 | `@mobileOptions` | `TableMobileOptions` |  | `{ show, only }` for the cards layout. |
+| `@tooltipProps` | `EuiTableHeaderCellTooltipProps` |  | Adds an icon with a tooltip next to the name. In a sortable header the icon is plain and the tooltip shows on the whole sort button. |
 
 | Block | Description |
 | --- | --- |
@@ -248,6 +250,8 @@ the page buttons on the right. You keep the page and the page size.
 | `@compressed` | `boolean` |  | Passed to `EuiPagination`: "page of total" with arrows. |
 | `@responsive` |  |  | Passed to `EuiPagination`: breakpoints at which it is compressed. |
 | `@ariaControls` | `string` |  | Passed to `EuiPagination`: id of the content the pages change. |
+| `@aria-label` | `string` |  | Accessible name of the pagination navigation (upstream `aria-label`), e.g. "Pagination for table: Users". |
+| `@aria-labelledby` | `string` |  | Id of the element naming the pagination navigation. |
 
 Deprecated: `@hidePerPageOptions` (Use `@showPerPageOptions={{false}}`. Hides the menu.).
 

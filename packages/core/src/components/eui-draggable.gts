@@ -18,6 +18,7 @@ import {
 
 import type { DraggableData } from '../-private/drag-drop.ts';
 import type EuiDroppable from './eui-droppable.gts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 /** Controls a key press inside the item must reach (not lift the item). */
 const INTERACTIVE =
@@ -31,6 +32,11 @@ const INTERACTIVE =
 export interface EuiDraggableSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** Unique id of the item, reported in `onDragEnd`. */
     draggableId: string;
     /** Position of the item in its list. */
@@ -130,7 +136,8 @@ export default class EuiDraggable extends Component<EuiDraggableSignature> {
       this.isClone && !this.isDragging && styles.hasClone,
       this.isDragging && styles.isDragging,
       this.args.isRemovable && styles.isRemovable,
-      styles.spacing[this.args.spacing ?? 'none']
+      styles.spacing[this.args.spacing ?? 'none'],
+      this.args.css
     )}`;
   }
 

@@ -95,6 +95,7 @@ items.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@droppableId` (required) | `string` |  | Unique id of the list, reported in `onDragEnd`. |
 | `@type` | `string` | `'EUI_DEFAULT'` | Items can only move between lists of the same type. |
 | `@direction` | `'vertical' \| 'horizontal'` | `'vertical'` | `'vertical'` or `'horizontal'` list. |
@@ -115,6 +116,7 @@ move it and Space again to drop it (Escape cancels).
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |
 | `@draggableId` (required) | `string` |  | Unique id of the item, reported in `onDragEnd`. |
 | `@index` (required) | `number` |  | Position of the item in its list. |
 | `@isDragDisabled` | `boolean` |  | The item cannot be dragged. |

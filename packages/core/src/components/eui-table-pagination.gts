@@ -51,6 +51,13 @@ export interface EuiTablePaginationSignature {
     responsive?: EuiPaginationSignature['Args']['responsive'];
     /** Passed to `EuiPagination`: id of the content the pages change. */
     ariaControls?: string;
+    /**
+     * Accessible name of the pagination navigation (upstream
+     * `aria-label`), e.g. "Pagination for table: Users".
+     */
+    'aria-label'?: string;
+    /** Id of the element naming the pagination navigation. */
+    'aria-labelledby'?: string;
   };
 }
 
@@ -169,6 +176,8 @@ export default class EuiTablePagination extends Component<EuiTablePaginationSign
             @compressed={{@compressed}}
             @responsive={{@responsive}}
             @ariaControls={{@ariaControls}}
+            aria-label={{@aria-label}}
+            aria-labelledby={{@aria-labelledby}}
           />
         {{/if}}
       </EuiFlexItem>

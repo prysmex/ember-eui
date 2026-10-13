@@ -104,8 +104,11 @@ path.
   sticky actions columns, `stickyHeader/stickyScrollbar` (EuiTable lacks
   them), copy-to-clipboard tabular markers (`OverrideCopiedTabularContent`),
   `EuiComponentDefaultsContext` page-size defaults (upstream defaults
-  used). Safari's loading workaround is an inline `position: relative` on
-  the `<table>` (EuiTable has no `@css`).
+  used). Safari's loading workaround is upstream's `safariLoadingWorkaround`
+  through `EuiTable @css`. The pagination is labelled "Pagination for
+  table: {caption}" through `EuiTablePagination @aria-label`, and
+  `nameTooltip` maps to `EuiTableHeaderCell @tooltipProps` (sortable
+  columns show the tooltip on the whole sort button, like upstream).
 - `EuiInMemoryTable`: owns query/sort/page as tracked state with
   upstream's `getDerivedStateFromProps` rules; `search.onChange` must
   return `true` to keep filtering in memory (upstream); `box.schema: true`
@@ -134,10 +137,9 @@ path.
   (generator entries in the `// new-tables` block).
 - Docs add 3 pages (forms/search-bar, tabular/basic-table,
   tabular/in-memory-table): the site's navigation count test needs +3.
-- Report for other families: `EuiFilterGroup` and `EuiTable` have no
-  `@css` (search bar filters and the Safari workaround would use them);
-  `EuiTablePagination` cannot take an `aria-label` for its navigation
-  (upstream's basic table labels it "Pagination for table: …");
-  `EuiTableHeaderCell` has no `tooltipProps`/`append`; EuiSelectable's
-  `onChange` does not report the changed option (the selection filter
-  diffs the options).
+- Resolved on `eui-wave/css-gaps`: `EuiFilterGroup` and `EuiTable` now take
+  `@css`, `EuiTablePagination` takes `@aria-label`/`@aria-labelledby` and
+  `EuiTableHeaderCell` takes `@tooltipProps`. Still open: `EuiTableHeaderCell`
+  has no `@append`; the search bar filters pass no `@css` to `EuiFilterGroup`
+  because upstream does not either; EuiSelectable's `onChange` does not
+  report the changed option (the selection filter diffs the options).

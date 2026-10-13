@@ -54,10 +54,8 @@ export default class EuiDataGridColumnSorting extends Component<EuiDataGridColum
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiDataGridColumnSortingStyles);
     return {
-      // EuiDroppable/EuiDraggable have no @css: list and spacing styles go on a wrapper
-      list: euiClass(context, styles.euiDataGridColumnSorting, {
-        '.euiDataGridColumnSorting__dragHandle': styles.euiDataGridColumnSorting__dragHandle
-      }),
+      list: styles.euiDataGridColumnSorting,
+      dragHandle: styles.euiDataGridColumnSorting__dragHandle,
       item: styles.euiDataGridColumnSorting__item,
       name: styles.euiDataGridColumnSorting__name,
       order: styles.euiDataGridColumnSorting__order,
@@ -219,9 +217,8 @@ export default class EuiDataGridColumnSorting extends Component<EuiDataGridColum
       </:button>
       <:content>
         {{#if @sorting.columns.length}}
-          <div class={{this.classes.list}}>
           <EuiDragDropContext @onDragEnd={{this.onDragEnd}} as |dnd|>
-            <dnd.Droppable @droppableId="columnSorting" as |list|>
+            <dnd.Droppable @droppableId="columnSorting" @css={{this.classes.list}} as |list|>
               {{#each @sorting.columns key="id" as |column index|}}
                 <list.Draggable
                   @draggableId={{column.id}}
@@ -229,6 +226,7 @@ export default class EuiDataGridColumnSorting extends Component<EuiDataGridColum
                   @hasInteractiveChildren={{true}}
                   @customDragHandle={{true}}
                   class="euiDataGridColumnSorting__dragHandle"
+                  @css={{this.classes.dragHandle}}
                   as |item|
                 >
                   <EuiFlexGroup
@@ -278,10 +276,10 @@ export default class EuiDataGridColumnSorting extends Component<EuiDataGridColum
                         </EuiFlexItem>
                       </EuiFlexGroup>
                     </EuiFlexItem>
-                    {{! EuiButtonGroup has no @css: the order styles (descendant
-                        rules + min-width) go on its flex item instead }}
-                    <EuiFlexItem class="euiDataGridColumnSorting__order" @css={{this.classes.order}}>
+                    <EuiFlexItem>
                       <EuiButtonGroup
+                        class="euiDataGridColumnSorting__order"
+                        @css={{this.classes.order}}
                         @legend={{this.t
                           "euiColumnSortingDraggable.toggleLegend"
                           "Select sorting method for {display}"
@@ -305,7 +303,6 @@ export default class EuiDataGridColumnSorting extends Component<EuiDataGridColum
               {{/each}}
             </dnd.Droppable>
           </EuiDragDropContext>
-          </div>
         {{else}}
           <EuiText @size="s" @color="subdued">
             <p role="alert">{{this.t "euiColumnSorting.emptySorting" "Currently no fields are sorted"}}</p>

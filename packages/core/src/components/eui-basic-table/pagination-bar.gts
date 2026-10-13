@@ -40,6 +40,8 @@ export interface PaginationBarSignature {
     onPageChange: (index: number) => void;
     /** Id of the table being controlled. */
     ariaControls?: string;
+    /** Accessible name of the pagination navigation. */
+    ariaLabel?: string;
   };
 }
 
@@ -113,6 +115,7 @@ export default class PaginationBar extends Component<PaginationBarSignature> {
         @onChangeItemsPerPage={{@onPageSizeChange}}
         @onChangePage={{@onPageChange}}
         @ariaControls={{@ariaControls}}
+        @aria-label={{@ariaLabel}}
       />
     </div>
   </template>

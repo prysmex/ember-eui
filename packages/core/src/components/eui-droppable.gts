@@ -27,6 +27,11 @@ import type { ComponentLike } from '@glint/template';
 export interface EuiDroppableSignature {
   Element: HTMLDivElement;
   Args: {
+    /**
+     * Extra styles composed last into this component's class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** Unique id of the list, reported in `onDragEnd`. */
     droppableId: string;
     /**
@@ -124,7 +129,8 @@ export default class EuiDroppable extends Component<EuiDroppableSignature> {
       this.isDraggingType && styles.isDragging,
       this.isDraggingOver && styles.isDraggingOver,
       this.args.grow ? styles.grow : styles.noGrow,
-      styles.spacing[this.args.spacing ?? 'none']
+      styles.spacing[this.args.spacing ?? 'none'],
+      this.args.css
     ];
   }
 

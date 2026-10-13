@@ -12,6 +12,7 @@ import {
 } from '../-private/table.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   EUI_TABLE_CSS_CONTAINER_NAME,
   euiContainerCSS,
@@ -35,6 +36,11 @@ import type {
 export interface EuiTableSignature {
   Element: HTMLTableElement;
   Args: {
+    /**
+     * Extra styles composed last into the `<table>`'s class (like upstream's
+     * `css` prop). Prefer this to an extra class when styling it from a parent.
+     */
+    css?: EuiCss;
     /** Smaller text and padding (not applied to the cards layout). */
     compressed?: boolean;
     /**
@@ -141,7 +147,8 @@ export default class EuiTable
       !compressed || responsive ? styles.uncompressed : undefined,
       compressed && !responsive ? styles.compressed : undefined,
       this.hasBackground ? styles.hasBackground : undefined,
-      responsive ? styles.mobile : styles.desktop
+      responsive ? styles.mobile : styles.desktop,
+      this.args.css
     );
   }
 

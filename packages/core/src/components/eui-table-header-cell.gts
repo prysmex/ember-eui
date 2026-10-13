@@ -21,10 +21,31 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
 import EuiInnerText from './eui-inner-text.gts';
+import EuiIconTip from './eui-icon-tip.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
+import EuiToolTip from './eui-tool-tip.gts';
 
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import type { EuiIconTipSignature } from './eui-icon-tip';
 import type EuiI18n from '../services/eui-i18n';
 import type { TableAlignment, TableMobileOptions } from '../-private/table.ts';
+
+/** An icon with a tooltip next to the column name (upstream `tooltipProps`). */
+export interface EuiTableHeaderCellTooltipProps {
+  /** The main content of the tooltip. */
+  content: string;
+  /** The icon type. Defaults to `'question'`. */
+  icon?: string;
+  /** Props of the icon: `{ className }`. */
+  iconProps?: EuiIconTipSignature['Args']['iconProps'];
+  /** More arguments of the tooltip. */
+  tooltipProps?: {
+    position?: 'top' | 'right' | 'bottom' | 'left';
+    title?: string;
+    delay?: 'regular' | 'long';
+    anchorClassName?: string;
+  };
+}
 
 /**
  * A column header of an `EuiTable`. With `@onSort` it is a button that
@@ -56,12 +77,36 @@ export interface EuiTableHeaderCellSignature {
     scope?: string;
     /** `{ show, only }` for the cards layout. */
     mobileOptions?: TableMobileOptions;
+    /**
+     * Adds an icon with a tooltip next to the name. In a sortable header
+     * the icon is plain and the tooltip shows on the whole sort button.
+     */
+    tooltipProps?: EuiTableHeaderCellTooltipProps;
   };
   Blocks: {
     /** The column's name. */
     default: [];
   };
 }
+
+/** Shows the tooltip on the whole sort button (upstream wraps it in `EuiToolTip`). */
+const MaybeTooltip: TemplateOnlyComponent<{
+  Args: { tooltipProps?: EuiTableHeaderCellTooltipProps };
+  Blocks: { default: [] };
+}> = <template>
+  {{#if @tooltipProps}}
+    <EuiToolTip
+      @content={{@tooltipProps.content}}
+      @position={{@tooltipProps.tooltipProps.position}}
+      @title={{@tooltipProps.tooltipProps.title}}
+      @delay={{@tooltipProps.tooltipProps.delay}}
+      @anchorClassName={{@tooltipProps.tooltipProps.anchorClassName}}
+      @display="block"
+    >{{yield}}</EuiToolTip>
+  {{else}}
+    {{yield}}
+  {{/if}}
+</template>;
 
 const TRUNCATE = euiTextTruncate();
 
@@ -146,41 +191,53 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
           ...attributes
         >
           {{#if this.canSort}}
-            <button
-              type="button"
-              class="euiTableHeaderButton
-                {{if @isSorted 'euiTableHeaderButton-isSorted'}}
-                {{this.styles.button}}"
-              data-test-subj="tableHeaderSortButton"
-              {{on "click" (sortHandler @onSort)}}
-            >
-              <span class="euiTableCellContent {{this.styles.content}}">
-                <EuiInnerText as |ref innerText|>
-                  <span
-                    class="eui-textTruncate {{this.styles.text}}"
-                    title={{this.title innerText}}
-                    {{didInsert ref}}
-                  >{{yield}}</span>
-                </EuiInnerText>
-                {{#if @description}}
-                  <EuiScreenReaderOnly><span>{{@description}}</span></EuiScreenReaderOnly>
-                {{/if}}
-                {{#if @isSorted}}
-                  <EuiIcon
-                    class="euiTableSortIcon"
-                    @type={{if @isSortAscending "sortUp" "sortDown"}}
-                    @size="m"
-                  />
-                {{else}}
-                  <EuiIcon
-                    class="euiTableSortIcon euiTableSortIcon--sortable"
-                    @type="sortable"
-                    @size="m"
-                    @color="subdued"
-                  />
-                {{/if}}
-              </span>
-            </button>
+            <MaybeTooltip @tooltipProps={{@tooltipProps}}>
+              <button
+                type="button"
+                class="euiTableHeaderButton
+                  {{if @isSorted 'euiTableHeaderButton-isSorted'}}
+                  {{this.styles.button}}"
+                data-test-subj="tableHeaderSortButton"
+                {{on "click" (sortHandler @onSort)}}
+              >
+                <span class="euiTableCellContent {{this.styles.content}}">
+                  <EuiInnerText as |ref innerText|>
+                    <span
+                      class="eui-textTruncate {{this.styles.text}}"
+                      title={{this.title innerText}}
+                      {{didInsert ref}}
+                    >{{yield}}</span>
+                  </EuiInnerText>
+                  {{#if @description}}
+                    <EuiScreenReaderOnly><span>{{@description}}</span></EuiScreenReaderOnly>
+                  {{/if}}
+                  {{#if @tooltipProps}}
+                    <EuiIcon
+                      class="euiTableSortIcon"
+                      @type={{if @tooltipProps.icon @tooltipProps.icon "question"}}
+                      @size="m"
+                      @color="subdued"
+                      @iconClasses={{@tooltipProps.iconProps.className}}
+                    />
+                  {{/if}}
+                  {{#if @isSorted}}
+                    <EuiIcon
+                      class="euiTableSortIcon"
+                      @type={{if @isSortAscending "sortUp" "sortDown"}}
+                      @size="m"
+                    />
+                  {{else}}
+                    <EuiIcon
+                      class="euiTableSortIcon euiTableSortIcon--sortable"
+                      @type="sortable"
+                      @size="m"
+                      @color="subdued"
+                    />
+                  {{/if}}
+                </span>
+              </button>
+
+            </MaybeTooltip>
           {{else}}
             <div class="euiTableCellContent {{this.styles.content}}">
               <EuiInnerText as |ref innerText|>
@@ -192,6 +249,20 @@ export default class EuiTableHeaderCell extends Component<EuiTableHeaderCellSign
               </EuiInnerText>
               {{#if @description}}
                 <EuiScreenReaderOnly><span>{{@description}}</span></EuiScreenReaderOnly>
+              {{/if}}
+              {{#if @tooltipProps}}
+                <EuiIconTip
+                  @content={{@tooltipProps.content}}
+                  @type={{if @tooltipProps.icon @tooltipProps.icon "question"}}
+                  @position={{@tooltipProps.tooltipProps.position}}
+                  @title={{@tooltipProps.tooltipProps.title}}
+                  @delay={{@tooltipProps.tooltipProps.delay}}
+                  @anchorClassName={{@tooltipProps.tooltipProps.anchorClassName}}
+                  @iconProps={{@tooltipProps.iconProps}}
+                  @size="m"
+                  @color="subdued"
+                  @display="block"
+                />
               {{/if}}
               {{#if @isSorted}}
                 <EuiIcon

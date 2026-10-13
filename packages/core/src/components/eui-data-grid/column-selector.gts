@@ -119,7 +119,7 @@ export default class EuiDataGridColumnSelector extends Component<EuiDataGridColu
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiDataGridColumnSelectorStyles);
     return {
-      list: euiClass(context, styles.euiDataGridColumnSelector),
+      list: styles.euiDataGridColumnSelector,
       item: `euiDataGridColumnSelector__item ${euiClass(context, styles.euiDataGridColumnSelector__item)}`
     };
   }
@@ -207,11 +207,10 @@ export default class EuiDataGridColumnSelector extends Component<EuiDataGridColu
               />
             </EuiPopoverTitle>
           {{/if}}
-          {{! EuiDroppable has no @css: the list styles go on a wrapper }}
-          <div class={{this.classes.list}}>
           <EuiDragDropContext @onDragEnd={{this.onDragEnd}} as |dnd|>
             <dnd.Droppable
               @droppableId="columnOrder"
+              @css={{this.classes.list}}
               @isDropDisabled={{not this.isDragEnabled}}
               as |list|
             >
@@ -263,7 +262,6 @@ export default class EuiDataGridColumnSelector extends Component<EuiDataGridColu
               {{/each}}
             </dnd.Droppable>
           </EuiDragDropContext>
-          </div>
           {{#if this.allowColumnHiding}}
             <EuiPopoverFooter @paddingSize="s">
               <EuiFlexGroup @gutterSize="s" @responsive={{false}} @justifyContent="spaceBetween">

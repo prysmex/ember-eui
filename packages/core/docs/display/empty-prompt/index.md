@@ -6,11 +6,52 @@ title: Empty Prompt
 <EuiPageHeader @pageTitle="Empty prompt"/>
 <EuiSpacer/>
 <EuiText>
-  <p>
-  The <strong>EuiEmptyPrompt</strong> is the building block to create an empty state. You can use it as a placeholder for any type of empty content. They are especially helpful for replacing entire pages or parts of a product that contain no content.
-   </p>
+
+The **EuiEmptyPrompt** is the building block to create an empty state. You can use it as a placeholder for any type of empty content. They are especially helpful for replacing entire pages or parts of a product that contain no content.
+
+## Guidelines
+
+### Anatomy
+
+A useful empty state will let the user know what's happening, why it's happening, and what to do about it. It can contribute to a more compelling user experience and add more value to the business if done right.
+
+To make the empty state clear, follow this pattern:
+
+1. **Icon or illustration (optional):** A meaningful representation of the the solution or context.
+2. **Title:** Answers the question "What's happening?". Is it an error? Is it loading?
+3. **Description:** Why is it happening? Explain why the space is empty and guide the users through the required actions.
+4. **Action(s):** Your call to actions should answer the question "What will solve the issue?". Lead the users to take action or guide them about the next steps.
+5. **Footer (optional):** Use this section to reference documentation or link to an area where users can learn more about the issue they are facing.
+
+### Vertical vs. horizontal
+
+The vertical layout is perfect when the content is small, a title and two paragraphs at most. You can use this layout with an icon, an illustration, or no icons at all.
+
+Use the horizontal layout when you have a long description, multiple calls to action, and a footer. For this type of layout, an illustration is required.
+
+### Icons and illustrations
+
+Icons and illustrations must first and foremost communicate meaning. They are also an opportunity to delight users and show our Elastic brand.
+
+When using an illustration, bear in mind that they stand out a lot. Use one illustration per page. Having multiple illustrations might make the page too crowded. An illustration works better in a horizontal layout. Avoid using icons and illustrations that don't mean anything and are not related to the content.
+
+### Learn more links
+
+"Learn more" links are optional. You can use them in your empty prompt to link to documentation where users can get more detailed help.
+
+Include the link after the description when the empty prompt doesn't contain a call to action. If there is a call to action, include the link in the footer.
+
+### Multiple empty states
+
+When a page has multiple empty states, avoid using multiple primary actions and multiple icons or illustrations.
+
+Use secondary actions and no icons or illustrations. This way, the visual noise will be reduced. Consider using an illustration or a primary action if you want to make one of the empty states stand out. Avoid mixing different types of empty states. Be consistent.
+
+### Less content, more actions
+
+Simplify the prompt by removing unneeded parts. Multiple actions can be provided as an array but list primary actions first and secondary actions as empty buttons.
+
 </EuiText>
-<EuiHorizontalRule />
 
 <!-- api:start -->
 <EuiSpacer @size="xl" />

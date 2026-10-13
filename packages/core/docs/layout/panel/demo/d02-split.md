@@ -34,7 +34,7 @@ import { EuiCode, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiSplitPanelInner, EuiS
           <EuiText>
             <p>
               Bottom panel has
-              <EuiCode>@grow=\{{false}}</EuiCode>
+              <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
             </p>
           </EuiText>
         </EuiSplitPanelInner>
@@ -46,7 +46,7 @@ import { EuiCode, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiSplitPanelInner, EuiS
           <EuiText>
             <p>
               Outer panel has
-              <EuiCode>@grow=\{{false}}</EuiCode>
+              <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
             </p>
           </EuiText>
         </EuiSplitPanelInner>

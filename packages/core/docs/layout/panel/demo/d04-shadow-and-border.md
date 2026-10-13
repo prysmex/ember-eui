@@ -30,7 +30,7 @@ import { EuiCode, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
   <EuiSpacer />
 
   <EuiPanel @hasBorder={{false}} @hasShadow={{true}}>
-    <EuiCode>@hasBorder=\{{false}} @hasShadow</EuiCode>
+    <EuiCode>@hasBorder=&#123;&#123;false&#125;&#125; @hasShadow</EuiCode>
   </EuiPanel>
 </template>
 ```

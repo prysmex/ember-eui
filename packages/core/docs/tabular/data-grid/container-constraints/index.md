@@ -9,46 +9,23 @@ order: 6
 
 <EuiText>
 
-The grid body is virtualized: only the rows and columns in view (plus a
-few overscan rows and columns, see `@virtualizationOptions`) are rendered,
-and scrolling only re-renders when the visible range changes. Give the grid
-a `@height` (or put it in a container with a height) to make it scroll;
-without one it grows to fit all rows of the current page.
+**EuiDataGrid** adapts to its container: it hides toolbar controls when it
+is narrow and, when its height or width is constrained (by `@height` /
+`@width` or by its container), virtualizes its body so only the visible
+cells are rendered. Without a height it grows to fit all rows of the current
+page.
 
-`@virtualizationOptions` also reports `onItemsRendered` (rendered and
-visible row/column ranges) and `onScroll` (positions and whether the grid
-is scrolled to an edge), and sets the scrolling element's `className` and
-`style` and its `initialScrollTop`/`initialScrollLeft`. Scroll from code
-with the `scrollTo` and `scrollToItem` methods of `@registerApi`.
-
-## Layout shift compensation
-
-Rows above the viewport can change height while you read further down,
-e.g. when `auto` height rows finish measuring or `rowHeights` change.
-`@rowHeightsOptions={{hash scrollAnchorRow="start"}}` (or `"center"`)
-keeps the first (or middle) visible row where it is by scrolling the grid
-by the same amount.
-
-## Custom grid body
-
-`@renderCustomGridBody` (a component) or the `<:customGridBody>` block
-replace the virtualized body, an escape hatch for very custom layouts.
-They receive:
-
-- `Cell`: the grid cell component. Pass `@colIndex` and `@visibleRowIndex`
-  (the row on the current page); optionally `@isExpandable` or
-  `@renderCellValue` overrides. Its content comes from the grid's
-  `@renderCellValue` or from the `Cell`'s own block (the grid's `<:cell>`
-  block can't reach a custom body).
-- `visibleColumns` (control and data columns in display order) and
-  `visibleRowData` (`startRow`, `endRow`, `visibleRowCount`) to follow
-  column changes, sorting and pagination.
-- `headerRow` and `footerRow` components to render (undefined when there is
-  no header or footer).
-- `setCustomGridBodyProps` to set attributes, `className`, `style` or
-  `on*` listeners on the body's wrapping element, and `gridWidth`.
-
-Keyboard navigation, cell expansion and focus work as in the default body.
+`@virtualizationOptions` tunes the virtualized body: `overscanRowCount` and
+`overscanColumnCount` (extra rows and columns rendered outside the view, 1
+by default), `onItemsRendered` and `onScroll` callbacks, the scrolling
+element's `className` and `style`, and `initialScrollTop` /
+`initialScrollLeft`. Upstream's react-window options (`estimatedRowHeight`,
+`estimatedColumnWidth`, `itemKey`, `outerElementType`, `direction`) don't
+apply: the Ember body measures rows and columns exactly. To scroll from
+code, use `scrollTo` and `scrollToItem` from
+[`@registerApi`](/docs/core/docs/tabular/data-grid/ref-methods); to replace
+the virtualized body entirely, see
+[custom body rendering](/docs/core/docs/tabular/data-grid/custom-body-rendering).
 
 </EuiText>
 

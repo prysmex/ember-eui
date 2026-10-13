@@ -4,6 +4,7 @@ import { cached } from '@glimmer/tracking';
 import { getEuiThemeContext } from '../../utils/emotion/consume.ts';
 import { euiSelectableListGroupLabelStyles } from '../../utils/eui/selectable.ts';
 import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
+import EuiComboBoxNode from './node.gts';
 
 /**
  * @private Title row of an option group in EuiComboBox: upstream
@@ -13,10 +14,12 @@ import { euiClass, useEuiBorealisStyles } from '../../utils/eui/styles.ts';
 export interface EuiComboBoxGroupSignature {
   Element: HTMLDivElement;
   Args: {
-    /** The group: `{ groupName, disabled }`. */
+    /** The group: `{ groupName, disabled, prepend, append }`. */
     group: {
       groupName: string;
       disabled: boolean;
+      prepend?: unknown;
+      append?: unknown;
     };
     /**
      * @private The first row of the list. The virtualized list renders a
@@ -59,7 +62,15 @@ export default class EuiComboBoxGroup extends Component<EuiComboBoxGroupSignatur
       aria-disabled={{if @group.disabled "true"}}
       ...attributes
     >
-      <span class="ember-power-select-group-name">{{@group.groupName}}</span>
+      {{#if @group.prepend}}<EuiComboBoxNode
+          @node={{@group.prepend}}
+          @option={{@group}}
+        />{{/if}}<span
+        class="ember-power-select-group-name"
+      >{{@group.groupName}}</span>{{#if @group.append}}<EuiComboBoxNode
+          @node={{@group.append}}
+          @option={{@group}}
+        />{{/if}}
       {{yield}}
     </div>
   </template>

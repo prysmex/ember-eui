@@ -18,7 +18,12 @@ import classNames from '../helpers/class-names.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
   comboBoxBoxReset,
-  comboBoxOptionLabel
+  comboBoxOptionLabel,
+  flattenOptionGroups,
+  partialStringMatcher,
+  selectedOptionForSearchValue,
+  sortMatchesByStartsWith,
+  transformForCaseSensitivity
 } from '../utils/eui/combo-box.ts';
 import {
   euiBackgroundColor,
@@ -31,7 +36,7 @@ import {
   euiScreenReaderOnly
 } from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
-import EuiHighlight from './eui-highlight.gts';
+import EuiComboBoxOptionText from './eui-combo-box/option-text.gts';
 import EuiComboBoxCreateOption from './eui-combo-box/create-option.gts';
 import EuiComboBoxGroup from './eui-combo-box/group.gts';
 import EuiComboBoxNoMatchesMessage from './eui-combo-box/no-matches-message.gts';
@@ -40,6 +45,56 @@ import EuiComboBoxSearchMessage from './eui-combo-box/search-message.gts';
 import EuiComboBoxTrigger from './eui-combo-box/trigger.gts';
 
 import type EuiI18n from '../services/eui-i18n';
+import type { EuiComboBoxSortMatchesBy } from '../utils/eui/combo-box.ts';
+import type { EuiComboBoxNode } from './eui-combo-box/node.gts';
+import type { EuiComboBoxTruncationProps } from './eui-combo-box/option-text.gts';
+import type { EuiTooltipArgs } from './eui-tool-tip';
+
+export type { EuiComboBoxNode, EuiComboBoxTruncationProps };
+
+/** `@onCreateOption`: the value, and all options with groups flattened. */
+export type EuiComboBoxOnCreateOption = (
+  search: string,
+  flattenedOptions: any[]
+) => boolean | undefined | void;
+
+/**
+ * An option object (options can also be plain strings). Every key is
+ * optional; `label` is the text by default (see `@searchField`).
+ */
+export interface EuiComboBoxOptionOption {
+  label?: string;
+  /** Disables the option. */
+  disabled?: boolean;
+  /** Pill color, see `EuiBadge`. */
+  color?: string;
+  /** Text or a component before the label, in the list and the pill. */
+  prepend?: EuiComboBoxNode;
+  /** Text or a component after the label, in the list and the pill. */
+  append?: EuiComboBoxNode;
+  /** Tooltip of the option in the list (not on disabled options). */
+  toolTipContent?: string;
+  /** More `EuiToolTip` arguments for `toolTipContent`. */
+  toolTipProps?: Partial<
+    Pick<
+      EuiTooltipArgs,
+      | 'position'
+      | 'delay'
+      | 'title'
+      | 'offset'
+      | 'className'
+      | 'css'
+      | 'anchorClassName'
+    >
+  >;
+  /** Truncation of this option, merged over `@truncationProps`. */
+  truncationProps?: EuiComboBoxTruncationProps;
+  /** Title of the option text (defaults to the label while truncated by CSS). */
+  title?: string;
+  /** A group: its options. Groups use `groupName` for their title. */
+  options?: unknown[];
+  [key: string]: unknown;
+}
 
 interface PromiseProxy<T> extends Promise<T> {
   content: any;
@@ -68,11 +123,13 @@ export interface EuiComboBoxSignature {
     /**
      * Lets the user add the typed text as a new option: shows an "add"
      * option when nothing matches (or always, with
-     * `@alwaysShowCreateOption`). Called with the search text; return
-     * `false` to reject it, or a value to use instead of the text. Add the
-     * result to `@options` / `@selectedOptions` yourself.
+     * `@alwaysShowCreateOption`). Called with the search text and all
+     * options (groups flattened); return `false` to reject it. Add the
+     * result to `@options` / `@selectedOptions` yourself. Text equal to a
+     * selected option is not added again, and text equal to the only
+     * matching option selects that option (upstream).
      */
-    onCreateOption?: (search: string) => boolean | undefined;
+    onCreateOption?: EuiComboBoxOnCreateOption;
     /** Shows the "add" option even when some options match. */
     alwaysShowCreateOption?: boolean;
     /**
@@ -178,8 +235,47 @@ export interface EuiComboBoxSignature {
     noMatchesMessageComponent?: any;
     /** Extra class for the element wrapping the options. */
     optionsClass?: string;
-    /** Height in px of each option in the (virtualized) list. */
-    rowHeight?: number;
+    /**
+     * Height in px of each option in the (virtualized) list. Set it when the
+     * block renders taller options. `'auto'` turns virtualization off so
+     * long options wrap onto several lines (slower for long lists; no
+     * truncation). Defaults to 29.
+     */
+    rowHeight?: number | 'auto';
+    /**
+     * Hides the options list: the combo box only takes typed values
+     * (`@onCreateOption`, added with Enter), and has no dropdown icon.
+     */
+    noSuggestions?: boolean;
+    /**
+     * A character separating several values in the typed or pasted text,
+     * typically `','`. Typing it adds the text before it; Enter (or leaving
+     * the combo box) adds each value of pasted text.
+     */
+    delimiter?: string;
+    /** Matches options case-sensitively. */
+    isCaseSensitive?: boolean;
+    /**
+     * `'startsWith'` lists the matches starting with the search text first;
+     * `'none'` keeps the options' order. Defaults to `'none'`.
+     */
+    sortMatchesBy?: EuiComboBoxSortMatchesBy;
+    /**
+     * Truncation of long option texts, any `EuiTextTruncate` argument but
+     * `text` (e.g. `{ truncation: 'middle' }`). Options can override it
+     * with their own `truncationProps`. While searching, the text is
+     * truncated around the match instead. Defaults to CSS truncation at
+     * the end.
+     */
+    truncationProps?: EuiComboBoxTruncationProps;
+    /**
+     * Text, a component, or an array of them before the input, e.g. a
+     * label. Only shown with `@singleSelection` (upstream), so pills never
+     * wrap onto taller rows.
+     */
+    prepend?: EuiComboBoxNode | EuiComboBoxNode[];
+    /** Like `@prepend`, after the input. Only with `@singleSelection`. */
+    append?: EuiComboBoxNode | EuiComboBoxNode[];
     /**
      * Custom matching for local filtering: `(option, searchText) => -1` for
      * no match, anything else for a match.
@@ -216,13 +312,16 @@ export interface EuiComboBoxSignature {
   };
   Blocks: {
     /**
-     * Renders each option (in the list and in the pills), with its index:
-     * `as |option|` → `{{option.label}}`. Strings can be rendered as they
-     * are. Optional: without a block, options show their text (strings, or
+     * Renders each option (in the list and in the pills), with its index
+     * and the search text (upstream `renderOption`): `as |option i search|`
+     * → `<EuiHighlight @text={{option.label}} @search={{search}} />`. In
+     * pills the second value is the select API and the search is empty.
+     * Optional: without a block, options show their text (strings, or
      * `@searchField` / `label` of objects), with the search text highlighted
-     * in the list like upstream.
+     * in the list like upstream. Option `prepend` / `append` render around
+     * the block.
      */
-    default: [any, number, Select];
+    default: [any, number | Select, string];
   };
 }
 
@@ -370,10 +469,69 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       .join(' ');
   }
 
-  /** Search text for the default option renderer's highlighting. */
-  get highlightSearch(): string {
-    return (this.select?.searchText ?? '').trim();
+  /**
+   * The search text, as typed (upstream `searchValue`). Kept apart from
+   * `select`, which is replaced on every highlight change: options derived
+   * from it would re-run ember-power-select's options modifier, which
+   * resets the highlight, in a loop.
+   */
+  @tracked searchValue = '';
+
+  /**
+   * Options given to ember-power-select: `@options`, with the matches
+   * starting with the search text first for `@sortMatchesBy="startsWith"`.
+   */
+  @cached
+  get powerSelectOptions(): any {
+    const options = this.options;
+    const search = this.searchValue;
+
+    if (
+      this.args.sortMatchesBy !== 'startsWith' ||
+      !search.trim() ||
+      !Array.isArray(options)
+    ) {
+      return options;
+    }
+
+    return sortMatchesByStartsWith(
+      options,
+      search,
+      this.args.searchField,
+      Boolean(this.args.isCaseSensitive)
+    );
   }
+
+  /**
+   * `@matcher`, else upstream's partial string matcher when matching is
+   * case-sensitive (ember-power-select's default ignores case and accents).
+   */
+  @cached
+  get matcher(): ((option: any, searchText: string) => number) | undefined {
+    if (this.args.matcher) return this.args.matcher;
+    if (!this.args.isCaseSensitive) return undefined;
+
+    return partialStringMatcher(this.args.searchField, true);
+  }
+
+  /** Untracked: the first measured option row shares its width (upstream). */
+  optionWidth?: number;
+
+  setOptionWidth = (width: number) => {
+    this.optionWidth = width;
+  };
+
+  /** EuiComboBox's `@truncationProps` merged with the option's own. */
+  truncationFor = (option: unknown): EuiComboBoxTruncationProps | undefined => {
+    const own =
+      option && typeof option === 'object'
+        ? (option as EuiComboBoxOptionOption).truncationProps
+        : undefined;
+
+    if (!this.args.truncationProps && !own) return undefined;
+
+    return { ...this.args.truncationProps, ...own };
+  };
 
   labelFor = (option: unknown) =>
     comboBoxOptionLabel(option, this.args.searchField);
@@ -389,8 +547,8 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       ...attributes
       @onChange={{this.onChange}}
       @onFocus={{@onFocus}}
-      @onBlur={{@onBlur}}
-      @onOpen={{@onOpen}}
+      @onBlur={{this.onBlur}}
+      @onOpen={{this.onOpen}}
       @onClose={{@onClose}}
       @placeholderComponent={{@placeholderComponent}}
       @searchMessage={{this.searchMessage}}
@@ -401,14 +559,14 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       }}
       @noMatchesMessage={{this.noMatchesMessage}}
       @matchTriggerWidth={{@matchTriggerWidth}}
-      @options={{this.options}}
+      @options={{this.powerSelectOptions}}
       @selected={{@selectedOptions}}
       @closeOnSelect={{@closeOnSelect}}
       @defaultHighlighted={{@defaultHighlighted}}
       @searchField={{@searchField}}
       @searchEnabled={{argOrDefault @searchEnabled true}}
       @tabindex={{@tabindex}}
-      @initiallyOpened={{and (not @isDisabled) @autoFocus}}
+      @initiallyOpened={{and (not @isDisabled) @autoFocus (not @noSuggestions)}}
       @triggerComponent={{component
         EuiComboBoxTrigger
         fullWidth=@fullWidth
@@ -420,13 +578,16 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
         isLoading=@isLoading
         autoFocus=(and (not @isDisabled) @autoFocus)
         icon=@triggerIcon
+        prepend=@prepend
+        append=@append
+        noSuggestions=@noSuggestions
       }}
-      @matcher={{@matcher}}
+      @matcher={{this.matcher}}
       @initiallyOpen={{@initiallyOpen}}
       @typeAheadOptionMatcher={{@typeAheadOptionMatcher}}
       @buildSelection={{this.buildSelection}}
       @search={{@search}}
-      @onInput={{@onInput}}
+      @onInput={{this.onInput}}
       @onKeydown={{@onKeydown}}
       @scrollTo={{this.scrollTo}}
       @registerAPI={{queue this.registerAPI (optional @registerApi)}}
@@ -464,6 +625,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
             onCreateOption=this.onCreateOption
             select=this.select
             alwaysShow=true
+            delimiter=@delimiter
           )
         )
       }}
@@ -472,6 +634,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       @optionsComponent={{component
         EuiComboBoxOptions
         rowHeight=@rowHeight
+        truncationProps=@truncationProps
         class=@optionsClass
         singleSelection=(if @singleSelection true false)
         searchField=@searchField
@@ -493,6 +656,7 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
           onCreateOption=this.onCreateOption
           select=this.select
           alwaysShow=false
+          delimiter=@delimiter
         )
         (component EuiComboBoxNoMatchesMessage)
       }}
@@ -500,11 +664,16 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
       as |option i|
     >
       {{#if (has-block)}}
-        {{yield option i}}
+        {{yield option i (if (this.isOptionRow i) this.searchValue "")}}
       {{else if (this.isOptionRow i)}}
-        <EuiHighlight
+        <EuiComboBoxOptionText
           @text={{this.labelFor option}}
-          @search={{this.highlightSearch}}
+          @search={{this.searchValue}}
+          @isCaseSensitive={{@isCaseSensitive}}
+          @rowHeight={{@rowHeight}}
+          @truncationProps={{this.truncationFor option}}
+          @width={{this.optionWidth}}
+          @onResize={{this.setOptionWidth}}
         />
       {{else}}
         {{this.labelFor option}}
@@ -608,6 +777,10 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   @action
   registerAPI(select: Select) {
     this.select = select;
+
+    const searchText = (select as { searchText?: string })?.searchText ?? '';
+
+    if (searchText !== this.searchValue) this.searchValue = searchText;
   }
 
   @action
@@ -625,27 +798,196 @@ export default class EuiComboBoxComponent extends Component<EuiComboBoxSignature
   }
 
   @action
-  onCreateOption() {
-    let option;
+  onOpen(select: Select, event: Event): boolean | void {
+    // upstream `noSuggestions`: the list never opens
+    if (this.args.noSuggestions) return false;
+
+    // ember-power-select calls it with its API first
+    const onOpen = this.args.onOpen as
+      | ((select: Select, event: Event) => boolean | void)
+      | undefined;
+
+    return onOpen?.(select, event);
+  }
+
+  /**
+   * Typing `@delimiter` adds the text before it (upstream
+   * `onSearchChange`), and clears the input.
+   */
+  @action
+  onInput(term: string, select: Select, event: Event): string | false | void {
+    const corrected = this.args.onInput?.(term, select, event);
+
+    if (corrected === false) return false;
+
+    const text = typeof corrected === 'string' ? corrected : term;
+    const delimiter = this.args.delimiter;
 
     if (
-      this.args.onCreateOption &&
-      typeof this.args.onCreateOption === 'function'
+      delimiter &&
+      text.endsWith(delimiter) &&
+      this.setCustomOptions(text, { keepOpen: true })
     ) {
-      // The `onCreateOption` function can be used to sanitize the input or explicitly return `false` to reject the input
-      option = this.args.onCreateOption(this.select.searchText);
+      const input = event?.target as HTMLInputElement | null;
 
-      if (option === false) {
-        return;
-      }
+      if (input && 'value' in input) input.value = '';
+
+      return '';
     }
 
-    const search = option || this.select.searchText;
+    return corrected as string | void;
+  }
 
-    this.select.actions.search('');
-    this.select.actions.close();
+  /**
+   * Upstream `onContainerBlur`: leaving the combo box adds the typed text,
+   * so it does not look like a text input. Only with `@noSuggestions` or
+   * `@delimiter` (see the docs' Ember differences).
+   */
+  @action
+  onBlur(select: Select, event: FocusEvent): void {
+    (this.args.onBlur as ((...args: unknown[]) => void) | undefined)?.(
+      select,
+      event
+    );
 
-    return search;
+    const api = select as Select & { searchText?: string; uniqueId?: string };
+
+    if (
+      !(this.args.noSuggestions || this.args.delimiter) ||
+      !this.args.onCreateOption ||
+      !api?.searchText
+    ) {
+      return;
+    }
+
+    const next = event?.relatedTarget as Node | null;
+    const list = api.uniqueId
+      ? document.getElementById(`ember-basic-dropdown-content-${api.uniqueId}`)
+      : null;
+
+    if (next && list?.contains(next)) return;
+
+    this.setCustomOptions(api.searchText, { keepOpen: true });
+  }
+
+  /** The "add" option, Enter without matches, and `@noSuggestions` Enter. */
+  @action
+  onCreateOption() {
+    this.setCustomOptions(this.select?.searchText ?? '');
+  }
+
+  /**
+   * Upstream `setCustomOptions`: the text, or each value separated by
+   * `@delimiter` (trimmed, without duplicates), is added.
+   */
+  setCustomOptions(text: string, { keepOpen = false } = {}): boolean {
+    const delimiter = this.args.delimiter;
+    const values = delimiter
+      ? [...new Set(text.split(delimiter).map((value) => value.trim()))]
+      : [text];
+    let seen = this.args.selectedOptions;
+    let selection = [...(seen ?? [])];
+    let cleared = false;
+
+    values.forEach((value) => {
+      if (!value.length) return;
+
+      // the consumer may have updated `@selectedOptions` already
+      if (this.args.selectedOptions !== seen) {
+        seen = this.args.selectedOptions;
+        selection = [...(seen ?? [])];
+      }
+
+      const result = this.addCustomOption(value, selection);
+
+      if (result === false) return;
+
+      cleared = true;
+
+      if (result) selection = result;
+    });
+
+    if (cleared) {
+      this.select?.actions.search('');
+    }
+
+    // like before: adding closes the list (upstream keeps it open for
+    // multiple selection); typing a delimiter keeps typing going
+    if (cleared && !keepOpen) {
+      (this.select as any)?.actions.close();
+    }
+
+    return cleared;
+  }
+
+  /**
+   * Upstream `addCustomOption` for one value: the only matching option
+   * when its label equals the value, else `@onCreateOption` unless an
+   * option with that label is selected. Returns the new selection when an
+   * existing option was chosen, `false` when nothing was added.
+   */
+  addCustomOption(value: string, selection: any[]): any[] | false | void {
+    const { isCaseSensitive, searchField, singleSelection } = this.args;
+    const matched = this.onlyMatchingOption(value, selection);
+
+    if (matched !== undefined) {
+      const next = singleSelection ? [matched] : [...selection, matched];
+
+      this.args.onChange(next);
+
+      return next;
+    }
+
+    if (!this.args.onCreateOption) return false;
+
+    if (
+      selectedOptionForSearchValue(
+        selection,
+        value,
+        searchField,
+        isCaseSensitive
+      ) !== undefined
+    ) {
+      return false;
+    }
+
+    const created = this.args.onCreateOption(
+      value,
+      flattenOptionGroups(Array.isArray(this.options) ? this.options : [])
+    );
+
+    // the consumer rejects a custom option explicitly
+    if (created === false) return false;
+  }
+
+  /**
+   * Upstream `doesSearchMatchOnlyOption`: the value matches exactly one
+   * (enabled, unselected) option, and equals its label.
+   */
+  onlyMatchingOption(value: string, selection: any[]): unknown {
+    const { isCaseSensitive, searchField } = this.args;
+    const options = flattenOptionGroups(
+      Array.isArray(this.options) ? this.options : []
+    );
+    const matcher =
+      this.matcher ?? partialStringMatcher(searchField, Boolean(isCaseSensitive));
+    const matches = options.filter(
+      (option) =>
+        !(option as { disabled?: boolean } | null)?.disabled &&
+        !(this.args.singleSelection ? false : selection.includes(option)) &&
+        matcher(option, value) >= 0
+    );
+
+    if (matches.length !== 1) return undefined;
+
+    const [option] = matches;
+
+    return transformForCaseSensitivity(
+      comboBoxOptionLabel(option, searchField),
+      isCaseSensitive
+    ) === transformForCaseSensitivity(value, isCaseSensitive)
+      ? option
+      : undefined;
   }
 
   @action

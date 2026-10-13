@@ -78,6 +78,24 @@ export default class EuiComboBoxTriggerInputComponent extends PowerSelectInput {
   handleKeydown(e: KeyboardEvent): false | void {
     if (e.target === null) return;
 
+    // @ts-expect-error `noSuggestions` is passed by EuiComboBoxTrigger
+    if (this.args.noSuggestions && e.key === 'Enter') {
+      // no list to choose from: Enter adds the typed text (upstream)
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (
+        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
+        this.args.onCreateOption &&
+        this.args.select.searchText.length >= 1
+      ) {
+        // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger
+        this.args.onCreateOption();
+      }
+
+      return false;
+    }
+
     if (this.args.onKeydown && this.args.onKeydown(e) === false) {
       if (
         // @ts-expect-error `onCreateOption` is passed by EuiComboBoxTrigger

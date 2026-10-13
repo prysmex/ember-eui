@@ -28,6 +28,16 @@ type EuiCopyArgs = {
    * content.
    */
   anchor?: HTMLElement;
+
+  /**
+   * EuiToolTip args for the tooltip (upstream `tooltipProps`), e.g.
+   * `(hash position="bottom" anchorProps=(hash data-test-subj="copy"))`.
+   * Every EuiToolTip arg except `content` and `onMouseOut` is supported;
+   * `onBlur` is called before the copied message resets.
+   */
+  tooltipProps?: Partial<
+    Omit<EuiToolTipSignature['Args'], 'content' | 'onMouseOut'>
+  >;
 };
 
 export interface EuiCopySignature {
@@ -61,10 +71,41 @@ export default class EuiCopyComponent extends Component<EuiCopySignature> {
     this.isCopied = false;
   }
 
+  /** Upstream: blurring the anchor resets the copied message. */
+  @action
+  onBlur(): void {
+    this.args.tooltipProps?.onBlur?.();
+    if (this.isCopied) this.resetTooltipText();
+  }
+
+  /** Upstream: the copied message is not announced as a description. */
+  get disableScreenReaderOutput(): boolean {
+    return this.isCopied || !!this.args.tooltipProps?.disableScreenReaderOutput;
+  }
+
   <template>
     <EuiToolTip
       @content={{this.tooltipText}}
       @onMouseOut={{this.resetTooltipText}}
+      @onBlur={{this.onBlur}}
+      @disableScreenReaderOutput={{this.disableScreenReaderOutput}}
+      @title={{@tooltipProps.title}}
+      @position={{@tooltipProps.position}}
+      @delay={{@tooltipProps.delay}}
+      @offset={{@tooltipProps.offset}}
+      @display={{@tooltipProps.display}}
+      @id={{@tooltipProps.id}}
+      @className={{@tooltipProps.className}}
+      @anchorClassName={{@tooltipProps.anchorClassName}}
+      @anchorCss={{@tooltipProps.anchorCss}}
+      @anchorStyle={{@tooltipProps.anchorStyle}}
+      @anchorProps={{@tooltipProps.anchorProps}}
+      @attachTo={{@tooltipProps.attachTo}}
+      @repositionOnScroll={{@tooltipProps.repositionOnScroll}}
+      @isShown={{@tooltipProps.isShown}}
+      @onFocus={{@tooltipProps.onFocus}}
+      @hasTitle={{@tooltipProps.hasTitle}}
+      @css={{@tooltipProps.css}}
       ...attributes
     >
       <:anchor>

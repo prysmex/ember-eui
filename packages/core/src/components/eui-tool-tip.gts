@@ -7,6 +7,7 @@ import { guidFor } from '@ember/object/internals';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import didUpdate from '@ember/render-modifiers/modifiers/did-update';
 import { cancel, later, next, scheduleOnce } from '@ember/runloop';
+import { isHTMLSafe } from '@ember/template';
 import type { SafeString } from '@ember/template';
 
 import { modifier } from 'ember-modifier';
@@ -15,6 +16,8 @@ import { and, eq, not, or } from 'ember-truth-helpers';
 
 import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import classNames from '../helpers/class-names.ts';
+import cssStyle from '../-private/css-style.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import resizeObserver from '../modifiers/resize-observer.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -28,6 +31,7 @@ import { findPopoverPosition, getElementZIndex } from '../utils/popover/index.ts
 import EuiPortal from './eui-portal.gts';
 import EuiToolTipPopover from './eui-tool-tip-popover.gts';
 
+import type { CssProperties } from '../-private/css-style.ts';
 import type { EuiTooltipPopoverSignature } from './eui-tool-tip-popover';
 
 export type ToolTipPositions = 'top' | 'right' | 'bottom' | 'left';
@@ -49,6 +53,55 @@ interface ToolTipStyles {
 }
 
 type EuiToolTipDisplay = 'inlineBlock' | 'block' | 'flex';
+
+/**
+ * Upstream `anchorProps`, for the `span.euiToolTipAnchor` wrapper.
+ * `className` and `css` are added to its classes, `style` is its inline
+ * style (upstream's object of CSS properties, or a safe string;
+ * `@anchorStyle` wins), `on<Event>` functions (e.g. `onMouseEnter`,
+ * `onMouseLeave`) are added as listeners next to the tooltip's own, and
+ * any other key (`id`, `data-test-subj`, `aria-*`, …) is set as an
+ * attribute.
+ */
+export interface EuiToolTipAnchorProps {
+  className?: string;
+  css?: EuiCss;
+  style?: CssProperties | SafeString | string;
+  [key: string]: unknown;
+}
+
+/** `anchorProps.style` as a `style` attribute value. */
+export function anchorPropsStyle(
+  style: EuiToolTipAnchorProps['style']
+): string | SafeString | undefined {
+  if (!style) return undefined;
+  if (typeof style === 'string' || isHTMLSafe(style)) {
+    return style as string | SafeString;
+  }
+  return cssStyle(style as CssProperties);
+}
+
+const ANCHOR_PROPS_HANDLED = ['className', 'css', 'style'] as const;
+
+/** `on<Event>` functions of `@anchorProps` as listeners (upstream spread). */
+const anchorListeners = modifier(
+  (element: HTMLElement, [props]: [EuiToolTipAnchorProps | undefined]) => {
+    const cleanups: Array<() => void> = [];
+
+    for (const [key, value] of Object.entries(props ?? {})) {
+      if (!/^on[A-Z]/.test(key) || typeof value !== 'function') continue;
+
+      const type = key.slice(2).toLowerCase();
+
+      element.addEventListener(type, value as EventListener);
+      cleanups.push(() =>
+        element.removeEventListener(type, value as EventListener)
+      );
+    }
+
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }
+);
 
 /** Upstream default distance between the anchor and the tooltip. */
 export const DEFAULT_TOOLTIP_OFFSET = 16;
@@ -228,6 +281,11 @@ export type EuiTooltipArgs = {
    * a style string or a safe string.
    */
   anchorStyle?: string | SafeString;
+  /**
+   * Props for the anchor wrapper (upstream `anchorProps`), see
+   * {@link EuiToolTipAnchorProps}.
+   */
+  anchorProps?: EuiToolTipAnchorProps;
 };
 
 /**
@@ -296,7 +354,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       this.attachTo.addEventListener('focusin', this.onFocus);
       //@ts-expect-error
       this.attachTo.addEventListener('mouseout', this.onMouseOut);
-      this.attachTo.addEventListener('focusout', this.onBlur);
+      this.attachTo.addEventListener('focusout', this.onAnchorBlur);
       this.positionToolTip();
     }
   }
@@ -308,7 +366,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       this.attachTo.removeEventListener('focusin', this.onFocus);
       //@ts-expect-error
       this.attachTo.removeEventListener('mouseout', this.onMouseOut);
-      this.attachTo.removeEventListener('focusout', this.onBlur);
+      this.attachTo.removeEventListener('focusout', this.onAnchorBlur);
     }
   }
 
@@ -420,8 +478,17 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       context,
       styles.euiToolTipAnchor,
       styles[this.anchorDisplay] ?? styles.inlineBlock,
-      this.args.anchorCss
+      this.args.anchorCss,
+      this.args.anchorProps?.css
     )}`;
+  }
+
+  get anchorStyle(): string | SafeString | undefined {
+    return this.args.anchorStyle ?? anchorPropsStyle(this.args.anchorProps?.style);
+  }
+
+  get anchorPropsHandled(): readonly string[] {
+    return ANCHOR_PROPS_HANDLED;
   }
 
   @cached
@@ -578,6 +645,13 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     this.hideToolTip();
   }
 
+  /** The anchor lost focus: hide, then `@onBlur` (upstream). */
+  @action
+  onAnchorBlur(): void {
+    this.onBlur();
+    this.args.onBlur?.();
+  }
+
   @action
   onMouseOut(event: MouseEvent): void {
     // Prevent mousing over children from hiding the tooltip by testing for whether the mouse has
@@ -633,8 +707,14 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
             wrappers apart (upstream) }}
         <span
           id={{if (not @disableScreenReaderOutput) (concat this.id "-wrapper")}}
-          class={{classNames this.anchorClasses @anchorClassName}}
-          style={{@anchorStyle}}
+          class={{classNames
+            this.anchorClasses
+            @anchorClassName
+            @anchorProps.className
+          }}
+          style={{this.anchorStyle}}
+          {{spreadAttributes @anchorProps this.anchorPropsHandled}}
+          {{anchorListeners @anchorProps}}
           {{didInsert this.didInsertAnchor}}
           {{didInsert this.syncScrollListener}}
           {{didUpdate this.syncScrollListener @repositionOnScroll}}
@@ -642,7 +722,7 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
           {{on "keydown" this.onKeyDown}}
           {{on "mouseover" this.showToolTip}}
           {{on "focusin" this.onFocus}}
-          {{on "focusout" this.onBlur}}
+          {{on "focusout" this.onAnchorBlur}}
           {{on "mouseout" this.onMouseOut}}
           {{didUpdate
             (if (eq @isShown true) this.onFocus this.onBlur)

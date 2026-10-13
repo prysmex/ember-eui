@@ -8,12 +8,13 @@ import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiBetaBadgeStyles } from '../utils/eui/styles.generated.ts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import {
   euiBadgeReset,
   secureRel
 } from './eui-badge.gts';
 import EuiIcon from './eui-icon.gts';
-import EuiToolTip from './eui-tool-tip.gts';
+import EuiToolTip, { anchorPropsStyle } from './eui-tool-tip.gts';
 
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiToolTipSignature } from './eui-tool-tip';
@@ -87,6 +88,13 @@ export interface EuiBetaBadgeSignature {
      * `css` prop). Prefer this to an extra class when styling it from a parent.
      */
     css?: EuiCss;
+    /**
+     * Props for the element around the badge (upstream `anchorProps`): the
+     * tooltip's anchor with `@tooltipContent` (see EuiToolTip's
+     * `@anchorProps`), otherwise a plain `span` wrapping the badge, which
+     * gets `className`, `css`, `style` and the other keys as attributes.
+     */
+    anchorProps?: EuiToolTipSignature['Args']['anchorProps'];
   };
   Blocks: {
     /** Custom content instead of `@label` / `@iconType`. */
@@ -147,6 +155,26 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
     );
   }
 
+  /** The plain wrapper's class: `anchorProps.className` and `.css`. */
+  @cached
+  get wrapperClass(): string | undefined {
+    const { className, css } = this.args.anchorProps ?? {};
+    const classes = [
+      className,
+      css ? euiClass(this.context, css) : undefined
+    ].filter(Boolean);
+
+    return classes.length ? classes.join(' ') : undefined;
+  }
+
+  get wrapperStyle() {
+    return anchorPropsStyle(this.args.anchorProps?.style);
+  }
+
+  get wrapperHandledProps(): readonly string[] {
+    return ['style'];
+  }
+
   @cached
   /** Composed into EuiIcon's own class via `@css`. */
   get iconCss(): EuiCss {
@@ -174,6 +202,7 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
           @position={{if @tooltipPosition @tooltipPosition "top"}}
           @title={{if @title @title @label}}
           @content={{@tooltipContent}}
+          @anchorProps={{@anchorProps}}
         >
           <Badge ...attributes>
             {{#if (has-block)}}
@@ -193,22 +222,29 @@ export default class EuiBetaBadge extends Component<EuiBetaBadgeSignature> {
           </Badge>
         </EuiToolTip>
       {{else}}
-        <Badge ...attributes>
-          {{#if (has-block)}}
-            {{yield}}
-          {{else if @iconType}}
-            <EuiIcon
-              @iconClasses="euiBetaBadge__icon"
+        {{! upstream: the badge always sits in a span with anchorProps }}
+        <span
+          class={{this.wrapperClass}}
+          style={{this.wrapperStyle}}
+          {{spreadAttributes @anchorProps this.wrapperHandledProps}}
+        >
+          <Badge ...attributes>
+            {{#if (has-block)}}
+              {{yield}}
+            {{else if @iconType}}
+              <EuiIcon
+                @iconClasses="euiBetaBadge__icon"
                 @css={{this.iconCss}}
-              @type={{@iconType}}
-              @size={{this.size}}
-              aria-hidden="true"
-              @color="inherit"
-            />
-          {{else}}
-            {{@label}}
-          {{/if}}
-        </Badge>
+                @type={{@iconType}}
+                @size={{this.size}}
+                aria-hidden="true"
+                @color="inherit"
+              />
+            {{else}}
+              {{@label}}
+            {{/if}}
+          </Badge>
+        </span>
       {{/if}}
     {{/let}}
   </template>

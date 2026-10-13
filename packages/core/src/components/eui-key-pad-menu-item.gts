@@ -12,8 +12,11 @@ import EuiBetaBadge from './eui-beta-badge.gts';
 import EuiCheckbox from './eui-checkbox.gts';
 import { getSecureRelForTarget, isValidHref } from './eui-link.gts';
 import EuiRadio from './eui-radio.gts';
+import EuiMaybeToolTip from '../-private/eui-maybe-tool-tip.gts';
 
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiTooltipArgs } from './eui-tool-tip.gts';
+import type { TemplateOnlyComponent } from '@ember/component/template-only';
 
 export interface EuiKeyPadMenuItemSignature {
   Element: HTMLButtonElement | HTMLAnchorElement | HTMLLabelElement;
@@ -48,8 +51,17 @@ export interface EuiKeyPadMenuItemSignature {
     betaBadgeLabel?: string;
     /** Icon in the beta badge instead of the letter. */
     betaBadgeIconType?: EuiIconSignature['Args']['type'];
-    /** Tooltip of the beta badge. */
+    /**
+     * Content of the tooltip shown with `@betaBadgeLabel` (its title is the
+     * label). The tooltip wraps the whole item, like upstream.
+     */
     betaBadgeTooltipContent?: string;
+    /**
+     * EuiToolTip args for the item's `@betaBadgeLabel` tooltip (upstream
+     * `betaBadgeTooltipProps`), except `title` and `content`, e.g.
+     * `(hash position="bottom" anchorProps=(hash data-test-subj="tip"))`.
+     */
+    betaBadgeTooltipProps?: Partial<Omit<EuiTooltipArgs, 'title' | 'content'>>;
     /** Id of the checkable input. Defaults to a random id. */
     id?: string;
     /** `target` of the `@href` link. */
@@ -62,6 +74,93 @@ export interface EuiKeyPadMenuItemSignature {
     default: [];
   };
 }
+
+/** The item's element (`a`, `button` or `label`). */
+const KeyPadMenuItemElement: TemplateOnlyComponent<{
+  Element: EuiKeyPadMenuItemSignature['Element'];
+  Args: { item: EuiKeyPadMenuItem };
+  Blocks: { default: [] };
+}> = <template>
+    {{#if @item.isLink}}
+      <a
+        class={{@item.classes}}
+        href={{@item.args.href}}
+        target={{@item.args.target}}
+        rel={{@item.rel}}
+        aria-current={{if @item.isSelected "true"}}
+        ...attributes
+      >
+        <span class={{@item.innerClass}}>
+          {{#if @item.args.betaBadgeLabel}}
+            <EuiBetaBadge
+              @size="s"
+              @color="subdued"
+              class="euiKeyPadMenuItem__betaBadge"
+              @css={{@item.betaBadgeCss}}
+              @label={{@item.betaBadgeLetter}}
+              @iconType={{@item.args.betaBadgeIconType}}
+              aria-hidden="true"
+            />
+          {{/if}}
+          <span class={{@item.iconClass}}>{{yield}}</span>
+          <span class={{@item.labelClass}}>{{@item.args.label}}</span>
+        </span>
+      </a>
+    {{else if @item.isButton}}
+      <button
+        class={{@item.classes}}
+        type="button"
+        disabled={{@item.isDisabled}}
+        aria-pressed={{@item.ariaPressed}}
+        ...attributes
+      >
+        <span class={{@item.innerClass}}>
+          {{#if @item.args.betaBadgeLabel}}
+            <EuiBetaBadge
+              @size="s"
+              @color="subdued"
+              class="euiKeyPadMenuItem__betaBadge"
+              @css={{@item.betaBadgeCss}}
+              @label={{@item.betaBadgeLetter}}
+              @iconType={{@item.args.betaBadgeIconType}}
+              aria-hidden="true"
+            />
+          {{/if}}
+          <span class={{@item.iconClass}}>{{yield}}</span>
+          <span class={{@item.labelClass}}>{{@item.args.label}}</span>
+        </span>
+      </button>
+    {{else}}
+      <label class={{@item.classes}} for={{@item.itemId}} ...attributes>
+        <span class={{@item.innerClass}}>
+          {{#if @item.isRadio}}
+            <EuiRadio
+              id={{@item.itemId}}
+              @containerClass="euiKeyPadMenuItem__checkableInput"
+              @css={{@item.checkableCss}}
+              @checked={{@item.isSelected}}
+              @disabled={{@item.isDisabled}}
+              @name={{@item.args.name}}
+              value={{@item.args.value}}
+              {{on "change" (fn @item.onChange @item.itemId @item.args.value)}}
+            />
+          {{else}}
+            <EuiCheckbox
+              id={{@item.itemId}}
+              @containerClass="euiKeyPadMenuItem__checkableInput"
+              @css={{@item.checkableCss}}
+              @checked={{@item.isSelected}}
+              @disabled={{@item.isDisabled}}
+              @name={{@item.args.name}}
+              {{on "change" (fn @item.onChange @item.itemId)}}
+            />
+          {{/if}}
+          <span class={{@item.iconClass}}>{{yield}}</span>
+          <span class={{@item.labelClass}}>{{@item.args.label}}</span>
+        </span>
+      </label>
+    {{/if}}
+</template>;
 
 const noop = () => {};
 
@@ -118,6 +217,21 @@ export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignat
 
   get betaBadgeLetter(): string | undefined {
     return this.args.betaBadgeLabel?.charAt(0);
+  }
+
+  /** Upstream wraps the item in a tooltip titled `@betaBadgeLabel`. */
+  @cached
+  get tooltipProps(): Partial<EuiTooltipArgs> | undefined {
+    const { betaBadgeLabel, betaBadgeTooltipContent, betaBadgeTooltipProps } =
+      this.args;
+
+    if (!betaBadgeLabel) return undefined;
+
+    return {
+      ...betaBadgeTooltipProps,
+      title: betaBadgeLabel,
+      content: betaBadgeTooltipContent
+    };
   }
 
   get onChange() {
@@ -197,86 +311,10 @@ export default class EuiKeyPadMenuItem extends Component<EuiKeyPadMenuItemSignat
   }
 
   <template>
-    {{#if this.isLink}}
-      <a
-        class={{this.classes}}
-        href={{@href}}
-        target={{@target}}
-        rel={{this.rel}}
-        aria-current={{if this.isSelected "true"}}
-        ...attributes
-      >
-        <span class={{this.innerClass}}>
-          {{#if @betaBadgeLabel}}
-            <EuiBetaBadge
-              @size="s"
-              @color="subdued"
-              class="euiKeyPadMenuItem__betaBadge"
-              @css={{this.betaBadgeCss}}
-              @label={{this.betaBadgeLetter}}
-              @title={{@betaBadgeLabel}}
-              @iconType={{@betaBadgeIconType}}
-              @tooltipContent={{@betaBadgeTooltipContent}}
-            />
-          {{/if}}
-          <span class={{this.iconClass}}>{{yield}}</span>
-          <span class={{this.labelClass}}>{{@label}}</span>
-        </span>
-      </a>
-    {{else if this.isButton}}
-      <button
-        class={{this.classes}}
-        type="button"
-        disabled={{this.isDisabled}}
-        aria-pressed={{this.ariaPressed}}
-        ...attributes
-      >
-        <span class={{this.innerClass}}>
-          {{#if @betaBadgeLabel}}
-            <EuiBetaBadge
-              @size="s"
-              @color="subdued"
-              class="euiKeyPadMenuItem__betaBadge"
-              @css={{this.betaBadgeCss}}
-              @label={{this.betaBadgeLetter}}
-              @title={{@betaBadgeLabel}}
-              @iconType={{@betaBadgeIconType}}
-              @tooltipContent={{@betaBadgeTooltipContent}}
-            />
-          {{/if}}
-          <span class={{this.iconClass}}>{{yield}}</span>
-          <span class={{this.labelClass}}>{{@label}}</span>
-        </span>
-      </button>
-    {{else}}
-      <label class={{this.classes}} for={{this.itemId}} ...attributes>
-        <span class={{this.innerClass}}>
-          {{#if this.isRadio}}
-            <EuiRadio
-              id={{this.itemId}}
-              @containerClass="euiKeyPadMenuItem__checkableInput"
-              @css={{this.checkableCss}}
-              @checked={{this.isSelected}}
-              @disabled={{this.isDisabled}}
-              @name={{@name}}
-              value={{@value}}
-              {{on "change" (fn this.onChange this.itemId @value)}}
-            />
-          {{else}}
-            <EuiCheckbox
-              id={{this.itemId}}
-              @containerClass="euiKeyPadMenuItem__checkableInput"
-              @css={{this.checkableCss}}
-              @checked={{this.isSelected}}
-              @disabled={{this.isDisabled}}
-              @name={{@name}}
-              {{on "change" (fn this.onChange this.itemId)}}
-            />
-          {{/if}}
-          <span class={{this.iconClass}}>{{yield}}</span>
-          <span class={{this.labelClass}}>{{@label}}</span>
-        </span>
-      </label>
-    {{/if}}
+    <EuiMaybeToolTip @props={{this.tooltipProps}}>
+      <KeyPadMenuItemElement @item={{this}} ...attributes>
+        {{yield}}
+      </KeyPadMenuItemElement>
+    </EuiMaybeToolTip>
   </template>
 }

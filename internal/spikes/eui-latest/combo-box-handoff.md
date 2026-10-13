@@ -401,3 +401,110 @@ major changesets make the next release 15.0.0, not 16.0.0.
 - ember-tsc (core, validated-form, changeset-form), eslint on changed
   files, parity 349/349, rollup (no package.json change),
   `generate-api-docs` (combo page regenerated).
+
+## Plain text value, toggle button, clear button (2026-10-13, branch `eui-wave/combo-flyout-parity`)
+
+Closes three of the "Remaining differences" above. Checked against
+123.1.0 `combo_box.tsx`, `combo_box_input/combo_box_input.tsx`,
+`form_control_layout_icons.tsx`, `combo_box.test.tsx` and
+`combo_box.spec.tsx`.
+
+### EuiFormControlLayout (additive)
+
+- `@icon` also takes upstream's `IconShape` object: `{ type, side, color,
+  onClick, disabled, ...attributes }`. With `onClick` it is a button
+  (EuiFormControlLayoutCustomIcon's existing clickable mode); other keys
+  (`aria-label`, `data-test-subj`, `tabIndex`, …) are applied with the
+  existing private `eui-spread-attributes` modifier. The shape's `side`
+  wins over `@iconSide` (also for the icon count variables).
+- `@clear` also takes upstream's clear button props: `{ onClick, disabled,
+  size, ...attributes }`. A function works as before.
+- Strings and functions render exactly as before (tested: a string icon
+  is a `span` with only its class). EuiFormControlLayoutDelimited and
+  `utils/eui/form-controls.ts` were not touched.
+
+### EuiComboBox
+
+- **`asPlainText`** (`combo_box_input.tsx` `searchValue`): the input's value
+  is the search text, else the selection's label; no pill. The option's
+  `prepend`/`append` sit around the input (`euiComboBoxPlainTextSelection__*`,
+  `xxs` margins). Backspace (upstream `onKeyDown`): the input's current
+  text becomes the search and the selection is removed; the key then
+  deletes one character natively. Clicking the input runs the focus
+  handler again (upstream `onClick={onFocus}`: `@onFocus` + open). The
+  label is used, not the block (upstream renders `label`); with
+  `@searchEnabled={{false}}` the old plain text pill is kept (no input).
+- **Toggle button**: the chevron is upstream's icon shape: a
+  `button[data-test-subj="comboBoxToggleListButton"]`, `tabindex=-1`,
+  `aria-label` "Open list of options" / "Close list of options" (upstream
+  literals, no i18n token), closing the list while open, else focusing the
+  input and opening it. Absent while disabled and with `@noSuggestions`;
+  `@triggerIcon` sets its icon type.
+- **Clear button**: upstream `clear` props, `data-test-subj="comboBoxClearButton"`
+  (behaviour unchanged: empties, focuses the input, opens the list).
+- The input gets `data-test-subj="comboBoxSearchInput"` (upstream).
+
+Ember differences:
+- The toggle button's mousedown/touch events are stopped (capture, on the
+  layout) so ember-basic-dropdown's trigger does not also toggle; mousedown
+  is prevented, so focus stays in the input. Upstream focuses the button on
+  mousedown, so after "Close list of options" focus is on the button there.
+- Clicking the input while the list is open still closes it first
+  (ember-basic-dropdown trigger mousedown); in plain text the click then
+  reopens it, as upstream's net result. Non plain text: pre-existing
+  difference, unchanged.
+
+Preserved (no changes there; their tests ran in the full suite): options
+derived from args, per-element handlers after an async `@search`
+(`eui-combo-box-click-focus-test`), list z-index anchor + 2000 and focus
+trap joining (`eui-stacking-test`).
+
+### Changed existing assertions (old → new, upstream reference)
+
+- `eui-combo-box-family-test.gts` "single selection: pill, plain text…":
+  `.euiComboBoxPill--plainText` has text "Banana" → the input has value
+  "Banana" and no `.euiComboBoxPill` (`renders asPlainText in the search
+  input, not as a pill`, combo_box.test.tsx).
+- `eui-combo-box-upstream-props-test.gts` "plain text single selection and
+  groups render prepend/append": prepend/append inside the plain text pill
+  (flex) → around the input inside the wrap (flex), input value "Titan"
+  (`EuiComboBoxOptionAppendPrepend` wrapping the input).
+- `eui-combo-box-upstream-behavior-test.gts` "Backspace removes the last
+  pill only from an empty input": plain text after the keydown had value
+  "Tita" → keydown keeps "Titan" (now the search), removes the selection
+  and the clear button; a `fillIn('Tita')` stands for the native deletion,
+  then "Tita" (spec "`asPlainText`: deletes the selection and only a single
+  character").
+
+### New tests
+
+`eui-combo-box-upstream-parity-test.gts` (15): plain text value / no pill /
+full width; the spec's Backspace case; choose then click reopens; typing,
+blur keeps text and invalid; blur with an exact match selects it; focus
+opens, clear empties/focuses/opens, `@onFocus`; prepend/append with a
+block; toggle button attributes, open/close/reopen, focus, open while
+focused, absent when disabled/noSuggestions, `@triggerIcon`, touch;
+`comboBoxClearButton`; EuiFormControlLayout icon shape (button, attrs,
+side count, click; span without onClick), clear props (attrs, disabled,
+function form), string icon and function clear unchanged.
+
+### Checks
+
+- Core full suite: 1788/1788 (same run as the flyout section).
+- Filtered combo/form-control-layout/stacking: 125/125.
+- validated-form 25/25, changeset-form 24/24, built against this
+  worktree's core: rollup (without the `declarations` step, which fails on
+  `utils/markdown/.../parsing-plugins.ts` types in this worktree, not
+  touched here) and temporary worktree-local `node_modules` for both
+  companions pointing `@ember-eui/core` at the worktree core; the
+  companions' `node_modules` symlinks were restored and `core/dist`
+  removed afterwards. sync-injected was not run.
+- ember-tsc clean; eslint clean on changed files; parity 356/356;
+  `generate-api-docs` (combo box and form control layout pages); rollup
+  did not change package.json.
+
+### Remaining differences
+
+- `@sortMatchesBy="startsWith"` with groups, typing keeping the highlighted
+  option, `@search` results not re-filtered, `inputPopoverProps`,
+  `inputRef`, ids by original index (unchanged, see above).

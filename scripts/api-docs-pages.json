@@ -476,5 +476,11 @@
   ],
   "packages/core/docs/utilities/provider/index.md": [
     "EuiEmotionProvider"
+  ],
+  "packages/core/docs/utilities/container-queries/index.md": [
+    "EuiContainerQuery"
+  ],
+  "packages/core/docs/utilities/pretty-duration/index.md": [
+    "EuiPrettyDuration"
   ]
 }

@@ -9,6 +9,8 @@ interface LookupTokenOptions {
   i18nMapping?: Record<string, string>;
   valueDefault: string | ((values: Record<string, unknown>) => string);
   values?: Record<string, unknown>;
+  /** Applied to the resolved text (upstream's `mappingFunc`); defaults to the service's `mappingFunc`. */
+  i18nMappingFunc?: (text: string) => string;
 }
 
 function flatten(
@@ -40,6 +42,13 @@ export default class EuiI18n extends Service {
    * `this.euiI18n.formatNumber = (n) => new Intl.NumberFormat('de').format(n)`.
    */
   @tracked formatNumber: (value: number) => string = (value) => defaultNumberFormat.format(value);
+
+  /**
+   * Transforms every resolved text (upstream's `EuiContext` `i18n.mappingFunc`),
+   * e.g. to pseudo-localize. A single `@i18n={{hash mappingFunc=...}}` on an
+   * `<EuiI18n>` overrides it for that instance.
+   */
+  @tracked mappingFunc?: (text: string) => string;
 
   @action
   addTranslations(translations: Record<string, unknown>) {
@@ -82,10 +91,11 @@ export default class EuiI18n extends Service {
       token,
       i18nMapping = this.mapping,
       valueDefault,
-      values = {}
+      values = {},
+      i18nMappingFunc = this.mappingFunc
     } = options;
 
-    let renderable = this.getTokenFromMapping(
+    const renderable = this.getTokenFromMapping(
       token,
       valueDefault,
       values,
@@ -93,10 +103,21 @@ export default class EuiI18n extends Service {
     );
 
     if (typeof renderable === 'function') {
-      renderable = renderable(values);
+      // A formatting function: its string result is mapped as a whole.
+      const rendered = renderable(values);
+
+      return (
+        i18nMappingFunc && typeof rendered === 'string'
+          ? i18nMappingFunc(rendered)
+          : rendered
+      ) as string;
     }
 
-    const children = processStringToChildren(renderable, values);
+    const children = processStringToChildren(
+      renderable,
+      values,
+      i18nMappingFunc
+    );
 
     return children as string;
   }

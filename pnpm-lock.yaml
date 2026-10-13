@@ -560,6 +560,9 @@ importers:
       remark-parse:
         specifier: ^8.0.3
         version: 8.0.3
+      remark-parse-no-trim:
+        specifier: ^8.0.4
+        version: 8.0.4
       remark-rehype:
         specifier: ^8.0.0
         version: 8.1.0

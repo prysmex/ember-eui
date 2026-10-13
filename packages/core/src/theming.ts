@@ -60,6 +60,8 @@ import {
   euiContainerQuery as _euiContainerQuery,
   euiFullHeight as _euiFullHeight,
   euiScrollBarStyles as _euiScrollBarStyles,
+  euiXScroll as _euiXScroll,
+  euiXScrollWithShadows as _euiXScrollWithShadows,
   euiYScroll as _euiYScroll,
   euiYScrollWithShadows as _euiYScrollWithShadows
 } from './utils/eui/styles.generated.ts';
@@ -124,3 +126,14 @@ export const euiYScrollWithShadows = _euiYScrollWithShadows as (
 
 /** `height: 100%; flex: 1 1 auto; overflow: hidden` (upstream's `euiFullHeight`). */
 export const euiFullHeight = _euiFullHeight as () => string;
+
+/** Horizontal scrolling with the minimal scroll bar (upstream's `euiXScroll`). */
+export const euiXScroll = _euiXScroll as (context: _Context) => string;
+
+/**
+ * Horizontal scrolling that masks the scrolled edges (upstream's
+ * `euiXScrollWithShadows`).
+ */
+export const euiXScrollWithShadows = _euiXScrollWithShadows as (
+  context: _Context
+) => string;

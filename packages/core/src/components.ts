@@ -37,6 +37,7 @@ import EuiComboBoxPill from './components/eui-combo-box-pill.gts';
 import EuiComment from './components/eui-comment.gts';
 import EuiCommentList from './components/eui-comment-list.gts';
 import EuiConfirmModal from './components/eui-confirm-modal.gts';
+import EuiContainerQuery from './components/eui-container-query.gts';
 import EuiContextMenu from './components/eui-context-menu.gts';
 import EuiContextMenuItem from './components/eui-context-menu-item.gts';
 import EuiContextMenuPanel from './components/eui-context-menu-panel.gts';
@@ -161,6 +162,7 @@ import EuiPaginationButton from './components/eui-pagination-button.gts';
 import EuiPanel from './components/eui-panel.gts';
 import EuiPinnableListGroup from './components/eui-pinnable-list-group.gts';
 import EuiPopover from './components/eui-popover.gts';
+import EuiPrettyDuration from './components/eui-pretty-duration.gts';
 import EuiPopoverFooter from './components/eui-popover-footer.gts';
 import EuiPopoverTitle from './components/eui-popover-title.gts';
 import EuiPortal from './components/eui-portal.gts';
@@ -303,6 +305,7 @@ export {
   EuiComment,
   EuiCommentList,
   EuiConfirmModal,
+  EuiContainerQuery,
   EuiContextMenu,
   EuiContextMenuItem,
   EuiContextMenuPanel,
@@ -427,6 +430,7 @@ export {
   EuiPanel,
   EuiPinnableListGroup,
   EuiPopover,
+  EuiPrettyDuration,
   EuiPopoverFooter,
   EuiPopoverTitle,
   EuiPortal,

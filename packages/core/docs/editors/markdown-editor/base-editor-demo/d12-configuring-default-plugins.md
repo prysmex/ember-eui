@@ -6,9 +6,9 @@ order: 12
 
 <EuiText>
 
-<EuiCode>getDefaultEuiMarkdownPlugins</EuiCode> (and the three <EuiCode>getDefaultEuiMarkdown...Plugins</EuiCode> functions) accept an optional configuration object: <EuiCode>exclude</EuiCode> unregisters default plugins, and <EuiCode>parsingConfig</EuiCode> overrides the configuration of a default parsing plugin, the <EuiCode>emoji</EuiCode> options and the link validator (<EuiCode>linkValidator</EuiCode>: <EuiCode>allowProtocols</EuiCode>, <EuiCode>allowRelative</EuiCode> for links starting with <EuiCode>/</EuiCode>, <EuiCode>allowDocumentRelative</EuiCode> and <EuiCode>baseUrl</EuiCode>). Links the validator rejects render as text, the link validator is on by default and allows <EuiCode>https:</EuiCode>, <EuiCode>http:</EuiCode>, <EuiCode>mailto:</EuiCode> and absolute relative links. You can also use <EuiCode>euiMarkdownLinkValidator</EuiCode> in your own parsing plugin list.
+<EuiCode>getDefaultEuiMarkdownPlugins</EuiCode> (and the three <EuiCode>getDefaultEuiMarkdown...Plugins</EuiCode> functions) accept an optional configuration object: <EuiCode>exclude</EuiCode> unregisters default plugins, <EuiCode>processingConfig</EuiCode> configures the processing plugins (<EuiCode>linkProps</EuiCode>: any <strong>EuiLink</strong> arg, e.g. <EuiCode>target</EuiCode>, <EuiCode>color</EuiCode>, <EuiCode>external</EuiCode> or an <EuiCode>onClick</EuiCode> handler, applied to every formatted link), and <EuiCode>parsingConfig</EuiCode> overrides the configuration of a default parsing plugin, the <EuiCode>emoji</EuiCode> options and the link validator (<EuiCode>linkValidator</EuiCode>: <EuiCode>allowProtocols</EuiCode>, <EuiCode>allowRelative</EuiCode> for links starting with <EuiCode>/</EuiCode>, <EuiCode>allowDocumentRelative</EuiCode> and <EuiCode>baseUrl</EuiCode>). Links the validator rejects render as text, the link validator is on by default and allows <EuiCode>https:</EuiCode>, <EuiCode>http:</EuiCode>, <EuiCode>mailto:</EuiCode> and absolute relative links. You can also use <EuiCode>euiMarkdownLinkValidator</EuiCode> in your own parsing plugin list.
 
-The example below excludes the <EuiCode>emoji</EuiCode> plugin and only lets <EuiCode>https:</EuiCode> and <EuiCode>mailto:</EuiCode> links through, with document-relative links (<EuiCode>[link](path)</EuiCode>) enabled. Upstream's <EuiCode>processingConfig.linkProps</EuiCode> (e.g. to open every link in a new tab) is not available in Ember EUI.
+The example below excludes the <EuiCode>emoji</EuiCode> plugin and only lets <EuiCode>https:</EuiCode> and <EuiCode>mailto:</EuiCode> links through, with document-relative links (<EuiCode>[link](path)</EuiCode>) enabled. Every link opens in a new tab through <EuiCode>processingConfig.linkProps</EuiCode>.
 
 </EuiText>
 
@@ -38,6 +38,9 @@ const { processingPlugins, parsingPlugins } = getDefaultEuiMarkdownPlugins({
       allowProtocols: ['https:', 'mailto:'],
       allowDocumentRelative: true,
     },
+  },
+  processingConfig: {
+    linkProps: { target: '_blank' },
   },
 });
 

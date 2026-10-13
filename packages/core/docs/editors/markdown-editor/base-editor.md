@@ -111,6 +111,7 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 | `@ariaLabel` | `string` |  | Accessible label of the textarea. |
 | `@ariaLabelledBy` | `string` |  | Id of the element labelling the textarea (e.g. a form row label). |
 | `@ariaDescribedBy` | `string` |  | Id of the element describing the textarea. |
+| `@markdownFormatProps` |  |  | Further args for the preview's `EuiMarkdownFormat` (upstream's `markdownFormatProps`): `rootClasses`, `textSize`, `color`, `shouldIncludeDefaultRootClasses`. They win over the `@format…` args. |
 | `@formatRootClasses` |  |  | `@rootClasses` of the preview's EuiMarkdownFormat. |
 | `@formatTextSize` |  |  | `@textSize` of the preview's EuiMarkdownFormat. |
 | `@formatColor` |  |  | `@color` of the preview's EuiMarkdownFormat. |

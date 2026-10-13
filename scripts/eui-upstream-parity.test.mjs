@@ -1299,6 +1299,8 @@ test('selectable static styles and new helpers match upstream', () => {
         styles.euiYScrollWithShadows(context, options),
         helpers.euiYScrollWithShadows(context, options)
       );
+    assert.equal(styles.euiXScroll(context), helpers.euiXScroll(context));
+    assert.equal(styles.euiXScrollWithShadows(context), helpers.euiXScrollWithShadows(context));
     for (const size of ['xxxs', 'xxs', 'xs', 's', 'm', 'l'])
       assert.deepEqual(styles.euiTitle(context, size), title.euiTitle(context, size));
   }

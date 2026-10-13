@@ -986,6 +986,14 @@ var euiYScrollWithShadows = function euiYScrollWithShadows2(euiTheme) {
     hasAnimatedOverflowShadow
   }), "\n");
 };
+var euiXScroll = function euiXScroll2(euiTheme) {
+  return "\n  ".concat(euiScrollBarStyles(euiTheme), "\n  ").concat(logicalCSSWithFallback("overflow-x", "auto"), "\n  &:focus {\n    outline: none; /* 1 */\n  }\n");
+};
+var euiXScrollWithShadows = function euiXScrollWithShadows2(euiTheme) {
+  return "\n  ".concat(euiXScroll(euiTheme), "\n  ").concat(euiOverflowShadowStyles(euiTheme, {
+    direction: "x"
+  }), "\n");
+};
 var euiFullHeight = function euiFullHeight2() {
   return "\n  ".concat(logicalCSS("height", "100%"), "\n  flex: 1 1 auto;\n  overflow: hidden;\n");
 };
@@ -11965,6 +11973,8 @@ export {
   euiTourStyles,
   euiTreeViewItemStyles,
   euiTreeViewStyles,
+  euiXScroll,
+  euiXScrollWithShadows,
   euiYScroll,
   euiYScrollWithShadows,
   getBadgeColors,

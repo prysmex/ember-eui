@@ -139,7 +139,7 @@ import { ${name} } from '@elastic/eui-illustrations';
 
     {{#if this.selected}}
       <EuiSpacer />
-      <EuiCodeBlock @language="gjs" @fontSize="m" @paddingSize="m" @isCopyable={{true}}>
+      <EuiCodeBlock @language="js" @fontSize="m" @paddingSize="m" @isCopyable={{true}}>
         {{this.snippet}}
       </EuiCodeBlock>
     {{/if}}

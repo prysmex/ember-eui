@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 2
 ---
 
-# Light and dark artwork
+# Light and dark artwork (Ember EUI extension)
 
 <EuiText>
 

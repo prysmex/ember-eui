@@ -8,28 +8,27 @@ title: Illustration
 
 <EuiText>
 
-`EuiIllustration` inlines an illustration asset and picks its light or dark
-artwork from the nearest theme's color mode. An asset is an object
-`{ id, title, light, dark }` where `light` and `dark` are SVG markup, the
-shape exported by `@elastic/eui-illustrations`.
+**EuiIllustration** renders theme-adaptive SVGs. Each illustration ships a `light` and a `dark` variant and the component inlines the one that matches the current theme.
+
+An asset is an object `{ id, title, light, dark }` where `light` and `dark` are SVG markup, the shape exported by [`@elastic/eui-illustrations`](https://github.com/elastic/eui/tree/main/packages/illustrations), a standalone package that is independently versioned and published from `@elastic/eui`, so the catalog can grow without an EUI release.
 
 ```js
-import { someIllustration } from '@elastic/eui-illustrations';
+import { dashboard } from '@elastic/eui-illustrations';
 ```
 
 ```hbs
-<EuiIllustration @type={{someIllustration}} />
+<EuiIllustration @type={{dashboard}} />
 ```
 
-The markup is inserted as-is: only pass trusted, package-authored SVGs, never
-user-supplied markup.
-
-The illustration is an image labelled with the asset's `title`; pass `@alt`
-to change the label, or `@alt=""` when it is decorative (it is then hidden
-from screen readers). It fills its container's width unless
-`@fullWidth={{false}}`.
+The markup is inserted as-is: only pass trusted, package-authored SVGs, never user-supplied markup.
 
 </EuiText>
+
+<EuiSpacer />
+
+<EuiCallOut @title="Accessibility recommendation" @color="success" @iconType="accessibility">
+  <p>The accessible label defaults to the illustration's <code>title</code>. Provide a more specific <code>@alt</code> when the illustration conveys meaning or pass <code>@alt=""</code> to mark it as purely decorative (it will be hidden from assistive technology). It fills its container's width unless <code>@fullWidth=&#123;&#123;false&#125;&#125;</code>.</p>
+</EuiCallOut>
 
 <EuiHorizontalRule />
 

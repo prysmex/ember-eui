@@ -8,7 +8,7 @@ order: 1
 
 **EuiContextMenu** is a nested menu system useful for navigating complicated trees. It lives within an **EuiPopover** which itself can be wrapped around any component (like a button in this example).
 
-Panels are a flat list; an item opens another panel with `panel: id`. Panels without `items` render their content with the `<:content>` block. An item's `icon` is an icon name, or a component (like a curried **EuiIcon**) to customize its color or size; `toolTipProps` takes any **EuiToolTip** argument, like `title`.
+Panels are a flat list; an item opens another panel with `panel: id`. Panels without `items` render their content with the `<:content>` block. An item's `icon` is an icon name, or a component (like a curried **EuiIcon**) to customize its color or size; `toolTipProps` takes any **EuiToolTip** argument, like `title`. A `target: '_blank'` link gets the external link icon (`external: false` hides it). `@onPanelChange` is called with `{ panelId, direction }` whenever another panel is shown.
 
 </EuiText>
 

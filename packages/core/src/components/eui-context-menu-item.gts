@@ -2,20 +2,25 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { service } from '@ember/service';
 
 import { and, not } from 'ember-truth-helpers';
 
+import euiDisabledElement from '../-private/eui-disabled-element.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import {
   euiContextMenuItemStyles,
-  euiListItemLayoutStyles
+  euiListItemLayoutStyles,
+  euiScreenReaderOnly
 } from '../utils/eui/styles.generated.ts';
 import EuiIcon from './eui-icon.gts';
+import { getSecureRelForTarget } from './eui-link.gts';
 import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
+import type EuiI18n from '../services/eui-i18n.ts';
 import type { EuiIconSignature } from './eui-icon';
 import type { EuiTooltipArgs } from './eui-tool-tip';
 import type { ComponentLike } from '@glint/template';
@@ -55,6 +60,22 @@ export interface EuiContextMenuItemSignature {
     href?: string;
     /** `target` of the `@href` link, e.g. `'_blank'`. */
     target?: string;
+    /**
+     * `rel` of the `@href` link; `noreferrer` (and `noopener` for
+     * `'_blank'`) is added, as upstream.
+     */
+    rel?: string;
+    /**
+     * Shows the external link icon after the text of an `@href` link.
+     * Defaults to `true` when `@target` is `'_blank'`.
+     */
+    external?: boolean;
+    /**
+     * With `@disabled`, keeps the item focusable and sets `aria-disabled`
+     * instead of `disabled` (e.g. so its tooltip still shows); clicks and
+     * key presses are blocked.
+     */
+    hasAriaDisabled?: boolean;
     /** Shows a spinner instead of the icon. */
     isLoading?: boolean;
     /**
@@ -92,6 +113,8 @@ export interface EuiContextMenuItemSignature {
 }
 
 export default class EuiContextMenuItemComponent extends Component<EuiContextMenuItemSignature> {
+  @service declare euiI18n: EuiI18n;
+
   @tracked link: HTMLAnchorElement | HTMLButtonElement | null = null;
 
   @action
@@ -116,17 +139,23 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
     const layout = useEuiBorealisStyles(context, euiListItemLayoutStyles);
     const styles = useEuiBorealisStyles(context, euiContextMenuItemStyles);
     const disabled = !!this.args.disabled;
+    const hasAriaDisabled = !!this.args.hasAriaDisabled;
     const color = this.args.color ?? 'text';
 
     return `euiContextMenuItem euiListItemLayout ${euiClass(
       context,
       ITEM_RESET,
       layout.euiListItemLayout,
-      !disabled && layout.isInteractive,
+      // upstream `canHaveInteractiveStyles`
+      (!disabled || hasAriaDisabled) && layout.isInteractive,
       styles.euiContextMenuItem,
       styles.layoutAlign[this.args.layoutAlign ?? 'center'],
       !disabled && color !== 'text' && styles.colors[color],
-      disabled && layout.isDisabled
+      disabled && layout.isDisabled,
+      disabled &&
+        hasAriaDisabled &&
+        Boolean(this.args.toolTipContent) &&
+        layout.buttonIsDisabled
     )}`;
   }
 
@@ -191,6 +220,60 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
     ].join(' ');
   }
 
+  get isLink(): boolean {
+    return Boolean(this.args.href && !this.args.disabled);
+  }
+
+  get rel(): string {
+    return getSecureRelForTarget(this.args.target, this.args.rel);
+  }
+
+  /** Native `disabled`, unless `@hasAriaDisabled` swaps it for `aria-disabled`. */
+  get nativeDisabled(): boolean | undefined {
+    return this.args.hasAriaDisabled ? undefined : this.args.disabled;
+  }
+
+  get ariaDisabled(): 'true' | undefined {
+    return this.args.hasAriaDisabled && this.args.disabled ? 'true' : undefined;
+  }
+
+  /** Upstream `EuiExternalLinkIcon` in the text of an enabled link. */
+  get showExternal(): boolean {
+    const { external, target } = this.args;
+    return (
+      this.isLink &&
+      ((target === '_blank' && external !== false) || external === true)
+    );
+  }
+
+  get externalText(): string {
+    return this.args.target === '_blank'
+      ? this.euiI18n.lookupToken(
+          'euiExternalLinkIcon.newTarget.screenReaderOnlyText',
+          '(external, opens in a new tab or window)'
+        )
+      : this.euiI18n.lookupToken(
+          'euiExternalLinkIcon.externalTarget.screenReaderOnlyText',
+          '(external)'
+        );
+  }
+
+  /** Upstream `EuiExternalLinkIcon` margin plus the layout's `externalIcon`. */
+  @cached
+  get externalIconCss(): EuiCss {
+    const context = getEuiThemeContext(this);
+    const layout = useEuiBorealisStyles(context, euiListItemLayoutStyles);
+    return [
+      { marginInlineStart: context.upstream.euiTheme.size.xs },
+      layout.externalIcon
+    ];
+  }
+
+  @cached
+  get srOnlyClass(): string {
+    return euiClass(getEuiThemeContext(this), euiScreenReaderOnly());
+  }
+
   get toolTipAnchorClass(): string {
     return ['eui-displayBlock', this.args.toolTipProps?.anchorClassName]
       .filter(Boolean)
@@ -224,15 +307,18 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
             class={{this.classes}}
             href={{@href}}
             target={{@target}}
+            rel={{this.rel}}
             {{didInsert this.registerLink}}
             ...attributes
           />
         {{else}}
           <button
             class={{this.classes}}
-            disabled={{@disabled}}
+            disabled={{this.nativeDisabled}}
+            aria-disabled={{this.ariaDisabled}}
             type="button"
             {{didInsert this.registerLink}}
+            {{euiDisabledElement @disabled @hasAriaDisabled}}
             ...attributes
           />
         {{/if}}
@@ -242,15 +328,18 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
         class={{this.classes}}
         href={{@href}}
         target={{@target}}
+        rel={{this.rel}}
         {{didInsert this.registerLink}}
         ...attributes
       />
     {{else}}
       <button
         class={{this.classes}}
-        disabled={{@disabled}}
+        disabled={{this.nativeDisabled}}
+        aria-disabled={{this.ariaDisabled}}
         type="button"
         {{didInsert this.registerLink}}
+        {{euiDisabledElement @disabled @hasAriaDisabled}}
         ...attributes
       />
     {{/if}}
@@ -284,6 +373,15 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
           {{/if}}
           <span class={{this.parts.text}}>
             {{yield}}
+            {{#if this.showExternal}}
+              <EuiIcon
+                @type="external"
+                @size="m"
+                @css={{this.externalIconCss}}
+                role="presentation"
+              />
+              <span class={{this.srOnlyClass}}>{{this.externalText}}</span>
+            {{/if}}
           </span>
           {{#if @hasPanel}}
             <span class={{this.parts.append}}>

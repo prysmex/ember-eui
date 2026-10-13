@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
-import { assert } from '@ember/debug';
+import { isDestroying } from '@ember/destroyable';
 import { hash } from '@ember/helper';
 import { guidFor } from '@ember/object/internals';
 
@@ -37,9 +37,9 @@ import EuiPageContentBody from './eui-page-content-body.gts';
 import EuiPageHeader from './eui-page-header.gts';
 import EuiPageSection from './eui-page-section.gts';
 import EuiPageSideBar from './eui-page-side-bar.gts';
-import EuiPageSidebar from './eui-page-sidebar.gts';
 import EuiPageTemplateBottomBar from './eui-page-template/bottom-bar.gts';
 import EuiPageTemplateEmptyPrompt from './eui-page-template/empty-prompt.gts';
+import EuiPageTemplateSidebar from './eui-page-template/sidebar.gts';
 
 import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 import type {
@@ -53,8 +53,7 @@ import type { EuiPageContentSignature } from './eui-page-content';
 import type { EuiPageContentBodySignature } from './eui-page-content-body';
 import type { EuiPageHeaderSignature } from './eui-page-header';
 import type { EuiPageSideBarSignature } from './eui-page-side-bar';
-import type { EuiPageSidebarSignature } from './eui-page-sidebar';
-import type Owner from '@ember/owner';
+import type { EuiPageTemplateSidebarRegistry } from './eui-page-template/sidebar.gts';
 import type { WithBoundArgs } from '@glint/template';
 
 export const TEMPLATES = [
@@ -226,8 +225,14 @@ export type EuiPageTemplateProps = {
  * template's settings. Args passed to a part override them.
  */
 export interface EuiPageTemplateParts {
-  /** `EuiPageSidebar` with the template's `@paddingSize` and `@responsive`. Only in `<:sidebar>`. */
-  Sidebar: WithBoundArgs<typeof EuiPageSidebar, 'paddingSize' | 'responsive'>;
+  /**
+   * `EuiPageSidebar` with the template's `@paddingSize` and `@responsive`.
+   * Only in the `<:sidebar>` block (it asserts elsewhere).
+   */
+  Sidebar: WithBoundArgs<
+    typeof EuiPageTemplateSidebar,
+    'paddingSize' | 'responsive'
+  >;
   /** `EuiPageHeader` with the template's width, padding, bottom border and color. */
   Header: WithBoundArgs<
     typeof EuiPageHeader,
@@ -276,10 +281,11 @@ export interface EuiPageTemplateSignature {
      */
     default: [EuiPageTemplateParts];
     /**
-     * Composable API. Sidebars (`T.Sidebar`), rendered beside the main
-     * element; panels and borders the content.
+     * Composable API. Sidebars (`T.Sidebar`, may be conditional), rendered
+     * beside the main element. Any rendered `T.Sidebar` panels and borders
+     * the content, like upstream.
      */
-    sidebar: [EuiPageTemplateParts];
+    sidebar: [Pick<EuiPageTemplateParts, 'Sidebar'>];
     /** Legacy API. A side bar, e.g. an `EuiSideNav`. */
     pageSideBar: [];
     /** Legacy API. The header's title, instead of `pageHeader.pageTitle`. */
@@ -296,31 +302,6 @@ export interface EuiPageTemplateSignature {
 }
 
 const DEFAULT_RESPONSIVE: EuiPageBreakpoint[] = ['xs', 's'];
-
-/**
- * `T.Sidebar` yielded to the default block: sidebars must go in the
- * `<:sidebar>` block so they render beside the main element.
- */
-export class EuiPageTemplateMisplacedSidebar extends Component<EuiPageSidebarSignature> {
-  constructor(owner: Owner, args: EuiPageSidebarSignature['Args']) {
-    super(owner, args);
-    assert(
-      'EuiPageTemplate: render `T.Sidebar` in the `<:sidebar as |T|>` block, not in the default block, so that it is placed beside the main content.'
-    );
-  }
-
-  <template>
-    <EuiPageSidebar
-      @sticky={{@sticky}}
-      @paddingSize={{@paddingSize}}
-      @minWidth={{@minWidth}}
-      @responsive={{@responsive}}
-      @hasEmbellish={{@hasEmbellish}}
-      @css={{@css}}
-      ...attributes
-    >{{yield}}</EuiPageSidebar>
-  </template>
-}
 
 interface ComposableLayout {
   innerClass: string;
@@ -420,9 +401,9 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
 
   /**
    * The layout settings that depend on whether there is a sidebar
-   * (upstream counts its `EuiPageTemplate.Sidebar` children; here it is
-   * whether the `<:sidebar>` block is given, so it is known at the first
-   * render). One cached object per case.
+   * (upstream counts its `EuiPageTemplate.Sidebar` children; here the
+   * rendered `T.Sidebar`s register, see `sidebarCount`). One cached object
+   * per case.
    */
   layoutFor(hasSidebar: boolean): ComposableLayout {
     const { panelled, contentBorder, bottomBorder, mainProps } = this.args;
@@ -455,6 +436,31 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
       headerBottomBorder: bottomBorder ?? (hasSidebar ? true : 'extended'),
       emptyPromptPanelled: innerPanelled ? true : panelled
     };
+  }
+
+  /**
+   * Number of rendered `T.Sidebar`s. Written as they render or go away,
+   * never read and written in one go, so a sidebar rendering does not
+   * invalidate something already read in the same render.
+   */
+  @tracked sidebarCount = 0;
+  #sidebars = 0;
+
+  sidebarRegistry: EuiPageTemplateSidebarRegistry = {
+    register: () => {
+      this.sidebarCount = ++this.#sidebars;
+      return () => {
+        this.#sidebars--;
+        if (!isDestroying(this)) this.sidebarCount = this.#sidebars;
+      };
+    }
+  };
+
+  /** Upstream: the layout depends on whether there are sidebars. */
+  get layout(): ComposableLayout {
+    return this.sidebarCount > 0
+      ? this.layoutWithSidebar
+      : this.layoutWithoutSidebar;
   }
 
   @cached
@@ -603,22 +609,7 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
       )
     }}
       {{#let
-        (if
-          (has-block "sidebar")
-          this.layoutWithSidebar
-          this.layoutWithoutSidebar
-        )
         (hash
-          Sidebar=(component
-            EuiPageSidebar
-            paddingSize=this.composablePaddingSize
-            responsive=this.responsive
-          )
-          MisplacedSidebar=(component
-            EuiPageTemplateMisplacedSidebar
-            paddingSize=this.composablePaddingSize
-            responsive=this.responsive
-          )
           BottomBar=(component
             EuiPageTemplateBottomBar
             restrictWidth=this.composableRestrictWidth
@@ -632,64 +623,64 @@ export default class EuiPageTemplate extends Component<EuiPageTemplateSignature>
             grow=true
           )
         )
-        as |layout parts|
+        as |parts|
       }}
-        {{#let
-          (component
-            EuiPageHeader
-            restrictWidth=this.composableRestrictWidth
-            paddingSize=this.composablePaddingSize
-            bottomBorder=layout.headerBottomBorder
-            color=this.sectionColor
-          )
-          (component
-            EuiPageTemplateEmptyPrompt
-            panelled=layout.emptyPromptPanelled
-            grow=true
-          )
-          as |Header EmptyPrompt|
-        }}
-          <div
-            class="euiPageTemplate {{this.outerClass}}"
-            {{style this.pageStyle}}
-            ...attributes
-          >
-            {{#if (has-block "sidebar")}}
+        <div
+          class="euiPageTemplate {{this.outerClass}}"
+          {{style this.pageStyle}}
+          ...attributes
+        >
+          {{! Sidebars render (and register) before anything reads the count. }}
+          {{#if (has-block "sidebar")}}
+            {{yield
+              (hash
+                Sidebar=(component
+                  EuiPageTemplateSidebar
+                  paddingSize=this.composablePaddingSize
+                  responsive=this.responsive
+                  registry=this.sidebarRegistry
+                )
+              )
+              to="sidebar"
+            }}
+          {{/if}}
+          {{#let (element this.mainTag) as |Main|}}
+            <Main
+              id={{this.mainId}}
+              class="{{this.layout.innerClass}} {{@mainProps.className}}"
+              role={{@mainProps.role}}
+              aria-label={{@mainProps.aria-label}}
+              aria-labelledby={{@mainProps.aria-labelledby}}
+              data-test-subj={{@mainProps.data-test-subj}}
+              {{style this.mainStyle}}
+            >
               {{yield
                 (hash
-                  Sidebar=parts.Sidebar
-                  Header=Header
+                  Sidebar=(component
+                    EuiPageTemplateSidebar
+                    paddingSize=this.composablePaddingSize
+                    responsive=this.responsive
+                  )
+                  Header=(component
+                    EuiPageHeader
+                    restrictWidth=this.composableRestrictWidth
+                    paddingSize=this.composablePaddingSize
+                    bottomBorder=this.layout.headerBottomBorder
+                    color=this.sectionColor
+                  )
                   Section=parts.Section
-                  EmptyPrompt=EmptyPrompt
+                  EmptyPrompt=(component
+                    EuiPageTemplateEmptyPrompt
+                    panelled=this.layout.emptyPromptPanelled
+                    grow=true
+                  )
                   BottomBar=parts.BottomBar
                 )
-                to="sidebar"
+                to="default"
               }}
-            {{/if}}
-            {{#let (element this.mainTag) as |Main|}}
-              <Main
-                id={{this.mainId}}
-                class="{{layout.innerClass}} {{@mainProps.className}}"
-                role={{@mainProps.role}}
-                aria-label={{@mainProps.aria-label}}
-                aria-labelledby={{@mainProps.aria-labelledby}}
-                data-test-subj={{@mainProps.data-test-subj}}
-                {{style this.mainStyle}}
-              >
-                {{yield
-                  (hash
-                    Sidebar=parts.MisplacedSidebar
-                    Header=Header
-                    Section=parts.Section
-                    EmptyPrompt=EmptyPrompt
-                    BottomBar=parts.BottomBar
-                  )
-                  to="default"
-                }}
-              </Main>
-            {{/let}}
-          </div>
-        {{/let}}
+            </Main>
+          {{/let}}
+        </div>
       {{/let}}
     {{else}}
     {{this.deprecateLegacyApi}}

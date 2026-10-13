@@ -11,9 +11,8 @@ import EuiButton from '#src/components/eui-button.gts';
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
 import EuiEmptyPrompt from '#src/components/eui-empty-prompt.gts';
 import EuiPageSection from '#src/components/eui-page-section.gts';
-import EuiPageTemplate, {
-  EuiPageTemplateMisplacedSidebar
-} from '#src/components/eui-page-template.gts';
+import EuiPageTemplate from '#src/components/eui-page-template.gts';
+import EuiPageTemplateSidebar from '#src/components/eui-page-template/sidebar.gts';
 import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
 
 import type {
@@ -532,6 +531,65 @@ module('Integration | Component | EuiPageTemplate composable', function (hooks) 
     assert.strictEqual(at('opt-out', '.euiEmptyPrompt').backgroundColor, plain);
   });
 
+  test('a conditional sidebar updates the layout without replacing the content', async function (assert) {
+    class State {
+      @tracked showSidebar = true;
+      @tracked second = false;
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiPageTemplate data-page>
+          <:sidebar as |T|>
+            {{#if state.showSidebar}}<T.Sidebar data-one>Nav</T.Sidebar>{{/if}}
+            {{#if state.second}}<T.Sidebar data-two>More</T.Sidebar>{{/if}}
+          </:sidebar>
+          <:default as |T|>
+            <T.Header @pageTitle="Title" />
+            <T.EmptyPrompt @title="Empty" />
+          </:default>
+        </EuiPageTemplate>
+      </template>
+    );
+    const plain = rgb(light.colors.backgroundBasePlain);
+    const main = el(this.element, '[data-page] main');
+    const header = el(this.element, '[data-page] .euiPageHeader');
+    const prompt = el(this.element, '[data-page] .euiEmptyPrompt');
+    const assertLayout = (withSidebar: boolean, message: string) => {
+      assert.strictEqual(getComputedStyle(main).backgroundColor, withSidebar ? plain : TRANSPARENT, `${message}: panelled`);
+      assert.strictEqual(getComputedStyle(main).borderLeftStyle, withSidebar ? 'solid' : 'none', `${message}: border`);
+      assert.strictEqual(getComputedStyle(header).borderBottomStyle, withSidebar ? 'none' : 'solid', `${message}: header border`);
+      assert.strictEqual(
+        getComputedStyle(el(header, '.euiPageHeaderContent')).borderBottomStyle,
+        withSidebar ? 'solid' : 'none',
+        `${message}: header content border`
+      );
+      assert.strictEqual(
+        getComputedStyle(prompt).backgroundColor,
+        rgb(withSidebar ? light.colors.backgroundBaseSubdued : light.colors.backgroundBasePlain),
+        `${message}: prompt`
+      );
+    };
+
+    assertLayout(true, 'one sidebar');
+    state.showSidebar = false;
+    await settled();
+    assert.dom('[data-page] .euiPageSidebar').doesNotExist();
+    assert.strictEqual(el(this.element, '[data-page] main'), main, 'same main');
+    assert.strictEqual(el(this.element, '[data-page] .euiEmptyPrompt'), prompt, 'same prompt');
+    assertLayout(false, 'no sidebar');
+
+    state.second = true;
+    await settled();
+    assertLayout(true, 'another sidebar');
+    state.showSidebar = true;
+    await settled();
+    assert.dom('[data-page] > .euiPageSidebar').exists({ count: 2 });
+    state.second = false;
+    await settled();
+    assertLayout(true, 'still one sidebar');
+  });
+
   test('responsive: the sidebar stacks above the content on narrow screens', async function (assert) {
     await render(
       <template>
@@ -765,7 +823,7 @@ module('Integration | Component | EuiPageTemplate composable', function (hooks) 
   test('T.Sidebar in the default block asserts', function (assert) {
     // Constructed directly: a render error would leave the renderer broken.
     assert.throws(
-      () => new EuiPageTemplateMisplacedSidebar(this.owner, {}),
+      () => new EuiPageTemplateSidebar(this.owner, {}),
       /<:sidebar as \|T\|>/,
       'points to the sidebar block'
     );

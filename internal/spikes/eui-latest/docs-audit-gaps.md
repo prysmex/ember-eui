@@ -71,7 +71,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiContextMenu items | `toolTipProps` (position etc.) | navigation/context-menu.mdx | S | Only `toolTipContent`/`toolTipTitle`. |
 | EuiContextMenu items | separator extra props (e.g. `margin`) | navigation/context-menu.mdx | S | Type is `{isSeparator, key?}`. |
 | EuiContextMenu items | `icon` as element (custom colour/size) | navigation/context-menu.mdx | S/M | `icon` is type-name only. |
-| EuiBreadcrumbs | per-item `popoverContent` / `popoverProps` (incl. `closePopover` render form) | navigation/breadcrumbs.mdx | M | Whole "Popover content" section and demo missing; popover only used for `max` overflow. |
 | EuiCollapsibleNavGroup | `extraAction` | navigation/collapsible-nav.mdx | S/M | Dropped in collapsible-nav-demo/demo3. |
 | EuiCollapsibleNavGroup | `arrowDisplay` (`right`/`none`) | navigation/collapsible-nav.mdx | S | Hard-coded to right. |
 | EuiCollapsibleNavGroup | EuiAccordion pass-through (`paddingSize`, `buttonElement`, `onToggle`) | navigation/collapsible-nav.mdx | S | Not in signature. |
@@ -95,7 +94,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiFlexGroup | `@tagName` beyond `div`/`span` | layout/flex/index.mdx | S | Template has an `eq "span"` branch; would need `{{element}}`. |
 | EuiFlexGrid | `css` | layout/flex/grid.mdx | S | Group and item have it. |
 | EuiHeader | `sections` items as nodes (only `{text}`); `sections[].breadcrumbProps` | layout/header.mdx | M | Workaround: compose with EuiHeaderSection. |
-| EuiHeaderBreadcrumbs | override `max`/`truncate` and other EuiBreadcrumbs args | layout/header.mdx | S | Hard-coded `max=4`; only `@breadcrumbs` forwarded. |
 | EuiSelectableTemplateSitewide | `searchProps` (`append`, `onKeyUpCapture`, `inputRef`, `className`) | templates/sitewide-search | M | Only `@onSearch`, `@placeholder`; Cmd+K demo needs it. |
 | EuiSelectableTemplateSitewide | `listProps`, `popoverProps` | templates/sitewide-search | S | `listProps` hard-coded internally. |
 | EuiSelectableTemplateSitewide | `popoverButtonBreakpoints` | templates/sitewide-search | S/M | Block always replaces the field. |

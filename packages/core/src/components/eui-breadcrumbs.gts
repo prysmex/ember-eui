@@ -25,7 +25,10 @@ import EuiIcon from './eui-icon.gts';
 import EuiInnerText from './eui-inner-text.gts';
 import EuiLink from './eui-link.gts';
 import EuiPopover from './eui-popover.gts';
+import EuiToolTip from './eui-tool-tip.gts';
 
+import type { ComponentLike } from '@glint/template';
+import type { EuiPopoverArgs } from './eui-popover.gts';
 import type EuiI18nService from '../services/eui-i18n.ts';
 import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 import type { CSSInterpolation } from '@emotion/css/create-instance';
@@ -43,6 +46,25 @@ const responsiveDefault: EuiBreadcrumbResponsiveMaxCount = {
   s: 2,
   m: 4
 };
+
+/**
+ * Args the `popoverContent` component receives.
+ */
+export type EuiBreadcrumbPopoverContentArgs = {
+  /** Closes the breadcrumb's popover. */
+  closePopover: () => void;
+  /** The breadcrumb the popover belongs to. */
+  breadcrumb: EuiBreadcrumb;
+};
+
+/**
+ * `EuiPopover` args accepted by a breadcrumb's `popoverProps`: everything
+ * except the ones that control its state, which `EuiBreadcrumbs` owns.
+ */
+export type EuiBreadcrumbPopoverProps = Omit<
+  EuiPopoverArgs,
+  'button' | 'closePopover' | 'isOpen' | 'buttonRef' | 'insert'
+>;
 
 export type EuiBreadcrumb = {
   /**
@@ -75,6 +97,23 @@ export type EuiBreadcrumb = {
    * (upstream; it used to be `'text'` for the last one).
    */
   color?: string;
+
+  /**
+   * Makes the breadcrumb a button that toggles a popover (with a
+   * `chevronSingleDown` icon). A string is shown as text. A component
+   * is rendered inside the popover with `@closePopover` and `@breadcrumb`.
+   * `true` renders the `<:popoverContent as |breadcrumb closePopover|>` block
+   * of `EuiBreadcrumbs`. `href` and `onClick` are ignored.
+   */
+  popoverContent?:
+    | string
+    | true
+    | ComponentLike<{ Args: EuiBreadcrumbPopoverContentArgs }>;
+  /**
+   * `EuiPopover` args for the popover (e.g. `{ panelPaddingSize: 'none' }`),
+   * except the ones controlling its state.
+   */
+  popoverProps?: EuiBreadcrumbPopoverProps;
 
   /** @deprecated Ignored. It used to mark the internal "…" item. */
   ellipsis?: boolean;
@@ -193,7 +232,14 @@ interface EuiBreadcrumbsComponentArgs {
 export interface EuiBreadcrumbsSignature {
   Element: HTMLElement;
   Args: EuiBreadcrumbsComponentArgs;
-  Blocks: { default: [] };
+  Blocks: {
+    default: [];
+    /**
+     * Content of the popover of every breadcrumb with `popoverContent: true`;
+     * yields the breadcrumb and a `closePopover` function.
+     */
+    popoverContent: [breadcrumb: EuiBreadcrumb, closePopover: () => void];
+  };
 }
 
 export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
@@ -317,7 +363,11 @@ export default class EuiBreadcrumbs extends Component<EuiBreadcrumbsSignature> {
             @truncate={{this.truncate}}
             @lastBreadcrumbIsCurrentPage={{this.lastBreadcrumbIsCurrentPage}}
             @collapsedLabel={{this.collapsedLabel}}
-          />
+          >
+            <:popoverContent as |breadcrumb closePopover|>
+              {{yield breadcrumb closePopover to="popoverContent"}}
+            </:popoverContent>
+          </BreadcrumbItem>
         {{/each}}
       </ol>
     </nav>
@@ -332,6 +382,9 @@ interface BreadcrumbItemSignature {
     lastBreadcrumbIsCurrentPage: boolean;
     collapsedLabel: string;
   };
+  Blocks: {
+    popoverContent: [breadcrumb: EuiBreadcrumb, closePopover: () => void];
+  };
 }
 
 /**
@@ -340,6 +393,8 @@ interface BreadcrumbItemSignature {
  * `css`).
  */
 class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
+  @service declare euiI18n: EuiI18nService;
+
   get isCollapsed(): boolean {
     return Boolean(this.args.item.overflow);
   }
@@ -363,9 +418,52 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
     );
   }
 
+  /** The breadcrumb of a popover item (never the "…" item). */
+  get popoverBreadcrumb(): EuiBreadcrumb {
+    return this.breadcrumb!;
+  }
+
+  get overflow(): EuiBreadcrumb[] | undefined {
+    return this.args.item.overflow;
+  }
+
+  /** `popoverContent` given as a string. */
+  get popoverText(): string | undefined {
+    const content = this.breadcrumb?.popoverContent;
+    return typeof content === 'string' ? content : undefined;
+  }
+
+  /** `popoverContent` given as a component. */
+  get popoverComponent():
+    | ComponentLike<{ Args: EuiBreadcrumbPopoverContentArgs }>
+    | undefined {
+    const content = this.breadcrumb?.popoverContent;
+    return typeof content === 'string' || content === true
+      ? undefined
+      : content;
+  }
+
+  /** A breadcrumb that toggles a popover (it ignores `href`/`onClick`). */
+  get hasPopover(): boolean {
+    return !this.isCollapsed && Boolean(this.breadcrumb!.popoverContent);
+  }
+
+  /** The "…" item or a breadcrumb with `popoverContent`. */
+  get isPopover(): boolean {
+    return this.isCollapsed || this.hasPopover;
+  }
+
+  get popoverAriaLabel(): string {
+    return ` - ${this.euiI18n.lookupToken(
+      'euiBreadcrumb.popoverAriaLabel',
+      'Clicking this button will toggle a popover dialog.'
+    )}`;
+  }
+
   get isInteractive(): boolean {
     return (
       !this.isCollapsed &&
+      !this.hasPopover &&
       Boolean(this.breadcrumb!.href || this.breadcrumb!.onClick)
     );
   }
@@ -432,7 +530,7 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
   get interactionCss(): CSSInterpolation {
     const context = getEuiThemeContext(this);
     const styles = useEuiBorealisStyles(context, euiBreadcrumbContentStyles);
-    return (this.isInteractive || this.isCollapsed) &&
+    return (this.isInteractive || this.isPopover) &&
       this.args.type !== 'application'
       ? styles.isInteractive
       : undefined;
@@ -446,13 +544,18 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
       context,
       euiBreadcrumbPopoverStyles
     );
-    return this.isCollapsed
+    return this.isPopover
       ? [
           popoverStyles.euiBreadcrumb__popoverButton,
           ...this.contentCss,
           this.interactionCss
         ]
       : [...this.contentCss, ...this.truncationCss, this.interactionCss];
+  }
+
+  /** Upstream's `popoverProps.css`, composed after the wrapper styles. */
+  get popoverUserCss(): CSSInterpolation {
+    return this.breadcrumb?.popoverProps?.css;
   }
 
   get contentClassNames(): string {
@@ -493,40 +596,126 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
     );
     return [
       popoverStyles.popoverWrapper.euiBreadcrumb__popoverWrapper,
-      !this.args.item.isLast && popoverStyles.popoverWrapper[this.args.type]
+      !this.args.item.isLast && popoverStyles.popoverWrapper[this.args.type],
+      this.popoverUserCss
     ];
   }
 
   <template>
-    {{#if @item.overflow}}
-      {{#let (useState false) as |popover|}}
+    {{#if this.isPopover}}
+      {{#let (useState false) this.breadcrumb.popoverProps as |popover props|}}
         <li class={{this.liClass}} data-test-subj="euiBreadcrumb">
           <EuiPopover
             @css={{this.popoverCss}}
             @isOpen={{popover.value}}
             @closePopover={{fn popover.setState false}}
+            @anchorPosition={{props.anchorPosition}}
+            @anchorClassName={{props.anchorClassName}}
+            @panelPaddingSize={{props.panelPaddingSize}}
+            @panelClassName={{props.panelClassName}}
+            @panelStyle={{props.panelStyle}}
+            @panelCss={{props.panelCss}}
+            @rootCss={{props.rootCss}}
+            @ownFocus={{props.ownFocus}}
+            @display={{props.display}}
+            @hasArrow={{props.hasArrow}}
+            @initialFocus={{props.initialFocus}}
+            @ariaLabel={{props.ariaLabel}}
+            @ariaLabelledBy={{props.ariaLabelledBy}}
+            @repositionOnScroll={{props.repositionOnScroll}}
+            @repositionToCrossAxis={{props.repositionToCrossAxis}}
+            @popoverScreenReaderText={{props.popoverScreenReaderText}}
+            @attachToAnchor={{props.attachToAnchor}}
+            @container={{props.container}}
+            @zIndex={{props.zIndex}}
+            @offset={{props.offset}}
+            @buffer={{props.buffer}}
+            @shouldSelfFocus={{props.shouldSelfFocus}}
+            @isFocusTrapPaused={{props.isFocusTrapPaused}}
+            @focusTrapOptions={{props.focusTrapOptions}}
+            @popoverRef={{props.popoverRef}}
+            @panelRef={{props.panelRef}}
+            @portalRef={{props.portalRef}}
+            @onTrapDeactivation={{props.onTrapDeactivation}}
           >
             <:button>
-              <EuiLink
-                class={{this.contentClassNames}}
-                @css={{this.contentStyles}}
-                @color="subdued"
-                aria-label={{@collapsedLabel}}
-                title={{@collapsedLabel}}
-                {{on "click" (fn popover.setState (if popover.value false true))}}
-              >
-                <span class={{this.truncationClass}}>&hellip;</span>
-                <EuiIcon @type="chevronSingleDown" @size="s" />
-              </EuiLink>
+              {{#if this.isCollapsed}}
+                <EuiLink
+                  class={{this.contentClassNames}}
+                  @css={{this.contentStyles}}
+                  @color="subdued"
+                  aria-label={{@collapsedLabel}}
+                  title={{@collapsedLabel}}
+                  {{on "click" (fn popover.setState (if popover.value false true))}}
+                >
+                  <span class={{this.truncationClass}}>&hellip;</span>
+                  <EuiIcon @type="chevronSingleDown" @size="s" />
+                </EuiLink>
+              {{else if this.breadcrumb.text}}
+                {{! Upstream wraps the button in a tooltip with its text. }}
+                <EuiToolTip
+                  @content={{this.breadcrumb.text}}
+                  @disableScreenReaderOutput={{true}}
+                >
+                  <:anchor>
+                    <EuiLink
+                      class={{this.contentClassNames}}
+                      @css={{this.contentStyles}}
+                      @color={{this.linkColor}}
+                      aria-current={{this.ariaCurrent}}
+                      {{on "click" (fn popover.setState (if popover.value false true))}}
+                    >
+                      <span class={{this.truncationClass}}>{{this.breadcrumb.text}}</span>
+                      <EuiIcon
+                        @type="chevronSingleDown"
+                        @size="s"
+                        aria-label={{this.popoverAriaLabel}}
+                      />
+                    </EuiLink>
+                  </:anchor>
+                </EuiToolTip>
+              {{else}}
+                <EuiLink
+                  class={{this.contentClassNames}}
+                  @css={{this.contentStyles}}
+                  @color={{this.linkColor}}
+                  aria-current={{this.ariaCurrent}}
+                  {{on "click" (fn popover.setState (if popover.value false true))}}
+                >
+                  <span class={{this.truncationClass}}></span>
+                  <EuiIcon
+                    @type="chevronSingleDown"
+                    @size="s"
+                    aria-label={{this.popoverAriaLabel}}
+                  />
+                </EuiLink>
+              {{/if}}
             </:button>
             <:content>
-              <EuiBreadcrumbs
-                @breadcrumbs={{@item.overflow}}
-                @lastBreadcrumbIsCurrentPage={{false}}
-                @responsive={{false}}
-                @truncate={{false}}
-                @max={{0}}
-              />
+              {{#if this.overflow}}
+                <EuiBreadcrumbs
+                  @breadcrumbs={{this.overflow}}
+                  @lastBreadcrumbIsCurrentPage={{false}}
+                  @responsive={{false}}
+                  @truncate={{false}}
+                  @max={{0}}
+                >
+                  <:popoverContent as |breadcrumb closePopover|>
+                    {{yield breadcrumb closePopover to="popoverContent"}}
+                  </:popoverContent>
+                </EuiBreadcrumbs>
+              {{else if this.popoverText}}
+                {{this.popoverText}}
+              {{else if this.popoverComponent}}
+                {{#let this.popoverComponent as |Content|}}
+                  <Content
+                    @closePopover={{fn popover.setState false}}
+                    @breadcrumb={{this.popoverBreadcrumb}}
+                  />
+                {{/let}}
+              {{else}}
+                {{yield this.popoverBreadcrumb (fn popover.setState false) to="popoverContent"}}
+              {{/if}}
             </:content>
           </EuiPopover>
         </li>

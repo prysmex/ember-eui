@@ -6,20 +6,23 @@ order: 1
 
 <EuiText>
 
-Links (`href`), actions (`onClick`) and the current page, which is
-marked with `aria-current="page"`.
+**EuiBreadcrumbs** let the user track their progress within and back out of a UX flow and work well when used in combination with **EuiPageHeader**. They are meant to be used at lower page level flows, while **EuiHeaderBreadcrumbs** should be used for application-wide navigation.
+
+**EuiBreadcrumbs** requires an array of breadcrumb objects as `@breadcrumbs` and handles truncation, including middle-truncation in the case of many items, and mobile responsiveness. Each item accepts an `href`, though we recommend the last item represent the current page and therefore the link is unnecessary.
+
+Provide a descriptive `aria-label` for each set of breadcrumbs.
 
 </EuiText>
 
 ```hbs template
-<EuiPageContent role={{null}}>
+<EuiPanel>
   <EuiBreadcrumbs
     @breadcrumbs={{this.breadcrumbs}}
     @truncate={{false}}
     aria-label='An example of EuiBreadcrumbs'
   />
   <EuiSpacer @size='xs' />
-  <EuiPageHeader>
+  <EuiPageHeader role="">
     <:pageTitle>
       Boa constrictor
     </:pageTitle>
@@ -29,13 +32,13 @@ marked with `aria-current="page"`.
       </Item>
     </:rightSideItems>
   </EuiPageHeader>
-</EuiPageContent>
+</EuiPanel>
 ```
 
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',

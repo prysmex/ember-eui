@@ -19,6 +19,8 @@ order: 5
   aria-label='An example of non-responsive EuiBreadcrumbs'
 />
 
+<EuiSpacer />
+
 <EuiText>
 	<p>
 		Alternatively, you can change number of breadcrumbs that show per breakpoint by passing a custom responsive object.
@@ -37,7 +39,7 @@ order: 5
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',

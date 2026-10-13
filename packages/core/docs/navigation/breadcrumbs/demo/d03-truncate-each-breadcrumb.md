@@ -22,7 +22,7 @@ order: 3
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',

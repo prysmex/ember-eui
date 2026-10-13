@@ -6,7 +6,7 @@ order: 4
 
 <EuiText>
 	<p>
-		Alternatively, you can force truncation on single breadcrumb item by adding <EuiCode @language="json">truncate: true</EuiCode> to the object.
+		Alternatively, you can force truncation on single breadcrumb <strong>item</strong> by adding <EuiCode @language="json">truncate: true</EuiCode> to the object.
   </p>
 
 </EuiText>
@@ -22,7 +22,7 @@ order: 4
 ```js component
 import Component from '@glimmer/component';
 
-export default class DemoSideNavComponent extends Component {
+export default class DemoComponent extends Component {
   breadcrumbs = [
     {
       text: 'Animals',

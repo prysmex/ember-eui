@@ -1,8 +1,8 @@
 ---
-order: 13
+order: 17
 ---
 
-# Ghost buttons
+# Ghost buttons (Ember EUI extension)
 
 <EuiText>
 

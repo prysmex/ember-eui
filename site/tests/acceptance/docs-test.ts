@@ -43,7 +43,7 @@ module('Acceptance | docs', function (hooks) {
   test('tables scroll on their own, so narrow screens keep the page width', async function (assert) {
     await visit('/docs/core/docs/forms/combo-box');
 
-    const tables = [...document.querySelectorAll('.euiPageBody table')];
+    const tables = [...document.querySelectorAll('.pageBody table')];
 
     assert.ok(tables.length > 0, 'the API reference has tables');
     assert.deepEqual(

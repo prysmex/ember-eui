@@ -13,7 +13,7 @@ module('Acceptance | Emotion showcase', function (hooks) {
     await visit('/docs/introduction');
     assert.dom('.euiSideNav').containsText('Emotion showcase');
     assert
-      .dom('.euiPageBody a[href="/docs/emotion"]')
+      .dom('.pageBody a[href="/docs/emotion"]')
       .hasText('Emotion showcase');
     const navButton = [
       ...document.querySelectorAll<HTMLButtonElement>('.euiSideNav button'),

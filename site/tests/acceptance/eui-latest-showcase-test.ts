@@ -12,7 +12,7 @@ module('Acceptance | Latest EUI showcase', function (hooks) {
     await visit('/docs/introduction');
     assert.dom('.euiSideNav').containsText('Latest EUI showcase');
     assert
-      .dom('.euiPageBody a[href="/docs/eui-latest"]')
+      .dom('.pageBody a[href="/docs/eui-latest"]')
       .hasText('Latest EUI showcase');
     const navButton = [
       ...document.querySelectorAll<HTMLButtonElement>('.euiSideNav button'),

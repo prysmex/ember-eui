@@ -60,13 +60,22 @@ const observeWidth = modifier(
       waiter.endAsync(token);
       token = undefined;
     };
+    let frame: number | undefined;
     const observer = new ResizeObserver(([entry]) => {
       const width = entry?.borderBoxSize?.[0]?.inlineSize;
-      if (width !== undefined) onResize(width);
-      settle();
+      if (width === undefined) return;
+      // Re-rendering truncated text can resize the list again; applying the
+      // width in the next frame avoids "ResizeObserver loop completed".
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = undefined;
+        onResize(width);
+        settle();
+      });
     });
     observer.observe(element);
     return () => {
+      if (frame !== undefined) cancelAnimationFrame(frame);
       observer.disconnect();
       settle();
     };
@@ -238,7 +247,7 @@ export default class EuiSelectableList extends Component<EuiSelectableListSignat
   }
 
   onContainerResize = (width: number): void => {
-    this.containerWidth = width;
+    if (width !== this.containerWidth) this.containerWidth = width;
   };
 
   setListBox = modifier((element: HTMLElement) => {

@@ -61,19 +61,28 @@ const observeSize = modifier(
       waiter.endAsync(token);
       token = undefined;
     };
+    let frame: number | undefined;
     const observer = new ResizeObserver(([entry]) => {
       const box = entry?.borderBoxSize?.[0];
-      if (box) {
-        const next = { width: box.inlineSize, height: box.blockSize };
-        if (next.width !== size.width || next.height !== size.height) {
-          size = next;
-          onResize(next);
-        }
+      if (!box) return settle();
+      const next = { width: box.inlineSize, height: box.blockSize };
+      if (next.width === size.width && next.height === size.height) {
+        return settle();
       }
-      settle();
+      size = next;
+      // Re-truncating can resize the element again; reporting in the next
+      // frame avoids "ResizeObserver loop completed with undelivered
+      // notifications".
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = undefined;
+        onResize(size);
+        settle();
+      });
     });
     observer.observe(element);
     return () => {
+      if (frame !== undefined) cancelAnimationFrame(frame);
       observer.disconnect();
       settle();
     };

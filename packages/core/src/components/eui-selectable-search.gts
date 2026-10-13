@@ -2,12 +2,17 @@ import Component from '@glimmer/component';
 import { on } from '@ember/modifier';
 import { action } from '@ember/object';
 
+import { eq, not } from 'ember-truth-helpers';
 import { modifier } from 'ember-modifier';
 
 import { getMatchingOptions } from '../-private/selectable-options.ts';
 import EuiFieldSearch from './eui-field-search.gts';
+import EuiFormAppend from './eui-form-append.gts';
+import EuiFormPrepend from './eui-form-prepend.gts';
 import EuiScreenReaderOnly from './eui-screen-reader-only.gts';
 
+import type { TOC as TemplateOnlyComponent } from '@ember/component/template-only';
+import type { ComponentLike } from '@glint/template';
 import type {
   EuiSelectableOption,
   EuiSelectableOptionMatcher
@@ -57,6 +62,22 @@ export interface EuiSelectableSearchSignature {
     onBlur?: (event: FocusEvent) => void;
     /** `data-test-subj` of the field. */
     dataTestSubj?: string;
+    /** Extra class name(s) of the field (upstream `className`). */
+    className?: string;
+    /**
+     * Content before the field (upstream `prepend`): a string is shown as
+     * a label, a component is rendered as is.
+     */
+    prepend?: string | ComponentLike;
+    /**
+     * Content after the field (upstream `append`): a string is shown as a
+     * label, a component is rendered as is.
+     */
+    append?: string | ComponentLike;
+    /** Called on `keyup` in the field, in the capture phase. */
+    onKeyUpCapture?: (event: KeyboardEvent) => void;
+    /** Called on `input` in the field, before the search is updated. */
+    onInput?: (event: Event) => void;
     /** @private `aria-label` of the field (the placeholder by default). */
     ariaLabel?: string;
     /** @private `aria-activedescendant`: the current option's id. */
@@ -83,6 +104,43 @@ const onIf = modifier(
     return () => element.removeEventListener(event, listener);
   }
 );
+
+/** `keyup` in the capture phase (React's `onKeyUpCapture`). */
+const onKeyUpCaptureIf = modifier(
+  (element: HTMLElement, [handler]: [((event: KeyboardEvent) => void) | undefined]) => {
+    if (!handler) return;
+    const listener = handler as unknown as EventListener;
+    element.addEventListener('keyup', listener, true);
+    return () => element.removeEventListener('keyup', listener, true);
+  }
+);
+
+/** A string `prepend` / `append` is a label (upstream), else a component. */
+const SideContent = <template>
+  {{#if (isString @content)}}
+    {{#if (eq @side "prepend")}}
+      <EuiFormPrepend @label={{asText @content}} @inputId={{@inputId}} />
+    {{else}}
+      <EuiFormAppend @label={{asText @content}} @inputId={{@inputId}} />
+    {{/if}}
+  {{else if @content}}
+    {{#let (asComponent @content) as |Content|}}<Content />{{/let}}
+  {{/if}}
+</template> as TemplateOnlyComponent<{
+  Args: { content?: string | ComponentLike; side: 'prepend' | 'append'; inputId?: string };
+}>;
+
+function isString(value: unknown): boolean {
+  return typeof value === 'string';
+}
+
+function asText(value: unknown): string {
+  return String(value);
+}
+
+function asComponent(value: unknown): ComponentLike {
+  return value as ComponentLike;
+}
 
 export default class EuiSelectableSearch extends Component<EuiSelectableSearchSignature> {
   lastValue = this.args.value ?? this.args.defaultValue ?? '';
@@ -124,7 +182,9 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
 
   <template>
     <EuiFieldSearch
-      class="euiSelectableSearch"
+      class="euiSelectableSearch {{@className}}"
+      @isFakePrependBlock={{not @prepend}}
+      @isFakeAppendBlock={{not @append}}
       @placeholder={{@placeholder}}
       @value={{this.fieldValue}}
       @incremental={{true}}
@@ -150,8 +210,17 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
       {{onIf "click" @onClick}}
       {{onIf "focus" @onFocus}}
       {{onIf "blur" @onBlur}}
+      {{onIf "input" @onInput}}
+      {{onKeyUpCaptureIf @onKeyUpCapture}}
       {{callWithElement @inputRef}}
-    />
+    >
+      <:prepend as |classes inputId|>
+        <SideContent @content={{@prepend}} @side="prepend" @inputId={{inputId}} />
+      </:prepend>
+      <:append as |classes inputId|>
+        <SideContent @content={{@append}} @side="append" @inputId={{inputId}} />
+      </:append>
+    </EuiFieldSearch>
     {{#if @instructions}}
       <EuiScreenReaderOnly>
         <p id={{@ariaDescribedby}}>{{@instructions}}</p>

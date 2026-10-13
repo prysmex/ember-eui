@@ -91,7 +91,8 @@ export interface EuiSelectableSignature {
      * Options of the search field: `{ placeholder, compressed, isLoading,
      * isClearable, value, defaultValue, onChange(searchValue,
      * matchingOptions), onSearch (same as onChange, not called on render),
-     * onKeyDown, onClick, onFocus, onBlur, inputRef, 'data-test-subj' }`.
+     * onKeyDown, onKeyUpCapture, onInput, onClick, onFocus, onBlur,
+     * inputRef, className, prepend, append, 'data-test-subj' }`.
      * With `value` the search is controlled: update it from `onChange`.
      * `onChange` is also called once after the first render.
      */
@@ -110,6 +111,16 @@ export interface EuiSelectableSignature {
       onBlur?: (event: FocusEvent) => void;
       inputRef?: (input: HTMLInputElement) => void;
       'data-test-subj'?: string;
+      /** Extra class name(s) of the search field. */
+      className?: string;
+      /** Content before the field: a string (a label) or a component. */
+      prepend?: string | ComponentLike;
+      /** Content after the field: a string (a label) or a component. */
+      append?: string | ComponentLike;
+      /** Called on `keyup` in the field, in the capture phase. */
+      onKeyUpCapture?: (event: KeyboardEvent) => void;
+      /** Called on `input` in the field, before the search is updated. */
+      onInput?: (event: Event) => void;
     };
     /**
      * Decides whether an option matches the search: `({ option,
@@ -595,6 +606,11 @@ export default class EuiSelectable extends Component<EuiSelectableSignature> {
             onBlur=@searchProps.onBlur
             inputRef=@searchProps.inputRef
             dataTestSubj=(searchTestSubj @searchProps)
+            className=@searchProps.className
+            prepend=@searchProps.prepend
+            append=@searchProps.append
+            onKeyUpCapture=@searchProps.onKeyUpCapture
+            onInput=@searchProps.onInput
           )
         )
         (component

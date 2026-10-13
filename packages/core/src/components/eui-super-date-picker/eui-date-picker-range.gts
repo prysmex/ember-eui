@@ -29,8 +29,16 @@ export interface EuiDatePickerRangeSignature {
     compressed?: boolean;
     /** Shows a spinner. */
     isLoading?: boolean;
-    /** Icon at the start of the control. */
+    /** Icon of the control. */
     icon?: string;
+    /** Side of `@icon` (upstream `iconSide`). Defaults to `'left'`. */
+    iconSide?: 'left' | 'right';
+    /**
+     * Renders the `<:append>` block. Defaults to `true`; the picker passes
+     * the block always and switches it here, so the range (and the quick
+     * select popover in it) is not remounted.
+     */
+    isAppendProvided?: boolean;
     /** Text between the controls. Defaults to `'→'`. */
     delimiter?: string;
     /** Extra class(es). */
@@ -43,6 +51,8 @@ export interface EuiDatePickerRangeSignature {
     prepend: EuiFormControlLayoutSignature['Blocks']['prepend'];
     startDateControl: [];
     endDateControl: [];
+    /** Content after the controls (upstream `append`). */
+    append: EuiFormControlLayoutSignature['Blocks']['append'];
   };
 }
 
@@ -73,6 +83,8 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
     <div class={{this.classes}} ...attributes>
       <EuiFormControlLayoutDelimited
         @icon={{@icon}}
+        @iconSide={{@iconSide}}
+        @isAppendProvided={{if (has-block "append") @isAppendProvided false}}
         @delimiter={{@delimiter}}
         @fullWidth={{@fullWidth}}
         @compressed={{@compressed}}
@@ -90,6 +102,9 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
         <:endControl>
           {{yield to="endDateControl"}}
         </:endControl>
+        <:append as |classes|>
+          {{yield classes to="append"}}
+        </:append>
       </EuiFormControlLayoutDelimited>
     </div>
   </template>

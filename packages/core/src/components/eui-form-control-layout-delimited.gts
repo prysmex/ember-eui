@@ -23,6 +23,11 @@ export interface EuiFormControlLayoutDelimitedSignature {
   Args: {
     /** Icon at the start of the control, anything `EuiIcon`'s `@type` accepts. */
     icon?: string;
+    /**
+     * Side of `@icon`: `'left'` or `'right'` (upstream `icon.side`).
+     * Defaults to `'left'`.
+     */
+    iconSide?: EuiFormControlLayoutSignature['Args']['iconSide'];
     /** Shows a clear ("x") button calling this function. */
     clear?: EuiFormControlLayoutSignature['Args']['clear'];
     /** Stretches the control to its container's width. */
@@ -46,6 +51,18 @@ export interface EuiFormControlLayoutDelimitedSignature {
     delimiter?: string;
     /** @deprecated Has no effect: the delimited layout is always a group. */
     useGroup?: boolean;
+    /**
+     * Renders the `<:prepend>` block. Defaults to `true`. Lets a wrapper
+     * that always passes the block hide it without remounting the layout
+     * (upstream passes `prepend={undefined}`).
+     */
+    isPrependProvided?: boolean;
+    /**
+     * Renders the `<:append>` block. Defaults to `true`. Lets a wrapper
+     * that always passes the block hide it without remounting the layout
+     * (upstream passes `append={undefined}`).
+     */
+    isAppendProvided?: boolean;
   };
   Blocks: {
     /** Content before the controls; yields the class to put on it. */
@@ -76,6 +93,9 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
       this.args.isInvalid && !this.isDisabled && !this.args.readOnly
     );
   }
+  /** A side shows when its block is passed and not switched off. */
+  provided = (hasBlock: boolean, isProvided: boolean | undefined) =>
+    hasBlock && isProvided !== false;
   get delimiter() {
     return this.args.delimiter ?? '→';
   }
@@ -134,6 +154,7 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
       @css={{this.rootCss}}
       @wrapperCss={{this.wrapperCss}}
       @icon={{@icon}}
+      @iconSide={{@iconSide}}
       @clear={{@clear}}
       @fullWidth={{@fullWidth}}
       @isLoading={{@isLoading}}
@@ -141,8 +162,8 @@ export default class EuiFormControlLayoutDelimited extends Component<EuiFormCont
       @compressed={{@compressed}}
       @readOnly={{@readOnly}}
       @disabled={{this.isDisabled}}
-      @isPrependProvided={{has-block "prepend"}}
-      @isAppendProvided={{has-block "append"}}
+      @isPrependProvided={{this.provided (has-block "prepend") @isPrependProvided}}
+      @isAppendProvided={{this.provided (has-block "append") @isAppendProvided}}
       ...attributes
     >
       <:prepend as |prependClasses|>

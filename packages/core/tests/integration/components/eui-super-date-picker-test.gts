@@ -12,6 +12,14 @@ class Range {
 
 type TimeChange = { start: string; end: string; isQuickSelection: boolean; isInvalid: boolean };
 
+const showDatesButton = '[data-test-subj="superDatePickerShowDatesButton"]';
+
+/** Upstream: clicking the pretty duration shows the start/end buttons. */
+async function showDates() {
+  await click(showDatesButton);
+  await waitUntil(() => document.querySelector('.euiDatePopoverContent'));
+}
+
 module('Integration | Component | eui-super-date-picker', function (hooks) {
   setupRenderingTest(hooks);
 
@@ -21,6 +29,9 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     await render(<template><EuiSuperDatePicker @start="now-15m" @end="now" @onTimeChange={{noop}} /></template>);
 
     assert.dom('.euiSuperDatePicker .euiQuickSelectPopover__anchor button').exists();
+    // upstream: a relative range shows as its pretty duration until clicked
+    assert.dom(showDatesButton).hasText('Last 15 minutes');
+    await showDates();
     assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /minutes ago/);
     assert.dom('.euiDatePopoverButton--end').hasAttribute('title', 'now');
     assert.dom('.euiSuperUpdateButton').exists();
@@ -67,6 +78,7 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
 
     await render(<template><EuiSuperDatePicker @start="now" @end="now-15m" @onTimeChange={{noop}} /></template>);
 
+    await showDates();
     assert.dom('.euiDatePopoverButton--start').hasClass('euiDatePopoverButton-isInvalid');
     assert.dom('.euiSuperUpdateButton').isDisabled();
   });
@@ -81,7 +93,8 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     assert.dom('.euiSuperUpdateButton').doesNotExist();
     // the legacy `__flexWrapper--noUpdateButton` modifier became upstream's narrower restricted width (30 × base)
     assert.strictEqual(getComputedStyle(document.querySelector('.euiSuperDatePicker')!).width, '480px');
-    assert.dom('.euiDatePopoverButton--start').isDisabled();
+    // upstream: the pretty duration button is disabled
+    assert.dom(showDatesButton).isDisabled();
   });
 
   test('it follows changes to @start / @end', async function (assert) {
@@ -90,21 +103,24 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
 
     await render(<template><EuiSuperDatePicker @start={{range.start}} @end={{range.end}} @onTimeChange={{noop}} /></template>);
 
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /minutes ago/);
+    // upstream: new relative ranges show as their pretty duration
+    assert.dom(showDatesButton).hasText('Last 15 minutes');
 
     range.start = 'now-3h';
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /hours ago/);
+    assert.dom(showDatesButton).hasText('Last 3 hours');
 
     range.start = 'now';
     range.end = 'now-1h';
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').hasClass('euiDatePopoverButton-isInvalid');
+    assert.dom('.euiFormControlLayout').hasClass('euiFormControlLayout--group');
+    assert.dom('.euiFormControlLayoutIcons .euiIcon').exists('invalid warning icon');
+    assert.dom(showDatesButton).hasText('Last 1 hour');
     assert.dom('.euiSuperUpdateButton').isDisabled();
 
     range.end = 'now+1h';
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').doesNotHaveClass('euiDatePopoverButton-isInvalid');
+    assert.dom(showDatesButton).hasText('Next 1 hour');
     assert.dom('.euiSuperUpdateButton').isNotDisabled();
   });
 
@@ -114,7 +130,7 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
 
     await render(<template><EuiSuperDatePicker @start={{range.start}} @end={{range.end}} @onTimeChange={{noop}} /></template>);
 
-    const initialTitle = document.querySelector('.euiDatePopoverButton--start')!.getAttribute('title');
+    assert.dom(showDatesButton).hasText('Last 15 minutes');
 
     await click('.euiQuickSelectPopover__anchor button');
     await waitUntil(() => document.querySelector('.euiQuickSelectPopover__sectionItem'));
@@ -124,15 +140,14 @@ module('Integration | Component | eui-super-date-picker', function (hooks) {
     await click(thisWeek);
 
     // the parent ignored onTimeChange: the selection stays visible
-    const selectedTitle = document.querySelector('.euiDatePopoverButton--start')!.getAttribute('title');
-    assert.notStrictEqual(selectedTitle, initialTitle, 'shows the quick selection');
+    assert.dom(showDatesButton).hasText('This week', 'shows the quick selection');
 
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', selectedTitle!, 'survives re-renders');
+    assert.dom(showDatesButton).hasText('This week', 'survives re-renders');
 
     range.start = 'now-2h';
     await rerender();
-    assert.dom('.euiDatePopoverButton--start').hasAttribute('title', /hours ago/, 'new arguments win');
+    assert.dom(showDatesButton).hasText('Last 2 hours', 'new arguments win');
   });
 
   test('with @onRefreshChange the quick select shows the refresh interval', async function (assert) {

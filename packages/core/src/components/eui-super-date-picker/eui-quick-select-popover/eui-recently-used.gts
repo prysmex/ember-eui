@@ -7,6 +7,7 @@ import { randomId } from '../../../-private/random-id.ts';
 import EuiFlexGrid from '../../eui-flex-grid.gts';
 import EuiFlexItem from '../../eui-flex-item.gts';
 import EuiLink from '../../eui-link.gts';
+import { prettyDuration } from '../utils/pretty-duration.ts';
 import EuiQuickSelectPanel from './eui-quick-select-panel.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
@@ -19,6 +20,10 @@ export interface EuiRecentlyUsedSignature {
     recentlyUsedRanges?: DurationRange[];
     /** Applies a new `{ start, end }` range. */
     applyTime: (args: { start: string; end: string }) => void;
+    /** Commonly used ranges: a matching range shows its label. */
+    commonlyUsedRanges?: DurationRange[];
+    /** moment format of absolute dates. */
+    dateFormat?: string;
   };
 }
 
@@ -38,8 +43,14 @@ export default class EuiRecentlyUsed extends Component<EuiRecentlyUsedSignature>
     return this.args.recentlyUsedRanges ?? [];
   }
 
+  /** Upstream renders each range as a `PrettyDuration`. */
   label = (range: DurationRange) =>
-    range.label ?? `${range.start} → ${range.end}`;
+    prettyDuration(this.euiI18n, {
+      timeFrom: range.start,
+      timeTo: range.end,
+      quickRanges: this.args.commonlyUsedRanges,
+      dateFormat: this.args.dateFormat ?? 'MMM D, YYYY @ HH:mm:ss.SSS'
+    });
 
   <template>
     {{! upstream renders nothing without ranges }}

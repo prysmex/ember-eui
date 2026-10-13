@@ -1,14 +1,19 @@
 import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
+import dateMath from '@elastic/datemath';
 import { modifier } from 'ember-modifier';
 import { eq, or } from 'ember-truth-helpers';
 
-import argOrDefault, { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
+import { argOrDefaultDecorator } from '../helpers/arg-or-default.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiSuperDatePickerStyles } from '../utils/eui/styles.generated.ts';
+import {
+  euiSuperDatePickerStyles,
+  euiTextTruncate
+} from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiDatePopoverButton from './eui-super-date-picker/date-popover/eui-date-popover-button.gts';
 import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
@@ -16,12 +21,23 @@ import EuiQuickSelectPopover from './eui-super-date-picker/eui-quick-select-popo
 import EuiSuperUpdateButton from './eui-super-date-picker/eui-super-update-button.gts';
 import EuiTimeWindowButtons from './eui-super-date-picker/eui-time-window-buttons.gts';
 import EuiAutoRefresh from './eui-auto-refresh.gts';
+import EuiAutoRefreshButton from './eui-auto-refresh-button.gts';
+import EuiFormControlButton from './eui-form-control-button.gts';
+import EuiFormControlLayout from './eui-form-control-layout.gts';
+import EuiToolTip from './eui-tool-tip.gts';
 import { isRangeInvalid } from './eui-super-date-picker/utils/index.ts';
+import {
+  prettyDuration,
+  showPrettyDuration
+} from './eui-super-date-picker/utils/pretty-duration.ts';
 import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options.ts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiTimeZoneDisplayProps } from './eui-super-date-picker/date-popover/eui-time-zone-display.gts';
-import type { CustomQuickSelectRenderOptions } from './eui-super-date-picker/eui-quick-select-popover.gts';
+import type {
+  CustomQuickSelectRenderOptions,
+  EuiQuickSelectButtonProps
+} from './eui-super-date-picker/eui-quick-select-popover.gts';
 import type { EuiSuperUpdateButtonProps } from './eui-super-date-picker/eui-super-update-button.gts';
 import type { EuiTimeWindowButtonsConfig } from './eui-super-date-picker/eui-time-window-buttons.gts';
 import type {
@@ -33,6 +49,7 @@ import type {
   RefreshUnitsOptions,
   ShortDate
 } from './eui-super-date-picker/types/global';
+import type { ComponentLike } from '@glint/template';
 import type { LocaleSpecifier, Moment } from 'moment';
 
 export type {
@@ -40,6 +57,7 @@ export type {
   ApplyTime,
   CustomQuickSelectRenderOptions,
   DurationRange,
+  EuiQuickSelectButtonProps,
   EuiSuperUpdateButtonProps,
   EuiTimeWindowButtonsConfig,
   EuiTimeZoneDisplayProps,
@@ -78,8 +96,12 @@ export interface EuiSuperDatePickerArgs {
    * auto refresh content. Defaults to `false`.
    */
   isAutoRefreshOnly?: boolean;
-  /** Disables the picker. Defaults to `false`. */
-  isDisabled?: boolean;
+  /**
+   * Disables the picker. Defaults to `false`. Pass `{ display }` to also
+   * replace the dates with your own content, e.g. `{ display: 'All time' }`
+   * (a string or a component), in a disabled button.
+   */
+  isDisabled?: boolean | { display: string | ComponentLike };
   /** Shows the update button's loading state, e.g. while data refreshes. */
   isLoading?: boolean;
   /**
@@ -185,11 +207,21 @@ export interface EuiSuperDatePickerArgs {
   isQuickSelectOnly?: boolean;
   /**
    * Arguments for the update button: `{ fill, color, size, iconType,
-   * iconOnly, className, children, minWidth, 'data-test-subj' }`
-   * (`children` is a custom label). They win over the picker's own,
+   * iconOnly, className, children, minWidth, showTooltip, toolTipProps,
+   * responsive, 'data-test-subj' }` (`children` is a custom label;
+   * `responsive` lists the screen sizes where it collapses to its icon,
+   * `['xs', 's']` by default, or `false`). They win over the picker's own,
    * e.g. `{ fill: false }`.
    */
   updateButtonProps?: EuiSuperUpdateButtonProps;
+  /**
+   * Props for the quick select button, spread over its defaults:
+   * `{ 'aria-label', 'data-test-subj', onClick, onMouseDown, label,
+   * iconLeft, iconRight, className, … }`. `on*` functions become event
+   * listeners (`onClick` runs after the popover toggles); other unknown
+   * keys are set as attributes.
+   */
+  quickSelectButtonProps?: EuiQuickSelectButtonProps;
   /**
    * Shows a button group next to the control to shift the time window back
    * and forward and to zoom it out. `true`, or a configuration
@@ -236,7 +268,6 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
   // @argOrDefaultDecorator('now-15m') start!: ShortDate;
   // @argOrDefaultDecorator('now') end!: ShortDate;
   @argOrDefaultDecorator(false) isAutoRefreshOnly!: boolean;
-  @argOrDefaultDecorator(false) isDisabled!: boolean;
   @argOrDefaultDecorator(true) isPaused!: boolean;
   @argOrDefaultDecorator(true) showUpdateButton!: boolean | 'iconOnly';
   @argOrDefaultDecorator('restricted') width!: string;
@@ -244,6 +275,20 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
   @argOrDefaultDecorator(1000) refreshInterval!: Milliseconds;
 
   @service declare euiI18n: EuiI18n;
+
+  /** Whether the start / end date popovers are open (upstream state). */
+  @tracked isStartDatePopoverOpen = false;
+  @tracked isEndDatePopoverOpen = false;
+
+  /**
+   * Upstream `showPrettyDuration` state, set for the @start/@end it was
+   * set for (like the draft below): new arguments recompute it.
+   */
+  @tracked private prettyDurationOverride?: {
+    show: boolean;
+    forStart: ShortDate | undefined;
+    forEnd: ShortDate | undefined;
+  };
 
   /**
    * The range the user is editing, before it is applied with the update
@@ -299,6 +344,150 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
     return this.currentDraft?.hasChanged ?? false;
   }
 
+  get isDisabled(): boolean {
+    return Boolean(this.args.isDisabled);
+  }
+
+  /** Upstream `isDisabled.display`. */
+  get disabledDisplay(): string | ComponentLike | undefined {
+    const { isDisabled } = this.args;
+    return typeof isDisabled === 'object' && isDisabled !== null
+      ? isDisabled.display || undefined
+      : undefined;
+  }
+
+  get disabledDisplayText(): string | undefined {
+    const display = this.disabledDisplay;
+    return typeof display === 'string' ? display : undefined;
+  }
+
+  get commonlyUsedRanges(): DurationRange[] {
+    return (
+      this.args.commonlyUsedRanges ?? this.timeOptions.commonDurationRanges
+    );
+  }
+
+  /**
+   * Upstream: a commonly used range or a range relative to now ("Last 15
+   * minutes") shows as one pretty duration button until it is clicked.
+   */
+  get showPrettyDurationState(): boolean {
+    const override = this.prettyDurationOverride;
+
+    if (
+      override &&
+      override.forStart === this.args.start &&
+      override.forEnd === this.args.end
+    ) {
+      return override.show;
+    }
+
+    return showPrettyDuration(
+      this.appliedStart,
+      this.appliedEnd,
+      this.commonlyUsedRanges
+    );
+  }
+
+  private setPrettyDuration(show: boolean) {
+    this.prettyDurationOverride = {
+      show,
+      forStart: this.args.start,
+      forEnd: this.args.end
+    };
+  }
+
+  /** The pretty duration (or `isDisabled.display`) button replaces the range. */
+  get showPrettyDurationButton(): boolean {
+    return Boolean(
+      this.disabledDisplay ||
+        (this.showPrettyDurationState &&
+          !this.isStartDatePopoverOpen &&
+          !this.isEndDatePopoverOpen)
+    );
+  }
+
+  get prettyDurationText(): string {
+    return prettyDuration(this.euiI18n, {
+      timeFrom: this.start,
+      timeTo: this.end,
+      quickRanges: this.commonlyUsedRanges,
+      dateFormat: this.dateFormat
+    });
+  }
+
+  /** The pretty duration button's tooltip: the full range (upstream). */
+  get formattedFullRange(): string {
+    if (this.isInvalid) return '';
+
+    const startMoment = dateMath.parse(this.start);
+    const endMoment = dateMath.parse(this.end, { roundUp: true });
+
+    return `${startMoment?.format(this.dateFormat)} – ${endMoment?.format(
+      this.dateFormat
+    )}`;
+  }
+
+  /** Upstream `offset={euiTheme.base * 0.5}`. */
+  get prettyDurationTooltipOffset(): number {
+    return this.context.upstream.euiTheme.base * 0.5;
+  }
+
+  @cached
+  get prettyDurationTextClass(): string {
+    return euiClass(this.context, euiTextTruncate());
+  }
+
+  /** Upstream `hidePrettyDuration`: show the range with the start popover open. */
+  @action
+  hidePrettyDuration() {
+    this.setPrettyDuration(false);
+    this.isStartDatePopoverOpen = true;
+  }
+
+  @action
+  onPrettyDurationFocus(event: FocusEvent) {
+    this.args.onFocus?.(event);
+  }
+
+  @action
+  onStartDatePopoverToggle() {
+    this.isStartDatePopoverOpen = !this.isStartDatePopoverOpen;
+  }
+
+  @action
+  onStartDatePopoverClose() {
+    this.isStartDatePopoverOpen = false;
+  }
+
+  @action
+  onEndDatePopoverToggle() {
+    this.isEndDatePopoverOpen = !this.isEndDatePopoverOpen;
+  }
+
+  @action
+  onEndDatePopoverClose() {
+    this.isEndDatePopoverOpen = false;
+  }
+
+  /** Upstream shows the auto refresh button in the field while refreshing. */
+  get showAutoRefreshAppend(): boolean {
+    return !this.isPaused;
+  }
+
+  /** Upstream: the `checkCircle` icon on the right while an update is pending. */
+  get hasChangedIcon(): boolean {
+    return this.hasChanged && !this.isInvalid;
+  }
+
+  /** Upstream spreads `updateButtonProps.showTooltip` over its own. */
+  get updateButtonShowTooltip(): boolean {
+    return (
+      this.updateButtonProps.showTooltip ??
+      (!this.isStartDatePopoverOpen && !this.isEndDatePopoverOpen)
+    );
+  }
+
   private setDraft(start: ShortDate, end: ShortDate, hasChanged: boolean) {
     this.draft = {
       start,
@@ -314,7 +503,11 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
   }
 
   setTime({ start, end }: DurationRange) {
-    this.setDraft(start, end, !(this.start === start && this.end === end));
+    this.setDraft(
+      start,
+      end,
+      !(this.appliedStart === start && this.appliedEnd === end)
+    );
 
     if (!this.showUpdateButton) {
       this.args.onTimeChange({
@@ -343,6 +536,9 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
   @action
   applyQuickTime({ start, end }: DurationRange) {
     this.setDraft(start, end, false);
+    this.setPrettyDuration(
+      showPrettyDuration(start, end, this.commonlyUsedRanges)
+    );
 
     this.args.onTimeChange({
       start,
@@ -447,7 +643,7 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
     const styles = this.styles;
     const width = this.resolvedWidth;
     const needsUpdating =
-      this.hasChanged && !this.args.isDisabled && !this.isInvalid;
+      this.hasChanged && !this.isDisabled && !this.isInvalid;
     return [
       'euiSuperDatePicker',
       needsUpdating && 'euiSuperDatePicker--needsUpdating',
@@ -470,20 +666,25 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
    * invalid, then needs updating, else default) for the layout inside.
    */
   @cached
-  get rangeCss() {
-    const { states, euiSuperDatePicker__range } = this.styles;
-    const state = this.args.isDisabled
+  get layoutCss() {
+    const { states } = this.styles;
+    const state = this.isDisabled
       ? states.disabled
       : this.isInvalid
         ? states.invalid
         : this.hasChanged
           ? states.needsUpdating
           : states.default;
-    return [
-      euiSuperDatePicker__range,
-      states.euiSuperDatePicker__formControlLayout,
-      state
-    ];
+    return [states.euiSuperDatePicker__formControlLayout, state];
+  }
+
+  @cached
+  get rangeCss() {
+    return [this.styles.euiSuperDatePicker__range, ...this.layoutCss];
+  }
+
+  get prettyDurationTooltipCss() {
+    return this.styles.euiSuperDatePicker__prettyDurationTooltip;
   }
 
   /** Start/end popovers grow to share the range (upstream `rangeInput`). */
@@ -549,130 +750,222 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
           @onRefreshChange={{this.onAutoRefreshChange}}
           @fullWidth={{eq this.resolvedWidth "full"}}
           @compressed={{@compressed}}
-          @isDisabled={{@isDisabled}}
+          @isDisabled={{this.isDisabled}}
         />
       {{else}}
-      <EuiDatePickerRange
-        @css={{this.rangeCss}}
-        @fullWidth={{true}}
-        @compressed={{@compressed}}
-        @isInvalid={{this.isInvalid}}
-        @isLoading={{this.isLayoutLoading}}
-        @disabled={{@isDisabled}}
-        @delimiter={{if @isQuickSelectOnly ""}}
-      >
-        <:prepend>
-          <EuiQuickSelectPopover
-            @start={{this.start}}
-            @end={{this.end}}
+        {{#let
+          (component
+            EuiQuickSelectPopover
+            start=this.start
+            end=this.end
+            applyTime=this.applyQuickTime
+            timeOptions=this.timeOptions
+            isDisabled=this.isDisabled
+            compressed=@compressed
+            commonlyUsedRanges=this.commonlyUsedRanges
+            recentlyUsedRanges=@recentlyUsedRanges
+            dateFormat=this.dateFormat
+            onRefreshChange=@onRefreshChange
+            isPaused=this.isPaused
+            refreshInterval=this.refreshInterval
+            refreshMinInterval=@refreshMinInterval
+            intervalUnits=@refreshIntervalUnits
+            customQuickSelectPanels=@customQuickSelectPanels
+            hasCustomQuickSelectRender=(has-block "customQuickSelectRender")
+            buttonProps=@quickSelectButtonProps
+          )
+          (component
+            EuiAutoRefreshButton
+            refreshInterval=this.refreshInterval
+            minInterval=@refreshMinInterval
+            intervalUnits=@refreshIntervalUnits
+            isDisabled=this.isDisabled
+            isPaused=this.isPaused
+            onRefreshChange=this.onAutoRefreshChange
+            shortHand=true
+          )
+          as |QuickSelect AutoRefreshButton|
+        }}
+          {{#if this.showPrettyDurationButton}}
+            <EuiFormControlLayout
+              @compressed={{@compressed}}
+              @isInvalid={{this.isInvalid}}
+              @isLoading={{this.isLayoutLoading}}
+              @isDisabled={{this.isDisabled}}
+              @fullWidth={{true}}
+              @css={{this.layoutCss}}
+              @isAppendProvided={{this.showAutoRefreshAppend}}
+            >
+              <:prepend>
+                <QuickSelect>
+                  <:customQuickSelectRender as |panels|>
+                    {{yield panels to="customQuickSelectRender"}}
+                  </:customQuickSelectRender>
+                </QuickSelect>
+              </:prepend>
+              <:field>
+                {{#unless @isQuickSelectOnly}}
+                  <EuiToolTip
+                    @css={{this.prettyDurationTooltipCss}}
+                    @content={{this.formattedFullRange}}
+                    @display="block"
+                    @offset={{this.prettyDurationTooltipOffset}}
+                  >
+                    <EuiFormControlButton
+                      class="euiSuperDatePicker__prettyFormat
+                        {{if
+                          this.isDisabled
+                          'euiSuperDatePicker__prettyFormat--disabled'
+                        }}"
+                      @compressed={{@compressed}}
+                      @isDisabled={{this.isDisabled}}
+                      data-test-subj="superDatePickerShowDatesButton"
+                      {{on "click" this.hidePrettyDuration}}
+                      {{on "focus" this.onPrettyDurationFocus}}
+                    >
+                      {{#if this.disabledDisplay}}
+                        {{#if this.disabledDisplayText}}
+                          {{this.disabledDisplayText}}
+                        {{else}}
+                          {{#let this.disabledDisplay as |Display|}}
+                            {{! @glint-expect-error: a string is handled above }}
+                            <Display />
+                          {{/let}}
+                        {{/if}}
+                      {{else}}
+                        <span
+                          class={{this.prettyDurationTextClass}}
+                        >{{this.prettyDurationText}}</span>
+                      {{/if}}
+                    </EuiFormControlButton>
+                  </EuiToolTip>
+                {{/unless}}
+              </:field>
+              <:append>
+                <AutoRefreshButton />
+              </:append>
+            </EuiFormControlLayout>
+          {{else}}
+            <EuiDatePickerRange
+              @css={{this.rangeCss}}
+              @fullWidth={{true}}
+              @compressed={{@compressed}}
+              @isInvalid={{this.isInvalid}}
+              @isLoading={{this.isLayoutLoading}}
+              @disabled={{this.isDisabled}}
+              @delimiter={{if @isQuickSelectOnly ""}}
+              @icon={{if this.hasChangedIcon "checkCircle"}}
+              @iconSide={{if this.hasChangedIcon "right"}}
+              @isAppendProvided={{this.showAutoRefreshAppend}}
+            >
+              <:prepend>
+                <QuickSelect>
+                  <:customQuickSelectRender as |panels|>
+                    {{yield panels to="customQuickSelectRender"}}
+                  </:customQuickSelectRender>
+                </QuickSelect>
+              </:prepend>
+
+              <:startDateControl>
+                {{#unless @isQuickSelectOnly}}
+                  <EuiDatePopoverButton
+                    @className="euiSuperDatePicker__startPopoverButton"
+                    @css={{this.rangeInputCss}}
+                    @value={{this.start}}
+                    @compressed={{@compressed}}
+                    @position="start"
+                    @isDisabled={{this.isDisabled}}
+                    @dateFormat={{this.dateFormat}}
+                    @timeFormat={{this.timeFormat}}
+                    @utcOffset={{@utcOffset}}
+                    @onChange={{this.setStart}}
+                    @isInvalid={{this.isInvalid}}
+                    @timeOptions={{this.timeOptions}}
+                    @needsUpdating={{this.hasChanged}}
+                    @locale={{@locale}}
+                    @minDate={{@minDate}}
+                    @maxDate={{@maxDate}}
+                    @canRoundRelativeUnits={{@canRoundRelativeUnits}}
+                    @timeZoneDisplayProps={{@timeZoneDisplayProps}}
+                    @onFocus={{@onFocus}}
+                    @isOpen={{this.isStartDatePopoverOpen}}
+                    @onPopoverToggle={{this.onStartDatePopoverToggle}}
+                    @onPopoverClose={{this.onStartDatePopoverClose}}
+                  />
+                {{/unless}}
+              </:startDateControl>
+
+              <:endDateControl>
+                {{#unless @isQuickSelectOnly}}
+                  <EuiDatePopoverButton
+                    @className="euiSuperDatePicker__endPopoverButton"
+                    @css={{this.rangeInputCss}}
+                    @value={{this.end}}
+                    @compressed={{@compressed}}
+                    @position="end"
+                    @isDisabled={{this.isDisabled}}
+                    @dateFormat={{this.dateFormat}}
+                    @timeFormat={{this.timeFormat}}
+                    @utcOffset={{@utcOffset}}
+                    @onChange={{this.setEnd}}
+                    @isInvalid={{this.isInvalid}}
+                    @timeOptions={{this.timeOptions}}
+                    @roundUp={{true}}
+                    @needsUpdating={{this.hasChanged}}
+                    @locale={{@locale}}
+                    @minDate={{@minDate}}
+                    @maxDate={{@maxDate}}
+                    @canRoundRelativeUnits={{@canRoundRelativeUnits}}
+                    @timeZoneDisplayProps={{@timeZoneDisplayProps}}
+                    @onFocus={{@onFocus}}
+                    @isOpen={{this.isEndDatePopoverOpen}}
+                    @onPopoverToggle={{this.onEndDatePopoverToggle}}
+                    @onPopoverClose={{this.onEndDatePopoverClose}}
+                  />
+                {{/unless}}
+              </:endDateControl>
+
+              <:append>
+                <AutoRefreshButton />
+              </:append>
+            </EuiDatePickerRange>
+          {{/if}}
+        {{/let}}
+
+        {{#if this.timeWindowConfig}}
+          <EuiTimeWindowButtons
             @applyTime={{this.applyQuickTime}}
-            @timeOptions={{this.timeOptions}}
-            @isDisabled={{@isDisabled}}
+            @start={{this.appliedStart}}
+            @end={{this.appliedEnd}}
             @compressed={{@compressed}}
-            @commonlyUsedRanges={{argOrDefault
-              @commonlyUsedRanges
-              this.timeOptions.commonDurationRanges
-            }}
-            @recentlyUsedRanges={{@recentlyUsedRanges}}
-            @onRefreshChange={{@onRefreshChange}}
-            @isPaused={{this.isPaused}}
-            @refreshInterval={{this.refreshInterval}}
-            @refreshMinInterval={{@refreshMinInterval}}
-            @intervalUnits={{@refreshIntervalUnits}}
-            @customQuickSelectPanels={{@customQuickSelectPanels}}
-            @hasCustomQuickSelectRender={{has-block "customQuickSelectRender"}}
-          >
-            <:customQuickSelectRender as |panels|>
-              {{yield panels to="customQuickSelectRender"}}
-            </:customQuickSelectRender>
-          </EuiQuickSelectPopover>
-        </:prepend>
+            @isDisabled={{or this.isDisabled this.isInvalid}}
+            @showZoomOut={{this.timeWindowConfig.showZoomOut}}
+            @showZoomIn={{this.timeWindowConfig.showZoomIn}}
+            @showShiftArrows={{this.timeWindowConfig.showShiftArrows}}
+            @zoomFactor={{this.timeWindowConfig.zoomFactor}}
+          />
+        {{/if}}
 
-        <:startDateControl>
-          {{#unless @isQuickSelectOnly}}
-            <EuiDatePopoverButton
-              @className="euiSuperDatePicker__startPopoverButton"
-              @css={{this.rangeInputCss}}
-              @value={{this.start}}
-              @compressed={{@compressed}}
-              @position="start"
-              @isDisabled={{@isDisabled}}
-              @dateFormat={{this.dateFormat}}
-              @timeFormat={{this.timeFormat}}
-              @utcOffset={{@utcOffset}}
-              @onChange={{this.setStart}}
-              @isInvalid={{this.isInvalid}}
-              @timeOptions={{this.timeOptions}}
-              @needsUpdating={{this.hasChanged}}
-              @locale={{@locale}}
-              @minDate={{@minDate}}
-              @maxDate={{@maxDate}}
-              @canRoundRelativeUnits={{@canRoundRelativeUnits}}
-              @timeZoneDisplayProps={{@timeZoneDisplayProps}}
-              @onFocus={{@onFocus}}
-            />
-          {{/unless}}
-        </:startDateControl>
-
-        <:endDateControl>
-          {{#unless @isQuickSelectOnly}}
-            <EuiDatePopoverButton
-              @className="euiSuperDatePicker__endPopoverButton"
-              @css={{this.rangeInputCss}}
-              @value={{this.end}}
-              @compressed={{@compressed}}
-              @position="end"
-              @isDisabled={{@isDisabled}}
-              @dateFormat={{this.dateFormat}}
-              @timeFormat={{this.timeFormat}}
-              @utcOffset={{@utcOffset}}
-              @onChange={{this.setEnd}}
-              @isInvalid={{this.isInvalid}}
-              @timeOptions={{this.timeOptions}}
-              @roundUp={{true}}
-              @needsUpdating={{this.hasChanged}}
-              @locale={{@locale}}
-              @minDate={{@minDate}}
-              @maxDate={{@maxDate}}
-              @canRoundRelativeUnits={{@canRoundRelativeUnits}}
-              @timeZoneDisplayProps={{@timeZoneDisplayProps}}
-              @onFocus={{@onFocus}}
-            />
-          {{/unless}}
-        </:endDateControl>
-      </EuiDatePickerRange>
-
-      {{#if this.timeWindowConfig}}
-        <EuiTimeWindowButtons
-          @applyTime={{this.applyQuickTime}}
-          @start={{this.appliedStart}}
-          @end={{this.appliedEnd}}
-          @compressed={{@compressed}}
-          @isDisabled={{or @isDisabled this.isInvalid}}
-          @showZoomOut={{this.timeWindowConfig.showZoomOut}}
-          @showZoomIn={{this.timeWindowConfig.showZoomIn}}
-          @showShiftArrows={{this.timeWindowConfig.showShiftArrows}}
-          @zoomFactor={{this.timeWindowConfig.zoomFactor}}
-        />
-      {{/if}}
-
-      {{#if this.showUpdateButton}}
-        <EuiSuperUpdateButton
-          @size={{this.updateButtonSize}}
-          @onClick={{this.handleClickUpdateButton}}
-          @isLoading={{@isLoading}}
-          @isDisabled={{or @isDisabled this.isInvalid}}
-          @needsUpdate={{this.hasChanged}}
-          @fill={{this.updateButtonProps.fill}}
-          @iconOnly={{this.updateButtonIconOnly}}
-          @color={{this.updateButtonProps.color}}
-          @iconType={{this.updateButtonProps.iconType}}
-          @label={{this.updateButtonProps.children}}
-          @minWidth={{this.updateButtonProps.minWidth}}
-          @className={{this.updateButtonProps.className}}
-          data-test-subj={{this.updateButtonTestSubj}}
-        />
-      {{/if}}
+        {{#if this.showUpdateButton}}
+          <EuiSuperUpdateButton
+            @size={{this.updateButtonSize}}
+            @onClick={{this.handleClickUpdateButton}}
+            @isLoading={{@isLoading}}
+            @isDisabled={{or this.isDisabled this.isInvalid}}
+            @needsUpdate={{this.hasChanged}}
+            @showTooltip={{this.updateButtonShowTooltip}}
+            @fill={{this.updateButtonProps.fill}}
+            @iconOnly={{this.updateButtonIconOnly}}
+            @color={{this.updateButtonProps.color}}
+            @iconType={{this.updateButtonProps.iconType}}
+            @label={{this.updateButtonProps.children}}
+            @minWidth={{this.updateButtonProps.minWidth}}
+            @className={{this.updateButtonProps.className}}
+            @toolTipProps={{this.updateButtonProps.toolTipProps}}
+            @responsive={{this.updateButtonProps.responsive}}
+            data-test-subj={{this.updateButtonTestSubj}}
+          />
+        {{/if}}
       {{/if}}
     </div>
   </template>

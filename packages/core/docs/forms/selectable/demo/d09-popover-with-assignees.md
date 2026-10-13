@@ -1,8 +1,8 @@
 ---
-order: 3
+order: 9
 ---
 
-# In a popover, with custom options
+# Popover with avatars (Ember EUI extra)
 
 <EuiText>
 

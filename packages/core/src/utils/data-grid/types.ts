@@ -38,6 +38,11 @@ export interface EuiDataGridRowHeightsOptions {
   rowHeights?: Record<number, EuiDataGridRowHeightOption>;
   lineHeight?: string;
   autoBelowLineCount?: boolean;
+  /**
+   * The row anchoring vertical layout shifts: with `'start'` or `'center'`
+   * the first or middle visible row keeps its position when rows above it
+   * change height, by adjusting the grid's scroll position.
+   */
   scrollAnchorRow?: 'start' | 'center';
   onChange?: (options: EuiDataGridRowHeightsOptions) => void;
 }

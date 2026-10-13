@@ -5,6 +5,7 @@ import {
   focus,
   render,
   settled,
+  triggerEvent,
   triggerKeyEvent,
   waitUntil
 } from '@ember/test-helpers';
@@ -646,6 +647,86 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       assert.dom('.euiDataGridFooter').includesText('total a');
       await click(cell(1, 2));
       assert.dom('.euiDataGridRowCell__actions', cell(1, 2)).doesNotExist('@isExpandable override');
+    });
+  });
+
+  module('rowHeightsOptions.scrollAnchorRow', function () {
+    class Heights {
+      @tracked options: Record<string, unknown>;
+      constructor(anchor?: 'start' | 'center') {
+        this.options = anchor ? { scrollAnchorRow: anchor } : {};
+      }
+      growFirstRows(anchor?: 'start' | 'center') {
+        this.options = {
+          ...(anchor ? { scrollAnchorRow: anchor } : {}),
+          rowHeights: { 0: { height: 120 }, 1: { height: 120 } }
+        };
+      }
+    }
+
+    async function renderGrid(heights: Heights) {
+      await render(
+        <template>
+          <div style="width:400px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{100}}
+              @height={{300}}
+              @toolbarVisibility={{false}}
+              @rowHeightsOptions={{heights.options}}
+            >
+              <:cell as |c|>{{c.columnId}}{{c.rowIndex}}</:cell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+    }
+
+    async function scrollTo(outer: HTMLElement, top: number) {
+      outer.scrollTop = top;
+      await triggerEvent(outer, 'scroll');
+    }
+
+    test("'start' keeps the first visible row in place when rows above grow", async function (assert) {
+      const heights = new Heights('start');
+      await renderGrid(heights);
+      const outer = el('.euiDataGrid__virtualized');
+      const rowHeight = cell(0, 0).offsetHeight;
+      await scrollTo(outer, rowHeight * 40);
+
+      heights.growFirstRows('start');
+      await settled();
+      await frame();
+      const growth = 2 * (120 - rowHeight);
+      assert.strictEqual(outer.scrollTop, rowHeight * 40 + growth, 'scrolled by the layout shift');
+      const firstVisible = cell(40, 0).closest<HTMLElement>('[role=row]')!;
+      assert.strictEqual(
+        parseFloat(firstVisible.style.top) - el('.euiDataGridHeader').offsetHeight,
+        outer.scrollTop,
+        'row 40 is still the first visible row'
+      );
+    });
+
+    test("'center' compensates too; without an anchor the scroll position stays", async function (assert) {
+      const centered = new Heights('center');
+      await renderGrid(centered);
+      let outer = el('.euiDataGrid__virtualized');
+      const rowHeight = cell(0, 0).offsetHeight;
+      await scrollTo(outer, rowHeight * 40);
+      centered.growFirstRows('center');
+      await settled();
+      await frame();
+      assert.strictEqual(outer.scrollTop, rowHeight * 40 + 2 * (120 - rowHeight));
+
+      const unanchored = new Heights();
+      await renderGrid(unanchored);
+      outer = el('.euiDataGrid__virtualized');
+      await scrollTo(outer, rowHeight * 40);
+      unanchored.growFirstRows();
+      await settled();
+      await frame();
+      assert.strictEqual(outer.scrollTop, rowHeight * 40, 'no compensation by default');
     });
   });
 });

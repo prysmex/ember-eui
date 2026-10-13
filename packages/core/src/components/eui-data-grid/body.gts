@@ -582,6 +582,50 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
   }
 
   /* -------------------------------------------------------------------- */
+  /* Layout shift compensation (`rowHeightsOptions.scrollAnchorRow`)      */
+  /* -------------------------------------------------------------------- */
+
+  /** The row layout the grid last rendered with. */
+  private layoutSnapshot: {
+    offsets: Float64Array | null;
+    defaultHeight: number;
+    count: number;
+  } | null = null;
+
+  /**
+   * Port of upstream `compensateForLayoutShift`: when rows above the anchor
+   * row (the first or the middle visible row) change height, scroll by the
+   * anchor row's vertical shift so the content in view stays put. Upstream
+   * runs this from the first cell of each row; here it runs once per row
+   * layout change, comparing the anchor row's top before and after.
+   */
+  compensateLayoutShift = modifier(
+    (element: HTMLElement, [offsets, defaultHeight]: [Float64Array | null, number]) => {
+      const count = this.visibleRowCount;
+      const previous = this.layoutSnapshot;
+      this.layoutSnapshot = { offsets, defaultHeight, count };
+      const anchor = this.rowHeightsOptions.scrollAnchorRow;
+      if (!anchor || !previous || previous.count !== count || count === 0) return;
+      const topOf = (snapshot: NonNullable<typeof previous>, index: number) =>
+        snapshot.offsets ? snapshot.offsets[index]! : index * snapshot.defaultHeight;
+      // the visible rows of the previous layout at the current scroll position
+      const scrollTop = element.scrollTop;
+      const viewportBottom = scrollTop + Math.max(this.finalHeight - this.headerOffset, 0);
+      let start = 0;
+      while (start < count - 1 && topOf(previous, start + 1) <= scrollTop) start++;
+      let stop = start;
+      while (stop < count - 1 && topOf(previous, stop + 1) < viewportBottom) stop++;
+      // upstream compares the center offset with the row index itself, which
+      // only finds the center row when scrolled to the top; use the real center row
+      const anchorRow = anchor === 'start' ? start : start + Math.floor((stop - start) / 2);
+      const shift = topOf(this.layoutSnapshot, anchorRow) - topOf(previous, anchorRow);
+      if (!shift || !Number.isFinite(shift)) return;
+      element.scrollTop = scrollTop + shift;
+      afterRender(this, this.onScroll);
+    }
+  );
+
+  /* -------------------------------------------------------------------- */
   /* Imperative scrolling (react-window's grid API)                       */
   /* -------------------------------------------------------------------- */
 
@@ -707,6 +751,7 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
       {{on "pointerdown" this.onPointerDown}}
       {{this.setupOuter}}
       {{this.itemsRendered this.rowWindow this.columnWindow}}
+      {{this.compensateLayoutShift this.rowOffsets this.defaultRowHeight}}
     >
       {{#if this.isMeasured}}
         <div style={{this.innerStyle}} {{this.setupInner}}>

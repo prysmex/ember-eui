@@ -8,7 +8,10 @@ order: 2
     <p>Apply the <EuiCode @language="text">@allowFullScreen</EuiCode> argument to make the image clickable and show a fullscreen version. Note that the second image also passes <EuiCode @language="text">@fullScreenIconColor="dark"</EuiCode> to change icon color to better contrast against the light background of that image.</p>
     </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiImage } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @justifyContent="spaceEvenly">
   <EuiFlexItem @grow={{false}}>
     {{! Because this image is sufficiently described by its caption, there is no need to repeat it via alt text }}
@@ -33,4 +36,5 @@ order: 2
     />
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

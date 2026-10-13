@@ -18,47 +18,13 @@ These functionalities can cause performance issues if the component is rendered 
 
 </EuiText>
 
-```hbs template
-<EuiText>
-  <EuiFlexGroup @alignItems='center' @gutterSize='xl'>
-    <EuiFormRow @label='Lines' @display='columnCompressed'>
-      <EuiFieldNumber
-        @compressed={{true}}
-        @value={{this.lineCount}}
-        style='width: 100px'
-        {{on 'input' this.setLineCount}}
-      />
-    </EuiFormRow>
-    <EuiSwitch
-      @label='Share one observer (pass @width)'
-      @checked={{this.shareWidth}}
-      @onChange={{this.toggleShareWidth}}
-    />
-  </EuiFlexGroup>
-  <EuiSpacer @size='m' />
-  <EuiPanel style='overflow: auto; resize: inline; max-inline-size: 100%; inline-size: 600px; block-size: 300px;'>
-    <div {{resize-observer onResize=this.onResize}}>
-      {{#each this.lines as |line|}}
-        <EuiTextTruncate
-          @text={{line}}
-          @truncation='middle'
-          @width={{this.widthArg}}
-        />
-      {{/each}}
-    </div>
-  </EuiPanel>
-  <EuiSpacer />
-  <p>
-    Drag the panel resize handle to test performance. Use the controls above
-    to compare the performance of different approaches.
-  </p>
-</EuiText>
-```
-
-```js component
+```gjs component
+import { resizeObserver } from '@ember-eui/core/modifiers';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFieldNumber, EuiFlexGroup, EuiFormRow, EuiPanel, EuiSpacer, EuiSwitch, EuiText, EuiTextTruncate } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 const words = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'.split(' ');
 
@@ -91,5 +57,43 @@ export default class extends Component {
   onResize({ width }) {
     this.width = Math.floor(width);
   }
+
+  <template>
+    <EuiText>
+      <EuiFlexGroup @alignItems='center' @gutterSize='xl'>
+        <EuiFormRow @label='Lines' @display='columnCompressed'>
+          <EuiFieldNumber
+            @compressed={{true}}
+            @value={{this.lineCount}}
+            style='width: 100px'
+            {{on 'input' this.setLineCount}}
+          />
+        </EuiFormRow>
+        <EuiSwitch
+          @label='Share one observer (pass @width)'
+          @checked={{this.shareWidth}}
+          @onChange={{this.toggleShareWidth}}
+        />
+      </EuiFlexGroup>
+      <EuiSpacer @size='m' />
+      <EuiPanel style='overflow: auto; resize: inline; max-inline-size: 100%; inline-size: 600px; block-size: 300px;'>
+        <div {{resizeObserver onResize=this.onResize}}>
+          {{#each this.lines as |line|}}
+            <EuiTextTruncate
+              @text={{line}}
+              @truncation='middle'
+              @width={{this.widthArg}}
+            />
+          {{/each}}
+        </div>
+      </EuiPanel>
+      <EuiSpacer />
+      <p>
+        Drag the panel resize handle to test performance. Use the controls above
+        to compare the performance of different approaches.
+      </p>
+    </EuiText>
+  </template>
 }
 ```
+

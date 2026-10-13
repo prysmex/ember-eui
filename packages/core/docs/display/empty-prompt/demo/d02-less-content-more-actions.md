@@ -10,12 +10,20 @@ You can remove parts of the prompt to simplify it. You can also provide an array
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiButtonEmpty, EuiEmptyPrompt } from '@ember-eui/core/components';
+import { array } from '@ember/helper';
+
+const ActionButton1 = <template><EuiButton @color="primary">Upgrade</EuiButton></template>;
+const ActionButton2 = <template><EuiButtonEmpty @color="primary">Start a trial</EuiButtonEmpty></template>;
+
+<template>
 <EuiEmptyPrompt
   @title="Upgrade your license to use Machine Learning"
   @actions={{array
-    (component "eui-button-title" title="Upgrade" color="primary")
-    (component "eui-button-title" title="Start a trial" color="primary" buttonEmpty=true)
+    ActionButton1
+    ActionButton2
   }}
 />
+</template>
 ```

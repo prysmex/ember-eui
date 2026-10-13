@@ -16,19 +16,9 @@ You can customize line number display further with a configuration object contai
 
 </EuiText>
 
-```hbs template
-<EuiCodeBlock
-  @language='json'
-  @fontSize='m'
-  @paddingSize='m'
-  @lineNumbers={{this.lineNumbers}}
->
-  {{this.jsonCode}}
-</EuiCodeBlock>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCodeBlock } from '@ember-eui/core/components';
 
 export default class LineNumbersConfig extends Component {
   lineNumbers = {
@@ -49,5 +39,17 @@ export default class LineNumbersConfig extends Component {
     "type": "Point"
   }
 ],`;
+
+  <template>
+    <EuiCodeBlock
+      @language='json'
+      @fontSize='m'
+      @paddingSize='m'
+      @lineNumbers={{this.lineNumbers}}
+    >
+      {{this.jsonCode}}
+    </EuiCodeBlock>
+  </template>
 }
 ```
+

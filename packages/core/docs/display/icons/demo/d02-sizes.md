@@ -14,28 +14,9 @@ use `xl` for those. Non-`original` sizes assume a square `viewBox`.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="xl" @alignItems="flexEnd" @wrap={{true}}>
-  {{#each this.sizes as |size|}}
-    <EuiFlexItem @grow={{false}}>
-      <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s">
-        <EuiFlexItem @grow={{false}}>
-          <EuiIcon @type="logoElasticsearch" @size={{size.name}} />
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiCode>@size="{{size.name}}"</EuiCode>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiText @size="xs" @color="subdued">{{size.pixels}}</EuiText>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCode, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiText } from '@ember-eui/core/components';
 
 export default class IconSizesDemo extends Component {
   sizes = [
@@ -46,5 +27,26 @@ export default class IconSizesDemo extends Component {
     { name: 'xxl', pixels: '40px · xx-large' },
     { name: 'original', pixels: 'svg size · original' },
   ];
+
+  <template>
+    <EuiFlexGroup @gutterSize="xl" @alignItems="flexEnd" @wrap={{true}}>
+      {{#each this.sizes as |size|}}
+        <EuiFlexItem @grow={{false}}>
+          <EuiFlexGroup @direction="column" @alignItems="center" @gutterSize="s">
+            <EuiFlexItem @grow={{false}}>
+              <EuiIcon @type="logoElasticsearch" @size={{size.name}} />
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiCode>@size="{{size.name}}"</EuiCode>
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiText @size="xs" @color="subdued">{{size.pixels}}</EuiText>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

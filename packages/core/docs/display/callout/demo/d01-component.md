@@ -10,6 +10,10 @@ Default settings produce a basic, primary-colored callout with a preset icon.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCallOut } from '@ember-eui/core/components';
+
+<template>
 <EuiCallOut @title="Callout title" @text="Description text goes here." />
+</template>
 ```

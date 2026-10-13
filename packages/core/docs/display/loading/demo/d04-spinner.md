@@ -10,7 +10,10 @@ order: 4
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiLoadingSpinner } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiLoadingSpinner @size="s" />
   &nbsp;&nbsp;
@@ -22,4 +25,5 @@ order: 4
   &nbsp;&nbsp;
   <EuiLoadingSpinner @size="xxl" />
 </div>
+</template>
 ```

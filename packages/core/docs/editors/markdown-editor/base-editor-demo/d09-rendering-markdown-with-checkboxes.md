@@ -14,20 +14,11 @@ value.
 
 </EuiText>
 
-```hbs template
-<EuiPanel @hasBorder={{true}}>
-  <EuiMarkdownFormat
-    @value={{this.markdown}}
-    @textSize="s"
-    @replaceNode={{this.replaceNode}}
-  />
-</EuiPanel>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiMarkdownFormat, EuiPanel } from '@ember-eui/core/components';
 
 export default class MarkdownFormatDemo extends Component {
   @tracked markdown = `### Release checklist :rocket:
@@ -45,5 +36,16 @@ Questions? Ask in **#releases**.`;
     this.markdown =
       this.markdown.slice(0, start.offset) + text + this.markdown.slice(end.offset);
   }
+
+  <template>
+    <EuiPanel @hasBorder={{true}}>
+      <EuiMarkdownFormat
+        @value={{this.markdown}}
+        @textSize="s"
+        @replaceNode={{this.replaceNode}}
+      />
+    </EuiPanel>
+  </template>
 }
 ```
+

@@ -10,21 +10,23 @@ With `@cloneElement={{true}}`, `EuiTextBlockTruncate` renders nothing itself and
 
 </EuiText>
 
-```hbs template
-<div style='max-width: 400px'>
-  <EuiText>
-    <EuiTextBlockTruncate @lines={{3}} @cloneElement={{true}} as |clamp|>
-      <p {{clamp}}>{{this.text}}</p>
-    </EuiTextBlockTruncate>
-  </EuiText>
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiText, EuiTextBlockTruncate } from '@ember-eui/core/components';
 
 export default class extends Component {
   text =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+
+  <template>
+    <div style='max-width: 400px'>
+      <EuiText>
+        <EuiTextBlockTruncate @lines={{3}} @cloneElement={{true}} as |clamp|>
+          <p {{clamp}}>{{this.text}}</p>
+        </EuiTextBlockTruncate>
+      </EuiText>
+    </div>
+  </template>
 }
 ```
+

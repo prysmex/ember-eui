@@ -14,7 +14,10 @@ The timeline icon is a very important part of the comment:
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAvatar, EuiCode, EuiComment, EuiCommentList, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiCommentList aria-label="An example with different timeline icons">
   <EuiComment @timelineAvatarAriaLabel="Andre Diaz">
     <:username>andred</:username>
@@ -52,4 +55,5 @@ The timeline icon is a very important part of the comment:
     </:body>
   </EuiComment>
 </EuiCommentList>
+</template>
 ```

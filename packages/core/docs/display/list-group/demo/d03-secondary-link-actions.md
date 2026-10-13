@@ -10,25 +10,11 @@ The `@extraAction` argument adds a secondary icon button to any list item. It ac
 
 </EuiText>
 
-```hbs template
-<EuiListGroup @maxWidth={{288}}>
-  {{#each this.items as |item|}}
-    <EuiListGroupItem
-      @iconType={{item.iconType}}
-      @label="EUI button link"
-      @onClick={{this.noop}}
-      @isActive={{item.isActive}}
-      @isDisabled={{item.isDisabled}}
-      @extraAction={{item.extraAction}}
-    />
-  {{/each}}
-</EuiListGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiListGroup, EuiListGroupItem } from '@ember-eui/core/components';
 
 export default class ExtraActionDemo extends Component {
   @tracked favorites = ['link2'];
@@ -70,5 +56,21 @@ export default class ExtraActionDemo extends Component {
 
   @action
   noop() {}
+
+  <template>
+    <EuiListGroup @maxWidth={{288}}>
+      {{#each this.items as |item|}}
+        <EuiListGroupItem
+          @iconType={{item.iconType}}
+          @label="EUI button link"
+          @onClick={{this.noop}}
+          @isActive={{item.isActive}}
+          @isDisabled={{item.isDisabled}}
+          @extraAction={{item.extraAction}}
+        />
+      {{/each}}
+    </EuiListGroup>
+  </template>
 }
 ```
+

@@ -14,20 +14,11 @@ In order to get the full benefit of using **EuiPinnableListGroup**, the componen
 
 </EuiText>
 
-```hbs template
-<EuiPinnableListGroup
-  @listItems={{this.itemList}}
-  @onPinClick={{this.togglePin}}
-  @maxWidth="none"
-  @pinTitle={{this.pinTitle}}
-  @unpinTitle={{this.unpinTitle}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiPinnableListGroup } from '@ember-eui/core/components';
 
 export default class PinnableDemo extends Component {
   @tracked itemList = [
@@ -54,5 +45,16 @@ export default class PinnableDemo extends Component {
       );
     }
   }
+
+  <template>
+    <EuiPinnableListGroup
+      @listItems={{this.itemList}}
+      @onPinClick={{this.togglePin}}
+      @maxWidth="none"
+      @pinTitle={{this.pinTitle}}
+      @unpinTitle={{this.unpinTitle}}
+    />
+  </template>
 }
 ```
+

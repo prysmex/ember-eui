@@ -10,7 +10,10 @@ The initials displayed in the avatar try to be smart based on the name argument.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAvatar, EuiFlexGroup, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <EuiTitle @size="xs"><h3>Single vs multi-word</h3></EuiTitle>
 <EuiSpacer />
 <EuiFlexGroup @responsive={{false}} @gutterSize="xs">
@@ -33,4 +36,5 @@ The initials displayed in the avatar try to be smart based on the name argument.
     @initialsLength={{2}}
   />
 </EuiFlexGroup>
+</template>
 ```

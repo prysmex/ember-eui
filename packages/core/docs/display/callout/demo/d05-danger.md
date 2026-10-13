@@ -10,11 +10,15 @@ Use this callout to let the user know that something went wrong. For example if 
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCallOut, EuiLink } from '@ember-eui/core/components';
+
+<template>
 <EuiCallOut @title="Sorry, there was an error" @color="danger">
   <p>
     Now you have to fix it, but maybe
     <EuiLink @href="#">this link can help</EuiLink>.
   </p>
 </EuiCallOut>
+</template>
 ```

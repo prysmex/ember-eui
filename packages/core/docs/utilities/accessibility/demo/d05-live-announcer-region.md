@@ -27,33 +27,12 @@ An additional difference is that <strong>EuiLiveAnnouncer</strong> can clear its
 
 <EuiSpacer />
 
-```hbs template
-<EuiFlexGroup @direction='column' @gutterSize='m' style='max-width: 300px'>
-  <EuiFlexItem>
-    <EuiButton {{on 'click' this.toggleShown}}>
-      Toggle announcement
-    </EuiButton>
-  </EuiFlexItem>
-
-  <EuiFlexItem>
-    {{#if this.isShown}}
-      <EuiButton {{on 'click' this.updateAnnouncement}}>
-        Update announcement
-      </EuiButton>
-      <EuiSpacer @size='m' />
-      <EuiCodeBlock>{{this.announcement}}</EuiCodeBlock>
-      <EuiLiveAnnouncer>
-        {{this.announcement}}
-      </EuiLiveAnnouncer>
-    {{/if}}
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiCodeBlock, EuiFlexGroup, EuiFlexItem, EuiLiveAnnouncer, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class LiveAnnouncerRegion extends Component {
   @tracked announcement = 'No notifications.';
@@ -70,5 +49,29 @@ export default class LiveAnnouncerRegion extends Component {
       Math.random() * 1000
     )} new notifications.`;
   }
+
+  <template>
+    <EuiFlexGroup @direction='column' @gutterSize='m' style='max-width: 300px'>
+      <EuiFlexItem>
+        <EuiButton {{on 'click' this.toggleShown}}>
+          Toggle announcement
+        </EuiButton>
+      </EuiFlexItem>
+
+      <EuiFlexItem>
+        {{#if this.isShown}}
+          <EuiButton {{on 'click' this.updateAnnouncement}}>
+            Update announcement
+          </EuiButton>
+          <EuiSpacer @size='m' />
+          <EuiCodeBlock>{{this.announcement}}</EuiCodeBlock>
+          <EuiLiveAnnouncer>
+            {{this.announcement}}
+          </EuiLiveAnnouncer>
+        {{/if}}
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

@@ -10,33 +10,9 @@ order: 1
 
 </EuiText>
 
-```hbs template
-<EuiDescriptionList @listItems={{this.favoriteVideoGames}} />
-<EuiSpacer />
-<EuiText>
-  <p>You can also use the <strong>EuiDescriptionListTitle</strong> and <strong>EuiDescriptionListDescription</strong> components separately to build a list manually.</p>
-</EuiText>
-<EuiSpacer />
-<EuiDescriptionList>
-  <EuiDescriptionListTitle>
-    The Elder Scrolls: Morrowind
-  </EuiDescriptionListTitle>
-  <EuiDescriptionListDescription>
-    The opening music alone evokes such strong memories.
-  </EuiDescriptionListDescription>
-  <EuiDescriptionListTitle>TIE Fighter</EuiDescriptionListTitle>
-  <EuiDescriptionListDescription>
-    The sequel to XWING, join the dark side and fly for the Emperor.
-  </EuiDescriptionListDescription>
-  <EuiDescriptionListTitle>Quake 2</EuiDescriptionListTitle>
-  <EuiDescriptionListDescription>
-    The game that made me drop out of college.
-  </EuiDescriptionListDescription>
-</EuiDescriptionList>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiDescriptionList, EuiDescriptionListDescription, EuiDescriptionListTitle, EuiSpacer, EuiText } from '@ember-eui/core/components';
 
 export default class DescriptionListDemo extends Component {
   favoriteVideoGames = [
@@ -54,5 +30,31 @@ export default class DescriptionListDemo extends Component {
       description: 'The game that made me drop out of college.',
     },
   ];
+
+  <template>
+    <EuiDescriptionList @listItems={{this.favoriteVideoGames}} />
+    <EuiSpacer />
+    <EuiText>
+      <p>You can also use the <strong>EuiDescriptionListTitle</strong> and <strong>EuiDescriptionListDescription</strong> components separately to build a list manually.</p>
+    </EuiText>
+    <EuiSpacer />
+    <EuiDescriptionList>
+      <EuiDescriptionListTitle>
+        The Elder Scrolls: Morrowind
+      </EuiDescriptionListTitle>
+      <EuiDescriptionListDescription>
+        The opening music alone evokes such strong memories.
+      </EuiDescriptionListDescription>
+      <EuiDescriptionListTitle>TIE Fighter</EuiDescriptionListTitle>
+      <EuiDescriptionListDescription>
+        The sequel to XWING, join the dark side and fly for the Emperor.
+      </EuiDescriptionListDescription>
+      <EuiDescriptionListTitle>Quake 2</EuiDescriptionListTitle>
+      <EuiDescriptionListDescription>
+        The game that made me drop out of college.
+      </EuiDescriptionListDescription>
+    </EuiDescriptionList>
+  </template>
 }
 ```
+

@@ -10,8 +10,12 @@ The **EuiProgress** component by default will display in an indeterminate loadin
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiProgress } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiProgress @size="xs" @color="accent" />
 </div>
+</template>
 ```

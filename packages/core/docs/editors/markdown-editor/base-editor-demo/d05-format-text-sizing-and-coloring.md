@@ -12,12 +12,9 @@ order: 5
 
 <EuiSpacer />
 
-```hbs template
-<EuiMarkdownFormat @color='danger' @textSize='s' @value={{this.markdownContent}} />
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiMarkdownFormat } from '@ember-eui/core/components';
 
 export default class FormatSizing extends Component {
   markdownContent = `This text has the \`textSize\` argument set to \`"s"\`.
@@ -30,5 +27,10 @@ The color argument is set to \`"danger"\` and that's why all the text is red! :s
 | :apple: | Red |
 | :green_heart:    | Green |
 `;
+
+  <template>
+    <EuiMarkdownFormat @color='danger' @textSize='s' @value={{this.markdownContent}} />
+  </template>
 }
 ```
+

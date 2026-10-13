@@ -10,7 +10,10 @@ The **EuiLoadingElastic** loader is great for full page or Elastic product loadi
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiLoadingElastic } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiLoadingElastic />
   &emsp;
@@ -20,4 +23,5 @@ The **EuiLoadingElastic** loader is great for full page or Elastic product loadi
   &emsp;
   <EuiLoadingElastic @size="xxl" />
 </div>
+</template>
 ```

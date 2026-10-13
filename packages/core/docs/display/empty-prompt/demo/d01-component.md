@@ -10,16 +10,23 @@ While no one piece of content is required, each **EuiEmptyPrompt** should contai
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiEmptyPrompt, EuiLink, EuiTitle } from '@ember-eui/core/components';
+import { array } from '@ember/helper';
+
+const ActionButton1 = <template><EuiButton @color="primary">Add a case</EuiButton></template>;
+
+<template>
 <EuiEmptyPrompt
   @iconType="logoSecurity"
   @title="Start adding cases"
   @body="Add a new case or change your filter settings."
-  @actions={{array (component "eui-button-title" title="Add a case" color="primary")}}
+  @actions={{array ActionButton1}}
 >
   <:footer>
     <EuiTitle @size="xxs"><h3>Want to learn more?</h3></EuiTitle>
     <EuiLink @href="#" @target="_blank">Read the docs</EuiLink>
   </:footer>
 </EuiEmptyPrompt>
+</template>
 ```

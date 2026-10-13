@@ -12,24 +12,12 @@ Generally you won't need this argument when a callout is rendered on initial pag
 
 </EuiText>
 
-```hbs template
-<EuiButton {{on "click" this.toggle}}>
-  {{if this.isShown "Hide" "Show"}} callout
-</EuiButton>
-<EuiSpacer />
-{{#if this.isShown}}
-  <EuiCallOut
-    @title="Important notification!"
-    @text="This content will be announced to screen readers when it appears."
-    @announceOnMount={{true}}
-  />
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiCallOut, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class CallOutAnnounceDemo extends Component {
   @tracked isShown = false;
@@ -37,5 +25,20 @@ export default class CallOutAnnounceDemo extends Component {
   @action toggle() {
     this.isShown = !this.isShown;
   }
+
+  <template>
+    <EuiButton {{on "click" this.toggle}}>
+      {{if this.isShown "Hide" "Show"}} callout
+    </EuiButton>
+    <EuiSpacer />
+    {{#if this.isShown}}
+      <EuiCallOut
+        @title="Important notification!"
+        @text="This content will be announced to screen readers when it appears."
+        @announceOnMount={{true}}
+      />
+    {{/if}}
+  </template>
 }
 ```
+

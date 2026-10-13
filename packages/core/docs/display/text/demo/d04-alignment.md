@@ -11,7 +11,10 @@ There are two ways to align text. Either individually by applying <strong>EuiTex
   </p>
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiSpacer, EuiText, EuiTextAlign } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiText>
     <EuiTextAlign @textAlign='left'>
@@ -36,4 +39,5 @@ There are two ways to align text. Either individually by applying <strong>EuiTex
     <p>And in conjunction with coloring.</p>
   </EuiText>
 </div>
+</template>
 ```

@@ -12,7 +12,10 @@ If your icon has multiples or custom colors like a logo, you can keep the defaul
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAvatar, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <EuiTitle @size="xs"><h2>Avatar colors and sizes</h2></EuiTitle>
 <EuiSpacer />
 <EuiAvatar @size="s" @name="Small size" @iconType="managementApp" />
@@ -42,4 +45,5 @@ If your icon has multiples or custom colors like a logo, you can keep the defaul
 />
 &emsp;
 <EuiAvatar @name="Large iconSize" @iconType="managementApp" @iconSize="l" />
+</template>
 ```

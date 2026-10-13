@@ -12,7 +12,10 @@ When the tooltip content **exactly duplicates** the trigger's accessible label, 
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiText, EuiToolTip } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize='m' @alignItems='center'>
   <EuiFlexItem @grow={{false}}>
     <EuiToolTip @content='Edit'>
@@ -42,4 +45,5 @@ When the tooltip content **exactly duplicates** the trigger's accessible label, 
     </EuiText>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

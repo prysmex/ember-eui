@@ -4,6 +4,10 @@ order: 1
 
 # Default
 
-```hbs template
+```gjs component
+import { EuiBadge } from '@ember-eui/core/components';
+
+<template>
 <EuiBadge>Default badge</EuiBadge>
+</template>
 ```

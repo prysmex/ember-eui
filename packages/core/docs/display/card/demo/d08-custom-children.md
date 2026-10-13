@@ -10,66 +10,9 @@ In the event that you need **more than** just paragraph text for the `@descripti
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="l">
-  <EuiFlexItem>
-    <EuiCard @textAlign="left" @title="Lists">
-      <:description>
-        <span>
-          Wrap a lists with <strong>EuiText size="s"</strong> to match the
-          description text.
-        </span>
-      </:description>
-      <:body>
-        <EuiText @size="s">
-          <ul>
-            <li>Bullet 1</li>
-            <li>Bullet 2</li>
-            <li>Bullet 3</li>
-          </ul>
-        </EuiText>
-      </:body>
-    </EuiCard>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiCard @textAlign="left" @title="Form controls">
-      <:body>
-        <EuiRadioGroup
-          @options={{this.radios}}
-          @idSelected="radios0"
-          @onChange={{this.noop}}
-          @compressed={{true}}
-        />
-      </:body>
-      <:footer>
-        <EuiFlexGroup @justifyContent="flexEnd">
-          <EuiFlexItem @grow={{false}}>
-            <EuiButton @size="s" @fill={{true}}>Send</EuiButton>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </:footer>
-    </EuiCard>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiCard @textAlign="left" @title="Just about anything">
-      <:description>
-        <span>
-          Just be sure not to add any <EuiCode>@onClick</EuiCode> handler to
-          the card if the children are also interactive.
-        </span>
-      </:description>
-      <:body>
-        <EuiCodeBlock @language="html" @paddingSize="s">
-          {{this.snippet}}
-        </EuiCodeBlock>
-      </:body>
-    </EuiCard>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiButton, EuiCard, EuiCode, EuiCodeBlock, EuiFlexGroup, EuiFlexItem, EuiRadioGroup, EuiText } from '@ember-eui/core/components';
 
 export default class CardChildrenDemo extends Component {
   radios = [
@@ -80,5 +23,64 @@ export default class CardChildrenDemo extends Component {
 
   snippet = '<yoda>Hello, young Skywalker</yoda>';
   noop = () => {};
+
+  <template>
+    <EuiFlexGroup @gutterSize="l">
+      <EuiFlexItem>
+        <EuiCard @textAlign="left" @title="Lists">
+          <:description>
+            <span>
+              Wrap a lists with <strong>EuiText size="s"</strong> to match the
+              description text.
+            </span>
+          </:description>
+          <:body>
+            <EuiText @size="s">
+              <ul>
+                <li>Bullet 1</li>
+                <li>Bullet 2</li>
+                <li>Bullet 3</li>
+              </ul>
+            </EuiText>
+          </:body>
+        </EuiCard>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiCard @textAlign="left" @title="Form controls">
+          <:body>
+            <EuiRadioGroup
+              @options={{this.radios}}
+              @idSelected="radios0"
+              @onChange={{this.noop}}
+              @compressed={{true}}
+            />
+          </:body>
+          <:footer>
+            <EuiFlexGroup @justifyContent="flexEnd">
+              <EuiFlexItem @grow={{false}}>
+                <EuiButton @size="s" @fill={{true}}>Send</EuiButton>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </:footer>
+        </EuiCard>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiCard @textAlign="left" @title="Just about anything">
+          <:description>
+            <span>
+              Just be sure not to add any <EuiCode>@onClick</EuiCode> handler to
+              the card if the children are also interactive.
+            </span>
+          </:description>
+          <:body>
+            <EuiCodeBlock @language="html" @paddingSize="s">
+              {{this.snippet}}
+            </EuiCodeBlock>
+          </:body>
+        </EuiCard>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

@@ -10,7 +10,10 @@ Badges can use icons on the left and right (default) sides.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiBadge } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiBadge @color="hollow" @iconType="cross" @iconSide="right">Hollow</EuiBadge>
 
@@ -20,4 +23,5 @@ Badges can use icons on the left and right (default) sides.
 
   <EuiBadge @iconType="return" />
 </div>
+</template>
 ```

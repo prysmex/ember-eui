@@ -11,7 +11,10 @@ There are two ways to color text. Either individually by applying <strong>EuiTex
   </p>
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiSpacer, EuiText, EuiTextColor, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiTitle @tagName="h2"><EuiTextColor @color='default'>You </EuiTextColor>
       <EuiTextColor @color='success'>use </EuiTextColor>
@@ -64,4 +67,5 @@ There are two ways to color text. Either individually by applying <strong>EuiTex
     </p>
   </EuiText>
 </div>
+</template>
 ```

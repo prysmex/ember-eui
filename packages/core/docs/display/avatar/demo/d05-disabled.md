@@ -10,7 +10,10 @@ While **EuiAvatar** doesn't accept any interactive behaviors itself, you can cre
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAvatar } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiAvatar
     @size="m"
@@ -44,4 +47,5 @@ While **EuiAvatar** doesn't accept any interactive behaviors itself, you can cre
     @isDisabled={{true}}
   />
 </div>
+</template>
 ```

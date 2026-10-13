@@ -10,37 +10,9 @@ When using an **EuiEmptyPrompt** in an **EuiPageTemplate**, use the `empty` temp
 
 </EuiText>
 
-```hbs template
-<EuiPageTemplate @template="empty" @minHeight="0">
-  <EuiEmptyPrompt @color="plain" @layout="horizontal">
-    <:icon>
-      <EuiImage @size="fullWidth" @src={{this.illustration}} alt="" />
-    </:icon>
-    <:content>
-      <EuiTitle @size="m"><h2>Create your first visualization</h2></EuiTitle>
-      <EuiSpacer @size="s" />
-      <EuiText @color="subdued">
-        <p>
-          There are no visualizations to display. This tool allows you to
-          create a wide range of charts, graphs, maps, and other graphics.
-        </p>
-        <p>
-          The visualizations you create can be easily shared with your peers.
-        </p>
-      </EuiText>
-      <EuiSpacer @size="l" />
-      <EuiButton @color="primary" @fill={{true}}>Create visualization</EuiButton>
-    </:content>
-    <:footer>
-      <EuiTitle @size="xxs"><span>Want to learn more?</span></EuiTitle>
-      <EuiLink @href="#" @target="_blank">Read the docs</EuiLink>
-    </:footer>
-  </EuiEmptyPrompt>
-</EuiPageTemplate>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiButton, EuiEmptyPrompt, EuiImage, EuiLink, EuiPageTemplate, EuiSpacer, EuiText, EuiTitle } from '@ember-eui/core/components';
 
 const svg =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
@@ -52,5 +24,35 @@ const svg =
 
 export default class EmptyPromptTemplateDemo extends Component {
   illustration = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+
+  <template>
+    <EuiPageTemplate @template="empty" @minHeight="0">
+      <EuiEmptyPrompt @color="plain" @layout="horizontal">
+        <:icon>
+          <EuiImage @size="fullWidth" @src={{this.illustration}} alt="" />
+        </:icon>
+        <:content>
+          <EuiTitle @size="m"><h2>Create your first visualization</h2></EuiTitle>
+          <EuiSpacer @size="s" />
+          <EuiText @color="subdued">
+            <p>
+              There are no visualizations to display. This tool allows you to
+              create a wide range of charts, graphs, maps, and other graphics.
+            </p>
+            <p>
+              The visualizations you create can be easily shared with your peers.
+            </p>
+          </EuiText>
+          <EuiSpacer @size="l" />
+          <EuiButton @color="primary" @fill={{true}}>Create visualization</EuiButton>
+        </:content>
+        <:footer>
+          <EuiTitle @size="xxs"><span>Want to learn more?</span></EuiTitle>
+          <EuiLink @href="#" @target="_blank">Read the docs</EuiLink>
+        </:footer>
+      </EuiEmptyPrompt>
+    </EuiPageTemplate>
+  </template>
 }
 ```
+

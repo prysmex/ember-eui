@@ -4,51 +4,14 @@ order: 1
 
 # Mutation observer
 
-```hbs template
-<div>
-  <p>
-    {{this.lastMutation}}
-  </p>
-  <EuiSpacer />
-  <div
-    {{mutation-observer
-      observerOptions=(hash subtree=true attributes=true childList=true)
-      onMutation=this.onMutation
-    }}
-  >
-    <EuiButton
-      @color={{this.buttonColor}}
-      @fill={{true}}
-      {{on 'click' this.toggleButtonColor}}
-    >
-      Toggle button color
-    </EuiButton>
-    <EuiSpacer />
-    <EuiFlexGroup>
-      <EuiFlexItem @grow={{false}}>
-        <EuiPanel @grow={{false}}>
-          <ul>
-            {{#each this.items as |item|}}
-              <li>
-                {{item}}
-              </li>
-            {{/each}}
-          </ul>
-          <EuiSpacer @size='s' />
-          <EuiButtonEmpty {{on 'click' this.addItem}}>
-            add item
-          </EuiButtonEmpty>
-        </EuiPanel>
-      </EuiFlexItem>
-    </EuiFlexGroup>
-  </div>
-</div>
-```
-
-```javascript component
+```gjs component
 import GlimmerComponent from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { mutationObserver } from '@ember-eui/core/modifiers';
+import { on } from '@ember/modifier';
 
 export default class MutationObserverDemo extends GlimmerComponent {
   @tracked lastMutation = 'no changes detected';
@@ -70,5 +33,47 @@ export default class MutationObserverDemo extends GlimmerComponent {
     this.lastMutation =
       type === 'attributes' ? 'button class name changed' : 'DOM tree changed';
   }
+
+  <template>
+    <div>
+      <p>
+        {{this.lastMutation}}
+      </p>
+      <EuiSpacer />
+      <div
+        {{mutationObserver
+          observerOptions=(hash subtree=true attributes=true childList=true)
+          onMutation=this.onMutation
+        }}
+      >
+        <EuiButton
+          @color={{this.buttonColor}}
+          @fill={{true}}
+          {{on 'click' this.toggleButtonColor}}
+        >
+          Toggle button color
+        </EuiButton>
+        <EuiSpacer />
+        <EuiFlexGroup>
+          <EuiFlexItem @grow={{false}}>
+            <EuiPanel @grow={{false}}>
+              <ul>
+                {{#each this.items as |item|}}
+                  <li>
+                    {{item}}
+                  </li>
+                {{/each}}
+              </ul>
+              <EuiSpacer @size='s' />
+              <EuiButtonEmpty {{on 'click' this.addItem}}>
+                add item
+              </EuiButtonEmpty>
+            </EuiPanel>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </div>
+    </div>
+  </template>
 }
 ```
+

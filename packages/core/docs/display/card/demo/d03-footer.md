@@ -15,7 +15,10 @@ Footers can contain any number of elements and will always align to the bottom o
 </EuiCallOut>
 <EuiSpacer />
 
-```hbs template
+```gjs component
+import { EuiButton, EuiCard, EuiFlexGroup, EuiFlexItem, EuiLink, EuiSpacer, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize="l">
   <EuiFlexItem>
     <EuiCard
@@ -81,4 +84,5 @@ Footers can contain any number of elements and will always align to the bottom o
     </EuiCard>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

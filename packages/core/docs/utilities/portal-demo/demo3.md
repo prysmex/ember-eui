@@ -31,111 +31,12 @@ In the following demo, you can see how to create your own flyout with these acce
 
 <EuiSpacer />
 
-```hbs template
-<div>
-  <EuiEmptyPrompt
-    @color='subdued'
-    @iconType='logoObservability'
-    @iconColor='default'
-  >
-    <:content>
-      <EuiTitle @size='xs'><h2>Observe my data</h2></EuiTitle>
-      <EuiSpacer @size='m' />
-      <EuiText @size='s' @color='subdued'>
-        <p>
-          Choose one of our many integrations to bring your data in, and start
-          visualizing it.
-        </p>
-      </EuiText>
-      <EuiSpacer @size='m' />
-      <EuiButton {{on 'click' this.toggleCustomFlyout}}>View guide</EuiButton>
-    </:content>
-  </EuiEmptyPrompt>
-
-  {{#if this.isCustomFlyoutVisible}}
-    <EuiPortal>
-      <EuiOverlayMask @onClick={{this.closeCustomFlyout}}>
-        <EuiPanel
-          aria-labelledby='customFlyoutTitle'
-          role='dialog'
-          @paddingSize='l'
-          style='position: fixed; max-inline-size: 480px; inset-inline-end: 24px; inset-block-start: 24px; block-size: calc(100% - 48px); display: flex; flex-direction: column; justify-content: space-between;'
-        >
-          <div style='flex-grow: 0;'>
-            <EuiSpacer @size='s' />
-            <EuiTitle @size='m'>
-              <h2 id='customFlyoutTitle'>Let's get started!</h2>
-            </EuiTitle>
-            <div style='position: absolute; inset-block-start: 16px; inset-inline-end: 16px;'>
-              <EuiToolTip @content='Close modal'>
-                <EuiButtonIcon
-                  @iconType='cross'
-                  @color='text'
-                  aria-label='Close modal'
-                  {{on 'click' this.closeCustomFlyout}}
-                  {{on 'keydown' this.onKeyDown}}
-                />
-              </EuiToolTip>
-            </div>
-            <EuiHorizontalRule />
-          </div>
-
-          <div style='flex-grow: 1; overflow-y: auto;'>
-            <EuiText @size='s'>
-              <p>
-                Elastic Observability provides a unified view into the health
-                and performance of your entire digital ecosystem. With easy
-                ingest of multiple kinds of data via pre-built collectors for
-                hundreds of data sources.
-              </p>
-              <EuiHorizontalRule />
-              <ol style='margin-inline-start: 0;'>
-                <li style='list-style-type: none;'>
-                  <h3>Step 1</h3>
-                  <p>Select an ingestion method</p>
-                  <EuiHorizontalRule />
-                </li>
-                <li style='list-style-type: none;'>
-                  <EuiTextColor @color='subdued'>
-                    <h3>Step 2</h3>
-                    <p>Select an ingestion method</p>
-                  </EuiTextColor>
-                  <EuiHorizontalRule />
-                </li>
-                <li style='list-style-type: none;'>
-                  <EuiTextColor @color='subdued'>
-                    <h3>Step 3</h3>
-                    <p>Select an ingestion method</p>
-                  </EuiTextColor>
-                  <EuiHorizontalRule />
-                </li>
-              </ol>
-            </EuiText>
-          </div>
-
-          <div style='flex-grow: 0;'>
-            <EuiText @textAlign='center' @color='subdued' @size='s'>
-              <EuiButtonEmpty @size='s' {{on 'click' this.closeCustomFlyout}}>
-                Exit setup guide
-              </EuiButtonEmpty>
-              <EuiSpacer @size='s' />
-              <p>
-                How's onboarding? We'd love your
-                <EuiLink @href='#'>feedback</EuiLink>.
-              </p>
-            </EuiText>
-          </div>
-        </EuiPanel>
-      </EuiOverlayMask>
-    </EuiPortal>
-  {{/if}}
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiButtonEmpty, EuiButtonIcon, EuiEmptyPrompt, EuiHorizontalRule, EuiLink, EuiOverlayMask, EuiPanel, EuiPortal, EuiSpacer, EuiText, EuiTextColor, EuiTitle, EuiToolTip } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class CustomFlyoutDemo extends Component {
   @tracked isCustomFlyoutVisible = false;
@@ -159,5 +60,107 @@ export default class CustomFlyoutDemo extends Component {
       this.closeCustomFlyout();
     }
   }
+
+  <template>
+    <div>
+      <EuiEmptyPrompt
+        @color='subdued'
+        @iconType='logoObservability'
+        @iconColor='default'
+      >
+        <:content>
+          <EuiTitle @size='xs'><h2>Observe my data</h2></EuiTitle>
+          <EuiSpacer @size='m' />
+          <EuiText @size='s' @color='subdued'>
+            <p>
+              Choose one of our many integrations to bring your data in, and start
+              visualizing it.
+            </p>
+          </EuiText>
+          <EuiSpacer @size='m' />
+          <EuiButton {{on 'click' this.toggleCustomFlyout}}>View guide</EuiButton>
+        </:content>
+      </EuiEmptyPrompt>
+
+      {{#if this.isCustomFlyoutVisible}}
+        <EuiPortal>
+          <EuiOverlayMask @onClick={{this.closeCustomFlyout}}>
+            <EuiPanel
+              aria-labelledby='customFlyoutTitle'
+              role='dialog'
+              @paddingSize='l'
+              style='position: fixed; max-inline-size: 480px; inset-inline-end: 24px; inset-block-start: 24px; block-size: calc(100% - 48px); display: flex; flex-direction: column; justify-content: space-between;'
+            >
+              <div style='flex-grow: 0;'>
+                <EuiSpacer @size='s' />
+                <EuiTitle @size='m'>
+                  <h2 id='customFlyoutTitle'>Let's get started!</h2>
+                </EuiTitle>
+                <div style='position: absolute; inset-block-start: 16px; inset-inline-end: 16px;'>
+                  <EuiToolTip @content='Close modal'>
+                    <EuiButtonIcon
+                      @iconType='cross'
+                      @color='text'
+                      aria-label='Close modal'
+                      {{on 'click' this.closeCustomFlyout}}
+                      {{on 'keydown' this.onKeyDown}}
+                    />
+                  </EuiToolTip>
+                </div>
+                <EuiHorizontalRule />
+              </div>
+
+              <div style='flex-grow: 1; overflow-y: auto;'>
+                <EuiText @size='s'>
+                  <p>
+                    Elastic Observability provides a unified view into the health
+                    and performance of your entire digital ecosystem. With easy
+                    ingest of multiple kinds of data via pre-built collectors for
+                    hundreds of data sources.
+                  </p>
+                  <EuiHorizontalRule />
+                  <ol style='margin-inline-start: 0;'>
+                    <li style='list-style-type: none;'>
+                      <h3>Step 1</h3>
+                      <p>Select an ingestion method</p>
+                      <EuiHorizontalRule />
+                    </li>
+                    <li style='list-style-type: none;'>
+                      <EuiTextColor @color='subdued'>
+                        <h3>Step 2</h3>
+                        <p>Select an ingestion method</p>
+                      </EuiTextColor>
+                      <EuiHorizontalRule />
+                    </li>
+                    <li style='list-style-type: none;'>
+                      <EuiTextColor @color='subdued'>
+                        <h3>Step 3</h3>
+                        <p>Select an ingestion method</p>
+                      </EuiTextColor>
+                      <EuiHorizontalRule />
+                    </li>
+                  </ol>
+                </EuiText>
+              </div>
+
+              <div style='flex-grow: 0;'>
+                <EuiText @textAlign='center' @color='subdued' @size='s'>
+                  <EuiButtonEmpty @size='s' {{on 'click' this.closeCustomFlyout}}>
+                    Exit setup guide
+                  </EuiButtonEmpty>
+                  <EuiSpacer @size='s' />
+                  <p>
+                    How's onboarding? We'd love your
+                    <EuiLink @href='#'>feedback</EuiLink>.
+                  </p>
+                </EuiText>
+              </div>
+            </EuiPanel>
+          </EuiOverlayMask>
+        </EuiPortal>
+      {{/if}}
+    </div>
+  </template>
 }
 ```
+

@@ -10,7 +10,10 @@ order: 2
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiStat } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @wrap={{true}}>
   <EuiFlexItem @grow={{false}}>
     <EuiStat @title="1" @description="Default color" />
@@ -37,4 +40,5 @@ order: 2
     <EuiStat @title="10,000" @description="Danger color" @titleColor="danger" />
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

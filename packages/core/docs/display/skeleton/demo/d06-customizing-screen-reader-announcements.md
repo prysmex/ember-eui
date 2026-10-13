@@ -14,49 +14,13 @@ As an optional escape hatch, `@ariaLiveProps` is also available and accepts any 
 
 </EuiText>
 
-```hbs template
-<EuiSkeletonLoading
-  @isLoading={{this.isLoading}}
-  @announceLoadedStatus={{false}}
-  @announceLoadingStatus={{true}}
-  @ariaLiveProps={{this.ariaLiveProps}}
-  @contentAriaLabel="Demo form"
->
-  <:loadingContent as |loading|>
-    <EuiSkeletonRectangle
-      @width="100%"
-      @height={{40}}
-      role={{loading.role}}
-      aria-label={{loading.ariaLabel}}
-    />
-  </:loadingContent>
-  <:loadedContent>
-    <form {{on "submit" this.simulateLoading}}>
-      <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
-        <EuiFlexItem>
-          <EuiFieldText
-            @fullWidth={{true}}
-            @value="Replaced with a loading skeleton on submit"
-            aria-label="Input that transitions to loading"
-          />
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButton @type="submit" @fill={{true}}>Submit</EuiButton>
-        </EuiFlexItem>
-        <EuiFlexItem @grow={{false}}>
-          <EuiButton>Cancel</EuiButton>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </form>
-  </:loadedContent>
-</EuiSkeletonLoading>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { registerDestructor } from '@ember/destroyable';
+import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiSkeletonLoading, EuiSkeletonRectangle } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class SkeletonAnnouncementsDemo extends Component {
   @tracked isLoading = false;
@@ -78,5 +42,44 @@ export default class SkeletonAnnouncementsDemo extends Component {
       this.isLoading = false;
     }, 3000);
   }
+
+  <template>
+    <EuiSkeletonLoading
+      @isLoading={{this.isLoading}}
+      @announceLoadedStatus={{false}}
+      @announceLoadingStatus={{true}}
+      @ariaLiveProps={{this.ariaLiveProps}}
+      @contentAriaLabel="Demo form"
+    >
+      <:loadingContent as |loading|>
+        <EuiSkeletonRectangle
+          @width="100%"
+          @height={{40}}
+          role={{loading.role}}
+          aria-label={{loading.ariaLabel}}
+        />
+      </:loadingContent>
+      <:loadedContent>
+        <form {{on "submit" this.simulateLoading}}>
+          <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
+            <EuiFlexItem>
+              <EuiFieldText
+                @fullWidth={{true}}
+                @value="Replaced with a loading skeleton on submit"
+                aria-label="Input that transitions to loading"
+              />
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiButton @type="submit" @fill={{true}}>Submit</EuiButton>
+            </EuiFlexItem>
+            <EuiFlexItem @grow={{false}}>
+              <EuiButton>Cancel</EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </form>
+      </:loadedContent>
+    </EuiSkeletonLoading>
+  </template>
 }
 ```
+

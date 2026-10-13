@@ -12,41 +12,14 @@ order: 2
 
 <EuiSpacer />
 
-```hbs template
-<EuiTitle @size='xs'>
-  <h3>lookupToken with string interpolation</h3>
-</EuiTitle>
-<p>{{this.stringText}}</p>
-<EuiSpacer @size='l' />
-<EuiTitle @size='xs'>
-  <h3>EuiI18n with string interpolation</h3>
-</EuiTitle>
-<p>
-  <EuiI18n
-    @token='euiI18nInterpolation.clickedCount'
-    @default='Clicked on button {count} times.'
-    @values={{hash count=this.count}}
-    as |Token|
-  >
-    <Token />
-  </EuiI18n>
-</p>
-<EuiSpacer @size='l' />
-<EuiTitle @size='xs'>
-  <h3>lookupToken with function interpolation</h3>
-</EuiTitle>
-<p>{{this.functionText}}</p>
-<EuiSpacer @size='l' />
-<EuiButton @size='s' {{on 'click' this.increase}}>
-  Increase count
-</EuiButton>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import { EuiButton, EuiI18n, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class I18nInterpolation extends Component {
   @service euiI18n;
@@ -72,5 +45,36 @@ export default class I18nInterpolation extends Component {
   increase() {
     this.count++;
   }
+
+  <template>
+    <EuiTitle @size='xs'>
+      <h3>lookupToken with string interpolation</h3>
+    </EuiTitle>
+    <p>{{this.stringText}}</p>
+    <EuiSpacer @size='l' />
+    <EuiTitle @size='xs'>
+      <h3>EuiI18n with string interpolation</h3>
+    </EuiTitle>
+    <p>
+      <EuiI18n
+        @token='euiI18nInterpolation.clickedCount'
+        @default='Clicked on button {count} times.'
+        @values={{hash count=this.count}}
+        as |Token|
+      >
+        <Token />
+      </EuiI18n>
+    </p>
+    <EuiSpacer @size='l' />
+    <EuiTitle @size='xs'>
+      <h3>lookupToken with function interpolation</h3>
+    </EuiTitle>
+    <p>{{this.functionText}}</p>
+    <EuiSpacer @size='l' />
+    <EuiButton @size='s' {{on 'click' this.increase}}>
+      Increase count
+    </EuiButton>
+  </template>
 }
 ```
+

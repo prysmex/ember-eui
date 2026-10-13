@@ -14,7 +14,10 @@ order: 5
   <p>Floats should only be used on images within <strong>large</strong> bodies of text. Specifically, we only suggest using them with <code>EuiText</code> which automatically clears floats.</p>
 </EuiCallOut>
 
-```hbs template
+```gjs component
+import { EuiImage, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiText>
   <EuiImage
     @size='l'
@@ -83,4 +86,5 @@ order: 5
     consequatur. Dignissimos ipsum accusamus quos provident consequatur. Sequi
     temporibus quisquam voluptates eum eos consectetur et.</p>
 </EuiText>
+</template>
 ```

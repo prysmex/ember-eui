@@ -11,17 +11,10 @@ calls its `callback`, which here shows its name below.
 
 </EuiText>
 
-```hbs template
-<div style="width: 280px;">
-  <EuiTreeView @items={{this.items}} aria-label="Project files" />
-</div>
-<EuiSpacer />
-<EuiText @size="s"><p>Selected: {{this.selected}}</p></EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { EuiSpacer, EuiText, EuiTreeView } from '@ember-eui/core/components';
 
 export default class TreeViewDemo extends Component {
   @tracked selected = 'nothing';
@@ -63,5 +56,14 @@ export default class TreeViewDemo extends Component {
       file('package-json', 'package.json'),
     ];
   }
+
+  <template>
+    <div style="width: 280px;">
+      <EuiTreeView @items={{this.items}} aria-label="Project files" />
+    </div>
+    <EuiSpacer />
+    <EuiText @size="s"><p>Selected: {{this.selected}}</p></EuiText>
+  </template>
 }
 ```
+

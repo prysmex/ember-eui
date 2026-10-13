@@ -10,6 +10,10 @@ order: 5
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiLoadingContent } from '@ember-eui/core/components';
+
+<template>
 <EuiLoadingContent @lines={{4}} />
+</template>
 ```

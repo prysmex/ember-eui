@@ -10,7 +10,10 @@ By default, `EuiTextTruncate` uses the unicode character for horizontal ellipsis
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiPanel, EuiText, EuiTextTruncate } from '@ember-eui/core/components';
+
+<template>
 <EuiText>
   <EuiPanel style='inline-size: 40ch; max-inline-size: 100%;'>
     <EuiTextTruncate
@@ -28,4 +31,5 @@ By default, `EuiTextTruncate` uses the unicode character for horizontal ellipsis
     />
   </EuiPanel>
 </EuiText>
+</template>
 ```

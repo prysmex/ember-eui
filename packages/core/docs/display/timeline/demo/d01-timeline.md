@@ -10,7 +10,10 @@ The `EuiTimeline` component standardizes the way a timeline thread is displayed.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiText, EuiTimeline, EuiTimelineItem } from '@ember-eui/core/components';
+
+<template>
 <EuiTimeline aria-label='Project beta timeline'>
   <EuiTimelineItem @icon='email' @iconAriaLabel='Invitation'>
     <EuiText @size='s'>
@@ -32,4 +35,5 @@ The `EuiTimeline` component standardizes the way a timeline thread is displayed.
     </EuiText>
   </EuiTimelineItem>
 </EuiTimeline>
+</template>
 ```

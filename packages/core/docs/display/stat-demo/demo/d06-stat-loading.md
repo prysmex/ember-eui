@@ -10,22 +10,11 @@ If you apply the `@isLoading` argument, the title will indicate the loading stat
 
 </EuiText>
 
-```hbs template
-<div>
-  <EuiStat @title="7,600 mm" @description="Total People" @isLoading={{this.isLoading}} />
-  <EuiSpacer />
-  <EuiSwitch
-    @label="Show as loading"
-    @checked={{this.isLoading}}
-    @onChange={{this.onToggleChange}}
-  />
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiSpacer, EuiStat, EuiSwitch } from '@ember-eui/core/components';
 
 export default class StatLoadingDemo extends Component {
   @tracked isLoading = true;
@@ -34,5 +23,18 @@ export default class StatLoadingDemo extends Component {
   onToggleChange(event) {
     this.isLoading = event.target.checked;
   }
+
+  <template>
+    <div>
+      <EuiStat @title="7,600 mm" @description="Total People" @isLoading={{this.isLoading}} />
+      <EuiSpacer />
+      <EuiSwitch
+        @label="Show as loading"
+        @checked={{this.isLoading}}
+        @onChange={{this.onToggleChange}}
+      />
+    </div>
+  </template>
 }
 ```
+

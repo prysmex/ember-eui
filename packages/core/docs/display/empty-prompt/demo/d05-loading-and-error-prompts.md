@@ -12,7 +12,10 @@ For **loading** states, instead of passing a `@iconType`, you can provide a cust
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCode, EuiEmptyPrompt, EuiLoadingLogo, EuiSpacer, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiEmptyPrompt @title="Loading Dashboards">
   <:icon>
     <EuiLoadingLogo @logo="logoKibana" @size="xl" />
@@ -29,4 +32,5 @@ For **loading** states, instead of passing a `@iconType`, you can provide a cust
   @title="Unable to load your dashboards"
   @body="There was an error loading the Dashboard application. Contact your administrator for help."
 />
+</template>
 ```

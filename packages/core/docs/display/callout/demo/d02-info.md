@@ -12,7 +12,10 @@ Use **EuiCallOut** to communicate general information to the user.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCallOut, EuiLink, EuiSpacer } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiCallOut
     @title="Check it out, here's a really long title that will wrap within a narrower browser"
@@ -39,4 +42,5 @@ Use **EuiCallOut** to communicate general information to the user.
     @title="This is a small callout for more non-intrusive but constant messages."
   />
 </div>
+</template>
 ```

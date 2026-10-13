@@ -10,29 +10,13 @@ Once the `@max` and `@value` arguments are set, it will act as a determinate pro
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @alignItems="center">
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @size="s" {{on "click" this.toggleProgress}}>
-      Toggle progress
-    </EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiText>
-      <p>{{this.value}}</p>
-    </EuiText>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiProgress @value={{this.value}} @max={{100}} @size="xs" />
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { registerDestructor } from '@ember/destroyable';
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiProgress, EuiText } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class ProgressValuesDemo extends Component {
   @tracked value = 0;
@@ -64,5 +48,24 @@ export default class ProgressValuesDemo extends Component {
     }
     this.showProgress = !this.showProgress;
   }
+
+  <template>
+    <EuiFlexGroup @alignItems="center">
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @size="s" {{on "click" this.toggleProgress}}>
+          Toggle progress
+        </EuiButton>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiText>
+          <p>{{this.value}}</p>
+        </EuiText>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiProgress @value={{this.value}} @max={{100}} @size="xs" />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

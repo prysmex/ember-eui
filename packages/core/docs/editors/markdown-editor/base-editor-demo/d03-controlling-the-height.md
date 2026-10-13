@@ -14,68 +14,11 @@ You can also control the <EuiCode>@maxHeight</EuiCode> of the editor/preview are
 
 <EuiSpacer />
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiPanel @color='primary'>
-      <EuiMarkdownEditor
-        @ariaLabel='EUI markdown editor with fixed height'
-        @placeholder='Your markdown here...'
-        @initialViewMode='viewing'
-        @value={{this.value1}}
-        @onChange={{set this 'value1'}}
-        @height={{200}}
-      />
-    </EuiPanel>
-  </EuiFlexItem>
-  <EuiFlexItem style='height: 600px'>
-    <EuiPanel @color='primary'>
-      <EuiMarkdownEditor
-        @ariaLabel='EUI markdown editor with full height'
-        @initialViewMode='viewing'
-        @value={{this.value2}}
-        @onChange={{set this 'value2'}}
-        @height='full'
-      />
-    </EuiPanel>
-  </EuiFlexItem>
-</EuiFlexGroup>
-
-<EuiSpacer />
-
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiPanel @color='primary'>
-      <EuiMarkdownEditor
-        @ariaLabel='EUI markdown editor with no auto expand'
-        @placeholder='Your markdown here...'
-        @initialViewMode='viewing'
-        @value={{this.value3}}
-        @onChange={{set this 'value3'}}
-        @height={{200}}
-        @autoExpandPreview={{false}}
-      />
-    </EuiPanel>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiPanel @color='primary'>
-      <EuiMarkdownEditor
-        @ariaLabel='EUI markdown editor with fixed and max height'
-        @placeholder='Your markdown here...'
-        @initialViewMode='viewing'
-        @value={{this.value4}}
-        @onChange={{set this 'value4'}}
-        @height={{200}}
-        @maxHeight={{300}}
-      />
-    </EuiPanel>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { EuiFlexGroup, EuiFlexItem, EuiMarkdownEditor, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
+import { set } from 'ember-set-helper';
 
 export default class EditorHeight extends Component {
   @tracked value1 = `## 👋 Hello there!
@@ -122,5 +65,65 @@ I'm just a **EuiMarkdownEditor** with:
 - a \`height\` set to \`200\`
 - a \`maxHeight\` set to \`300\`
 `;
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem>
+        <EuiPanel @color='primary'>
+          <EuiMarkdownEditor
+            @ariaLabel='EUI markdown editor with fixed height'
+            @placeholder='Your markdown here...'
+            @initialViewMode='viewing'
+            @value={{this.value1}}
+            @onChange={{set this 'value1'}}
+            @height={{200}}
+          />
+        </EuiPanel>
+      </EuiFlexItem>
+      <EuiFlexItem style='height: 600px'>
+        <EuiPanel @color='primary'>
+          <EuiMarkdownEditor
+            @ariaLabel='EUI markdown editor with full height'
+            @initialViewMode='viewing'
+            @value={{this.value2}}
+            @onChange={{set this 'value2'}}
+            @height='full'
+          />
+        </EuiPanel>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+
+    <EuiSpacer />
+
+    <EuiFlexGroup>
+      <EuiFlexItem>
+        <EuiPanel @color='primary'>
+          <EuiMarkdownEditor
+            @ariaLabel='EUI markdown editor with no auto expand'
+            @placeholder='Your markdown here...'
+            @initialViewMode='viewing'
+            @value={{this.value3}}
+            @onChange={{set this 'value3'}}
+            @height={{200}}
+            @autoExpandPreview={{false}}
+          />
+        </EuiPanel>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiPanel @color='primary'>
+          <EuiMarkdownEditor
+            @ariaLabel='EUI markdown editor with fixed and max height'
+            @placeholder='Your markdown here...'
+            @initialViewMode='viewing'
+            @value={{this.value4}}
+            @onChange={{set this 'value4'}}
+            @height={{200}}
+            @maxHeight={{300}}
+          />
+        </EuiPanel>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

@@ -14,49 +14,12 @@ Consider applying the <EuiCode>@readOnly</EuiCode> argument to restrict editing 
 
 <EuiSpacer />
 
-```hbs template
-<EuiMarkdownEditor
-  @ariaLabel='EUI markdown editor demo'
-  @placeholder='Your markdown here...'
-  @value={{this.value}}
-  @onChange={{this.setValue}}
-  @height={{400}}
-  @onParse={{this.onParse}}
-  @errors={{this.messages}}
-  @dropHandlers={{this.dropHandlers}}
-  @readOnly={{this.isReadOnly}}
-  @initialViewMode='viewing'
-/>
-<EuiSpacer @size='s' />
-<EuiFlexGroup @alignItems='center'>
-  <EuiFlexItem @grow={{true}}>
-    <EuiSwitch
-      @label='Read-only'
-      @checked={{this.isReadOnly}}
-      @onChange={{this.toggleReadOnly}}
-    />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton
-      @size='s'
-      @iconType={{if this.isAstShowing 'eyeClosed' 'eye'}}
-      @fill={{this.isAstShowing}}
-      {{on 'click' this.toggleAst}}
-    >
-      {{if this.isAstShowing 'Hide editor AST' 'Show editor AST'}}
-    </EuiButton>
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer @size='s' />
-{{#if this.isAstShowing}}
-  <EuiCodeBlock @language='json'>{{this.ast}}</EuiCodeBlock>
-{{/if}}
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiCodeBlock, EuiFlexGroup, EuiFlexItem, EuiMarkdownEditor, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class BaseEditor extends Component {
   @tracked value = `## Hello world!
@@ -112,5 +75,45 @@ And it can render !{tooltip[tooltips like this](Look! I'm a very helpful tooltip
   @action toggleAst() {
     this.isAstShowing = !this.isAstShowing;
   }
+
+  <template>
+    <EuiMarkdownEditor
+      @ariaLabel='EUI markdown editor demo'
+      @placeholder='Your markdown here...'
+      @value={{this.value}}
+      @onChange={{this.setValue}}
+      @height={{400}}
+      @onParse={{this.onParse}}
+      @errors={{this.messages}}
+      @dropHandlers={{this.dropHandlers}}
+      @readOnly={{this.isReadOnly}}
+      @initialViewMode='viewing'
+    />
+    <EuiSpacer @size='s' />
+    <EuiFlexGroup @alignItems='center'>
+      <EuiFlexItem @grow={{true}}>
+        <EuiSwitch
+          @label='Read-only'
+          @checked={{this.isReadOnly}}
+          @onChange={{this.toggleReadOnly}}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton
+          @size='s'
+          @iconType={{if this.isAstShowing 'eyeClosed' 'eye'}}
+          @fill={{this.isAstShowing}}
+          {{on 'click' this.toggleAst}}
+        >
+          {{if this.isAstShowing 'Hide editor AST' 'Show editor AST'}}
+        </EuiButton>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer @size='s' />
+    {{#if this.isAstShowing}}
+      <EuiCodeBlock @language='json'>{{this.ast}}</EuiCodeBlock>
+    {{/if}}
+  </template>
 }
 ```
+

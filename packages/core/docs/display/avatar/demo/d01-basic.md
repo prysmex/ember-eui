@@ -4,7 +4,10 @@ order: 1
 
 # Component
 
-```hbs template
+```gjs component
+import { EuiAvatar, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiAvatar @size="s" @name="Raphael" />
   &emsp;
@@ -24,4 +27,5 @@ order: 1
   &emsp;
   <EuiAvatar @size="xl" @name="Cat" @imageUrl="https://picsum.photos/id/40/64" />
 </div>
+</template>
 ```

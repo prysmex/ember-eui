@@ -10,33 +10,13 @@ The modifier's first positional argument limits what it observes: <EuiCode>'heig
 
 </EuiText>
 
-```hbs template
-<div>
-  <EuiButton {{on 'click' this.increaseItemsWidth}}>increase width</EuiButton>
-  <EuiButton {{on 'click' this.addItem}}>add item</EuiButton>
-  <EuiSpacer />
-  <EuiText>
-    <p><EuiCode>height: {{this.dimensions.height}}; width: {{this.dimensions.width}}</EuiCode></p>
-  </EuiText>
-  <EuiSpacer />
-  <EuiFlexGroup>
-    <EuiFlexItem @grow={{false}}>
-      <EuiPanel @grow={{false}} {{resize-observer 'height' onResize=this.onResize}}>
-        <ul>
-          {{#each this.items as |item|}}
-            <li>{{item}}</li>
-          {{/each}}
-        </ul>
-      </EuiPanel>
-    </EuiFlexItem>
-  </EuiFlexGroup>
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiCode, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { resizeObserver } from '@ember-eui/core/modifiers';
+import { on } from '@ember/modifier';
 
 export default class ResizeObserverHeight extends Component {
   @tracked dimensions = { width: 0, height: 0 };
@@ -56,5 +36,29 @@ export default class ResizeObserverHeight extends Component {
   onResize(dimensions) {
     this.dimensions = dimensions;
   }
+
+  <template>
+    <div>
+      <EuiButton {{on 'click' this.increaseItemsWidth}}>increase width</EuiButton>
+      <EuiButton {{on 'click' this.addItem}}>add item</EuiButton>
+      <EuiSpacer />
+      <EuiText>
+        <p><EuiCode>height: {{this.dimensions.height}}; width: {{this.dimensions.width}}</EuiCode></p>
+      </EuiText>
+      <EuiSpacer />
+      <EuiFlexGroup>
+        <EuiFlexItem @grow={{false}}>
+          <EuiPanel @grow={{false}} {{resizeObserver 'height' onResize=this.onResize}}>
+            <ul>
+              {{#each this.items as |item|}}
+                <li>{{item}}</li>
+              {{/each}}
+            </ul>
+          </EuiPanel>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </div>
+  </template>
 }
 ```
+

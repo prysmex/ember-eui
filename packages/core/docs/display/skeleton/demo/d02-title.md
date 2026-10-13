@@ -10,32 +10,11 @@ Use **EuiSkeletonTitle** to display a placeholder for heading titles.
 
 </EuiText>
 
-```hbs template
-<EuiSwitch
-  @label="Toggle loaded state"
-  @checked={{this.isLoading}}
-  @onChange={{this.toggleLoading}}
-/>
-<EuiSpacer />
-<EuiFlexGroup @direction="column">
-  {{#each this.titles as |title|}}
-    <EuiSkeletonTitle
-      @size={{title.size}}
-      @isLoading={{this.isLoading}}
-      @contentAriaLabel="Demo skeleton title"
-    >
-      <EuiTitle @size={{title.size}}>
-        <span>{{title.text}}</span>
-      </EuiTitle>
-    </EuiSkeletonTitle>
-  {{/each}}
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiSkeletonTitle, EuiSpacer, EuiSwitch, EuiTitle } from '@ember-eui/core/components';
 
 export default class SkeletonTitleDemo extends Component {
   @tracked isLoading = true;
@@ -53,5 +32,28 @@ export default class SkeletonTitleDemo extends Component {
   toggleLoading() {
     this.isLoading = !this.isLoading;
   }
+
+  <template>
+    <EuiSwitch
+      @label="Toggle loaded state"
+      @checked={{this.isLoading}}
+      @onChange={{this.toggleLoading}}
+    />
+    <EuiSpacer />
+    <EuiFlexGroup @direction="column">
+      {{#each this.titles as |title|}}
+        <EuiSkeletonTitle
+          @size={{title.size}}
+          @isLoading={{this.isLoading}}
+          @contentAriaLabel="Demo skeleton title"
+        >
+          <EuiTitle @size={{title.size}}>
+            <span>{{title.text}}</span>
+          </EuiTitle>
+        </EuiSkeletonTitle>
+      {{/each}}
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

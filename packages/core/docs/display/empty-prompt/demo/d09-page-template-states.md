@@ -10,45 +10,12 @@ You can then tie multiple types of empty states together to create a seamless lo
 
 </EuiText>
 
-```hbs template
-<div style="height: 460px;">
-  <EuiPageTemplate @template="empty" @grow={{false}}>
-    {{#if (eq this.currentState "error")}}
-      <EuiEmptyPrompt
-        @color="danger"
-        @iconType="error"
-        @title="Unable to load your dashboards"
-        @body="There was an error loading the Dashboard application. Contact your administrator for help."
-      />
-    {{else if (eq this.currentState "empty")}}
-      <EuiEmptyPrompt
-        @color="plain"
-        @iconType="dashboardApp"
-        @iconColor="default"
-      >
-        <:content>
-          <EuiTitle @size="m"><h2>Dashboards</h2></EuiTitle>
-          <EuiSpacer @size="s" />
-          <EuiText @color="subdued"><p>You don't have any dashboards yet.</p></EuiText>
-          <EuiSpacer @size="l" />
-          <EuiButton @fill={{true}} @iconType="plusCircle">Create new dashboard</EuiButton>
-        </:content>
-      </EuiEmptyPrompt>
-    {{else}}
-      <EuiEmptyPrompt @color="subdued" @title="Loading Dashboards">
-        <:icon>
-          <EuiLoadingLogo @logo="logoKibana" @size="xl" />
-        </:icon>
-      </EuiEmptyPrompt>
-    {{/if}}
-  </EuiPageTemplate>
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { registerDestructor } from '@ember/destroyable';
+import { EuiButton, EuiEmptyPrompt, EuiLoadingLogo, EuiPageTemplate, EuiSpacer, EuiText, EuiTitle } from '@ember-eui/core/components';
+import { eq } from 'ember-truth-helpers';
 
 const states = ['loading1', 'error', 'loading2', 'empty'];
 
@@ -64,5 +31,41 @@ export default class EmptyPromptStatesDemo extends Component {
     }, 3000);
     registerDestructor(this, () => clearInterval(timer));
   }
+
+  <template>
+    <div style="height: 460px;">
+      <EuiPageTemplate @template="empty" @grow={{false}}>
+        {{#if (eq this.currentState "error")}}
+          <EuiEmptyPrompt
+            @color="danger"
+            @iconType="error"
+            @title="Unable to load your dashboards"
+            @body="There was an error loading the Dashboard application. Contact your administrator for help."
+          />
+        {{else if (eq this.currentState "empty")}}
+          <EuiEmptyPrompt
+            @color="plain"
+            @iconType="dashboardApp"
+            @iconColor="default"
+          >
+            <:content>
+              <EuiTitle @size="m"><h2>Dashboards</h2></EuiTitle>
+              <EuiSpacer @size="s" />
+              <EuiText @color="subdued"><p>You don't have any dashboards yet.</p></EuiText>
+              <EuiSpacer @size="l" />
+              <EuiButton @fill={{true}} @iconType="plusCircle">Create new dashboard</EuiButton>
+            </:content>
+          </EuiEmptyPrompt>
+        {{else}}
+          <EuiEmptyPrompt @color="subdued" @title="Loading Dashboards">
+            <:icon>
+              <EuiLoadingLogo @logo="logoKibana" @size="xl" />
+            </:icon>
+          </EuiEmptyPrompt>
+        {{/if}}
+      </EuiPageTemplate>
+    </div>
+  </template>
 }
 ```
+

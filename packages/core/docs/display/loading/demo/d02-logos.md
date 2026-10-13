@@ -10,7 +10,10 @@ order: 2
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiLoadingLogo } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiLoadingLogo />
   &emsp;
@@ -18,4 +21,5 @@ order: 2
   &emsp;
   <EuiLoadingLogo @logo="logoSecurity" @size="xl" />
 </div>
+</template>
 ```

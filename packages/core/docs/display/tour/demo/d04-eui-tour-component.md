@@ -10,46 +10,13 @@ The `EuiTour` component provides minimal state management. It yields `Step` (an 
 
 </EuiText>
 
-```hbs template
-<EuiTour @steps={{this.steps}} @initialState={{this.initialState}} as |tour|>
-  <EuiButtonEmpty @size='s' @iconType='refresh' @flush='left' {{on 'click' (fn this.resetTour tour)}}>
-    Begin tour
-  </EuiButtonEmpty>
-  <EuiSpacer @size='m' />
-  <EuiForm @component='form'>
-    <EuiFormRow @label='Query'>
-      <tour.Step @step={{1}} @anchorPosition='rightUp'>
-        <:default>
-          <EuiTextArea
-            @value={{this.queryValue}}
-            placeholder='Placeholder text'
-            aria-label='Query'
-            style='width: 400px'
-            {{on 'input' (fn this.onChange tour)}}
-          />
-        </:default>
-        <:content>
-          <EuiText @size='s'>
-            <p>Copy and paste this sample query.</p>
-            <EuiCodeBlock @language='html' @paddingSize='s' @isCopyable={{true}}>SELECT email FROM "kibana_sample_data_ecommerce"</EuiCodeBlock>
-          </EuiText>
-        </:content>
-      </tour.Step>
-    </EuiFormRow>
-
-    <EuiSpacer @size='m' />
-
-    <tour.Step @step={{2}} @anchorPosition='rightUp'>
-      <EuiButton @fill={{true}} @size='s' {{on 'click' tour.actions.finishTour}}>Save</EuiButton>
-    </tour.Step>
-  </EuiForm>
-</EuiTour>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiButtonEmpty, EuiCodeBlock, EuiForm, EuiFormRow, EuiSpacer, EuiText, EuiTextArea, EuiTour } from '@ember-eui/core/components';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class extends Component {
   @tracked queryValue = '';
@@ -80,5 +47,42 @@ export default class extends Component {
       tour.actions.incrementStep();
     }
   }
+
+  <template>
+    <EuiTour @steps={{this.steps}} @initialState={{this.initialState}} as |tour|>
+      <EuiButtonEmpty @size='s' @iconType='refresh' @flush='left' {{on 'click' (fn this.resetTour tour)}}>
+        Begin tour
+      </EuiButtonEmpty>
+      <EuiSpacer @size='m' />
+      <EuiForm @component='form'>
+        <EuiFormRow @label='Query'>
+          <tour.Step @step={{1}} @anchorPosition='rightUp'>
+            <:default>
+              <EuiTextArea
+                @value={{this.queryValue}}
+                placeholder='Placeholder text'
+                aria-label='Query'
+                style='width: 400px'
+                {{on 'input' (fn this.onChange tour)}}
+              />
+            </:default>
+            <:content>
+              <EuiText @size='s'>
+                <p>Copy and paste this sample query.</p>
+                <EuiCodeBlock @language='html' @paddingSize='s' @isCopyable={{true}}>SELECT email FROM "kibana_sample_data_ecommerce"</EuiCodeBlock>
+              </EuiText>
+            </:content>
+          </tour.Step>
+        </EuiFormRow>
+
+        <EuiSpacer @size='m' />
+
+        <tour.Step @step={{2}} @anchorPosition='rightUp'>
+          <EuiButton @fill={{true}} @size='s' {{on 'click' tour.actions.finishTour}}>Save</EuiButton>
+        </tour.Step>
+      </EuiForm>
+    </EuiTour>
+  </template>
 }
 ```
+

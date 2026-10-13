@@ -10,7 +10,10 @@ Natively `disabled` elements are removed from the tab order, which prevents keyb
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiToolTip } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @alignItems='center' @gutterSize='m'>
   <EuiFlexItem @grow={{false}}>
     <EuiToolTip @content='Fill in all required fields to save'>
@@ -26,4 +29,5 @@ Natively `disabled` elements are removed from the tab order, which prevents keyb
     </EuiToolTip>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

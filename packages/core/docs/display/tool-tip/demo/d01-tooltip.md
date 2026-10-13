@@ -10,7 +10,10 @@ Wrap `EuiToolTip` around any item that you need a tooltip for and provide the `@
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiIcon, EuiLink, EuiText, EuiToolTip } from '@ember-eui/core/components';
+
+<template>
 <EuiText>
   <p>
     This tooltip appears on the
@@ -52,4 +55,5 @@ Wrap `EuiToolTip` around any item that you need a tooltip for and provide the `@
     </EuiToolTip>
   </p>
 </EuiText>
+</template>
 ```

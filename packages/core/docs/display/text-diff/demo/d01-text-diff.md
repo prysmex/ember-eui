@@ -16,24 +16,9 @@ order: 1
 
 </EuiText>
 
-```hbs template
-<EuiText>
-  <p>
-    <EuiTextDiff @beforeText={{this.beforeText}} @afterText={{this.afterText}} />
-  </p>
-</EuiText>
-<EuiSpacer />
-<EuiTextDiff @beforeText={{this.beforeText}} @afterText={{this.afterText}} as |diff|>
-  <EuiCode>
-    <EuiTextColor @color='success'> {{this.countOf diff 1}} </EuiTextColor> Insertions,
-    <EuiTextColor @color='danger'> {{this.countOf diff -1}} </EuiTextColor>
-    Deletions
-  </EuiCode>
-</EuiTextDiff>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCode, EuiSpacer, EuiText, EuiTextColor, EuiTextDiff } from '@ember-eui/core/components';
 
 export default class extends Component {
   beforeText =
@@ -43,5 +28,22 @@ export default class extends Component {
 
   countOf = (diff, operation) =>
     diff.filter((chunk) => chunk[0] === operation).length;
+
+  <template>
+    <EuiText>
+      <p>
+        <EuiTextDiff @beforeText={{this.beforeText}} @afterText={{this.afterText}} />
+      </p>
+    </EuiText>
+    <EuiSpacer />
+    <EuiTextDiff @beforeText={{this.beforeText}} @afterText={{this.afterText}} as |diff|>
+      <EuiCode>
+        <EuiTextColor @color='success'> {{this.countOf diff 1}} </EuiTextColor> Insertions,
+        <EuiTextColor @color='danger'> {{this.countOf diff -1}} </EuiTextColor>
+        Deletions
+      </EuiCode>
+    </EuiTextDiff>
+  </template>
 }
 ```
+

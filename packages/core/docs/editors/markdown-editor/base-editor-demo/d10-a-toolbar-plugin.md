@@ -13,20 +13,11 @@ the selection (`prefix` / `suffix`) or prefixes each selected line
 
 </EuiText>
 
-```hbs template
-<EuiMarkdownEditor
-  @value={{this.value}}
-  @onChange={{this.update}}
-  @uiPlugins={{this.uiPlugins}}
-  @height={{180}}
-  @ariaLabel="Editor with a quote button"
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiMarkdownEditor } from '@ember-eui/core/components';
 
 const quotePlugin = {
   name: 'quote',
@@ -44,5 +35,16 @@ export default class ToolbarPluginDemo extends Component {
   update(value) {
     this.value = value;
   }
+
+  <template>
+    <EuiMarkdownEditor
+      @value={{this.value}}
+      @onChange={{this.update}}
+      @uiPlugins={{this.uiPlugins}}
+      @height={{180}}
+      @ariaLabel="Editor with a quote button"
+    />
+  </template>
 }
 ```
+

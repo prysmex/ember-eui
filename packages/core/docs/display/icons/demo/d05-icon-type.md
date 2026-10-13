@@ -17,7 +17,10 @@ A few of them: `EuiButton`, `EuiButtonEmpty`, `EuiButtonIcon`,
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiBadge, EuiButton, EuiButtonEmpty, EuiButtonIcon, EuiCallOut, EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize="s" @alignItems="center" @wrap={{true}}>
   <EuiFlexItem @grow={{false}}>
     <EuiButton @iconType="plusCircle">Add data</EuiButton>
@@ -40,4 +43,5 @@ A few of them: `EuiButton`, `EuiButtonEmpty`, `EuiButtonIcon`,
 <EuiCallOut @title="Heads up" @iconType="help">
   <p>Callouts, list items, toasts and empty prompts take an icon too.</p>
 </EuiCallOut>
+</template>
 ```

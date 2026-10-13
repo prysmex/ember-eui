@@ -12,7 +12,10 @@ It also links the tooltip to the anchor's focusable element and shows it on focu
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiFieldText, EuiSpacer, EuiToolTip } from '@ember-eui/core/components';
+
+<template>
 <EuiToolTip
   @position='top'
   @content='Works on any kind of element — buttons, inputs, you name it!'
@@ -43,4 +46,5 @@ It also links the tooltip to the anchor's focusable element and shows it on focu
     aria-label='Example of input wrapped with tooltip'
   />
 </EuiToolTip>
+</template>
 ```

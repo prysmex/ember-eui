@@ -17,118 +17,12 @@ When dealing with asynchronous events like posting a message we recommend settin
 </EuiText>
 <EuiSpacer />
 
-```hbs template
-<EuiCommentList aria-label="Comment system example">
-  {{#each this.comments as |comment|}}
-    {{#if comment.markdown}}
-      <EuiComment
-        @timelineAvatarAriaLabel={{comment.username}}
-        @eventIcon={{comment.eventIcon}}
-        @eventIconAriaLabel={{comment.eventIcon}}
-        @eventColor={{comment.eventColor}}
-      >
-        <:timelineIcon>
-          <EuiAvatar @name={{comment.username}} @iconType={{comment.timelineIcon}} @color={{if comment.timelineIcon "subdued"}} />
-        </:timelineIcon>
-        <:username>
-          <EuiToolTip @position="top" @content={{comment.fullname}}>
-            <strong>{{comment.username}}</strong>
-          </EuiToolTip>
-        </:username>
-        <:event>
-          {{#if comment.tags}}
-            <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="xs" @wrap={{true}}>
-              <EuiFlexItem @grow={{false}}>added tags</EuiFlexItem>
-              {{#each comment.tags as |tag|}}
-                <EuiFlexItem @grow={{false}}><EuiBadge>{{tag}}</EuiBadge></EuiFlexItem>
-              {{/each}}
-            </EuiFlexGroup>
-          {{else if comment.inProgress}}
-            marked case as <EuiBadge @color="warning">In progress</EuiBadge>
-          {{else}}
-            {{comment.event}}
-          {{/if}}
-        </:event>
-        <:timestamp>{{comment.timestamp}}</:timestamp>
-        <:actions>
-          <EuiToolTip @content="Custom action" @disableScreenReaderOutput={{true}}>
-            <EuiButtonIcon aria-label="Custom action" @color="text" @iconType="copy" />
-          </EuiToolTip>
-        </:actions>
-        <:body>
-          <EuiMarkdownFormat @textSize="s" @value={{comment.markdown}} />
-        </:body>
-      </EuiComment>
-    {{else}}
-      <EuiComment
-        @timelineAvatarAriaLabel={{comment.username}}
-        @eventIcon={{comment.eventIcon}}
-        @eventIconAriaLabel={{comment.eventIcon}}
-        @eventColor={{comment.eventColor}}
-      >
-        <:timelineIcon>
-          <EuiAvatar @name={{comment.username}} @iconType={{comment.timelineIcon}} @color={{if comment.timelineIcon "subdued"}} />
-        </:timelineIcon>
-        <:username>
-          <EuiToolTip @position="top" @content={{comment.fullname}}>
-            <strong>{{comment.username}}</strong>
-          </EuiToolTip>
-        </:username>
-        <:event>
-          {{#if comment.tags}}
-            <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="xs" @wrap={{true}}>
-              <EuiFlexItem @grow={{false}}>added tags</EuiFlexItem>
-              {{#each comment.tags as |tag|}}
-                <EuiFlexItem @grow={{false}}><EuiBadge>{{tag}}</EuiBadge></EuiFlexItem>
-              {{/each}}
-            </EuiFlexGroup>
-          {{else if comment.inProgress}}
-            marked case as <EuiBadge @color="warning">In progress</EuiBadge>
-          {{else}}
-            {{comment.event}}
-          {{/if}}
-        </:event>
-        <:timestamp>{{comment.timestamp}}</:timestamp>
-      </EuiComment>
-    {{/if}}
-  {{/each}}
-  <EuiComment>
-    <:timelineIcon><EuiAvatar @name="juana" /></:timelineIcon>
-    <:username>juana</:username>
-    <:body>
-      <EuiMarkdownEditor
-        @ariaLabel="Markdown editor"
-        @placeholder="Add a comment..."
-        @value={{this.editorValue}}
-        @onChange={{this.setEditorValue}}
-        @readOnly={{this.isLoading}}
-        @initialViewMode="editing"
-        @formatTextSize="s"
-      />
-    </:body>
-  </EuiComment>
-</EuiCommentList>
-<EuiSpacer />
-
-<EuiFlexGroup @justifyContent="flexEnd" @responsive={{false}}>
-  <EuiFlexItem @grow={{false}}>
-    <div>
-      <EuiButton
-        @isLoading={{this.isLoading}}
-        @isDisabled={{this.isEmpty}}
-        {{on "click" this.addComment}}
-      >
-        Add comment
-      </EuiButton>
-    </div>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiAvatar, EuiBadge, EuiButton, EuiButtonIcon, EuiComment, EuiCommentList, EuiFlexGroup, EuiFlexItem, EuiMarkdownEditor, EuiMarkdownFormat, EuiSpacer, EuiToolTip } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 const replyMsg = `Thanks, Tiago for taking a look. :tada:
 
@@ -208,5 +102,114 @@ export default class CommentSystemDemo extends Component {
       ];
     }, 3000);
   }
+
+  <template>
+    <EuiCommentList aria-label="Comment system example">
+      {{#each this.comments as |comment|}}
+        {{#if comment.markdown}}
+          <EuiComment
+            @timelineAvatarAriaLabel={{comment.username}}
+            @eventIcon={{comment.eventIcon}}
+            @eventIconAriaLabel={{comment.eventIcon}}
+            @eventColor={{comment.eventColor}}
+          >
+            <:timelineIcon>
+              <EuiAvatar @name={{comment.username}} @iconType={{comment.timelineIcon}} @color={{if comment.timelineIcon "subdued"}} />
+            </:timelineIcon>
+            <:username>
+              <EuiToolTip @position="top" @content={{comment.fullname}}>
+                <strong>{{comment.username}}</strong>
+              </EuiToolTip>
+            </:username>
+            <:event>
+              {{#if comment.tags}}
+                <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="xs" @wrap={{true}}>
+                  <EuiFlexItem @grow={{false}}>added tags</EuiFlexItem>
+                  {{#each comment.tags as |tag|}}
+                    <EuiFlexItem @grow={{false}}><EuiBadge>{{tag}}</EuiBadge></EuiFlexItem>
+                  {{/each}}
+                </EuiFlexGroup>
+              {{else if comment.inProgress}}
+                marked case as <EuiBadge @color="warning">In progress</EuiBadge>
+              {{else}}
+                {{comment.event}}
+              {{/if}}
+            </:event>
+            <:timestamp>{{comment.timestamp}}</:timestamp>
+            <:actions>
+              <EuiToolTip @content="Custom action" @disableScreenReaderOutput={{true}}>
+                <EuiButtonIcon aria-label="Custom action" @color="text" @iconType="copy" />
+              </EuiToolTip>
+            </:actions>
+            <:body>
+              <EuiMarkdownFormat @textSize="s" @value={{comment.markdown}} />
+            </:body>
+          </EuiComment>
+        {{else}}
+          <EuiComment
+            @timelineAvatarAriaLabel={{comment.username}}
+            @eventIcon={{comment.eventIcon}}
+            @eventIconAriaLabel={{comment.eventIcon}}
+            @eventColor={{comment.eventColor}}
+          >
+            <:timelineIcon>
+              <EuiAvatar @name={{comment.username}} @iconType={{comment.timelineIcon}} @color={{if comment.timelineIcon "subdued"}} />
+            </:timelineIcon>
+            <:username>
+              <EuiToolTip @position="top" @content={{comment.fullname}}>
+                <strong>{{comment.username}}</strong>
+              </EuiToolTip>
+            </:username>
+            <:event>
+              {{#if comment.tags}}
+                <EuiFlexGroup @responsive={{false}} @alignItems="center" @gutterSize="xs" @wrap={{true}}>
+                  <EuiFlexItem @grow={{false}}>added tags</EuiFlexItem>
+                  {{#each comment.tags as |tag|}}
+                    <EuiFlexItem @grow={{false}}><EuiBadge>{{tag}}</EuiBadge></EuiFlexItem>
+                  {{/each}}
+                </EuiFlexGroup>
+              {{else if comment.inProgress}}
+                marked case as <EuiBadge @color="warning">In progress</EuiBadge>
+              {{else}}
+                {{comment.event}}
+              {{/if}}
+            </:event>
+            <:timestamp>{{comment.timestamp}}</:timestamp>
+          </EuiComment>
+        {{/if}}
+      {{/each}}
+      <EuiComment>
+        <:timelineIcon><EuiAvatar @name="juana" /></:timelineIcon>
+        <:username>juana</:username>
+        <:body>
+          <EuiMarkdownEditor
+            @ariaLabel="Markdown editor"
+            @placeholder="Add a comment..."
+            @value={{this.editorValue}}
+            @onChange={{this.setEditorValue}}
+            @readOnly={{this.isLoading}}
+            @initialViewMode="editing"
+            @formatTextSize="s"
+          />
+        </:body>
+      </EuiComment>
+    </EuiCommentList>
+    <EuiSpacer />
+
+    <EuiFlexGroup @justifyContent="flexEnd" @responsive={{false}}>
+      <EuiFlexItem @grow={{false}}>
+        <div>
+          <EuiButton
+            @isLoading={{this.isLoading}}
+            @isDisabled={{this.isEmpty}}
+            {{on "click" this.addComment}}
+          >
+            Add comment
+          </EuiButton>
+        </div>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

@@ -14,30 +14,12 @@ Increase or decrease the number control below to see the argument in action.
 
 </EuiText>
 
-```hbs template
-<EuiText>
-  <EuiFormRow @label='Truncation position'>
-    <EuiFieldNumber
-      @compressed={{true}}
-      @value={{this.truncationPosition}}
-      {{on 'input' this.setPosition}}
-    />
-  </EuiFormRow>
-  <EuiSpacer />
-  <EuiPanel style='inline-size: 40ch; max-inline-size: 100%;'>
-    <EuiTextTruncate
-      @text='But the dog wasn’t lazy, it was just practicing mindfulness, so it had a greater sense of life-satisfaction than that fox with all its silly jumping.'
-      @truncation='startEnd'
-      @truncationPosition={{this.truncationPosition}}
-    />
-  </EuiPanel>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFieldNumber, EuiFormRow, EuiPanel, EuiSpacer, EuiText, EuiTextTruncate } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class extends Component {
   @tracked truncationPosition = 45;
@@ -46,5 +28,26 @@ export default class extends Component {
   setPosition(event) {
     this.truncationPosition = Number(event.target.value);
   }
+
+  <template>
+    <EuiText>
+      <EuiFormRow @label='Truncation position'>
+        <EuiFieldNumber
+          @compressed={{true}}
+          @value={{this.truncationPosition}}
+          {{on 'input' this.setPosition}}
+        />
+      </EuiFormRow>
+      <EuiSpacer />
+      <EuiPanel style='inline-size: 40ch; max-inline-size: 100%;'>
+        <EuiTextTruncate
+          @text='But the dog wasn’t lazy, it was just practicing mindfulness, so it had a greater sense of life-satisfaction than that fox with all its silly jumping.'
+          @truncation='startEnd'
+          @truncationPosition={{this.truncationPosition}}
+        />
+      </EuiPanel>
+    </EuiText>
+  </template>
 }
 ```
+

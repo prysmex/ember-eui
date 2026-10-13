@@ -10,28 +10,12 @@ Each click shows a random toast through the `euiToaster` service; `EuiGlobalToas
 
 </EuiText>
 
-```hbs template
-<div style='max-width: 320px'>
-  <EuiFlexGroup @gutterSize='s'>
-    <EuiFlexItem>
-      <EuiButton {{on 'click' this.addToast}}>
-        Add toast to global toast list
-      </EuiButton>
-    </EuiFlexItem>
-    <EuiFlexItem>
-      <EuiButton @color='danger' {{on 'click' this.removeAllToasts}}>
-        Remove all toasts
-      </EuiButton>
-    </EuiFlexItem>
-  </EuiFlexGroup>
-  <EuiGlobalToastList @toastLifeTimeMs={{6000}} />
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { action } from '@ember/object';
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiGlobalToastList } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 const toasts = [
   {
@@ -81,5 +65,24 @@ export default class extends Component {
   removeAllToasts() {
     this.euiToaster.toasts = [];
   }
+
+  <template>
+    <div style='max-width: 320px'>
+      <EuiFlexGroup @gutterSize='s'>
+        <EuiFlexItem>
+          <EuiButton {{on 'click' this.addToast}}>
+            Add toast to global toast list
+          </EuiButton>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiButton @color='danger' {{on 'click' this.removeAllToasts}}>
+            Remove all toasts
+          </EuiButton>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+      <EuiGlobalToastList @toastLifeTimeMs={{6000}} />
+    </div>
+  </template>
 }
 ```
+

@@ -12,24 +12,12 @@ order: 1
 
 <EuiSpacer @size='l' />
 
-```hbs template
-<div>
-  <EuiButton {{on 'click' this.togglePortal}}>Toggle portal</EuiButton>
-
-  {{#if this.isPortalVisible}}
-    <EuiPortal>
-      <EuiBottomBar>
-        <p>This element is appended to the body in the DOM if you inspect</p>
-      </EuiBottomBar>
-    </EuiPortal>
-  {{/if}}
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiBottomBar, EuiButton, EuiPortal } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class PortalDemo extends Component {
   @tracked isPortalVisible = false;
@@ -38,5 +26,20 @@ export default class PortalDemo extends Component {
   togglePortal() {
     this.isPortalVisible = !this.isPortalVisible;
   }
+
+  <template>
+    <div>
+      <EuiButton {{on 'click' this.togglePortal}}>Toggle portal</EuiButton>
+
+      {{#if this.isPortalVisible}}
+        <EuiPortal>
+          <EuiBottomBar>
+            <p>This element is appended to the body in the DOM if you inspect</p>
+          </EuiBottomBar>
+        </EuiPortal>
+      {{/if}}
+    </div>
+  </template>
 }
 ```
+

@@ -10,25 +10,28 @@ Use `actionProps.primary` and `actionProps.secondary` to render call-to-action b
 
 </EuiText>
 
-```hbs template
-<EuiBanner
-  @title="Upgrade your plan"
-  @text="Unlock advanced capabilities and get priority support with a higher-tier subscription."
-  @actionProps={{hash
-    primary=(hash children="Upgrade now" onClick=this.noop)
-    secondary=(hash children="Learn more" onClick=this.noop)
-  }}
->
-  <:media>
-    <img src="https://placehold.co/80x80" alt="" aria-hidden="true" />
-  </:media>
-</EuiBanner>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBanner } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
 
 export default class BannerActionsDemo extends Component {
   noop = () => {};
+
+  <template>
+    <EuiBanner
+      @title="Upgrade your plan"
+      @text="Unlock advanced capabilities and get priority support with a higher-tier subscription."
+      @actionProps={{hash
+        primary=(hash children="Upgrade now" onClick=this.noop)
+        secondary=(hash children="Learn more" onClick=this.noop)
+      }}
+    >
+      <:media>
+        <img src="https://placehold.co/80x80" alt="" aria-hidden="true" />
+      </:media>
+    </EuiBanner>
+  </template>
 }
 ```
+

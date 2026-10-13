@@ -15,7 +15,10 @@ Images can be added in place of, or in conjunction with, icons. Just pass a url 
 </EuiCallOut>
 <EuiSpacer />
 
-```hbs template
+```gjs component
+import { EuiButton, EuiCard, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize="l">
   <EuiFlexItem>
     <EuiCard
@@ -54,4 +57,5 @@ Images can be added in place of, or in conjunction with, icons. Just pass a url 
     />
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

@@ -10,20 +10,10 @@ When using the `@listItems` argument to pass an array of items and you need to a
 
 </EuiText>
 
-```hbs template
-<div style="max-width: 400px;">
-  <EuiDescriptionList
-    @listItems={{this.favoriteVideoGames}}
-    @type="column"
-    @align="center"
-    @titleProps={{hash className="eui-textTruncate"}}
-    @descriptionProps={{hash className="eui-textTruncate"}}
-  />
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiDescriptionList } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
 
 export default class DescriptionListClassDemo extends Component {
   favoriteVideoGames = [
@@ -41,5 +31,18 @@ export default class DescriptionListClassDemo extends Component {
       description: 'The game that made me drop out of college.',
     },
   ];
+
+  <template>
+    <div style="max-width: 400px;">
+      <EuiDescriptionList
+        @listItems={{this.favoriteVideoGames}}
+        @type="column"
+        @align="center"
+        @titleProps={{hash className="eui-textTruncate"}}
+        @descriptionProps={{hash className="eui-textTruncate"}}
+      />
+    </div>
+  </template>
 }
 ```
+

@@ -13,21 +13,16 @@ result; the task list checkboxes are clickable there.
 
 </EuiText>
 
-```hbs template
-<EuiMarkdownEditor
-  @value={{this.value}}
-  @onChange={{set this 'value'}}
-  @processingPluginList={{this.processingPlugins}}
-/>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { visit } from '@ember-eui/core/utils/markdown/plugins/markdown-add-components/processor';
 import EuiAccordion from '@ember-eui/core/components/eui-accordion';
 import { defaultProcessingPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins/processing-plugins';
+import { helper } from '@ember/component/helper';
+import { EuiMarkdownEditor } from '@ember-eui/core/components';
+import { set } from 'ember-set-helper';
 
 /*
  Quick example how you can extend plugins, this plugin adds _blank to `a` elements
@@ -81,9 +76,6 @@ class Human {
 \`\`\`
 
 \`\`\`tsx
-import Component from '@glimmer/component';
-import { helper } from '@ember/component/helper';
-import { tracked } from '@glimmer/tracking';
 
 export default class SomeComponent extends Component {
 	@tracked count = 0;
@@ -106,5 +98,14 @@ export default class SomeComponent extends Component {
 [Access Google!](https://google.com)
 
 `;
+
+  <template>
+    <EuiMarkdownEditor
+      @value={{this.value}}
+      @onChange={{set this 'value'}}
+      @processingPluginList={{this.processingPlugins}}
+    />
+  </template>
 }
 ```
+

@@ -16,37 +16,12 @@ The below example demonstrates a primary use case for the block and the `@trunca
   Do not render excessive extra content alongside the text. The sizing logic will not account for it, and the truncation calculations will be off.
 </EuiCallOut>
 
-```hbs template
-<EuiText>
-  <EuiFormRow @label='Type to highlight text'>
-    <EuiFieldText
-      @value={{this.highlight}}
-      @placeholder='For example, try typing "lazy", "mindful", "life", or "silly"'
-      {{on 'input' this.setHighlight}}
-    />
-  </EuiFormRow>
-  <EuiSpacer />
-  <EuiPanel style='inline-size: 40ch; max-inline-size: 100%;'>
-    <EuiTextTruncate
-      @text={{this.text}}
-      @truncation='startEnd'
-      @truncationPosition={{this.highlightCenterPosition}}
-      as |truncatedText|
-    >
-      {{#if (this.isLonger truncatedText)}}
-        <EuiHighlight @search={{this.highlight}} @text={{truncatedText}} />
-      {{else}}
-        <EuiMark>{{truncatedText}}</EuiMark>
-      {{/if}}
-    </EuiTextTruncate>
-  </EuiPanel>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFieldText, EuiFormRow, EuiHighlight, EuiMark, EuiPanel, EuiSpacer, EuiText, EuiTextTruncate } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class extends Component {
   text =
@@ -66,5 +41,33 @@ export default class extends Component {
   setHighlight(event) {
     this.highlight = event.target.value;
   }
+
+  <template>
+    <EuiText>
+      <EuiFormRow @label='Type to highlight text'>
+        <EuiFieldText
+          @value={{this.highlight}}
+          @placeholder='For example, try typing "lazy", "mindful", "life", or "silly"'
+          {{on 'input' this.setHighlight}}
+        />
+      </EuiFormRow>
+      <EuiSpacer />
+      <EuiPanel style='inline-size: 40ch; max-inline-size: 100%;'>
+        <EuiTextTruncate
+          @text={{this.text}}
+          @truncation='startEnd'
+          @truncationPosition={{this.highlightCenterPosition}}
+          as |truncatedText|
+        >
+          {{#if (this.isLonger truncatedText)}}
+            <EuiHighlight @search={{this.highlight}} @text={{truncatedText}} />
+          {{else}}
+            <EuiMark>{{truncatedText}}</EuiMark>
+          {{/if}}
+        </EuiTextTruncate>
+      </EuiPanel>
+    </EuiText>
+  </template>
 }
 ```
+

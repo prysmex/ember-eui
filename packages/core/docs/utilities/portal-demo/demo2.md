@@ -14,25 +14,14 @@ There is an optional <EuiCode>@insert</EuiCode> argument that can specify the po
 
 <EuiSpacer @size='l' />
 
-```hbs template
-<div>
-  <EuiButton {{did-insert this.setButtonRef}} {{on 'click' this.togglePortal}}>
-    Toggle portal
-  </EuiButton>
-
-  {{#if this.isPortalVisible}}
-    <EuiPortal @insert={{hash sibling=this.buttonRef position='after'}}>
-      <EuiSpacer />
-      <p>This element is appended immediately after the button.</p>
-    </EuiPortal>
-  {{/if}}
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
+import { EuiButton, EuiPortal, EuiSpacer } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class PortalInsertDemo extends Component {
   @tracked isPortalVisible = false;
@@ -47,5 +36,21 @@ export default class PortalInsertDemo extends Component {
   togglePortal() {
     this.isPortalVisible = !this.isPortalVisible;
   }
+
+  <template>
+    <div>
+      <EuiButton {{didInsert this.setButtonRef}} {{on 'click' this.togglePortal}}>
+        Toggle portal
+      </EuiButton>
+
+      {{#if this.isPortalVisible}}
+        <EuiPortal @insert={{hash sibling=this.buttonRef position='after'}}>
+          <EuiSpacer />
+          <p>This element is appended immediately after the button.</p>
+        </EuiPortal>
+      {{/if}}
+    </div>
+  </template>
 }
 ```
+

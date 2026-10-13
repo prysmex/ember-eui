@@ -12,61 +12,15 @@ Upstream's <strong>EuiContext</strong> sets global internationalization copy for
 
 <EuiSpacer />
 
-```hbs template
-<EuiFlexGroup @gutterSize='s' @alignItems='center'>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton
-      aria-pressed={{if (eq this.language 'en') 'true' 'false'}}
-      @fill={{eq this.language 'en'}}
-      {{on 'click' (fn this.setLanguage 'en')}}
-    >
-      <EuiI18n @token='euiContext.english' @default='English' @i18n={{this.i18n}} as |Token|><Token /></EuiI18n>
-    </EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton
-      aria-pressed={{if (eq this.language 'fr') 'true' 'false'}}
-      @fill={{eq this.language 'fr'}}
-      {{on 'click' (fn this.setLanguage 'fr')}}
-    >
-      <EuiI18n @token='euiContext.french' @default='French' @i18n={{this.i18n}} as |Token|><Token /></EuiI18n>
-    </EuiButton>
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer @size='m' />
-<div lang={{this.language}}>
-  <strong>
-    <EuiI18n
-      @token='euiContext.greeting'
-      @default='Welcome, {name}!'
-      @values={{hash name=this.displayName}}
-      @i18n={{this.i18n}}
-      as |Token|
-    ><Token /></EuiI18n>
-  </strong>
-  <EuiSpacer @size='s' />
-  <p>
-    <EuiI18n @token='euiContext.guestNo' @default='You are guest #' @i18n={{this.i18n}} as |Token|><Token /></EuiI18n>
-    <EuiI18nNumber @value={{1582394}} />
-  </p>
-  <EuiSpacer @size='m' />
-  <EuiFormRow @label={{this.question}}>
-    <EuiFieldText
-      @value={{this.name}}
-      @placeholder={{this.placeholder}}
-      {{on 'input' this.updateName}}
-    />
-  </EuiFormRow>
-  <EuiSpacer />
-  <EuiButton>{{this.action}}</EuiButton>
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import { EuiButton, EuiFieldText, EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiI18n, EuiI18nNumber, EuiSpacer } from '@ember-eui/core/components';
+import { fn, hash } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { eq } from 'ember-truth-helpers';
 
 const mappings = {
   en: {},
@@ -124,5 +78,56 @@ export default class I18nContext extends Component {
   updateName(event) {
     this.name = event.target.value;
   }
+
+  <template>
+    <EuiFlexGroup @gutterSize='s' @alignItems='center'>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton
+          aria-pressed={{if (eq this.language 'en') 'true' 'false'}}
+          @fill={{eq this.language 'en'}}
+          {{on 'click' (fn this.setLanguage 'en')}}
+        >
+          <EuiI18n @token='euiContext.english' @default='English' @i18n={{this.i18n}} as |Token|><Token /></EuiI18n>
+        </EuiButton>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton
+          aria-pressed={{if (eq this.language 'fr') 'true' 'false'}}
+          @fill={{eq this.language 'fr'}}
+          {{on 'click' (fn this.setLanguage 'fr')}}
+        >
+          <EuiI18n @token='euiContext.french' @default='French' @i18n={{this.i18n}} as |Token|><Token /></EuiI18n>
+        </EuiButton>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer @size='m' />
+    <div lang={{this.language}}>
+      <strong>
+        <EuiI18n
+          @token='euiContext.greeting'
+          @default='Welcome, {name}!'
+          @values={{hash name=this.displayName}}
+          @i18n={{this.i18n}}
+          as |Token|
+        ><Token /></EuiI18n>
+      </strong>
+      <EuiSpacer @size='s' />
+      <p>
+        <EuiI18n @token='euiContext.guestNo' @default='You are guest #' @i18n={{this.i18n}} as |Token|><Token /></EuiI18n>
+        <EuiI18nNumber @value={{1582394}} />
+      </p>
+      <EuiSpacer @size='m' />
+      <EuiFormRow @label={{this.question}}>
+        <EuiFieldText
+          @value={{this.name}}
+          @placeholder={{this.placeholder}}
+          {{on 'input' this.updateName}}
+        />
+      </EuiFormRow>
+      <EuiSpacer />
+      <EuiButton>{{this.action}}</EuiButton>
+    </div>
+  </template>
 }
 ```
+

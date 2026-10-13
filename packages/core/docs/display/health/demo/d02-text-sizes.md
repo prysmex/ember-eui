@@ -10,7 +10,10 @@ Match the text size of **EuiHealth** to your context by passing `xs / s / m / in
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiHealth, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiHealth @textSize="xs" @color="success">Extra small</EuiHealth>
   <EuiSpacer />
@@ -24,4 +27,5 @@ Match the text size of **EuiHealth** to your context by passing `xs / s / m / in
     </h3>
   </EuiTitle>
 </div>
+</template>
 ```

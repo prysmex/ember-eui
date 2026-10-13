@@ -10,10 +10,14 @@ order: 2
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiNotificationBadge } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @responsive={{false}} @gutterSize="s">
   <EuiNotificationBadge>1</EuiNotificationBadge>
   <EuiNotificationBadge @color="success">2</EuiNotificationBadge>
   <EuiNotificationBadge @color="subdued">3</EuiNotificationBadge>
 </EuiFlexGroup>
+</template>
 ```

@@ -10,21 +10,9 @@ order: 1
 
 <EuiSpacer />
 
-```hbs template
-<div style='width: 20rem'>
-  <EuiTreeView @items={{this.items}} aria-label='Sample Folder Tree'>
-    <:label as |node|>
-      {{#if node.token}}
-        <EuiToken @iconType={{node.token}} />
-      {{/if}}
-      {{node.label}}
-    </:label>
-  </EuiTreeView>
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiToken, EuiTreeView } from '@ember-eui/core/components';
 
 export default class extends Component {
   items = [
@@ -86,5 +74,19 @@ export default class extends Component {
       id: 'item_two',
     },
   ];
+
+  <template>
+    <div style='width: 20rem'>
+      <EuiTreeView @items={{this.items}} aria-label='Sample Folder Tree'>
+        <:label as |node|>
+          {{#if node.token}}
+            <EuiToken @iconType={{node.token}} />
+          {{/if}}
+          {{node.label}}
+        </:label>
+      </EuiTreeView>
+    </div>
+  </template>
 }
 ```
+

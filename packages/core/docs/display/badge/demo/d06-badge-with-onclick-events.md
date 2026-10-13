@@ -15,64 +15,66 @@ Badges can have `@onClick` events applied to the badge itself or the icon within
 </EuiCallOut>
 <EuiSpacer />
 
-```hbs template
-<EuiFlexGroup @wrap={{true}} @responsive={{false}} @gutterSize="xs">
-  <EuiFlexItem @grow={{false}}>
-    <EuiBadge
-      @color="primary"
-      @onClick={{this.noop}}
-      @onClickAriaLabel="Example of onClick event for the button"
-      data-test-sub="testExample1"
-    >
-      onClick on text within badge
-    </EuiBadge>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiBadge
-      @color="hollow"
-      @iconType="cross"
-      @iconSide="right"
-      @iconOnClick={{this.noop}}
-      @iconOnClickAriaLabel="Example of onClick event for icon within the button"
-      data-test-sub="testExample2"
-    >
-      onClick on icon within badge
-    </EuiBadge>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiBadge
-      @color="success"
-      @iconType="cross"
-      @iconSide="right"
-      @onClick={{this.noop}}
-      @onClickAriaLabel="Example of onClick event for the button"
-      @iconOnClick={{this.noop}}
-      @iconOnClickAriaLabel="Example of onClick event for icon within the button"
-      data-test-sub="testExample3"
-    >
-      onClick on both text and icon within badge
-    </EuiBadge>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiBadge
-      @isDisabled={{true}}
-      @color="danger"
-      @onClick={{this.noop}}
-      @onClickAriaLabel="Example of disabled button badge"
-      @iconOnClick={{this.noop}}
-      @iconOnClickAriaLabel="Example of disabled button badge"
-      data-test-sub="testExample4"
-    >
-      disabled button badge
-    </EuiBadge>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBadge, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
 
 export default class BadgeOnClickDemo extends Component {
   noop = () => {};
+
+  <template>
+    <EuiFlexGroup @wrap={{true}} @responsive={{false}} @gutterSize="xs">
+      <EuiFlexItem @grow={{false}}>
+        <EuiBadge
+          @color="primary"
+          @onClick={{this.noop}}
+          @onClickAriaLabel="Example of onClick event for the button"
+          data-test-sub="testExample1"
+        >
+          onClick on text within badge
+        </EuiBadge>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiBadge
+          @color="hollow"
+          @iconType="cross"
+          @iconSide="right"
+          @iconOnClick={{this.noop}}
+          @iconOnClickAriaLabel="Example of onClick event for icon within the button"
+          data-test-sub="testExample2"
+        >
+          onClick on icon within badge
+        </EuiBadge>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiBadge
+          @color="success"
+          @iconType="cross"
+          @iconSide="right"
+          @onClick={{this.noop}}
+          @onClickAriaLabel="Example of onClick event for the button"
+          @iconOnClick={{this.noop}}
+          @iconOnClickAriaLabel="Example of onClick event for icon within the button"
+          data-test-sub="testExample3"
+        >
+          onClick on both text and icon within badge
+        </EuiBadge>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiBadge
+          @isDisabled={{true}}
+          @color="danger"
+          @onClick={{this.noop}}
+          @onClickAriaLabel="Example of disabled button badge"
+          @iconOnClick={{this.noop}}
+          @iconOnClickAriaLabel="Example of disabled button badge"
+          data-test-sub="testExample4"
+        >
+          disabled button badge
+        </EuiBadge>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

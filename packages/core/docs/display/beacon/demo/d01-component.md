@@ -4,6 +4,10 @@ order: 1
 
 # Component
 
-```hbs template
+```gjs component
+import { EuiBeacon } from '@ember-eui/core/components';
+
+<template>
 <EuiBeacon />
+</template>
 ```

@@ -14,23 +14,9 @@ Unlike upstream, **EuiListGroup** does not take a `listItems` array: render one 
 
 </EuiText>
 
-```hbs template
-<EuiListGroup @color="primary">
-  {{#each this.links as |link|}}
-    <EuiListGroupItem
-      @label={{link.label}}
-      @href={{link.href}}
-      @iconType={{link.iconType}}
-      @isActive={{link.isActive}}
-      @isDisabled={{link.isDisabled}}
-      @target={{link.target}}
-    />
-  {{/each}}
-</EuiListGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiListGroup, EuiListGroupItem } from '@ember-eui/core/components';
 
 export default class ListOfLinksDemo extends Component {
   links = [
@@ -63,5 +49,21 @@ export default class ListOfLinksDemo extends Component {
       target: '_blank',
     },
   ];
+
+  <template>
+    <EuiListGroup @color="primary">
+      {{#each this.links as |link|}}
+        <EuiListGroupItem
+          @label={{link.label}}
+          @href={{link.href}}
+          @iconType={{link.iconType}}
+          @isActive={{link.isActive}}
+          @isDisabled={{link.isDisabled}}
+          @target={{link.target}}
+        />
+      {{/each}}
+    </EuiListGroup>
+  </template>
 }
 ```
+

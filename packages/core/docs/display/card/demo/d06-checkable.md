@@ -10,20 +10,12 @@ order: 6
 
 </EuiText>
 
-```hbs template
-<EuiCheckableCard
-  @label="I am a checkbox"
-  @checkableType="checkbox"
-  @checked={{this.checkbox}}
-  value="checkbox1"
-  {{on "change" this.toggleCheckbox}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiCheckableCard } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class CardCheckableDemo extends Component {
   @tracked checkbox = false;
@@ -31,5 +23,16 @@ export default class CardCheckableDemo extends Component {
   @action toggleCheckbox() {
     this.checkbox = !this.checkbox;
   }
+
+  <template>
+    <EuiCheckableCard
+      @label="I am a checkbox"
+      @checkableType="checkbox"
+      @checked={{this.checkbox}}
+      value="checkbox1"
+      {{on "change" this.toggleCheckbox}}
+    />
+  </template>
 }
 ```
+

@@ -10,7 +10,10 @@ order: 1
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiHorizontalRule, EuiText } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiText @grow={{false}}>
     <h1>This is Heading One</h1>
@@ -194,4 +197,5 @@ order: 1
     </p>
   </EuiText>
 </div>
+</template>
 ```

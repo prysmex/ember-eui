@@ -10,7 +10,10 @@ The component requires a `@title` and a `<:media>` block. All other arguments ar
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiBanner } from '@ember-eui/core/components';
+
+<template>
 <EuiBanner
   @title="Introducing a new feature"
   @text="Get more done with the latest improvements to your workspace. Explore what's new and start using it today."
@@ -19,4 +22,5 @@ The component requires a `@title` and a `<:media>` block. All other arguments ar
     <img src="https://placehold.co/80x80" alt="" aria-hidden="true" />
   </:media>
 </EuiBanner>
+</template>
 ```

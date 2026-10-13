@@ -10,7 +10,10 @@ Badges can work as health status indicators in places where there are a lot of r
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiBadge, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @wrap={{true}} @responsive={{false}} @gutterSize="xs">
   <EuiFlexItem @grow={{false}}>
     <EuiBadge @color="success">Healthy</EuiBadge>
@@ -25,4 +28,5 @@ Badges can work as health status indicators in places where there are a lot of r
     <EuiBadge @color="default">Unknown</EuiBadge>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

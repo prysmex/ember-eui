@@ -10,35 +10,13 @@ In places like flyouts, you can use <EuiCode>@overflowHeight="100%"</EuiCode> to
 
 </EuiText>
 
-```hbs template
-<EuiButton {{on 'click' (set this 'showFlyout' true)}}>
-  Show flyout example
-</EuiButton>
-
-{{#if this.showFlyout}}
-  <EuiFlyout @onClose={{set this 'showFlyout' false}}>
-    <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle @size='m' @tagName="h2" id='flyoutTitle'>A flyout with just code</EuiTitle>
-    </EuiFlyoutHeader>
-    <div style='height: 100%'>
-      <EuiCodeBlock
-        @language='json'
-        @isCopyable={{true}}
-        @overflowHeight='100%'
-        @lineNumbers={{true}}
-        @isVirtualized={{true}}
-      >
-        {{this.jsonCode}}
-      </EuiCodeBlock>
-    </div>
-  </EuiFlyout>
-{{/if}}
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiCodeBlock, EuiFlyout, EuiFlyoutHeader, EuiTitle } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { set } from 'ember-set-helper';
 
 export default class EuiMarkdownEditor1 extends Component {
   @tracked jsonCode = `{
@@ -855,5 +833,31 @@ export default class EuiMarkdownEditor1 extends Component {
   "loaded": 1,
   "isRestored": false
 }`;
+
+  <template>
+    <EuiButton {{on 'click' (set this 'showFlyout' true)}}>
+      Show flyout example
+    </EuiButton>
+
+    {{#if this.showFlyout}}
+      <EuiFlyout @onClose={{set this 'showFlyout' false}}>
+        <EuiFlyoutHeader @hasBorder={{true}}>
+          <EuiTitle @size='m' @tagName="h2" id='flyoutTitle'>A flyout with just code</EuiTitle>
+        </EuiFlyoutHeader>
+        <div style='height: 100%'>
+          <EuiCodeBlock
+            @language='json'
+            @isCopyable={{true}}
+            @overflowHeight='100%'
+            @lineNumbers={{true}}
+            @isVirtualized={{true}}
+          >
+            {{this.jsonCode}}
+          </EuiCodeBlock>
+        </div>
+      </EuiFlyout>
+    {{/if}}
+  </template>
 }
 ```
+

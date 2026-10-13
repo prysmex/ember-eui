@@ -14,36 +14,12 @@ In Ember EUI only the <EuiCode>tooltip</EuiCode> plugin can be excluded for now.
 
 <EuiSpacer />
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSwitch
-      @label='tooltip'
-      @checked={{this.tooltip}}
-      @onChange={{this.toggleTooltip}}
-    />
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiMarkdownEditor
-      @ariaLabel='Demo with excluded default plugins'
-      @value={{this.value}}
-      @onChange={{this.setValue}}
-      @parsingPluginList={{this.plugins.parsingPlugins}}
-      @processingPluginList={{this.plugins.processingPlugins}}
-      @uiPlugins={{this.plugins.uiPlugins}}
-      @initialViewMode='viewing'
-      @autoExpandPreview={{false}}
-      @height={{400}}
-    />
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { getDefaultEuiMarkdownPlugins } from '@ember-eui/core/utils/markdown/plugins/markdown-default-plugins/index';
+import { EuiFlexGroup, EuiFlexItem, EuiMarkdownEditor, EuiSwitch } from '@ember-eui/core/components';
 
 export default class UnregisterPlugins extends Component {
   @tracked tooltip = true;
@@ -76,5 +52,31 @@ When disabled, the following syntax will no longer work.
   @action toggleTooltip() {
     this.tooltip = !this.tooltip;
   }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSwitch
+          @label='tooltip'
+          @checked={{this.tooltip}}
+          @onChange={{this.toggleTooltip}}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiMarkdownEditor
+          @ariaLabel='Demo with excluded default plugins'
+          @value={{this.value}}
+          @onChange={{this.setValue}}
+          @parsingPluginList={{this.plugins.parsingPlugins}}
+          @processingPluginList={{this.plugins.processingPlugins}}
+          @uiPlugins={{this.plugins.uiPlugins}}
+          @initialViewMode='viewing'
+          @autoExpandPreview={{false}}
+          @height={{400}}
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

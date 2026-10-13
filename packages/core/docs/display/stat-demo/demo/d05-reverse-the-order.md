@@ -10,7 +10,10 @@ You can reverse the order of the `@description` and `@title` text by setting the
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiStat } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiFlexGroup>
     <EuiFlexItem>
@@ -18,4 +21,5 @@ You can reverse the order of the `@description` and `@title` text by setting the
     </EuiFlexItem>
   </EuiFlexGroup>
 </div>
+</template>
 ```

@@ -11,25 +11,9 @@ name.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGrid @columns={{4}} @gutterSize="s">
-  {{#each this.types as |type|}}
-    <EuiFlexItem>
-      <EuiFlexGroup @gutterSize="s" @alignItems="center" @responsive={{false}}>
-        <EuiFlexItem @grow={{false}}>
-          <EuiToken @iconType={{type}} @title={{type}} />
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <EuiText @size="xs"><code>{{type}}</code></EuiText>
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiFlexItem>
-  {{/each}}
-</EuiFlexGrid>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiText, EuiToken } from '@ember-eui/core/components';
 
 export default class TokenTypes extends Component {
   types = [
@@ -50,5 +34,23 @@ export default class TokenTypes extends Component {
     'tokenVariable',
     'tokenConstant',
   ];
+
+  <template>
+    <EuiFlexGrid @columns={{4}} @gutterSize="s">
+      {{#each this.types as |type|}}
+        <EuiFlexItem>
+          <EuiFlexGroup @gutterSize="s" @alignItems="center" @responsive={{false}}>
+            <EuiFlexItem @grow={{false}}>
+              <EuiToken @iconType={{type}} @title={{type}} />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiText @size="xs"><code>{{type}}</code></EuiText>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiFlexItem>
+      {{/each}}
+    </EuiFlexGrid>
+  </template>
 }
 ```
+

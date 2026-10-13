@@ -12,24 +12,9 @@ Setting `@valueText={{true}}` will add a % sign next to the `@value` passed. If 
 
 </EuiText>
 
-```hbs template
-<div style="max-width: 160px;">
-  {{#each this.data as |item|}}
-    <EuiProgress @label={{item.label}} @value={{item.value}} @valueText={{item.valueText}} @max={{100}} @color="success" @size="s" />
-    <EuiSpacer @size="s" />
-  {{/each}}
-</div>
-<EuiSpacer @size="m" />
-<div style="max-width: 200px;">
-  {{#each this.data as |item|}}
-    <EuiProgress @label={{item.label}} @value={{item.value}} @valueText={{item.valueText}} @max={{100}} @color="primary" @size="m" />
-    <EuiSpacer @size="s" />
-  {{/each}}
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiProgress, EuiSpacer } from '@ember-eui/core/components';
 
 export default class ProgressChartsDemo extends Component {
   data = [
@@ -39,5 +24,22 @@ export default class ProgressChartsDemo extends Component {
     { label: 'Custom valueText', value: 40, valueText: '4,005,678' },
     { label: "Women's Accessories", value: 24.0256, valueText: true },
   ];
+
+  <template>
+    <div style="max-width: 160px;">
+      {{#each this.data as |item|}}
+        <EuiProgress @label={{item.label}} @value={{item.value}} @valueText={{item.valueText}} @max={{100}} @color="success" @size="s" />
+        <EuiSpacer @size="s" />
+      {{/each}}
+    </div>
+    <EuiSpacer @size="m" />
+    <div style="max-width: 200px;">
+      {{#each this.data as |item|}}
+        <EuiProgress @label={{item.label}} @value={{item.value}} @valueText={{item.valueText}} @max={{100}} @color="primary" @size="m" />
+        <EuiSpacer @size="s" />
+      {{/each}}
+    </div>
+  </template>
 }
 ```
+

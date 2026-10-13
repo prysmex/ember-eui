@@ -12,11 +12,15 @@ can be components.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiI18n } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+
+<template>
 <EuiI18n
   @token='euiPagination.pageOfTotalCompressed'
   @default='{page} of {total}'
-  @values={{hash page=(component 'eui-button') total=(component 'eui-button')}}
+  @values={{hash page=EuiButton total=EuiButton}}
   as |Token|
 >
   <Token as |value|>
@@ -33,4 +37,5 @@ can be components.
 		{{value}}
 	</Token>
 </EuiI18n>
+</template>
 ```

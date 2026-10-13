@@ -10,7 +10,10 @@ Ember EUI extra: `@layout="horizontal"` puts the icon next to the text. Pair it 
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCard, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize='l'>
 
   <EuiFlexItem>
@@ -43,4 +46,5 @@ Ember EUI extra: `@layout="horizontal"` puts the icon next to the text. Pair it 
   </EuiFlexItem>
 
 </EuiFlexGroup>
+</template>
 ```

@@ -10,51 +10,10 @@ Users proceed through tour steps without needing to complete actions on the unde
 
 </EuiText>
 
-```hbs template
-<EuiTour @initialState={{this.initialState}} @steps={{this.steps}} as |tour|>
-  <EuiButtonEmpty @size='s' @iconType='refresh' @flush='left' {{on 'click' tour.actions.resetTour}}>
-    Begin tour
-  </EuiButtonEmpty>
-  <EuiSpacer @size='m' />
-  <EuiPanel @hasBorder={{true}} style='width: max-content'>
-    <EuiFlexGroup @gutterSize='s' @responsive={{false}}>
-      {{#each this.steps as |step|}}
-        <EuiFlexItem @grow={{false}}>
-          <tour.Step @step={{step.step}} @anchorPosition='downLeft'>
-            <:default>
-              <EuiToolTip @content={{step.title}} @disableScreenReaderOutput={{true}}>
-                <EuiButtonIcon
-                  @size='m'
-                  @iconType={{step.iconType}}
-                  @color='text'
-                  aria-label={{step.title}}
-                />
-              </EuiToolTip>
-            </:default>
-            <:footerAction>
-              {{#if step.isLast}}
-                <EuiButton @color='success' @size='s' {{on 'click' tour.actions.finishTour}}>
-                  Finish tour
-                </EuiButton>
-              {{else}}
-                <EuiButtonEmpty @size='s' @color='text' {{on 'click' tour.actions.finishTour}}>
-                  Close tour
-                </EuiButtonEmpty>
-                <EuiButton @color='success' @size='s' {{on 'click' tour.actions.incrementStep}}>
-                  Next
-                </EuiButton>
-              {{/if}}
-            </:footerAction>
-          </tour.Step>
-        </EuiFlexItem>
-      {{/each}}
-    </EuiFlexGroup>
-  </EuiPanel>
-</EuiTour>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiButton, EuiButtonEmpty, EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer, EuiToolTip, EuiTour } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class extends Component {
   initialState = {
@@ -70,5 +29,49 @@ export default class extends Component {
     { step: 3, title: 'Comment mode', content: 'Collaborate with your colleagues.', iconType: 'comment' },
     { step: 4, title: 'Share', content: 'Share your project.', iconType: 'share', isLast: true },
   ];
+
+  <template>
+    <EuiTour @initialState={{this.initialState}} @steps={{this.steps}} as |tour|>
+      <EuiButtonEmpty @size='s' @iconType='refresh' @flush='left' {{on 'click' tour.actions.resetTour}}>
+        Begin tour
+      </EuiButtonEmpty>
+      <EuiSpacer @size='m' />
+      <EuiPanel @hasBorder={{true}} style='width: max-content'>
+        <EuiFlexGroup @gutterSize='s' @responsive={{false}}>
+          {{#each this.steps as |step|}}
+            <EuiFlexItem @grow={{false}}>
+              <tour.Step @step={{step.step}} @anchorPosition='downLeft'>
+                <:default>
+                  <EuiToolTip @content={{step.title}} @disableScreenReaderOutput={{true}}>
+                    <EuiButtonIcon
+                      @size='m'
+                      @iconType={{step.iconType}}
+                      @color='text'
+                      aria-label={{step.title}}
+                    />
+                  </EuiToolTip>
+                </:default>
+                <:footerAction>
+                  {{#if step.isLast}}
+                    <EuiButton @color='success' @size='s' {{on 'click' tour.actions.finishTour}}>
+                      Finish tour
+                    </EuiButton>
+                  {{else}}
+                    <EuiButtonEmpty @size='s' @color='text' {{on 'click' tour.actions.finishTour}}>
+                      Close tour
+                    </EuiButtonEmpty>
+                    <EuiButton @color='success' @size='s' {{on 'click' tour.actions.incrementStep}}>
+                      Next
+                    </EuiButton>
+                  {{/if}}
+                </:footerAction>
+              </tour.Step>
+            </EuiFlexItem>
+          {{/each}}
+        </EuiFlexGroup>
+      </EuiPanel>
+    </EuiTour>
+  </template>
 }
 ```
+

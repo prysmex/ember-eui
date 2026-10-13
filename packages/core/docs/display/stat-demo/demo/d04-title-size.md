@@ -10,7 +10,10 @@ order: 4
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiStat } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiFlexGroup>
     <EuiFlexItem>
@@ -35,4 +38,5 @@ order: 4
     </EuiFlexItem>
   </EuiFlexGroup>
 </div>
+</template>
 ```

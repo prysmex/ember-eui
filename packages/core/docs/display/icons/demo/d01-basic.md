@@ -12,7 +12,10 @@ styling. Find names in the gallery above.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize="l" @alignItems="center" @responsive={{false}}>
   <EuiFlexItem @grow={{false}}>
     <EuiIcon @type="bell" />
@@ -32,4 +35,5 @@ styling. Find names in the gallery above.
     </EuiText>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

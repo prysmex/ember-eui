@@ -12,7 +12,10 @@ The four truncation styles supported are `start`, `end`, `startEnd`, and `middle
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiPanel, EuiText, EuiTextTruncate } from '@ember-eui/core/components';
+
+<template>
 <EuiText>
   <EuiPanel style='overflow: auto; resize: inline; inline-size: 35ch; max-inline-size: 100%;'>
     <EuiTextTruncate
@@ -33,4 +36,5 @@ The four truncation styles supported are `start`, `end`, `startEnd`, and `middle
     />
   </EuiPanel>
 </EuiText>
+</template>
 ```

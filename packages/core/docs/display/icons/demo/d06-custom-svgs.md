@@ -28,32 +28,34 @@ import Rocket from '../icons/rocket.svg';
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="l" @alignItems="center" @wrap={{true}}>
-  <EuiFlexItem @grow={{false}}>
-    <EuiIcon @type={{this.Rocket}} />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiIcon @type={{this.Rocket}} @size="xl" @color="accent" @title="Launch" />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton @iconType={{this.Rocket}} @fill={{true}}>Launch</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiBadge @iconType={{this.Leaf}} @color="success">Eco mode</EuiBadge>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
-
-// app/icons/*.svg, turned into components by @svg-jar/plugin
 import Rocket from 'site/icons/rocket.svg';
 import Leaf from 'site/icons/leaf.svg';
+import { EuiBadge, EuiButton, EuiFlexGroup, EuiFlexItem, EuiIcon } from '@ember-eui/core/components';
+
+// app/icons/*.svg, turned into components by @svg-jar/plugin
 
 export default class CustomSvgsDemo extends Component {
   Rocket = Rocket;
   Leaf = Leaf;
+
+  <template>
+    <EuiFlexGroup @gutterSize="l" @alignItems="center" @wrap={{true}}>
+      <EuiFlexItem @grow={{false}}>
+        <EuiIcon @type={{this.Rocket}} />
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiIcon @type={{this.Rocket}} @size="xl" @color="accent" @title="Launch" />
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiButton @iconType={{this.Rocket}} @fill={{true}}>Launch</EuiButton>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiBadge @iconType={{this.Leaf}} @color="success">Eco mode</EuiBadge>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

@@ -20,84 +20,11 @@ Adjust the spacing between the title and description with the `@columnGutterSize
 
 </EuiText>
 
-```hbs template
-<div style="max-width: 400px;">
-  <EuiFlexGroup>
-    <EuiFlexItem>
-      <EuiTitle @size="xxs"><h3>Align options</h3></EuiTitle>
-      <EuiButtonGroup
-        @legend="Toggle for the EuiDescription align argument"
-        @options={{this.alignToggleButtons}}
-        @idSelected={{this.alignSelected}}
-        @onChange={{this.setAlign}}
-      />
-    </EuiFlexItem>
-
-    <EuiFlexItem>
-      <EuiTitle @size="xxs"><h3>Row gutter sizes</h3></EuiTitle>
-      <EuiButtonGroup
-        @legend="Toggle for the EuiDescription rowGutterSize argument"
-        @options={{this.gutterOptions}}
-        @idSelected={{this.rowGutterSize}}
-        @onChange={{this.setRowGutterSize}}
-      />
-    </EuiFlexItem>
-
-    <EuiFlexItem>
-      <EuiTitle @size="xxs"><h3>Column gap sizes</h3></EuiTitle>
-      <EuiButtonGroup
-        @legend="Toggle for the EuiDescription columnGutterSize argument"
-        @options={{this.gutterOptions}}
-        @idSelected={{this.columnGutterSize}}
-        @onChange={{this.setColumnGutterSize}}
-      />
-    </EuiFlexItem>
-
-    <EuiFlexItem>
-      <EuiTitle @size="xxs"><h3>Compressed</h3></EuiTitle>
-      <EuiSwitch
-        @label="Compressed"
-        @checked={{this.compressed}}
-        @onChange={{this.toggleCompressed}}
-      />
-    </EuiFlexItem>
-  </EuiFlexGroup>
-
-  <EuiSpacer />
-
-  <EuiDescriptionList
-    @listItems={{this.favoriteVideoGames}}
-    @align={{this.alignSelected}}
-    @compressed={{this.compressed}}
-    @rowGutterSize={{this.rowGutterSize}}
-  />
-
-  <EuiSpacer @size="l" />
-
-  <EuiDescriptionList
-    @listItems={{this.favoriteVideoGames}}
-    @type="column"
-    @align={{this.alignSelected}}
-    @compressed={{this.compressed}}
-    @rowGutterSize={{this.rowGutterSize}}
-    @columnGutterSize={{this.columnGutterSize}}
-  />
-
-  <EuiSpacer @size="l" />
-
-  <EuiDescriptionList
-    @listItems={{this.favoriteVideoGames}}
-    @type="inline"
-    @align={{this.alignSelected}}
-    @compressed={{this.compressed}}
-  />
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButtonGroup, EuiDescriptionList, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiSwitch, EuiTitle } from '@ember-eui/core/components';
 
 export default class DescriptionListAppearanceDemo extends Component {
   favoriteVideoGames = [
@@ -146,5 +73,80 @@ export default class DescriptionListAppearanceDemo extends Component {
   @action toggleCompressed() {
     this.compressed = !this.compressed;
   }
+
+  <template>
+    <div style="max-width: 400px;">
+      <EuiFlexGroup>
+        <EuiFlexItem>
+          <EuiTitle @size="xxs"><h3>Align options</h3></EuiTitle>
+          <EuiButtonGroup
+            @legend="Toggle for the EuiDescription align argument"
+            @options={{this.alignToggleButtons}}
+            @idSelected={{this.alignSelected}}
+            @onChange={{this.setAlign}}
+          />
+        </EuiFlexItem>
+
+        <EuiFlexItem>
+          <EuiTitle @size="xxs"><h3>Row gutter sizes</h3></EuiTitle>
+          <EuiButtonGroup
+            @legend="Toggle for the EuiDescription rowGutterSize argument"
+            @options={{this.gutterOptions}}
+            @idSelected={{this.rowGutterSize}}
+            @onChange={{this.setRowGutterSize}}
+          />
+        </EuiFlexItem>
+
+        <EuiFlexItem>
+          <EuiTitle @size="xxs"><h3>Column gap sizes</h3></EuiTitle>
+          <EuiButtonGroup
+            @legend="Toggle for the EuiDescription columnGutterSize argument"
+            @options={{this.gutterOptions}}
+            @idSelected={{this.columnGutterSize}}
+            @onChange={{this.setColumnGutterSize}}
+          />
+        </EuiFlexItem>
+
+        <EuiFlexItem>
+          <EuiTitle @size="xxs"><h3>Compressed</h3></EuiTitle>
+          <EuiSwitch
+            @label="Compressed"
+            @checked={{this.compressed}}
+            @onChange={{this.toggleCompressed}}
+          />
+        </EuiFlexItem>
+      </EuiFlexGroup>
+
+      <EuiSpacer />
+
+      <EuiDescriptionList
+        @listItems={{this.favoriteVideoGames}}
+        @align={{this.alignSelected}}
+        @compressed={{this.compressed}}
+        @rowGutterSize={{this.rowGutterSize}}
+      />
+
+      <EuiSpacer @size="l" />
+
+      <EuiDescriptionList
+        @listItems={{this.favoriteVideoGames}}
+        @type="column"
+        @align={{this.alignSelected}}
+        @compressed={{this.compressed}}
+        @rowGutterSize={{this.rowGutterSize}}
+        @columnGutterSize={{this.columnGutterSize}}
+      />
+
+      <EuiSpacer @size="l" />
+
+      <EuiDescriptionList
+        @listItems={{this.favoriteVideoGames}}
+        @type="inline"
+        @align={{this.alignSelected}}
+        @compressed={{this.compressed}}
+      />
+    </div>
+  </template>
 }
 ```
+

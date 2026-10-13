@@ -12,35 +12,10 @@ Some times a localized value is needed for an argument instead of rendering dire
 
 <EuiSpacer />
 
-```hbs template
-<EuiTitle @size='xs'>
-  <h3>lookupToken used in an attribute</h3>
-</EuiTitle>
-<EuiSpacer />
-<EuiFormRow @label="This text field's placeholder reads from euiI18nAttribute.placeholderName">
-  <EuiFieldText @placeholder={{this.placeholder}} />
-</EuiFormRow>
-<EuiSpacer @size='xl' />
-<EuiTitle @size='xs'>
-  <h3>EuiI18n used with a block</h3>
-</EuiTitle>
-<EuiSpacer />
-<EuiI18n
-  @token='euiI18nAttribute.placeholderName'
-  @default='John Doe'
-  as |Token|
->
-  <Token as |placeholderName|>
-    <EuiFormRow @label="This text field's placeholder reads from euiI18nAttribute.placeholderName">
-      <EuiFieldText @placeholder={{placeholderName}} />
-    </EuiFormRow>
-  </Token>
-</EuiI18n>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { service } from '@ember/service';
+import { EuiFieldText, EuiFormRow, EuiI18n, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
 
 export default class I18nAttribute extends Component {
   @service euiI18n;
@@ -51,5 +26,32 @@ export default class I18nAttribute extends Component {
       'John Doe'
     );
   }
+
+  <template>
+    <EuiTitle @size='xs'>
+      <h3>lookupToken used in an attribute</h3>
+    </EuiTitle>
+    <EuiSpacer />
+    <EuiFormRow @label="This text field's placeholder reads from euiI18nAttribute.placeholderName">
+      <EuiFieldText @placeholder={{this.placeholder}} />
+    </EuiFormRow>
+    <EuiSpacer @size='xl' />
+    <EuiTitle @size='xs'>
+      <h3>EuiI18n used with a block</h3>
+    </EuiTitle>
+    <EuiSpacer />
+    <EuiI18n
+      @token='euiI18nAttribute.placeholderName'
+      @default='John Doe'
+      as |Token|
+    >
+      <Token as |placeholderName|>
+        <EuiFormRow @label="This text field's placeholder reads from euiI18nAttribute.placeholderName">
+          <EuiFieldText @placeholder={{placeholderName}} />
+        </EuiFormRow>
+      </Token>
+    </EuiI18n>
+  </template>
 }
 ```
+

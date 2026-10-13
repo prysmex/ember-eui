@@ -16,27 +16,11 @@ This is primarily useful for announcing navigation or page changes, when program
 
 <EuiSpacer />
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem @grow={{false}} style='min-width: 200px'>
-    <EuiSideNav @items={{this.sideNav}} @mobileBreakpoints={{array}} />
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiTitle @size='m'><h2>{{this.pageTitle}}</h2></EuiTitle>
-    <EuiSpacer />
-    <EuiScreenReaderLive @focusRegionOnTextChange={{true}}>
-      {{this.pageTitle}}
-    </EuiScreenReaderLive>
-    <EuiButton>
-      Clicking a nav link and then pressing tab should focus this button
-    </EuiButton>
-  </EuiFlexItem>
-</EuiFlexGroup>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiScreenReaderLive, EuiSideNav, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+import { array } from '@ember/helper';
 
 export default class FocusRegionOnTextChange extends Component {
   @tracked pageTitle = 'Home';
@@ -57,5 +41,24 @@ export default class FocusRegionOnTextChange extends Component {
       },
     ];
   }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem @grow={{false}} style='min-width: 200px'>
+        <EuiSideNav @items={{this.sideNav}} @mobileBreakpoints={{array}} />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiTitle @size='m'><h2>{{this.pageTitle}}</h2></EuiTitle>
+        <EuiSpacer />
+        <EuiScreenReaderLive @focusRegionOnTextChange={{true}}>
+          {{this.pageTitle}}
+        </EuiScreenReaderLive>
+        <EuiButton>
+          Clicking a nav link and then pressing tab should focus this button
+        </EuiButton>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </template>
 }
 ```
+

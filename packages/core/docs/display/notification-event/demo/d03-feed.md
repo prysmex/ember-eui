@@ -13,61 +13,17 @@ controls to change the number of messages and show the actions.
 
 </EuiText>
 
-```hbs template
-<div>
-  {{#each this.items as |item|}}
-    {{#let (slice
-      0 this.messagesCount (shuffle item.messages)
-    ) as |msgs|}}
-      <EuiNotificationEvent
-        @type={{item.type}}
-        @badgeColor={{item.badgeColor}}
-        @time={{item.time}}
-        @title={{item.title}}
-        @messages={{msgs}}
-        @iconType={{item.iconType}}
-        @accordionButtonText={{concat '+ ' (sub msgs.length 1) ' more'}}
-        @accordionHideText='hide'
-      >
-
-        <:primaryAction>
-          <EuiButtonEmpty
-            style="display: {{if this.showPrimaryAction '' 'none'}};"
-            @flush="left"
-            @size="s"
-          >
-            Do something!
-          </EuiButtonEmpty>
-        </:primaryAction>
-
-      </EuiNotificationEvent>
-    {{/let}}
-  {{/each}}
-</div>
-
-<EuiSpacer/>
-
-Messages count:
-<EuiRange
-  @min={{1}}
-  @max={{3}}
-  @step={{1}}
-  @value={{this.messagesCount}}
-  @onChange={{this.setMessagesCount}}
-  @showLabels={{true}}
-/>
-
-<EuiSwitch
-  @label='Show primary action'
-  @checked={{this.showPrimaryAction}}
-  @onChange={{pick 'target.checked' (set this 'showPrimaryAction')}}
-/>
-```
-
-```js component
+```gjs component
+import { htmlSafe } from '@ember/template';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButtonEmpty, EuiNotificationEvent, EuiRange, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
+import { concat } from '@ember/helper';
+import { pick, slice, shuffle } from '@nullvoxpopuli/ember-composable-helpers';
+import { set } from 'ember-set-helper';
+
+const sub = (a, b) => a - b;
 
 export default class NotificationEvent3Component extends Component {
   @tracked messagesCount;
@@ -117,5 +73,60 @@ export default class NotificationEvent3Component extends Component {
     this.messagesCount = e.target.value;
   }
 
+  get primaryActionStyle() {
+    return htmlSafe(this.showPrimaryAction ? 'display: revert;' : 'display: none;');
+  }
+
+  <template>
+    <div>
+      {{#each this.items as |item|}}
+        {{#let (slice
+          0 this.messagesCount (shuffle item.messages)
+        ) as |msgs|}}
+          <EuiNotificationEvent
+            @type={{item.type}}
+            @badgeColor={{item.badgeColor}}
+            @time={{item.time}}
+            @title={{item.title}}
+            @messages={{msgs}}
+            @iconType={{item.iconType}}
+            @accordionButtonText={{concat '+ ' (sub msgs.length 1) ' more'}}
+            @accordionHideText='hide'
+          >
+
+            <:primaryAction>
+              <EuiButtonEmpty
+                style={{this.primaryActionStyle}}
+                @flush="left"
+                @size="s"
+              >
+                Do something!
+              </EuiButtonEmpty>
+            </:primaryAction>
+
+          </EuiNotificationEvent>
+        {{/let}}
+      {{/each}}
+    </div>
+
+    <EuiSpacer/>
+
+    Messages count:
+    <EuiRange
+      @min={{1}}
+      @max={{3}}
+      @step={{1}}
+      @value={{this.messagesCount}}
+      @onChange={{this.setMessagesCount}}
+      @showLabels={{true}}
+    />
+
+    <EuiSwitch
+      @label='Show primary action'
+      @checked={{this.showPrimaryAction}}
+      @onChange={{pick 'target.checked' (set this 'showPrimaryAction')}}
+    />
+  </template>
 }
 ```
+

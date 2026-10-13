@@ -10,7 +10,10 @@ The avatar `@type`, which primarily defines the shape, is a keyword and can be `
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAvatar, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiTitle @size="xs"><h3>Spaces</h3></EuiTitle>
   <EuiSpacer />
@@ -22,4 +25,5 @@ The avatar `@type`, which primarily defines the shape, is a keyword and can be `
   &emsp;
   <EuiAvatar @size="xl" @type="space" @name="Engineering Space" />
 </div>
+</template>
 ```

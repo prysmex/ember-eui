@@ -4,7 +4,10 @@ order: 1
 
 # Health
 
-```hbs template
+```gjs component
+import { EuiHealth, EuiSpacer } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiHealth @color="text">Unknown</EuiHealth>
   <EuiSpacer />
@@ -20,4 +23,5 @@ order: 1
   <EuiSpacer />
   <EuiHealth @color="#000000">Custom color as hex</EuiHealth>
 </div>
+</template>
 ```

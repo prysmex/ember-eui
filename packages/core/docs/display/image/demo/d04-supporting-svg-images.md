@@ -12,7 +12,10 @@ In order to work with an SVG image that lacks a defined size, you'll want to set
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiImage } from '@ember-eui/core/components';
+
+<template>
 <EuiImage
   @size="l"
   @hasShadow={{true}}
@@ -21,4 +24,5 @@ In order to work with an SVG image that lacks a defined size, you'll want to set
   @src="https://upload.wikimedia.org/wikipedia/commons/a/af/Fishapods.svg"
   @allowFullScreen={{true}}
 />
+</template>
 ```

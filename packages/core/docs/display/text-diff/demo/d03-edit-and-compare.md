@@ -10,31 +10,12 @@ Edit the text on the right: the diff below updates as you type.
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiFormRow @label="Before">
-      <EuiTextArea @value={{this.before}} @rows={{4}} {{on "input" this.setBefore}} />
-    </EuiFormRow>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiFormRow @label="After">
-      <EuiTextArea @value={{this.after}} @rows={{4}} {{on "input" this.setAfter}} />
-    </EuiFormRow>
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer />
-<EuiPanel @color="subdued">
-  <EuiText>
-    <EuiTextDiff @beforeText={{this.before}} @afterText={{this.after}} />
-  </EuiText>
-</EuiPanel>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiPanel, EuiSpacer, EuiText, EuiTextArea, EuiTextDiff } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class TextDiffDemo extends Component {
   @tracked before =
@@ -51,5 +32,27 @@ export default class TextDiffDemo extends Component {
   setAfter(event) {
     this.after = event.target.value;
   }
+
+  <template>
+    <EuiFlexGroup>
+      <EuiFlexItem>
+        <EuiFormRow @label="Before">
+          <EuiTextArea @value={{this.before}} @rows={{4}} {{on "input" this.setBefore}} />
+        </EuiFormRow>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiFormRow @label="After">
+          <EuiTextArea @value={{this.after}} @rows={{4}} {{on "input" this.setAfter}} />
+        </EuiFormRow>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer />
+    <EuiPanel @color="subdued">
+      <EuiText>
+        <EuiTextDiff @beforeText={{this.before}} @afterText={{this.after}} />
+      </EuiText>
+    </EuiPanel>
+  </template>
 }
 ```
+

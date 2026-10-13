@@ -18,7 +18,10 @@ Using <strong>EuiScreenReaderOnly</strong> hides the wrapped content from the pa
 
 <EuiSpacer />
 
-```hbs template
+```gjs component
+import { EuiScreenReaderOnly, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiText>
   <p>This is the first paragraph. It is visible to all.</p>
   <EuiScreenReaderOnly>
@@ -29,4 +32,5 @@ Using <strong>EuiScreenReaderOnly</strong> hides the wrapped content from the pa
   </EuiScreenReaderOnly>
   <p>This is the third paragraph. It is visible to all.</p>
 </EuiText>
+</template>
 ```

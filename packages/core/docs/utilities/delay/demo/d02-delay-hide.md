@@ -12,36 +12,12 @@ order: 2
 
 <EuiSpacer />
 
-```hbs template
-<EuiFlexItem>
-  <EuiFormRow>
-    <EuiCheckbox
-      @id='delay-hide-checkbox'
-      @checked={{this.hide}}
-      @label='Hide child'
-      {{on 'change' this.onChangeHide}}
-    />
-  </EuiFormRow>
-  <EuiFormRow @label='Minimum duration'>
-    <EuiFieldNumber
-      @value={{this.minimumDuration}}
-      {{on 'input' this.onChangeMinimumDuration}}
-    />
-  </EuiFormRow>
-  <EuiFormRow @label='Child to render'>
-    <div>
-      <EuiDelayHide @hide={{this.hide}} @minimumDuration={{this.minimumDuration}}>
-        <EuiLoadingSpinner @size='m' />
-      </EuiDelayHide>
-    </div>
-  </EuiFormRow>
-</EuiFlexItem>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiCheckbox, EuiDelayHide, EuiFieldNumber, EuiFlexItem, EuiFormRow, EuiLoadingSpinner } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class DelayHide extends Component {
   @tracked minimumDuration = 3000;
@@ -56,5 +32,32 @@ export default class DelayHide extends Component {
   onChangeHide(event) {
     this.hide = event.target.checked;
   }
+
+  <template>
+    <EuiFlexItem>
+      <EuiFormRow>
+        <EuiCheckbox
+          @id='delay-hide-checkbox'
+          @checked={{this.hide}}
+          @label='Hide child'
+          {{on 'change' this.onChangeHide}}
+        />
+      </EuiFormRow>
+      <EuiFormRow @label='Minimum duration'>
+        <EuiFieldNumber
+          @value={{this.minimumDuration}}
+          {{on 'input' this.onChangeMinimumDuration}}
+        />
+      </EuiFormRow>
+      <EuiFormRow @label='Child to render'>
+        <div>
+          <EuiDelayHide @hide={{this.hide}} @minimumDuration={{this.minimumDuration}}>
+            <EuiLoadingSpinner @size='m' />
+          </EuiDelayHide>
+        </div>
+      </EuiFormRow>
+    </EuiFlexItem>
+  </template>
 }
 ```
+

@@ -12,7 +12,11 @@ It accepts all the same arguments as `EuiToolTip`. For convenience, you can also
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCheckbox, EuiCode, EuiFlexGroup, EuiFlexItem, EuiIconTip, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+
+<template>
 <EuiFlexGroup @alignItems='center' @gutterSize='s' @responsive={{false}}>
   <EuiFlexItem @grow={{false}}>
     <EuiCheckbox @id='explainedCheckbox' @label='Use source maps' />
@@ -55,4 +59,5 @@ It accepts all the same arguments as `EuiToolTip`. For convenience, you can also
     </EuiIconTip>
   </p>
 </EuiText>
+</template>
 ```

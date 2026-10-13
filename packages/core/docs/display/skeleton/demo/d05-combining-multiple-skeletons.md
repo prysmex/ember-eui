@@ -14,75 +14,11 @@ To circumvent this, use **EuiSkeletonLoading** to handle a single parent-level `
 
 </EuiText>
 
-```hbs template
-<EuiSwitch
-  @label="Toggle loaded state"
-  @checked={{this.isLoading}}
-  @onChange={{this.toggleLoading}}
-/>
-<EuiSpacer />
-<EuiSkeletonLoading @isLoading={{this.isLoading}} @contentAriaLabel="Demo loading section">
-  <:loadingContent as |loading|>
-    <EuiPanel role={{loading.role}} aria-label={{loading.ariaLabel}}>
-      <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
-        <EuiFlexItem @grow={{false}}>
-          <EuiSkeletonCircle @size="s" />
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <EuiSkeletonTitle @size="l" />
-        </EuiFlexItem>
-      </EuiFlexGroup>
-      <EuiSpacer @size="s" />
-      <EuiFlexGroup>
-        <EuiFlexItem>
-          <EuiSkeletonText @lines={{5}} />
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <EuiSkeletonRectangle @width="100%" @height={{148}} />
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiPanel>
-  </:loadingContent>
-  <:loadedContent>
-    <EuiPanel>
-      <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
-        <EuiAvatar @size="s" @name="Avatar" />
-        <EuiTitle @size="l">
-          <span>Example section title</span>
-        </EuiTitle>
-      </EuiFlexGroup>
-      <EuiSpacer @size="s" />
-      <EuiFlexGroup>
-        <EuiFlexItem>
-          <EuiText>
-            <p>
-              This demo groups multiple skeleton types into a single loading
-              section by using <code>EuiSkeletonLoading</code>.
-            </p>
-            <p>
-              This is a significant usability improvement for screen readers as
-              only one loaded message is announced, as opposed to four.
-            </p>
-          </EuiText>
-        </EuiFlexItem>
-        <EuiFlexItem>
-          <EuiCard
-            @display="subdued"
-            @icon="logoElastic"
-            @title="Elastic Cloud"
-            @description="Example card description."
-          />
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </EuiPanel>
-  </:loadedContent>
-</EuiSkeletonLoading>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiAvatar, EuiCard, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSkeletonCircle, EuiSkeletonLoading, EuiSkeletonRectangle, EuiSkeletonText, EuiSkeletonTitle, EuiSpacer, EuiSwitch, EuiText, EuiTitle } from '@ember-eui/core/components';
 
 export default class SkeletonCombinedDemo extends Component {
   @tracked isLoading = true;
@@ -91,5 +27,71 @@ export default class SkeletonCombinedDemo extends Component {
   toggleLoading() {
     this.isLoading = !this.isLoading;
   }
+
+  <template>
+    <EuiSwitch
+      @label="Toggle loaded state"
+      @checked={{this.isLoading}}
+      @onChange={{this.toggleLoading}}
+    />
+    <EuiSpacer />
+    <EuiSkeletonLoading @isLoading={{this.isLoading}} @contentAriaLabel="Demo loading section">
+      <:loadingContent as |loading|>
+        <EuiPanel role={{loading.role}} aria-label={{loading.ariaLabel}}>
+          <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
+            <EuiFlexItem @grow={{false}}>
+              <EuiSkeletonCircle @size="s" />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiSkeletonTitle @size="l" />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+          <EuiSpacer @size="s" />
+          <EuiFlexGroup>
+            <EuiFlexItem>
+              <EuiSkeletonText @lines={{5}} />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiSkeletonRectangle @width="100%" @height={{148}} />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiPanel>
+      </:loadingContent>
+      <:loadedContent>
+        <EuiPanel>
+          <EuiFlexGroup @alignItems="center" @gutterSize="s" @responsive={{false}}>
+            <EuiAvatar @size="s" @name="Avatar" />
+            <EuiTitle @size="l">
+              <span>Example section title</span>
+            </EuiTitle>
+          </EuiFlexGroup>
+          <EuiSpacer @size="s" />
+          <EuiFlexGroup>
+            <EuiFlexItem>
+              <EuiText>
+                <p>
+                  This demo groups multiple skeleton types into a single loading
+                  section by using <code>EuiSkeletonLoading</code>.
+                </p>
+                <p>
+                  This is a significant usability improvement for screen readers as
+                  only one loaded message is announced, as opposed to four.
+                </p>
+              </EuiText>
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiCard
+                @display="subdued"
+                @icon="logoElastic"
+                @title="Elastic Cloud"
+                @description="Example card description."
+              />
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiPanel>
+      </:loadedContent>
+    </EuiSkeletonLoading>
+  </template>
 }
 ```
+

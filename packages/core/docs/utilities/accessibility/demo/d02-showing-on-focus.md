@@ -14,7 +14,10 @@ If the wrapped element is <strong>focusable</strong>, you must use the <EuiCode>
 
 <EuiSpacer />
 
-```hbs template
+```gjs component
+import { EuiButtonIcon, EuiLink, EuiScreenReaderOnly, EuiText, EuiToolTip } from '@ember-eui/core/components';
+
+<template>
 <EuiText>
   <p>
     This link is visible to all on focus:
@@ -33,4 +36,5 @@ If the wrapped element is <strong>focusable</strong>, you must use the <EuiCode>
     </EuiScreenReaderOnly>
   </p>
 </EuiText>
+</template>
 ```

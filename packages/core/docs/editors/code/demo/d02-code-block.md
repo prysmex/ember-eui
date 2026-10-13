@@ -10,27 +10,29 @@ order: 2
 
 </EuiText>
 
-```hbs template
-<EuiCodeBlock @language='jsx' @fontSize='m' @paddingSize='m'>
-  {{this.jsCode}}
-</EuiCodeBlock>
-
-<EuiSpacer />
-
-<EuiCodeBlock
-  @language='jsx'
-  @paddingSize='none'
-  @transparentBackground={{true}}
->
-  {{this.jsCode}}
-</EuiCodeBlock>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCodeBlock, EuiSpacer } from '@ember-eui/core/components';
 
 export default class CodeBlock extends Component {
   jsCode = `/* I'm an example of JS */
-import Component from '@glimmer/component';`;
+`;
+
+  <template>
+    <EuiCodeBlock @language='jsx' @fontSize='m' @paddingSize='m'>
+      {{this.jsCode}}
+    </EuiCodeBlock>
+
+    <EuiSpacer />
+
+    <EuiCodeBlock
+      @language='jsx'
+      @paddingSize='none'
+      @transparentBackground={{true}}
+    >
+      {{this.jsCode}}
+    </EuiCodeBlock>
+  </template>
 }
 ```
+

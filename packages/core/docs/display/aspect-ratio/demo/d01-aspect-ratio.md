@@ -10,7 +10,10 @@ order: 1
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAspectRatio, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <EuiTitle @size="s"><p>16x9 aspect</p></EuiTitle>
 <EuiSpacer @size="s" />
 <EuiAspectRatio @width={{16}} @height={{9}}>
@@ -49,4 +52,5 @@ order: 1
     scrolling="no"
   ></iframe>
 </EuiAspectRatio>
+</template>
 ```

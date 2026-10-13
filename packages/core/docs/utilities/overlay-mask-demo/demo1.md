@@ -14,36 +14,13 @@ There are <a href="https://www.nngroup.com/articles/overuse-of-overlays/" target
 
 <EuiSpacer />
 
-```hbs template
-<EuiButton {{on 'click' (fn this.setMaskWithClick true)}}>
-  Overlay with button
-</EuiButton>
-<EuiSpacer @size='xxl' />
-<EuiButton {{on 'click' (fn this.setMask true)}}>
-  Overlay with click-to-close
-</EuiButton>
-
-{{#if this.maskOpen}}
-  <EuiOverlayMask @onClick={{fn this.setMask false}}>
-    <EuiTitle>
-      <h2>Click anywhere to close overlay.</h2>
-    </EuiTitle>
-  </EuiOverlayMask>
-{{/if}}
-
-{{#if this.maskWithClickOpen}}
-  <EuiOverlayMask>
-    <EuiButton {{on 'click' (fn this.setMaskWithClick false)}}>
-      Click this button to close
-    </EuiButton>
-  </EuiOverlayMask>
-{{/if}}
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiOverlayMask, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 export default class OverlayMaskDemo extends Component {
   @tracked maskOpen = false;
@@ -58,5 +35,32 @@ export default class OverlayMaskDemo extends Component {
   setMaskWithClick(value) {
     this.maskWithClickOpen = value;
   }
+
+  <template>
+    <EuiButton {{on 'click' (fn this.setMaskWithClick true)}}>
+      Overlay with button
+    </EuiButton>
+    <EuiSpacer @size='xxl' />
+    <EuiButton {{on 'click' (fn this.setMask true)}}>
+      Overlay with click-to-close
+    </EuiButton>
+
+    {{#if this.maskOpen}}
+      <EuiOverlayMask @onClick={{fn this.setMask false}}>
+        <EuiTitle>
+          <h2>Click anywhere to close overlay.</h2>
+        </EuiTitle>
+      </EuiOverlayMask>
+    {{/if}}
+
+    {{#if this.maskWithClickOpen}}
+      <EuiOverlayMask>
+        <EuiButton {{on 'click' (fn this.setMaskWithClick false)}}>
+          Click this button to close
+        </EuiButton>
+      </EuiOverlayMask>
+    {{/if}}
+  </template>
 }
 ```
+

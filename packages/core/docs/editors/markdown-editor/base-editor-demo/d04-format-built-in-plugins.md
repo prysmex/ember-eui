@@ -14,12 +14,9 @@ order: 4
 
 <EuiSpacer />
 
-```hbs template
-<EuiMarkdownFormat @value={{this.markdownContent}} />
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiMarkdownFormat } from '@ember-eui/core/components';
 
 export default class FormatBuiltIn extends Component {
   markdownContent = `Beyond Remark's base syntax, **EuiMarkdownFormat** bundles these abilities by default:
@@ -44,5 +41,10 @@ turns into
 
 Note that you'll need to use *EuiMarkdownEditor* to make those checkboxes dynamic.
 `;
+
+  <template>
+    <EuiMarkdownFormat @value={{this.markdownContent}} />
+  </template>
 }
 ```
+

@@ -17,7 +17,10 @@ If you need to use a custom icon, use the `@iconType` argument to override it.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiSpacer, EuiToast } from '@ember-eui/core/components';
+
+<template>
 <div style='max-width: 320px'>
   <EuiToast @title='3 new messages' @color='primary' />
   <EuiSpacer @size='s' />
@@ -27,4 +30,5 @@ If you need to use a custom icon, use the `@iconType` argument to override it.
   <EuiSpacer @size='s' />
   <EuiToast @title="Couldn't complete the search" @color='danger' />
 </div>
+</template>
 ```

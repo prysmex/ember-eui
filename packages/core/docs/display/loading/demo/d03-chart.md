@@ -10,7 +10,10 @@ To indicate that a visualization is loading, use **EuiLoadingChart**.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiLoadingChart } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiLoadingChart @size="m" />
   &nbsp;&nbsp;
@@ -20,4 +23,5 @@ To indicate that a visualization is loading, use **EuiLoadingChart**.
   &nbsp;&nbsp;
   <EuiLoadingChart @size="xl" @mono={{true}} />
 </div>
+</template>
 ```

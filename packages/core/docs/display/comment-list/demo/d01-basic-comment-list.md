@@ -10,7 +10,10 @@ Use **EuiCommentList** to display a list of **EuiComment**s. Upstream passes an 
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiBadge, EuiButtonIcon, EuiComment, EuiCommentList, EuiFlexGroup, EuiFlexItem, EuiText, EuiToolTip } from '@ember-eui/core/components';
+
+<template>
 <EuiCommentList aria-label="Comment list example">
   <EuiComment @timelineAvatarAriaLabel="Jane Doe">
     <:username>janed</:username>
@@ -85,4 +88,5 @@ Use **EuiCommentList** to display a list of **EuiComment**s. Upstream passes an 
     <:body><p>An error occurred sending your message.</p></:body>
   </EuiComment>
 </EuiCommentList>
+</template>
 ```

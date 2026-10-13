@@ -10,7 +10,10 @@ order: 1
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCode, EuiHorizontalRule, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <div>
   <EuiTitle @size='l' @tagName="h1">This is a large title, only one should exist per page</EuiTitle>
   <EuiCode @language='js'>size=&quot;l&quot;</EuiCode>
@@ -40,4 +43,5 @@ order: 1
 
   <EuiTitle @size='l' @tagName='span'>Titles are markup agnostic, they only confer style</EuiTitle>
 </div>
+</template>
 ```

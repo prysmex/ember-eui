@@ -12,34 +12,36 @@ Upstream's `showToolTips`, `toolTipText` and `toolTipProps` are not available on
 
 </EuiText>
 
-```hbs template
-<EuiListGroup>
-  <EuiListGroupItem @onClick={{this.noop}} @label="First item" />
-
-  <EuiListGroupItem @onClick={{this.noop}} @label="Second item" />
-
-  <EuiListGroupItem @onClick={{this.noop}}>
-    <span>
-      Third very, very long item that
-      <strong>will surely</strong>
-      force truncation
-    </span>
-  </EuiListGroupItem>
-
-  <EuiListGroupItem
-    @onClick={{this.noop}}
-    @wrapText={{true}}
-    @label="Fourth very long item with wrapping enabled, custom props, and will not force truncation."
-  />
-</EuiListGroup>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
+import { EuiListGroup, EuiListGroupItem } from '@ember-eui/core/components';
 
 export default class WrapTextDemo extends Component {
   @action
   noop() {}
+
+  <template>
+    <EuiListGroup>
+      <EuiListGroupItem @onClick={{this.noop}} @label="First item" />
+
+      <EuiListGroupItem @onClick={{this.noop}} @label="Second item" />
+
+      <EuiListGroupItem @onClick={{this.noop}}>
+        <span>
+          Third very, very long item that
+          <strong>will surely</strong>
+          force truncation
+        </span>
+      </EuiListGroupItem>
+
+      <EuiListGroupItem
+        @onClick={{this.noop}}
+        @wrapText={{true}}
+        @label="Fourth very long item with wrapping enabled, custom props, and will not force truncation."
+      />
+    </EuiListGroup>
+  </template>
 }
 ```
+

@@ -12,53 +12,10 @@ If many localized values are needed in a small area, call the service's <EuiCode
 
 <EuiSpacer />
 
-```hbs template
-<EuiTitle @size='xs'>
-  <h3>lookupToken for several tokens</h3>
-</EuiTitle>
-<div>
-  <EuiText>
-    <p>
-      Both title and description for the card are looked up in the component class.
-    </p>
-  </EuiText>
-  <EuiSpacer />
-  <EuiCard
-    class='eui-displayInlineBlock'
-    @title={{this.title}}
-    @description={{this.description}}
-  />
-</div>
-<EuiSpacer @size='l' />
-<EuiTitle @size='xs'>
-  <h3>One EuiI18n per token</h3>
-</EuiTitle>
-<div>
-  <EuiText>
-    <p>
-      Each <strong>EuiI18n</strong> yields the text of its own token.
-    </p>
-  </EuiText>
-  <EuiSpacer />
-  <EuiI18n @token='euiI18nMulti.title' @default='Card Title' as |Title|>
-    <EuiI18n @token='euiI18nMulti.description' @default='Card Description' as |Description|>
-      <Title as |title|>
-        <Description as |description|>
-          <EuiCard
-            class='eui-displayInlineBlock'
-            @title={{title}}
-            @description={{description}}
-          />
-        </Description>
-      </Title>
-    </EuiI18n>
-  </EuiI18n>
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { service } from '@ember/service';
+import { EuiCard, EuiI18n, EuiSpacer, EuiText, EuiTitle } from '@ember-eui/core/components';
 
 export default class I18nMulti extends Component {
   @service euiI18n;
@@ -73,5 +30,50 @@ export default class I18nMulti extends Component {
       'Card Description'
     );
   }
+
+  <template>
+    <EuiTitle @size='xs'>
+      <h3>lookupToken for several tokens</h3>
+    </EuiTitle>
+    <div>
+      <EuiText>
+        <p>
+          Both title and description for the card are looked up in the component class.
+        </p>
+      </EuiText>
+      <EuiSpacer />
+      <EuiCard
+        class='eui-displayInlineBlock'
+        @title={{this.title}}
+        @description={{this.description}}
+      />
+    </div>
+    <EuiSpacer @size='l' />
+    <EuiTitle @size='xs'>
+      <h3>One EuiI18n per token</h3>
+    </EuiTitle>
+    <div>
+      <EuiText>
+        <p>
+          Each <strong>EuiI18n</strong> yields the text of its own token.
+        </p>
+      </EuiText>
+      <EuiSpacer />
+      <EuiI18n @token='euiI18nMulti.title' @default='Card Title' as |Title|>
+        <EuiI18n @token='euiI18nMulti.description' @default='Card Description' as |Description|>
+          <Title as |title|>
+            <Description as |description|>
+              <EuiCard
+                class='eui-displayInlineBlock'
+                @title={{title}}
+                @description={{description}}
+              />
+            </Description>
+          </Title>
+        </EuiI18n>
+      </EuiI18n>
+    </div>
+  </template>
 }
 ```
+

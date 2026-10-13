@@ -10,19 +10,9 @@ order: 6
   </p>
 </EuiText>
 
-```hbs template
-<EuiCodeBlock
-  @language='json'
-  @fontSize='m'
-  @paddingSize='m'
-  @lineNumbers={{true}}
->
-  {{this.jsonCode}}
-</EuiCodeBlock>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCodeBlock } from '@ember-eui/core/components';
 
 export default class LineNumbers extends Component {
   jsonCode = `{
@@ -38,5 +28,17 @@ export default class LineNumbers extends Component {
     }
   }
 }`;
+
+  <template>
+    <EuiCodeBlock
+      @language='json'
+      @fontSize='m'
+      @paddingSize='m'
+      @lineNumbers={{true}}
+    >
+      {{this.jsonCode}}
+    </EuiCodeBlock>
+  </template>
 }
 ```
+

@@ -14,7 +14,10 @@ The <strong>EuiSkipLink</strong> component allows users to bypass navigation, or
 
 <EuiSpacer />
 
-```hbs template
+```gjs component
+import { EuiSkipLink, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiText id='skip-link-example'>
   <p>The following skip links are only visible on focus:</p>
   <EuiSkipLink
@@ -27,4 +30,5 @@ The <strong>EuiSkipLink</strong> component allows users to bypass navigation, or
     Falls back to main container
   </EuiSkipLink>
 </EuiText>
+</template>
 ```

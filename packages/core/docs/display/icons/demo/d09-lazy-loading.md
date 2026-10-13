@@ -32,29 +32,13 @@ assertions see the real svg.
 
 </EuiText>
 
-```hbs template
-<EuiButton @iconType="download" @isLoading={{this.isLoading}} {{on "click" this.loadLogos}}>
-  Preload and show some logos
-</EuiButton>
-
-<EuiSpacer />
-
-{{#if this.showLogos}}
-  <EuiFlexGroup @gutterSize="l" @wrap={{true}} @responsive={{false}}>
-    {{#each this.logos as |logo|}}
-      <EuiFlexItem @grow={{false}}>
-        <EuiIcon @type={{logo}} @size="xl" @title={{logo}} />
-      </EuiFlexItem>
-    {{/each}}
-  </EuiFlexGroup>
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { preloadIcons } from '@ember-eui/core/utils/preload-icons';
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class LazyIconsDemo extends Component {
   @tracked isLoading = false;
@@ -70,5 +54,24 @@ export default class LazyIconsDemo extends Component {
     this.isLoading = false;
     this.showLogos = true;
   }
+
+  <template>
+    <EuiButton @iconType="download" @isLoading={{this.isLoading}} {{on "click" this.loadLogos}}>
+      Preload and show some logos
+    </EuiButton>
+
+    <EuiSpacer />
+
+    {{#if this.showLogos}}
+      <EuiFlexGroup @gutterSize="l" @wrap={{true}} @responsive={{false}}>
+        {{#each this.logos as |logo|}}
+          <EuiFlexItem @grow={{false}}>
+            <EuiIcon @type={{logo}} @size="xl" @title={{logo}} />
+          </EuiFlexItem>
+        {{/each}}
+      </EuiFlexGroup>
+    {{/if}}
+  </template>
 }
 ```
+

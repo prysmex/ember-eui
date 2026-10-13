@@ -12,9 +12,13 @@ order: 5
 
 <EuiSpacer />
 
-```hbs template
+```gjs component
+import { EuiI18nNumber } from '@ember-eui/core/components';
+
+<template>
 <p>
   Formatted count of users:
   <EuiI18nNumber @value={{5000000}} />
 </p>
+</template>
 ```

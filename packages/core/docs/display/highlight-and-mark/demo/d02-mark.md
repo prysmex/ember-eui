@@ -10,6 +10,10 @@ Use `EuiMark` to wrap a string in a `mark` element.
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiMark } from '@ember-eui/core/components';
+
+<template>
 The quick brown fox <EuiMark>jumped over</EuiMark> the lazy dog
+</template>
 ```

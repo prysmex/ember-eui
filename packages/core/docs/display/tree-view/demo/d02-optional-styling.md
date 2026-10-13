@@ -16,28 +16,9 @@ Lastly, each node can also accept a custom `className` should you need to style 
 
 </EuiText>
 
-```hbs template
-<style>
-  .docsTreeViewNode { background-color: rgba(255, 220, 0, 0.2); }
-</style>
-<div style='width: 20rem'>
-  <EuiTreeView
-    @items={{this.items}}
-    @display='compressed'
-    @expandByDefault={{true}}
-    @showExpansionArrows={{true}}
-    aria-label='Document Outline'
-  >
-    <:label as |node|>
-      <EuiToken @iconType={{node.token}} @size='xs' />
-      {{node.label}}
-    </:label>
-  </EuiTreeView>
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiToken, EuiTreeView } from '@ember-eui/core/components';
 
 export default class extends Component {
   items = [
@@ -87,5 +68,26 @@ export default class extends Component {
     },
     { label: 'smokeMonster', id: 'smokeMonster', token: 'tokenMethod' },
   ];
+
+  <template>
+    <style>
+      .docsTreeViewNode { background-color: rgba(255, 220, 0, 0.2); }
+    </style>
+    <div style='width: 20rem'>
+      <EuiTreeView
+        @items={{this.items}}
+        @display='compressed'
+        @expandByDefault={{true}}
+        @showExpansionArrows={{true}}
+        aria-label='Document Outline'
+      >
+        <:label as |node|>
+          <EuiToken @iconType={{node.token}} @size='xs' />
+          {{node.label}}
+        </:label>
+      </EuiTreeView>
+    </div>
+  </template>
 }
 ```
+

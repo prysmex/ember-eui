@@ -13,7 +13,10 @@ Each `EuiTimelineItem` has two parts: an icon on the left side and an event on t
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiCode, EuiText, EuiTimeline, EuiTimelineItem } from '@ember-eui/core/components';
+
+<template>
 <EuiTimeline aria-label='Timeline item example'>
   <EuiTimelineItem @icon='dot' @iconAriaLabel='Main icon'>
     <EuiText @size='s'>
@@ -23,4 +26,5 @@ Each `EuiTimelineItem` has two parts: an icon on the left side and an event on t
     </EuiText>
   </EuiTimelineItem>
 </EuiTimeline>
+</template>
 ```

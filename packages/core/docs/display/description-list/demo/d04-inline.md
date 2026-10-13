@@ -10,16 +10,9 @@ Using the argument `@type` set to `inline`, description lists can be presented i
 
 </EuiText>
 
-```hbs template
-<EuiDescriptionList
-  @type="inline"
-  @listItems={{this.favoriteVideoGames}}
-  style="max-width: 400px;"
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiDescriptionList } from '@ember-eui/core/components';
 
 export default class DescriptionListInlineDemo extends Component {
   favoriteVideoGames = [
@@ -37,5 +30,14 @@ export default class DescriptionListInlineDemo extends Component {
       description: 'The game that made me drop out of college.',
     },
   ];
+
+  <template>
+    <EuiDescriptionList
+      @type="inline"
+      @listItems={{this.favoriteVideoGames}}
+      style="max-width: 400px;"
+    />
+  </template>
 }
 ```
+

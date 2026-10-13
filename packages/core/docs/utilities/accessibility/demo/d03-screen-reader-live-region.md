@@ -16,26 +16,12 @@ Also consider other live region guidelines, such as that live regions must be pr
 
 <EuiSpacer />
 
-```hbs template
-<EuiButton {{on 'click' this.startAnnouncements}}>
-  Create screen reader announcement
-</EuiButton>
-<EuiSpacer />
-<EuiText>
-  <p>
-    <em>Content announced by screen reader: </em>
-    <EuiCode>{{this.screenReaderText}}</EuiCode>
-  </p>
-  <EuiScreenReaderLive>
-    <p>{{this.screenReaderText}}</p>
-  </EuiScreenReaderLive>
-</EuiText>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiCode, EuiScreenReaderLive, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
 
 export default class ScreenReaderLiveRegion extends Component {
   @tracked screenReaderText = 'You have no notifications.';
@@ -48,5 +34,22 @@ export default class ScreenReaderLiveRegion extends Component {
       randomNumber > 1 ? 's' : ''
     }.`;
   }
+
+  <template>
+    <EuiButton {{on 'click' this.startAnnouncements}}>
+      Create screen reader announcement
+    </EuiButton>
+    <EuiSpacer />
+    <EuiText>
+      <p>
+        <em>Content announced by screen reader: </em>
+        <EuiCode>{{this.screenReaderText}}</EuiCode>
+      </p>
+      <EuiScreenReaderLive>
+        <p>{{this.screenReaderText}}</p>
+      </EuiScreenReaderLive>
+    </EuiText>
+  </template>
 }
 ```
+

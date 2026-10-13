@@ -10,14 +10,9 @@ Pass an illustration asset to the `@type` argument. The component picks the corr
 
 </EuiText>
 
-```hbs template
-<div style="max-width: 360px">
-  <EuiIllustration @type={{this.asset}} />
-</div>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiIllustration } from '@ember-eui/core/components';
 
 const art = (sky, hill, sun) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100" width="160" height="100">` +
@@ -32,5 +27,12 @@ export default class IllustrationComponentDemo extends Component {
     light: art('#E8F1FF', '#8EC5A8', '#F6C744'),
     dark: art('#1D2A3E', '#2F6B57', '#C9A227')
   };
+
+  <template>
+    <div style="max-width: 360px">
+      <EuiIllustration @type={{this.asset}} />
+    </div>
+  </template>
 }
 ```
+

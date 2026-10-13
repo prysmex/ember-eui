@@ -10,17 +10,9 @@ order: 4
   </p>
 </EuiText>
 
-```hbs template
-<EuiCodeBlock
-  @language='sql'
-  @overflowHeight={{150}}
->
-  {{this.sqlCode}}
-</EuiCodeBlock>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCodeBlock } from '@ember-eui/core/components';
 
 export default class Scrolling extends Component {
   sqlCode = `-- I'm an example of SQL
@@ -35,5 +27,15 @@ REFERENCES "forum" ("id");
 
 insert into "topic" ("forum_id", "subject")
 values (2, 'D''artagnian');`;
+
+  <template>
+    <EuiCodeBlock
+      @language='sql'
+      @overflowHeight={{150}}
+    >
+      {{this.sqlCode}}
+    </EuiCodeBlock>
+  </template>
 }
 ```
+

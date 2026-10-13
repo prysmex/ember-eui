@@ -14,40 +14,13 @@ In Ember EUI it is the <EuiCode>resize-observer</EuiCode> modifier: put it on th
 
 <EuiSpacer />
 
-```hbs template
-<div>
-  <EuiText>
-    <p>
-      <EuiCode>
-        height:
-        {{this.height}}; width:
-        {{this.width}}
-      </EuiCode>
-    </p>
-  </EuiText>
-  <EuiSpacer />
-  <EuiButton @fill={{true}} {{on 'click' this.togglePaddingSize}}>
-    Toggle container padding
-  </EuiButton>
-  <EuiSpacer />
-  <div class='eui-displayInlineBlock' {{resize-observer onResize=this.onResize}}>
-    <EuiPanel class='eui-displayInlineBlock' @paddingSize={{this.paddingSize}}>
-      <ul>
-        {{#each this.items as |item|}}
-          <li>{{item}}</li>
-        {{/each}}
-      </ul>
-      <EuiSpacer @size='s' />
-      <EuiButtonEmpty {{on 'click' this.addItem}}>add item</EuiButtonEmpty>
-    </EuiPanel>
-  </div>
-</div>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiButtonEmpty, EuiCode, EuiPanel, EuiSpacer, EuiText } from '@ember-eui/core/components';
+import { resizeObserver } from '@ember-eui/core/modifiers';
+import { on } from '@ember/modifier';
 
 export default class ResizeObserverDemo extends Component {
   @tracked paddingSize = 's';
@@ -70,5 +43,36 @@ export default class ResizeObserverDemo extends Component {
     this.height = height;
     this.width = width;
   }
+
+  <template>
+    <div>
+      <EuiText>
+        <p>
+          <EuiCode>
+            height:
+            {{this.height}}; width:
+            {{this.width}}
+          </EuiCode>
+        </p>
+      </EuiText>
+      <EuiSpacer />
+      <EuiButton @fill={{true}} {{on 'click' this.togglePaddingSize}}>
+        Toggle container padding
+      </EuiButton>
+      <EuiSpacer />
+      <div class='eui-displayInlineBlock' {{resizeObserver onResize=this.onResize}}>
+        <EuiPanel class='eui-displayInlineBlock' @paddingSize={{this.paddingSize}}>
+          <ul>
+            {{#each this.items as |item|}}
+              <li>{{item}}</li>
+            {{/each}}
+          </ul>
+          <EuiSpacer @size='s' />
+          <EuiButtonEmpty {{on 'click' this.addItem}}>add item</EuiButtonEmpty>
+        </EuiPanel>
+      </div>
+    </div>
+  </template>
 }
 ```
+

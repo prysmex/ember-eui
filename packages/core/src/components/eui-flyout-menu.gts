@@ -7,6 +7,8 @@ import { service } from '@ember/service';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
 
+import { euiFlyoutContext } from '../-private/eui-flyout-context.ts';
+
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiFlyoutMenuStyles } from '../utils/eui/flyout-menu.ts';
 import { euiFlyoutCloseButtonStyles } from '../utils/eui/styles.generated.ts';
@@ -127,7 +129,10 @@ export interface EuiFlyoutMenuSignature {
     hideTitle?: boolean;
     /** Hides the close button. Defaults to `false`. */
     hideCloseButton?: boolean;
-    /** Called by the close button. Without it the button does nothing. */
+    /**
+     * Called by the close button. Without it, the button closes the
+     * `EuiFlyout` the menu is in (upstream `EuiFlyoutMenuContext`).
+     */
     onClose?: (event: MouseEvent) => void;
     /** Shows a back button. Defaults to `false`. */
     showBackButton?: boolean;
@@ -329,7 +334,8 @@ export default class EuiFlyoutMenu extends Component<EuiFlyoutMenuSignature> {
 
   @action
   onCloseClick(event: MouseEvent): void {
-    this.args.onClose?.(event);
+    if (this.args.onClose) this.args.onClose(event);
+    else euiFlyoutContext(this)?.close(event, { reason: 'close-button' });
   }
 
   @action

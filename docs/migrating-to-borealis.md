@@ -42,16 +42,28 @@ nearest `EuiEmotionProvider`:
   mode, like upstream's nested provider. `@wrapper={{false}}` skips the
   span where an extra element would break a flex or grid layout
   (attributes are forwarded to the span).
-- **Light/dark** is the provider's `@colorMode` (`"light"`, the default,
-  or `"dark"`). Nested providers inherit it, or fix a section to the
-  other mode; siblings are isolated.
+- **Light/dark** is the provider's `@colorMode` (`"light"` or `"dark"`).
+  Like upstream `EuiProvider`, a root provider left without one follows
+  the OS (`prefers-color-scheme`); components rendered without any
+  provider use light. Nested providers inherit it, or fix a section to
+  the other mode; siblings are isolated.
 - **Theme overrides** are `@borealisOverrides`: upstream Borealis token
   modifications, merged into nested providers.
-- **High contrast** is `@highContrastMode`: `false`, `"preferred"` or
-  `"forced"`, inherited by nested providers.
+- **High contrast** is `@highContrastMode`: `true` (= `"preferred"`),
+  `false` (overrides the OS preference) or `"forced"`, inherited by
+  nested providers. Left unset, a root provider follows the OS
+  (`prefers-contrast: more`; Windows `forced-colors: active` gives
+  `"forced"`, which supersedes app settings, including `@colorMode`).
+  High contrast applies upstream's border token modifications.
+- **CSS variables.** The root provider publishes the theme's tokens as
+  `--eui-*` custom properties (`--eui-color-text-subdued`,
+  `--eui-size-s`, …) for plain app CSS. See
+  [Theming your own components](/docs/theming).
 
 **`@css` on components.** Migrated components take an `@css` argument
-(type `EuiCss`, Emotion's CSS interpolation: an object or a string). It is
+(type `EuiCss`: Emotion's CSS interpolation, an object or a string, or a
+theme function `({ euiTheme, colorMode, highContrastMode }) => styles`
+like upstream's `css` prop callback; arrays mix them). It is
 composed **last into the component's own class**, like upstream's `css`
 prop, so your declarations win regardless of stylesheet order. Some
 components have slot variants: `EuiPopover` `@panelCss`, `EuiToolTip`
@@ -193,6 +205,8 @@ means the previous value was not recorded.
 | Component | Change | Before | Now |
 | --- | --- | --- | --- |
 | Global styles | Reset, root font size, body colors, focus ring, selection, link color | Not stated | Injected by the outermost `EuiEmotionProvider`; root font size 14px |
+| `EuiEmotionProvider` | Root provider without `@colorMode` / `@highContrastMode` | `light` / `false` | Follows the OS (`prefers-color-scheme`, `prefers-contrast`, `forced-colors`), as upstream `EuiProvider`; pass the value to pin it |
+| `EuiEmotionProvider` | High contrast border tokens | Unchanged | Upstream's high contrast modifications: borders use the text colors / plain dark (light) or plain light (dark) |
 | `EuiText` | Default `@size` | `m` | `s` |
 | `EuiText` | DOM with `@color` / `@textAlign` | Nested `EuiTextColor` / `EuiTextAlign` wrappers | A single `.euiText` element; without `@color` the color is inherited |
 | `EuiTextAlign` | Alignment | Physical | Logical: `left` / `right` serialize to `start` / `end` and flip in RTL |

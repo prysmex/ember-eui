@@ -44,6 +44,7 @@ export default class EuiDataGridPagination extends Component<EuiDataGridPaginati
 
   get pageCount(): number {
     const { pageSize } = this.args.pagination;
+    // ember-eui extension (row-tree): visible rows instead of @rowCount
     return pageSize ? Math.ceil(this.args.grid.rowCount / pageSize) : 1;
   }
 

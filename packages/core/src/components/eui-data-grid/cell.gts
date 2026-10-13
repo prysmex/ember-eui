@@ -33,7 +33,9 @@ import EuiPopover from '../eui-popover.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
 import EuiDataGridCopyMarker from './copy-marker.gts';
 import EuiDataGridDefaultCellPopover from './default-cell-popover.gts';
+// ember-eui extension (row-tree): tree cell parts and hooks
 import EuiDataGridTreeCell from './tree-cell.gts';
+import { handleRowTreeCellKeyDown, rowTreeCellState } from './row-tree-hooks.ts';
 import {
   EuiDataGridCellActions,
   EuiDataGridCellPopoverActions
@@ -228,28 +230,15 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     return this.grid.getCorrectRowIndex(this.args.visibleRowIndex);
   }
 
-  /* Nested rows & grouping (Ember EUI extension) ------------------------- */
-
-  /** The tree row with `@rowTree`/`@grouping`, else undefined. */
-  get treeRow() {
-    if (this.args.isFooter) return undefined;
-    return this.grid.treeRowAt(this.args.visibleRowIndex);
-  }
-
-  get isGroupRow(): boolean {
-    return this.treeRow?.kind === 'group';
-  }
-
-  /** The cell with the row's indentation and expand toggle. */
-  get isToggleCell(): boolean {
-    if (!this.treeRow || !this.column) return false;
-    const toggleColumnId = this.grid.rowModel?.toggleColumnId ?? this.grid.columns[0]?.id;
-    return this.columnId === toggleColumnId;
-  }
-
-  /** Row object passed to renderers as `@row` (with `@rowTree` or `@grouping.rows`). */
-  get rowData(): unknown {
-    return this.args.isFooter ? undefined : this.grid.rowModel?.rowAt(this.rowIndex);
+  // ember-eui extension (row-tree): tree row, group/toggle cell flags and `@row`
+  @cached
+  get rowTree() {
+    return rowTreeCellState(this.grid, {
+      visibleRowIndex: this.args.visibleRowIndex,
+      rowIndex: this.rowIndex,
+      column: this.column,
+      isFooter: this.args.isFooter
+    });
   }
 
   get width(): number | undefined {
@@ -326,7 +315,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
 
   get defaultIsExpandable(): boolean {
     if (this.args.isExpandable !== undefined && !this.args.isFooter) return this.args.isExpandable;
-    if (this.isControlColumn || this.isGroupRow) return false;
+    if (this.isControlColumn) return false;
+    if (this.rowTree.isGroupRow) return false; // ember-eui extension (row-tree): group rows have no value
     if (this.args.isFooter) return true;
     return this.column?.isExpandable ?? true;
   }
@@ -334,7 +324,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   get isExpandable(): boolean {
     // A cell with cell actions must always be expandable, otherwise keyboard
     // and screen reader users can't access them
-    if (this.column?.cellActions?.length && !this.isGroupRow) return true;
+    // ember-eui extension (row-tree): `!isGroupRow`: group rows have no value
+    if (this.column?.cellActions?.length && !this.rowTree.isGroupRow) return true;
     return this.cellProps.isExpandable ?? this.defaultIsExpandable;
   }
 
@@ -524,18 +515,19 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
 
   @action
   onKeyDown(event: KeyboardEvent): void {
-    // tree toggle: Space, or Enter where it doesn't open a popover
-    const treeRow = this.treeRow;
+    // ember-eui extension (row-tree): toggle cell keys (Space/Enter/arrows)
     if (
-      treeRow?.hasChildren &&
-      this.isToggleCell &&
-      event.target === this.cellElement &&
-      (event.key === keys.SPACE || (event.key === keys.ENTER && !this.isExpandable))
-    ) {
-      event.preventDefault();
-      this.grid.toggleRow(treeRow);
+      handleRowTreeCellKeyDown(event, {
+        grid: this.grid,
+        tree: this.rowTree,
+        cellElement: this.cellElement,
+        colIndex: this.args.colIndex,
+        isExpandable: this.isExpandable,
+        isPopoverOpen: this.isPopoverOpen,
+        hasFocusTrap: this.renderFocusTrap
+      })
+    )
       return;
-    }
     if (this.isExpandable) {
       if (this.isPopoverOpen) return;
       if (event.key === keys.ENTER || event.key === keys.F2) {
@@ -857,7 +849,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       isDetails: false,
       schema: this.schema,
       cellContext: this.grid.args.cellContext,
-      row: this.rowData
+      row: this.rowTree.rowData // ember-eui extension (row-tree): `@row`
     };
   }
 
@@ -938,17 +930,18 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
           }}
           {{this.measureAutoHeight this.isAutoHeight}}
         >
-          {{#if this.treeRow}}
+          {{! ember-eui extension (row-tree): indentation, toggle, group content }}
+          {{#if this.rowTree.row}}
             <EuiDataGridTreeCell
               @grid={{@grid}}
-              @row={{this.treeRow}}
+              @row={{this.rowTree.row}}
               @columnId={{this.columnId}}
               @colIndex={{@colIndex}}
-              @isToggleCell={{this.isToggleCell}}
+              @isToggleCell={{this.rowTree.isToggleCell}}
             />
           {{/if}}
-          {{#if this.isGroupRow}}
-            {{! group rows: content from the tree cell above }}
+          {{! ember-eui extension (row-tree): group rows render no value }}
+          {{#if this.rowTree.isGroupRow}}
           {{else if this.renderer}}
             {{#let this.renderer as |Renderer|}}
               <Renderer
@@ -961,7 +954,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                 @isDetails={{false}}
                 @schema={{this.schema}}
                 @cellContext={{@grid.args.cellContext}}
-                @row={{this.rowData}}
+                {{! ember-eui extension (row-tree): @row }}
+                @row={{this.rowTree.rowData}}
               />
             {{/let}}
           {{else if (eq this.kind "data")}}
@@ -995,17 +989,18 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
             }}
             {{this.measureAutoHeight this.isAutoHeight}}
           >
-            {{#if this.treeRow}}
+            {{! ember-eui extension (row-tree): indentation, toggle, group content }}
+            {{#if this.rowTree.row}}
               <EuiDataGridTreeCell
                 @grid={{@grid}}
-                @row={{this.treeRow}}
+                @row={{this.rowTree.row}}
                 @columnId={{this.columnId}}
                 @colIndex={{@colIndex}}
-                @isToggleCell={{this.isToggleCell}}
+                @isToggleCell={{this.rowTree.isToggleCell}}
               />
             {{/if}}
-            {{#if this.isGroupRow}}
-              {{! group rows: content from the tree cell above }}
+            {{! ember-eui extension (row-tree): group rows render no value }}
+            {{#if this.rowTree.isGroupRow}}
             {{else if this.renderer}}
               {{#let this.renderer as |Renderer|}}
                 <Renderer
@@ -1018,7 +1013,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                   @isDetails={{false}}
                   @schema={{this.schema}}
                   @cellContext={{@grid.args.cellContext}}
-                  @row={{this.rowData}}
+                  {{! ember-eui extension (row-tree): @row }}
+                  @row={{this.rowTree.rowData}}
                 />
               {{/let}}
             {{else if (eq this.kind "data")}}
@@ -1110,6 +1106,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         @setCellPopoverProps={{this.setCellPopoverProps}}
                         @cellActions={{CellActions}}
                         @DefaultCellPopover={{DefaultCellPopover}}
+                        {{! ember-eui extension (row-tree): @row }}
+                        @row={{this.rowTree.rowData}}
                       >
                         {{#if this.renderer}}
                           {{#let this.renderer as |Renderer|}}
@@ -1123,13 +1121,15 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                               @isDetails={{true}}
                               @schema={{this.schema}}
                               @cellContext={{@grid.args.cellContext}}
-                              @row={{this.rowData}}
+                              {{! ember-eui extension (row-tree): @row }}
+                              @row={{this.rowTree.rowData}}
                             />
                           {{/let}}
                         {{/if}}
                       </PopoverRenderer>
                     {{/let}}
                   {{else if @hasCellPopoverBlock}}
+                    {{! ember-eui extension (row-tree): `row` in the hash }}
                     {{yield
                       (hash
                         rowIndex=this.rowIndex
@@ -1140,6 +1140,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         setCellPopoverProps=this.setCellPopoverProps
                         cellActions=CellActions
                         DefaultCellPopover=DefaultCellPopover
+                        row=this.rowTree.rowData
                       )
                       to="cellPopover"
                     }}
@@ -1161,7 +1162,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                             @isDetails={{true}}
                             @schema={{this.schema}}
                             @cellContext={{@grid.args.cellContext}}
-                            @row={{this.rowData}}
+                            {{! ember-eui extension (row-tree): @row }}
+                            @row={{this.rowTree.rowData}}
                           />
                         {{/let}}
                       {{else if (eq this.kind "footer")}}

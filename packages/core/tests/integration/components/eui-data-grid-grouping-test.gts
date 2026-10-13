@@ -126,7 +126,7 @@ class Pagination {
   };
 }
 
-module('Integration | Component | EuiDataGrid nested rows & grouping', function (hooks) {
+module('Integration | Component | EuiDataGrid grouping (nested rows)', function (hooks) {
   setupRenderingTest(hooks);
 
   test('without @rowTree/@grouping nothing changes (role=grid, no tree attributes)', async function (assert) {
@@ -198,7 +198,7 @@ module('Integration | Component | EuiDataGrid nested rows & grouping', function 
     assert.dom('[tabindex="0"][data-test-subj=euiDataGridRowToggle]').doesNotExist('the toggle stays out of the tab order');
   });
 
-  test('keyboard: Space toggles, Enter still opens the expandable cell popover', async function (assert) {
+  test('keyboard: Space toggles, Enter still opens the expandable cell popover, leaves keep arrow navigation', async function (assert) {
     await render(
       <template>
         <div style="width:600px">
@@ -218,13 +218,14 @@ module('Integration | Component | EuiDataGrid nested rows & grouping', function 
     assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).hasText('src', 'Enter opens the popover');
     assert.deepEqual(columnTexts(0), ['src', 'README.md']);
 
-    // arrows keep navigating cells
+    // a leaf's ArrowRight keeps navigating cells
     await triggerKeyEvent(document.activeElement!, 'keydown', 'Escape');
     await waitUntil(() => !document.querySelector('[data-test-subj=euiDataGridExpansionPopover]'));
-    cell(0, 0).focus();
-    await triggerKeyEvent(cell(0, 0), 'keydown', 'ArrowRight');
-    await waitUntil(() => document.activeElement === cell(0, 1));
-    assert.strictEqual(document.activeElement, cell(0, 1), 'ArrowRight moves to the next cell');
+    await click(cell(1, 0));
+    await triggerKeyEvent(cell(1, 0), 'keydown', 'ArrowRight');
+    await waitUntil(() => document.activeElement === cell(1, 1));
+    assert.strictEqual(document.activeElement, cell(1, 1), 'ArrowRight on a leaf moves to the next cell');
+    await click(cell(0, 1));
     await triggerKeyEvent(cell(0, 1), 'keydown', ' ');
     assert.deepEqual(columnTexts(0), ['src', 'README.md'], 'Space outside the toggle cell does nothing');
   });
@@ -421,5 +422,52 @@ module('Integration | Component | EuiDataGrid nested rows & grouping', function 
     assert.deepEqual(columnTexts(0), ['src', 'app.ts', 'utils', 'keys.ts', 'README.md'], 'ancestors expanded');
     assert.strictEqual(document.activeElement, cell(3, 1));
     assert.throws(() => api!.setFocusedCell({ rowIndex: 5, colIndex: 0 }), /not a valid row/);
+  });
+
+  test('lazy loading: hasChildren rows expand, then rows get their children', async function (assert) {
+    class Lazy {
+      @tracked rows: Array<Record<string, unknown>> = [
+        { id: 'p', name: 'parent', size: 1, hasChildren: true },
+        { id: 'q', name: 'other', size: 2 }
+      ];
+      onExpandedChange = (ids: string[]) => {
+        if (ids.includes('p') && !this.rows[0]!['children']) {
+          this.rows = [{ ...this.rows[0], children: [{ id: 'c', name: 'child', size: 3 }] }, this.rows[1]!];
+        }
+      };
+    }
+    const lazy = new Lazy();
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid aria-label="Lazy" @columns={{COLUMNS}} @rowTree={{hash rows=lazy.rows onExpandedChange=lazy.onExpandedChange}} @renderCellValue={{RowCell}} @toolbarVisibility={{false}} />
+        </div>
+      </template>
+    );
+    assert.dom(row(0)).hasAttribute('aria-expanded', 'false');
+    await click(el('[data-test-subj=euiDataGridRowToggle]', cell(0, 0)));
+    assert.deepEqual(columnTexts(0), ['parent', 'child', 'other'], 'expansion state survives the rows update (ids)');
+  });
+
+  test('collapsing rows clamps a page index past the last page', async function (assert) {
+    const pagination = new Pagination();
+    let api: EuiDataGridRefProps | undefined;
+    const registerApi = (value: EuiDataGridRefProps) => {
+      api = value;
+    };
+    await render(
+      <template>
+        <div style="width:600px">
+          <EuiDataGrid aria-label="Clamp" @columns={{COLUMNS}} @rowTree={{hash rows=FILES defaultExpandedRowIds="all"}} @renderCellValue={{RowCell}} @pagination={{pagination}} @registerApi={{registerApi}} @toolbarVisibility={{false}} />
+        </div>
+      </template>
+    );
+    pagination.pageIndex = 2;
+    await settled();
+    assert.deepEqual(columnTexts(0), ['README.md']);
+    api!.collapseAll!();
+    await settled();
+    assert.strictEqual(pagination.pageIndex, 0, 'moved to the last page');
+    assert.deepEqual(columnTexts(0), ['src', 'README.md']);
   });
 });

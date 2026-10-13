@@ -319,6 +319,7 @@
       "./components/eui-data-grid/keyboard-shortcuts.js": "./dist/_app_/components/eui-data-grid/keyboard-shortcuts.js",
       "./components/eui-data-grid/pagination.js": "./dist/_app_/components/eui-data-grid/pagination.js",
       "./components/eui-data-grid/row-model.js": "./dist/_app_/components/eui-data-grid/row-model.js",
+      "./components/eui-data-grid/row-tree-hooks.js": "./dist/_app_/components/eui-data-grid/row-tree-hooks.js",
       "./components/eui-data-grid/row.js": "./dist/_app_/components/eui-data-grid/row.js",
       "./components/eui-data-grid/toolbar.js": "./dist/_app_/components/eui-data-grid/toolbar.js",
       "./components/eui-data-grid/tree-cell.js": "./dist/_app_/components/eui-data-grid/tree-cell.js",

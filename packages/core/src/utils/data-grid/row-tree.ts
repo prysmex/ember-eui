@@ -32,6 +32,8 @@ export interface RowTreeNode {
   rowIndex: number;
   group?: RowTreeGroup;
   children: RowTreeNode[];
+  /** Shows a toggle although no children are loaded yet (lazy loading). */
+  canExpand?: boolean;
 }
 
 export interface RowTreeVisibleRow {
@@ -59,6 +61,11 @@ export interface RowTreeSource<T = any> {
   getParentId?: (row: T) => RowId | null | undefined;
   /** Row id. Defaults to `row.id`, else the row's index. */
   getRowId?: (row: T, rowIndex: number) => RowId | null | undefined;
+  /**
+   * Whether a row can expand before its children are loaded (lazy loading).
+   * Defaults to `row.hasChildren === true`.
+   */
+  hasChildren?: (row: T) => boolean;
 }
 
 export interface BuiltRowTree {
@@ -79,6 +86,10 @@ function defaultChildren(row: unknown): unknown[] | undefined {
 function defaultParentId(row: unknown): RowId | null | undefined {
   if (!isObject(row)) return undefined;
   return (row['parentId'] ?? row['parent']) as RowId | null | undefined;
+}
+
+function defaultHasChildren(row: unknown): boolean {
+  return isObject(row) && row['hasChildren'] === true;
 }
 
 function defaultRowId(row: unknown): RowId | null | undefined {
@@ -102,6 +113,7 @@ export function buildRowTree<T>(source: RowTreeSource<T>): BuiltRowTree {
     const id = getRowId(row, rowIndex);
     return id == null ? String(rowIndex) : String(id);
   };
+  const hasChildren = (source.hasChildren ?? defaultHasChildren) as (row: T) => boolean;
 
   if (isNestedRowSource(source)) {
     const getChildren = (source.getChildren ?? defaultChildren) as (row: T) => T[] | null | undefined;
@@ -120,6 +132,7 @@ export function buildRowTree<T>(source: RowTreeSource<T>): BuiltRowTree {
         rowIndex,
         children: []
       };
+      if (hasChildren(row)) node.canExpand = true;
       for (const child of getChildren(row) ?? []) {
         const childNode = visit(child);
         if (childNode) node.children.push(childNode);
@@ -140,7 +153,8 @@ export function buildRowTree<T>(source: RowTreeSource<T>): BuiltRowTree {
       id: idOf(row, rowIndex),
       kind: 'row',
       rowIndex,
-      children: []
+      children: [],
+      ...(hasChildren(row) ? { canExpand: true } : {})
     })
   );
   const byId = new Map<string, RowTreeNode>();
@@ -276,7 +290,7 @@ export function flattenRowTree(
   const visit = (nodes: RowTreeNode[], depth: number, parentId: string | null) => {
     const setSize = nodes.length;
     nodes.forEach((node, index) => {
-      const hasChildren = node.children.length > 0;
+      const hasChildren = node.children.length > 0 || !!node.canExpand;
       const expanded = hasChildren && isExpanded(node);
       result.push({
         id: node.id,
@@ -302,7 +316,7 @@ export function collectExpandableIds(roots: RowTreeNode[]): { row: string[]; gro
   const ids = { row: [] as string[], group: [] as string[] };
   const visit = (nodes: RowTreeNode[]) => {
     for (const node of nodes) {
-      if (!node.children.length) continue;
+      if (!node.children.length && !node.canExpand) continue;
       ids[node.kind].push(node.id);
       visit(node.children);
     }

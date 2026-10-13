@@ -131,6 +131,7 @@ The app's logo (and name) linking home, first in the header.
 | `@rel` | `string` |  | Merged into upstream's secure `rel` (`noreferrer`, plus `noopener` for `_blank`). |
 | `@iconTitle` | `string` |  | Accessible name of the logo. Needed when there is no text in the block. |
 | `@iconType` |  | `'logoElastic'` | The logo, anything `EuiIcon`'s `@type` accepts. |
+| `@logoType` | `'glyph' \| 'horizontal'` |  | `'glyph'` (default) is the Elastic glyph (or `@iconType`); `'horizontal'` is the full Elastic logo with its wordmark, 24px tall. `@iconTitle` is its accessible name, `'Elastic'` by default. |
 
 | Block | Description |
 | --- | --- |

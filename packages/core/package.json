@@ -393,6 +393,7 @@
       "./components/eui-header-link.js": "./dist/_app_/components/eui-header-link.js",
       "./components/eui-header-links.js": "./dist/_app_/components/eui-header-links.js",
       "./components/eui-header-logo.js": "./dist/_app_/components/eui-header-logo.js",
+      "./components/eui-header-logo/elastic-logo-full.js": "./dist/_app_/components/eui-header-logo/elastic-logo-full.js",
       "./components/eui-header-section-item-button.js": "./dist/_app_/components/eui-header-section-item-button.js",
       "./components/eui-header-section-item.js": "./dist/_app_/components/eui-header-section-item.js",
       "./components/eui-header-section.js": "./dist/_app_/components/eui-header-section.js",

@@ -64,10 +64,18 @@ export interface EuiTreeViewSignature {
     showExpansionArrows?: boolean;
     /** @private The root tree's id, for nested levels. */
     treeId?: string;
+    /** @private Whether the root tree has an `<:icon>` block. */
+    hasIconBlock?: boolean;
   };
   Blocks: {
     /** Renders a node's label yourself; yields the node. */
     label: [node: EuiTreeViewNode];
+    /**
+     * Renders the icon of each node that has an `icon` (or an
+     * `iconWhenExpanded`) yourself, inside its icon wrapper (upstream's
+     * per-node icon element). Yields the node and whether it is open.
+     */
+    icon: [node: EuiTreeViewNode, isExpanded: boolean];
   };
 }
 
@@ -337,13 +345,19 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
             {{/if}}
             {{#if (this.hasIcon node)}}
               <span class="euiTreeView__iconWrapper {{this.iconWrapperStyles}}">
-                {{#let (this.iconType node) as |type|}}
-                  {{#if type}}
-                    <EuiIcon @type={{type}} />
-                  {{else}}
-                    <EuiRenderNode @value={{this.iconNode node}} />
-                  {{/if}}
-                {{/let}}
+                {{#if
+                  (if (isBoolean @hasIconBlock) @hasIconBlock (has-block "icon"))
+                }}
+                  {{yield node (this.isOpen node) to="icon"}}
+                {{else}}
+                  {{#let (this.iconType node) as |type|}}
+                    {{#if type}}
+                      <EuiIcon @type={{type}} />
+                    {{else}}
+                      <EuiRenderNode @value={{this.iconNode node}} />
+                    {{/if}}
+                  {{/let}}
+                {{/if}}
               </span>
             {{else if node.useEmptyIcon}}
               <span
@@ -370,8 +384,16 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
                   @showExpansionArrows={{@showExpansionArrows}}
                   @expandByDefault={{this.expandChildNodes}}
                   @treeId={{this.treeId}}
+                  @hasIconBlock={{if
+                    (isBoolean @hasIconBlock)
+                    @hasIconBlock
+                    (has-block "icon")
+                  }}
                   aria-labelledby={{node.id}}
                 >
+                  <:icon as |child isExpanded|>
+                    {{yield child isExpanded to="icon"}}
+                  </:icon>
                   <:label as |child|>
                     {{~#if (has-block "label")~}}
                       {{yield child to="label"}}
@@ -387,6 +409,10 @@ export default class EuiTreeView extends Component<EuiTreeViewSignature> {
       {{/each}}
     </ul>
   </template>
+}
+
+function isBoolean(value: unknown): boolean {
+  return typeof value === 'boolean';
 }
 
 function childrenOf(node: EuiTreeViewNode): EuiTreeViewNode[] {

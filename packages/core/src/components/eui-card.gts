@@ -7,6 +7,7 @@ import { modifier } from 'ember-modifier';
 import { and, eq, not, or } from 'ember-truth-helpers';
 
 import EuiRenderNode from '../-private/eui-render-node.gts';
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import { randomId } from '../-private/random-id.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -89,6 +90,16 @@ type EuiCardComponentArgs = {
     onClickAriaLabel?: string;
     /** Styles composed after the card's own badge styles. */
     css?: EuiCss;
+    /**
+     * Props of the `<span>` wrapping the badge (upstream `anchorProps`):
+     * `className`, `css` (composed after the card's anchor styles) and
+     * any other key as an attribute, e.g. `data-test-subj`.
+     */
+    anchorProps?: {
+      className?: string;
+      css?: EuiCss;
+      [attribute: string]: unknown;
+    };
   };
   /** Text under the title. Use the `<:description>` block for markup. */
   description?: string;
@@ -182,6 +193,9 @@ const INTERACTIVE =
 
 // Upstream factories take the padding size; one memoizable factory each.
 type CardStyles = ReturnType<typeof euiCardStyles>;
+/** `anchorProps` has no arguments: every key but `className`/`css` is an attribute. */
+const NO_ARGS: string[] = [];
+
 type BetaStyles = ReturnType<typeof euiCardBetaBadgeStyles>;
 const PADDINGS: EuiCardPadding[] = ['none', 's', 'm', 'l'];
 const cardFactories = Object.fromEntries(
@@ -458,7 +472,17 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
 
   @cached
   get betaAnchorClass(): string {
-    return euiClass(this.context, this.betaStyles.euiCard__betaBadgeAnchor);
+    const anchorProps = this.args.betaBadgeProps?.anchorProps;
+    return [
+      euiClass(
+        this.context,
+        this.betaStyles.euiCard__betaBadgeAnchor,
+        anchorProps?.css
+      ),
+      anchorProps?.className
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
 
   /** Upstream's `css` on the EuiBetaBadge. */
@@ -609,7 +633,10 @@ export default class EuiCardComponent extends Component<EuiCardSignature> {
         </div>
 
         {{#if @betaBadgeProps.label}}
-          <span class="euiCard__betaBadgeAnchor {{this.betaAnchorClass}}">
+          <span
+            class="euiCard__betaBadgeAnchor {{this.betaAnchorClass}}"
+            {{spreadAttributes @betaBadgeProps.anchorProps NO_ARGS}}
+          >
             <EuiBetaBadge
               id={{this.betaBadgeId}}
               class="euiCard__betaBadge"

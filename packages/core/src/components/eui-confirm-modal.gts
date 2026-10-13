@@ -44,6 +44,12 @@ export interface EuiConfirmModalSignature {
      * Defaults to the modal itself.
      */
     defaultFocusedButton?: 'confirm' | 'cancel';
+    /**
+     * Element to focus when the modal opens, as `EuiModal`'s
+     * `@initialFocus` (a CSS selector, an element or a function returning
+     * one). Wins over `@defaultFocusedButton`.
+     */
+    initialFocus?: EuiModalSignature['Args']['initialFocus'];
     /** Disables the confirm button, e.g. until a checkbox is checked. */
     confirmButtonDisabled?: boolean;
     /** Shows a spinner in the confirm button while the action runs. */
@@ -96,6 +102,7 @@ export default class EuiConfirmModal extends Component<EuiConfirmModalSignature>
 
   /** Upstream focuses the button after the focus trap settles. */
   get initialFocus() {
+    if (this.args.initialFocus) return this.args.initialFocus;
     const which = this.args.defaultFocusedButton;
     if (which !== CANCEL_BUTTON && which !== CONFIRM_BUTTON) return undefined;
     return () => {

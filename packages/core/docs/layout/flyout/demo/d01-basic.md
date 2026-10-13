@@ -2,58 +2,70 @@
 order: 1
 ---
 
-# Basic flyout
+# Component
 
-<EuiText>
+<EuiCallOut @title="Accessibility requirement" @iconType="accessibility" @color="warning">
+  Use <code>aria-labelledby</code> pointing at the flyout's title id to ensure
+  the flyout is announced to screen readers.
+</EuiCallOut>
 
-A flyout with a header and a body. By default it is medium sized, opens
-on the right and masks the page.
+<EuiSpacer />
 
-</EuiText>
-
-```hbs template
-<EuiButton {{on 'click' this.openFlyout}}>
-  A typical flyout
-</EuiButton>
-{{#if this.flyoutOpen}}
-  <EuiFlyout
-    @size='m'
-    @onClose={{this.closeFlyout}}
-  >
-    <EuiFlyoutHeader @hasBorder={{true}}>
-      <EuiTitle @size='l'>A typical flyout</EuiTitle>
-    </EuiFlyoutHeader>
-    <EuiFlyoutBody>
-      <EuiText>
-        For consistency across the many flyouts, please utilize the following code for implementing the flyout with a header.
-      </EuiText>
-      <EuiCodeBlock
-        @isCopyable={{false}}
-        @language="html"
-      >
-        Some code
-      </EuiCodeBlock>
-    </EuiFlyoutBody>
-  </EuiFlyout>
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { EuiButton, EuiCodeBlock, EuiFlyout, EuiFlyoutBody, EuiFlyoutHeader, EuiText, EuiTitle } from '@ember-eui/core/components';
 
-export default class DemoFlyoutDemo1Component extends Component {
-  @tracked flyoutOpen = false;
+export default class FlyoutBasicComponent extends Component {
+  @tracked isFlyoutVisible = false;
+
+  htmlCode = `<EuiFlyout @onClose={{this.closeFlyout}} aria-labelledby="flyoutTitle">
+  <EuiFlyoutHeader @hasBorder={{true}}>
+    <EuiTitle @size="m" id="flyoutTitle">...</EuiTitle>
+  </EuiFlyoutHeader>
+  <EuiFlyoutBody>
+    ...
+  </EuiFlyoutBody>
+</EuiFlyout>
+`;
 
   @action
-  openFlyout() {
-    this.flyoutOpen = true;
+  showFlyout() {
+    this.isFlyoutVisible = true;
   }
 
   @action
-  closeFlyout(flyout) {
-    this.flyoutOpen = false;
+  closeFlyout() {
+    this.isFlyoutVisible = false;
   }
+
+  <template>
+  <EuiButton {{on "click" this.showFlyout}}>
+    Show flyout
+  </EuiButton>
+
+  {{#if this.isFlyoutVisible}}
+    <EuiFlyout
+      @ownFocus={{true}}
+      @onClose={{this.closeFlyout}}
+      aria-labelledby="simpleFlyoutTitle"
+    >
+      <EuiFlyoutHeader @hasBorder={{true}}>
+        <EuiTitle @size="m" id="simpleFlyoutTitle">A typical flyout</EuiTitle>
+      </EuiFlyoutHeader>
+      <EuiFlyoutBody>
+        <EuiText>
+          <p>
+            For consistency across the many flyouts, please utilize the
+            following code for implementing the flyout with a header.
+          </p>
+        </EuiText>
+        <EuiCodeBlock @language="html" @isCopyable={{false}}>{{this.htmlCode}}</EuiCodeBlock>
+      </EuiFlyoutBody>
+    </EuiFlyout>
+  {{/if}}
+  </template>
 }
 ```

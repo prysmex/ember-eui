@@ -16,8 +16,10 @@ order: 3
   argument.
 </EuiText>
 
-```hbs template
-<EuiSpacer />
+```gjs component
+import { EuiAccordion, EuiPanel, EuiSpacer, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiAccordion @paddingSize='l'>
   <:buttonContent>
     An accordion with padding applied through props
@@ -50,7 +52,7 @@ order: 3
 <EuiSpacer />
 <EuiAccordion @paddingSize='m'>
   <:buttonContent>
-    A third accordion with nested accordion
+    A third accordion with a nested accordion
   </:buttonContent>
   <:content>
     <EuiText @size='s'>
@@ -74,4 +76,5 @@ order: 3
     </EuiAccordion>
   </:content>
 </EuiAccordion>
+</template>
 ```

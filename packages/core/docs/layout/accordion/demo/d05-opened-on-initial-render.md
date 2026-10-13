@@ -10,7 +10,10 @@ order: 5
   argument to open the accordion when first rendered.
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiAccordion, EuiPanel } from '@ember-eui/core/components';
+
+<template>
 <EuiAccordion @initialIsOpen={{true}}>
   <:buttonContent>
     I am opened by default. Click me to toggle close / open
@@ -23,4 +26,5 @@ order: 5
     </EuiPanel>
   </:content>
 </EuiAccordion>
+</template>
 ```

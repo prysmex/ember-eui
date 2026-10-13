@@ -35,6 +35,144 @@ mask closes it only with `@clickOutsideToClose={{true}}`, since modals
 usually hold an important decision. Always offer a button that closes
 the modal.
 
+
+<EuiCallOut @title="Modal vs flyout" @iconType="info" @size="s">
+  If your modal content is complex or takes a long time to complete, consider
+  using an <strong>EuiFlyout</strong> instead.
+</EuiCallOut>
+
+### Focus management
+
+`EuiModal` manages focus for keyboard navigation and accessibility. This
+ensures users can navigate modal content effectively, especially those using
+screen readers or keyboard-only navigation. When an `EuiModal` is used, it
+will automatically:
+
+1. Move focus to the modal when opened
+2. Trap focus inside the modal while open
+3. Return focus to the trigger element when closed
+
+Use `@initialFocus` (a selector, element or function) to choose what is focused
+on open, and `@focusTrapOptions` (e.g.
+`@focusTrapOptions={{hash returnFocusOnDeactivate=false}}`) to manage returning
+focus yourself.
+
+<EuiCallOut @title="Manually return focus when the trigger element is removed" @color="warning" @iconType="warning" @size="s">
+  If the trigger element is removed from the DOM before the modal closes, focus
+  will be "lost" to the document body. In this case, manually return focus to
+  an appropriate element.
+</EuiCallOut>
+
+### Confirming an action
+
+Use a modal when you need to interrupt a user and ask them to confirm an
+action. Structure:
+
+1. **Title** (mandatory)
+   - Whenever possible, frame it as a question that provides context for the
+     action. Don't use "Are you sure?"
+   - Focus the question on what's important to the user and in a way that
+     assumes intent from them. For example `Discard 7 changes?` instead of
+     `Exit without saving?`
+   - Avoid including text variables in the title, especially for things users
+     can input without character limits, such as object labels. For example,
+     `Apply configuration changes?` instead of `Apply configuration changes to
+     Loremipsum-dolorsitamet-consectetur-adipiscing-elit deployment?`
+2. **Body** (mandatory)
+   - **Cause** (optional): if the context is important to know, add it.
+   - **Consequences** (mandatory): let users know what happens if they
+     continue. If possible, list the objects that may be impacted. Don't
+     repeat the title.
+   - **More information** (optional): if necessary, anticipate user questions
+     by including a link to a relevant source of information (like docs).
+3. **Calls to action** (mandatory)
+   - The main action confirms the question asked in the title. If there's
+     enough space and it is relevant, include the number of impacted objects
+     and their noun. For example `Invite 3 users` instead of `Send invite`.
+   - Always provide a secondary CTA that allows users to leave the prompt
+     without taking an action. Not all choices are binary: add a third CTA when
+     it makes sense for common actions users would want to do.
+   - Make sure each CTA is explicit and not ambiguous with the other CTAs next
+     to it.
+
+### Confirming a destructive action
+
+Asking to confirm a delete or remove action follows the same principles as the
+default pattern, with these additions:
+
+- The main CTA is extra clear on what is about to be deleted with a clear noun,
+  in addition to visual clues (`@buttonColor="danger"`).
+- The body is unambiguous about what won't be recoverable after the action is
+  confirmed.
+- Optionally, and depending on the importance of the destructive action, you
+  may include an extra confirmation within the body of the modal. If you do so,
+  use something generic, such as "delete", that users can copy easily and that
+  will remind them of what they are actually deleting.
+
+## Guidelines
+
+A modal says "pay attention to me and nothing else."
+
+- **The header sets the context.** Short and sentence-case, the header should
+  indicate what the modal is about.
+- **The body is for a single task.** This task should not require a lot of
+  explanation or user interaction.
+- **Buttons are right-aligned.** The primary action is a filled button, and the
+  secondary action is a link button. Labels should use strong action verbs.
+
+### Use a modal to focus on a single action
+
+A modal can gather input necessary for continuing the current workflow. This
+type of modal works best for a short, focused task. Use input modals
+sparingly, they interrupt the user's workflow.
+
+- Do: a save action is a good use case for a modal. The meaning is clear and
+  the content is simple.
+- Don't: modals aren't the best design solution for multiple steps or complex
+  user input. An in-page form is more appropriate.
+- **Open a modal on a user action.** Let a user action, such as a button click,
+  open a modal. Don't open a modal from a toolbar action, users don't expect it.
+- **Avoid scrolling content.** Modal content should fit in a single view. If
+  your modal has a lot of detail or a long list of items, consider a different
+  solution, such as a form or a table.
+- **Don't stack modals.** Opening a modal on top of a modal might mean your
+  workflow is too complex. Instead, use a component that supports multiple
+  steps, such as a form or steps.
+
+### Use a modal to confirm an action
+
+The most common use of modals is to confirm a user action. This modal should
+start with a question, give users enough information to make a decision, and
+restate the action in the button label.
+
+- Do: use a modal for confirmation when the user might lose data. For the body
+  text, use one to two short sentences that explain the consequences.
+- Don't: confirmations aren't good for messages. Toasts are best for success
+  messages because they are less disruptive. Error and warning messages often
+  appear directly on the page.
+
+### State the action in both the header and button text
+
+- Do: use the same action verbs in the header and button text.
+- Don't: use a vague header such as "Are you sure?" or the button labels "Yes"
+  and "No."
+
+### Create separate confirmations for single and bulk actions
+
+- Do: asking users to delete a single item should include the item name in the
+  title, if possible. Use single quotes around the name if it helps clarify
+  meaning.
+- Do: for bulk actions, include the number of items in the title.
+
+### Sometimes a header and buttons are enough
+
+You can omit the body if users understand the decision from the header and
+button text alone.
+
+- Do: the header alone is enough when the modal asks the user whether to remove
+  an index pattern, since data won't be lost.
+- Don't: write body text that simply repeats the title. It doesn't add value.
+
 </EuiText>
 
 <EuiHorizontalRule />

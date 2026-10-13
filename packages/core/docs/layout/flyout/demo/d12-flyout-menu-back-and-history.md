@@ -1,8 +1,8 @@
 ---
-order: 10
+order: 12
 ---
 
-# Flyout menu
+# Flyout menu with back button and history
 
 <EuiText>
 
@@ -15,35 +15,12 @@ with it.
 
 </EuiText>
 
-```hbs template
-<EuiButton {{on 'click' this.openFlyout}}>
-  Open flyout with a menu
-</EuiButton>
-{{#if this.isOpen}}
-  <EuiFlyout @onClose={{this.closeFlyout}} @hideCloseButton={{true}} aria-labelledby='menu-flyout-title'>
-    <EuiFlyoutMenu
-      @title='Page {{this.page}}'
-      @titleId='menu-flyout-title'
-      @showBackButton={{this.hasHistory}}
-      @backButtonProps={{this.backButtonProps}}
-      @historyItems={{this.historyItems}}
-      @trailingActions={{this.actions}}
-      @onClose={{this.closeFlyout}}
-    />
-    <EuiFlyoutBody>
-      <EuiText>
-        <p>Page {{this.page}}</p>
-        <EuiButton @size='s' {{on 'click' this.next}}>Go to the next page</EuiButton>
-      </EuiText>
-    </EuiFlyoutBody>
-  </EuiFlyout>
-{{/if}}
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { EuiButton, EuiFlyout, EuiFlyoutBody, EuiFlyoutMenu, EuiText } from '@ember-eui/core/components';
 
 export default class DemoFlyoutMenuComponent extends Component {
   @tracked isOpen = false;
@@ -99,5 +76,30 @@ export default class DemoFlyoutMenuComponent extends Component {
     this.history = this.history.slice(this.history.indexOf(page) + 1);
     this.page = page;
   }
+
+  <template>
+  <EuiButton {{on 'click' this.openFlyout}}>
+    Open flyout with a menu
+  </EuiButton>
+  {{#if this.isOpen}}
+    <EuiFlyout @onClose={{this.closeFlyout}} @hideCloseButton={{true}} aria-labelledby='menu-flyout-title'>
+      <EuiFlyoutMenu
+        @title='Page {{this.page}}'
+        @titleId='menu-flyout-title'
+        @showBackButton={{this.hasHistory}}
+        @backButtonProps={{this.backButtonProps}}
+        @historyItems={{this.historyItems}}
+        @trailingActions={{this.actions}}
+        @onClose={{this.closeFlyout}}
+      />
+      <EuiFlyoutBody>
+        <EuiText>
+          <p>Page {{this.page}}</p>
+          <EuiButton @size='s' {{on 'click' this.next}}>Go to the next page</EuiButton>
+        </EuiText>
+      </EuiFlyoutBody>
+    </EuiFlyout>
+  {{/if}}
+  </template>
 }
 ```

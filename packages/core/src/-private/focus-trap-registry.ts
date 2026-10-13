@@ -17,6 +17,7 @@ interface Entry {
 }
 
 const active = new Set<Entry>();
+const entries = new WeakMap<FocusTrap, Entry>();
 
 const containersOf = (entry: Entry) => [...entry.base, ...entry.extra];
 
@@ -42,6 +43,7 @@ export function createRegisteredFocusTrap(
     }
   });
 
+  entries.set(entry.trap, entry);
   return entry.trap;
 }
 
@@ -84,3 +86,20 @@ export function attachToFocusTraps(
  */
 export const focusTrapFactory =
   createRegisteredFocusTrap as unknown as () => void;
+
+/** Every container (base, shards and attached surfaces) of a registered trap. */
+export function focusTrapContains(trap: FocusTrap, target: Node): boolean {
+  const entry = entries.get(trap);
+  return entry ? containersOf(entry).some((c) => c.contains(target)) : false;
+}
+
+/** Replaces the base containers of a registered trap (e.g. when shards change). */
+export function setFocusTrapContainers(
+  trap: FocusTrap,
+  containers: HTMLElement[]
+): void {
+  const entry = entries.get(trap);
+  if (!entry) return;
+  entry.base = containers;
+  trap.updateContainerElements(containersOf(entry));
+}

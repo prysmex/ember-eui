@@ -461,5 +461,17 @@
   ],
   "packages/validated-form/docs/validated-form.md": [
     "ValidatedForm"
+  ],
+  "packages/core/docs/utilities/focus-trap/index.md": [
+    "EuiFocusTrap"
+  ],
+  "packages/core/docs/utilities/window-event/index.md": [
+    "EuiWindowEvent"
+  ],
+  "packages/core/docs/utilities/inner-text/index.md": [
+    "EuiInnerText"
+  ],
+  "packages/core/docs/utilities/provider/index.md": [
+    "EuiEmotionProvider"
   ]
 }

@@ -71,6 +71,7 @@ import EuiFlexGrid from './components/eui-flex-grid.gts';
 import EuiFlexGroup from './components/eui-flex-group.gts';
 import EuiFlexItem from './components/eui-flex-item.gts';
 import EuiFlyout from './components/eui-flyout.gts';
+import EuiFocusTrap from './components/eui-focus-trap.gts';
 import EuiFlyoutBody from './components/eui-flyout-body.gts';
 import EuiFlyoutFooter from './components/eui-flyout-footer.gts';
 import EuiFlyoutHeader from './components/eui-flyout-header.gts';
@@ -243,6 +244,7 @@ import EuiTextColor from './components/eui-text-color.gts';
 import EuiTextDiff from './components/eui-text-diff.gts';
 import EuiTextTruncate from './components/eui-text-truncate.gts';
 import EuiTimeline from './components/eui-timeline.gts';
+import EuiWindowEvent from './components/eui-window-event.gts';
 import EuiTimelineItem from './components/eui-timeline-item.gts';
 import EuiTimelineItemEvent from './components/eui-timeline-item-event.gts';
 import EuiTimelineItemIcon from './components/eui-timeline-item-icon.gts';
@@ -332,6 +334,7 @@ export {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFlyout,
+  EuiFocusTrap,
   EuiFlyoutBody,
   EuiFlyoutFooter,
   EuiFlyoutHeader,
@@ -504,6 +507,7 @@ export {
   EuiTextDiff,
   EuiTextTruncate,
   EuiTimeline,
+  EuiWindowEvent,
   EuiTimelineItem,
   EuiTimelineItemEvent,
   EuiTimelineItemIcon,

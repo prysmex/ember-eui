@@ -12,16 +12,16 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiTourStep | no `useEuiTour` hook (`EuiTour` yields the same state and actions; deliberately not added) |
 | EuiMarkdownEditor | `toolbarProps`; `getDefaultEuiMarkdownPlugins` exclude only `tooltip` (button stays); no link validator |
 | EuiI18n | multi-token lookup, component-valued interpolation; no `EuiContext` |
-| Missing components | `EuiFocusTrap`, `EuiWindowEvent` |
-| Illustrations | `@elastic/eui-illustrations` not installed: no catalog/gallery |
-| Not documented | utilities pages: error-boundary, html-id-generator, inner-text, pretty-duration, provider, container-queries, css-utility-classes, color-palettes, scroll |
+| Illustrations | no live searchable gallery on the site: needs `@elastic/eui-illustrations` as a site devDependency (core takes it as an optional app install, documented; see gaps-utils-handoff.md). TODO once installed |
+| Color palettes | `euiPaletteColorBlind`, `ForStatus`, `ForTemperature`, `Cool`, `Warm`, `Gray`, `Negative`, `Positive` and `BehindText` return EUI's classic colors, not the Borealis vis colors, and take no `colors` option (only Red/Green/SkyBlue/Yellow/Orange do); `euiPaletteComplimentary` is upstream's `euiPaletteComplementary` (different values: vis colors); no `EUI_VIS_COLOR_STORE`, no `useEuiPalette*` hooks |
+| Utilities | no `useEuiContainerQuery`, no `euiXScroll`/horizontal overflow helper, no standalone `PrettyDuration`/`usePrettyDuration` (see super-date-picker-handoff.md), no EuiErrorBoundary (Glimmer has no equivalent), no global `eui-*` utility classes or `componentDefaults` |
+| EuiFocusTrap | react-focus-on's `as`, `lockProps`, `inert`, `whiteList`, `focusLock`, `allowPinchZoom`, `preventScrollOnFocus` and the `data-focus-guard` sentinels; `EuiProvider componentDefaults` |
 
 ## Forms
 
 | Component | Missing prop/feature |
 | --- | --- |
 | EuiSearchBar | `box` prepend/append/onClick/onFocus/onBlur; filter option `view` as markup |
-| EuiDatePicker | no calendar picker in core (flatpickr/pikaday packages) |
 
 ## Tables and data grid
 
@@ -35,3 +35,7 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature | Upstream page | Effort | Notes |
 |---|---|---|---|---|
+
+## Decisions
+
+- EuiDatePicker: calendars live in `@ember-eui/flatpickr` and `@ember-eui/pikaday`, not in core.

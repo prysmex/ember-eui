@@ -1,5 +1,5 @@
 ---
-	order: 2
+order: 2
 ---
 
 # Copy to clipboard function
@@ -11,6 +11,7 @@
 </EuiText>
 
 ```hbs template
+<EuiCommentList aria-label='Copy to clipboard example'>
 <EuiComment>
   <:username>
     Gusteau
@@ -19,7 +20,7 @@
     added a comment
   </:event>
   <:timestamp>
-    on tuesday
+    on {{this.date}}
   </:timestamp>
   <:actions>
     <EuiToolTip @content={{this.tooltipText}}>
@@ -29,7 +30,6 @@
           aria-label='Copy text to clipboard'
           @color='text'
           @iconType='copy'
-          @onClick={{this.onClick}}
           {{on 'click' this.onClick}}
           {{on 'blur' (set this 'isTextCopied' false)}}
         />
@@ -42,6 +42,7 @@
     </EuiText>
   </:body>
 </EuiComment>
+</EuiCommentList>
 ```
 
 ```javascript component
@@ -53,6 +54,7 @@ import { copyToClipboard } from '@ember-eui/core/utils/copy-to-clipboard';
 export default class OutsideClickDetectorComponentDemo1 extends GlimmerComponent {
   @tracked isTextCopied = false;
   buttonRef = null;
+  date = new Date().toLocaleDateString(undefined, { dateStyle: 'long' });
 
   text =
     'You must be imaginative, strong-hearted. You must try things that may not work, and you must not let anyone define your limits because of where you come from. Your only limit is your soul. What I say is true—anyone can cook… but only the fearless can be great.';

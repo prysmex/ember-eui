@@ -9,7 +9,7 @@ order: 2
     </EuiText>
 
 ```gjs component
-import { EuiFlexGroup, EuiFlexItem, EuiImage } from '@ember-eui/core/components';
+import { EuiFlexGroup, EuiFlexItem, EuiImage, EuiLink } from '@ember-eui/core/components';
 
 <template>
 <EuiFlexGroup @justifyContent="spaceEvenly">
@@ -27,13 +27,20 @@ import { EuiFlexGroup, EuiFlexItem, EuiImage } from '@ember-eui/core/components'
   <EuiFlexItem @grow={{false}}>
     <EuiImage
       @allowFullScreen={{true}}
-      @caption="Browser usage on Wikimedia (CC BY 3.0)"
       @alt="Pie chart describing browser usage on Wikimedia on October 2011. Internet Explorer occupies 34 percent, Firefox occupies 23 percent, Chrome occupies 20 percent, Safari occupies 11 percent, Opera occupies 5%, Android occupies 1.9 percent, and other browsers occupy 3.5 percent."
       @src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Wikimedia_browser_share_pie_chart.png"
       @fullScreenIconColor="dark"
       @size={{300}}
       style="padding: 20px 30px; background: white;"
-    />
+    >
+      <:caption>
+        Browser usage on
+        <EuiLink
+          @href="https://commons.wikimedia.org/wiki/File:Wikimedia_browser_share_pie_chart.png"
+          @target="_blank"
+        >Wikimedia (CC BY 3.0)</EuiLink>
+      </:caption>
+    </EuiImage>
   </EuiFlexItem>
 </EuiFlexGroup>
 </template>

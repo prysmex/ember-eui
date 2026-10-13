@@ -52,8 +52,9 @@ module('Integration | Component | eui-call-out', function (hooks) {
 
     assert.dom('.euiCallOut button.euiCallOutAction').hasText('Update now').hasAttribute('data-test-subj', 'p-action');
     assert.dom('.euiCallOut a.euiCallOutAction.extra').hasText('Learn more').hasAttribute('href', '#learn');
-    assert.dom('button.euiCallOutAction').hasClass('euiButton--small').hasClass('euiButton--warning');
-    assert.dom('a.euiCallOutAction').hasClass('euiButtonEmpty--small').hasClass('euiButtonEmpty--warning');
+    // Emotion labels carry the size and color (`…-s-base-warning`)
+    assert.ok(/-s-.*warning/.test(document.querySelector('button.euiCallOutAction')!.className), 'small, warning button');
+    assert.ok(/-s-.*warning/.test(document.querySelector('a.euiCallOutAction')!.className), 'small, warning empty button');
 
     await click('button.euiCallOutAction');
     assert.deepEqual(clicks, ['primary']);

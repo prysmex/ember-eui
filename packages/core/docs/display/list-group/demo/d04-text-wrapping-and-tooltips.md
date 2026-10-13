@@ -6,9 +6,11 @@ order: 4
 
 <EuiText>
 
-Long item labels are truncated to one line by default. `@wrapText` on an item (or on **EuiListGroup**) wraps the text instead, for lists inside narrow containers.
+Optional arguments `@showToolTip` and `@wrapText` can be used to augment the display of list items. Use these when lists are inside small containers where it is likely that the content will be truncated. `@showToolTips` on **EuiListGroup** turns the tooltip on for all of its items.
 
-Upstream's `showToolTips`, `toolTipText` and `toolTipProps` are not available on **EuiListGroup** yet; wrap an item's content in an **EuiToolTip** yourself when you need one.
+Similarly, `@toolTipText` can be used to provide tooltip text. By default, the tooltip has the same text as the `@label`.
+
+You can also use `@toolTipProps`, an object of **EuiToolTip** arguments, to customize tooltip placement, title and other behaviors.
 
 </EuiText>
 
@@ -21,13 +23,22 @@ export default class WrapTextDemo extends Component {
   @action
   noop() {}
 
+  fourthToolTip = { position: 'top', title: 'Title of record' };
+
   <template>
-    <EuiListGroup>
-      <EuiListGroupItem @onClick={{this.noop}} @label="First item" />
+    <EuiListGroup @showToolTips={{true}}>
+      <EuiListGroupItem
+        @onClick={{this.noop}}
+        @label="First item"
+        @toolTipText="This is tooltip text"
+      />
 
       <EuiListGroupItem @onClick={{this.noop}} @label="Second item" />
 
-      <EuiListGroupItem @onClick={{this.noop}}>
+      <EuiListGroupItem
+        @onClick={{this.noop}}
+        @toolTipText="Third very, very long item that will surely force truncation"
+      >
         <span>
           Third very, very long item that
           <strong>will surely</strong>
@@ -39,6 +50,7 @@ export default class WrapTextDemo extends Component {
         @onClick={{this.noop}}
         @wrapText={{true}}
         @label="Fourth very long item with wrapping enabled, custom props, and will not force truncation."
+        @toolTipProps={{this.fourthToolTip}}
       />
     </EuiListGroup>
   </template>

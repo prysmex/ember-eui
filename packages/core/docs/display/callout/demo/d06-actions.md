@@ -6,44 +6,53 @@ order: 6
 
 <EuiText>
 
-Use the `<:actions>` block to add up to two actions to a callout: a primary `EuiButton` and a secondary `EuiButtonEmpty` (both `@size="s"`, with the `@color` of the callout). Upstream configures these through an `actionProps` argument, which Ember EUI replaces with the block.
+Use `@actionProps` to add up to two actions to a callout. The `primary` action renders as an **EuiButton** and the `secondary` action renders as an **EuiButtonEmpty**. Color and size are automatically matched to the callout and can't be customized. An action takes `children` (its text), `onClick`, `href`, `target`, `iconType`, `isDisabled`, `isLoading`, `className`, `data-test-subj` and `tooltipProps` (the arguments of **EuiToolTip**).
 
 A secondary action can be provided on its own, but most commonly is paired with a primary action.
+
+For other buttons, or anything custom, use the `<:actions>` block: it renders after the actions from `@actionProps`.
 
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
-import { EuiButton, EuiButtonEmpty, EuiCallOut, EuiSpacer } from '@ember-eui/core/components';
-import { on } from '@ember/modifier';
+import { EuiButton, EuiCallOut, EuiSpacer } from '@ember-eui/core/components';
 
 export default class CallOutActionsDemo extends Component {
   noop = () => {};
+
+  updateActions = {
+    primary: { children: 'Update now', onClick: this.noop },
+    secondary: { children: 'Learn more', href: '#' },
+  };
+
+  sessionActions = {
+    primary: { children: 'Stay signed in', onClick: this.noop },
+  };
 
   <template>
     <EuiCallOut
       @title="Your index needs to be updated"
       @color="warning"
       @text="This operation may take a few minutes. You can continue using the app while it runs."
-    >
-      <:actions>
-        <EuiButton @size="s" @color="warning" @fill={{true}} {{on "click" this.noop}}>
-          Update now
-        </EuiButton>
-        <EuiButtonEmpty @size="s" @color="warning" @href="#">Learn more</EuiButtonEmpty>
-      </:actions>
-    </EuiCallOut>
+      @actionProps={{this.updateActions}}
+    />
 
     <EuiSpacer />
 
-    <EuiCallOut @title="Your session is about to expire" @color="danger">
+    <EuiCallOut
+      @title="Your session is about to expire"
+      @color="danger"
+      @actionProps={{this.sessionActions}}
+    />
+
+    <EuiSpacer />
+
+    <EuiCallOut @title="Custom actions through the block" @color="success">
       <:actions>
-        <EuiButton @size="s" @color="danger" @fill={{true}} {{on "click" this.noop}}>
-          Stay signed in
-        </EuiButton>
+        <EuiButton @size="s" @color="success" @fill={{true}}>Continue</EuiButton>
       </:actions>
     </EuiCallOut>
   </template>
 }
 ```
-

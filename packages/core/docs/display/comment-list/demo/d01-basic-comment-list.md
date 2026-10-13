@@ -6,7 +6,7 @@ order: 1
 
 <EuiText>
 
-Use **EuiCommentList** to display a list of **EuiComment**s. Upstream passes an array of comment objects to a `comments` argument; in Ember EUI each comment is an **EuiComment** inside the list, and its parts are given as the named blocks `<:username>`, `<:event>`, `<:timestamp>`, `<:actions>` and `<:body>`.
+Use **EuiCommentList** to display a list of **EuiComment**s. Each comment is an **EuiComment** inside the list, and its parts are given as the named blocks `<:username>`, `<:event>`, `<:timestamp>`, `<:actions>` and `<:body>`. To render comments from data instead, pass an array to `@comments` (see the "Comments from data" example).
 
 </EuiText>
 

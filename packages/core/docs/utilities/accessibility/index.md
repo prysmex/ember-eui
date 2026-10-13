@@ -13,6 +13,8 @@ Helpers for content that only screen reader and keyboard users need.
 - **`EuiScreenReaderOnly`** hides its content visually but keeps it for
   screen readers, e.g. the text of an icon-only control or extra context
   in a table. `@showOnFocus` shows it while something in it has focus.
+- **`EuiScreenReaderLive`** and **`EuiLiveAnnouncer`** announce dynamic
+  content such as status changes (see also the Live regions page).
 - **`EuiSkipLink`** is a "Skip to main content" link, hidden until a
   keyboard user tabs to it, so they can jump past the header.
 

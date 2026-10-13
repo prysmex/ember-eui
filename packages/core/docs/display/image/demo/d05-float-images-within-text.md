@@ -1,5 +1,5 @@
 ---
-order: 4
+order: 5
 ---
 
 # Float images within text
@@ -8,6 +8,12 @@ order: 4
 <p>When using <EuiCode @language="text">EuiImage</EuiCode> within <EuiCode @language="text">EuiText</EuiCode> it is often useful to apply floats. Almost always you'll want to pair the <EuiCode @language="text">@float</EuiCode> argument usage, with a <EuiCode @language="text">@margin</EuiCode> argument usage to give space around your image. Margins, when used in combo with floats, will adjust depending upon the position of the float.</p>
 </EuiText>
 
+<EuiSpacer />
+
+<EuiCallOut @title="Be careful with floats" @color="warning" @iconType="warning">
+  <p>Floats should only be used on images within <strong>large</strong> bodies of text. Specifically, we only suggest using them with <code>EuiText</code> which automatically clears floats.</p>
+</EuiCallOut>
+
 ```hbs template
 <EuiText>
   <EuiImage
@@ -15,10 +21,10 @@ order: 4
     @float='right'
     @margin='l'
     @hasShadow={{true}}
-    @caption='Random nature image'
+    @caption="A randomized image"
     @allowFullScreen={{true}}
-    @alt='Random nature image'
-    @url='https://picsum.photos/800/500'
+    @alt=""
+    @src='https://picsum.photos/800/500'
   />
   <p>Eius et sunt. Nisi neque quis. Quae expedita non iure odit qui consequatur
     beatae. Quos laboriosam voluptas eaque aut nostrum blanditiis sint aut enim.
@@ -52,9 +58,9 @@ order: 4
     @margin='l'
     @hasShadow={{true}}
     @allowFullScreen={{true}}
-    @caption='Another random image'
-    @alt='Random nature image'
-    @url='https://picsum.photos/300/300'
+    @caption="Another randomized image"
+    @alt=""
+    @src='https://picsum.photos/300/300'
   />
   <p>Earum ea voluptatibus reprehenderit dolorum non et aperiam eum non.
     Expedita doloribus itaque. Consectetur non et aut sit quis inventore eos et.

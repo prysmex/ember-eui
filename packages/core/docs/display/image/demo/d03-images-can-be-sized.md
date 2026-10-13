@@ -11,65 +11,77 @@ order: 3
 ```hbs template
 <div>
   <EuiImage
+    class="eui-textLeft"
+    @size={{50}}
     @hasShadow={{true}}
     @allowFullScreen={{true}}
-    @size='{{50}}'
-    @caption='Custom size (50)'
-    @alt='Accessible image alt goes here'
-    @url='https://source.unsplash.com/1000x1000/?Nature'
+    @caption="Custom size (50)"
+    @alt={{this.alt}}
+    @src={{this.src}}
   />
   <EuiSpacer />
   <EuiImage
-    @size='s'
+    @size="s"
     @hasShadow={{true}}
     @allowFullScreen={{true}}
-    @caption='Small'
-    @alt='Accessible image alt goes here'
-    @url='https://source.unsplash.com/1000x1000/?Nature'
+    @caption="Small"
+    @alt={{this.alt}}
+    @src={{this.src}}
   />
   <EuiSpacer />
   <EuiImage
-    @size='m'
+    @size="m"
     @hasShadow={{true}}
     @allowFullScreen={{true}}
-    @caption='Medium'
-    @alt='Accessible image alt goes here'
-    @url='https://source.unsplash.com/1000x1000/?Nature'
+    @caption="Medium"
+    @alt={{this.alt}}
+    @src={{this.src}}
   />
   <EuiSpacer />
   <EuiImage
-    @size='l'
+    @size="l"
     @hasShadow={{true}}
     @allowFullScreen={{true}}
-    @caption='Large'
-    @alt='Accessible image alt goes here'
-    @url='https://source.unsplash.com/1000x1000/?Nature'
+    @caption="Large"
+    @alt={{this.alt}}
+    @src={{this.src}}
   />
   <EuiSpacer />
   <EuiImage
-    @size='xl'
+    @size="xl"
     @hasShadow={{true}}
     @allowFullScreen={{true}}
-    @caption='Extra large'
-    @alt='Accessible image alt goes here'
-    @url='https://source.unsplash.com/1000x1000/?Nature'
-  />
-  <EuiSpacer />
-  <EuiImage
-    @hasShadow={{true}}
-    @allowFullScreen={{true}}
-    @caption='Original'
-    @alt='Accessible image alt goes here'
-    @url='https://source.unsplash.com/1000x1000/?Nature'
+    @caption="Extra large"
+    @alt={{this.alt}}
+    @src={{this.src}}
   />
   <EuiSpacer />
   <EuiImage
     @hasShadow={{true}}
     @allowFullScreen={{true}}
-    @size='fullWidth'
-    @caption='Full width'
-    @alt='Accessible image alt goes here'
-    @url='https://source.unsplash.com/1000x1000/?Nature'
+    @caption="Original"
+    @alt={{this.alt}}
+    @src={{this.src}}
+  />
+  <EuiSpacer />
+  <EuiImage
+    @size="fullWidth"
+    @hasShadow={{true}}
+    @allowFullScreen={{true}}
+    @caption="Full width"
+    @alt={{this.alt}}
+    @src={{this.src}}
   />
 </div>
+```
+
+```js component
+import Component from '@glimmer/component';
+
+export default class ImageSizesDemo extends Component {
+  src =
+    'https://images.unsplash.com/photo-1477747219299-60f95c811fef?w=1000&h=1000&fit=crop&q=60';
+  alt =
+    'A cozy breakfast scene. In the background is a plate of waffles and blueberries. In the middle ground is a glass of orange juice and a small cup of cream. In the foreground is a plate of Eggs Benedict with a side of salad and cherry tomatoes.';
+}
 ```

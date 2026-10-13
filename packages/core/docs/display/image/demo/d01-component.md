@@ -2,18 +2,14 @@
 order: 1
 ---
 
-# Image
+# Component
 
 ```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem @grow={{false}}>
-    <EuiImage
-      @size='l'
-      @hasShadow={{true}}
-      @caption='Random nature image'
-      @alt='Random nature image'
-      @src='https://picsum.photos/300/300'
-    />
-  </EuiFlexItem>
-</EuiFlexGroup>
+<EuiImage
+  @size="l"
+  @hasShadow={{true}}
+  @caption="Mastigias papua, also known as spotted jelly"
+  @alt="Many small white-spotted pink jellyfish floating in a dark aquarium"
+  @src="https://images.unsplash.com/photo-1650253618249-fb0d32d3865c?w=900&h=900&fit=crop&q=60"
+/>
 ```

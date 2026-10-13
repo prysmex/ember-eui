@@ -5,10 +5,19 @@ title: Image
 <EuiSpacer/>
 <EuiPageHeader @pageTitle="Image"/>
 
- <EuiSpacer />
-    <EuiText>
-    <p>Use <strong>EuiImage</strong> when you need to place a static image into a page with an optional caption.</p>
-    </EuiText>
+<EuiSpacer />
+<EuiText>
+
+Use **EuiImage** when you need to place a static image into a page with an optional caption.
+
+</EuiText>
+
+<EuiSpacer />
+
+<EuiCallOut @title="Writing meaningful image alt text" @color="success" @iconType="accessibility">
+  <p>The examples on this page have alt text written to aid screen reader users, as well as several examples of when <em>not</em> to include alt text. When an image is decorative, or if the image is adequately described by surrounding text, it is better to pass an empty <code>""</code> string instead.</p>
+  <p>When an image is not already sufficiently described, the alt text passed should help non-visual users understand the purpose of the image within the context of the overall page. See <a href="https://webaim.org/techniques/alttext/" target="_blank" rel="noopener noreferrer">WebAIM</a> for a more detailed guide to writing effective alt text.</p>
+</EuiCallOut>
 
   <EuiHorizontalRule />
 

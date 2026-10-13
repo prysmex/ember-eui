@@ -1573,9 +1573,16 @@ export default class EuiFlyoutComponent
       : this.width;
   }
 
-  /** A managed flyout pushes only while its session is the active one. */
+  /**
+   * Upstream `shouldPush`: a standalone flyout pushes whenever it is in push
+   * mode; a flyout in a managed context (a managed flyout, or a standard one
+   * nested in it) only while it is the active session's main or child, so a
+   * pushed standard flyout nested in a managed flyout never pushes.
+   */
   get shouldPush(): boolean {
-    return this.isPushed && (!this.level || this.isActiveManagedFlyout);
+    return (
+      this.isPushed && (!this.isInManagedContext || this.isActiveManagedFlyout)
+    );
   }
 
   /** Measures the container (size, scroll, window resize) and reports it to the manager. */

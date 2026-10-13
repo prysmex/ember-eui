@@ -15,31 +15,65 @@ export interface EuiMaybeToolTipSignature {
     anchorClass?: string;
     /** Replaces `props.anchorCss`. */
     anchorCss?: EuiCss;
+    /**
+     * Renders the `<:content>` block as the tooltip's content instead of
+     * `props.content` (upstream's node content).
+     */
+    blockContent?: boolean;
   };
-  Blocks: { default: [] };
+  Blocks: { default: []; content: [] };
 }
 
 /** Wraps its content in an `EuiToolTip` when there are tooltip props. */
 const EuiMaybeToolTip: TemplateOnlyComponent<EuiMaybeToolTipSignature> = <template>
   {{#if @props}}
-    <EuiToolTip
-      @content={{@props.content}}
-      @title={{@props.title}}
-      @position={{@props.position}}
-      @delay={{@props.delay}}
-      @offset={{@props.offset}}
-      @display={{@props.display}}
-      @id={{@props.id}}
-      @className={{@props.className}}
-      @disableScreenReaderOutput={{@props.disableScreenReaderOutput}}
-      @repositionOnScroll={{@props.repositionOnScroll}}
-      @hasTitle={{@props.hasTitle}}
-      @css={{@props.css}}
-      @anchorClassName={{if @anchorClass @anchorClass @props.anchorClassName}}
-      @anchorCss={{if @anchorCss @anchorCss @props.anchorCss}}
-    >
-      {{yield}}
-    </EuiToolTip>
+    {{#if @blockContent}}
+      <EuiToolTip
+        @title={{@props.title}}
+        @position={{@props.position}}
+        @delay={{@props.delay}}
+        @offset={{@props.offset}}
+        @display={{@props.display}}
+        @id={{@props.id}}
+        @className={{@props.className}}
+        @disableScreenReaderOutput={{@props.disableScreenReaderOutput}}
+        @repositionOnScroll={{@props.repositionOnScroll}}
+        @hasTitle={{@props.hasTitle}}
+        @isShown={{@props.isShown}}
+        @onMouseOut={{@props.onMouseOut}}
+        @onFocus={{@props.onFocus}}
+        @onBlur={{@props.onBlur}}
+        @css={{@props.css}}
+        @anchorClassName={{if @anchorClass @anchorClass @props.anchorClassName}}
+        @anchorCss={{if @anchorCss @anchorCss @props.anchorCss}}
+      >
+        <:anchor>{{yield}}</:anchor>
+        <:content>{{yield to="content"}}</:content>
+      </EuiToolTip>
+    {{else}}
+      <EuiToolTip
+        @content={{@props.content}}
+        @title={{@props.title}}
+        @position={{@props.position}}
+        @delay={{@props.delay}}
+        @offset={{@props.offset}}
+        @display={{@props.display}}
+        @id={{@props.id}}
+        @className={{@props.className}}
+        @disableScreenReaderOutput={{@props.disableScreenReaderOutput}}
+        @repositionOnScroll={{@props.repositionOnScroll}}
+        @hasTitle={{@props.hasTitle}}
+        @isShown={{@props.isShown}}
+        @onMouseOut={{@props.onMouseOut}}
+        @onFocus={{@props.onFocus}}
+        @onBlur={{@props.onBlur}}
+        @css={{@props.css}}
+        @anchorClassName={{if @anchorClass @anchorClass @props.anchorClassName}}
+        @anchorCss={{if @anchorCss @anchorCss @props.anchorCss}}
+      >
+        {{yield}}
+      </EuiToolTip>
+    {{/if}}
   {{else}}
     {{yield}}
   {{/if}}

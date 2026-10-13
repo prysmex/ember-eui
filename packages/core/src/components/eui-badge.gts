@@ -5,6 +5,7 @@ import { on } from '@ember/modifier';
 import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 
 import optional from '@nullvoxpopuli/ember-composable-helpers/helpers/optional';
+import { modifier } from 'ember-modifier';
 import { and, eq, not } from 'ember-truth-helpers';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
@@ -84,6 +85,32 @@ export function euiBadgeReset({ euiTheme }: EuiBorealisContext): CSSObject {
   };
 }
 
+/** Attributes that stay on the root with both click handlers (upstream `className`, `style`). */
+const ROOT_ATTRIBUTES = new Set(['class', 'style']);
+
+/**
+ * Upstream: with `iconOnClick` and `onClick`/`href`, `className` and
+ * `style` stay on the outer span while the other props (`...rest`) go on the
+ * text button or link. Ember passes them all through `...attributes`, so the
+ * other attributes are moved from the root to the child after render and
+ * whenever they change.
+ */
+const restToChildButton = modifier((root: HTMLElement) => {
+  const move = () => {
+    const child = root.querySelector(':scope > .euiBadge__content > .euiBadge__childButton');
+    if (!child) return;
+    for (const { name, value } of [...root.attributes]) {
+      if (ROOT_ATTRIBUTES.has(name)) continue;
+      child.setAttribute(name, value);
+      root.removeAttribute(name);
+    }
+  };
+  move();
+  const observer = new MutationObserver(move);
+  observer.observe(root, { attributes: true });
+  return () => observer.disconnect();
+});
+
 const buttonReset: CSSObject = {
   background: 'none',
   border: 'none',
@@ -122,6 +149,8 @@ export interface EuiBadgeSignature {
     /**
      * Makes the icon a separate button calling this function, e.g. an "x" to
      * remove the badge. Requires `@iconType` and `@iconOnClickAriaLabel`.
+     * With `@onClick` or `@href` too, attributes other than `class` and
+     * `style` go on the text button or link (upstream `...rest`).
      */
     iconOnClick?: (event: MouseEvent) => void;
     /**
@@ -331,7 +360,11 @@ export default class EuiBadge extends Component<EuiBadgeSignature> {
       <EuiInnerText as |ref innerText|>
         {{#if (and @iconOnClick this.isClickable)}}
           {{! icon button and text button/link side by side }}
-          <span class="euiBadge {{this.rootClass hasText}}" ...attributes>
+          <span
+            class="euiBadge {{this.rootClass hasText}}"
+            ...attributes
+            {{restToChildButton}}
+          >
             <span class="euiBadge__content {{this.contentClass}}">
               {{#if @iconType}}
               {{#if (eq this.iconSide "left")}}

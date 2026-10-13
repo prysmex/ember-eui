@@ -5,11 +5,11 @@ import type { SerializedStyles } from '@emotion/serialize';
 
 /**
  * What an EuiListGroup shares with the items in its block (upstream clones
- * `color` and `wrapText` into its children; the item's own args win).
+ * `color` and, when set, `showToolTip` into its children; the item's own
+ * args win). `wrapText` only reaches `listItems` upstream.
  */
 export interface EuiListGroupContext {
   readonly color: string | undefined;
-  readonly wrapText: boolean | undefined;
   readonly showToolTips: boolean | undefined;
 }
 

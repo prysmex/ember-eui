@@ -61,7 +61,10 @@ export interface EuiListGroupSignature {
      * `'subdued'`. An item's own `@color` wins. Defaults to `'text'`.
      */
     color?: string;
-    /** Default `@wrapText` of the items in the block. */
+    /**
+     * Default `wrapText` of the `@listItems`. As upstream, it does not reach
+     * the `EuiListGroupItem`s of the block (set their own `@wrapText`).
+     */
     wrapText?: boolean;
     /** @deprecated Has no effect: latest EUI lists have no padding. */
     flush?: boolean;
@@ -96,13 +99,14 @@ export default class EuiListGroup
     return this.args.color;
   }
 
-  get wrapText(): boolean | undefined {
-    return this.args.wrapText;
-  }
-
   get showToolTips(): boolean | undefined {
     return this.args.showToolTips;
   }
+
+  /** Upstream `wrapText={wrapText}` then `{...item}`: the item's own wins. */
+  itemWrapText = (item: EuiListGroupListItem): boolean | undefined => {
+    return item.wrapText ?? this.args.wrapText;
+  };
 
   @cached
   get classes(): string {
@@ -135,7 +139,7 @@ export default class EuiListGroup
             @iconType={{item.iconType}}
             @isActive={{item.isActive}}
             @isDisabled={{item.isDisabled}}
-            @wrapText={{item.wrapText}}
+            @wrapText={{this.itemWrapText item}}
             @extraAction={{item.extraAction}}
             @color={{item.color}}
             @showToolTip={{item.showToolTip}}

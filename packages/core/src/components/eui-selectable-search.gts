@@ -103,8 +103,10 @@ export interface EuiSelectableSearchSignature {
     ariaLabel?: string;
     /** @private `aria-activedescendant`: the current option's id. */
     activeDescendant?: string;
-    /** @private Id of the screen reader instructions (`aria-describedby`). */
+    /** @private `aria-describedby` of the field (the instructions id by default). */
     ariaDescribedby?: string;
+    /** @private Id of the screen reader instructions. */
+    instructionsId?: string;
     /** @private Screen reader instructions, rendered after the field. */
     instructions?: string;
   };
@@ -132,7 +134,8 @@ const SEARCH_PROPS = [
   'readOnly',
   'isInvalid',
   'id',
-  // upstream combines it with the message id (`getAccessibleName`); not ported
+  // EuiSelectable routes them (upstream `getAccessibleName`)
+  'aria-label',
   'aria-describedby'
 ] as const;
 
@@ -276,7 +279,7 @@ export default class EuiSelectableSearch extends Component<EuiSelectableSearchSi
     </EuiFieldSearch>
     {{#if @instructions}}
       <EuiScreenReaderOnly>
-        <p id={{@ariaDescribedby}}>{{@instructions}}</p>
+        <p id={{@instructionsId}}>{{@instructions}}</p>
       </EuiScreenReaderOnly>
     {{/if}}
   </template>

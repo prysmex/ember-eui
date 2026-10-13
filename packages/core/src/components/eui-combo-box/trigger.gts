@@ -58,7 +58,19 @@ interface TriggerArgs {
   allowClear?: boolean;
   onClear?: (event?: Event) => void;
   onToggleList?: (event: MouseEvent) => void;
+  /** Focus left the toggle button (upstream `onContainerBlur`). */
+  onToggleBlur?: (event: FocusEvent) => void;
+  /** A key on the focused toggle button; `true` stops it here. */
+  onToggleKeydown?: (event: KeyboardEvent) => boolean;
 }
+
+/** The chevron (`comboBoxToggleListButton`) or an element in it. */
+export const isToggleButton = (target: EventTarget | null): boolean =>
+  Boolean(
+    (target as Element | null)?.closest?.(
+      '[data-test-subj="comboBoxToggleListButton"]'
+    )
+  );
 
 /** Upstream side nodes: one string is an EuiFormPrepend/Append label. */
 const isSingleText = (node: unknown) => !Array.isArray(node) && isTextNode(node);
@@ -173,19 +185,30 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
 
   /**
    * The toggle button handles its own clicks: ember-basic-dropdown's
-   * trigger must not toggle the list on the same press, and focus stays in
-   * the input.
+   * trigger must not toggle the list on the same press. The press focuses
+   * the button, as upstream (the input blurs; the combo box keeps focus).
    */
   keepToggle = (event: Event) => {
-    const target = event.target as Element | null;
-
-    if (!target?.closest?.('[data-test-subj="comboBoxToggleListButton"]')) {
-      return;
-    }
+    if (!isToggleButton(event.target)) return;
 
     event.stopPropagation();
+  };
 
-    if (event.type === 'mousedown') event.preventDefault();
+  /**
+   * Keys on the focused toggle button run upstream's container `onKeyDown`
+   * before ember-basic-dropdown's trigger sees them.
+   */
+  toggleKeydown = (event: KeyboardEvent) => {
+    if (!isToggleButton(event.target)) return;
+
+    if (this.comboArgs.onToggleKeydown?.(event)) event.stopPropagation();
+  };
+
+  /** Upstream `onContainerBlur` for the toggle button. */
+  toggleBlur = (event: FocusEvent) => {
+    if (!isToggleButton(event.target)) return;
+
+    this.comboArgs.onToggleBlur?.(event);
   };
 
   /** Upstream `showPlaceholder`: a placeholder, no selection, no search. */
@@ -287,6 +310,8 @@ export default class EuiComboBoxTriggerComponent extends PowerSelectTrigger {
       {{on "mousedown" this.keepToggle capture=true}}
       {{on "touchstart" this.keepToggle capture=true}}
       {{on "touchend" this.keepToggle capture=true}}
+      {{on "focusout" this.toggleBlur}}
+      {{on "keydown" this.toggleKeydown}}
       @fullWidth={{@fullWidth}}
       @compressed={{@compressed}}
       @readOnly={{@readOnly}}

@@ -282,6 +282,9 @@ const factories = {
   'components/form/form_control_button/form_control_button.styles.js': ['euiFormControlButtonStyles'],
   // new-refresh-flyout
   'components/flyout/_flyout_resize_button.styles.js': ['euiFlyoutResizeButtonStyles'],
+  // flyout-manager
+  'components/flyout/manager/flyout_managed.styles.js': ['euiManagedFlyoutStyles'],
+  'components/flyout/manager/flyout_main.styles.js': ['euiMainFlyoutStyles'],
   // new-tables
   'components/search_bar/search_bar.styles.js': ['euiSearchBar__searchHolder', 'euiSearchBar__filtersHolder'],
   'components/basic_table/basic_table.styles.js': ['euiBasicTableBodyLoading'],
@@ -1179,6 +1182,29 @@ test('flyout constants and inline style composition match upstream', () => {
           reference.composeFlyoutInlineStyles(size, 'side-by-side', null, null, maxWidth, zIndex),
           `${size}/${maxWidth}/${zIndex}`
         );
+});
+
+// flyout-manager
+test('managed flyout stage styles match upstream for every stage, side and level', () => {
+  const reference = require(resolve(eui, 'lib/components/flyout/manager/flyout_managed.styles.js'));
+  for (const colorMode of ['LIGHT', 'DARK']) {
+    const context = {
+      colorMode,
+      highContrastMode: false,
+      modifications: {},
+      euiTheme: getComputed(EuiThemeBorealis, buildTheme({}, 'parity'), colorMode, false)
+    };
+    const port = styles.euiManagedFlyoutStyles(context);
+    const upstream = reference.euiManagedFlyoutStyles(context);
+    for (const stage of ['opening', 'active', 'inactive', 'backgrounding', 'backgrounded', 'returning', 'closing'])
+      for (const side of ['left', 'right', undefined])
+        for (const level of ['main', 'child'])
+          assert.deepEqual(
+            normalize(port.stage(stage, side, level)),
+            normalize(upstream.stage(stage, side, level)),
+            `${colorMode}/${stage}/${side}/${level}`
+          );
+  }
 });
 
 test('card factories match upstream for every padding size in 12 theme configurations', () => {

@@ -111,7 +111,7 @@ extensible syntax (plugins). Attributes go to the `<textarea>`.
 | `@ariaLabel` | `string` |  | Accessible label of the textarea. |
 | `@ariaLabelledBy` | `string` |  | Id of the element labelling the textarea (e.g. a form row label). |
 | `@ariaDescribedBy` | `string` |  | Id of the element describing the textarea. |
-| `@markdownFormatProps` |  |  | Further args for the preview's `EuiMarkdownFormat` (upstream's `markdownFormatProps`): `rootClasses`, `textSize`, `color`, `shouldIncludeDefaultRootClasses`. They win over the `@format…` args. |
+| `@markdownFormatProps` |  |  | Further args for the preview's `EuiMarkdownFormat` (upstream's `markdownFormatProps`): `rootClasses`, `textSize`, `color`, `shouldIncludeDefaultRootClasses`, `grow`, `textAlign` and `component`. They win over the `@format…` args. |
 | `@formatRootClasses` |  |  | `@rootClasses` of the preview's EuiMarkdownFormat. |
 | `@formatTextSize` |  |  | `@textSize` of the preview's EuiMarkdownFormat. |
 | `@formatColor` |  |  | `@color` of the preview's EuiMarkdownFormat. |
@@ -135,6 +135,9 @@ root `<div class="euiMarkdownFormat">`.
 | `@textSize` |  | `'m'` | Text size, any `EuiText` size; `'relative'` scales with the parent's font size. |
 | `@color` | `EuiTextColorValue` | `'default'` | Any EuiText color: a named color (`'subdued'`, `'danger'`…) or a CSS color. Also tints blockquote, rule and table borders. |
 | `@shouldIncludeDefaultRootClasses` | `boolean` | `true`; `false` keeps only the markdown-specific styles | Applies EuiText typography (and the `euiText` class) to the content. |
+| `@component` | `'div' \| 'span' \| 'p'` |  | The root element: `'div'` (default), `'span'` or `'p'` (upstream EuiText's `component`). Only `'div'` can hold block content such as headings, lists and tables. |
+| `@grow` | `boolean` |  | `true` (default) lets the text span the container's full width; `false` caps lines at a readable width (EuiText's `grow`). |
+| `@textAlign` | `EuiTextAlignment` |  | `'left'`, `'center'` or `'right'` (logical, so they flip in RTL). |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

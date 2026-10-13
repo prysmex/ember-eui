@@ -153,11 +153,18 @@ export interface EuiMarkdownEditorArgs {
   /**
    * Further args for the preview's `EuiMarkdownFormat` (upstream's
    * `markdownFormatProps`): `rootClasses`, `textSize`, `color`,
-   * `shouldIncludeDefaultRootClasses`. They win over the `@format…` args.
+   * `shouldIncludeDefaultRootClasses`, `grow`, `textAlign` and `component`.
+   * They win over the `@format…` args.
    */
   markdownFormatProps?: Pick<
     EuiMarkdownFormatSignature['Args'],
-    'rootClasses' | 'textSize' | 'color' | 'shouldIncludeDefaultRootClasses'
+    | 'rootClasses'
+    | 'textSize'
+    | 'color'
+    | 'shouldIncludeDefaultRootClasses'
+    | 'grow'
+    | 'textAlign'
+    | 'component'
   >;
   /** `@rootClasses` of the preview's EuiMarkdownFormat. */
   formatRootClasses?: EuiMarkdownFormatSignature['Args']['rootClasses'];
@@ -645,6 +652,9 @@ export default class EuiMarkdownEditorComponent extends Component<EuiMarkdownEdi
             @textSize={{this.formatTextSize}}
             @color={{this.formatColor}}
             @shouldIncludeDefaultRootClasses={{this.formatShouldIncludeDefaultRootClasses}}
+            @grow={{@markdownFormatProps.grow}}
+            @textAlign={{@markdownFormatProps.textAlign}}
+            @component={{@markdownFormatProps.component}}
           />
         </div>
       {{/if}}

@@ -13,7 +13,6 @@ import {
   fillIn,
   focus,
   render,
-  settled,
   triggerKeyEvent,
   waitUntil
 } from '@ember/test-helpers';
@@ -129,7 +128,7 @@ module('Integration | Component | eui-combo-box last interactions', function (ho
       await triggerKeyEvent(TOGGLE, 'keydown', 'Enter');
       q(TOGGLE).dispatchEvent(new KeyboardEvent('keydown', { key: 't', bubbles: true, cancelable: true }));
       await triggerKeyEvent(TOGGLE, 'keydown', ' ');
-      await settled();
+      
       assert.deepEqual(state.changes, [], 'Enter does not choose, letters do not type ahead');
       assert.true(isOpen(), 'the keydowns themselves do not toggle (the button click does)');
 
@@ -167,7 +166,7 @@ module('Integration | Component | eui-combo-box last interactions', function (ho
       assert.deepEqual(state.created, [], 'nothing added while focus is in the combo box');
 
       await focus('.outside');
-      await settled();
+      
       assert.strictEqual(state.blurs, 1, '@onBlur once');
       assert.false(isOpen(), 'the list closes');
       assert.deepEqual(state.created, ['Rhea'], 'setCustomOptions(true)');

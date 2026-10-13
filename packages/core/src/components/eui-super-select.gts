@@ -120,6 +120,10 @@ export interface EuiSuperSelectSignature {
     popoverProps?: Partial<Omit<EuiInputPopoverArgs, 'isOpen'>> & {
       className?: string;
     };
+    /** @private Whether the `<:prepend>` block has content. Defaults to `has-block`; for wrappers that always forward the blocks. */
+    isPrependProvided?: boolean;
+    /** @private Whether the `<:append>` block has content. Defaults to `has-block`. */
+    isAppendProvided?: boolean;
     /** Called when the list opens. */
     onFocus?: () => void;
     /** Called when the list closes. */
@@ -461,8 +465,8 @@ export default class EuiSuperSelect extends Component<EuiSuperSelectSignature> {
           @disabled={{@disabled}}
           @readOnly={{@readOnly}}
           @isDropdownOpen={{this.isPopoverOpen}}
-          @isPrependProvided={{has-block "prepend"}}
-          @isAppendProvided={{has-block "append"}}
+          @isPrependProvided={{argOrDefault @isPrependProvided (has-block "prepend")}}
+          @isAppendProvided={{argOrDefault @isAppendProvided (has-block "append")}}
           {{on "click" this.toggle}}
           {{on "keydown" this.onSelectKeyDown}}
           {{this.registerControl}}

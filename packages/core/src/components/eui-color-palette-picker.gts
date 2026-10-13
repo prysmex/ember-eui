@@ -63,6 +63,15 @@ export interface EuiColorPalettePickerSignature {
     /** Read-only: the list does not open. */
     readOnly?: boolean;
   };
+  Blocks: {
+    /**
+     * Content before the picker (upstream's `prepend`), e.g. a label or
+     * an icon; yields the class to put on it.
+     */
+    prepend: [className: string];
+    /** Content after the picker (upstream's `append`); yields the class to put on it. */
+    append: [className: string];
+  };
 }
 
 type PaletteOption = EuiSuperSelectOption & { palette: EuiColorPalettePickerPalette };
@@ -90,8 +99,12 @@ export default class EuiColorPalettePicker extends Component<EuiColorPalettePick
       @isLoading={{@isLoading}}
       @disabled={{@disabled}}
       @readOnly={{@readOnly}}
+      @isPrependProvided={{has-block "prepend"}}
+      @isAppendProvided={{has-block "append"}}
       ...attributes
     >
+      <:prepend as |className|>{{yield className to="prepend"}}</:prepend>
+      <:append as |className|>{{yield className to="append"}}</:append>
       <:inputDisplay as |option|>
         {{#let (paletteOf option) as |palette|}}
           {{#if (this.showTitleOnly palette)}}

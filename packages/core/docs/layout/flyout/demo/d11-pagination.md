@@ -6,17 +6,19 @@ order: 11
 
 <EuiText>
   <p>
-    Pass a <EuiCode>@pagination</EuiCode> object to
-    <EuiCode>EuiFlyoutMenu</EuiCode> to render Prev/Next navigation controls and
+    Pass a <EuiCode>pagination</EuiCode> object to
+    <EuiCode>@flyoutMenuProps</EuiCode> to render Prev/Next navigation controls and
     a position counter in the flyout menu bar. This is useful when the flyout
     displays one item from an ordered list (e.g. a data table or search results)
     and the user should be able to step through items without closing the
     flyout.
   </p>
   <p>
-    Use <EuiCode>@leadingActions</EuiCode> to render actions grouped alongside
+    Use <EuiCode>leadingActions</EuiCode> to render actions grouped alongside
     the pagination controls. A divider is automatically shown between the
-    pagination controls and <EuiCode>@leadingActions</EuiCode>.
+    pagination controls and <EuiCode>leadingActions</EuiCode>. In a managed
+    flyout, the <EuiCode>eui-flyout-manager</EuiCode> service's
+    <EuiCode>setPagination(flyoutId, pagination)</EuiCode> overrides it.
   </p>
   <p>
     The Prev/Next buttons default to up/down chevrons. When
@@ -33,7 +35,8 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
-import { EuiButton, EuiFlyout, EuiFlyoutBody, EuiFlyoutHeader, EuiFlyoutMenu, EuiText, EuiTitle } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { EuiButton, EuiFlyout, EuiFlyoutBody, EuiFlyoutHeader, EuiText, EuiTitle } from '@ember-eui/core/components';
 
 const ITEMS = [
   { title: 'Item 1', body: 'Details for item 1.' },
@@ -99,14 +102,12 @@ export default class FlyoutMenuPaginationComponent extends Component {
   {{#if this.isOpen}}
     <EuiFlyout
       @onClose={{this.close}}
-      @hideCloseButton={{true}}
+      @flyoutMenuProps={{hash
+        pagination=this.pagination
+        leadingActions=this.leadingActions
+      }}
       aria-label="Item details"
     >
-      <EuiFlyoutMenu
-        @pagination={{this.pagination}}
-        @leadingActions={{this.leadingActions}}
-        @onClose={{this.close}}
-      />
       <EuiFlyoutHeader @hasBorder={{true}}>
         <EuiTitle @size="m">{{this.item.title}}</EuiTitle>
       </EuiFlyoutHeader>

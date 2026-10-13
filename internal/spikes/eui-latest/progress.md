@@ -122,6 +122,20 @@ portalled popovers/combo lists join the trap they open from (focus-trap
 6.9.4 declared in core). Generated styles name modules by package path.
 NOTICE.md + MIT LICENSE files. See docs-audit-gaps.md for what remains.
 
+Update 7 (2026-10-13): merged sitewide, sdp-rest (pretty duration opt-in via
+@showPrettyDuration, user decision), gaps-utils (EuiFocusTrap, EuiWindowEvent,
+utility pages), gaps-text, palettes (Borealis vis colors, user decision),
+gaps-grid, combo-flyout-parity, small-diffs (EuiImage attrs on <img>,
+selectable search focus, T.BottomBar via in-element). Site installs
+@elastic/eui-illustrations 1.1.0 for the illustration gallery (apps install
+it themselves). `@ember-eui/core/utils/color` exported; EuiInnerText and
+EuiEmotionProvider in the components barrel. Docs curlies: entities inside
+gjs demo templates, \{{ in raw HTML prose, inline code in markdown prose.
+Main: core 1906/1906, parity 357/357, companions 25/24/8/7, site 8/8 +
+17/17 (nav 127). Note: the shared mount can serve stale hard-linked files
+(same inode, different contents); `rm -rf` the injected copy's dist and
+resync if the site build references a missing chunk.
+
 Follow-ups: data grid renderers lack row depth/expanded state; EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
 screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
 slowly (~20s under load); open decision on focusing the form error callout;

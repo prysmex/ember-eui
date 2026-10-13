@@ -484,6 +484,83 @@ module('Integration | Component | EuiFlyout session management', function (hooks
     assert.strictEqual(document.activeElement, $('.opener'), 'focus is returned by default');
   });
 
+  test('a container bounds the flyout and its mask; nested flyouts inherit it', async function (assert) {
+    const state = new Flyouts();
+    const area = document.createElement('div');
+    area.setAttribute('style', 'position: fixed; top: 50px; left: 100px; width: 900px; height: 600px;');
+    document.body.appendChild(area);
+    const size = new (class {
+      @tracked value = 's';
+    })();
+    state.a = true;
+
+    await render(
+      <template>
+        <EuiEmotionProvider>
+          {{#if state.a}}
+            <EuiFlyout @container={{area}} @size={{size.value}} @onClose={{state.closeA}} data-test-subj="scoped">
+              {{#if state.b}}<EuiFlyout @onClose={{state.closeB}} data-test-subj="inherits">b</EuiFlyout>{{/if}}
+              {{#if state.c}}<EuiFlyout @container={{null}} @onClose={{state.closeC}} data-test-subj="viewport">c</EuiFlyout>{{/if}}
+            </EuiFlyout>
+          {{/if}}
+        </EuiEmotionProvider>
+      </template>
+    );
+    await managed();
+
+    const flyout = $('[data-test-subj="scoped"]');
+    const rect = flyout.getBoundingClientRect();
+    assert.strictEqual(Math.round(rect.top), 50);
+    assert.strictEqual(Math.round(rect.height), 600);
+    assert.strictEqual(Math.round(rect.right), 1000, 'aligned to the container end');
+    assert.strictEqual(flyout.style.inlineSize, '225px', 's is 25% of the container');
+    assert.strictEqual(flyout.style.minInlineSize, `${Math.round(Number(light.breakpoint.m) * 0.42)}px`);
+    const mask = $('.euiOverlayMask');
+    assert.strictEqual(mask.style.insetBlockStart, '50px', 'the mask is clipped to the container');
+    assert.strictEqual(mask.style.inlineSize, '900px');
+
+    size.value = 'fill';
+    await managed();
+    assert.strictEqual(flyout.style.minInlineSize, '0px', 'fill has no min width');
+    assert.strictEqual(flyout.style.inlineSize, '810px');
+
+    state.b = true;
+    await managed();
+    assert.strictEqual(Math.round($('[data-test-subj="inherits"]').getBoundingClientRect().top), 50, 'a nested flyout inherits the container');
+
+    state.b = false;
+    state.c = true;
+    await managed();
+    const viewport = $('[data-test-subj="viewport"]');
+    assert.strictEqual(Math.round(viewport.getBoundingClientRect().top), 0, 'container=null uses the viewport');
+    assert.true(
+      Number(getComputedStyle(viewport).zIndex) >= Number(light.levels.mask),
+      'container=null stacks above fixed headers'
+    );
+
+    state.a = false;
+    await settled();
+    area.remove();
+  });
+
+  test('a container caps the min width at 90% of a small container', async function (assert) {
+    const state = new Flyouts();
+    const area = document.createElement('div');
+    area.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 300px; height: 300px;');
+    document.body.appendChild(area);
+    state.a = true;
+
+    await render(
+      <template>
+        <EuiFlyout @container={{area}} @size="s" @onClose={{state.closeA}} data-test-subj="small">s</EuiFlyout>
+      </template>
+    );
+    await managed();
+
+    assert.strictEqual($('[data-test-subj="small"]').style.minInlineSize, '270px');
+    area.remove();
+  });
+
   test('a push flyout in a container pads the container', async function (assert) {
     const state = new Flyouts();
     state.a = true;

@@ -14,6 +14,8 @@ import type { EuiFlyoutCloseMeta } from '../utils/eui/flyout-manager/types.ts';
 export interface EuiFlyoutContext {
   /** Closes the flyout, as its close button does. */
   close(event?: Event, meta?: EuiFlyoutCloseMeta): void;
+  /** The flyout's container, which nested flyouts inherit. */
+  readonly containerElement: HTMLElement | null;
 }
 
 export const EUI_FLYOUT_CONTEXT = '@ember-eui/core/flyout' as const;

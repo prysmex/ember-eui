@@ -351,8 +351,9 @@ export type EuiFlyoutArgs = {
    * Keeps the flyout (and its mask) within an element's bounds, e.g. an
    * app area next to a side navigation: an element, a getter or a CSS
    * selector. Push flyouts pad it instead of `<body>`, and its width
-   * replaces the window's for push breakpoints and resizing. `null` forces
-   * the viewport and puts the flyout above fixed headers.
+   * replaces the window's for push breakpoints and resizing. Nested
+   * flyouts inherit it. `null` forces the viewport and puts the flyout above
+   * fixed headers.
    */
   container?: EuiFlyoutContainer;
   /** Focus trap options (upstream `focusTrapProps`): `returnFocus`, `shards`. */
@@ -706,8 +707,15 @@ export default class EuiFlyoutComponent
 
   // Container (upstream `container` prop)
 
+  /**
+   * `@container`; a flyout nested in another one without it inherits the
+   * parent's container (`@container={{null}}` opts out).
+   */
   @cached
   get containerElement(): HTMLElement | null {
+    if (!('container' in this.args)) {
+      return euiFlyoutContext(this)?.containerElement ?? null;
+    }
     return resolveContainer(this.args.container);
   }
 

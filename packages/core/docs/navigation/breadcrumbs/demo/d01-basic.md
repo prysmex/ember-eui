@@ -14,29 +14,9 @@ Provide a descriptive `aria-label` for each set of breadcrumbs.
 
 </EuiText>
 
-```hbs template
-<EuiPanel>
-  <EuiBreadcrumbs
-    @breadcrumbs={{this.breadcrumbs}}
-    @truncate={{false}}
-    aria-label='An example of EuiBreadcrumbs'
-  />
-  <EuiSpacer @size='xs' />
-  <EuiPageHeader role="">
-    <:pageTitle>
-      Boa constrictor
-    </:pageTitle>
-    <:rightSideItems as |Item|>
-      <Item>
-        <EuiButton>Cancel</EuiButton>
-      </Item>
-    </:rightSideItems>
-  </EuiPageHeader>
-</EuiPanel>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBreadcrumbs, EuiButton, EuiPageHeader, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   breadcrumbs = [
@@ -66,5 +46,26 @@ export default class DemoComponent extends Component {
       }
     }
   ];
+
+  <template>
+    <EuiPanel>
+      <EuiBreadcrumbs
+        @breadcrumbs={{this.breadcrumbs}}
+        @truncate={{false}}
+        aria-label='An example of EuiBreadcrumbs'
+      />
+      <EuiSpacer @size='xs' />
+      <EuiPageHeader role="">
+        <:pageTitle>
+          Boa constrictor
+        </:pageTitle>
+        <:rightSideItems as |Item|>
+          <Item>
+            <EuiButton>Cancel</EuiButton>
+          </Item>
+        </:rightSideItems>
+      </EuiPageHeader>
+    </EuiPanel>
+  </template>
 }
 ```

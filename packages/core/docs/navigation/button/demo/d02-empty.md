@@ -10,7 +10,10 @@ Empty buttons are for **complementary (tertiary)** actions like close, cancel, f
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButtonEmpty, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @wrap={{true}} @gutterSize="s" @alignItems="center">
   <EuiFlexItem @grow={{false}}>
     <EuiButtonEmpty>Empty button</EuiButtonEmpty>
@@ -24,4 +27,5 @@ Empty buttons are for **complementary (tertiary)** actions like close, cancel, f
     <EuiButtonEmpty @size="xs">Extra small empty button</EuiButtonEmpty>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

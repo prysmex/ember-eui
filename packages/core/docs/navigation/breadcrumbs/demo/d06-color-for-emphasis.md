@@ -11,16 +11,9 @@ order: 6
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @max={{null}}
-  aria-label='An example of EuiBreadcrumbs with colors'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBreadcrumbs } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   breadcrumbs = [
@@ -45,5 +38,13 @@ export default class DemoComponent extends Component {
       text: 'Edit',
     }
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @max={{null}}
+      aria-label='An example of EuiBreadcrumbs with colors'
+    />
+  </template>
 }
 ```

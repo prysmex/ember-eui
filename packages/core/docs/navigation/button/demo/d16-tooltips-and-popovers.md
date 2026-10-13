@@ -14,33 +14,13 @@ When there is only one primary and one secondary action, an `{{on "click"}}` mod
 
 </EuiText>
 
-```hbs template
-<EuiSplitButton as |split|>
-  <split.ActionPrimary
-    @iconType="save"
-    @tooltipProps={{hash content="Primary action tooltip" position="bottom"}}
-  >
-    Save
-  </split.ActionPrimary>
-  <split.ActionSecondary
-    @iconType="chevronSingleDown"
-    aria-label="Open secondary actions menu"
-    {{on "click" this.toggle}}
-    @popoverProps={{hash
-      isOpen=this.isOpen
-      closePopover=this.close
-      panelPaddingSize="s"
-    }}
-  >
-    <EuiContextMenu @panels={{this.panels}} @initialPanelId={{0}} />
-  </split.ActionSecondary>
-</EuiSplitButton>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { hash } from '@ember/helper';
+import { EuiContextMenu, EuiSplitButton } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   @tracked isOpen = false;
@@ -83,5 +63,28 @@ export default class DemoComponent extends Component {
   close() {
     this.isOpen = false;
   }
+
+  <template>
+    <EuiSplitButton as |split|>
+      <split.ActionPrimary
+        @iconType="save"
+        @tooltipProps={{hash content="Primary action tooltip" position="bottom"}}
+      >
+        Save
+      </split.ActionPrimary>
+      <split.ActionSecondary
+        @iconType="chevronSingleDown"
+        aria-label="Open secondary actions menu"
+        {{on "click" this.toggle}}
+        @popoverProps={{hash
+          isOpen=this.isOpen
+          closePopover=this.close
+          panelPaddingSize="s"
+        }}
+      >
+        <EuiContextMenu @panels={{this.panels}} @initialPanelId={{0}} />
+      </split.ActionSecondary>
+    </EuiSplitButton>
+  </template>
 }
 ```

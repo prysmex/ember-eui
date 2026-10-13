@@ -29,115 +29,13 @@ When the tooltip `@content` duplicates the button's accessible label (e.g. it's 
 
 <EuiSpacer />
 
-```hbs template
-<EuiFlexGroup @gutterSize="m" @alignItems="center" @wrap={{true}}>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSelect
-      @options={{this.colorOptions}}
-      @value={{this.buttonColor}}
-      @compressed={{true}}
-      aria-label="Button colors"
-      {{on "change" (fn this.onChange "buttonColor")}}
-    >
-      <:prepend as |classes|>
-        <EuiFormLabel class={{classes}}>Color</EuiFormLabel>
-      </:prepend>
-    </EuiSelect>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSelect
-      @options={{this.displayTypeOptions}}
-      @value={{this.displayType}}
-      @compressed={{true}}
-      aria-label="Button display styles"
-      {{on "change" (fn this.onChange "displayType")}}
-    >
-      <:prepend as |classes|>
-        <EuiFormLabel class={{classes}}>Display</EuiFormLabel>
-      </:prepend>
-    </EuiSelect>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSelect
-      @options={{this.displaySizeOptions}}
-      @value={{this.displaySize}}
-      @compressed={{true}}
-      aria-label="Button sizes"
-      {{on "change" (fn this.onChange "displaySize")}}
-    >
-      <:prepend as |classes|>
-        <EuiFormLabel class={{classes}}>Size</EuiFormLabel>
-      </:prepend>
-    </EuiSelect>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSelect
-      @options={{this.iconSizeOptions}}
-      @value={{this.iconSize}}
-      @compressed={{true}}
-      aria-label="Icon in button sizes"
-      {{on "change" (fn this.onChange "iconSize")}}
-    >
-      <:prepend as |classes|>
-        <EuiFormLabel class={{classes}}>Icon size</EuiFormLabel>
-      </:prepend>
-    </EuiSelect>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{this.toggleDisabled}} />
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer @size="xl" />
-<EuiToolTip @content="Open documentation" @disableScreenReaderOutput={{true}}>
-  <EuiButtonIcon
-    @color={{this.buttonColor}}
-    @display={{this.displayType}}
-    @size={{this.displaySize}}
-    @iconSize={{this.iconSize}}
-    @isDisabled={{this.disableButton}}
-    @iconType="documentation"
-    aria-label="Open documentation"
-  />
-</EuiToolTip>
-
-<EuiSpacer @size="xl" />
-
-<EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="flexStart">
-  <EuiFlexItem @grow={{false}}>
-    <EuiToolTip @content="Lens" @disableScreenReaderOutput={{true}}>
-      <EuiButtonIcon @display="base" @iconType="lensApp" @size="m" aria-label="Lens" />
-    </EuiToolTip>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiToolTip @content="Warning" @disableScreenReaderOutput={{true}}>
-      <EuiButtonIcon @display="base" @iconType="warning" @size="s" @color="warning" aria-label="Warning" />
-    </EuiToolTip>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiToolTip @content="Dashboard" @disableScreenReaderOutput={{true}}>
-      <EuiButtonIcon @iconType="dashboardApp" aria-label="Dashboard" @color="text" />
-    </EuiToolTip>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiToolTip @content="Delete" @disableScreenReaderOutput={{true}}>
-      <EuiButtonIcon @iconType="trash" aria-label="Delete" @color="danger" />
-    </EuiToolTip>
-  </EuiFlexItem>
-</EuiFlexGroup>
-
-<EuiSpacer />
-
-<EuiText>
-
-`EuiButtonIcon` requires an `aria-label` to express the meaning to screen readers.
-
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import { fn } from '@ember/helper';
+import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiFormLabel, EuiSelect, EuiSpacer, EuiSwitch, EuiText, EuiToolTip } from '@ember-eui/core/components';
 
 const options = (names) => names.map((name) => ({ value: name, text: name }));
 
@@ -162,5 +60,110 @@ export default class DemoComponent extends Component {
   toggleDisabled() {
     this.disableButton = !this.disableButton;
   }
+
+  <template>
+    <EuiFlexGroup @gutterSize="m" @alignItems="center" @wrap={{true}}>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSelect
+          @options={{this.colorOptions}}
+          @value={{this.buttonColor}}
+          @compressed={{true}}
+          aria-label="Button colors"
+          {{on "change" (fn this.onChange "buttonColor")}}
+        >
+          <:prepend as |classes|>
+            <EuiFormLabel class={{classes}}>Color</EuiFormLabel>
+          </:prepend>
+        </EuiSelect>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSelect
+          @options={{this.displayTypeOptions}}
+          @value={{this.displayType}}
+          @compressed={{true}}
+          aria-label="Button display styles"
+          {{on "change" (fn this.onChange "displayType")}}
+        >
+          <:prepend as |classes|>
+            <EuiFormLabel class={{classes}}>Display</EuiFormLabel>
+          </:prepend>
+        </EuiSelect>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSelect
+          @options={{this.displaySizeOptions}}
+          @value={{this.displaySize}}
+          @compressed={{true}}
+          aria-label="Button sizes"
+          {{on "change" (fn this.onChange "displaySize")}}
+        >
+          <:prepend as |classes|>
+            <EuiFormLabel class={{classes}}>Size</EuiFormLabel>
+          </:prepend>
+        </EuiSelect>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSelect
+          @options={{this.iconSizeOptions}}
+          @value={{this.iconSize}}
+          @compressed={{true}}
+          aria-label="Icon in button sizes"
+          {{on "change" (fn this.onChange "iconSize")}}
+        >
+          <:prepend as |classes|>
+            <EuiFormLabel class={{classes}}>Icon size</EuiFormLabel>
+          </:prepend>
+        </EuiSelect>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{this.toggleDisabled}} />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer @size="xl" />
+    <EuiToolTip @content="Open documentation" @disableScreenReaderOutput={{true}}>
+      <EuiButtonIcon
+        @color={{this.buttonColor}}
+        @display={{this.displayType}}
+        @size={{this.displaySize}}
+        @iconSize={{this.iconSize}}
+        @isDisabled={{this.disableButton}}
+        @iconType="documentation"
+        aria-label="Open documentation"
+      />
+    </EuiToolTip>
+
+    <EuiSpacer @size="xl" />
+
+    <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="flexStart">
+      <EuiFlexItem @grow={{false}}>
+        <EuiToolTip @content="Lens" @disableScreenReaderOutput={{true}}>
+          <EuiButtonIcon @display="base" @iconType="lensApp" @size="m" aria-label="Lens" />
+        </EuiToolTip>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiToolTip @content="Warning" @disableScreenReaderOutput={{true}}>
+          <EuiButtonIcon @display="base" @iconType="warning" @size="s" @color="warning" aria-label="Warning" />
+        </EuiToolTip>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiToolTip @content="Dashboard" @disableScreenReaderOutput={{true}}>
+          <EuiButtonIcon @iconType="dashboardApp" aria-label="Dashboard" @color="text" />
+        </EuiToolTip>
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiToolTip @content="Delete" @disableScreenReaderOutput={{true}}>
+          <EuiButtonIcon @iconType="trash" aria-label="Delete" @color="danger" />
+        </EuiToolTip>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+
+    <EuiSpacer />
+
+    <EuiText>
+
+    `EuiButtonIcon` requires an `aria-label` to express the meaning to screen readers.
+
+    </EuiText>
+  </template>
 }
 ```

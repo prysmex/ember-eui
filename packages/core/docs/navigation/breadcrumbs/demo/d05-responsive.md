@@ -11,33 +11,10 @@ order: 5
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @max={{null}}
-  @responsive={{false}}
-  aria-label='An example of non-responsive EuiBreadcrumbs'
-/>
-
-<EuiSpacer />
-
-<EuiText>
-	<p>
-		Alternatively, you can change number of breadcrumbs that show per breakpoint by passing a custom responsive object.
-  </p>
-</EuiText>
-
-
-<EuiBreadcrumbs
-  @breadcrumbs={{this.breadcrumbs}}
-  @responsive={{hash xs=1 s=3 m=5 xl=6}}
-	@max={{null}}
-  aria-label='An example of custom responsive EuiBreadcrumbs'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { hash } from '@ember/helper';
+import { EuiBreadcrumbs, EuiSpacer, EuiText } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   breadcrumbs = [
@@ -73,5 +50,30 @@ export default class DemoComponent extends Component {
       text: 'Nebulosa subspecies'
     }
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @max={{null}}
+      @responsive={{false}}
+      aria-label='An example of non-responsive EuiBreadcrumbs'
+    />
+
+    <EuiSpacer />
+
+    <EuiText>
+    	<p>
+    		Alternatively, you can change number of breadcrumbs that show per breakpoint by passing a custom responsive object.
+      </p>
+    </EuiText>
+
+
+    <EuiBreadcrumbs
+      @breadcrumbs={{this.breadcrumbs}}
+      @responsive={{hash xs=1 s=3 m=5 xl=6}}
+    	@max={{null}}
+      aria-label='An example of custom responsive EuiBreadcrumbs'
+    />
+  </template>
 }
 ```

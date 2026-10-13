@@ -11,7 +11,10 @@ On dark backgrounds, `@color="ghost"` renders white buttons. `EuiButton`,
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiButtonEmpty, EuiButtonIcon, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
 <div style="background: #25282f; padding: 16px; border-radius: 6px;">
   <EuiFlexGroup @gutterSize="s" @alignItems="center" @wrap={{true}} @responsive={{false}}>
     <EuiFlexItem @grow={{false}}>
@@ -28,4 +31,5 @@ On dark backgrounds, `@color="ghost"` renders white buttons. `EuiButton`,
     </EuiFlexItem>
   </EuiFlexGroup>
 </div>
+</template>
 ```

@@ -11,17 +11,9 @@ order: 2
 
 </EuiText>
 
-```hbs template
-<EuiBreadcrumbs
-  @max={{4}}
-  @breadcrumbs={{this.breadcrumbs}}
-  @truncate={{false}}
-  aria-label='An example of EuiBreadcrumbs with specifying max prop'
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiBreadcrumbs } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   breadcrumbs = [
@@ -57,5 +49,14 @@ export default class DemoComponent extends Component {
       text: 'Nebulosa subspecies',
     },
   ];
+
+  <template>
+    <EuiBreadcrumbs
+      @max={{4}}
+      @breadcrumbs={{this.breadcrumbs}}
+      @truncate={{false}}
+      aria-label='An example of EuiBreadcrumbs with specifying max prop'
+    />
+  </template>
 }
 ```

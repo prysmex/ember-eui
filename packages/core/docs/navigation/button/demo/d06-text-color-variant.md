@@ -10,7 +10,10 @@ Use `text` button color variants on action-heavy UIs to reduce visual noise. Thi
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiToolTip } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="flexStart">
   <EuiFlexItem @grow={{false}}>
     <EuiButton @color="text">Text color button</EuiButton>
@@ -21,4 +24,5 @@ Use `text` button color variants on action-heavy UIs to reduce visual noise. Thi
     </EuiToolTip>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

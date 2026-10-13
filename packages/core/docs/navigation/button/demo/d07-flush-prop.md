@@ -10,7 +10,10 @@ The `@flush` argument is only available for `EuiButtonEmpty`. It removes padding
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHorizontalRule, EuiPanel, EuiTitle } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @gutterSize="s" @direction="row">
   <EuiFlexItem style="width: 240px" @grow={{false}}>
     <EuiPanel @color="plain" @hasBorder={{true}}>
@@ -27,4 +30,5 @@ The `@flush` argument is only available for `EuiButtonEmpty`. It removes padding
     </EuiPanel>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

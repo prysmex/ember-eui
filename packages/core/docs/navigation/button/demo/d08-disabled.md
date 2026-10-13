@@ -10,18 +10,11 @@ Show a button in a disabled state when the action **cannot be performed** due to
 
 </EuiText>
 
-```hbs template
-<EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{this.toggle}} />
-<EuiSpacer />
-<EuiButton @isDisabled={{this.disableButton}} @fill={{true}}>
-  {{if this.disableButton "Disabled" "Button"}}
-</EuiButton>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   @tracked disableButton = true;
@@ -30,5 +23,13 @@ export default class DemoComponent extends Component {
   toggle() {
     this.disableButton = !this.disableButton;
   }
+
+  <template>
+    <EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{this.toggle}} />
+    <EuiSpacer />
+    <EuiButton @isDisabled={{this.disableButton}} @fill={{true}}>
+      {{if this.disableButton "Disabled" "Button"}}
+    </EuiButton>
+  </template>
 }
 ```

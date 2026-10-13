@@ -10,18 +10,11 @@ Always consider the button loading state due to potential **performance slowdown
 
 </EuiText>
 
-```hbs template
-<EuiSwitch @compressed={{true}} @label="Is loading" @checked={{this.loadingButton}} @onChange={{this.toggle}} />
-<EuiSpacer />
-<EuiButton @isLoading={{this.loadingButton}} @fill={{true}}>
-  {{if this.loadingButton "Loading..." "Button"}}
-</EuiButton>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButton, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   @tracked loadingButton = true;
@@ -30,5 +23,13 @@ export default class DemoComponent extends Component {
   toggle() {
     this.loadingButton = !this.loadingButton;
   }
+
+  <template>
+    <EuiSwitch @compressed={{true}} @label="Is loading" @checked={{this.loadingButton}} @onChange={{this.toggle}} />
+    <EuiSpacer />
+    <EuiButton @isLoading={{this.loadingButton}} @fill={{true}}>
+      {{if this.loadingButton "Loading..." "Button"}}
+    </EuiButton>
+  </template>
 }
 ```

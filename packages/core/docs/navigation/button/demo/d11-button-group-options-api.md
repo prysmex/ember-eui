@@ -12,51 +12,13 @@ order: 11
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize="m" @alignItems="center">
-  <EuiFlexItem @grow={{false}}>
-    <EuiSwitch @compressed={{true}} @label="Full width" @checked={{this.fullButton}} @onChange={{fn this.toggle "fullButton"}} />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{fn this.toggle "disableButton"}} />
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer />
-<EuiPanel @color="plain" @hasBorder={{true}} style="width: 600px; max-width: 100%">
-  <EuiTitle @size="xxs" @tagName="h3">Default</EuiTitle>
-  <EuiSpacer @size="s" />
-  <EuiButtonGroup
-    @legend="Default single select button group"
-    @isFullWidth={{this.fullButton}}
-    @isDisabled={{this.disableButton}}
-    @options={{this.toggleButtons}}
-    @idSelected={{this.toggleIdSelected}}
-    @onChange={{this.onChange}}
-  />
-</EuiPanel>
-
-<EuiSpacer />
-
-<EuiPanel @color="plain" @hasBorder={{true}} style="width: 600px; max-width: 100%">
-  <EuiTitle @size="xxs" @tagName="h3">Multi select</EuiTitle>
-  <EuiSpacer @size="s" />
-  <EuiButtonGroup
-    @legend="Multi select button group"
-    @type="multi"
-    @isFullWidth={{this.fullButton}}
-    @isDisabled={{this.disableButton}}
-    @options={{this.toggleButtonsMulti}}
-    @idToSelectedMap={{this.toggleIdToSelectedMap}}
-    @onChange={{this.onChangeMulti}}
-  />
-</EuiPanel>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { guidFor } from '@ember/object/internals';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { fn } from '@ember/helper';
+import { EuiButtonGroup, EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer, EuiSwitch, EuiTitle } from '@ember-eui/core/components';
 
 const basicButtonGroupPrefix = guidFor({});
 const multiSelectButtonGroupPrefix = guidFor({});
@@ -98,5 +60,45 @@ export default class DemoComponent extends Component {
       [optionId]: !this.toggleIdToSelectedMap[optionId]
     };
   }
+
+  <template>
+    <EuiFlexGroup @gutterSize="m" @alignItems="center">
+      <EuiFlexItem @grow={{false}}>
+        <EuiSwitch @compressed={{true}} @label="Full width" @checked={{this.fullButton}} @onChange={{fn this.toggle "fullButton"}} />
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{fn this.toggle "disableButton"}} />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+    <EuiSpacer />
+    <EuiPanel @color="plain" @hasBorder={{true}} style="width: 600px; max-width: 100%">
+      <EuiTitle @size="xxs" @tagName="h3">Default</EuiTitle>
+      <EuiSpacer @size="s" />
+      <EuiButtonGroup
+        @legend="Default single select button group"
+        @isFullWidth={{this.fullButton}}
+        @isDisabled={{this.disableButton}}
+        @options={{this.toggleButtons}}
+        @idSelected={{this.toggleIdSelected}}
+        @onChange={{this.onChange}}
+      />
+    </EuiPanel>
+
+    <EuiSpacer />
+
+    <EuiPanel @color="plain" @hasBorder={{true}} style="width: 600px; max-width: 100%">
+      <EuiTitle @size="xxs" @tagName="h3">Multi select</EuiTitle>
+      <EuiSpacer @size="s" />
+      <EuiButtonGroup
+        @legend="Multi select button group"
+        @type="multi"
+        @isFullWidth={{this.fullButton}}
+        @isDisabled={{this.disableButton}}
+        @options={{this.toggleButtonsMulti}}
+        @idToSelectedMap={{this.toggleIdToSelectedMap}}
+        @onChange={{this.onChangeMulti}}
+      />
+    </EuiPanel>
+  </template>
 }
 ```

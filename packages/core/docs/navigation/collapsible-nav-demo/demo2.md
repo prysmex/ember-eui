@@ -6,103 +6,75 @@ order: 2
 
 <EuiText>
 	<p>
-		An <strong>EuiCollapsibleNavGroup</strong> adds some basic borders and <EuiCode>@background</EuiCode> color of <EuiCode>none</EuiCode>, <EuiCode>light</EuiCode>, or <EuiCode>dark</EuiCode>. Give each section a heading by providing an optional <EuiCode>title</EuiCode> and <EuiCode>@iconType</EuiCode>. Make the section collapsible (accordion style) with <EuiCode>isCollapsible=true</EuiCode>.
+		An <strong>EuiCollapsibleNavGroup</strong> adds some basic borders and <EuiCode>@background</EuiCode> color of <EuiCode>none</EuiCode>, <EuiCode>light</EuiCode>, or <EuiCode>dark</EuiCode>. Give each section a heading by providing an optional <EuiCode>&lt;:title&gt;</EuiCode> block and <EuiCode>@iconType</EuiCode>. Make the section collapsible (accordion style) with <EuiCode>@isCollapsible=&#123;&#123;true&#125;&#125;</EuiCode>.
 	</p>
 	<p>
-    	When in <EuiCode>@isCollapsible</EuiCode> mode, a <EuiCode>title</EuiCode> and <EuiCode>initialIsOpen:boolean</EuiCode> is required.
+    	When in <EuiCode>@isCollapsible</EuiCode> mode, a <EuiCode>&lt;:title&gt;</EuiCode> block and <EuiCode>@initialIsOpen</EuiCode> are required.
 	</p>
-
 </EuiText>
 
-```hbs template
+<EuiSpacer />
+
+```gjs component
+import { EuiCode, EuiCollapsibleNavGroup, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiCollapsibleNavGroup>
   <:content>
-    <EuiText @size='s' @color='subdued'>
+    <EuiText @size="s" @color="subdued">
       <p>This is a basic group without any modifications</p>
     </EuiText>
   </:content>
 </EuiCollapsibleNavGroup>
-<EuiCollapsibleNavGroup @title='Nav group' @iconType='logoElastic'>
+<EuiCollapsibleNavGroup @iconType="logoElastic">
+  <:title>Nav group</:title>
   <:content>
-    <EuiText @size='s' @color='subdued'>
+    <EuiText @size="s" @color="subdued">
       <p>
-        This is a nice group with a heading supplied via
-        <EuiCode>title</EuiCode>
-        and
-        <EuiCode>iconType</EuiCode>.
+        This is a nice group with a heading supplied via the
+        <EuiCode>&lt;:title&gt;</EuiCode> block and
+        <EuiCode>@iconType</EuiCode>.
       </p>
     </EuiText>
   </:content>
 </EuiCollapsibleNavGroup>
 <EuiCollapsibleNavGroup
-  @background='light'
-  @title='Nav group'
+  @background="light"
   @isCollapsible={{true}}
-  @iconType='logoElastic'
+  @iconType="logoElastic"
   @initialIsOpen={{true}}
 >
+  <:title>Nav group</:title>
   <:content>
-    <EuiText @size='s' @color='subdued'>
+    <EuiText @size="s" @color="subdued">
       <p>
-        This group is
-        <EuiCode>collapsible</EuiCode>
-        and set with
-        <EuiCode>initialIsOpen</EuiCode>. It has a heading that is the
-        collapsing button via
-        <EuiCode>title</EuiCode>
-        and
-        <EuiCode>iconType</EuiCode>.
+        This group is <EuiCode>collapsible</EuiCode> and set with
+        <EuiCode>@initialIsOpen</EuiCode>. It has a heading that is the
+        collapsing button via the <EuiCode>&lt;:title&gt;</EuiCode> block and
+        <EuiCode>@iconType</EuiCode>.
       </p>
     </EuiText>
   </:content>
 </EuiCollapsibleNavGroup>
 <EuiCollapsibleNavGroup
-  @title='Nav group'
-  @iconType='logoGCPMono'
-  @iconSize='xxl'
-  @titleSize='s'
+  @iconType="logoGCPMono"
+  @iconSize="xxl"
+  @titleSize="s"
   @isCollapsible={{true}}
   @initialIsOpen={{false}}
-  @background='dark'
+  @background="dark"
 >
+  <:title>Nav group</:title>
   <:content>
-    <EuiText @size='s'>
+    <EuiText @size="s">
       <p>
-        This is a
-        <EuiCode>dark</EuiCode>
-        <EuiCode>collapsible</EuiCode>
-        group that is initally set to closed,
-        <EuiCode>iconSize=&quot;xxl&quot;</EuiCode>
-        and
-        <EuiCode>titleSize=&quot;s&quot;</EuiCode>.
+        This is a <EuiCode>dark</EuiCode> <EuiCode>collapsible</EuiCode> group
+        that is initially set to closed,
+        <EuiCode>@iconSize="xxl"</EuiCode> and
+        <EuiCode>@titleSize="s"</EuiCode>.
       </p>
     </EuiText>
   </:content>
 </EuiCollapsibleNavGroup>
-```
-
-```js component
-import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-
-export default class DemoCollapsibleNavComponent extends Component {
-  @tracked collNavIsOpen = false;
-  @tracked navIsDocked = false;
-
-  @action
-  openCollapsibleNav() {
-    this.collNavIsOpen = true;
-  }
-
-  @action
-  closeCollapsibleNav() {
-    this.collNavIsOpen = false;
-  }
-
-  @action
-  toggleDockedNav() {
-    this.navIsDocked = !this.navIsDocked;
-  }
-}
+</template>
 ```

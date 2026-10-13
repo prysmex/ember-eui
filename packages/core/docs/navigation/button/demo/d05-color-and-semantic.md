@@ -16,7 +16,10 @@ Do not override button styles. EUI provides arguments to manage color, size, and
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiText } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @responsive={{false}} @gutterSize="s" @alignItems="flexStart">
   <EuiFlexItem @grow={{false}}>
     <EuiButton @color="danger">Danger</EuiButton>
@@ -36,4 +39,5 @@ Do not override button styles. EUI provides arguments to manage color, size, and
 **Avoid direct use** of semantic buttons unless they are part of existing EUI components. Direct use of `danger` (red) buttons is limited to confirming **destructive** outcomes, like deleting data, to maintain its elevated meaning. `success` (green) buttons indicate **unsaved or unprocessed** changes (draft or dirty state) to mitigate work loss. **Do not rely solely on color** for meaning; include a label or icon for accessibility and clarity.
 
 </EuiText>
+</template>
 ```

@@ -1,5 +1,5 @@
 ---
-order: 1
+order: 2
 ---
 
 # External links
@@ -13,29 +13,31 @@ order: 1
 
 
 
-```hbs template
-<EuiText>
-  <p>
-    Open the
-    <EuiLink @href='http://www.elastic.co' @target='_blank'>
-      Elastic website
-    </EuiLink>
-    in a new tab.
-  </p>
-  <p>
-    This
-    <EuiLink @href='#/navigation/link' @external={{true}}>
-      link
-    </EuiLink>
-    has the
-    <EuiCode>external</EuiCode>
-    prop set to true.
-  </p>
-</EuiText>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
+import { EuiCode, EuiLink, EuiText } from '@ember-eui/core/components';
 
-export default class DemoSideNavComponent extends Component {}
+export default class DemoComponent extends Component {
+
+  <template>
+    <EuiText>
+      <p>
+        Open the
+        <EuiLink @href='http://www.elastic.co' @target='_blank'>
+          Elastic website
+        </EuiLink>
+        in a new tab.
+      </p>
+      <p>
+        This
+        <EuiLink @href='#/navigation/link' @external={{true}}>
+          link
+        </EuiLink>
+        has the
+        <EuiCode>@external</EuiCode>
+        argument set to true.
+      </p>
+    </EuiText>
+  </template>
+}
 ```

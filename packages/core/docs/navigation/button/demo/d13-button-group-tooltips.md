@@ -12,25 +12,11 @@ To instead display an `EuiToolTip` around your button(s), pass the `toolTipConte
 
 </EuiText>
 
-```hbs template
-<EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{this.toggleDisabled}} />
-<EuiSpacer />
-
-<EuiFormRow @label="Default button group with tooltips" @fullWidth={{true}}>
-  <EuiButtonGroup
-    @legend="This is a group with tooltips"
-    @options={{this.toggleButtons}}
-    @idSelected={{this.toggleIdSelected}}
-    @isDisabled={{this.disableButton}}
-    @onChange={{this.onChange}}
-  />
-</EuiFormRow>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButtonGroup, EuiFormRow, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
 
 export default class DemoComponent extends Component {
   @tracked toggleIdSelected = 'buttonGroup__1';
@@ -60,5 +46,20 @@ export default class DemoComponent extends Component {
   onChange(optionId) {
     this.toggleIdSelected = optionId;
   }
+
+  <template>
+    <EuiSwitch @compressed={{true}} @label="Disabled" @checked={{this.disableButton}} @onChange={{this.toggleDisabled}} />
+    <EuiSpacer />
+
+    <EuiFormRow @label="Default button group with tooltips" @fullWidth={{true}}>
+      <EuiButtonGroup
+        @legend="This is a group with tooltips"
+        @options={{this.toggleButtons}}
+        @idSelected={{this.toggleIdSelected}}
+        @isDisabled={{this.disableButton}}
+        @onChange={{this.onChange}}
+      />
+    </EuiFormRow>
+  </template>
 }
 ```

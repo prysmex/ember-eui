@@ -10,7 +10,10 @@ Use `EuiButton` for actions and `EuiLink` for text-based navigation. Buttons and
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
 <EuiFlexGroup @responsive={{false}} @wrap={{true}} @gutterSize="s" @alignItems="center">
   <EuiFlexItem @grow={{false}}>
     <EuiButton @href="#using-href-and-onclick">Button with href</EuiButton>
@@ -22,4 +25,5 @@ Use `EuiButton` for actions and `EuiLink` for text-based navigation. Buttons and
     </EuiButtonEmpty>
   </EuiFlexItem>
 </EuiFlexGroup>
+</template>
 ```

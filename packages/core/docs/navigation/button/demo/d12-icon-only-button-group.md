@@ -10,30 +10,12 @@ Use the `@isIconOnly` argument when displaying a group of icon-only buttons. The
 
 </EuiText>
 
-```hbs template
-<EuiButtonGroup
-  @legend="Text align"
-  @options={{this.toggleButtonsIcons}}
-  @idSelected={{this.toggleIconIdSelected}}
-  @onChange={{this.onChangeIcons}}
-  @isIconOnly={{true}}
-/>
-&nbsp;&nbsp;
-<EuiButtonGroup
-  @legend="Text style"
-  @options={{this.toggleButtonsIconsMulti}}
-  @idToSelectedMap={{this.toggleIconIdToSelectedMap}}
-  @onChange={{this.onChangeIconsMulti}}
-  @type="multi"
-  @isIconOnly={{true}}
-/>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { guidFor } from '@ember/object/internals';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButtonGroup } from '@ember-eui/core/components';
 
 const idPrefix3 = guidFor({});
 
@@ -66,5 +48,24 @@ export default class DemoComponent extends Component {
       [optionId]: !this.toggleIconIdToSelectedMap[optionId]
     };
   }
+
+  <template>
+    <EuiButtonGroup
+      @legend="Text align"
+      @options={{this.toggleButtonsIcons}}
+      @idSelected={{this.toggleIconIdSelected}}
+      @onChange={{this.onChangeIcons}}
+      @isIconOnly={{true}}
+    />
+    &nbsp;&nbsp;
+    <EuiButtonGroup
+      @legend="Text style"
+      @options={{this.toggleButtonsIconsMulti}}
+      @idToSelectedMap={{this.toggleIconIdToSelectedMap}}
+      @onChange={{this.onChangeIconsMulti}}
+      @type="multi"
+      @isIconOnly={{true}}
+    />
+  </template>
 }
 ```

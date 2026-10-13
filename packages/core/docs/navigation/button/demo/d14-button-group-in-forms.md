@@ -10,36 +10,12 @@ When using button groups within compressed forms, match the form elements by add
 
 </EuiText>
 
-```hbs template
-<EuiPanel @hasBorder={{true}} style="max-width: 300px">
-  <EuiButtonGroup
-    @name="coarsness"
-    @legend="This is a basic group"
-    @options={{this.toggleButtonsCompressed}}
-    @idSelected={{this.toggleCompressedIdSelected}}
-    @onChange={{this.onChangeCompressed}}
-    @buttonSize="compressed"
-    @isFullWidth={{true}}
-  />
-  <EuiSpacer />
-  <EuiButtonGroup
-    @legend="Text style"
-    class="eui-displayInlineBlock"
-    @options={{this.toggleButtonsIconsMulti}}
-    @idToSelectedMap={{this.toggleIconIdToSelectedMapIcon}}
-    @onChange={{this.onChangeIconsMultiIcons}}
-    @type="multi"
-    @buttonSize="compressed"
-    @isIconOnly={{true}}
-  />
-</EuiPanel>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { guidFor } from '@ember/object/internals';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { EuiButtonGroup, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
 
 const compressedToggleButtonGroupPrefix = guidFor({});
 const multiSelectButtonGroupPrefix = guidFor({});
@@ -73,5 +49,30 @@ export default class DemoComponent extends Component {
       [optionId]: !this.toggleIconIdToSelectedMapIcon[optionId]
     };
   }
+
+  <template>
+    <EuiPanel @hasBorder={{true}} style="max-width: 300px">
+      <EuiButtonGroup
+        @name="coarsness"
+        @legend="This is a basic group"
+        @options={{this.toggleButtonsCompressed}}
+        @idSelected={{this.toggleCompressedIdSelected}}
+        @onChange={{this.onChangeCompressed}}
+        @buttonSize="compressed"
+        @isFullWidth={{true}}
+      />
+      <EuiSpacer />
+      <EuiButtonGroup
+        @legend="Text style"
+        class="eui-displayInlineBlock"
+        @options={{this.toggleButtonsIconsMulti}}
+        @idToSelectedMap={{this.toggleIconIdToSelectedMapIcon}}
+        @onChange={{this.onChangeIconsMultiIcons}}
+        @type="multi"
+        @buttonSize="compressed"
+        @isIconOnly={{true}}
+      />
+    </EuiPanel>
+  </template>
 }
 ```

@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 5
 ---
 
-# Item options
+# Item options (Ember EUI extension)
 
 <EuiText>
 
@@ -16,7 +16,10 @@ order: 2
 
 </EuiText>
 
-```hbs template
+```gjs component
+import { EuiContextMenuItem, EuiContextMenuPanel, EuiPanel } from '@ember-eui/core/components';
+
+<template>
 <EuiPanel @paddingSize="none" @hasBorder={{true}} style="max-width: 320px;">
   <EuiContextMenuPanel>
     <EuiContextMenuItem @icon="empty">No icon, still aligned</EuiContextMenuItem>
@@ -29,4 +32,5 @@ order: 2
     </EuiContextMenuItem>
   </EuiContextMenuPanel>
 </EuiPanel>
+</template>
 ```

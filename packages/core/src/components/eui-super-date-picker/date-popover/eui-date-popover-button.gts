@@ -2,10 +2,10 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
+import { cancel, later, schedule } from '@ember/runloop';
 import { service } from '@ember/service';
 
-import set from 'ember-set-helper/helpers/set';
-import { not } from 'ember-truth-helpers';
+import { modifier } from 'ember-modifier';
 
 import { getEuiThemeContext } from '../../../utils/emotion/consume.ts';
 import { buttonReset } from '../../../utils/eui/form-controls.ts';
@@ -31,8 +31,19 @@ interface EuiDatePopoverButtonArgs {
   isDisabled?: boolean;
   /** Invalid styling. */
   isInvalid?: boolean;
-  /** Whether the popover is open. */
+  /**
+   * Whether the popover is open, when the parent controls it (with
+   * `@onPopoverToggle`).
+   */
   isOpen?: boolean;
+  /**
+   * Called when the button is clicked. Passing it makes the popover
+   * controlled: `@isOpen` decides whether it is open (upstream
+   * `onPopoverToggle`).
+   */
+  onPopoverToggle?: () => void;
+  /** Called when the controlled popover asks to close (upstream `onPopoverClose`). */
+  onPopoverClose?: () => void;
   /** Highlights that it changed and needs applying. */
   needsUpdating?: boolean;
   /** moment locale. */
@@ -70,6 +81,9 @@ interface EuiDatePopoverButtonArgs {
   css?: EuiCss;
 }
 
+/** Upstream EuiPopover's `closingTransitionTime`. */
+const CLOSING_TRANSITION_TIME = 250;
+
 /** @private The start or end date button of EuiSuperDatePicker. */
 export interface EuiDatePopoverButtonSignature {
   Element: HTMLButtonElement;
@@ -88,7 +102,80 @@ export interface EuiDatePopoverButtonSignature {
 
 export default class EuiDatePopoverButton extends Component<EuiDatePopoverButtonSignature> {
   @service declare euiI18n: EuiI18n;
-  @tracked isOpen = false;
+  @tracked private uncontrolledIsOpen = false;
+
+  /** Controlled by the parent when it passes `@onPopoverToggle`. */
+  get isOpen(): boolean {
+    return this.args.onPopoverToggle
+      ? Boolean(this.args.isOpen)
+      : this.uncontrolledIsOpen;
+  }
+
+  toggle = () => {
+    if (this.args.onPopoverToggle) {
+      this.args.onPopoverToggle();
+    } else {
+      this.uncontrolledIsOpen = !this.uncontrolledIsOpen;
+    }
+  };
+
+  open = () => {
+    if (!this.isOpen) this.toggle();
+  };
+
+  close = () => {
+    if (this.args.onPopoverToggle) {
+      this.args.onPopoverClose?.();
+    } else {
+      this.uncontrolledIsOpen = false;
+    }
+  };
+
+  private wasOpen = false;
+  private panelId: string | null = null;
+  private strandedFocusTimer?: ReturnType<typeof later>;
+
+  /**
+   * Upstream EuiPopover's `handleStrandedFocus`: once the popover closed, if
+   * the focus could not return (it is left on the body, or in the closing
+   * panel), move it to this button. E.g. the super date picker opens the
+   * start popover on mount from its pretty duration button, which is gone.
+   */
+  returnStrandedFocus = modifier((element: HTMLElement, [isOpen]: [boolean]) => {
+    const wasOpen = this.wasOpen;
+    this.wasOpen = isOpen;
+
+    if (isOpen) {
+      // EuiPopover links the panel once it opens
+      schedule('afterRender', () => {
+        this.panelId = element.getAttribute('aria-controls') ?? this.panelId;
+      });
+      return;
+    }
+
+    if (!wasOpen) return;
+
+    const panelId = element.getAttribute('aria-controls') ?? this.panelId;
+    cancel(this.strandedFocusTimer);
+    this.strandedFocusTimer = later(() => {
+      const active = document.activeElement;
+      const panel = panelId ? document.getElementById(panelId) : null;
+
+      if (
+        !active ||
+        active === document.body ||
+        !active.isConnected ||
+        panel?.contains(active)
+      ) {
+        element.focus({ preventScroll: true });
+      }
+    }, CLOSING_TRANSITION_TIME);
+  });
+
+  willDestroy() {
+    super.willDestroy();
+    cancel(this.strandedFocusTimer);
+  }
 
   get dateFormat() {
     //date with seconds and such
@@ -196,7 +283,7 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
   <template>
     <EuiPopover
       @isOpen={{this.isOpen}}
-      @closePopover={{set this "isOpen" false}}
+      @closePopover={{this.close}}
       @anchorPosition={{this.anchorPosition}}
       @anchorClassName={{this.anchorClass}}
       @panelPaddingSize="none"
@@ -209,8 +296,8 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
             (hash
               classes=this.classes
               formattedValue=this.formattedValue
-              open=(set this "isOpen" true)
-              close=(set this "isOpen" false)
+              open=this.open
+              close=this.close
             )
             to="button"
           }}
@@ -222,8 +309,9 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
             disabled={{@isDisabled}}
             data-test-subj="superDatePicker{{this.position}}DatePopoverButton"
             ...attributes
-            {{on "click" (set this "isOpen" (not this.isOpen))}}
+            {{on "click" this.toggle}}
             {{on "focus" this.onFocus}}
+            {{this.returnStrandedFocus this.isOpen}}
           >
             {{this.formattedValue}}
           </button>

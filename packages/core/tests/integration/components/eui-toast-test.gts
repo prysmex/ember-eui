@@ -29,4 +29,24 @@ module('Integration | Component | eui-toast', function (hooks) {
     await click('[data-test-subj="toastCloseButton"]');
     assert.strictEqual(closed, 1);
   });
+
+  test('@body can be a component for rich content', async function (assert) {
+    const Rich = <template><span class="rich-body">See <a href="#docs">the docs</a></span></template>;
+    await render(<template><EuiToast @title="Rich" @body={{Rich}} /></template>);
+
+    assert.dom('[data-test-subj="euiToastBody"] .euiToast__text .rich-body a').hasText('the docs');
+  });
+
+  test('a component body ignores @useMarkdownFormat, a string body still renders markdown', async function (assert) {
+    const Rich = <template><span class="rich-body">**not markdown**</span></template>;
+    await render(
+      <template>
+        <EuiToast @title="A" @body={{Rich}} @useMarkdownFormat={{true}} data-test-subj="a" />
+        <EuiToast @title="B" @body="**bold**" @useMarkdownFormat={{true}} data-test-subj="b" />
+      </template>
+    );
+
+    assert.dom('[data-test-subj="a"] .rich-body').hasText('**not markdown**');
+    assert.dom('[data-test-subj="b"] strong').hasText('bold');
+  });
 });

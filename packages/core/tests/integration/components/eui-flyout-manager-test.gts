@@ -512,3 +512,185 @@ module('Integration | Component | EuiFlyout session management', function (hooks
     wide.remove();
   });
 });
+
+module('Integration | Component | EuiFlyout session management (upstream manager tests)', function (hooks) {
+  setupRenderingTest(hooks);
+
+  let manager: EuiFlyoutManagerService;
+
+  hooks.beforeEach(function () {
+    manager = euiFlyoutManager(this);
+  });
+
+  const sessionMainIds = () =>
+    manager.state.sessions.map((session) => document.getElementById(session.mainFlyoutId)?.getAttribute('data-test-subj'));
+
+  test('closing a backgrounded main removes only its own session', async function (assert) {
+    const state = new Flyouts();
+    state.a = true;
+
+    await render(
+      <template>
+        {{#if state.a}}<EuiFlyout @session="start" aria-label="First" @onClose={{state.closeA}} data-test-subj="first">1</EuiFlyout>{{/if}}
+        {{#if state.b}}<EuiFlyout @session="start" aria-label="Second" @onClose={{state.closeB}} data-test-subj="second">2</EuiFlyout>{{/if}}
+      </template>
+    );
+    await managed();
+    state.b = true;
+    await managed();
+    assert.deepEqual(sessionMainIds(), ['first', 'second']);
+
+    state.a = false;
+    await managed();
+    assert.deepEqual(sessionMainIds(), ['second'], 'the foreground session stays');
+    assert.dom('[data-test-subj="second"]', document.body).hasAttribute('data-managed-flyout-level', 'main');
+    assert.deepEqual(state.closes, [], 'unrendering a flyout does not call its onClose');
+
+    state.b = false;
+    await managed();
+    assert.deepEqual(sessionMainIds(), []);
+    assert.strictEqual(manager.state.currentZIndex, 0, 'the z-index resets once every flyout is closed');
+  });
+
+  test('unrendering the foreground main still closes the whole current session', async function (assert) {
+    const state = new Flyouts();
+    state.a = true;
+
+    await render(
+      <template>
+        {{#if state.a}}<EuiFlyout @session="start" aria-label="First" @onClose={{state.closeA}} data-test-subj="first">1</EuiFlyout>{{/if}}
+        {{#if state.b}}
+          <EuiFlyout @session="start" aria-label="Second" @onClose={{state.closeB}} data-test-subj="second">
+            {{#if state.child}}<EuiFlyout aria-label="Child" @onClose={{state.closeChild}}>c</EuiFlyout>{{/if}}
+          </EuiFlyout>
+        {{/if}}
+      </template>
+    );
+    await managed();
+    state.b = true;
+    state.child = true;
+    await managed();
+    assert.strictEqual(manager.state.flyouts.length, 3);
+
+    state.b = false;
+    await managed();
+    assert.deepEqual(sessionMainIds(), ['first']);
+    assert.strictEqual(manager.state.flyouts.length, 1, 'the child went with its main flyout');
+    assert.deepEqual(state.closes, [], 'no onClose for flyouts the app removed');
+  });
+
+  test('closing from the manager calls onClose with navigation-cascade', async function (assert) {
+    const state = new Flyouts();
+    state.a = true;
+    state.child = true;
+
+    await render(
+      <template>
+        {{#if state.a}}
+          <EuiFlyout @session="start" aria-label="Main" @onClose={{state.closeA}}>
+            {{#if state.child}}<EuiFlyout aria-label="Child" @onClose={{state.closeChild}}>c</EuiFlyout>{{/if}}
+          </EuiFlyout>
+        {{/if}}
+      </template>
+    );
+    await managed();
+    assert.deepEqual(
+      manager.state.flyouts.map((flyout) => [flyout.level, flyout.size]),
+      [
+        ['main', 'm'],
+        ['child', 's']
+      ],
+      'main flyouts default to m, children to s'
+    );
+
+    manager.closeAllFlyouts();
+    await managed();
+    assert.deepEqual(
+      state.closes.sort(),
+      [
+        ['a', 'navigation-cascade'],
+        ['child', 'navigation-cascade']
+      ],
+      'each flyout is told once'
+    );
+  });
+
+  test('menu props: pagination hides the history, children have no history', async function (assert) {
+    const state = new Flyouts();
+    const key = Symbol('menu');
+    const pagination = { currentIndex: 0, total: 2, onPrevious() {}, onNext() {} };
+    state.a = true;
+
+    await render(
+      <template>
+        {{#if state.a}}<EuiFlyout @session="start" @historyKey={{key}} aria-label="A" @onClose={{state.closeA}}>a</EuiFlyout>{{/if}}
+        {{#if state.b}}
+          <EuiFlyout @session="start" @historyKey={{key}} @flyoutMenuProps={{hash title="B" hideTitle=false}} @onClose={{state.closeB}} data-test-subj="b">
+            {{#if state.child}}<EuiFlyout @flyoutMenuProps={{hash title="Child" hideTitle=false}} @onClose={{state.closeChild}} data-test-subj="child">c</EuiFlyout>{{/if}}
+          </EuiFlyout>
+        {{/if}}
+        {{#if state.c}}<EuiFlyout @session="start" @historyKey={{key}} @flyoutMenuProps={{hash title="C" pagination=pagination}} @onClose={{state.closeC}} data-test-subj="c">c</EuiFlyout>{{/if}}
+      </template>
+    );
+    await managed();
+    state.b = true;
+    state.child = true;
+    await managed();
+
+    assert.dom('[data-test-subj="b"] [data-test-subj="euiFlyoutMenuBackButton"]', document.body).exists('history depth shows Back');
+    assert.true(
+      $('[data-test-subj="b"] .euiFlyoutMenu h3').getBoundingClientRect().width > 0,
+      'hideTitle=false shows the title'
+    );
+    assert.dom('[data-test-subj="child"] .euiFlyoutMenu', document.body).exists('a visible title renders the menu');
+    assert.dom('[data-test-subj="child"] [data-test-subj="euiFlyoutMenuBackButton"]', document.body).doesNotExist('children get no history controls');
+
+    state.c = true;
+    await managed();
+    assert.dom('[data-test-subj="c"] [data-test-subj="euiFlyoutMenuBackButton"]', document.body).doesNotExist('pagination replaces Back');
+    assert.dom('[data-test-subj="c"] [data-test-subj="euiFlyoutMenuPaginationNext"]', document.body).exists();
+  });
+
+  test('a new main is not clamped against the main it backgrounds; only the active main publishes its width', async function (assert) {
+    const state = new Flyouts();
+    const mainWidthVar = () => document.documentElement.style.getPropertyValue('--euiFlyoutMainWidth');
+    const referenceWidth = window.innerWidth;
+    const requested = Math.round(referenceWidth * 0.75);
+    const toPct = (width: number) => `${(width / referenceWidth) * 100}%`;
+    state.a = true;
+
+    await render(
+      <template>
+        {{#if state.a}}<EuiFlyout @session="start" @resizable={{true}} @size={{400}} aria-label="First" @onClose={{state.closeA}} data-test-subj="first">1</EuiFlyout>{{/if}}
+        {{#if state.b}}<EuiFlyout @session="start" aria-label="Second" @onClose={{state.closeB}}>2</EuiFlyout>{{/if}}
+        {{#if state.c}}<EuiFlyout @session="start" @resizable={{true}} @size={{requested}} aria-label="Third" @onClose={{state.closeC}} data-test-subj="third">3</EuiFlyout>{{/if}}
+      </template>
+    );
+    await managed();
+    assert.strictEqual(mainWidthVar(), toPct(400), 'the active resizable main publishes its width');
+
+    state.b = true;
+    await managed();
+    assert.strictEqual(mainWidthVar(), '', 'a backgrounded main withdraws it');
+
+    state.b = false;
+    await managed();
+    assert.strictEqual(mainWidthVar(), toPct(400), 'back in front it publishes again');
+
+    state.c = true;
+    await managed();
+    assert.true(
+      $('[data-test-subj="third"]').getAttribute('style')!.includes(`inline-size: ${toPct(requested)}`),
+      'the new main keeps its requested width'
+    );
+    assert.strictEqual(mainWidthVar(), toPct(requested));
+
+    state.c = false;
+    await managed();
+    assert.strictEqual(mainWidthVar(), toPct(400));
+    state.a = false;
+    await managed();
+    assert.strictEqual(mainWidthVar(), '');
+  });
+});
+

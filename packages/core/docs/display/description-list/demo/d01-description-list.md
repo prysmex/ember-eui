@@ -14,9 +14,7 @@ order: 1
 <EuiDescriptionList @listItems={{this.favoriteVideoGames}} />
 <EuiSpacer />
 <EuiText>
-
-You can also use the **EuiDescriptionListTitle** and **EuiDescriptionListDescription** components separately to build a list manually.
-
+  <p>You can also use the <strong>EuiDescriptionListTitle</strong> and <strong>EuiDescriptionListDescription</strong> components separately to build a list manually.</p>
 </EuiText>
 <EuiSpacer />
 <EuiDescriptionList>

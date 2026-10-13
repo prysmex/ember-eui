@@ -18,9 +18,7 @@ Using the argument `@type` set to `column`, description lists can be presented i
 />
 <EuiSpacer @size="l" />
 <EuiText>
-
-To return to the typical row format on smaller screens set `@type` to `responsiveColumn`. The following list will only show the column format on larger screens.
-
+  <p>To return to the typical row format on smaller screens set <EuiCode>@type</EuiCode> to <EuiCode>responsiveColumn</EuiCode>. The following list will only show the column format on larger screens.</p>
 </EuiText>
 <EuiSpacer />
 <EuiDescriptionList
@@ -30,13 +28,9 @@ To return to the typical row format on smaller screens set `@type` to `responsiv
 />
 <EuiSpacer @size="l" />
 <EuiText>
-
-The optional `@columnWidths` argument allows customizing specific column widths (e.g. `array "100px" "200px"`). The first value applies to the title column, and the second applies to the description column.
-
-Passing numbers instead of CSS width strings will use a ratio of widths. For example, `(array 1 3)` will render a description column 3x the width of the title column. In other words, titles will have a width of 25% descriptions will have a width of 75%.
-
-For advanced usage, column width strings also accept [CSS grid special units, sizing, keywords, and sizing functions](https://css-tricks.com/snippets/css/complete-guide-grid/#aa-special-units-functions).
-
+  <p>The optional <EuiCode>@columnWidths</EuiCode> argument allows customizing specific column widths (e.g. <EuiCode>["100px", "200px"]</EuiCode>). The first array value applies to the title column, and the second applies to the description column.</p>
+  <p>Passing numbers instead of CSS width strings will use a ratio of widths. For example, <EuiCode>[1, 3]</EuiCode> will render a description column 3x the width of the title column. In other words, titles will have a width of 25% descriptions will have a width of 75%.</p>
+  <p>For advanced usage, column width strings also accept <a href="https://css-tricks.com/snippets/css/complete-guide-grid/#aa-special-units-functions">CSS grid special units, sizing, keywords, and sizing functions</a>.</p>
 </EuiText>
 <EuiSpacer />
 <EuiDescriptionList

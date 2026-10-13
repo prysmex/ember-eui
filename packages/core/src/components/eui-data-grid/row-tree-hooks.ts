@@ -13,7 +13,10 @@ import * as keys from '../../utils/keys.ts';
 
 import type EuiDataGrid from '../eui-data-grid.gts';
 import type { RowTreeVisibleRow } from '../../utils/data-grid/row-tree.ts';
-import type { EuiDataGridColumn } from '../../utils/data-grid/types.ts';
+import type {
+  EuiDataGridColumn,
+  EuiDataGridRowTreeRowInfo
+} from '../../utils/data-grid/types.ts';
 
 /* ------------------------------------------------------------------------ */
 /* Cells                                                                    */
@@ -27,13 +30,16 @@ export interface RowTreeCellState {
   isToggleCell: boolean;
   /** The row object, passed to renderers as `@row`. */
   rowData: unknown;
+  /** The data row's tree state, passed to renderers as `@rowTree`. */
+  info: EuiDataGridRowTreeRowInfo | undefined;
 }
 
 const NO_TREE: RowTreeCellState = {
   row: undefined,
   isGroupRow: false,
   isToggleCell: false,
-  rowData: undefined
+  rowData: undefined,
+  info: undefined
 };
 
 /** Tree state of a cell (`cell.gts` `rowTree` getter). */
@@ -50,11 +56,26 @@ export function rowTreeCellState(
   if (!rowModel || isFooter) return NO_TREE;
   const row = rowModel.visibleRowAt(visibleRowIndex, grid.visibleRows.startRow);
   const toggleColumnId = rowModel.toggleColumnId ?? grid.columns[0]?.id;
+  const isToggleCell = !!row && !!column && column.id === toggleColumnId;
   return {
     row,
     isGroupRow: row?.kind === 'group',
-    isToggleCell: !!row && !!column && column.id === toggleColumnId,
-    rowData: rowModel.rowAt(rowIndex)
+    isToggleCell,
+    rowData: rowModel.rowAt(rowIndex),
+    info:
+      row && row.kind !== 'group'
+        ? {
+            id: row.id,
+            depth: row.depth,
+            hasChildren: row.hasChildren,
+            isExpanded: row.isExpanded,
+            parentId: row.parentId,
+            posInSet: row.posInSet,
+            setSize: row.setSize,
+            isToggleCell,
+            toggle: () => grid.toggleRow(row)
+          }
+        : undefined
   };
 }
 

@@ -24,9 +24,7 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiBasicTable | not in the audit, still missing (see tables-gaps-handoff.md): action `name` as rich content (text only); other `<td>` attributes on a column object (only `className`/`data-test-subj`; use `cellProps`); copy-to-clipboard tabular markers; `EuiComponentDefaultsContext` page-size defaults |
-| EuiDataGrid | `virtualizationOptions.onScroll` direction/`scrollUpdateWasRequested`; `estimatedRowHeight`; no custom virtualization (react-window); `footerCellProps` style; cell-action `closePopover` (upstream doesn't pass it either) |
-| EuiDataGrid (extension) | renderers don't get row depth / expanded state |
+| EuiDataGrid | react-window's own options (`estimatedColumnWidth`, `itemKey`, `outerElementType`, `direction`) don't apply to the Ember virtualizer; replace the virtualization with `@renderCustomGridBody` (see gaps-grid-handoff.md) |
 
 ## Layout, navigation, templates
 

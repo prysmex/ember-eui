@@ -13,6 +13,9 @@ checks out of the box.
 
 ```ts
 onScroll(args: {
+  horizontalScrollDirection: 'forward' | 'backward';
+  verticalScrollDirection: 'forward' | 'backward';
+  scrollUpdateWasRequested: boolean;
   scrollLeft: number;
   scrollTop: number;
   scrollHeight: number;
@@ -25,6 +28,11 @@ onScroll(args: {
   isScrolledToInlineEnd: boolean;
 }) => void
 ```
+
+As with react-window, the directions compare each position with the
+previous one, `scrollUpdateWasRequested` is `true` when the grid scrolled
+itself (`scrollTo`, `scrollToItem`, a focused cell scrolled into view), and
+the callback also runs once when the body first renders.
 
 `virtualizationOptions.onItemsRendered` similarly reports the rendered
 (overscan) and visible row and column ranges after each render; see the

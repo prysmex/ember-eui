@@ -7,8 +7,10 @@ import { service } from '@ember/service';
 
 import {
   callWithItemIfFunction,
-  isCustomItemAction
+  isCustomItemAction,
+  resolveItemNode
 } from '../../-private/basic-table.ts';
+import TableNode from '../../-private/table-node.gts';
 import EuiButtonIcon from '../eui-button-icon.gts';
 import EuiContextMenuItem from '../eui-context-menu-item.gts';
 import EuiContextMenuPanel from '../eui-context-menu-panel.gts';
@@ -19,6 +21,7 @@ import type {
   Action,
   CustomItemAction,
   DefaultItemAction,
+  EuiTableActionName,
   ItemIdResolved
 } from '../../-private/basic-table.ts';
 import type EuiI18n from '../../services/eui-i18n';
@@ -42,7 +45,7 @@ interface Control<T extends object> {
   action?: DefaultItemAction<T>;
   enabled: boolean;
   icon?: string;
-  name?: string;
+  name?: EuiTableActionName<T>;
   description?: string;
   href?: string;
   testSubj?: string;
@@ -94,7 +97,7 @@ export default class CollapsedItemActions<T extends object> extends Component<
           action,
           enabled,
           icon: action.icon ? call(action.icon) : undefined,
-          name: call(action.name),
+          name: resolveItemNode(item, action.name),
           description: call(action.description),
           href: call(action.href),
           testSubj: call(action['data-test-subj']),
@@ -169,7 +172,7 @@ export default class CollapsedItemActions<T extends object> extends Component<
                 @toolTipContent={{if (same control.name control.description) undefined control.description}}
                 data-test-subj={{control.testSubj}}
                 {{on "click" (fn this.onItemClick control)}}
-              >{{control.name}}</EuiContextMenuItem>
+              ><TableNode @node={{control.name}} @item={{@item}} /></EuiContextMenuItem>
             {{/if}}
           {{/each}}
         </EuiContextMenuPanel>

@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
+import { htmlSafe } from '@ember/template';
 
 import {
   BOX_SIZING,
@@ -17,6 +18,7 @@ import {
 } from '../utils/eui/styles.generated.ts';
 import { euiTableStickyCellStyles } from '../utils/eui/table.ts';
 import TableNode from '../-private/table-node.gts';
+import cssStyle from '../-private/css-style.ts';
 import EuiTextBlockTruncate from './eui-text-block-truncate.gts';
 
 import type {
@@ -27,6 +29,11 @@ import type {
 import type { EuiTableStickyCellOptions } from '../utils/eui/table.ts';
 import type { EuiTableNode } from '../-private/table-node.gts';
 import type { CSSObject } from '@emotion/css/create-instance';
+
+/** Inline styles of a cell: an object of CSS properties, or a string. */
+export type EuiTableRowCellStyle =
+  | string
+  | Record<string, string | number | null | undefined>;
 
 /** A cell of an `EuiTableRow`. */
 export interface EuiTableRowCellSignature {
@@ -86,12 +93,22 @@ export interface EuiTableRowCellSignature {
      * the content there.
      */
     mobileOptions?: TableMobileOptions;
+    /**
+     * Inline styles merged under the cell's own width styles (upstream's
+     * `style` prop). A `style` attribute replaces them instead.
+     */
+    style?: EuiTableRowCellStyle;
   };
   Blocks: {
     /** The content. */
     default: [];
     /** Different content in the cards layout. */
     mobile: [];
+    /**
+     * Content after the cell's content wrapper (upstream `append`), e.g. the
+     * hidden tabular copy markers of `EuiBasicTable`.
+     */
+    append: [];
   };
 }
 
@@ -173,6 +190,16 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
 
   @cached
   get style() {
+    const widths = this.widthStyle;
+    const base = this.args.style;
+    if (!base) return widths;
+    const baseText = typeof base === 'string' ? base : cssStyle(base)?.toString();
+    if (!baseText) return widths;
+    // upstream `resolveWidthPropsAsStyle(style, widths)`: widths win
+    return htmlSafe(widths ? `${baseText}; ${widths.toString()}` : baseText);
+  }
+
+  get widthStyle() {
     const { width, minWidth, maxWidth, hasActions, isExpander } = this.args;
     if (!this.isResponsive) return widthStyle(width, minWidth, maxWidth);
     // In cards, actions are shifted to a right column via CSS
@@ -306,6 +333,7 @@ export default class EuiTableRowCell extends Component<EuiTableRowCellSignature>
               {{yield}}
             {{/if}}
           </div>
+          {{yield to="append"~}}
         </Cell>
       {{/let}}
     {{/if}}

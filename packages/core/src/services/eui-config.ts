@@ -6,6 +6,23 @@ import { merge } from 'lodash-es';
 import type { EuiButtonIconSignature } from '../components/eui-button-icon';
 import type { ComponentLike } from '@glint/template';
 
+/**
+ * Defaults for components' props, like upstream `EuiProvider`'s
+ * `componentDefaults` (app-wide here). Args passed to a component win.
+ */
+export interface EuiComponentDefaults {
+  /**
+   * Page size settings inherited by `EuiTablePagination` and every table
+   * and grid built on it (`EuiBasicTable`, `EuiInMemoryTable`,
+   * `EuiDataGrid`).
+   */
+  EuiTablePagination?: {
+    itemsPerPage?: number;
+    itemsPerPageOptions?: number[];
+    showPerPageOptions?: boolean;
+  };
+}
+
 export interface EuiConfig {
   /**
    * Extra icons usable by name, e.g. `<EuiIcon @type="myLogo" />` or
@@ -23,6 +40,13 @@ export interface EuiConfig {
   euiIconUseSvg?: boolean;
   'euiButtonIcon.size'?: EuiButtonIconSignature['Args']['iconSize'];
   euiComboBoxOptionsHeight?: number;
+  /**
+   * Upstream `EuiProvider componentDefaults`, e.g.
+   * `{ EuiTablePagination: { itemsPerPage: 25, itemsPerPageOptions: [25, 50, 100] } }`.
+   * Set it with `setConfig` or a single `updateConfig` call: `updateConfig`
+   * merges arrays by index into earlier values.
+   */
+  componentDefaults?: EuiComponentDefaults;
 }
 
 const DEFAULT_CONFIG: EuiConfig = {

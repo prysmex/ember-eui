@@ -754,10 +754,24 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       : visibleRowIndex + 1;
   }
 
+  /** `footerCellProps.style` of a control column's footer cell. */
+  get footerCellPropsStyle(): string {
+    if (!this.args.isFooter || !this.isControlColumn) return '';
+    const style = this.controlColumn?.footerCellProps?.style;
+    if (!style || typeof style !== 'object') return '';
+    const { top, ...rest } = style as Record<string, string | number | undefined>;
+    // upstream: `top: style.top ? 0 : undefined` (rows position their cells)
+    return styleString({ ...rest, top: top ? 0 : undefined });
+  }
+
   get style() {
     const { body, colIndex, visibleRowIndex, isFooter } = this.args;
     const width = this.width;
     const parts: string[] = [];
+    // control columns' `footerCellProps.style` comes first, like upstream's
+    // `style` prop under the width, line height and `setCellProps` styles
+    const footerStyle = this.footerCellPropsStyle;
+    if (footerStyle) parts.push(footerStyle);
     if (!isFooter && !body.isVirtualized) {
       // custom grid body: cells flow in the consumer's rows
       parts.push(`height:${this.isAutoHeight ? 'auto' : `${body.rowHeight(visibleRowIndex)}px`}`);
@@ -850,7 +864,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       isDetails: false,
       schema: this.schema,
       cellContext: this.grid.args.cellContext,
-      row: this.rowTree.rowData // ember-eui extension (row-tree): `@row`
+      row: this.rowTree.rowData, // ember-eui extension (row-tree): `@row`
+      rowTree: this.rowTree.info // ember-eui extension (row-tree): `@rowTree`
     };
   }
 
@@ -955,8 +970,9 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                 @isDetails={{false}}
                 @schema={{this.schema}}
                 @cellContext={{@grid.args.cellContext}}
-                {{! ember-eui extension (row-tree): @row }}
+                {{! ember-eui extension (row-tree): @row, @rowTree }}
                 @row={{this.rowTree.rowData}}
+                @rowTree={{this.rowTree.info}}
               />
             {{/let}}
           {{else if (eq this.kind "data")}}
@@ -1015,8 +1031,9 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                   @isDetails={{false}}
                   @schema={{this.schema}}
                   @cellContext={{@grid.args.cellContext}}
-                  {{! ember-eui extension (row-tree): @row }}
+                  {{! ember-eui extension (row-tree): @row, @rowTree }}
                   @row={{this.rowTree.rowData}}
+                  @rowTree={{this.rowTree.info}}
                 />
               {{/let}}
             {{else if (eq this.kind "data")}}
@@ -1108,8 +1125,9 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         @setCellPopoverProps={{this.setCellPopoverProps}}
                         @cellActions={{CellActions}}
                         @DefaultCellPopover={{DefaultCellPopover}}
-                        {{! ember-eui extension (row-tree): @row }}
+                        {{! ember-eui extension (row-tree): @row, @rowTree }}
                         @row={{this.rowTree.rowData}}
+                        @rowTree={{this.rowTree.info}}
                       >
                         {{#if this.renderer}}
                           {{#let this.renderer as |Renderer|}}
@@ -1123,15 +1141,16 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                               @isDetails={{true}}
                               @schema={{this.schema}}
                               @cellContext={{@grid.args.cellContext}}
-                              {{! ember-eui extension (row-tree): @row }}
+                              {{! ember-eui extension (row-tree): @row, @rowTree }}
                               @row={{this.rowTree.rowData}}
+                              @rowTree={{this.rowTree.info}}
                             />
                           {{/let}}
                         {{/if}}
                       </PopoverRenderer>
                     {{/let}}
                   {{else if @hasCellPopoverBlock}}
-                    {{! ember-eui extension (row-tree): `row` in the hash }}
+                    {{! ember-eui extension (row-tree): `row`, `rowTree` in the hash }}
                     {{yield
                       (hash
                         rowIndex=this.rowIndex
@@ -1143,6 +1162,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         cellActions=CellActions
                         DefaultCellPopover=DefaultCellPopover
                         row=this.rowTree.rowData
+                        rowTree=this.rowTree.info
                       )
                       to="cellPopover"
                     }}
@@ -1164,8 +1184,9 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                             @isDetails={{true}}
                             @schema={{this.schema}}
                             @cellContext={{@grid.args.cellContext}}
-                            {{! ember-eui extension (row-tree): @row }}
+                            {{! ember-eui extension (row-tree): @row, @rowTree }}
                             @row={{this.rowTree.rowData}}
+                            @rowTree={{this.rowTree.info}}
                           />
                         {{/let}}
                       {{else if (eq this.kind "footer")}}

@@ -29,7 +29,9 @@ basic table's arguments plus:
 - `@executeQueryOptions`: `{ defaultFields, isClauseMatcher, enabled }`.
 
 New `@items` (e.g. from a server search) go back to the first page unless
-the pagination is controlled.
+the pagination is controlled. Without `pageSizeOptions` or a page size,
+the app's page size defaults apply (see
+[EuiTable's page size defaults](../table)).
 
 The table sorts a column by its `field`, or by its `name` for computed
 columns, so keep computed column names stable.

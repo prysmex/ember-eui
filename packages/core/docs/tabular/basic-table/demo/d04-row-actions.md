@@ -39,6 +39,17 @@ If a meaningful description is not possible, setting the exact same string
 for `name` and `description` makes the button's tooltip visual-only, so the
 text is not announced to screen readers twice.
 
+`name` can also be rich content, like upstream's React nodes: an `htmlSafe`
+string, or a component that receives the row's `@item` (a function of the
+item may return one too). It is the button's content, the label of an icon
+action (read by screen readers) and the text of the collapsed menu item.
+
+```gjs
+const DeleteName = <template>Delete <strong>{{@item.firstName}}</strong></template>;
+
+const action = { name: DeleteName, description: 'Delete this user', onClick: … };
+```
+
 </EuiText>
 
 ```gjs component

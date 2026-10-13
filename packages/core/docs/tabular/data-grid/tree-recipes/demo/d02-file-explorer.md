@@ -6,15 +6,13 @@ order: 2
 
 <EuiText>
 
-The demo controls the expanded ids, so the "Name" renderer can show an
-open folder for expanded folders.
+The "Name" renderer reads `cell.rowTree.isExpanded` to show an open folder
+for expanded folders; the grid keeps the expanded state itself.
 
 </EuiText>
 
 ```gjs component
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 import { get, hash } from '@ember/helper';
 import { eq } from 'ember-truth-helpers';
 import { EuiDataGrid, EuiIcon } from '@ember-eui/core/components';
@@ -25,7 +23,7 @@ const totalSize = (row) =>
   row.children ? row.children.reduce((sum, child) => sum + totalSize(child), 0) : row.size;
 
 export default class FileExplorerDemo extends Component {
-  @tracked expandedRowIds = ['/', '/src'];
+  defaultExpandedRowIds = ['/', '/src'];
 
   columns = [
     { id: 'name', displayAsText: 'Name', initialWidth: 300 },
@@ -63,8 +61,8 @@ export default class FileExplorerDemo extends Component {
     }
   ];
 
-  iconFor = (row) => {
-    if (row.children) return this.expandedRowIds.includes(row.id) ? 'folderOpen' : 'folderClosed';
+  iconFor = (row, rowTree) => {
+    if (rowTree?.hasChildren) return rowTree.isExpanded ? 'folderOpen' : 'folderClosed';
     return ICONS[row.name.split('.').pop()] ?? 'document';
   };
 
@@ -75,25 +73,20 @@ export default class FileExplorerDemo extends Component {
     return `${bytes} B`;
   };
 
-  @action onExpandedChange(ids) {
-    this.expandedRowIds = ids;
-  }
-
   <template>
     <EuiDataGrid
       aria-label="File explorer"
       @columns={{this.columns}}
-      @rowTree={{hash
-        rows=this.files
-        expandedRowIds=this.expandedRowIds
-        onExpandedChange=this.onExpandedChange
-      }}
+      @rowTree={{hash rows=this.files defaultExpandedRowIds=this.defaultExpandedRowIds}}
       @gridStyle={{hash border="horizontal" header="underline" rowHover="highlight"}}
       @height={{360}}
     >
       <:cell as |cell|>
         {{#if (eq cell.columnId "name")}}
-          <EuiIcon @type={{this.iconFor cell.row}} @color={{if cell.row.children "warning" "subdued"}} />
+          <EuiIcon
+            @type={{this.iconFor cell.row cell.rowTree}}
+            @color={{if cell.rowTree.hasChildren "warning" "subdued"}}
+          />
           {{cell.row.name}}
         {{else if (eq cell.columnId "size")}}
           {{this.formatSize cell.row}}

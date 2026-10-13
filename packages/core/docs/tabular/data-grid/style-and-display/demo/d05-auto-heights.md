@@ -13,9 +13,9 @@ height to fit the contents.
 You can also override the height of a specific row by passing a
 `rowHeights` object associating the row's index with an `"auto"` value.
 
-Upstream also passes `virtualizationOptions.estimatedRowHeight` here to
-smooth out scrolling; the Ember grid measures auto rows instead of
-estimating them, so it has no such option.
+The grid also passes `virtualizationOptions.estimatedRowHeight`, a rough
+average of the rows' heights: rows that haven't rendered yet count with it
+in the scrollable height. Accurately setting it smooths out scrolling.
 
 </EuiText>
 
@@ -58,6 +58,12 @@ export default class AutoRowHeightsDemo extends Component {
   ];
 
   rowHeightsOptions = { defaultHeight: 'auto' };
+
+  virtualizationOptions = {
+    // rough average of the cell heights in the example
+    // accurately setting this smooths out the scrolling experience
+    estimatedRowHeight: 210
+  };
 
   // pagination
   @tracked pageIndex = 0;
@@ -103,6 +109,7 @@ export default class AutoRowHeightsDemo extends Component {
       }}
       @height={{400}}
       @rowHeightsOptions={{this.rowHeightsOptions}}
+      @virtualizationOptions={{this.virtualizationOptions}}
     >
       <:cell as |cell|>
         {{#if (eq cell.columnId "productName")}}

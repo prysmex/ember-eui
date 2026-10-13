@@ -25,13 +25,13 @@ Handoff: [data-grid-grouping-handoff.md](data-grid-grouping-handoff.md).
 | --- | --- |
 | `src/utils/data-grid/row-tree.ts` | Pure model: build nested/flat trees, group, sort siblings, flatten visible rows, ancestors. |
 | `src/components/eui-data-grid/row-model.ts` | `EuiDataGridRowModel`: tracked expanded state (controlled/uncontrolled), sorting inputs, visible rows, index mapping, API methods. |
-| `src/components/eui-data-grid/row-tree-hooks.ts` | What the hooks call: cell state, toggle cell keyboard, row ARIA attributes, page index clamping. |
+| `src/components/eui-data-grid/row-tree-hooks.ts` | What the hooks call: cell state (including the renderers' `@rowTree` info), toggle cell keyboard, row ARIA attributes, page index clamping. |
 | `src/components/eui-data-grid/tree-cell.gts` | Indentation, toggle button, group label/count, `renderGroupCell`. |
-| `src/utils/data-grid/types.ts` (appended block) | `EuiDataGridRowTree*`, `EuiDataGridGrouping`, `EuiDataGridGroupCellProps`; `row?` on cell value props; API method types. |
+| `src/utils/data-grid/types.ts` (appended block) | `EuiDataGridRowTree*` (including `EuiDataGridRowTreeRowInfo`, the renderers' `@rowTree`), `EuiDataGridGrouping`, `EuiDataGridGroupCellProps`; `row?`/`rowTree?` on cell value props; API method types. |
 
 ### Touchpoints in ported upstream files
 
-46 marked lines in 5 files. "Delegates to" names the extension code that
+48 marked lines in 5 files. "Delegates to" names the extension code that
 holds the logic.
 
 **`eui-data-grid.gts`**
@@ -39,7 +39,7 @@ holds the logic.
 | Symbol | Hook | Delegates to |
 | --- | --- | --- |
 | imports | `EuiDataGridRowModel`, `clampRowTreePageIndex` | row-model.ts, row-tree-hooks.ts |
-| `EuiDataGridCellPopoverElementProps` | `row?` field | — (type) |
+| `EuiDataGridCellPopoverElementProps` | `row?`, `rowTree?` fields | — (type) |
 | `Args` | `rowCount` optional; `rowTree`, `grouping` args | types.ts |
 | `rowTreeModel` / `rowModel` | model instance; `rowModel` null without the args | `EuiDataGridRowModel.isActive` |
 | `rowCount`, `dataRowCount` | visible rows / data rows, else `@rowCount` | `rowModel.visibleRows`, `rowModel.dataRowCount` |
@@ -60,9 +60,9 @@ holds the logic.
 | `rowTree` (`@cached`) | tree row, `isGroupRow`, `isToggleCell`, `rowData` | `rowTreeCellState` |
 | `defaultIsExpandable`, `isExpandable` | group rows are not expandable | `rowTree.isGroupRow` |
 | `onKeyDown` | first statement: Space/Enter/ArrowLeft/ArrowRight in the toggle cell | `handleRowTreeCellKeyDown` |
-| `cellValueProps` | `row` | `rowTree.rowData` |
+| `cellValueProps` | `row`, `rowTree` | `rowTree.rowData`, `rowTree.info` |
 | template (×2 content branches) | `<EuiDataGridTreeCell>` before the renderer; `{{#if this.rowTree.isGroupRow}}{{else if this.renderer}}` | tree-cell.gts |
-| template renderers (×6) | `@row` on the 4 `Renderer` and the `PopoverRenderer` invocations, `row` in the `<:cellPopover>` hash | `rowTree.rowData` |
+| template renderers (×6) | `@row` and `@rowTree` on the 4 `Renderer` and the `PopoverRenderer` invocations, `row` and `rowTree` in the `<:cellPopover>` hash | `rowTree.rowData`, `rowTree.info` |
 
 **`eui-data-grid/row.gts`**: `rowTree` getter → `rowTreeRowAttributes`;
 the group row class in `classes`; the template's `aria-level`,
@@ -85,6 +85,7 @@ Unmarked, but part of the extension: `package.json` app-js entries for
 | `tests/integration/components/eui-data-grid-grouping-test.gts` | No-arg regression, nested/flat/accessors, controlled/default expansion, grouping, `renderGroupCell`, sorting, pagination (+ clamping), API, lazy loading. |
 | `tests/integration/components/eui-data-grid-grouping-keyboard-test.gts` | Space/Enter/arrow keys, parent focus across pages, groups, popover/focus-trap exclusions, no-arg arrows. |
 | `tests/integration/components/eui-data-grid-grouping-virtualization-test.gts` | 5,550-row tree: windowing, end of list, toggling mid-scroll, `scrollToItem`, auto row heights. |
+| `tests/integration/components/eui-data-grid-gaps-test.gts` (`row tree state for renderers`) | `@rowTree` on component renderers (depth, expanded, siblings, `toggle`), `rowTree` in the `<:cell>` block and popovers, group levels in `depth`, none without the args. |
 
 The other `eui-data-grid*-test.gts` files are the upstream port's own tests.
 They must keep passing unchanged, since they prove the hooks are inert

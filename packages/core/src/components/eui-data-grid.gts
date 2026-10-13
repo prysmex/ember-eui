@@ -46,7 +46,9 @@ import type {
   EuiDataGridFocusedCell,
   EuiDataGridInMemory,
   EuiDataGridInMemoryValues,
+  EuiDataGridCellLocationProps,
   EuiDataGridPaginationProps,
+  EuiDataGridRefProps,
   EuiDataGridRowHeightsOptions,
   EuiDataGridSchema,
   EuiDataGridSchemaDetector,
@@ -211,6 +213,12 @@ export interface EuiDataGridSignature {
     virtualizationOptions?: EuiDataGridVirtualizationOptions;
     /** Called when fullscreen mode is entered or left. */
     onFullScreenChange?: (isFullScreen: boolean) => void;
+    /**
+     * Called after render with the grid's imperative API (upstream's `ref`):
+     * `setIsFullScreen`, `setFocusedCell`, `openCellPopover`,
+     * `closeCellPopover`, `scrollTo` and `scrollToItem`.
+     */
+    registerApi?: (api: EuiDataGridRefProps) => void;
     /** Accessible name of the grid (same as the `aria-label` attribute). */
     ariaLabel?: string;
     /** Id(s) labelling the grid (same as the `aria-labelledby` attribute). */
@@ -956,6 +964,71 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     this.body = null;
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Imperative API (upstream `useImperativeGridRef`)                       */
+  /* ---------------------------------------------------------------------- */
+
+  /**
+   * Throws a digestible error if the consumer targets an invalid cell, which
+   * also stops the API from continuing.
+   */
+  private checkCellExists({ rowIndex, colIndex }: EuiDataGridCellLocationProps): void {
+    const rowCount = this.args.rowCount;
+    const colCount = this.visibleColCount;
+    if (rowIndex >= rowCount || rowIndex < 0) {
+      throw new Error(
+        `Row ${rowIndex} is not a valid row. The maximum visible row index is ${rowCount - 1}.`
+      );
+    }
+    if (colIndex >= colCount) {
+      throw new Error(
+        `Column ${colIndex} is not a valid column. The maximum visible column index is ${colCount - 1}.`
+      );
+    }
+  }
+
+  /**
+   * The consumer's (unsorted, unpaginated) row index to the visible row
+   * index the cells use, changing page when the row is on another one.
+   */
+  private findVisibleRowIndex(rowIndex: number): number {
+    const sortedRowMap = this.sortedRowMap;
+    const visibleRowIndex = sortedRowMap.length
+      ? sortedRowMap.findIndex((mappedIndex) => mappedIndex === rowIndex)
+      : rowIndex;
+    const pagination = this.pagination;
+    if (pagination && pagination.pageSize > 0) {
+      const pageIndex = Math.floor(visibleRowIndex / pagination.pageSize);
+      if (pageIndex !== pagination.pageIndex) pagination.onChangePage(pageIndex);
+      return visibleRowIndex % pagination.pageSize;
+    }
+    return visibleRowIndex;
+  }
+
+  /** The API passed to `@registerApi`. */
+  readonly api: EuiDataGridRefProps = {
+    setIsFullScreen: (isFullScreen: boolean) => this.setIsFullScreen(isFullScreen),
+    setFocusedCell: (cell: EuiDataGridCellLocationProps) => {
+      this.checkCellExists(cell);
+      const visibleRowIndex = this.findVisibleRowIndex(cell.rowIndex);
+      this.setFocusedCell([cell.colIndex, visibleRowIndex]);
+    },
+    openCellPopover: (cell: EuiDataGridCellLocationProps) => {
+      this.checkCellExists(cell);
+      const visibleRowIndex = this.findVisibleRowIndex(cell.rowIndex);
+      this.openCellPopover({ rowIndex: visibleRowIndex, colIndex: cell.colIndex });
+    },
+    closeCellPopover: () => this.closeCellPopover(),
+    scrollTo: (params) => this.body?.scrollTo(params),
+    scrollToItem: (params) => this.body?.scrollToItem(params)
+  };
+
+  registerApi = modifier(
+    (_element: HTMLElement, [registerApi]: [EuiDataGridSignature['Args']['registerApi']]) => {
+      if (registerApi) afterRender(this, () => registerApi(this.api));
+    }
+  );
+
   <template>
     <div
       class={{this.focusWrapClass}}
@@ -972,6 +1045,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
         {{on "keydown" this.onGridRootKeyDown}}
         {{this.observeWidth}}
         {{this.restrictBody this.isFullScreen this.restrictBodyClass}}
+        {{this.registerApi @registerApi}}
         ...attributes
         {{this.moveAriaAttributes}}
       >

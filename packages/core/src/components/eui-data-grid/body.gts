@@ -26,7 +26,9 @@ import type EuiDataGrid from '../eui-data-grid.gts';
 import type { EuiDataGridSignature } from '../eui-data-grid.gts';
 import type {
   EuiDataGridColumn,
-  EuiDataGridFocusedCell
+  EuiDataGridFocusedCell,
+  EuiDataGridScrollToItemProps,
+  EuiDataGridScrollToProps
 } from '../../utils/data-grid/types.ts';
 
 const DEFAULT_COLUMN_WIDTH = 100;
@@ -55,7 +57,47 @@ export interface EuiDataGridBodySignature {
   >;
 }
 
-const doesColumnHaveAnInitialWidth = (column: EuiDataGridColumn) =>
+/** Port of react-window's `getOffsetForIndexAndAlignment` (VariableSizeGrid). */
+function getOffsetForIndexAndAlignment({
+  align,
+  size,
+  totalSize,
+  offset,
+  itemSize,
+  scrollOffset,
+  scrollbarSize
+}: {
+  align: NonNullable<EuiDataGridScrollToItemProps['align']>;
+  size: number;
+  totalSize: number;
+  offset: number;
+  itemSize: number;
+  scrollOffset: number;
+  scrollbarSize: number;
+}): number {
+  const maxOffset = Math.max(0, Math.min(totalSize - size, offset));
+  const minOffset = Math.max(0, offset - size + scrollbarSize + itemSize);
+  if (align === 'smart') {
+    align =
+      scrollOffset >= minOffset - size && scrollOffset <= maxOffset + size ? 'auto' : 'center';
+  }
+  switch (align) {
+    case 'start':
+      return maxOffset;
+    case 'end':
+      return minOffset;
+    case 'center':
+      return Math.round(minOffset + (maxOffset - minOffset) / 2);
+    case 'auto':
+    default:
+      if (scrollOffset >= minOffset && scrollOffset <= maxOffset) return scrollOffset;
+      if (minOffset > maxOffset) return minOffset; // the item is larger than the viewport
+      if (scrollOffset < minOffset) return minOffset;
+      return maxOffset;
+  }
+}
+
+const doesColumnHaveAnInitialWidth =(column: EuiDataGridColumn) =>
   column.initialWidth != null;
 
 /** Binary search: index of the last offset `<= value`. */
@@ -690,6 +732,65 @@ export default class EuiDataGridBody extends Component<EuiDataGridBodySignature>
       // render the target cell now instead of waiting for the scroll event
       this.onScroll();
     }
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* Imperative scrolling (react-window's grid API)                       */
+  /* -------------------------------------------------------------------- */
+
+  /** react-window `scrollTo`: offsets in px; a missing offset is kept. */
+  @action
+  scrollTo({ scrollLeft, scrollTop }: EuiDataGridScrollToProps = {}): void {
+    const outer = this.outerElement;
+    if (!outer) return;
+    outer.scrollTo({
+      left: scrollLeft ?? outer.scrollLeft,
+      top: scrollTop ?? outer.scrollTop
+    });
+    this.onScroll();
+  }
+
+  /** react-window `scrollToItem`: brings a row and/or column into view. */
+  @action
+  scrollToItem({ align = 'auto', columnIndex, rowIndex }: EuiDataGridScrollToItemProps = {}): void {
+    const outer = this.outerElement;
+    if (!outer) return;
+    const columnCount = this.grid.visibleColCount;
+    const rowCount = this.visibleRowCount;
+    const height = this.finalHeight;
+    const width = this.finalWidth;
+    const totalHeight = this.totalRowsHeight;
+    const totalWidth = this.totalWidth;
+    // react-window adds the scrollbar of the other axis to the item's minimum offset
+    const horizontalScrollbarSize = totalWidth > width ? this.scrollBarHeight : 0;
+    const verticalScrollbarSize = totalHeight > height ? this.scrollBarWidth : 0;
+    let scrollLeft: number | undefined;
+    let scrollTop: number | undefined;
+    if (columnIndex !== undefined && columnCount > 0) {
+      const index = Math.max(0, Math.min(columnIndex, columnCount - 1));
+      scrollLeft = getOffsetForIndexAndAlignment({
+        align,
+        size: width,
+        totalSize: totalWidth,
+        offset: this.columnLeft(index),
+        itemSize: this.columnWidthList[index] ?? 0,
+        scrollOffset: outer.scrollLeft,
+        scrollbarSize: verticalScrollbarSize
+      });
+    }
+    if (rowIndex !== undefined && rowCount > 0) {
+      const index = Math.max(0, Math.min(rowIndex, rowCount - 1));
+      scrollTop = getOffsetForIndexAndAlignment({
+        align,
+        size: height,
+        totalSize: totalHeight,
+        offset: this.rowTop(index),
+        itemSize: this.rowHeight(index),
+        scrollOffset: outer.scrollTop,
+        scrollbarSize: horizontalScrollbarSize
+      });
+    }
+    this.scrollTo({ scrollLeft, scrollTop });
   }
 
   /* -------------------------------------------------------------------- */

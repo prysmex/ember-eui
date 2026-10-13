@@ -12,7 +12,10 @@ import { tracked } from '@glimmer/tracking';
 
 import EuiDataGrid from '#src/components/eui-data-grid.gts';
 
-import type { EuiDataGridColumn } from '#src/components/eui-data-grid.gts';
+import type {
+  EuiDataGridColumn,
+  EuiDataGridRefProps
+} from '#src/components/eui-data-grid.gts';
 
 function el(selector: string, root: ParentNode = document): HTMLElement {
   const element = root.querySelector<HTMLElement>(selector);
@@ -22,6 +25,12 @@ function el(selector: string, root: ParentNode = document): HTMLElement {
 
 function header(col: number): HTMLElement {
   return el(`[role=columnheader][data-gridcell-column-index="${col}"]`);
+}
+
+function cell(row: number, col: number): HTMLElement {
+  return el(
+    `[role=gridcell][data-gridcell-visible-row-index="${row}"][data-gridcell-column-index="${col}"]`
+  );
 }
 
 function headerIds(): string[] {
@@ -231,6 +240,162 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       await click(header(0));
       await press(' ');
       assert.dom(header(0)).doesNotHaveAttribute('data-column-moving');
+    });
+  });
+
+  module('imperative API (@registerApi)', function () {
+    class ApiState {
+      api: EuiDataGridRefProps | null = null;
+      fullScreen: boolean[] = [];
+      @tracked pageIndex = 0;
+      registerApi = (api: EuiDataGridRefProps) => {
+        this.api = api;
+      };
+      onFullScreenChange = (isFullScreen: boolean) => this.fullScreen.push(isFullScreen);
+      private self = this;
+      pagination = {
+        self: this.self,
+        // read lazily so the grid sees page changes
+        get pageIndex(): number {
+          return this.self.pageIndex;
+        },
+        pageSize: 2,
+        pageSizeOptions: [2],
+        onChangePage: (pageIndex: number) => {
+          this.pageIndex = pageIndex;
+        },
+        onChangeItemsPerPage: () => {}
+      };
+    }
+
+    test('setFocusedCell, cell popovers and fullscreen', async function (assert) {
+      const state = new ApiState();
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{4}}
+              @registerApi={{state.registerApi}}
+              @onFullScreenChange={{state.onFullScreenChange}}
+            >
+              <:cell as |c|>{{c.columnId}}{{c.rowIndex}}</:cell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+      const api = state.api!;
+      assert.ok(api, 'the API is registered after render');
+      assert.deepEqual(
+        Object.keys(api).sort(),
+        ['closeCellPopover', 'openCellPopover', 'scrollTo', 'scrollToItem', 'setFocusedCell', 'setIsFullScreen']
+      );
+
+      api.setFocusedCell({ rowIndex: 2, colIndex: 1 });
+      await settled();
+      assert.strictEqual(document.activeElement, cell(2, 1));
+      assert.dom(cell(2, 1)).hasAttribute('tabindex', '0');
+
+      api.openCellPopover({ rowIndex: 1, colIndex: 2 });
+      await settled();
+      assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).hasText('c1');
+      assert.dom(cell(1, 2)).hasClass('euiDataGridRowCell--open');
+      api.closeCellPopover();
+      await settled();
+      assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).doesNotExist();
+
+      api.setIsFullScreen(true);
+      await settled();
+      assert.dom('.euiDataGrid').hasClass('euiDataGrid--fullScreen');
+      api.setIsFullScreen(false);
+      await settled();
+      assert.dom('.euiDataGrid').doesNotHaveClass('euiDataGrid--fullScreen');
+      assert.deepEqual(state.fullScreen, [true, false]);
+
+      assert.throws(
+        () => api.setFocusedCell({ rowIndex: 4, colIndex: 0 }),
+        /Row 4 is not a valid row. The maximum visible row index is 3./
+      );
+      assert.throws(
+        () => api.openCellPopover({ rowIndex: 0, colIndex: 3 }),
+        /Column 3 is not a valid column. The maximum visible column index is 2./
+      );
+    });
+
+    test('targets rows on other pages and sorted rows by their data index', async function (assert) {
+      const state = new ApiState();
+      const sorting = { columns: [{ id: 'a', direction: 'desc' as const }], onSort: () => {} };
+      const inMemory = { level: 'sorting' as const };
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{5}}
+              @sorting={{sorting}}
+              @inMemory={{inMemory}}
+              @pagination={{state.pagination}}
+              @registerApi={{state.registerApi}}
+            >
+              <:cell as |c|>{{c.rowIndex}}</:cell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+      await waitUntil(() => cell(0, 0).textContent?.trim() === '4');
+
+      // descending: data row 4 is visible row 0, data row 1 is visible row 3 (page 2)
+      state.api!.setFocusedCell({ rowIndex: 4, colIndex: 0 });
+      await settled();
+      assert.strictEqual(document.activeElement, cell(0, 0));
+
+      state.api!.setFocusedCell({ rowIndex: 1, colIndex: 1 });
+      await settled();
+      assert.strictEqual(state.pageIndex, 1, 'moved to the page of the row');
+      await waitUntil(() => document.activeElement === cell(1, 1));
+      assert.dom(document.activeElement).hasAttribute('data-gridcell-row-index', '1');
+    });
+
+    test('scrollTo and scrollToItem scroll the virtualized body', async function (assert) {
+      const state = new ApiState();
+      await render(
+        <template>
+          <div style="width:400px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{100}}
+              @height={{300}}
+              @toolbarVisibility={{false}}
+              @registerApi={{state.registerApi}}
+            >
+              <:cell as |c|>{{c.columnId}}{{c.rowIndex}}</:cell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+      const outer = el('.euiDataGrid__virtualized');
+      const rowHeight = cell(0, 0).offsetHeight;
+
+      state.api!.scrollTo!({ scrollTop: rowHeight * 10 });
+      await settled();
+      assert.strictEqual(outer.scrollTop, rowHeight * 10);
+      assert.dom(cell(10, 0)).exists('rows in the new window render');
+
+      state.api!.scrollToItem!({ rowIndex: 50, align: 'start' });
+      await settled();
+      assert.strictEqual(outer.scrollTop, rowHeight * 50, "'start' puts the row under the header");
+      assert.dom(cell(50, 0)).hasText('a50');
+
+      state.api!.scrollToItem!({ rowIndex: 49 });
+      await settled();
+      assert.strictEqual(outer.scrollTop, rowHeight * 49, "'auto' scrolls just enough");
+
+      state.api!.scrollToItem!({ rowIndex: 0, align: 'smart' });
+      await settled();
+      assert.strictEqual(outer.scrollTop, 0, "'smart' centers far rows (clamped)");
     });
   });
 });

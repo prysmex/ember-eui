@@ -256,3 +256,43 @@ export interface EuiDataGridScrollEvent {
 
 /** `[colIndex, visibleRowIndex]`; the header row is `-1`. */
 export type EuiDataGridFocusedCell = [number, number];
+
+/** Cell location used by the imperative API (`rowIndex` is the data row index). */
+export interface EuiDataGridCellLocationProps {
+  rowIndex: number;
+  colIndex: number;
+}
+
+/** react-window `scrollTo` arguments: offsets in px, missing ones are kept. */
+export interface EuiDataGridScrollToProps {
+  scrollLeft?: number;
+  scrollTop?: number;
+}
+
+/** react-window `scrollToItem` arguments (`rowIndex` is the visible row index). */
+export interface EuiDataGridScrollToItemProps {
+  align?: 'auto' | 'smart' | 'center' | 'end' | 'start';
+  columnIndex?: number;
+  rowIndex?: number;
+}
+
+/**
+ * The grid's imperative API (upstream's `ref`), passed to `@registerApi`.
+ */
+export interface EuiDataGridRefProps {
+  /** Allows manually controlling the fullscreen state of the grid. */
+  setIsFullScreen: (isFullScreen: boolean) => void;
+  /**
+   * Focuses the specified cell, changing page if needed. Restore focus to
+   * the grid with it after closing a modal or flyout the grid opened.
+   */
+  setFocusedCell: (cell: EuiDataGridCellLocationProps) => void;
+  /** Opens the expansion popover of the specified cell, changing page if needed. */
+  openCellPopover: (cell: EuiDataGridCellLocationProps) => void;
+  /** Closes any open cell popover. */
+  closeCellPopover: () => void;
+  /** Scrolls the grid body to a top/left offset (not available with a custom grid body). */
+  scrollTo?: (params: EuiDataGridScrollToProps) => void;
+  /** Scrolls a row and/or column into view (not available with a custom grid body). */
+  scrollToItem?: (params: EuiDataGridScrollToItemProps) => void;
+}

@@ -300,6 +300,18 @@ means the previous value was not recorded.
 | `EuiComboBox` | Options | `button.euiFilterSelectItem`, tab stops | `div.euiComboBoxOption[role=option]`; focus stays in the input |
 | `EuiComboBox` | Placeholder | `p.euiComboBoxPlaceholder` | The input's native `placeholder` |
 | `EuiComboBox` | Dropdown z-index | Global `:root` variable in `ember-eui.css` | Set on the combo box's own content element; app-owned ember-basic-dropdowns no longer get 99999 |
+| `EuiComboBox` | Default matching | Ignores case and accents (ember-power-select) | Upstream: ignores case only (`@isCaseSensitive`, `@matcher`, `@optionMatcher` customize it) |
+| `EuiComboBox` | Selected options, multiple selection | Listed, marked selected; choosing one again removed it | Not listed (matched by label and `key`, like upstream) |
+| `EuiComboBox` | After a choice, multiple selection | List closed | List stays open, next option highlighted (`@closeOnSelect` defaults to single selection only) |
+| `EuiComboBox` | Typed text on blur | Kept only with `@noSuggestions` / `@delimiter`, else cleared | Added (`@onCreateOption`, or the option it names); otherwise kept and marked invalid |
+| `EuiComboBox` | Enter without a highlighted option | Closed the list (created only without matches) | Adds the typed text (`@onCreateOption`, or the only exact match); the list stays open in multiple selection |
+| `EuiComboBox` | Highlight when the list opens | First option (its tooltip shown) | None, except single selection's option on click; the arrows wrap and start at either end; hover no longer highlights |
+| `EuiComboBox` | Keys | Escape cleared the text; Tab chose nothing and left; Backspace opened the list | Escape keeps the text; Tab is held while an option is highlighted; Backspace only reopens single selection's list (plain text: also deletes one character) |
+| `EuiComboBox` | `@sortMatchesBy="startsWith"` with groups | Sorted within each group | Sorts the whole list, group titles included (upstream) |
+| `EuiComboBox` | Empty list messages | "No results found" | Upstream: "{searchValue} doesn't match any options", "There aren't any options available", "You've selected all available options", "{label} has already been added" (`@noMatchesMessage` still wins) |
+| `EuiComboBox` | Focus | Opened on click or typing | Focusing the input opens the list |
+| `EuiComboBox` | Accessibility | Wrapper `role="combobox"`, a tab stop with the label | The input is the combobox (`aria-expanded`, `aria-controls` while open, `aria-haspopup`); the listbox is labelled; screen reader instructions on focus |
+| `EuiComboBox` | Enter badge on the highlighted option | Always | Only with `@onFocusBadge` |
 | `EuiSuperSelect` | Options | `EuiContextMenuItem` buttons | `button.euiSuperSelect__item[role=option]`; arrows no longer wrap; Tab chooses |
 | `EuiRange` | Slider with `@showInput` | `aria-hidden` only for `true` | `aria-hidden`, `tabindex=-1` for any `@showInput`, including `"inputWithPopover"` |
 | `EuiDualRange` | Popover class | `euiRange__popover` | `euiDualRange__popover` |
@@ -496,12 +508,11 @@ as before):
   scroll or reposition when the input resizes.
 - **Tables**: sticky header/scrollbar/cells, header tooltips, multi-line
   truncation and cell `append`.
-- **Combo box**: delimiter, middle truncation, `rowHeight="auto"`, option
-  prepend/append/tooltips, prepend/append in single selection and the
-  "already added" / "no available options" messages. It keeps
-  ember-power-select; its input sizes with `field-sizing: content`, which
-  Firefox does not support yet, so there the input may wrap below the
-  pills earlier.
+- **Combo box**: `inputPopoverProps`, `inputRef` and the separate
+  chevron button; a plain text single selection is shown next to the
+  input instead of as its value. It keeps ember-power-select; its input
+  sizes with `field-sizing: content`, which Firefox does not support yet,
+  so there the input may wrap below the pills earlier.
 - **Selectable**: wrapping/truncation options, option tooltips,
   `onActiveOptionChange` and the "N results available" live region.
 - **Super date picker**: `showPrettyDuration`, auto-refresh-only rendering,

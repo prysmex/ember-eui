@@ -6,7 +6,7 @@ order: 15
 
 <EuiText>
 
-Leave out the `@onCreateOption` argument to disallow the creation of custom options. Use `@onInput` and `@onBlur` to tell the user when what they typed matches no option.
+Leave out the `@onCreateOption` argument to disallow the creation of custom options. Text that matches no option stays in the input when the combo box loses focus, and marks it invalid; `@onSearchChange` tells you whether any option matches, to explain why.
 
 </EuiText>
 
@@ -43,17 +43,6 @@ export default class ComboBoxNoCustomDemo extends Component {
     return this.error !== undefined;
   }
 
-  validate(value) {
-    const hasMatchingOptions = this.options.some((option) =>
-      option.label.toLowerCase().includes(value.toLowerCase())
-    );
-
-    this.error =
-      value.length === 0 || hasMatchingOptions
-        ? undefined
-        : `"${value}" is not a valid option`;
-  }
-
   @action
   onChange(selectedOptions) {
     this.selectedOptions = selectedOptions;
@@ -66,14 +55,20 @@ export default class ComboBoxNoCustomDemo extends Component {
   }
 
   @action
-  onInput(value) {
+  onSearchChange(value, hasMatchingOptions) {
     this.searchValue = value;
-    this.validate(value);
+    this.error =
+      value.length === 0 || hasMatchingOptions
+        ? undefined
+        : `"${value}" is not a valid option`;
   }
 
   @action
   onBlur() {
-    this.validate(this.searchValue);
+    const value = this.searchValue;
+
+    this.error =
+      value.length === 0 ? undefined : `"${value}" is not a valid option`;
   }
 
   <template>
@@ -86,7 +81,7 @@ export default class ComboBoxNoCustomDemo extends Component {
         @searchField="label"
         @onChange={{this.onChange}}
         @removeTag={{this.removeTag}}
-        @onInput={{this.onInput}}
+        @onSearchChange={{this.onSearchChange}}
         @onBlur={{this.onBlur}}
         @isInvalid={{this.isInvalid}}
         as |option|

@@ -87,11 +87,16 @@ Deprecated: `@children` (Has no effect, use the `<:content>` block.).
 | `@titleTagName` |  | `'h3'` | Same as `@titleElement`, limited to `EuiTitle`'s tags. |
 | `@titleSize` |  | `'xxs'` | Size of the title, any `EuiTitle` size. |
 | `@background` | `EuiCollapsibleNavGroupBackground \| (string & {})` | `'none'` | Background of the group: `'none'`, `'light'` or `'dark'`. A dark group renders its content in dark mode (a nested dark provider), as upstream. |
+| `@arrowDisplay` |  | `'right'` | Side of the title the open/close arrow is on, for a collapsible group: `'right'`, `'left'` or `'none'`. |
+| `@paddingSize` |  |  | Padding of a collapsible group's content, see `EuiAccordion`. |
+| `@buttonElement` |  |  | Tag of a collapsible group's title button, see `EuiAccordion`. |
+| `@onToggle` |  |  | Called with the new open state when a collapsible group toggles. |
 
 | Block | Description |
 | --- | --- |
 | `<:title>` | The group's title; without it the group has no heading. |
 | `<:content>` | The group's links, e.g. an `EuiListGroup`. |
+| `<:extraAction>` | An action next to the title of a collapsible group, e.g. a button icon; yields whether the group is open (see `EuiAccordion`). |
 
 </EuiText>
 <!-- api:end -->

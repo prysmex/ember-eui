@@ -8,7 +8,7 @@ order: 1
 
 **EuiContextMenu** is a nested menu system useful for navigating complicated trees. It lives within an **EuiPopover** which itself can be wrapped around any component (like a button in this example).
 
-Panels are a flat list; an item opens another panel with `panel: id`. Panels without `items` render their content with the `<:content>` block.
+Panels are a flat list; an item opens another panel with `panel: id`. Panels without `items` render their content with the `<:content>` block. An item's `icon` is an icon name, or a component (like a curried **EuiIcon**) to customize its color or size; `toolTipProps` takes any **EuiToolTip** argument, like `title`.
 
 </EuiText>
 
@@ -20,7 +20,9 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
 import { eq } from 'ember-truth-helpers';
-import { EuiButton, EuiContextMenu, EuiFormRow, EuiPopover, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
+import { EuiButton, EuiContextMenu, EuiFormRow, EuiIcon, EuiPopover, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
+
+const TrashIcon = <template><EuiIcon @type="trash" @size="m" @color="danger" /></template>;
 
 export default class DemoComponent extends Component {
   @tracked isPopoverOpen = false;
@@ -55,10 +57,15 @@ export default class DemoComponent extends Component {
             name: 'Add a tooltip',
             icon: 'document',
             toolTipContent: 'Optional content for a tooltip',
-            toolTipTitle: 'Optional tooltip title',
+            toolTipProps: { title: 'Optional tooltip title' },
             onClick: closePopover
           },
           { name: 'Use an app icon', icon: 'visualizeApp', onClick: closePopover },
+          {
+            name: 'Pass an icon as a component to customize it',
+            icon: TrashIcon,
+            onClick: closePopover
+          },
           {
             name: 'Disabled option',
             icon: 'user',

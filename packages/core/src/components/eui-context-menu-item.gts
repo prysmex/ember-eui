@@ -17,6 +17,8 @@ import EuiLoadingSpinner from './eui-loading-spinner.gts';
 import EuiToolTip from './eui-tool-tip.gts';
 
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiTooltipArgs } from './eui-tool-tip';
+import type { ComponentLike } from '@glint/template';
 
 /** Scoped button/link reset (no React global reset); upstream rules follow. */
 const ITEM_RESET = {
@@ -56,10 +58,12 @@ export interface EuiContextMenuItemSignature {
     /** Shows a spinner instead of the icon. */
     isLoading?: boolean;
     /**
-     * Icon before the text; anything `EuiIcon`'s `@type` accepts. Pass
-     * `'empty'` to align items without an icon with the others.
+     * Icon before the text: an icon type name for `EuiIcon` (pass
+     * `'empty'` to align items without an icon with the others), or a
+     * component rendered as is, with the item's icon class and styles
+     * (e.g. `(component EuiIcon type="check" color="success" size="l")`).
      */
-    icon?: EuiIconSignature['Args']['type'];
+    icon?: EuiIconSignature['Args']['type'] | ComponentLike<any>;
     /** Extra classes for the icon. */
     iconClasses?: string;
     /** Shows an arrow on the right, for items opening another panel. */
@@ -73,6 +77,12 @@ export interface EuiContextMenuItemSignature {
     toolTipContent?: string;
     /** Title of the `@toolTipContent` tooltip. */
     toolTipTitle?: string;
+    /**
+     * More args for the tooltip, any `EuiToolTip` arg except `content`
+     * (`title`, `delay`, `offset`, `anchorClassName`, `css`, …). The
+     * position is always `'right'`, as upstream.
+     */
+    toolTipProps?: Partial<Omit<EuiTooltipArgs, 'content'>>;
   };
 
   Blocks: {
@@ -167,13 +177,47 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
     return [this.parts.icon, this.args.iconClasses].filter(Boolean).join(' ');
   }
 
+  get iconIsType(): boolean {
+    return typeof this.args.icon === 'string';
+  }
+
+  /** Classes for an icon given as a component (upstream clones `css` onto it). */
+  @cached
+  get elementIconClasses(): string {
+    const context = getEuiThemeContext(this);
+    return [
+      this.iconClasses,
+      euiClass(context, this.childCss.icon)
+    ].join(' ');
+  }
+
+  get toolTipAnchorClass(): string {
+    return ['eui-displayBlock', this.args.toolTipProps?.anchorClassName]
+      .filter(Boolean)
+      .join(' ');
+  }
+
   <template>
     {{#if @toolTipContent}}
       <EuiToolTip
+        @title={{if @toolTipProps.title @toolTipProps.title @toolTipTitle}}
+        @id={{@toolTipProps.id}}
+        @delay={{@toolTipProps.delay}}
+        @offset={{@toolTipProps.offset}}
+        @disableScreenReaderOutput={{@toolTipProps.disableScreenReaderOutput}}
+        @attachTo={{@toolTipProps.attachTo}}
+        @isShown={{@toolTipProps.isShown}}
+        @hasTitle={{@toolTipProps.hasTitle}}
+        @onMouseOut={{@toolTipProps.onMouseOut}}
+        @onFocus={{@toolTipProps.onFocus}}
+        @onBlur={{@toolTipProps.onBlur}}
+        @css={{@toolTipProps.css}}
+        @anchorCss={{@toolTipProps.anchorCss}}
+        @anchorClassName={{this.toolTipAnchorClass}}
+        @display={{if @toolTipProps.display @toolTipProps.display "block"}}
+        @className={{@toolTipProps.className}}
         @content={{@toolTipContent}}
-        @title={{@toolTipTitle}}
         @position="right"
-        @display="block"
       >
         {{#if (and @href (not @disabled))}}
           <a
@@ -225,13 +269,17 @@ export default class EuiContextMenuItemComponent extends Component<EuiContextMen
             </span>
           {{else if @icon}}
             <span class={{this.parts.prepend}}>
-              <EuiIcon
-                @iconClasses={{this.iconClasses}}
-                @css={{this.childCss.icon}}
-                @type={{@icon}}
-                @size="m"
-                @color="inherit"
-              />
+              {{#if this.iconIsType}}
+                <EuiIcon
+                  @iconClasses={{this.iconClasses}}
+                  @css={{this.childCss.icon}}
+                  @type={{@icon}}
+                  @size="m"
+                  @color="inherit"
+                />
+              {{else}}
+                <@icon class={{this.elementIconClasses}} />
+              {{/if}}
             </span>
           {{/if}}
           <span class={{this.parts.text}}>

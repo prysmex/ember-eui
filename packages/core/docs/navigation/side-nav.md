@@ -55,6 +55,7 @@ A hierarchical navigation tree for a page's side bar.
 | `@mobileTitle` | `string` | the heading | Text of the mobile toggle button. |
 | `@items` | `Item[]` |  | The navigation tree, see `Item`. |
 | `@selectedItem` | `string` |  | Id of the current item: it is highlighted and its parents open. |
+| `@renderItem` | `EuiSideNavRenderItem` |  | Replaces the rendering of every item's link, button or text with a component, see `Item.renderItem`. |
 
 | Block | Description |
 | --- | --- |

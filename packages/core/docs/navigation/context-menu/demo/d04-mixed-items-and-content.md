@@ -14,7 +14,9 @@ If your panel contents have different widths or you need to ensure that a specif
 
 ### Custom items
 
-You can add separator lines in the `items` array if you define an item as `{ isSeparator: true }`.
+You can add separator lines in the `items` array if you define an item as `{ isSeparator: true }`. The rest of the object's properties go to an **EuiHorizontalRule** (`margin`, `size`, `css`, `className`) or become attributes.
+
+For completely custom rendered items, use `{ renderItem: Component }` to pass a component.
 
 </EuiText>
 
@@ -26,7 +28,13 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
 import { eq } from 'ember-truth-helpers';
-import { EuiButton, EuiContextMenu, EuiIcon, EuiPopover, EuiSpacer, EuiTabbedContent, EuiText } from '@ember-eui/core/components';
+import { EuiButton, EuiContextMenu, EuiIcon, EuiPopover, EuiPopoverFooter, EuiSpacer, EuiTabbedContent, EuiText } from '@ember-eui/core/components';
+
+const CustomItem = <template>
+  <EuiPopoverFooter @paddingSize="s">
+    <EuiButton @size="s" style="margin-inline-start: auto">I'm a custom item!</EuiButton>
+  </EuiPopoverFooter>
+</template>;
 
 export default class DemoComponent extends Component {
   @tracked isPopoverOpen = false;
@@ -81,7 +89,8 @@ export default class DemoComponent extends Component {
         items: [
           { name: 'Show fullscreen', icon: 'magnify', onClick: close },
           { isSeparator: true },
-          { name: 'See more', icon: 'plusCircle', panel: 1 }
+          { name: 'See more', icon: 'plusCircle', panel: 1 },
+          { renderItem: CustomItem }
         ]
       },
       { id: 1, width: 400, title: 'See more' }

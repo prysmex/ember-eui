@@ -8,7 +8,7 @@ order: 1
 
 Buttons enable **user actions** and are crucial for forms, modals, toolbars, and interactive pages. They offer various types, sizes, colors, and properties. The best combination depends on placement, prominence, and state. `EuiButton` is for primary and secondary actions, while `EuiButtonEmpty` is for tertiary or low-prominence actions.
 
-Regular `EuiButton` can be used for two types of actions: primary and secondary. It has `@fill` set to `false` by default, which is typically used for **secondary actions**, striking a balance between visibility and visual noise. They are less prominent than primary actions and can be used alongside them. **Primary actions (CTAs)** should be represented by filled buttons (`@fill={{true}}`).
+Regular `EuiButton` can be used for two types of actions: primary and secondary. It has `@fill` set to `false` by default, which is typically used for **secondary actions**, striking a balance between visibility and visual noise. They are less prominent than primary actions and can be used alongside them. **Primary actions (CTAs)** should be represented by filled buttons (`@fill={{true}}`). Use `@minWidth` (a CSS length, or a number of pixels) to set a minimum width.
 
 </EuiText>
 

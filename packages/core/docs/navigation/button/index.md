@@ -62,6 +62,7 @@ Generated from the components' TypeScript signatures by
 | `@isLoading` | `boolean` |  | Shows a spinner instead of the icon and disables the button. |
 | `@isSelected` | `boolean` |  | For toggle buttons: sets `aria-pressed="true"` while selected. |
 | `@size` | `string` | `'m'` | `'s'` or `'m'`. |
+| `@minWidth` | `string \| number \| false` |  | Overrides the minimum width (inline `min-inline-size`): a CSS length or a number of pixels. Upstream has no minimum by default. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@textClasses` | `string` |  | Classes for the element wrapping the text. |
 | `@type` | `string` | `'button'` | `type` of the `<button>`, e.g. `'submit'` in a form. |

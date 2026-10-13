@@ -13,6 +13,7 @@ import EuiHideFor from '../components/eui-hide-for.gts';
 import EuiShowFor from '../components/eui-show-for.gts';
 import EuiSideNavItem, { isChildrenOnly } from '../components/eui-side-nav-item.gts';
 import EuiTitle from '../components/eui-title.gts';
+import nullish from '../helpers/nullish.ts';
 import { isItemOpen, isItemSelected } from '../helpers/is-item-open.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -24,12 +25,32 @@ import {
 
 import type { EuiHideForSignature } from '../components/eui-hide-for';
 import type EuiI18n from '../services/eui-i18n';
+import type { ComponentLike } from '@glint/template';
+
+/** Props a `renderItem` component receives for the item it replaces. */
+export interface EuiSideNavRenderItemSignature {
+  Element: HTMLElement;
+  Args: {
+    href?: string;
+    target?: string;
+    rel?: string;
+    onClick?: () => void;
+    disabled?: boolean;
+  };
+  Blocks: { default: [] };
+}
+
+export type EuiSideNavRenderItem = ComponentLike<EuiSideNavRenderItemSignature>;
 
 export interface Item {
   /** Unique id, matched against `@selectedItem`. */
   id: string;
-  /** Icon before the name; anything `EuiIcon`'s `@type` accepts. */
-  icon?: string;
+  /**
+   * Icon before the name: a type name for `EuiIcon`, or a component
+   * rendered as is (e.g. `EuiIcon` curried with a color:
+   * `(component EuiIcon type="clock" color="success")`).
+   */
+  icon?: string | ComponentLike<any>;
   /** Makes the item a button calling this function. */
   onClick?: () => void;
   /** Makes the item a link. */
@@ -49,8 +70,18 @@ export interface Item {
   depth?: number;
   /** The item's text. */
   name?: string;
-  /** @deprecated Has no effect. */
-  renderItem?: unknown;
+  /**
+   * Replaces the item's link, button or text: a component (see
+   * `EuiSideNavRenderItemSignature`) getting `@href`, `@target`, `@rel`,
+   * `@onClick` and `@disabled`, the item's classes as `class`, and the
+   * item's content as its block. Wins over the nav's `@renderItem`.
+   */
+  renderItem?: EuiSideNavRenderItem;
+  /**
+   * Opens or closes this item's children, overriding what its selection
+   * and `forceOpen` imply (upstream passes it through to the item).
+   */
+  isOpen?: boolean;
   /**
    * Marks the item as the current one, like matching `@selectedItem`:
    * highlighted, with its parents open.
@@ -99,6 +130,11 @@ export interface EuiSideNavSignature {
     items?: Item[];
     /** Id of the current item: it is highlighted and its parents open. */
     selectedItem?: string;
+    /**
+     * Replaces the rendering of every item's link, button or text with a
+     * component, see `Item.renderItem`.
+     */
+    renderItem?: EuiSideNavRenderItem;
   };
   Blocks: {
     /** Unused. */
@@ -256,7 +292,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
               {{#each @items as |item|}}
                 <EuiSideNavItem
                   @selectedItem={{@selectedItem}}
-                  @isOpen={{true}}
+                  @isOpen={{nullish item.isOpen true}}
                   @isSelected={{this.isItemSelected item}}
                   @isParent={{if item.items true false}}
                   @icon={{item.icon}}
@@ -272,6 +308,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                   @emphasize={{item.emphasize}}
                   @buttonClassName={{item.buttonClassName}}
                   @childrenOnly={{false}}
+                  @renderItem={{if item.renderItem item.renderItem @renderItem}}
                 >
                   {{item.name}}
                 </EuiSideNavItem>
@@ -318,7 +355,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
             {{#each @items as |item|}}
               <EuiSideNavItem
                 @selectedItem={{@selectedItem}}
-                @isOpen={{true}}
+                @isOpen={{nullish item.isOpen true}}
                 @isSelected={{this.isItemSelected item}}
                 @isParent={{if item.items true false}}
                 @icon={{item.icon}}
@@ -334,6 +371,7 @@ export default class EuiSideNavComponent extends Component<EuiSideNavSignature> 
                 @emphasize={{item.emphasize}}
                 @buttonClassName={{item.buttonClassName}}
                 @childrenOnly={{false}}
+                  @renderItem={{if item.renderItem item.renderItem @renderItem}}
               >
                 {{item.name}}
               </EuiSideNavItem>

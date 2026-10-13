@@ -82,6 +82,7 @@ enough.
 | --- | --- | --- | --- |
 | `@panels` (required) | `EuiContextMenuPanelDescriptor[]` |  | Every panel, flat: an item's `panel` is the id of the panel it opens. |
 | `@initialPanelId` (required) | `PanelId` |  | Id of the panel shown first. |
+| `@height` | `number \| string` | the height of the shown panel | Fixes the menu's height (a number of px or any CSS height) instead of fitting the panel; the items of a panel then scroll. |
 
 Deprecated: `@size` (Has no effect: latest EUI has a single item size.).
 
@@ -124,12 +125,13 @@ An action in a menu, usually inside an `EuiContextMenuPanel` in an
 | `@href` | `string` |  | Renders the item as a link. |
 | `@target` | `string` |  | `target` of the `@href` link, e.g. `'_blank'`. |
 | `@isLoading` | `boolean` |  | Shows a spinner instead of the icon. |
-| `@icon` |  |  | Icon before the text; anything `EuiIcon`'s `@type` accepts. Pass `'empty'` to align items without an icon with the others. |
+| `@icon` |  |  | Icon before the text: an icon type name for `EuiIcon` (pass `'empty'` to align items without an icon with the others), or a component rendered as is, with the item's icon class and styles (e.g. `(component EuiIcon type="check" color="success" size="l")`). |
 | `@iconClasses` | `string` |  | Extra classes for the icon. |
 | `@hasPanel` | `boolean` |  | Shows an arrow on the right, for items opening another panel. |
 | `@color` | `string` |  | Color of the text and icon: `'text'` (default) or a button color such as `'danger'` (upstream recommends `'text'` and `'danger'`). |
 | `@toolTipContent` | `string` |  | Shows a tooltip on the right of the item on hover and focus. |
 | `@toolTipTitle` | `string` |  | Title of the `@toolTipContent` tooltip. |
+| `@toolTipProps` | `Partial<Omit<EuiTooltipArgs, 'content'>>` |  | More args for the tooltip, any `EuiToolTip` arg except `content` (`title`, `delay`, `offset`, `anchorClassName`, `css`, …). The position is always `'right'`, as upstream. |
 
 Deprecated: `@layoutAlign` (Upstream will always center. Vertical alignment of the icon with the text: `'center'`, `'top'` or `'bottom'`. Defaults to `'center'`.); `@size` (Has no effect: latest EUI has a single item size.).
 

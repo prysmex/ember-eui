@@ -6,7 +6,7 @@ order: 5
 
 <EuiText>
 
-Adding `emphasize: true` to a **EuiSideNav** item will enhance the visual appearance of that section and its nested items. This is helpful for when you need to indicate a dynamic navigational item like a user-created object.
+Adding `emphasize: true` to a **EuiSideNav** item (and `isOpen: true` to open its children whatever the selection) will enhance the visual appearance of that section and its nested items. This is helpful for when you need to indicate a dynamic navigational item like a user-created object.
 
 The emphasized nav item's background color extends beyond the horizontal bounds of the component to allow it to reach its parent's bounds. Be sure to add `overflow: hidden` to whichever container you'd like it to stop at.
 
@@ -50,6 +50,7 @@ export default class DemoComponent extends Component {
             items: [
               createItem('opbeans-java', {
                 emphasize: true,
+                isOpen: true,
                 items: [
                   createItem('Transactions'),
                   createItem('Errors'),

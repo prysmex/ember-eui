@@ -9,20 +9,9 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiListGroup | `@listItems`, `@showToolTips`, item tooltip args |
-| EuiImage | rich `@caption`, `@width`, `wrapperProps` |
-| EuiCommentList | `comments` array, `ariaLabel` |
-| EuiCallOut | `actionProps` |
-| EuiCard | `betaBadgeProps` color/href/target, `hasBorder`, `@image` as element |
-| EuiTimeline | node `children` on items |
-| EuiTourStep | `@anchor`, `@zIndex`, `@footerAction` arg; no `useEuiTour` equivalent |
-| EuiToolTip | `@repositionOnScroll` |
-| EuiTextDiff | `timeout`, `insertComponent`, `deleteComponent` |
-| EuiToast / toaster service | `body` is string-only |
-| EuiTreeView | `icon` takes icon type strings only |
+| EuiTourStep | no `useEuiTour` hook (`EuiTour` yields the same state and actions; deliberately not added) |
 | EuiMarkdownEditor | `toolbarProps`; `getDefaultEuiMarkdownPlugins` exclude only `tooltip` (button stays); no link validator |
 | EuiI18n | multi-token lookup, component-valued interpolation; no `EuiContext` |
-| EuiCodeBlock | `lineNumbers.annotations` strings only |
 | Missing components | `EuiFocusTrap`, `EuiWindowEvent` |
 | Illustrations | `@elastic/eui-illustrations` not installed: no catalog/gallery |
 | Not documented | utilities pages: error-boundary, html-id-generator, inner-text, pretty-duration, provider, container-queries, css-utility-classes, color-palettes, scroll |
@@ -76,9 +65,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiSideNav items | `renderItem` | navigation/side-nav.mdx | S | Declared but unused (dead arg). |
 | EuiSteps | auto-numbering / `firstStepNumber`; parent-level `titleSize`/`headingElement` | navigation/steps/index.mdx | S | `EuiSteps` Args is `{}`; `@step` set manually on each step. |
 | EuiTabbedContent | tab `prepend`, `append`, `href`, `className`; non-string `name` | containers/tabs/index.mdx | S | Tab type is `id,name:string,content?,disabled?`; icon-prefixed Hydrogen tab missing. |
-| EuiCard | `hasBorder` | containers/card.mdx | S | Hard-coded false; "Bordered" example missing. |
-| EuiCard | `betaBadgeProps.color` / other badge props | containers/card.mdx | S | Colour derived from `isDisabled` only. |
-| EuiCard | `image` as element/node | containers/card.mdx | S/M | `image` is string; d02 notes adaptation. |
 | EuiResizableButton | standalone use (`isHorizontal`, `onMouseDown`, `onTouchStart`, `onKeyDown`) | containers/resizable-container.mdx | M | "Custom resize logic" example omitted. |
 | EuiResizablePanel | collapsible `mode` options `className`, `data-test-subj` | containers/resizable-container.mdx | S | `Mode` allows only `{position}`. |
 | EuiPageHeader | `tabsProps`; `breadcrumbProps`/`rightSideGroupProps`/`pageTitleProps`/`iconProps` accept only `{className}` | layout/page-header.mdx | S | Upstream passes `aria-label`, `data-test-subj`. |

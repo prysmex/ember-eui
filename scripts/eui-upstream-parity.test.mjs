@@ -308,7 +308,10 @@ const factories = {
   'components/datagrid/controls/column_selector.styles.js': ['euiDataGridColumnSelectorStyles'],
   'components/datagrid/controls/column_sorting.styles.js': ['euiDataGridColumnSortingStyles'],
   'components/datagrid/controls/keyboard_shortcuts.styles.js': ['euiDataGridKeyboardShortcutsStyles'],
-  'components/datagrid/pagination/data_grid_pagination.styles.js': ['euiDataGridPaginationStyles']
+  'components/datagrid/pagination/data_grid_pagination.styles.js': ['euiDataGridPaginationStyles'],
+  // tables-gaps
+  'components/table/sticky_header/sticky_header.styles.js': ['euiTableStickyHeaderStyles'],
+  'components/table/sticky_scrollbar/sticky_scrollbar.styles.js': ['euiTableStickyScrollbarStyles']
 };
 function normalize(value) {
   if (Array.isArray(value)) return value.map(normalize);
@@ -2152,4 +2155,47 @@ test('high contrast theme modifications port matches upstream useHighContrastMod
   } finally {
     Module._load = originalLoad;
   }
+});
+
+// tables-gaps
+test('table sticky cell hand port and container query helper match upstream', () => {
+  const container = require(resolve(eui, 'lib/global_styling/mixins/_container_query.js'));
+  for (const args of [['scroll-state(scrollable: right)', 'EuiTable'], ['(min-width: 10px)'], ['x', '']])
+    assert.equal(styles.euiContainerQuery(...args), container.euiContainerQuery(...args), JSON.stringify(args));
+  const port = loadPort('table.ts', 'eui-table-parity.cjs');
+  for (const colorMode of ['LIGHT', 'DARK'])
+    for (const highContrastMode of [false, 'preferred', 'forced'])
+      for (const modifications of [
+        {},
+        { base: 20, colors: { LIGHT: { primary: '#663399' }, DARK: { primary: '#aa77dd' } } }
+      ]) {
+        const context = {
+          colorMode,
+          highContrastMode,
+          modifications,
+          euiTheme: getComputed(EuiThemeBorealis, buildTheme(modifications, 'parity'), colorMode, highContrastMode)
+        };
+        const originalLoad = Module._load;
+        // upstream only reaches the factory through its hook
+        Module._load = function (request, parent, isMain) {
+          if (request === '../../services' && /table_cells_shared\.styles\.js$/.test(parent?.filename ?? ''))
+            return { ...originalLoad.call(this, request, parent, isMain), useEuiMemoizedStyles: (factory) => factory(context) };
+          return originalLoad.call(this, request, parent, isMain);
+        };
+        try {
+          const path = resolve(eui, 'lib/components/table/table_cells_shared.styles.js');
+          delete require.cache[path];
+          const { _useEuiTableStickyCellStyles } = require(path);
+          const ours = port.euiTableStickyCellStyles(context);
+          for (const side of ['start', 'end'])
+            assert.deepEqual(
+              normalize(_useEuiTableStickyCellStyles({ side })),
+              normalize([ours.root, ours.side[side]]),
+              `${side} ${colorMode}/${highContrastMode}`
+            );
+          assert.strictEqual(_useEuiTableStickyCellStyles(undefined), undefined);
+        } finally {
+          Module._load = originalLoad;
+        }
+      }
 });

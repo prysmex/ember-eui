@@ -499,6 +499,7 @@
       "./components/eui-select.js": "./dist/_app_/components/eui-select.js",
       "./components/eui-selectable-list-item.js": "./dist/_app_/components/eui-selectable-list-item.js",
       "./components/eui-selectable-list.js": "./dist/_app_/components/eui-selectable-list.js",
+      "./components/eui-selectable-list/option-text.js": "./dist/_app_/components/eui-selectable-list/option-text.js",
       "./components/eui-selectable-message.js": "./dist/_app_/components/eui-selectable-message.js",
       "./components/eui-selectable-search.js": "./dist/_app_/components/eui-selectable-search.js",
       "./components/eui-selectable-template-sitewide.js": "./dist/_app_/components/eui-selectable-template-sitewide.js",

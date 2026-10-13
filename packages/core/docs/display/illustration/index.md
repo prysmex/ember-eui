@@ -47,7 +47,7 @@ Any object with `{ id, title, light, dark }` works, so you can also pass your ow
 
 **License:** the illustrations are copyright Elasticsearch B.V. and licensed under the Elastic License 2.0 or the Server Side Public License, v 1, not under Ember EUI's license. See `packages/core/NOTICE.md` for how these terms apply to this repository.
 
-A live, searchable gallery like upstream's is not shown here because this site does not install the package.
+This site installs the package to show the searchable gallery below ("All illustrations").
 
 The markup is inserted as-is: only pass trusted, package-authored SVGs, never user-supplied markup.
 

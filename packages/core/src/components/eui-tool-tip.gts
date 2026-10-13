@@ -188,6 +188,13 @@ export type EuiTooltipArgs = {
    */
   attachTo?: undefined | HTMLElement | string | null;
 
+  /**
+   * Repositions the tooltip when any scrollable ancestor (or the window)
+   * scrolls. Needed for fixed-position anchors or a tooltip inside a
+   * scrollable container. Defaults to `false`.
+   */
+  repositionOnScroll?: boolean;
+
   /** Shows (`true`) or hides (`false`) the tooltip from outside. */
   isShown?: boolean | undefined;
 
@@ -296,6 +303,22 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       this.attachTo.removeEventListener('mouseout', this.onMouseOut);
       this.attachTo.removeEventListener('focusout', this.onBlur);
     }
+  }
+
+  private listeningToScroll = false;
+
+  /** Adds or removes the capturing scroll listener (`@repositionOnScroll`). */
+  @action
+  syncScrollListener(): void {
+    const wanted = this.args.repositionOnScroll === true;
+
+    if (wanted && !this.listeningToScroll) {
+      window.addEventListener('scroll', this.positionToolTip, true);
+    } else if (!wanted && this.listeningToScroll) {
+      window.removeEventListener('scroll', this.positionToolTip, true);
+    }
+
+    this.listeningToScroll = wanted;
   }
 
   @action
@@ -561,6 +584,8 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
     this.clearAnimationTimeout();
     toolTipManager.deregisterToolTip(this.hideToolTip);
     this.removeAttachToHandlers();
+    window.removeEventListener('scroll', this.positionToolTip, true);
+    this.listeningToScroll = false;
     this.anchor = null;
     this.popover = null;
     this._attachTo = null;
@@ -574,6 +599,8 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
       {{#if @attachTo}}
         <span
           {{didInsert this.updateAttachTo}}
+          {{didInsert this.syncScrollListener}}
+          {{didUpdate this.syncScrollListener @repositionOnScroll}}
           {{didUpdate this.updateAttachTo @attachTo}}
           {{describedBy this.attachTo this.id this.describesAnchor}}
           {{didUpdate
@@ -589,6 +616,8 @@ export default class EuiToolTip extends Component<EuiToolTipSignature> {
           id={{if (not @disableScreenReaderOutput) (concat this.id "-wrapper")}}
           class={{classNames this.anchorClasses @anchorClassName}}
           {{didInsert this.didInsertAnchor}}
+          {{didInsert this.syncScrollListener}}
+          {{didUpdate this.syncScrollListener @repositionOnScroll}}
           {{describedBy null this.id this.describesAnchor}}
           {{on "keydown" this.onKeyDown}}
           {{on "mouseover" this.showToolTip}}

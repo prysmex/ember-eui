@@ -14,7 +14,7 @@ import { euiToolTipStyles } from '../utils/eui/styles.generated.ts';
 import type { CommonArgs } from './common.ts';
 
 type EuiTooltipPopoverArgs = CommonArgs & {
-  /** Repositions the tooltip (on resize and scroll). */
+  /** Repositions the tooltip (on resize, like upstream; see `@repositionOnScroll` of EuiToolTip). */
   positionToolTip: () => void;
   /** @deprecated Has no effect, use the `<:title>` block. */
   title?: Component;
@@ -49,14 +49,12 @@ export default class EuiTooltipPopover extends Component<EuiTooltipPopoverSignat
     super(owner, args);
     document.body.classList.add('euiBody-hasPortalContent');
     window.addEventListener('resize', this.updateDimensions);
-    window.addEventListener('scroll', this.updateDimensions, true);
   }
 
   willDestroy(): void {
     super.willDestroy();
     document.body.classList.remove('euiBody-hasPortalContent');
     window.removeEventListener('resize', this.updateDimensions);
-    window.removeEventListener('scroll', this.updateDimensions, true);
     this.popover = null;
   }
 

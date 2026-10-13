@@ -69,20 +69,22 @@
     </EuiHeader>
     <EuiPageTemplate
       @paddingSize="none"
-      @grow={{true}}
-      @pageBodyProps={{hash className="pageBodyShadow"}}
+      @restrictWidth={{false}}
+      @mainProps={{hash className="pageBody"}}
     >
-      <:pageSideBar>
-        <SideNav
-          @isClearable={{true}}
-          @onSearch={{this.onSearch}}
-          @searchValue={{this.searchValue}}
-          @isOpenMobile={{this.isOpenMobile}}
-          @toggleOpenOnMobile={{set this "isOpenMobile"}}
-          @items={{this.currentSideNavRoutes}}
-          @selectedItem={{this.selectedItem}}
-        />
-      </:pageSideBar>
+      <:sidebar as |T|>
+        <T.Sidebar @sticky={{true}}>
+          <SideNav
+            @isClearable={{true}}
+            @onSearch={{this.onSearch}}
+            @searchValue={{this.searchValue}}
+            @isOpenMobile={{this.isOpenMobile}}
+            @toggleOpenOnMobile={{set this "isOpenMobile"}}
+            @items={{this.currentSideNavRoutes}}
+            @selectedItem={{this.selectedItem}}
+          />
+        </T.Sidebar>
+      </:sidebar>
       <:default>
         {{outlet}}
       </:default>

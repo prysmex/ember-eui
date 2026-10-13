@@ -98,7 +98,7 @@ body.euiBody--headerIsFixed {
   }
 }
 
-.pageBodyShadow {
+.pageBody {
   box-shadow:
     rgb(0 0 0 / 8%) 0 0.9px 4px,
     rgb(0 0 0 / 6%) 0 2.6px 8px,
@@ -109,15 +109,15 @@ body.euiBody--headerIsFixed {
 /* Elastic UI docs specific */
 
 /*
-  the page's gutter, which prose and demos share (on the page body, not the
-  panel around it, which gets the same class)
+  the page's gutter, which prose and demos share (on the template's main
+  element)
 */
-.euiPageBody.pageBodyShadow:not(.euiPanel) {
+.pageBody {
   padding-inline: 24px;
 }
 
 @media only screen and (width <= 574px) {
-  .euiPageBody.pageBodyShadow:not(.euiPanel) {
+  .pageBody {
     padding-inline: 16px;
   }
 }

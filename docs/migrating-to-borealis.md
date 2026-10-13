@@ -471,6 +471,7 @@ deprecation workflow while you migrate.
 | `EuiSuggest` (and `EuiSuggestInput`, `EuiSuggestItem`) | `ember-eui.eui-suggest.removed-upstream` (one id per part) | `EuiSelectable` or `EuiComboBox` |
 | `EuiColorStops` (and its thumbs) | `ember-eui.eui-color-stops.removed-upstream` (thumbs: `eui-color-stops-thumb`) | No direct replacement; `EuiColorPalettePicker` for predefined gradients |
 | `EuiControlBar` | `ember-eui.eui-control-bar.removed-upstream` | `EuiBottomBar`, or a bar composed with `EuiFlexGroup` and `EuiTabs` |
+| `EuiPageTemplate` legacy API (`@template`, `@pageHeader`, `@page…Props`, `@bottomBarProps`, `@fullHeight`, the `<:pageSideBar>`, `<:pageHeader…>` and `<:bottomBar>` blocks) | `ember-eui.eui-page-template-legacy.removed-upstream` | The composable API: `<EuiPageTemplate as \|T\|>` with `T.Header`, `T.Section`, `T.EmptyPrompt`, `T.BottomBar`, and `T.Sidebar` in a `<:sidebar as \|T\|>` block |
 
 Arguments that no longer do anything are marked deprecated in the
 signatures and API reference (no runtime warning), e.g. `EuiCheckbox` /
@@ -487,8 +488,6 @@ groups, `@size` on context menus, `EuiPaginationButton @paddingSize` /
 Upstream features that are not ported yet (the Ember API keeps working
 as before):
 
-- **Page**: upstream's newer `EuiPageTemplate` API (Outer/Inner/Section/Sidebar,
-  `panelled`, `offset`) and a public `EuiPageSection`.
 - **Flyout**: the flyout manager (sessions, child flyouts), `resizable`,
   the flyout menu and the `container` prop.
 - **Popover**: initial focus on the panel itself, `panelProps`,

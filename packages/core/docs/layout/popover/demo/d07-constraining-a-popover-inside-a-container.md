@@ -10,39 +10,13 @@ order: 7
   </p>
 </EuiText>
 
-```hbs template
-<EuiPanel {{did-insert this.setPanelRef}}>
-  <EuiPopover
-    @isOpen={{this.isPopoverOpen}}
-    @closePopover={{this.closePopover}}
-    @container={{this.panelRef}}
-  >
-    <:button>
-      <EuiButtonEmpty
-        @iconType='help'
-        @iconSide='right'
-        style='position: relative; left: 50px;'
-        {{on 'click' this.onButtonClick}}
-      >
-        Show constrained popover
-      </EuiButtonEmpty>
-    </:button>
-    <:content>
-      <div>
-        Popover is positioned <EuiCode>downCenter</EuiCode> but constrained to fit within the panel.
-      </div>
-    </:content>
-  </EuiPopover>
-  {{! create adequate room for the popover }}
-  <EuiSpacer @size='xxl' />
-  <EuiSpacer @size='xxl' />
-</EuiPanel>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { tracked } from '@glimmer/tracking';
+import { EuiButtonEmpty, EuiCode, EuiPanel, EuiPopover, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isPopoverOpen = false;
@@ -62,5 +36,34 @@ export default class PopoverDemo extends Component {
   closePopover() {
     this.isPopoverOpen = false;
   }
+
+  <template>
+    <EuiPanel {{didInsert this.setPanelRef}}>
+      <EuiPopover
+        @isOpen={{this.isPopoverOpen}}
+        @closePopover={{this.closePopover}}
+        @container={{this.panelRef}}
+      >
+        <:button>
+          <EuiButtonEmpty
+            @iconType='help'
+            @iconSide='right'
+            style='position: relative; left: 50px;'
+            {{on 'click' this.onButtonClick}}
+          >
+            Show constrained popover
+          </EuiButtonEmpty>
+        </:button>
+        <:content>
+          <div>
+            Popover is positioned <EuiCode>downCenter</EuiCode> but constrained to fit within the panel.
+          </div>
+        </:content>
+      </EuiPopover>
+      {{! create adequate room for the popover }}
+      <EuiSpacer @size='xxl' />
+      <EuiSpacer @size='xxl' />
+    </EuiPanel>
+  </template>
 }
 ```

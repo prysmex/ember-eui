@@ -10,37 +10,41 @@ Using <strong>EuiPanel</strong> in an <strong>EuiFlexItem</strong> will always g
   </p>
 </EuiText>
 
-```hbs template
-<EuiSpacer @size='l' />
-<EuiFlexGroup @gutterSize='l'>
-  <EuiFlexItem>
-    <EuiPanel>
-      <EuiText>
-        <p>
-          I am some panel content...
-          <br />
-          ...
-          <br />
-          ...
-          <br />
-          whose content is tall
-        </p>
-      </EuiText>
-    </EuiPanel>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiPanel @grow={{true}}>
-      <EuiText>
-        <p>I am some panel content... whose content will grow</p>
-      </EuiText>
-    </EuiPanel>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiPanel @grow={{false}}>
-      <EuiText>
-        <p>I am some panel content... whose content did not grow</p>
-      </EuiText>
-    </EuiPanel>
-  </EuiFlexItem>
-</EuiFlexGroup>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiPanel, EuiSpacer, EuiText } from '@ember-eui/core/components';
+
+<template>
+  <EuiSpacer @size='l' />
+  <EuiFlexGroup @gutterSize='l'>
+    <EuiFlexItem>
+      <EuiPanel>
+        <EuiText>
+          <p>
+            I am some panel content...
+            <br />
+            ...
+            <br />
+            ...
+            <br />
+            whose content is tall
+          </p>
+        </EuiText>
+      </EuiPanel>
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiPanel @grow={{true}}>
+        <EuiText>
+          <p>I am some panel content... whose content will grow</p>
+        </EuiText>
+      </EuiPanel>
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiPanel @grow={{false}}>
+        <EuiText>
+          <p>I am some panel content... whose content did not grow</p>
+        </EuiText>
+      </EuiPanel>
+    </EuiFlexItem>
+  </EuiFlexGroup>
+</template>
 ```

@@ -10,8 +10,12 @@ Panels default to a flat bordered look (<EuiCode>@hasBorder=&#123;&#123;true&#12
   </p>
 </EuiText>
 
-```hbs template
-<EuiPanel>
-  Default panel
-</EuiPanel>
+```gjs component
+import { EuiPanel } from '@ember-eui/core/components';
+
+<template>
+  <EuiPanel>
+    Default panel
+  </EuiPanel>
+</template>
 ```

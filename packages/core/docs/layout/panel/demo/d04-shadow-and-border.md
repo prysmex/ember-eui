@@ -18,15 +18,19 @@ By default, <strong>EuiPanel</strong> is flat with <EuiCode>@hasBorder=&#123;&#1
   </p>
 </EuiCallOut>
 
-```hbs template
-<EuiSpacer @size='l' />
-<EuiPanel>
-  <EuiCode>Default (hasBorder, no shadow)</EuiCode>
-</EuiPanel>
+```gjs component
+import { EuiCode, EuiPanel, EuiSpacer } from '@ember-eui/core/components';
 
-<EuiSpacer />
+<template>
+  <EuiSpacer @size='l' />
+  <EuiPanel>
+    <EuiCode>Default (hasBorder, no shadow)</EuiCode>
+  </EuiPanel>
 
-<EuiPanel @hasBorder={{false}} @hasShadow={{true}}>
-  <EuiCode>@hasBorder=&#123;&#123;false&#125;&#125; @hasShadow</EuiCode>
-</EuiPanel>
+  <EuiSpacer />
+
+  <EuiPanel @hasBorder={{false}} @hasShadow={{true}}>
+    <EuiCode>@hasBorder=&#123;&#123;false&#125;&#125; @hasShadow</EuiCode>
+  </EuiPanel>
+</template>
 ```

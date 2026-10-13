@@ -10,53 +10,13 @@ order: 10
   </p>
 </EuiText>
 
-```hbs template
-<EuiPopover
-  @isOpen={{this.isPopoverOpen}}
-  @closePopover={{this.closePopover}}
-  @focusTrapOptions={{hash
-    clickOutsideDeactivates=false
-    onClickOutside=this.showModal
-  }}
->
-  <:button>
-    <EuiButtonEmpty
-      @iconType='help'
-      @iconSide='right'
-      {{on 'click' this.togglePopover}}
-    >
-      This popover toggles a confirm modal on close
-    </EuiButtonEmpty>
-  </:button>
-  <:content>
-    <EuiText>
-      <p>
-        Clicking outside this popover toggles a confirm modal.
-        <br />
-        The confirm modal either keeps the popover open or closes the popover.
-      </p>
-    </EuiText>
-  </:content>
-</EuiPopover>
-
-{{#if this.isModalVisible}}
-  <EuiConfirmModal
-    @title='You have unsaved work'
-    @onCancel={{this.closeModal}}
-    @onConfirm={{this.confirmModal}}
-    @cancelButtonText="No, don't do it"
-    @confirmButtonText='Yes, do it'
-    @defaultFocusedButton='cancel'
-  >
-    <p>Are you sure you to close the popover?</p>
-  </EuiConfirmModal>
-{{/if}}
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButtonEmpty, EuiConfirmModal, EuiPopover, EuiText } from '@ember-eui/core/components';
+import { hash } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isPopoverOpen = false;
@@ -87,5 +47,48 @@ export default class PopoverDemo extends Component {
     this.isModalVisible = false;
     this.isPopoverOpen = false;
   }
+
+  <template>
+    <EuiPopover
+      @isOpen={{this.isPopoverOpen}}
+      @closePopover={{this.closePopover}}
+      @focusTrapOptions={{hash
+        clickOutsideDeactivates=false
+        onClickOutside=this.showModal
+      }}
+    >
+      <:button>
+        <EuiButtonEmpty
+          @iconType='help'
+          @iconSide='right'
+          {{on 'click' this.togglePopover}}
+        >
+          This popover toggles a confirm modal on close
+        </EuiButtonEmpty>
+      </:button>
+      <:content>
+        <EuiText>
+          <p>
+            Clicking outside this popover toggles a confirm modal.
+            <br />
+            The confirm modal either keeps the popover open or closes the popover.
+          </p>
+        </EuiText>
+      </:content>
+    </EuiPopover>
+
+    {{#if this.isModalVisible}}
+      <EuiConfirmModal
+        @title='You have unsaved work'
+        @onCancel={{this.closeModal}}
+        @onConfirm={{this.confirmModal}}
+        @cancelButtonText="No, don't do it"
+        @confirmButtonText='Yes, do it'
+        @defaultFocusedButton='cancel'
+      >
+        <p>Are you sure you to close the popover?</p>
+      </EuiConfirmModal>
+    {{/if}}
+  </template>
 }
 ```

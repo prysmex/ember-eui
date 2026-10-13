@@ -18,56 +18,12 @@ order: 11
   </p>
 </EuiCallOut>
 
-```hbs template
-<EuiPopover
-  @ownFocus={{false}}
-  @initialFocus='#focusId'
-  @isOpen={{this.isPopoverOpen}}
-  @closePopover={{this.closePopover}}
->
-  <:button>
-    <EuiButtonEmpty
-      @iconType='help'
-      @iconSide='right'
-      {{on 'click' this.onButtonClick}}
-    >
-      Show popover
-    </EuiButtonEmpty>
-  </:button>
-  <:content>
-    <EuiFormRow
-      @label='Generate a public snapshot?'
-      @id='focusId'
-      @hasChildLabel={{false}}
-    >
-      <EuiSwitch
-        @name='switch'
-        @label='Snapshot data'
-        @checked={{true}}
-        @onChange={{this.noop}}
-      />
-    </EuiFormRow>
-
-    <EuiFormRow @label='Include the following in the embed'>
-      <EuiSwitch
-        @name='switch'
-        @label='Current time range'
-        @checked={{true}}
-        @onChange={{this.noop}}
-      />
-    </EuiFormRow>
-
-    <EuiSpacer />
-
-    <EuiButton @fill={{true}}>Copy IFRAME code</EuiButton>
-  </:content>
-</EuiPopover>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiButtonEmpty, EuiFormRow, EuiPopover, EuiSpacer, EuiSwitch } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isPopoverOpen = false;
@@ -84,5 +40,51 @@ export default class PopoverDemo extends Component {
 
   @action
   noop() {}
+
+  <template>
+    <EuiPopover
+      @ownFocus={{false}}
+      @initialFocus='#focusId'
+      @isOpen={{this.isPopoverOpen}}
+      @closePopover={{this.closePopover}}
+    >
+      <:button>
+        <EuiButtonEmpty
+          @iconType='help'
+          @iconSide='right'
+          {{on 'click' this.onButtonClick}}
+        >
+          Show popover
+        </EuiButtonEmpty>
+      </:button>
+      <:content>
+        <EuiFormRow
+          @label='Generate a public snapshot?'
+          @id='focusId'
+          @hasChildLabel={{false}}
+        >
+          <EuiSwitch
+            @name='switch'
+            @label='Snapshot data'
+            @checked={{true}}
+            @onChange={{this.noop}}
+          />
+        </EuiFormRow>
+
+        <EuiFormRow @label='Include the following in the embed'>
+          <EuiSwitch
+            @name='switch'
+            @label='Current time range'
+            @checked={{true}}
+            @onChange={{this.noop}}
+          />
+        </EuiFormRow>
+
+        <EuiSpacer />
+
+        <EuiButton @fill={{true}}>Copy IFRAME code</EuiButton>
+      </:content>
+    </EuiPopover>
+  </template>
 }
 ```

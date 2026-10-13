@@ -18,39 +18,12 @@ order: 9
   </p>
 </EuiCallOut>
 
-```hbs template
-<EuiPopover
-  @initialFocus='#name'
-  @isOpen={{this.isPopoverOpen}}
-  @closePopover={{this.closePopover}}
->
-  <:button>
-    <EuiButtonEmpty
-      @iconType='help'
-      @iconSide='right'
-      {{on 'click' this.onButtonClick}}
-    >
-      Show popover
-    </EuiButtonEmpty>
-  </:button>
-  <:content>
-    <EuiFormRow @label='Enter name' @id='name'>
-      <EuiFieldText @compressed={{true}} @name='input' />
-    </EuiFormRow>
-
-    <EuiSpacer />
-
-    <EuiButton @size='s' @fill={{true}}>
-      Submit
-    </EuiButton>
-  </:content>
-</EuiPopover>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiButtonEmpty, EuiFieldText, EuiFormRow, EuiPopover, EuiSpacer } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isPopoverOpen = false;
@@ -64,5 +37,34 @@ export default class PopoverDemo extends Component {
   closePopover() {
     this.isPopoverOpen = false;
   }
+
+  <template>
+    <EuiPopover
+      @initialFocus='#name'
+      @isOpen={{this.isPopoverOpen}}
+      @closePopover={{this.closePopover}}
+    >
+      <:button>
+        <EuiButtonEmpty
+          @iconType='help'
+          @iconSide='right'
+          {{on 'click' this.onButtonClick}}
+        >
+          Show popover
+        </EuiButtonEmpty>
+      </:button>
+      <:content>
+        <EuiFormRow @label='Enter name' @id='name'>
+          <EuiFieldText @id='name' @compressed={{true}} @name='input' />
+        </EuiFormRow>
+
+        <EuiSpacer />
+
+        <EuiButton @size='s' @fill={{true}}>
+          Submit
+        </EuiButton>
+      </:content>
+    </EuiPopover>
+  </template>
 }
 ```

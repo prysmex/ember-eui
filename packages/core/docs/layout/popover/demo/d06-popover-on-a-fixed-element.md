@@ -10,35 +10,12 @@ order: 6
   </p>
 </EuiText>
 
-```hbs template
-<EuiButton {{on 'click' this.toggleExample}}>Toggle example</EuiButton>
-{{#if this.isExampleShown}}
-  <EuiPopover
-    @isOpen={{this.isPopoverOpen}}
-    @closePopover={{this.closePopover}}
-    @repositionOnScroll={{true}}
-    style='position: fixed; bottom: 50px; right: 50px; z-index: 10;'
-  >
-    <:button>
-      <EuiButtonEmpty
-        @iconType='help'
-        @iconSide='right'
-        {{on 'click' this.onButtonClick}}
-      >
-        Show fixed popover
-      </EuiButtonEmpty>
-    </:button>
-    <:content>
-      <div>This popover scrolls with the button element!</div>
-    </:content>
-  </EuiPopover>
-{{/if}}
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiButtonEmpty, EuiPopover } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isExampleShown = false;
@@ -58,5 +35,30 @@ export default class PopoverDemo extends Component {
   closePopover() {
     this.isPopoverOpen = false;
   }
+
+  <template>
+    <EuiButton {{on 'click' this.toggleExample}}>Toggle example</EuiButton>
+    {{#if this.isExampleShown}}
+      <EuiPopover
+        @isOpen={{this.isPopoverOpen}}
+        @closePopover={{this.closePopover}}
+        @repositionOnScroll={{true}}
+        style='position: fixed; bottom: 50px; right: 50px; z-index: 10;'
+      >
+        <:button>
+          <EuiButtonEmpty
+            @iconType='help'
+            @iconSide='right'
+            {{on 'click' this.onButtonClick}}
+          >
+            Show fixed popover
+          </EuiButtonEmpty>
+        </:button>
+        <:content>
+          <div>This popover scrolls with the button element!</div>
+        </:content>
+      </EuiPopover>
+    {{/if}}
+  </template>
 }
 ```

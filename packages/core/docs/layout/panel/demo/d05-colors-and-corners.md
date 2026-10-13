@@ -13,15 +13,19 @@ Passing <EuiCode>@color="transparent"</EuiCode> can give you a quick empty box s
   </p>
 </EuiText>
 
-```hbs template
-<EuiSpacer @size='l' />
-<EuiPanel @color='subdued' @borderRadius='none' @hasShadow={{false}}>
-  <p>I am a simple shaded box</p>
-</EuiPanel>
+```gjs component
+import { EuiPanel, EuiSpacer } from '@ember-eui/core/components';
 
-<EuiSpacer />
+<template>
+  <EuiSpacer @size='l' />
+  <EuiPanel @color='subdued' @borderRadius='none' @hasShadow={{false}}>
+    <p>I am a simple shaded box</p>
+  </EuiPanel>
 
-<EuiPanel @color='transparent' @hasBorder={{false}}>
-  <p>I am a transparent box simply for padding</p>
-</EuiPanel>
+  <EuiSpacer />
+
+  <EuiPanel @color='transparent' @hasBorder={{false}}>
+    <p>I am a transparent box simply for padding</p>
+  </EuiPanel>
+</template>
 ```

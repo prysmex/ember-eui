@@ -18,74 +18,78 @@ screen sizes to stack on as `@responsive` (default `["xs", "s"]`) or
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @gutterSize='l'>
-  <EuiFlexItem>
-    <EuiSplitPanel::Outer @grow={{true}}>
-      <EuiSplitPanel::Inner>
-        <EuiText>
-          <p>Top panel</p>
-        </EuiText>
-      </EuiSplitPanel::Inner>
-      <EuiSplitPanel::Inner @grow={{false}} @color='subdued'>
-        <EuiText>
-          <p>
-            Bottom panel has
-            <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
-          </p>
-        </EuiText>
-      </EuiSplitPanel::Inner>
-    </EuiSplitPanel::Outer>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiSplitPanel::Outer @grow={{false}}>
-      <EuiSplitPanel::Inner>
-        <EuiText>
-          <p>
-            Outer panel has
-            <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
-          </p>
-        </EuiText>
-      </EuiSplitPanel::Inner>
-      <EuiSplitPanel::Inner @grow={{false}} @color='subdued'>
-        <EuiText>
-          <p>Bottom panel</p>
-        </EuiText>
-      </EuiSplitPanel::Inner>
-    </EuiSplitPanel::Outer>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiSplitPanel::Outer>
-      <EuiSplitPanel::Inner>
-        <EuiText>
-          <p>Top panel</p>
-        </EuiText>
-      </EuiSplitPanel::Inner>
-      <EuiSplitPanel::Inner @color='subdued'>
-        <EuiText>
-          <p>Middle panel</p>
-        </EuiText>
-      </EuiSplitPanel::Inner>
-      <EuiSplitPanel::Inner @color='danger'>
-        <EuiText>
-          <p>Danger panel</p>
-        </EuiText>
-      </EuiSplitPanel::Inner>
-    </EuiSplitPanel::Outer>
-  </EuiFlexItem>
-</EuiFlexGroup>
-<EuiSpacer />
-<EuiSplitPanel::Outer @direction='row'>
-  <EuiSplitPanel::Inner>
-    <EuiText>
-      <p>Left panel</p>
-      <p>Has more content</p>
-    </EuiText>
-  </EuiSplitPanel::Inner>
-  <EuiSplitPanel::Inner @color='subdued'>
-    <EuiText>
-      <p>Right panel</p>
-    </EuiText>
-  </EuiSplitPanel::Inner>
-</EuiSplitPanel::Outer>
+```gjs component
+import { EuiCode, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiSplitPanelInner, EuiSplitPanelOuter, EuiText } from '@ember-eui/core/components';
+
+<template>
+  <EuiFlexGroup @gutterSize='l'>
+    <EuiFlexItem>
+      <EuiSplitPanelOuter @grow={{true}}>
+        <EuiSplitPanelInner>
+          <EuiText>
+            <p>Top panel</p>
+          </EuiText>
+        </EuiSplitPanelInner>
+        <EuiSplitPanelInner @grow={{false}} @color='subdued'>
+          <EuiText>
+            <p>
+              Bottom panel has
+              <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
+            </p>
+          </EuiText>
+        </EuiSplitPanelInner>
+      </EuiSplitPanelOuter>
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiSplitPanelOuter @grow={{false}}>
+        <EuiSplitPanelInner>
+          <EuiText>
+            <p>
+              Outer panel has
+              <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
+            </p>
+          </EuiText>
+        </EuiSplitPanelInner>
+        <EuiSplitPanelInner @grow={{false}} @color='subdued'>
+          <EuiText>
+            <p>Bottom panel</p>
+          </EuiText>
+        </EuiSplitPanelInner>
+      </EuiSplitPanelOuter>
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <EuiSplitPanelOuter>
+        <EuiSplitPanelInner>
+          <EuiText>
+            <p>Top panel</p>
+          </EuiText>
+        </EuiSplitPanelInner>
+        <EuiSplitPanelInner @color='subdued'>
+          <EuiText>
+            <p>Middle panel</p>
+          </EuiText>
+        </EuiSplitPanelInner>
+        <EuiSplitPanelInner @color='danger'>
+          <EuiText>
+            <p>Danger panel</p>
+          </EuiText>
+        </EuiSplitPanelInner>
+      </EuiSplitPanelOuter>
+    </EuiFlexItem>
+  </EuiFlexGroup>
+  <EuiSpacer />
+  <EuiSplitPanelOuter @direction='row'>
+    <EuiSplitPanelInner>
+      <EuiText>
+        <p>Left panel</p>
+        <p>Has more content</p>
+      </EuiText>
+    </EuiSplitPanelInner>
+    <EuiSplitPanelInner @color='subdued'>
+      <EuiText>
+        <p>Right panel</p>
+      </EuiText>
+    </EuiSplitPanelInner>
+  </EuiSplitPanelOuter>
+</template>
 ```

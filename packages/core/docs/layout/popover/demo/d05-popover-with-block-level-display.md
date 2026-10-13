@@ -10,27 +10,12 @@ order: 5
   </p>
 </EuiText>
 
-```hbs template
-<EuiPopover
-  @isOpen={{this.isPopoverOpen}}
-  @closePopover={{this.closePopover}}
-  @display='block'
->
-  <:button>
-    <EuiButton @fullWidth={{true}} {{on 'click' this.onButtonClick}}>
-      This button is expanded
-    </EuiButton>
-  </:button>
-  <:content>
-    <div>This is a popover</div>
-  </:content>
-</EuiPopover>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButton, EuiPopover } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isPopoverOpen = false;
@@ -44,5 +29,22 @@ export default class PopoverDemo extends Component {
   closePopover() {
     this.isPopoverOpen = false;
   }
+
+  <template>
+    <EuiPopover
+      @isOpen={{this.isPopoverOpen}}
+      @closePopover={{this.closePopover}}
+      @display='block'
+    >
+      <:button>
+        <EuiButton @fullWidth={{true}} {{on 'click' this.onButtonClick}}>
+          This button is expanded
+        </EuiButton>
+      </:button>
+      <:content>
+        <div>This is a popover</div>
+      </:content>
+    </EuiPopover>
+  </template>
 }
 ```

@@ -22,32 +22,13 @@ order: 1
   </ul>
 </EuiText>
 
-```hbs template
-<EuiPopover
-  @isOpen={{this.isPopoverOpen}}
-  @closePopover={{fn this.close 'isPopoverOpen'}}
->
-  <:button>
-    <EuiButtonEmpty
-      @iconType='documentation'
-      @iconSide='right'
-      {{on 'click' (fn this.toggle 'isPopoverOpen')}}
-    >
-      How it works
-    </EuiButtonEmpty>
-  </:button>
-  <:content>
-    <EuiText style='width: 300px;'>
-      <p>Popover content that&rsquo;s wider than the default width</p>
-    </EuiText>
-  </:content>
-</EuiPopover>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButtonEmpty, EuiPopover, EuiText } from '@ember-eui/core/components';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isPopoverOpen = false;
@@ -60,5 +41,27 @@ export default class PopoverDemo extends Component {
   close(name) {
     this[name] = false;
   }
+
+  <template>
+    <EuiPopover
+      @isOpen={{this.isPopoverOpen}}
+      @closePopover={{fn this.close 'isPopoverOpen'}}
+    >
+      <:button>
+        <EuiButtonEmpty
+          @iconType='documentation'
+          @iconSide='right'
+          {{on 'click' (fn this.toggle 'isPopoverOpen')}}
+        >
+          How it works
+        </EuiButtonEmpty>
+      </:button>
+      <:content>
+        <EuiText style='width: 300px;'>
+          <p>Popover content that&rsquo;s wider than the default width</p>
+        </EuiText>
+      </:content>
+    </EuiPopover>
+  </template>
 }
 ```

@@ -10,24 +10,12 @@ order: 12
   </p>
 </EuiText>
 
-```hbs template
-<div {{did-insert this.insertAnchor}}></div>
-
-{{#if this.anchor}}
-  <EuiWrappingPopover
-    @button={{this.anchor}}
-    @isOpen={{this.isPopoverOpen}}
-    @closePopover={{this.closePopover}}
-  >
-    <div>Normal template content populates the popover.</div>
-  </EuiWrappingPopover>
-{{/if}}
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { tracked } from '@glimmer/tracking';
+import { EuiWrappingPopover } from '@ember-eui/core/components';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked anchor = null;
@@ -55,5 +43,19 @@ export default class PopoverDemo extends Component {
   closePopover() {
     this.isPopoverOpen = false;
   }
+
+  <template>
+    <div {{didInsert this.insertAnchor}}></div>
+
+    {{#if this.anchor}}
+      <EuiWrappingPopover
+        @button={{this.anchor}}
+        @isOpen={{this.isPopoverOpen}}
+        @closePopover={{this.closePopover}}
+      >
+        <div>Normal template content populates the popover.</div>
+      </EuiWrappingPopover>
+    {{/if}}
+  </template>
 }
 ```

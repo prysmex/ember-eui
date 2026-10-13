@@ -1,5 +1,5 @@
 ---
-order: 4
+order: 11
 ---
 
 # Auto scroll
@@ -12,38 +12,12 @@ closest one scrolls.
 
 </EuiText>
 
-```hbs template
-<EuiDragDropContext @onDragEnd={{this.onDragEnd}} as |dnd|>
-  <div style="display: flex; gap: 16px; overflow-x: auto; max-width: 520px; padding-bottom: 8px;" {{dnd.autoScroll}}>
-    {{#each this.columns key="id" as |column|}}
-      <div style="flex: 0 0 200px;">
-        <EuiTitle @size="xxs"><h3>{{column.title}}</h3></EuiTitle>
-        <EuiSpacer @size="s" />
-        <dnd.Droppable
-          @droppableId={{column.id}}
-          @spacing="s"
-          @withPanel={{true}}
-          style="height: 220px; overflow-y: auto;"
-          as |list|
-        >
-          {{#each column.items key="id" as |item index|}}
-            <list.Draggable @draggableId={{item.id}} @index={{index}} @spacing="s">
-              <EuiPanel @paddingSize="s">{{item.label}}</EuiPanel>
-            </list.Draggable>
-          {{/each}}
-        </dnd.Droppable>
-      </div>
-    {{/each}}
-  </div>
-</EuiDragDropContext>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
-
+import { EuiDragDropContext, EuiPanel, EuiSpacer, EuiTitle } from '@ember-eui/core/components';
 import { euiDragDropMove, euiDragDropReorder } from '@ember-eui/core/utils/drag-drop';
+import { action } from '@ember/object';
 
 const column = (id, title, count) => ({
   id,
@@ -71,5 +45,31 @@ export default class AutoScrollDemo extends Component {
 
     this.columns = this.columns.map((c) => (lists[c.id] ? { ...c, items: lists[c.id] } : c));
   }
+
+  <template>
+    <EuiDragDropContext @onDragEnd={{this.onDragEnd}} as |dnd|>
+      <div style="display: flex; gap: 16px; overflow-x: auto; max-width: 520px; padding-bottom: 8px;" {{dnd.autoScroll}}>
+        {{#each this.columns key="id" as |column|}}
+          <div style="flex: 0 0 200px;">
+            <EuiTitle @size="xxs"><h3>{{column.title}}</h3></EuiTitle>
+            <EuiSpacer @size="s" />
+            <dnd.Droppable
+              @droppableId={{column.id}}
+              @spacing="s"
+              @withPanel={{true}}
+              style="height: 220px; overflow-y: auto;"
+              as |list|
+            >
+              {{#each column.items key="id" as |item index|}}
+                <list.Draggable @draggableId={{item.id}} @index={{index}} @spacing="s">
+                  <EuiPanel @paddingSize="s">{{item.label}}</EuiPanel>
+                </list.Draggable>
+              {{/each}}
+            </dnd.Droppable>
+          </div>
+        {{/each}}
+      </div>
+    </EuiDragDropContext>
+  </template>
 }
 ```

@@ -13,62 +13,12 @@ order: 8
   </p>
 </EuiText>
 
-```hbs template
-<EuiInputPopover
-  @isOpen={{this.isPopoverOpen}}
-  @closePopover={{this.closePopover}}
->
-  <:input>
-    <EuiFieldText
-      @placeholder='Focus me to toggle an input popover'
-      aria-label='Popover attached to input element'
-      {{on 'focus' this.openPopover}}
-    />
-  </:input>
-  <:content>
-    Popover content
-  </:content>
-</EuiInputPopover>
-
-<EuiSpacer />
-
-<EuiInputPopover
-  @display='inline-block'
-  @isOpen={{this.isResizablePopoverOpen}}
-  @closePopover={{this.closeResizablePopover}}
-  @panelMinWidth={{300}}
-  @anchorPosition={{this.anchorPosition}}
->
-  <:input>
-    <EuiTextArea
-      @placeholder='Focus me, press the down arrow key, then drag the resize handle'
-      @rows={{2}}
-      @resize='horizontal'
-      aria-label='Press the down arrow key to toggle the popover attached to this textarea element.'
-      {{on 'keydown' this.onTextAreaKeyDown}}
-    />
-  </:input>
-  <:content>
-    This popover has a minimum width of 300px, and will adjust in size as the textarea does.
-    <EuiSpacer @size='s' />
-    <EuiFormRow @label='Anchor position' @display='columnCompressed'>
-      <EuiButtonGroup
-        @buttonSize='compressed'
-        @legend='Anchor position'
-        @name='anchorPosition'
-        @idSelected={{this.anchorPosition}}
-        @onChange={{this.setAnchorPosition}}
-        @options={{this.anchorOptions}}
-      />
-    </EuiFormRow>
-  </:content>
-</EuiInputPopover>
-```
-
-```javascript component
+```gjs component
 import Component from '@glimmer/component';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { EuiButtonGroup, EuiFieldText, EuiFormRow, EuiInputPopover, EuiSpacer, EuiTextArea } from '@ember-eui/core/components';
+import { on } from '@ember/modifier';
+import { action } from '@ember/object';
 
 export default class PopoverDemo extends Component {
   @tracked isPopoverOpen = false;
@@ -108,5 +58,57 @@ export default class PopoverDemo extends Component {
   setAnchorPosition(id) {
     this.anchorPosition = id;
   }
+
+  <template>
+    <EuiInputPopover
+      @isOpen={{this.isPopoverOpen}}
+      @closePopover={{this.closePopover}}
+    >
+      <:input>
+        <EuiFieldText
+          @placeholder='Focus me to toggle an input popover'
+          aria-label='Popover attached to input element'
+          {{on 'focus' this.openPopover}}
+        />
+      </:input>
+      <:content>
+        Popover content
+      </:content>
+    </EuiInputPopover>
+
+    <EuiSpacer />
+
+    <EuiInputPopover
+      @display='inline-block'
+      @isOpen={{this.isResizablePopoverOpen}}
+      @closePopover={{this.closeResizablePopover}}
+      @panelMinWidth={{300}}
+      @anchorPosition={{this.anchorPosition}}
+    >
+      <:input>
+        <EuiTextArea
+          @placeholder='Focus me, press the down arrow key, then drag the resize handle'
+          @rows={{2}}
+          @resize='horizontal'
+          aria-label='Press the down arrow key to toggle the popover attached to this textarea element.'
+          {{on 'keydown' this.onTextAreaKeyDown}}
+        />
+      </:input>
+      <:content>
+        This popover has a minimum width of 300px, and will adjust in size as the textarea does.
+        <EuiSpacer @size='s' />
+        <EuiFormRow @label='Anchor position' @display='columnCompressed'>
+          <EuiButtonGroup
+            @buttonSize='compressed'
+            @legend='Anchor position'
+            @name='anchorPosition'
+            @idSelected={{this.anchorPosition}}
+            @onChange={{this.setAnchorPosition}}
+            @options={{this.anchorOptions}}
+          />
+        </EuiFormRow>
+      </:content>
+    </EuiInputPopover>
+  </template>
 }
 ```

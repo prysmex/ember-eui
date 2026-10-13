@@ -235,6 +235,7 @@ import type EuiColorStops from './components/eui-color-stops';
 import type EuiTour from './components/eui-tour';
 import type EuiTourStep from './components/eui-tour-step';
 import type EuiTourStepIndicator from './components/eui-tour-step-indicator';
+import type EuiResizableButton from './components/eui-resizable-container/button';
 import type EuiResizableContainer from './components/eui-resizable-container';
 import type EuiDragDropContext from './components/eui-drag-drop-context';
 import type EuiDroppable from './components/eui-droppable';
@@ -745,6 +746,8 @@ export default interface EmberEuiRegistry {
   'eui-tour-step': typeof EuiTourStep;
   EuiTourStepIndicator: typeof EuiTourStepIndicator;
   'eui-tour-step-indicator': typeof EuiTourStepIndicator;
+  EuiResizableButton: typeof EuiResizableButton;
+  'eui-resizable-button': typeof EuiResizableButton;
   EuiResizableContainer: typeof EuiResizableContainer;
   'eui-resizable-container': typeof EuiResizableContainer;
   EuiDragDropContext: typeof EuiDragDropContext;

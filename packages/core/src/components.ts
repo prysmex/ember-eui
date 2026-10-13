@@ -174,6 +174,7 @@ import EuiRangeTooltip from './components/eui-range-tooltip.gts';
 import EuiRangeTrack from './components/eui-range-track.gts';
 import EuiRangeWrapper from './components/eui-range-wrapper.gts';
 import EuiRefreshInterval from './components/eui-refresh-interval.gts';
+import EuiResizableButton from './components/eui-resizable-container/button.gts';
 import EuiResizableContainer from './components/eui-resizable-container.gts';
 import EuiSaturation from './components/eui-saturation.gts';
 import EuiScreenReaderLive from './components/eui-screen-reader-live.gts';
@@ -433,6 +434,7 @@ export {
   EuiRangeTrack,
   EuiRangeWrapper,
   EuiRefreshInterval,
+  EuiResizableButton,
   EuiResizableContainer,
   EuiSaturation,
   EuiScreenReaderLive,

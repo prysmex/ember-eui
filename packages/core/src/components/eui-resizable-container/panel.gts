@@ -25,7 +25,17 @@ import type EuiResizableContainer from '../eui-resizable-container.gts';
 import type { EuiCss } from '../../utils/eui/styles.ts';
 import type { EuiPanelSignature } from '../eui-panel';
 
-type Mode = PanelModeType | [PanelModeType, { position?: 'top' | 'middle' | 'bottom' | 'left' | 'right' }];
+/** Upstream `ToggleOptions`: where the toggle sits and attributes for it. */
+export interface EuiResizablePanelToggleOptions {
+  /** Where the toggle button sits along the edge. Defaults to `'middle'`. */
+  position?: 'top' | 'middle' | 'bottom' | 'left' | 'right';
+  /** Extra class of the toggle button. */
+  className?: string;
+  /** `data-test-subj` of the toggle button. */
+  'data-test-subj'?: string;
+}
+
+type Mode = PanelModeType | [PanelModeType, EuiResizablePanelToggleOptions];
 
 /**
  * A panel of an `EuiResizableContainer` (yielded as `Panel`), sized in
@@ -46,8 +56,9 @@ export interface EuiResizablePanelSignature {
     scrollable?: boolean;
     /**
      * `'collapsible'` (with a toggle button, next to a `'main'` panel),
-     * `'main'`, or `['collapsible', { position }]` to place the toggle
-     * (`'top'`, `'middle'`, `'bottom'`).
+     * `'main'`, or `['collapsible', { position, className, 'data-test-subj' }]`
+     * to place the toggle (`'top'`, `'middle'`, `'bottom'`) and to give it
+     * a class and a `data-test-subj`.
      */
     mode?: Mode;
     /** Padding inside the panel: `'none'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`. */
@@ -100,7 +111,19 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
   get togglePosition(): 'top' | 'middle' | 'bottom' | 'left' | 'right' {
     const mode = this.args.mode;
 
-    return (Array.isArray(mode) ? mode[1].position : undefined) ?? 'middle';
+    return (Array.isArray(mode) ? mode[1]?.position : undefined) ?? 'middle';
+  }
+
+  get toggleClassName(): string | undefined {
+    const mode = this.args.mode;
+
+    return Array.isArray(mode) ? mode[1]?.className : undefined;
+  }
+
+  get toggleTestSubj(): string | undefined {
+    const mode = this.args.mode;
+
+    return Array.isArray(mode) ? mode[1]?.['data-test-subj'] : undefined;
   }
 
   get isCollapsible(): boolean {
@@ -274,6 +297,8 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
           {{#if (isBefore toggle)}}
             <EuiResizableCollapseButton
               aria-label={{this.toggleLabel}}
+              class={{this.toggleClassName}}
+              data-test-subj={{this.toggleTestSubj}}
               @externalPosition="before"
               @direction={{if this.container.isHorizontal "horizontal" "vertical"}}
               @internalPosition={{this.togglePosition}}
@@ -301,6 +326,8 @@ export default class EuiResizablePanel extends Component<EuiResizablePanelSignat
           {{#if (isAfter toggle)}}
             <EuiResizableCollapseButton
               aria-label={{this.toggleLabel}}
+              class={{this.toggleClassName}}
+              data-test-subj={{this.toggleTestSubj}}
               @externalPosition="after"
               @direction={{if this.container.isHorizontal "horizontal" "vertical"}}
               @internalPosition={{this.togglePosition}}

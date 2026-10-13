@@ -26,6 +26,9 @@ export interface EuiListGroupListItem {
   external?: EuiListGroupItemSignature['Args']['external'];
   onClick?: EuiListGroupItemSignature['Args']['onClick'];
   iconType?: EuiListGroupItemSignature['Args']['iconType'];
+  iconProps?: EuiListGroupItemSignature['Args']['iconProps'];
+  icon?: EuiListGroupItemSignature['Args']['icon'];
+  hasAriaDisabled?: EuiListGroupItemSignature['Args']['hasAriaDisabled'];
   isActive?: EuiListGroupItemSignature['Args']['isActive'];
   isDisabled?: EuiListGroupItemSignature['Args']['isDisabled'];
   wrapText?: EuiListGroupItemSignature['Args']['wrapText'];
@@ -54,6 +57,8 @@ export interface EuiListGroupSignature {
     listItems?: EuiListGroupListItem[];
     /** Shows a tooltip on all items (an item's own `showToolTip` wins). */
     showToolTips?: boolean;
+    /** Id of the element labelling the list (its `aria-labelledby`). */
+    ariaLabelledby?: string;
     /** Adds a rounded border around the list. */
     bordered?: boolean;
     /**
@@ -126,7 +131,11 @@ export default class EuiListGroup
   }
 
   <template>
-    <ul class={{this.classes}} ...attributes>
+    <ul
+      class={{this.classes}}
+      aria-labelledby={{@ariaLabelledby}}
+      ...attributes
+    >
       {{#if @listItems.length}}
         {{#each @listItems as |item|}}
           <EuiListGroupItem
@@ -137,6 +146,9 @@ export default class EuiListGroup
             @external={{item.external}}
             @onClick={{item.onClick}}
             @iconType={{item.iconType}}
+            @iconProps={{item.iconProps}}
+            @icon={{item.icon}}
+            @hasAriaDisabled={{item.hasAriaDisabled}}
             @isActive={{item.isActive}}
             @isDisabled={{item.isDisabled}}
             @wrapText={{this.itemWrapText item}}

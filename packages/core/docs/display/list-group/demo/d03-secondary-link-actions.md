@@ -8,6 +8,8 @@ order: 3
 
 The `@extraAction` argument adds a secondary icon button to any list item. It accepts several properties of its own, including `color`, `onClick`, `iconType`, and `alwaysShow`, and can be used for actions such as pinning, adding to favorites, or deleting an item.
 
+`@iconProps` passes arguments to the item's **EuiIcon** (the third item uses `{ color: 'default' }` instead of inheriting the item's color); `@icon` takes a custom icon component instead of `@iconType`.
+
 </EuiText>
 
 ```gjs component
@@ -22,7 +24,7 @@ export default class ExtraActionDemo extends Component {
   rows = [
     { id: 'link1', iconType: 'bullseye', isActive: true },
     { id: 'link2', iconType: 'visualizeApp' },
-    { id: 'link3', iconType: 'lensApp' },
+    { id: 'link3', iconType: 'lensApp', iconProps: { color: 'default' } },
     { id: 'link4', iconType: 'broom', actionDisabled: true },
     { id: 'link5', iconType: 'brush', isDisabled: true, plain: true },
   ];
@@ -32,6 +34,7 @@ export default class ExtraActionDemo extends Component {
       const isFavorite = this.favorites.includes(row.id);
       return {
         iconType: row.iconType,
+        iconProps: row.iconProps,
         isActive: row.isActive,
         isDisabled: row.isDisabled,
         extraAction: {
@@ -62,6 +65,7 @@ export default class ExtraActionDemo extends Component {
       {{#each this.items as |item|}}
         <EuiListGroupItem
           @iconType={{item.iconType}}
+          @iconProps={{item.iconProps}}
           @label="EUI button link"
           @onClick={{this.noop}}
           @isActive={{item.isActive}}

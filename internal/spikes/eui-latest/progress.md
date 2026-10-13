@@ -60,9 +60,17 @@ items; catalog test ~80s idle, 300s timeout). The site's Vite 8
 `optimizeDeps.esbuildOptions` warning (from @docfy/ember-vite 0.14.2) is fixed in
 `site/vite.config.mjs`. No worktrees or `eui-wave/*` branches remain.
 
-Follow-ups: `@css` missing on EuiButtonGroup, EuiDroppable/EuiDraggable,
-EuiFilterGroup, EuiTable; EuiTablePagination aria-label; EuiTableHeaderCell
-tooltipProps; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
+Update (2026-10-13): merged css-gaps (`3268787c`: `@css` on EuiButtonGroup,
+EuiDroppable/EuiDraggable, EuiFilterGroup, EuiTable; EuiTablePagination aria
+labels; EuiTableHeaderCell `@tooltipProps`) and data-grid-api (header drag
+reorder, custom body/toolbar, `@registerApi` imperative API, scrollAnchorRow,
+tabular copy, remaining props, docs for the expand button and popover editing;
+see new-data-grid-handoff.md). Main: core 1267/1267, parity 349/349, site Node
+8/8, acceptance 17/17 (nav still 113). Dev server (`pnpm start`) could not be
+verified in the sandbox (first request hangs with or without the optimizeDeps
+shim); needs a check on the host.
+
+Follow-ups: EuiTableHeaderCell `@append`; EuiButtonEmpty `hasAriaDisabled`; the skeleton's private
 screen-reader-live copy could reuse EuiScreenReaderLive; button docs page loads
 slowly (~20s under load); open decision on focusing the form error callout;
 major changeset for 16.0.0 deprecations.

@@ -9,11 +9,43 @@ order: 1
 
 <EuiText>
 
-`EuiDataGrid` displays tabular data in a virtualized, keyboard-navigable
-grid. Describe the columns with `@columns`, give the number of rows with
+**EuiDataGrid** is for displaying large amounts of tabular data. It is a
+better choice over [EUI tables](/docs/core/docs/tabular/basic-table) when
+there are many columns, the data in those columns is fairly uniform, and
+when schemas and sorting are important for comparison. Although it is
+similar to traditional spreadsheet software, EuiDataGrid's current strengths
+are in rendering rather than creating content.
+
+## Core concepts
+
+- The grid allows you to optionally define an
+  [in memory level](/docs/core/docs/tabular/data-grid/in-memory) to have the
+  grid automatically handle updating your columns. Depending upon the level
+  chosen, you may need to manage the content order separately from the grid.
+- [Schemas](/docs/core/docs/tabular/data-grid/schema-and-columns) allow you
+  to tailor the render and sort methods for each column. The component ships
+  with a few automatic schema detection and types, but you can also pass in
+  custom ones.
+- Unlike tables, the data grid **forces truncation**. To display more
+  content you can customize
+  [popovers](/docs/core/docs/tabular/data-grid/cells-and-popovers) to display
+  more content and actions into popovers.
+- [Grid styling](/docs/core/docs/tabular/data-grid/style-and-display) can be
+  controlled by the engineer, but augmented by user preference depending upon
+  the features you enable.
+- [Control columns](/docs/core/docs/tabular/data-grid/schema-and-columns)
+  allow you to add repeatable actions and controls like checkboxes or
+  buttons to your grid.
+- The [toolbar](/docs/core/docs/tabular/data-grid/toolbar) offers the user
+  ways to manipulate the display and order of the data.
+
+## Rendering cells in Ember
+
+Describe the columns with `@columns`, give the number of rows with
 `@rowCount` and render each cell, either with the `<:cell>` block or with a
-`@renderCellValue` component. The grid only asks for the cells that are on
-screen, so the data can live anywhere (an array, a store, a server).
+`@renderCellValue` component (upstream's `renderCellValue`). The grid only
+asks for the cells that are on screen, so the data can live anywhere (an
+array, a store, a server).
 
 ```hbs
 <EuiDataGrid
@@ -31,12 +63,24 @@ Each cell receives `rowIndex` (the row in your data, even when the grid
 is sorted or paginated), `colIndex`, `columnId`, `schema`, `isDetails`
 (`true` inside the expansion popover), `isExpanded`, `isExpandable`,
 `cellContext` and `setCellProps`, which lets a cell set its own `className`,
-`style`, `isExpandable` or attributes.
+`style`, `isExpandable` or attributes. Upstream's other render props are
+components or named blocks too: control columns use `<:controlHeaderCell>`,
+`<:controlCell>` and `<:controlFooterCell>` (or `headerCellRender`,
+`rowCellRender` and `footerCellRender` components), and upstream's `ref` is
+the `@registerApi` callback (see
+[ref methods](/docs/core/docs/tabular/data-grid/ref-methods)).
 
 The grid follows upstream EUI's accessibility model: a single cell is
 tabbable, arrows/Home/End/Page Up/Page Down/Ctrl+Home/Ctrl+End move between
 cells, Enter or F2 opens a cell's details and Escape closes them. Name the
 grid with `aria-label` or `aria-labelledby`.
+
+## Top level arguments
+
+The API reference below lists every top level **EuiDataGrid** argument.
+The other data grid pages document the lower level configurations
+(columns, cells and popovers, toolbar, styles, row heights, sorting,
+pagination and virtualization).
 
 </EuiText>
 

@@ -213,6 +213,18 @@ means the previous value was not recorded.
 | `EuiTextColor` | `primary` | Upstream color | Kept as an Ember extension mapped to `textPrimary`; custom colors use a class, never your `style` |
 | `EuiHealth` | Default `@textSize` | `m` | `s` |
 
+#### Color palettes
+
+| Component | Change | Before | Now |
+| --- | --- | --- | --- |
+| `euiPaletteColorBlind` | Colors | Amsterdam set (`#54B399`, `#6092C0`, …) | Borealis vis colors (`#16C5C0`, `#A6EDEA`, `#61A2FF`, …); `useEuiPaletteColorBlind(context)` follows high contrast |
+| `euiPaletteColorBlindBehindText` | Colors | Base palette brightened by 0.5 | Same as `euiPaletteColorBlind` (upstream) |
+| `euiPaletteForStatus`, `euiPaletteForTemperature`, `euiPaletteCool`, `euiPaletteWarm`, `euiPaletteGray` | Colors | Amsterdam gradients | Gradients between the Borealis vis colors (success, warning, danger, cool, warm, grey); 1 step returns a vis color |
+| `euiPaletteComplementary` | New name and colors | `euiPaletteComplimentary`: blue to orange | Borealis complementary vis colors through the base color; `euiPaletteComplimentary` is a deprecated alias (until 16.0.0) |
+| `euiPaletteNegative`, `euiPalettePositive`, `euiPaletteForLightBackground`, `euiPaletteForDarkBackground` | Removed upstream | Available | Deprecated until 16.0.0 with unchanged values; use `euiPaletteRed`, `euiPaletteGreen`, `euiPaletteColorBlind` |
+| `euiPalette*` | `@colors` option and theme-aware functions | Not available | `euiPaletteX(steps, { colors })`; `useEuiPaletteX(context, …)` with `getEuiThemeContext(this).upstream` |
+| `EuiColorPicker` | Default `@swatches` | Amsterdam color-blind palette | Theme's vis colors (`useEuiPaletteColorBlind`) |
+
 #### Layout
 
 | Component | Change | Before | Now |

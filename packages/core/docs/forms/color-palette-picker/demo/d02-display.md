@@ -36,7 +36,7 @@ import {
 } from '@ember-eui/core/components';
 import {
   euiPaletteColorBlind,
-  euiPaletteComplimentary,
+  euiPaletteComplementary,
   euiPaletteCool,
   euiPaletteForStatus,
   euiPaletteForTemperature,
@@ -54,7 +54,7 @@ const paletteWithStops = [
 const paletteData = {
   euiPaletteForStatus,
   euiPaletteForTemperature,
-  euiPaletteComplimentary,
+  euiPaletteComplementary,
   euiPaletteCool,
   euiPaletteWarm,
   euiPaletteGray,

@@ -15,10 +15,10 @@ import {
   HSV_FALLBACK,
   parseColor,
   RGB_FALLBACK,
-  RGB_JOIN,
-  VISUALIZATION_COLORS
+  RGB_JOIN
 } from '../-private/color.ts';
 import { randomId } from '../-private/random-id.ts';
+import { useEuiPaletteColorBlind } from '../utils/color/eui_palettes.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { boxReset, listReset } from '../utils/eui/color-picker.ts';
 import { euiColorPickerStyles } from '../utils/eui/styles.generated.ts';
@@ -213,7 +213,10 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
   }
 
   get swatches(): string[] {
-    return this.args.swatches ?? VISUALIZATION_COLORS;
+    return (
+      this.args.swatches ??
+      useEuiPaletteColorBlind(getEuiThemeContext(this).upstream)
+    );
   }
 
   get canClear(): boolean {

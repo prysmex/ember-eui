@@ -12,7 +12,6 @@ This is the list of those gaps. Effort: S/M/L.
 | EuiTourStep | no `useEuiTour` hook (`EuiTour` yields the same state and actions; deliberately not added) |
 | EuiMarkdownEditor | `processingConfig.linkProps`; `markdownFormatProps`; upstream's `remark-parse-no-trim` and intraword-underscore plugin (see gaps-text-handoff.md) |
 | EuiI18n | no `EuiContext` (deliberately not added, see the i18n Context example); `@i18n` has no `mappingFunc` |
-| Color palettes | `euiPaletteColorBlind`, `ForStatus`, `ForTemperature`, `Cool`, `Warm`, `Gray`, `Negative`, `Positive` and `BehindText` return EUI's classic colors, not the Borealis vis colors, and take no `colors` option (only Red/Green/SkyBlue/Yellow/Orange do); `euiPaletteComplimentary` is upstream's `euiPaletteComplementary` (different values: vis colors); no `EUI_VIS_COLOR_STORE`, no `useEuiPalette*` hooks |
 | Utilities | no `useEuiContainerQuery`, no `euiXScroll`/horizontal overflow helper, no standalone `PrettyDuration`/`usePrettyDuration` (see super-date-picker-handoff.md), no EuiErrorBoundary (Glimmer has no equivalent), no global `eui-*` utility classes or `componentDefaults` |
 | EuiFocusTrap | react-focus-on's `as`, `lockProps`, `inert`, `whiteList`, `focusLock`, `allowPinchZoom`, `preventScrollOnFocus` and the `data-focus-guard` sentinels; `EuiProvider componentDefaults` |
 

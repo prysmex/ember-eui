@@ -39,6 +39,7 @@ import {
 } from './styles.generated.ts';
 
 import type { SerializedStyles } from '@emotion/serialize';
+import { useEuiPaletteColorBlind } from '../color/eui_palettes.ts';
 import type { EuiBorealisContext } from './theme.ts';
 
 // The generated helpers read optional parameters from `arguments`, so their
@@ -119,20 +120,11 @@ export const euiSelectableListGroupLabelStyles = (
 
 const sitewideRoot = css('display:block;label:euiSelectableTemplateSitewide;');
 
-/** Upstream `euiPaletteColorBlind()` (one rotation) from the given theme. */
-function visPalette(euiThemeContext: EuiBorealisContext): string[] {
-  const vis = euiThemeContext.euiTheme.colors.vis as unknown as Record<
-    string,
-    string
-  >;
-  return Array.from({ length: 10 }, (_, i) => vis[`euiColorVis${i}`]!);
-}
-
 export const euiSelectableTemplateSitewideStyles = (
   euiThemeContext: EuiBorealisContext
 ) => {
   const { euiTheme } = euiThemeContext;
-  const visColors = visPalette(euiThemeContext);
+  const visColors = useEuiPaletteColorBlind(euiThemeContext);
   const highContrast = (color: string) =>
     makeHighContrastColor(color)(euiTheme);
   return {

@@ -39,6 +39,7 @@ import EuiDataGridPagination, {
   shouldRenderPagination
 } from './eui-data-grid/pagination.gts';
 import EuiDataGridToolbar from './eui-data-grid/toolbar.gts';
+import EuiDataGridRowModel from './eui-data-grid/row-model.ts';
 
 import type Owner from '@ember/owner';
 import type EuiI18n from '../services/eui-i18n.ts';
@@ -51,12 +52,14 @@ import type {
   EuiDataGridControlColumn,
   EuiDataGridCustomToolbarProps,
   EuiDataGridFocusedCell,
+  EuiDataGridGrouping,
   EuiDataGridInMemory,
   EuiDataGridInMemoryValues,
   EuiDataGridCellLocationProps,
   EuiDataGridPaginationProps,
   EuiDataGridRefProps,
   EuiDataGridRowHeightsOptions,
+  EuiDataGridRowTree,
   EuiDataGridSchema,
   EuiDataGridSchemaDetector,
   EuiDataGridSorting,
@@ -65,6 +68,7 @@ import type {
   EuiDataGridVirtualizationOptions
 } from '../utils/data-grid/types.ts';
 import type { ComponentLike } from '@glint/template';
+import type { RowTreeVisibleRow } from '../utils/data-grid/row-tree.ts';
 import type { EuiDataGridCustomBodyProps } from './eui-data-grid/custom-body.gts';
 import type { EuiDataGridDefaultCellPopoverSignature } from './eui-data-grid/default-cell-popover.gts';
 
@@ -187,8 +191,21 @@ export interface EuiDataGridSignature {
      * grid keeps its own state, starting with every column visible.
      */
     columnVisibility?: EuiDataGridColumnVisibility;
-    /** Number of rows in the data. */
-    rowCount: number;
+    /** Number of rows in the data (not needed with `@rowTree` or `@grouping.rows`). */
+    rowCount?: number;
+    /**
+     * Ember EUI extension: nested rows. The rows array (nested through each
+     * row's `children`, or flat with `parentId`), or options
+     * `{ rows, getChildren, getParentId, getRowId, expandedRowIds,
+     * defaultExpandedRowIds, onExpandedChange, toggleColumnId }`.
+     */
+    rowTree?: EuiDataGridRowTree;
+    /**
+     * Ember EUI extension: groups rows by column values
+     * (`{ groupBy, getValue, rows, expandedGroupIds, defaultExpandedGroupIds,
+     * onExpandedChange, renderGroupCell, toggleColumnId }`).
+     */
+    grouping?: EuiDataGridGrouping;
     /**
      * Component rendering a cell's value; receives `@rowIndex`, `@colIndex`,
      * `@columnId`, `@isDetails`, `@isExpanded`, `@isExpandable`,
@@ -465,15 +482,35 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     return this.pagination!;
   }
 
+  /**
+   * `@rowTree`/`@grouping` state (Ember EUI extension); null without them,
+   * so the grid works exactly as upstream.
+   */
+  readonly rowTreeModel = new EuiDataGridRowModel(this);
+
+  get rowModel(): EuiDataGridRowModel | null {
+    return this.rowTreeModel.isActive ? this.rowTreeModel : null;
+  }
+
+  /** Number of rows the grid shows: `@rowCount`, or the visible tree rows. */
+  get rowCount(): number {
+    return this.rowModel?.visibleRows.length ?? this.args.rowCount ?? 0;
+  }
+
+  /** Number of data rows (all tree levels). */
+  get dataRowCount(): number {
+    return this.rowModel?.dataRowCount ?? this.args.rowCount ?? 0;
+  }
+
   get showPagination(): boolean {
     const pagination = this.pagination;
-    return !!pagination && shouldRenderPagination(this.args.rowCount, pagination);
+    return !!pagination && shouldRenderPagination(this.rowCount, pagination);
   }
 
   @cached
   get visibleRows(): { startRow: number; endRow: number; visibleRowCount: number } {
     const pagination = this.pagination;
-    const rowCount = this.args.rowCount;
+    const rowCount = this.rowCount;
     const startRow =
       pagination && pagination.pageSize > 0
         ? pagination.pageIndex * pagination.pageSize
@@ -527,9 +564,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     const inMemory = this.args.inMemory;
     if (inMemory?.level === 'enhancements') {
       // only the first page size is guaranteed to be available in memory
-      return this.pagination?.pageSize || this.args.rowCount;
+      return this.pagination?.pageSize || this.dataRowCount;
     }
-    return this.args.rowCount;
+    return this.dataRowCount;
   }
 
   @cached
@@ -564,10 +601,23 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     const unpaginatedRowIndex = isPaginated
       ? visibleRowIndex + startRow
       : visibleRowIndex;
+    if (this.rowModel) {
+      // tree rows: data rows, or negative indexes for group rows
+      return this.rowModel.visibleRows[unpaginatedRowIndex]?.rowIndex ?? unpaginatedRowIndex;
+    }
     const sortedRowMap = this.sortedRowMap;
     return unpaginatedRowIndex in sortedRowMap
       ? sortedRowMap[unpaginatedRowIndex]!
       : unpaginatedRowIndex;
+  }
+
+  /** The tree row (`@rowTree`/`@grouping`) at a visible row index, if any. */
+  treeRowAt(visibleRowIndex: number): RowTreeVisibleRow | undefined {
+    const rowModel = this.rowModel;
+    if (!rowModel) return undefined;
+    const startRow = this.visibleRows.startRow;
+    const isPaginated = visibleRowIndex - startRow < 0;
+    return rowModel.visibleRows[isPaginated ? visibleRowIndex + startRow : visibleRowIndex];
   }
 
   /* ---------------------------------------------------------------------- */
@@ -887,7 +937,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
 
   get ariaPageCount(): number {
     return this.pagination?.pageSize
-      ? Math.ceil(this.args.rowCount / this.pagination.pageSize)
+      ? Math.ceil(this.rowCount / this.pagination.pageSize)
       : 1;
   }
 
@@ -988,7 +1038,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
       visibleColCount: this.visibleColCount,
       visibleRowCount: this.visibleRows.visibleRowCount,
       visibleRowStartIndex: this.body?.visibleRowStartIndex ?? 0,
-      rowCount: this.args.rowCount,
+      rowCount: this.rowCount,
       pagination: this.pagination,
       hasFooter: this.hasFooter,
       focusedCell: this.focusedCell,
@@ -1025,7 +1075,7 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
    * also stops the API from continuing.
    */
   private checkCellExists({ rowIndex, colIndex }: EuiDataGridCellLocationProps): void {
-    const rowCount = this.args.rowCount;
+    const rowCount = this.dataRowCount;
     const colCount = this.visibleColCount;
     if (rowIndex >= rowCount || rowIndex < 0) {
       throw new Error(
@@ -1045,7 +1095,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
    */
   private findVisibleRowIndex(rowIndex: number): number {
     const sortedRowMap = this.sortedRowMap;
-    const visibleRowIndex = sortedRowMap.length
+    const visibleRowIndex = this.rowModel
+      ? this.findTreeRowIndex(this.rowModel, rowIndex)
+      : sortedRowMap.length
       ? sortedRowMap.findIndex((mappedIndex) => mappedIndex === rowIndex)
       : rowIndex;
     const pagination = this.pagination;
@@ -1053,6 +1105,17 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
       const pageIndex = Math.floor(visibleRowIndex / pagination.pageSize);
       if (pageIndex !== pagination.pageIndex) pagination.onChangePage(pageIndex);
       return visibleRowIndex % pagination.pageSize;
+    }
+    return visibleRowIndex;
+  }
+
+  /** Visible index of a tree data row, expanding its collapsed ancestors. */
+  private findTreeRowIndex(rowModel: EuiDataGridRowModel, rowIndex: number): number {
+    rowModel.reveal(rowIndex);
+    const visibleRowIndex = rowModel.indexOfRowIndex(rowIndex);
+    if (visibleRowIndex === -1) {
+      // controlled expansion the consumer has not applied yet
+      throw new Error(`Row ${rowIndex} is not visible: its parent rows are collapsed.`);
     }
     return visibleRowIndex;
   }
@@ -1074,8 +1137,19 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     },
     closeCellPopover: () => this.closeCellPopover(),
     scrollTo: (params) => this.body?.scrollTo?.(params),
-    scrollToItem: (params) => this.body?.scrollToItem?.(params)
+    scrollToItem: (params) => this.body?.scrollToItem?.(params),
+    expandRow: (id: string) => this.rowModel?.setRowExpanded(id, true),
+    collapseRow: (id: string) => this.rowModel?.setRowExpanded(id, false),
+    expandAll: () => this.rowModel?.expandAll(),
+    collapseAll: () => this.rowModel?.collapseAll()
   };
+
+  /** Toggles a tree row or group (closes a popover: rows below it move). */
+  @action
+  toggleRow(row: { id: string; kind: 'row' | 'group'; isExpanded: boolean }): void {
+    this.closeCellPopover();
+    this.rowModel?.toggle(row);
+  }
 
   registerApi = modifier(
     (_element: HTMLElement, [registerApi]: [EuiDataGridSignature['Args']['registerApi']]) => {
@@ -1124,8 +1198,8 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
         <div
           id={{this.gridId}}
           class={{this.contentClass}}
-          role="grid"
-          aria-rowcount={{@rowCount}}
+          role={{if this.rowModel "treegrid" "grid"}}
+          aria-rowcount={{this.rowCount}}
           aria-colcount={{this.visibleColCount}}
           aria-label={{this.gridAriaLabel}}
           aria-labelledby={{this.gridAriaLabelledBy}}

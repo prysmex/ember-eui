@@ -34,10 +34,26 @@ export default class EuiDataGridRow extends Component<EuiDataGridRowSignature> {
     return [
       'euiDataGridRow',
       this.args.visibleRowIndex % 2 !== 0 && 'euiDataGridRow--striped',
+      this.treeRow?.kind === 'group' && 'euiDataGridRow--group',
       extra
     ]
       .filter(Boolean)
       .join(' ');
+  }
+
+  /** Tree row (`@rowTree`/`@grouping`, Ember EUI extension) for treegrid ARIA. */
+  get treeRow() {
+    return this.args.grid.treeRowAt(this.args.visibleRowIndex);
+  }
+
+  get ariaLevel(): number | undefined {
+    const row = this.treeRow;
+    return row ? row.depth + 1 : undefined;
+  }
+
+  get ariaExpanded(): string | undefined {
+    const row = this.treeRow;
+    return row?.hasChildren ? String(row.isExpanded) : undefined;
   }
 
   get style() {
@@ -55,6 +71,10 @@ export default class EuiDataGridRow extends Component<EuiDataGridRowSignature> {
       style={{this.style}}
       data-grid-row-index={{this.rowIndex}}
       data-grid-visible-row-index={{@visibleRowIndex}}
+      aria-level={{this.ariaLevel}}
+      aria-expanded={{this.ariaExpanded}}
+      aria-setsize={{this.treeRow.setSize}}
+      aria-posinset={{this.treeRow.posInSet}}
     >
       {{#each @body.renderedColumns key="@identity" as |colIndex|}}
         <EuiDataGridCell

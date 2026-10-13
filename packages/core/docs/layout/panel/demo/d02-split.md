@@ -1,8 +1,8 @@
 ---
-order: 4
+order: 2
 ---
 
-# Split panels
+# Split
 
 <EuiText>
 
@@ -31,7 +31,7 @@ screen sizes to stack on as `@responsive` (default `["xs", "s"]`) or
         <EuiText>
           <p>
             Bottom panel has
-            <EuiCode>{'grow={false}'}</EuiCode>
+            <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
           </p>
         </EuiText>
       </EuiSplitPanel::Inner>
@@ -43,7 +43,7 @@ screen sizes to stack on as `@responsive` (default `["xs", "s"]`) or
         <EuiText>
           <p>
             Outer panel has
-            <EuiCode>{'grow={false}'}</EuiCode>
+            <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>
           </p>
         </EuiText>
       </EuiSplitPanel::Inner>

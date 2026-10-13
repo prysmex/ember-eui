@@ -5,24 +5,21 @@ order: 12
 # Popover using an HTML element as the anchor
 
 <EuiText>
-
-`EuiWrappingPopover` anchors a popover to an element that already exists
-in the page (passed as `@button`), e.g. one rendered outside Ember.
-
+  <p>
+    <strong>EuiWrappingPopover</strong> is an extra popover component that allows any existing DOM element to be passed as the <EuiCode>@button</EuiCode> argument. Here the button is plain HTML inserted outside of Ember's rendering, and the popover wraps it.
+  </p>
 </EuiText>
 
 ```hbs template
-{{#each this.buttons key='id' as |ele|}}
-  {{ele.button}}
-{{/each}}
+<div {{did-insert this.insertAnchor}}></div>
 
-{{#if this.isOpen}}
+{{#if this.anchor}}
   <EuiWrappingPopover
-    @button={{this.button}}
-    @isOpen={{this.isOpen}}
+    @button={{this.anchor}}
+    @isOpen={{this.isPopoverOpen}}
     @closePopover={{this.closePopover}}
   >
-    <div>Any content populates the popover.</div>
+    <div>Normal template content populates the popover.</div>
   </EuiWrappingPopover>
 {{/if}}
 ```
@@ -31,45 +28,32 @@ in the page (passed as `@button`), e.g. one rendered outside Ember.
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { next } from '@ember/runloop';
 
-export default class PopoverDemo1 extends Component {
-  @tracked isOpen = false;
-  @tracked button = null;
-  @tracked counter = 1;
+export default class PopoverDemo extends Component {
+  @tracked anchor = null;
+  @tracked isPopoverOpen = false;
 
-  @tracked buttons = [];
+  @action
+  insertAnchor(container) {
+    // a plain HTML element, created outside of Ember's rendering
+    container.innerHTML = `
+      <button id="popoverAnchorButton" type="button">
+        This is an HTML button
+      </button>
+    `;
+    const anchor = container.querySelector('#popoverAnchorButton');
+    anchor.addEventListener('click', this.onButtonClick);
+    this.anchor = anchor;
+  }
 
-  closePopover = () => {
-    this.isOpen = false;
-    this.createButton();
-  };
+  @action
+  onButtonClick() {
+    this.isPopoverOpen = !this.isPopoverOpen;
+  }
 
-  createButton = () => {
-    const button = document.createElement('div');
-
-    button.innerHTML = `This is a dynamically inserted html node with <b>ID = ${this.counter}</b>, if you click, you will get a popover on it.`;
-
-    button.addEventListener('click', () => {
-      this.isOpen = true;
-      this.button = button;
-    });
-
-    const ele = {
-      button,
-      id: `${this.counter}`
-    };
-
-    this.buttons = [...this.buttons, ele];
-    this.counter++;
-  };
-
-  constructor() {
-    super(...arguments);
-
-    next(() => {
-      this.createButton();
-    });
+  @action
+  closePopover() {
+    this.isPopoverOpen = false;
   }
 }
 ```

@@ -1,5 +1,5 @@
 ---
-order: 5
+order: 13
 ---
 
 # Panel class name
@@ -14,7 +14,7 @@ order: 5
     @ownFocus={{true}}
     @isOpen={{this.popover}}
     @anchorPosition='downLeft'
-    @panelClasses='guideDemo__textLines'
+    @panelClassName='guideDemo__textLines'
     @closePopover={{set this 'popover' false}}
   >
     <:button>

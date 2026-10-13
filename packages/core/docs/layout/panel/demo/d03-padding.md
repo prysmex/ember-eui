@@ -1,12 +1,12 @@
 ---
-order: 1
+order: 3
 ---
 
 # Padding
 
 <EuiText>
   <p>
-The most basic use is to simply add padding around your content.
+The most basic use is to simply add padding around your content. The preferred padding options are <EuiCode>none</EuiCode>, <EuiCode>s</EuiCode>, <EuiCode>m</EuiCode> (default) and <EuiCode>l</EuiCode>.
   </p>
 </EuiText>
 

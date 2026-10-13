@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 4
 ---
 
-# Characters
+# Characters (Ember EUI extension)
 
 <EuiText>
 

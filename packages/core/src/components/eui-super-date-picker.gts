@@ -14,19 +14,40 @@ import EuiDatePopoverButton from './eui-super-date-picker/date-popover/eui-date-
 import EuiDatePickerRange from './eui-super-date-picker/eui-date-picker-range.gts';
 import EuiQuickSelectPopover from './eui-super-date-picker/eui-quick-select-popover.gts';
 import EuiSuperUpdateButton from './eui-super-date-picker/eui-super-update-button.gts';
+import EuiTimeWindowButtons from './eui-super-date-picker/eui-time-window-buttons.gts';
+import EuiAutoRefresh from './eui-auto-refresh.gts';
 import { isRangeInvalid } from './eui-super-date-picker/utils/index.ts';
 import { useI18nTimeOptions } from './eui-super-date-picker/utils/time-options.ts';
 
 import type EuiI18n from '../services/eui-i18n';
+import type { EuiTimeZoneDisplayProps } from './eui-super-date-picker/date-popover/eui-time-zone-display.gts';
+import type { CustomQuickSelectRenderOptions } from './eui-super-date-picker/eui-quick-select-popover.gts';
+import type { EuiSuperUpdateButtonProps } from './eui-super-date-picker/eui-super-update-button.gts';
+import type { EuiTimeWindowButtonsConfig } from './eui-super-date-picker/eui-time-window-buttons.gts';
 import type {
   ApplyRefreshInterval,
+  ApplyTime,
   DurationRange,
   Milliseconds,
+  QuickSelectPanel,
+  RefreshUnitsOptions,
   ShortDate
 } from './eui-super-date-picker/types/global';
-import type { LocaleSpecifier } from 'moment';
+import type { LocaleSpecifier, Moment } from 'moment';
 
-export type { ApplyRefreshInterval, DurationRange, Milliseconds, ShortDate };
+export type {
+  ApplyRefreshInterval,
+  ApplyTime,
+  CustomQuickSelectRenderOptions,
+  DurationRange,
+  EuiSuperUpdateButtonProps,
+  EuiTimeWindowButtonsConfig,
+  EuiTimeZoneDisplayProps,
+  Milliseconds,
+  QuickSelectPanel,
+  RefreshUnitsOptions,
+  ShortDate
+};
 
 /**
  * EuiSuperDatePicker picks a time range (absolute dates, relative like
@@ -40,7 +61,13 @@ export interface EuiSuperDatePickerArgs {
    * EUI's list (Today, This week, Last 15 minutes, …).
    */
   commonlyUsedRanges?: DurationRange[];
-  // customQuickSelectPanels?: QuickSelectPanel[];
+  /**
+   * Extra panels at the end of the quick select popover:
+   * `[{ title: 'My panel', content: MyPanel }]`. `content` is a component,
+   * rendered with `@applyTime`; call it with `{ start, end }` to apply a
+   * range (as a quick selection) and close the popover.
+   */
+  customQuickSelectPanels?: QuickSelectPanel[];
   /**
    * moment format for absolute dates. Defaults to
    * `'MMM D, YYYY @ HH:mm:ss.SSS'`.
@@ -112,12 +139,35 @@ export interface EuiSuperDatePickerArgs {
    */
   refreshInterval?: Milliseconds;
   /**
+   * Minimum refresh interval in milliseconds: the refresh interval fields
+   * don't go below it. Defaults to `0`.
+   */
+  refreshMinInterval?: Milliseconds;
+  /**
+   * The refresh interval's unit (`'s'`, `'m'` or `'h'`). By default it is
+   * rounded up to the largest unit that fits (90 seconds become 2 minutes).
+   * To keep the user's unit, store the `intervalUnits` `@onRefreshChange`
+   * receives and pass it back here. Passing this argument (even
+   * `undefined`) adds `intervalUnits` to `@onRefreshChange`'s payload.
+   */
+  refreshIntervalUnits?: RefreshUnitsOptions;
+  /**
    * Start of the range, as date math (`'now-15m'`, `'now/d'`) or an ISO
    * date. Defaults to `'now-15m'`.
    */
   start?: ShortDate;
   /** End of the range, like `@start`. Defaults to `'now'`. */
   end?: ShortDate;
+  /**
+   * Earliest selectable date (a moment): earlier days are disabled in the
+   * calendar and a start before it makes the range invalid.
+   */
+  minDate?: Moment;
+  /**
+   * Latest selectable date (a moment): later days are disabled in the
+   * calendar and an end after it makes the range invalid.
+   */
+  maxDate?: Moment;
   /**
    * moment format for times in the date picker. Defaults to `'HH:mm'`.
    */
@@ -135,14 +185,50 @@ export interface EuiSuperDatePickerArgs {
    */
   isQuickSelectOnly?: boolean;
   /**
-   * Props passed to the update button #EuiSuperUpdateButtonProps
+   * Arguments for the update button: `{ fill, color, size, iconType,
+   * iconOnly, className, children, minWidth, 'data-test-subj' }`
+   * (`children` is a custom label). They win over the picker's own,
+   * e.g. `{ fill: false }`.
    */
-  // updateButtonProps?: EuiSuperUpdateButtonProps;
+  updateButtonProps?: EuiSuperUpdateButtonProps;
+  /**
+   * Shows a button group next to the control to shift the time window back
+   * and forward and to zoom it out. `true`, or a configuration
+   * `{ showZoomOut, showZoomIn, showShiftArrows, zoomFactor }` (zoom in is
+   * off by default; `zoomFactor` defaults to `0.5`, also as `'50%'`).
+   */
+  showTimeWindowButtons?: boolean | EuiTimeWindowButtonsConfig;
+  /**
+   * Shows time zone information in the start/end popovers:
+   * `{ timeZone: 'America/Los_Angeles' }` (any IANA name, `'Browser'` or
+   * `'UTC'`), plus an optional reference `date` and a `customRender`
+   * component (`@nameDisplay`, `@utcOffset`, `@timeZoneName`).
+   * Informational only: dates are not converted.
+   */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
+  /**
+   * By default relative values are rounded to the largest unit that fits
+   * (90 minutes show as "~ 2 hours ago"). `false` keeps the user's units.
+   * Defaults to `true`.
+   */
+  canRoundRelativeUnits?: boolean;
+  /** Called when the start or end date button gets focus. */
+  onFocus?: (event: FocusEvent) => void;
 }
 
 export interface EuiSuperDatePickerSignature {
   Element: HTMLDivElement;
   Args: EuiSuperDatePickerArgs;
+  Blocks: {
+    /**
+     * Replaces the quick select popover's content (upstream
+     * `customQuickSelectRender`). Yields the default panels as components
+     * (`quickSelect`, `commonlyUsedRanges`, `recentlyUsedRanges`,
+     * `refreshInterval`, `customQuickSelectPanels`) to re-order, omit or
+     * mix with your own content.
+     */
+    customQuickSelectRender: [CustomQuickSelectRenderOptions];
+  };
 }
 
 export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSignature> {
@@ -184,6 +270,15 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
       : undefined;
   }
 
+  /** The applied range (upstream's props, not the draft). */
+  get appliedStart(): ShortDate {
+    return this.args.start ?? 'now-15m';
+  }
+
+  get appliedEnd(): ShortDate {
+    return this.args.end ?? 'now';
+  }
+
   get start(): ShortDate {
     return this.currentDraft?.start ?? this.args.start ?? 'now-15m';
   }
@@ -193,7 +288,12 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
   }
 
   get isInvalid(): boolean {
-    return isRangeInvalid(this.start, this.end);
+    return isRangeInvalid(
+      this.start,
+      this.end,
+      this.args.minDate,
+      this.args.maxDate
+    );
   }
 
   get hasChanged(): boolean {
@@ -222,7 +322,12 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
         start,
         end,
         isQuickSelection: false,
-        isInvalid: isRangeInvalid(start, end)
+        isInvalid: isRangeInvalid(
+          start,
+          end,
+          this.args.minDate,
+          this.args.maxDate
+        )
       });
     }
   }
@@ -278,6 +383,65 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
   get context() {
     return getEuiThemeContext(this);
   }
+
+  /**
+   * `intervalUnits` joins `@onRefreshChange`'s payload (upstream) when the
+   * caller passes `@refreshIntervalUnits`, so existing callers keep their
+   * `{ refreshInterval, isPaused }` payload.
+   */
+  get reportsIntervalUnits() {
+    return 'refreshIntervalUnits' in this.args;
+  }
+
+  /** Upstream `renderTimeWindowButtons`: not with `@isAutoRefreshOnly`. */
+  get timeWindowConfig(): EuiTimeWindowButtonsConfig | undefined {
+    const { showTimeWindowButtons } = this.args;
+    if (!showTimeWindowButtons || this.isAutoRefreshOnly) return undefined;
+    return typeof showTimeWindowButtons === 'boolean'
+      ? {}
+      : showTimeWindowButtons;
+  }
+
+  /** Upstream renders `EuiAutoRefresh` instead of the range. */
+  get showAutoRefreshOnly() {
+    return Boolean(this.isAutoRefreshOnly && this.args.onRefreshChange);
+  }
+
+  /** Upstream spreads `updateButtonProps` last over its own props. */
+  get updateButtonProps(): EuiSuperUpdateButtonProps {
+    return this.args.updateButtonProps ?? {};
+  }
+
+  get updateButtonIconOnly() {
+    return (
+      this.updateButtonProps.iconOnly ?? this.showUpdateButton === 'iconOnly'
+    );
+  }
+
+  get updateButtonSize() {
+    return this.updateButtonProps.size ?? (this.args.compressed ? 's' : 'm');
+  }
+
+  get updateButtonTestSubj() {
+    return (
+      this.updateButtonProps['data-test-subj'] ??
+      'superDatePickerApplyTimeButton'
+    );
+  }
+
+  /** EuiAutoRefresh reports the picked units too (upstream). */
+  onAutoRefreshChange = (change: {
+    refreshInterval: number;
+    isPaused: boolean;
+    intervalUnits: RefreshUnitsOptions;
+  }) => {
+    const { refreshInterval, isPaused, intervalUnits } = change;
+    this.args.onRefreshChange?.(
+      this.reportsIntervalUnits
+        ? { refreshInterval, isPaused, intervalUnits }
+        : { refreshInterval, isPaused }
+    );
+  };
 
   /** Upstream forces `auto` width when only the quick select shows. */
   get resolvedWidth(): 'restricted' | 'full' | 'auto' {
@@ -390,6 +554,18 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
       {{this.autoRefresh @onRefresh this.isPaused this.refreshInterval}}
       ...attributes
     >
+      {{#if this.showAutoRefreshOnly}}
+        <EuiAutoRefresh
+          @isPaused={{this.isPaused}}
+          @refreshInterval={{this.refreshInterval}}
+          @minInterval={{@refreshMinInterval}}
+          @intervalUnits={{@refreshIntervalUnits}}
+          @onRefreshChange={{this.onAutoRefreshChange}}
+          @fullWidth={{eq this.resolvedWidth "full"}}
+          @compressed={{@compressed}}
+          @isDisabled={{@isDisabled}}
+        />
+      {{else}}
       <EuiDatePickerRange
         @css={{this.rangeCss}}
         @fullWidth={{true}}
@@ -412,10 +588,22 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
               this.timeOptions.commonDurationRanges
             }}
             @recentlyUsedRanges={{@recentlyUsedRanges}}
-            @applyRefreshInterval={{@onRefreshChange}}
+            @applyRefreshInterval={{unless
+              this.reportsIntervalUnits
+              @onRefreshChange
+            }}
+            @onRefreshChange={{if this.reportsIntervalUnits @onRefreshChange}}
             @isPaused={{this.isPaused}}
             @refreshInterval={{this.refreshInterval}}
-          />
+            @refreshMinInterval={{@refreshMinInterval}}
+            @intervalUnits={{@refreshIntervalUnits}}
+            @customQuickSelectPanels={{@customQuickSelectPanels}}
+            @hasCustomQuickSelectRender={{has-block "customQuickSelectRender"}}
+          >
+            <:customQuickSelectRender as |panels|>
+              {{yield panels to="customQuickSelectRender"}}
+            </:customQuickSelectRender>
+          </EuiQuickSelectPopover>
         </:prepend>
 
         <:startDateControl>
@@ -435,6 +623,11 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
               @timeOptions={{this.timeOptions}}
               @needsUpdating={{this.hasChanged}}
               @locale={{@locale}}
+              @minDate={{@minDate}}
+              @maxDate={{@maxDate}}
+              @canRoundRelativeUnits={{@canRoundRelativeUnits}}
+              @timeZoneDisplayProps={{@timeZoneDisplayProps}}
+              @onFocus={{@onFocus}}
             />
           {{/unless}}
         </:startDateControl>
@@ -457,21 +650,47 @@ export default class EuiSuperDatePicker extends Component<EuiSuperDatePickerSign
               @roundUp={{true}}
               @needsUpdating={{this.hasChanged}}
               @locale={{@locale}}
+              @minDate={{@minDate}}
+              @maxDate={{@maxDate}}
+              @canRoundRelativeUnits={{@canRoundRelativeUnits}}
+              @timeZoneDisplayProps={{@timeZoneDisplayProps}}
+              @onFocus={{@onFocus}}
             />
           {{/unless}}
         </:endDateControl>
       </EuiDatePickerRange>
 
+      {{#if this.timeWindowConfig}}
+        <EuiTimeWindowButtons
+          @applyTime={{this.applyQuickTime}}
+          @start={{this.appliedStart}}
+          @end={{this.appliedEnd}}
+          @compressed={{@compressed}}
+          @isDisabled={{or @isDisabled this.isInvalid}}
+          @showZoomOut={{this.timeWindowConfig.showZoomOut}}
+          @showZoomIn={{this.timeWindowConfig.showZoomIn}}
+          @showShiftArrows={{this.timeWindowConfig.showShiftArrows}}
+          @zoomFactor={{this.timeWindowConfig.zoomFactor}}
+        />
+      {{/if}}
+
       {{#if this.showUpdateButton}}
         <EuiSuperUpdateButton
-          @size={{if @compressed "s" "m"}}
+          @size={{this.updateButtonSize}}
           @onClick={{this.handleClickUpdateButton}}
           @isLoading={{@isLoading}}
           @isDisabled={{or @isDisabled this.isInvalid}}
           @needsUpdate={{this.hasChanged}}
-          @fill={{true}}
-          @iconOnly={{eq this.showUpdateButton "iconOnly"}}
+          @fill={{this.updateButtonProps.fill}}
+          @iconOnly={{this.updateButtonIconOnly}}
+          @color={{this.updateButtonProps.color}}
+          @iconType={{this.updateButtonProps.iconType}}
+          @label={{this.updateButtonProps.children}}
+          @minWidth={{this.updateButtonProps.minWidth}}
+          @className={{this.updateButtonProps.className}}
+          data-test-subj={{this.updateButtonTestSubj}}
         />
+      {{/if}}
       {{/if}}
     </div>
   </template>

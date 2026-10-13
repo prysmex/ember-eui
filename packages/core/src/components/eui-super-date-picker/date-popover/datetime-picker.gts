@@ -17,6 +17,7 @@ import { euiClass, useEuiBorealisStyles } from '../../../utils/eui/styles.ts';
 import EuiButtonIcon from '../../eui-button-icon.gts';
 import EuiFormControlLayout from '../../eui-form-control-layout.gts';
 import EuiSelect from '../../eui-select.gts';
+import { isOutOfBounds } from '../utils/date-utils.ts';
 
 const isSameDayHelper = helper(function ([year, month, day, selectedDate]: [
   number,
@@ -44,6 +45,10 @@ interface DatetimePickerArgs {
   iconClasses?: string;
   /** moment format of absolute dates. */
   dateFormat?: string;
+  /** Days before this one are disabled (react-datepicker `minDate`). */
+  minDate?: moment.Moment;
+  /** Days after this one are disabled (react-datepicker `maxDate`). */
+  maxDate?: moment.Moment;
 }
 
 interface Day {
@@ -255,8 +260,22 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
     this.args.onChange(this.selectedDate, e);
   }
 
+  /** react-datepicker disables the days outside `minDate`..`maxDate`. */
+  isDayDisabled = (day: Day): boolean => {
+    const { minDate, maxDate } = this.args;
+    if (!minDate && !maxDate) return false;
+    const date = moment([
+      day.year ?? this.year,
+      day.month ?? this.month,
+      day.day
+    ]);
+    return Boolean(isOutOfBounds(date, { minDate, maxDate }));
+  };
+
   @action
   selectDate(day: Day, e: Event) {
+    if (this.isDayDisabled(day)) return;
+
     // Only outside days will have year/month
     this.momentConfig.year = day.year || this.year;
     this.momentConfig.month = day.month || this.month;
@@ -384,7 +403,12 @@ export default class DatetimePicker extends Component<DatetimePickerSignature> {
                         (if
                           day.isOutside " react-datepicker__day--outside-month"
                         )
+                        (if
+                          (this.isDayDisabled day)
+                          " react-datepicker__day--disabled"
+                        )
                       }}
+                      aria-disabled={{if (this.isDayDisabled day) "true"}}
                       {{on "click" (fn this.selectDate day)}}
                     >
                       <div class="react-datepicker__day-text">{{day.day}}</div>

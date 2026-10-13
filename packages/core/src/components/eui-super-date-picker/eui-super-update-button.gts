@@ -1,4 +1,5 @@
 import Component from '@glimmer/component';
+import { cached } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 
@@ -32,7 +33,41 @@ export interface EuiSuperUpdateButtonSignature {
     size?: EuiButtonIconSignature['Args']['size'];
     /** Classes for the text. */
     textClasses?: string;
+    /**
+     * Button color, instead of `primary` (`success` while an update is
+     * pending or loading).
+     */
+    color?: EuiButtonSignature['Args']['color'];
+    /** Icon, instead of `refresh` (`push` while an update is pending). */
+    iconType?: string;
+    /**
+     * Custom label (upstream `children`), instead of "Refresh" / "Update" /
+     * "Updating"; keep it in sync with `@needsUpdate` and `@isLoading`.
+     */
+    label?: string;
+    /**
+     * Minimum width of the text button, a number of px or a CSS length;
+     * `false` removes it. Defaults to `118`.
+     */
+    minWidth?: number | string | false;
   };
+}
+
+/**
+ * Upstream `EuiSuperUpdateButtonProps` as EuiSuperDatePicker's
+ * `@updateButtonProps` takes them (the arguments it can forward).
+ */
+export interface EuiSuperUpdateButtonProps {
+  fill?: boolean;
+  color?: EuiButtonSignature['Args']['color'];
+  size?: EuiButtonIconSignature['Args']['size'];
+  iconType?: string;
+  iconOnly?: boolean;
+  className?: string;
+  /** A custom label (upstream `children`). */
+  children?: string;
+  minWidth?: number | string | false;
+  'data-test-subj'?: string;
 }
 
 export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButtonSignature> {
@@ -43,12 +78,21 @@ export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButton
   }
 
   get color() {
-    return this.isActive ? 'success' : 'primary';
+    return this.args.color ?? (this.isActive ? 'success' : 'primary');
   }
 
   /** Upstream uses `push` while an update is pending or loading. */
   get iconType() {
-    return this.isActive ? 'push' : 'refresh';
+    return this.args.iconType ?? (this.isActive ? 'push' : 'refresh');
+  }
+
+  /** Upstream `minWidth={118}` (an inline style), overridable through the props. */
+  @cached
+  get minWidthCss() {
+    const { minWidth } = this.args;
+    if (minWidth === false) return undefined;
+    const value = minWidth ?? 118;
+    return { minInlineSize: typeof value === 'number' ? `${value}px` : value };
   }
 
   /** Upstream passes `size` to EuiButton, whose default is `m`. */
@@ -61,6 +105,8 @@ export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButton
   }
 
   get label() {
+    if (this.args.label) return this.args.label;
+
     if (this.args.isLoading) {
       return this.euiI18n.lookupToken(
         'euiSuperUpdateButton.updatingButtonLabel',
@@ -99,9 +145,8 @@ export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButton
     {{else}}
       <EuiButton
         class={{classNames "euiSuperUpdateButton" @className}}
-        {{! upstream minWidth={118} }}
-        style="min-inline-size: 118px"
         data-test-subj="superDatePickerApplyTimeButton"
+        @css={{this.minWidthCss}}
         @fill={{this.fill}}
         @textClasses={{@textClasses}}
         @color={{this.color}}

@@ -21,7 +21,8 @@ import type { TimeOptions } from '../utils/time-options.ts';
 import type { AbsoluteTabSignature } from './absolute-tab';
 import type { NowTabSignature } from './now-tab';
 import type { RelativeTabSignature } from './relative-tab';
-import type { LocaleSpecifier } from 'moment';
+import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
+import type { LocaleSpecifier, Moment } from 'moment';
 
 interface EuiDatePopoverContentArgs {
   /** The date (date math or ISO date). */
@@ -45,13 +46,25 @@ interface EuiDatePopoverContentArgs {
   utcOffset?: number;
   /** Time units and tenses for the quick select. */
   timeOptions: TimeOptions;
+  /** Earliest selectable day of the absolute tab's calendar. */
+  minDate?: Moment;
+  /** Latest selectable day of the absolute tab's calendar. */
+  maxDate?: Moment;
+  /**
+   * `false` keeps relative values as typed in the relative tab (upstream
+   * rounds them through an absolute date). Defaults to `true`.
+   */
+  canRoundRelativeUnits?: boolean;
+  /** Shows the time zone in the absolute and relative tabs. */
+  timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
 }
 
-const toAbsoluteStringHelper = helper(function ([value, roundUp]: [
-  string,
-  boolean
-]) {
-  return toAbsoluteString(value, roundUp);
+const toAbsoluteStringHelper = helper(function ([
+  value,
+  roundUp,
+  canRoundRelativeUnits = true
+]: [string, boolean, boolean?]) {
+  return canRoundRelativeUnits ? toAbsoluteString(value, roundUp) : value;
 });
 
 /** @private The tabs (absolute, relative, now) of the date popover. */
@@ -131,6 +144,10 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
     return this.args.roundUp ?? false;
   }
 
+  get canRoundRelativeUnits() {
+    return this.args.canRoundRelativeUnits ?? true;
+  }
+
   get timeOptions() {
     return this.args.timeOptions || useI18nTimeOptions(this.euiI18n);
   }
@@ -147,7 +164,11 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
       <:selectedTabContent as |selected|>
         {{#if (eq selected.id "relative")}}
           <RelativeTab
-            @value={{this.toAbsoluteStringHelper @value this.roundUp}}
+            @value={{this.toAbsoluteStringHelper
+              @value
+              this.roundUp
+              this.canRoundRelativeUnits
+            }}
             @onChange={{@onChange}}
             @labelPrefix={{this.labelPrefix}}
             @roundUp={{this.roundUp}}
@@ -155,6 +176,7 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
             @locale={{@locale}}
             @position={{@position}}
             @timeOptions={{this.timeOptions}}
+            @timeZoneDisplayProps={{@timeZoneDisplayProps}}
           />
         {{else if (eq selected.id "now")}}
           <NowTab @position={{@position}} @onChange={{@onChange}} />
@@ -167,6 +189,9 @@ export default class EuiDatePopoverContent extends Component<EuiDatePopoverConte
             @position={{@position}}
             @onChange={{@onChange}}
             @labelPrefix={{this.labelPrefix}}
+            @minDate={{@minDate}}
+            @maxDate={{@maxDate}}
+            @timeZoneDisplayProps={{@timeZoneDisplayProps}}
           />
         {{/if}}
       </:selectedTabContent>

@@ -554,7 +554,7 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
   }
 
   /** Upstream's `popoverProps.css`, composed after the wrapper styles. */
-  get popoverUserCss(): CSSInterpolation {
+  get popoverUserCss(): EuiCss {
     return this.breadcrumb?.popoverProps?.css;
   }
 
@@ -588,7 +588,7 @@ class BreadcrumbItem extends Component<BreadcrumbItemSignature> {
 
   /** Upstream's `css` on the collapsed item's EuiPopover. */
   @cached
-  get popoverCss(): CSSInterpolation[] {
+  get popoverCss(): EuiCss[] {
     const context = getEuiThemeContext(this);
     const popoverStyles = useEuiBorealisStyles(
       context,

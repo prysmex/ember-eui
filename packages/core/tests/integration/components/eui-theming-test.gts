@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { render, settled } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
@@ -7,18 +7,25 @@ import { EuiThemeBorealis } from '@elastic/eui-theme-borealis';
 
 import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
 import EuiPanel from '#src/components/eui-panel.gts';
-import { getEuiThemeContext } from '#src/utils/emotion/consume.ts';
-import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+import EuiPopover from '#src/components/eui-popover.gts';
 import {
+  euiClass,
   euiCssVar,
   euiCssVariableName,
-  euiThemeCssVariables
-} from '#src/utils/eui/css-variables.ts';
+  euiThemeCssVariables,
+  getEuiThemeContext,
+  resolveBorealisTheme,
+  useEuiBorealisStyles
+} from '#src/theming.ts';
 import { EuiSystemPreferences } from '#src/utils/emotion/system.ts';
 
-import type { EuiThemeContext } from '#src/utils/emotion/context.ts';
-import type { EuiColorMode } from '#src/utils/emotion/theme.ts';
-import type { EuiHighContrastModeArg } from '#src/utils/eui/theme.ts';
+import type {
+  EuiColorMode,
+  EuiCss,
+  EuiHighContrastModeArg,
+  EuiThemeContext,
+  EuiThemeStyleContext
+} from '#src/theming.ts';
 import type EuiEmotionService from '#src/services/eui-emotion.ts';
 
 /** Plain CSS reading a published variable. */
@@ -464,5 +471,122 @@ module('Integration | Theming | CSS variables', function (hooks) {
     state.show = false;
     await settled();
     assert.strictEqual(rootVar('--eui-size-s'), '');
+  });
+});
+
+const noop = () => {};
+let calls = 0;
+const dangerText: EuiCss = ({ euiTheme }: EuiThemeStyleContext) => {
+  calls++;
+  return { color: euiTheme.colors.textDanger };
+};
+const nested: EuiCss = [
+  { fontWeight: 700 },
+  ({ euiTheme }: EuiThemeStyleContext) => [
+    { borderInlineStartColor: euiTheme.colors.borderStrongAccent }
+  ]
+];
+
+const boxStyles = ({ euiTheme }: EuiThemeStyleContext) => ({
+  root: { padding: euiTheme.size.m, color: euiTheme.colors.textSuccess }
+});
+
+class CustomBox extends Component<{ Element: HTMLDivElement; Blocks: { default: [] } }> {
+  @cached
+  get classes() {
+    const context = getEuiThemeContext(this);
+    return euiClass(context, useEuiBorealisStyles(context, boxStyles).root);
+  }
+  <template>
+    <div class={{this.classes}} ...attributes>{{yield}}</div>
+  </template>
+}
+
+module('Integration | Theming | theme function @css', function (hooks) {
+  setupRenderingTest(hooks);
+
+  test('a theme function @css follows the theme and stays cached otherwise', async function (assert) {
+    class State {
+      @tracked mode: EuiColorMode = 'light';
+      @tracked padding: 's' | 'l' = 's';
+    }
+    const state = new State();
+    calls = 0;
+    await render(
+      <template>
+        <EuiEmotionProvider @colorMode={{state.mode}}>
+          <EuiPanel
+            @paddingSize={{state.padding}}
+            @css={{dangerText}}
+            data-panel
+          >Danger</EuiPanel>
+          <EuiPanel @css={{dangerText}} data-twin>Twin</EuiPanel>
+          <EuiPanel @css={{nested}} @hasBorder={{true}} data-nested>Nested</EuiPanel>
+        </EuiEmotionProvider>
+      </template>
+    );
+    const light = resolveBorealisTheme('light').euiTheme;
+    const dark = resolveBorealisTheme('dark').euiTheme;
+    const panel = el('[data-panel]');
+    assert.strictEqual(getComputedStyle(panel).color, rgb(light.colors.textDanger));
+    assert.strictEqual(calls, 1, 'one call per theme, shared by every user');
+    assert.strictEqual(getComputedStyle(el('[data-nested]')).fontWeight, '700');
+    assert.strictEqual(
+      getComputedStyle(el('[data-nested]')).borderLeftColor,
+      rgb(light.colors.borderStrongAccent),
+      'functions nested in arrays resolve too'
+    );
+
+    state.padding = 'l';
+    await settled();
+    assert.strictEqual(calls, 1, 'unrelated argument changes reuse the result');
+    assert.strictEqual(el('[data-panel]'), panel, 'element kept');
+
+    state.mode = 'dark';
+    await settled();
+    assert.strictEqual(getComputedStyle(panel).color, rgb(dark.colors.textDanger));
+    assert.strictEqual(calls, 2);
+
+    state.mode = 'light';
+    await settled();
+    assert.strictEqual(getComputedStyle(panel).color, rgb(light.colors.textDanger));
+  });
+
+  test('slot css args such as @panelCss accept theme functions', async function (assert) {
+    await render(
+      <template>
+        <EuiEmotionProvider @colorMode="dark">
+          <EuiPopover @isOpen={{true}} @closePopover={{noop}} @panelCss={{dangerText}}>
+            <:button><button type="button">Open</button></:button>
+            <:content><span data-content>Content</span></:content>
+          </EuiPopover>
+        </EuiEmotionProvider>
+      </template>
+    );
+    const content = document.querySelector('[data-content]')!;
+    const panel = content.closest('.euiPopover__panel')!;
+    assert.strictEqual(
+      getComputedStyle(panel).color,
+      rgb(resolveBorealisTheme('dark').euiTheme.colors.textDanger)
+    );
+  });
+
+  test('custom components compose factories and strings through euiClass', async function (assert) {
+    await render(
+      <template>
+        <EuiEmotionProvider @colorMode="dark">
+          <CustomBox data-box>Box</CustomBox>
+        </EuiEmotionProvider>
+        <EuiEmotionProvider @colorMode="light">
+          <EuiPanel @css="text-decoration: underline;" data-string>String</EuiPanel>
+        </EuiEmotionProvider>
+      </template>
+    );
+    const dark = resolveBorealisTheme('dark').euiTheme;
+    assert.strictEqual(getComputedStyle(el('[data-box]')).color, rgb(dark.colors.textSuccess));
+    assert.strictEqual(getComputedStyle(el('[data-box]')).paddingTop, '12px');
+    assert.true(
+      getComputedStyle(el('[data-string]')).textDecorationLine.includes('underline')
+    );
   });
 });

@@ -3,6 +3,7 @@ import { concat } from '@ember/helper';
 
 import { and, eq } from 'ember-truth-helpers';
 
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
 import randomId from '../-private/random-id.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -22,6 +23,33 @@ import type { EuiIconSignature } from './eui-icon';
 import type { EuiTitleSignature } from './eui-title';
 
 export type EuiCollapsibleNavGroupBackground = 'none' | 'light' | 'dark';
+
+/**
+ * EuiAccordion args a collapsible group passes on (upstream spreads the
+ * accordion props). `buttonClassName` replaces
+ * `euiCollapsibleNavGroup__heading` and `buttonContent` replaces the
+ * title row, as upstream.
+ */
+export type EuiCollapsibleNavGroupAccordionArgs = Pick<
+  EuiAccordionSignature['Args'],
+  | 'arrowProps'
+  | 'borders'
+  | 'buttonClassName'
+  | 'buttonContent'
+  | 'buttonContentClassName'
+  | 'buttonProps'
+  | 'element'
+  | 'forceState'
+  | 'isDisabled'
+  | 'isLoading'
+  | 'isLoadingMessage'
+  | 'role'
+  | 'childClassName'
+  | 'triggerClassName'
+>;
+
+/** `iconProps` keys that are EuiIcon args, not attributes. */
+const ICON_ARGS = ['color', 'title', 'titleId', 'useSvg', 'onIconLoad', 'iconClasses'];
 
 export interface EuiCollapsibleNavGroupSignature {
   Element: EuiAccordionSignature['Element'];
@@ -62,7 +90,16 @@ export interface EuiCollapsibleNavGroupSignature {
     buttonElement?: EuiAccordionSignature['Args']['buttonElement'];
     /** Called with the new open state when a collapsible group toggles. */
     onToggle?: EuiAccordionSignature['Args']['onToggle'];
-  };
+    /**
+     * More props for the title's EuiIcon (upstream `iconProps`, without
+     * `type` and `size`): `className`, `color`, `css`, `title`,
+     * `aria-label` and other keys as attributes.
+     */
+    iconProps?: Omit<Partial<EuiIconSignature['Args']>, 'type' | 'size'> & {
+      className?: string;
+      [key: string]: unknown;
+    };
+  } & EuiCollapsibleNavGroupAccordionArgs;
   Blocks: {
     /** Unused, use `<:title>` and `<:content>`. */
     default: [];
@@ -93,6 +130,15 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
 
   get colorMode() {
     return this.background === 'dark' ? 'dark' : undefined;
+  }
+
+  get iconArgs(): readonly string[] {
+    return ICON_ARGS;
+  }
+
+  get iconClasses(): string | undefined {
+    const { className, iconClasses } = this.args.iconProps ?? {};
+    return [iconClasses, className].filter(Boolean).join(' ') || undefined;
   }
 
   get titleElement() {
@@ -166,7 +212,23 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
                 id={{groupID}}
                 class="euiCollapsibleNavGroup"
                 @css={{classes.rootCss}}
-                @buttonClassName="euiCollapsibleNavGroup__heading"
+                @buttonClassName={{if
+                  @buttonClassName
+                  @buttonClassName
+                  "euiCollapsibleNavGroup__heading"
+                }}
+                @arrowProps={{@arrowProps}}
+                @borders={{@borders}}
+                @buttonContentClassName={{@buttonContentClassName}}
+                @buttonProps={{@buttonProps}}
+                @element={{@element}}
+                @forceState={{@forceState}}
+                @isDisabled={{@isDisabled}}
+                @isLoading={{@isLoading}}
+                @isLoadingMessage={{@isLoadingMessage}}
+                @role={{@role}}
+                @childClassName={{@childClassName}}
+                @triggerClassName={{@triggerClassName}}
                 @initialIsOpen={{if
                   (eq @initialIsOpen undefined)
                   true
@@ -180,29 +242,38 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
                 ...attributes
               >
                 <:buttonContent>
-                  <EuiFlexGroup
-                    @gutterSize="m"
-                    @alignItems="center"
-                    @responsive={{false}}
-                  >
-                    {{#if @iconType}}
-                      <EuiFlexItem @grow={{false}}>
-                        <EuiIcon
-                          @type={{@iconType}}
-                          @size={{if @iconSize @iconSize "l"}}
-                        />
+                  {{#if @buttonContent}}
+                    {{@buttonContent}}
+                  {{else}}
+                    <EuiFlexGroup
+                      @gutterSize="m"
+                      @alignItems="center"
+                      @responsive={{false}}
+                    >
+                      {{#if @iconType}}
+                        <EuiFlexItem @grow={{false}}>
+                          <EuiIcon
+                            @type={{@iconType}}
+                            @size={{if @iconSize @iconSize "l"}}
+                            @color={{@iconProps.color}}
+                            @css={{@iconProps.css}}
+                            @title={{@iconProps.title}}
+                            @iconClasses={{this.iconClasses}}
+                            {{spreadAttributes @iconProps this.iconArgs}}
+                          />
+                        </EuiFlexItem>
+                      {{/if}}
+                      <EuiFlexItem>
+                        <TitleElement
+                          id={{titleID}}
+                          class="euiTitle euiCollapsibleNavGroup__title
+                            {{classes.title}}"
+                        >
+                          {{yield to="title"}}
+                        </TitleElement>
                       </EuiFlexItem>
-                    {{/if}}
-                    <EuiFlexItem>
-                      <TitleElement
-                        id={{titleID}}
-                        class="euiTitle euiCollapsibleNavGroup__title
-                          {{classes.title}}"
-                      >
-                        {{yield to="title"}}
-                      </TitleElement>
-                    </EuiFlexItem>
-                  </EuiFlexGroup>
+                    </EuiFlexGroup>
+                  {{/if}}
                 </:buttonContent>
                 <:extraAction as |isOpen|>
                   {{yield isOpen to="extraAction"}}
@@ -236,6 +307,11 @@ export default class EuiCollapsibleNavGroup extends Component<EuiCollapsibleNavG
                           <EuiIcon
                             @type={{@iconType}}
                             @size={{if @iconSize @iconSize "l"}}
+                            @color={{@iconProps.color}}
+                            @css={{@iconProps.css}}
+                            @title={{@iconProps.title}}
+                            @iconClasses={{this.iconClasses}}
+                            {{spreadAttributes @iconProps this.iconArgs}}
                           />
                         </EuiFlexItem>
                       {{/if}}

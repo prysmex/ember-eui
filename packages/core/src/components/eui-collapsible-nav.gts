@@ -16,7 +16,7 @@ import { euiCollapsibleNavStyles } from '../utils/eui/styles.generated.ts';
 import EuiFlyout from './eui-flyout.gts';
 
 import type { EuiBreakpointSize, EuiBreakpoints } from '../utils/breakpoint.ts';
-import type { EuiFlyoutSignature } from './eui-flyout';
+import type { EuiFlyoutArgs, EuiFlyoutSignature } from './eui-flyout';
 import type { ModifierLike } from '@glint/template';
 
 export type EuiCollapsibleNavArgs = {
@@ -67,14 +67,51 @@ export type EuiCollapsibleNavArgs = {
   paddingSize?: string;
   /** Called to close the nav (close button, Escape, outside click). */
   onClose: EuiFlyoutSignature['Args']['onClose'];
-};
+  /**
+   * Flyout session (EuiFlyout `@session`). Defaults to `'never'`, as
+   * upstream: the nav stays out of managed flyout sessions.
+   */
+  session?: EuiFlyoutArgs['session'];
+  /**
+   * Focus trap options (EuiFlyout `@focusTrapProps`). The toggle button
+   * is always added to `shards`, as upstream.
+   */
+  focusTrapProps?: EuiFlyoutArgs['focusTrapProps'];
+} & Pick<
+  EuiFlyoutArgs,
+  | 'closeButtonProps'
+  | 'container'
+  | 'flyoutMenuDisplayMode'
+  | 'flyoutMenuProps'
+  | 'hasAnimation'
+  | 'hasChildBackground'
+  | 'historyKey'
+  | 'includeFixedHeadersInFocusTrap'
+  | 'includeSelectorInFocusTrap'
+  | 'maskProps'
+  | 'maxWidth'
+  | 'minWidth'
+  | 'onActive'
+  | 'onResize'
+  | 'pushAnimation'
+  | 'resizable'
+>;
 
 const triggerHandlersModifier = modBuilder(
   (
     element: Element,
     _pos,
-    { flyoutID, isOpen }: { flyoutID: string; isOpen: boolean }
+    {
+      flyoutID,
+      isOpen,
+      register
+    }: {
+      flyoutID: string;
+      isOpen: boolean;
+      register?: (element: HTMLElement | null) => void;
+    }
   ) => {
+    register?.(element as HTMLElement);
     element.setAttribute('aria-controls', flyoutID);
     element.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     element.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
@@ -87,6 +124,7 @@ const triggerHandlersModifier = modBuilder(
     element.addEventListener('mouseup', fn, true);
 
     return () => {
+      register?.(null);
       element.removeEventListener('touchend', fn);
       element.removeEventListener('mouseup', fn, true);
     };
@@ -223,6 +261,28 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
     return this.args.paddingSize ?? 'none';
   }
 
+  /** The toggle button, a focus trap shard (upstream `buttonRef`). */
+  buttonElement: HTMLElement | null = null;
+
+  registerButton = (element: HTMLElement | null): void => {
+    this.buttonElement = element;
+  };
+
+  /** Read when the flyout's focus trap is created, after the button. */
+  get focusTrapProps(): EuiFlyoutArgs['focusTrapProps'] {
+    const own = this.args.focusTrapProps;
+    const button = this.buttonElement;
+
+    return {
+      ...own,
+      shards: [...(button ? [button] : []), ...(own?.shards ?? [])]
+    };
+  }
+
+  get session(): EuiFlyoutArgs['session'] {
+    return this.args.session ?? 'never';
+  }
+
   @action
   functionToCallOnWindowResize() {
     throttle(this, this.measureWindow, 50);
@@ -244,7 +304,12 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
 
       {{#if (not (and this.navIsDocked (not this.showButtonIfDocked)))}}
         {{yield
-          (modifier triggerHandlersModifier isOpen=@isOpen flyoutID=flyoutID)
+          (modifier
+            triggerHandlersModifier
+            isOpen=@isOpen
+            flyoutID=flyoutID
+            register=this.registerButton
+          )
           to="button"
         }}
       {{/if}}
@@ -266,6 +331,24 @@ export default class EuiCollapsibleNavComponent extends Component<EuiCollapsible
           @hideCloseButton={{this.navIsDocked}}
           @pushMinBreakpoint={{this.dockedBreakpoint}}
           @onClose={{@onClose}}
+          @session={{this.session}}
+          @focusTrapProps={{this.focusTrapProps}}
+          @closeButtonProps={{@closeButtonProps}}
+          @container={{@container}}
+          @flyoutMenuDisplayMode={{@flyoutMenuDisplayMode}}
+          @flyoutMenuProps={{@flyoutMenuProps}}
+          @hasAnimation={{@hasAnimation}}
+          @hasChildBackground={{@hasChildBackground}}
+          @historyKey={{@historyKey}}
+          @includeFixedHeadersInFocusTrap={{@includeFixedHeadersInFocusTrap}}
+          @includeSelectorInFocusTrap={{@includeSelectorInFocusTrap}}
+          @maskProps={{@maskProps}}
+          @maxWidth={{@maxWidth}}
+          @minWidth={{@minWidth}}
+          @onActive={{@onActive}}
+          @onResize={{@onResize}}
+          @pushAnimation={{@pushAnimation}}
+          @resizable={{@resizable}}
           ...attributes
         >
           {{yield to="content"}}

@@ -1,11 +1,13 @@
 ---
-order: 2
+order: 10
 ---
 
-# Layout
+# Horizontal layout
 
 <EuiText>
-<p>At its core an <strong>EuiCard</strong> should contain a <EuiCode @language="text">@title</EuiCode>,<EuiCode @language="text">@description</EuiCode>, and an <EuiCode @language="text">@icon</EuiCode>. You can make the whole card clickable by giving it an <EuiCode @language="text">@onClick</EuiCode> handler or <EuiCode @language="text">@href</EuiCode>.</p>
+
+Ember EUI extra: `@layout="horizontal"` puts the icon next to the text. Pair it with a larger `@iconSize` or a smaller `@titleSize`.
+
 </EuiText>
 
 ```hbs template

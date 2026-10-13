@@ -2,7 +2,10 @@ import Component from '@glimmer/component';
 import { cached } from '@glimmer/tracking';
 
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
-import { euiDatePickerRangeStyles } from '../utils/eui/styles.generated.ts';
+import {
+  euiDatePickerRangeInlineStyles,
+  euiDatePickerRangeStyles
+} from '../utils/eui/styles.generated.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import EuiFormControlLayoutDelimited from './eui-form-control-layout-delimited.gts';
 
@@ -39,6 +42,16 @@ export interface EuiDatePickerRangeSignature {
     iconType?: boolean | string;
     /** Text between the inputs. Defaults to `'→'`. */
     delimiter?: string;
+    /**
+     * For two calendars displayed in the page (e.g. inline flatpickr or
+     * pikaday calendars in the blocks): drops the field frame, the icon
+     * and `@fullWidth`/`@compressed`, lays the blocks out side by side and
+     * stacks them when the container is too narrow. Pass the inline option
+     * to your calendars too.
+     */
+    inline?: boolean;
+    /** With `@inline`: a shadow around both calendars. Defaults to `true`. */
+    shadow?: boolean;
   };
   Blocks: {
     /** The start input; yields the classes to give it. */
@@ -51,18 +64,57 @@ export interface EuiDatePickerRangeSignature {
 }
 
 export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSignature> {
+  get shadow() {
+    return this.args.shadow ?? true;
+  }
+
+  /** `@fullWidth` and `@compressed` don't apply to inline pickers. */
+  get fullWidth() {
+    return this.args.fullWidth && !this.args.inline;
+  }
+
+  get compressed() {
+    return this.args.compressed && !this.args.inline;
+  }
+
   @cached
   get classes() {
     const context = getEuiThemeContext(this);
-    const styles = useEuiBorealisStyles(context, euiDatePickerRangeStyles);
+
+    if (!this.args.inline) {
+      const styles = useEuiBorealisStyles(context, euiDatePickerRangeStyles);
+      return `euiDatePickerRange ${euiClass(
+        context,
+        { boxSizing: 'border-box' },
+        styles.euiDatePickerRange
+      )}`;
+    }
+
+    const inline = useEuiBorealisStyles(
+      context,
+      euiDatePickerRangeInlineStyles
+    );
+    // Upstream puts `formLayout` on the delimited layout itself, unless
+    // disabled (the disabled background wins); here it is nested.
+    const formLayout = this.args.disabled
+      ? undefined
+      : {
+          '.euiFormControlLayoutDelimited': this.shadow
+            ? inline.formLayout.shadow
+            : inline.formLayout.noShadow
+        };
     return `euiDatePickerRange ${euiClass(
       context,
       { boxSizing: 'border-box' },
-      styles.euiDatePickerRange
+      inline.euiDatePickerRangeInline,
+      inline.responsive,
+      this.shadow && inline.shadow,
+      formLayout
     )}`;
   }
 
   get icon(): string | undefined {
+    if (this.args.inline) return undefined;
     const { iconType } = this.args;
     if (iconType === false) return undefined;
     if (iconType === undefined || iconType === true) return 'calendar';
@@ -80,8 +132,8 @@ export default class EuiDatePickerRange extends Component<EuiDatePickerRangeSign
         <EuiFormControlLayoutDelimited
           @icon={{this.icon}}
           @delimiter={{@delimiter}}
-          @fullWidth={{@fullWidth}}
-          @compressed={{@compressed}}
+          @fullWidth={{this.fullWidth}}
+          @compressed={{this.compressed}}
           @readOnly={{@readOnly}}
           @isDisabled={{@disabled}}
           @isInvalid={{@isInvalid}}

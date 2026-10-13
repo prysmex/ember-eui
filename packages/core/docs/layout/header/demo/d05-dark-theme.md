@@ -10,48 +10,50 @@ To make site-wide navigation more prominent, `EuiHeader` supports reversing the 
 
 </EuiText>
 
-```hbs template
-<EuiHeader @theme='dark'>
-  <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem>
-      <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderLinks aria-label='App navigation dark theme example'>
-        <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
-        <EuiHeaderLink>Code</EuiHeaderLink>
-        <EuiHeaderLink @iconType='help'> Help</EuiHeaderLink>
-      </EuiHeaderLinks>
-    </EuiHeaderSectionItem>
-
-  </EuiHeaderSection>
-  <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItem>
-      <EuiBadge @iconType='chevronSingleDown' @iconSide='right'>
-        Production logs
-      </EuiBadge>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton
-        @notification='2'
-        aria-label='2 Notifications'
-      >
-        <EuiIcon @type='popper' @size='m' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton aria-label='Account menu'>
-        <EuiAvatar @name='John Username' @size='s' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-
-  </EuiHeaderSection>
-</EuiHeader>
-```
-
-```js component
+```gjs component
+import { EuiHeader, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderLogo, EuiHeaderLinks, EuiHeaderLink, EuiBadge, EuiHeaderSectionItemButton, EuiIcon, EuiAvatar } from '@ember-eui/core/components';
 import Component from '@glimmer/component';
 
-export default class DarkHeaderDemo extends Component {}
+export default class DarkHeaderDemo extends Component {
+
+  <template>
+    <EuiHeader @theme='dark'>
+      <EuiHeaderSection @side='left'>
+        <EuiHeaderSectionItem>
+          <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiHeaderLinks aria-label='App navigation dark theme example'>
+            <EuiHeaderLink @isActive={{true}}>Docs</EuiHeaderLink>
+            <EuiHeaderLink>Code</EuiHeaderLink>
+            <EuiHeaderLink @iconType='help'> Help</EuiHeaderLink>
+          </EuiHeaderLinks>
+        </EuiHeaderSectionItem>
+
+      </EuiHeaderSection>
+      <EuiHeaderSection @side='right'>
+        <EuiHeaderSectionItem>
+          <EuiBadge @iconType='chevronSingleDown' @iconSide='right'>
+            Production logs
+          </EuiBadge>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton
+            @notification='2'
+            aria-label='2 Notifications'
+          >
+            <EuiIcon @type='popper' @size='m' />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton aria-label='Account menu'>
+            <EuiAvatar @name='John Username' @size='s' />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+
+      </EuiHeaderSection>
+    </EuiHeader>
+  </template>
+}
 ```

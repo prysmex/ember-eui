@@ -10,9 +10,13 @@ Flex grids support vertically aligning children via the `@alignItems` arg. Unlik
 
 </EuiText>
 
-```hbs template
-<EuiFlexGrid class="flex-demo" @columns={{2}} @alignItems="center">
-  <EuiFlexItem>I<br />am<br />a<br />tall<br />item</EuiFlexItem>
-  <EuiFlexItem>I am vertically centered!</EuiFlexItem>
-</EuiFlexGrid>
+```gjs component
+import { EuiFlexGrid, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
+  <EuiFlexGrid class="flex-demo" @columns={{2}} @alignItems="center">
+    <EuiFlexItem>I<br />am<br />a<br />tall<br />item</EuiFlexItem>
+    <EuiFlexItem>I am vertically centered!</EuiFlexItem>
+  </EuiFlexGrid>
+</template>
 ```

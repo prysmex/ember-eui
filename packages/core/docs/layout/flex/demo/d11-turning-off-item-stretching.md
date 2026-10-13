@@ -14,9 +14,13 @@ By default, all `EuiFlexItem`s will grow horizontally within their flex group if
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup class="flex-demo">
-  <EuiFlexItem @grow={{false}}>This item won&rsquo;t grow</EuiFlexItem>
-  <EuiFlexItem>But this item will.</EuiFlexItem>
-</EuiFlexGroup>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
+  <EuiFlexGroup class="flex-demo">
+    <EuiFlexItem @grow={{false}}>This item won&rsquo;t grow</EuiFlexItem>
+    <EuiFlexItem>But this item will.</EuiFlexItem>
+  </EuiFlexGroup>
+</template>
 ```

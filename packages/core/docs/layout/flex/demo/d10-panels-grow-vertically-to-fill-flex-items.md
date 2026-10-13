@@ -10,29 +10,33 @@ The `EuiPanel` component will naturally grow to fill the `EuiFlexItem` which con
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiText>
-      <p>
-        <EuiCode>FlexItem</EuiCode>
-      </p>
-      <p>A side nav might be in this one.</p>
-      <p>And you would want the panel on the right to expand with it.</p>
-    </EuiText>
-  </EuiFlexItem>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiText, EuiCode, EuiPanel } from '@ember-eui/core/components';
 
-  <EuiFlexItem>
-    <EuiPanel>
-      <strong>EuiPanel</strong>
-    </EuiPanel>
-  </EuiFlexItem>
+<template>
+  <EuiFlexGroup>
+    <EuiFlexItem>
+      <EuiText>
+        <p>
+          <EuiCode>FlexItem</EuiCode>
+        </p>
+        <p>A side nav might be in this one.</p>
+        <p>And you would want the panel on the right to expand with it.</p>
+      </EuiText>
+    </EuiFlexItem>
 
-  <EuiFlexItem>
-    <EuiPanel @grow={{false}}>
-      Another <strong>EuiPanel</strong>, with
-      <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
-    </EuiPanel>
-  </EuiFlexItem>
-</EuiFlexGroup>
+    <EuiFlexItem>
+      <EuiPanel>
+        <strong>EuiPanel</strong>
+      </EuiPanel>
+    </EuiFlexItem>
+
+    <EuiFlexItem>
+      <EuiPanel @grow={{false}}>
+        Another <strong>EuiPanel</strong>, with
+        <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
+      </EuiPanel>
+    </EuiFlexItem>
+  </EuiFlexGroup>
+</template>
 ```

@@ -12,158 +12,11 @@ The example below shows how to incorporate `EuiHeaderAlert` components to show a
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup @alignItems='center' @gutterSize='m'>
-  <EuiFlexItem @grow={{false}}>
-    <EuiSwitch
-      @label='Make header fixed position'
-      @checked={{eq this.position 'fixed'}}
-      @onChange={{this.setPosition}}
-    />
-  </EuiFlexItem>
-
-  <EuiFlexItem @grow={{false}}>
-    <EuiSwitch
-      @label='Change theme to dark'
-      @checked={{eq this.theme 'dark'}}
-      @onChange={{this.setTheme}}
-    />
-  </EuiFlexItem>
-</EuiFlexGroup>
-
-<EuiSpacer />
-<EuiHeader @position={{this.position}} @theme={{this.theme}}>
-  <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem>
-      <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-  <EuiHeaderSection @side='right'>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton
-        @notification={{true}}
-        aria-controls='headerFlyoutNewsFeed'
-        aria-expanded={{this.flyout}}
-        aria-haspopup='true'
-        aria-label='Alerts feed: Updates available'
-        {{on 'click' (set this 'flyout' true)}}
-      >
-        <EuiIcon @type='bell' />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiPopover
-        @isOpen={{this.popover}}
-        @closePopover={{set this 'popover' false}}
-        @anchorPosition='leftCenter'
-        @panelPaddingSize='none'
-        @repositionOnScroll={{true}}
-      >
-        <:button>
-          <EuiHeaderSectionItemButton
-            @notification={{6}}
-            aria-controls='headerPopoverNewsFeed'
-            aria-expanded={{this.popover}}
-            aria-haspopup='true'
-            aria-label='News feed: Updates available'
-            {{on 'click' (set this 'popover' (not this.popover))}}
-          >
-            <EuiIcon @type='popper' />
-          </EuiHeaderSectionItemButton>
-        </:button>
-        <:content>
-          <EuiPopoverTitle @paddingSize='s'>What&apos;s new</EuiPopoverTitle>
-          <div style='max-height:40vh; overflow-y: auto; padding: 4px'>
-            <EuiSpacer @size='s' />
-            {{#each this.alerts as |alert|}}
-              <EuiHeaderAlert>
-                <:title>
-                  {{alert.title}}
-                </:title>
-                <:action>
-                  <EuiLink>{{alert.action}}</EuiLink>
-                </:action>
-                <:text>
-                  {{alert.text}}
-                </:text>
-                <:date>
-                  {{alert.date}}
-                </:date>
-                <:badge>
-                  <EuiBadge @color={{alert.badgeColor}}>{{alert.badge}}</EuiBadge>
-                </:badge>
-              </EuiHeaderAlert>
-            {{/each}}
-          </div>
-          <EuiPopoverFooter @paddingSize='s'>
-            <EuiText @color='subdued' @size='s'>
-              <p>Version 7.0</p>
-            </EuiText>
-          </EuiPopoverFooter>
-        </:content>
-      </EuiPopover>
-
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-</EuiHeader>
-
-{{#if this.flyout}}
-  <EuiPortal>
-    <EuiFlyout @onClose={{set this 'flyout' false}} @size='s'>
-      <EuiFlyoutHeader @hasBorder={{true}}>
-        <EuiTitle @size='s' @tagName="h2">What&apos;s new</EuiTitle>
-      </EuiFlyoutHeader>
-      <EuiFlyoutBody>
-        {{#each this.alerts as |alert|}}
-          <EuiHeaderAlert>
-            <:title>
-              {{alert.title}}
-            </:title>
-            <:action>
-              <EuiLink>{{alert.action}}</EuiLink>
-            </:action>
-            <:text>
-              {{alert.text}}
-            </:text>
-            <:date>
-              {{alert.date}}
-            </:date>
-            <:badge>
-              <EuiBadge
-                @color={{alert.badgeColor}}
-              >
-                {{alert.badge}}
-              </EuiBadge>
-            </:badge>
-          </EuiHeaderAlert>
-        {{/each}}
-      </EuiFlyoutBody>
-      <EuiFlyoutFooter>
-        <EuiFlexGroup @justifyContent='spaceBetween' @alignItems='center'>
-          <EuiFlexItem @grow={{false}}>
-            <EuiButtonEmpty
-              @iconType='cross'
-              @onClick={{set this 'flyout' false}}
-              @flush='left'
-            >
-              Close
-            </EuiButtonEmpty>
-          </EuiFlexItem>
-          <EuiFlexItem @grow={{false}}>
-            <EuiText @color='subdued' @size='s'>
-              <p>Version 7.0</p>
-            </EuiText>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiFlyoutFooter>
-    </EuiFlyout>
-
-  </EuiPortal>
-
-{{/if}}
-```
-
-```js component
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiSwitch, EuiSpacer, EuiHeader, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderLogo, EuiHeaderSectionItemButton, EuiIcon, EuiPopover, EuiPopoverTitle, EuiHeaderAlert, EuiLink, EuiBadge, EuiPopoverFooter, EuiText, EuiPortal, EuiFlyout, EuiFlyoutHeader, EuiTitle, EuiFlyoutBody, EuiFlyoutFooter, EuiButtonEmpty } from '@ember-eui/core/components';
+import { eq, not } from 'ember-truth-helpers';
+import { set } from 'ember-set-helper';
+import { on } from '@ember/modifier';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -240,5 +93,156 @@ export default class DemoHeaderComponent extends Component {
       this.theme = 'default';
     }
   };
+
+  <template>
+    <EuiFlexGroup @alignItems='center' @gutterSize='m'>
+      <EuiFlexItem @grow={{false}}>
+        <EuiSwitch
+          @label='Make header fixed position'
+          @checked={{eq this.position 'fixed'}}
+          @onChange={{this.setPosition}}
+        />
+      </EuiFlexItem>
+
+      <EuiFlexItem @grow={{false}}>
+        <EuiSwitch
+          @label='Change theme to dark'
+          @checked={{eq this.theme 'dark'}}
+          @onChange={{this.setTheme}}
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+
+    <EuiSpacer />
+    <EuiHeader @position={{this.position}} @theme={{this.theme}}>
+      <EuiHeaderSection @side='left'>
+        <EuiHeaderSectionItem>
+          <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
+        </EuiHeaderSectionItem>
+      </EuiHeaderSection>
+      <EuiHeaderSection @side='right'>
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton
+            @notification={{true}}
+            aria-controls='headerFlyoutNewsFeed'
+            aria-expanded={{this.flyout}}
+            aria-haspopup='true'
+            aria-label='Alerts feed: Updates available'
+            {{on 'click' (set this 'flyout' true)}}
+          >
+            <EuiIcon @type='bell' />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiPopover
+            @isOpen={{this.popover}}
+            @closePopover={{set this 'popover' false}}
+            @anchorPosition='leftCenter'
+            @panelPaddingSize='none'
+            @repositionOnScroll={{true}}
+          >
+            <:button>
+              <EuiHeaderSectionItemButton
+                @notification={{6}}
+                aria-controls='headerPopoverNewsFeed'
+                aria-expanded={{this.popover}}
+                aria-haspopup='true'
+                aria-label='News feed: Updates available'
+                {{on 'click' (set this 'popover' (not this.popover))}}
+              >
+                <EuiIcon @type='popper' />
+              </EuiHeaderSectionItemButton>
+            </:button>
+            <:content>
+              <EuiPopoverTitle @paddingSize='s'>What&apos;s new</EuiPopoverTitle>
+              <div style='max-height:40vh; overflow-y: auto; padding: 4px'>
+                <EuiSpacer @size='s' />
+                {{#each this.alerts as |alert|}}
+                  <EuiHeaderAlert>
+                    <:title>
+                      {{alert.title}}
+                    </:title>
+                    <:action>
+                      <EuiLink>{{alert.action}}</EuiLink>
+                    </:action>
+                    <:text>
+                      {{alert.text}}
+                    </:text>
+                    <:date>
+                      {{alert.date}}
+                    </:date>
+                    <:badge>
+                      <EuiBadge @color={{alert.badgeColor}}>{{alert.badge}}</EuiBadge>
+                    </:badge>
+                  </EuiHeaderAlert>
+                {{/each}}
+              </div>
+              <EuiPopoverFooter @paddingSize='s'>
+                <EuiText @color='subdued' @size='s'>
+                  <p>Version 7.0</p>
+                </EuiText>
+              </EuiPopoverFooter>
+            </:content>
+          </EuiPopover>
+
+        </EuiHeaderSectionItem>
+      </EuiHeaderSection>
+    </EuiHeader>
+
+    {{#if this.flyout}}
+      <EuiPortal>
+        <EuiFlyout @onClose={{set this 'flyout' false}} @size='s'>
+          <EuiFlyoutHeader @hasBorder={{true}}>
+            <EuiTitle @size='s' @tagName="h2">What&apos;s new</EuiTitle>
+          </EuiFlyoutHeader>
+          <EuiFlyoutBody>
+            {{#each this.alerts as |alert|}}
+              <EuiHeaderAlert>
+                <:title>
+                  {{alert.title}}
+                </:title>
+                <:action>
+                  <EuiLink>{{alert.action}}</EuiLink>
+                </:action>
+                <:text>
+                  {{alert.text}}
+                </:text>
+                <:date>
+                  {{alert.date}}
+                </:date>
+                <:badge>
+                  <EuiBadge
+                    @color={{alert.badgeColor}}
+                  >
+                    {{alert.badge}}
+                  </EuiBadge>
+                </:badge>
+              </EuiHeaderAlert>
+            {{/each}}
+          </EuiFlyoutBody>
+          <EuiFlyoutFooter>
+            <EuiFlexGroup @justifyContent='spaceBetween' @alignItems='center'>
+              <EuiFlexItem @grow={{false}}>
+                <EuiButtonEmpty
+                  @iconType='cross'
+                  @onClick={{set this 'flyout' false}}
+                  @flush='left'
+                >
+                  Close
+                </EuiButtonEmpty>
+              </EuiFlexItem>
+              <EuiFlexItem @grow={{false}}>
+                <EuiText @color='subdued' @size='s'>
+                  <p>Version 7.0</p>
+                </EuiText>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </EuiFlyoutFooter>
+        </EuiFlyout>
+
+      </EuiPortal>
+
+    {{/if}}
+  </template>
 }
 ```

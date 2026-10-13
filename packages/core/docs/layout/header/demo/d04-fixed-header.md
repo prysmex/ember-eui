@@ -14,23 +14,9 @@ If you're using your own custom layout, or have custom UI that needs to sit belo
 
 </EuiText>
 
-```hbs template
-<EuiSwitch
-  @label={{'Make header fixed position'}}
-  @checked={{eq this.position 'fixed'}}
-  @onChange={{this.setPosition}}
-/>
-<EuiSpacer />
-<EuiHeader @position={{this.position}}>
-  <EuiHeaderSection @side='left'>
-    <EuiHeaderSectionItem>
-      <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-</EuiHeader>
-```
-
-```js component
+```gjs component
+import { EuiSwitch, EuiSpacer, EuiHeader, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderLogo } from '@ember-eui/core/components';
+import { eq } from 'ember-truth-helpers';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
@@ -45,5 +31,21 @@ export default class DemoHeaderComponent extends Component {
       this.position = 'static';
     }
   };
+
+  <template>
+    <EuiSwitch
+      @label={{'Make header fixed position'}}
+      @checked={{eq this.position 'fixed'}}
+      @onChange={{this.setPosition}}
+    />
+    <EuiSpacer />
+    <EuiHeader @position={{this.position}}>
+      <EuiHeaderSection @side='left'>
+        <EuiHeaderSectionItem>
+          <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
+        </EuiHeaderSectionItem>
+      </EuiHeaderSection>
+    </EuiHeader>
+  </template>
 }
 ```

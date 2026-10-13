@@ -10,13 +10,17 @@ order: 1
 
 </EuiText>
 
-```hbs template
-<div class="eui-textCenter">
-  <EuiCode>quarter</EuiCode>
-  <EuiHorizontalRule @size="quarter" />
-  <EuiCode>half</EuiCode>
-  <EuiHorizontalRule @size="half" />
-  <EuiCode>full (default)</EuiCode>
-  <EuiHorizontalRule />
-</div>
+```gjs component
+import { EuiCode, EuiHorizontalRule } from '@ember-eui/core/components';
+
+<template>
+  <div class="eui-textCenter">
+    <EuiCode>quarter</EuiCode>
+    <EuiHorizontalRule @size="quarter" />
+    <EuiCode>half</EuiCode>
+    <EuiHorizontalRule @size="half" />
+    <EuiCode>full (default)</EuiCode>
+    <EuiHorizontalRule />
+  </div>
+</template>
 ```

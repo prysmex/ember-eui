@@ -12,16 +12,20 @@ This allows you to use semantic tags with flex layouts, or to obey rules around 
 
 </EuiText>
 
-```hbs template
-<p>
-  <EuiFlexGroup class="flex-demo" @tagName="span">
-    <EuiFlexItem @tagName="span">
-      These items are nested within a paragraph tag
-    </EuiFlexItem>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
 
-    <EuiFlexItem @tagName="span">
-      So they use inline span tags to avoid HTML validation issues
-    </EuiFlexItem>
-  </EuiFlexGroup>
-</p>
+<template>
+  <p>
+    <EuiFlexGroup class="flex-demo" @tagName="span">
+      <EuiFlexItem @tagName="span">
+        These items are nested within a paragraph tag
+      </EuiFlexItem>
+
+      <EuiFlexItem @tagName="span">
+        So they use inline span tags to avoid HTML validation issues
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </p>
+</template>
 ```

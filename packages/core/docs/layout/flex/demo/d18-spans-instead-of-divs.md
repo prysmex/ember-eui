@@ -10,16 +10,20 @@ Inside elements that only accept inline content (e.g. a `<button>`), pass `@tagN
 
 </EuiText>
 
-```hbs template
-<button type="button">
-  <EuiFlexGroup class="flex-demo" @tagName="span">
-    <EuiFlexItem @tagName="span">
-      These items are within a button
-    </EuiFlexItem>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
 
-    <EuiFlexItem @tagName="span">
-      So they all specify @tagName=&ldquo;span&rdquo;
-    </EuiFlexItem>
-  </EuiFlexGroup>
-</button>
+<template>
+  <button type="button">
+    <EuiFlexGroup class="flex-demo" @tagName="span">
+      <EuiFlexItem @tagName="span">
+        These items are within a button
+      </EuiFlexItem>
+
+      <EuiFlexItem @tagName="span">
+        So they all specify @tagName=&ldquo;span&rdquo;
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </button>
+</template>
 ```

@@ -10,19 +10,8 @@ The `@gutterSize` arg can be applied to a parent `EuiFlexGrid` to adjust the spa
 
 </EuiText>
 
-```hbs template
-{{#each this.gutterSizes as |gutter|}}
-  <EuiFlexGrid class="flex-demo" @columns={{4}} @gutterSize={{gutter.size}}>
-    <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
-    <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
-    <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
-    <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
-  </EuiFlexGrid>
-  <EuiSpacer @size="m" />
-{{/each}}
-```
-
-```js component
+```gjs component
+import { EuiFlexGrid, EuiFlexItem, EuiSpacer } from '@ember-eui/core/components';
 import Component from '@glimmer/component';
 
 export default class GridGutterSizesDemo extends Component {
@@ -34,5 +23,17 @@ export default class GridGutterSizesDemo extends Component {
     { size: 'l', text: 'Large (default)' },
     { size: 'xl', text: 'Extra large' },
   ];
+
+  <template>
+    {{#each this.gutterSizes as |gutter|}}
+      <EuiFlexGrid class="flex-demo" @columns={{4}} @gutterSize={{gutter.size}}>
+        <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
+        <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
+        <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
+        <EuiFlexItem>{{gutter.text}}</EuiFlexItem>
+      </EuiFlexGrid>
+      <EuiSpacer @size="m" />
+    {{/each}}
+  </template>
 }
 ```

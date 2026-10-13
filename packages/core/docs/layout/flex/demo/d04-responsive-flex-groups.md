@@ -10,24 +10,28 @@ order: 4
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup class="flex-demo" @alignItems="center">
-  <EuiFlexItem @grow={{false}}>
-    <EuiIcon @type="faceSad" />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    On mobile, the icon will show above this text.
-  </EuiFlexItem>
-</EuiFlexGroup>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiIcon, EuiSpacer } from '@ember-eui/core/components';
 
-<EuiSpacer />
+<template>
+  <EuiFlexGroup class="flex-demo" @alignItems="center">
+    <EuiFlexItem @grow={{false}}>
+      <EuiIcon @type="faceSad" />
+    </EuiFlexItem>
+    <EuiFlexItem @grow={{false}}>
+      On mobile, the icon will show above this text.
+    </EuiFlexItem>
+  </EuiFlexGroup>
 
-<EuiFlexGroup class="flex-demo" @responsive={{false}} @alignItems="center">
-  <EuiFlexItem @grow={{false}}>
-    <EuiIcon @type="faceHappy" />
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    On mobile, the icon will stay to the left of this text.
-  </EuiFlexItem>
-</EuiFlexGroup>
+  <EuiSpacer />
+
+  <EuiFlexGroup class="flex-demo" @responsive={{false}} @alignItems="center">
+    <EuiFlexItem @grow={{false}}>
+      <EuiIcon @type="faceHappy" />
+    </EuiFlexItem>
+    <EuiFlexItem @grow={{false}}>
+      On mobile, the icon will stay to the left of this text.
+    </EuiFlexItem>
+  </EuiFlexGroup>
+</template>
 ```

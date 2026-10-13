@@ -12,20 +12,24 @@ In addition to the components mentioned prior, which lend themselves to more app
 
 </EuiText>
 
-```hbs template
-<EuiHeader>
-  <EuiHeaderSectionItem>
-    <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
-  </EuiHeaderSectionItem>
+```gjs component
+import { EuiHeader, EuiHeaderSectionItem, EuiHeaderLogo, EuiHeaderLinks, EuiHeaderLink } from '@ember-eui/core/components';
 
-  <EuiHeaderSectionItem>
-    <EuiHeaderLinks aria-label="App navigation links example" as |closeMobilePopover|>
-      <EuiHeaderLink @isActive={{true}} @onClick={{closeMobilePopover}}>Docs</EuiHeaderLink>
+<template>
+  <EuiHeader>
+    <EuiHeaderSectionItem>
+      <EuiHeaderLogo @iconType="logoElastic">Elastic</EuiHeaderLogo>
+    </EuiHeaderSectionItem>
 
-      <EuiHeaderLink @onClick={{closeMobilePopover}}>Code</EuiHeaderLink>
+    <EuiHeaderSectionItem>
+      <EuiHeaderLinks aria-label="App navigation links example" as |closeMobilePopover|>
+        <EuiHeaderLink @isActive={{true}} @onClick={{closeMobilePopover}}>Docs</EuiHeaderLink>
 
-      <EuiHeaderLink @iconType="help" @onClick={{closeMobilePopover}}>Help</EuiHeaderLink>
-    </EuiHeaderLinks>
-  </EuiHeaderSectionItem>
-</EuiHeader>
+        <EuiHeaderLink @onClick={{closeMobilePopover}}>Code</EuiHeaderLink>
+
+        <EuiHeaderLink @iconType="help" @onClick={{closeMobilePopover}}>Help</EuiHeaderLink>
+      </EuiHeaderLinks>
+    </EuiHeaderSectionItem>
+  </EuiHeader>
+</template>
 ```

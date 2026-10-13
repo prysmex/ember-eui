@@ -16,32 +16,36 @@ This can sometimes cause unwanted layouts of your content when there are multipl
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup class="flex-demo">
-  <EuiFlexItem>
-    <EuiButton @fill={{true}}>Buttons will widen</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <div>
-      <EuiButton @fill={{true}}>Unless you wrap them</EuiButton>
-    </div>
-  </EuiFlexItem>
-</EuiFlexGroup>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiButton, EuiSpacer, EuiText, EuiPanel } from '@ember-eui/core/components';
 
-<EuiSpacer />
+<template>
+  <EuiFlexGroup class="flex-demo">
+    <EuiFlexItem>
+      <EuiButton @fill={{true}}>Buttons will widen</EuiButton>
+    </EuiFlexItem>
+    <EuiFlexItem>
+      <div>
+        <EuiButton @fill={{true}}>Unless you wrap them</EuiButton>
+      </div>
+    </EuiFlexItem>
+  </EuiFlexGroup>
 
-<EuiText>
+  <EuiSpacer />
 
-Alternatively, you can sometimes opt to omit `EuiFlexItem` completely.
+  <EuiText>
 
-</EuiText>
+  Alternatively, you can sometimes opt to omit `EuiFlexItem` completely.
 
-<EuiSpacer />
+  </EuiText>
 
-<EuiFlexGroup @justifyContent="spaceBetween" @alignItems="center">
-  <EuiPanel @grow={{false}}>
-    Flex group parents will still <br /> align children as usual
-  </EuiPanel>
-  <EuiButton @fill={{true}}>Look ma, no EuiFlexItem</EuiButton>
-</EuiFlexGroup>
+  <EuiSpacer />
+
+  <EuiFlexGroup @justifyContent="spaceBetween" @alignItems="center">
+    <EuiPanel @grow={{false}}>
+      Flex group parents will still <br /> align children as usual
+    </EuiPanel>
+    <EuiButton @fill={{true}}>Look ma, no EuiFlexItem</EuiButton>
+  </EuiFlexGroup>
+</template>
 ```

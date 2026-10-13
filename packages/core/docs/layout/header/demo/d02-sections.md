@@ -14,51 +14,20 @@ This example has been simplified to showcase just the buttons within sections. S
 
 </EuiText>
 
-```hbs template
-<EuiHeader>
-  <EuiHeaderSection>
-    <EuiHeaderSectionItem>
-      <EuiHeaderLogo @iconType="logoElastic" @href="#" aria-label="Go to home page" {{on "click" this.preventDefault}} />
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton aria-label="Spaces menu">
-        <EuiAvatar @type="space" @name="Sales Team" @size="s" />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-
-  <EuiHeaderBreadcrumbs
-    aria-label="Header sections breadcrumbs"
-    @breadcrumbs={{this.breadcrumbs}}
-  />
-
-  <EuiHeaderSection @side="right">
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton @disabled={{true}} aria-label="Sitewide search">
-        <EuiIcon @type="magnify" @size="m" />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton @disabled={{true}} aria-label="Account menu">
-        <EuiAvatar @isDisabled={{true}} @name="John Username" @size="s" />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-    <EuiHeaderSectionItem>
-      <EuiHeaderSectionItemButton
-        @disabled={{true}}
-        aria-label="Apps menu with 1 new app"
-        @notification="1"
-      >
-        <EuiIcon @type="apps" @size="m" />
-      </EuiHeaderSectionItemButton>
-    </EuiHeaderSectionItem>
-  </EuiHeaderSection>
-</EuiHeader>
-```
-
-```js component
+```gjs component
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
+import { on } from '@ember/modifier';
+import {
+  EuiAvatar,
+  EuiHeader,
+  EuiHeaderBreadcrumbs,
+  EuiHeaderLogo,
+  EuiHeaderSection,
+  EuiHeaderSectionItem,
+  EuiHeaderSectionItemButton,
+  EuiIcon,
+} from '@ember-eui/core/components';
 
 export default class HeaderSectionsDemo extends Component {
   breadcrumbs = [
@@ -71,6 +40,48 @@ export default class HeaderSectionsDemo extends Component {
   preventDefault(event) {
     event.preventDefault();
   }
+
+  <template>
+    <EuiHeader>
+      <EuiHeaderSection>
+        <EuiHeaderSectionItem>
+          <EuiHeaderLogo @iconType="logoElastic" @href="#" aria-label="Go to home page" {{on "click" this.preventDefault}} />
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton aria-label="Spaces menu">
+            <EuiAvatar @type="space" @name="Sales Team" @size="s" />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+      </EuiHeaderSection>
+
+      <EuiHeaderBreadcrumbs
+        aria-label="Header sections breadcrumbs"
+        @breadcrumbs={{this.breadcrumbs}}
+      />
+
+      <EuiHeaderSection @side="right">
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton @disabled={{true}} aria-label="Sitewide search">
+            <EuiIcon @type="magnify" @size="m" />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton @disabled={{true}} aria-label="Account menu">
+            <EuiAvatar @isDisabled={{true}} @name="John Username" @size="s" />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>
+          <EuiHeaderSectionItemButton
+            @disabled={{true}}
+            aria-label="Apps menu with 1 new app"
+            @notification="1"
+          >
+            <EuiIcon @type="apps" @size="m" />
+          </EuiHeaderSectionItemButton>
+        </EuiHeaderSectionItem>
+      </EuiHeaderSection>
+    </EuiHeader>
+  </template>
 }
 ```
 
@@ -82,17 +93,15 @@ export default class HeaderSectionsDemo extends Component {
 
 </EuiText>
 
-```hbs template
-<EuiHeader @sections={{this.sections}} />
-```
+```gjs component
+import { EuiHeader } from '@ember-eui/core/components';
 
-```js component
-import Component from '@glimmer/component';
+const sections = [
+  { items: [{ text: 'Home' }, { text: 'Dashboards' }] },
+  { items: [{ text: 'Help' }] },
+];
 
-export default class HeaderSectionsDataDemo extends Component {
-  sections = [
-    { items: [{ text: 'Home' }, { text: 'Dashboards' }] },
-    { items: [{ text: 'Help' }] },
-  ];
-}
+<template>
+  <EuiHeader @sections={{sections}} />
+</template>
 ```

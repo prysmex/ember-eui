@@ -10,12 +10,16 @@ You can set `@wrap={{true}}` on `EuiFlexGroup` if it contains `EuiFlexItem`s wit
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup class="flex-demo" @wrap={{true}}>
-  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
 
-  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
+<template>
+  <EuiFlexGroup class="flex-demo" @wrap={{true}}>
+    <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
 
-  <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
-</EuiFlexGroup>
+    <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
+
+    <EuiFlexItem style="min-width: 300px">Min-width 300px</EuiFlexItem>
+  </EuiFlexGroup>
+</template>
 ```

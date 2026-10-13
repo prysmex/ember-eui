@@ -12,38 +12,42 @@ The default size is `l` (24px); upstream EUI defaults to `m` (16px), so pass `@s
 
 </EuiText>
 
-```hbs template
-<div class="guideDemo__highlightSpacer">
-  <EuiFlexGroup>
-    <EuiFlexItem>
-      <EuiCode>xs</EuiCode>
-      <EuiSpacer @size="xs" />
-    </EuiFlexItem>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiCode, EuiSpacer } from '@ember-eui/core/components';
 
-    <EuiFlexItem>
-      <EuiCode>s</EuiCode>
-      <EuiSpacer @size="s" />
-    </EuiFlexItem>
+<template>
+  <div class="guideDemo__highlightSpacer">
+    <EuiFlexGroup>
+      <EuiFlexItem>
+        <EuiCode>xs</EuiCode>
+        <EuiSpacer @size="xs" />
+      </EuiFlexItem>
 
-    <EuiFlexItem>
-      <EuiCode>m</EuiCode>
-      <EuiSpacer @size="m" />
-    </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiCode>s</EuiCode>
+        <EuiSpacer @size="s" />
+      </EuiFlexItem>
 
-    <EuiFlexItem>
-      <EuiCode>l (default)</EuiCode>
-      <EuiSpacer />
-    </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiCode>m</EuiCode>
+        <EuiSpacer @size="m" />
+      </EuiFlexItem>
 
-    <EuiFlexItem>
-      <EuiCode>xl</EuiCode>
-      <EuiSpacer @size="xl" />
-    </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiCode>l (default)</EuiCode>
+        <EuiSpacer />
+      </EuiFlexItem>
 
-    <EuiFlexItem>
-      <EuiCode>xxl</EuiCode>
-      <EuiSpacer @size="xxl" />
-    </EuiFlexItem>
-  </EuiFlexGroup>
-</div>
+      <EuiFlexItem>
+        <EuiCode>xl</EuiCode>
+        <EuiSpacer @size="xl" />
+      </EuiFlexItem>
+
+      <EuiFlexItem>
+        <EuiCode>xxl</EuiCode>
+        <EuiSpacer @size="xxl" />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </div>
+</template>
 ```

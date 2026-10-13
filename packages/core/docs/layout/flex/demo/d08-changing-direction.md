@@ -10,10 +10,14 @@ You can change direction using the `@direction` arg (`row`, `rowReverse`, `colum
 
 </EuiText>
 
-```hbs template
-<EuiFlexGroup class="flex-demo" @direction="column">
-  <EuiFlexItem>Flex item</EuiFlexItem>
-  <EuiFlexItem>Another flex item</EuiFlexItem>
-  <EuiFlexItem>Using the column direction</EuiFlexItem>
-</EuiFlexGroup>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem } from '@ember-eui/core/components';
+
+<template>
+  <EuiFlexGroup class="flex-demo" @direction="column">
+    <EuiFlexItem>Flex item</EuiFlexItem>
+    <EuiFlexItem>Another flex item</EuiFlexItem>
+    <EuiFlexItem>Using the column direction</EuiFlexItem>
+  </EuiFlexGroup>
+</template>
 ```

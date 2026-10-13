@@ -10,29 +10,33 @@ Alternatively, you can specify a `@grow` number between 1 and 10 for each `EuiFl
 
 </EuiText>
 
-```hbs template
-<div>
-  <EuiFlexGroup class="flex-demo">
-    <EuiFlexItem @grow={{1}}>1</EuiFlexItem>
-    <EuiFlexItem @grow={{2}}>
-      2<br />
-      wraps content if necessary
-    </EuiFlexItem>
-    <EuiFlexItem @grow={{3}}>
-      3<br />
-      expands_to_fit_if_content_cannot_wrap
-    </EuiFlexItem>
-    <EuiFlexItem @grow={{4}}>4</EuiFlexItem>
-  </EuiFlexGroup>
+```gjs component
+import { EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@ember-eui/core/components';
 
-  <EuiSpacer />
+<template>
+  <div>
+    <EuiFlexGroup class="flex-demo">
+      <EuiFlexItem @grow={{1}}>1</EuiFlexItem>
+      <EuiFlexItem @grow={{2}}>
+        2<br />
+        wraps content if necessary
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{3}}>
+        3<br />
+        expands_to_fit_if_content_cannot_wrap
+      </EuiFlexItem>
+      <EuiFlexItem @grow={{4}}>4</EuiFlexItem>
+    </EuiFlexGroup>
 
-  <EuiFlexGroup class="flex-demo">
-    <EuiFlexItem @grow={{6}}>6</EuiFlexItem>
-    <EuiFlexItem @grow={{3}}>3</EuiFlexItem>
-    <EuiFlexItem @grow={{1}}>1</EuiFlexItem>
-    <EuiFlexItem @grow={{3}}>3</EuiFlexItem>
-    <EuiFlexItem @grow={{6}}>6</EuiFlexItem>
-  </EuiFlexGroup>
-</div>
+    <EuiSpacer />
+
+    <EuiFlexGroup class="flex-demo">
+      <EuiFlexItem @grow={{6}}>6</EuiFlexItem>
+      <EuiFlexItem @grow={{3}}>3</EuiFlexItem>
+      <EuiFlexItem @grow={{1}}>1</EuiFlexItem>
+      <EuiFlexItem @grow={{3}}>3</EuiFlexItem>
+      <EuiFlexItem @grow={{6}}>6</EuiFlexItem>
+    </EuiFlexGroup>
+  </div>
+</template>
 ```

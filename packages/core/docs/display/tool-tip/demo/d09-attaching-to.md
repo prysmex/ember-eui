@@ -1,8 +1,8 @@
 ---
-order: 4
+order: 9
 ---
 
-# Attaching to
+# Attaching to (Ember EUI extension)
 
 <EuiText>
 <p>

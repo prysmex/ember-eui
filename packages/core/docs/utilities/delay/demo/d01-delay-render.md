@@ -6,42 +6,57 @@ order: 1
 
 <EuiText>
 
-Each button loads for a different time. The spinner only appears for
-loads longer than the 500ms delay.
+<strong>EuiDelayRender</strong> is a component for conditionally toggling the visibility of a child component. It will ensure that the child is hidden for at least 500ms (default). This allows delay UI rendering. That is helpful when you need to update aria live region(s) repeatedly.
 
 </EuiText>
 
+<EuiSpacer />
+
 ```hbs template
-<EuiFlexGroup @alignItems="center" @responsive={{false}}>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton {{on "click" (fn this.load 200)}}>Load for 200ms</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    <EuiButton {{on "click" (fn this.load 2000)}}>Load for 2s</EuiButton>
-  </EuiFlexItem>
-  <EuiFlexItem @grow={{false}}>
-    {{#if this.isLoading}}
-      <EuiDelayRender>
-        <EuiLoadingSpinner @size="l" />
-      </EuiDelayRender>
-    {{/if}}
-  </EuiFlexItem>
-</EuiFlexGroup>
+<EuiFlexItem>
+  <EuiFormRow>
+    <EuiCheckbox
+      @id='delay-render-checkbox'
+      @checked={{this.render}}
+      @label='Show child'
+      {{on 'change' this.onChangeRender}}
+    />
+  </EuiFormRow>
+  <EuiFormRow @label='Minimum delay'>
+    <EuiFieldNumber
+      @value={{this.minimumDelay}}
+      {{on 'input' this.onChangeMinimumDelay}}
+    />
+  </EuiFormRow>
+  <EuiFormRow @label='Child ({{if this.render "showing" "hidden"}})'>
+    <div>
+      {{#if this.render}}
+        <EuiDelayRender @delay={{this.minimumDelay}}>
+          <EuiLoadingSpinner @size='m' />
+        </EuiDelayRender>
+      {{/if}}
+    </div>
+  </EuiFormRow>
+</EuiFlexItem>
 ```
 
-```js component
+```javascript component
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DelayRenderDemo extends Component {
-  @tracked isLoading = false;
+export default class DelayRender extends Component {
+  @tracked minimumDelay = 3000;
+  @tracked render = false;
 
   @action
-  async load(ms) {
-    this.isLoading = true;
-    await new Promise((resolve) => setTimeout(resolve, ms));
-    this.isLoading = false;
+  onChangeMinimumDelay(event) {
+    this.minimumDelay = parseInt(event.target.value, 10);
+  }
+
+  @action
+  onChangeRender(event) {
+    this.render = event.target.checked;
   }
 }
 ```

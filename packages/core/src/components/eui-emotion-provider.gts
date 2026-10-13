@@ -17,7 +17,8 @@ import {
 } from '../utils/emotion/context.ts';
 import { euiGlobalStyles } from '../utils/eui/global-styles.ts';
 import EuiEmotionButton from './eui-emotion-button.gts';
-import { euiClass } from '../utils/eui/styles.ts';
+import { euiClass, memoizedStyles } from '../utils/eui/styles.ts';
+import { euiThemeCssVariables } from '../utils/eui/css-variables.ts';
 import { EuiSystemPreferences } from '../utils/emotion/system.ts';
 
 import type { EuiEmotionCache } from '../utils/emotion/context.ts';
@@ -137,39 +138,92 @@ export default class EuiEmotionProvider extends Component<EuiEmotionProviderSign
     return this.args.globalStyles !== false && this.isRoot;
   }
 
+  /**
+   * The root provider owns the page-level styles: upstream's global styles
+   * (unless `@globalStyles={{false}}`) in the `eui-global` cache, and the
+   * theme's CSS variables on `:root` (see `utils/eui/css-variables.ts`) in
+   * the `eui-vars` cache, re-injected when the theme changes. Variables are
+   * published even without global styles: they style nothing by
+   * themselves.
+   */
   syncGlobalStyles = (
     upstream: EuiBorealisContext,
-    enabled: boolean
+    isRoot: boolean,
+    globalStyles: boolean
   ): undefined => {
-    if (!enabled) return this.removeGlobalStyles();
-    this.globals ??= createEuiEmotionCache({ key: 'eui-global' });
-    this.globals.flush();
-    // Spread: the parts are template fragments, as in upstream's css(...).
-    this.globals.injectGlobal(...euiGlobalStyles(upstream));
+    if (!isRoot) {
+      this.removeGlobalStyles();
+      return this.removeCssVariables();
+    }
+    if (globalStyles) {
+      this.globals ??= createEuiEmotionCache({ key: 'eui-global' });
+      this.globals.flush();
+      // Spread: the parts are template fragments, as in upstream's css(...).
+      this.globals.injectGlobal(...euiGlobalStyles(upstream));
+    } else {
+      this.removeGlobalStyles();
+    }
+    this.variables ??= createEuiEmotionCache({ key: 'eui-vars' });
+    this.variables.flush();
+    this.variables.injectGlobal({
+      ':root': memoizedStyles(upstream, euiThemeCssVariables)
+    });
   };
+
+  private variables?: EuiEmotionCache;
 
   private removeGlobalStyles(): undefined {
     this.globals?.flush();
     this.globals = undefined;
   }
 
+  private removeCssVariables(): undefined {
+    this.variables?.flush();
+    this.variables = undefined;
+  }
+
   willDestroy() {
     super.willDestroy();
     this.removeGlobalStyles();
+    this.removeCssVariables();
     this.system?.destroy();
+  }
+
+  /**
+   * A nested provider whose theme differs from its parent's (own
+   * overrides, or a different color/contrast mode) scopes the theme CSS
+   * variables on its wrapper; otherwise they are inherited from `:root`.
+   */
+  get scopesCssVariables(): boolean {
+    if (this.isRoot) return false;
+    const parent = this.args.parent ?? getEuiThemeContext(this);
+    const overrides = this.args.borealisOverrides;
+    return (
+      (!!overrides && Object.keys(overrides).length > 0) ||
+      this.context.colorMode !== parent.colorMode ||
+      this.context.highContrastMode !== parent.highContrastMode
+    );
   }
 
   @cached
   get colorClass() {
-    const { colorMode, euiTheme } = this.context.upstream;
+    const upstream = this.context.upstream;
+    const { colorMode, euiTheme } = upstream;
     return euiClass(this.context, {
       label: `euiColorMode-${colorMode}`,
-      color: euiTheme.colors.textParagraph
+      color: euiTheme.colors.textParagraph,
+      ...(this.scopesCssVariables
+        ? memoizedStyles(upstream, euiThemeCssVariables)
+        : undefined)
     });
   }
 
   <template>
-    {{this.syncGlobalStyles this.context.upstream this.rendersGlobalStyles}}
+    {{this.syncGlobalStyles
+      this.context.upstream
+      this.isRoot
+      this.rendersGlobalStyles
+    }}
     {{#if (if (eq @wrapper undefined) true @wrapper)}}
       <span class="euiThemeProvider {{this.colorClass}}" ...attributes>
         {{yield

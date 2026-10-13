@@ -9,11 +9,23 @@ import EuiEmotionProvider from '#src/components/eui-emotion-provider.gts';
 import EuiPanel from '#src/components/eui-panel.gts';
 import { getEuiThemeContext } from '#src/utils/emotion/consume.ts';
 import { resolveBorealisTheme } from '#src/utils/eui/theme.ts';
+import {
+  euiCssVar,
+  euiCssVariableName,
+  euiThemeCssVariables
+} from '#src/utils/eui/css-variables.ts';
 import { EuiSystemPreferences } from '#src/utils/emotion/system.ts';
 
 import type { EuiThemeContext } from '#src/utils/emotion/context.ts';
+import type { EuiColorMode } from '#src/utils/emotion/theme.ts';
 import type { EuiHighContrastModeArg } from '#src/utils/eui/theme.ts';
 import type EuiEmotionService from '#src/services/eui-emotion.ts';
+
+/** Plain CSS reading a published variable. */
+const probeClass = 'eui-theming-probe';
+const probeStyle = document.createElement('style');
+probeStyle.textContent = `.${probeClass} { color: var(--eui-color-text-subdued); }`;
+document.head.appendChild(probeStyle);
 
 /** A controllable `window.matchMedia` with change events. */
 class FakeMedia {
@@ -59,6 +71,12 @@ function rgb(color: string) {
   const value = getComputedStyle(probe).color;
   probe.remove();
   return value;
+}
+
+function rootVar(name: string) {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
 }
 
 function el(selector: string): HTMLElement {
@@ -267,5 +285,184 @@ module('Integration | Theming | high contrast and system defaults', function (ho
       getComputedStyle(el('[data-panel]')).borderTopColor,
       rgb(EuiThemeBorealis.root.colors.plainDark)
     );
+  });
+});
+
+module('Integration | Theming | CSS variables', function (hooks) {
+  setupRenderingTest(hooks);
+
+  test('names are derived deterministically from token paths', function (assert) {
+    assert.strictEqual(
+      euiCssVariableName('colors.textSubdued'),
+      '--eui-color-text-subdued'
+    );
+    assert.strictEqual(
+      euiCssVariableName('colors.backgroundBasePlain'),
+      '--eui-color-background-base-plain'
+    );
+    assert.strictEqual(euiCssVariableName('size.s'), '--eui-size-s');
+    assert.strictEqual(
+      euiCssVariableName('border.radius.medium'),
+      '--eui-border-radius-medium'
+    );
+    assert.strictEqual(
+      euiCssVariableName('font.weight.semiBold'),
+      '--eui-font-weight-semi-bold'
+    );
+    assert.strictEqual(
+      euiCssVar('colors.danger', 'red'),
+      'var(--eui-color-danger, red)'
+    );
+    const theme = resolveBorealisTheme('light');
+    const vars = euiThemeCssVariables(theme);
+    assert.strictEqual(
+      vars['--eui-color-text-subdued'],
+      theme.euiTheme.colors.textSubdued
+    );
+    assert.strictEqual(vars['--eui-size-s'], '8px');
+    assert.strictEqual(vars['--eui-border-width-thin'], '1px');
+    assert.strictEqual(vars['--eui-font-family'], theme.euiTheme.font.family);
+    assert.ok(vars['--eui-font-size-s']!.endsWith('rem'));
+    assert.ok(vars['--eui-color-severity-danger']);
+    assert.notOk(
+      Object.keys(vars).some((key) => key.startsWith('--eui-color-vis')),
+      'vis colors are left out'
+    );
+    assert.ok(Object.keys(vars).length > 150);
+  });
+
+  test('the root provider publishes variables that follow color mode, contrast and overrides', async function (assert) {
+    class State {
+      @tracked mode: EuiColorMode = 'light';
+      @tracked contrast = false;
+      @tracked overrides = {};
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiEmotionProvider
+          @colorMode={{state.mode}}
+          @highContrastMode={{state.contrast}}
+          @borealisOverrides={{state.overrides}}
+        >
+          <p
+            class={{probeClass}}
+            data-probe
+          >Subdued</p>
+        </EuiEmotionProvider>
+      </template>
+    );
+    const light = resolveBorealisTheme('light').euiTheme;
+    const dark = resolveBorealisTheme('dark').euiTheme;
+    assert.strictEqual(
+      rootVar('--eui-color-text-subdued'),
+      light.colors.textSubdued
+    );
+    assert.strictEqual(
+      getComputedStyle(el('[data-probe]')).color,
+      rgb(light.colors.textSubdued)
+    );
+    assert.strictEqual(rootVar('--eui-size-s'), '8px');
+    assert.strictEqual(
+      document.querySelectorAll('style[data-emotion^="eui-vars"]').length > 0,
+      true,
+      'variables live in the provider-owned eui-vars cache'
+    );
+    assert.notOk(el('[data-probe]').getAttribute('style'), 'no inline styles');
+
+    state.mode = 'dark';
+    await settled();
+    assert.strictEqual(
+      rootVar('--eui-color-text-subdued'),
+      dark.colors.textSubdued
+    );
+    assert.strictEqual(
+      getComputedStyle(el('[data-probe]')).color,
+      rgb(dark.colors.textSubdued)
+    );
+
+    state.contrast = true;
+    await settled();
+    assert.strictEqual(
+      rootVar('--eui-color-border-base-plain'),
+      EuiThemeBorealis.root.colors.plainLight
+    );
+
+    state.overrides = { colors: { DARK: { textSubdued: '#663399' } } };
+    await settled();
+    assert.strictEqual(
+      rootVar('--eui-color-text-subdued').toLowerCase(),
+      '#663399'
+    );
+  });
+
+  test('nested providers with a different theme scope variables on their wrapper', async function (assert) {
+    class State {
+      @tracked mode: EuiColorMode = 'dark';
+    }
+    const state = new State();
+    await render(
+      <template>
+        <EuiEmotionProvider @colorMode="light">
+          <p class={{probeClass}} data-outer>Outer</p>
+          <EuiEmotionProvider @colorMode={{state.mode}} data-nested>
+            <p class={{probeClass}} data-inner>Inner</p>
+          </EuiEmotionProvider>
+          <EuiEmotionProvider data-same>
+            <p class={{probeClass}} data-same-inner>Same</p>
+          </EuiEmotionProvider>
+        </EuiEmotionProvider>
+      </template>
+    );
+    const light = resolveBorealisTheme('light').euiTheme;
+    const dark = resolveBorealisTheme('dark').euiTheme;
+    assert.strictEqual(
+      getComputedStyle(el('[data-inner]')).color,
+      rgb(dark.colors.textSubdued)
+    );
+    assert.strictEqual(
+      getComputedStyle(el('[data-outer]')).color,
+      rgb(light.colors.textSubdued),
+      'siblings outside keep the root values'
+    );
+    assert.strictEqual(
+      getComputedStyle(el('[data-same-inner]')).color,
+      rgb(light.colors.textSubdued)
+    );
+    assert.strictEqual(
+      getComputedStyle(el('[data-same]'))
+        .getPropertyValue('--eui-color-text-subdued')
+        .trim(),
+      light.colors.textSubdued,
+      'an unchanged nested theme inherits from :root'
+    );
+    assert.strictEqual(
+      rootVar('--eui-color-text-subdued'),
+      light.colors.textSubdued
+    );
+    state.mode = 'light';
+    await settled();
+    assert.strictEqual(
+      getComputedStyle(el('[data-inner]')).color,
+      rgb(light.colors.textSubdued)
+    );
+  });
+
+  test('variables are removed with the root provider', async function (assert) {
+    class State {
+      @tracked show = true;
+    }
+    const state = new State();
+    await render(
+      <template>
+        {{#if state.show}}
+          <EuiEmotionProvider @globalStyles={{false}} />
+        {{/if}}
+      </template>
+    );
+    assert.ok(rootVar('--eui-size-s'), 'published even without global styles');
+    state.show = false;
+    await settled();
+    assert.strictEqual(rootVar('--eui-size-s'), '');
   });
 });

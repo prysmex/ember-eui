@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render } from '@ember/test-helpers';
+import { click, render } from '@ember/test-helpers';
 
 import EuiCallOut from '#src/components/eui-call-out.gts';
 
@@ -36,5 +36,52 @@ module('Integration | Component | eui-call-out', function (hooks) {
     assert.dom('.euiCallOut').hasAttribute('data-size', 's');
     assert.dom('h3.euiCallOutHeader__title').hasText('Block title');
     assert.dom('.euiCallOut .euiCallOut__additionalContent').hasText('Block body');
+  });
+
+  test('@actionProps render a small primary EuiButton and secondary EuiButtonEmpty in the callout color', async function (assert) {
+    const clicks: string[] = [];
+    const actionProps = {
+      primary: { children: 'Update now', onClick: () => clicks.push('primary'), 'data-test-subj': 'p-action' },
+      secondary: { children: 'Learn more', href: '#learn', className: 'extra' }
+    };
+    await render(
+      <template>
+        <EuiCallOut @title="Needs update" @color="warning" @text="It may take a while" @actionProps={{actionProps}} />
+      </template>
+    );
+
+    assert.dom('.euiCallOut button.euiCallOutAction').hasText('Update now').hasAttribute('data-test-subj', 'p-action');
+    assert.dom('.euiCallOut a.euiCallOutAction.extra').hasText('Learn more').hasAttribute('href', '#learn');
+    assert.dom('button.euiCallOutAction').hasClass('euiButton--small').hasClass('euiButton--warning');
+    assert.dom('a.euiCallOutAction').hasClass('euiButtonEmpty--small').hasClass('euiButtonEmpty--warning');
+
+    await click('button.euiCallOutAction');
+    assert.deepEqual(clicks, ['primary']);
+  });
+
+  test('a secondary action can stand alone, and actionProps combine with the <:actions> block', async function (assert) {
+    const actionProps = { secondary: { children: 'Only secondary' } };
+    await render(
+      <template>
+        <EuiCallOut @title="Alone" @actionProps={{actionProps}}>
+          <:actions><button type="button" class="from-block">Block</button></:actions>
+        </EuiCallOut>
+      </template>
+    );
+
+    assert.dom('.euiCallOutAction').exists({ count: 1 });
+    assert.dom('.euiCallOutAction + .from-block').exists('block content follows the props actions');
+  });
+
+  test('no actions area without actionProps or the block', async function (assert) {
+    await render(<template><EuiCallOut @title="Plain" /></template>);
+    assert.dom('.euiCallOutAction').doesNotExist();
+  });
+
+  test('an action with tooltipProps gets a tooltip', async function (assert) {
+    const actionProps = { primary: { children: 'Hover', tooltipProps: { content: 'Tip text' } } };
+    await render(<template><EuiCallOut @title="T" @actionProps={{actionProps}} /></template>);
+
+    assert.dom('.euiToolTipAnchor .euiCallOutAction').exists();
   });
 });

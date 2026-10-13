@@ -283,6 +283,7 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@confirmButtonDisabled` | `boolean` |  | Disables the confirm button, e.g. until a checkbox is checked. |
 | `@isLoading` | `boolean` |  | Shows a spinner in the confirm button while the action runs. |
 | `@maxWidth` |  | `true` | Width cap, as `EuiModal`'s `@maxWidth`. |
+| `@outsideClickCloses` | `boolean` | `false` | Clicking the mask around the modal calls `@onCancel`. |
 | `@onCancel` (required) | `() => void` |  | Called by the cancel and close buttons and Escape. Close the modal here. |
 | `@onConfirm` (required) | `() => void` |  | Called by the confirm button. |
 

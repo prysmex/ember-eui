@@ -66,6 +66,7 @@ import type {
 } from '../utils/data-grid/types.ts';
 import type { ComponentLike } from '@glint/template';
 import type { EuiDataGridCustomBodyProps } from './eui-data-grid/custom-body.gts';
+import type { EuiDataGridDefaultCellPopoverSignature } from './eui-data-grid/default-cell-popover.gts';
 
 export type * from '../utils/data-grid/types.ts';
 export type {
@@ -166,6 +167,14 @@ export interface EuiDataGridCellPopoverElementProps {
   schema?: string | null;
   cellContentsElement: HTMLElement | null;
   setCellPopoverProps: (props: Record<string, unknown>) => void;
+  /** The column's cell actions, as rendered in the default popover footer. */
+  cellActions: ComponentLike;
+  /**
+   * The standard popover display (`EuiText` around its block, or the cell's
+   * JSON in a code block for the `json` schema, then the cell actions), to
+   * fall back to it for some columns: `<@DefaultCellPopover>{{yield}}</@DefaultCellPopover>`.
+   */
+  DefaultCellPopover: ComponentLike<EuiDataGridDefaultCellPopoverSignature>;
 }
 
 export interface EuiDataGridSignature {
@@ -188,7 +197,10 @@ export interface EuiDataGridSignature {
     renderCellValue?: ComponentLike<EuiDataGridCellValueSignature>;
     /** Extra data passed to every cell renderer as `@cellContext`. */
     cellContext?: Record<string, unknown>;
-    /** Component rendering the expansion popover; or use the `<:cellPopover>` block. */
+    /**
+     * Component rendering the expansion popover (its default block renders
+     * the cell value with `@isDetails`); or use the `<:cellPopover>` block.
+     */
     renderCellPopover?: ComponentLike<{
       Args: EuiDataGridCellPopoverElementProps;
       Blocks: { default: [] };
@@ -259,12 +271,7 @@ export interface EuiDataGridSignature {
     /** Cell content when `@renderCellValue` is not given. */
     cell: [EuiDataGridCellValueElementProps];
     /** Expansion popover content when `@renderCellPopover` is not given. */
-    cellPopover: [
-      EuiDataGridCellPopoverElementProps & {
-        /** The column's cell actions, as rendered in the default popover footer. */
-        cellActions: ComponentLike;
-      }
-    ];
+    cellPopover: [EuiDataGridCellPopoverElementProps];
     /** Footer cell content when `@renderFooterCellValue` is not given. */
     footerCell: [EuiDataGridCellValueElementProps];
     /** Header of a control column without `headerCellRender`. */

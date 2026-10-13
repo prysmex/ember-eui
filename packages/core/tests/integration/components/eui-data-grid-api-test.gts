@@ -18,7 +18,9 @@ import EuiButtonEmpty from '#src/components/eui-button-empty.gts';
 import type { TOC } from '@ember/component/template-only';
 
 import type {
+  EuiDataGridCellPopoverElementProps,
   EuiDataGridCellValueSignature,
+  EuiDataGridDisplaySelectorCustomRenderProps,
   EuiDataGridColumn,
   EuiDataGridCustomBodyProps,
   EuiDataGridCustomToolbarProps,
@@ -803,6 +805,142 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       window.getSelection()!.removeAllRanges();
       await click(cell(1, 1));
       assert.strictEqual(copySelection().text, 'b1');
+    });
+  });
+
+  module('other upstream props', function () {
+    test('showDisplaySelector.additionalDisplaySettings and customRender', async function (assert) {
+      const Extra: TOC<{ Args: Record<string, never> }> = <template>
+        <p data-test-subj="extraSettings">Extra settings</p>
+      </template>;
+      const Custom: TOC<{ Args: EuiDataGridDisplaySelectorCustomRenderProps }> = <template>
+        <div class="customDisplay">
+          {{#if @additionalDisplaySettings}}<@additionalDisplaySettings />{{/if}}
+          {{#if @rowHeightControl}}<@rowHeightControl />{{/if}}
+          {{#if @densityControl}}<@densityControl />{{/if}}
+          <span class="hasReset">{{if @resetButton "yes" "no"}}</span>
+        </div>
+      </template>;
+      const onlyExtra = {
+        showDisplaySelector: { allowDensity: false, allowRowHeight: false, additionalDisplaySettings: Extra }
+      };
+      const custom = { showDisplaySelector: { additionalDisplaySettings: Extra, customRender: Custom } };
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid id="extra" aria-label="A" @columns={{COLUMNS}} @rowCount={{1}} @toolbarVisibility={{onlyExtra}} />
+            <EuiDataGrid id="custom" aria-label="B" @columns={{COLUMNS}} @rowCount={{1}} @toolbarVisibility={{custom}} />
+          </div>
+        </template>
+      );
+
+      await click('#extra [data-test-subj=dataGridDisplaySelectorButton]');
+      assert.dom('[data-test-subj=extraSettings]', document.body).exists('the popover shows with only extra settings');
+      assert.dom('[data-test-subj=densityButtonGroup]', document.body).doesNotExist();
+      await click('#extra [data-test-subj=dataGridDisplaySelectorButton]');
+
+      await click('#custom [data-test-subj=dataGridDisplaySelectorButton]');
+      const custom2 = el('.customDisplay', document.body);
+      const order = Array.from(
+        custom2.querySelectorAll('[data-test-subj=extraSettings], [data-test-subj=rowHeightButtonGroup], [data-test-subj=densityButtonGroup]'),
+        (node) => node.getAttribute('data-test-subj')
+      );
+      assert.deepEqual(order, ['extraSettings', 'rowHeightButtonGroup', 'densityButtonGroup']);
+      assert.dom('.hasReset', custom2).hasText('no', 'no reset button before changes');
+      await click(el('[data-test-subj=densityButtonGroup] .euiButtonGroupButton', custom2));
+      assert.dom('.hasReset', custom2).hasText('yes');
+      assert.dom('#custom').hasClass('euiDataGrid--fontSizeSmall', 'the controls keep working');
+    });
+
+    test('renderCellPopover gets cellActions and DefaultCellPopover', async function (assert) {
+      const CellValue: TOC<EuiDataGridCellValueSignature> = <template>
+        <span class="value" data-details={{if @isDetails "yes" "no"}}>{{@columnId}}{{@rowIndex}}</span>
+      </template>;
+      const Popover: TOC<{ Args: EuiDataGridCellPopoverElementProps; Blocks: { default: [] } }> = <template>
+        <div class="customPopover">
+          {{#let @DefaultCellPopover as |DefaultCellPopover|}}
+            <DefaultCellPopover>{{yield}}</DefaultCellPopover>
+          {{/let}}
+        </div>
+      </template>;
+      const columns: EuiDataGridColumn[] = [
+        {
+          id: 'a',
+          cellActions: [{ iconType: 'plusInCircle', label: 'Filter in', onClick: () => {}, 'data-test-subj': 'filterIn' }]
+        },
+        { id: 'json', schema: 'json' }
+      ];
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{columns}}
+              @rowCount={{1}}
+              @toolbarVisibility={{false}}
+              @renderCellValue={{CellValue}}
+              @renderCellPopover={{Popover}}
+            />
+          </div>
+        </template>
+      );
+
+      await click(cell(0, 0));
+      await press('Enter');
+      const popover = el('.customPopover', document.body);
+      assert.dom('.euiText .value', popover).hasAttribute('data-details', 'yes', 'children in EuiText');
+      assert.dom('.euiPopoverFooter [data-test-subj=filterIn]', popover).exists('cell actions footer');
+      await press('Escape', popover.querySelector('button')!);
+    });
+
+    test('the <:cellPopover> block gets DefaultCellPopover (json schema)', async function (assert) {
+      const columns: EuiDataGridColumn[] = [{ id: 'json', schema: 'json' }];
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid aria-label="Grid" @columns={{columns}} @rowCount={{1}} @toolbarVisibility={{false}}>
+              <:cell>{"a":1}</:cell>
+              <:cellPopover as |popover|>
+                <div class="blockPopover"><popover.DefaultCellPopover /></div>
+              </:cellPopover>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+      await click(cell(0, 0));
+      await press('Enter');
+      assert.dom('.blockPopover .euiCodeBlock', document.body).includesText('"a": 1');
+    });
+
+    test('virtualizationOptions className, style and initial scroll offsets', async function (assert) {
+      const options = {
+        className: 'myVirtualized',
+        style: { outline: '1px solid red', zIndex: 3 },
+        initialScrollTop: 340
+      };
+      await render(
+        <template>
+          <div style="width:400px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{100}}
+              @height={{300}}
+              @toolbarVisibility={{false}}
+              @virtualizationOptions={{options}}
+            >
+              <:cell as |c|>{{c.columnId}}{{c.rowIndex}}</:cell>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+      await waitUntil(() => el('.euiDataGrid__virtualized').scrollTop === 340);
+      const outer = el('.euiDataGrid__virtualized');
+      assert.dom(outer).hasClass('myVirtualized');
+      assert.strictEqual(outer.style.outlineStyle, 'solid');
+      assert.strictEqual(outer.style.zIndex, '3');
+      assert.strictEqual(outer.style.overflow, 'auto', 'own styles kept');
+      assert.strictEqual(outer.scrollTop, 340);
     });
   });
 });

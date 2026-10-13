@@ -212,6 +212,21 @@ export interface EuiDataGridToolBarVisibilityDisplaySelectorOptions {
   allowDensity?: boolean;
   allowRowHeight?: boolean;
   allowResetButton?: boolean;
+  /** A component appended to the bottom of the display settings popover. */
+  additionalDisplaySettings?: ComponentLike;
+  /**
+   * Completely custom layout of the display settings popover: a component
+   * receiving the default controls (undefined when disabled).
+   */
+  customRender?: ComponentLike<{ Args: EuiDataGridDisplaySelectorCustomRenderProps }>;
+}
+
+/** Arguments of `showDisplaySelector.customRender`. */
+export interface EuiDataGridDisplaySelectorCustomRenderProps {
+  densityControl?: ComponentLike;
+  rowHeightControl?: ComponentLike;
+  additionalDisplaySettings?: ComponentLike;
+  resetButton?: ComponentLike;
 }
 
 /** Where `toolbarVisibility.additionalControls.left` components go. */
@@ -281,6 +296,14 @@ export interface EuiDataGridCustomToolbarProps {
 }
 
 export interface EuiDataGridVirtualizationOptions {
+  /** Extra class of the scrolling body element. */
+  className?: string;
+  /** Extra inline styles of the scrolling body element. */
+  style?: Record<string, string | number>;
+  /** Initial vertical scroll offset in px. */
+  initialScrollTop?: number;
+  /** Initial horizontal scroll offset in px. */
+  initialScrollLeft?: number;
   /** Extra rows rendered above/below the viewport. Defaults to 1. */
   overscanRowCount?: number;
   /** Extra columns rendered before/after the viewport. Defaults to 1. */

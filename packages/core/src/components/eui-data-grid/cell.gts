@@ -28,12 +28,11 @@ import {
   enableAndFocusInteractives
 } from '../../utils/data-grid/focus.ts';
 import * as keys from '../../utils/keys.ts';
-import EuiCodeBlock from '../eui-code-block.gts';
 import EuiLiveAnnouncer from '../eui-live-announcer.gts';
 import EuiPopover from '../eui-popover.gts';
 import EuiScreenReaderOnly from '../eui-screen-reader-only.gts';
-import EuiText from '../eui-text.gts';
 import EuiDataGridCopyMarker from './copy-marker.gts';
+import EuiDataGridDefaultCellPopover from './default-cell-popover.gts';
 import {
   EuiDataGridCellActions,
   EuiDataGridCellPopoverActions
@@ -407,19 +406,6 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     return this.contentElement?.innerText ?? '';
   }
 
-  get jsonPopoverText(): string {
-    let formatted = this.cellText;
-    try {
-      formatted = JSON.stringify(JSON.parse(formatted), null, 2);
-    } catch {
-      // not JSON: show as is
-    }
-    return formatted;
-  }
-
-  get isJsonSchema(): boolean {
-    return this.schema === 'json';
-  }
 
   @action
   setCellPopoverProps(props: Record<string, unknown>): void {
@@ -1014,6 +1000,24 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                 <div data-test-subject="cellPopoverAnchor"></div>
               </:button>
               <:content>
+                {{#let
+                  (component
+                    EuiDataGridCellPopoverActions
+                    column=this.column
+                    rowIndex=this.rowIndex
+                    colIndex=@colIndex
+                  )
+                  as |CellActions|
+                }}
+                {{#let
+                  (component
+                    EuiDataGridDefaultCellPopover
+                    schema=this.schema
+                    cellContentsElement=this.contentElement
+                    cellActions=CellActions
+                  )
+                  as |DefaultCellPopover|
+                }}
                 <div data-test-subj="euiDataGridExpansionPopover">
                   {{#if @grid.args.renderCellPopover}}
                     {{#let @grid.args.renderCellPopover as |PopoverRenderer|}}
@@ -1024,6 +1028,8 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         @schema={{this.schema}}
                         @cellContentsElement={{this.contentElement}}
                         @setCellPopoverProps={{this.setCellPopoverProps}}
+                        @cellActions={{CellActions}}
+                        @DefaultCellPopover={{DefaultCellPopover}}
                       >
                         {{#if this.renderer}}
                           {{#let this.renderer as |Renderer|}}
@@ -1051,29 +1057,17 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                         schema=this.schema
                         cellContentsElement=this.contentElement
                         setCellPopoverProps=this.setCellPopoverProps
-                        cellActions=(component
-                          EuiDataGridCellPopoverActions
-                          column=this.column
-                          rowIndex=this.rowIndex
-                          colIndex=@colIndex
-                        )
+                        cellActions=CellActions
+                        DefaultCellPopover=DefaultCellPopover
                       )
                       to="cellPopover"
                     }}
-                  {{else if this.isJsonSchema}}
-                    <EuiCodeBlock
-                      @isCopyable={{true}}
-                      @transparentBackground={{true}}
-                      @paddingSize="none"
-                      @language="json"
-                    >{{this.jsonPopoverText}}</EuiCodeBlock>
-                    <EuiDataGridCellPopoverActions
-                      @column={{this.column}}
-                      @rowIndex={{this.rowIndex}}
-                      @colIndex={{@colIndex}}
-                    />
                   {{else}}
-                    <EuiText>
+                    <EuiDataGridDefaultCellPopover
+                      @schema={{this.schema}}
+                      @cellContentsElement={{this.contentElement}}
+                      @cellActions={{CellActions}}
+                    >
                       {{#if this.renderer}}
                         {{#let this.renderer as |Renderer|}}
                           <Renderer
@@ -1093,14 +1087,11 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
                       {{else}}
                         {{yield this.detailsValueProps to="cell"}}
                       {{/if}}
-                    </EuiText>
-                    <EuiDataGridCellPopoverActions
-                      @column={{this.column}}
-                      @rowIndex={{this.rowIndex}}
-                      @colIndex={{@colIndex}}
-                    />
+                    </EuiDataGridDefaultCellPopover>
                   {{/if}}
                 </div>
+                {{/let}}
+                {{/let}}
               </:content>
             </EuiPopover>
           </:popover>

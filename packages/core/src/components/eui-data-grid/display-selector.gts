@@ -24,6 +24,8 @@ import EuiPopoverFooter from '../eui-popover-footer.gts';
 import EuiToolTip from '../eui-tool-tip.gts';
 import { getNestedObjectOptions } from '../../utils/data-grid/toolbar.ts';
 
+import type { TOC } from '@ember/component/template-only';
+import type { ComponentLike } from '@glint/template';
 import type EuiI18n from '../../services/eui-i18n.ts';
 import type EuiDataGrid from '../eui-data-grid.gts';
 import type {
@@ -89,8 +91,20 @@ export default class EuiDataGridDisplaySelector extends Component<EuiDataGridDis
     return getNestedObjectOptions(this.options, 'allowRowHeight');
   }
 
+  /** Upstream `additionalDisplaySettings`: a component appended to the popover. */
+  get additionalDisplaySettings(): ComponentLike | undefined {
+    const options = this.options;
+    return typeof options === 'object' ? options.additionalDisplaySettings : undefined;
+  }
+
+  /** Upstream `customRender`: lays out the popover's controls. */
+  get customRender(): EuiDataGridToolBarVisibilityDisplaySelectorOptions['customRender'] {
+    const options = this.options;
+    return typeof options === 'object' ? options.customRender : undefined;
+  }
+
   get show(): boolean {
-    return this.showDensity || this.showRowHeight;
+    return this.showDensity || this.showRowHeight || !!this.additionalDisplaySettings;
   }
 
   /* density -------------------------------------------------------------- */
@@ -238,73 +252,100 @@ export default class EuiDataGridDisplaySelector extends Component<EuiDataGridDis
           </EuiToolTip>
         </:button>
         <:content>
-          {{#if this.showDensity}}
-            <EuiFormRow
-              @label={{this.t "euiDisplaySelector.densityLabel" "Density"}}
-              @display="columnCompressed"
-            >
-              <EuiButtonGroup
-                @legend={{this.t "euiDisplaySelector.densityLabel" "Density"}}
-                @buttonSize="s"
-                @isFullWidth={{true}}
-                @options={{this.densityOptions}}
-                @idSelected={{this.density}}
-                @onChange={{this.setDensity}}
-                data-test-subj="densityButtonGroup"
+          {{#if this.customRender}}
+            {{#let this.customRender as |CustomRender|}}
+              <CustomRender
+                @densityControl={{if this.showDensity (component DensityControl selector=this)}}
+                @rowHeightControl={{if this.showRowHeight (component RowHeightControl selector=this)}}
+                @additionalDisplaySettings={{this.additionalDisplaySettings}}
+                @resetButton={{if this.showResetButton (component ResetButton selector=this)}}
               />
-            </EuiFormRow>
-          {{/if}}
-          {{#if this.showRowHeight}}
-            <EuiFormRow
-              @label={{this.t "euiDisplaySelector.rowHeightLabel" "Lines per row"}}
-              @display="columnCompressed"
-            >
-              <EuiFlexGroup
-                @gutterSize="s"
-                @responsive={{false}}
-                {{this.syncLineCount this.rowHeightsOptions.defaultHeight}}
-              >
-                <div class={{this.rowHeightGroupClass}}>
-                  <EuiButtonGroup
-                    @legend={{this.t "euiDisplaySelector.rowHeightLabel" "Lines per row"}}
-                    @buttonSize="s"
-                    @isFullWidth={{true}}
-                    @options={{this.rowHeightButtonOptions}}
-                    @idSelected={{this.rowHeightSelection}}
-                    @onChange={{this.setRowHeight}}
-                    data-test-subj="rowHeightButtonGroup"
-                  />
-                </div>
-                <EuiFieldNumber
-                  aria-label={{this.t "euiDisplaySelector.rowHeightLabel" "Lines per row"}}
-                  @compressed={{true}}
-                  @min={{1}}
-                  @max={{20}}
-                  @disabled={{if (eqStatic this.rowHeightSelection) false true}}
-                  @value={{this.lineCountInput}}
-                  data-test-subj="lineCountNumber"
-                  {{on "change" this.setLineCountHeight}}
-                />
-              </EuiFlexGroup>
-            </EuiFormRow>
-          {{/if}}
-          {{#if this.showResetButton}}
-            <EuiPopoverFooter>
-              <EuiFlexGroup @justifyContent="flexEnd" @responsive={{false}}>
-                <EuiButtonEmpty
-                  @flush="both"
-                  @size="xs"
-                  data-test-subj="resetDisplaySelector"
-                  {{on "click" @grid.resetDisplayOptions}}
-                >{{this.t "euiDisplaySelector.resetButtonText" "Reset to default"}}</EuiButtonEmpty>
-              </EuiFlexGroup>
-            </EuiPopoverFooter>
+            {{/let}}
+          {{else}}
+            {{#if this.showDensity}}<DensityControl @selector={{this}} />{{/if}}
+            {{#if this.showRowHeight}}<RowHeightControl @selector={{this}} />{{/if}}
+            {{#if this.additionalDisplaySettings}}
+              {{#let this.additionalDisplaySettings as |AdditionalDisplaySettings|}}
+                <AdditionalDisplaySettings />
+              {{/let}}
+            {{/if}}
+            {{#if this.showResetButton}}<ResetButton @selector={{this}} />{{/if}}
           {{/if}}
         </:content>
       </EuiPopover>
     {{/if}}
   </template>
 }
+
+type PartSignature = TOC<{ Args: { selector: EuiDataGridDisplaySelector } }>;
+
+/** Density button group (upstream `densityControl`). */
+const DensityControl: PartSignature = <template>
+  <EuiFormRow
+    @label={{@selector.t "euiDisplaySelector.densityLabel" "Density"}}
+    @display="columnCompressed"
+  >
+    <EuiButtonGroup
+      @legend={{@selector.t "euiDisplaySelector.densityLabel" "Density"}}
+      @buttonSize="s"
+      @isFullWidth={{true}}
+      @options={{@selector.densityOptions}}
+      @idSelected={{@selector.density}}
+      @onChange={{@selector.setDensity}}
+      data-test-subj="densityButtonGroup"
+    />
+  </EuiFormRow>
+</template>;
+
+/** Lines per row control (upstream `rowHeightControl`). */
+const RowHeightControl: PartSignature = <template>
+  <EuiFormRow
+    @label={{@selector.t "euiDisplaySelector.rowHeightLabel" "Lines per row"}}
+    @display="columnCompressed"
+  >
+    <EuiFlexGroup
+      @gutterSize="s"
+      @responsive={{false}}
+      {{@selector.syncLineCount @selector.rowHeightsOptions.defaultHeight}}
+    >
+      <div class={{@selector.rowHeightGroupClass}}>
+        <EuiButtonGroup
+          @legend={{@selector.t "euiDisplaySelector.rowHeightLabel" "Lines per row"}}
+          @buttonSize="s"
+          @isFullWidth={{true}}
+          @options={{@selector.rowHeightButtonOptions}}
+          @idSelected={{@selector.rowHeightSelection}}
+          @onChange={{@selector.setRowHeight}}
+          data-test-subj="rowHeightButtonGroup"
+        />
+      </div>
+      <EuiFieldNumber
+        aria-label={{@selector.t "euiDisplaySelector.rowHeightLabel" "Lines per row"}}
+        @compressed={{true}}
+        @min={{1}}
+        @max={{20}}
+        @disabled={{if (eqStatic @selector.rowHeightSelection) false true}}
+        @value={{@selector.lineCountInput}}
+        data-test-subj="lineCountNumber"
+        {{on "change" @selector.setLineCountHeight}}
+      />
+    </EuiFlexGroup>
+  </EuiFormRow>
+</template>;
+
+/** Reset to default button (upstream `resetButton`). */
+const ResetButton: PartSignature = <template>
+  <EuiPopoverFooter>
+    <EuiFlexGroup @justifyContent="flexEnd" @responsive={{false}}>
+      <EuiButtonEmpty
+        @flush="both"
+        @size="xs"
+        data-test-subj="resetDisplaySelector"
+        {{on "click" @selector.args.grid.resetDisplayOptions}}
+      >{{@selector.t "euiDisplaySelector.resetButtonText" "Reset to default"}}</EuiButtonEmpty>
+    </EuiFlexGroup>
+  </EuiPopoverFooter>
+</template>;
 
 function eqStatic(selection: string): boolean {
   return selection === 'static';

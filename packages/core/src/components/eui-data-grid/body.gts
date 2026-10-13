@@ -25,6 +25,7 @@ import type {
   EuiDataGridScrollToProps
 } from '../../utils/data-grid/types.ts';
 
+const UNITLESS = new Set(['opacity', 'z-index', 'flex-grow', 'flex-shrink', 'line-height', 'order']);
 // Offset for the cell actions menu when scrolling a cell below the sticky header
 const ACTIONS_MENU_HEIGHT = 21;
 
@@ -461,8 +462,20 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
     };
   });
 
+  private initialScrollApplied = false;
+
+  /** `virtualizationOptions.initialScrollTop/Left`, once rows can scroll. */
+  private applyInitialScroll(): void {
+    if (this.initialScrollApplied) return;
+    this.initialScrollApplied = true;
+    const { initialScrollTop, initialScrollLeft } = this.grid.args.virtualizationOptions ?? {};
+    if (initialScrollTop == null && initialScrollLeft == null) return;
+    this.scrollTo({ scrollTop: initialScrollTop, scrollLeft: initialScrollLeft });
+  }
+
   setupInner = modifier((element: HTMLElement) => {
     this.innerElement = element;
+    afterRender(this, () => this.applyInitialScroll());
     // horizontal scrollbars appear/disappear when the inner width changes
     const stop = observeResize([element], this.measure);
     return () => {
@@ -701,14 +714,29 @@ export default class EuiDataGridBody extends EuiDataGridBodyBase<EuiDataGridBody
   @cached
   get outerClass(): string {
     const { context, body } = this.styles;
-    return `euiDataGrid__virtualized ${euiClass(context, body.euiDataGridBody, body.virtualized)}`;
+    const className = this.grid.args.virtualizationOptions?.className;
+    return `euiDataGrid__virtualized ${euiClass(context, body.euiDataGridBody, body.virtualized)}${className ? ` ${className}` : ''}`;
+  }
+
+  /** `virtualizationOptions.style`, merged over the body's own styles (like react-window). */
+  @cached
+  get extraOuterStyle(): string {
+    const style = this.grid.args.virtualizationOptions?.style;
+    if (!style) return '';
+    return Object.entries(style)
+      .map(([key, value]) => {
+        const property = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+        const unitless = typeof value !== 'number' || UNITLESS.has(property);
+        return `;${property}:${unitless ? value : `${value}px`}`;
+      })
+      .join('');
   }
 
   get outerStyle() {
     const height = this.finalHeight;
     const width = this.finalWidth;
     return htmlSafe(
-      `position:relative;height:${height}px;width:${width ? `${width}px` : '100%'};overflow:auto;will-change:transform;direction:ltr`
+      `position:relative;height:${height}px;width:${width ? `${width}px` : '100%'};overflow:auto;will-change:transform;direction:ltr${this.extraOuterStyle}`
     );
   }
 

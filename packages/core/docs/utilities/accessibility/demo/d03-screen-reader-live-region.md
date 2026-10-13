@@ -10,7 +10,7 @@ Using <strong>EuiScreenReaderLive</strong> to announce dynamic content, such as 
 
 The configurable <EuiCode>@role</EuiCode> and <EuiCode>@ariaLive</EuiCode> arguments default to <EuiCode>status</EuiCode> and <EuiCode>polite</EuiCode> respectively for non-intrusive but timely update announcements. When not using the default values, be sure to follow <a href='https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions' target='_blank' rel='noopener noreferrer'>ARIA guidelines</a> for <EuiCode>role</EuiCode> to <EuiCode>aria-live</EuiCode> mapping.
 
-Also consider other live region guidelines, such as that live regions must be present on initial page load, and should not be inside a conditional <EuiCode>&#123;&#123;#if&#125;&#125;</EuiCode> block.
+Also consider other live region guidelines, such as that live regions must be present on initial page load, and should not be inside a conditional `{{#if}}` block.
 
 </EuiText>
 

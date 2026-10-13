@@ -6,7 +6,7 @@ order: 2
 
 <EuiText>
 
-<strong>EuiI18n</strong> and the service's <EuiCode>lookupToken</EuiCode> support variable interpolation. In a translation like <EuiCode>Signed in as &#123;name&#125; (&#123;email&#125;)</EuiCode>, two values can be interpolated (<EuiCode>name</EuiCode> and <EuiCode>email</EuiCode>). These values can be specified by passing a <EuiCode>@values</EuiCode> hash to <strong>EuiI18n</strong>, or by passing an object of values as the third argument to <EuiCode>lookupToken</EuiCode>. Interpolation values can be passed as a string, number, or a component.
+<strong>EuiI18n</strong> and the service's <EuiCode>lookupToken</EuiCode> support variable interpolation. In a translation like `Signed in as {name} ({email})`, two values can be interpolated (<EuiCode>name</EuiCode> and <EuiCode>email</EuiCode>). These values can be specified by passing a <EuiCode>@values</EuiCode> hash to <strong>EuiI18n</strong>, or by passing an object of values as the third argument to <EuiCode>lookupToken</EuiCode>. Interpolation values can be passed as a string, number, or a component.
 
 </EuiText>
 

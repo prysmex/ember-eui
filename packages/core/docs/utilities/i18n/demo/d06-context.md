@@ -6,7 +6,7 @@ order: 6
 
 <EuiText>
 
-Upstream's <strong>EuiContext</strong> sets global internationalization copy for the EUI components inside it. In Ember EUI, add translations globally with the <EuiCode>euiI18n</EuiCode> service (see above), or pass a mapping to a single <strong>EuiI18n</strong> with <EuiCode>@i18n=&#123;&#123;hash mapping=...&#125;&#125;</EuiCode>, as in this example: the buttons switch the mapping used by the texts below.
+Upstream's <strong>EuiContext</strong> sets global internationalization copy for the EUI components inside it. In Ember EUI, add translations globally with the <EuiCode>euiI18n</EuiCode> service (see above), or pass a mapping to a single <strong>EuiI18n</strong> with `@i18n={{hash mapping=...}}`, as in this example: the buttons switch the mapping used by the texts below.
 
 </EuiText>
 

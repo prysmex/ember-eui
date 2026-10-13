@@ -31,7 +31,7 @@ An `EuiPanel` inside a flex item grows to the item's height, so panels in a row 
   <EuiFlexItem>
     <EuiPanel @grow={{false}}>
       Another <strong>EuiPanel</strong>, with
-      <EuiCode>grow=&#123;false&#125;</EuiCode>.
+      `grow={false}`.
     </EuiPanel>
   </EuiFlexItem>
 </EuiFlexGroup>

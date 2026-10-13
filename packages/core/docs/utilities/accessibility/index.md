@@ -28,7 +28,7 @@ Helpers for content that only screen reader and keyboard users need.
 ```
 
 To hide a single element without a wrapper, the `screenReaderOnly`
-modifier does the same: `<span &#123;&#123;screenReaderOnly}}>…</span>`.
+modifier does the same: `<span {{screenReaderOnly}}>…</span>`.
 
 </EuiText>
 

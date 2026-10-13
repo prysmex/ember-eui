@@ -53,7 +53,7 @@ Dragging near an edge scrolls: the window (turn it off with
 `@autoScrollWindow={{false}}` on the context), a list that scrolls itself
 (`@autoScroll={{false}}` on the droppable turns it off), and any other
 container you give the yielded modifier, e.g. a board of lists:
-`<div class="board" &#123;&#123;dnd.autoScroll}}>`. Moving an item with the
+`<div class="board" {{dnd.autoScroll}}>`. Moving an item with the
 keyboard keeps it in view.
 
 </EuiText>

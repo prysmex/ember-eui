@@ -24,7 +24,7 @@ title: Text
 
 <EuiText>
 
-<strong>EuiText</strong> can ensure proper line-length for readability by setting a <EuiCode>max-width</EuiCode> on the entire component. To add the max-width setting, set <EuiCode>@grow=&#123;&#123;false&#125;&#125;</EuiCode>.
+<strong>EuiText</strong> can ensure proper line-length for readability by setting a <EuiCode>max-width</EuiCode> on the entire component. To add the max-width setting, set `@grow={{false}}`.
 
 </EuiText>
 

@@ -187,6 +187,11 @@ style="overflow-x: auto"
   <EuiSpacer @size="xl" />
         <EuiText @size="xs" @textAlign="center" @color="subdued">
           <p>
+            Component styles, icons and many examples here are derived from EUI,
+            Copyright Elasticsearch B.V. Ember EUI is a community project, not
+            affiliated with or endorsed by Elastic.
+          </p>
+          <p>
             EUI is dual-licensed under
             <EuiLink 
               @href="https://github.com/elastic/eui/blob/main/licenses/ELASTIC-LICENSE-2.0.md" 

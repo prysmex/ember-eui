@@ -91,4 +91,11 @@ See the [Contributing](CONTRIBUTING.md) guide for details.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE.md).
+This project is licensed under the [MIT License](LICENSE.md), except for the
+parts derived from [Elastic UI (EUI)](https://github.com/elastic/eui) (its
+component styles, icons, ported component logic and documentation examples),
+which remain Copyright Elasticsearch B.V. under the Elastic License 2.0 or the
+Server Side Public License, v 1. See [NOTICE.md](NOTICE.md).
+
+Ember EUI is a community project and is not affiliated with or endorsed by
+Elastic.

@@ -53,7 +53,8 @@
     "addon-main.cjs",
     "declarations",
     "dist",
-    "vendor/**/*"
+    "vendor/**/*",
+    "NOTICE.md"
   ],
   "scripts": {
     "build": "concurrently 'npm:build:*'",

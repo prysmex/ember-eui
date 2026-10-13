@@ -63,6 +63,10 @@ export interface EuiAutoRefreshButtonSignature {
     flush?: EuiButtonEmptySignature['Args']['flush'];
     /** Shows the loading spinner and disables the button. */
     isLoading?: boolean;
+    /** `EuiButtonEmpty`'s `@contentProps` (upstream's `contentProps`). */
+    contentProps?: EuiButtonEmptySignature['Args']['contentProps'];
+    /** `EuiButtonEmpty`'s `@textProps` (upstream's `textProps`). */
+    textProps?: EuiButtonEmptySignature['Args']['textProps'];
     /** Extra styles composed last into the button's class. */
     css?: EuiCss;
   };
@@ -144,6 +148,8 @@ export default class EuiAutoRefreshButton extends Component<EuiAutoRefreshButton
             @isLoading={{@isLoading}}
             @isDisabled={{@isDisabled}}
             @hasAriaDisabled={{this.hasAriaDisabled}}
+            @contentProps={{@contentProps}}
+            @textProps={{@textProps}}
             @css={{@css}}
             {{on "click" this.toggle}}
             ...attributes

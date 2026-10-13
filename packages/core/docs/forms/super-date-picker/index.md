@@ -162,6 +162,8 @@ that opens a popover with `EuiRefreshInterval` to change it. Upstream's
 | `@size` |  | `'s'` | `EuiButtonEmpty` size. |
 | `@flush` |  |  | `EuiButtonEmpty` flush. |
 | `@isLoading` | `boolean` |  | Shows the loading spinner and disables the button. |
+| `@contentProps` |  |  | `EuiButtonEmpty`'s `@contentProps` (upstream's `contentProps`). |
+| `@textProps` |  |  | `EuiButtonEmpty`'s `@textProps` (upstream's `textProps`). |
 | `@css` | `EuiCss` |  | Extra styles composed last into the button's class. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>` / `<a>`.

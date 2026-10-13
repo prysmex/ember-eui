@@ -110,6 +110,10 @@ const ours = {};
 for (const f of files) {
   const sf = ourProgram.getSourceFile(f);
   if (!sf) continue;
+  // `export default EuiX;` names the file's component variable
+  const defaultName = sf.statements.find(
+    (st) => ts.isExportAssignment(st) && !st.isExportEquals && ts.isIdentifier(st.expression)
+  )?.expression.text;
   for (const st of sf.statements) {
     // template-only: `declare const EuiX: TOC<EuiXSignature>; export default EuiX;`
     if (ts.isVariableStatement(st)) {
@@ -126,7 +130,8 @@ for (const f of files) {
           const t = ourChecker.getTypeOfSymbolAtLocation(p, arg);
           for (const q of ourChecker.getPropertiesOfType(t)) names.add(q.getName());
         }
-        const name = nameByFile[f] || d.name.text;
+        const isDefault = d.name.text === defaultName;
+        const name = (isDefault && nameByFile[f]) || d.name.text;
         if (names.size && !ours[name]) ours[name] = [...names];
       }
       continue;

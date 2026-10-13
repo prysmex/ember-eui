@@ -10,6 +10,7 @@ import {
 } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
 
+import EuiAutoRefreshButton from '#src/components/eui-auto-refresh-button.gts';
 import EuiCheckableCard from '#src/components/eui-checkable-card.gts';
 import EuiDatePickerRange from '#src/components/eui-date-picker-range.gts';
 import EuiFieldPassword from '#src/components/eui-field-password.gts';
@@ -113,6 +114,22 @@ module('Integration | Component | upstream props: forms and date pickers', funct
 
     assert.dom('button.euiSuperUpdateButton').hasAttribute('aria-pressed', 'true').hasAttribute('aria-disabled', 'true').doesNotHaveAttribute('disabled');
     assert.strictEqual(getComputedStyle(el('button.euiSuperUpdateButton')).width, getComputedStyle(el('button.euiSuperUpdateButton').parentElement!).width, 'full width');
+  });
+
+  test('EuiSuperUpdateButton and EuiAutoRefreshButton pass contentProps and textProps', async function (assert) {
+    const contentProps = { className: 'myContent' };
+    const textProps = { class: 'myText', 'data-test-subj': 'text' };
+    await render(
+      <template>
+        <EuiSuperUpdateButton @onClick={{noop}} @responsive={{false}} @contentProps={{contentProps}} @textProps={{textProps}} />
+        <EuiAutoRefreshButton @onRefreshChange={{noop}} @contentProps={{contentProps}} @textProps={{textProps}} />
+      </template>
+    );
+
+    assert.dom('.euiSuperUpdateButton .euiButton__content').hasClass('myContent');
+    assert.dom('.euiSuperUpdateButton .euiButton__text').hasClass('myText');
+    assert.dom('.euiAutoRefreshButton .euiButtonEmpty__content').hasClass('myContent');
+    assert.dom('.euiAutoRefreshButton .euiButtonEmpty__text').hasClass('myText').hasAttribute('data-test-subj', 'text');
   });
 
   test('EuiDatePopoverButton @buttonProps', async function (assert) {

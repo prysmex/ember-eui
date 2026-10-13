@@ -57,6 +57,10 @@ export interface EuiSuperUpdateButtonSignature {
     isDisabled?: boolean;
     /** Loading state. */
     isLoading?: boolean;
+    /** `EuiButton`'s `@contentProps` (upstream's `contentProps`). */
+    contentProps?: EuiButtonSignature['Args']['contentProps'];
+    /** `EuiButton`'s `@textProps` (upstream's `textProps`). */
+    textProps?: EuiButtonSignature['Args']['textProps'];
     /** Highlights that the range changed and needs applying. */
     needsUpdate?: boolean;
     /** Called on click. */
@@ -329,6 +333,8 @@ export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButton
           @iconSide={{@iconSide}}
           @iconSize={{@iconSize}}
           @isSelected={{@isSelected}}
+          @contentProps={{@contentProps}}
+          @textProps={{@textProps}}
           {{on "click" @onClick}}
           {{this.autoShowTooltip
             @showTooltip
@@ -359,6 +365,8 @@ export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButton
           @iconSide={{@iconSide}}
           @iconSize={{@iconSize}}
           @isSelected={{@isSelected}}
+          @contentProps={{@contentProps}}
+          @textProps={{@textProps}}
           {{on "click" @onClick}}
           {{this.autoShowTooltip
             @showTooltip

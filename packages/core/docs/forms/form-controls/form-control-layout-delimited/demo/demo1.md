@@ -2,148 +2,133 @@
 order: 1
 ---
 
-# Two controls with a delimiter
+# Delimited layout
 
 <EuiText>
 
-Render the controls in the `<:startControl>` and `<:endControl>` blocks,
-with the yielded class. `@delimiter` changes the text between them (an
-arrow by default); `<:prepend>` / `<:append>` add labels on the sides.
+Like `EuiFormControlLayout`, `EuiFormControlLayoutDelimited` is generally used internally to consistently style form controls. This component specifically lays out two form controls with center text or an icon.
+
+It takes all of the same arguments as `EuiFormControlLayout`. Instead of a default block it uses a **single** `<:startControl>` and a **single** `<:endControl>` block, each yielding the class to put on the control. You can optionally change the center content with the `<:delimiter>` block (like an `EuiIcon`) or the `@delimiter` string.
 
 </EuiText>
 
 ```gjs component
-import { EuiFormControlLayoutDelimited, EuiFormLabel, EuiSpacer, EuiFormRow, EuiIcon } from '@ember-eui/core/components';
-import { array } from '@ember/helper';
+import {
+  EuiFieldNumber,
+  EuiFormAppend,
+  EuiFormControlLayoutDelimited,
+  EuiFormPrepend,
+  EuiIcon,
+} from '@ember-eui/core/components';
+
+const noop = () => {};
 
 <template>
-  <EuiFormControlLayoutDelimited @delimiter='+'>
-    <:prepend as |classes|>
-      <EuiFormLabel class={{classes}}>
-        Add
-      </EuiFormLabel>
-    </:prepend>
-    <:startControl as |classes|>
-      <input
-        type='number'
-        placeholder='100'
-        class='euiFieldNumber {{classes}}'
-        aria-label='Use aria labels when no actual label is in use'
-      />
-    </:startControl>
-    <:endControl as |classes|>
-      <input
-        type='number'
-        placeholder='100'
-        class='euiFieldNumber {{classes}}'
-        aria-label='Use aria labels when no actual label is in use'
-      />
-    </:endControl>
-  </EuiFormControlLayoutDelimited>
-
-  <EuiSpacer />
-
-  <EuiFormControlLayoutDelimited @fullWidth={{true}}>
-    <:prepend as |classes|>
-      <EuiFormLabel class={{classes}}>
-        Add
-      </EuiFormLabel>
-    </:prepend>
-    <:startControl as |classes|>
-      <input
-        type='number'
-        placeholder='100'
-        class='euiFieldNumber {{classes}}'
-        aria-label='Use aria labels when no actual label is in use'
-      />
-    </:startControl>
-    <:endControl as |classes|>
-      <input
-        type='number'
-        placeholder='100'
-        class='euiFieldNumber {{classes}}'
-        aria-label='Use aria labels when no actual label is in use'
-      />
-    </:endControl>
-  </EuiFormControlLayoutDelimited>
-
-  <EuiSpacer />
-
-  <EuiFormRow
-    @fullWidth={{true}}
-    @error={{array 'error1' 'error2'}}
-    @isInvalid={{true}}
-  >
-    <:label>
-      Hello
-    </:label>
-    <:field>
-      <EuiFormControlLayoutDelimited @fullWidth={{true}}>
-        <:prepend as |classes|>
-          <EuiFormLabel class={{classes}}>
-            Prepend
-          </EuiFormLabel>
-        </:prepend>
-        <:startControl as |classes|>
-          <input
-            type='number'
-            placeholder='100'
-            class='euiFieldNumber {{classes}}'
-            aria-label='Use aria labels when no actual label is in use'
-          />
-        </:startControl>
-        <:delimiter>
-          \_(o.o)_/
-        </:delimiter>
-        <:endControl as |classes|>
-          <input
-            type='number'
-            placeholder='100'
-            class='euiFieldNumber {{classes}}'
-            aria-label='Use aria labels when no actual label is in use'
-          />
-        </:endControl>
-        <:append as |classes|>
-          <EuiFormLabel class={{classes}}>
-            Append
-          </EuiFormLabel>
-        </:append>
-      </EuiFormControlLayoutDelimited>
-    </:field>
-    <:errors as |error|>
-      <EuiIcon @type='faceSad' @color='danger' />
-      {{error}}
-    </:errors>
-    <:helpText>
-      Here is a hint
-    </:helpText>
-  </EuiFormRow>
-
-  <EuiSpacer />
-  <EuiFormRow
-    @error={{array 'error1' 'error2'}}
-    @isInvalid={{true}}
-    @label='Hello'
-    @helpText="Here's a hint"
-  >
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
     <EuiFormControlLayoutDelimited @fullWidth={{true}}>
       <:startControl as |classes|>
-        <input
-          type='number'
-          placeholder='100'
-          class='euiFieldNumber {{classes}}'
-          aria-label='Use aria labels when no actual label is in use'
-        />
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
       </:startControl>
       <:endControl as |classes|>
-        <input
-          type='number'
-          placeholder='100'
-          class='euiFieldNumber {{classes}}'
-          aria-label='Use aria labels when no actual label is in use'
-        />
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
       </:endControl>
     </EuiFormControlLayoutDelimited>
-  </EuiFormRow>
+    <EuiFormControlLayoutDelimited>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+      <:append><EuiFormAppend @label="px" /></:append>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited @icon="vectorSquare">
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited @clear={{noop}} @isLoading={{true}}>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited @isLoading={{true}}>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited @compressed={{true}}>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited>
+      <:prepend><EuiFormPrepend @label="Add" /></:prepend>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:delimiter>+</:delimiter>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited>
+      <:prepend><EuiFormPrepend @label="Merge" /></:prepend>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:delimiter><EuiIcon @type="merge" /></:delimiter>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited @readOnly={{true}}>
+      <:prepend><EuiFormPrepend @label="Read Only" /></:prepend>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" @readOnly={{true}} aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" @readOnly={{true}} aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited @isDisabled={{true}}>
+      <:prepend><EuiFormPrepend @label="Disabled" /></:prepend>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" @disabled={{true}} aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" @disabled={{true}} aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+    <EuiFormControlLayoutDelimited @isInvalid={{true}}>
+      <:prepend><EuiFormPrepend @label="Invalid" /></:prepend>
+      <:startControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="0" @isInvalid={{true}} aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:startControl>
+      <:endControl as |classes|>
+        <EuiFieldNumber @controlOnly={{true}} placeholder="100" @isInvalid={{true}} aria-label="Use aria labels when no actual label is in use" class={{classes}} />
+      </:endControl>
+    </EuiFormControlLayoutDelimited>
+  </div>
 </template>
 ```

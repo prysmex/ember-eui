@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 3
 ---
 
-# Labels, icons and buttons
+# More examples (Ember EUI extra)
 
 <EuiText>
 

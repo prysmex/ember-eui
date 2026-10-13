@@ -12,13 +12,42 @@ title: Illustration
 
 An asset is an object `{ id, title, light, dark }` where `light` and `dark` are SVG markup, the shape exported by [`@elastic/eui-illustrations`](https://github.com/elastic/eui/tree/main/packages/illustrations), a standalone package that is independently versioned and published from `@elastic/eui`, so the catalog can grow without an EUI release.
 
-```js
-import { dashboard } from '@elastic/eui-illustrations';
+## Using `@elastic/eui-illustrations` (optional)
+
+Ember EUI does **not** depend on or bundle the illustrations package, exactly like upstream's `@elastic/eui`. Install it in your own app when you want Elastic's catalog:
+
+```sh
+pnpm add @elastic/eui-illustrations
 ```
 
-```hbs
-<EuiIllustration @type={{dashboard}} />
+Every export is an asset in the shape above, so import one and pass it as `@type`:
+
+```js
+import { EuiIllustration } from '@ember-eui/core/components';
+import { dashboard } from '@elastic/eui-illustrations';
+
+<template>
+  <div style="max-inline-size: 360px">
+    <EuiIllustration @type={{dashboard}} />
+  </div>
+</template>
 ```
+
+To list the whole catalog, the package also exports `illustrations`, an object keyed by export name (upstream's gallery sorts `Object.values` by `title` and filters on `title` and `id`):
+
+```js
+import { illustrations } from '@elastic/eui-illustrations';
+
+const items = Object.entries(illustrations)
+  .map(([exportName, illustration]) => ({ exportName, ...illustration }))
+  .sort((a, b) => a.title.localeCompare(b.title));
+```
+
+Any object with `{ id, title, light, dark }` works, so you can also pass your own SVG assets.
+
+**License:** the illustrations are copyright Elasticsearch B.V. and licensed under the Elastic License 2.0 or the Server Side Public License, v 1, not under Ember EUI's license. See `packages/core/NOTICE.md` for how these terms apply to this repository.
+
+A live, searchable gallery like upstream's is not shown here because this site does not install the package.
 
 The markup is inserted as-is: only pass trusted, package-authored SVGs, never user-supplied markup.
 

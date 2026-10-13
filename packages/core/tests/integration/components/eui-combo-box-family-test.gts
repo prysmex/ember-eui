@@ -260,7 +260,9 @@ module('Integration | Component | Borealis combo box family', function (hooks) {
 
     assert.dom('[data-c="pill"] .euiComboBoxPill.euiBadge').hasText('Banana');
     assert.dom('[data-c="pill"] .euiComboBoxPill .euiBadge__iconButton').doesNotExist('no remove button in single selection');
-    assert.dom('[data-c="plain"] .euiComboBoxPill--plainText').hasText('Banana');
+    // upstream: plain text is the input's value, not a pill
+    assert.dom(`[data-c="plain"] ${INPUT}`).hasValue('Banana');
+    assert.dom('[data-c="plain"] .euiComboBoxPill').doesNotExist();
     assert.dom('[data-c="plain"] .euiComboBox__inputWrap').hasClass('euiComboBox__inputWrap--plainText');
     const plainWrap = css(wrapOf('[data-c="plain"]'));
     assert.strictEqual(plainWrap.alignItems, 'center', 'upstream plain text alignment');

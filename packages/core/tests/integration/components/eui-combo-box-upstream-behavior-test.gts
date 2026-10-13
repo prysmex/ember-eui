@@ -559,9 +559,14 @@ module('Integration | Component | eui-combo-box upstream behavior', function (ho
       await triggerKeyEvent(`[data-c="single"] ${INPUT}`, 'keydown', 'Escape');
 
       await focus(`[data-c="plain"] ${INPUT}`);
+      assert.dom(`[data-c="plain"] ${INPUT}`).hasValue('Titan', 'asPlainText: the selection is the value');
       await triggerKeyEvent(`[data-c="plain"] ${INPUT}`, 'keydown', 'Backspace');
-      
+
       assert.deepEqual(plain.selected, [], 'asPlainText: removes the selection');
+      assert.dom(`[data-c="plain"] ${INPUT}`).hasValue('Titan', 'the text stays (it is the search now)');
+      assert.dom('[data-c="plain"] [data-test-subj="comboBoxClearButton"]').doesNotExist('selection removed');
+      // the key's own deletion (synthetic key events don't edit the text)
+      await fillIn(`[data-c="plain"] ${INPUT}`, 'Tita');
       assert.dom(`[data-c="plain"] ${INPUT}`).hasValue('Tita', 'and deletes one character');
     });
   });

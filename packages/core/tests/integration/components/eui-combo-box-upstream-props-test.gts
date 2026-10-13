@@ -143,9 +143,17 @@ module('Integration | Component | eui-combo-box upstream props', function (hooks
       </template>
     );
 
-    const plain = q('[data-c="plain"] .euiComboBoxPill--plainText');
-    assert.dom('.euiComboBoxPlainTextSelection__prepend', plain).hasText('P');
-    assert.dom('.euiComboBoxPlainTextSelection__append', plain).hasText('A');
+    // upstream: the option's prepend/append sit around the input, which
+    // shows the selection as its value
+    const plain = q('[data-c="plain"] .euiComboBox__inputWrap');
+    const input = q<HTMLInputElement>(INPUT, plain);
+    const prepend = q('.euiComboBoxPlainTextSelection__prepend', plain);
+    const append = q('.euiComboBoxPlainTextSelection__append', plain);
+    assert.dom(prepend).hasText('P');
+    assert.dom(append).hasText('A');
+    assert.dom(input).hasValue('Titan');
+    assert.true(Boolean(prepend.compareDocumentPosition(input) & Node.DOCUMENT_POSITION_FOLLOWING), 'prepend before the input');
+    assert.true(Boolean(append.compareDocumentPosition(input) & Node.DOCUMENT_POSITION_PRECEDING), 'append after the input');
     assert.strictEqual(getComputedStyle(plain).display, 'flex');
 
     await open('[data-c="groups"]');

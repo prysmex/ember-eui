@@ -43,8 +43,8 @@ onExpandedChange = async (ids) => {
 ## File explorer
 
 Icons by type, an open folder icon for expanded folders, and formatted
-sizes. Renderers don't receive the tree state, so the demo controls
-`expandedRowIds` and looks the row's id up in it.
+sizes. The "Name" renderer reads the row's tree state (`cell.rowTree`), so
+the expansion stays uncontrolled.
 
 ## Org chart
 

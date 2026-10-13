@@ -83,19 +83,20 @@ rowTree = {
 };
 ```
 
-## Renderers: `@row` and `@rowIndex`
+## Renderers: `@row`, `@rowTree` and `@rowIndex`
 
 The grid itself never sees your data, only indexes. With `@rowTree` (or
 `@grouping.rows`) it does know your row objects, so every cell renderer
-also receives the row:
+also receives the row, and with `@rowTree` or `@grouping` the row's tree
+state:
 
-| Renderer | Row object | Row index |
-| --- | --- | --- |
-| `<:cell as \|cell\|>` block | `cell.row` | `cell.rowIndex` |
-| `@renderCellValue` component | `@row` | `@rowIndex` |
-| `@renderCellPopover` component, `<:cellPopover>` block | `@row` / `row` | `@rowIndex` / `rowIndex` |
-| `@inMemory` (the off-screen renderer reading values) | `@row` | `@rowIndex` |
-| control column `rowCellRender` / `<:controlCell>` | `@row` / `row` | `@rowIndex` / `rowIndex` |
+| Renderer | Row object | Tree state | Row index |
+| --- | --- | --- | --- |
+| `<:cell as \|cell\|>` block | `cell.row` | `cell.rowTree` | `cell.rowIndex` |
+| `@renderCellValue` component | `@row` | `@rowTree` | `@rowIndex` |
+| `@renderCellPopover` component, `<:cellPopover>` block | `@row` / `row` | `@rowTree` / `rowTree` | `@rowIndex` / `rowIndex` |
+| `@inMemory` (the off-screen renderer reading values) | `@row` | — | `@rowIndex` |
+| control column `rowCellRender` / `<:controlCell>` | `@row` / `row` | `@rowTree` / `rowTree` | `@rowIndex` / `rowIndex` |
 
 Why both? `@rowIndex` is the grid's *data row index*. For **flat rows** it is
 the row's index in your array, so `this.rows[rowIndex]` keeps working, as in
@@ -106,7 +107,25 @@ rebuilding that numbering. Use `@rowIndex` for per-row grid options
 (`rowHeightsOptions.rowHeights`, `gridStyle.rowClasses`) and for the
 imperative API, which address rows by data row index.
 
-Without `@rowTree`/`@grouping.rows`, `row` is `undefined`, as before.
+`@rowTree` describes the data row the cell is in, so a renderer can show
+an open folder for an expanded row without controlling the expanded ids:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Row id (as in `expandedRowIds`). |
+| `depth` | `number` | Nesting level, 0 for top-level rows. Rows inside groups count the group levels. |
+| `hasChildren` | `boolean` | The row has child rows (or `hasChildren` says it will). |
+| `isExpanded` | `boolean` | The row's children are shown. |
+| `parentId` | `string \| null` | Parent row (or group) id, `null` at the top level. |
+| `posInSet` / `setSize` | `number` | 1-based position among its siblings, and their count. |
+| `isToggleCell` | `boolean` | This cell holds the indentation and toggle. |
+| `toggle` | `() => void` | Expands or collapses the row (calls `onExpandedChange`). |
+
+Without `@rowTree`/`@grouping.rows`, `row` is `undefined`, as before; without
+`@rowTree`/`@grouping`, so is `rowTree`. Group rows render no value, so
+renderers never see them (use `renderGroupCell`). The off-screen
+`@inMemory` renderer reads every row, visible or not, and gets no tree
+state.
 
 ## API reference
 
@@ -160,7 +179,8 @@ import type {
   EuiDataGridRowTreeOptions,
   EuiDataGridGrouping,
   EuiDataGridGroupCellProps,
-  EuiDataGridCellValueElementProps // has `row?: any`
+  EuiDataGridRowTreeRowInfo,
+  EuiDataGridCellValueElementProps // has `row?: any` and `rowTree?: EuiDataGridRowTreeRowInfo`
 } from '@ember-eui/core/components/eui-data-grid';
 
 interface EuiDataGridRowTreeOptions<T = any> {
@@ -195,13 +215,22 @@ interface EuiDataGridGroupCellProps {
   isExpanded: boolean;
   depth: number;
 }
+
+interface EuiDataGridRowTreeRowInfo {
+  id: string;
+  depth: number;
+  hasChildren: boolean;
+  isExpanded: boolean;
+  parentId: string | null;
+  posInSet: number;
+  setSize: number;
+  isToggleCell: boolean;
+  toggle: () => void;
+}
 ```
 
 ## Limitations
 
-- **Renderers don't receive the tree state.** A cell doesn't get its
-  row's depth or expanded state. If you need them (e.g. an open folder
-  icon), control the expanded ids, as in the file explorer recipe.
 - **Group rows have no data.** They use negative row indexes (`-1`, `-2`, …),
   are not expandable (no popover or cell actions), and render nothing in
   control columns. There is no built-in "select the whole group".

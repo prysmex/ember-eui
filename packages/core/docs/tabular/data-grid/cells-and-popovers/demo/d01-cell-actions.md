@@ -24,6 +24,10 @@ also be a plain `{ iconType, label, onClick }` object.
 To close a cell's expansion popover upon clicking an action, use the
 `closeCellPopover` method of the grid's API, received through
 [`@registerApi`](/docs/core/docs/tabular/data-grid/ref-methods).
+Actions don't receive a `closePopover` argument: upstream's example
+destructures one, but EUI 123.1.0 passes only `rowIndex`, `colIndex`,
+`columnId`, `Component` and `isExpanded` to cell actions, so this demo
+closes the popover through the API instead.
 
 In the below example, the email and city columns provide 1 cell action
 each, while the country column provides 2 cell actions.

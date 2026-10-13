@@ -9,6 +9,7 @@ import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import { euiSkipLinkStyles } from '../utils/eui/styles.generated.ts';
 import EuiButton from './eui-button.gts';
+import type { EuiButtonSignature } from './eui-button';
 import { euiScreenReaderOnlyCss } from './eui-screen-reader-only.gts';
 
 /**
@@ -44,6 +45,36 @@ export interface EuiSkipLinkSignature {
     position?: 'static' | 'fixed' | 'absolute';
     /** `tabindex` of the link; a fixed link always gets `0`. */
     tabIndex?: number;
+    /** EuiButton color. Defaults to `'primary'`. */
+    color?: EuiButtonSignature['Args']['color'];
+    /** `class`, `css` and attributes of the content element, see `EuiButton`. */
+    contentProps?: EuiButtonSignature['Args']['contentProps'];
+    /** `class`, `css` and attributes of the text element, see `EuiButton`. */
+    textProps?: EuiButtonSignature['Args']['textProps'];
+    /** Tag to render instead of the `<a>`, see `EuiButton`. */
+    element?: EuiButtonSignature['Args']['element'];
+    /** Solid background. Defaults to `true`. */
+    fill?: boolean;
+    /** Stretches the link to its container's width. */
+    fullWidth?: boolean;
+    /** Beta: `aria-disabled` instead of `disabled`, see `EuiButton`. */
+    hasAriaDisabled?: boolean;
+    /** Side of the icon, see `EuiButton`. */
+    iconSide?: EuiButtonSignature['Args']['iconSide'];
+    /** Size of the icon, see `EuiButton`. */
+    iconSize?: EuiButtonSignature['Args']['iconSize'];
+    /** Icon next to the text, see `EuiButton`. */
+    iconType?: EuiButtonSignature['Args']['iconType'];
+    /** Disables the link. */
+    isDisabled?: boolean;
+    /** Shows a spinner and disables the link. */
+    isLoading?: boolean;
+    /** Sets `aria-pressed`, see `EuiButton`. */
+    isSelected?: boolean;
+    /** Minimum width, see `EuiButton`. */
+    minWidth?: EuiButtonSignature['Args']['minWidth'];
+    /** `'s'` or `'m'`. Defaults to `'s'`. */
+    size?: EuiButtonSignature['Args']['size'];
   };
   Blocks: {
     /** The link text, e.g. "Skip to main content". */
@@ -58,6 +89,10 @@ export default class EuiSkipLink extends Component<EuiSkipLinkSignature> {
 
   get tabIndex() {
     return this.position === 'fixed' ? 0 : this.args.tabIndex;
+  }
+
+  get fill() {
+    return this.args.fill ?? true;
   }
 
   @cached
@@ -115,8 +150,21 @@ export default class EuiSkipLink extends Component<EuiSkipLinkSignature> {
       class="euiSkipLink"
       @css={{this.css}}
       @href="#{{@destinationId}}"
-      @size="s"
-      @fill={{true}}
+      @size={{if @size @size "s"}}
+      @fill={{this.fill}}
+      @color={{@color}}
+      @contentProps={{@contentProps}}
+      @textProps={{@textProps}}
+      @element={{@element}}
+      @fullWidth={{@fullWidth}}
+      @hasAriaDisabled={{@hasAriaDisabled}}
+      @iconSide={{@iconSide}}
+      @iconSize={{@iconSize}}
+      @iconType={{@iconType}}
+      @isDisabled={{@isDisabled}}
+      @isLoading={{@isLoading}}
+      @isSelected={{@isSelected}}
+      @minWidth={{@minWidth}}
       tabindex={{this.tabIndex}}
       {{on "click" this.onClick}}
       ...attributes

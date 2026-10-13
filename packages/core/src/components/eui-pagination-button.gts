@@ -3,6 +3,8 @@ import { cached } from '@glimmer/tracking';
 import { concat } from '@ember/helper';
 import { service } from '@ember/service';
 
+import { or } from 'ember-truth-helpers';
+
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { useEuiBorealisStyles } from '../utils/eui/styles.ts';
 import type { EuiCss } from '../utils/eui/styles.ts';
@@ -29,6 +31,30 @@ export interface EuiPaginationButtonSignature {
     isActive?: boolean;
     /** Disables the button (e.g. a "…" placeholder). */
     isPlaceholder?: boolean;
+    /** Disables the button. */
+    isDisabled?: boolean;
+    /** EuiButtonEmpty color. Defaults to `'text'`. */
+    color?: EuiButtonEmptySignature['Args']['color'];
+    /** `class`, `css` and attributes of the content element, see `EuiButtonEmpty`. */
+    contentProps?: EuiButtonEmptySignature['Args']['contentProps'];
+    /** `class`, `css` and attributes of the text element, see `EuiButtonEmpty`. */
+    textProps?: EuiButtonEmptySignature['Args']['textProps'];
+    /** Pulls the button to an edge, see `EuiButtonEmpty`. */
+    flush?: EuiButtonEmptySignature['Args']['flush'];
+    /** Beta: `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. */
+    hasAriaDisabled?: boolean;
+    /** Side of the icon, see `EuiButtonEmpty`. */
+    iconSide?: EuiButtonEmptySignature['Args']['iconSide'];
+    /** Size of the icon, see `EuiButtonEmpty`. */
+    iconSize?: EuiButtonEmptySignature['Args']['iconSize'];
+    /** Icon next to the page number, see `EuiButtonEmpty`. */
+    iconType?: EuiButtonEmptySignature['Args']['iconType'];
+    /** Shows a spinner and disables the button. */
+    isLoading?: boolean;
+    /** Sets `aria-pressed`, see `EuiButtonEmpty`. */
+    isSelected?: boolean;
+    /** `'xs'`, `'s'` or `'m'`. Defaults to `'s'`. */
+    size?: EuiButtonEmptySignature['Args']['size'];
     /** @deprecated Has no effect; EuiPagination's `@responsive` compresses it instead. */
     hideOnMobile?: boolean;
     /**
@@ -78,10 +104,19 @@ export default class EuiPaginationButton extends Component<EuiPaginationButtonSi
       class="euiPaginationButton"
       @css={{this.css}}
       aria-label={{this.ariaLabel}}
-      @size="s"
-      @color="text"
+      @size={{if @size @size "s"}}
+      @iconType={{@iconType}}
+      @color={{if @color @color "text"}}
+      @contentProps={{@contentProps}}
+      @textProps={{@textProps}}
+      @flush={{@flush}}
+      @hasAriaDisabled={{@hasAriaDisabled}}
+      @iconSide={{@iconSide}}
+      @iconSize={{@iconSize}}
+      @isLoading={{@isLoading}}
+      @isSelected={{@isSelected}}
       @href={{if @ariaControls (concat "#" @ariaControls)}}
-      @isDisabled={{if @isActive true @isPlaceholder}}
+      @isDisabled={{or @isActive @isPlaceholder @isDisabled}}
       aria-current={{if @isActive "page"}}
       aria-controls={{@ariaControls}}
       data-test-subj="pagination-button-{{@pageIndex}}"

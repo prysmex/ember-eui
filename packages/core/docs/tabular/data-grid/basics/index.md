@@ -155,6 +155,16 @@ HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied
 | `@iconType` |  |  | Icon before the label. |
 | `@badgeContent` | `string \| number` |  | Count shown in a badge after the label (e.g. `5` or `'3/10'`). |
 | `@isDisabled` | `boolean` |  | Disables the button. |
+| `@color` |  | `'text'` | EuiButtonEmpty color. |
+| `@contentProps` |  |  | `class`, `css` and attributes of the content element, see `EuiButtonEmpty`. |
+| `@textProps` | `EuiElementProps` |  | `class`/`className`, `css` and attributes of the label element, which always has `euiDataGridToolbarControl__text` and truncates. |
+| `@flush` |  |  | Pulls the button to an edge, see `EuiButtonEmpty`. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. |
+| `@iconSide` |  |  | Side of the icon, see `EuiButtonEmpty`. |
+| `@iconSize` |  |  | Size of the icon, see `EuiButtonEmpty`. |
+| `@isLoading` | `boolean` |  | Shows a spinner and disables the button. |
+| `@isSelected` | `boolean` |  | Sets `aria-pressed`, see `EuiButtonEmpty`. |
+| `@size` |  | `'xs'` | `'xs'`, `'s'` or `'m'`. |
 | `@css` | `EuiCss` |  | Extra styles composed last into the button class. |
 
 | Block | Description |

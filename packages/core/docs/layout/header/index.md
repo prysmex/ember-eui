@@ -109,6 +109,19 @@ with an optional notification dot or count. Give it an `aria-label`.
 | --- | --- | --- | --- |
 | `@ref` | `(api: { euiAnimate: () => void }) => void` |  | Called with `{ euiAnimate }`; call `euiAnimate()` to wiggle the button, e.g. when a new notification arrives. |
 | `@disabled` | `boolean` |  | Disables the button. |
+| `@isDisabled` | `boolean` |  | Same as `@disabled` (upstream's name, from EuiButtonEmpty). |
+| `@color` |  | `'text'` | EuiButtonEmpty color. |
+| `@contentProps` |  |  | EuiButtonEmpty `contentProps`: class, css and attributes of the content element. |
+| `@textProps` |  |  | EuiButtonEmpty `textProps`: class, css and attributes of the text element. |
+| `@flush` |  |  | Pulls the button to an edge, see `EuiButtonEmpty`. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. |
+| `@iconSide` |  |  | Side of the icon, see `EuiButtonEmpty`. |
+| `@iconSize` |  |  | Size of the icon, see `EuiButtonEmpty`. |
+| `@iconType` |  |  | Icon next to the content, see `EuiButtonEmpty`. |
+| `@isLoading` | `boolean` |  | Shows a spinner and disables the button. |
+| `@isSelected` | `boolean` |  | Sets `aria-pressed` for toggle buttons. |
+| `@size` |  |  | `'xs'`, `'s'` or `'m'`, see `EuiButtonEmpty`. |
+| `@css` | `EuiCss` |  | Extra styles composed last into the button's class. |
 | `@href` | `string` |  | Renders a link instead of a button. |
 | `@onClick` | `(event: MouseEvent) => void` |  | Called on click. |
 | `@notification` | `boolean \| number \| string` |  | `true` shows a dot; a number shows a count badge, which becomes a dot below the theme's `m` breakpoint (as upstream; formerly only `xs`). |

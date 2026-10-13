@@ -21,6 +21,8 @@ import EuiIcon from './eui-icon.gts';
 import EuiNotificationBadge from './eui-notification-badge.gts';
 
 import type { EuiNotificationBadgeSignature } from './eui-notification-badge';
+import type { EuiButtonEmptySignature } from './eui-button-empty';
+import type { EuiCss } from '../utils/eui/styles.ts';
 
 const keyframes: Keyframe[] = [
   { transform: 'rotate(0)', offset: 0, easing: 'ease-in-out' },
@@ -147,6 +149,32 @@ export interface EuiHeaderSectionItemButtonSignature {
     ref?: (api: { euiAnimate: () => void }) => void;
     /** Disables the button. */
     disabled?: boolean;
+    /** Same as `@disabled` (upstream's name, from EuiButtonEmpty). */
+    isDisabled?: boolean;
+    /** EuiButtonEmpty color. Defaults to `'text'`. */
+    color?: EuiButtonEmptySignature['Args']['color'];
+    /** EuiButtonEmpty `contentProps`: class, css and attributes of the content element. */
+    contentProps?: EuiButtonEmptySignature['Args']['contentProps'];
+    /** EuiButtonEmpty `textProps`: class, css and attributes of the text element. */
+    textProps?: EuiButtonEmptySignature['Args']['textProps'];
+    /** Pulls the button to an edge, see `EuiButtonEmpty`. */
+    flush?: EuiButtonEmptySignature['Args']['flush'];
+    /** Beta: `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. */
+    hasAriaDisabled?: boolean;
+    /** Side of the icon, see `EuiButtonEmpty`. */
+    iconSide?: EuiButtonEmptySignature['Args']['iconSide'];
+    /** Size of the icon, see `EuiButtonEmpty`. */
+    iconSize?: EuiButtonEmptySignature['Args']['iconSize'];
+    /** Icon next to the content, see `EuiButtonEmpty`. */
+    iconType?: EuiButtonEmptySignature['Args']['iconType'];
+    /** Shows a spinner and disables the button. */
+    isLoading?: boolean;
+    /** Sets `aria-pressed` for toggle buttons. */
+    isSelected?: boolean;
+    /** `'xs'`, `'s'` or `'m'`, see `EuiButtonEmpty`. */
+    size?: EuiButtonEmptySignature['Args']['size'];
+    /** Extra styles composed last into the button's class. */
+    css?: EuiCss;
     /** Renders a link instead of a button. */
     href?: string;
     /** Called on click. */
@@ -250,7 +278,7 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
     );
     return {
       // Upstream's `css` on EuiButtonEmpty.
-      button: styles.euiHeaderSectionItemButton,
+      button: [styles.euiHeaderSectionItemButton, this.args.css],
       content: euiClass(context, styles.euiHeaderSectionItemButton__content)
     };
   }
@@ -259,9 +287,19 @@ export default class EuiHeaderSectionItemButtonComponent extends Component<EuiHe
     <EuiButtonEmpty
       class="euiHeaderSectionItemButton"
       @css={{this.styles.button}}
-      @isDisabled={{@disabled}}
+      @isDisabled={{if @isDisabled @isDisabled @disabled}}
       @href={{@href}}
-      @color="text"
+      @color={{if @color @color "text"}}
+      @contentProps={{@contentProps}}
+      @textProps={{@textProps}}
+      @flush={{@flush}}
+      @hasAriaDisabled={{@hasAriaDisabled}}
+      @iconSide={{@iconSide}}
+      @iconSize={{@iconSize}}
+      @iconType={{@iconType}}
+      @isLoading={{@isLoading}}
+      @isSelected={{@isSelected}}
+      @size={{@size}}
       {{didInsert this.setButtonRef}}
       {{on "click" (optional @onClick)}}
       ...attributes

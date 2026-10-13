@@ -241,11 +241,15 @@ The title of an EuiModal, styled like upstream's `EuiTitle size="m"`.
 EuiModal is labelled by it unless you give the modal an `aria-label` or
 `aria-labelledby`.
 
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@tagName` | `string` | `'div'` | Upstream's `component`: the tag to render instead of the wrapping `<div>`, e.g. `'h1'` or `'h2'`, so the text goes straight inside and no heading needs nesting. |
+| `@size` | `'xxxs' \| 'xxs' \| 'xs' \| 's' \| 'm' \| 'l'` | `'m'` | `'xxxs'`, `'xxs'`, `'xs'`, `'s'`, `'m'` or `'l'`. |
+| `@textTransform` | `'uppercase'` |  | `'uppercase'` for all caps. |
+
 | Block | Description |
 | --- | --- |
 | default block | The title text. Wrap it in a heading (e.g. `<h1>`) for the page outline; the heading inherits the title's styles. |
-
-HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 
 ### EuiModalBody
 

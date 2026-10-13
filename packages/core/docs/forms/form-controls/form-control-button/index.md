@@ -45,6 +45,9 @@ Generated from the components' TypeScript signatures by
 | `@href` | `string` |  | Renders an `<a>` link instead of a `<button>`. |
 | `@target` | `string` |  | `target` of the `@href` link. |
 | `@type` | `string` | `'button'` | `type` of the `<button>`. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: renders `aria-disabled` instead of `disabled`, see `EuiButtonEmpty`. |
+| `@contentProps` | `EuiElementProps` |  | Upstream's `contentProps`: `class`/`className`, `css` and HTML attributes for the element wrapping the icon and text. |
+| `@textProps` | `EuiElementProps` |  | Upstream's `textProps`: `class`/`className`, `css` and HTML attributes for the element holding the value or placeholder. |
 | `@contentCss` | `EuiCss` |  | Extra styles composed last into the content element's class (upstream `contentProps.css`). |
 | `@textCss` | `EuiCss` |  | Extra styles composed last into the value/placeholder text's class (upstream `textProps.css`). |
 | `@css` | `EuiCss` |  | Extra styles composed last into this component's class (like upstream's `css` prop). Prefer this to an extra class when styling it from a parent. |

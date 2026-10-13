@@ -88,6 +88,11 @@ active filters.
 | `@withNext` | `boolean` |  | Removes the divider after it, to join it with the next button (e.g. "On" and "Off" toggles). |
 | `@noDivider` | `boolean` |  | Same as `@withNext`. |
 | `@type` | `string` | `'button'` | `type` of the `<button>`. |
+| `@hasAriaDisabled` | `boolean` |  | Beta: with `@isDisabled`, renders `aria-disabled` instead of the native `disabled`; the button keeps focus while clicks are blocked. |
+| `@iconSize` |  | `'m'` | Size of the icon. |
+| `@isLoading` | `boolean` |  | Replaces the icon with a spinner and disables the button. |
+| `@contentProps` | `EuiElementProps` |  | Upstream's `contentProps`: `class`/`className`, `css` and HTML attributes for the element wrapping the icon, text and badge. |
+| `@textProps` | `EuiElementProps` |  | Upstream's `textProps`: `class`/`className`, `css` and HTML attributes for the element wrapping the text. |
 
 | Block | Description |
 | --- | --- |

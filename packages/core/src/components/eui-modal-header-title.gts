@@ -28,7 +28,19 @@ const NESTED_HEADING_RESET = {
  * `aria-labelledby`.
  */
 export interface EuiModalHeaderTitleSignature {
-  Element: HTMLDivElement;
+  Element: Element;
+  Args: {
+    /**
+     * Upstream's `component`: the tag to render instead of the wrapping
+     * `<div>`, e.g. `'h1'` or `'h2'`, so the text goes straight inside and
+     * no heading needs nesting. Defaults to `'div'`.
+     */
+    tagName?: string;
+    /** `'xxxs'`, `'xxs'`, `'xs'`, `'s'`, `'m'` or `'l'`. Defaults to `'m'`. */
+    size?: 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l';
+    /** `'uppercase'` for all caps. */
+    textTransform?: 'uppercase';
+  };
   Blocks: {
     /**
      * The title text. Wrap it in a heading (e.g. `<h1>`) for the page
@@ -52,14 +64,17 @@ export default class EuiModalHeaderTitle extends Component<EuiModalHeaderTitleSi
         fontFamily: context.upstream.euiTheme.font.family
       },
       styles.euiTitle,
-      styles.m,
+      this.args.textTransform ? styles[this.args.textTransform] : undefined,
+      styles[this.args.size ?? 'm'],
       NESTED_HEADING_RESET
     )}`;
   }
 
   <template>
-    <div class={{this.classes}} ...attributes>
-      {{yield}}
-    </div>
+    {{#let (element (if @tagName @tagName "div")) as |Tag|}}
+      <Tag class={{this.classes}} ...attributes>
+        {{yield}}
+      </Tag>
+    {{/let}}
   </template>
 }

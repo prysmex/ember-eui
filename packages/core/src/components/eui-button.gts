@@ -5,6 +5,8 @@ import { on } from '@ember/modifier';
 import { modifier } from 'ember-modifier';
 import { resolveButtonCommonProps } from '../-private/eui-button-context.ts';
 import EuiButtonGroupItem from '../-private/eui-button-group-item.gts';
+import euiApplyProps, { propsClasses } from '../-private/eui-apply-props.ts';
+import type { EuiElementProps } from '../-private/eui-apply-props.ts';
 import euiDisabledElement from '../-private/eui-disabled-element.ts';
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import { euiClass, useEuiBorealisStyles } from '../utils/eui/styles.ts';
@@ -120,6 +122,17 @@ export interface EuiButtonSignature {
      */
     buttonContext?: EuiButtonContext;
     /**
+     * Upstream's `contentProps`, for the element wrapping the icon and
+     * text: `class`/`className`, `css` and HTML attributes (`data-*`,
+     * `aria-*`, `title`, ...). Event handlers are not supported.
+     */
+    contentProps?: EuiElementProps;
+    /**
+     * Upstream's `textProps`, for the element wrapping the text, with the
+     * same keys as `@contentProps`. `false` is not supported.
+     */
+    textProps?: EuiElementProps;
+    /**
      * Extra styles composed last into this component's class (like upstream's
      * `css` prop). Prefer this to an extra class when styling it from a parent.
      */
@@ -232,6 +245,7 @@ export default class EuiButton extends Component<EuiButtonSignature> {
     return [
       'euiButton__content',
       this.args.contentClasses,
+      propsClasses(this.args.contentProps),
       euiClass(context, styles.euiButtonDisplayContent, {
         boxSizing: 'border-box',
         flexDirection: this.args.iconSide === 'right' ? 'row-reverse' : 'row',
@@ -244,7 +258,7 @@ export default class EuiButton extends Component<EuiButtonSignature> {
           borderColor: 'currentColor',
           borderRightColor: 'transparent'
         }
-      }, this.args.contentCss)
+      }, this.args.contentCss, this.args.contentProps?.css)
     ]
       .filter(Boolean)
       .join(' ');
@@ -258,12 +272,13 @@ export default class EuiButton extends Component<EuiButtonSignature> {
     return [
       'euiButton__text',
       this.args.textClasses,
+      propsClasses(this.args.textProps),
       euiClass(this.context, styles.content[this.size], {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         minInlineSize: 0
-      })
+      }, this.args.textProps?.css)
     ]
       .filter(Boolean)
       .join(' ');
@@ -298,6 +313,8 @@ export default class EuiButton extends Component<EuiButtonSignature> {
             @useSvg={{@useSvg}}
             @useComponent={{@useComponent}}
             @textClasses={{this.textClasses}}
+            @textProps={{@textProps}}
+            {{euiApplyProps @contentProps}}
           >{{yield}}</EuiButtonContent>
         </Element>
       {{/let}}

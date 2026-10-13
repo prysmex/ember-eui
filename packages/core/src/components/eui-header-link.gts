@@ -44,6 +44,11 @@ const EuiHeaderLink: TemplateOnlyComponent<EuiHeaderLinkSignature> = <template>
     @iconClasses={{@iconClasses}}
     @textClasses={{@textClasses}}
     @contentClasses={{@contentClasses}}
+    @contentProps={{@contentProps}}
+    @textProps={{@textProps}}
+    @hasAriaDisabled={{@hasAriaDisabled}}
+    @contentCss={{@contentCss}}
+    @css={{@css}}
     ...attributes
   >
     {{yield}}

@@ -90,6 +90,11 @@ export interface EuiColorPickerSignature {
     fullWidth?: boolean;
     /** Disables it. */
     disabled?: boolean;
+    /**
+     * z-index of the color selector popover. Defaults to the anchor's
+     * z-index + 2000, as in EuiPopover.
+     */
+    popoverZIndex?: number;
     /** Read-only: the popover does not open. */
     readOnly?: boolean;
     /** Invalid look. */
@@ -506,6 +511,7 @@ export default class EuiColorPicker extends Component<EuiColorPickerSignature> {
         @ownFocus={{false}}
         @initialFocus={{false}}
         @ariaLabel={{this.labels.popover}}
+        @zIndex={{@popoverZIndex}}
       >
         <:button>
           {{#if (has-block "button")}}

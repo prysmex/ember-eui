@@ -40,7 +40,7 @@ import EuiRangeWrapper from './eui-range-wrapper.gts';
 
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiFormControlLayoutSignature } from './eui-form-control-layout';
-import type { EuiRangeArgs } from './eui-range';
+import type { EuiRangeArgs, EuiRangeInputPopoverProps } from './eui-range';
 import type {
   EuiRangeInputArgs,
   EuiRangeInputSignature
@@ -52,6 +52,14 @@ import type { EuiRangeTick } from './eui-range-ticks';
 export type ValueMember = number | string;
 
 export interface EuiDualRangeArgs {
+  /**
+   * Props of the EuiInputPopover used with `@showInput="inputWithPopover"`
+   * (upstream `inputPopoverProps`): EuiInputPopover args except `isOpen`,
+   * `closePopover`, `disableFocusTrap`, `ownFocus`,
+   * `popoverScreenReaderText` and `fullWidth`, which the range controls.
+   * Its `className` is added to the popover root.
+   */
+  inputPopoverProps?: EuiRangeInputPopoverProps;
   /** The selected range, `[lower, upper]`. Update it in `@onChange`. */
   value: [ValueMember, ValueMember];
   /** Called when a thumb or input loses focus. */
@@ -781,7 +789,34 @@ export default class EuiDualRangeComponent extends Component<EuiDualRangeSignatu
     }}
       {{#if this.showInputOnly}}
         <EuiInputPopover
-          class="euiDualRange__popover"
+          class="euiDualRange__popover {{@inputPopoverProps.className}}"
+          @panelPaddingSize={{@inputPopoverProps.panelPaddingSize}}
+          @anchorPosition={{@inputPopoverProps.anchorPosition}}
+          @attachToAnchor={{@inputPopoverProps.attachToAnchor}}
+          @display={{@inputPopoverProps.display}}
+          @offset={{@inputPopoverProps.offset}}
+          @repositionToCrossAxis={{@inputPopoverProps.repositionToCrossAxis}}
+          @closeOnScroll={{@inputPopoverProps.closeOnScroll}}
+          @panelMinWidth={{@inputPopoverProps.panelMinWidth}}
+          @onPanelResize={{@inputPopoverProps.onPanelResize}}
+          @css={{@inputPopoverProps.css}}
+          @panelCss={{@inputPopoverProps.panelCss}}
+          @repositionOnScroll={{@inputPopoverProps.repositionOnScroll}}
+          @panelClassName={{@inputPopoverProps.panelClassName}}
+          @panelStyle={{@inputPopoverProps.panelStyle}}
+          @anchorClassName={{@inputPopoverProps.anchorClassName}}
+          @zIndex={{@inputPopoverProps.zIndex}}
+          @container={{@inputPopoverProps.container}}
+          @buffer={{@inputPopoverProps.buffer}}
+          @insert={{@inputPopoverProps.insert}}
+          @hasArrow={{@inputPopoverProps.hasArrow}}
+          @initialFocus={{@inputPopoverProps.initialFocus}}
+          @ariaLabel={{@inputPopoverProps.ariaLabel}}
+          @ariaLabelledBy={{@inputPopoverProps.ariaLabelledBy}}
+          @popoverRef={{@inputPopoverProps.popoverRef}}
+          @portalRef={{@inputPopoverProps.portalRef}}
+          @onTrapDeactivation={{@inputPopoverProps.onTrapDeactivation}}
+          @shouldAccountForOtherPopovers={{@inputPopoverProps.shouldAccountForOtherPopovers}}
           @fullWidth={{this.fullWidth}}
           @isOpen={{this.isPopoverOpen}}
           @closePopover={{this.closePopover}}

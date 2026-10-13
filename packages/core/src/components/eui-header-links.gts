@@ -3,6 +3,8 @@ import { cached, tracked } from '@glimmer/tracking';
 
 import { modifier } from 'ember-modifier';
 
+import spreadAttributes from '../-private/eui-spread-attributes.ts';
+
 import { getEuiThemeContext } from '../utils/emotion/consume.ts';
 import {
   euiBreakpointsMedia,
@@ -16,12 +18,48 @@ import EuiPopover from './eui-popover.gts';
 
 import type { EuiBreakpointSize } from '../utils/breakpoint.ts';
 import type { EuiIconSignature } from './eui-icon';
+import type { EuiHeaderSectionItemButtonSignature } from './eui-header-section-item-button';
 import type { EuiPopoverSignature } from './eui-popover';
+import type { EuiCss } from '../utils/eui/styles.ts';
 import type { EuiResponsiveSizes } from './eui-show-for.gts';
 
 export type EuiHeaderLinksGutterSize = 'none' | 'xxs' | 'xs' | 's' | 'm' | 'l';
 
 const ALL_SIZES: EuiBreakpointSize[] = ['xs', 's', 'm', 'l', 'xl'];
+
+/**
+ * Upstream `popoverButtonProps`: EuiHeaderSectionItemButton args, plus
+ * `iconType` (defaults to `'apps'`). Other keys (`aria-label`,
+ * `data-test-subj`, …) become attributes of the button.
+ */
+export type EuiHeaderLinksPopoverButtonProps = Partial<
+  EuiHeaderSectionItemButtonSignature['Args']
+> & {
+  iconType?: EuiIconSignature['Args']['type'];
+  [key: string]: unknown;
+};
+
+/**
+ * Upstream `popoverProps`: EuiPopover args except `button` and
+ * `closePopover`; they replace the defaults (`isOpen`, `anchorPosition`
+ * `'downRight'`, `panelPaddingSize` `'s'`, `repositionOnScroll`). Its
+ * `className` is added to the popover root and its `css` is composed into
+ * the root's class.
+ */
+export type EuiHeaderLinksPopoverProps = Partial<
+  Omit<EuiPopoverSignature['Args'], 'button' | 'closePopover'>
+> & { className?: string };
+
+/** Button args that are not attributes. */
+const BUTTON_ARGS = [
+  'iconType',
+  'ref',
+  'disabled',
+  'href',
+  'onClick',
+  'notification',
+  'notificationColor'
+];
 
 /** Upstream closes the mobile menu whenever the window resizes. */
 const onWindowResize = modifier(
@@ -55,6 +93,19 @@ export interface EuiHeaderLinkSignature {
     popoverButtonIconType?: EuiIconSignature['Args']['type'];
     /** Accessible name of the popover button. Defaults to `'Open menu'`. */
     popoverButtonAriaLabel?: string;
+    /**
+     * Props for the popover's button (upstream `popoverButtonProps`), see
+     * {@link EuiHeaderLinksPopoverButtonProps}. `iconType` wins over
+     * `@popoverButtonIconType` and an `aria-label` over
+     * `@popoverButtonAriaLabel`; `onClick` is called before the menu toggles.
+     */
+    popoverButtonProps?: EuiHeaderLinksPopoverButtonProps;
+    /**
+     * Props for the mobile menu's EuiPopover (upstream `popoverProps`), see
+     * {@link EuiHeaderLinksPopoverProps}. `panelPaddingSize` wins over
+     * `@panelPaddingSize`.
+     */
+    popoverProps?: EuiHeaderLinksPopoverProps;
   };
   Blocks: {
     /**
@@ -88,9 +139,47 @@ export default class EuiHeaderLinksComponent extends Component<EuiHeaderLinkSign
     return this.popoverSizes.length > 0;
   }
 
-  toggleMenu = () => {
+  toggleMenu = (event: MouseEvent) => {
+    this.args.popoverButtonProps?.onClick?.(event);
     this.mobileMenuIsOpen = !this.mobileMenuIsOpen;
   };
+
+  get buttonArgs(): readonly string[] {
+    return BUTTON_ARGS;
+  }
+
+  get buttonIconType(): EuiIconSignature['Args']['type'] {
+    return (
+      this.args.popoverButtonProps?.iconType ??
+      this.args.popoverButtonIconType ??
+      'apps'
+    );
+  }
+
+  get isPopoverOpen(): boolean {
+    const props = this.args.popoverProps;
+
+    return props && 'isOpen' in props
+      ? Boolean(props.isOpen)
+      : this.mobileMenuIsOpen;
+  }
+
+  get popoverPaddingSize(): EuiPopoverSignature['Args']['panelPaddingSize'] {
+    return (
+      this.args.popoverProps?.panelPaddingSize ??
+      this.args.panelPaddingSize ??
+      's'
+    );
+  }
+
+  get popoverRepositionOnScroll(): boolean {
+    return this.args.popoverProps?.repositionOnScroll ?? true;
+  }
+
+  @cached
+  get popoverCss(): EuiCss {
+    return [this.classes.popover, this.args.popoverProps?.css];
+  }
 
   closeMenu = () => {
     this.mobileMenuIsOpen = false;
@@ -135,12 +224,45 @@ export default class EuiHeaderLinksComponent extends Component<EuiHeaderLinkSign
 
       {{#if this.hasMobileVersion}}
         <EuiPopover
-          @css={{this.classes.popover}}
-          @isOpen={{this.mobileMenuIsOpen}}
-          @anchorPosition="downRight"
-          @repositionOnScroll={{true}}
-          @panelPaddingSize={{if @panelPaddingSize @panelPaddingSize "s"}}
+          class={{@popoverProps.className}}
+          @css={{this.popoverCss}}
+          @isOpen={{this.isPopoverOpen}}
+          @anchorPosition={{if
+            @popoverProps.anchorPosition
+            @popoverProps.anchorPosition
+            "downRight"
+          }}
+          @repositionOnScroll={{this.popoverRepositionOnScroll}}
+          @panelPaddingSize={{this.popoverPaddingSize}}
           @closePopover={{this.closeMenu}}
+          @portalRef={{@popoverProps.portalRef}}
+          @anchorClassName={{@popoverProps.anchorClassName}}
+          @attachToAnchor={{@popoverProps.attachToAnchor}}
+          @buttonRef={{@popoverProps.buttonRef}}
+          @container={{@popoverProps.container}}
+          @display={{@popoverProps.display}}
+          @hasArrow={{@popoverProps.hasArrow}}
+          @initialFocus={{@popoverProps.initialFocus}}
+          @insert={{@popoverProps.insert}}
+          @ownFocus={{@popoverProps.ownFocus}}
+          @panelClassName={{@popoverProps.panelClassName}}
+          @panelStyle={{@popoverProps.panelStyle}}
+          @popoverScreenReaderText={{@popoverProps.popoverScreenReaderText}}
+          @panelProps={{@popoverProps.panelProps}}
+          @focusTrapProps={{@popoverProps.focusTrapProps}}
+          @onPositionChange={{@popoverProps.onPositionChange}}
+          @panelRef={{@popoverProps.panelRef}}
+          @popoverRef={{@popoverProps.popoverRef}}
+          @shouldAccountForOtherPopovers={{@popoverProps.shouldAccountForOtherPopovers}}
+          @repositionToCrossAxis={{@popoverProps.repositionToCrossAxis}}
+          @panelCss={{@popoverProps.panelCss}}
+          @zIndex={{@popoverProps.zIndex}}
+          @onTrapDeactivation={{@popoverProps.onTrapDeactivation}}
+          @offset={{@popoverProps.offset}}
+          @buffer={{@popoverProps.buffer}}
+          @ariaLabel={{@popoverProps.ariaLabel}}
+          @ariaLabelledBy={{@popoverProps.ariaLabelledBy}}
+          @tabindex={{@popoverProps.tabindex}}
         >
           <:button>
             <EuiHeaderSectionItemButton
@@ -150,15 +272,14 @@ export default class EuiHeaderLinksComponent extends Component<EuiHeaderLinkSign
                 "Open menu"
               }}
               @onClick={{this.toggleMenu}}
+              @ref={{@popoverButtonProps.ref}}
+              @disabled={{@popoverButtonProps.disabled}}
+              @href={{@popoverButtonProps.href}}
+              @notification={{@popoverButtonProps.notification}}
+              @notificationColor={{@popoverButtonProps.notificationColor}}
+              {{spreadAttributes @popoverButtonProps this.buttonArgs}}
             >
-              <EuiIcon
-                @type={{if
-                  @popoverButtonIconType
-                  @popoverButtonIconType
-                  "apps"
-                }}
-                @size="m"
-              />
+              <EuiIcon @type={{this.buttonIconType}} @size="m" />
             </EuiHeaderSectionItemButton>
           </:button>
           <:content>

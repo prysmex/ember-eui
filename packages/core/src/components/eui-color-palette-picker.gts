@@ -9,7 +9,10 @@ import EuiText from './eui-text.gts';
 
 import type { ComponentLike } from '@glint/template';
 import type { ColorStop } from '../-private/color.ts';
-import type { EuiSuperSelectOption } from './eui-super-select';
+import type {
+  EuiSuperSelectOption,
+  EuiSuperSelectSignature
+} from './eui-super-select';
 
 export interface EuiColorPalettePickerPalette {
   /** The value passed to `@onChange` when chosen. */
@@ -62,6 +65,18 @@ export interface EuiColorPalettePickerSignature {
     disabled?: boolean;
     /** Read-only: the list does not open. */
     readOnly?: boolean;
+    /**
+     * Controls whether the list is open (upstream `isOpen`, from
+     * EuiSuperSelect). Defaults to closed until the user opens it.
+     */
+    isOpen?: boolean;
+    /** Class for each option in the list (EuiSuperSelect `itemClassName`). */
+    itemClassName?: string;
+    /**
+     * Props of the list's EuiInputPopover (EuiSuperSelect `popoverProps`),
+     * e.g. `(hash panelClassName="…" repositionOnScroll=true)`.
+     */
+    popoverProps?: EuiSuperSelectSignature['Args']['popoverProps'];
   };
   Blocks: {
     /**
@@ -99,6 +114,9 @@ export default class EuiColorPalettePicker extends Component<EuiColorPalettePick
       @isLoading={{@isLoading}}
       @disabled={{@disabled}}
       @readOnly={{@readOnly}}
+      @isOpen={{@isOpen}}
+      @itemClassName={{@itemClassName}}
+      @popoverProps={{@popoverProps}}
       @isPrependProvided={{has-block "prepend"}}
       @isAppendProvided={{has-block "append"}}
       ...attributes

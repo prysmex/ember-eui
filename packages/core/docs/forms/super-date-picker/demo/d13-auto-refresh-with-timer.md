@@ -1,8 +1,8 @@
 ---
-order: 3
+order: 13
 ---
 
-# Auto refresh input
+# Auto refresh with a timer (Ember EUI extra)
 
 <EuiText>
 

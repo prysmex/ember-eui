@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 12
 ---
 
-# Auto refresh
+# Auto refresh with a counter (Ember EUI extra)
 
 <EuiText>
 

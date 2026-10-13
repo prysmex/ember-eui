@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 3
 ---
 
-# Start and end dates
+# In a form row, with validation (Ember EUI extra)
 
 <EuiText>
 

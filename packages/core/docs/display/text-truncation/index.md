@@ -29,6 +29,17 @@ to a number of lines with CSS line clamping instead.
 
 </EuiText>
 
+<EuiSpacer />
+
+<EuiCallOut @title="Accessibility and comparison to text-overflow" @iconType="accessibility">
+  <p><strong>EuiTextTruncate</strong> attempts to mimic the behavior of <EuiCode>text-overflow: ellipsis</EuiCode> as closely as possible, although there may be edge cases and cross-browser issues, as this is essentially a browser implementation we are trying to polyfill.</p>
+  <ul>
+    <li>Screen readers should ignore the truncated text and only read out the full text.</li>
+    <li>Sighted mouse users will be able to briefly hover over the truncated text and read the full text in a tooltip. Use <EuiCode>@toolTipProps</EuiCode> to control where it opens, e.g. its <EuiCode>position</EuiCode>.</li>
+    <li>For mouse users, double clicking to select the truncated line should allow copying the full untruncated text.</li>
+  </ul>
+</EuiCallOut>
+
 <EuiHorizontalRule />
 
 <!-- api:start -->

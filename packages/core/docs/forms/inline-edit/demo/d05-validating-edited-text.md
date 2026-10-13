@@ -42,7 +42,7 @@ export default class InlineEditValidationDemo extends Component {
     return {
       formRowProps: { error: this.errors },
       cancelButtonProps: { onClick: () => (this.errors = []) },
-      inputProps: {},
+      inputProps: { readOnly: this.isLoading },
     };
   }
 

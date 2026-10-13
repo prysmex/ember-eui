@@ -49,6 +49,7 @@ A file input styled as a drop zone. Attributes such as `accept` go to the
 | `@isLoading` | `boolean` |  | Shows a spinner (`default`) or a progress bar (`large`). |
 | `@disabled` | `boolean` |  | Disables the picker. |
 | `@multiple` | `boolean` |  | Allows selecting several files. |
+| `@files` | `File[] \| null` |  | Files to show as selected (their name, or "N files selected"), e.g. to keep the prompt when a multi-step form re-renders the picker. Browsers don't let the file input itself be set: keep the files in your state. A new array replaces whatever the user picked since. |
 | `@ref` |  |  | Called with the component instance, e.g. to call its `removeFiles()` action and reset the picker. |
 
 Deprecated: `@class` (Has no effect, use `class=`.).

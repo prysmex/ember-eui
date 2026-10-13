@@ -100,6 +100,11 @@ export interface EuiFormRowSignature {
      * added to the control's `aria-describedby` while shown.
      */
     error?: string | string[] | null;
+    /**
+     * Ids of other elements describing the control, added first to its
+     * `aria-describedby` (before the help text and errors).
+     */
+    describedByIds?: string[];
     /** Extra classes for each error message. */
     errorClasses?: string;
     /** Extra classes for the help text. */
@@ -248,6 +253,7 @@ export default class EuiFormRow extends Component<EuiFormRowSignature> {
             this.rowId
             helpText=(or @helpText hasHelpTextBlock)
             errorCount=(if @isInvalid this.errors.length 0)
+            describedByIds=@describedByIds
           }}
         >
           {{#if hasLabel}}

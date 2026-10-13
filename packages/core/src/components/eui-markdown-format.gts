@@ -16,6 +16,7 @@ import {
   defaultProcessingPlugins
 } from '../utils/markdown/plugins/markdown-default-plugins/index.ts';
 import { toDOM } from '../utils/markdown/plugins/to-dom.ts';
+import { euiTextAlignCss } from './eui-text-align.gts';
 import { TEXT_COLORS, euiTextColorCss } from './eui-text-color.gts';
 import { euiTextReset } from './eui-text.gts';
 
@@ -23,6 +24,7 @@ import type {
   EuiMarkdownAstNodePosition,
   RehypeNode
 } from '../utils/markdown/markdown-types';
+import type { EuiTextAlignment } from './eui-text-align.gts';
 import type { EuiTextColorValue } from './eui-text-color.gts';
 import type { EuiTextSignature } from './eui-text.gts';
 import type { CSSObject } from '@emotion/css/create-instance';
@@ -97,7 +99,28 @@ export interface EuiMarkdownFormatSignature {
      * Defaults to `true`; `false` keeps only the markdown-specific styles.
      */
     shouldIncludeDefaultRootClasses?: boolean;
+    /**
+     * The root element: `'div'` (default), `'span'` or `'p'` (upstream
+     * EuiText's `component`). Only `'div'` can hold block content such as
+     * headings, lists and tables.
+     */
+    component?: 'div' | 'span' | 'p';
+    /**
+     * `true` (default) lets the text span the container's full width;
+     * `false` caps lines at a readable width (EuiText's `grow`).
+     */
+    grow?: boolean;
+    /** `'left'`, `'center'` or `'right'` (logical, so they flip in RTL). */
+    textAlign?: EuiTextAlignment;
   };
+}
+
+/**
+ * The root tag. Typed as `'div'` so callers keep `HTMLDivElement`
+ * attributes; `@component` may be `'span'` or `'p'` too.
+ */
+function tagName(component: string | undefined): 'div' {
+  return (component || 'div') as 'div';
 }
 
 export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignature> {
@@ -156,6 +179,10 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
     const markdown = useEuiBorealisStyles(context, euiMarkdownFormatStyles);
     const size = this.textSize;
     const color = this.color;
+    const { grow, textAlign } = this.args;
+    // Upstream EuiText: `constrainedWidth` unless it grows, and the
+    // alignment last (EuiTextAlign clones the element).
+    const align = textAlign ? euiTextAlignCss(textAlign) : undefined;
     const borderColor: MarkdownFormatColor = (
       TEXT_COLORS as readonly string[]
     ).includes(color)
@@ -168,7 +195,8 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
         markdown.euiMarkdownFormat,
         markdown[size],
         markdown.colors[borderColor],
-        markdownFormatEmberCss
+        markdownFormatEmberCss,
+        align
       );
     }
 
@@ -179,12 +207,14 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
       euiTextReset(context.upstream),
       TABLE_RESET,
       text.euiText,
+      grow === false ? text.constrainedWidth : undefined,
       text[size],
       euiTextColorCss(context, color),
       markdown.euiMarkdownFormat,
       markdown[size],
       markdown.colors[borderColor],
-      markdownFormatEmberCss
+      markdownFormatEmberCss,
+      align
     );
   }
 
@@ -219,11 +249,13 @@ export default class EuiMarkdownFormat extends Component<EuiMarkdownFormatSignat
 
   <template>
     {{! This hbs was inspired by https://github.com/ampatspell/ember-cli-remark-static/blob/v3.0.5/addon/components/remark.hbs }}
-    <div class={{this.rootClassName}} ...attributes>
-      {{#if this.result}}
-        {{#each this.result.nodes as |node|}}{{node}}{{/each}}
-      {{/if}}
-    </div>
+    {{#let (element (tagName @component)) as |Tag|}}
+      <Tag class={{this.rootClassName}} ...attributes>
+        {{#if this.result}}
+          {{#each this.result.nodes as |node|}}{{node}}{{/each}}
+        {{/if}}
+      </Tag>
+    {{/let}}
     {{#if this.result}}
       {{#each this.result.components as |CompNode|}}
         {{#in-element CompNode.element}}

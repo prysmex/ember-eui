@@ -12,6 +12,24 @@ import {
 import EuiFlexGroup from './eui-flex-group.gts';
 import EuiFlexItem from './eui-flex-item.gts';
 import EuiIcon from './eui-icon.gts';
+import EuiToolTip from './eui-tool-tip.gts';
+
+import type { EuiTooltipArgs } from './eui-tool-tip.gts';
+
+/** `EuiToolTip` args `@toolTipProps` supports (upstream `toolTipProps`). */
+export type EuiFilterSelectItemToolTipProps = Partial<
+  Pick<
+    EuiTooltipArgs,
+    | 'position'
+    | 'delay'
+    | 'title'
+    | 'offset'
+    | 'className'
+    | 'css'
+    | 'anchorClassName'
+    | 'anchorCss'
+  >
+>;
 
 /**
  * One option in a filter popover (opened from an `EuiFilterButton`): a
@@ -37,11 +55,77 @@ export interface EuiFilterSelectItemSignature {
     truncateContent?: boolean;
     /** Disables the option. */
     disabled?: boolean;
+    /**
+     * Tooltip of the option (not when disabled). It also shows while the
+     * option `@isFocused`, e.g. during keyboard navigation.
+     */
+    toolTipContent?: string;
+    /**
+     * More `EuiToolTip` args for `@toolTipContent`: `position` (defaults
+     * to `'left'`), `delay`, `title`, `offset`, `className`, `css`,
+     * `anchorClassName` and `anchorCss`.
+     */
+    toolTipProps?: EuiFilterSelectItemToolTipProps;
   };
   Blocks: {
     /** The option's label. */
     default: [];
   };
+}
+
+interface FilterSelectItemButtonSignature {
+  Element: HTMLButtonElement;
+  Args: {
+    classes: string;
+    contentCss: EuiCss;
+    icon: string;
+    showIcons: boolean;
+    checked?: 'on' | 'off';
+    disabled?: boolean;
+    isFocused?: boolean;
+  };
+  Blocks: { default: [] };
+}
+
+/** @private The option's button, inside a tooltip when it has one. */
+class FilterSelectItemButton extends Component<FilterSelectItemButtonSignature> {
+  /** Upstream scrolls an option into view when it becomes focused. */
+  scrollWhenFocused = (element: HTMLButtonElement) => {
+    if (this.args.isFocused) element.scrollIntoView?.({ block: 'nearest' });
+  };
+
+  <template>
+    <button
+      type="button"
+      role="option"
+      class={{@classes}}
+      aria-selected={{if (isOn @checked) "true" "false"}}
+      disabled={{@disabled}}
+      aria-disabled={{if @disabled "true"}}
+      {{didUpdate this.scrollWhenFocused @isFocused}}
+      ...attributes
+    >
+      <EuiFlexGroup
+        @alignItems="center"
+        @gutterSize="s"
+        @tagName="span"
+        @responsive={{false}}
+      >
+        {{#if @showIcons}}
+          <EuiFlexItem @grow={{false}}>
+            <EuiIcon @type={{@icon}} @color={{if @checked "text"}} />
+          </EuiFlexItem>
+        {{/if}}
+        <EuiFlexItem
+          class="euiFilterSelectItem__content"
+          @tagName="span"
+          @css={{@contentCss}}
+        >
+          {{yield}}
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </button>
+  </template>
 }
 
 export default class EuiFilterSelectItem extends Component<EuiFilterSelectItemSignature> {
@@ -78,42 +162,48 @@ export default class EuiFilterSelectItem extends Component<EuiFilterSelectItemSi
     return this.args.truncateContent !== false ? euiTextTruncate() : undefined;
   }
 
-  /** Upstream scrolls an option into view when it becomes focused. */
-  scrollWhenFocused = (element: HTMLButtonElement) => {
-    if (this.args.isFocused) element.scrollIntoView?.({ block: 'nearest' });
-  };
+  get hasToolTip(): boolean {
+    return Boolean(this.args.toolTipContent) && !this.args.disabled;
+  }
 
   <template>
-    <button
-      type="button"
-      role="option"
-      class={{this.classes}}
-      aria-selected={{if (isOn @checked) "true" "false"}}
-      disabled={{@disabled}}
-      aria-disabled={{if @disabled "true"}}
-      {{didUpdate this.scrollWhenFocused @isFocused}}
-      ...attributes
-    >
-      <EuiFlexGroup
-        @alignItems="center"
-        @gutterSize="s"
-        @tagName="span"
-        @responsive={{false}}
+    {{#if this.hasToolTip}}
+      <EuiToolTip
+        @display="block"
+        @content={{@toolTipContent}}
+        @position={{if @toolTipProps.position @toolTipProps.position "left"}}
+        @delay={{@toolTipProps.delay}}
+        @title={{@toolTipProps.title}}
+        @offset={{@toolTipProps.offset}}
+        @className={{@toolTipProps.className}}
+        @css={{@toolTipProps.css}}
+        @anchorClassName={{@toolTipProps.anchorClassName}}
+        @anchorCss={{@toolTipProps.anchorCss}}
+        @isShown={{@isFocused}}
       >
-        {{#if this.showIcons}}
-          <EuiFlexItem @grow={{false}}>
-            <EuiIcon @type={{this.icon}} @color={{if @checked "text"}} />
-          </EuiFlexItem>
-        {{/if}}
-        <EuiFlexItem
-          class="euiFilterSelectItem__content"
-          @tagName="span"
-          @css={{this.contentCss}}
-        >
-          {{yield}}
-        </EuiFlexItem>
-      </EuiFlexGroup>
-    </button>
+        <FilterSelectItemButton
+          @classes={{this.classes}}
+          @contentCss={{this.contentCss}}
+          @icon={{this.icon}}
+          @showIcons={{this.showIcons}}
+          @checked={{@checked}}
+          @disabled={{@disabled}}
+          @isFocused={{@isFocused}}
+          ...attributes
+        >{{yield}}</FilterSelectItemButton>
+      </EuiToolTip>
+    {{else}}
+      <FilterSelectItemButton
+        @classes={{this.classes}}
+        @contentCss={{this.contentCss}}
+        @icon={{this.icon}}
+        @showIcons={{this.showIcons}}
+        @checked={{@checked}}
+        @disabled={{@disabled}}
+        @isFocused={{@isFocused}}
+        ...attributes
+      >{{yield}}</FilterSelectItemButton>
+    {{/if}}
   </template>
 }
 

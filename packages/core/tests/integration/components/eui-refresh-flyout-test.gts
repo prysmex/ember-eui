@@ -223,8 +223,50 @@ module('Integration | Component | Borealis auto refresh', function (hooks) {
       </template>
     );
 
-    assert.dom('button.euiAutoRefreshButton').hasText('2 m').isDisabled();
-    assert.dom('button.euiAutoRefreshButton').hasAttribute('disabled');
+    // upstream `hasAriaDisabled={isDisabled}`: aria-disabled, still focusable
+    assert.dom('button.euiAutoRefreshButton').hasText('2 m').hasAttribute('aria-disabled', 'true');
+    assert.dom('button.euiAutoRefreshButton').doesNotHaveAttribute('disabled');
+  });
+
+  test('EuiAutoRefreshButton @hasAriaDisabled={{false}} disables natively', async function (assert) {
+    const state = new Refresh();
+
+    await render(
+      <template>
+        <EuiAutoRefreshButton
+          @isDisabled={{true}}
+          @hasAriaDisabled={{false}}
+          @onRefreshChange={{state.onChange}}
+        />
+      </template>
+    );
+
+    assert.dom('button.euiAutoRefreshButton').isDisabled().doesNotHaveAttribute('aria-disabled');
+  });
+
+  test('EuiAutoRefresh @isInvalid, @isLoading and the <:append> block', async function (assert) {
+    const state = new Refresh();
+
+    await render(
+      <template>
+        <EuiAutoRefresh
+          data-test-subj="auto"
+          @isInvalid={{true}}
+          @isLoading={{true}}
+          @onRefreshChange={{state.onChange}}
+        >
+          <:append as |classes|>
+            <span class="{{classes}} my-append">After</span>
+          </:append>
+        </EuiAutoRefresh>
+        <EuiAutoRefresh data-test-subj="plain" @onRefreshChange={{state.onChange}} />
+      </template>
+    );
+
+    assert.dom('input[data-test-subj="auto"]').hasAttribute('aria-invalid', 'true');
+    assert.dom('.euiBorealisLoadingSpinner').exists({ count: 1 });
+    assert.dom('.my-append').hasText('After');
+    assert.dom('.euiFormControlLayout:has(input[data-test-subj="plain"]) .euiFormControlLayout__append').doesNotExist('no append without the block');
   });
 });
 

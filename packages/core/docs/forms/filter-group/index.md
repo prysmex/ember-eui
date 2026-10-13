@@ -100,21 +100,15 @@ active filters.
 
 ### EuiFilterSelectItem
 
-One option in a filter popover (opened from an `EuiFilterButton`): a
-button with a check mark when `@checked="on"`, or a cross when `"off"`
-(excluded).
-
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
-| `@checked` | `'on' \| 'off'` |  | `'on'` (check mark, included; sets `aria-selected="true"`), `'off'` (cross, excluded) or nothing (not applied). |
-| `@isFocused` | `boolean` |  | Highlights it, e.g. while moving through the list with the keyboard, and scrolls it into view when it becomes focused. |
-| `@showIcons` | `boolean` | `true` | Shows the check mark / cross column. |
-| `@truncateContent` | `boolean` | `true` | Truncates a long label with an ellipsis. |
-| `@disabled` | `boolean` |  | Disables the option. |
-
-| Block | Description |
-| --- | --- |
-| default block | The option's label. |
+| `@classes` (required) | `string` |  |  |
+| `@contentCss` (required) | `EuiCss` |  |  |
+| `@icon` (required) | `string` |  |  |
+| `@showIcons` (required) | `boolean` |  |  |
+| `@checked` | `'on' \| 'off'` |  |  |
+| `@disabled` | `boolean` |  |  |
+| `@isFocused` | `boolean` |  |  |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<button>`.
 

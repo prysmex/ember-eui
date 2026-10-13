@@ -95,6 +95,21 @@ export interface EuiSuperUpdateButtonSignature {
      * `['xs', 's']`.
      */
     responsive?: false | EuiBreakpointSize[];
+    /** Tag to render (EuiButton's `@element`). Defaults to `'button'`. */
+    element?: EuiButtonSignature['Args']['element'];
+    /** Stretches the button to its container's width. */
+    fullWidth?: EuiButtonSignature['Args']['fullWidth'];
+    /**
+     * With `@isDisabled`, renders `aria-disabled="true"` instead of the
+     * native `disabled` attribute, so the tooltip still shows.
+     */
+    hasAriaDisabled?: EuiButtonSignature['Args']['hasAriaDisabled'];
+    /** Side of the icon: `'left'` (default) or `'right'`. */
+    iconSide?: EuiButtonSignature['Args']['iconSide'];
+    /** Size of the icon. */
+    iconSize?: EuiButtonSignature['Args']['iconSize'];
+    /** Pressed (`aria-pressed`) look. */
+    isSelected?: EuiButtonSignature['Args']['isSelected'];
   };
 }
 
@@ -118,6 +133,12 @@ export interface EuiSuperUpdateButtonProps {
   toolTipProps?: EuiSuperUpdateButtonToolTipProps;
   /** Sizes on which the button collapses to its icon, or `false`. */
   responsive?: false | EuiBreakpointSize[];
+  element?: EuiButtonSignature['Args']['element'];
+  fullWidth?: boolean;
+  hasAriaDisabled?: boolean;
+  iconSide?: EuiButtonSignature['Args']['iconSide'];
+  iconSize?: EuiButtonSignature['Args']['iconSize'];
+  isSelected?: boolean;
   'data-test-subj'?: string;
 }
 
@@ -302,6 +323,12 @@ export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButton
           @isDisabled={{@isDisabled}}
           @isLoading={{@isLoading}}
           @size={{this.size}}
+          @element={{@element}}
+          @fullWidth={{@fullWidth}}
+          @hasAriaDisabled={{@hasAriaDisabled}}
+          @iconSide={{@iconSide}}
+          @iconSize={{@iconSize}}
+          @isSelected={{@isSelected}}
           {{on "click" @onClick}}
           {{this.autoShowTooltip
             @showTooltip
@@ -326,6 +353,12 @@ export default class EuiSuperUpdateButton extends Component<EuiSuperUpdateButton
           @isDisabled={{@isDisabled}}
           @isLoading={{@isLoading}}
           @size={{this.size}}
+          @element={{@element}}
+          @fullWidth={{@fullWidth}}
+          @hasAriaDisabled={{@hasAriaDisabled}}
+          @iconSide={{@iconSide}}
+          @iconSize={{@iconSize}}
+          @isSelected={{@isSelected}}
           {{on "click" @onClick}}
           {{this.autoShowTooltip
             @showTooltip

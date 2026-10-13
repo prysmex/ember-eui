@@ -133,6 +133,12 @@ with an "Auto refresh" prepend button; both open a popover with
 | `@readOnly` | `boolean` | `true` | The input is read-only by default because its value is edited in the popover. |
 | `@fullWidth` | `boolean` |  | Stretches the input to its container's width. |
 | `@compressed` | `boolean` |  | Compressed input, for dense forms. |
+| `@isInvalid` | `boolean` |  | Invalid state: danger border, warning icon and `aria-invalid`. |
+| `@isLoading` | `boolean` |  | Shows a spinner in the input. |
+
+| Block | Description |
+| --- | --- |
+| `<:append>` | Content after the input (upstream `append`), e.g. an `EuiFormAppend`; yields the class to put on it and the input id. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<input>`.
 
@@ -149,7 +155,8 @@ that opens a popover with `EuiRefreshInterval` to change it. Upstream's
 | `@minInterval` | `number` | `0` | The smallest allowed interval in milliseconds. |
 | `@intervalUnits` | `'s' \| 'm' \| 'h'` |  | By default the unit is rounded up to the next largest one (90 seconds becomes 2 minutes). Pass `'s'`, `'m'` or `'h'` to fix it. |
 | `@onRefreshChange` (required) | `OnRefreshChange` |  | Called with `{ isPaused, refreshInterval, intervalUnits }` when the user changes the refresh settings. |
-| `@isDisabled` | `boolean` |  | Disables the button (it stays focusable, as `aria-disabled`). |
+| `@isDisabled` | `boolean` |  | Disables the button. It stays focusable (`aria-disabled`) so that its tooltip still shows, unless `@hasAriaDisabled={{false}}`. |
+| `@hasAriaDisabled` | `boolean` | `@isDisabled` (upstream) | With `@isDisabled`, renders `aria-disabled="true"` instead of the native `disabled` attribute. |
 | `@shortHand` | `boolean` | `false` | Reduces the time unit to a single letter. |
 | `@color` |  | `'text'` | `EuiButtonEmpty` color. |
 | `@size` |  | `'s'` | `EuiButtonEmpty` size. |

@@ -27,6 +27,7 @@ import EuiSelectableMessage from './eui-selectable-message.gts';
 import EuiSelectableSearch from './eui-selectable-search.gts';
 import EuiSpacer from './eui-spacer.gts';
 
+import type { EuiSelectableListWindowProps } from './eui-selectable-list.gts';
 import type EuiI18n from '../services/eui-i18n';
 import type { EuiCss } from '../utils/eui/styles.ts';
 import type {
@@ -191,7 +192,7 @@ export interface EuiSelectableSignature {
     /**
      * Options of the list: `{ bordered, paddingSize, showIcons, rowHeight,
      * onFocusBadge, isVirtualized, textWrap, truncationProps, css,
-     * 'aria-label', 'aria-describedby' }` (`onFocusBadge` defaults to
+     * windowProps, 'aria-label', 'aria-describedby' }` (`onFocusBadge` defaults to
      * `false`, upstream). See `EuiSelectableList`.
      */
     listProps?: {
@@ -211,6 +212,8 @@ export interface EuiSelectableSignature {
       textWrap?: 'truncate' | 'wrap';
       truncationProps?: EuiSelectableTruncationProps;
       css?: EuiCss;
+      /** Props of the scrolling list; see EuiSelectableList's `@windowProps`. */
+      windowProps?: EuiSelectableListWindowProps;
     };
     /** Message while `@isLoading`. Defaults to "Loading options". */
     loadingMessage?: string;
@@ -916,6 +919,7 @@ class SelectableBody extends Component<SelectableBodySignature> {
         @truncationProps={{@listProps.truncationProps}}
         @isPreFiltered={{@isPreFiltered}}
         @css={{@listProps.css}}
+        @windowProps={{@listProps.windowProps}}
         @listId={{this.selectable.listId}}
         @makeOptionId={{this.selectable.makeOptionId}}
         @hasOption={{flag @hasOption (has-block "option")}}

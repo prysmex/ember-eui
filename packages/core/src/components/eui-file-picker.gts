@@ -69,6 +69,13 @@ type EuiFilePicker = {
   disabled?: boolean;
   /** Allows selecting several files. */
   multiple?: boolean;
+  /**
+   * Files to show as selected (their name, or "N files selected"), e.g. to
+   * keep the prompt when a multi-step form re-renders the picker. Browsers
+   * don't let the file input itself be set: keep the files in your state.
+   * A new array replaces whatever the user picked since.
+   */
+  files?: File[] | null;
 
   /**
    * Called with the component instance, e.g. to call its `removeFiles()`
@@ -113,7 +120,11 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
   @service('eui-i18n') declare euiI18n: EuiI18n;
 
   @tracked fileInput: HTMLInputElement | null = null;
-  @tracked promptText: string | null | undefined = null;
+  /** The prompt after the user picked or removed files (UI state). */
+  @tracked pickedPromptText: string | null = null;
+  @tracked hasPicked = false;
+  /** `@files` when the user last picked: a new `@files` wins again. */
+  @tracked filesWhenPicked: File[] | null | undefined = undefined;
   @tracked isHoveringDrop = false;
 
   generatedId = randomId();
@@ -139,6 +150,33 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
 
   get normalFormControl(): boolean {
     return this.args.display !== 'large';
+  }
+
+  /** Upstream `getPromptTextFromFileList`. */
+  promptFromFiles(files: File[] | null | undefined): string | null {
+    if (!files || files.length === 0) return null;
+
+    if (files.length > 1) {
+      return this.euiI18n.lookupToken(
+        'euiFilePicker.filesSelected',
+        '{fileCount} files selected',
+        { fileCount: files.length }
+      );
+    }
+
+    return files[0]!.name;
+  }
+
+  /**
+   * Upstream keeps the prompt in state, set from `files` initially and
+   * whenever `files` changes, and from the input when the user picks.
+   */
+  get promptText(): string | null {
+    if (this.hasPicked && this.filesWhenPicked === this.args.files) {
+      return this.pickedPromptText;
+    }
+
+    return this.promptFromFiles(this.args.files);
   }
 
   get isOverridingInitialPrompt(): boolean {
@@ -311,18 +349,17 @@ export default class EuiFilePickerComponent extends Component<EuiFilePickerSigna
     if (!this.fileInput) return;
 
     const files = this.fileInput.files;
+    let promptText: string | null;
 
-    if (files && files.length > 1) {
-      this.promptText = this.euiI18n.lookupToken(
-        'euiFilePicker.filesSelected',
-        '{fileCount} files selected',
-        { fileCount: files.length }
-      );
-    } else if (!files || files.length === 0) {
-      this.promptText = null;
+    if (files && files.length === 1) {
+      promptText = this.fileInput.value.split('\\').pop() || files[0]!.name;
     } else {
-      this.promptText = this.fileInput.value.split('\\').pop() || files[0]!.name;
+      promptText = this.promptFromFiles(files ? Array.from(files) : null);
     }
+
+    this.pickedPromptText = promptText;
+    this.filesWhenPicked = this.args.files;
+    this.hasPicked = true;
 
     const { onChange } = this.args;
 

@@ -19,9 +19,16 @@ import EuiDatePopoverContent from './eui-date-popover-content.gts';
 
 import type EuiI18n from '../../../services/eui-i18n';
 import type { EuiCss } from '../../../utils/eui/styles.ts';
+import type { CommonArgs } from '../../common.ts';
 import type { EuiDatePopoverContentSignature } from './eui-date-popover-content';
 import type { EuiTimeZoneDisplayProps } from './eui-time-zone-display.gts';
 import type { Moment } from 'moment';
+
+/** Supported keys of `@buttonProps`. */
+export type EuiDatePopoverButtonProps = CommonArgs & {
+  css?: EuiCss;
+  onFocus?: (event: FocusEvent) => void;
+};
 
 interface EuiDatePopoverButtonArgs {
   /** Extra class(es). */
@@ -75,6 +82,13 @@ interface EuiDatePopoverButtonArgs {
   timeZoneDisplayProps?: EuiTimeZoneDisplayProps;
   /** Called when the button gets focus (upstream `buttonProps.onFocus`). */
   onFocus?: (event: FocusEvent) => void;
+  /**
+   * Extra props for the `<button>` (upstream `buttonProps`): `className`
+   * (added to its classes), `css` (composed last into its class), `id`,
+   * `aria-label`, `data-test-subj` (replaces the default) and `onFocus`
+   * (called with `@onFocus`).
+   */
+  buttonProps?: EuiDatePopoverButtonProps;
   /**
    * Extra styles for the popover root (upstream passes the super date
    * picker's range input styles this way).
@@ -197,7 +211,17 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
     );
   }
 
-  onFocus = (event: FocusEvent) => this.args.onFocus?.(event);
+  onFocus = (event: FocusEvent) => {
+    this.args.buttonProps?.onFocus?.(event);
+    this.args.onFocus?.(event);
+  };
+
+  get testSubj(): string {
+    return (
+      this.args.buttonProps?.['data-test-subj'] ??
+      `superDatePicker${this.position}DatePopoverButton`
+    );
+  }
 
   get timeOptions() {
     return this.args.timeOptions || useI18nTimeOptions(this.euiI18n);
@@ -233,13 +257,15 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
       this.args.needsUpdating && 'euiDatePopoverButton-needsUpdating',
       this.args.isDisabled && 'euiDatePopoverButton-disabled',
       this.args.className,
+      this.args.buttonProps?.className,
       euiClass(
         context,
         buttonReset,
         {
           fontFamily: context.upstream.euiTheme.font.family
         },
-        this.styles.euiDatePopoverButton
+        this.styles.euiDatePopoverButton,
+        this.args.buttonProps?.css
       )
     ]
       .filter(Boolean)
@@ -322,7 +348,9 @@ export default class EuiDatePopoverButton extends Component<EuiDatePopoverButton
               type="button"
               class={{this.classes}}
               disabled={{@isDisabled}}
-              data-test-subj="superDatePicker{{this.position}}DatePopoverButton"
+              id={{@buttonProps.id}}
+              aria-label={{@buttonProps.aria-label}}
+              data-test-subj={{this.testSubj}}
               ...attributes
               {{on "click" this.toggle}}
               {{on "focus" this.onFocus}}

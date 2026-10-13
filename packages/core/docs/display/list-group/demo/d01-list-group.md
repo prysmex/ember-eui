@@ -6,65 +6,25 @@ order: 1
 
 <EuiText>
 
-Items as text, links or buttons, with `@isActive` and `@isDisabled`
-states. `@bordered` adds a border and `@flush` removes the padding.
+The **EuiListGroup** component is used to present **EuiListGroupItems** in a neatly formatted list. Use `@bordered` for a bordered presentation.
 
 </EuiText>
 
 ```hbs template
-<EuiFlexGroup>
-  <EuiFlexItem>
-    <EuiListGroup
-      @bordered={{this.bordered}}
-      @flush={{this.flush}}
-      @maxWidth={{this.maxWidth}}
-      @gutterSize={{this.gutterSize}}
-    >
-      <EuiListGroupItem
-        @href={{if this.useHref '/'}}
-        @onClick={{if this.useOnClick this.onClick}}
-        @isActive={{this.isActive}}
-        @isDisabled={{this.isDisabled}}
-        @wrapText={{this.wrapText}}
-        @size={{this.size}}
-        @color={{this.color}}
-        @iconType={{if this.useIconType 'bell'}}
-      >
-        {{#if this.wrapText}}
-          First item with very long text with Lorem ipsum dolor sit amet,
-          consectetur adipiscing elit
-        {{else}}
-          First item
-        {{/if}}
-      </EuiListGroupItem>
-      <EuiListGroupItem>
-        Second item
-      </EuiListGroupItem>
-      <EuiListGroupItem>
-        Third item
-      </EuiListGroupItem>
-      <EuiListGroupItem>
-        Fourth item
-      </EuiListGroupItem>
-    </EuiListGroup>
-  </EuiFlexItem>
-  <EuiFlexItem>
-    <EuiFlexGroup>
-      <EuiFlexItem>
-        <EuiTitle @size='xs'>Group</EuiTitle>
-        <div>
-          <Input @type='checkbox' @checked={{this.bordered}} name='bordered' />
-          <label for='bordered'>Bordered</label>
-        </div>
-        <div>
-          <Input @type='checkbox' @checked={{this.flush}} name='flushed' />
-          <label for='flushed'>Flush</label>
-        </div>
-
-      </EuiFlexItem>
-    </EuiFlexGroup>
+<EuiFlexGroup @alignItems="center">
+  <EuiFlexItem @grow={{false}}>
+    <EuiSwitch @label="Show as bordered" @checked={{this.showBorder}} @onChange={{this.toggleBorder}} />
   </EuiFlexItem>
 </EuiFlexGroup>
+
+<EuiSpacer @size="l" />
+
+<EuiListGroup @bordered={{this.showBorder}}>
+  <EuiListGroupItem @onClick={{this.noop}} @label="First item" />
+  <EuiListGroupItem @onClick={{this.noop}} @label="Second item" />
+  <EuiListGroupItem @onClick={{this.noop}} @label="Third item" @isActive={{true}} />
+  <EuiListGroupItem @onClick={{this.noop}} @label="Fourth item" @isDisabled={{true}} />
+</EuiListGroup>
 ```
 
 ```js component
@@ -72,32 +32,15 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class DemoListGroupComponent extends Component {
-  // Group config
-  @tracked bordered = false;
-  @tracked flush = false;
-  @tracked gutterSize = 's';
-  @tracked maxWidthType = 'bool';
-  @tracked maxWidth = false;
+export default class ListGroupDemo extends Component {
+  @tracked showBorder = false;
 
   @action
-  parseToNum(event) {
-    this.maxWidth = Number(event.target.value);
+  toggleBorder() {
+    this.showBorder = !this.showBorder;
   }
 
   @action
-  onClick(event) {
-    console.log('Item clicked');
-  }
-
-  //Item config
-  @tracked useHref = false;
-  @tracked useOnClick = false;
-  @tracked isActive = false;
-  @tracked isDisabled = false;
-  @tracked wrapText = false;
-  @tracked size = 'm';
-  @tracked color = 'inherit';
-  @tracked useIconType = false;
+  noop() {}
 }
 ```

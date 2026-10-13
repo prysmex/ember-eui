@@ -56,12 +56,18 @@ mind:
 - **Pagination**: `EuiTablePagination` shows the pages and a "Rows per
   page" menu.
 - **Layout**: `EuiTable` takes `@tableLayout`, `@compressed`,
-  `@responsiveBreakpoint` and `@scrollableInline`.
+  `@responsiveBreakpoint`, `@scrollableInline`, `@stickyHeader` and
+  `@stickyScrollbar`. Cells take `@sticky={{hash side="end"}}` to stay at
+  a side while the table scrolls inline.
 
 ### Ember differences
 
-Upstream's beta `stickyHeader` and `stickyScrollbar` props of `EuiTable`
-are not supported yet.
+The sticky header copies each header cell into a hidden table above the
+table, like upstream; the copies are rendered from the same blocks (so a
+header cell's content renders twice) and stay in the cells' order. Note
+that upstream scrolls inline with `overflow-inline`, which some browsers
+(e.g. Chromium 130) do not support yet; there the table overflows its
+container instead of scrolling, in React EUI too.
 
 </EuiText>
 
@@ -85,7 +91,8 @@ only render the markup: sorting, selection and pagination stay yours
 (or come from a headless table library).
 
 Like upstream, the table is wrapped in a `div.euiTable__wrapper`;
-attributes go to the `<table>`.
+attributes go to the `<table>`. `@stickyHeader` renders a copy of the
+header before the wrapper, and `@stickyScrollbar` a scrollbar after it.
 
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -96,6 +103,8 @@ attributes go to the `<table>`.
 | `@responsiveBreakpoint` | `TableResponsiveBreakpoint` | `'m'` (upstream) | Named theme breakpoint below which rows become cards; `true` always renders cards, `false` never. Takes precedence over `@responsive`. |
 | `@hasBackground` | `boolean` | `true` | The table's plain background. |
 | `@scrollableInline` | `boolean` |  | Lets the table grow wider than its container and scroll inline. Use with `@tableLayout="auto"`. Upstream beta. |
+| `@stickyScrollbar` | `boolean` |  | Shows a horizontal scrollbar sticking to the bottom of the viewport while the table's own one is out of view (long tables). Requires `@scrollableInline`. Upstream beta. |
+| `@stickyHeader` | `boolean` |  | Keeps the header at the top of the viewport while the user scrolls through a long table (not in the cards layout). Offset it with the `--euiTableStickyHeaderOffsetTop` CSS variable (e.g. below a fixed header) and layer it with `--euiTableStickyHeaderZIndex`. Upstream beta. |
 
 | Block | Description |
 | --- | --- |
@@ -133,6 +142,7 @@ shows the sort direction (`@isSorted`, `@isSortAscending`), or a
 | `@scope` | `string` | `'col'` | `scope` of the `<th>`. |
 | `@mobileOptions` | `TableMobileOptions` |  | `{ show, only }` for the cards layout. |
 | `@tooltipProps` | `EuiTableHeaderCellTooltipProps` |  | Adds an icon with a tooltip next to the name. In a sortable header the icon is plain and the tooltip shows on the whole sort button. |
+| `@sticky` | `EuiTableStickyCellOptions` |  | Sticks the cell to a side of the table (`{ side: 'start' \| 'end' }`) while it scrolls inline; only for the first or last column, and not in the cards layout. Upstream beta. |
 
 | Block | Description |
 | --- | --- |
@@ -202,7 +212,7 @@ A cell of an `EuiTableRow`.
 | Argument | Type | Default | Description |
 | --- | --- | --- | --- |
 | `@align` | `TableAlignment` | `'left'` | `'left'`, `'right'` (numbers) or `'center'`. |
-| `@truncateText` | `boolean` |  | `true` cuts long text with an ellipsis; otherwise long words break (upstream default). |
+| `@truncateText` | `TableTruncateText` |  | `true` cuts long text on one line with an ellipsis; `{ lines: n }` clamps it to `n` lines. Otherwise long words break (upstream default). |
 | `@textOnly` | `boolean` | `true` | The content is only text (wrapped in a span that truncates or wraps). Set `false` for components. |
 | `@setScopeRow` | `boolean` |  | Renders a `<th scope="row">`: the row's header. |
 | `@showOnHover` | `boolean` |  | Shows the content only while the row is hovered or the cell has focus (always shown in the cards layout). Upstream's `euiBasicTableAction-showOnHover`. |
@@ -212,6 +222,7 @@ A cell of an `EuiTableRow`.
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
 | `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
 | `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
+| `@sticky` | `EuiTableStickyCellOptions` |  | Sticks the cell to a side of the table (`{ side: 'start' \| 'end' }`) while it scrolls inline; only for the first or last column, and not in the cards layout. With `@hasBackground={{false}}` on the table, set `--euiTableCellStickyBackgroundColor` to the background behind it. Upstream beta. |
 | `@mobileOptions` | `TableMobileOptions` |  | In the cards layout: `{ show, only, header, enlarge, align, truncateText, textOnly, width, minWidth, maxWidth }`. `header` labels the value in the row's card; the `<:mobile>` block replaces the content there. |
 
 | Block | Description |
@@ -247,6 +258,7 @@ A cell of an `EuiTableFooter`, e.g. a column's total.
 | `@width` | `number \| string` |  | Width, e.g. `100` (px) or `'20%'`. |
 | `@minWidth` | `number \| string` |  | Min width, e.g. `100` (px). |
 | `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
+| `@sticky` | `EuiTableStickyCellOptions` |  | Sticks the cell to a side of the table (`{ side: 'start' \| 'end' }`) while it scrolls inline; only for the first or last column, and not in the cards layout. Upstream beta. |
 
 | Block | Description |
 | --- | --- |

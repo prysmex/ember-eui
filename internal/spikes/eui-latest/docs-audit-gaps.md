@@ -43,9 +43,7 @@ This is the list of those gaps. Effort: S/M/L.
 
 | Component | Missing prop/feature |
 | --- | --- |
-| EuiBasicTable | column `valign`, `truncateText: { lines }`, `textOnly` in cellProps leaks to DOM, column `name` text-only, sticky actions column |
-| EuiInMemoryTable | `useEuiBasicTablePanelProps` (custom panels) |
-| EuiTable | `stickyHeader`, `stickyScrollbar` |
+| EuiBasicTable | not in the audit, still missing (see tables-gaps-handoff.md): action `name` as rich content (text only); other `<td>` attributes on a column object (only `className`/`data-test-subj`; use `cellProps`); copy-to-clipboard tabular markers; `EuiComponentDefaultsContext` page-size defaults |
 | EuiDataGrid | `virtualizationOptions.onScroll` direction/`scrollUpdateWasRequested`; `estimatedRowHeight`; no custom virtualization (react-window); `footerCellProps` style; cell-action `closePopover` (upstream doesn't pass it either) |
 | EuiDataGrid (extension) | renderers don't get row depth / expanded state |
 

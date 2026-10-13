@@ -383,7 +383,8 @@
     "EuiBasicTable"
   ],
   "packages/core/docs/tabular/in-memory-table/index.md": [
-    "EuiInMemoryTable"
+    "EuiInMemoryTable",
+    "EuiBasicTablePanel"
   ],
   "packages/core/docs/tabular/data-grid/basics/index.md": [
     "EuiDataGrid",

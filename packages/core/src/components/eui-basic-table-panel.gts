@@ -34,6 +34,13 @@ export function useEuiBasicTablePanelProps(): EuiBasicTablePanelProps {
   return PANEL_PROPS;
 }
 
+/**
+ * A `<div>` styled with `useEuiBasicTablePanelProps()`: a supporting
+ * panel for a panelled `EuiBasicTable` or `EuiInMemoryTable`, e.g. in the
+ * in-memory table's `<:childrenBetween>` block. Consecutive panels join,
+ * and the table below loses its top radius. Ember convenience over
+ * upstream's hook.
+ */
 export interface EuiBasicTablePanelSignature {
   Element: HTMLDivElement;
   Args: {
@@ -49,13 +56,6 @@ export interface EuiBasicTablePanelSignature {
   };
 }
 
-/**
- * A `<div>` styled with {@link useEuiBasicTablePanelProps}: a supporting
- * panel for a panelled `EuiBasicTable` or `EuiInMemoryTable`, e.g. in the
- * in-memory table's `<:childrenBetween>` block. Consecutive panels join,
- * and the table below loses its top radius. Ember convenience over
- * upstream's hook.
- */
 export default class EuiBasicTablePanel extends Component<EuiBasicTablePanelSignature> {
   @cached
   get classes(): string {

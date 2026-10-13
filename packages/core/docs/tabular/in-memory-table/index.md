@@ -40,8 +40,10 @@ The search bar's tools and hint, and content between the search bar and
 the table (upstream `childrenBetween`), are the `<:toolsLeft>`,
 `<:toolsRight>`, `<:hint>` and `<:childrenBetween>` blocks; a custom
 "no items" message is the `<:noItemsMessage>` block. Upstream's
-`useEuiBasicTablePanelProps` hook (custom panels for `childrenBetween`) is
-not available yet.
+`useEuiBasicTablePanelProps` hook is a plain function returning `{ css,
+className }` (pass them to any component's `@css` and `class`), and
+`<:childrenBetween>` yields an `EuiBasicTablePanel` component built on it
+(see [Custom panels](#custom-panels)).
 
 </EuiText>
 
@@ -72,6 +74,24 @@ them in memory.
 | `@allowNeutralSort` | `boolean` | `true` | Clicking a descending column unsorts it. |
 | `@onTableChange` | `(nextValues: Criteria<T>) => void` |  | Informational: called with the new `{ page, sort }` criteria (the table already manages that state). |
 | `@executeQueryOptions` |  |  | Options of the in-memory query execution. |
+
+HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
+
+### EuiBasicTablePanel
+
+A `<div>` styled with `useEuiBasicTablePanelProps()`: a supporting
+panel for a panelled `EuiBasicTable` or `EuiInMemoryTable`, e.g. in the
+in-memory table's `<:childrenBetween>` block. Consecutive panels join,
+and the table below loses its top radius. Ember convenience over
+upstream's hook.
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `@css` | `EuiCss` |  | Extra styles composed last into the panel's class (like upstream's `css` prop), e.g. padding. |
+
+| Block | Description |
+| --- | --- |
+| default block | The panel's content. |
 
 HTML attributes and modifiers (`class`, `data-test-*`, `{{on …}}`) are applied to its `<div>`.
 

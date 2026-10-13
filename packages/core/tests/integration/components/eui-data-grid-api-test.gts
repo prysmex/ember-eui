@@ -9,11 +9,18 @@ import {
   waitUntil
 } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
+import { hash } from '@ember/helper';
 
 import EuiDataGrid from '#src/components/eui-data-grid.gts';
+import EuiButtonEmpty from '#src/components/eui-button-empty.gts';
+
+import type { TOC } from '@ember/component/template-only';
 
 import type {
+  EuiDataGridCellValueSignature,
   EuiDataGridColumn,
+  EuiDataGridCustomBodyProps,
+  EuiDataGridCustomToolbarProps,
   EuiDataGridRefProps
 } from '#src/components/eui-data-grid.gts';
 
@@ -396,6 +403,249 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       state.api!.scrollToItem!({ rowIndex: 0, align: 'smart' });
       await settled();
       assert.strictEqual(outer.scrollTop, 0, "'smart' centers far rows (clamped)");
+    });
+  });
+
+  module('renderCustomToolbar', function () {
+    const AddButton: TOC<{ Args: Record<string, never> }> = <template>
+      <EuiButtonEmpty @size="xs" data-test-subj="addButton">Add</EuiButtonEmpty>
+    </template>;
+    const RightButton: TOC<{ Args: Record<string, never> }> = <template>
+      <EuiButtonEmpty @size="xs" data-test-subj="rightButton">Right</EuiButtonEmpty>
+    </template>;
+
+    test('the <:customToolbar> block lays out the yielded controls', async function (assert) {
+      const sorting = { columns: [], onSort: () => {} };
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid aria-label="Grid" @columns={{COLUMNS}} @rowCount={{2}} @sorting={{sorting}}>
+              <:customToolbar as |toolbar|>
+                <div class="myToolbar" data-room={{if toolbar.hasRoomForGridControls "yes" "no"}}>
+                  <toolbar.fullScreenControl />
+                  <toolbar.keyboardShortcutsControl />
+                  <toolbar.displayControl />
+                  <toolbar.columnSortingControl />
+                  <toolbar.columnControl />
+                </div>
+              </:customToolbar>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+
+      assert.dom('[data-test-subj=dataGridControls]').doesNotExist('replaces the default toolbar');
+      assert.dom('.myToolbar').hasAttribute('data-room', 'yes');
+      const order = Array.from(
+        el('.myToolbar').querySelectorAll('[data-test-subj$=Button]'),
+        (button) => button.getAttribute('data-test-subj')
+      );
+      assert.deepEqual(order, [
+        'dataGridFullScreenButton',
+        'dataGridKeyboardShortcutsButton',
+        'dataGridDisplaySelectorButton',
+        'dataGridColumnSortingButton',
+        'dataGridColumnSelectorButton'
+      ]);
+      await click('[data-test-subj=dataGridFullScreenButton]');
+      assert.dom('.euiDataGrid').hasClass('euiDataGrid--fullScreen', 'the controls keep working');
+      await click('[data-test-subj=dataGridFullScreenButton]');
+      await click('[data-test-subj=dataGridColumnSelectorButton]');
+      assert.dom('[data-test-subj=dataGridColumnSelectorPopover]', document.body).exists();
+    });
+
+    test('@renderCustomToolbar gets hidden controls as undefined and additional controls', async function (assert) {
+      const received: Partial<EuiDataGridCustomToolbarProps>[] = [];
+      const record = (props: Partial<EuiDataGridCustomToolbarProps>) => {
+        received.push(props);
+        return '';
+      };
+      const CustomToolbar: TOC<{ Args: EuiDataGridCustomToolbarProps }> = <template>
+        <div class="myToolbar">
+          {{record
+            (hash
+              displayControl=@displayControl
+              columnSortingControl=@columnSortingControl
+              additionalControls=@additionalControls
+            )
+          }}
+          {{#if @additionalControls.leftPrepend}}<@additionalControls.leftPrepend />{{/if}}
+          {{#if @columnControl}}<@columnControl />{{/if}}
+          {{#if @displayControl}}<@displayControl />{{/if}}
+          {{#if @additionalControls.right}}<@additionalControls.right />{{/if}}
+          <@keyboardShortcutsControl />
+        </div>
+      </template>;
+      const visibility = {
+        showDisplaySelector: false,
+        showKeyboardShortcuts: false,
+        additionalControls: { left: { prepend: AddButton }, right: RightButton }
+      };
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{2}}
+              @toolbarVisibility={{visibility}}
+              @renderCustomToolbar={{CustomToolbar}}
+            />
+          </div>
+        </template>
+      );
+
+      assert.dom('[data-test-subj=dataGridControls]').doesNotExist();
+      assert.dom('.myToolbar [data-test-subj=addButton]').exists();
+      assert.dom('.myToolbar [data-test-subj=rightButton]').exists();
+      assert.dom('.myToolbar [data-test-subj=dataGridColumnSelectorButton]').exists();
+      assert.dom('.myToolbar [data-test-subj=dataGridDisplaySelectorButton]').doesNotExist();
+      assert.dom('.myToolbar .euiScreenReaderOnly-showOnFocus [data-test-subj=dataGridKeyboardShortcutsButton]').exists(
+        'hidden keyboard shortcuts stay reachable'
+      );
+      const props = received.at(-1)!;
+      assert.strictEqual(props.displayControl, undefined);
+      assert.strictEqual(props.columnSortingControl, undefined, 'no sort control without @sorting');
+      assert.strictEqual(props.additionalControls?.leftAppend, undefined);
+    });
+
+    test('the default toolbar renders additionalControls components', async function (assert) {
+      const single = { additionalControls: AddButton };
+      const positioned = { additionalControls: { left: { prepend: AddButton }, right: RightButton } };
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid id="single" aria-label="A" @columns={{COLUMNS}} @rowCount={{1}} @toolbarVisibility={{single}} />
+            <EuiDataGrid id="positioned" aria-label="B" @columns={{COLUMNS}} @rowCount={{1}} @toolbarVisibility={{positioned}} />
+          </div>
+        </template>
+      );
+      const left = el('#single .euiDataGrid__leftControls');
+      assert.strictEqual(
+        left.lastElementChild?.getAttribute('data-test-subj'),
+        'addButton',
+        'a single component is appended to the left side'
+      );
+      assert.strictEqual(
+        el('#positioned .euiDataGrid__leftControls').firstElementChild?.getAttribute('data-test-subj'),
+        'addButton'
+      );
+      assert.strictEqual(
+        el('#positioned .euiDataGrid__rightControls').firstElementChild?.getAttribute('data-test-subj'),
+        'rightButton'
+      );
+    });
+  });
+
+  module('renderCustomGridBody', function () {
+    const rowsOf = (data: EuiDataGridCustomBodyProps['visibleRowData']) =>
+      Array.from({ length: data.visibleRowCount }, (_, i) => i);
+
+    test('the <:customGridBody> block renders cells without virtualization', async function (assert) {
+      const bodyProps = { className: 'myBody', 'data-test-subj': 'myBody', style: { maxHeight: 400 } };
+      const calls: string[] = [];
+      const onScroll = () => calls.push('scroll');
+      const props = { ...bodyProps, onScroll };
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid aria-label="Grid" @columns={{COLUMNS}} @rowCount={{3}} @toolbarVisibility={{false}}>
+              <:customGridBody as |body|>
+                {{body.setCustomGridBodyProps props}}
+                <body.headerRow />
+                {{#each (rowsOf body.visibleRowData) as |rowIndex|}}
+                  <div role="row" class="myRow">
+                    {{#each body.visibleColumns as |_column colIndex|}}
+                      <body.Cell @colIndex={{colIndex}} @visibleRowIndex={{rowIndex}} as |cell|>
+                        {{cell.columnId}}{{cell.rowIndex}}
+                      </body.Cell>
+                    {{/each}}
+                  </div>
+                {{/each}}
+              </:customGridBody>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+
+      assert.dom('.euiDataGrid__virtualized').doesNotExist();
+      assert.dom('.euiDataGrid__customRenderBody').hasClass('myBody');
+      assert.dom('.euiDataGrid__customRenderBody').hasAttribute('data-test-subj', 'myBody');
+      assert.strictEqual(el('.euiDataGrid__customRenderBody').style.maxHeight, '400px');
+      assert.strictEqual(getComputedStyle(el('.euiDataGrid__customRenderBody')).overflowY, 'auto');
+      el('.euiDataGrid__customRenderBody').dispatchEvent(new Event('scroll'));
+      assert.deepEqual(calls, ['scroll'], 'on* props become listeners');
+
+      assert.dom('[role=grid] .euiDataGridHeader[role=row]').exists();
+      assert.dom('.myRow').exists({ count: 3 });
+      assert.dom('[role=gridcell]').exists({ count: 9 });
+      assert.dom(cell(2, 1)).hasText('b2');
+      assert.notStrictEqual(cell(0, 0).style.position, 'absolute', 'cells flow in the consumer rows');
+      assert.ok(cell(0, 0).offsetHeight > 20, 'cells keep the row height');
+      assert.strictEqual(cell(0, 1).style.width, header(1).style.width, 'columns share widths');
+
+      // grid keyboard navigation and expansion still work
+      await click(cell(0, 0));
+      await press('ArrowDown');
+      assert.strictEqual(document.activeElement, cell(1, 0));
+      await press('ArrowRight');
+      assert.strictEqual(document.activeElement, cell(1, 1));
+      await press('Enter');
+      assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).hasText('b1');
+    });
+
+    test('@renderCustomGridBody gets header/footer rows and follows pagination', async function (assert) {
+      const CellValue: TOC<EuiDataGridCellValueSignature> = <template>
+        <span class="value">{{@columnId}}-{{@rowIndex}}</span>
+      </template>;
+      const Footer: TOC<EuiDataGridCellValueSignature> = <template>total {{@columnId}}</template>;
+      const Body: TOC<{ Args: EuiDataGridCustomBodyProps }> = <template>
+        {{#if @headerRow}}<@headerRow />{{/if}}
+        <div class="rows" data-start={{@visibleRowData.startRow}} data-end={{@visibleRowData.endRow}}>
+          {{#each (rowsOf @visibleRowData) as |rowIndex|}}
+            <div role="row">
+              {{#each @visibleColumns as |_column colIndex|}}
+                <@Cell @colIndex={{colIndex}} @visibleRowIndex={{rowIndex}} @isExpandable={{false}} />
+              {{/each}}
+            </div>
+          {{/each}}
+        </div>
+        {{#if @footerRow}}<@footerRow />{{/if}}
+      </template>;
+      const pagination = {
+        pageIndex: 1,
+        pageSize: 2,
+        pageSizeOptions: [2],
+        onChangePage: () => {},
+        onChangeItemsPerPage: () => {}
+      };
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{COLUMNS}}
+              @rowCount={{5}}
+              @pagination={{pagination}}
+              @toolbarVisibility={{false}}
+              @headerVisibility={{false}}
+              @renderCellValue={{CellValue}}
+              @renderFooterCellValue={{Footer}}
+              @renderCustomGridBody={{Body}}
+            />
+          </div>
+        </template>
+      );
+
+      assert.dom('[role=columnheader]').doesNotExist('no header row with @headerVisibility=false');
+      assert.dom('.rows').hasAttribute('data-start', '2');
+      assert.dom('.rows').hasAttribute('data-end', '4');
+      assert.dom('.rows [role=gridcell]').exists({ count: 6 });
+      assert.dom(cell(0, 0)).hasText('a-2', 'visible rows map to the page');
+      assert.dom('.euiDataGridFooter [role=gridcell]').exists({ count: 3 });
+      assert.dom('.euiDataGridFooter').includesText('total a');
+      await click(cell(1, 2));
+      assert.dom('.euiDataGridRowCell__actions', cell(1, 2)).doesNotExist('@isExpandable override');
     });
   });
 });

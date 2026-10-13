@@ -42,9 +42,11 @@ import type Owner from '@ember/owner';
 import type EuiI18n from '../../services/eui-i18n.ts';
 import type EuiDataGrid from '../eui-data-grid.gts';
 import type { EuiDataGridSignature } from '../eui-data-grid.gts';
-import type EuiDataGridBody from './body.gts';
+import type EuiDataGridBodyBase from './body-base.ts';
+import type { ComponentLike } from '@glint/template';
 import type {
   EuiDataGridCellValueElementProps,
+  EuiDataGridCellValueSignature,
   EuiDataGridColumn,
   EuiDataGridControlColumn,
   EuiDataGridSetCellProps
@@ -62,12 +64,15 @@ export interface EuiDataGridCellSignature {
   Element: HTMLDivElement;
   Args: {
     grid: EuiDataGrid;
-    body: EuiDataGridBody;
+    body: EuiDataGridBodyBase<any>;
     colIndex: number;
     visibleRowIndex: number;
     /** Footer cells sit in the flex footer row instead of being positioned. */
     isFooter?: boolean;
     hasCellPopoverBlock?: boolean;
+    /** Custom grid body overrides (upstream's `Cell` props). */
+    isExpandable?: boolean;
+    renderCellValue?: ComponentLike<EuiDataGridCellValueSignature>;
   };
   Blocks: Pick<
     EuiDataGridSignature['Blocks'],
@@ -284,6 +289,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   /* -------------------------------------------------------------------- */
 
   get defaultIsExpandable(): boolean {
+    if (this.args.isExpandable !== undefined && !this.args.isFooter) return this.args.isExpandable;
     if (this.isControlColumn) return false;
     if (this.args.isFooter) return true;
     return this.column?.isExpandable ?? true;
@@ -706,7 +712,10 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
     const { body, colIndex, visibleRowIndex, isFooter } = this.args;
     const width = this.width;
     const parts: string[] = [];
-    if (!isFooter) {
+    if (!isFooter && !body.isVirtualized) {
+      // custom grid body: cells flow in the consumer's rows
+      parts.push(`height:${this.isAutoHeight ? 'auto' : `${body.rowHeight(visibleRowIndex)}px`}`);
+    } else if (!isFooter) {
       parts.push(
         'position:absolute',
         `left:${body.columnLeft(colIndex)}px`,
@@ -770,6 +779,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
   }
 
   get renderer() {
+    if (this.args.renderCellValue && !this.args.isFooter) return this.args.renderCellValue;
     switch (this.kind) {
       case 'data':
         return this.grid.args.renderCellValue;
@@ -856,6 +866,7 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
       {{this.cellPropsAttributes this.cellProps}}
       {{this.registerFocus @colIndex @visibleRowIndex}}
       {{this.setupCell}}
+      ...attributes
     >
       {{#if this.isExpandable}}
         {{! template-lint-disable no-duplicate-landmark-elements }}

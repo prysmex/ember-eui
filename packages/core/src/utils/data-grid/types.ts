@@ -209,6 +209,24 @@ export interface EuiDataGridToolBarVisibilityDisplaySelectorOptions {
   allowResetButton?: boolean;
 }
 
+/** Where `toolbarVisibility.additionalControls.left` components go. */
+export interface EuiDataGridToolBarAdditionalControlsLeftOptions {
+  /** Before the column & sort controls. */
+  prepend?: ComponentLike;
+  /** After the column & sort controls. */
+  append?: ComponentLike;
+}
+
+export interface EuiDataGridToolBarAdditionalControlsOptions {
+  /**
+   * A component appended to the left side (after the column & sort
+   * controls), or `{ prepend, append }` components.
+   */
+  left?: ComponentLike | EuiDataGridToolBarAdditionalControlsLeftOptions;
+  /** A component prepended to the right side (before the display & fullscreen controls). */
+  right?: ComponentLike;
+}
+
 export interface EuiDataGridToolBarVisibilityOptions {
   showColumnSelector?:
     | boolean
@@ -218,7 +236,43 @@ export interface EuiDataGridToolBarVisibilityOptions {
     | EuiDataGridToolBarVisibilityDisplaySelectorOptions;
   showSortSelector?: boolean;
   showFullScreenSelector?: boolean;
+  /**
+   * Shows the keyboard shortcuts popover button. When `false`, it is
+   * visually hidden but still reachable by keyboard and screen readers.
+   */
   showKeyboardShortcuts?: boolean;
+  /**
+   * Extra toolbar controls as components: one component (appended to the
+   * left side) or `{ left, right }` (see also the grid's
+   * `<:leftControlsPrepend>`, `<:leftControlsAppend>` and `<:rightControls>`
+   * blocks).
+   */
+  additionalControls?: ComponentLike | EuiDataGridToolBarAdditionalControlsOptions;
+}
+
+/** Controls handed to `@renderCustomToolbar` / the `<:customToolbar>` block (undefined when hidden). */
+export interface EuiDataGridCustomToolbarProps {
+  /** Whether the grid is wide enough (or fullscreen) for the left controls. */
+  hasRoomForGridControls: boolean;
+  /** The column selector button. */
+  columnControl?: ComponentLike;
+  /** The sort popover button (undefined without `@sorting`). */
+  columnSortingControl?: ComponentLike;
+  /** The keyboard shortcuts button (screen reader only when `showKeyboardShortcuts` is false). */
+  keyboardShortcutsControl: ComponentLike;
+  /** The display options button. */
+  displayControl?: ComponentLike;
+  /** The fullscreen toggle. */
+  fullScreenControl?: ComponentLike;
+  /**
+   * Ember addition: `toolbarVisibility.additionalControls` components by
+   * position (the grid's control blocks can't be passed on).
+   */
+  additionalControls: {
+    leftPrepend?: ComponentLike;
+    leftAppend?: ComponentLike;
+    right?: ComponentLike;
+  };
 }
 
 export interface EuiDataGridVirtualizationOptions {

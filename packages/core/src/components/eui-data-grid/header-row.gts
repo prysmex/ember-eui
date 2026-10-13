@@ -20,12 +20,12 @@ import EuiDataGridHeaderCell from './header-cell.gts';
 
 import type EuiI18n from '../../services/eui-i18n.ts';
 import type EuiDataGrid from '../eui-data-grid.gts';
-import type EuiDataGridBody from './body.gts';
+import type EuiDataGridBodyBase from './body-base.ts';
 import type { DragStart, DropResult } from '../eui-drag-drop-context.gts';
 import type { EuiDataGridColumn } from '../../utils/data-grid/types.ts';
 
 /** Width/resize state the header cells read (the virtualized or custom body). */
-export type EuiDataGridHeaderBody = Pick<EuiDataGridBody, 'widthForColumn' | 'setColumnWidth'>;
+export type EuiDataGridHeaderBody = Pick<EuiDataGridBodyBase<any>, 'widthForColumn' | 'setColumnWidth'>;
 
 export interface EuiDataGridHeaderRowSignature {
   Element: HTMLDivElement;

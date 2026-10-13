@@ -8,13 +8,13 @@ import EuiDataGridCell from './cell.gts';
 
 import type EuiDataGrid from '../eui-data-grid.gts';
 import type { EuiDataGridSignature } from '../eui-data-grid.gts';
-import type EuiDataGridBody from './body.gts';
+import type EuiDataGridBodyBase from './body-base.ts';
 
 export interface EuiDataGridFooterRowSignature {
   Element: HTMLDivElement;
   Args: {
     grid: EuiDataGrid;
-    body: EuiDataGridBody;
+    body: EuiDataGridBodyBase<any>;
     hasCellPopoverBlock?: boolean;
   };
   Blocks: Pick<EuiDataGridSignature['Blocks'], 'footerCell' | 'cellPopover' | 'controlFooterCell'>;

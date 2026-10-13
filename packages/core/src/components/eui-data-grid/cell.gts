@@ -437,8 +437,26 @@ export default class EuiDataGridCell extends Component<EuiDataGridCellSignature>
 
   takeFocus(preventScroll: boolean): void {
     const cell = this.cellElement;
+    if (!cell) return;
+    const active = document.activeElement;
+    if (active && !cell.contains(active) && active.closest('.euiPopover__panel')) {
+      // focus is in a popover (e.g. this cell's expansion popover, closing):
+      // its focus trap keeps focus until it closes, so focus the cell after
+      let frames = 30; // the popover's closing transition
+      const focusWhenReleased = () => {
+        if (this.isDestroying || !this.isFocused) return;
+        const current = document.activeElement;
+        if (current?.closest('.euiPopover__panel') && frames-- > 0) {
+          requestAnimationFrame(focusWhenReleased);
+          return;
+        }
+        if (!this.cellElement?.contains(current)) this.cellElement?.focus({ preventScroll });
+      };
+      requestAnimationFrame(focusWhenReleased);
+      return;
+    }
     // Only focus the cell if not already focused on something in the cell
-    if (cell && !cell.contains(document.activeElement)) cell.focus({ preventScroll });
+    if (!cell.contains(active)) cell.focus({ preventScroll });
   }
 
   @action

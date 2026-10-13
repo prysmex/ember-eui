@@ -980,6 +980,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
 
   @action
   onContentKeyDown(event: KeyboardEvent): void {
+    // Popovers attached inside cells (expansion, column actions) own their
+    // keys: upstream renders them outside the grid content
+    if ((event.target as Element | null)?.closest?.('.euiPopover__panel')) return;
     handleGridKeyDown(event, {
       gridElement: this.contentElement,
       visibleColCount: this.visibleColCount,
@@ -1060,7 +1063,9 @@ export default class EuiDataGrid extends Component<EuiDataGridSignature> {
     setFocusedCell: (cell: EuiDataGridCellLocationProps) => {
       this.checkCellExists(cell);
       const visibleRowIndex = this.findVisibleRowIndex(cell.rowIndex);
-      this.setFocusedCell([cell.colIndex, visibleRowIndex]);
+      // forced, unlike upstream: re-focuses the cell even when it is
+      // already the grid's focused cell (e.g. after a modal or popover)
+      this.setFocusedCell([cell.colIndex, visibleRowIndex], true);
     },
     openCellPopover: (cell: EuiDataGridCellLocationProps) => {
       this.checkCellExists(cell);

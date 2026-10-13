@@ -10,7 +10,8 @@ import {
   waitUntil
 } from '@ember/test-helpers';
 import { tracked } from '@glimmer/tracking';
-import { hash } from '@ember/helper';
+import { fn, hash } from '@ember/helper';
+import { on } from '@ember/modifier';
 
 import EuiDataGrid from '#src/components/eui-data-grid.gts';
 import EuiButtonEmpty from '#src/components/eui-button-empty.gts';
@@ -943,4 +944,72 @@ module('Integration | Component | EuiDataGrid API', function (hooks) {
       assert.strictEqual(outer.scrollTop, 340);
     });
   });
+
+  module('editing in the cell popover', function () {
+    class Editor {
+      api: EuiDataGridRefProps | null = null;
+      @tracked rows = [{ a: 'one' }, { a: 'two' }];
+      registerApi = (api: EuiDataGridRefProps) => {
+        this.api = api;
+      };
+      save = (rowIndex: number, colIndex: number, event: SubmitEvent) => {
+        event.preventDefault();
+        const value = (new FormData(event.target as HTMLFormElement).get('value') as string | null) ?? '';
+        this.rows = this.rows.map((row, i) => (i === rowIndex ? { a: value } : row));
+        this.api!.closeCellPopover();
+        this.api!.setFocusedCell({ rowIndex, colIndex });
+      };
+    }
+
+    test('a form in <:cellPopover> edits the data; keys typed in it stay in the form', async function (assert) {
+      const editor = new Editor();
+      const columns: EuiDataGridColumn[] = [{ id: 'a', displayAsText: 'A' }, { id: 'b', displayAsText: 'B' }];
+      await render(
+        <template>
+          <div style="width:600px">
+            <EuiDataGrid
+              aria-label="Grid"
+              @columns={{columns}}
+              @rowCount={{2}}
+              @toolbarVisibility={{false}}
+              @registerApi={{editor.registerApi}}
+            >
+              <:cell as |c|>{{if (eqId c.columnId "a") (getA editor.rows c.rowIndex) "-"}}</:cell>
+              <:cellPopover as |popover|>
+                <form {{on "submit" (fn editor.save popover.rowIndex popover.colIndex)}}>
+                  <input name="value" value={{getA editor.rows popover.rowIndex}} aria-label="Value" />
+                  <button type="submit">Save</button>
+                </form>
+              </:cellPopover>
+            </EuiDataGrid>
+          </div>
+        </template>
+      );
+
+      await click(cell(1, 0));
+      await press('Enter');
+      const field = el('[data-test-subj=euiDataGridExpansionPopover] input[name=value]', document.body) as HTMLInputElement;
+      await waitUntil(() => document.activeElement === field);
+      await press('ArrowRight', field);
+      await press('ArrowDown', field);
+      assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).exists('still editing');
+      assert.strictEqual(document.activeElement, field, 'arrow keys in the form do not move grid focus');
+
+      field.value = 'changed';
+      await click(el('[data-test-subj=euiDataGridExpansionPopover] button[type=submit]', document.body));
+      assert.deepEqual(editor.rows, [{ a: 'one' }, { a: 'changed' }]);
+      assert.dom('[data-test-subj=euiDataGridExpansionPopover]', document.body).doesNotExist();
+      assert.dom('[data-datagrid-cellcontent]', cell(1, 0)).hasText('changed');
+      await waitUntil(() => document.activeElement === cell(1, 0));
+      assert.ok(true, 'focus returned to the edited cell');
+    });
+  });
 });
+
+function eqId(a: string, b: string): boolean {
+  return a === b;
+}
+
+function getA(rows: Array<{ a: string }>, index: number): string {
+  return rows[index]?.a ?? '';
+}

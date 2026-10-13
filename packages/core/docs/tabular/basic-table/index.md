@@ -38,6 +38,12 @@ Columns are plain objects:
   available(item), enabled(item), isPrimary, showOnHover }` or a custom
   `{ component }` receiving `@item` and `@enabled`.
 
+Field and computed columns pass their other keys to their cells, like
+upstream's `<td>` props: `className`, `data-test-subj`, `style` (an object
+of CSS properties or a string, under the cells' widths), `title`,
+`data-*`/`aria-*` attributes and `on*` listeners (`onClick: (event) => …`).
+`@cellProps` does the same for every cell; a column's own keys win.
+
 `EuiBasicTable` shows the sorting, pagination and selection you pass and
 calls `@onChange` with the new `{ page: { index, size }, sort: { field,
 direction } }` criteria, so your component (or a server) decides what the
@@ -51,11 +57,30 @@ React nodes become text, `htmlSafe` strings or components: column
 or a function returning text, and `name` (like `mobileOptions.header`) is
 text, an `htmlSafe` string or a component rendered without arguments
 (`nameTooltip` adds an icon tip, `description` adds screen-reader-only
-text). Custom actions are components, and expanded rows are rendered by
+text). An action's `name` is text, an `htmlSafe` string, a component
+(rendered with the row's `@item`) or a function of the item returning one
+of those. Custom actions are components, and expanded rows are rendered by
 the `<:expandedRow>` block. `@cellProps` may hold `EuiTableRowCell`
 arguments (`textOnly`, `truncateText`, `valign`, `align`, `width`,
 `mobileOptions`, …), which the cell consumes like upstream; the other keys
 become attributes or listeners of the cell.
+
+### Copying rows
+
+Like upstream, the table marks its cells with hidden characters (a tab
+after each cell, a newline after each row; `aria-hidden`, visually hidden)
+so a selection copied from it pastes into a spreadsheet as rows and
+columns. The caption is left out of the copy. The markers are part of a
+cell's `textContent`: tests reading a cell's text should read its
+`.euiTableCellContent`, or ignore `[data-tabular-copy-marker]` elements.
+
+### Page size defaults
+
+`@pagination` falls back to the app's page size defaults (`itemsPerPage`,
+`itemsPerPageOptions`, `showPerPageOptions`), set in the `euiConfig`
+service's `componentDefaults.EuiTablePagination` like upstream's
+`EuiProvider componentDefaults`. See
+[EuiTable's page size defaults](../table).
 
 </EuiText>
 

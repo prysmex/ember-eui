@@ -69,6 +69,30 @@ that upstream scrolls inline with `overflow-inline`, which some browsers
 (e.g. Chromium 130) do not support yet; there the table overflows its
 container instead of scrolling, in React EUI too.
 
+### Page size defaults
+
+Upstream sets app-wide page size defaults with `EuiProvider`'s
+`componentDefaults`. In Ember they live in the `euiConfig` service, under
+the same keys. `EuiTablePagination` and every table and grid built on it
+(`EuiBasicTable`, `EuiInMemoryTable`, `EuiDataGrid`) use them when their
+own arguments leave a value out:
+
+```js
+// e.g. in your application route or an instance initializer
+this.euiConfig.updateConfig({
+  componentDefaults: {
+    EuiTablePagination: {
+      itemsPerPage: 25,
+      itemsPerPageOptions: [25, 50, 100],
+      showPerPageOptions: true
+    }
+  }
+});
+```
+
+`updateConfig` merges arrays by index into the values set before, so set
+`itemsPerPageOptions` in a single call (or use `setConfig`).
+
 </EuiText>
 
 <EuiHorizontalRule />
@@ -147,6 +171,7 @@ shows the sort direction (`@isSorted`, `@isSortAscending`), or a
 | Block | Description |
 | --- | --- |
 | default block | The column's name. |
+| `<:append>` | Content after the cell's content (upstream `append`), e.g. the hidden tabular copy markers of `EuiBasicTable`. |
 
 ### EuiTableHeaderCellCheckbox
 
@@ -162,6 +187,7 @@ A header cell holding a checkbox, e.g. "select all rows".
 | Block | Description |
 | --- | --- |
 | default block | The checkbox. |
+| `<:append>` | Content after the cell's content (upstream `append`). |
 
 ### EuiTableHeaderButton
 
@@ -224,11 +250,13 @@ A cell of an `EuiTableRow`.
 | `@maxWidth` | `number \| string` |  | Max width, e.g. `'30%'`. |
 | `@sticky` | `EuiTableStickyCellOptions` |  | Sticks the cell to a side of the table (`{ side: 'start' \| 'end' }`) while it scrolls inline; only for the first or last column, and not in the cards layout. With `@hasBackground={{false}}` on the table, set `--euiTableCellStickyBackgroundColor` to the background behind it. Upstream beta. |
 | `@mobileOptions` | `TableMobileOptions` |  | In the cards layout: `{ show, only, header, enlarge, align, truncateText, textOnly, width, minWidth, maxWidth }`. `header` labels the value in the row's card; the `<:mobile>` block replaces the content there. |
+| `@style` | `EuiTableRowCellStyle` |  | Inline styles merged under the cell's own width styles (upstream's `style` prop). A `style` attribute replaces them instead. |
 
 | Block | Description |
 | --- | --- |
 | default block | The content. |
 | `<:mobile>` | Different content in the cards layout. |
+| `<:append>` | Content after the cell's content wrapper (upstream `append`), e.g. the hidden tabular copy markers of `EuiBasicTable`. |
 
 ### EuiTableRowCellCheckbox
 
@@ -239,6 +267,7 @@ layout it sits in the card's top left corner (give the row
 | Block | Description |
 | --- | --- |
 | default block | The checkbox. |
+| `<:append>` | Content after the cell's content (upstream `append`). |
 
 ### EuiTableFooter
 
@@ -274,10 +303,10 @@ the page buttons on the right. You keep the page and the page size.
 | `@activePage` | `number` |  | The current page, from `0`. |
 | `@pageCount` | `number` |  | Number of pages. |
 | `@onChangePage` | `(page: number) => void` |  | Called with the clicked page (from `0`). |
-| `@itemsPerPage` | `number` | `10` (upstream) | Rows per page. `0` means all rows: the menu reads "Showing all rows" and the pages are hidden. |
-| `@itemsPerPageOptions` | `number[]` | `[10, 25, 50]` (upstream) | Choices of rows per page. `0` is the "Show all rows" choice. |
+| `@itemsPerPage` | `number` | `10` (upstream), or the app's `componentDefaults.EuiTablePagination` in `euiConfig` | Rows per page. `0` means all rows: the menu reads "Showing all rows" and the pages are hidden. |
+| `@itemsPerPageOptions` | `number[]` | `[10, 25, 50]` (upstream), or the app's `componentDefaults.EuiTablePagination` | Choices of rows per page. `0` is the "Show all rows" choice. |
 | `@onChangeItemsPerPage` | `(itemsPerPage: number) => void` |  | Called with the chosen rows per page. |
-| `@showPerPageOptions` | `boolean` | `true` | Shows the "Rows per page" menu. |
+| `@showPerPageOptions` | `boolean` | `true`, or the app's `componentDefaults.EuiTablePagination` | Shows the "Rows per page" menu. |
 | `@compressed` | `boolean` |  | Passed to `EuiPagination`: "page of total" with arrows. |
 | `@responsive` |  |  | Passed to `EuiPagination`: breakpoints at which it is compressed. |
 | `@ariaControls` | `string` |  | Passed to `EuiPagination`: id of the content the pages change. |

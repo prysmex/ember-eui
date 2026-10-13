@@ -32,18 +32,23 @@ export interface EuiTablePaginationSignature {
     /** Called with the clicked page (from `0`). */
     onChangePage?: (page: number) => void;
     /**
-     * Rows per page. Defaults to `10` (upstream). `0` means all rows: the
-     * menu reads "Showing all rows" and the pages are hidden.
+     * Rows per page. Defaults to `10` (upstream), or the app's
+     * `componentDefaults.EuiTablePagination` in `euiConfig`. `0` means all
+     * rows: the menu reads "Showing all rows" and the pages are hidden.
      */
     itemsPerPage?: number;
     /**
-     * Choices of rows per page. Defaults to `[10, 25, 50]` (upstream). `0`
-     * is the "Show all rows" choice.
+     * Choices of rows per page. Defaults to `[10, 25, 50]` (upstream), or
+     * the app's `componentDefaults.EuiTablePagination`. `0` is the "Show all
+     * rows" choice.
      */
     itemsPerPageOptions?: number[];
     /** Called with the chosen rows per page. */
     onChangeItemsPerPage?: (itemsPerPage: number) => void;
-    /** Shows the "Rows per page" menu. Defaults to `true`. */
+    /**
+     * Shows the "Rows per page" menu. Defaults to `true`, or the app's
+     * `componentDefaults.EuiTablePagination`.
+     */
     showPerPageOptions?: boolean;
     /** @deprecated Use `@showPerPageOptions={{false}}`. Hides the menu. */
     hidePerPageOptions?: boolean;

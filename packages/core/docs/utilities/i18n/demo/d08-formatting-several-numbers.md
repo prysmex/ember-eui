@@ -1,8 +1,8 @@
 ---
-order: 2
+order: 8
 ---
 
-# Formatting numbers
+# Formatting several numbers (Ember EUI extra)
 
 <EuiText>
 

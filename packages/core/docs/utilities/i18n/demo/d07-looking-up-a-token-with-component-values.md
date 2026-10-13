@@ -1,8 +1,8 @@
 ---
-order: 1
+order: 7
 ---
 
-# Looking up a token
+# Component values (Ember EUI extra)
 
 <EuiText>
 
